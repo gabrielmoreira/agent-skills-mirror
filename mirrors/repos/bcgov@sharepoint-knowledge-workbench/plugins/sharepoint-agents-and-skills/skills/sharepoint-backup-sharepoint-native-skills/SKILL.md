@@ -1,30 +1,45 @@
 ---
 name: sharepoint-backup-sharepoint-native-skills
-description: Read-only backup of named AgentAssets native-skill/template files from a SharePoint tenant to a local directory.
+plugin: sharepoint-agents-and-skills
+description: Read-only backup of named AgentAssets native-skill and template files from a SharePoint tenant to a local directory. Use as a precaution before tenant cleanup or a redeploy. Makes no tenant changes.
+allowed-tools: Bash, Read
 ---
 
-# backup-sharepoint-native-skills
+# Backup SharePoint Native Skills
 
-## Purpose
+Download named `AgentAssets` skill and template files to a local directory. Idempotent: same output directory, overwritten in place.
 
-Downloads named `AgentAssets` skill/template files to a local directory as a precaution before
-any tenant cleanup is considered. Makes no changes to the tenant. Idempotent — always writes to
-the same fixed output directory and overwrites in place on every run.
+## Contents
 
-## Input boundaries
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-- `-ConfigFile` — connection/authentication context only.
-- `-Items` (required) — explicit list of `{Url, Dest}` hashtables. No hardcoded target list —
-  the caller supplies exactly what to back up.
-- `-OutputDir` — local destination directory.
-- **Read-only** — no tenant write of any kind.
+## Constraints
 
-## Scripts
+- Read-only: no tenant write of any kind.
+- `-Items` is a required explicit list of `{Url, Dest}` hashtables. No hardcoded target list.
+- `-ConfigFile` carries connection context only. When running an installed copy, pass it explicitly.
 
-- `../../scripts/backup-sharepoint-native-skills.ps1`
+## Quick start
 
-## Related
+```powershell
+pwsh -File scripts/backup-sharepoint-native-skills.ps1 -ConfigFile config.psd1 -Items @(@{Url='AgentAssets/Skills/my-skill/SKILL.md'; Dest='my-skill.md'}) -OutputDir ./backup
+```
 
-- `restore-sharepoint-native-skills` — the corresponding restore skill, consumes the same
-  `{Url, Dest}`/`{LocalPath, Url}` shape.
+## Workflow
 
+1. Confirm the exact `Url` and local `Dest` for each file.
+2. Run the script with `-OutputDir`.
+3. Keep the backup for `sharepoint-restore-sharepoint-native-skills`, which consumes the same shape.
+
+## Verification
+
+Every listed file exists locally under `-OutputDir`.
+
+## References
+
+- [Safety, config and permissions](references/agents-and-skills-safety-and-config.md): read for the gate model of every script, the `-ConfigFile` default caveat and the Copilot permission note.
+- [Backup and restore](references/agent-backup-restore-details.md): read for the backup parameters and the matching restore.

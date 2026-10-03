@@ -1,51 +1,51 @@
 ---
 name: sharepoint-publish-aspx-to-sharepoint
-description: Builds a human-actionable publish plan for rendered content as SharePoint modern pages. Performs no tenant writes -- matches this plugin's Phase 3 package-only architecture.
+plugin: sharepoint-content-publication
+description: Builds a human-actionable publish plan (a PublishPlan) for rendered content as SharePoint modern pages. Use after rendering, before uploading. Performs no tenant writes and never attempts raw .aspx upload (blocked); execution belongs to sharepoint-upload-content.
+allowed-tools: Bash, Read
+examples:
+  - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); from sharepoint_publish_plan import build_aspx_publish_plan; print(build_aspx_publish_plan('doc-1', 'rendered/', '/sites/Test/SitePages'))\""
 ---
 
-# publish-aspx-to-sharepoint
+# Publish ASPX to SharePoint (plan)
 
-## Purpose
+Produce a `PublishPlan` for publishing rendered content as SharePoint modern pages. It does not upload or create any page.
 
-Produces a `PublishPlan` for publishing rendered content as SharePoint pages. **Does not upload
-or create any page itself.**
+## Contents
 
-## Real platform constraint recorded
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-Per Phase 3.0's confirmed finding
-(`docs/research/research-experimentation/tenant-discovery/field-note-sharepoint-write-capability-discovery.md` §15): raw
-`.aspx` file upload is blocked (`Access denied`) on this tenant. The only confirmed-working
-mechanism is the `Add-PnPPage`/`Add-PnPPageTextPart` modern-page-creation API, not a file upload.
-This skill builds the plan (source content, target page names); the real executor that consumes
-it is `upload-content`'s `scripts/spo-upload-plan.ps1` — see that skill for the working
-`Add-PnPPage`/`Add-PnPPageTextPart`/`Publish-PnPPage` implementation (dry-run by default, real
-writes behind `-Execute -ConfirmToken UPLOAD-SPO-PLAN`).
+## Constraints
 
-**Correction (2026-08-17):** this SKILL.md previously stated the page-creation API "remains a
-future, separately-authorized capability once Stage 3.4.3 is approved." That was stale — a real
-executor was already built and shipped in `upload-content` and was never a Stage 3.4.3 write-path
-question to begin with (Stage 3.4.3 concerns a different, not-yet-approved write identity; this
-plugin's page-creation path already runs under the same interactive `Connect-PnPOnline` convention
-every other plugin's real executor uses). Corrected here rather than left to mislead the next
-reader.
+- Zero tenant I/O. This skill only builds the plan.
+- Never plan or attempt raw `.aspx` file upload: it is confirmed `Access denied`. The only working mechanism is the modern-page
+  API (`Add-PnPPage` / `Add-PnPPageTextPart` / `Publish-PnPPage`).
+- Refuse to build a plan from a missing source directory or one with no `.md` files.
+- Run from this skill's root with `scripts/` on `sys.path`.
 
-## Input boundaries
+## Quick start
 
-- `document_id`, a local rendered `.md` source directory, and a target site-relative path.
-- Refuses to build a plan from a missing source directory or one with no `.md` files.
+```python
+import sys; sys.path.insert(0, "scripts")
+from sharepoint_publish_plan import build_aspx_publish_plan
+plan = build_aspx_publish_plan(document_id, source_dir, target_site_relative_path)
+```
 
-## Prohibited scope
+## Workflow
 
-- This skill itself performs zero tenant I/O — it only builds the plan.
-- Does not attempt raw `.aspx` file upload (confirmed blocked).
+1. Collect `document_id`, the local rendered source directory and the target site-relative path.
+2. Call `build_aspx_publish_plan`. The plan records source content and target page names, not an upload mechanism.
+3. Hand the plan to the `sharepoint-upload-content` skill, whose executor creates the pages (dry run first).
 
-## Scripts
+## Verification
 
-- `../../scripts/sharepoint_publish_plan.py` (`build_aspx_publish_plan`)
-- Real executor: `upload-content`'s `../../scripts/spo-upload-plan.ps1` (consumes this skill's
-  `PublishPlan` output directly).
+Confirm the plan lists every expected source file with its target page name, and that nothing was written to a tenant.
 
-## Tests
+## References
 
-- `../../tests/unit/test_sharepoint_publish_plan.py`
-
+- [Executors, gates and constraints](references/publication-executors-and-gates.md): read for why `.aspx` upload is blocked, the
+  executor that consumes this plan, and the corrections history.

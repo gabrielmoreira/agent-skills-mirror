@@ -1,79 +1,60 @@
 ---
 name: sharepoint-generate-sharepoint-schema-from-export
-plugin: sharepoint-schema
-description: Transforms an already-loaded SharePoint schema export (site columns, content types, lists with fields) into a declarative, JSON-serializable schema definition. Pure, read-only transform -- consumes an export, never contacts a tenant.
+plugin: sharepoint-discovery
+description: Transforms an already-loaded SharePoint schema export (site columns, content types, lists with fields) into a declarative, JSON-serializable schema definition. Use when you need a definition suitable for later comparison or provisioning-input translation. A pure, read-only transform; consumes an export, never contacts a tenant.
 allowed-tools: Bash, Read
 examples:
-  - "python -c \"from schema_export import load_schema_export; from schema_definition import generate_schema_definition; d = generate_schema_definition(load_schema_export('exports/baseline'), label='baseline'); print(d.to_dict())\""
-  - "python -c \"from schema_definition import SiteSchemaDefinition; SiteSchemaDefinition.load('baseline.json')\""
+  - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); from schema_export import load_schema_export; from schema_definition import generate_schema_definition; d = generate_schema_definition(load_schema_export('exports/baseline'), label='baseline'); print(d.to_dict())\""
+  - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); from schema_definition import SiteSchemaDefinition; SiteSchemaDefinition.load('baseline.json')\""
 ---
 
 # Generate SharePoint Schema From Export
 
-## Trigger and Purpose
+Turn one loaded schema export into a declarative `SiteSchemaDefinition` JSON describing what that
+export contains.
 
-Use this skill to turn an already-loaded schema export into a declarative
-schema definition -- one JSON-serializable shape describing site columns,
-content types, and lists (each with its own fields) -- suitable for later
-comparison or, in a future and separate step, provisioning-input
-translation. This skill does not compare two exports (see `audit-schema` for
-that) and does not provision or write anything to a tenant; it only
-transforms one export it is given into a declarative description of what
-that export contains.
+## Contents
 
-## Where the exported schema comes from
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-This skill consumes an already-exported schema directory tree
-(`<dir>/summary/lists.json`, `<dir>/lists/<listname>/fields.json`, etc. — see
-`schema_export.py`'s `ExportLayout`). That tree is produced by
-`sharepoint-discovery`'s `collect-sharepoint-inventory` skill running
-`collect-sharepoint-schema-export.ps1` against a live tenant — this plugin
-never connects to a tenant itself. Run that script first if you don't
-already have an export directory.
+## Constraints
 
-## Honest outcomes -- a degraded export never produces a clean-looking definition
+- Pure and read-only. Never contact a tenant, never provision or write anything, and do not compare two
+  exports (that is `sharepoint-audit-schema`).
+- A degraded export never produces a clean-looking definition. The definition carries the export's
+  overall status unchanged, with only the `OBSERVED` sections populated. A list whose `fields.json`
+  could not be read keeps an honest `fields_status` and empty `fields`.
+- Run from this skill's root with `scripts/` on `sys.path`.
 
-`generate_schema_definition` reuses `schema_export.SectionStatus` rather than
-inventing a second status vocabulary. The resulting `SiteSchemaDefinition`
-carries the source export's overall `status` unchanged: an `UNAVAILABLE`,
-`FORBIDDEN`, `FAILED`, or `PARTIAL` export produces a definition with that
-same status and only the sections that were actually `OBSERVED` populated --
-never a silently empty-but-`OBSERVED`-looking definition assembled from a
-broken export. The same discipline applies per-list: a list whose own
-`fields.json` could not be read cleanly keeps that list's `fields_status`
-honest and its `fields` tuple empty, rather than guessing.
-
-## Usage
+## Quick start
 
 ```bash
-python -c "
+python3 -c "
+import sys; sys.path.insert(0, 'scripts')
 from schema_export import load_schema_export
 from schema_definition import generate_schema_definition
-
-export = load_schema_export('exports/baseline', label='baseline')
-definition = generate_schema_definition(export, label='baseline')
-definition.save('baseline-schema.json')
-print(definition.status)
-"
+d = generate_schema_definition(load_schema_export('exports/baseline', label='baseline'), label='baseline')
+d.save('baseline-schema.json'); print(d.status)"
 ```
 
-Round-trip a saved definition:
+## Workflow
 
-```bash
-python -c "
-from schema_definition import SiteSchemaDefinition
-d = SiteSchemaDefinition.load('baseline-schema.json')
-print(len(d.site_columns), len(d.content_types), len(d.lists))
-"
-```
+1. Get an export directory; see [exports and outcomes](references/schema-export-sources-and-outcomes.md).
+2. Load it with `load_schema_export`, call `generate_schema_definition`, and `save` the result.
+3. Report the definition's status and the counts of site columns, content types and lists.
 
-## Scripts
+## Verification
 
-- `scripts/schema_export.py` -- `load_schema_export`, `SectionStatus`, `SchemaExport` (input to this skill)
-- `scripts/schema_definition.py` -- `generate_schema_definition`, `FieldDefinition`, `ContentTypeDefinition`, `ListDefinition`, `SiteSchemaDefinition`
+Check `definition.status` is `OBSERVED` before treating the definition as complete. Round-trip it with
+`SiteSchemaDefinition.load` to confirm it parses.
 
-## Provenance
+## References
 
-New-build work for this repository, not extracted or adapted from any prior
-source. No provenance record is needed in the Phase 9 provenance ledger.
-
+- [Exports and outcomes](references/schema-export-sources-and-outcomes.md): read for where exports come
+  from and status meanings.
+- [Definition generation](references/schema-definition-generation.md): read for degraded-export
+  behavior, the round trip, scripts and provenance.

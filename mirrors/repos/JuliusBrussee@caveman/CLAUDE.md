@@ -115,9 +115,10 @@ caveman/
 
 | File | What it controls |
 |------|-----------------|
-| `skills/caveman/SKILL.md` | Caveman behavior: intensity levels, rules, wenyan mode, auto-clarity, persistence. Only file to edit for behavior changes. |
-| `src/rules/caveman-activate.md` | Always-on auto-activation rule body. Consumed by `src/tools/caveman-init.js` when a user runs `npx caveman --with-init` (per-repo IDE rule files). Edit here, not in any per-agent rule copy. |
+| `skills/caveman/SKILL.md` | The caveman voice: rules, auto-clarity, persistence. Sibling skills `skills/ultracave/SKILL.md` (grammar stripped) and `skills/megacave/SKILL.md` (文言文) are self-contained and each map 1:1 to a stored mode. Edit these three for behavior changes. |
+| `src/rules/caveman-activate.md` | Always-on auto-activation rule body, consumed by `src/tools/caveman-init.js` (per-repo IDE rule files) and by the opencode `AGENTS.md` block. GENERATED: `skills/compile.mjs` derives it from `skills/caveman/SKILL.md` (thesis line + rule headlines) plus the fixed tail in `skills/activation-rule.mjs`, and rewrites the `RULE_BODY` fallback in `caveman-init.js` to match. Edit the skill or the tail, rerun `node packages/cli/scripts/compile-registries.mjs`; `tests/installer/rule-copies.test.mjs` fails on drift. |
 | `src/rules/caveman-openclaw-bootstrap.md` | Marker-fenced bootstrap snippet appended to `~/.openclaw/workspace/SOUL.md` by `bin/lib/openclaw.js`. Drives always-on caveman through the OpenClaw gateway. Must include the SENTINEL `Respond terse like smart caveman` and stay well under OpenClaw's 12K-per-bootstrap-file cap. |
+| `.codex/codex-sessionstart.js` | Repo-local Codex SessionStart hook. Resolves the configured default mode through `src/hooks/caveman-config.js` and emits the active skill's ruleset whole, replacing the hardcoded `full`-level echo `.codex/hooks.json` used to carry — so `CAVEMAN_DEFAULT_MODE`, a repo-local `.caveman.json` and a user-config `defaultMode: "off"` all take effect on Codex. Repo-local only: `bin/install.js` never copies `.codex/`, and Codex users install through `npx skills add -a codex`. Carries a hand-copied `FALLBACK_VALID_MODES` for when the shared resolver is absent; `tests/hooks/codex-sessionstart.test.mjs` fails if it drifts from `VALID_MODES`. |
 | `bin/lib/openclaw.js` | OpenClaw install/uninstall helper. Frontmatter merge (`version`, `always: true`), SOUL.md marker append/strip, idempotent. Shared by `bin/install.js` and `src/tools/caveman-init.js`. |
 | `skills/caveman-commit/SKILL.md` | Caveman commit message behavior. Fully independent skill. |
 | `skills/caveman-review/SKILL.md` | Caveman code review behavior. Fully independent skill. |
@@ -224,7 +225,7 @@ SessionStart hook ──┐                                        ┌── Use
                           mirrors       reads
                              ▼             ▼
               .caveman-active      caveman-statusline.sh ◀── session JSON on stdin
-           (last-write-wins,        [CAVEMAN] / [CAVEMAN:ULTRA] / ...
+           (last-write-wins,        [CAVEMAN] / [ULTRACAVE] / [MEGACAVE]
             compat only)
 ```
 
@@ -242,7 +243,7 @@ All hooks honor `CLAUDE_CONFIG_DIR` for non-default Claude Code config locations
 ### `src/hooks/caveman-config.js` — shared module
 
 Exports:
-- `getDefaultMode()` — resolves default mode in order: `CAVEMAN_DEFAULT_MODE` env var → repo-local config (`<cwd>/.caveman/config.json` or `<cwd>/.caveman.json`, walking up to the filesystem root) → user config (`$XDG_CONFIG_HOME/caveman/config.json` / `~/.config/caveman/config.json` / `%APPDATA%\caveman\config.json`) → `'full'`. The env var short-circuits before any cwd walk. Repo-local config lets a team check in a per-project default without polluting every contributor's env or user config.
+- `getDefaultMode()` — resolves default mode in order: `CAVEMAN_DEFAULT_MODE` env var → repo-local config (`<cwd>/.caveman/config.json` or `<cwd>/.caveman.json`, walking up to the filesystem root) → user config (`$XDG_CONFIG_HOME/caveman/config.json` / `~/.config/caveman/config.json` / `%APPDATA%\caveman\config.json`) → `'caveman'`. The env var short-circuits before any cwd walk. Repo-local config lets a team check in a per-project default without polluting every contributor's env or user config.
 - `findRepoConfigPath(start)` — walks up from `start` (default `process.cwd()`) looking for the first `.caveman/config.json` or `.caveman.json`. Bounded to 64 ancestors. Refuses symlinked files (symmetric with `safeWriteFlag` / `readFlag`).
 - `safeWriteFlag(flagPath, content)` — symlink-safe flag write. Refuses if flag target or its immediate parent is a symlink. Opens with `O_NOFOLLOW` where supported. Atomic temp + rename. Creates with `0600`. Protects against local attackers replacing the predictable flag path with a symlink to clobber files writable by the user. Used by both write hooks. Silent-fails on all filesystem errors.
 - `validateSessionId(id)` — returns the id or `null`. Whitelist `^[A-Za-z0-9_-]{1,128}$`. **A session id becomes part of a filesystem path, so nothing may interpolate one without passing it through here first.** The symlink hardening in `safeWriteFlag` does not cover traversal.
@@ -274,12 +275,10 @@ Silent-fails on all filesystem errors — never blocks session start.
 Reads JSON from stdin — `session_id` scopes every read and write. Three responsibilities:
 
 **1. Slash-command activation.** If prompt starts with `/caveman`, writes the session's mode via `writeSessionMode`:
-- `/caveman` → configured default (see `caveman-config.js`, defaults to `full`)
-- `/caveman lite` → `lite`
-- `/caveman ultra` → `ultra`
-- `/caveman wenyan` or `/caveman wenyan-full` → `wenyan` (alias) / `wenyan-full`
-- `/caveman wenyan-lite` → `wenyan-lite`
-- `/caveman wenyan-ultra` → `wenyan-ultra`
+- `/caveman` → configured default (see `caveman-config.js`, defaults to `caveman`)
+- `/ultracave` (alias `/caveman ultra`) → `ultracave`
+- `/megacave` (alias `/caveman wenyan`, any `wenyan-*`) → `megacave`
+- `/caveman lite` or `/caveman full` (legacy aliases) → `caveman`
 - `/caveman-commit` → `commit`
 - `/caveman-review` → `review`
 - `/caveman-compress` → `compress`
@@ -291,9 +290,9 @@ Reads JSON from stdin — `session_id` scopes every read and write. Three respon
 ### `src/hooks/caveman-statusline.sh` — Statusline badge
 
 Reads the session JSON Claude Code pipes to it on stdin, extracts `session_id` (pure bash — no `jq` dependency), and reads `.caveman-sessions/<id>.mode`; falls back to `$CLAUDE_CONFIG_DIR/.caveman-active` when there is no usable id. Outputs colored badge string for Claude Code statusline:
-- `full` or empty → `[CAVEMAN]` (orange)
+- `caveman` or empty → `[CAVEMAN]` (orange)
 - `off` → nothing at all. Never `[CAVEMAN:OFF]` — that reads as a mode rather than the absence of one
-- anything else → `[CAVEMAN:<MODE_UPPERCASED>]` (orange)
+- `ultracave` → `[ULTRACAVE]`, `megacave` → `[MEGACAVE]`; one-shots → `[CAVEMAN:<MODE_UPPERCASED>]` (orange). Legacy stored values render through the same map
 
 Stdin is bounded the same way as the SessionStart hook: `[ ! -t 0 ]` skips an interactive terminal, and `read -r -d '' -t 1` caps the wait. The timeout is an **integer on purpose** — macOS ships bash 3.2, which rejects `-t 0.3` with `invalid timeout specification`.
 
@@ -319,9 +318,11 @@ Skills = Markdown files with YAML frontmatter consumed by Claude Code's skill/pl
 
 Each skill has a human-facing `README.md` alongside the LLM-facing `SKILL.md`. The README explains what the skill does for users browsing GitHub; the SKILL.md is the prompt body the agent loads. Don't merge them — different audiences, different formats.
 
-### Intensity levels
+### Three skills, one mode model
 
-Defined in `skills/caveman/SKILL.md`. Six levels: `lite`, `full` (default), `ultra`, `wenyan-lite`, `wenyan-full`, `wenyan-ultra`. Persists until changed or session ends.
+Three self-contained skills, each 1:1 with a stored mode id: `caveman` (default voice), `ultracave` (grammar stripped), `megacave` (文言文). The SessionStart hook injects `skills/<id>/SKILL.md` whole; there is no per-level filtering. Legacy stored values map on read: `lite` and `full` → `caveman`, `ultra` → `ultracave`, every `wenyan*` → `megacave`. Writes emit new ids only. Mode persists until changed or session ends. Plan: `docs/technical/three-skills-refactor.md`.
+
+`defaultMode: "manual"` is a Claude Code startup policy, not a fourth mode. It starts inactive, stores only `off`, and explicit bare-command or natural-language activation resolves to `caveman`. Keep it out of `VALID_MODES`; only configuration accepts it. OpenCode maps this policy to its existing caveman default because its installer also supplies static AGENTS.md activation. `/caveman status` is read-only and must return before one-shot restoration or any mode-state mutation.
 
 ### Auto-clarity rule
 
@@ -354,7 +355,7 @@ How caveman reaches each agent type:
 | Windsurf | `npx skills add ... -a windsurf` (default via `--only windsurf`); per-repo `.windsurf/rules/caveman.md` via `--with-init` | Yes — always-on rule |
 | Cline | `npx skills add ... -a cline` (default via `--only cline`); per-repo `.clinerules/caveman.md` via `--with-init` | Yes — Cline auto-discovers `.clinerules/` |
 | Copilot | `npx skills add ... -a github-copilot` (soft probe — pass `--only copilot`); per-repo `.github/copilot-instructions.md` + `AGENTS.md` via `--with-init` | Yes — repo-wide instructions |
-| Continue, AiderDesk, Antigravity IDE/2.0 | Owned physical copies into each vendor's supported directory, honoring configured homes; separate explicit targets for the two Antigravity products | Host skill invocation; feature settings may be required |
+| Continue, AiderDesk, Antigravity IDE/2.0, Grok Build | Owned physical copies into each vendor's supported directory, honoring configured homes (`GROK_HOME`, default `~/.grok`, for Grok Build); separate explicit targets for the two Antigravity products | Host skill invocation; feature settings may be required |
 | Others (Junie, Trae, Warp, Tabnine, Mistral, Qwen, Devin, Droid, ForgeCode, Bob, Crush, iFlow, OpenHands, Qoder, Rovo Dev, Replit, …) | Delegated `npx skills` personal installs; Replit uses project scope. Configured iFlow/Crush roots use owned copies | Host skill invocation; `/caveman` where supported |
 
 opencode reaches Tier 1 minus the statusline (opencode's TUI has no plugin-writable badge). Mode flag lives at `~/.config/opencode/.caveman-active` for any external tooling that wants to surface it.

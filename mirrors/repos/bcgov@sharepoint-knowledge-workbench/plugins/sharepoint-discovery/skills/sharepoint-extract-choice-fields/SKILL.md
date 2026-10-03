@@ -1,77 +1,59 @@
 ---
 name: sharepoint-extract-choice-fields
-plugin: sharepoint-schema
-description: Inventories Choice and MultiChoice fields from an exported SharePoint schema and renders them as a list/internal-name keyed overrides mapping. Distinguishes "no options defined" from "options unknown". Read-only, group filter is opt-in with no default.
+plugin: sharepoint-discovery
+description: Inventories Choice and MultiChoice fields from an exported SharePoint schema and renders them as a list and internal-name keyed overrides mapping, distinguishing "no options defined" from "options unknown". Use when you need the real option sets behind a site's Choice columns for migration mapping, validation rules or seeding a provisioning template. Read-only; the group filter is opt-in with no default.
 allowed-tools: Bash, Read
 examples:
-  - "python -c \"from choice_fields import inventory_choice_fields, to_overrides_mapping; print(to_overrides_mapping(inventory_choice_fields(export)))\""
+  - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); from choice_fields import inventory_choice_fields, to_overrides_mapping; print(to_overrides_mapping(inventory_choice_fields(export)))\""
 ---
 
 # Extract Choice Fields
 
-## Trigger and Purpose
+Inventory `Choice` and `MultiChoice` fields across an exported schema and emit them as an overrides
+mapping keyed by list and internal field name.
 
-Use this skill when you need the actual option sets behind a site's Choice
-columns — for migration mapping, for validation rules, or to seed a
-provisioning template. It inventories `Choice` and `MultiChoice` fields across
-an exported schema and can emit them as an overrides mapping keyed by list and
-internal field name.
+## Contents
 
-## Where the exported schema comes from
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-This skill consumes an already-exported schema directory tree
-(`<dir>/summary/lists.json`, `<dir>/lists/<listname>/fields.json`, etc. — see
-`schema_export.py`'s `ExportLayout`). That tree is produced by
-`sharepoint-discovery`'s `collect-sharepoint-inventory` skill running
-`collect-sharepoint-schema-export.ps1` against a live tenant — this plugin
-never connects to a tenant itself. Run that script first if you don't
-already have an export directory.
+## Constraints
 
-## Unknown is not empty
+- Unknown is not empty. An empty choice list means no options are defined; a field with no `Choices`
+  property is `UNKNOWN`. `to_overrides_mapping` omits unknown option sets rather than emitting an
+  empty list for them.
+- The group filter is an explicit caller parameter with no default. Exclude nothing silently.
+- A missing export is `UNAVAILABLE`, never an empty success. An export with no choice fields is `EMPTY`.
+- Read-only. Run from this skill's root with `scripts/` on `sys.path`.
 
-The distinction this skill exists to preserve:
-
-- A field with an **empty** choice list has genuinely no options defined.
-- A field with **no `Choices` property at all** is `UNKNOWN` — the export
-  simply did not carry the information.
-
-These are reported differently and never conflated. `to_overrides_mapping`
-**omits unknown option sets** rather than emitting an empty list for them,
-so a downstream consumer cannot mistake "we don't know" for "there are none".
-
-Both the plain array form and the OData `{"results": [...]}` envelope are
-supported, since SharePoint exports vary.
-
-## Group filter is opt-in
-
-Filtering by field group is an explicit caller parameter with **no default** —
-nothing is silently excluded from your inventory.
-
-## Honest outcomes
-
-A missing export is `UNAVAILABLE`, never an empty success. An export
-containing no choice fields at all is `EMPTY`.
-
-## Usage
+## Quick start
 
 ```bash
-python -c "
+python3 -c "
+import sys; sys.path.insert(0, 'scripts')
 from schema_export import load_schema_export
 from choice_fields import inventory_choice_fields, to_overrides_mapping
 inv = inventory_choice_fields(load_schema_export('exports/baseline'))
-print(inv.status)
-print(to_overrides_mapping(inv))
-"
+print(inv.status); print(to_overrides_mapping(inv))"
 ```
 
-## Scripts
+## Workflow
 
-- `scripts/choice_fields.py` -- `inventory_choice_fields`, `to_overrides_mapping`, `ChoiceField`, `ChoiceFieldInventory`
-- `scripts/schema_export.py` -- export loading and shared status vocabulary
+1. Get an export directory; see [exports and outcomes](references/schema-export-sources-and-outcomes.md).
+2. Load it and call `inventory_choice_fields`, adding a group filter only if the user asks.
+3. Call `to_overrides_mapping` for the overrides mapping and report which fields were `UNKNOWN`.
 
-## Provenance
+## Verification
 
-Adapted from `sp-extracting-choices` in the originating SharePoint migration
-repository. See
-`docs/reports/phase-9-reusable-sharepoint-plugin-extraction/provenance.md`.
+Check `inv.status`, and that every field missing a `Choices` property is reported as unknown rather
+than empty. Both the plain array and the OData `{"results": [...]}` forms are accepted.
 
+## References
+
+- [Exports and outcomes](references/schema-export-sources-and-outcomes.md): read for where exports
+  come from and status meanings.
+- [Choice fields details](references/choice-fields-details.md): read for unknown-vs-empty, the group
+  filter, scripts and provenance.

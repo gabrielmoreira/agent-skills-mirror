@@ -1,83 +1,60 @@
 ---
 name: sharepoint-analyze-site-navigation
 plugin: sharepoint-discovery
-description: Analyses an exported classic SharePoint site navigation tree (top nav and quick launch) -- flattening it with per-node depth and child counts, and computing max-depth statistics -- to produce a navigation architecture summary. Read-only; consumes an export you provide and never contacts a tenant.
+description: Analyses an exported classic SharePoint site navigation tree (top nav and quick launch), flattening it with per-node depth and child counts and computing max-depth statistics, to produce a navigation architecture summary. Use when planning a classic-to-modern migration and sizing navigation before mapping it to hub or global navigation. Read-only; consumes an export you provide and never contacts a tenant.
 allowed-tools: Bash, Read
 examples:
-  - "python -c \"from navigation_analysis import run; print(run(navigation_path='nav.json', output_dir='out/').status)\""
+  - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); from navigation_analysis import run; print(run(navigation_path='navigation.json', output_dir='out/').status)\""
 ---
 
 # Analyze Site Navigation
 
-## Trigger and Purpose
+Answer: how many top-level nodes exist, how deep does each tree nest, and what does the full
+node list look like with depth and child counts.
 
-Use this skill when planning a classic-to-modern SharePoint migration and you
-need to understand how deep and how wide a site's navigation chrome is before
-mapping it onto modern hub/global navigation. It consumes a navigation export
-already pulled from a tenant (top navigation bar and quick launch, each an
-arbitrarily nested tree) and produces a flattened, depth-annotated summary.
+## Contents
 
-It answers: how many top-level nodes exist, how deep does each tree nest, and
-what does the full node list look like with depth and child counts.
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-## Honest outcomes
+## Constraints
 
-Every run returns a `DiscoveryOutcome` carrying a `DiscoveryStatus`:
-`OBSERVED`, `EMPTY`, `PARTIAL`, `UNAVAILABLE`, `FORBIDDEN`, or `FAILED`.
+- Read-only. No tenant writes, no network access: it reads the export path you name and writes
+  analysis artifacts to the output directory you name.
+- A missing input file is `UNAVAILABLE` and creates no output directory. An export with no
+  navigation nodes is `EMPTY`, never a pass. An input that isn't a JSON object is `FAILED`
+  (the expected shape is `{topNav, quickLaunch}`).
+- Run from this skill's root with `scripts/` on `sys.path`. Python is standard library only.
 
-A missing input file is `UNAVAILABLE` and **no output directory is created**.
-An export with no navigation nodes at all is `EMPTY`, never a pass. An input
-that isn't a JSON object (e.g. an array or a scalar) is `FAILED`, since it
-cannot be the expected `{topNav, quickLaunch}` shape.
-
-## Read-only guarantee
-
-No writes to any tenant, no network access. It reads the export path you name
-and writes analysis artifacts to the output directory you name.
-
-## Usage
+## Quick start
 
 ```bash
-python -c "
+python3 -c "
+import sys; sys.path.insert(0, 'scripts')
 from navigation_analysis import run
-outcome = run(navigation_path='navigation.json', output_dir='out/')
-print(outcome.status, outcome.detail)
-"
+o = run(navigation_path='navigation.json', output_dir='out/')
+print(o.status, o.detail)"
 ```
 
-## Collecting a fresh export
+## Workflow
 
-`collect-sharepoint-site-navigation.ps1` connects to a live on-prem
-SharePoint 2016 site (REST + NTLM/Kerberos, no PnP/CSOM -- see
-`.agent/rules/sharepoint-ps1-authentication-convention.md` for why on-prem
-uses this auth mechanism instead of `Connect-PnPOnline`) and writes a
-`navigation.json` in the exact `{topNav, quickLaunch}` shape
-`navigation_analysis.py` consumes, each node shaped
-`{title, url, children}`. It also writes a fuller `site-chrome.json`
-(site title, logo URL, master page path, locale, breadcrumb ancestor chain)
-for reference/reporting -- not consumed by `navigation_analysis.py`, which
-reads `navigation.json` only. Read-only: calls only REST GETs, makes zero
-writes to the tenant.
+1. Get a `navigation.json` shaped `{topNav, quickLaunch}`, each node `{title, url, children}`,
+   or collect one; see [collection](references/site-navigation-collection.md).
+2. Call `run(navigation_path=..., output_dir=...)`.
+3. Report node counts, max depth per tree and the flattened node list.
+4. Optionally write the reviewer-facing summary from
+   `assets/site-navigation-chrome-summary-template.md`.
 
-```bash
-pwsh -File scripts/collect-sharepoint-site-navigation.ps1 -SiteUrl "https://sp2016.example.org/sites/Legacy" -OutputDir ./nav-export -UseDefaultCredentials
-```
+## Verification
 
-`assets/site-navigation-chrome-summary-template.md` is a Markdown template
-for writing up the collected navigation/chrome data as a reviewer-facing
-architecture summary (top nav table, quick launch, master page chrome) --
-fill in its `{{...}}` placeholders from `site-chrome.json` and
-`navigation-plan.json`.
+Check `outcome.status` is `OBSERVED` and the output directory holds the report. Treat any other
+status as the honest outcome it is; see [outcomes](references/discovery-outcomes.md).
 
-## Scripts
+## References
 
-- `scripts/collect-sharepoint-site-navigation.ps1` -- real, read-only on-prem REST collector
-- `scripts/navigation_analysis.py` -- `run`, `analyse`, `generate_report`
-- `scripts/discovery_inputs.py` -- `DiscoveryStatus`, `DiscoveryOutcome`, `load_json_input`, `require_output_dir`
-
-## Provenance
-
-Adapted from `sp-discovering-navigation` in the originating SharePoint
-migration repository. See
-`docs/reports/phase-9-reusable-sharepoint-plugin-extraction/provenance.md`.
-
+- [Collection](references/site-navigation-collection.md): read when you need a fresh export, the
+  summary template, or the script list.
+- [Outcomes](references/discovery-outcomes.md): read when interpreting a non-`OBSERVED` status.

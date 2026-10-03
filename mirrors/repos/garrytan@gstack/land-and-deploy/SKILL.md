@@ -581,7 +581,7 @@ When the user types `/land-and-deploy`, run this skill.
 
 Automate read-only detection and polling. First-run setup confirmation (Step 1.5)
 and pre-merge approval (Step 3.5) are mandatory when applicable. Stop on missing
-access, unknown target/state, failing required CI, conflicts, or failing tests.
+access, unknown target/state, unapproved red, pending or missing CI, conflicts, or failing tests.
 After any merge error, read server state before deciding whether to stop.
 Failures, timeouts, staging choices, rollback, and optional cleanup use the explicit
 decisions below; no approval overrides a blocker or authorizes a different revision.
@@ -695,16 +695,16 @@ Choice A saves the fingerprint and continues to Step 2; B/C stop.
 Tell the user: "Checking CI status and merge readiness..."
 
 ```bash
-gh pr checks "$PR_NUMBER" --repo "$REPO" --required --json name,state,bucket,link
+~/.claude/skills/gstack/bin/gstack-ci-gate --repo "$REPO" --pr "$PR_NUMBER" --expect-head "$PR_HEAD" --registration-wait 60
 ```
 
-Parse valid JSON using `bucket` (pass/fail/pending/skipping/cancel). Exit 8 means
-pending; a nonzero exit with valid failing checks is a CI failure. Auth/network/schema
-errors are **STOP**, never "no required checks". An empty successful result or the
-CLI's explicit "no required checks reported" response means none are configured.
-1. Required checks **FAILING/cancelled**: **STOP**, list failures to fix.
-2. Required checks **PENDING**: announce the wait and proceed to Step 3.
-3. All pass (or none required): report that exact result. Skip only Step 3's wait;
+It gates on all checks on this head, required or not. Act on line 1,
+`VERDICT <verdict> <sha>` (`<sha>` must be `PR_HEAD`), never on the exit code.
+Auth/network/schema errors are ERROR, never "no required checks".
+1. ERROR, or FAIL on a `required=y|?` check: **STOP**, show the output.
+2. Only `required=n` failures, or NO_CHECKS ("no CI ran on `<sha>`" after a 60 s
+   re-poll): Step 3.5 must approve it.
+3. PENDING: Step 3. PASS: skip Step 3's wait;
    continue to Step 3.4, then Step 3.5 before merging.
 
 Also check for merge conflicts:
@@ -712,23 +712,21 @@ Also check for merge conflicts:
 gh pr view "$PR_NUMBER" --repo "$REPO" --json mergeable -q .mergeable
 ```
 If `CONFLICTING`: **STOP**, resolve conflicts first. Failed/UNKNOWN readback: **STOP**,
-readiness is not established. Cancelled required checks are failures, not passes.
+readiness is not established.
 
 ---
 
 ## Step 3: Wait for CI (if pending)
 
-If required checks are still pending, wait for them to complete. Use a timeout of 15 minutes:
+Poll in 4-minute rounds (300 s shell timeout), 15 minutes max; record the wait:
 
 ```bash
-gh pr checks "$PR_NUMBER" --repo "$REPO" --required --watch --fail-fast --interval 30
+~/.claude/skills/gstack/bin/gstack-ci-gate --repo "$REPO" --pr "$PR_NUMBER" --expect-head "$PR_HEAD" --wait 240
 ```
 
-Record the CI wait time for the deploy report.
-
-Pass: report duration and continue to Step 3.4, then Step 3.5 before merging.
-Failure: **STOP**, show failing checks. Timeout (15 minutes): **STOP**, point to
-GitHub Actions. Enforce the deadline; do not leave an unbounded watch running.
+Other verdicts follow Step 2. PENDING at 15 minutes: list the still-pending checks;
+ask A) wait 15 more minutes, B) exclude named `required=n` checks (Step 3.5
+approves each), or C) stop.
 
 ---
 

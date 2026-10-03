@@ -71,10 +71,12 @@ default uses `RetrieveThenDecide` with the process's embedding provider as
 the retriever, so retrieval finds candidates by meaning rather than by
 shared words before Jev decides among them.
 
-The ranker resolves the signed-in TinyHumans credential fresh on every
-search rather than caching it at install time, because a desktop can sign in
-and out while the process keeps running. The built Jev client is cached by
-credential and backend URL, so a stable session does not rebuild an HTTP
+The ranker resolves its Jev route and credential fresh on every search
+rather than caching them at install time, because a desktop can sign in and
+out while the process keeps running. The route is `agent.tool_search.jev_route`
+(see [Configuration](#configuration)): the TinyHumans proxy, TypeSafe's own
+API, or OpenRouter's System One API. The built Jev client is cached by
+route, credential and backend URL, so a stable session does not rebuild an HTTP
 client on every search. When the process has no usable embedding provider,
 `TinyHumansJevRanker` refuses outright and the harness answers with its own
 BM25 ranking instead of running a Jev decision over a lexical shortlist that
@@ -128,6 +130,8 @@ the `[agent.tool_search]` block:
 ```toml
 [agent.tool_search]
 ranker = "jev"   # "jev" (default) | "auto" | "bm25" | "compare"
+jev_route = "auto"   # "auto" (default) | "tinyhumans" | "typesafe" | "openrouter"
+# jev_base_url = "http://127.0.0.1:18080"   # typesafe/openrouter origin override
 top_k = 3
 ```
 
@@ -138,13 +142,26 @@ top_k = 3
 - `"compare"`: serve Jev, but also record the BM25 ranking in the
   `tool.searched` telemetry, so the two can be compared on live traffic
   without changing what the model sees.
+- `jev_route`: where the Jev decision calls go. `"auto"` uses the TinyHumans
+  credential when the process has one, else `TYPESAFE_API_KEY` (direct to
+  TypeSafe), else an OpenRouter key (`OPENROUTER_API_KEY`, or the stored
+  `openrouter` BYOK key). `"tinyhumans"`, `"typesafe"` and `"openrouter"` pin
+  one route and never fall through to another credential. Override per launch
+  with `OPENHUMAN_JEV_ROUTE`.
+- `jev_base_url`: replaces the API origin of the `typesafe` / `openrouter`
+  routes (a metering proxy, a mirror). Remote origins must be HTTPS; HTTP is
+  accepted for literal loopback IPs only. Override per launch with
+  `OPENHUMAN_JEV_BASE_URL`.
 - `top_k`: how many matches a search returns when the model does not ask for
   a specific number. Three by default, enough to choose from without
   returning so many schemas that the point of deferring them is lost.
 
-Without an embedding provider or a TinyHumans credential, tool search falls
-back to BM25 automatically. `auto` and `jev` cost nothing extra when signed
-out.
+Without an embedding provider, or without a credential for the selected Jev
+route, tool search falls back to BM25 automatically, so `auto` and `jev` cost
+nothing extra with no credential. A BYOK setup with no TinyHumans account
+needs an embedding provider that does not depend on one (for example
+`memory.embedding_provider = "custom:<OpenAI-compatible endpoint>"`) as well as
+a TypeSafe or OpenRouter key.
 
 ## Running the benchmark
 

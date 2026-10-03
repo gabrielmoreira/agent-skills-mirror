@@ -1,84 +1,60 @@
 ---
 name: sharepoint-analyze-custom-forms
 plugin: sharepoint-discovery
-description: Analyses an exported classic SharePoint custom list-form inventory -- classifying each form as out-of-box, script-based, or InfoPath/custom-layout -- and attaches a caller-supplied modernization strategy per classification. Read-only; consumes an export you provide and never contacts a tenant.
+description: Analyses an exported classic SharePoint custom list-form inventory, classifying each form as out-of-box, script-based, or InfoPath/custom-layout, and attaches a caller-supplied modernization strategy per classification. Use when planning a classic-to-modern migration and deciding which list forms carry forward as-is. Read-only; consumes an export you provide and never contacts a tenant.
 allowed-tools: Bash, Read
 examples:
-  - "python -c \"from forms_analysis import run; print(run(forms_path='forms.json', rules_path='rules.json', output_dir='out/').status)\""
+  - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); from forms_analysis import run; print(run(forms_path='forms.json', rules_path='assets/form-classification-rules.json', output_dir='out/').status)\""
 ---
 
 # Analyze Custom Forms
 
-## Trigger and Purpose
+Decide which classic list forms are safe to carry forward and which need replacing: out-of-box,
+inline-script, or InfoPath/custom-layout, each with a recommended modernization strategy.
 
-Use this skill when planning a classic-to-modern SharePoint migration and you
-need to know which list forms are safe to carry forward as-is and which need
-a replacement. It consumes a form inventory already exported from a tenant
-and classifies each customized form.
+## Contents
 
-It answers: is a form out-of-box, does it carry inline script, or is it an
-InfoPath/custom-layout form with no script -- and what is the recommended
-modernization strategy for each case.
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-## Rules are data, not code
+## Constraints
 
-`load_rules(path)` reads a caller-supplied JSON rules file
-(`assets/form-classification-rules.json` ships a neutral default). The
-modernization strategy text per classification is **entirely** supplied by
-you -- **no site-specific migration judgement is built in.** The source
-implementation this was extracted from hardcoded one organisation's strategy
-text directly; that is removed.
+- Read-only. No tenant writes, no network access: it reads the export path you name and writes
+  analysis artifacts to the output directory you name.
+- Rules are data, not code. Strategy text per classification comes entirely from the
+  caller-supplied rules JSON; `assets/form-classification-rules.json` is a neutral default.
+  No site-specific migration judgement is built in.
+- A missing export or rules file is `UNAVAILABLE` and creates no output directory. An empty
+  export is `EMPTY`, never a pass. A non-array input is `FAILED`.
+- Run from this skill's root with `scripts/` on `sys.path`. Python is standard library only.
 
-## Honest outcomes
-
-Every run returns a `DiscoveryOutcome` carrying a `DiscoveryStatus`:
-`OBSERVED`, `EMPTY`, `PARTIAL`, `UNAVAILABLE`, `FORBIDDEN`, or `FAILED`.
-
-A missing forms export or rules file is `UNAVAILABLE` and **no output
-directory is created**. An empty forms export is `EMPTY`, never a pass. An
-input that isn't a JSON array is `FAILED`.
-
-## Read-only guarantee
-
-No writes to any tenant, no network access. It reads the export path you name
-and writes analysis artifacts to the output directory you name.
-
-## Usage
+## Quick start
 
 ```bash
-python -c "
+python3 -c "
+import sys; sys.path.insert(0, 'scripts')
 from forms_analysis import run
-outcome = run(forms_path='forms.json', rules_path='rules.json', output_dir='out/')
-print(outcome.status, outcome.detail)
-"
+o = run(forms_path='forms.json', rules_path='assets/form-classification-rules.json', output_dir='out/')
+print(o.status, o.detail)"
 ```
 
-## Collecting a fresh export
+## Workflow
 
-`collect-sharepoint-custom-forms.ps1` connects to a live on-prem SharePoint
-2016 site (REST + NTLM/Kerberos, no PnP/CSOM -- see
-`.agent/rules/sharepoint-ps1-authentication-convention.md`), checks every
-list/library's `Forms` folder for non-standard `.aspx` files, downloads
-them, and does a best-effort classification (inline `<script>` present ->
-`hasScript`; InfoPath/XSN markers -> `formType: InfoPath`) -- writing
-`forms.json` in the exact `[{listName, isCustomized, hasScript, formType}]`
-shape `forms_analysis.py` consumes. This classification is a heuristic
-starting point, not a substitute for the rules-driven analysis this skill
-performs. Read-only: calls only REST GETs, makes zero writes to the tenant.
+1. Get a forms export shaped `[{listName, isCustomized, hasScript, formType}]`, or collect a
+   fresh one; see [collection and scripts](references/custom-forms-collection-and-scripts.md).
+2. Choose the rules file (default or caller-supplied) and the output directory.
+3. Call `run(...)`. `load_rules` reads the rules; `analyse` classifies; `generate_report` writes.
+4. Report each form's classification and its recommended strategy.
 
-```bash
-pwsh -File scripts/collect-sharepoint-custom-forms.ps1 -SiteUrl "https://sp2016.example.org/sites/Legacy" -OutputDir ./forms-export -UseDefaultCredentials
-```
+## Verification
 
-## Scripts
+Check `outcome.status` is `OBSERVED` and the output directory holds the report. `EMPTY`,
+`PARTIAL`, `UNAVAILABLE`, `FORBIDDEN` and `FAILED` are honest outcomes; report them as such.
 
-- `scripts/collect-sharepoint-custom-forms.ps1` -- real, read-only on-prem REST collector
-- `scripts/forms_analysis.py` -- `run`, `analyse`, `generate_report`, `load_rules`
-- `scripts/discovery_inputs.py` -- `DiscoveryStatus`, `DiscoveryOutcome`, `load_json_input`, `require_output_dir`
+## References
 
-## Provenance
-
-Adapted from `sp-discovering-forms` in the originating SharePoint migration
-repository. See
-`docs/reports/phase-9-reusable-sharepoint-plugin-extraction/provenance.md`.
-
+- [Collection and scripts](references/custom-forms-collection-and-scripts.md): read when you need
+  a fresh export, the outcome status definitions, or the script list.

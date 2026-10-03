@@ -727,17 +727,17 @@ all. It does, and the captures below measure it.
 | `omp--menu-dismissed.txt` | The welcome panel (a 100-cell `╭───┴───╮` box) plus an MCP failure notice above an empty composer. Negative control: a second, narrower box on screen must not be spliced into the composer's geometry | `idle` |
 | `omp--slash-palette.txt` | `/` typed: the autocomplete renders BELOW the box, at the box's own width, with one wrapped entry (3 rows) — a `skill:…` row, which omp assembles from the capturing machine and which is therefore NOT an omp built-in. `extractInputDraft` reads `"/"` | `idle` |
 | `omp--slash-palette--filtered.txt` | `/new` typed: five palette rows below the box, all omp built-ins — but note they are everything omp fuzzy-matched for `new`, an accident of one search rather than a curated set. One of three sources for `lib/agent-commands.ts`'s `omp` catalog (collie draws its own palette for an omp pane, because the chrome strip takes omp's); the other two are the tip line and this table — see below | `idle` |
-| `omp--select-menu.txt` | The `ask` tool's single-choice dialog (`╭─ Ask ─╮` box, `❯ ○ Red` rows, an `○ Other (type your own)` free-text escape). **Declined** — a different widget whose `handleInput` is unread, and whose escape row would strand a phone user in a free-text input | `blocked` |
-| `omp--select-menu-moved.txt` | The same dialog with the pointer moved | `blocked` |
-| `omp--select-multi.txt` | The `ask` tool's multi-select (`☐ Cheese` rows under a `toppings / Submit` chip row). **Declined** — same reasons, plus omp never numbers its options, so the shared multi-select model's `String(o.n)` walk has nothing to read | `blocked` |
+| `omp--select-menu.txt` | The `ask` tool's single-choice dialog (`╭─ Ask ─╮` box, `❯ ○ Red` rows, an `○ Other (type your own)` free-text escape), footer `Enter select · n note · ↑/↓ move · Esc cancel`. Declined until 2026-10-02; **lifted** since [ADR 0077](../../../../.adr/0077-the-omp-ask-single-select-is-lifted-and-its-multi-select-is-not.md) as a pointed list (`omp/ask.ts`), `Other` included, because the screen it opens is the answer editor the phone already reads | `blocked` |
+| `omp--select-menu-moved.txt` | The same dialog with the pointer moved to Blue. Lifted: Red walks `Up` twice | `blocked` |
+| `omp--select-multi.txt` | The `ask` tool's multi-select (`☐ Cheese` rows under a `toppings / Submit` chip row), footer `Space/Enter toggle · n note · ↑/↓ move · Tab/←/→ · Esc cancel`. **Declined** ([ADR 0077](../../../../.adr/0077-the-omp-ask-single-select-is-lifted-and-its-multi-select-is-not.md)): Enter toggles here and submits in 18.4.10, and omp never numbers its options, so neither shared toggle recipe (a digit, or a digit-jump then Enter) can drive it | `blocked` |
 | `omp--select-multi-checked.txt` | The same dialog mid-selection (`☑ Cheese`) | `blocked` |
 | `omp--select-multi-review.txt` | Its review screen — whose body is `1. toppings: Cheese, Olives`, a NUMBERED SUMMARY rather than a numbered menu. The exact digit trap [`.adr/0009`](../../../../.adr/0009-a-generic-menu-is-driven-by-the-keys-it-names.md) exists for | `blocked` |
 | `omp--menu-model.txt` | `/model`: a two-pane provider/model picker, footer `Enter assign roles · ↑/↓ providers · → models · type to search · Esc close`. **Declined** — `parseKeyHintFooter` returns `[]` for it (omp writes `<key> <verb>`, not `<key> to <verb>`) | `idle` |
 | `omp--menu-model-moved.txt` | The same picker with the selection moved | `idle` |
 | `omp--menu-settings.txt` | `/settings`: a tabbed panel. **Declined** — its footer is the ONE omp footer `parseKeyHintFooter` parses, and it yields only `{Jump sections, [Tab]}` + `{Close, [Escape]}`, because `menuKeyFor` rejects the compound tokens (`Enter/Space`, `←/→`, `Type`) its real actions are named with. A modal whose only button is "Jump sections" is worse than the raw mirror | `idle` |
 | `omp--menu-settings-moved.txt` | The same panel with the selection moved | `idle` |
-| `omp--menu-resume.txt` | `/resume`: the session picker. **Declined** — `parseKeyHintFooter` returns `[]` for its footer too, and the footer is worth reading before writing any omp grammar: `[Del/⌫ delete · Enter select · Tab all projects · Esc cancel]` names `Del`, which is neither on `menuKeyFor`'s whitelist nor a key `pane.send_keys` accepts | `idle` |
-| `omp--menu-resume-moved.txt` | The same picker with the selection moved | `idle` |
+| `omp--menu-resume.txt` | `/resume`: the session picker, unboxed (omp 17.x to 18.1): `Resume Session (current folder)`, a rule, a `>` search row, then sessions as blank-separated groups, the pointer `❯` in column 0, footer `[Del/⌫ delete · Enter select · Tab all projects · Esc cancel]`. One titled session (three rows) and two UNTITLED ones that print only first prompt and meta (two rows). **Lifted** since [ADR 0076](../../../../.adr/0076-the-omp-resume-picker-is-lifted-and-every-omp-modal-has-a-way-out.md) (`omp/resume.ts`): the footer prints `Enter select`, so a tap is the pointer walk plus Enter. It was declined until then because `parseKeyHintFooter` returns `[]` for the footer, and `Del` is neither on `menuKeyFor`'s whitelist nor a key `pane.send_keys` accepts, which is why delete is not on the card | `idle` |
+| `omp--menu-resume-moved.txt` | The same picker with the pointer on the third session, a two-row one. Lifted: the first two walk Up | `idle` |
 
 **No picker's confirm key was ever pressed.** Every dialog here was driven onto the screen, captured,
 and dismissed with `Escape`.
@@ -875,6 +875,11 @@ probed on the `write` dialog, with the target file verified absent afterwards. O
 worth recording: `read` is auto-approved even under `--approval-mode always-ask`, so a read call
 paints no dialog and cannot be used to generate one.
 
+Since [ADR 0078](../../../../.adr/0078-the-omp-tool-approval-is-lifted-and-deny-never-lands-on-approve.md)
+all three lift as a card (`omp/approval.ts`): Approve, Deny and Cancel, the command or the path and
+content in Approve's description. They are the evidence for the `nerd` preset: U+F054 as the pointer
+over the text-keycap footer. The usage strip under the box stays out of the signature.
+
 ## OMP `/tree` capture (2026-09-13, oh-my-pi `omp` v18.1.19, throwaway Herdr pane)
 
 One byte-faithful `pane.read format:ansi` capture, and the only thing it is evidence for is that omp
@@ -904,6 +909,168 @@ cwd. The session had no provider signed in, so there is no vendor account state 
 | `omp--tree.txt` | The welcome panel and the `No models available` warning above a `╭─ Session Tree ─╮` box: hint row, `Search:` row, rule, then the default filter's `1 entries hidden` notice and `(0/1)` | `idle` |
 
 `/tree` was dismissed with `Escape`; nothing in the tree was ever switched to.
+
+## OMP empty-editor key hint (captured 2026-09-30, oh-my-pi `omp` v18.4.4, herdr 0.9.2, throwaway Herdr panes)
+
+Four byte-faithful `pane.read format:ansi` captures, taken with `scripts/capture-fixture.sh`. The
+first three come from fresh omp sessions in `/tmp`, one per composer shape. The rule and pi shapes ran under a
+`--config` overlay that set only `composer.shape`. omp 18.4 paints a key hint into an EMPTY editor:
+the Shift+Tab key glyphs in the accent colour, one space, then `to change thinking effort` in dim
+italic, right-aligned in the draft row. The hint is not in the input buffer and goes away with the
+first typed character. Read as text, the row was a draft of the two key glyphs, so every fresh
+session showed "Draft in terminal". `draftPlaceholder` (`harness/omp/markers.ts`) now recognises
+the hint by the renderer's shape.
+
+omp's `composer-hints.ts` builds a second hint from the same parts, and it wins over the effort
+hint: `← ← to see N running agents`, painted while a background subagent runs. Its key run is two
+glyphs with a space between them, which the effort hint never tests. `omp--fresh-agents-hint.txt`
+pins it in the boxed shape. It was captured 2026-10-02 on omp v18.4.10 and herdr 0.9.3, after one
+`task` subagent was started in the background. omp retires a hint after its gesture is used three
+times, and the capturing operator's own count had retired it, so this session ran on a copy of the
+agent directory (`PI_CODING_AGENT_DIR`) with the hint counter cleared.
+
+The operator's statusline template shows the model and the context meter, plus the subagent count
+and git branch when there are any. The agents capture ran in a fresh `git init` sandbox, so its row
+shows `1` and `main`. No cwd, host or account appears. **No sanitization pass was needed.** All four are CRLF with no trailing
+newline; their `wc -l` counts are 2, 4, 4 and 2.
+
+**The two boxed captures are deliberately outside the `extractStatusLines` content assertion.**
+Every other boxed fixture is held to a status row that starts with `π`, ends with `▶` and names the
+branch (`chrome.test.ts`). That is the default powerline template the rest of the corpus carries.
+These two carry the operator's own template, which is neither, so they are held only to the shape
+half of that test: exactly one styled row with more than one segment.
+
+| Fixture | State / what's in it | Herdr status |
+|---|---|---|
+| `omp--fresh-effort-hint.txt` | Boxed composer on a fresh session: the hint right-aligned in the `╰─ … ─╯` bottom border | `idle` |
+| `omp--v18-rule-effort-hint.txt` | `rule` composer: the hint right-aligned on the empty `❯` row, then the blank gap and the status row | `idle` |
+| `omp--v18-pi-effort-hint.txt` | `pi` composer: the hint right-aligned on the single draft row between the two rules, status row below | `idle` |
+| `omp--fresh-agents-hint.txt` | Boxed composer with a background subagent running: `← ← to see 1 running agent` right-aligned in the bottom border | `idle` |
+
+## OMP 18.4.10 modal corpus (captured 2026-10-02, oh-my-pi `omp` v18.4.10)
+
+Nine captures from omp 18.4.10 (five more for the `ask` tool and five for the tool approval follow below), byte-faithful but for the sanitization pass below, taken to lift `/resume` and to give every other omp modal a declared way out ([ADR 0076](../../../../.adr/0076-the-omp-resume-picker-is-lifted-and-every-omp-modal-has-a-way-out.md)).
+omp 18.4 draws its pickers as a rounded box that fills the pane (59 rows by 109 columns here) and prints **glyph keycaps** in the footer: `⏎` for Enter, `⌦/⌫` for delete, `⇥` for Tab, `⎋` for Escape. omp 17.x to 18.1 printed the same keys as words (`Enter`, `Del/⌫`, `Tab`, `Esc`), so the corpus now holds both dialects of the footer, and `omp/modal.ts` accepts exactly the six spellings of the way out (`⎋ cancel`, `⎋ close`, `⎋ to close`, `Esc cancel`, `Esc close`, `Esc to close`).
+
+The `/resume` captures are the boxed layout of that picker: a titled top border (`╭─ Resume Session (current folder) ─…╮`), a `│ > <typed text> │` search row, sessions as blank-separated groups of three rows (title, first prompt, meta), and a bracketed footer, then the bottom border. The meta row reads `<age> ago · <size> · [current ·] ✔ done|⚠ interrupted · [⑂ fork] · [<cwd>]`, with a double space on each side of every `·`. Both sessions in these captures share one title, so the meta row is what tells them apart on the card. `omp--v18-4-resume-nomatch.txt` is the state with no row to point at: the grammar declines it, and the unread-dialog card with its Escape button stands over the raw mirror.
+
+**One sanitization pass, LENGTH-PRESERVING, two substitutions, ASCII for ASCII and with every SGR
+escape left untouched**, so each row keeps its byte length and its cell width:
+
+- **The session id.** `omp--v18-4-composer-idle.txt` printed the forked session's UUID twice, in the
+  `return to original: omp --resume <id>` notice and on the wrapped row under it. Both read
+  `00000000-0000-7000-8000-000000000000`.
+- **The cwd.** `~/projects/collie-workspace` became `~/projects/sample-workspace` on the composer
+  powerline (`omp--v18-4-composer-idle.txt`), on the `/settings` preview row
+  (`omp--v18-4-menu-settings.txt`) and on both meta rows of `omp--v18-4-resume-all-projects.txt`.
+
+Kept verbatim, on purpose: the session title and first prompt (a sandbox request, quoted in the
+transcript, the welcome panel's Recent sessions and the `/tree` list as well), the transcript itself,
+the `GPT-6 Luna` model and the `openrouter` provider, which the older omp captures above already
+print, and the `/model` catalogue. The whole-corpus check after the pass: a UUID pattern matches only
+the zero id, and `/home/`, `/Users/`, an email, an `sk-`/`ghp_`/`AKIA`-shaped string, an OSC escape
+and `collie-workspace` match nothing.
+
+**Five more, the same day, for the `ask` tool** ([ADR 0077](../../../../.adr/0077-the-omp-ask-single-select-is-lifted-and-its-multi-select-is-not.md)),
+from the lead's own pane at 108 columns by 210 and 284 rows. Each prompt asked omp to call `ask`
+exactly once (`Pick a color` with Red, Green, Blue; then `Pick toppings` with Cheese, Olives, Basil and
+`multi=true`). The moved, note and checked states are one `Down`, one `n` and one `Space` from the
+dialog as it opened. The dialog replaces the composer, so no statusline and no cwd is on screen; above the
+box is the session's own transcript (the same `Render Fancy Content in Terminal` session as the
+captures above, its welcome splash, its earlier answered and cancelled `ask` calls) and a working row
+(`⎋ Choosing a color`). **No sanitization pass was needed**, and that is checked rather than
+assumed: a UUID pattern, `/home/`, `/Users/`, `/tmp`, an email, an `sk-`/`ghp_`/`AKIA`-shaped string,
+an OSC escape, a host name and `collie-workspace` match nothing in the five files. All five are CRLF
+with no trailing newline; `wc -l` is 209 for the three single-question color captures and 283 for the
+two toppings captures.
+
+The two footers are the version drift the grammar is built around. The single-select footer is the
+17.2.12 one in glyph keycaps, `⏎ select · n note · ↑/↓ move · ⎋ cancel`. The multi-select footer
+CHANGED MEANING: 17.2.12 printed `Space/Enter toggle`, 18.4.10 prints `␣ toggle · ⏎ submit`, and
+omp 18.4.10's source confirms that Enter on an option there submits the checked set at once.
+
+`omp--v18-4-tree.txt` is the one capture here without a way out: neither it nor `omp--tree.txt` prints an Esc segment (the hint row is clipped), so `ompModalOnScreen` answers false on it and it keeps no card.
+
+| Fixture | State / what's in it | Herdr status |
+|---|---|---|
+| `omp--v18-4-composer-idle.txt` | 177 rows: a long transcript, `Resumed session`, and `✔ Session forked · return to original: omp --resume <id> or /resume`, then an EMPTY boxed composer whose top border carries the 18.4 powerline with a context meter (`▶─2%───┃─1.1M─`). A composer, `composerReady` true, no card | `idle` |
+| `omp--v18-4-menu-model.txt` | `/model`: the two-pane `╭─ Models ─┬─╮` picker, footer `⏎/→ models · ↑/↓ providers · type to search · Alt+←/Alt+→ kind · ⎋ close`. Stays raw; gets the card | not recorded |
+| `omp--v18-4-menu-settings.txt` | `/settings`: the tabbed panel, footer `⏎/␣ to change · ⇥ to jump sections · ←/→ to switch tabs · Type to search · ⎋ to close`. Stays raw; gets the card | not recorded |
+| `omp--v18-4-tree.txt` | `/tree`: 182 rows, the welcome panel and a long transcript above a `╭─ Session Tree ─╮` box whose hint row is clipped (`⇧⏎: summa…`). No footer names a way out, so no card | not recorded |
+| `omp--v18-4-resume.txt` | `/resume` in the current folder, two sessions that share the title `Render Fancy Content in Terminal`, the pointer on the first. Lifts as a `prompt-select`: Enter, Down+Enter, then Cancel | not recorded |
+| `omp--v18-4-resume-moved.txt` | The same screen with the pointer on the second session: Up+Enter, Enter, Cancel | not recorded |
+| `omp--v18-4-resume-untitled-dated.txt` | Four sessions: an untitled one that prints two rows (first prompt, meta; `just now`), two titled ones, and one nine days old whose age reads `9/20/2026`; the pointer on the third. The two extra session logs were hand-made copies of a real one (new id, `touch -d`, title rows removed) so omp rendered the shapes itself, and deleted after the capture | not recorded |
+| `omp--v18-4-resume-search.txt` | `ab` typed in the search row: both sessions still match, in the other order, the pointer on the first | not recorded |
+| `omp--v18-4-resume-all-projects.txt` | After `⇥`: the title reads `(all projects)`, every meta row ends in the session's cwd, and the footer offers `⇥ current folder` | not recorded |
+| `omp--v18-4-resume-nomatch.txt` | `abzzzzqq` typed: `No sessions in current folder. Press ⇥ to view all.` and no session row. The grammar declines, the card stands | not recorded |
+| `omp--v18-4-ask-single.txt` | The `ask` tool's one-question single-select dialog: `╭─ Ask ─╮`, `Pick a color`, `❯ ○ Red`, `○ Green`, `○ Blue`, `○ Other (type your own)`, two blank body rows, footer `⏎ select · n note · ↑/↓ move · ⎋ cancel`. Lifts as a `prompt-select` (`omp/ask.ts`): Enter, then one more `Down` per row, then Cancel | not recorded |
+| `omp--v18-4-ask-single-moved.txt` | The same dialog after one `Down`: the pointer on Green. Red walks `Up` | not recorded |
+| `omp--v18-4-ask-note-editor.txt` | `n` on Green: the prompt-style answer editor titled `Note for Green: Pick a color`, an empty `│ > ` row, hint `⏎ or Ctrl+Q submit  ⎋ cancel  Ctrl+G external editor`. An input: `composerReady` true, no card | not recorded |
+| `omp--v18-4-ask-multi.txt` | The multi-select dialog: the tab strip `toppings    Submit`, `Pick toppings`, `❯ ☐ Cheese`, `☐ Olives`, `☐ Basil`, `☐ Other (type your own)`, footer `␣ toggle · ⏎ submit · ↑/↓ move · ⇥/←/→ · ⎋ cancel`. Stays raw, gets the card | not recorded |
+| `omp--v18-4-ask-multi-checked.txt` | The same dialog after one `Space`: `❯ ☑ Cheese`. Stays raw, gets the card | not recorded |
+
+**Five more, the same day, for the tool-approval dialog** ([ADR 0078](../../../../.adr/0078-the-omp-tool-approval-is-lifted-and-deny-never-lands-on-approve.md)),
+from the same session at 108 columns, 300 rows each. Each prompt asked omp for one harmless call,
+`echo hello-approval` or a file under `/tmp/omp-sandbox-approval`, with approval required for every
+call and no config pattern behind it, so the box carries no `Reason:` row. The moved states are one `Down` from the dialog as it opened.
+These are the evidence for the `unicode` preset: the pointer is `❯` and the footer prints glyph
+keycaps, `↑/↓ navigate  ⏎ select  ⎋ cancel`, segments split by two spaces. No usage strip sits under
+the box. The pointed row's band is `rgb(0,130,179)` here and `rgb(60,56,54)` in the 18.1.17 captures,
+which is why only the glyph is read (`omp/APPROVAL_NOTES.md`). **No sanitization pass was needed**,
+and that is checked rather than assumed: the operator's user name and host names, `collie-workspace`,
+`/home/`, `/Users/`, `/var/home`, a UUID pattern, an email, an `sk-`/`ghp_`/`AKIA`-shaped string, a
+long hex or base64 token and an OSC escape match nothing in the five files. The only paths are the
+sandbox's. All five are CRLF with no trailing newline; `wc -l` is 299.
+
+| Fixture | State / what's in it | Herdr status |
+|---|---|---|
+| `omp--v18-4-approval-bash.txt` | `╭─ Allow tool: bash ─╮`, `Command: echo hello-approval`, `❯ Approve`, `Deny`. Lifts as a card: Approve sends `Enter`, Deny `Down` `Enter`, Cancel `Escape` | not recorded |
+| `omp--v18-4-approval-bash-moved.txt` | The same dialog after one `Down`: `❯ Deny`. Approve sends `Up` `Enter`, Deny still `Down` `Enter` | not recorded |
+| `omp--v18-4-approval-write.txt` | `Allow tool: write`, `Path: /tmp/omp-sandbox-approval/note.txt`, `Content:`, `hello approval`, the pointer on Approve. Above it, the transcript records the denied shell command, then the call's own streaming preview | not recorded |
+| `omp--v18-4-approval-write-moved.txt` | The same dialog after one `Down`: `❯ Deny` | not recorded |
+| `omp--v18-4-approval-write-long.txt` | A `write` of fourteen rows, `sample line N for the approval dialog`: the box grows to hold them all. The card shows all fourteen, and so does the raw mirror above it | not recorded |
+
+## OMP `ask` answer editor (captured 2026-10-01, oh-my-pi `omp` v18.4.4, herdr 0.9.3, throwaway Herdr pane)
+
+Seven byte-faithful `pane.read format:ansi` captures, read through the local bridge from one throwaway
+Herdr workspace in `/tmp/ompask`. The prompt asked omp to call its `ask` tool with one question and
+three options, and the dialog was then driven with `Up`/`Down`, `Enter`, `n` and typed text.
+
+They exist for one screen: the free-text box the `ask` tool opens for `Other (type your own)` and
+for `n note`. omp's prompt-style `HookEditorComponent` (pi-tui `overlays/hook-editor.ts`) REPLACES the
+composer while it is open (`extension-ui-controller.ts` clears the editor container and mounts only
+this), so before `omp/answer-editor.ts` the reply pre-flight saw no composer and refused every reply
+typed into it.
+
+The box is titled `Custom answer: <question>` or `Note for <option>: <question>`, the first answer row
+carries the editor's `> ` gutter, continuation rows are indented by the gutter's width, and the hint
+row reads `<enter> or <ctrl+q> submit  <esc> cancel  <ctrl+g> external editor`. The hint is the one row
+that tells the two editor modes apart: hook-style joins its submit keys with `/` and inserts a newline
+on plain Enter.
+
+Keys live-probed on the real editor, not inferred. Plain `Enter` submits. **A raw newline submits
+too**: `pane.send_text` of `line one\nline two` answered the question with `line one` and typed
+`line two` into the composer behind it (HERDR_API.md: `send_text` writes raw bytes). `Escape` returns
+to the Ask dialog with nothing recorded.
+
+CRLF throughout with no trailing newline; `wc -l` is 38 for `empty`, `typed` and `note`, 39 for
+`wrapped`, 61 for `long`, and 43 for both dialog captures. **No sanitization pass was needed**, and that is verified rather
+than assumed: no username, hostname, home or `/tmp` path, email, session id or UUID appears, and the
+box covers the statusline. Every row above the box is the sandbox session's own transcript and omp's
+`Update Available` notice.
+
+| Fixture | State / what's in it | Herdr status |
+|---|---|---|
+| `omp--select-menu-other.txt` | omp 18's single-choice Ask dialog with the pointer on `Other (type your own)`; footer `<enter> select · n note · ↑/↓ move · <esc> cancel`, in the Nerd Font preset (U+F0311, U+F12B7; pointer U+F054, radio U+F10C). A modal: `composerReady` false. Lifted since ADR 0077, the Nerd Font preset read from this capture | `working` |
+| `omp--select-menu-noted.txt` | Back on the Ask dialog after a note was submitted with `Enter`: `Blue  ✎ note`. A modal: `composerReady` false. Lifted since ADR 0077, `✎ note` becoming Blue's description | `working` |
+| `omp--answer-editor-empty.txt` | `Enter` on `Other`: `╭─ Custom answer: Pick a colour ─╮`, an empty `│ > ` row, the prompt-style hint | `working` |
+| `omp--answer-editor-typed.txt` | The same editor holding `a deep teal, like the sea at dusk` | `working` |
+| `omp--answer-editor-wrapped.txt` | A longer answer soft-wrapped onto a second row | `working` |
+| `omp--answer-editor-long.txt` | A 700-word answer: the box grows with it, to 37 answer rows | `working` |
+| `omp--answer-editor-note.txt` | `n` on `Blue`: the same editor titled `Note for Blue: Pick a colour`, holding `only if it is a warm blue` | `working` |
+
+The answers were typed with `herdr pane send-text` into the sandbox session only, and the workspace was
+closed afterwards.
 
 ## Lessons already encoded here (don't re-learn them)
 

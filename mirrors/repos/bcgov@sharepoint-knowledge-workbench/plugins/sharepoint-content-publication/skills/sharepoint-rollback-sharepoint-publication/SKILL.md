@@ -1,44 +1,54 @@
 ---
 name: sharepoint-rollback-sharepoint-publication
-description: Builds a rollback plan reversing a prior publication's exact actions, package-scoped to one document, then a real PnP executor removes each target (Remove-PnPPage/Remove-PnPFile, with fail-loud removal verification). Dry-run by default.
+plugin: sharepoint-content-publication
+description: Builds a rollback plan reversing a prior publication's exact actions, scoped to one document, then a real PnP executor removes each target (Remove-PnPPage or Remove-PnPFile) with fail-loud removal verification. Use to undo a publication. Dry-run by default.
+allowed-tools: Bash, Read
+examples:
+  - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); from sharepoint_publish_plan import build_rollback_plan; print(build_rollback_plan('doc-1', previous_plan))\""
+  - "pwsh -File scripts/spo-rollback-publication.ps1 -PlanPath rollback.json -SiteUrl \"https://tenant.sharepoint.com/sites/Test\""
 ---
 
-# rollback-sharepoint-publication
+# Roll Back SharePoint Publication
 
-## Purpose
+Given a prior `PublishPlan`, produce a `RollbackPlan` (the exact targets to remove) and remove them with the real executor.
 
-Given a prior `PublishPlan`, produces a `RollbackPlan` — the exact set of targets to remove — via
-`sharepoint_publish_plan.py`. The real executor, `scripts/spo-rollback-publication.ps1`, then
-removes each target: `Remove-PnPPage` for a `SitePages` target, `Remove-PnPFile` for a
-document-library target, verifying absence after each removal (throws if a target is still
-present, rather than reporting success on an unverified delete). Package-scoped: only reverses
-the named `document_id`'s own actions, never another document's — rejects a mismatched
-`document_id` rather than silently rolling back the wrong document. Dry-run by default; real
-deletions require `-Execute -ConfirmToken ROLLBACK-SPO-PLAN`.
+## Contents
 
-**Correction (2026-08-17):** this SKILL.md previously said real tenant writes "remain gated
-behind Stage 3.4.3's unapproved write-identity decision." That was a stale/incorrect blocker —
-see `publish-markdown-to-sharepoint`'s SKILL.md for the same correction and reasoning. The real
-gap was simply that no removal executor had been built yet — now fixed.
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-## Input boundaries
+## Constraints
 
-- `document_id` must match the supplied `PublishPlan`'s own `document_id` exactly — a mismatch
-  raises `PlanError` rather than producing a plan for the wrong document.
+- Package-scoped: only reverse the named `document_id`'s own actions. A `document_id` that does not match the supplied plan's
+  own raises `PlanError`; never roll back the wrong document.
+- Planning performs zero tenant I/O. The executor `scripts/spo-rollback-publication.ps1` is dry-run by default and deletes nothing
+  without `-Execute -ConfirmToken ROLLBACK-SPO-PLAN`. A real run is a destructive live tenant write that the user runs.
+- Verify each removal. The executor throws if a target is still present afterwards; never report an unverified delete as success.
+- When running from an installed copy, pass `-ConfigPath` (or `-SiteUrl`, `-ClientId`, `-TenantId`).
 
-## Prohibited scope
+## Quick start
 
-- The planning module itself performs zero tenant I/O — it only builds the plan.
-- The real executor performs no deletion without `-Execute -ConfirmToken ROLLBACK-SPO-PLAN`, and
-  verifies each target is actually gone afterward rather than trusting the cmdlet call alone.
+```python
+import sys; sys.path.insert(0, "scripts")
+from sharepoint_publish_plan import build_rollback_plan
+rollback = build_rollback_plan(document_id, previous_publish_plan)
+```
 
-## Scripts
+## Workflow
 
-- `../../scripts/sharepoint_publish_plan.py` (`build_rollback_plan`)
-- Real executor: `../../scripts/spo-rollback-publication.ps1`
+1. Build the rollback plan from the original `PublishPlan` and its `document_id`.
+2. Save it as JSON and dry run: `pwsh -File scripts/spo-rollback-publication.ps1 -PlanPath rollback.json`.
+3. After the user confirms, rerun with `-Execute -ConfirmToken ROLLBACK-SPO-PLAN`. `Remove-PnPPage` handles a `SitePages` target and
+   `Remove-PnPFile` a document-library target.
 
-## Tests
+## Verification
 
-- `../../tests/unit/test_sharepoint_publish_plan.py` — includes the cross-document-mismatch
-  rejection test (a real safety property, not a hypothetical edge case).
+Confirm the dry run lists exactly the targets the original plan created, then that every target reports absent after the real run.
 
+## References
+
+- [Executors, gates and constraints](references/publication-executors-and-gates.md): read for the executor table, config note and
+  the corrections history.

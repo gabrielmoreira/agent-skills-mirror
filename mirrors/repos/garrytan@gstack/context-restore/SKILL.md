@@ -422,6 +422,16 @@ eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gsta
 eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)" && mkdir -p "$GSTACK_STATE_ROOT/projects/$SLUG" && echo "PROJECT_DIR: $GSTACK_STATE_ROOT/projects/$SLUG"
 eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
 CHECKPOINT_DIR="$GSTACK_STATE_ROOT/projects/$SLUG/checkpoints"
+# Project identity: canonical remote (root only when there is no remote).
+eval "$(~/.claude/skills/gstack/bin/gstack-slug --identity 2>/dev/null)" || true
+echo "PROJECT_IDENTITY: ${PROJECT_REMOTE:-${PROJECT_ROOT:-unknown}}"
+echo "PROJECT_ROOT: ${PROJECT_ROOT:-unknown}"
+if [ -n "${LEGACY_SLUG:-}" ] && [ -d "$GSTACK_STATE_ROOT/projects/$LEGACY_SLUG/checkpoints" ]; then
+  LEGACY_N=$(find "$GSTACK_STATE_ROOT/projects/$LEGACY_SLUG/checkpoints" -maxdepth 1 -name "*.md" -type f 2>/dev/null | wc -l | tr -d ' ')
+  if [ "$LEGACY_N" -gt 0 ]; then
+    echo "LEGACY_BUCKET: projects/$LEGACY_SLUG holds $LEGACY_N earlier checkpoint(s) from the bucket this project shared with other nested-group repos; review and copy with: ~/.claude/skills/gstack/bin/gstack-slug --adopt-legacy"
+  fi
+fi
 if [ ! -d "$CHECKPOINT_DIR" ]; then
   echo "NO_CHECKPOINTS"
 else
@@ -458,9 +468,28 @@ else
     done <<EOF
 $ALL
 EOF
-    # Cap at 20: a user with 10k saved files shouldn't blow the context window.
-    FILES=$(printf '%s%s' "$SAME" "$OTHER" | grep -v '^[[:space:]]*$' | head -20)
-    echo "$FILES"
+    # Identity check (#3003): only checkpoints stamped with THIS project's
+    # identity are candidates for "latest". Unstamped (older) checkpoints are
+    # trusted unless the directory demonstrably holds another project's files.
+    CLASSIFIED=$(printf '%s%s' "$SAME" "$OTHER" | grep -v '^[[:space:]]*$' \
+      | ~/.claude/skills/gstack/bin/gstack-slug --classify-checkpoints 2>/dev/null)
+    if [ -z "$CLASSIFIED" ]; then
+      echo "IDENTITY_CHECK_FAILED"
+      printf '%s%s' "$SAME" "$OTHER" | grep -v '^[[:space:]]*$' | head -20 | sed 's/^/UNVERIFIED /'
+    else
+      FOREIGN_N=$(printf '%s\n' "$CLASSIFIED" | grep -c '^foreign' || true)
+      # Cap at 20: a user with 10k saved files shouldn't blow the context window.
+      FILES=$(printf '%s\n' "$CLASSIFIED" | awk -F '\t' -v f="$FOREIGN_N" \
+        '$1 == "match" || $1 == "match-root" || ($1 == "unstamped" && f == 0) { print $2 }' | head -20)
+      if [ -n "$FILES" ]; then echo "$FILES"; else echo "NO_VERIFIED_CHECKPOINTS"; fi
+      printf '%s\n' "$CLASSIFIED" | awk -F '\t' -v f="$FOREIGN_N" \
+        '$1 == "match-root" { print "ROOT_DIFFERS " $2 }
+         $1 == "foreign" { print "FOREIGN " $2 }
+         $1 == "unstamped" && f > 0 { print "UNVERIFIED " $2 }' | head -40
+      if [ "$FOREIGN_N" -gt 0 ]; then
+        echo "SHARED_BUCKET: $FOREIGN_N checkpoint(s) here were saved by another project"
+      fi
+    fi
   fi
 fi
 ```
@@ -470,13 +499,38 @@ fi
 frontmatter). Other-branch files stay in the set as a fallback, which preserves
 Conductor workspace handoff when the current branch has no checkpoint of its own.
 
+**Project identity.** Plain path lines are this project's checkpoints (verified by
+the `remote:`/`project_root:` stamp, or unstamped in a directory no other project
+has written to). Prefixed lines are never candidates for "latest":
+- `FOREIGN <path>`: saved by a different project that shares this directory.
+- `UNVERIFIED <path>`: saved before identity stamps, in a directory another
+  project also uses, so it may belong to either.
+- `ROOT_DIFFERS <path>`: same repository, different checkout (Conductor workspace
+  handoff or a moved clone). This is information, not a mismatch; the file is
+  also listed as a plain path line.
+
 ### Step 2: Load the right file
 
 - If the user specified a title fragment or number: find the matching file among
-  the candidates.
-- Otherwise: load the **first file returned by Step 1 above** — that is the
-  newest `YYYYMMDD-HHMMSS` checkpoint for the current branch, or, if the current
-  branch has none, the newest across all branches.
+  the candidates, including `FOREIGN` and `UNVERIFIED` lines (a user may restore
+  another project's checkpoint deliberately).
+- Otherwise: load the **first plain path line returned by Step 1 above**, which
+  is the newest `YYYYMMDD-HHMMSS` checkpoint of this project for the current
+  branch, or, if the current branch has none, the newest across all branches.
+- If Step 1 printed `NO_VERIFIED_CHECKPOINTS` or `IDENTITY_CHECK_FAILED`, do not
+  present any checkpoint as the latest one. Say "No checkpoint in this directory
+  is verified as this project's", list the `FOREIGN`/`UNVERIFIED` titles with the
+  `remote:`/`project_root:` they name (or "unknown"), and ask which one, if any, to
+  open.
+
+**Report identity problems before any summary.** If the chosen file is `FOREIGN`
+or `UNVERIFIED`, start with:
+"PROJECT MISMATCH: this checkpoint was saved by `{remote or project_root from its
+frontmatter, or 'an unknown project'}`, not this project (`{PROJECT_IDENTITY}`)."
+If Step 1 printed `SHARED_BUCKET`, say "This checkpoints directory also holds N
+checkpoint(s) from another project; only this project's are listed." If it printed
+`LEGACY_BUCKET`, relay that line. If the chosen file is `ROOT_DIFFERS`, add
+"Saved from another checkout of this repository at `{project_root}`." as info.
 
 Read the chosen file and present a summary:
 
@@ -523,6 +577,9 @@ If Step 1 printed `NO_CHECKPOINTS`, tell the user:
 "No saved contexts yet. Run `/context-save` first to save your current working
 state, then `/context-restore` will find it."
 
+If it also printed `LEGACY_BUCKET`, relay that line: earlier checkpoints are kept
+in the old bucket until the user copies them with `gstack-slug --adopt-legacy`.
+
 ---
 
 ## Important Rules
@@ -532,6 +589,9 @@ state, then `/context-restore` will find it."
   fallback set.** Cross-branch resume (Conductor handoff) still works when the
   current branch has no checkpoint; it just no longer lets a sibling worktree's
   newer save shadow this branch's own.
+- **Never present another project's checkpoint as "latest".** Identity is the
+  canonical remote (the root only when there is no remote); a mismatch is
+  reported before any summary.
 - **"Most recent" means the filename `YYYYMMDD-HHMMSS` prefix**, not
   `ls -1t` (filesystem mtime). Filenames are stable across file-system
   operations; mtime is not.

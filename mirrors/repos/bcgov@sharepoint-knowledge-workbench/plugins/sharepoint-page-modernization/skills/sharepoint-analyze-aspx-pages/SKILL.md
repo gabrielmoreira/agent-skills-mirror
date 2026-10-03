@@ -1,82 +1,51 @@
 ---
 name: sharepoint-analyze-aspx-pages
 plugin: sharepoint-page-modernization
-description: Stages 1-2 of classic page modernization -- parses exported classic .aspx content, view exports, and connected-consumer overrides into a neutral component inventory, then classifies each component by role, type, and variant. Read-only, operates on exported files, never contacts a tenant.
+description: Stages 1-2 of classic page modernization. Parses exported classic .aspx content, view exports and connected-consumer overrides into a neutral component inventory, then classifies each component by role, type and variant. Use to understand what a legacy page is made of before deciding how to rebuild it. Read-only; operates on exported files and never contacts a tenant.
 allowed-tools: Bash, Read
 examples:
-  - "python3 scripts/aspx_inventory.py --raw-html page.html --views views.json --output inventory.json"
-  - "python3 scripts/component_classification.py --inventory inventory.json --output classified.json"
+  - "python3 scripts/aspx_inventory.py --source-html page.html --views-json views.json --output inventory.json"
+  - "python3 scripts/component_classification.py --input inventory.json --output classified.json"
 ---
 
 # Analyze ASPX Pages
 
-## Trigger and Purpose
+Understand what a legacy classic SharePoint page is made of: stage 1 builds an inventory, stage 2 classifies each component.
 
-Use this skill to understand what a legacy classic SharePoint page is actually
-made of, before deciding how to rebuild it. It is stages 1-2 of the
-modernization pipeline:
+## Contents
 
-```
-analyze-aspx-pages  ->  convert-aspx-pages
-  1. inventory          3. layout selection
-  2. classification     4. component mapping
-```
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-**Stage 1 (`aspx_inventory.py`)** parses three input sources into one neutral
-inventory: rendered classic HTML (content-editor zones), a views export
-(list-view zones), and an override file (connected-consumer zones that cannot
-be detected from markup alone).
+## Constraints
 
-**Stage 2 (`component_classification.py`)** assigns each component a Role,
-Type, and Variant (`Primary`, `Secondary`, `Child`, `Banner`, `Unknown`).
+- Read-only. Operate only on exported files you are given; no network access, no SharePoint connection, no writes outside the output path you name.
+- `Unknown` is a real answer. Report a component the classifier cannot place as `Unknown`; never force it into a plausible category.
+- Never treat a missing or empty result as a pass: missing input is `Unavailable`, no detectable components is `Empty`, a partly readable input is `Partial` with the gaps recorded.
+- Run from this skill's root. Standard library only.
 
-## Unknown is a real answer
-
-`Unknown` is a first-class variant. A component the classifier cannot place is
-reported as `Unknown` rather than being forced into a plausible-looking
-category — a wrong classification is more expensive downstream than an honest
-gap.
-
-## Honest outcomes
-
-Shared vocabulary in `outcomes.py`. A missing input is `UNAVAILABLE`, never a
-clean pass. A page with no detectable components is `EMPTY`, never a success.
-A partially-parseable input is `PARTIAL` with the unreadable parts recorded.
-Malformed markup does not crash the stage — see the `malformed-page` fixture.
-
-## Read-only, no tenant contact
-
-Operates entirely on exported files you provide. No network access, no
-SharePoint connection, no writes outside the output path you name.
-
-## Usage
+## Quick start
 
 ```bash
-python3 scripts/aspx_inventory.py \
-  --raw-html classic-page.raw.html \
-  --views classic-page.views.json \
-  --overrides classic-page.override.json \
-  --output inventory.json
-
-python3 scripts/component_classification.py \
-  --inventory inventory.json --output classified.json
+python3 scripts/aspx_inventory.py --source-html classic-page.raw.html --output inventory.json
+python3 scripts/component_classification.py --input inventory.json --output classified.json
 ```
 
-## Scripts
+## Workflow
 
-- `scripts/aspx_inventory.py` -- stage 1 CLI
-- `scripts/component_classification.py` -- stage 2 CLI
-- `scripts/outcomes.py` -- shared status vocabulary
+1. Get the exported rendered HTML, optionally a views export (`--views-json`) and a connected-consumer override file (`--override`).
+2. Run stage 1 (`aspx_inventory.py`), then stage 2 (`component_classification.py`) on its output.
+3. Report the components with their Role, Type and Variant (`Primary`, `Secondary`, `Child`, `Banner`, `Unknown`), and the outcome of each stage.
+4. Hand `classified.json` to `sharepoint-convert-aspx-pages`.
 
-## Boundary vs `structured-content-rendering`
+## Verification
 
-That plugin *renders new* pages from structured content this workbench owns.
-This plugin *analyses existing* legacy pages it did not create. Different
-inputs, different responsibility -- do not conflate them (spec section 4a).
+Check each stage's outcome is `Observed`. Treat `Empty`, `Partial` and `Unavailable` as findings with their detail, and list every `Unknown` component.
 
-## Provenance
+## References
 
-Adapted from `sp-analysing-aspx-pages` and `sp-converting-aspx-pages` in the
-originating SharePoint migration repository. See
-`docs/reports/phase-9-reusable-sharepoint-plugin-extraction/provenance.md`.
-
+- [Analysis details](references/aspx-analysis-details.md): read for stage inputs, the `Unknown` variant, full usage and provenance.
+- [Pipeline and outcomes](references/page-modernization-pipeline.md): read for the stage table, the outcome vocabulary and the boundary with `content-rendering`.

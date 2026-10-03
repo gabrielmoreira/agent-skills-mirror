@@ -5,11 +5,8 @@ metadata:
   version: "1.0"
   domains: ["Experience"]
   relatedSkills:
+    - "experience-cms-brand-create"
     - "experience-search-coordinate"
-  mcpTools:
-    content-readonly:
-      tools: ["search_media_cms_channels"]
-      semver: "^1.0.0"
 ---
 
 # Applying CMS Brand
@@ -30,7 +27,7 @@ Universal skill for searching, extracting, and applying CMS brand guidelines to 
 
 **DO NOT use this skill when the user wants to:**
 - Search for images or media (use experience-search-coordinate skill)
-- Create a new brand from scratch
+- Create a new brand from scratch (use experience-cms-brand-create skill)
 - Edit brand definitions in CMS
 - Generate logos or visual brand assets
 

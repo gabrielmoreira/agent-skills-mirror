@@ -1,55 +1,48 @@
 ---
 name: content-compare-rendered-output
-plugin: structured-content-rendering
-description: Compares a freshly-produced rendered-output tree (Markdown or ASPX) against a recorded golden-master baseline for byte-identical fidelity -- file-set completeness (nothing missing, nothing extra) plus byte-for-byte content match, excluding run-specific files (generator-info.json, render-result.json). Packages the golden-master comparison pattern from Phase 2 Subphase 2.5.4 as a standalone, reusable primitive.
+plugin: content-rendering
+description: Compares a freshly produced rendered-output tree (Markdown or ASPX) against a recorded golden-master baseline for byte-identical fidelity, checking file-set completeness and byte-for-byte content while excluding run-specific files. Use to prove a refactor or re-render reproduces known-good output. A standalone, reusable golden-master comparison primitive.
 allowed-tools: Bash, Read
 examples:
-  - "python -c \"import compare_rendered_output as cro; print(cro.compare_rendered_trees('fresh/rendered-output', 'golden/rendered-output').status)\""
+  - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); import compare_rendered_output as cro; print(cro.compare_rendered_trees('fresh/rendered-output', 'golden/rendered-output').status)\""
 ---
 
 # Compare Rendered Output
 
-## Trigger and Purpose
+Prove a rendered-output tree is byte-identical to a recorded golden-master baseline.
 
-Use this skill to prove a freshly-produced rendered-output tree is
-byte-identical to a recorded golden-master baseline — the same pattern
-this repo already used at Phase 2 Subphase 2.5.4 (proving Phase 4.5's
-decomposed plugin architecture reproduced the pre-decomposition
-combined plugin's output byte-for-byte) and Phase 6 Task 0.16's own
-ASPX golden-master proof
-(`tests/integration/test_golden_master_aspx.py`), now packaged as a
-standalone, reusable comparison primitive rather than a one-off script.
+## Contents
 
-Works against either renderer's output shape (`render-multipage-
-markdown`'s `index.md`/`pages/*.md`, or `render-sharepoint-aspx`'s
-`page-manifest.json`/`pages/*.html`) — both are just a directory of
-files, so no format-specific logic is needed.
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
 
-## Public Interface
+## Constraints
+
+- Format-agnostic: both renderers' output (`index.md` and `pages/*.md`, or `page-manifest.json` and
+  `pages/*.html`) is just a directory of files, so no format-specific logic applies.
+- `generator-info.json` and `render-result.json` are excluded by default because they carry run-specific
+  fields. Override only deliberately with `excluded_filenames=frozenset(...)`.
+- Read-only comparison. Standard library only. Run from this skill's root with `scripts/` on `sys.path`.
+
+## Quick start
 
 ```python
+import sys; sys.path.insert(0, "scripts")
 from compare_rendered_output import compare_rendered_trees
-
 report = compare_rendered_trees("fresh/rendered-output", "golden/rendered-output")
 # ComparisonReport(status="MATCH"|"MISMATCH", issues=[...])
 ```
 
-Detects: files present in the first tree but missing from the second
-(`missing_in_b`), files present in the second but not the first
-(`extra_in_b`), and byte-content mismatches for files present in both
-(`content_mismatch`).
+## Workflow
 
-Two filenames are excluded from comparison by default (`generator-
-info.json`, `render-result.json` — both carry run-specific fields);
-pass `excluded_filenames=frozenset(...)` to override.
+1. Point `compare_rendered_trees` at the fresh tree and the golden tree.
+2. Report the status and each issue by kind: `missing_in_b` (in the first tree, absent from the second),
+   `extra_in_b` (in the second, absent from the first), or `content_mismatch` (byte difference in a file
+   present in both).
 
-## Installation
+## Verification
 
-```bash
-pip install -e plugins/structured-content-rendering
-```
-
-## Dependencies
-
-None beyond the Python standard library.
-
+`status` must be `MATCH` with no issues for byte-identical fidelity. Any `MISMATCH` is a real difference; do
+not widen `excluded_filenames` to make it pass.

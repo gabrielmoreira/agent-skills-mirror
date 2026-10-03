@@ -10,6 +10,8 @@ metadata:
     - "experience-ui-bundle-metadata-generate"
     - "experience-ui-bundle-salesforce-data-access"
   cliTools:
+    - tool: ["node"]
+      semver: ">=18.0.0"
     - tool: ["npm"]
       semver: ">=8.0.0"
     - tool: ["npx"]
@@ -22,7 +24,7 @@ metadata:
 
 ## Resolve the Bundle Directory
 
-**MUST** run `scripts/resolve-ui-bundle.sh [project-root]` before applying any rule below or writing any file — an ad-hoc `find`/`ls` is not a substitute; it does not enforce the exit-code gate below. It reads `sfdx-project.json`'s `packageDirectories[0].path` (does not assume `force-app` — the source path is configurable) and looks under `<sourceDir>/main/default/uiBundles/`:
+**MUST** run `node scripts/resolve-ui-bundle.mjs [project-root]` before applying any rule below or writing any file — an ad-hoc `find`/`ls` is not a substitute; it does not enforce the exit-code gate below. Always invoke via `node` (never as a bare executable) so this works on Windows as well as macOS/Linux. It reads `sfdx-project.json`'s `packageDirectories[0].path` (does not assume `force-app` — the source path is configurable) and looks under `<sourceDir>/main/default/uiBundles/`:
 
 - **Exit 0**, bundle path printed to stdout: exactly one bundle directory found — that is the bundle directory. Use that exact directory name; never substitute a different name (e.g. a generic "AcmePortal" example from a prompt template) for the one actually printed.
 - **Exit 2**, candidates printed to stderr: multiple `uiBundles/*` subdirectories exist — do not guess, and do not write to any of them, or to a bundle name not in the printed list. Ask the user which app/bundle they mean before editing or running any command.
@@ -32,10 +34,10 @@ Run all `npm`/lint/build/dev commands from inside the resolved bundle directory,
 
 ## Preconditions
 
-Before applying any rule below, confirm this is an existing, scaffolded UI bundle: **MUST** run `scripts/check-preconditions.sh <bundle-dir>` with the directory `resolve-ui-bundle.sh` printed.
+Before applying any rule below, confirm this is an existing, scaffolded UI bundle: **MUST** run `node scripts/check-preconditions.mjs <bundle-dir>` with the directory `resolve-ui-bundle.mjs` printed.
 
 - **Single-bundle (exit 0) case**: run it once, on that bundle.
-- **Multi-bundle (exit 2) case**: do not run it yet — first ask the user which app/bundle they mean, per the Resolve step above. Once the user names the bundle, run `check-preconditions.sh` on that one bundle only. Never run it against multiple candidates speculatively before the user has chosen — that means touching/inspecting bundles the user didn't ask about.
+- **Multi-bundle (exit 2) case**: do not run it yet — first ask the user which app/bundle they mean, per the Resolve step above. Once the user names the bundle, run `check-preconditions.mjs` on that one bundle only. Never run it against multiple candidates speculatively before the user has chosen — that means touching/inspecting bundles the user didn't ask about.
 - **Exit 0**: the bundle has `src/appLayout.tsx`, `src/routes.tsx`, and `src/components/ui/` — proceed.
 - **Exit 1**, missing pieces listed: this is a fresh SFDX project, a non-UI-bundle React project, or a partially-scaffolded bundle — **stop**. Do not fall back to generic React knowledge (e.g. `react-router-dom`, a hardcoded basename, or raw HTML), and do not hand-write `appLayout.tsx`/`routes.tsx`/a page/a component to "fill in" the missing scaffold, even for a casual, vague, or urgent-sounding request ("just change the header", "make the background blue"). Tell the user the bundle isn't scaffolded yet and direct them to `experience-ui-bundle-app-coordinate` (or `experience-ui-bundle-metadata-generate`) to scaffold it first. If, after the user names their intended bundle, that one turns out to be unscaffolded, stop and redirect for it — do not silently switch to scaffolding a different candidate instead.
 
@@ -60,11 +62,11 @@ A request to rename/rebrand the app (e.g. "call it X everywhere a user would see
 Some capabilities ship as pre-built, tested feature packages. The catalog **evolves and is not something you can know from memory** — never decide from the request wording alone whether a capability "is" or "isn't" a feature. Before hand-writing any non-trivial capability (anything beyond a plain page, component, or styling change) in this skill:
 
 1. **Consult the authoritative catalog.** Invoke `experience-ui-bundle-features-generate`, which runs `list` to show the *current* set of installable features. Do not rely on a hardcoded or remembered list — this skill deliberately names none, because any names it listed would go stale.
-2. **Detect whether a matching feature is already installed** in the bundle — inspect `package.json` dependencies and existing `src/` files. If present, use it as-is; do not reinstall or re-implement.
+2. **Detect whether a matching feature is already installed** in the bundle — inspect `package.json` dependencies and existing `src/` files. If present, do not reinstall or re-implement it — **but you must still adopt it**: invoke `experience-ui-bundle-features-generate` to `describe` it (which reads the feature's README — the adoption contract), wire it into the app, and, if the feature ships config (e.g. a `config.json`), set that for this app's data and use case. Installed-but-unconfigured is not done.
 3. **If a matching feature exists in the catalog but isn't installed**, let `experience-ui-bundle-features-generate` install the tested package. Do not build it from scratch here.
 4. **Only hand-build** a capability that has no matching catalog feature.
 
-This gate is **idempotent**: when this skill runs as a phase of `experience-ui-bundle-app-coordinate` (which installs features earlier in its sequence), step 2 finds the feature already present and this collapses to a no-op. It only does real work when the skill was reached directly — the path that would otherwise skip feature detection.
+When this skill runs as a phase of `experience-ui-bundle-app-coordinate`, a matching feature is often already present — installed by an earlier phase, or shipped by the template. Already-present is **not** a reason to skip: step 2 still requires adopting and configuring that feature for this app. Only the install/re-implement work is ever skipped — never the wiring and configuration.
 
 ---
 
@@ -80,7 +82,7 @@ When making any change that affects navigation, header, footer, sidebar, theme, 
 
 `index.html` lives at the bundle root (not under `src/`), but it is still in scope for this skill whenever branding or the app name changes — the leftover `<title>React App</title>` / `Vite + React` boilerplate is a common ship-blocker that `npm run lint`/`npm run build` never catches.
 
-Before finishing, confirm: Did I update `appLayout.tsx` with real nav items and branding? Then run `scripts/verify-rules.sh` to check for residual boilerplate (see Verification below).
+Before finishing, confirm: Did I update `appLayout.tsx` with real nav items and branding? Then run `node scripts/verify-rules.mjs` to check for residual boilerplate (see Verification below).
 
 | What | Where |
 |------|-------|
@@ -191,7 +193,7 @@ Before completing, run all of the following from the resolved UI bundle director
 2. `npm run build` — must succeed.
 3. `npm run dev` (or the project's dev-server script) — confirm the app starts cleanly so the change is verified at runtime, not just at build time.
 
-**`lint`/`build` alone do not catch the highest-risk rules in this skill** — a wrong `react-router-dom` import, a hardcoded basename, an inline `style={{}}`, or a stray `lightning/*` import can all lint and build clean while breaking at runtime. After any change that touches routing, layout, styling, or module imports, run `scripts/verify-rules.sh <files-or-dirs-you-edited>`:
+**`lint`/`build` alone do not catch the highest-risk rules in this skill** — a wrong `react-router-dom` import, a hardcoded basename, an inline `style={{}}`, or a stray `lightning/*` import can all lint and build clean while breaking at runtime. After any change that touches routing, layout, styling, or module imports, run `node scripts/verify-rules.mjs <files-or-dirs-you-edited>`:
 
 - **Exit 0**: no violations found.
 - **Exit 1**, violations listed by rule and file: fix every one before considering the task complete, even if lint and build passed.

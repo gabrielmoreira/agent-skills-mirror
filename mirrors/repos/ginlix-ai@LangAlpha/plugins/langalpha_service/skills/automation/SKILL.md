@@ -10,8 +10,6 @@ This skill provides 3 tools for creating and managing scheduled automations:
 - `create_automation` - Create a new scheduled automation
 - `manage_automation` - Update, pause, resume, trigger, or delete automations
 
-You should call these tools directly instead of using ExecuteCode tool.
-
 ## Before Creating an Automation
 
 **Always confirm with the user before calling `create_automation`.** Automations run autonomously on a schedule, so getting the details right matters. If the user's request is unclear or underspecified, ask to clarify:
@@ -53,7 +51,9 @@ Create a new scheduled automation.
 |-----------|------|----------|-------------|
 | `name` | str | Yes | Short name for the automation |
 | `instruction` | str | Yes | The prompt the agent will execute on each run |
-| `schedule` | str | Yes | Cron expression or ISO datetime (see below) |
+| `schedule` | str | Cron/once | Cron expression or ISO datetime (see below). Omit for price triggers. |
+| `trigger_type` | str | No | `"price"` for a price trigger; otherwise inferred from `schedule` |
+| `trigger_config` | dict | Price | Symbol and conditions (see Price-Triggered Automations) |
 | `description` | str | No | Optional description |
 | `thread` | str | No | `"new"` (default), `"persistent"`, or `"current"` (see Thread Strategy) |
 | `delivery` | str | No | Comma-separated delivery methods (e.g. `"slack"`) |
@@ -122,7 +122,9 @@ create_automation(
 
 ## Price-Triggered Automations
 
-In addition to cron/datetime schedules, automations can trigger when a stock price meets a specific condition. Set `trigger_type="price"` and provide a `trigger_config` dict instead of (or alongside) a `schedule`.
+In addition to cron/datetime schedules, automations can trigger when a stock price meets a specific condition. Set `trigger_type="price"` and provide a `trigger_config` dict instead of a `schedule`; passing both is refused.
+
+`symbol` is a bare US stock or index ticker (`AAPL`, `SPX`), with no `^` or `I:` prefix. There is no crypto, currency or futures feed, so no alert can watch those.
 
 ### Condition Types
 
@@ -130,8 +132,8 @@ In addition to cron/datetime schedules, automations can trigger when a stock pri
 |-----------|-------------|
 | `price_above` | Fires when price rises above the given value |
 | `price_below` | Fires when price drops below the given value |
-| `pct_change_above` | Fires when percentage change exceeds the given value |
-| `pct_change_below` | Fires when percentage change drops below the given (negative) value |
+| `pct_change_above` | Fires when the price is up more than the given percent |
+| `pct_change_below` | Fires when the price is down more than the given percent. The value is positive: `3` means a 3% drop |
 
 For percentage conditions, `reference` sets the baseline price:
 
@@ -176,11 +178,11 @@ create_automation(
 
 # Recurring alert with 4-hour cooldown
 create_automation(
-    name="BTC Volatility Watch",
-    instruction="BTC moved more than 3% from today's open. Summarize order flow and sentiment.",
+    name="NVDA Volatility Watch",
+    instruction="NVDA moved more than 3% from today's open. Summarize volume, options flow and news.",
     trigger_type="price",
     trigger_config={
-        "symbol": "BTC-USD",
+        "symbol": "NVDA",
         "conditions": [
             {"type": "pct_change_above", "value": 3, "reference": "day_open"},
         ],
@@ -193,7 +195,6 @@ create_automation(
 
 - **Confirm before creating.** Always repeat the symbol, condition, threshold value, and retrigger mode back to the user and get explicit confirmation.
 - **Default to `one_shot`** retrigger mode unless the user asks for repeated alerts. For recurring, omit cooldown_seconds to default to once per trading day.
-- **Use flash mode** by default for price-triggered automations (lightweight, low-latency execution).
 
 ---
 

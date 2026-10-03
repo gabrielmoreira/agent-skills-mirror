@@ -1,70 +1,55 @@
 ---
 name: sharepoint-extract-links
 plugin: sharepoint-link-remediation
-description: Extracts and classifies every hyperlink from SharePoint page or document content -- absolute, server-relative, protocol-relative, mailto, anchor, and malformed -- into a LinkInventory carrying an honest outcome (OBSERVED / EMPTY / PARTIAL / FAILED). Read-only; reads content you pass it and never contacts a tenant.
+description: Extracts and classifies every hyperlink from SharePoint page or document content (absolute, server-relative, protocol-relative, mailto, anchor, malformed) into a LinkInventory with an honest outcome (OBSERVED, EMPTY, PARTIAL, FAILED). Use first, to build a complete link inventory before deciding what needs rewriting. Read-only; reads content you pass it and never contacts a tenant.
 allowed-tools: Bash, Read
 examples:
-  - "python -c \"from link_extraction import extract_links_from_text; print(extract_links_from_text(html, source='page.aspx').to_dict())\""
-  - "python -c \"from link_extraction import extract_links_from_paths; print(extract_links_from_paths(['export/page1.aspx']).to_dict())\""
+  - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); from link_extraction import extract_links_from_text; print(extract_links_from_text(html, source='page.aspx').to_dict())\""
+  - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); from link_extraction import extract_links_from_paths; print(extract_links_from_paths(['export/page1.aspx']).to_dict())\""
 ---
 
 # Extract Links
 
-## Trigger and Purpose
+Build a complete, classified inventory of the links inside SharePoint content. Stage one of
+`sharepoint-extract-links` -> `sharepoint-remediate-links` -> `sharepoint-validate-link-integrity`.
 
-Use this skill to build a complete, classified inventory of the links
-inside SharePoint content before deciding what needs rewriting. It is
-the read-only first stage of the link-remediation pipeline:
-`extract-links` -> `remediate-links` -> `validate-link-integrity`.
+## Contents
 
-`extract_links_from_text(content, source=...)` parses one document's
-content. `extract_links_from_paths(paths)` reads a set of local files
-already exported from a tenant. Each returns a `LinkInventory` whose
-`links` are `ExtractedLink` records (`url`, `source`, `kind`) and whose
-`outcome` distinguishes states that are otherwise easy to conflate.
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-## Honest outcomes -- an empty result is never a silent pass
+## Constraints
 
-| Outcome | Meaning |
-|---|---|
-| `OBSERVED` | Links were found |
-| `EMPTY` | Content read successfully, genuinely contained no links |
-| `PARTIAL` | Some sources failed to read; `problems` lists them |
-| `FAILED` | Every attempted source failed |
+- Read-only. No writes and no network access; read only content you are given or local paths you name. Export tenant content first.
+- Never let an empty result pass silently. `EMPTY` (read fine, no links) and `FAILED` (nothing could be read) must stay distinct, and a
+  partial read is `PARTIAL` with `problems` listed.
+- Run from this skill's root with `scripts/` on `sys.path`. Standard library only.
 
-`EMPTY` and `FAILED` are deliberately distinct: "no links found" and
-"nothing could be read" must never look alike (Phase 9 spec section 13).
-When `extract_links_from_paths` is given `sources_attempted`, an
-all-sources-failed run reports `FAILED`, not an empty success.
+## Quick start
 
-## Read-only guarantee
-
-This skill performs no writes and opens no network connections. It reads
-only content passed to it or local paths you name. Tenant retrieval is
-deliberately out of scope -- export content first, then extract.
-
-## Usage
-
-```bash
-python -c "
+```python
+import sys; sys.path.insert(0, "scripts")
 from link_extraction import extract_links_from_text
-inv = extract_links_from_text(open('page.aspx').read(), source='page.aspx')
+inv = extract_links_from_text(open("page.aspx").read(), source="page.aspx")
 print(inv.outcome, len(inv.links))
-"
 ```
 
-Link kinds are reported by `classify(url)`: `absolute`, `server_relative`,
-`protocol_relative`, `mailto`, `anchor`, `malformed`.
+## Workflow
 
-## Scripts
+1. Get exported content: a string per document, or local file paths.
+2. Call `extract_links_from_text(content, source=...)` or `extract_links_from_paths(paths)`.
+3. Report the `LinkInventory`: each `ExtractedLink` (`url`, `source`, `kind`) and the `outcome`.
+4. Pass the inventory to `sharepoint-remediate-links` or `sharepoint-validate-link-integrity`.
 
-- `scripts/link_extraction.py` -- `extract_links_from_text`, `extract_links_from_paths`, `classify`, `ExtractedLink`, `LinkInventory`
-- `scripts/link_outcomes.py` -- the shared `Outcome` vocabulary
+## Verification
 
-## Provenance
+Check `inv.outcome`. `OBSERVED` has links; anything else is reported as what it is, with `problems` for `PARTIAL`. Kinds are `absolute`,
+`server_relative`, `protocol_relative`, `mailto`, `anchor` and `malformed`.
 
-Adapted from `sp-extracting-links` in the originating SharePoint migration
-repository (see `docs/reports/phase-9-reusable-sharepoint-plugin-extraction/provenance.md`).
-Ported to Python and stripped of all project-specific literals; the plugin
-carries no dependency on that repository.
+## References
 
+- [Extraction details](references/extract-links-details.md): read for the API, link kinds, outcome semantics and provenance.
+- [Pipeline, outcomes and write safety](references/link-pipeline-and-write-safety.md): read for the shared outcome vocabulary.

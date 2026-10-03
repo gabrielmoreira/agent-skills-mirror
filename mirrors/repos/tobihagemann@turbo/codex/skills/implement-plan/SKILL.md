@@ -66,7 +66,7 @@ After `$implement` completes, set the plan's frontmatter `status:` to `done`. If
 
 When the plan's Context names a larger source it implements part of (an assessment, a backlog, an issue), report the plan's completion separately from that source's: name the source's items the plan left out, and say whether another plan under `.turbo/plans/` covers them.
 
-If this run created a goal in Step 1, mark it complete with `update_goal`.
+If this run created a goal in Step 1, follow the closing `update_plan` call below by mirroring it into the workflow file, setting `Status: closed`, and marking the goal complete with `update_goal`, in that order.
 
 Then call `update_plan` to mark this step completed and continue with the next step of the active workflow.
 
@@ -75,4 +75,4 @@ Then call `update_plan` to mark this step completed and continue with the next s
 - The plan file is read-only during execution. If revisions are needed, run `$refine-plan` or `$draft-plan` separately.
 - Never skip Step 2.
 - Never enumerate or execute the plan's Implementation Steps inline. The work runs through `$implement`. Restating steps as a turn-level narration counts as inline execution and bypasses the delegation.
-- If the plan's Implementation Steps or Verification include `git commit`, `git push`, or PR creation, halt before Step 3 and ask the user to remove them via `$refine-plan`.
+- If the plan's Implementation Steps or Verification include `git commit`, `git push`, or PR creation, halt before Step 3 and ask the user to remove them via `$refine-plan`. A Verification item that observes the result of a push without instructing one is not grounds to halt.

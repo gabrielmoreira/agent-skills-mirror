@@ -18,7 +18,6 @@ metadata:
         - "search_stock_images"
       semver: ">=1.0.0"
 allowed-tools: |
-  Bash
   mcp__media_management__search_stock_images
   mcp__media_management__download_stock_image
 ---
@@ -47,7 +46,7 @@ In all of these cases, search the stock library — this is the tool for obtaini
 
 | Parameter    | Required | Default     | Notes                                                                              |
 |--------------|----------|-------------|------------------------------------------------------------------------------------|
-| `query`      | Yes      | —           | Natural language search phrase (e.g. "sunset over ocean", "business meeting"), max 500 chars |
+| `query`      | ✅ Yes   | —           | Natural language search phrase (e.g. "sunset over ocean", "business meeting"), max 500 chars |
 | `searchType` | No       | `Creative`  | `Creative` (royalty-free stock), `Editorial` (rights-managed news/event imagery)   |
 | `orientation`| No       | _(none)_    | `Horizontal`, `Vertical`, `Square`, `PanoramicHorizontal`, `PanoramicVertical`     |
 | `sortOrder`  | No       | `BestMatch` | `BestMatch`, `MostPopular`, `Newest`                                               |
@@ -107,7 +106,7 @@ Prefix the list with `Searched for: <effectiveQuery>` only if `effectiveQuery` i
 
 ## Step 3 — Download (billed)
 
-**WARNING: Each call licenses the image and spends a stock-image download credit. Only invoke after the user explicitly selects an image (or in non-interactive mode, as noted above).**
+⚠️ **Each call licenses the image and spends a stock-image download credit. Only invoke after the user explicitly selects an image (or in non-interactive mode, as noted above).**
 
 **Before calling `download_stock_image`, verify:**
 - [ ] User has explicitly named or numbered the image they want (or non-interactive mode is confirmed)
@@ -118,7 +117,7 @@ Prefix the list with `Searched for: <effectiveQuery>` only if `effectiveQuery` i
 
 | Parameter   | Required | Default | Notes                                                                                              |
 |-------------|----------|---------|----------------------------------------------------------------------------------------------------|
-| `assetId`   | Yes      | —       | Stock asset ID from the prior `search_stock_images` result, max 50 chars                           |
+| `assetId`   | ✅ Yes   | —       | Stock asset ID from the prior `search_stock_images` result, max 50 chars                           |
 | `size`      | No       | `comp`  | `comp` (web-quality composite, default), `medium_jpg`, `largest` (full res, can exceed 100 MB), max 50 chars |
 
 Use `largest` only when the user explicitly asks for full/original resolution.

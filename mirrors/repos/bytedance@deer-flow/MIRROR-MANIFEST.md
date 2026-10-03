@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bytedance/deer-flow` — 26 default patterns, 35 followed patterns, 205 file(s) materialized.
+Mirror of `bytedance/deer-flow` — 26 default patterns, 36 followed patterns, 206 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 35 followed patterns, 2
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 35 |
-| Files         | 205 |
+| Followed pats | 36 |
+| Files         | 206 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,6 +66,7 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 35 followed patterns, 2
 - `README_fr.md`
 - `README_ru.md`
 - `backend/docs/MEMORY_SETTINGS_REVIEW.md`
+- `backend/packages/harness/deerflow/community/tenki/README.md`
 - `docs/capability-center.md`
 - `backend/docs/IM_CHANNEL_CONNECTIONS.md`
 - `docker/lark-cli-init/README.md`
@@ -117,10 +118,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`backend/packages/harness/deerflow/community/aio_sandbox/AGENTS.md`](backend/packages/harness/deerflow/community/aio_sandbox/AGENTS.md) |
 | 23 | ✓ | [`backend/packages/harness/deerflow/community/boxlite/README.md`](backend/packages/harness/deerflow/community/boxlite/README.md) |
 | 24 | ✓ | [`backend/packages/harness/deerflow/community/e2b_sandbox/AGENTS.md`](backend/packages/harness/deerflow/community/e2b_sandbox/AGENTS.md) |
-| 25 | ✓ | [`backend/packages/harness/deerflow/community/opensandbox/README.md`](backend/packages/harness/deerflow/community/opensandbox/README.md) |
-| 26 | ✓ | [`backend/packages/harness/deerflow/community/ragflow/AGENTS.md`](backend/packages/harness/deerflow/community/ragflow/AGENTS.md) |
-| 27 | ✓ | [`backend/packages/harness/deerflow/community/tavily/AGENTS.md`](backend/packages/harness/deerflow/community/tavily/AGENTS.md) |
-| 28 | ✓ | [`backend/packages/harness/deerflow/community/tenki/README.md`](backend/packages/harness/deerflow/community/tenki/README.md) |
+| 25 | ✓ | [`backend/packages/harness/deerflow/community/jina_ai/AGENTS.md`](backend/packages/harness/deerflow/community/jina_ai/AGENTS.md) |
+| 26 | ✓ | [`backend/packages/harness/deerflow/community/opensandbox/README.md`](backend/packages/harness/deerflow/community/opensandbox/README.md) |
+| 27 | ✓ | [`backend/packages/harness/deerflow/community/ragflow/AGENTS.md`](backend/packages/harness/deerflow/community/ragflow/AGENTS.md) |
+| 28 | ✓ | [`backend/packages/harness/deerflow/community/tavily/AGENTS.md`](backend/packages/harness/deerflow/community/tavily/AGENTS.md) |
 | 29 | ✓ | [`backend/packages/harness/deerflow/config/AGENTS.md`](backend/packages/harness/deerflow/config/AGENTS.md) |
 | 30 | ✓ | [`backend/packages/harness/deerflow/extensions/AGENTS.md`](backend/packages/harness/deerflow/extensions/AGENTS.md) |
 | 31 | ✓ | [`backend/packages/harness/deerflow/mcp/AGENTS.md`](backend/packages/harness/deerflow/mcp/AGENTS.md) |
@@ -273,31 +274,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 178 | → | [`backend/docs/TUI.md`](backend/docs/TUI.md) |
 | 179 | → | [`backend/packages/harness/deerflow/agents/memory/backends/honcho/README.md`](backend/packages/harness/deerflow/agents/memory/backends/honcho/README.md) |
 | 180 | → | [`backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md`](backend/packages/harness/deerflow/agents/memory/backends/mem0/README.md) |
-| 181 | → | [`backend/README.md`](backend/README.md) |
-| 182 | → | [`backend/scripts/benchmark/context_snapshot/README.md`](backend/scripts/benchmark/context_snapshot/README.md) |
-| 183 | → | [`backend/scripts/benchmark/deermem_scope_isolation/README.md`](backend/scripts/benchmark/deermem_scope_isolation/README.md) |
-| 184 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 185 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 186 | → | [`docker/lark-cli-broker/README.md`](docker/lark-cli-broker/README.md) |
-| 187 | → | [`docker/lark-cli-init/README.md`](docker/lark-cli-init/README.md) |
-| 188 | → | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
-| 189 | → | [`docs/capability-center.md`](docs/capability-center.md) |
-| 190 | → | [`docs/database-forward-revision-recovery.md`](docs/database-forward-revision-recovery.md) |
-| 191 | → | [`docs/full-stack-plugins.md`](docs/full-stack-plugins.md) |
-| 192 | → | [`docs/OPENVIKING.md`](docs/OPENVIKING.md) |
-| 193 | → | [`docs/plans/2026-07-10-pluggable-authorization-rfc.md`](docs/plans/2026-07-10-pluggable-authorization-rfc.md) |
-| 194 | → | [`docs/plans/2026-08-24-subagent-batch-capacity-implementation.md`](docs/plans/2026-08-24-subagent-batch-capacity-implementation.md) |
-| 195 | → | [`docs/task-continuity.md`](docs/task-continuity.md) |
-| 196 | → | [`examples/deerflow-extension-bookmarks/README.md`](examples/deerflow-extension-bookmarks/README.md) |
-| 197 | → | [`examples/deerflow-extension-jev-screening/README.md`](examples/deerflow-extension-jev-screening/README.md) |
-| 198 | → | [`Install.md`](Install.md) |
-| 199 | → | [`README_fr.md`](README_fr.md) |
-| 200 | → | [`README_ja.md`](README_ja.md) |
-| 201 | → | [`README_ru.md`](README_ru.md) |
-| 202 | → | [`README_zh.md`](README_zh.md) |
-| 203 | → | [`README.md`](README.md) |
-| 204 | → | [`RELEASING.md`](RELEASING.md) |
-| 205 | → | [`SECURITY.md`](SECURITY.md) |
+| 181 | → | [`backend/packages/harness/deerflow/community/tenki/README.md`](backend/packages/harness/deerflow/community/tenki/README.md) |
+| 182 | → | [`backend/README.md`](backend/README.md) |
+| 183 | → | [`backend/scripts/benchmark/context_snapshot/README.md`](backend/scripts/benchmark/context_snapshot/README.md) |
+| 184 | → | [`backend/scripts/benchmark/deermem_scope_isolation/README.md`](backend/scripts/benchmark/deermem_scope_isolation/README.md) |
+| 185 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 186 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 187 | → | [`docker/lark-cli-broker/README.md`](docker/lark-cli-broker/README.md) |
+| 188 | → | [`docker/lark-cli-init/README.md`](docker/lark-cli-init/README.md) |
+| 189 | → | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
+| 190 | → | [`docs/capability-center.md`](docs/capability-center.md) |
+| 191 | → | [`docs/database-forward-revision-recovery.md`](docs/database-forward-revision-recovery.md) |
+| 192 | → | [`docs/full-stack-plugins.md`](docs/full-stack-plugins.md) |
+| 193 | → | [`docs/OPENVIKING.md`](docs/OPENVIKING.md) |
+| 194 | → | [`docs/plans/2026-07-10-pluggable-authorization-rfc.md`](docs/plans/2026-07-10-pluggable-authorization-rfc.md) |
+| 195 | → | [`docs/plans/2026-08-24-subagent-batch-capacity-implementation.md`](docs/plans/2026-08-24-subagent-batch-capacity-implementation.md) |
+| 196 | → | [`docs/task-continuity.md`](docs/task-continuity.md) |
+| 197 | → | [`examples/deerflow-extension-bookmarks/README.md`](examples/deerflow-extension-bookmarks/README.md) |
+| 198 | → | [`examples/deerflow-extension-jev-screening/README.md`](examples/deerflow-extension-jev-screening/README.md) |
+| 199 | → | [`Install.md`](Install.md) |
+| 200 | → | [`README_fr.md`](README_fr.md) |
+| 201 | → | [`README_ja.md`](README_ja.md) |
+| 202 | → | [`README_ru.md`](README_ru.md) |
+| 203 | → | [`README_zh.md`](README_zh.md) |
+| 204 | → | [`README.md`](README.md) |
+| 205 | → | [`RELEASING.md`](RELEASING.md) |
+| 206 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

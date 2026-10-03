@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ginlix-ai/LangAlpha` — 26 default patterns, 0 followed patterns, 54 file(s) materialized.
+Mirror of `ginlix-ai/LangAlpha` — 26 default patterns, 0 followed patterns, 56 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ginlix-ai/LangAlpha` — 26 default patterns, 0 followed patterns, 54
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 54 |
+| Files         | 56 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -97,22 +97,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 36 | ✓ | [`plugins/langalpha_research/skills/thesis-tracker/SKILL.md`](plugins/langalpha_research/skills/thesis-tracker/SKILL.md) |
 | 37 | ✓ | [`plugins/langalpha_research/skills/trade-pitch/SKILL.md`](plugins/langalpha_research/skills/trade-pitch/SKILL.md) |
 | 38 | ✓ | [`plugins/langalpha_service/skills/automation/SKILL.md`](plugins/langalpha_service/skills/automation/SKILL.md) |
-| 39 | ✓ | [`plugins/langalpha_service/skills/onboarding/SKILL.md`](plugins/langalpha_service/skills/onboarding/SKILL.md) |
-| 40 | ✓ | [`plugins/langalpha_service/skills/run-workflow/SKILL.md`](plugins/langalpha_service/skills/run-workflow/SKILL.md) |
-| 41 | ✓ | [`plugins/langalpha_service/skills/secretary/SKILL.md`](plugins/langalpha_service/skills/secretary/SKILL.md) |
-| 42 | ✓ | [`plugins/langalpha_service/skills/self-improve/SKILL.md`](plugins/langalpha_service/skills/self-improve/SKILL.md) |
-| 43 | ✓ | [`plugins/langalpha_service/skills/user-profile/SKILL.md`](plugins/langalpha_service/skills/user-profile/SKILL.md) |
-| 44 | ✓ | [`src/ptc_agent/agent/prompts/templates/AGENTS.md`](src/ptc_agent/agent/prompts/templates/AGENTS.md) |
-| 45 | ✓ | [`src/ptc_agent/agent/tools/AGENTS.md`](src/ptc_agent/agent/tools/AGENTS.md) |
-| 46 | ✓ | [`src/server/AGENTS.md`](src/server/AGENTS.md) |
-| 47 | ✓ | [`src/tools/AGENTS.md`](src/tools/AGENTS.md) |
-| 48 | ✓ | [`tests/fixtures/plugins/dialect-cursor/skills/cli-tips/SKILL.md`](tests/fixtures/plugins/dialect-cursor/skills/cli-tips/SKILL.md) |
-| 49 | ✓ | [`tests/fixtures/plugins/marketplace-mixed/plugins/alpha/skills/alpha-notes/SKILL.md`](tests/fixtures/plugins/marketplace-mixed/plugins/alpha/skills/alpha-notes/SKILL.md) |
-| 50 | ✓ | [`tests/fixtures/plugins/mcp-doc-invalid/skills/survivor/SKILL.md`](tests/fixtures/plugins/mcp-doc-invalid/skills/survivor/SKILL.md) |
-| 51 | ✓ | [`tests/fixtures/plugins/skill-defects/skills/good/SKILL.md`](tests/fixtures/plugins/skill-defects/skills/good/SKILL.md) |
-| 52 | ✓ | [`tests/fixtures/plugins/valid-full/skills/fx-notes/SKILL.md`](tests/fixtures/plugins/valid-full/skills/fx-notes/SKILL.md) |
-| 53 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 54 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
+| 39 | ✓ | [`plugins/langalpha_service/skills/langalpha-doc/references/skills.md`](plugins/langalpha_service/skills/langalpha-doc/references/skills.md) |
+| 40 | ✓ | [`plugins/langalpha_service/skills/langalpha-doc/SKILL.md`](plugins/langalpha_service/skills/langalpha-doc/SKILL.md) |
+| 41 | ✓ | [`plugins/langalpha_service/skills/onboarding/SKILL.md`](plugins/langalpha_service/skills/onboarding/SKILL.md) |
+| 42 | ✓ | [`plugins/langalpha_service/skills/run-workflow/SKILL.md`](plugins/langalpha_service/skills/run-workflow/SKILL.md) |
+| 43 | ✓ | [`plugins/langalpha_service/skills/secretary/SKILL.md`](plugins/langalpha_service/skills/secretary/SKILL.md) |
+| 44 | ✓ | [`plugins/langalpha_service/skills/self-improve/SKILL.md`](plugins/langalpha_service/skills/self-improve/SKILL.md) |
+| 45 | ✓ | [`plugins/langalpha_service/skills/user-profile/SKILL.md`](plugins/langalpha_service/skills/user-profile/SKILL.md) |
+| 46 | ✓ | [`src/ptc_agent/agent/prompts/templates/AGENTS.md`](src/ptc_agent/agent/prompts/templates/AGENTS.md) |
+| 47 | ✓ | [`src/ptc_agent/agent/tools/AGENTS.md`](src/ptc_agent/agent/tools/AGENTS.md) |
+| 48 | ✓ | [`src/server/AGENTS.md`](src/server/AGENTS.md) |
+| 49 | ✓ | [`src/tools/AGENTS.md`](src/tools/AGENTS.md) |
+| 50 | ✓ | [`tests/fixtures/plugins/dialect-cursor/skills/cli-tips/SKILL.md`](tests/fixtures/plugins/dialect-cursor/skills/cli-tips/SKILL.md) |
+| 51 | ✓ | [`tests/fixtures/plugins/marketplace-mixed/plugins/alpha/skills/alpha-notes/SKILL.md`](tests/fixtures/plugins/marketplace-mixed/plugins/alpha/skills/alpha-notes/SKILL.md) |
+| 52 | ✓ | [`tests/fixtures/plugins/mcp-doc-invalid/skills/survivor/SKILL.md`](tests/fixtures/plugins/mcp-doc-invalid/skills/survivor/SKILL.md) |
+| 53 | ✓ | [`tests/fixtures/plugins/skill-defects/skills/good/SKILL.md`](tests/fixtures/plugins/skill-defects/skills/good/SKILL.md) |
+| 54 | ✓ | [`tests/fixtures/plugins/valid-full/skills/fx-notes/SKILL.md`](tests/fixtures/plugins/valid-full/skills/fx-notes/SKILL.md) |
+| 55 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 56 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
 
 ---
 

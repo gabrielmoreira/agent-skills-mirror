@@ -1,7 +1,7 @@
 ---
 name: sharepoint-update-list-column
 plugin: sharepoint-provisioning
-description: Updates a list-scoped column's properties on a specific SharePoint list. Dry-run by default; real writes require -Execute and confirmation token UPDATE-SPO-LIST-COLUMN.
+description: Updates a list-scoped column's properties on a specific SharePoint list. Use to change one list's column. Dry-run by default; real writes require -Execute and confirmation token UPDATE-SPO-LIST-COLUMN.
 allowed-tools: Bash, Read
 examples:
   - "pwsh -File scripts/spo-update-list-column.ps1 -PlanPath plan.json"
@@ -10,31 +10,40 @@ examples:
 
 # Update SharePoint List Column
 
-## Overview
+Update a list-scoped column with Set-PnPField.
 
-Use this skill to execute real SharePoint Online **Update SharePoint List Column** operations using PnP.PowerShell (\$vb\).
+## Contents
 
-### Safety Contract
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-- **Dry-run by default**: Running without \-Execute\ outputs a structured JSON action plan detailing the operations that would occur without modifying tenant state.
-- **Confirmation Gated**: Real execution requires passing \-Execute\ alongside \-ConfirmToken UPDATE-SPO-LIST-COLUMN\.
-- **Connection Resolution**: Resolves credentials interactively or from \config.psd1\ via \Get-WorkbenchConnectionConfig.ps1\.
+## Constraints
 
-## Usage
+- Dry run by default: without `-Execute` it prints a structured JSON action summary and changes nothing.
+- A real write needs `-Execute -ConfirmToken UPDATE-SPO-LIST-COLUMN`, exactly. The plan's own `confirmation_token` field is a different value. A real run is a live tenant write that the user runs.
+- List-scoped: changes one list's column only. Treat a column type change as risky and confirm it with the user.
+- Read the "Plan JSON shape" block in `scripts/spo-update-list-column.ps1`'s header and do not invent plan keys. When running an installed copy, pass `-ConfigPath` (or `-SiteUrl`, `-ClientId`, `-TenantId`).
 
-### 1. Preview Actions (Dry-Run)
+## Quick start
 
-\\\ash
+```bash
 pwsh -File scripts/spo-update-list-column.ps1 -PlanPath path/to/plan.json
-\\\
+```
 
-### 2. Execute Real Tenant Write
+## Workflow
 
-\\\ash
-pwsh -File scripts/spo-update-list-column.ps1 -PlanPath path/to/plan.json -Execute -ConfirmToken UPDATE-SPO-LIST-COLUMN
-\\\
+1. Get or build the plan JSON for this operation.
+2. Dry run (above) and review the action summary with the user.
+3. After the user confirms, rerun with `-Execute -ConfirmToken UPDATE-SPO-LIST-COLUMN`.
+4. Report the result and check it as described below.
 
-## Script Reference
+## Verification
 
-- \scripts/spo-update-list-column.ps1\ — Primary PnP.PowerShell executor.
-- \scripts/Get-WorkbenchConnectionConfig.ps1\ — Shared connection helper.
+The dry-run summary shows each property change; afterwards that list's column carries the new values.
+
+## References
+
+- [Executor contract](references/provisioning-executor-contract.md): read for the safety contract, the two kinds of token, connection and config, plan shapes, and the full executor table.

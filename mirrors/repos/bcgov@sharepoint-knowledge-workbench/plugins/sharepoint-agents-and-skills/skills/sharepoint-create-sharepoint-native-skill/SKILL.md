@@ -1,46 +1,46 @@
 ---
 name: sharepoint-create-sharepoint-native-skill
-description: Authors a validated native SharePoint skill (SKILL.md) source package locally. Does not deploy it -- creation and deployment are separate.
+plugin: sharepoint-agents-and-skills
+description: Authors a validated native SharePoint skill (SKILL.md) source package locally. Use to write a skill for a site's AgentAssets library. Does not deploy it; creation and deployment are separate.
+allowed-tools: Bash, Read, Write
 ---
 
-# create-sharepoint-native-skill
+# Create SharePoint Native Skill
 
-## Purpose
+Produce a locally validated `SKILL.md` source package from explicit parameters.
 
-Produces a locally validated `SKILL.md` source package from explicit parameters — name,
-description, instructions, input boundary, prohibited scope. Writes only to a local output path;
-never connects to a tenant.
+## Contents
 
-## Input boundaries
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-- `-SkillName` (required) — must match the `AgentAssets/Skills/<name>/` folder-naming convention
-  (lowercase, alphanumeric and hyphens).
-- `-SkillDescription` (required).
-- `-InstructionsPath` **or** `-Instructions` (exactly one required) — no default instruction
-  content is invented; the caller must supply real content.
-- `-InputBoundary`, `-ProhibitedScope` (optional) — appended as their own sections when supplied.
-- `-OutputPath` (required) — local file path; `-Overwrite` required to replace an existing file.
+## Constraints
 
-## Prohibited scope & Chat Runtime Boundaries
- 
- - Performs zero tenant I/O — no `Connect-PnPOnline` call anywhere in this script.
- - Does not deploy the produced package — use `deploy-sharepoint-native-skill` separately, as a
-   distinct, explicitly invoked step.
- - Does not use `create-test-skill.ps1` as a runtime dependency.
- 
- > [!IMPORTANT]
- > **SharePoint Copilot Chat Web Runtime Boundary**:
- > Native skills executed by SharePoint Copilot chat agents running in the web interface do **NOT** have direct write/create-file capabilities to create new files in document libraries. 
- > - When designing skill instructions (e.g. diagram generators, report builders), author the skill to produce **copy-paste-ready structured content** (Markdown, Mermaid, JSON).
- > - If the skill includes a saving/persistence step, instruct the agent to provide the full content and suggested filename in chat and state that file upload requires external execution (e.g. workbench publish scripts) if automated creation tools are not available.
+- Zero tenant I/O. Deploy separately with `sharepoint-deploy-sharepoint-native-skill`.
+- `-SkillName` must be lowercase alphanumerics and hyphens, matching the `AgentAssets/Skills/<name>/` folder. `-SkillDescription` is required. Supply exactly one of `-InstructionsPath` or `-Instructions`: no default instruction content is invented.
+- `-OutputPath` is required; `-Overwrite` replaces an existing file.
+- Native skills in the SharePoint Copilot chat web runtime cannot create files: author them to produce copy-paste-ready structured content (Markdown, Mermaid, JSON).
 
-## Scripts
+## Quick start
 
-- `../../scripts/create-sharepoint-native-skill.ps1`
+```powershell
+pwsh -File scripts/create-sharepoint-native-skill.ps1 -SkillName my-skill -SkillDescription "Does X when asked Y" -InstructionsPath instructions.md -OutputPath ./my-skill/SKILL.md
+```
 
-## Tests
+## Workflow
 
-`../../tests/unit/test_create_sharepoint_native_skill.py` — 5 executable tests run via `pwsh`
-(valid-package generation, invalid-name rejection, missing-instructions rejection,
-overwrite-protection, `-Overwrite` allowing replace). No tenant connection required or attempted.
+1. Collect the name, a description that states purpose and trigger phrases, and the real instructions.
+2. Add `-InputBoundary` and `-ProhibitedScope` if needed (appended as their own sections).
+3. Run the script, then deploy with the deploy skill.
 
+## Verification
+
+A `SKILL.md` exists at `-OutputPath`; an invalid name, missing instructions, or an existing file without `-Overwrite` is rejected.
+
+## References
+
+- [Safety, config and permissions](references/agents-and-skills-safety-and-config.md): read for the gate model of every script, the `-ConfigFile` default caveat and the Copilot permission note.
+- [Native skill lifecycle](references/native-skill-lifecycle-details.md): read for the chat runtime boundary, the full lifecycle and the tests.

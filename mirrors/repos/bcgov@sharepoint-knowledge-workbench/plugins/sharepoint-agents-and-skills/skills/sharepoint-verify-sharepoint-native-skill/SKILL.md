@@ -1,44 +1,45 @@
 ---
 name: sharepoint-verify-sharepoint-native-skill
-description: Read-only reconciliation of a deployed native SharePoint skill's SKILL.md against its repository source, by exact SHA-256 comparison.
+plugin: sharepoint-agents-and-skills
+description: Read-only reconciliation of a deployed native SharePoint skill's SKILL.md against its repository source by exact SHA-256 comparison. Use to check whether a deployment happened and whether it has drifted.
+allowed-tools: Bash, Read
 ---
 
-# verify-sharepoint-native-skill
+# Verify SharePoint Native Skill
 
-## Purpose
+Verify that the `SKILL.md` deployed to `AgentAssets/Skills/<skill-name>/` matches its repository source exactly.
 
-Read-only verification that a native skill deployed to `AgentAssets/Skills/<skill-name>/SKILL.md`
-on a tenant matches its repository source exactly — no upload, overwrite, or delete. Distinct
-from `deploy-sharepoint-native-skill`, which performs the deployment itself; this skill only
-checks whether a deployment already happened and, if so, whether it drifted.
+## Contents
 
-## Capabilities
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-- **Artifact verification** (`verify-agentassets-artifact.ps1`): lists everything in
-  `AgentAssets/Skills/`, downloads and hashes any `SKILL.md` found, compares each against a named
-  repository source (`-TargetSkillName`/`-RepoSkillPath`), and reports a disposition:
-  `ARTIFACT_ALREADY_PRESENT` (hash match), `DEPLOYED_ARTIFACT_DRIFT_DETECTED` (hash mismatch), or
-  `DEPLOYMENT_CANDIDATE_NOT_YET_PRESENT` (nothing deployed under that name yet).
-- **Deployment reconciliation** (`reconcile-deployed-skill.ps1`, extracted/generalized from the
-  historical `task-8a-reconcile-deployed-skill.ps1`): same read-only reconciliation, computing the
-  expected SHA-256 from a live local file (`-RepoSkillPath`) rather than a hardcoded hash, and
-  reporting frontmatter (`name`/`description`) alongside the hash comparison.
+## Constraints
 
-## Input boundaries
+- Read-only: no upload, overwrite or delete.
+- Claim nothing beyond a SHA-256 comparison of the exact bytes retrieved: nothing about canonical package identity or structural-anchor completeness.
+- `-TargetSkillName` and `-RepoSkillPath` are explicit; there is no hardcoded target. When running an installed copy, pass `-ConfigFile`.
 
-- `-ConfigFile` — connection/authentication context only.
-- `-TargetSkillName` — the skill folder name to check (no hardcoded default target).
-- `-RepoSkillPath` — the repository source `SKILL.md` to compare against.
-- **Read-only** — neither script performs any tenant write.
+## Quick start
 
-## Prohibited scope
+```powershell
+pwsh -File scripts/verify-agentassets-artifact.ps1 -ConfigFile config.psd1 -TargetSkillName my-skill -RepoSkillPath ./my-skill/SKILL.md
+```
 
-- No hash-recalculation claims beyond SHA-256 comparison of the exact bytes retrieved — no
-  claims about canonical package identity or structural-anchor completeness.
-- Does not deploy, roll back, or modify anything — pure read-only reconciliation.
+## Workflow
 
-## Scripts
+1. Run `verify-agentassets-artifact.ps1` for the disposition.
+2. For frontmatter alongside the hash, run `reconcile-deployed-skill.ps1` (expected hash computed from `-RepoSkillPath`).
+3. Report the disposition and any drift.
 
-- `../../scripts/verify-agentassets-artifact.ps1`
-- `../../scripts/reconcile-deployed-skill.ps1`
+## Verification
 
+The disposition is `ARTIFACT_ALREADY_PRESENT` (match), `DEPLOYED_ARTIFACT_DRIFT_DETECTED` (mismatch) or `DEPLOYMENT_CANDIDATE_NOT_YET_PRESENT`.
+
+## References
+
+- [Safety, config and permissions](references/agents-and-skills-safety-and-config.md): read for the gate model of every script, the `-ConfigFile` default caveat and the Copilot permission note.
+- [Native skill lifecycle](references/native-skill-lifecycle-details.md): read for both scripts and the dispositions.

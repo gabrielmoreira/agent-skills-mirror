@@ -1,40 +1,45 @@
 ---
 name: sharepoint-rollback-sharepoint-native-skill
-description: Human-authorized rollback of a deployed native SharePoint skill, recycling (not permanently deleting) the target SKILL.md, dry-run by default.
+plugin: sharepoint-agents-and-skills
+description: Human-authorized rollback of a deployed native SharePoint skill, recycling (not permanently deleting) the target SKILL.md, dry-run by default. Use to take a deployed skill out of service recoverably.
+allowed-tools: Bash, Read
 ---
 
-# rollback-sharepoint-native-skill
+# Rollback SharePoint Native Skill
 
-## Purpose
+Remove a deployed native skill's `SKILL.md` by moving it to the Recycle Bin, which is recoverable.
 
-Removes a deployed native skill's `SKILL.md` from `AgentAssets/Skills/<skill-name>/` by moving it
-to the SharePoint Recycle Bin (recoverable), not permanent deletion. Requires explicit,
-two-part authorization before any tenant write.
+## Contents
 
-## Capabilities
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-- **Guarded rollback** (`rollback-skill-deployment.ps1`): dry-run by default — displays the exact
-  resolved target with zero tenant writes unless `-Execute` is passed. When `-Execute` is passed,
-  additionally requires `-ConfirmExactTarget "CONFIRM-REMOVE"` (exact string match) before
-  performing the recycle. Verifies post-action that the item no longer exists in active site
-  content.
+## Constraints
 
-## Input boundaries
+- Dry run by default (zero tenant writes). `-Execute` additionally requires `-ConfirmExactTarget "CONFIRM-REMOVE"` (exact match); a single `-Execute` is rejected. A real run is a live tenant write that the user runs.
+- Never permanent deletion: it recycles (`Move-PnPFileToRecycleBin`), never `Remove-PnPFile`. Roll back only the exact named target; no bulk or pattern removal.
+- Pass `-ConfigFile` and `-ManifestFile` explicitly when installed (the manifest names the exact library, folder and filename, same shape as the deploy skill's).
 
-- `-ConfigFile` — connection/authentication context only.
-- `-ManifestFile` — names the exact target library/folder/filename (same manifest shape as
-  `deploy-sharepoint-native-skill`).
-- `-Execute` + `-ConfirmExactTarget "CONFIRM-REMOVE"` — both required for any write; a single
-  `-Execute` without the exact confirmation string is rejected, not treated as sufficient
-  authorization.
+## Quick start
 
-## Prohibited scope
+```powershell
+pwsh -File scripts/rollback-skill-deployment.ps1 -ConfigFile config.psd1 -ManifestFile deployment-manifest.json
+```
 
-- Never performs permanent deletion (`Remove-PnPFile`) — always recycles
-  (`Move-PnPFileToRecycleBin`), preserving recoverability.
-- Does not roll back anything beyond the exact named target — no bulk or pattern-based removal.
+## Workflow
 
-## Scripts
+1. Confirm the exact target in the manifest with the user.
+2. Dry run and review the resolved target.
+3. After explicit authorization, rerun with `-Execute -ConfirmExactTarget "CONFIRM-REMOVE"`.
 
-- `../../scripts/rollback-skill-deployment.ps1`
+## Verification
 
+The script verifies afterward that the item is no longer in active site content. Restore from the Recycle Bin if rolled back in error.
+
+## References
+
+- [Safety, config and permissions](references/agents-and-skills-safety-and-config.md): read for the gate model of every script, the `-ConfigFile` default caveat and the Copilot permission note.
+- [Native skill lifecycle](references/native-skill-lifecycle-details.md): read for the rollback details.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cisco-ai-defense/skill-scanner` — 26 default patterns, 0 followed patterns, 45 file(s) materialized.
+Mirror of `cisco-ai-defense/skill-scanner` — 26 default patterns, 0 followed patterns, 48 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cisco-ai-defense/skill-scanner` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 45 |
+| Files         | 48 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,27 +83,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`evals/skills/prompt-injection/jailbreak-override/SKILL.md`](evals/skills/prompt-injection/jailbreak-override/SKILL.md) |
 | 23 | ✓ | [`evals/skills/resource-exhaustion/infinite-loop/SKILL.md`](evals/skills/resource-exhaustion/infinite-loop/SKILL.md) |
 | 24 | ✓ | [`evals/skills/safe-skills-2/file-validator/SKILL.md`](evals/skills/safe-skills-2/file-validator/SKILL.md) |
-| 25 | ✓ | [`evals/skills/safe-skills/simple-math/SKILL.md`](evals/skills/safe-skills/simple-math/SKILL.md) |
-| 26 | ✓ | [`evals/skills/skill-discovery-abuse/keyword-stuffing/payload.md`](evals/skills/skill-discovery-abuse/keyword-stuffing/payload.md) |
-| 27 | ✓ | [`evals/skills/skill-discovery-abuse/keyword-stuffing/SKILL.md`](evals/skills/skill-discovery-abuse/keyword-stuffing/SKILL.md) |
-| 28 | ✓ | [`evals/skills/social-engineering/vague-description/SKILL.md`](evals/skills/social-engineering/vague-description/SKILL.md) |
-| 29 | ✓ | [`evals/skills/sql-injection/database-query/SKILL.md`](evals/skills/sql-injection/database-query/SKILL.md) |
-| 30 | ✓ | [`evals/skills/supply-chain-attack/unpinned-dependency/SKILL.md`](evals/skills/supply-chain-attack/unpinned-dependency/SKILL.md) |
-| 31 | ✓ | [`evals/skills/tool-chaining-abuse/attacker-forwarding/payload.md`](evals/skills/tool-chaining-abuse/attacker-forwarding/payload.md) |
-| 32 | ✓ | [`evals/skills/tool-chaining-abuse/attacker-forwarding/SKILL.md`](evals/skills/tool-chaining-abuse/attacker-forwarding/SKILL.md) |
-| 33 | ✓ | [`evals/skills/transitive-trust-abuse/external-instructions/payload.md`](evals/skills/transitive-trust-abuse/external-instructions/payload.md) |
-| 34 | ✓ | [`evals/skills/transitive-trust-abuse/external-instructions/SKILL.md`](evals/skills/transitive-trust-abuse/external-instructions/SKILL.md) |
-| 35 | ✓ | [`evals/skills/unauthorized-tool-use/remote-package-source/SKILL.md`](evals/skills/unauthorized-tool-use/remote-package-source/SKILL.md) |
-| 36 | ✓ | [`evals/skills/unicode-steganography/encoded-tag/SKILL.md`](evals/skills/unicode-steganography/encoded-tag/SKILL.md) |
-| 37 | ✓ | [`evals/test_skills/malicious/ascii-smuggling/SKILL.md`](evals/test_skills/malicious/ascii-smuggling/SKILL.md) |
-| 38 | ✓ | [`evals/test_skills/malicious/eicar-test/SKILL.md`](evals/test_skills/malicious/eicar-test/SKILL.md) |
-| 39 | ✓ | [`evals/test_skills/malicious/exfiltrator/SKILL.md`](evals/test_skills/malicious/exfiltrator/SKILL.md) |
-| 40 | ✓ | [`evals/test_skills/malicious/flowise-cve-2025-59528/SKILL.md`](evals/test_skills/malicious/flowise-cve-2025-59528/SKILL.md) |
-| 41 | ✓ | [`evals/test_skills/malicious/mcp-atlassian-cve-2026-27825/SKILL.md`](evals/test_skills/malicious/mcp-atlassian-cve-2026-27825/SKILL.md) |
-| 42 | ✓ | [`evals/test_skills/malicious/mcpwn-cve-2026-33032/SKILL.md`](evals/test_skills/malicious/mcpwn-cve-2026-33032/SKILL.md) |
-| 43 | ✓ | [`evals/test_skills/malicious/prompt-injection/SKILL.md`](evals/test_skills/malicious/prompt-injection/SKILL.md) |
-| 44 | ✓ | [`evals/test_skills/safe/atr-benign-control/SKILL.md`](evals/test_skills/safe/atr-benign-control/SKILL.md) |
-| 45 | ✓ | [`evals/test_skills/safe/simple-formatter/SKILL.md`](evals/test_skills/safe/simple-formatter/SKILL.md) |
+| 25 | ✓ | [`evals/skills/safe-skills-2/registry-default-mirror/SKILL.md`](evals/skills/safe-skills-2/registry-default-mirror/SKILL.md) |
+| 26 | ✓ | [`evals/skills/safe-skills/simple-math/SKILL.md`](evals/skills/safe-skills/simple-math/SKILL.md) |
+| 27 | ✓ | [`evals/skills/skill-discovery-abuse/keyword-stuffing/payload.md`](evals/skills/skill-discovery-abuse/keyword-stuffing/payload.md) |
+| 28 | ✓ | [`evals/skills/skill-discovery-abuse/keyword-stuffing/SKILL.md`](evals/skills/skill-discovery-abuse/keyword-stuffing/SKILL.md) |
+| 29 | ✓ | [`evals/skills/social-engineering/vague-description/SKILL.md`](evals/skills/social-engineering/vague-description/SKILL.md) |
+| 30 | ✓ | [`evals/skills/sql-injection/database-query/SKILL.md`](evals/skills/sql-injection/database-query/SKILL.md) |
+| 31 | ✓ | [`evals/skills/supply-chain-attack/registry-redirect-declared/SKILL.md`](evals/skills/supply-chain-attack/registry-redirect-declared/SKILL.md) |
+| 32 | ✓ | [`evals/skills/supply-chain-attack/registry-redirect/SKILL.md`](evals/skills/supply-chain-attack/registry-redirect/SKILL.md) |
+| 33 | ✓ | [`evals/skills/supply-chain-attack/unpinned-dependency/SKILL.md`](evals/skills/supply-chain-attack/unpinned-dependency/SKILL.md) |
+| 34 | ✓ | [`evals/skills/tool-chaining-abuse/attacker-forwarding/payload.md`](evals/skills/tool-chaining-abuse/attacker-forwarding/payload.md) |
+| 35 | ✓ | [`evals/skills/tool-chaining-abuse/attacker-forwarding/SKILL.md`](evals/skills/tool-chaining-abuse/attacker-forwarding/SKILL.md) |
+| 36 | ✓ | [`evals/skills/transitive-trust-abuse/external-instructions/payload.md`](evals/skills/transitive-trust-abuse/external-instructions/payload.md) |
+| 37 | ✓ | [`evals/skills/transitive-trust-abuse/external-instructions/SKILL.md`](evals/skills/transitive-trust-abuse/external-instructions/SKILL.md) |
+| 38 | ✓ | [`evals/skills/unauthorized-tool-use/remote-package-source/SKILL.md`](evals/skills/unauthorized-tool-use/remote-package-source/SKILL.md) |
+| 39 | ✓ | [`evals/skills/unicode-steganography/encoded-tag/SKILL.md`](evals/skills/unicode-steganography/encoded-tag/SKILL.md) |
+| 40 | ✓ | [`evals/test_skills/malicious/ascii-smuggling/SKILL.md`](evals/test_skills/malicious/ascii-smuggling/SKILL.md) |
+| 41 | ✓ | [`evals/test_skills/malicious/eicar-test/SKILL.md`](evals/test_skills/malicious/eicar-test/SKILL.md) |
+| 42 | ✓ | [`evals/test_skills/malicious/exfiltrator/SKILL.md`](evals/test_skills/malicious/exfiltrator/SKILL.md) |
+| 43 | ✓ | [`evals/test_skills/malicious/flowise-cve-2025-59528/SKILL.md`](evals/test_skills/malicious/flowise-cve-2025-59528/SKILL.md) |
+| 44 | ✓ | [`evals/test_skills/malicious/mcp-atlassian-cve-2026-27825/SKILL.md`](evals/test_skills/malicious/mcp-atlassian-cve-2026-27825/SKILL.md) |
+| 45 | ✓ | [`evals/test_skills/malicious/mcpwn-cve-2026-33032/SKILL.md`](evals/test_skills/malicious/mcpwn-cve-2026-33032/SKILL.md) |
+| 46 | ✓ | [`evals/test_skills/malicious/prompt-injection/SKILL.md`](evals/test_skills/malicious/prompt-injection/SKILL.md) |
+| 47 | ✓ | [`evals/test_skills/safe/atr-benign-control/SKILL.md`](evals/test_skills/safe/atr-benign-control/SKILL.md) |
+| 48 | ✓ | [`evals/test_skills/safe/simple-formatter/SKILL.md`](evals/test_skills/safe/simple-formatter/SKILL.md) |
 
 ---
 

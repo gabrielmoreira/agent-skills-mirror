@@ -1,90 +1,62 @@
 ---
 name: sharepoint-analyze-permissions
 plugin: sharepoint-discovery
-description: Analyses an exported classic SharePoint permissions/security snapshot -- deriving groups, evaluated objects, and the subset with broken permission inheritance -- to produce a group provisioning worksheet and a broken-inheritance exception report. Read-only; consumes an export you provide and never contacts a tenant.
+description: Analyses an exported classic SharePoint permissions snapshot, deriving groups, evaluated objects and the subset with broken permission inheritance, to produce a group provisioning worksheet and a broken-inheritance exception report. Use when planning a classic-to-modern migration and you need to know which groups exist and which lists or libraries must be explicitly re-provisioned. Read-only; consumes an export you provide and never contacts a tenant.
 allowed-tools: Bash, Read
 examples:
-  - "python -c \"from permissions_analysis import run; print(run(permissions_path='permissions.json', output_dir='out/').status)\""
+  - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); from permissions_analysis import run; print(run(permissions_path='permissions.json', output_dir='out/').status)\""
 ---
 
 # Analyze Permissions
 
-## Trigger and Purpose
+Find which groups exist and which lists or libraries have broken permission inheritance that
+must be re-provisioned rather than inherited.
 
-Use this skill when planning a classic-to-modern SharePoint migration and you
-need to know which groups exist and which lists/libraries have broken
-permission inheritance that must be explicitly re-provisioned rather than
-inherited. It consumes a permissions export -- either produced by
-`scripts/collect-sharepoint-permissions.ps1` (this skill's own real,
-read-only NTLM/REST collector) or supplied from any other source in one of
-the two accepted shapes below.
+## Contents
 
-## Two accepted export shapes
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-1. A flat JSON array of permission entries, one row per (principal, object)
-   pair -- `webUrl`, `principalTitle`, `permissionLevels`, and either
-   `objectTitle` or `listName`.
-2. A structured JSON object -- `siteUrl`, `groups: [{name, permission}]`,
-   `objects: [{title, hasUniqueRoleAssignments, roleAssignments}]`.
+## Constraints
 
-Both are accepted by the same `analyse()` entry point; the flat shape has no
-explicit inheritance flag, so every derived object is treated as evaluated
-(it does not claim to know inheritance state it cannot see).
+- Read-only. The analysis makes no tenant writes and no network access; it reads the export path
+  you name and writes to the output directory you name.
+- Never fabricate a placeholder group or object list to look successful. A missing export is
+  `UNAVAILABLE` and creates no output directory. No groups or objects is `EMPTY`, never a pass. An
+  input that is neither a JSON array nor object is `FAILED`.
+- Accepts two export shapes (flat array, or structured object). The flat shape carries no
+  inheritance flag, so do not claim inheritance state it cannot show.
+- Run from this skill's root with `scripts/` on `sys.path`.
 
-## Honest outcomes
-
-Every run returns a `DiscoveryOutcome` carrying a `DiscoveryStatus`:
-`OBSERVED`, `EMPTY`, `PARTIAL`, `UNAVAILABLE`, `FORBIDDEN`, or `FAILED`.
-
-A missing permissions export is `UNAVAILABLE` and **no output directory is
-created** -- this module never fabricates a placeholder group/object list to
-appear successful (the source implementation this was extracted from did;
-that fallback is removed). An export with no groups or objects is `EMPTY`,
-never a pass. An input that is neither a JSON array nor object is `FAILED`.
-
-## Read-only guarantee
-
-`permissions_analysis.py` itself makes no writes to any tenant and no network
-access -- it reads the export path you name and writes analysis artifacts to
-the output directory you name. `collect-sharepoint-permissions.ps1` (below)
-does connect to a live site, but only ever calls REST GET
-(`_api/web/roleassignments`) -- zero tenant writes.
-
-## Collecting a fresh export
-
-`collect-sharepoint-permissions.ps1` connects via Windows-credential/NTLM
-REST (works against both legacy on-premises SharePoint 2016 and modern
-SharePoint Online, since both expose the same REST surface) and writes a
-flat JSON array in exactly the shape #1 above -- `webUrl`, `principalTitle`,
-`permissionLevels`, and `objectTitle`/`listName`. It queries the site's own
-role assignments plus every non-hidden list/library where
-`HasUniqueRoleAssignments` is true (inherited-permission lists have nothing
-of their own to report). Read-only -- REST GET calls only, zero tenant
-writes.
+## Quick start
 
 ```bash
-pwsh -File scripts/collect-sharepoint-permissions.ps1 -SiteUrl "https://tenant.example.com/sites/Team" -OutputPath permissions.json -UseDefaultCredentials
-```
-
-## Usage
-
-```bash
-python -c "
+python3 -c "
+import sys; sys.path.insert(0, 'scripts')
 from permissions_analysis import run
-outcome = run(permissions_path='permissions.json', output_dir='out/')
-print(outcome.status, outcome.detail)
-"
+o = run(permissions_path='permissions.json', output_dir='out/')
+print(o.status, o.detail)"
 ```
 
-## Scripts
+## Workflow
 
-- `scripts/collect-sharepoint-permissions.ps1` -- real, read-only NTLM/REST collector
-- `scripts/permissions_analysis.py` -- `run`, `analyse`, `generate_report`
-- `scripts/discovery_inputs.py` -- `DiscoveryStatus`, `DiscoveryOutcome`, `load_json_input`, `require_output_dir`
+1. Get a permissions export from `scripts/collect-sharepoint-permissions.ps1` or any source in
+   one of the two accepted shapes; see
+   [shapes and collection](references/permissions-collection-and-shapes.md).
+2. Call `run(permissions_path=..., output_dir=...)`; `analyse()` handles both shapes.
+3. Report the groups, evaluated objects, and the broken-inheritance exceptions.
 
-## Provenance
+## Verification
 
-Adapted from `sp-discovering-permissions` in the originating SharePoint
-migration repository. See
-`docs/reports/phase-9-reusable-sharepoint-plugin-extraction/provenance.md`.
+Check `outcome.status` is `OBSERVED` and the output directory holds the group provisioning
+worksheet and exception report. Treat any other status as the honest outcome it is; see
+[outcomes](references/discovery-outcomes.md).
 
+## References
+
+- [Shapes and collection](references/permissions-collection-and-shapes.md): read for the two
+  export shapes, a fresh export, or the script list.
+- [Outcomes](references/discovery-outcomes.md): read when interpreting a non-`OBSERVED` status.

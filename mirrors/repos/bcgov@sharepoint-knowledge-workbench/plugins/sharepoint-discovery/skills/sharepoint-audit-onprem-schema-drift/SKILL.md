@@ -1,7 +1,7 @@
 ---
 name: sharepoint-audit-onprem-schema-drift
 plugin: sharepoint-discovery
-description: Compares field schemas between a set of source lists and a set of destination lists on a legacy on-prem SP2016 site -- missing fields, type mismatches, required-field mismatches, broken lookup references, and workflow associations -- for schema-drift root-cause analysis ahead of a migration or workflow investigation.
+description: Compares field schemas between a set of source lists and a set of destination lists on a legacy on-prem SP2016 site, reporting missing fields, type mismatches, required-field mismatches, broken lookup references and workflow associations. Use for schema-drift root-cause analysis when a data copy or workflow fails, or ahead of a migration that depends on matching schemas.
 allowed-tools: Bash, Read
 examples:
   - "pwsh -File scripts/audit-onprem-sharepoint-schema-drift.ps1 -SiteUrl \"https://sp2016.example.org/sites/Legacy\" -SourceListNames @('Requests') -DestinationListPattern \"Archive_*\" -OutputDir .\\schema-drift-report"
@@ -9,91 +9,53 @@ examples:
 
 # Audit On-Prem Schema Drift
 
-## Trigger and Purpose
+Find out whether field-schema drift between a source-of-record list and its destination lists
+explains a failure or blocks a migration.
 
-Use this skill when you need to know whether field-schema drift between a
-"source of record" list and a set of downstream/destination lists explains
-a data-copy or workflow failure on a legacy on-premises SP2016 site, or
-ahead of planning a migration that depends on those schemas matching. It
-compares field schemas (by internal name) between caller-supplied source
-lists and caller-supplied destination lists -- missing fields, type
-mismatches, required-field mismatches in either direction -- and also
-validates lookup-field references and inspects workflow associations across
-every list on the site.
+## Contents
 
-## Read-only guarantee
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-The script performs site reads only -- `Get-PnP*` cmdlets and CSOM
-`ExecuteQuery()` calls that only load and read list/field/workflow objects.
-Zero writes. This is enforced as a hard rule in the script's own header.
+## Constraints
 
-## Honest outcomes
+- Site reads only: `Get-PnP*` cmdlets and CSOM `ExecuteQuery()` calls that load and read
+  list, field and workflow objects. Zero writes; the script's own header enforces this as a hard rule.
+- Never fabricate or silently skip. Failed `Get-PnPField` or `Get-PnPContentType` calls and
+  workflow-association reads emit `Write-Warning` and leave the affected record set empty.
+- Source and destination lists are always caller-supplied. No list names or sentinel fields are
+  built in.
+- The script performs live site I/O and the user runs it.
 
-Failed `Get-PnPField`/`Get-PnPContentType` calls or workflow-association
-reads emit `Write-Warning` and the affected record set is left empty --
-never fabricated or silently skipped without a warning.
-
-## Usage
+## Quick start
 
 ```bash
 pwsh -File scripts/audit-onprem-sharepoint-schema-drift.ps1 \
   -SiteUrl "https://sp2016.example.org/sites/Legacy" \
-  -SourceListNames @('Matches_Received','All_Appearances') \
-  -DestinationListPattern "Cal_*" \
+  -SourceListNames @('Requests') -DestinationListPattern "Archive_*" \
   -OutputDir .\schema-drift-report
-
-pwsh -File scripts/audit-onprem-sharepoint-schema-drift.ps1 \
-  -SiteUrl "https://sp2016.example.org/sites/Legacy" \
-  -SourceListNames @('Requests') \
-  -DestinationListNames @('Archive_2024','Archive_2025') \
-  -WatchFieldNames @('Case_ID','Status') \
-  -UseCredential
 ```
 
-`-SiteUrl` falls back to `SiteUrl` in this plugin's `config.psd1` if
-omitted, the same way other scripts in this plugin do. Auth is via
-`Connect-PnPOnline -UseWebLogin` (or `-Credentials` with `-UseCredential`) --
-a documented exception to this repo's modern-SPO `-Interactive` convention,
-since PnP.PowerShell supports on-prem SP2016 via CSOM/web-login rather than
-Entra app registrations. See
-`.agent/rules/sharepoint-ps1-authentication-convention.md`.
+## Workflow
 
-`-WatchFieldNames` is optional and only narrows the dedicated "Field Types"
-report section in the markdown output -- the field-schema CSV and the
-source/destination mismatch comparison always cover every field on every
-list regardless of this parameter.
+1. Choose the source lists (`-SourceListNames`) and the destinations (`-DestinationListNames` or
+   `-DestinationListPattern`). Optionally narrow the field report with `-WatchFieldNames`.
+2. Run the script; auth, `-UseCredential` and a second example are in
+   [usage and output](references/schema-drift-usage-and-output.md).
+3. Read `SchemaDrift-Report.md` in `-OutputDir` and report the mismatches, lookup problems and
+   workflow dependencies.
 
-## Output
+## Verification
 
-Five CSVs (`SchemaDrift-ListSchema.csv`, `SchemaDrift-FieldSchema.csv`,
-`SchemaDrift-ContentTypes.csv`, `SchemaDrift-SchemaMismatches.csv`,
-`SchemaDrift-WorkflowDependencies.csv`) plus one markdown summary report
-(`SchemaDrift-Report.md`) combining all findings with a recommended-
-remediation section, written to `-OutputDir`.
+Confirm the five CSVs and `SchemaDrift-Report.md` exist in `-OutputDir`, and list every
+`Write-Warning` as a gap rather than a clean result.
 
-## Scripts
+## References
 
-- `scripts/audit-onprem-sharepoint-schema-drift.ps1` -- on-prem SP2016 PnP.PowerShell field-schema drift comparison, lookup validation, and workflow inspection
-
-## Related asset (does not directly consume this skill's output)
-
-`plugins/sharepoint-discovery/assets/master-discovery-meta-review-template.md`
-is a generalized migration-readiness catalog template ported from the same
-source project as this skill's script. It is a much broader 13-domain
-site-modernization summary (page inventory, web part scans, navigation,
-permissions, link surfaces, etc.) fed by many discovery passes, not just
-schema comparison -- this skill's CSV/markdown output does not map onto its
-placeholders in any direct way, so it is ported here as a standalone asset
-for whoever assembles that broader catalog, not as an integrated output
-format of this skill.
-
-## Provenance
-
-Ported and generalized from
-`plugins/sharepoint-migration/scripts/diagnose-onprem-schema-drift.ps1` in
-the originating SharePoint migration repository. All hardcoded sentinel
-field names, source/destination list names, wildcard patterns, and
-project-specific report prose were removed in favor of explicit
-`-SourceListNames`/`-DestinationListNames`/`-DestinationListPattern`/
-`-WatchFieldNames` parameters.
-
+- [Usage and output](references/schema-drift-usage-and-output.md): read for auth, more examples,
+  the output files, and the related meta-review template.
+- [Meta-review template](assets/master-discovery-meta-review-template.md): a standalone catalog
+  template for a broader site-modernization summary; this skill's output does not map onto it.

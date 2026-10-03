@@ -1,73 +1,51 @@
 ---
 name: sharepoint-scaffold-spfx-react-app
 plugin: sharepoint-spfx-authoring
-description: Scaffolds an enterprise-grade React 17/18 SPFx Web Part with Fluent UI 8/9, PnPjs v4 cross-site context, Tailwind CSS, self-healing migration GUID recovery, and robust state management.
+description: Scaffolds an enterprise-grade React 17/18 SPFx Web Part with Fluent UI 8/9, PnPjs v4 cross-site context, Tailwind CSS, self-healing migration GUID recovery and robust state management. Use for complex, interactive components such as document catalogues, favourites portals, multi-list dashboards or cross-site aggregators.
 allowed-tools: Bash, Read, Write
+examples:
+  - "python3 scripts/scaffold_spfx_react_app.py --spec app_spec.json --output-dir path/to/spfx-project/src/webparts/documentCatalogue"
 ---
 
-# scaffold-spfx-react-app
+# Scaffold SPFx React App
 
-## Overview
+Scaffold an Enterprise React SPFx web part with PnPjs v4, Tailwind and self-healing list-GUID recovery.
 
-When building complex, interactive SharePoint Online components (such as document catalogues, personal favourites portals, multi-list dashboards, or cross-site data aggregators), this skill scaffolds an **Enterprise React SPFx Web Part**.
+## Contents
 
-This architecture incorporates enterprise patterns:
-- **PnPjs v4 (`@pnp/sp` 4.18+)**: Centralized singleton with cross-site collection query support (`getWeb(url)`).
-- **Tailwind CSS 3**: Clean CLI preprocessing alongside Heft/Webpack without build ejecting.
-- **Fluent UI 8/9 & Theme Adaptation**: Automatic adaptation to SharePoint section background colors.
-- **Self-Healing GUID Recovery**: Resilient fallback to list titles when web parts are promoted across DEV/TEST/PROD environments.
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
----
+## Constraints
 
-## Toolchain Requirements
+- The generator is local (Python 3.8+) and writes only to `--output-dir`. The surrounding project needs Node.js LTS (v18 or v22) and SPFx 1.20+ (Heft / Webpack).
+- Tailwind must be compiled before the SPFx build; add the `build:tailwind` step to `package.json` so `npm run build` runs it first.
+- For lists promoted across DEV, TEST and PROD, rely on the self-healing GUID recovery (fall back to list titles); do not hardcode list GUIDs.
+- Run from this skill's root.
 
-- **Node.js**: LTS version (v18 or v22)
-- **SPFx**: 1.20+ (Heft / Webpack build toolchain)
-- **Python**: 3.8+ (for manifest generator scripts)
-
----
-
-## Core Workflow
-
-### Step 1: Create Layout Specification (`app_spec.json`)
-
-```json
-{
-  "webPartName": "DocumentCatalogue",
-  "title": "Corporate Document Catalogue",
-  "description": "Interactive document browser with personal favouriting and metadata filtering."
-}
-```
-
-### Step 2: Run Generator
+## Quick start
 
 ```bash
-python ../scripts/scaffold_spfx_react_app.py --spec path/to/app_spec.json --output-dir path/to/spfx-project/src/webparts/documentCatalogue
+python3 scripts/scaffold_spfx_react_app.py --spec path/to/app_spec.json --output-dir path/to/spfx-project/src/webparts/documentCatalogue
 ```
 
-### Step 3: Setup Tailwind CSS Build
+## Workflow
 
-Ensure your `package.json` contains the pre-build Tailwind compilation command:
+1. Write `app_spec.json` with `webPartName`, `title` and `description`.
+2. Run the generator.
+3. Add the Tailwind pre-build command to `package.json` (see the details reference).
+4. Run `npm run build`.
 
-```json
-{
-  "scripts": {
-    "build:tailwind": "tailwindcss -i ./src/webparts/documentCatalogue/style/tailwind.css -o ./src/webparts/documentCatalogue/style/tailwind.output.css --minify",
-    "build": "npm run build:tailwind && heft test --clean --production && heft package-solution --production"
-  }
-}
-```
+## Verification
 
-### Step 4: Verify & Build
-
-```bash
-npm run build
-```
-
----
+The output holds the web part `.ts` and manifest, `components/` (the React component and `pnpjsConfig.ts`) and `style/` (Tailwind input and output). `npm run build` succeeds.
 
 ## References
 
-- `references/SPFX-TAILWIND-INTEGRATION-GUIDE.md` — Complete Tailwind CLI setup.
-- `references/SPFX-PNPJS-V4-CROSS-SITE-ARCHITECTURE.md` — Hub-and-Spoke data patterns.
-- `references/SPFX-SELF-HEALING-MIGRATION-GUIDE.md` — List GUID recovery strategies.
+- [React app details](references/react-app-scaffold-details.md): read for the architecture, the spec, the outputs and the Tailwind `package.json` snippet.
+- [Tailwind integration](references/SPFX-TAILWIND-INTEGRATION-GUIDE.md): read for the full Tailwind CLI setup.
+- [PnPjs v4 cross-site architecture](references/SPFX-PNPJS-V4-CROSS-SITE-ARCHITECTURE.md): read for hub-and-spoke data patterns.
+- [Self-healing migration](references/SPFX-SELF-HEALING-MIGRATION-GUIDE.md): read for list GUID recovery strategies.

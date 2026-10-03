@@ -1,0 +1,16 @@
+---
+title: Change contract
+applicability:
+- When a decision depends on the observable contract a change must satisfy
+x-claim-provenance:
+- claim: Requirements engineering includes functional, nonfunctional, quality-of-service, conflict, analysis, and traceability concerns.
+  source: https://www.computer.org/education/bodies-of-knowledge/software-engineering/topics
+---
+
+Name the person, caller, or system consuming the outcome and state what they can observe when it is complete. Separate requirements, constraints, assumptions, preferences, and non-goals, and name adjacent capabilities a reader could reasonably mistake as included. A mechanism named in the request is not the outcome unless its use is itself the contract. Check claims about current behavior against the repository's behavior, tests, schemas, help, and maintained documentation; the request's description is evidence to investigate, not proof of the baseline.
+
+Fix the intended finished contract as acceptance criteria before design, implementation, or verification. Each criterion states the trigger or starting condition, action, observable result, observation point, the evidence capable of settling it, and the independent source of both the expected value and the cases it covers. Keep the source or authority for each criterion traceable through the work so a later design or verification choice cannot silently replace it. Use requirements, an established contract, a real consumer, documented behavior, or a worked example as the oracle; do not derive it from the production algorithm or rewrite it around delivered code. If sources conflict on a material requirement, preserve the conflict and obtain the owning decision rather than choosing the easiest interpretation. If no independent oracle exists, state that and identify what authority can supply one.
+
+Cover success, meaningful boundaries, failures, side effects, permissions, persistence, concurrency, compatibility, cleanup, and operational outcomes when applicable. Also surface quality attributes the requester, product, users, standards, or project evidence makes contractual: performance and capacity, availability and recovery, security and privacy, accessibility and usability, localization or internationalization, portability, observability, or another named quality. These are prompts, not universal requirements; include one only when an authority or affected consumer makes it part of the outcome. Do not treat compilation, a happy path, or assertions shaped around an introduced function, class, file, or table as sufficient. Do not narrow, split, or drop a criterion because the implementation does not satisfy it. For a removal, specify both what disappears and what remains supported before anything is removed: the remaining callers, accepted inputs, and persisted values, the surviving consumers and their replacement path where one exists, the deprecation period, and any specified response to use of the retired surface.
+
+If evidence cannot settle a criterion, keep it open and name the authority that can. Do not implement or verify against a guessed contract. Completion means every in-scope criterion has decisive current evidence or is reported as unverified beside the missing check.

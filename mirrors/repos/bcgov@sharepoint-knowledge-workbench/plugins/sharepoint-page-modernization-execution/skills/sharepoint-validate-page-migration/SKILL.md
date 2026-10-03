@@ -1,7 +1,7 @@
 ---
 name: sharepoint-validate-page-migration
-plugin: sharepoint-content-publication
-description: Read-only validation of converted modern pages against a run manifest -- page existence, mapped-field population, and literal field values. Writes a pass/fail test report and exits non-zero on any failure, for use in a pipeline.
+plugin: sharepoint-page-modernization-execution
+description: Read-only validation of converted modern pages against a run manifest, checking page existence, mapped-field population and literal field values. Use after a conversion run, to confirm every page landed with its metadata. Writes a pass/fail test report and exits non-zero on any failure, for use in a pipeline.
 allowed-tools: Bash, Read
 examples:
   - "pwsh -File scripts/spo-validate-page-conversion.ps1 -ManifestPath run-manifest.csv -FieldMapping field-mapping.json -ReportPath test-report.csv"
@@ -9,41 +9,40 @@ examples:
 
 # Validate Page Migration
 
-## Trigger and Purpose
+Independently confirm every converted page landed with the metadata it should have. It never trusts the conversion run's own exit code.
 
-Use this skill after `execute-page-bulk-migration` (or a manual
-`convert-page-to-modern` run) to independently confirm every converted page
-actually landed with the metadata it was supposed to get. It never trusts
-the conversion run's own exit code -- it re-queries the live site.
+## Contents
 
-## What is checked
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-- The modern page exists in `-TargetLibrary`.
-- Every target field named as a value in `-FieldMapping` is non-empty.
-- Every field named in `-LiteralFieldValues` equals its expected value
-  exactly.
+## Constraints
 
-Both `-FieldMapping` and `-LiteralFieldValues` should be the same JSON files
-passed to the conversion run being validated.
+- Read-only: REST and PnP read cmdlets only, so there is no `-Execute` or token. It does re-query the live site, so the user runs it.
+- Use the same `-FieldMapping` and `-LiteralFieldValues` files as the conversion run being validated.
+- Exit non-zero on any failure, and never report success from the conversion run's own result.
+- When running from an installed copy, pass `-ConfigPath` (or `-SiteUrl`, `-ClientId`, `-TenantId`).
 
-## Read-only guarantee
-
-No writes to any tenant -- REST/PnP read cmdlets only.
-
-## Usage
+## Quick start
 
 ```bash
 pwsh -File scripts/spo-validate-page-conversion.ps1 -ManifestPath run-manifest.csv -FieldMapping field-mapping.json -LiteralFieldValues literals.json -ReportPath test-report.csv
 ```
 
-## Scripts
+## Workflow
 
-- `scripts/spo-validate-page-conversion.ps1` -- real, read-only PnP.PowerShell validator
+1. Get the run manifest from `sharepoint-execute-page-bulk-migration` and the mapping files used.
+2. Run the script; add `-IncludeSkipped` to include pages recorded as Skipped.
+3. Report the pass/fail results from the report file.
 
-## Provenance
+## Verification
 
-Generalized from the originating SharePoint migration repository's
-`link-conversion/Test-LinkConversion.ps1` -- removed hardcoded expected
-field names, replaced with the same caller-supplied `-FieldMapping`/
-`-LiteralFieldValues` JSON files `convert-page-to-modern` accepts.
+Every manifest page exists in `-TargetLibrary`, every mapped target field is non-empty, and every literal field equals its expected value exactly. A non-zero exit means the migration is not validated.
 
+## References
+
+- [Validation details](references/page-migration-validation-details.md): read for what is checked, usage and provenance.
+- [Gates, tokens and config](references/page-execution-gates-and-config.md): read for the `-ConfigPath` note.

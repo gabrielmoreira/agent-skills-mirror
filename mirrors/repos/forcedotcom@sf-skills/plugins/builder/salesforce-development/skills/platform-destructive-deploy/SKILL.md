@@ -91,11 +91,13 @@ If validation fails, surface errors and STOP. Common failure modes:
 
 ### Production path
 
-Confirm whether the target is production before executing. The reliable check is the gate's classifier (returns `production|sandbox|scratch|trial|devhub|unknown`):
+Confirm whether the target is production before executing. The reliable check is the gate's classifier, which resolves the org the same way the deploy hook does (returns `production|sandbox|scratch|trial|unknown`):
 
 ```bash
-sf org display --target-org <alias> --json | "${CLAUDE_PLUGIN_ROOT}/scripts/sf-deploy-gate" classify
+"${CLAUDE_PLUGIN_ROOT}/scripts/sf-deploy-gate" bucket <alias>
 ```
+
+`unknown` means the org type could not be confirmed (usually an incomplete org record). Say so plainly: the deploy gate still allows the deploy, auto-deploy on save stays off for that org, and re-authenticating with `sf org login web` usually restores the classification.
 
 If the classifier returns `production`:
 1. Display destructive confirmation banner (mirroring `platform-quick-deploy`)

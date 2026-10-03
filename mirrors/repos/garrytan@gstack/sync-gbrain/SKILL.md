@@ -403,6 +403,7 @@ the skill itself, not a dispatcher binary):
 - `/sync-gbrain --code-only` — only run the code stage; skip memory + brain-sync
 - `/sync-gbrain --dry-run` — preview what would sync; no writes anywhere
 - `/sync-gbrain --no-memory` / `--no-brain-sync` — selectively skip stages
+- `/sync-gbrain --sources <types|all>` — memory types to ingest (env `GSTACK_MEMORY_INGEST_SOURCES`); by default, types a federated gstack source already indexes are skipped
 - `/sync-gbrain --quiet` — suppress per-stage output
 - `/sync-gbrain --refresh-cache` — force-rebuild brain-aware planning cache (v1.48; replaces /brain-refresh-context per D1 fold). Skips code + memory stages; routes to `gstack-brain-cache refresh --project <slug>`.
 - `/sync-gbrain --audit` — emit summary of gstack-owned pages per project + sensitive-content audit (v1.48 / D10 lifecycle). Read-only.

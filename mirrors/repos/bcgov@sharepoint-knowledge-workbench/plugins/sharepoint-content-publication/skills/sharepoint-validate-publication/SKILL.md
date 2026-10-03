@@ -1,37 +1,52 @@
 ---
 name: sharepoint-validate-publication
-description: Offline pre-upload schema validation of an UploadPackage against the target library schema, plus a real read-only post-deployment presence check (Get-PnPPage/Get-PnPFile) confirming a PublishPlan's targets actually landed on the tenant.
+plugin: sharepoint-content-publication
+description: Offline pre-upload schema validation of an UploadPackage against the target library schema, plus a read-only post-deployment presence check (Get-PnPPage or Get-PnPFile) confirming that a PublishPlan's targets landed on the tenant. Use before uploading and again after publishing.
+allowed-tools: Bash, Read
+examples:
+  - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); from sharepoint_dry_run import validate_upload_package; print(validate_upload_package(pkg))\""
+  - "pwsh -File scripts/spo-validate-publication-deployment.ps1 -PlanPath plan.json -SiteUrl \"https://tenant.sharepoint.com/sites/Test\""
 ---
 
-# validate-sharepoint-publication
+# Validate SharePoint Publication
 
-## Purpose
+Two checks: an offline pre-upload validation, and a read-only post-deployment presence check.
 
-**Pre-upload validation (existing, real):** `sharepoint_dry_run.py`'s `validate_upload_package`
-runs entirely offline — zero tenant I/O — checking an `UploadPackage`'s fields against the
-target library schema (e.g. title length) before any human upload happens.
+## Contents
 
-**Post-deployment validation (real, added 2026-08-17):**
-`scripts/spo-validate-publication-deployment.ps1` reads a `PublishPlan` and confirms each target
-actually exists on the tenant — `Get-PnPPage` for a `SitePages` target, `Get-PnPFile` for a
-document-library target — reporting `OBSERVED`/`EMPTY` per target and an overall `PASS`/`FAIL`.
-Read-only, so it always runs live (no `-Execute`/confirmation token — there is nothing to
-confirm, this script never writes). Checks presence only, not field-level content match;
-`reconcile-sharepoint-publication` covers identity-field reconciliation against a CSV export from
-a different angle.
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-## Input boundaries
+## Constraints
 
-- Pre-upload: an `UploadPackage`, checked entirely offline.
-- Post-deployment: a `PublishPlan`, checked against live tenant state (read-only).
+- Pre-upload validation is entirely offline (`validate_upload_package`), with zero tenant I/O.
+- The post-deployment check is read-only and always live: it never writes, so it has no `-Execute` or token. It checks presence only,
+  not field-level content (use `sharepoint-reconcile-sharepoint-publication` for identity-field reconciliation).
+- When running from an installed copy, pass `-ConfigPath` (or `-SiteUrl`, `-ClientId`, `-TenantId`).
+- Run Python from this skill's root with `scripts/` on `sys.path`.
 
-## Scripts
+## Quick start
 
-- `../../scripts/sharepoint_dry_run.py` (existing, pre-upload only).
-- `../../scripts/spo-validate-publication-deployment.ps1` — real, read-only post-deployment
-  presence check.
+```python
+import sys; sys.path.insert(0, "scripts")
+from sharepoint_dry_run import validate_upload_package
+report = validate_upload_package(pkg)
+```
 
-## Tests
+## Workflow
 
-- `../../tests/unit/test_sharepoint_dry_run.py` (existing).
+1. Before upload: call `validate_upload_package(pkg)` and fix any issues (for example title length against the library schema).
+2. After upload: run `scripts/spo-validate-publication-deployment.ps1 -PlanPath plan.json`. `Get-PnPPage` checks a `SitePages` target
+   and `Get-PnPFile` a library target.
 
+## Verification
+
+The offline report has no blocking issues; the post-deployment run reports `OBSERVED` for every target and an overall `PASS`. An
+`EMPTY` target means it is not on the tenant.
+
+## References
+
+- [Executors, gates and constraints](references/publication-executors-and-gates.md): read for the executor table and the config note.

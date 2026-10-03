@@ -12,6 +12,7 @@ When performing these actions, ALWAYS invoke the corresponding skill FIRST:
 | ------ | ----- |
 | Adding a Community Agent Skill (importable .md attack workflow) | `add-community-skill` |
 | Adding a built-in attack skill to the agent | `builtin-agent-skill` |
+| Adding a non-chat provider type, or a path that picks any provider row | `llm-provider-integration` |
 | Adding a tool the agent can call | `agentic-tool-integration` |
 | Adding or editing an MCP server the agent uses | `agentic-tool-integration` |
 | Adding or integrating an LLM provider | `llm-provider-integration` |

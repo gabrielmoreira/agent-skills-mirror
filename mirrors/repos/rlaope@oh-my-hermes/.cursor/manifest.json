@@ -7,7 +7,7 @@
     "omh-accessibility-audit/references/a11y-rules.md": "cd7e0404576923cfd3bcec9e055b1de7a78f3fc55971fd033598aac1043e4469",
     "omh-adversarial-consensus/SKILL.md": "54af2bd5cf2145624ed5e3c008a2e66de1cfc1556a43494736620e321d35ab0a",
     "omh-adversarial-consensus/references/consensus-protocol.md": "e2337062d98214abc440d3909d7c076db284c817dc45c9b67a292003a6b51a89",
-    "omh-agent-debug/SKILL.md": "12826d91070a3db27bbc2390167395649de8813504af666b95864694d36717aa",
+    "omh-agent-debug/SKILL.md": "2da387aca391905adbd89bf57d76160680cf61269a688339fac8c6295e9d937d",
     "omh-agent-instructions/SKILL.md": "b3201fb1d915bc3a4a75186a78cf4e29b26a0b59a5843aef6752afa6a86b1697",
     "omh-agent-instructions/references/instruction-file-method.md": "cc8f82b67198fa905f1336ea0fb8b50a2451b290ca4678efc41cc2c195828446",
     "omh-agent-ops-review/SKILL.md": "7ca75c0709b83a1b042a15fdbadf19ffc77397d8f58df7c369102fdcc543555b",
@@ -314,7 +314,7 @@
     "ulw-work"
   ],
   "source": "agent-skills",
-  "source_digest": "7b34c42a913ec3d04ff45709bcfb2567cbc310f5cc003fb3ab87c4c9881fdacb",
+  "source_digest": "1841e4452765bbc24ff72a4028fc37f3c407123124c87fd0e435aa606d4871d2",
   "targets": {
     "repo": ".agents/skills",
     "user": ".agents/skills"

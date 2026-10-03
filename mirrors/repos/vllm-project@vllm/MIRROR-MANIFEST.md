@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vllm-project/vllm` — 26 default patterns, 6 followed patterns, 30 file(s) materialized.
+Mirror of `vllm-project/vllm` — 26 default patterns, 6 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vllm-project/vllm` — 26 default patterns, 6 followed patterns, 30 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 30 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,21 +79,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`.agents/skills/triton-kernel-writing/SKILL.md`](.agents/skills/triton-kernel-writing/SKILL.md) |
 | 14 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 15 | ✓ | [`rust/AGENTS.md`](rust/AGENTS.md) |
-| 16 | ✓ | [`rust/CLAUDE.md`](rust/CLAUDE.md) |
-| 17 | ✓ | [`rust/src/bench/AGENTS.md`](rust/src/bench/AGENTS.md) |
-| 18 | ✓ | [`rust/src/bench/CLAUDE.md`](rust/src/bench/CLAUDE.md) |
-| 19 | ✓ | [`vllm/parser/AGENTS.md`](vllm/parser/AGENTS.md) |
-| 20 | ✓ | [`vllm/parser/CLAUDE.md`](vllm/parser/CLAUDE.md) |
-| 21 | ✓ | [`vllm/reasoning/AGENTS.md`](vllm/reasoning/AGENTS.md) |
-| 22 | ✓ | [`vllm/reasoning/CLAUDE.md`](vllm/reasoning/CLAUDE.md) |
-| 23 | ✓ | [`vllm/tool_parsers/AGENTS.md`](vllm/tool_parsers/AGENTS.md) |
-| 24 | ✓ | [`vllm/tool_parsers/CLAUDE.md`](vllm/tool_parsers/CLAUDE.md) |
-| 25 | → | [`docs/contributing/editing-agent-instructions.md`](docs/contributing/editing-agent-instructions.md) |
-| 26 | → | [`docs/contributing/incremental_build.md`](docs/contributing/incremental_build.md) |
-| 27 | → | [`docs/contributing/model/tests.md`](docs/contributing/model/tests.md) |
-| 28 | → | [`docs/contributing/vulnerability_management.md`](docs/contributing/vulnerability_management.md) |
-| 29 | → | [`docs/usage/security.md`](docs/usage/security.md) |
-| 30 | → | [`SECURITY.md`](SECURITY.md) |
+| 16 | ✓ | [`rust/src/bench/AGENTS.md`](rust/src/bench/AGENTS.md) |
+| 17 | ✓ | [`vllm/parser/AGENTS.md`](vllm/parser/AGENTS.md) |
+| 18 | ✓ | [`vllm/reasoning/AGENTS.md`](vllm/reasoning/AGENTS.md) |
+| 19 | ✓ | [`vllm/tool_parsers/AGENTS.md`](vllm/tool_parsers/AGENTS.md) |
+| 20 | → | [`docs/contributing/editing-agent-instructions.md`](docs/contributing/editing-agent-instructions.md) |
+| 21 | → | [`docs/contributing/incremental_build.md`](docs/contributing/incremental_build.md) |
+| 22 | → | [`docs/contributing/model/tests.md`](docs/contributing/model/tests.md) |
+| 23 | → | [`docs/contributing/vulnerability_management.md`](docs/contributing/vulnerability_management.md) |
+| 24 | → | [`docs/usage/security.md`](docs/usage/security.md) |
+| 25 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

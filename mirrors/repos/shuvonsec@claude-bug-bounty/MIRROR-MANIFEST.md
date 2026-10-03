@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shuvonsec/claude-bug-bounty` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `shuvonsec/claude-bug-bounty` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `shuvonsec/claude-bug-bounty` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,24 +62,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`SKILL.md`](SKILL.md) |
-| 4 | ✓ | [`skills/argus/SKILL.md`](skills/argus/SKILL.md) |
-| 5 | ✓ | [`skills/bb-methodology/SKILL.md`](skills/bb-methodology/SKILL.md) |
-| 6 | ✓ | [`skills/bug-bounty/SKILL.md`](skills/bug-bounty/SKILL.md) |
-| 7 | ✓ | [`skills/cicd-security/SKILL.md`](skills/cicd-security/SKILL.md) |
-| 8 | ✓ | [`skills/client-reverse/references/browser-js-signing.md`](skills/client-reverse/references/browser-js-signing.md) |
-| 9 | ✓ | [`skills/client-reverse/SKILL.md`](skills/client-reverse/SKILL.md) |
-| 10 | ✓ | [`skills/credential-attack/SKILL.md`](skills/credential-attack/SKILL.md) |
-| 11 | ✓ | [`skills/graphql-audit/SKILL.md`](skills/graphql-audit/SKILL.md) |
-| 12 | ✓ | [`skills/meme-coin-audit/SKILL.md`](skills/meme-coin-audit/SKILL.md) |
-| 13 | ✓ | [`skills/mobile-pentest/SKILL.md`](skills/mobile-pentest/SKILL.md) |
-| 14 | ✓ | [`skills/report-writing/SKILL.md`](skills/report-writing/SKILL.md) |
-| 15 | ✓ | [`skills/security-arsenal/METHODOLOGY_CHEATSHEET.md`](skills/security-arsenal/METHODOLOGY_CHEATSHEET.md) |
-| 16 | ✓ | [`skills/security-arsenal/REFERENCES.md`](skills/security-arsenal/REFERENCES.md) |
-| 17 | ✓ | [`skills/security-arsenal/SKILL.md`](skills/security-arsenal/SKILL.md) |
-| 18 | ✓ | [`skills/triage-validation/SKILL.md`](skills/triage-validation/SKILL.md) |
-| 19 | ✓ | [`skills/web2-recon/SKILL.md`](skills/web2-recon/SKILL.md) |
-| 20 | ✓ | [`skills/web2-vuln-classes/SKILL.md`](skills/web2-vuln-classes/SKILL.md) |
-| 21 | ✓ | [`skills/web3-audit/SKILL.md`](skills/web3-audit/SKILL.md) |
+| 4 | ✓ | [`skills/agentic-app-audit/SKILL.md`](skills/agentic-app-audit/SKILL.md) |
+| 5 | ✓ | [`skills/argus/SKILL.md`](skills/argus/SKILL.md) |
+| 6 | ✓ | [`skills/bb-methodology/SKILL.md`](skills/bb-methodology/SKILL.md) |
+| 7 | ✓ | [`skills/bug-bounty/SKILL.md`](skills/bug-bounty/SKILL.md) |
+| 8 | ✓ | [`skills/cicd-security/SKILL.md`](skills/cicd-security/SKILL.md) |
+| 9 | ✓ | [`skills/client-reverse/references/browser-js-signing.md`](skills/client-reverse/references/browser-js-signing.md) |
+| 10 | ✓ | [`skills/client-reverse/SKILL.md`](skills/client-reverse/SKILL.md) |
+| 11 | ✓ | [`skills/cloud-pentest/SKILL.md`](skills/cloud-pentest/SKILL.md) |
+| 12 | ✓ | [`skills/credential-attack/SKILL.md`](skills/credential-attack/SKILL.md) |
+| 13 | ✓ | [`skills/graphql-audit/SKILL.md`](skills/graphql-audit/SKILL.md) |
+| 14 | ✓ | [`skills/llm-redteam/SKILL.md`](skills/llm-redteam/SKILL.md) |
+| 15 | ✓ | [`skills/mcp-server-audit/SKILL.md`](skills/mcp-server-audit/SKILL.md) |
+| 16 | ✓ | [`skills/meme-coin-audit/SKILL.md`](skills/meme-coin-audit/SKILL.md) |
+| 17 | ✓ | [`skills/mobile-pentest/SKILL.md`](skills/mobile-pentest/SKILL.md) |
+| 18 | ✓ | [`skills/report-writing/SKILL.md`](skills/report-writing/SKILL.md) |
+| 19 | ✓ | [`skills/security-arsenal/METHODOLOGY_CHEATSHEET.md`](skills/security-arsenal/METHODOLOGY_CHEATSHEET.md) |
+| 20 | ✓ | [`skills/security-arsenal/REFERENCES.md`](skills/security-arsenal/REFERENCES.md) |
+| 21 | ✓ | [`skills/security-arsenal/SKILL.md`](skills/security-arsenal/SKILL.md) |
+| 22 | ✓ | [`skills/triage-validation/SKILL.md`](skills/triage-validation/SKILL.md) |
+| 23 | ✓ | [`skills/web2-recon/SKILL.md`](skills/web2-recon/SKILL.md) |
+| 24 | ✓ | [`skills/web2-vuln-classes/SKILL.md`](skills/web2-vuln-classes/SKILL.md) |
+| 25 | ✓ | [`skills/web3-audit/SKILL.md`](skills/web3-audit/SKILL.md) |
 
 ---
 

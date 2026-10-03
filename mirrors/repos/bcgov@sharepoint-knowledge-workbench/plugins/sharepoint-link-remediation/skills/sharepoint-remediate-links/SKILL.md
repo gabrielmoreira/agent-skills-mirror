@@ -1,108 +1,59 @@
 ---
 name: sharepoint-remediate-links
 plugin: sharepoint-link-remediation
-description: Rewrites legacy SharePoint URLs to their modern targets using a declarative, parameterized rewrite ruleset. DRY-RUN BY DEFAULT -- applying changes requires BOTH an explicitly injected writer AND a confirmation token from the plan. Reports PARTIAL/FORBIDDEN/FAILED honestly and supports rollback.
+description: Rewrites legacy SharePoint URLs in page/HTML body content to their modern targets using a declarative, parameterized rewrite ruleset. Use after a migration has moved content (for example classic /Pages/ to /SitePages/, or an old host to a new one). DRY-RUN BY DEFAULT; applying changes requires BOTH an explicitly injected writer AND a confirmation token from the plan. Reports PARTIAL, FORBIDDEN and FAILED honestly and supports rollback.
 allowed-tools: Bash, Read
 examples:
-  - "python -c \"from link_remediation import plan_remediation; print(plan_remediation(docs, ruleset).to_dict())\""
-  - "python -c \"from link_rules import load_ruleset; print(load_ruleset('rules.json'))\""
+  - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); from link_remediation import plan_remediation; print(plan_remediation(docs, ruleset).to_dict())\""
+  - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); from link_rules import load_ruleset; print(load_ruleset('rules.json'))\""
 ---
 
 # Remediate Links
 
-## Trigger and Purpose
+Rewrite links in page body content after a migration. Stage two of the extract, remediate, validate pipeline.
 
-Use this skill to rewrite links after a SharePoint migration has moved
-content -- classic `/Pages/` to `/SitePages/`, an old host to a new one,
-and so on. It is the only WRITE-capable skill in this plugin, and its
-safety gates are structural, not advisory.
+## Contents
 
-Stage two of `extract-links` -> `remediate-links` -> `validate-link-integrity`.
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-## Write safety -- three independent gates
+## Constraints
 
-Per Phase 9 spec section 13, no autonomous production write is reachable:
+- Three independent write gates, structural not advisory: dry-run is the default; a `writer` callable must be injected (else
+  `WriterRequired`); a real apply needs `confirm=plan.confirmation_token` (else `ConfirmationRequired`, so a stale plan cannot be applied).
+- The PowerShell executor `scripts/spo-remediate-page-links.ps1` writes nothing without `-Execute -ConfirmToken REMEDIATE-SPO-LINKS`. A real
+  run is a live tenant write that the user runs. When installed, pass `-ConfigPath` (or `-SiteUrl`, `-ClientId`, `-TenantId`).
+- Rulesets are data: no host, tenant or project URL is built in. A malformed ruleset raises `RulesetError`.
+- Never report a partly-failed run as success, and never flatten a permission denial (`FORBIDDEN`) into a generic failure.
+- Run from this skill's root with `scripts/` on `sys.path`.
 
-1. **Dry-run is the default.** `apply_remediation(plan)` with no arguments
-   changes nothing and returns `would_change`.
-2. **A writer must be injected.** This module ships no tenant transport.
-   Without a `writer` callable, it raises `WriterRequired` rather than
-   silently no-op'ing or faking success.
-3. **A confirmation token is required.** `dry_run=False` additionally
-   requires `confirm=plan.confirmation_token`, derived from the plan's own
-   content. A stale or absent token raises `ConfirmationRequired`, so a plan
-   cannot be applied after the underlying documents have changed.
+## Quick start
 
-`rollback_remediation` restores prior content under the same gates.
-
-## Honest outcomes
-
-| Outcome | Meaning |
-|---|---|
-| `OBSERVED` | All intended writes succeeded |
-| `EMPTY` | Nothing matched the ruleset; nothing to do |
-| `PARTIAL` | Some writes succeeded, some failed; both lists populated |
-| `FORBIDDEN` | The writer raised `PermissionError` |
-| `FAILED` | Every write failed |
-
-A partly-failed run is never reported as success, and a permission denial is
-never flattened into a generic failure.
-
-## Rulesets are data, not code
-
-`load_ruleset(path)` reads a declarative JSON ruleset of `match` /
-`replacement` / `description` entries. **No host, tenant, or project URL is
-built in** -- every rewrite target is supplied by you. Malformed rulesets
-raise `RulesetError` rather than silently matching nothing.
-
-## Usage
-
-```bash
-# 1. Plan (always safe)
-python -c "
+```python
+import sys; sys.path.insert(0, "scripts")
 from link_rules import load_ruleset
 from link_remediation import plan_remediation
-plan = plan_remediation(documents, load_ruleset('rules.json'))
-print(plan.outcome, plan.to_dict()['would_change'])
-"
+plan = plan_remediation(documents, load_ruleset("rules.json"))   # always safe
+print(plan.outcome, plan.to_dict()["would_change"])
 ```
 
-Apply only after reviewing the plan, with a real writer and the plan's own
-confirmation token.
+## Workflow
 
-## Real executor
+1. Load the ruleset and plan: `plan_remediation(documents, ruleset)`. Review `would_change` with the user.
+2. Apply only after review, with a real writer and the plan's own token: `apply_remediation(plan, writer=..., dry_run=False,
+   confirm=plan.confirmation_token)`; or use the PowerShell executor with an augmented plan JSON.
+3. Undo with `rollback_remediation` under the same gates if needed.
 
-`scripts/spo-remediate-page-links.ps1` implements the writer role directly:
-it reads a `RemediationPlan.to_dict()`-shaped JSON file, resolves each
-changed document's `source` (a server-relative path) to a list item in
-`-TargetLibrary` via `Get-PnPListItem`, then overwrites `-TargetField`
-(default `CanvasContent1`, the modern-page body field) via
-`Set-PnPListItem`. Dry run by default; real writes require
-`-Execute -ConfirmToken REMEDIATE-SPO-LINKS`.
+## Verification
 
-```bash
-pwsh -File scripts/spo-remediate-page-links.ps1 -PlanPath plan.json -TargetLibrary "Site Pages" -SiteUrl "https://tenant.sharepoint.com/sites/Test" -Execute -ConfirmToken REMEDIATE-SPO-LINKS
-```
+Check the outcome (`OBSERVED`, `EMPTY`, `PARTIAL`, `FORBIDDEN`, `FAILED`), then run `sharepoint-validate-link-integrity` to confirm the rewritten
+links resolve.
 
-The plan JSON must carry each changed document's already-computed
-`remediated_content` text (Python's `RemediationPlan.to_dict()` reports only
-`source`/`changed`/`changes`, not the new content -- see the script's
-comment-based help for the exact augmentation). It is not wired in as
-`link_remediation.py`'s injected `writer` automatically -- Python cannot
-call a PowerShell script as an in-process callback, so the two paths are
-used independently rather than composed.
+## References
 
-## Scripts
-
-- `scripts/link_remediation.py` -- `plan_remediation`, `apply_remediation`, `rollback_remediation`, safety errors
-- `scripts/link_rules.py` -- `load_ruleset`, `RewriteRule`, `RewriteRuleset`
-- `scripts/link_outcomes.py` -- shared `Outcome` vocabulary
-- `scripts/spo-remediate-page-links.ps1` -- real PnP executor (see "Real executor" above)
-
-## Provenance
-
-Adapted from `sp-remediating-links` in the originating SharePoint migration
-repository (see `docs/reports/phase-9-reusable-sharepoint-plugin-extraction/provenance.md`).
-The source's hardcoded tenant URLs were replaced by the parameterized ruleset
-model; no project-specific literal ships as a live default.
-
+- [Remediation details](references/remediate-links-details.md): read for rulesets, apply and rollback, and the real executor.
+- [Pipeline, outcomes and write safety](references/link-pipeline-and-write-safety.md): read for the gates, the outcome table and the plan
+  JSON augmentation the executor needs.

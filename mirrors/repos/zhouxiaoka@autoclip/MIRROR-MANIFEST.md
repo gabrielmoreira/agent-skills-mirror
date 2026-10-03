@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zhouxiaoka/autoclip` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `zhouxiaoka/autoclip` — 26 default patterns, 2 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `zhouxiaoka/autoclip` — 26 default patterns, 0 followed patterns, 5 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 5 |
+| Followed pats | 2 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,8 @@ Mirror of `zhouxiaoka/autoclip` — 26 default patterns, 0 followed patterns, 5 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/TESTING_ACCEPTANCE.md`
+- `RELEASE_CHECKLIST.md`
 
 ## File Index
 
@@ -59,11 +60,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`artifacts/game-ads/run-20260921/runner-variants/AGENTS.md`](artifacts/game-ads/run-20260921/runner-variants/AGENTS.md) |
-| 2 | ✓ | [`artifacts/game-ads/run-20260921/runner-variants/CLAUDE.md`](artifacts/game-ads/run-20260921/runner-variants/CLAUDE.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`skills/autoclip/SKILL.md`](skills/autoclip/SKILL.md) |
-| 5 | ✓ | [`skills/product-board/SKILL.md`](skills/product-board/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`artifacts/game-ads/run-20260921/runner-variants/AGENTS.md`](artifacts/game-ads/run-20260921/runner-variants/AGENTS.md) |
+| 3 | ✓ | [`artifacts/game-ads/run-20260921/runner-variants/CLAUDE.md`](artifacts/game-ads/run-20260921/runner-variants/CLAUDE.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 5 | ✓ | [`docs/RELEASE_1_5_1.md`](docs/RELEASE_1_5_1.md) |
+| 6 | ✓ | [`docs/RELEASE_1_5_2.md`](docs/RELEASE_1_5_2.md) |
+| 7 | ✓ | [`skills/autoclip/SKILL.md`](skills/autoclip/SKILL.md) |
+| 8 | ✓ | [`skills/product-board/SKILL.md`](skills/product-board/SKILL.md) |
+| 9 | → | [`docs/TESTING_ACCEPTANCE.md`](docs/TESTING_ACCEPTANCE.md) |
+| 10 | → | [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) |
 
 ---
 

@@ -29,20 +29,22 @@ required for the first App outcome. These are planned product consumers of
 T0–T4, not additional provider promotion or completed migration claims.
 
 
-## Current delivery frontier (2026-09-28)
+## Current delivery frontier (2026-10-02)
 
-Audit `ce3862e33`: #5054, #5140, #5144, #5156, #5173, #5175 and #5169
-are merged. Do not count event retirement, archive recovery, managed process
-supervision, reviewed local cutover or native drain as new pending PRs.
-#4931 remains an open SQLite optimization, not a completed D2 qualification.
+At main `9b0486dc1`, #4931, #5251, #5395, #5417 and #5436 are merged.
+Do not recount their storage improvements or Python retirement as pending work.
+The [current validation, migration and deletion plan](ledger/shared-goal-authority-state-provider-v0/2026-09-28-retirement-cadence.md#current-closeout-validation-migration-and-deletion-2026-10-02)
+prioritizes #5413/#5466/#5283 closeout, installed reversible qualification,
+bounded opt-in adoption, canonical creation/defaults and last-caller deletion.
+Existing Goal migration, two-policy ownership retirement and storage-format
+upgrade have separate receipts and exits. Original-receipt recovery does not
+justify retaining `legacy` as a live policy. Required migration readers remain.
 
-Next: qualify whole-Goal execution/consumer integration and matched local
-profiles in parallel; then unify new-Goal/install/settings and supported upgrade
-entrypoints, deleting each replaced writer with its last caller. Retain necessary
-Host IO, original receipts and migration readers. No additional dead Python
-module is certified by this audit, and no fixed remaining-PR total is promised.
-[Deletion inventory, engineering windows, local evidence and remaining work](ledger/shared-goal-authority-state-provider-v0/2026-09-28-retirement-cadence.md)
-supersedes older current-count estimates; their execution evidence stays historical.
+A bounded cohort can start after its installed recovery and relevant execution
+controls pass; it does not certify a released default or formal ten-day D2.
+Frozen failures/missing evidence remain visible. T4 deletes proven redundant
+owners alongside implementation, without waiting for R6 or all Python to vanish.
+This replaces stale current-count estimates, not historical execution evidence.
 
 ## Native authority qualification and prototype retirement (2026-09-26)
 
@@ -1150,6 +1152,18 @@ The existing idempotent writer repairs a missing spend receipt without a second
 debit. This closes the demonstrated T3 consumer gap, not D1–D3, provider
 promotion, or the remaining Python transaction adapters. See the
 [operating contract](../../quota-allocation.md#receipt-backed-settlement-progress).
+
+**Canonical claim contention.** The TS claim command now retries a conclusive
+provider revision CAS rejection at most twice, using the same operation and
+lease keys. Every attempt rereads the receipt and complete authority and
+revalidates source registration, Todo eligibility, acceptance and lease scopes.
+An explicit provider revision or transfer grant stays pinned; ambiguous writes
+retain existing receipt recovery. Independent claims can both finish while
+same-Todo or overlapping-scope claims still admit one owner. This adopts the
+shared-authority conflict contract at the canonical writer; it does not reserve
+recommendations, change local writer serialization, or qualify sustained
+multi-host throughput. CLI claim callers inherit the behavior; no frontend or
+Lark action contract changes.
 
 **Scoped gate action readback.** The final quota packet now projects the scoped
 User gate/action override through a typed quota rule after selection, capability,

@@ -1,82 +1,55 @@
 ---
 name: sharepoint-upload-content
-description: Executes a PublishPlan (built by publish-aspx-to-sharepoint or publish-markdown-to-sharepoint) via an explicitly injected uploader -- zero SharePoint tenant I/O by default, matching this plugin's Phase 3 package-only architecture.
+plugin: sharepoint-content-publication
+description: Executes a PublishPlan (built by sharepoint-publish-aspx-to-sharepoint or sharepoint-publish-markdown-to-sharepoint) either through an explicitly injected Python uploader or through a real PnP executor that creates and publishes modern pages. Use to carry out a page-publication plan. Zero tenant I/O by default.
+allowed-tools: Bash, Read
+examples:
+  - "pwsh -File scripts/spo-upload-plan.ps1 -PlanPath plan.json -SiteUrl \"https://tenant.sharepoint.com/sites/Test\""
+  - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); from sharepoint_upload import upload_pages; upload_pages(plan, uploader)\""
 ---
 
-# upload-content
+# Upload Content
 
-## Purpose
+Execute a `PublishPlan`'s actions: create a modern page (or upload a site asset) per action.
 
-Executes a `PublishPlan`'s actions -- creates a modern page or uploads a
-site asset per action. Two execution paths exist:
+## Contents
 
-1. **`sharepoint_upload.py::upload_pages(plan, uploader)`** -- a
-   Python plan-execution loop requiring an injected `uploader(action) ->
-   UploadResult` callable. Zero tenant I/O of its own; raises
-   `NotImplementedError` without one.
-2. **`scripts/spo-upload-plan.ps1`** -- a real, working PowerShell executor
-   for the modern-page-creation path described below. Reads a `PublishPlan`
-   JSON file directly and creates/publishes each page for real, gated behind
-   `-Execute -ConfirmToken UPLOAD-SPO-PLAN`. See "Real executor" below.
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-## Real platform constraint recorded
+## Constraints
 
-Same confirmed mechanism as `publish-aspx-to-sharepoint`'s SKILL.md: the
-`Add-PnPPage`/`Add-PnPPageTextPart`/`Publish-PnPPage` modern-page-creation
-call pattern is the only confirmed-working mechanism on this tenant (raw
-`.aspx` upload is blocked). Any real `uploader` a caller injects should
-follow that pattern (or the equivalent SharePoint REST calls), not attempt
-raw file upload.
+- Zero tenant I/O unless the caller explicitly injects a real `uploader`. `upload_pages` raises `NotImplementedError` without one,
+  and stops on the first failed action rather than reporting partial success.
+- The real executor `scripts/spo-upload-plan.ps1` is dry-run by default and writes nothing without
+  `-Execute -ConfirmToken UPLOAD-SPO-PLAN`. A real run is a live tenant write that the user runs.
+- Never attempt raw `.aspx` upload (blocked). Create pages with `Add-PnPPage` / `Add-PnPPageTextPart` / `Publish-PnPPage`.
+- Page creation from pre-rendered HTML fragments only (the `content-render-sharepoint-aspx` skill's output). File and asset upload
+  to a library is `sharepoint-publish-markdown-to-sharepoint`'s job.
+- When running from an installed copy, pass `-ConfigPath` (or `-SiteUrl`, `-ClientId`, `-TenantId`).
 
-## Real executor
-
-`scripts/spo-upload-plan.ps1` implements the constraint above directly: it
-reads a `PublishPlan.to_dict()`-shaped JSON file and, per action, creates a
-modern page via `Add-PnPPage`, injects the `source_path` file's content via
-`Add-PnPPageTextPart`, and publishes via `Publish-PnPPage`. Dry run by
-default; real writes require `-Execute -ConfirmToken UPLOAD-SPO-PLAN`.
+## Quick start
 
 ```bash
-pwsh -File scripts/spo-upload-plan.ps1 -PlanPath plan.json -SiteUrl "https://tenant.sharepoint.com/sites/Test" -Execute -ConfirmToken UPLOAD-SPO-PLAN
+pwsh -File scripts/spo-upload-plan.ps1 -PlanPath plan.json -SiteUrl "https://tenant.sharepoint.com/sites/Test"
 ```
 
-**Scope:** page creation from pre-rendered HTML only (`source_path` should
-point at an HTML fragment file, matching `structured-content-rendering`'s
-`render-sharepoint-aspx` output). Raw file/asset upload to a document
-library (`Add-PnPFile`, with checkout/checkin discipline) is provided by
-`spo-publish-markdown-plan.ps1` (see line 118).
+## Workflow
 
-It is not wired in as `sharepoint_upload.py`'s injected `uploader`
-automatically -- Python cannot call a PowerShell script as an in-process
-callback, so the two paths are used independently rather than composed.
+1. Get a `PublishPlan` JSON from `sharepoint-publish-aspx-to-sharepoint`.
+2. Dry run the executor (above); review the planned pages.
+3. After the user confirms, rerun with `-Execute -ConfirmToken UPLOAD-SPO-PLAN` (add `-Overwrite` only if replacing is intended).
+4. Or, from Python, call `upload_pages(plan, uploader)` with an injected uploader.
 
-## Input boundaries
+## Verification
 
-- A `PublishPlan` (from `sharepoint_publish_plan.py`).
-- An `uploader(action) -> UploadResult` callable, supplied by the caller.
-  Without one, `upload_pages()` raises `NotImplementedError` -- this module
-  ships no live PnP/REST client itself.
+Confirm each planned page was created and published, then check with `sharepoint-validate-publication`.
 
-## Prohibited scope
+## References
 
-- Zero tenant I/O unless the caller explicitly injects a real `uploader`.
-- Stops on the first failed action rather than reporting partial success as
-  full success.
-
-## Scripts
-
-- `../../scripts/sharepoint_upload.py` (`upload_pages`, `UploadResult`, `UploadError`)
-- `../../scripts/spo-upload-plan.ps1` -- real, working PnP.PowerShell executor (page-creation path)
-
-## Tests
-
-- `../../tests/unit/test_sharepoint_upload.py`
-
-## Provenance
-
-Authoritative publication and upload skill
-(`scripts/upload/upload-modern-page.ps1`,
-`scripts/upload/upload-modern-page-rest.ps1`) -- see
-`docs/reports/phase-9-reusable-sharepoint-plugin-extraction/provenance.md`
-for the full source-to-destination record.
-
+- [Upload details](references/upload-content-details.md): read for the two execution paths and the scope.
+- [Executors, gates and constraints](references/publication-executors-and-gates.md): read for the executor table, config note and
+  provenance.

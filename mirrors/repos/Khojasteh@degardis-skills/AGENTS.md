@@ -1,218 +1,39 @@
 # Repository Instructions
 
-## Repository purpose
+This repository holds AI-agent skills in Degardis source format; Degardis validates and compiles them into installable bundles.
 
-This repository contains AI agent skills in the Degardis source format.
-Degardis validates those sources and compiles them into installable AI agent
-skill bundles. Treat each skill as an independently valid, buildable unit.
+## Routing
 
-The authored source is `skill.yaml` plus its selected entries, workflows,
-profiles, scripts, and assets. Do not edit generated `SKILL.md`,
-`references/`, or `agents/openai.yaml` files as source.
+For any work that writes, reviews, assesses, improves, evaluates, or versions a skill, validates or builds one, creates a bundle, or uses the Degardis CLI: invoke and read `degardis-authoring` before planning or inspecting skill sources, or read `skills/degardis-authoring/` if it isn't installed. That skill governs authoring skills in any domain; this file governs the repository around it.
 
-## Source organization
+## Repository rules are not skill instructions
 
-- Store every skill directly at `skills/<skill-name>/`.
-- Use lowercase, hyphenated skill directory names and make the `skill.yaml`
-  `name` match its directory.
-- Keep skill names unique across the repository.
-- Keep skills self-contained. Do not require another skill to be installed for
-  a skill to complete its outcome.
-- Preserve unrelated and staged user changes.
+A skill source tells an agent how to do the skill's job wherever the bundle lands, and that agent has never seen this repository. So a skill source never mentions this repository, its trials, documentation conventions, scripts, or release process, and these `AGENTS.md` files never restate or host a skill's own rules. Delete text found on the wrong side, and add it where it belongs only if still needed.
 
-Degardis discovers descendant `skill.yaml` files recursively and stops
-descending after it finds a skill. Do not add collection manifests or nest one
-skill inside another.
+## Layout
 
-## Skill documentation
+- Each skill lives directly in `skills/<skill-name>/`, with a unique name and no manifest in `skills/` or above.
+- `README.md` and `CHANGELOG.md` stay out of manifest content globs and bundles.
 
-Leaf README files are generated repository documentation, not Degardis source
-content. The root README is handwritten except for its generated catalog
-table. Each skill's documentation source is `readme.yaml`;
-keep it outside the manifest content globs so neither it nor the generated
-README is copied into skill bundles.
+## Documentation names
 
-Use the documentation hierarchy consistently:
+A `README.md` says what a directory holds and states no rule; GitHub opens it for anyone. An `AGENTS.md` holds the rules for a session working in that directory: one per directory that owns rules, and no rule outside one. Trial fixtures are content, governed by `trials/AGENTS.md`.
 
-- The root `README.md` is the user-facing catalog and installation guide.
-- Each skill README explains only that skill.
+## The source is authoritative
 
-Do not add collection or category READMEs under `skills/`; the root catalog is
-the sole cross-skill index.
+READMEs and the guides in `docs/` describe the last released bundle and lag the source by design. While working on a skill, don't read or write them: they give a stale picture of what you're editing. The release reconciles them.
 
-Every generated skill README must use this order:
+## One commit, one skill
 
-1. Skill title.
-2. A compact metadata line with version and linked license.
-3. `Purpose`.
-4. `When it applies`.
-5. `Capabilities`.
-6. `Sample prompts`.
-7. `Install for your agent`.
+A commit changes bundle content for at most one skill, and never alongside a README.
 
-Write `When it applies` as a neutral routing boundary:
+Its body is the change's permanent record and the only input to the skill's next release section: state what changed and, where a reader wouldn't otherwise see it, why. Record built-bundle behavior only; documentation, trial, and automation work belong to no skill's history, and work that never reached the bundle isn't described. Don't add a `Co-Authored-By` trailer.
 
-- Prefer `This skill applies to...` or `This skill applies when...`.
-- State an out-of-scope boundary when it resolves a real ambiguity.
-- Do not tell the reader or agent to choose another skill.
-- Do not add cross-skill recommendations or links in leaf READMEs.
+Don't touch `CHANGELOG.md`: each section is one published version, dated and linked to its release asset, and `changelog.py` accepts nothing else. A never-released skill has none; the release that first publishes it creates one.
 
-Keep cross-skill navigation in the root catalog. The documentation generator
-reads authoritative identity and release metadata from `skill.yaml`:
+## Elsewhere
 
-- `name`;
-- `title`;
-- `version`; and
-- `license`.
-
-Do not duplicate those fields in `readme.yaml`. Store only documentation fields
-that are not represented in `skill.yaml`:
-
-- `purpose`;
-- `when_it_applies`;
-- `capabilities`;
-- `sample_prompts`; and
-- `catalog.order`, `catalog.category`, and `catalog.summary`.
-
-Set `format_version: 1`. Write `purpose` and `when_it_applies` as Markdown
-block scalars, write capabilities and sample prompts as non-empty string
-lists, and give every skill a unique integer `catalog.order`.
-
-Treat `skill.yaml` and `readme.yaml` as the authoritative inputs. Keep
-generated reader-visible wording and Markdown structure in these templates.
-The handwritten root README owns the `Available skills` heading immediately
-before the root catalog markers:
-
-- `.github/templates/skill-readme.md` owns complete leaf READMEs;
-- `.github/templates/root-catalog.md` owns the generated root catalog table;
-- `.github/templates/catalog-row.md` owns catalog row structure;
-- `.github/templates/capability.md` and
-  `.github/templates/sample-prompt.md` own repeated leaf list items;
-- `.github/templates/changelog-link.md` owns the optional changelog link.
-
-The generator may validate inputs, calculate dynamic values, render repeated
-items, and replace generated sections. It must not construct user-facing prose,
-headings, table labels, or installation instructions. Do not edit a leaf README
-directly.
-
-## Versions and changelogs
-
-Use semantic versioning for skills:
-
-- Patch: corrections within the existing outcome and routing boundary.
-- Minor: backward-compatible capabilities, profiles, or workflow additions.
-- Major: incompatible routing, behavior, interface, or outcome changes.
-
-When a skill has release history, maintain `CHANGELOG.md` in that skill's
-directory. The documentation generator adds its link to the skill README
-metadata line automatically. Changelog files are repository documentation and
-must remain outside generated bundles.
-
-Use this changelog structure:
-
-```markdown
-# Changelog
-
-Significant user-visible changes to this skill are recorded here.
-
-## Unreleased
-
-- Describe pending user-visible changes.
-
-## 1.1.0 — 2026-09-14
-
-- Describe the released behavior and its impact.
-```
-
-Changelog conventions:
-
-- Keep releases newest first and use ISO dates.
-- Record changes to routing, workflows, capabilities, profiles, scripts,
-  assets, interface metadata, or generated behavior.
-- Omit internal reorganization and trivial documentation corrections unless
-  they materially affect users.
-- Do not report abandoned, experimental, or never-released behavior as release
-  history.
-- Do not invent release dates or backfill releases without evidence.
-- When preparing a release, move applicable `Unreleased` entries under the
-  released version and date.
-- For a released skill, make the latest released changelog version match the
-  version in `skill.yaml`.
-
-## Validation
-
-After changing a skill source, validate both the selected skill and the full
-collection:
-
-```console
-degardis validate skills/<skill-name>
-degardis validate skills
-```
-
-Build changed sources into an explicit generated directory outside authored
-sources:
-
-```console
-degardis build skills/<skill-name> --output .artifacts/verification
-```
-
-Inspect the generated `SKILL.md`, `agents/openai.yaml`, references, selected
-profiles, scripts, and assets. Confirm repository `README.md` and
-`CHANGELOG.md` files are absent from the bundle. Remove temporary verification
-artifacts after inspection.
-
-For documentation changes:
-
-- Run `python .github/scripts/generate-readmes.py`, then run it again with
-  `--check`.
-- Verify every relative link.
-- Verify displayed version and license values against `skill.yaml`.
-- Verify the generated root catalog contains every skill.
-- Run `git diff --check`.
-
-Never build into an authored skill directory or maintain generated artifacts
-in the repository.
-
-## Distribution
-
-Every leaf skill README is generated end-user documentation. The root catalog
-table is also generated. Run
-`.github/scripts/generate-readmes.py` after adding or renaming a skill,
-changing `skill.yaml` or `readme.yaml`, or editing a README template. Do not
-hand-edit leaf README files or the catalog content between generated markers
-in the root README.
-
-The root README owns the shared packaged-skill installation guide and
-agent-directory table. The skill README template owns each skill's download
-link, security warning, and link to that shared guide. The generator must:
-
-- supply authoritative `title`, `name`, `version`, and `license` values from
-  `skill.yaml`;
-- supply documentation and catalog values from `readme.yaml`;
-- calculate each release asset link from the skill name and README location;
-- render capabilities, prompts, catalog rows, and optional changelog links; and
-- reject missing, duplicate, nested, or malformed source data.
-
-Change shared installation prose, headings, table labels, agent-directory
-choices, platform explanations, and ChatGPT instructions in the root README.
-Change skill-specific installation wording and warnings in the skill README
-template. The shared filesystem installation guide must tell users to back up
-local modifications and empty an existing skill directory before extracting
-an upgrade into it.
-
-Keep maintainer release mechanics out of leaf READMEs.
-
-Publish downloadable bundles as complete repository snapshots. Run the
-`Release skill bundles` workflow with a tag named `skills-YYYY-MM-DD`; append
-`.N` when publishing more than one snapshot on the same date. The workflow
-must install the published `degardis` package from PyPI, validate the full
-collection, build every skill with every profile, attach every
-`<skill-name>.zip`, generate release notes from the authoritative skill titles
-and versions, and explicitly mark the snapshot as GitHub's latest release. A
-complete asset set is required because every leaf README uses GitHub's
-repository-wide `releases/latest/download/` redirect.
-
-Snapshot tags are dated distribution identifiers, not semantic versions.
-Continue to version each skill independently in its `skill.yaml`, README, and
-catalog entries. Do not introduce a shared semantic version for the
-collection.
+- Reader-facing pages — the root `README.md`, a guide in `docs/`, or a skill's `README.md`: read `docs/AGENTS.md` first.
+- Retiring, withdrawing, or removing a skill, released or not: read `.github/RETIRING.md` first.
+- Releases, or their workflows, scripts, or templates: read `.github/AGENTS.md` first. Otherwise don't inspect `.github/`.
+- Blind trials or their fixtures: read `trials/AGENTS.md` first. Otherwise don't inspect `trials/`.

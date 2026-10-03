@@ -1,38 +1,46 @@
 ---
 name: sharepoint-update-sharepoint-agent
-description: Updates an existing local .agent source package's description, instructions, or knowledge sources in place, without recreating the whole package.
+plugin: sharepoint-agents-and-skills
+description: Updates an existing local .agent source package's description, instructions or knowledge sources in place, without recreating the whole package. Use to change an agent you already authored. Zero tenant I/O.
+allowed-tools: Bash, Read, Write
 ---
 
-# update-sharepoint-agent
+# Update SharePoint Agent
 
-## Purpose
+Change an agent's instructions or grounding sources without running create again from scratch. It operates on the local `.agent` JSON that `create-sharepoint-agent` produces.
 
-Previously missing entirely — there was no way to change an agent's instructions or grounding
-sources without running `create-sharepoint-agent` again from scratch. Operates on the same local
-`.agent` JSON package `create-sharepoint-agent` produces.
+## Contents
 
-## Input boundaries
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-- `-AgentPath` (required) — must already exist; fails if not found (this skill updates, it does
-  not create).
-- `-AgentDescription`, `-AgentInstructionsPath`/`-AgentInstructions`, `-KnowledgeSourcePaths` —
-  all optional, but at least one is required (no-op invocations are rejected).
-- Empty `-KnowledgeSourcePaths` requires explicit `-AllowEmptyKnowledgeSources` — refuses to
-  silently clear all grounding sources.
+## Constraints
 
-## Prohibited scope
+- Zero tenant I/O. Do not deploy the updated package.
+- `-AgentPath` must already exist: this updates, never creates.
+- Pass at least one of `-AgentDescription`, `-AgentInstructionsPath`/`-AgentInstructions`, `-KnowledgeSourcePaths`; a no-op call is rejected.
+- Never silently clear all grounding: an empty `-KnowledgeSourcePaths` needs `-AllowEmptyKnowledgeSources`.
 
-- Zero tenant I/O.
-- Does not deploy the updated package — same as `create-sharepoint-agent`, deployment is a
-  separate, not-yet-built capability.
+## Quick start
 
-## Scripts
+```powershell
+pwsh -File scripts/update-sharepoint-agent.ps1 -AgentPath policy-helper.agent -AgentDescription "Updated description"
+```
 
-- `../../scripts/update-sharepoint-agent.ps1`
+## Workflow
 
-## Tests
+1. Confirm the `.agent` file and what changes.
+2. Run the script with only the parameters to change.
+3. Redeploy through a separate step.
 
-`../../tests/unit/test_update_sharepoint_agent.py` — 5 executable tests via `pwsh` (description
-update leaves instructions unchanged, knowledge-source replacement, missing-path rejection,
-no-parameters rejection, empty-knowledge-sources-without-allow rejection).
+## Verification
 
+The changed field is updated and the others (for example instructions) are unchanged.
+
+## References
+
+- [Safety, config and permissions](references/agents-and-skills-safety-and-config.md): read for the gate model of every script, the `-ConfigFile` default caveat and the Copilot permission note.
+- [Agent package authoring](references/agent-package-authoring-details.md): read for update behavior and the tests.

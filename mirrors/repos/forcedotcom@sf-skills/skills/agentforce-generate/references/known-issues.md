@@ -325,6 +325,56 @@ Unresolved platform bugs, limitations, and edge cases that affect Agent Script d
 
 ---
 
+### Issue 21: Migration breaks for agents whose developer name ends in `_<digits>`
+- **Status**: WORKAROUND
+- **Date Discovered**: 2026-08-19
+- **Affects**: `migrateAgentToNga` (legacy → NGA) for any agent whose
+  `developer_name` ends in an underscore followed by digits — e.g. `Agent_01`,
+  `Support_Bot_2`, `Order_Agent_007`. The trailing `_<digits>` pattern is
+  `_\d+$`.
+- **Symptom**: The migration call itself may succeed and the migrated agent is
+  viewable/editable **in the Agent Builder UI**, but the bundle **cannot be
+  worked on from the terminal**. The versioning treatment of the
+  `AiAuthoringBundle` is wrong: the tooling conflates the `_<digits>` name suffix
+  with a bundle **version** suffix (`<name>_<version>`), so `sf project retrieve`
+  / `sf project deploy` / `sf agent validate|publish` mis-resolve the `fullName`
+  and version, and edits cannot be round-tripped.
+- **Root Cause**: `AiAuthoringBundle` uses a `<developer_name>_<version>`
+  `fullName` convention (see Issue on the retrieve/deploy folder-name trap in
+  [upgrade-legacy-agent-to-agentscript.md](upgrade-legacy-agent-to-agentscript.md)).
+  When the developer name **itself** ends in `_<digits>`, that trailing segment
+  is ambiguous with the version segment, so the bundle's version handling is
+  parsed incorrectly.
+- **Workaround**: Rename the agent's `developer_name` to break up the trailing
+  digits **before** migrating — insert a non-digit character so the name no
+  longer matches `_\d+$`. A minimal change is enough:
+  - `Agent_01` → `Agent_v01`
+  - `Order_Agent_007` → `Order_Agent_v007`
+
+  **Warning: Renaming has ripple effects.** The agent is referenced by developer name
+  in several places that must all be updated to the new name, or they break:
+  - **Email Configurations** for the Agentforce Service Agent (and any other
+    channel/config records keyed on the agent name).
+  - **Deploy configs** — `package.xml` and any `AiAuthoringBundle` /
+    `GenAiPlannerBundle` member entries that name the agent.
+  - **Integrations using the Agent API** — any external caller that targets the
+    agent by developer name.
+
+  Because of this blast radius, prefer renaming **before** the agent accrues
+  downstream references. This skill migrates agents from the terminal (`sf` CLI /
+  source-controlled workflow), so a `_<digits>` developer name is a **hard
+  blocker** for it: the rename above is mandatory before the skill can migrate the
+  agent. (The Agent Builder UI can still open a migrated `_<digits>` agent for
+  viewing — that is platform behavior, not a path this skill offers, and it does
+  not remove the terminal round-trip breakage.)
+- **Open Questions**:
+  - Will `migrateAgentToNga` / the bundle tooling be fixed to treat a
+    `_<digits>`-suffixed developer name distinctly from a version suffix?
+  - Is there a supported rename path that cascades to Email Configurations and
+    API integrations automatically?
+
+---
+
 ## Resolved Issues
 
 ### Issue 16: `connections:` (plural) wrapper block not valid — use `connection messaging:` (singular)
@@ -359,4 +409,4 @@ When an issue is resolved:
 
 ---
 
-*Last updated: 2026-03-04*
+*Last updated: 2026-08-19*

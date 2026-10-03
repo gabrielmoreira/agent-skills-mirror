@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HKUDS/nanobot` — 26 default patterns, 8 followed patterns, 22 file(s) materialized.
+Mirror of `HKUDS/nanobot` — 26 default patterns, 9 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `HKUDS/nanobot` — 26 default patterns, 8 followed patterns, 22 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 8 |
-| Files         | 22 |
+| Followed pats | 9 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -56,6 +56,7 @@ Mirror of `HKUDS/nanobot` — 26 default patterns, 8 followed patterns, 22 file(
 - `.agent/security.md`
 - `.agent/gotchas.md`
 - `.agent/workflow.md`
+- `.agent/review-guide.md`
 - `CONTRIBUTING.md`
 - `docs/releasing.md`
 - `COMMUNICATION.md`
@@ -82,12 +83,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`nanobot/templates/AGENTS.md`](nanobot/templates/AGENTS.md) |
 | 15 | → | [`.agent/design.md`](.agent/design.md) |
 | 16 | → | [`.agent/gotchas.md`](.agent/gotchas.md) |
-| 17 | → | [`.agent/security.md`](.agent/security.md) |
-| 18 | → | [`.agent/simplify.md`](.agent/simplify.md) |
-| 19 | → | [`.agent/workflow.md`](.agent/workflow.md) |
-| 20 | → | [`COMMUNICATION.md`](COMMUNICATION.md) |
-| 21 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 22 | → | [`docs/releasing.md`](docs/releasing.md) |
+| 17 | → | [`.agent/review-guide.md`](.agent/review-guide.md) |
+| 18 | → | [`.agent/security.md`](.agent/security.md) |
+| 19 | → | [`.agent/simplify.md`](.agent/simplify.md) |
+| 20 | → | [`.agent/workflow.md`](.agent/workflow.md) |
+| 21 | → | [`COMMUNICATION.md`](COMMUNICATION.md) |
+| 22 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 23 | → | [`docs/releasing.md`](docs/releasing.md) |
 
 ---
 

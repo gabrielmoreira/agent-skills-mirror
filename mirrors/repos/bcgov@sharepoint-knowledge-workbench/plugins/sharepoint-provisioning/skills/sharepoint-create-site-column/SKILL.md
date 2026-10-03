@@ -1,7 +1,7 @@
 ---
 name: sharepoint-create-site-column
 plugin: sharepoint-provisioning
-description: Creates new SharePoint site columns across standard or complex types (Text, Choice, Lookup, User, Calculated via Field XML). Dry-run by default; real writes require -Execute and confirmation token PROVISION-SPO-SITE-COLUMNS.
+description: Creates new SharePoint site columns across standard or complex types (Text, Choice, Lookup, User, Calculated via Field XML). Use to define a reusable site column. Dry-run by default; real writes require -Execute and confirmation token PROVISION-SPO-SITE-COLUMNS.
 allowed-tools: Bash, Read
 examples:
   - "pwsh -File scripts/spo-provision-site-columns.ps1 -PlanPath plan.json"
@@ -10,31 +10,40 @@ examples:
 
 # Create SharePoint Site Column
 
-## Overview
+Create site columns with Add-PnPField, or Add-PnPFieldFromXml for complex types.
 
-Use this skill to execute real SharePoint Online **Create SharePoint Site Column** operations using PnP.PowerShell (\$vb\).
+## Contents
 
-### Safety Contract
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-- **Dry-run by default**: Running without \-Execute\ outputs a structured JSON action plan detailing the operations that would occur without modifying tenant state.
-- **Confirmation Gated**: Real execution requires passing \-Execute\ alongside \-ConfirmToken PROVISION-SPO-SITE-COLUMNS\.
-- **Connection Resolution**: Resolves credentials interactively or from \config.psd1\ via \Get-WorkbenchConnectionConfig.ps1\.
+## Constraints
 
-## Usage
+- Dry run by default: without `-Execute` it prints a structured JSON action summary and changes nothing.
+- A real write needs `-Execute -ConfirmToken PROVISION-SPO-SITE-COLUMNS`, exactly. The plan's own `confirmation_token` field is a different value. A real run is a live tenant write that the user runs.
+- Supports standard and complex types, including Calculated via Field XML; use Field XML as supplied and do not rewrite formulas.
+- Read the "Plan JSON shape" block in `scripts/spo-provision-site-columns.ps1`'s header and do not invent plan keys. When running an installed copy, pass `-ConfigPath` (or `-SiteUrl`, `-ClientId`, `-TenantId`).
 
-### 1. Preview Actions (Dry-Run)
+## Quick start
 
-\\\ash
+```bash
 pwsh -File scripts/spo-provision-site-columns.ps1 -PlanPath path/to/plan.json
-\\\
+```
 
-### 2. Execute Real Tenant Write
+## Workflow
 
-\\\ash
-pwsh -File scripts/spo-provision-site-columns.ps1 -PlanPath path/to/plan.json -Execute -ConfirmToken PROVISION-SPO-SITE-COLUMNS
-\\\
+1. Get or build the plan JSON for this operation.
+2. Dry run (above) and review the action summary with the user.
+3. After the user confirms, rerun with `-Execute -ConfirmToken PROVISION-SPO-SITE-COLUMNS`.
+4. Report the result and check it as described below.
 
-## Script Reference
+## Verification
 
-- \scripts/spo-provision-site-columns.ps1\ — Primary PnP.PowerShell executor.
-- \scripts/Get-WorkbenchConnectionConfig.ps1\ — Shared connection helper.
+The dry-run summary lists each column and type; afterwards the site column exists.
+
+## References
+
+- [Executor contract](references/provisioning-executor-contract.md): read for the safety contract, the two kinds of token, connection and config, plan shapes, and the full executor table.

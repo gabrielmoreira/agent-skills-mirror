@@ -1,7 +1,7 @@
 ---
 name: sharepoint-create-document-library
 plugin: sharepoint-provisioning
-description: Creates a new SharePoint document library (Template 101) using PnP.PowerShell. Dry-run by default; real writes require -Execute and confirmation token PROVISION-SPO-LIST.
+description: Creates a new SharePoint document library (Template 101) using PnP.PowerShell. Use to add a document library to a site. Dry-run by default; real writes require -Execute and confirmation token PROVISION-SPO-LIST.
 allowed-tools: Bash, Read
 examples:
   - "pwsh -File scripts/spo-provision-list.ps1 -PlanPath plan.json"
@@ -10,31 +10,40 @@ examples:
 
 # Create SharePoint Document Library
 
-## Overview
+Create a document library (Template 101) with New-PnPList.
 
-Use this skill to execute real SharePoint Online **Create SharePoint Document Library** operations using PnP.PowerShell (\$vb\).
+## Contents
 
-### Safety Contract
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-- **Dry-run by default**: Running without \-Execute\ outputs a structured JSON action plan detailing the operations that would occur without modifying tenant state.
-- **Confirmation Gated**: Real execution requires passing \-Execute\ alongside \-ConfirmToken PROVISION-SPO-LIST\.
-- **Connection Resolution**: Resolves credentials interactively or from \config.psd1\ via \Get-WorkbenchConnectionConfig.ps1\.
+## Constraints
 
-## Usage
+- Dry run by default: without `-Execute` it prints a structured JSON action summary and changes nothing.
+- A real write needs `-Execute -ConfirmToken PROVISION-SPO-LIST`, exactly. The plan's own `confirmation_token` field is a different value. A real run is a live tenant write that the user runs.
+- Shares spo-provision-list.ps1 with sharepoint-create-list and sharepoint-remove-list, which applies a duplicate-title gate on the plan's blocking_findings.
+- Read the "Plan JSON shape" block in `scripts/spo-provision-list.ps1`'s header and do not invent plan keys. When running an installed copy, pass `-ConfigPath` (or `-SiteUrl`, `-ClientId`, `-TenantId`).
 
-### 1. Preview Actions (Dry-Run)
+## Quick start
 
-\\\ash
+```bash
 pwsh -File scripts/spo-provision-list.ps1 -PlanPath path/to/plan.json
-\\\
+```
 
-### 2. Execute Real Tenant Write
+## Workflow
 
-\\\ash
-pwsh -File scripts/spo-provision-list.ps1 -PlanPath path/to/plan.json -Execute -ConfirmToken PROVISION-SPO-LIST
-\\\
+1. Get or build the plan JSON for this operation.
+2. Dry run (above) and review the action summary with the user.
+3. After the user confirms, rerun with `-Execute -ConfirmToken PROVISION-SPO-LIST`.
+4. Report the result and check it as described below.
 
-## Script Reference
+## Verification
 
-- \scripts/spo-provision-list.ps1\ — Primary PnP.PowerShell executor.
-- \scripts/Get-WorkbenchConnectionConfig.ps1\ — Shared connection helper.
+The dry-run summary lists the library; afterwards a Get-PnPList re-check finds it.
+
+## References
+
+- [Executor contract](references/provisioning-executor-contract.md): read for the safety contract, the two kinds of token, connection and config, plan shapes, and the full executor table.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
+Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patterns, 52 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `datadog-labs/agent-skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 50 |
+| Files         | 52 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,45 +70,47 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`agent-observability/agent-observability-session-classify/SKILL.md`](agent-observability/agent-observability-session-classify/SKILL.md) |
 | 10 | ✓ | [`agent-observability/agent-observability-trace-rca/SKILL.md`](agent-observability/agent-observability-trace-rca/SKILL.md) |
 | 11 | ✓ | [`dd-account-setup/SKILL.md`](dd-account-setup/SKILL.md) |
-| 12 | ✓ | [`dd-apm/k8s-ssi/agent-install/SKILL.md`](dd-apm/k8s-ssi/agent-install/SKILL.md) |
-| 13 | ✓ | [`dd-apm/k8s-ssi/enable-ssi/SKILL.md`](dd-apm/k8s-ssi/enable-ssi/SKILL.md) |
-| 14 | ✓ | [`dd-apm/k8s-ssi/onboarding-summary/SKILL.md`](dd-apm/k8s-ssi/onboarding-summary/SKILL.md) |
-| 15 | ✓ | [`dd-apm/k8s-ssi/troubleshoot-ssi/SKILL.md`](dd-apm/k8s-ssi/troubleshoot-ssi/SKILL.md) |
-| 16 | ✓ | [`dd-apm/k8s-ssi/verify-ssi/SKILL.md`](dd-apm/k8s-ssi/verify-ssi/SKILL.md) |
-| 17 | ✓ | [`dd-apm/linux-ssi/agent-install/SKILL.md`](dd-apm/linux-ssi/agent-install/SKILL.md) |
-| 18 | ✓ | [`dd-apm/linux-ssi/enable-ssi/SKILL.md`](dd-apm/linux-ssi/enable-ssi/SKILL.md) |
-| 19 | ✓ | [`dd-apm/linux-ssi/onboarding-summary/SKILL.md`](dd-apm/linux-ssi/onboarding-summary/SKILL.md) |
-| 20 | ✓ | [`dd-apm/linux-ssi/troubleshoot-ssi/SKILL.md`](dd-apm/linux-ssi/troubleshoot-ssi/SKILL.md) |
-| 21 | ✓ | [`dd-apm/linux-ssi/verify-ssi/SKILL.md`](dd-apm/linux-ssi/verify-ssi/SKILL.md) |
-| 22 | ✓ | [`dd-apm/service-remapping/SKILL.md`](dd-apm/service-remapping/SKILL.md) |
-| 23 | ✓ | [`dd-apm/SKILL.md`](dd-apm/SKILL.md) |
-| 24 | ✓ | [`dd-apps/datadog-app/SKILL.md`](dd-apps/datadog-app/SKILL.md) |
-| 25 | ✓ | [`dd-audit/ai-activity-audit/SKILL.md`](dd-audit/ai-activity-audit/SKILL.md) |
-| 26 | ✓ | [`dd-audit/compliance-report/SKILL.md`](dd-audit/compliance-report/SKILL.md) |
-| 27 | ✓ | [`dd-audit/cost-spike-investigation/SKILL.md`](dd-audit/cost-spike-investigation/SKILL.md) |
-| 28 | ✓ | [`dd-audit/key-compromise/SKILL.md`](dd-audit/key-compromise/SKILL.md) |
-| 29 | ✓ | [`dd-audit/security-investigation/SKILL.md`](dd-audit/security-investigation/SKILL.md) |
-| 30 | ✓ | [`dd-audit/SKILL.md`](dd-audit/SKILL.md) |
-| 31 | ✓ | [`dd-aws-integration/SKILL.md`](dd-aws-integration/SKILL.md) |
-| 32 | ✓ | [`dd-azure-integration/SKILL.md`](dd-azure-integration/SKILL.md) |
-| 33 | ✓ | [`dd-browser-sdk/setup-sourcemaps/SKILL.md`](dd-browser-sdk/setup-sourcemaps/SKILL.md) |
-| 34 | ✓ | [`dd-browser-sdk/SKILL.md`](dd-browser-sdk/SKILL.md) |
-| 35 | ✓ | [`dd-browser-sdk/upgrade-v5/SKILL.md`](dd-browser-sdk/upgrade-v5/SKILL.md) |
-| 36 | ✓ | [`dd-browser-sdk/upgrade-v6/SKILL.md`](dd-browser-sdk/upgrade-v6/SKILL.md) |
-| 37 | ✓ | [`dd-browser-sdk/upgrade-v7/SKILL.md`](dd-browser-sdk/upgrade-v7/SKILL.md) |
-| 38 | ✓ | [`dd-docs/SKILL.md`](dd-docs/SKILL.md) |
-| 39 | ✓ | [`dd-gcp-integration/SKILL.md`](dd-gcp-integration/SKILL.md) |
-| 40 | ✓ | [`dd-instrument-rum/SKILL.md`](dd-instrument-rum/SKILL.md) |
-| 41 | ✓ | [`dd-logs/SKILL.md`](dd-logs/SKILL.md) |
-| 42 | ✓ | [`dd-monitors/SKILL.md`](dd-monitors/SKILL.md) |
-| 43 | ✓ | [`dd-oci-integration/SKILL.md`](dd-oci-integration/SKILL.md) |
-| 44 | ✓ | [`dd-orchestrator/SKILL.md`](dd-orchestrator/SKILL.md) |
-| 45 | ✓ | [`dd-product-recommender/SKILL.md`](dd-product-recommender/SKILL.md) |
-| 46 | ✓ | [`dd-pup/SKILL.md`](dd-pup/SKILL.md) |
-| 47 | ✓ | [`dd-security/csm/ownership-agent/SKILL.md`](dd-security/csm/ownership-agent/SKILL.md) |
-| 48 | ✓ | [`dd-software-delivery/triage-flaky-test/SKILL.md`](dd-software-delivery/triage-flaky-test/SKILL.md) |
-| 49 | ✓ | [`dd-software-delivery/unblock-pr/SKILL.md`](dd-software-delivery/unblock-pr/SKILL.md) |
-| 50 | ✓ | [`SKILL.md`](SKILL.md) |
+| 12 | ✓ | [`dd-apm/enable-dsm/SKILL.md`](dd-apm/enable-dsm/SKILL.md) |
+| 13 | ✓ | [`dd-apm/k8s-ssi/agent-install/SKILL.md`](dd-apm/k8s-ssi/agent-install/SKILL.md) |
+| 14 | ✓ | [`dd-apm/k8s-ssi/enable-ssi/SKILL.md`](dd-apm/k8s-ssi/enable-ssi/SKILL.md) |
+| 15 | ✓ | [`dd-apm/k8s-ssi/onboarding-summary/SKILL.md`](dd-apm/k8s-ssi/onboarding-summary/SKILL.md) |
+| 16 | ✓ | [`dd-apm/k8s-ssi/troubleshoot-ssi/SKILL.md`](dd-apm/k8s-ssi/troubleshoot-ssi/SKILL.md) |
+| 17 | ✓ | [`dd-apm/k8s-ssi/verify-ssi/SKILL.md`](dd-apm/k8s-ssi/verify-ssi/SKILL.md) |
+| 18 | ✓ | [`dd-apm/linux-ssi/agent-install/SKILL.md`](dd-apm/linux-ssi/agent-install/SKILL.md) |
+| 19 | ✓ | [`dd-apm/linux-ssi/enable-ssi/SKILL.md`](dd-apm/linux-ssi/enable-ssi/SKILL.md) |
+| 20 | ✓ | [`dd-apm/linux-ssi/onboarding-summary/SKILL.md`](dd-apm/linux-ssi/onboarding-summary/SKILL.md) |
+| 21 | ✓ | [`dd-apm/linux-ssi/troubleshoot-ssi/SKILL.md`](dd-apm/linux-ssi/troubleshoot-ssi/SKILL.md) |
+| 22 | ✓ | [`dd-apm/linux-ssi/verify-ssi/SKILL.md`](dd-apm/linux-ssi/verify-ssi/SKILL.md) |
+| 23 | ✓ | [`dd-apm/service-remapping/SKILL.md`](dd-apm/service-remapping/SKILL.md) |
+| 24 | ✓ | [`dd-apm/SKILL.md`](dd-apm/SKILL.md) |
+| 25 | ✓ | [`dd-apps/datadog-app/SKILL.md`](dd-apps/datadog-app/SKILL.md) |
+| 26 | ✓ | [`dd-audit/ai-activity-audit/SKILL.md`](dd-audit/ai-activity-audit/SKILL.md) |
+| 27 | ✓ | [`dd-audit/compliance-report/SKILL.md`](dd-audit/compliance-report/SKILL.md) |
+| 28 | ✓ | [`dd-audit/cost-spike-investigation/SKILL.md`](dd-audit/cost-spike-investigation/SKILL.md) |
+| 29 | ✓ | [`dd-audit/key-compromise/SKILL.md`](dd-audit/key-compromise/SKILL.md) |
+| 30 | ✓ | [`dd-audit/security-investigation/SKILL.md`](dd-audit/security-investigation/SKILL.md) |
+| 31 | ✓ | [`dd-audit/SKILL.md`](dd-audit/SKILL.md) |
+| 32 | ✓ | [`dd-aws-integration/SKILL.md`](dd-aws-integration/SKILL.md) |
+| 33 | ✓ | [`dd-azure-integration/SKILL.md`](dd-azure-integration/SKILL.md) |
+| 34 | ✓ | [`dd-browser-sdk/setup-sourcemaps/SKILL.md`](dd-browser-sdk/setup-sourcemaps/SKILL.md) |
+| 35 | ✓ | [`dd-browser-sdk/SKILL.md`](dd-browser-sdk/SKILL.md) |
+| 36 | ✓ | [`dd-browser-sdk/upgrade-v5/SKILL.md`](dd-browser-sdk/upgrade-v5/SKILL.md) |
+| 37 | ✓ | [`dd-browser-sdk/upgrade-v6/SKILL.md`](dd-browser-sdk/upgrade-v6/SKILL.md) |
+| 38 | ✓ | [`dd-browser-sdk/upgrade-v7/SKILL.md`](dd-browser-sdk/upgrade-v7/SKILL.md) |
+| 39 | ✓ | [`dd-docs/SKILL.md`](dd-docs/SKILL.md) |
+| 40 | ✓ | [`dd-gcp-integration/SKILL.md`](dd-gcp-integration/SKILL.md) |
+| 41 | ✓ | [`dd-instrument-llmo/SKILL.md`](dd-instrument-llmo/SKILL.md) |
+| 42 | ✓ | [`dd-instrument-rum/SKILL.md`](dd-instrument-rum/SKILL.md) |
+| 43 | ✓ | [`dd-logs/SKILL.md`](dd-logs/SKILL.md) |
+| 44 | ✓ | [`dd-monitors/SKILL.md`](dd-monitors/SKILL.md) |
+| 45 | ✓ | [`dd-oci-integration/SKILL.md`](dd-oci-integration/SKILL.md) |
+| 46 | ✓ | [`dd-orchestrator/SKILL.md`](dd-orchestrator/SKILL.md) |
+| 47 | ✓ | [`dd-product-recommender/SKILL.md`](dd-product-recommender/SKILL.md) |
+| 48 | ✓ | [`dd-pup/SKILL.md`](dd-pup/SKILL.md) |
+| 49 | ✓ | [`dd-security/csm/ownership-agent/SKILL.md`](dd-security/csm/ownership-agent/SKILL.md) |
+| 50 | ✓ | [`dd-software-delivery/triage-flaky-test/SKILL.md`](dd-software-delivery/triage-flaky-test/SKILL.md) |
+| 51 | ✓ | [`dd-software-delivery/unblock-pr/SKILL.md`](dd-software-delivery/unblock-pr/SKILL.md) |
+| 52 | ✓ | [`SKILL.md`](SKILL.md) |
 
 ---
 

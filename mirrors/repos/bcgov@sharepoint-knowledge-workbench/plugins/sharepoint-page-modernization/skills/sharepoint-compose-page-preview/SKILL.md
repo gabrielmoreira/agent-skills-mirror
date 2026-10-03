@@ -1,7 +1,7 @@
 ---
 name: sharepoint-compose-page-preview
 plugin: sharepoint-page-modernization
-description: Merges a site's structural chrome (navigation, header, logo, ancestors) with an already-extracted page's content (modern-preview.html + metadata.json) into a single self-contained offline preview HTML file. Disk-only; performs no tenant writes.
+description: Merges a site's structural chrome (navigation, header, logo, ancestors) with an already-extracted page's content (modern-preview.html plus metadata.json) into a single self-contained offline preview HTML file. Use so a reviewer can see a converted page in context. Disk-only; performs no tenant writes.
 allowed-tools: Bash, Read
 examples:
   - "python3 scripts/preview_composition.py --page-folder ./destination/My-Page --chrome-folder ./site-chrome/Example --output ./destination/My-Page/full-preview.html"
@@ -9,70 +9,41 @@ examples:
 
 # Compose Page Preview
 
-## Trigger and Purpose
+Show a converted page the way it would look with the site's own navigation, header, logo and breadcrumb trail in place.
 
-A reviewer confirming a page conversion needs to see the result in context --
-not a bare content fragment, but the page as it would look with the site's
-own navigation, header, logo, and breadcrumb trail in place. This skill
-merges a page folder's extracted content with a chrome folder's structural
-data into one complete, self-contained offline HTML file.
+## Contents
 
-## Inputs
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-- **Page folder**: must contain `metadata.json` (page title, source URL,
-  extraction timestamp) and `modern-preview.html` (the extracted page
-  content, wrapped in a `<main class="page-content">` or `<div
-  class="page-content">` element -- falls back to `<body>` if that wrapper is
-  absent).
-- **Chrome folder**: must contain `site-chrome.json` with `Web` (title, and
-  optionally `SiteLogoUrl` or `SiteLogoLocalFile`), `TopNav` (a list of
-  `{Title, Url, Children}` entries), and `Ancestors` (a list of `{Title,
-  Url}` breadcrumb entries).
+## Constraints
 
-## Honest outcomes
+- Disk-only. Read the two folders given and write the one output file. No network calls and no tenant I/O.
+- Never fabricate. A missing logo is not replaced by a placeholder image, and missing ancestors or navigation never invent breadcrumb or menu entries. Name every gap in the outcome.
+- Required inputs: a page folder with `metadata.json` and `modern-preview.html`, and a chrome folder with `site-chrome.json`. A missing required file is `Unavailable` and nothing is written.
+- Run from this skill's root. Standard library only.
 
-| Condition | Outcome | Output written? |
-|---|---|---|
-| Page or chrome folder missing a required file | `Unavailable` | No |
-| Page content is empty | `Empty` | No |
-| Chrome present but missing logo, ancestors, and/or navigation | `Partial` (missing parts named) | Yes |
-| Full chrome and content present | `Observed` | Yes |
-
-A missing logo is never replaced with a placeholder image, and missing
-ancestors/navigation never fabricate breadcrumb or menu entries -- the
-preview is built from exactly what is on disk, and every gap is named in the
-outcome detail so a reviewer can see what is missing.
-
-## No tenant writes
-
-This skill only reads the two folders it is given and writes the one output
-file it is given (or `full-preview.html` inside the page folder, by
-default). It performs no network calls and no SharePoint/tenant I/O of any
-kind.
-
-## Usage
+## Quick start
 
 ```bash
-python3 scripts/preview_composition.py \
-  --page-folder ./destination/My-Page \
-  --chrome-folder ./site-chrome/Example \
-  --output ./destination/My-Page/full-preview.html
+python3 scripts/preview_composition.py --page-folder ./destination/My-Page --chrome-folder ./site-chrome/Example
 ```
 
-If `--output` is omitted, the preview is written to `full-preview.html`
-inside the page folder.
+If `--output` is omitted, the preview is written to `full-preview.html` inside the page folder.
 
-## Scripts
+## Workflow
 
-- `scripts/preview_composition.py` -- CLI entry point
-- `scripts/outcomes.py` -- shared status vocabulary
+1. Confirm both folders hold their required files (see the details reference for the exact shape).
+2. Run `preview_composition.py`.
+3. Report the outcome and any missing parts, and where the preview was written.
 
-## Provenance
+## Verification
 
-Adapted from a component of `sp-running-sharegate-jobs` in the originating
-SharePoint migration repository. That skill otherwise depends on a
-commercial migration tool; this component was independently verified to
-have zero calls into it and zero live-tenant I/O, and was extracted here on
-that basis. See
-`docs/reports/phase-9-reusable-sharepoint-plugin-extraction/provenance.md`.
+`Observed` means full chrome and content were present. `Partial` names what chrome was missing (output still written); `Empty` (no page content) and `Unavailable` write nothing.
 
+## References
+
+- [Preview details](references/page-preview-composition-details.md): read for the input file shapes, the outcome table and provenance.

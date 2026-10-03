@@ -1,11 +1,12 @@
 ---
 name: agentforce-generate
-description: "Build, modify, audit, repair, optimize, debug, and deploy agents with Agentforce Agent Script. TRIGGER when: user creates, reviews, or changes .agent files or aiAuthoringBundle metadata; asks to fix AgentScript, audit an existing agent, run an AgentScript health check, common-pitfall review, or baseline-versus-candidate repair loop; changes a response, action, subagent, route, state flow, or Agent Spec; previews, debugs, deploys, publishes, or tests agents; uses sf agent generate/preview/publish/test; or manages Agentforce MCP servers, tools, assets, or authentication. DO NOT TRIGGER when: Apex, Flow, Prompt Template, Experience Cloud, or general Salesforce CLI work is unrelated to Agent Script; or the primary input is a production session or trace ID rather than an agent artifact."
+description: "Build, modify, audit, repair, optimize, debug, and deploy agents with Agentforce Agent Script. TRIGGER when: user creates, reviews, or changes .agent files or aiAuthoringBundle metadata; asks to fix AgentScript, audit an existing agent, run an AgentScript health check, common-pitfall review, or baseline-versus-candidate repair loop; changes a response, action, subagent, route, state flow, or Agent Spec; migrates or upgrades a legacy GenAiPlannerBundle Agentforce agent (NOT an Einstein Bot) to an aiAuthoringBundle (Agent Script) agent; previews, debugs, deploys, publishes, or tests agents; uses sf agent generate/preview/publish/test; or manages Agentforce MCP servers, tools, assets, or authentication. DO NOT TRIGGER when: Apex, Flow, Prompt Template, Experience Cloud, or general Salesforce CLI work is unrelated to Agent Script; the source is an Einstein Bot (BotDefinition/BotVersion) — use agentforce-bot-upgrade; or the primary input is a production session or trace ID rather than an agent artifact."
 metadata:
   version: "0.11"
   domains: ["Agentforce"]
   minApiVersion: "66.0"
   relatedSkills:
+    - "agentforce-bot-upgrade"
     - "agentforce-observe"
     - "agentforce-test"
     - "automation-flow-generate"
@@ -350,6 +351,25 @@ Use **agentforce-test** for test-spec design, security coverage, metadata
 creation, execution, and result analysis. First map the Agent Spec and all
 reachable routes/actions into coverage targets. Confirm before adding security
 tests or running tests that can invoke live actions.
+
+### Migrate a Legacy Agent to Agent Script
+
+User wants to upgrade a legacy `GenAiPlannerBundle` agent into an NGA `AiAuthoringBundle` (Agent Script) agent. May say "migrate my legacy agent", "upgrade to the new builder", "convert agent", "start migration", or mention `genAiPlannerBundle` / `aiAuthoringBundle` migration. (Distinct from Einstein **Bot** upgrades — this covers existing Agentforce **agents**. To convert an Einstein **Bot** into a new agent, use the **agentforce-bot-upgrade** skill instead.)
+
+#### Required Steps
+
+Read [Upgrade a Legacy Agent to Agent Script](references/upgrade-legacy-agent-to-agentscript.md) for the full workflow, exact commands, and the NGA-vs-legacy discriminator. In brief:
+
+1. **Set up the project** — **Confirm the target org via a selectable menu — never assume the default org** (show `sf org list`, mark the default, require an explicit pick). Confirm a DX project (create one if needed); run all retrieves from inside it.
+2. **Pick the legacy agent version** — Two-screen selection: choose the agent, then a **non-NGA** version. Exclude versions whose planner `PlannerType` is `Atlas__ConcurrentMultiAgentOrchestration` (already NGA).
+3. **Migrate via the Connect API** — POST the chosen `botVersionId` to `migrateAgentToNga`. Mutating call; confirm org + id first. Run it in a **subagent** so the large response (inline `agentScript`) does not bloat context — return only `bundleVersionApiName` (+ `conversionWarnings`, `agentResponse`).
+4. **Retrieve the new bundle** — Pull the `AiAuthoringBundle` into the project (by `bundleVersionApiName`, or map `bundleVersionId → fullName` as fallback).
+5. **Analyze, optimize, iterate** — The migration is a mechanical transform that ignores Agent Script primitives. Hand off to **Comprehend an Existing Agent**, then **Optimize an Agent**, then validate/preview.
+
+#### Reference Files
+
+1. [Upgrade a Legacy Agent to Agent Script](references/upgrade-legacy-agent-to-agentscript.md) — full step-by-step workflow, commands, and discriminator logic
+2. [Core Language](references/agent-script-core-language.md) — read the migrated `.agent` structure
 
 ### Optimize an Agent
 

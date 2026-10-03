@@ -13,6 +13,8 @@ metadata:
   cliTools:
     - tool: ["jq"]
       semver: ">=1.6.0"
+    - tool: ["node"]
+      semver: ">=18.0.0"
     - tool: ["sf"]
       semver: ">=2.0.0"
 ---
@@ -32,8 +34,10 @@ The frameworks this skill supports are exactly the reference files under `<skill
 **Detect the framework deterministically — run the script:**
 
 ```sh
-bash <skill_dir>/scripts/detect-framework.sh [<ROOT>]
+node <skill_dir>/scripts/detect-framework.mjs [<ROOT>]
 ```
+
+Always invoke via `node` (never as a bare executable) so this works on Windows cmd/PowerShell as well as macOS/Linux/Git Bash.
 
 `ROOT` defaults to the current directory; pass the bundle or project root when editing/configuring an existing bundle. The script prints exactly one token and sets a matching exit code — branch on it:
 
@@ -49,8 +53,8 @@ The reference file gives you the exact `--template` flag, the entry-file layout,
 - Pass `--output-dir` to use a different location for template generation. If you do, pass that same path to the verification script in step 1 below.
 
 After generation:
-1. **Verify the scaffold is complete** — run `bash <skill_dir>/scripts/verify-bundle-location.sh <BundleName> [<CustomOutputDir>] [<framework>]` from the project root and follow any error output. This checks both the bundle's location AND that `package.json`, `src/`, and an entry `index.html` exist — if any are missing, the scaffold step was skipped; go back and run `sf template generate ui-bundle` before continuing. Pass `<CustomOutputDir>` only if you used `--output-dir` during scaffolding (pass `""` to skip it while still supplying a framework); pass `<framework>` (`react` or `angular`) so the remediation hint uses the right template.
-2. **Verify API version** — run `bash <skill_dir>/scripts/check-api-version.sh` from the project root to ensure `sourceApiVersion` in `sfdx-project.json` is 67.0 or higher. The script will automatically update it if needed.
+1. **Verify the scaffold is complete** — run `node <skill_dir>/scripts/verify-bundle-location.mjs <BundleName> [<CustomOutputDir>] [<framework>]` from the project root and follow any error output. This checks both the bundle's location AND that `package.json`, `src/`, and an entry `index.html` exist — if any are missing, the scaffold step was skipped; go back and run `sf template generate ui-bundle` before continuing. Pass `<CustomOutputDir>` only if you used `--output-dir` during scaffolding (pass `""` to skip it while still supplying a framework); pass `<framework>` (`react` or `angular`) so the remediation hint uses the right template.
+2. **Verify API version** — run `node <skill_dir>/scripts/check-api-version.mjs` from the project root to ensure `sourceApiVersion` in `sfdx-project.json` is 67.0 or higher. The script will automatically update it if needed.
 3. Replace all default boilerplate — the framework reference file lists the exact stock `<title>` and placeholder strings to replace
 4. Populate the home page with real content (landing section, banners, hero, navigation)
 5. Update navigation and placeholders (see the `experience-ui-bundle-frontend-generate` skill)

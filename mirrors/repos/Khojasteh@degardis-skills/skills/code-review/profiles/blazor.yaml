@@ -1,7 +1,0 @@
-name: blazor
-label: Blazor
-description: Load when reviewing Blazor code or behavior.
-instructions:
-- Review component lifecycle, parameter and cascading state, DI scopes, authorization, forms, circuits,
-  prerendering and hydration, serialization, JS interop, cancellation, concurrency, disposal, and Server
-  versus WebAssembly constraints.

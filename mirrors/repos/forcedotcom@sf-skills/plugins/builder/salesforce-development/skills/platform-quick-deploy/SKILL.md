@@ -15,16 +15,13 @@ Promote a validated deploy to a Production org using the job ID from a prior `sf
 Before doing ANYTHING, verify all four:
 
 1. **Target is Production**
+   Confirm the target really is production with the gate's classifier, which resolves the org the same way the deploy hook does (returns `production|sandbox|scratch|trial|unknown`):
    ```bash
-   sf org display --target-org <alias> --json
+   "${CLAUDE_PLUGIN_ROOT}/scripts/sf-deploy-gate" bucket <alias>
    ```
-   Confirm the target really is production. The reliable check is the gate's classifier (returns `production|sandbox|scratch|trial|devhub|unknown`):
-   ```bash
-   sf org display --target-org <alias> --json | "${CLAUDE_PLUGIN_ROOT}/scripts/sf-deploy-gate" classify
-   ```
-   Production means `isSandbox=false` AND `isScratch=false` AND instance URL has no `--` (sandbox marker) AND no `test.salesforce.com` **AND it is not a trial/Developer Edition host** (`orgfarm-*`, `*.develop.my.salesforce.com`, `*.pc-rnd.*`, or a `trialExpirationDate` in the response — these report `isSandbox`/`isScratch` as `null` and must not be taken for production).
+   Production means not a scratch org or sandbox (no `--` or `test.salesforce.com` host marker) **and not a trial/Developer Edition org** (`orgfarm-*`, `*.develop.my.salesforce.com`, `*.pc-rnd.*` hosts, or a future trial expiration date, as on SDOs). A Dev Hub with none of those signals is production.
 
-   If target is NOT production (classifier returns anything other than `production`) → STOP and redirect to `platform-metadata-deploy` (which handles non-prod natively).
+   If target is NOT production (classifier returns anything other than `production`) → STOP and redirect to `platform-metadata-deploy` (which handles non-prod natively). `unknown` means the org type could not be confirmed (usually an incomplete org record). Say so plainly: the deploy gate still allows the deploy, auto-deploy on save stays off for that org, and re-authenticating with `sf org login web` usually restores the classification.
 
 2. **A validation exists**
    - Read `.sfdx/last-validation.json` if it exists (left there by `platform-deploy-validate`)

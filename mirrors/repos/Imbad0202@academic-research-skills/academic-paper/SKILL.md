@@ -394,7 +394,7 @@ Whether the note appears must not depend on the topic, the wording, or the kind 
 
 **When not to show it.**
 
-- The note was already answered or skipped in this project or run. In a run with a passport file, look for a `checkpoint_closed` entry with `checkpoint_id: review-form-note` in the run ledger; without one, look in this conversation. Across separate sessions without a passport file the note can appear again; this is accepted. If the ledger holds a `checkpoint_opened` entry for `review-form-note` and no closing entry, the note is still awaiting its answer: show it again, append no second opening entry, and append the closing entry after the reply.
+- The note was already answered or skipped in this project or run. In a run with a passport file, look for a `checkpoint_closed` entry with `checkpoint_id: review-form-note` in what `python3 scripts/run_ledger.py show --passport-path <passport>` prints; without one, look in this conversation. Across separate sessions without a passport file the note can appear again; this is accepted. If the ledger holds a `checkpoint_opened` entry for `review-form-note` and no closing entry, the note is still awaiting its answer: show it again, append no second opening entry, and append the closing entry after the reply.
 - The author already named a review form in their own words or actions: entered `systematic-review` mode, asked for a systematic, scoping, rapid, narrative, or integrative review, or said they want no formal review. This test reads what the author said, not the content of the research question.
 
 **How to show it.**
@@ -485,6 +485,8 @@ In revision mode, `draft_writer_agent` does NOT re-emit the complete paper. The 
 5. **Continuous evidence:** every review write, all-declined no-op, and integrity-correction round enters `revision-evidence-bundle/1.0`, from an exact integrity-PASS draft to the exact final draft. A scope escalation requires a new explicit sidecar or a narrower patch; legacy full re-emission cannot claim current authorization PASS.
 
 Orchestrated runs follow `pipeline_orchestrator_agent.md` § Revision-Round Patch Sequencing; Mode B users run the same scripts by hand — exact commands in `references/revision_patch_protocol.md`. Honest boundary: registered surfaces and exact edit authority are machine-replayed, but unregistered semantic drift still requires E6 review. `scripts/claim_strength_drift_disposition.py` closes explicit handling of reported rows only; it does not make model-mediated detection deterministic or complete. The `academic-paper full` in-pair Phase 6→4 loop is outside this standalone/pipeline revision contract.
+
+**Abstract after revision (#936).** Revision mode does not re-run `abstract_bilingual_agent`, so an abstract changes only where an author-approved target covers its blocks. A standalone revision's delivery always says the abstract was not regenerated. When the applied patch changes a finding, number, or scope that an abstract states, it also quotes each abstract sentence the patched text now contradicts, so the author can approve an abstract target in the next round or run `abstract-only`. In pipeline runs the integrity gate's C2 check also compares every abstract with the body.
 
 ---
 
@@ -638,7 +640,7 @@ When `ARS_MODEL_TIERING` is set, the dispatching session routes this skill's age
 - **Unset (default):** every agent inherits the session model — byte-equivalent pre-#517 behavior.
 - **`economy`** (frontier-tier session): execution-type agents dispatch ONE tier below the session model — floor Opus-class, never lower; judgment-type agents stay on the session model. No-op at or below the floor (announce once).
 - **`quality-boost`** (below-frontier session): judgment-type agents at the checkpoint surfaces (Stage 2.5/4.5 gates; the opt-in Stage 4→5 claim–ref audit; final review) jump UP to the frontier tier (however many tiers away — not a single increment); nothing is ever downgraded. No-op at the frontier (announce once).
-- Unknown values → warn once, behave as unset. Tiers are relative positions, never hard-pinned model ids. When a direction is active, route repeated same-stage calls to the SAME worker so its prompt cache accumulates; unset means dispatch shapes stay byte-equivalent too.
+- Unknown values → warn once, behave as unset. Tiers are relative positions, never hard-pinned model ids. When a direction is active, route repeated same-stage calls to the SAME worker so its prompt cache accumulates, where the protocol permits (never merging seats that must stay blind; `shared/model_tiering.md`); unset means dispatch shapes stay byte-equivalent too.
 
 ---
 

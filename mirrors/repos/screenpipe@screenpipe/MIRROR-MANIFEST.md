@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `screenpipe/screenpipe` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
+Mirror of `screenpipe/screenpipe` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `screenpipe/screenpipe` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 24 |
+| Files         | 36 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,19 +70,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 10 | ✓ | [`crates/screenpipe-core/assets/skills/render-html-report/SKILL.md`](crates/screenpipe-core/assets/skills/render-html-report/SKILL.md) |
 | 11 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-api/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-api/SKILL.md) |
-| 12 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-chats/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-chats/SKILL.md) |
-| 13 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-cli/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-cli/SKILL.md) |
-| 14 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-durable-learning/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-durable-learning/SKILL.md) |
-| 15 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-focus-review/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-focus-review/SKILL.md) |
-| 16 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-meeting-follow-up/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-meeting-follow-up/SKILL.md) |
-| 17 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-meeting-prep/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-meeting-prep/SKILL.md) |
-| 18 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-recall/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-recall/SKILL.md) |
-| 19 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-research-synthesis/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-research-synthesis/SKILL.md) |
-| 20 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-shareable-recap/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-shareable-recap/SKILL.md) |
-| 21 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-team/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-team/SKILL.md) |
-| 22 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-workflow-maintenance/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-workflow-maintenance/SKILL.md) |
-| 23 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-worklog/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-worklog/SKILL.md) |
-| 24 | ✓ | [`packages/workflows-ui/skills/video-sop/SKILL.md`](packages/workflows-ui/skills/video-sop/SKILL.md) |
+| 12 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-bug-report/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-bug-report/SKILL.md) |
+| 13 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-chats/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-chats/SKILL.md) |
+| 14 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-cli/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-cli/SKILL.md) |
+| 15 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-commitment-review/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-commitment-review/SKILL.md) |
+| 16 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-customer-context/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-customer-context/SKILL.md) |
+| 17 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-decision-history/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-decision-history/SKILL.md) |
+| 18 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-durable-learning/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-durable-learning/SKILL.md) |
+| 19 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-focus-review/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-focus-review/SKILL.md) |
+| 20 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-incident-timeline/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-incident-timeline/SKILL.md) |
+| 21 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-interview-synthesis/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-interview-synthesis/SKILL.md) |
+| 22 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-meeting-follow-up/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-meeting-follow-up/SKILL.md) |
+| 23 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-meeting-prep/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-meeting-prep/SKILL.md) |
+| 24 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-process-guide/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-process-guide/SKILL.md) |
+| 25 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-project-handoff/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-project-handoff/SKILL.md) |
+| 26 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-project-status/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-project-status/SKILL.md) |
+| 27 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-recall/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-recall/SKILL.md) |
+| 28 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-research-synthesis/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-research-synthesis/SKILL.md) |
+| 29 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-resume-work/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-resume-work/SKILL.md) |
+| 30 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-shareable-recap/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-shareable-recap/SKILL.md) |
+| 31 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-team/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-team/SKILL.md) |
+| 32 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-workflow-discovery/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-workflow-discovery/SKILL.md) |
+| 33 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-workflow-maintenance/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-workflow-maintenance/SKILL.md) |
+| 34 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-worklog/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-worklog/SKILL.md) |
+| 35 | ✓ | [`crates/screenpipe-core/assets/skills/screenpipe-writing-context/SKILL.md`](crates/screenpipe-core/assets/skills/screenpipe-writing-context/SKILL.md) |
+| 36 | ✓ | [`packages/workflows-ui/skills/video-sop/SKILL.md`](packages/workflows-ui/skills/video-sop/SKILL.md) |
 
 ---
 

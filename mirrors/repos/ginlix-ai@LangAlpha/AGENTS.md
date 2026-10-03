@@ -24,7 +24,7 @@ uv run pytest tests/unit/ -v --tb=short
 uv run pytest -m integration          # hits real APIs — needs DB + Redis + API keys
 uv run pytest -m regression           # locks live market-data behavior — needs a running server + live providers
 
-cd web && pnpm test                   # Vitest;  pnpm test:e2e = Playwright;  pnpm typecheck = tsc --noEmit
+cd web && pnpm test                   # Vitest;  pnpm test:e2e = Playwright;  pnpm typecheck = tsc -b
 ```
 
 ## Architecture
@@ -39,11 +39,11 @@ cd web && pnpm test                   # Vitest;  pnpm test:e2e = Playwright;  pn
 | `src/llms/` | LLM wrappers, token counting, pricing, model manifest (`manifest/models.json`) |
 | `src/data_client/` | Financial data protocol abstraction |
 | `src/utils/` | Redis cache, shared utilities |
-| `libs/ptc-cli/` | Standalone interactive CLI for the PTC agent (pkg `langalpha-cli`, cmd `ptc-agent`) |
+| `libs/ptc-cli/` | Standalone interactive CLI for the PTC agent (pkg `langalpha-cli`, cmd `ptc-agent`). The `cli` extra, not a server dependency: `uv sync --extra cli`. The server imports nothing from it, and the backend images never install it. |
 
 ### Frontend (`web/src/`)
 
-React 19 + Vite + TypeScript + Tailwind + shadcn/ui; state via React Query. Path alias `@` → `web/src/`. Non-obvious landmines — dual-mode auth (`VITE_HOST_MODE`), SSE via raw `fetch` (not axios), Zod at the prefs boundary — are documented in **`web/AGENTS.md`**.
+React 19 + Vite + TypeScript + Tailwind + shadcn/ui; state via React Query. Path alias `@` → `web/src/`. Non-obvious landmines — dual-mode auth (`VITE_HOST_MODE`), SSE via raw `fetch` (not the REST client), Zod at the prefs boundary — are documented in **`web/AGENTS.md`**.
 
 ### Desktop shell (`desktop/`)
 
@@ -73,11 +73,14 @@ A tool may instead be bound to the **direct** path, where the model calls it as 
 - **Prompts**: Jinja2 templates in `src/ptc_agent/agent/prompts/templates/`, config in `.../prompts/config/prompts.yaml`, via `PromptLoader`. Preview: `scripts/utils/render_prompt.py`.
 - **Long-term memory** (agent-written): user + workspace tiers on the LangGraph `BaseStore`. The memory index rides the per-thread baseline of the runtime context (`agent/middleware/runtime_context/`), frozen at turn start and rebuilt at compaction; a change by another writer reaches the model as a durable row, not a re-render.
 - **Memo store** (`agent/memo/`, `server/app/memo.py`): user-uploaded docs, read-only to the agent; binaries in S3-compatible storage (`services/memo_binary_storage.py`), base64 fallback.
+- **Thread transcripts** (`agent/transcript/`, `server/services/transcripts.py`): each thread rendered from its checkpoint into turn and subagent-run JSONL in the background at turn end, only the segments that changed, stored in `thread_transcripts` (bytes in the rows; with object storage, files over 64 KiB go to blobs). Compaction saves its agent's part live and points the summary at it. The sandbox never holds a copy; the file mount serves them read-only, with a per-computer `threads.jsonl` index generated on read.
+- **File mount** (`core/sandbox/livefs_runtime/`, `server/services/livefs/`, endpoint `/api/v1/livefs/*`): a per-computer FUSE daemon serves the server-held files (memory, profile, automations, workflows, memos and transcripts read-only) so Bash and code read and write them as ordinary files. The sandbox paths are symlinks into `/mnt/livefs`, made at the computer root and again in every workspace folder, where commands run, itself a symlink to the current daemon's mount under `/mnt/.livefs/<generation>`, so a daemon is replaced by mounting anew and swapping the link. Each generation is a small tmpfs with the FUSE mount inside: Daytona runs Sysbox, which refuses to unmount FUSE but not the tmpfs, and a lazy unmount of the tmpfs takes the FUSE mount with it. The daemon authenticates with an opaque per-computer token (digest in `livefs_tokens`, about an hour, rewritten under 30 min left, revoked at stop). A save the server refuses reaches the tool result as `NOT SAVED`, and a save that reports its changes (an automation's file, and an `rm` or `mv` of one) shows them there, matched by the call id in the command's starting environment. The tool files who the command runs for (workspace, thread, timezone) under the same id, which a new automation's defaults come from. Unmounted (server unreachable from the sandbox, a Docker container created without `/dev/fuse`), the file tools still reach these files in process, code is refused, and transcripts are not shown.
 
 ## Conventions
 
 - **Python 3.13+, async-first.** Ruff for linting (only `E741` ignored globally).
 - **Config split**: `.env` for credentials/URLs, YAML (`agent_config.yaml`, `config.yaml`) for behavioral settings.
+- **Per-environment overlays**: `APP_ENV` layers a sibling YAML over each config file (`APP_ENV=production` → `agent_config.production.yaml`); nested maps merge, lists replace. Overlays are gitignored, so the committed YAML stays the documented default. Merged in `load_yaml_config` (`src/ptc_agent/config/file_utils.py`), so every reader gets it. The dev compose stack bind-mounts the base files but bakes overlays in at build, so an overlay edit needs `docker compose build backend`.
 - **`plugins/` holds the built-in MCP servers and skills** — one Agent Plugins 1.0.0 package per group, the same format a user uploads on the Plugins page, read at config load by `src/ptc_agent/config/plugins.py`. A bundle carries its own files: the server entry points `mcp.json` names, and its skills as directories under `plugins/<bundle>/skills/`. `mcp_servers/` keeps only the runtime they share (`_bootstrap`, the envelope, the output schemas). `mcp.json` is closed (`additionalProperties: false` at every level), so a server's `description`, `instruction`, `tool_exposure_mode` and `vault_blueprints` live in `plugin.json` under `extensions["ai.langalpha"]`, the format's one extension point — the same block an uploaded plugin may use. `agent_config.yaml`'s `mcp.servers` is now the operator's own list; a name declared in both wins there. See `plugins/README.md`.
 - **Server-side LLM calls** go through `LLMService.complete`, never `create_llm()` directly (skips BYOK/OAuth/per-user prefs) — contract in `src/server/AGENTS.md`.
 - **Package managers**: `uv` (Python), `pnpm` (frontend).

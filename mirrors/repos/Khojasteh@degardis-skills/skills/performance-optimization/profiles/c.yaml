@@ -1,6 +1,0 @@
-name: c
-label: C
-description: Load when optimizing C performance.
-instructions:
-- Measure optimized builds while checking inlining, vectorization, aliasing, cache locality, branches,
-  allocation, copies, syscalls, I/O, synchronization, binary size, and startup.

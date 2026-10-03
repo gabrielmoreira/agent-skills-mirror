@@ -11,6 +11,7 @@ The Python gateway owns agent execution, sessions, tools, memory, and security p
 | Path permissions, HTTP/MCP, or shell isolation | [`.agent/security.md`](.agent/security.md) |
 | Dependency setup, WebUI transport, config, Windows, prompts, or persistence | [`.agent/gotchas.md`](.agent/gotchas.md) |
 | Reusing verification evidence | [`.agent/workflow.md`](.agent/workflow.md) |
+| WebUI/host compatibility | [`.agent/review-guide.md`](.agent/review-guide.md) |
 | Contribution or publication | [`CONTRIBUTING.md`](CONTRIBUTING.md), [`docs/releasing.md`](docs/releasing.md) |
 
 ## Development constraints

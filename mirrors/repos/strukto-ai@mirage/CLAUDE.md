@@ -34,6 +34,10 @@ semantics.
 - `scripts/check_layout_parity.py --strict`: module sets of `mirage/<pkg>/`
   against the TypeScript twin; the count must equal the committed baseline.
   Exceptions live in `spec/layout_exceptions.json` with a reason.
+- `scripts/check_symbol_parity.py --strict`: the top-level names of each
+  module pair, the same ratchet over `spec/symbol_exceptions.json`. A module
+  constant uses the short name (`BUILDER`, `PROMPT`, `IO`); a file needing
+  several imports them as namespaces (`import * as column`).
 - `scripts/gen_specs.py` and `typescript/scripts/gen-specs.ts` regenerate
   `spec/`; `scripts/check_spec_parity.py` diffs command specs, VFS registries
   and config fields across the two languages.

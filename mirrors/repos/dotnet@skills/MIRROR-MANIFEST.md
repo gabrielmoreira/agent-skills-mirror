@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dotnet/skills` — 26 default patterns, 0 followed patterns, 114 file(s) materialized.
+Mirror of `dotnet/skills` — 26 default patterns, 0 followed patterns, 115 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dotnet/skills` — 26 default patterns, 0 followed patterns, 114 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 114 |
+| Files         | 115 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -168,11 +168,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 107 | ✓ | [`plugins/dotnet-upgrade/skills/migrate-dotnet9-to-dotnet10/SKILL.md`](plugins/dotnet-upgrade/skills/migrate-dotnet9-to-dotnet10/SKILL.md) |
 | 108 | ✓ | [`plugins/dotnet-upgrade/skills/migrate-nullable-references/SKILL.md`](plugins/dotnet-upgrade/skills/migrate-nullable-references/SKILL.md) |
 | 109 | ✓ | [`plugins/dotnet-upgrade/skills/thread-abort-migration/SKILL.md`](plugins/dotnet-upgrade/skills/thread-abort-migration/SKILL.md) |
-| 110 | ✓ | [`plugins/dotnet/skills/csharp-refactoring/SKILL.md`](plugins/dotnet/skills/csharp-refactoring/SKILL.md) |
-| 111 | ✓ | [`plugins/dotnet/skills/msbuild/SKILL.md`](plugins/dotnet/skills/msbuild/SKILL.md) |
-| 112 | ✓ | [`plugins/dotnet/skills/setup-local-sdk/SKILL.md`](plugins/dotnet/skills/setup-local-sdk/SKILL.md) |
-| 113 | ✓ | [`plugins/dotnet11/skills/system-text-json-net11/SKILL.md`](plugins/dotnet11/skills/system-text-json-net11/SKILL.md) |
-| 114 | ✓ | [`tests/dotnet-test/writing-mstest-tests/fixtures/repository-overlay/AGENTS.md`](tests/dotnet-test/writing-mstest-tests/fixtures/repository-overlay/AGENTS.md) |
+| 110 | ✓ | [`plugins/dotnet-winforms/skills/winforms-expert/SKILL.md`](plugins/dotnet-winforms/skills/winforms-expert/SKILL.md) |
+| 111 | ✓ | [`plugins/dotnet/skills/csharp-refactoring/SKILL.md`](plugins/dotnet/skills/csharp-refactoring/SKILL.md) |
+| 112 | ✓ | [`plugins/dotnet/skills/msbuild/SKILL.md`](plugins/dotnet/skills/msbuild/SKILL.md) |
+| 113 | ✓ | [`plugins/dotnet/skills/setup-local-sdk/SKILL.md`](plugins/dotnet/skills/setup-local-sdk/SKILL.md) |
+| 114 | ✓ | [`plugins/dotnet11/skills/system-text-json-net11/SKILL.md`](plugins/dotnet11/skills/system-text-json-net11/SKILL.md) |
+| 115 | ✓ | [`tests/dotnet-test/writing-mstest-tests/fixtures/repository-overlay/AGENTS.md`](tests/dotnet-test/writing-mstest-tests/fixtures/repository-overlay/AGENTS.md) |
 
 ---
 

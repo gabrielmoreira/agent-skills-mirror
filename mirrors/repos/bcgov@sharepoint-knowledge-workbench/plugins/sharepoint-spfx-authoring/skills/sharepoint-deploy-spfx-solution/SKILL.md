@@ -1,55 +1,49 @@
 ---
 name: sharepoint-deploy-spfx-solution
 plugin: sharepoint-spfx-authoring
-description: Provides PnP PowerShell runbooks and scripts to upload, deploy, and verify .sppkg packages in Site Collection or Tenant App Catalogs.
+description: Provides PnP PowerShell runbooks and scripts to upload, deploy and verify .sppkg packages in Site Collection or Tenant App Catalogs. Use after packaging an SPFx solution, to get it into an App Catalog and confirm it is valid and enabled.
 allowed-tools: Bash, Read, Write
+examples:
+  - "pwsh -File scripts/deploy-spfx-package.ps1 -PackagePath \"path/to/solution.sppkg\" -Scope Site -Install"
+  - "pwsh -File scripts/verify-app-catalog.ps1 -SiteUrl \"https://tenant.sharepoint.com/sites/site\" -AdminUrl \"https://tenant-admin.sharepoint.com\""
 ---
 
-# deploy-spfx-solution
+# Deploy SPFx Solution
 
-## Overview
+Upload, deploy and verify a compiled `.sppkg` in a SharePoint Online App Catalog (site collection or tenant).
 
-This skill guides the deployment and verification of compiled SPFx solution packages (`.sppkg`) into a SharePoint Online App Catalog (Site Collection App Catalog or Tenant App Catalog).
+## Contents
 
-## Toolchain Requirements
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-- **PowerShell**: PowerShell 7 (`pwsh`)
-- **Module**: `PnP.PowerShell`
+## Constraints
 
-## Core Workflow
+- `scripts/deploy-spfx-package.ps1` has no dry-run or confirmation gate: it uploads and publishes (`Add-PnPApp`), and with `-Install` installs the app, as soon as it runs. Confirm the target site and package with the user first;
+  the user runs it. `scripts/verify-app-catalog.ps1` is read-only.
+- A Site Collection App Catalog must exist on the target site before a site-scope deploy; add it with `-EnsureSiteAppCatalog` or follow `sharepoint-request-site-collection-app-catalog`.
+- Requires PowerShell 7 (`pwsh`) and `PnP.PowerShell`. When running an installed copy, pass `-ConfigPath` or explicit `-SiteUrl`, `-ClientId`, `-TenantId`.
 
-### Step 1: Verify Site Collection App Catalog
-
-Ensure the App Catalog exists on the target site collection:
-
-```powershell
-Connect-PnPOnline -Url "https://<tenant>.sharepoint.com/sites/<site>" -Interactive
-Add-PnPSiteCollectionAppCatalog
-```
-
-### Step 2: Upload and Deploy Package via Browser
-
-1. Navigate to the App Catalog direct library view:
-   `https://<tenant>.sharepoint.com/sites/<site>/AppCatalog/AppCatalog`
-2. Drag and drop the `.sppkg` file.
-3. Confirm **Replace / Overwrite**.
-4. In the trust panel, select **Enable app** / **Deploy**.
-
-### Step 3: Automated Upload via PnP PowerShell
-
-Alternatively, deploy directly via PowerShell script:
+## Quick start
 
 ```powershell
-Connect-PnPOnline -Url "https://<tenant>.sharepoint.com/sites/<site>" -Interactive
-Add-PnPApp -Path "path/to/solution.sppkg" -Publish -Overwrite
+pwsh -File scripts/deploy-spfx-package.ps1 -PackagePath "path/to/solution.sppkg" -Scope Site -Install
 ```
 
-### Step 4: Verification
+## Workflow
 
-1. Confirm the App Catalog list displays:
-   - **Enabled = Yes**
-   - **Valid App Package = Yes**
-   - **App Package Error Message = No errors**
-2. Refresh the target modern page (`.../SitePages/<page>.aspx?SelectedID=1`).
-3. Verify that the SPFx Master-Detail component renders updated data without requiring page re-addition.
+1. Verify the site's App Catalog exists (`scripts/verify-app-catalog.ps1`).
+2. Deploy with the script above, or upload through the browser or `Add-PnPApp` (see the runbook).
+3. Check the App Catalog entry, then refresh the target modern page.
 
+## Verification
+
+The App Catalog list shows Enabled = Yes, Valid App Package = Yes and App Package Error Message = No errors, and the SPFx component renders updated data on the page without being re-added.
+
+## References
+
+- [Deploy runbook](references/spfx-deploy-runbook.md): read for the browser and PnP flows and the verification checklist.
+- [Live-write scripts](references/spfx-live-write-scripts.md): read for which SPFx scripts have gates and their parameters.

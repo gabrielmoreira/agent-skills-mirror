@@ -11,6 +11,7 @@ When performing these actions, ALWAYS invoke the corresponding skill FIRST:
 | Action | Skill |
 | ------ | ----- |
 | Adding a built-in attack skill to the agent | `builtin-agent-skill` |
+| Adding a non-chat provider type, or a path that picks any provider row | `llm-provider-integration` |
 | Adding or integrating an LLM provider | `llm-provider-integration` |
 | Adding, removing or changing a tool on the inbound MCP server | `mcp-server-tools` |
 | Changing MCP token scopes, their UI wording, or the MCP API reference generator | `mcp-server-tools` |

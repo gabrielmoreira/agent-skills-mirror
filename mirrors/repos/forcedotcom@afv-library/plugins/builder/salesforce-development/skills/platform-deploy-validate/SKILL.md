@@ -27,13 +27,13 @@ Always prefer `sf project deploy validate` (prod) or `sf project deploy start --
 
 ### Step 1 — Confirm the target org
 
-Classify the org with the gate's classifier — it is the authoritative source of truth (it handles sandbox/scratch markers, trial and Developer Edition hosts, and dev hubs, and returns one of `production|sandbox|scratch|trial|devhub|unknown`):
+Classify the org with the gate's classifier — it is the authoritative source of truth and resolves the org the same way the deploy hook does (it handles sandbox/scratch markers, trial and Developer Edition orgs including SDOs, and treats a Dev Hub with no such signal as production; returns one of `production|sandbox|scratch|trial|unknown`):
 
 ```bash
-sf org display --target-org <alias> --json | "${CLAUDE_PLUGIN_ROOT}/scripts/sf-deploy-gate" classify
+"${CLAUDE_PLUGIN_ROOT}/scripts/sf-deploy-gate" bucket <alias>
 ```
 
-Only `production` takes the production path (Step 2b); every other result takes the sandbox/scratch path (Step 2a).
+Only `production` takes the production path (Step 2b); every other result takes the sandbox/scratch path (Step 2a). `unknown` means the org type could not be confirmed (usually an incomplete org record). Say so plainly: the deploy gate still allows the deploy, auto-deploy on save stays off for that org, and re-authenticating with `sf org login web` usually restores the classification.
 
 ### Step 2a — Sandbox/Scratch path (dry-run)
 

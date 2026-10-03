@@ -3,7 +3,7 @@
 Before proceeding to STEP 3 (Final Summary), validate that all required phases were executed:
 
 **Critical Validation (MUST pass):**
-- [ ] **Phase 0 (Template Offer & Bootstrap) executed**: If no template was used, run `scripts/check-sfdx-project.sh`. If it returns non-zero, STOP and report error:
+- [ ] **Phase 0 (Template Offer & Bootstrap) executed**: If no template was used, run `node scripts/check-sfdx-project.mjs`. If it returns non-zero, STOP and report error:
   ```text
   ERROR: No SFDX project detected. Phase 0 (Bootstrap) is REQUIRED before scaffolding.
   Run `sf project generate` (or create sfdx-project.json) before invoking
@@ -11,7 +11,7 @@ Before proceeding to STEP 3 (Final Summary), validate that all required phases w
   ```
   If a template was used in Phase 0, this check is satisfied by the template's own scaffolding — skip re-running the script.
 
-- [ ] **Phase 1 hosting target resolved**: Run `scripts/check-hosting-target.sh`. If it returns non-zero, STOP and report error:
+- [ ] **Phase 1 hosting target resolved**: Run `node scripts/check-hosting-target.mjs`. If it returns non-zero, STOP and report error:
   ```text
   ERROR: Hosting target was not resolved in Phase 1. A UI bundle without a <target> in its
   meta XML will not be visible in the org. Determine Experience Site vs Custom Application
@@ -33,7 +33,7 @@ Before proceeding to STEP 3 (Final Summary), validate that all required phases w
   Exactly one of Phase 7a/7b must run -- it is never optional or "skipped".
   ```
 
-- [ ] **No dangling references after scaffold pruning**: If any file was deleted during Phase 1 scaffold pruning (see "Prune unused scaffold" in SKILL.md), run `scripts/check-dangling-refs.sh <deleted-basename>` for each deleted file. If it returns non-zero (e.g. `vite.config.ts` still imports `vite-plugin-graphql-codegen` after `codegen.yml` was deleted, or a page still imports a deleted hook/component), STOP and report error:
+- [ ] **No dangling references after scaffold pruning**: If any file was deleted during Phase 1 scaffold pruning (see "Prune unused scaffold" in SKILL.md), run `node scripts/check-dangling-refs.mjs <deleted-basename>` for each deleted file. If it returns non-zero (e.g. `vite.config.ts` still imports `vite-plugin-graphql-codegen` after `codegen.yml` was deleted, or a page still imports a deleted hook/component), STOP and report error:
   ```text
   ERROR: Scaffold pruning left a dangling reference -- <file> was deleted but <other-file>
   still imports/references it. Remove the reference (or restore the file) before completing

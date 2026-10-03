@@ -460,6 +460,51 @@ This release closes that milestone with **301 merged pull requests**.
 
 ### Fixed
 
+- **community:** The shared SSRF guard now refuses every non-global address,
+  including the `100.64.0.0/10` shared address space that its flag checks let
+  through. That range holds CGNAT and Tailscale hosts and Alibaba Cloud's
+  `100.100.100.200` instance metadata endpoint, so `web_fetch` (crawl4ai,
+  Browserless, fastcrw), `web_capture`, the agentic browser, and personal MCP
+  connections could reach them, including through the IPv4-mapped
+  `::ffff:100.100.100.200` form a DNS answer can carry. The existing flag
+  checks stay, because some non-public forms such as the NAT64 spelling of a
+  metadata address still report as global. Operators who intentionally fetch
+  tailnet or CGNAT hosts with these tools must now set
+  `allow_private_addresses: true`. ([#6202])
+- **browser:** The agentic browser can no longer be steered to a private or
+  cloud-metadata host by a DNS answer that changes after the SSRF check. The
+  navigate screen and the per-request guard resolve a hostname to vet it, but
+  Chromium resolved it again to connect, so a rebinding DNS server could answer
+  the checks with a public address and the connection with a private one. Each
+  launched browser now sends every TCP connection through a per-session
+  loopback SOCKS5 proxy: Chromium hands it the hostname, and the proxy resolves
+  it once under the same `allow_private_addresses` policy and connects to
+  exactly the vetted addresses. Loopback traffic goes through the proxy too.
+  WebRTC UDP does not traverse the proxy and is not covered. CDP-attached Chrome
+  is unchanged, and delegated fetch services (crawl4ai, Browserless, fastcrw)
+  still resolve on their own side, which the Gateway cannot pin. ([#6201])
+- **channels:** The Discord typing indicator is now actually sent while the
+  agent works on a reply. `_start_typing()` called `channel.trigger_typing()`, which
+  discord.py removed in 2.0 (the project requires `>=2.7.0`), and its loop
+  swallowed every exception, so each tick raised `AttributeError` and nothing
+  was ever sent. It now awaits `channel.typing()`, the 2.x API that sends one
+  indicator. A typing loop's first failed tick is logged at WARNING (a missing
+  permission or sustained rate limiting is visible at the default level) and
+  later ticks at DEBUG, instead of being dropped. ([#6138])
+- **community:** The SSRF URL guard no longer stalls the Gateway event loop
+  while it resolves a hostname. `validate_public_http_url` resolves with
+  blocking `socket.getaddrinfo`, and the crawl4ai and Browserless `web_fetch`,
+  `web_capture`, `browser_navigate`, the Gateway browser navigate route, and
+  the Live stream's navigate input and seed called it directly from async code,
+  so a slow DNS answer for a model- or user-chosen URL froze every other request
+  and stream for the length of the lookup. The Playwright request guard, which
+  screens every redirect hop and subresource, did the same on the shared browser
+  loop and stalled Live frames and input for every browser session. These
+  callers now run the guard
+  through `asyncio.to_thread`; what it allows and rejects is unchanged. The
+  strict blocking-IO gate gains a `socket.getaddrinfo` rule, because
+  Blockbuster's defaults wrap socket methods but not the module-level resolver.
+  ([#6140])
 - **agents:** Loop-detection integer thresholds now reject YAML booleans instead
   of coercing `true` to `1`. A configuration such as `warn_threshold: true`
   and `hard_limit: true` previously made the first tool-call set meet the hard
@@ -7561,4 +7606,8 @@ with **180 merged pull requests** since the first 2.0 milestone tag.
 [#6132]: https://github.com/bytedance/deer-flow/pull/6132
 [#6134]: https://github.com/bytedance/deer-flow/pull/6134
 [#6135]: https://github.com/bytedance/deer-flow/pull/6135
+[#6138]: https://github.com/bytedance/deer-flow/pull/6138
+[#6140]: https://github.com/bytedance/deer-flow/pull/6140
+[#6201]: https://github.com/bytedance/deer-flow/pull/6201
+[#6202]: https://github.com/bytedance/deer-flow/pull/6202
 

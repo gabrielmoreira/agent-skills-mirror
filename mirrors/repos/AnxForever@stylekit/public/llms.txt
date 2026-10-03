@@ -53,10 +53,43 @@ npx shadcn add https://www.stylekit.top/r/neo-brutalist.json
 Install the StyleKit knowledge skill in a compatible coding-agent environment:
 
 ```bash
-npx skills add AnxForever/stylekit-skill
+npx skills@latest add AnxForever/stylekit-skill
 ```
 
 The repository also contains published public-beta [CLI](https://www.npmjs.com/package/stylekit-cli) and [MCP](https://www.npmjs.com/package/stylekit-mcp) packages. Check each package listing for its current release rather than assuming the repository and npm versions are identical.
+
+## Updating StyleKit tools
+
+Use `npx -y --prefer-online stylekit-cli@latest ...` to run the current CLI.
+For an MCP client, add this once to its MCP server configuration:
+
+```json
+{
+  "mcpServers": {
+    "stylekit": {
+      "command": "npx",
+      "args": ["-y", "--prefer-online", "stylekit-mcp@latest"]
+    }
+  }
+}
+```
+
+The CLI checks npm when invoked. An MCP client checks npm when it starts the configured process; restart a running server or client to load a release. Public online asset content is fetched on demand and does not require reinstalling these packages. Replace `@latest` with an exact published version for reproducible runs.
+
+Install or update a direct Core dependency with `npm install stylekit-core@beta` or `pnpm add stylekit-core@beta`. Moving this npm dist-tag does not update versions already recorded in a project's manifest or lockfile. Use an exact version for reproducible builds.
+
+A compatible coding agent checks GitHub when it runs the StyleKit Skill instructions, at most once every 24 hours. This is not a background service. Existing Skill installations need one migration update: `npx skills@latest update stylekit`. Back up local Skill edits before migrating; afterward, the updater verifies files before changing them, skips updates when it detects local edits, and restores the previous file if a file update fails.
+
+## Public Asset API
+
+- Browse and search: `GET https://www.stylekit.top/api/assets?kind=animation&q=fade&limit=20&offset=0`
+- Retrieve one asset: `GET https://www.stylekit.top/api/assets/{kind}/{id}`
+- Complete style contract: `GET https://www.stylekit.top/api/styles/{slug}/brief`
+- Standalone template ZIP: `GET https://www.stylekit.top/api/templates/{slug}/download`
+
+The asset catalog covers curated styles, animation snippets, backgrounds, gradients, shadows, font pairings, component patterns, templates and design references. Follow `hasMore` and increment `offset` to discover the whole catalog. Asset details include data, reusable code or project files, dependencies, and source/license information where applicable. Preserve third-party attribution and check each item's availability before using it. External templates are references; restricted experience packs require their separate license. Private user kits and knowledge records awaiting publication are excluded.
+
+The MCP server exposes `stylekit_list_assets` and `stylekit_get_asset`. The CLI provides `stylekit assets` and `stylekit asset <kind> <id>`. The Agent Skill can save the same asset JSON for reuse in a target project. Bundled fallback covers static assets; complete template source requires the website. Style lint checks do not prove that arbitrary asset integration is accessible or works in a browser.
 
 ## Product Boundaries
 

@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.1.12] - 2026-10-03
+
+**The desktop app can now see when computer use is waiting on a system permission, and a cancelled task on Windows no longer shows up as a crash.** This release runs on the senpi 2026.10.2 engine, which carries the upstream pi v1.0.0 changes.
+
+### Added
+
+**A computer-use permission request reaches the root session as an event.** When a computer-use action, an eval cell or a delegated task stops because the system has not granted a permission computer use needs (such as Screen Recording or Accessibility), omo emits `omo.computer.permission_required` on the root session, with that session's id, once per missing permission. The desktop app can show the request instead of a bare tool error, and other failures never turn into permission events. ([#9393](https://github.com/code-yeongyu/oh-my-openagent/pull/9393))
+
+### Changed
+
+**omo runs on senpi 2026.10.2.** Reloading or replacing a session while a monitor or an eval cell is running no longer kills the process, and the engine carries the upstream pi v1.0.0 changes. Full list: [senpi 2026.10.2](https://github.com/code-yeongyu/senpi/releases/tag/v2026.10.2).
+
+### Fixed
+
+**On Windows, a cancelled delegated task is recorded as cancelled, not as a crash.** A killed task child could be recorded as an error carrying Bun's child-reaper message when enough of those messages filled the end of its error output; it now counts as killed, while any real error output still marks a crash. ([#9443](https://github.com/code-yeongyu/oh-my-openagent/pull/9443))
+
+**A platform package is published only if its release binary passed the smoke.** The platform publish uploaded its npm package before the release-binary smoke ran, so a platform whose smoke failed still published its package (5.1.8 published both Windows x64 packages from a run whose smoke failed). The package is now uploaded only after that platform's smoke passes, so a failed smoke stops exactly that platform's publish while the others still publish, and the linux-arm64 smokes now finish before their packages publish. ([#9385](https://github.com/code-yeongyu/oh-my-openagent/issues/9385), [#9439](https://github.com/code-yeongyu/oh-my-openagent/pull/9439))
+
+## [5.1.11] - 2026-10-02
+
+**New tasks no longer queue forever behind a delegated task that lost its connection to the host.** Such a task used to stay suspended with its lane taken until the session restarted; now it reconnects, or ends within a bounded time and frees the lane. This release runs on the senpi 2026.10.1-3 engine.
+
+### Fixed
+
+**A delegated task that loses its connection to the host is reattached, or fails with `transport lost` within a bounded time.** Either way its lane is released and its own processes are cleaned up, so the next task starts instead of waiting. After a host restart, lanes still held by tasks that died are reclaimed. ([#9403](https://github.com/code-yeongyu/oh-my-openagent/issues/9403), [#9407](https://github.com/code-yeongyu/oh-my-openagent/pull/9407))
+
+Cancelling a delegated task finishes only once the host confirms the child closed, a stopped task whose handle was let go still ends as cancelled, and a stopped task is never continued afterwards. ([#9407](https://github.com/code-yeongyu/oh-my-openagent/pull/9407))
+
+**The OpenCode edition's skill tool lists skills and commands in a stable order, so its tool definitions stay cacheable.** Skills and commands in the same scope were listed in discovery order, which varies between processes, so the tool definition changed from session to session and each new session and subagent missed the prompt cache. They are now ordered by scope, then by name. Thanks to @kimchupa-l10n for the report. ([#9432](https://github.com/code-yeongyu/oh-my-openagent/issues/9432))
+
+## [5.1.10] - 2026-10-02
+
+**Hotfix: `omo -p` exits again after a delegated task.** Since 5.1.8, a headless or scripted run whose agent handed work to an in-process task printed its answer and then never exited, so CI jobs, cron entries and wrappers that wait on it hung until killed. Interactive sessions leaked a loopback bridge server and its socket for every such task. This release runs on the senpi 2026.10.1-3 engine.
+
+### Fixed
+
+**`omo -p` exits after an in-process task child finishes, and the child's resources are released.** Since 5.1.8 an in-process child loads the engine's builtin extensions, but its teardown disposed the session without running their `session_shutdown` handlers, so codemode's per-session bridge server stayed listening and kept the process alive. Child teardown now runs those handlers first, within the host's shutdown budget, on both the normal path and the path that discards a child whose handle never started. ([#9413](https://github.com/code-yeongyu/oh-my-openagent/issues/9413), [#9418](https://github.com/code-yeongyu/oh-my-openagent/pull/9418))
+
+A delegated task that the host recovers after a restart is reported as continued only once its continuation prompt is acknowledged; a refused or timed-out prompt is now reported as lost instead of a successful reattach. Thanks to @Dante-dan. ([#9406](https://github.com/code-yeongyu/oh-my-openagent/pull/9406))
+
 ## [5.1.9] - 2026-10-02
 
 **In the desktop app's restricted modes, the agent's own tools stop asking for approval, and a bash call from an eval cell no longer hangs.** Files that ship with the app no longer count as outside paths, the first Python cell after a cold start works on Windows x64, and delegated tasks keep your timeout settings and run at thinking levels their models accept. This release runs on the senpi 2026.10.1-3 engine.

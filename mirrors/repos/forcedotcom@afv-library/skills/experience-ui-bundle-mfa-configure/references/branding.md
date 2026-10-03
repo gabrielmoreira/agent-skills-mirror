@@ -15,9 +15,11 @@ The MFA challenge page and login page are platform-rendered. Their branding is c
 
 ## Retrieve existing branding
 
-```bash
-# Create a package.xml manifest
-cat > /tmp/branding-pkg.xml <<'EOF'
+Create a package.xml manifest at `manifest/branding-pkg.xml` in the project (a
+plain file write — avoid a shell heredoc, since `<<EOF` and `/tmp` are not
+portable to Windows cmd/PowerShell) with this content:
+
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
   <types>
@@ -26,11 +28,13 @@ cat > /tmp/branding-pkg.xml <<'EOF'
   </types>
   <version>62.0</version>
 </Package>
-EOF
+```
 
-# Retrieve from org
+Then retrieve from the org:
+
+```bash
 sf project retrieve start --target-org <org-alias> \
-  --manifest /tmp/branding-pkg.xml \
+  --manifest manifest/branding-pkg.xml \
   --target-metadata-dir ./branding-retrieve --unzip
 ```
 

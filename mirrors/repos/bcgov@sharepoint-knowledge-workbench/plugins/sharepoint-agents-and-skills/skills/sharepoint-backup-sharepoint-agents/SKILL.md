@@ -1,31 +1,45 @@
 ---
 name: sharepoint-backup-sharepoint-agents
-description: Read-only backup of named .agent files from a SharePoint site to a local directory.
+plugin: sharepoint-agents-and-skills
+description: Read-only backup of named .agent files from a SharePoint site to a local directory. Use as a precaution before any tenant cleanup or agent change. Makes no tenant changes.
+allowed-tools: Bash, Read
 ---
 
-# backup-sharepoint-agents
+# Backup SharePoint Agents
 
-## Purpose
+Download named `.agent` files to a local directory. Idempotent: it always writes to the same output directory and overwrites in place.
 
-Downloads named `.agent` files to a local directory as a precaution before any tenant cleanup is
-considered. Makes no changes to the tenant. Idempotent — always writes to the same fixed output
-directory and overwrites in place on every run.
+## Contents
 
-## Input boundaries
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-- `-ConfigFile` — connection/authentication context only.
-- `-SitePath` (required) — site-relative path to the folder containing the `.agent` files.
-- `-AgentFileNames` (required) — explicit list. No hardcoded default — generalized from the
-  original Phase 5 `backup-existing-agents.ps1`, which hardcoded specific agent
-  filenames; those 5 values now live only in that Phase 5 script's own thin-wrapper defaults.
-- `-OutputDir` — local destination directory.
-- **Read-only** — no tenant write of any kind.
+## Constraints
 
-## Scripts
+- Read-only: no tenant write of any kind.
+- `-SitePath` and `-AgentFileNames` are required. There is no hardcoded default list; the caller names exactly what to back up.
+- `-ConfigFile` carries connection context only. When running an installed copy, pass it explicitly.
 
-- `../../scripts/backup-sharepoint-agents.ps1`
+## Quick start
 
-## Related
+```powershell
+pwsh -File scripts/backup-sharepoint-agents.ps1 -ConfigFile config.psd1 -SitePath "<site-relative folder>" -AgentFileNames @('agent-one.agent') -OutputDir ./backup
+```
 
-- `restore-sharepoint-agents` — the corresponding restore skill.
+## Workflow
 
+1. Confirm the site-relative folder and the exact `.agent` file names.
+2. Run the script with `-OutputDir`.
+3. Keep the backup for `sharepoint-restore-sharepoint-agents`.
+
+## Verification
+
+Every named file exists in `-OutputDir`. A missing file is reported, not skipped.
+
+## References
+
+- [Safety, config and permissions](references/agents-and-skills-safety-and-config.md): read for the gate model of every script, the `-ConfigFile` default caveat and the Copilot permission note.
+- [Backup and restore](references/agent-backup-restore-details.md): read for the backup parameters and the matching restore.

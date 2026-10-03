@@ -1,61 +1,46 @@
 ---
 name: sharepoint-inventory-and-validate-agentassets
-description: Provisions, inspects, and validates readiness of a SharePoint site's AgentAssets document library and its Skills subfolder before native-skill deployment.
+plugin: sharepoint-agents-and-skills
+description: Provisions, inspects and validates the readiness of a SharePoint site's AgentAssets document library and its Skills subfolder before native-skill deployment. Use before deploying a native skill, or to troubleshoot library names and IDs.
+allowed-tools: Bash, Read
 ---
 
-# inventory-and-validate-agentassets
+# Inventory and Validate AgentAssets
 
-## Purpose
+Inspect a site's `AgentAssets` library, the library Copilot in SharePoint reads native `SKILL.md` definitions from, and provision it only when explicitly asked.
 
-Read-only (and, only when explicitly requested, provisioning) inspection of a SharePoint site's
-`AgentAssets` document library — the library Copilot in SharePoint reads native `SKILL.md`
-definitions from. Confirms the library and its `Skills/` subfolder exist and are accessible
-before any `deploy-sharepoint-native-skill` invocation is attempted.
+## Contents
 
-## Capabilities
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-- **Provision** (`provision-agentassets.ps1`): create `AgentAssets` as a document library and its
-  `Skills/` subfolder if they don't exist yet. Optionally uploads one named sample skill when both
-  `-SkillName` and `-SkillSourcePath` are supplied — does nothing skill-specific otherwise.
-- **Readiness check** (`verify-agentassets-ready.ps1`): confirms `AgentAssets`/`Skills/` exist and
-  are accessible, inventories existing `SKILL.md` files, reports a `READY`/`BLOCKED` status.
-- **Library diagnostic** (`diagnose-sharepoint-library.ps1`): read-only inspection of any library
-  on the site (not just `AgentAssets`) — lists libraries, or inspects one in detail (items,
-  fields/columns). Useful for troubleshooting library names/IDs before pointing other skills at
-  them.
+## Constraints
 
-## Input boundaries
+- `scripts/provision-agentassets.ps1` is the only write-capable script and has no dry-run gate: it creates the library and `Skills/` folder immediately. Run it only when explicitly requested, and the user runs it.
+- `verify-agentassets-ready.ps1` and `diagnose-sharepoint-library.ps1` are strictly read-only and must never create the library as a side effect.
+- Every target is an explicit parameter; a config with placeholder credentials fails closed. Pass `-ConfigFile` (`-ConfigPath` for the provision script) when installed.
+- Do not deploy or verify a specific skill's content here.
 
-- `-ConfigFile` (all scripts) — connection/authentication context only (`SiteUrl`, `ClientId`,
-  `TenantId`). No fallback to another phase's config file — fails closed with an explicit error if
-  the supplied config has placeholder credentials, per this plugin's parameterization standard.
-- Provisioning (`provision-agentassets.ps1`) is the only write-capable capability here — the
-  readiness check and diagnostic are strictly read-only.
-- No hardcoded tenant, site, library, or skill names in any of the three scripts — every target is
-  an explicit parameter.
+## Quick start
 
-## Prohibited scope
+```powershell
+pwsh -File scripts/verify-agentassets-ready.ps1 -ConfigFile config.psd1
+```
 
-- Do not deploy or verify a specific native skill's content here — that's
-  `deploy-sharepoint-native-skill`/`verify-sharepoint-native-skill`'s responsibility.
-- Do not create the `AgentAssets` library as a side effect of a read-only readiness check or
-  diagnostic call — only `provision-agentassets.ps1`, invoked explicitly, writes anything.
+## Workflow
 
-## Scripts
+1. Run the readiness check; it reports `READY` or `BLOCKED` and lists existing `SKILL.md` files.
+2. If blocked and provisioning is requested, run `provision-agentassets.ps1` (optionally `-SkillName` with `-SkillSourcePath` to upload one sample skill).
+3. For library names or IDs, run `diagnose-sharepoint-library.ps1` (with `-LibraryName` for detail).
 
-- `../../scripts/provision-agentassets.ps1`
-- `../../scripts/verify-agentassets-ready.ps1`
-- `../../scripts/diagnose-sharepoint-library.ps1`
+## Verification
 
-(Referenced directly from the plugin root — see `review-manual-topics/SKILL.md`'s note on why
-these are not yet managed file-level symlinks: `symlink_manager.py` does not exist in this
-repository.)
+Status is `READY`; provisioning reports what it created or found existing, with an optional JSON export (`-JsonOutputPath`).
 
-## Output
+## References
 
-- Provisioning: confirmation of what was created/already existed, plus an optional JSON inventory
-  export (`-JsonOutputPath`).
-- Readiness check: `READY` or `BLOCKED` status, plus the list of existing `SKILL.md` files found.
-- Diagnostic: library metadata (title, URL, ID, item count, fields) or, with no `-LibraryName`,
-  a list of every library on the site.
-
+- [Safety, config and permissions](references/agents-and-skills-safety-and-config.md): read for the gate model of every script, the `-ConfigFile` default caveat and the Copilot permission note.
+- [Native skill lifecycle](references/native-skill-lifecycle-details.md): read for the three capabilities and their outputs.

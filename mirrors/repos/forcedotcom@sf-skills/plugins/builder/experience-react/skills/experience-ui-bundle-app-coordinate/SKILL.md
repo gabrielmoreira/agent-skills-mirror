@@ -42,7 +42,7 @@ Before starting any phase, verify these preconditions are met:
 
 1. **Authenticated Salesforce org**: Run `sf org display` to confirm a default org is set and authenticated. If not, prompt the user to authenticate: `sf org login web`
 2. **Required CLI tools**: Verify `sf`, `npm`, and `npx` are available (declared in metadata.cliTools)
-3. **Node.js version**: Run `scripts/check-prerequisites.sh` and report any errors it returns
+3. **Node.js version**: Run `node scripts/check-prerequisites.mjs` and report any errors
 4. **Org features** (if deploying): Experience Cloud enabled, appropriate licenses, and Sites enabled
 
 If any precondition fails, stop and report the specific missing requirement before attempting any phase execution.
@@ -114,7 +114,7 @@ Offer prebuilt starter template (experience-ui-bundle-project-generate)
     v
 If template chosen: scaffold via sf template generate project -- Phase 1 skipped
     v
-If declined: run scripts/check-sfdx-project.sh
+If declined: run node scripts/check-sfdx-project.mjs
     v
 If missing: create sfdx-project.json
     v
@@ -123,7 +123,7 @@ Verify project directory initialized
 
 Offers a faster, less error-prone starting point before building from scratch. If no template is used, ensures an SFDX project exists before attempting to generate a UI bundle — without this, `sf template generate ui-bundle` will fail with a hard error. Always check first — do not assume the project structure exists.
 
-**Action:** Load `experience-ui-bundle-project-generate` and offer the two starter templates. If declined, run `scripts/check-sfdx-project.sh` and report any errors it returns. If the script reports an error, create the missing `sfdx-project.json` before proceeding.
+**Action:** Load `experience-ui-bundle-project-generate` and offer the two starter templates. If declined, run `node scripts/check-sfdx-project.mjs`; on error, create the missing `sfdx-project.json` before proceeding.
 
 ### Phase 1: Scaffolding (Foundation)
 
@@ -154,7 +154,7 @@ Creates the UI bundle directory structure, meta XML (including hosting target), 
 - `package.json` — remove now-unused dependencies (`vite-plugin-graphql-codegen`, `@graphql-codegen/*`, `playwright`, `vitest`, etc.) and their npm scripts, not just the config files.
 - Any component/page that imports a deleted hook, client, or shadcn component (e.g. `useAsyncData`, `graphqlClient`) must have that import and its usage removed or replaced — never leave an import pointing at a file that no longer exists.
 - Do NOT re-add a file you just deleted elsewhere in the same pass (e.g. deleting `codegen.yml` while still emitting `.graphqlrc.yml`) — decide scope once per concern and apply it consistently across every file that touches that concern.
-- Before finishing Phase 4, run `scripts/check-dangling-refs.sh <deleted-basename>` for each deleted file and report any errors it returns.
+- Before finishing Phase 4, run `node scripts/check-dangling-refs.mjs <deleted-basename>` for each deleted file and report any errors.
 
 ### Phase 2: Features (Required if prompt mentions feature keywords — see "Prompt Classification Keywords" above)
 
@@ -163,16 +163,16 @@ Search project code (src/) for existing implementations
     v
 Install dependencies (npm install)
     v
-Search, describe, and install features (auth, shadcn, search, navigation, GraphQL)
+Search, describe, and adopt features (auth, shadcn, search, navigation, GraphQL)
     v
 Resolve conflicts (two-pass: --on-conflict error, then --conflict-resolution)
     v
 Integrate __examples__ files into target files (verify build succeeds), then delete them
 ```
 
-Installs pre-built, tested feature packages. See "Prompt Classification Keywords" above for the full trigger keyword list and negative-phrasing handling — these features provide the foundation that UI components build on top of.
+Loads the feature skill to install pre-built packages, or adopt ones the template already shipped — never build your own version of a catalog feature. See "Prompt Classification Keywords" for triggers and negative-phrasing handling.
 
-Only skip this phase if the app is truly a minimal "hello world" with no interactive features (no trigger keywords present at all).
+Skip only for a minimal "hello world" with no interactive features; pre-shipped features still require this phase.
 
 ### Phase 2.5: Custom Objects (Required if the prompt requires a new custom Salesforce object the org doesn't have)
 
@@ -378,14 +378,14 @@ Execute each phase sequentially following the standard pattern in `references/ph
 ---
 
 **Phase 0 -- Template Offer & Bootstrap**
-- Load `experience-ui-bundle-project-generate`, offer templates. If chosen: skip Phase 1, continue at Phase 4. If declined: run `scripts/check-sfdx-project.sh`, create project if missing.
+- Load `experience-ui-bundle-project-generate`, offer templates. If chosen: skip Phase 1, continue at Phase 2. If declined: run `node scripts/check-sfdx-project.mjs`, create project if missing.
 
 **Phase 1 -- Scaffolding** (skip if template used in Phase 0)
-- **Precondition**: `scripts/check-sfdx-project.sh` passes
+- **Precondition**: `node scripts/check-sfdx-project.mjs` passes
 - Load `experience-ui-bundle-metadata-generate`. Determine hosting target FIRST. Run `sf template generate ui-bundle --template reactbasic`, configure meta XML with `<target>`.
-- **Post-verification**: `scripts/check-phase-1-complete.sh` passes
+- **Post-verification**: `node scripts/check-phase-1-complete.mjs` passes
 
-**Phase 2 -- Features** (skip if no feature keywords present — see "Prompt Classification Keywords")
+**Phase 2 -- Features** (run on any feature keyword, even if pre-installed — see "Prompt Classification Keywords")
 - Load `experience-ui-bundle-features-generate`. Install features, integrate examples. Verify with `npm run build`.
 
 **Phase 2.5 -- Custom Objects** (skip if org has all needed objects)
@@ -395,25 +395,25 @@ Execute each phase sequentially following the standard pattern in `references/ph
 - Load `experience-ui-bundle-salesforce-data-access`. Fetch schema, ground entities, generate queries/mutations. Verify with `npx eslint`.
 
 **Phase 4 -- UI** (ALWAYS REQUIRED)
-- **Precondition**: `scripts/check-phase-1-complete.sh` passes
+- **Precondition**: `node scripts/check-phase-1-complete.mjs` passes
 - Load `experience-ui-bundle-frontend-generate`. Build layout, pages, components. Replace all boilerplate.
-- **Post-verification**: `scripts/check-phase-4-complete.sh` passes
+- **Post-verification**: `node scripts/check-phase-4-complete.mjs` passes
 - **CRITICAL**: Phase 4 generates the actual React UI. Never skip.
 
 **Phase 5 -- Integrations** (skip if not requested)
 - Load `experience-ui-bundle-agentforce-client-generate` (5a) and/or `experience-ui-bundle-file-upload-generate` (5b) as needed.
 
 **Phase 6 -- Deployment**
-- **Precondition**: `scripts/check-phase-6-ready.sh` passes
+- **Precondition**: `node scripts/check-phase-6-ready.mjs` passes
 - Load `experience-ui-bundle-deploy`. Follow 7-step sequence. Prefer `scripts/org-setup.mjs` if available.
 - **CRITICAL**: Guard against empty schema — retry fetch 3x before codegen.
 
 **Phase 7a -- Experience Site** (external users)
-- **Trigger**: `scripts/check-hosting-target.sh` outputs "ExperienceSite"
+- **Trigger**: `node scripts/check-hosting-target.mjs` outputs "ExperienceSite"
 - Load `experience-ui-bundle-site-generate`. Deploy site infrastructure.
 
 **Phase 7b -- Custom Application** (internal users)
-- **Trigger**: `scripts/check-hosting-target.sh` outputs "CustomApplication"
+- **Trigger**: `node scripts/check-hosting-target.mjs` outputs "CustomApplication"
 - Load `experience-ui-bundle-custom-app-generate`. Deploy app metadata.
 
 ### STEP 2.5: Phase Completion Validation

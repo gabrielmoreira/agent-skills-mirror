@@ -1,42 +1,46 @@
 ---
 name: sharepoint-apply-sharepoint-agent-template
-description: Applies an existing agent template to a specific target, producing a concrete .agent package via create-sharepoint-agent.
+plugin: sharepoint-agents-and-skills
+description: Applies an existing agent template to a specific target, producing a concrete .agent package through create-sharepoint-agent. Use after a template exists, to produce an agent for one set of knowledge sources. Zero tenant I/O; does not deploy.
+allowed-tools: Bash, Read, Write
 ---
 
-# apply-sharepoint-agent-template
+# Apply SharePoint Agent Template
 
-## Purpose
+Fill a template's knowledge-source placeholders with real URLs, assemble the final instructions from its sections, and delegate to `create-sharepoint-agent` to write the `.agent` package.
 
-Fills a template's knowledge-source placeholders with real URLs, assembles the final
-instructions from the template's sections, and delegates to `create-sharepoint-agent` to write
-the resulting `.agent` package. Rejects a mismatched knowledge-source count rather than silently
-truncating or padding.
+## Contents
 
-## Input boundaries
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-- `-TemplatePath` (required) — must exist.
-- `-AgentName`, `-AgentDescription` (required) — the concrete agent's identity; the template has
-  none of its own.
-- `-KnowledgeSourcePaths` (required) — must contain **exactly** the template's
-  `KnowledgeSourcePlaceholderCount`.
-- `-OutputPath` (required); `-Overwrite` passed through to `create-sharepoint-agent.ps1`.
+## Constraints
 
-## Prohibited scope
+- Zero tenant I/O. Do not deploy the produced package.
+- `-KnowledgeSourcePaths` must contain exactly the template's `KnowledgeSourcePlaceholderCount`; reject a mismatch rather than truncating or padding.
+- `-TemplatePath` must exist; `-AgentName` and `-AgentDescription` are required because the template has no identity. `-Overwrite` is passed through to `create-sharepoint-agent.ps1`.
+- Pass several `-KnowledgeSourcePaths` with `pwsh -Command` and an explicit `@(...)` array; multi-value arrays followed by more named parameters are unreliable under `-File`.
 
-- Zero tenant I/O.
-- Does not deploy the produced package.
+## Quick start
 
-## Scripts
+```powershell
+pwsh -File scripts/apply-sharepoint-agent-template.ps1 -TemplatePath template.json -AgentName "Policy Helper" -AgentDescription "Answers policy questions" -KnowledgeSourcePaths "https://tenant.sharepoint.com/sites/x/Policies" -OutputPath policy-helper.agent
+```
 
-- `../../scripts/apply-sharepoint-agent-template.ps1` (delegates to
-  `create-sharepoint-agent.ps1`)
+## Workflow
 
-## Tests
+1. Confirm the template exists and note its `KnowledgeSourcePlaceholderCount`.
+2. Collect the agent name, description and exactly that many knowledge-source URLs.
+3. Run the script. It delegates to `create-sharepoint-agent.ps1` to write the package.
 
-`../../tests/unit/test_agent_templates.py` — includes exact-source-count enforcement.
+## Verification
 
-**Note on multi-value array parameters:** invoking a script with a multi-value array parameter
-(e.g. 2+ `-KnowledgeSourcePaths`) followed by additional named parameters is unreliable via
-`pwsh -File`'s positional binding (confirmed via direct reproduction) — use `-Command` with an
-explicit `@(...)` array literal instead. Single-value arrays work fine under `-File`.
+A valid `.agent` file exists at `-OutputPath` and its knowledge sources match the supplied URLs. To deploy it, use a separate step.
 
+## References
+
+- [Safety, config and permissions](references/agents-and-skills-safety-and-config.md): read for the gate model of every script, the `-ConfigFile` default caveat and the Copilot permission note.
+- [Agent package authoring](references/agent-package-authoring-details.md): read for how templates, create and update fit together, and the tests.

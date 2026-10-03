@@ -193,7 +193,7 @@ Add the following to your project's `.pre-commit-config.yaml`:
 ```yaml
 repos:
   - repo: https://github.com/Cranot/roam-code
-    rev: v14.0.4          # pin to a release tag
+    rev: v14.1.0          # pin to a release tag
     hooks:
       - id: roam-secrets        # secret scanning -- no index required
       - id: roam-syntax-check   # tree-sitter syntax validation -- no index required
@@ -575,7 +575,7 @@ roam-code is organized into these key areas:
 | `src/roam/graph/` | NetworkX graph algorithms (PageRank, SCC, clustering, layers) |
 | `src/roam/bridges/` | Cross-language symbol resolution |
 | `src/roam/output/` | Formatting, JSON envelopes, SARIF output |
-| `src/roam/mcp_server.py` | MCP server with 246 tools (17 in the default `core` preset) |
+| `src/roam/mcp_server.py` | MCP server with 258 tools (17 in the default `core` preset) |
 | `tests/` | Test suite |
 
 For full architectural details, see the [Architecture Guide](https://roam-code.com/docs/architecture).

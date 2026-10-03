@@ -137,9 +137,10 @@ coverage must be at least 80 percent.
   starts with `use super::*;` and carries no `#[cfg(test)]` of its own. Never name
   one `test.rs`, `tests.rs` or `<module>_test.rs`, and never write an inline
   `#[cfg(test)] mod tests { ... }` (`pnpm rust:layout` fails on an inline module
-  and on `test.rs`/`tests.rs`; it does not yet catch `<module>_test.rs`). The same
-  rule binds every `vendor/` submodule: `node scripts/externalize-inline-tests.mjs
-  <repo-root> --write` converts one mechanically, and a crate root directly in
+  and on `test.rs`/`tests.rs`/`<module>_test.rs`). The same rule binds every
+  `vendor/` submodule: `node scripts/externalize-inline-tests.mjs <repo-root>
+  --write` converts one mechanically (add `--rename-legacy` for `test.rs` and
+  `<module>_test.rs`), and a crate root directly in
   `src/bin/` keeps its tests in `src/bin/<stem>/` because Cargo builds any `.rs`
   placed straight in `src/bin/` as a binary.
 - Rust domain tests live beside their modules. Use

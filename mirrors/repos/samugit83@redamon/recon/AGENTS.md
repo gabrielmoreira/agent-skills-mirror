@@ -11,6 +11,7 @@ When performing these actions, ALWAYS invoke the corresponding skill FIRST:
 | Action | Skill |
 | ------ | ----- |
 | Adding a new tool to the recon pipeline | `recon-tool-integration` |
+| Adding an LLM \| Jev engine switch to a recon AI hook | `recon-ai-enrichment` |
 | Adding or editing a recon/helpers/ai_planner hook or its /llm endpoint | `recon-ai-enrichment` |
 | Adding partial-recon support for a recon tool | `add-partial-recon` |
 | Changing or adding a project setting or default value | `project-settings-cascade` |

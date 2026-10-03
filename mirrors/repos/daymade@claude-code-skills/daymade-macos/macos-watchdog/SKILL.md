@@ -26,9 +26,9 @@ The governing principle, learned the expensive way: **a watchdog's lifecycle is 
 | SRE alert layering (page vs ticket, fatigue numbers) | `references/alert-discipline.md` |
 | A watchdog alert appears under Script Editor or its sender is unclear | `references/alert-discipline.md` § Message content; inspect the delivered card |
 
-## The quiet-watchdog contract (the four clauses)
+## The quiet-watchdog contract
 
-Before shipping or blessing any watchdog, all four must hold. Each clause exists because a real watchdog violated it.
+Before shipping or blessing any watchdog, every clause below must hold. Each clause exists because a real watchdog violated it.
 
 ### 1. Premise-state self-check — it knows when it has no job
 
@@ -73,6 +73,7 @@ Gate every such action: check the target process is alive before invoking its sc
 5. **Idempotency guard**: re-running your deploy must not double-install. `scripts/new-launchagent.sh <label> <script> <interval>` is the idempotent wrapper (bootout-if-loaded → write plist → bootstrap → verify `launchctl list`).
 6. **TCC / Full Disk Access**: a LaunchAgent reading protected files needs a working grant for its effective permission subject. Use `macos-permissions` to inspect TCC attribution and verify a protected read from the actual job; the shell's interpreter path alone does not decide this.
 7. **Batch throttling by default**: any watchdog loop that spawns work (replays, fuzz, batch scans, parallel API calls) needs an explicit rate cap as a default parameter, not a later optimization. To the machine, an unthrottled loop and a runaway process are indistinguishable (real case: an unthrottled test replay forked 1,041 processes/sec for 7 minutes and pushed the die to 83 °C).
+8. **Browser side-effect acceptance**: a successful data fetch alone does not prove a browser-backed watchdog is ready. The deploying operator must declare a budget for task-owned spaces and pages, then independently inventory them across multiple rounds, including injected initialization and cleanup failures. Counts must stay within that lifecycle budget; protect user-owned and unknown-origin pages throughout. If the task requires no focus stealing, independently observe the foreground app and visible windows during those rounds; CDP success is not focus evidence. For ego lite lifecycle, locking, ownership conflicts and cleanup readback, load the named Skill `ego-lite-use` when installed. Otherwise use the owning browser tool's documented lifecycle while meeting the same budget and readback requirements. Missing resource observations, or missing focus observations when no focus stealing is required, leave acceptance incomplete.
 
 ## Stop semantics (the deprecated trap)
 

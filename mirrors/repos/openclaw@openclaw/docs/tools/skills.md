@@ -55,7 +55,13 @@ snapshot refresh and sandbox synchronization. Sandboxed runs read the
 materialized copies, not the original host paths.
 
 Managed worktree sessions keep their recorded canonical workspace as the skill
-source. The configured agent workspace remains the primary skill source even when
+source. That source is read and watched on the Gateway, even when a File Transfer
+plugin serves the agent workspace from a paired node. The node reads its configured
+agent skill roots; it does not receive Gateway source paths. Selected skill files
+and supporting resources are delivered from their owning host. Model-facing
+workspace-hosted entries use `workspace-skill://` read locations, so an identical
+Gateway path cannot redirect the read to the node.
+The configured agent workspace remains the primary skill source even when
 the session executes in a worktree; only selecting that worktree as the agent's
 workspace gives its skills primary precedence. A selected nested workspace stays
 nested: discovery does not walk up to its parent repository. Installing OpenClaw
@@ -224,15 +230,20 @@ regardless of where they are loaded from.
 ```json5
 {
   agents: {
+    ownership: "explicit",
     defaults: {
       skills: ["github", "weather"], // shared baseline
+      heartbeat: { agentId: "writer" },
+      systemAgent: { agentId: "writer" },
+      authInheritance: { agentId: "writer" },
     },
     entries: {
-      writer: { default: true }, // inherits github, weather
+      writer: { workspace: "~/.openclaw/workspace" }, // inherits github, weather
       docs: { skills: ["docs-search"] }, // replaces defaults entirely
       "locked-down": { skills: [] }, // no skills
     },
   },
+  talk: { agentId: "writer" },
 }
 ```
 
@@ -355,6 +366,12 @@ publish and sync.
     directory or repository name. Use `--as <slug>` to override.
     `openclaw skills update` tracks ClawHub installs only — reinstall Git or
     local sources to refresh them.
+
+    ClawHub tracking uses `.clawhub/lock.json` in the workspace and
+    `.clawhub/origin.json` in each installed skill. The pre-July 2026
+    `.clawdhub` directory is no longer read. For older installs, rename those
+    metadata directories to `.clawhub` before updating or verifying skills;
+    preserve and reconcile any existing `.clawhub` metadata instead of overwriting it.
 
   </Accordion>
   <Accordion title="Verification and security scanning">
@@ -559,10 +576,12 @@ Fresh dependency checks detect binaries installed into directories already on
 </ParamField>
 
 <Note>
-  Legacy `metadata.clawdbot` blocks are still accepted when
-  `metadata.openclaw` is absent, so older installed skills keep their
-  dependency gates and installer hints. New skills should use
-  `metadata.openclaw`.
+  The pre-July 2026 `metadata.clawdbot` format is no longer read. To update an
+  older skill, edit its `SKILL.md` frontmatter and rename that block to
+  `metadata.openclaw`, preserving its requirements and installer fields. If
+  both blocks exist, keep the current block and merge only the legacy fields
+  you still want. OpenClaw does not rewrite the file; the old block's dependency
+  gates and installer hints are ignored until you update it.
 </Note>
 
 ### Installer specs
@@ -759,8 +778,9 @@ skills through the existing snapshot preparation. Restart the Gateway after
 restoring watch capacity to enable native watching again.
 
 When native events are unavailable, skills polling runs every 30 seconds by
-default. This is also the minimum interval for explicitly requested polling;
-larger `CHOKIDAR_INTERVAL` values remain supported. Native event hints still
+default. A valid `CHOKIDAR_INTERVAL` overrides this default for automatic fallback
+and explicitly requested polling, with a 20 ms minimum. Shorter intervals increase
+background scanning cost, especially for large skill trees. Native event hints still
 trigger prompt refreshes with the normal debounce. Each watcher logs one warning
 when automatic selection falls back to polling, including the reported reason
 when available.

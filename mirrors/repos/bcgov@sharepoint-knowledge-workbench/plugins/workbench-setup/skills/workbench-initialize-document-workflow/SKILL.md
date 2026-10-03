@@ -1,83 +1,72 @@
 ---
 name: workbench-initialize-document-workflow
 plugin: workbench-setup
-description: "Interactive intake wizard covering source-document identity, requested processing stages, requested output formats (only implemented renderer profiles offered as executable choices), publication locations, agent-grounding representations, and governance/evidence settings. Produces document-workflows/<DocumentId>.workflow.psd1 and publication-profiles/<DocumentId>.publication.psd1. Execution boundary: ask -> propose defaults -> validate -> display resolved configuration -> write profile files -> stop. Never extracts documents, renders content, or connects to/modifies SharePoint."
+description: "Interactive intake wizard that records a source document's identity, processing stages, output formats (only implemented renderer profiles are executable choices), publication locations, agent-grounding representations and governance settings, then writes document-workflows/{DocumentId}.workflow.psd1 and publication-profiles/{DocumentId}.publication.psd1. Use when setting up a new document or revision for conversion or publication. Ask, propose defaults, validate, display, write, stop; never extracts, renders, or connects to SharePoint."
 allowed-tools: Bash, Read
 examples:
-  - "python -c \"import document_workflow as dw; dw.write_document_workflow('.', 'sample-manual', workflow, publication)\""
+  - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); import document_workflow as dw; dw.write_document_workflow('.', 'sample-manual', workflow, publication)\""
 ---
 
 # Initialize Document Workflow
 
-## Trigger and Purpose
+Run the interactive intake for one source document and write its two profile files.
+Initialization only: configuration in, `.psd1` profiles out.
 
-Use this skill to run the broader interactive intake wizard for a
-source document, per `docs/superpowers/specs/2026-08-02-multi-
-document-destination-configuration-design.md` Sections 1 (Layer 1b,
-Layer 2) and 8. Ask the user (across all domains, without performing
-any of their work): source-document identity, new conversion vs.
-revision, content type/ownership, requested processing stages,
-requested output formats, human-facing publication locations, media
-locations, ASPX publication, agent-grounding representations, existing-
-vs-new agent decisions, native-skill requirements, governance/evidence
-settings, and an explicit list of unresolved decisions.
+## Contents
 
-**Only implemented renderer profiles may be offered as executable
-choices** — currently `multipage-markdown` and `sharepoint-aspx`
-(`document_workflow.IMPLEMENTED_RENDERER_PROFILES`, kept in sync with
-`structured-content-rendering`'s actual registered renderers).
-Anything else requested is recorded in `UnsupportedRequests`, never
-silently treated as executable.
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-**Execution boundary — initialization only, this version:**
+## Constraints
+
+Execution boundary for this version:
+
 ```text
 ask -> propose defaults -> validate -> display resolved configuration -> write profile files -> stop
 ```
-Must **not**: extract documents; confirm topic boundaries; render
-content; connect to or modify SharePoint; upload files; create pages;
-create agents; deploy native skills. Every one of those stays a
-separate, explicitly invoked domain-plugin capability.
 
-`initialize-publication-profile` (a narrower, earlier-conceived skill
-named in the design doc) is **superseded/absorbed** into this wizard's
-broader flow — not a separate, fourth skill.
+Must **not**: extract documents; confirm topic boundaries; render content; connect to or
+modify SharePoint; upload files; create pages; create agents; deploy native skills. Each
+stays a separate, explicitly invoked domain-plugin capability.
 
-## Public Interface
+Offer only implemented renderer profiles (`multipage-markdown`, `sharepoint-aspx`) as
+executable choices. Record anything else in `UnsupportedRequests`.
 
-```python
-from document_workflow import (
-    classify_renderer_requests, build_workflow_profile,
-    build_publication_profile, write_document_workflow,
-)
+Run from this skill's root: the helpers are `scripts/document_workflow.py` and
+`scripts/psd1_writer.py`. Standard library only; no other plugin is required.
 
-workflow = build_workflow_profile(document_id=..., source_path=..., source_format=...,
-                                   is_revision=..., requested_stages=[...],
-                                   requested_renderer_profiles=[...],
-                                   human_confirmation_gates={...},
-                                   publication_profile_path=...,
-                                   agent_actions_requested=[...], outstanding_decisions=[...])
+## Quick start
 
-publication = build_publication_profile(document_id=..., title=..., content_type=...,
-                                         content_owner=..., source_package_path=...,
-                                         package_identity=..., human_publication={...})
+1. Ask the intake questions in [intake scope](references/document-workflow-intake-scope.md).
+2. From the skill root, put `scripts/` on `sys.path`, build both profiles and write them with
+   `write_document_workflow`; signatures are in
+   [the API reference](references/document-workflow-api.md).
 
-workflow_path, publication_path = write_document_workflow(repo_root, document_id, workflow, publication)
-```
+## Workflow
 
-Both `build_*` functions validate before returning (raise
-`DocumentWorkflowError` on invalid input, e.g. an empty `document_id`
-or an unimplemented renderer profile placed in `HumanPublication.
-PublicationProfile`). `write_document_workflow` refuses to silently
-overwrite existing profile files unless `overwrite=True` is passed
-explicitly.
+1. Ask for source-document identity, new conversion vs. revision, requested stages and
+   output formats, publication and media locations, agent-grounding choices, and
+   governance settings. List every unresolved decision explicitly.
+2. Propose defaults for anything the user leaves open.
+3. Call `build_workflow_profile` and `build_publication_profile`; they validate and raise
+   `DocumentWorkflowError` on invalid input.
+4. Display the resolved configuration and get confirmation.
+5. Call `write_document_workflow`. It refuses to overwrite existing files unless
+   `overwrite=True` is passed explicitly. Then stop.
 
-## Installation
+## Verification
 
-```bash
-pip install -e plugins/workbench-setup
-```
+Confirm both files exist at `document-workflows/<id>.workflow.psd1` and
+`publication-profiles/<id>.publication.psd1`, and that every requested renderer outside the
+allowlist appears under `UnsupportedRequests`. Confirm no extraction, rendering or
+SharePoint call was made.
 
-## Dependencies
+## References
 
-None beyond the Python standard library.
-
+- [Intake scope](references/document-workflow-intake-scope.md): read before asking
+  the user questions, or when a requested output format is not in the allowlist.
+- [API reference](references/document-workflow-api.md): read before calling
+  `build_*` or `write_document_workflow`, or when validation or overwrite errors occur.

@@ -94,9 +94,9 @@ The model then queries the stored original with three read-only tools, none of w
 | `juice_extract` | Links or headings from HTML or Markdown output. |
 | `juice_summarize` | Size, outline or JSON shape, then head and tail, or the parts most relevant to a `hint`. |
 
-Answers are size-capped, and an unknown or evicted handle is an error. `tinyjuice_retrieve` still returns the whole original. Because a handle preview is built without a model call, it also replaces the LLM summary for results big enough to get one, so a slow summarizer cannot stall the turn. The three tools are registered (about 1.5 KB of schema) only while this mode is in effect.
+Answers are size-capped, and an unknown or evicted handle is an error. `juice_retrieve` still returns the whole original. Because a handle preview is built without a model call, it also replaces the LLM summary for results big enough to get one, so a slow summarizer cannot stall the turn. The three tools are registered (about 1.5 KB of schema) only while this mode is in effect.
 
-Opt out of the whole feature with `context.compaction_enabled = false` or `OPENHUMAN_COMPACTION=0`. Keep compaction but return to the one-blob compression and `tinyjuice_retrieve` with `tokenjuice.repl_handle_enabled = false` (`OPENHUMAN_TOKENJUICE_REPL_HANDLE_ENABLED=0`). Set `tokenjuice.repl_save_enabled = true` to also write each stored original to `<workspace>/.tokenjuice/repl/<handle>.txt` (mode 0600) so an agent can script over it; that puts raw tool output on disk and nothing prunes it.
+Opt out of the whole feature with `context.compaction_enabled = false` or `OPENHUMAN_COMPACTION=0`. Keep compaction but return to the one-blob compression and `juice_retrieve` with `tokenjuice.repl_handle_enabled = false` (`OPENHUMAN_TOKENJUICE_REPL_HANDLE_ENABLED=0`). Set `tokenjuice.repl_save_enabled = true` to also write each stored original to `<workspace>/.tokenjuice/repl/<handle>.txt` (mode 0600) so an agent can script over it; that puts raw tool output on disk and nothing prunes it.
 
 ---
 
@@ -117,8 +117,8 @@ Lossy compression would normally mean throwing data away. TokenJuice instead **o
 
 - **In-memory tier** (always on): a process-global store keyed by SHA-256 hash, bounded by entry count (`max_cache_entries`, default 256) and total bytes (`max_cache_bytes`, default 64 MiB), FIFO eviction.
 - **On-disk tier** (optional): `<workspace>/.tokenjuice/ccr/`, enabled with `ccr_disk_enabled`, survives memory eviction. Optional TTL via `ccr_ttl_secs`.
-- **The marker:** compacted output ends with a footer like `[compacted tool output — PARTIAL view; full original available via tokenjuice_retrieve with token "…"]` carrying the `⟦tj:<hash>⟧` token.
-- **Retrieval tool:** the agent calls the read-only **`tokenjuice_retrieve`** tool with that token (optionally a byte/line `range`) to pull back the full original or a slice. The token is an unguessable SHA-256 digest.
+- **The marker:** compacted output ends with a footer like `[compacted tool output — PARTIAL view; full original available via juice_retrieve with token "…"]` carrying the `⟦tj:<hash>⟧` token.
+- **Retrieval tool:** the agent calls the read-only **`juice_retrieve`** tool with that token (optionally a byte/line `range`) to pull back the full original or a slice. The token is an unguessable SHA-256 digest.
 
 So the agent gets the cheap compacted view by default, and can transparently "zoom in" on the full text only when it actually needs it.
 
@@ -156,7 +156,7 @@ Everything lives under the `[tokenjuice]` config block (`crates/openhuman-core/s
 - **CCR:** `ccr_enabled`, `ccr_disk_enabled`, `max_cache_entries`, `max_cache_bytes`, `ccr_ttl_secs`.
 - **Per-kind:** `search_enabled`, `code_enabled`, `html_enabled`, plus the `ml_*` keys.
 - **RPC** (`openhuman.tokenjuice_*`): `detect`, `compress` (dry-run the pipeline), `settings_get` / `settings_update` (live partial patch), `cache_stats`, `retrieve`, `savings_stats`, `savings_reset`.
-- **Agent tools:** `tinyjuice_retrieve` recovers a whole offloaded original; `juice_find`, `juice_extract` and `juice_summarize` query one by handle. All are read-only.
+- **Agent tools:** `juice_retrieve` recovers a whole offloaded original; `juice_find`, `juice_extract` and `juice_summarize` query one by handle. All are read-only.
 - **Debugging:** start the core with `RUST_LOG=openhuman_core::inference::tokenjuice=debug` to watch detection, matching, and how much each blob is trimmed.
 
 ---

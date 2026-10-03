@@ -12,7 +12,7 @@ Always pass `--template angularbasic` to scaffold an Angular bundle:
 sf template generate ui-bundle -n CoffeeBoutique --template angularbasic
 ```
 
-Pass `--output-dir` to generate at a different location. If you do, pass that same path to `verify-bundle-location.sh` in the verification step.
+Pass `--output-dir` to generate at a different location. If you do, pass that same path to `verify-bundle-location.mjs` in the verification step.
 
 ## What the scaffold produces
 

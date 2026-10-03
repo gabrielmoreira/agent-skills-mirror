@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `mudler/LocalAI` — 26 default patterns, 2 followed patterns, 21 file(s) materialized.
+Mirror of `mudler/LocalAI` — 26 default patterns, 2 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mudler/LocalAI` — 26 default patterns, 2 followed patterns, 21 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 21 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,18 +69,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`.agents/ci-caching.md`](.agents/ci-caching.md) |
 | 8 | ✓ | [`.agents/coding-style.md`](.agents/coding-style.md) |
 | 9 | ✓ | [`.agents/debugging-backends.md`](.agents/debugging-backends.md) |
-| 10 | ✓ | [`.agents/distributed-state.md`](.agents/distributed-state.md) |
-| 11 | ✓ | [`.agents/ds4-backend.md`](.agents/ds4-backend.md) |
-| 12 | ✓ | [`.agents/llama-cpp-backend.md`](.agents/llama-cpp-backend.md) |
-| 13 | ✓ | [`.agents/localai-assistant-mcp.md`](.agents/localai-assistant-mcp.md) |
-| 14 | ✓ | [`.agents/preparing-a-release.md`](.agents/preparing-a-release.md) |
-| 15 | ✓ | [`.agents/sglang-backend.md`](.agents/sglang-backend.md) |
-| 16 | ✓ | [`.agents/testing-mcp-apps.md`](.agents/testing-mcp-apps.md) |
-| 17 | ✓ | [`.agents/vllm-backend.md`](.agents/vllm-backend.md) |
-| 18 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 19 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 20 | → | [`.impeccable.md`](.impeccable.md) |
-| 21 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 10 | ✓ | [`.agents/distributed-seams.md`](.agents/distributed-seams.md) |
+| 11 | ✓ | [`.agents/distributed-state.md`](.agents/distributed-state.md) |
+| 12 | ✓ | [`.agents/ds4-backend.md`](.agents/ds4-backend.md) |
+| 13 | ✓ | [`.agents/llama-cpp-backend.md`](.agents/llama-cpp-backend.md) |
+| 14 | ✓ | [`.agents/localai-assistant-mcp.md`](.agents/localai-assistant-mcp.md) |
+| 15 | ✓ | [`.agents/preparing-a-release.md`](.agents/preparing-a-release.md) |
+| 16 | ✓ | [`.agents/sglang-backend.md`](.agents/sglang-backend.md) |
+| 17 | ✓ | [`.agents/testing-mcp-apps.md`](.agents/testing-mcp-apps.md) |
+| 18 | ✓ | [`.agents/vllm-backend.md`](.agents/vllm-backend.md) |
+| 19 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 20 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 21 | → | [`.impeccable.md`](.impeccable.md) |
+| 22 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

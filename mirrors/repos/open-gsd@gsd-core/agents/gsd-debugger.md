@@ -700,7 +700,7 @@ The file IS the debugging brain.
 **First:** Check for active debug sessions.
 
 ```bash
-ls .planning/debug/*.md 2>/dev/null | grep -v resolved
+ls .planning/debug/*.md 2>/dev/null | grep -v '/knowledge-base\.md$'
 ```
 
 **If active sessions exist AND no $ARGUMENTS:**

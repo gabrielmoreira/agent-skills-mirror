@@ -121,6 +121,9 @@ Optional per-model [`request_admission`](backend/docs/CONFIGURATION.md#model-req
 paces requests to help stay within provider request-per-minute limits.
 It is disabled by default; see the linked guide to enable it.
 
+For Google's official Gemini OpenAI-compatible endpoint, use the
+[Gemini reasoning profile](backend/docs/CONFIGURATION.md#gemini-via-googles-openai-compatible-endpoint).
+
 1. **Clone the DeerFlow repository**
 
    ```bash
@@ -141,6 +144,8 @@ It is disabled by default; see the linked guide to enable it.
    The wizard also lets you configure an optional web search provider, or skip it for now.
 
    Jina, Browserless, and InfoQuest web fetches resolve relative links and image sources using the requested page URL (or a usable HTML base URL), so returned Markdown includes complete destinations. Link resolution preserves the surrounding HTML source, including malformed-page formatting.
+
+   Jina fetches support opt-in bounded retries via `max_retries` (default `0`) and `retry_budget_seconds` (default `30`) in the tool configuration. Retry waits are randomized within the time budget. Retries may increase upstream requests and cost; see [Jina fetch retries](backend/docs/CONFIGURATION.md#jina-fetch-retries).
 
    Run `make doctor` at any time to verify your setup and get actionable fix hints.
    If you are opening a GitHub issue about a local setup or runtime problem, run
@@ -619,6 +624,12 @@ See the [Sandbox Configuration Guide](backend/docs/CONFIGURATION.md#sandbox) to 
 Remote directory listings report traversal failures (for example, unreadable
 directories) as incomplete results, even when no entries were returned. A
 missing start path is reported separately as “Directory not found.”
+
+The optional [Tenki cloud sandbox provider](backend/packages/harness/deerflow/community/tenki/README.md)
+uses Tenki SDK 1.4.0 or newer. Timed-out commands preserve partial output and
+report `Exit Code: 124`; unsuccessful health checks cannot reclaim a warm sandbox.
+Health probes tolerate login-shell output around the `ok` line, and failures log
+the sandbox ID and probe output before replacing the sandbox.
 
 #### MCP Server
 
@@ -1891,15 +1902,24 @@ also fails, for example because of a Windows sharing violation.
 Once the file is published, a temporary-file cleanup failure is logged without
 failing the upload; hidden staging files are left for the startup sweep.
 
+Uploads, new skill support files, and new local sandbox paths reject Windows
+reserved device names on every platform, including `COM¹`, `LPT²` and names with
+extensions such as `com³.txt`. Rename these files before creating or uploading
+them so the same file tree remains usable on Windows.
+
 Uploaded filenames matching `.upload-*.part` are rejected because that pattern is
 reserved for temporary staging files. Rename such a file before uploading it.
+The restriction includes Windows aliases with trailing dots or spaces and
+case variants, such as `.upload-notes.part.`, `.upload-notes.part `, and
+`.UPLOAD-NOTES.PART`, on every host.
 The HTTP check recognizes both `/` and `\` as path separators, including on
 Linux, when extracting the basename. The endpoint returns `400` with a rename
 hint before publishing any file in a batch containing a reserved name, so the
 chat reports the upload error instead
 of continuing without the attachment. The SDK validates filenames for the whole
-batch before copying any files. Project document names follow the same
-restriction; an older shelf document with a reserved name
+batch before copying any files. New project document names follow the same
+restriction, whether defaulted from the source or explicitly supplied on upload
+or promotion to the shelf; an older shelf document with a reserved name
 remains downloadable but cannot be attached directly. Download it, rename it,
 and upload it to the thread. This change does not recover or migrate older
 thread uploads that already match the staging pattern.
@@ -1921,7 +1941,7 @@ order within a tool entry, with either indented or indentless YAML lists.
 
 Reading a page is not the same as *using* one. Alongside the read-only `web_fetch` and `web_capture` tools, DeerFlow ships an optional agentic browser tool group that keeps a live, per-conversation browser session so the agent can actually operate a page — navigate, read the interactive elements, click, type, submit forms, and follow multi-step flows on JavaScript-heavy sites.
 
-Each action returns a fresh snapshot of the page's interactive elements, each addressed by a stable `[ref]` number, so the agent acts on what it just observed instead of guessing selectors. Outbound URLs are SSRF-screened by default. It is powered by Playwright and shipped as an optional extra so the core install stays lean:
+Each action returns a fresh snapshot of the page's interactive elements, each addressed by a stable `[ref]` number, so the agent acts on what it just observed instead of guessing selectors. Outbound URLs are SSRF-screened by default, and the browser's TCP connections go through a local proxy that pins each one to the screened addresses, so a DNS answer that changes after the check cannot redirect them to a private host (WebRTC UDP is not covered). It is powered by Playwright and shipped as an optional extra so the core install stays lean:
 
 ```bash
 cd backend
@@ -2240,6 +2260,7 @@ Current MVP capabilities:
 - One-time task forms reject local times skipped by daylight-saving transitions; select another time before creating or saving the task.
 - Choose whether each scheduled task reuses a thread and its conversation history or creates a fresh thread per run
 - Pin each task to `lead_agent` (default) or a custom agent the owner already has; unknown names are rejected
+- Sending `assistant_id: null` in a scheduled-task PATCH resets the task to `lead_agent`; omitting `assistant_id` preserves the current agent, including when that custom agent has since been deleted
 - Duplicate an existing task into the create form as an editable draft without copying its run history
 - Support `once`, `cron`, and `interval` schedules
 - Editing or duplicating an interval task preserves its saved cadence until the interval is explicitly changed, including sub-minute intervals allowed by the operator's scheduler configuration
@@ -2316,7 +2337,7 @@ deerflow --recursion-limit 250 --print "task" # override the headless agent-loop
 
 Headless `--print` and `--json` exit with status `1` when the run fails, including provider errors returned as fallback messages. `--print` still writes the fallback text to stdout; `--json` appends a terminal error record.
 
-A keyboard-driven chat surface with a streaming transcript (Markdown-rendered answers), compact tool-activity cards, a `/` slash-command palette, display-only `/clear`, `/goal` goal management, `/model` and `/threads` pickers, input history, PageUp/PageDown transcript navigation, and `Esc` / `Ctrl+C` interrupt. Transcript refreshes preserve your reading position after you scroll upward and resume following new output when you return to the bottom. `/clear` removes rows from the current terminal display without deleting the thread or its persisted conversation; `/new` and `/clear` ask you to wait during an active run instead of resetting in-flight display state. Sessions opened in the TUI also appear in the Web UI sidebar — it writes the shared thread store under the local default user, so terminal and web stay in sync **without running the Gateway**.
+A keyboard-driven chat surface with a streaming transcript (Markdown-rendered answers), compact tool-activity cards, a `/` slash-command palette, display-only `/clear`, `/goal` goal management, `/model` and `/threads` pickers, input history, PageUp/PageDown transcript navigation, and `Esc` / `Ctrl+C` interrupt. The composer preserves line breaks and indentation in pasted code, stack traces, and multi-paragraph prompts; `Enter` sends the complete document. Transcript refreshes preserve your reading position after you scroll upward and resume following new output when you return to the bottom. `/clear` removes rows from the current terminal display without deleting the thread or its persisted conversation; `/new` and `/clear` ask you to wait during an active run instead of resetting in-flight display state. Sessions opened in the TUI also appear in the Web UI sidebar — it writes the shared thread store under the local default user, so terminal and web stay in sync **without running the Gateway**.
 
 See [backend/docs/TUI.md](backend/docs/TUI.md) for the full guide.
 

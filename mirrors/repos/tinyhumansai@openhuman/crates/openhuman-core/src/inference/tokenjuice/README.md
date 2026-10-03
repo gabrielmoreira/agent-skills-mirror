@@ -22,7 +22,7 @@ OpenHuman-owned files:
 | `schemas.rs` | JSON-RPC controller schemas and handlers. |
 | `config_patch.rs` | Partial update shape for the `[tokenjuice]` config block. |
 | `repl_tools.rs` | The three REPL tools (`juice_find`, `juice_extract`, `juice_summarize`) over a stored result. TinyJuice owns the ops and declarations (`tinyjuice::repl::tools`, cargo feature `tinytools`); the CCR store lives in the module, so each call fetches the original with `Retrieve` and hands the stock tool a one-entry store. Registered by `tools/ops.rs` only while `repl_handle_active(config)`. |
-| `tools.rs` | OpenHuman agent tool implementation for the retrieve tool (`RETRIEVE_TOOL_NAME = "tinyjuice_retrieve"`; `"tokenjuice_retrieve"` is a recognized recovery-tool alias, not the tool's registered name, see `RECOVERY_TOOL_NAMES`). |
+| `tools.rs` | OpenHuman agent tool implementation for the retrieve tool (`RETRIEVE_TOOL_NAME = "juice_retrieve"`; `"tokenjuice_retrieve"` is a recognized recovery-tool alias, not the tool's registered name, see `RECOVERY_TOOL_NAMES`). |
 | `ml/` | Bridge from TinyJuice's optional ML callback into the shared `runtime::python_server` Kompress backend (ModernBERT token/sentence salience); opt-in via `config.tokenjuice.ml_compression_enabled` (default off), degrades gracefully when the flag is off or the runtime server is unavailable. |
 | `savings.rs` | OpenHuman model-pricing attribution and persisted dashboard stats. |
 
@@ -58,7 +58,7 @@ Everything with state stays where it was, reached only through TinyBus:
 | Behind the module boundary | Why it stays |
 | --- | --- |
 | `compress::route` / `compress_content` | Picks a compressor from the rule engine and records savings. |
-| `cache/`: the CCR store, retrieval markers, disk tier, ranged retrieval | Owns a disk tier and a marker vocabulary (`⟦tj:<hash>⟧`) the module must resolve. `tinyjuice_retrieve` is the model-facing half and is unchanged. |
+| `cache/`: the CCR store, retrieval markers, disk tier, ranged retrieval | Owns a disk tier and a marker vocabulary (`⟦tj:<hash>⟧`) the module must resolve. `juice_retrieve` is the model-facing half and is unchanged. |
 | `rules/`, `reduce/`, `ml/` | Rule tables, execution reduction, the ModernBERT callback. |
 
 Why a content transform is not allowed to go through the bus: reaching it there
@@ -90,7 +90,7 @@ callback stay here.
 - `tools/ops.rs` registers `crate::inference::tokenjuice::TokenjuiceRetrieveTool::new()`
   in the agent tool catalog (it is not re-exported through `tools/mod.rs`) and
   treats every `RECOVERY_TOOL_NAMES` entry as a recovery tool. The registered
-  tool name is `RETRIEVE_TOOL_NAME` (`"tinyjuice_retrieve"`);
+  tool name is `RETRIEVE_TOOL_NAME` (`"juice_retrieve"`);
   `"tokenjuice_retrieve"` and `LEGACY_RETRIEVE_TOOL_NAME`
   (`"retrieve_tool_output"`) are recognized aliases only. Only
   `RECOVERY_TOOL_VISIBLE` (the live tool) is force-added to a curated

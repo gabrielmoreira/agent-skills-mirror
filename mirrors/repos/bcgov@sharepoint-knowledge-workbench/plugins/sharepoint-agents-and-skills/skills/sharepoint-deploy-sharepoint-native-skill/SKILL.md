@@ -1,45 +1,47 @@
 ---
 name: sharepoint-deploy-sharepoint-native-skill
-description: Deploys a native SharePoint SKILL.md to a tenant's AgentAssets library with SHA-256 readback verification, dry-run by default.
+plugin: sharepoint-agents-and-skills
+description: Deploys a native SharePoint SKILL.md to a tenant's AgentAssets library with SHA-256 readback verification, dry-run by default. Use to publish an already-built skill. Also inventories what is deployed.
+allowed-tools: Bash, Read
 ---
 
-# deploy-sharepoint-native-skill
+# Deploy SharePoint Native Skill
 
-## Purpose
+Deploy a repository-authored `SKILL.md` to `AgentAssets/Skills/<skill-name>/SKILL.md` and confirm a byte-for-byte hash match.
 
-Deploys a repository-authored native SharePoint skill's `SKILL.md` to
-`AgentAssets/Skills/<skill-name>/SKILL.md` on a target tenant, with byte-for-byte SHA-256
-readback verification. Distinct from `create-sharepoint-native-skill`: this skill deploys an
-already-built skill package, it does not author one.
+## Contents
 
-## Capabilities
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-- **Deploy + verify** (`deploy-and-verify-skill.ps1`): dry-run by default (zero tenant writes
-  unless `-Execute` is explicitly passed). Reads a deployment manifest (skill name, repository
-  source path, target library/folder/filename), computes the local file's SHA-256, uploads it,
-  downloads it back, and confirms a 100% hash match. Fails loudly on mismatch.
-- **Native-skill inventory** (`inventory-skills.ps1`): read-only inventory of deployed `SKILL.md`
-  assets and (site-pages-hosted) knowledge content on a target site, for confirming what's already
-  deployed before/after a deployment.
+## Constraints
 
-## Input boundaries
+- Dry run by default: without `-Execute` it computes the target and writes nothing. `-Execute` is a live tenant write that the user runs.
+- It does not create the `AgentAssets` library or `Skills/` folder; it fails closed if they are missing (use `sharepoint-inventory-and-validate-agentassets`).
+- It deploys a built skill; it does not author or validate content (`sharepoint-create-sharepoint-native-skill`).
+- Pass `-ConfigFile` and `-ManifestFile` explicitly: both defaults are repo-root-relative and do not resolve when installed.
 
-- `-ConfigFile` — connection/authentication context only.
-- `-ManifestFile` — a JSON manifest naming the skill, its repository source path, and its exact
-  target library/folder/filename (see `deployment-manifest.example.json` at the plugin root).
-- `-Execute` — required to perform any tenant write; omitted by default (preflight-only mode,
-  displays the exact resolved target with zero writes).
+## Quick start
 
-## Prohibited scope
+```powershell
+pwsh -File scripts/deploy-and-verify-skill.ps1 -ConfigFile config.psd1 -ManifestFile deployment-manifest.json
+```
 
-- Does not create the `AgentAssets` library or `Skills/` folder if missing — that's
-  `inventory-and-validate-agentassets`'s `provision-agentassets.ps1` responsibility. This skill
-  fails closed (does not create the library) if the target doesn't exist.
-- Does not author or validate a skill's content — that's `create-sharepoint-native-skill`'s
-  responsibility.
+## Workflow
 
-## Scripts
+1. Prepare the manifest (skill name, repository source path, target library, folder, filename).
+2. Run the preflight above and review the resolved target with the user.
+3. After the user confirms, rerun with `-Execute`. It uploads, downloads back and compares SHA-256.
+4. Use `scripts/inventory-skills.ps1` (read-only) to confirm what is deployed.
 
-- `../../scripts/deploy-and-verify-skill.ps1`
-- `../../scripts/inventory-skills.ps1`
+## Verification
 
+A 100% SHA-256 match; a mismatch fails loudly. Confirm with `sharepoint-verify-sharepoint-native-skill`.
+
+## References
+
+- [Safety, config and permissions](references/agents-and-skills-safety-and-config.md): read for the gate model of every script, the `-ConfigFile` default caveat and the Copilot permission note.
+- [Native skill lifecycle](references/native-skill-lifecycle-details.md): read for the deploy and inventory behavior and the manifest.

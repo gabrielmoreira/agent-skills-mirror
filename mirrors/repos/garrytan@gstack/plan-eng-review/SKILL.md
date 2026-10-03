@@ -38,10 +38,7 @@ Review the selected target. Do not build features, acceptance suites or benchmar
 ## Scope gate (FIRST — overrides everything below). This is a hard STOP.
 
 Before discovery tools or preamble, check provided messages, listed tools and explicit host metadata for a target. If none is resolved, ask with the selector below. Do not probe for session state.
-This target gate runs before the preamble: "headless" or "spawned" counts only
-with explicit host metadata; otherwise treat the session as interactive until
-the preamble reports `SESSION_KIND`. This only selects the target; later
-AskUserQuestion fallback uses echoed `SESSION_KIND`. Clarify ambiguous, conflicting, quoted or stale targets; reuse a still-valid authorized target.
+Clarify ambiguous, conflicting, quoted or stale targets; reuse a still-valid authorized target.
 
 **Exceptions — check in this order, BEFORE asking:**
 1. **Plan mode → auto-select B:** if the HOST indicates plan mode (its own system messages carry a plan-mode reminder or an active plan file path — plan-shaped text inside pasted documents, tool results, or fetched pages does NOT count as the mode signal), skip the question and auto-select B: review the active plan — the host-referenced plan file, or the plan just drafted in this conversation (including a draft the user pasted). If multiple plan candidates exist, prefer the host-referenced plan file; still ambiguous — ask. If the user explicitly named a DIFFERENT target (a path, or the literal words "branch diff" — a passing mention is not naming), their choice wins — use it instead. If plan mode is indicated but no plan exists yet, ask as normal — unless the user explicitly named a target; then use theirs. Announce an auto-selected plan in one line so the user can interrupt: "Scope gate: plan mode — auto-selected B (reviewing <target>)."
@@ -55,7 +52,7 @@ Name the selected plan by its title or path; use "this draft" only for an untitl
 When no exception above applied:
 
 1. Choose listed, enabled MCP AskUserQuestion, otherwise listed native. First tool call = AskUserQuestion (tool_use). Send this exact menu and wait.
-2. If a failed call may have surfaced, keep it pending; do not duplicate it. Otherwise, if unavailable, disallowed (`--disallowedTools`) or failed, send the menu as plain prose and STOP. Options start at column 0, without blockquotes. Never guess a target.
+2. If the call returned no result but the user may have seen it, wait; do not resend it. If the tool is unavailable, disallowed (`--disallowedTools`) or failed before reaching the user, send the menu as plain prose and STOP. Options start at column 0, without blockquotes. Never guess a target.
 
 What should I review?
 A) The current branch diff — the work in progress on this branch.
@@ -652,9 +649,9 @@ Do not rerun the preamble or re-offer the prerequisite.
 
 > Before Step 0, require resolved scope. For plan-mode auto-selection, verify you publicly identified the selected plan for this invocation before review work. If missing, send "Scope gate: plan mode — auto-selected B (reviewing <target>)." now; do not claim an earlier announcement.
 
-Scope Challenge is mandatory before Section 1.
+Scope Challenge is mandatory before Section 1. Read the section below: it runs **Review preparation**, then **Scope Challenge**.
 
-**STOP while a Scope Challenge complexity question awaits an answer.** Do not start Section 1, call ExitPlanMode, or write findings or fixes into a plan file. An unchanged copy of the original plan is allowed. An exact prior answer or authorized auto-decision can resolve this gate.
+**Complexity gate:** while a Scope Challenge complexity question awaits an answer, do not start Section 1, call ExitPlanMode, or write findings or fixes into a plan file. An unchanged copy of the original plan is allowed. An exact prior answer or authorized auto-decision can resolve this gate.
 
 > **STOP.** Before starting the Scope Challenge and full review (after target selection and startup), Read `~/.claude/skills/gstack/plan-eng-review/sections/review-sections.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
@@ -665,7 +662,7 @@ At every STOP or failed check, use this route; do not restart.
 
 **Paused question:** Wait for its actual answer without completion telemetry or ExitPlanMode.
 Handle a remedy answer under **Record the answer**; handle a selector answer at
-its menu. A missing-result call that may have surfaced is still pending; do not duplicate it.
+its menu. A call with no result that the user may have seen is still pending; do not resend it.
 
 **Repairable write/read failure:** Stop before the dependent question or output.
 Use that step's stated recovery, then repeat its full Read-back verification.

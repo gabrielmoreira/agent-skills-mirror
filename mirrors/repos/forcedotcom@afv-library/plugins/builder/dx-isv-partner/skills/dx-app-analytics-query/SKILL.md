@@ -1,6 +1,6 @@
 ---
 name: dx-app-analytics-query
-description: "ISV App Analytics metadata types — AppAnalyticsQueryRequest and AppAnalyticsSettings. Use this skill when the user asks about retrieving managed package usage data, configuring App Analytics simulation mode, querying subscriber snapshots, or understanding the AppAnalyticsQueryRequest lifecycle (New → Pending → Complete → Expired). TRIGGER when: user mentions App Analytics, AppAnalyticsQueryRequest, AppAnalyticsSettings, package usage data, subscriber analytics, ISV analytics, or simulation mode for app analytics. DO NOT TRIGGER when: the task is about standard Salesforce reports or dashboards (use platform-report-generate), custom CRM SOQL (use platform-soql-query), or Data Cloud query or search (use data360-query)."
+description: "ISV App Analytics metadata types — AppAnalyticsQueryRequest and AppAnalyticsSettings. Use this skill when the user asks about retrieving managed package usage data, configuring App Analytics simulation mode, querying subscriber snapshots, or understanding the AppAnalyticsQueryRequest lifecycle (New → Pending → Complete → Expired). TRIGGER when: user mentions App Analytics, AppAnalyticsQueryRequest, AppAnalyticsSettings, package usage data, subscriber analytics, ISV analytics, or simulation mode for app analytics. DO NOT TRIGGER when: the task is about standard Salesforce reports/dashboards (use reporting skills), custom SOQL on Account/Contact (use querying-soql), or Data Cloud query/search (use retrieving-datacloud)."
 metadata:
   version: "1.0"
   domains: ["Developer Experience"]
@@ -27,9 +27,9 @@ Use `dx-app-analytics-query` when the work involves:
 
 Delegate elsewhere when the user is:
 - Running standard CRM SOQL queries → platform-soql-query
-- Working with Data Cloud SQL or DMOs → data360-query
-- Building reports/dashboards on standard objects → platform-report-generate
-- Deploying or retrieving generic metadata XML → platform-metadata-deploy / platform-metadata-retrieve
+- Working with Data Cloud SQL or DMOs → retrieving-datacloud
+- Building reports/dashboards on standard objects → reporting skills
+- Deploying or retrieving generic metadata XML → deploying-metadata / retrieving-metadata
 
 ---
 

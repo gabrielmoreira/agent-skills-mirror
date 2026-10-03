@@ -49,7 +49,7 @@ Parse subcommands and flags from the `<arguments>` block BEFORE the active-sessi
 
 Check for active sessions (used for non-list/status/continue flows):
 ```bash
-ls .planning/debug/*.md 2>/dev/null | grep -v resolved | head -5
+ls .planning/debug/*.md 2>/dev/null | grep -v '/knowledge-base\.md$' | head -5
 ```
 </context>
 

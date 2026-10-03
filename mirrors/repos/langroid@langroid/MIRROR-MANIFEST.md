@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langroid/langroid` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `langroid/langroid` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langroid/langroid` — 26 default patterns, 0 followed patterns, 5 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,9 +61,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 2 | ✓ | [`docs/notes/gemini.md`](docs/notes/gemini.md) |
-| 3 | ✓ | [`llms.txt`](llms.txt) |
-| 4 | ✓ | [`plugins/langroid/skills/add-pattern/SKILL.md`](plugins/langroid/skills/add-pattern/SKILL.md) |
-| 5 | ✓ | [`plugins/langroid/skills/patterns/SKILL.md`](plugins/langroid/skills/patterns/SKILL.md) |
+| 3 | ✓ | [`docs/notes/rotating-api-keys.md`](docs/notes/rotating-api-keys.md) |
+| 4 | ✓ | [`llms.txt`](llms.txt) |
+| 5 | ✓ | [`plugins/langroid/skills/add-pattern/SKILL.md`](plugins/langroid/skills/add-pattern/SKILL.md) |
+| 6 | ✓ | [`plugins/langroid/skills/patterns/SKILL.md`](plugins/langroid/skills/patterns/SKILL.md) |
 
 ---
 

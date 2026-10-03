@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Cranot/roam-code` — 26 default patterns, 8 followed patterns, 46 file(s) materialized.
+Mirror of `Cranot/roam-code` — 26 default patterns, 8 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Cranot/roam-code` — 26 default patterns, 8 followed patterns, 46 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 46 |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -90,28 +90,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`.claude/skills/roam-release-readiness/SKILL.md`](.claude/skills/roam-release-readiness/SKILL.md) |
 | 23 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 24 | ✓ | [`docs/agent-cli.md`](docs/agent-cli.md) |
-| 25 | ✓ | [`docs/algo-polish-research.md`](docs/algo-polish-research.md) |
-| 26 | ✓ | [`docs/audit_report_template.md`](docs/audit_report_template.md) |
-| 27 | ✓ | [`docs/COMMANDS.md`](docs/COMMANDS.md) |
-| 28 | ✓ | [`docs/containers.md`](docs/containers.md) |
-| 29 | ✓ | [`docs/fresh-install-smoke.md`](docs/fresh-install-smoke.md) |
-| 30 | ✓ | [`docs/language-support.md`](docs/language-support.md) |
-| 31 | ✓ | [`docs/mcp-protocol-compatibility.md`](docs/mcp-protocol-compatibility.md) |
-| 32 | ✓ | [`docs/mcp-tools.md`](docs/mcp-tools.md) |
-| 33 | ✓ | [`docs/measurements.md`](docs/measurements.md) |
-| 34 | ✓ | [`docs/network-boundary.md`](docs/network-boundary.md) |
-| 35 | ✓ | [`docs/sibling-patch-network-v1.md`](docs/sibling-patch-network-v1.md) |
-| 36 | ✓ | [`docs/website-maintenance.md`](docs/website-maintenance.md) |
-| 37 | ✓ | [`skills/roam/SKILL.md`](skills/roam/SKILL.md) |
-| 38 | ✓ | [`templates/distribution/landing-page/llms.txt`](templates/distribution/landing-page/llms.txt) |
-| 39 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 40 | → | [`docs/ci-integration.md`](docs/ci-integration.md) |
-| 41 | → | [`docs/concepts/detector-evidence.md`](docs/concepts/detector-evidence.md) |
-| 42 | → | [`docs/concepts/verification-evidence.md`](docs/concepts/verification-evidence.md) |
-| 43 | → | [`docs/README.md`](docs/README.md) |
-| 44 | → | [`docs/releases.md`](docs/releases.md) |
-| 45 | → | [`docs/repository-maintenance.md`](docs/repository-maintenance.md) |
-| 46 | → | [`docs/understanding-roam.md`](docs/understanding-roam.md) |
+| 25 | ✓ | [`docs/COMMANDS.md`](docs/COMMANDS.md) |
+| 26 | ✓ | [`docs/containers.md`](docs/containers.md) |
+| 27 | ✓ | [`docs/fresh-install-smoke.md`](docs/fresh-install-smoke.md) |
+| 28 | ✓ | [`docs/language-support.md`](docs/language-support.md) |
+| 29 | ✓ | [`docs/mcp-protocol-compatibility.md`](docs/mcp-protocol-compatibility.md) |
+| 30 | ✓ | [`docs/mcp-tools.md`](docs/mcp-tools.md) |
+| 31 | ✓ | [`docs/measurements.md`](docs/measurements.md) |
+| 32 | ✓ | [`docs/network-boundary.md`](docs/network-boundary.md) |
+| 33 | ✓ | [`docs/sibling-patch-network-v1.md`](docs/sibling-patch-network-v1.md) |
+| 34 | ✓ | [`docs/website-maintenance.md`](docs/website-maintenance.md) |
+| 35 | ✓ | [`skills/roam/SKILL.md`](skills/roam/SKILL.md) |
+| 36 | ✓ | [`templates/distribution/landing-page/llms.txt`](templates/distribution/landing-page/llms.txt) |
+| 37 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 38 | → | [`docs/ci-integration.md`](docs/ci-integration.md) |
+| 39 | → | [`docs/concepts/detector-evidence.md`](docs/concepts/detector-evidence.md) |
+| 40 | → | [`docs/concepts/verification-evidence.md`](docs/concepts/verification-evidence.md) |
+| 41 | → | [`docs/README.md`](docs/README.md) |
+| 42 | → | [`docs/releases.md`](docs/releases.md) |
+| 43 | → | [`docs/repository-maintenance.md`](docs/repository-maintenance.md) |
+| 44 | → | [`docs/understanding-roam.md`](docs/understanding-roam.md) |
 
 ---
 

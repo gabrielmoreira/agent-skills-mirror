@@ -7,22 +7,26 @@ Publishable bridge CLI (`@p697/clawket`) inside the Clawket monorepo.
 When improving the local Hermes testing flow:
 
 1. Prefer a single productized `bridge-cli` entrypoint over ad hoc shell scripts that duplicate pairing and bridge startup logic.
-2. Auto-clean only Clawket-managed Hermes local bridge processes, plus Hermes gateway processes when the user explicitly opts into a restart.
+2. Auto-clean only Clawket-managed Hermes local bridge processes, plus Hermes gateway processes when the user explicitly opts into a restart. The Bridge may replace a key-rejecting gateway only with the ownership record defined in `packages/bridge-runtime`.
 3. Do not kill unrelated processes solely because they occupy the same port; fail with a clear error instead of risking collateral damage.
 4. QR generation, PNG export, and terminal QR output should all come from the same CLI flow so local testing, docs, and future automation stay aligned.
 5. If a watch mode is added for Hermes local development, keep its watch scope narrow to bridge-only sources and config (`apps/bridge-cli`, `packages/bridge-core`, `packages/bridge-runtime`), and do not rebuild on unrelated app changes.
 6. Treat `clawket pair local` as a shared product entrypoint. If multiple local-capable backends are installed, emit one local pairing result per detected backend from the same command so the user can choose which QR to scan.
 7. Use Bridge Runtime's shared Hermes installation resolver for pairing detection and doctor output. Honor explicit source/command overrides and the current official installation directory without requiring a user to edit shell PATH.
 
+## Hermes Pairing Readiness
+
+1. Hermes relay and local pairing print a QR only after the Bridge `/health` reports a usable Hermes API. Otherwise print no QR, exit non-zero and emit `ok: false` JSON with `hermesApiIssue` and a remedy in `runtimeMessage`; a rejected key fails at once, other issues after a short grace. Bridges that predate `hermesApiReachable` keep the old success path.
+2. `--restart-hermes` on pairing replaces a running Clawket-managed Bridge with its saved token, so a running relay runtime reconnects; never forward it to the relay child, which would restart the Bridge again.
+3. `reset` keeps `hermes-gateway-owner.json`: the gateway it names keeps running, and the record holds no credential.
+
 ## CLI Observability Rule
 
-When expanding `status`, `doctor`, `logs`, `reset`, or related operational commands:
-
-1. Treat them as product-level diagnostics for both OpenClaw and Hermes, not as OpenClaw-only legacy helpers.
-2. Hermes detached bridge and relay runtimes must write to stable log files under the Clawket log directory so `clawket logs` and field debugging work without ad hoc shell inspection.
-3. `reset` must clear Hermes bridge and relay local state only in Clawket-owned files and processes; do not delete or mutate Hermes source trees.
-4. Do not remove or weaken OpenClaw diagnostics while adding Hermes coverage; the correct outcome is additive dual-backend visibility.
-5. Prefer product-facing diagnostics over raw state dumps: `doctor` should surface an overall health conclusion, and `logs` should support a practical follow mode for live debugging.
+1. `status`, `doctor` and `logs` cover all saved Clawket backends. `src/agent-inventory.ts` reads only the bounded Clawket state layout; custom configs require their original `--config`. Never scan native histories or start a native/Bridge process for an offline diagnostic.
+2. Default status is a compact local-state summary; `--verbose` exposes details. Doctor reports findings/remedies and exits nonzero for missing, invalid, stopped or unverified selected state. Local readiness, configured model, Relay attachment and successful inference are separate evidence.
+3. `src/cli-logs.ts` provides bounded tails, timestamp filtering and byte-based follow for both global and backend commands. Include stderr by default, label sources, preserve untimestamped legacy lines with an explicit age warning, and retain JSON snapshots / JSONL follow. New Agent runtime callbacks timestamp only their existing sanitized messages.
+4. Stop/reset/restart require authenticated local lifecycle control even after native-health failure; only `ECONNREFUSED` proves no listener. Authentication failures, mismatched identities, timeouts and resets never authorize replacement or config deletion. Preserve exact response correlation and the bounded authenticated legacy identity fallback.
+5. Default lifecycle/reset retains the OpenClaw/Hermes service scope. Codex, Claude Code and Pi require an explicit backend and original scope; reset removes only pairing config and retains history. Unknown/conflicting backends and scope flags without a backend fail before mutations. Never delete native source/config or stop unrelated processes.
 
 ## CLI Lifecycle Rule
 
@@ -50,7 +54,7 @@ When expanding `start`, `install`, `restart`, `stop`, or `uninstall`:
 1. `clawket pair --preview` uses the official Preview Registry and writes `~/.clawket/bridge-cli.preview.json`; it must never overwrite Production pairing state.
 2. The installed service runs every configured OpenClaw Relay environment in one process. Treat each runtime as independent so a Preview outage cannot break Production.
 3. `refresh-code --preview` and `reset --preview` affect Preview only. A full reset may clear both OpenClaw environments while preserving existing Hermes cleanup semantics.
-4. Preview currently supports OpenClaw Relay only. Do not silently route Hermes or local pairing through Preview.
+4. The shared service Preview scope is OpenClaw Relay only. Codex/Claude Code use their independent Preview state; Pi requires its original isolated Registry/config. Do not enroll Hermes or infer Preview from a transport kind.
 
 ## Secure Pairing Invitation Rule
 
@@ -109,12 +113,16 @@ Claude first-time detached pairing must carry the resolved device scope into the
 
 ## 3.1 release
 
-The authorized Bridge patch release is `3.1.9`. Keep the publish guard and bundled workspace versions aligned. Preserve the existing OpenClaw/Hermes pair behavior for old clients. `pair choose` is interactive and read-only until selection; explicit `--backend` is required for agent/script prompts. Client distribution is a separate release stage.
+The authorized Bridge patch release is `3.1.10`. Keep the publish guard and bundled workspace versions aligned. Preserve the existing OpenClaw/Hermes pair behavior for old clients. `pair choose` is interactive and read-only until selection; explicit `--backend` is required for agent/script prompts. Client distribution is a separate release stage.
 
-New Codex and Claude Code configurations save a `Product · Device name` default via `src/device-connection-name.ts`: prefer the bounded macOS ComputerName lookup, then hostname, then the plain product name. Reuse the saved label for Registry registration, encrypted invitations and Relay/local QR output; existing configurations without a label retain plain product defaults. Refresh must not rename existing Registry records. Project/device scope and connection identity never come from the display name; keep device labels out of diagnostics and persistent logs.
+Codex and Claude Code pairing saves a `Product · Device name` default via `src/device-connection-name.ts`: prefer the bounded macOS ComputerName lookup, then hostname, then the plain product name. Reuse the saved label for Registry registration, encrypted invitations and Relay/local QR output; explicit pairing backfills a missing/blank saved label, preserving every nonblank saved name. The authenticated access-code refresh synchronizes that saved label to Registry so claims cannot restore an old product-only name. Ordinary run/start/restart never generate or migrate labels, and computer renames never regenerate a saved label. Project/device scope and connection identity never come from the display name; keep device labels out of diagnostics and persistent logs.
 
 Codex foreground/background native RPC diagnostics use the runtime's bounded metadata contract in the existing local log. Never forward raw native frames, stderr or exception text, and do not upload local logs automatically. See `../../docs/3.0/20-connection-diagnostics.md`.
 
 ## Pairing progress
 
 `src/progress.ts` draws one live status line while `pair`, `pair choose` discovery, `refresh-code` and Agent/local-model pairing wait. It draws only on an interactive stderr outside CI and `TERM=dumb`; `--json`, pipes and scripts keep byte-identical output. Detached Agent children forward step text over IPC (`<backend>.progress`), and the launching terminal closes the line with ✔/✖ before printing a code, QR or error. Step text must never contain codes, tokens or payloads.
+
+## Unified Bridge update
+
+`update` is the explicit all-saved-managed-runtime exception to default lifecycle scope. Keep its bounded authenticated private owner control, idle admission fence, immutable package staging and verified version transition. Retain exact config/identity/history; never pair/reset, infer ownership from ports, or start a second owner after an uncertain stop. Preserve stopped scopes and report independent supervisors as manual. Future starts use a validated managed snapshot; old global CLIs require the latest npx invocation. Details and release limitations: `../../docs/bridge-updates.md`.

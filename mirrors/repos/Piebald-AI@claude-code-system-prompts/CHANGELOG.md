@@ -4,6 +4,27 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.288](https://github.com/Piebald-AI/claude-code-system-prompts/commit/be47ed7)
+
+_+4,051 tokens_
+
+- **NEW:** System Prompt: Artifact patch turn edit composer — Tool-less composer that answers an artifact edit request with one JSON decision: ordered exact-string edits with a reply and confidence, or a hand-back to the main assistant.
+- **NEW:** System Reminder: Cross-session message held notice — Says a message to another session is held, not delivered, usually from mismatched permission modes; don't report delivery, wait, or resend.
+- **NEW:** System Reminder: Subagent write blocked pending worktree isolation — Tells a subagent its write to the shared checkout is blocked until the parent background session isolates into a worktree, and how to proceed or disable the guard.
+- **NEW:** Tool Description: Code review command — Describes the code review command's effort levels, `--comment` and `--fix` modes, and the `--max-findings <n>` / `all` / `default` limit.
+- **NEW:** Tool Description: Enable Claude app browser (shared description), Enable Claude in Chrome (shared description), and Enable computer use (shared description) — Rollout-flag variants that also cover steps inside skills or user-requested tasks, and say calling them adds the file tools too.
+- Agent Prompt: Code review (minimal, low, medium, high, extra-high/maximum modes and `ReportFindings` output format) and Skill: Code review (inline medium/high, inline xhigh, low-effort expanded findings, findings JSON array) — Finding limits are no longer fixed per effort level; they follow the configurable maximum, which can be "all findings".
+- Data: Built-in gh stand-in api command help — Now covers GitHub Enterprise hosts from the checkout's remote or `--hostname`, notes a self-hosted runner's CLI uses its own credentials, and suggests another JSON tool when `jq` is missing.
+- Data: Claude Code gateway protocol — Adds the `structured_outputs_unsupported` error kind for a rejected `output_config.format`, and "does not support PDF" rejections now count as `document_block`.
+- Data: Claude Test spec file format — Example spec switches from a project-joining flow to adding and searching a "Claude Test demo recipe", with matching assertions and sentinel text.
+- Data: Hook classifier context field — Drops "inner REPL calls" from the list of calls with no per-result line in the classifier transcript.
+- Data: SDK API error kind field — Adds the `media_removed` kind, for when the API refuses an image or document and Claude Code leaves it out of later requests.
+- Data: SDK initialize response sdk_mcp_manifests_parked field — Adds two `not_honoured` causes: an entry past the CLI's limits on a live answer, and the per-minute tool-list read cap.
+- Data: Turn handoff available event schema — The announcement also lists `carried_writes` among the optional members reported when set.
+- System Reminder: Large PDF read guidance — Adds a branch for models that cannot be sent a whole PDF, only page images; also pluralizes "page" correctly.
+- Tool Description: ReadFile and ReadFile (compact) — PDF-reading text now depends on the current model rather than only on whether PDFs are supported at all.
+- Tool Description: Artifact publishing and update guidance — Camera, microphone, location and similar device APIs are usable only when the user has a runtime capability and the page declares it; otherwise take uploads.
+
 # [2.1.287](https://github.com/Piebald-AI/claude-code-system-prompts/commit/b18a6b3)
 
 _+4,435 tokens_

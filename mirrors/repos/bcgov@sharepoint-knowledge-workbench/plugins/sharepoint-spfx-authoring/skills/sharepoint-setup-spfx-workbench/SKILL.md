@@ -1,56 +1,47 @@
 ---
 name: sharepoint-setup-spfx-workbench
 plugin: sharepoint-spfx-authoring
-description: Sets up and validates a local SPFx web part development workflow that can be tested in SharePoint Online hosted workbench.aspx.
+description: Sets up and validates a local SPFx web part development workflow that can be tested in the SharePoint Online hosted workbench (workbench.aspx). Use when preparing an SPFx project to debug against localhost manifests in a real tenant.
 allowed-tools: Bash, Read, Write
+examples:
+  - "pwsh -File scripts/setup-spfx-workbench.ps1 -ProjectPath path/to/spfx-solution-root -SiteUrl https://contoso.sharepoint.com/sites/test-site"
 ---
 
-# setup-spfx-workbench
+# Setup SPFx Workbench
 
-## Identity
+Prepare an SPFx project for local development and test it in the hosted workbench (`/_layouts/15/workbench.aspx`) with debug manifests served from localhost.
 
-Use this skill when a user wants to prepare an SPFx project for local development and test it in the hosted SharePoint Online workbench (`/_layouts/15/workbench.aspx`) with debug manifests served from localhost.
+## Contents
 
-## Steps
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-### Step 1: Confirm tenant profile and connectivity
+## Constraints
 
-From repository root, confirm `config.psd1` points at the intended tenant profile, then run:
+- Local only: `setup-spfx-workbench.ps1` validates the project, trusts the local dev certificate and prints URLs; it writes nothing to the tenant. `gulp serve` must stay running while you debug.
+- Confirm `config.psd1` points at the intended tenant profile and the connection works before debugging against the hosted workbench (use `workbench-validate-workbench-environment`).
+- Run `scripts/check-spfx-toolchain.ps1` first, or let the setup script call it.
 
-```powershell
-pwsh -File plugins/workbench-setup/skills/workbench-validate-workbench-environment/scripts/test-spo-connection.ps1
-```
-
-### Step 2: Validate SPFx toolchain
-
-```powershell
-pwsh -File plugins/sharepoint-spfx-authoring/scripts/check-spfx-toolchain.ps1
-```
-
-### Step 3: Prepare hosted workbench URLs and dev cert
+## Quick start
 
 ```powershell
-pwsh -File plugins/sharepoint-spfx-authoring/scripts/setup-spfx-workbench.ps1 `
-  -ProjectPath "path/to/spfx-solution-root" `
-  -SiteUrl "https://contoso.sharepoint.com/sites/test-site"
+pwsh -File scripts/setup-spfx-workbench.ps1 -ProjectPath "path/to/spfx-solution-root" -SiteUrl "https://contoso.sharepoint.com/sites/test-site"
 ```
 
-The script verifies project prerequisites, ensures the dev certificate is trusted, and prints:
-- local workbench URL
-- hosted workbench URL
-- hosted debug URL (`loadSPFX=true` + `debugManifestsFile`)
+## Workflow
 
-### Step 4: Start local serve and open hosted workbench debug URL
+1. Confirm the tenant profile and connectivity, then validate the toolchain.
+2. Run the setup script; it prints the local workbench URL, the hosted workbench URL and the hosted debug URL (`loadSPFX=true` plus `debugManifestsFile`).
+3. In the project folder run `npx gulp serve --nobrowser`, then open the hosted debug URL in the browser.
 
-```powershell
-cd path/to/spfx-solution-root
-npx gulp serve --nobrowser
-```
+## Verification
 
-In browser, use the hosted debug URL printed in Step 3.
+The web part appears in the hosted workbench with the debug manifest served from `https://localhost:4321/temp/manifests.js`.
 
-## Common Failures
+## References
 
-- `ERR_CERT_AUTHORITY_INVALID` on localhost: rerun `setup-spfx-workbench.ps1` without `-SkipCertInstall`.
-- Web part not appearing in hosted workbench: ensure `gulp serve` is still running and URL includes `debugManifestsFile=https://localhost:4321/temp/manifests.js`.
-- 401/403 on hosted workbench: verify tenant/site URL and rerun SharePoint connection validation from Step 1.
+- [Workbench setup details](references/spfx-workbench-setup-details.md): read for the full steps and the common failures (certificate, missing web part, 401/403).
+- [Acceptance criteria](references/acceptance-criteria.md): read when checking expected behavior.

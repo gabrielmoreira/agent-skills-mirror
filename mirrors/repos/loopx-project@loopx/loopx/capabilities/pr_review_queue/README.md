@@ -442,6 +442,30 @@ them. Queue selection, scheduler and runtime permissions are unchanged. The
 five public sections retain the bounded prose floors documented above; reuse
 evidence and do not pad. Invoking review uses the installed capability policy.
 
+### Reviewer provenance and specification basis
+
+Policy revision 14 makes two publication requirements mandatory for every new
+result; neither changes queue selection, merge authority or how already
+published GitHub reviews are recognized (`check_review_body` is unchanged).
+
+- `result.reviewer` (`reviewer_declaration`) names `actor_kind`
+  (`model_agent` or `human_operator`) and `declaration_source`
+  (`runtime_reported` or `self_reported`); an agent adds `declared_model` and
+  `declared_provider` in product-family wording. The body repeats them on
+  exactly one visible `Reviewer:` line, each value as a whole token. This is
+  provenance, not a credential: it authenticates nothing and adds no weight.
+- `problem_context.spec_basis` (`spec_basis_assessment`) is `mapped`,
+  `no_spec` or `not_yet_proven`. `mapped` gives text `spec_ref`,
+  `spec_revision` (a full commit id for `accepted_rfc` and
+  `accepted_contract_doc`) and one criterion row per material acceptance
+  criterion; `not_met` and `not_yet_proven` block approval. The reference,
+  revision and every `criterion_id` must appear as whole tokens in the
+  visible body, because another operator reads only the published review.
+
+`--check-result` reports a missing or inconsistent declaration or unpublished
+reference as an error, and a spec-basis gap as an approval blocker. Regenerate
+results made under revision 13 rather than adding these fields to them.
+
 ### Semantic alignment and CI constraint recovery
 
 The semantic triage introduced in policy revision 5 replaces universal detailed
@@ -561,6 +585,26 @@ negative path, and validation, plus one concise English machine verdict
 Chinese review carries the depth and evidence; the English verdict carries the
 machine-readable state and validation summary. A findings-only or blocker-only
 body is not a complete PR review.
+
+The opening `动机` must stand alone for a reader unfamiliar with the repository:
+who encounters the problem, one triggering task and concrete before/after
+example, the old failure's practical cost, the proposed improvement, and this
+PR's scope. Define necessary terms when they first appear. Keep symbols,
+specification criteria, test counts and the detailed verdict in the later
+sections; they support the explanation rather than replace it.
+
+Reuse `problem_context.affected_caller_or_operator`, `before_after_scenario`,
+`observable_outcome` and `non_goals` as concise public-safe sentences and publish
+their wording in `动机`. For `justified_increment`, also publish `remaining_gap`.
+For example: a maintainer retries an interrupted export; previously a lost
+response caused duplicate rows and manual cleanup; the proposed change returns
+the saved result; automatic scheduling remains outside the command repair.
+Separate intended behavior from reviewer-verified behavior and remaining
+defects. `--check-result` rejects explanations confined to structured evidence,
+HTML comments, code fences or later sections, while allowing ordinary Markdown
+emphasis and line wrapping. Read the remote body back into the same result and
+rerun the check. Matching proves visibility and consistency; the reviewer still
+judges whether the scenario is supported and the explanation understandable.
 
 Each complete PR review must also include whole-PR interpretation depth:
 per-file responsibility mapping, 2-5 key symbol explanations with exact-head

@@ -1,78 +1,58 @@
 ---
 name: content-render-sharepoint-aspx
-plugin: structured-content-rendering
-description: Renders a validated structured content package into SharePoint modern-page-ready artifacts (an HTML fragment per chunk plus a page-manifest.json) for the confirmed-working Add-PnPPage/Add-PnPPageTextPart route. Does not upload to SharePoint, does not attempt raw .aspx file upload (confirmed Access denied), and does not extract source documents or determine topic boundaries.
+plugin: content-rendering
+description: Renders an accepted structured content package into SharePoint modern-page-ready artifacts (an HTML fragment per chunk plus a page-manifest.json) for the confirmed Add-PnPPage and Add-PnPPageTextPart route. Use when preparing content for SharePoint publication. Does not upload to SharePoint, does not attempt raw .aspx upload (confirmed Access denied), and does not extract source documents or determine topic boundaries.
 allowed-tools: Bash, Read
 examples:
-  - "python -c \"from renderers.sharepoint_aspx import SharePointAspxRenderer; SharePointAspxRenderer().render(package, output_dir)\""
+  - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); from renderers.sharepoint_aspx import SharePointAspxRenderer; SharePointAspxRenderer().render(package, output_dir)\""
 ---
 
 # Render SharePoint ASPX
 
-## Trigger and Purpose
+Render an accepted structured content package into HTML fragments and a page manifest staged for
+SharePoint's modern-page API.
 
-Use this skill to load an already-accepted structured content package
-from disk (built and validated by `structured-content-assembly`) and
-render it into artifacts staged for SharePoint's supported modern-page
-creation API: one HTML fragment per chunk (suitable for a single
-`Add-PnPPageTextPart` call), a `page-manifest.json` describing page
-order/titles/media, and a local copy of the package's media.
+## Contents
 
-This renderer never uploads anything to SharePoint and never produces a
-raw `.aspx` file for direct upload — Phase 3.0's tenant experiment
-confirmed raw `.aspx` upload to Site Pages is `Access denied` (a platform
-boundary, not a permissions gap), while `Add-PnPPage` +
-`Add-PnPPageTextPart` with generated HTML pushed and rendered correctly.
-See `docs/research/research-experimentation/tenant-discovery/field-note-sharepoint-write-capability-discovery.md`
-§15 and `tools/phase-3-sharepoint-discovery/push-aspx-experiment.ps1` for
-the confirming evidence.
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-Uploading the rendered artifacts and calling the page-creation API is a
-separate, later skill (`sharepoint-content-publication`'s
-`publish-aspx-to-sharepoint`) — this skill performs zero SharePoint
-tenant I/O.
+## Constraints
 
-## Public Interface
+- Zero SharePoint tenant I/O. Never upload, and never produce a raw `.aspx` file for direct upload:
+  that is a confirmed `Access denied` platform boundary. Uploading belongs to
+  `sharepoint-publish-aspx-to-sharepoint`.
+- Consume only an already-loaded `CanonicalPackage` from an accepted package.
+- A pandoc failure raises `PandocConversionError`; never return a partial render.
+- `pandoc` must be on `PATH`. Run from this skill's root with `scripts/` on `sys.path`.
+
+## Quick start
 
 ```python
+import sys; sys.path.insert(0, "scripts")
 from renderers.sharepoint_aspx import SharePointAspxRenderer, render_to_staging
-
-renderer = SharePointAspxRenderer()
-result = renderer.render(package, output_dir)
-# RenderResult: {renderer_name: "sharepoint-aspx", ..., output_files: [...]}
-
-# Or, to stage without promoting (mirrors render-multipage-markdown):
-result, staging_dir = render_to_staging(package, output_root)
+result = SharePointAspxRenderer().render(package, output_dir)
 ```
 
-- `package` — an already-loaded `CanonicalPackage`
-  (`structured-content-assembly`'s `build_canonical_package` output,
-  loaded via `canonical_package.CanonicalPackage.load()`).
-- `output_dir` — path under which the render is staged:
-  ```
-  rendered-output/
-    page-manifest.json   # ordered list of {chunk_id, title, html_file, media_refs}
-    pages/
-      <chunk_id>.html      # one HTML fragment per chunk
-    media/
-      <asset files>         # copied from the package's media
-  ```
-- A `FAIL` (pandoc unavailable/errors) raises `PandocConversionError`
-  rather than returning a partial render.
+## Workflow
 
-## Installation
+1. Load the accepted package with `canonical_package.CanonicalPackage.load()`.
+2. Render with `SharePointAspxRenderer().render(package, output_dir)`, or stage without promoting with
+   `render_to_staging(package, output_root)`.
+3. Report the `RenderResult` and the `rendered-output/` layout: `page-manifest.json`, `pages/<chunk_id>.html`
+   and `media/`. Validate and promote with `content-validate-rendered-output`.
 
-```bash
-pip install -e plugins/structured-content-rendering
-```
+## Verification
 
-No other package needs to be installed first — this plugin has zero
-dependency on any other workbench distribution or the repository root.
+Confirm `page-manifest.json` lists every chunk in order and each referenced HTML fragment exists. Run the
+validation skill before treating the render as accepted.
 
-## Dependencies
+## References
 
-`pandoc` on `PATH` (already a repository-wide dependency — see
-`DEPENDENCIES.md`), used to convert each chunk's canonical Markdown to
-an HTML fragment. No other dependency beyond the Python standard
-library.
-
+- [ASPX rendering details](references/render-aspx-details.md): read for why fragments and not `.aspx`
+  files, the full interface, the output layout and failure behavior.
+- [Rendered output profile](references/contracts/rendered-output-profile.md): read when checking the
+  profile contract.

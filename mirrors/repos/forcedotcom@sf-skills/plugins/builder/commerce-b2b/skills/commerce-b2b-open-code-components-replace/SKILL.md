@@ -1,7 +1,7 @@
 ---
 name: commerce-b2b-open-code-components-replace
-description: "Map OOTB Salesforce B2B Commerce component definitions to open source `site:` equivalents, or replace those definitions in site metadata `content.json` files. Use this skill for lookup-only and replacement workflows. TRIGGER when: the user asks for an OOTB-to-open-code mapping, names `commerce_builder:` definitions, requests equivalent `site:` components, or wants selected definitions replaced in a store or view. DO NOT TRIGGER when: the user needs to install or copy the official component library (use commerce-b2b-open-code-components-integrate), create or retrieve a B2B store (use commerce-b2b-store-create), author custom LWCs, or make general Experience Builder changes unrelated to OOTB-to-open-code mapping."
-allowed-tools: Bash(grep:*) Bash(ls:*) Bash(python3:*) Read Write
+description: "Replace OOTB (out-of-the-box) B2B Commerce components with open source equivalents in site metadata content.json files, or look up the equivalent open code `site:` component for OOTB definitions. Use when users mention \"replace OOTB components\", \"replace commerce components with open code\", \"swap OOTB for open source\", \"replace commerce_builder:\", \"replace OOTB in site\", \"replace component in site metadata\", \"replace component definition\", \"find open code equivalent\", \"equivalent open code component\", \"OOTB to open code mapping\", \"what is the site component for\", components \"in this view\" or \"for a given view\", or a specific list of component names — and want to update or only discover mappings in their store metadata."
+allowed-tools: Bash(grep:*) Bash(ls:*) Read Write
 metadata:
   version: "1.0"
   domains: ["Commerce", "Experience"]
@@ -23,13 +23,7 @@ This skill replaces OOTB (out-of-the-box) B2B Commerce component definitions in 
 
 ### Resolve `<package-dir>`
 
-Run the plugin's deterministic resolver from the Salesforce project root:
-
-```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/resolve-package-directory.py"
-```
-
-Use its single stdout line as `<package-dir>` everywhere below. The resolver selects the `packageDirectories[]` entry with `"default": true`, or the first entry when no default is declared. If it exits nonzero, relay its diagnostic to the user and abort; do not guess a package directory or reimplement the selection logic inline.
+Read `sfdx-project.json` and pick the active package directory. Extract `packageDirectories[]` and use the entry with `"default": true`; if no entry is flagged default, use the first entry. Use this value as `<package-dir>` everywhere below. If `sfdx-project.json` is missing or has no `packageDirectories`, tell the user and abort.
 
 ### Delegate setup
 

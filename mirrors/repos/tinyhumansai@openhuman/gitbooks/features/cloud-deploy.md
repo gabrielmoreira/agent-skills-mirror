@@ -13,12 +13,13 @@ separately is useful for:
 - Internal testers without local Rust toolchains
 - Long-running cron jobs / webhooks that should outlive a laptop session
 
-This guide covers four deploy paths, easiest first:
+This guide covers five deploy paths, easiest first:
 
 1. [DigitalOcean App Platform: one-click](#1-digitalocean-app-platform-one-click)
 2. [DigitalOcean App Platform: manual via doctl](#2-digitalocean-app-platform-manual-via-doctl)
 3. [Any VPS via Docker Compose](#3-any-vps-via-docker-compose)
 4. [Fly.io](#4-flyio)
+5. [Oracle Cloud Infrastructure: Terraform on Always Free](#5-oracle-cloud-infrastructure-terraform-on-always-free)
 
 What gets deployed in every path: a single container running
 `openhuman-core serve` on port `7788`. Public hosts should sit behind the
@@ -206,6 +207,11 @@ The image is `linux/amd64`. arm64 hosts pull the standalone tarball
 attached to the same GitHub Release (`openhuman-core-<version>-aarch64-unknown-linux-gnu.tar.gz`)
 or build the image from source on an arm64 builder.
 
+If you wrap a release tarball in your own image, match its glibc floor: the
+`aarch64` binary links against glibc 2.39 (`ubuntu:24.04` or newer works,
+`debian:bookworm-slim` ships 2.36 and fails at exec with `GLIBC_2.39' not found`),
+the `x86_64` binary links against glibc 2.34.
+
 Quick run with a published image:
 
 ```bash
@@ -263,6 +269,10 @@ openhuman-core --version
 Then run `openhuman-core serve` under your service manager of choice
 (systemd, supervisord, …) with the same environment variables documented
 above.
+
+The tarballs are dynamically linked: `aarch64` needs glibc 2.39 or newer
+(Ubuntu 24.04, Debian 13), `x86_64` needs glibc 2.34 or newer (Ubuntu 22.04,
+Debian 12). Check with `ldd --version` on the host.
 
 ### Headless self-update contract
 
@@ -438,6 +448,43 @@ elsewhere and hand it to the core at boot:
 Either installs the credential only when the store has none of that kind; to
 rotate, clear first (`openhuman-core auth clear_credential --kind api-key`).
 The same operation is available over RPC as `openhuman.auth_clear_credential`.
+
+### Headless without a TinyHumans account
+
+Custom cloud providers (`inference_url` + `api_key`, or an entry in
+`cloud_providers`) are only built when a backend session or TinyHumans API key
+exists. Without one, every turn fails with
+`SESSION_EXPIRED: backend session not active — sign in to use custom providers`.
+Caller-owned runtimes are exempt from that gate, and `local-openai` is one of
+them, so any hosted OpenAI-compatible endpoint can run a headless core with no
+account:
+
+1. Set `LOCAL_OPENAI_URL=https://<your endpoint>/v1` in the core's environment
+   (`OPENHUMAN_LOCAL_INFERENCE_URL` also works and overrides it).
+2. Store the endpoint's bearer key with `openhuman.config_update_local_ai_settings`
+   (`runtime_enabled: true`, `opt_in_confirmed: true`, `api_key: "<key>"`).
+3. Pin the workloads with `openhuman.config_update_model_settings`:
+   `chat_provider`, `reasoning_provider`, `agentic_provider`, `coding_provider`
+   (and `vision_provider`, `memory_provider`, `learning_provider` if you want
+   them off the managed route) to `local-openai:<model-id>`, plus
+   `default_model: "<model-id>"`.
+
+`openhuman.inference_agent_chat_simple` is the quickest end-to-end check.
+Managed features (integrations, teams, hosted voice) still need a TinyHumans
+credential; see [Local models and bring your own key](model-routing/local-and-byok-models.md).
+
+### Secret storage in containers
+
+In `production` and `staging` the keyring backend is `encrypted_file`, and its
+master key is loaded from the OS keychain. A container has no keychain, so the
+first write that stores a provider key fails with `Failed to encrypt api_key`
+(`[keyring] set error ... master key unavailable`). Supply the master key from
+the environment instead: `OPENHUMAN_KEYRING_MASTER_KEY` (64 hex characters) or
+`OPENHUMAN_KEYRING_MASTER_KEY_FILE` (a secret mount), described in "What you
+need before you start" (#6926). On a release that predates those variables, set
+`OPENHUMAN_KEYRING_BACKEND=file`, which keeps secrets in
+`$OPENHUMAN_WORKSPACE/dev-keychain.json` (plaintext, `0600`); put the workspace
+volume on encrypted storage and treat the host as the secret boundary.
 
 ---
 
@@ -735,3 +782,22 @@ curl -fsS http://localhost:7789/health
 docker rm -f oh-vol-smoke
 docker volume rm oh-vol-test
 ```
+
+---
+
+## 5. Oracle Cloud Infrastructure: Terraform on Always Free
+
+A community-maintained Terraform stack runs the headless core on OCI's Always
+Free tier: an Ampere A1 VM in a private subnet running the release binary in a
+container, a flexible load balancer that forwards only `/rpc`, `/health` and
+`/events`, secrets in OCI Vault read by the VM's instance principal, OCI
+Generative AI as the model provider through the `local-openai` route above, and
+an Autonomous Database that agents reach through Oracle's managed Database
+Tools MCP Server once an operator registers a user access token for that server
+(the stack's post-apply step; the MCP server authenticates users, not the VM's
+instance principal).
+
+Repository and run book: <https://github.com/kamelhar/openhuman-oci>. Like the
+Fly and DigitalOcean recipes, it sets `OPENHUMAN_CORE_TOKEN`, mounts the
+workspace on persistent storage, and keeps the core off the public internet
+except through the load balancer.

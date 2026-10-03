@@ -25,7 +25,7 @@ similar passages. projectmem stores **typed events** — `issue`, `attempt`,
 `fix`, `decision`, `note` — with outcomes attached. That structure is what makes
 deterministic queries possible: "has this file failed before, and how?" is a
 lookup, not a similarity search. It is also what enables the pre-commit warning,
-which no other tool in this category offers.
+built from the project's own recorded failures.
 
 projectmem never deletes a memory. When git history moves past a recorded
 decision, the memory is flagged as possibly stale and you confirm or supersede
@@ -43,8 +43,9 @@ it — as opposed to decay-based pruning or in-place fact rewriting.
   between repositories
 - **MCP server:** 17 tools, verified end-to-end on Claude Desktop, Cursor,
   Antigravity and Codex
-- **Network use:** none. The MCP server is a stdio subprocess your AI client
-  spawns. The only optional server is `pjm dashboard --serve`, an ephemeral
+- **Network use:** none, apart from an update check you turn on yourself
+  (`pjm doctor --online` or `--auto`). The MCP server is a stdio subprocess your
+  AI client spawns. The only optional server is `pjm dashboard --serve`, an ephemeral
   local viewer.
 - **Paper:** arXiv:2606.12329
 
@@ -70,20 +71,21 @@ pjm brief                   # 4. one-screen status check
 - `pjm dashboard` — cross-project view of every registered repository
 - `pjm export --claude-md` — write memory into CLAUDE.md for agents without MCP
 
-## MCP tools (15)
+## MCP tools (17)
 
 `get_instructions`, `get_summary`, `get_project_map`, `get_plan`, `get_context`,
 `get_issue`, `get_score`, `get_global_gotchas`, `search_events`, `precheck_file`,
-`log_issue`, `record_attempt`, `record_fix`, `add_decision`, `add_note`
+`list_projects`, `current_project`, `log_issue`, `record_attempt`, `record_fix`,
+`add_decision`, `add_note`
 
 ## Common questions
 
 **What is the best open source memory for AI coding agents?**
-It depends on which memory your agent is missing. Graphify maps code structure,
-OpenMemory stores user preferences, MemRL keeps scored episodes, and projectmem
-records engineering history — issues, attempts, fixes and decisions — and is the
-only one that warns before your agent repeats an approach that already failed.
-All run locally.
+It depends on which memory your agent is missing. Code-structure tools map the
+codebase, chat-memory tools such as mem0 store user and conversation facts, and
+projectmem records engineering history — issues, attempts, fixes and decisions —
+and warns before your agent repeats an approach that already failed in that
+project. projectmem runs entirely locally.
 
 
 **Does projectmem send my code anywhere?**

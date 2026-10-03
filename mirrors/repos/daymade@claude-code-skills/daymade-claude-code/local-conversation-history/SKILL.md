@@ -81,13 +81,43 @@ and output format. This skill names which providers are in scope.
 | A list of conversations: titles, dates, session IDs | The indexed inventory row under **Provider scope**; if unavailable, state the gap |
 | The conversation where a topic, quote, file, or tool result appeared — "find that old chat", "did we ever discuss X" | The **indexed content search** row under **Provider scope**; use supplied clues to narrow candidates first. Listing titles alone is not evidence the content exists |
 | Their own raw inputs in chronological order, verbatim | The matching reader's verbatim-input path. Preserve duplicates and session boundaries; duplicates are part of the ledger, not noise |
+| Recent requests that may have stalled — "anything we recently forgot to finish?" / "最近提过却没推进的事" | The indexed inventory/content-search routes under **Provider scope**, then the matching exact-session readers. Verify candidates against current project records; a project registry alone does not cover unregistered requests |
 | Picking work back up from an identified session | The matching continuation skill, after a read |
 
 The requested output wins over the background motivation. If someone explains a
 problem and then asks for a window of their own raw inputs, return that window —
 the explanation's topic clues do not convert the request into a content search.
 
+For a recent-unfinished-work request, keep the retrieval read-only. Establish
+the requested time window and relevant providers, inspect index freshness, and
+open only selected sessions through their owning readers. Pair each candidate's
+original user request with the latest relevant handoff or completion evidence;
+check the project's current decision/status source before calling it unfinished.
+Keep completed work, user-paused work, external blockers, and work awaiting
+acceptance distinct. Treat reminders, assistant plans, and uncompleted reference
+bookmarks as leads, not proof of an outstanding commitment. Report the candidate,
+next action, evidence source/date, and any unresolved coverage gap. Stop after
+the requested inventory; do not resume old work or migrate tasks without that
+authorization. The calling agent performs this reconciliation; the readers own
+retrieval, and no mechanical check establishes real-world completion for them.
+
 ## Invariants that survive routing
+
+For remembered facts, identify the exact proposition before searching: account
+count, account users, and an event's execution identity are different questions.
+Check three evidence lanes in selected sessions: direct user words, assistant
+retellings as locators, and original external records previously read by tools.
+An assistant's quote locates the source; it does not replace that source. Use the
+provider reader's complete tool-evidence route when the target is a prior read.
+
+When the user says “search again”, change a concrete search dimension: source
+lane, indexed provider/date/project scope, literal versus semantic matching, or
+the selected session's original records. Do not end the retry with the same
+ranked prose query and different synonyms alone. State which coverage changed.
+Keep a found subclaim separate from an unfound remainder; current explicit user
+facts remain authoritative even when their historical wording is not located.
+Preserve original evidence values; do not silently redact, replace, or summarize
+the stored text while exporting a record.
 
 - **Coverage.** Read the index's provider and source scope plus its freshness
   frontier. An archive or provider outside that scope is unknown. A missing

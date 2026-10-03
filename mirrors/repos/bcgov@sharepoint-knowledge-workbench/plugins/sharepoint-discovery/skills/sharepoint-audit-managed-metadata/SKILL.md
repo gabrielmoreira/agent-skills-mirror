@@ -1,7 +1,7 @@
 ---
 name: sharepoint-audit-managed-metadata
 plugin: sharepoint-discovery
-description: Audits a live SharePoint site for Managed Metadata (Taxonomy) usage -- term group/term-set discovery plus every list/library and site column bound to a Taxonomy field -- for modern SPO (PnP.PowerShell) or legacy on-prem SP2016 (NTLM/Kerberos REST + CSOM) sites.
+description: Audits a live SharePoint site for Managed Metadata (Taxonomy) usage, covering term group and term-set discovery plus every list, library and site column bound to a Taxonomy field, for modern SPO (PnP.PowerShell) or legacy on-prem SP2016 (NTLM/Kerberos REST plus CSOM). Use ahead of a migration or schema-design decision to learn whether and where a site uses Managed Metadata.
 allowed-tools: Bash, Read
 examples:
   - "pwsh -File scripts/audit-sharepoint-managed-metadata.ps1 -SiteUrl \"https://tenant.sharepoint.com/sites/Test\" -TermGroupName \"Enterprise Taxonomy\" -OutputPath managed-metadata-audit.json"
@@ -10,50 +10,53 @@ examples:
 
 # Audit Managed Metadata
 
-## Trigger and Purpose
+Resolve a named Term Group's term sets and scan every list, library and site column for
+`TaxonomyField` and `TaxonomyFieldTypeMulti` fields. Pick the script by site type.
 
-Use this skill when you need to know whether -- and where -- a SharePoint
-site uses Managed Metadata (Taxonomy) columns, ahead of a migration or
-schema-design decision. It resolves a named Term Group's term sets and scans
-every list/library and site column for `TaxonomyField`/
-`TaxonomyFieldTypeMulti` fields, for either a modern SPO site (via
-PnP.PowerShell) or a legacy on-premises SP2016 site (via NTLM/Kerberos REST +
-CSOM, since on-prem has no Entra app-registration path in general use here).
+## Contents
 
-## Read-only guarantee
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-Both scripts perform tenant/site **reads only** -- `Get-PnP*` cmdlets,
-`Invoke-RestMethod` GET calls, or CSOM `ExecuteQuery()` calls that only load
-and read term-store objects. Zero writes.
+## Constraints
 
-## Honest outcomes
+- Reads only. Both scripts use `Get-PnP*` cmdlets, `Invoke-RestMethod` GET calls, or CSOM
+  `ExecuteQuery()` calls that only load and read term-store objects. Zero writes.
+- Never fabricate or silently drop a failure. Failed REST calls, PnP errors and an unresolvable Term
+  Group are recorded as `Error` or `Found: false` fields in the JSON. A CSOM assembly or version
+  failure on-prem is a non-fatal finding, not an exception.
+- Both scripts perform live tenant I/O and the user runs them. On-prem uses NTLM/Kerberos because
+  there is no Entra app-registration path in general use there.
 
-Failed REST calls, PnP cmdlet errors, or an unresolvable Term Group are
-recorded as `Error`/`Found: false` fields in the JSON output -- never
-fabricated or silently dropped. A CSOM assembly/version failure on-prem is
-likewise recorded as a non-fatal finding, not thrown.
-
-## Usage
-
-### Modern SPO
+## Quick start
 
 ```bash
 pwsh -File scripts/audit-sharepoint-managed-metadata.ps1 -SiteUrl "https://tenant.sharepoint.com/sites/Test" -TermGroupName "Enterprise Taxonomy" -OutputPath managed-metadata-audit.json
 ```
 
-### On-prem SP2016
+## Workflow
 
-```bash
-pwsh -File scripts/audit-onprem-sharepoint-managed-metadata.ps1 -SiteUrl "https://sp2016.example.org/sites/Legacy" -TermGroupName "Enterprise Taxonomy" -OutputPath managed-metadata-audit.json -UseDefaultCredentials
-pwsh -File scripts/audit-onprem-sharepoint-managed-metadata.ps1 -SiteUrl "https://sp2016.example.org/subsite" -ParentSiteUrl "https://sp2016.example.org" -OutputPath managed-metadata-audit.json
-```
+1. Choose the script: `scripts/audit-sharepoint-managed-metadata.ps1` for modern SPO (term group,
+   term-set lookup, list/library and site-column Taxonomy scan), or
+   `scripts/audit-onprem-sharepoint-managed-metadata.ps1` for on-prem SP2016 (same checks, plus an
+   optional `-ParentSiteUrl` second site and a CSOM `TaxonomySession` term-store lookup).
+2. On-prem examples:
 
-## Scripts
+   ```bash
+   pwsh -File scripts/audit-onprem-sharepoint-managed-metadata.ps1 -SiteUrl "https://sp2016.example.org/sites/Legacy" -TermGroupName "Enterprise Taxonomy" -OutputPath managed-metadata-audit.json -UseDefaultCredentials
+   pwsh -File scripts/audit-onprem-sharepoint-managed-metadata.ps1 -SiteUrl "https://sp2016.example.org/subsite" -ParentSiteUrl "https://sp2016.example.org" -OutputPath managed-metadata-audit.json
+   ```
+3. Read the JSON written to `-OutputPath` and report the term sets and every Taxonomy-bound field.
 
-- `scripts/audit-sharepoint-managed-metadata.ps1` -- modern SPO PnP.PowerShell audit (term group/term-set lookup + list/library + site column Taxonomy-field scan)
-- `scripts/audit-onprem-sharepoint-managed-metadata.ps1` -- on-prem SP2016 NTLM/REST + CSOM audit (same checks, plus optional `-ParentSiteUrl` second site and CSOM `TaxonomySession` term-store lookup)
+## Verification
 
-## Provenance
+Confirm the JSON exists at `-OutputPath`, then list any `Error` or `Found: false` entries as
+findings rather than treating the audit as clean.
 
-Ported and generalized from `plugins/sharepoint-migration/scripts/inventory/check-managed-metadata-custom.ps1` and `plugins/sharepoint-migration/scripts/utilities/check-managed-metadata-spo-prod.ps1` in the originating SharePoint migration repository. All hardcoded site URLs, project codenames, and output defaults were removed in favor of explicit `-SiteUrl`/`-ParentSiteUrl`/`-TermGroupName` parameters, and console-only (`Write-Host`/`Format-Table`) output was replaced with structured JSON via a required `-OutputPath` parameter.
+## References
 
+- [Provenance](references/managed-metadata-audit-provenance.md): read to see what was removed from
+  the source scripts when they were generalized.

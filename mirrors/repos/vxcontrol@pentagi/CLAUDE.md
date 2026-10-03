@@ -22,7 +22,7 @@ The target: comment lines at 0–2% of a file of logic and about 18% of a file o
 
 3. **English only.** No Russian, not even a quoted requirement.
 
-4. **No `§`, no requirement ids like `(R37)`, no reference to a document that is not in this repository.** A planning document that is not tracked leaves every pointer into it dead. Do not just delete the token — rewrite the sentence so it stands alone, or delete the comment. "The spec says X" is not a reason; if the reason is real, state the reason. (`§` is a legitimate *string* separator in `backend/cmd/installer/wizard/models/types.go` and a legitimate reference to the CommonMark spec in `markdown-editor-marked.ts` — those are not comments.)
+4. **No `§`, no requirement ids like `(R37)`, no reference to a document that is not in this repository.** A planning document that is not tracked leaves every pointer into it dead. Do not just delete the token — rewrite the sentence so it stands alone, or delete the comment. "The spec says X" is not a reason; if the reason is real, state the reason. (`§` is a legitimate *string* separator in `backend/cmd/installer/wizard/models/types.go`, and in `markdown-editor-marked.ts` it is the delimiter of the anonymizer placeholder `§*Name*§` that the code reads — neither is a pointer into a document.)
 
 5. **No archaeology.** Git holds the history. Delete "it used to be", "no longer", "before this", "now that X arrives", "was an overgeneralisation". Keep the invariant the story was there to protect. This applies to test *names* as well as test comments.
 
@@ -71,9 +71,10 @@ The application is a monorepo:
 
 ```bash
 go mod download                              # Install dependencies
-go generate ./cmd/installer/files/           # REQUIRED once per fresh clone: fs.go, fs_test.go and fs/ in
-                                             #   cmd/installer/files/ are generated and gitignored; the installer
-                                             #   tests fail without them
+go generate ./cmd/installer/files/           # REQUIRED once per fresh clone and again after a change under
+                                             #   cmd/installer/files/links or to a file linked there: fs.go,
+                                             #   fs_test.go and fs/ in cmd/installer/files/ are generated and
+                                             #   gitignored; the installer tests fail without them
 go build -trimpath -o pentagi ./cmd/pentagi  # Quick compile; the binary reports version "ce"
 go test ./...                                # Default test tier (see Testing)
 golangci-lint run --timeout=5m               # Lint — config backend/.golangci.yml (v2 schema); CI pins v2.12.2

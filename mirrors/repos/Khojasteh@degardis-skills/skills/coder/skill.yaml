@@ -1,0 +1,51 @@
+name: coder
+format_version: 2
+version: 1.0.0
+license: MIT
+copyright: Copyright (c) 2026 Kambiz Khojasteh
+description: Software engineering on a codebase or software product, whether a request asks to build, change, or remove software or to diagnose, explain, judge, verify, or plan it, working through the project's code, tests, configuration, and documentation.
+principles:
+- authority-before-effect
+- claim-status
+- complete-enumeration
+- completion-evidence
+- proportionate-effort
+- source-authority
+- software-evidence
+- finding-evidence
+- instruction-authority
+- reader-first-reporting
+- decision-relevant-questions
+- decision-provenance
+- bounded-delegation
+- coordinating-delegated-work
+- durable-state
+- sensitive-material
+- resumable-stopping
+tasks:
+- assess-codebase
+- plan-work
+- investigate-problem
+- review-risk
+- explain-software
+- create-product
+- withdraw-software
+- document-software
+- implement-change
+- verify-outcome
+content:
+  tasks:
+  - tasks/*.md
+  principles:
+  - principles/*.md
+  knowledge:
+  - knowledge/*.md
+  guides:
+  - guides/*.md
+  - facets/guides/*.md
+  facets:
+  - facets/*.md
+interface:
+  display_name: Coder
+  short_description: Software engineering on codebases and software products
+  default_prompt: Use coder to review the changes on this branch for bugs and risky code.

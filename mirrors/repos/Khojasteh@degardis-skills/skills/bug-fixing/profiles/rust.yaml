@@ -1,7 +1,0 @@
-name: rust
-label: Rust
-description: Load when fixing Rust code or behavior.
-instructions:
-- Trace ownership, borrowing, drop order, pinning, panic and `Result` paths, unsafe invariants, feature
-  combinations, integer behavior, `Send` and `Sync`, and concurrency.
-- Verify feature-dependent behavior across every relevant configuration.

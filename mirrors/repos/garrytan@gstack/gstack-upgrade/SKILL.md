@@ -371,6 +371,10 @@ Use the output to determine if an upgrade is available.
 
 2. If `UPGRADE_AVAILABLE <old> <new>`: follow Steps 2-6 above.
 
+   If `CHECK_FAILED ...`: the remote version could not be read, so the update
+   status is unknown. Show the line (it names the URL that failed) and tell the
+   user the check failed; never report "already on the latest version". Stop.
+
 3. If no output (primary is up to date): check for a stale local vendored copy.
 
 Run the Step 2 bash block above to detect the primary install type and directory (`INSTALL_TYPE` and `INSTALL_DIR`). Then run the Step 4.5 detection bash block above to check for a local vendored copy (`LOCAL_GSTACK`) and team mode status (`TEAM_MODE`).

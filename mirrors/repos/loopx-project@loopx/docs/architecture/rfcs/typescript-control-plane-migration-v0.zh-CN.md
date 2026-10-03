@@ -27,17 +27,18 @@ R1–R3 的 TS 消费者包括 App 产品路径，不只 CLI 结算。
 这里是 T0–T4 的产品消费计划，不新增 provider promotion，也不声称迁移完成。
 
 
-## 当前交付边界（2026-09-28）
+## 当前交付边界（2026-10-02）
 
-按 `ce3862e33` 核对，#5054、#5140、#5144、#5156、#5173、#5175、#5169
-均已合并。事件退役、archive 恢复、managed 进程监督、reviewed 本地切换和 native
-drain 不再计作新待办 PR。#4931 仍是开放的 SQLite 优化，不是已完成 D2 验收。
+按 main `9b0486dc1` 核对，#4931、#5251、#5395、#5417、#5436 已合并，
+不再把这些存储改进和 Python 退役重复记作待办。
+[当前验证、迁移与删除计划](ledger/shared-goal-authority-state-provider-v0/2026-09-28-retirement-cadence.zh-CN.md#当前收尾验证迁移与删除2026-10-02)
+优先收尾 #5413/#5466/#5283，再做安装态可回退验证、有界自愿采用、canonical
+创建／默认接入及最后调用方删除。存量 Goal 迁移、两策略退役和格式升级各有独立
+回执及出口；原回执恢复不能成为保留 legacy 活跃策略的理由，必要迁移 reader 保留。
 
-接下来并行验证整 Goal 执行／消费者集成和本地 profile，再统一新 Goal／安装／设置
-及受支持升级入口，切走最后调用方时同步删除对应旧 writer。保留必要 Host IO、
-原回执与迁移 reader。本轮未认证额外某个 Python 模块已死，也不承诺固定剩余 PR 数。
-[删除清单、工程窗口、本机证据及剩余工作](ledger/shared-goal-authority-state-provider-v0/2026-09-28-retirement-cadence.zh-CN.md)
-替代旧记录的当前数量估算，旧执行证据仍按历史保留。
+有界 cohort 在安装恢复和相关执行控制通过后可开始，不代表发布默认值或正式十天
+D2 已通过；冻结的失败／缺项保持可见。T4 随实现删除已证明重复的 owner，不等 R6
+或所有 Python 消失。本节替代陈旧的当前数量估算，不覆盖历史执行证据。
 
 ## Todo 事件路径退役（2026-09-25）
 
@@ -837,6 +838,8 @@ PostgreSQL 读取使用同一个 repeatable-read snapshot，并发提交在下�
 T3/D1 reader，未完成全部 Todo writer、retention/compaction 或 promotion。
 
 配额准入与结算消费者现在从统一 Todo reader 读取完整来源，在显示压缩前解析显式 Todo 选择。它删除直接追加 Markdown 候选的路径，保留 promote 前的事件适配；promote 后权威为空或不可读都不能复活展示行。结算进度由现有 TS 回执链归约，Python 负责完整身份命令及 JSON/Markdown 展示。现有幂等 writer 可补齐缺失的 spend 回执而不再次扣款。这关闭已复现的 T3 消费者缺口，不代表 D1–D3、provider promotion 或剩余 Python 事务适配已完成。操作语义见[结算进度契约](../../quota-allocation.md#receipt-backed-settlement-progress)。
+
+**Canonical claim 争抢。** TS claim 命令现在对明确的 provider revision CAS 拒绝最多重试两次，保持同一 operation 与 lease key；每次重新读取回执和完整权威，复核来源注册、Todo 资格、acceptance 和 lease 写范围。显式 provider revision 或 transfer grant 保持固定，写入结果不明确时沿用回执恢复。独立认领可以同时完成，同 Todo 或重叠写范围仍只接受一方。这让 canonical writer 采用 shared-authority 冲突契约，不预留推荐项、不改变本机 writer 串行化，也不证明持续多主机吞吐。CLI claim 调用方继承该行为，frontend／Lark 动作契约不变。
 
 **Scoped gate 动作回读。** 最终 quota 包在选择、能力、workspace、回执及通知决策之后，通过 TS quota 规则投影 scoped User gate/action override。可选 `selected_action` 只在 interaction 允许交付时取最终选中 Todo 的文字；待选择、修复和已结算包省略该字段。准入诊断与回执身份保留。这修正 peer gate 场景的 CLI JSON 误导，不代表剩余 route／primary-action builder 已迁移、推荐已成为预留，或 T3/D1–D3 已完成。
 

@@ -8,6 +8,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadSurfaces, scanSkillBody } from "./verbs-gate.mjs";
+import { activationRule, embedRuleBody } from "./activation-rule.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const BANNED = ["TO" + "DO", "FIX" + "ME", "not " + "implemented", "not-" + "implemented"];
@@ -256,6 +257,23 @@ if (cliDir) {
   console.error(`compiled ${cliSkills.length} agent skill(s) into ${join(cliDir, "src", "agent-skills.generated.ts")}`);
 } else {
   die("CLI source directory not found");
+}
+
+// Always-on activation rule, derived from the caveman skill so the IDE rule,
+// the opencode AGENTS.md body and the caveman-init.js fallback cannot drift.
+const repoRoot = join(here, "..");
+if (existsSync(join(repoRoot, "src", "rules"))) {
+  const initPath = join(repoRoot, "src", "tools", "caveman-init.js");
+  let rule, init;
+  try {
+    rule = activationRule(readFileSync(join(here, "caveman", "SKILL.md"), "utf8"));
+    init = embedRuleBody(readFileSync(initPath, "utf8"), rule);
+  } catch (error) {
+    die(error.message);
+  }
+  writeFileSync(join(repoRoot, "src", "rules", "caveman-activate.md"), rule);
+  writeFileSync(initPath, init);
+  console.error("compiled the always-on activation rule into src/rules/caveman-activate.md and src/tools/caveman-init.js");
 }
 
 const nativePackJSON = JSON.stringify(compiledNativePack, null, 2) + "\n";

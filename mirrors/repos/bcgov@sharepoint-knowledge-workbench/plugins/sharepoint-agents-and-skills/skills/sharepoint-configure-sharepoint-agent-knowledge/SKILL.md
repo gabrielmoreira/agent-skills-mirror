@@ -1,46 +1,47 @@
 ---
 name: sharepoint-configure-sharepoint-agent-knowledge
-description: Read-only report of a deployed SharePoint agent's current knowledge-source bindings, plus resolution of the exact site_id/web_id/list_id/unique_id a new binding needs.
+plugin: sharepoint-agents-and-skills
+description: Read-only report of a deployed SharePoint agent's current knowledge-source bindings, plus resolution of the exact site_id, web_id, list_id and unique_id a new binding needs. Use to inspect what an agent is grounded on or to get correct identifiers for site isolation.
+allowed-tools: Bash, Read
 ---
 
-# configure-sharepoint-agent-knowledge
+# Configure SharePoint Agent Knowledge
 
-## Purpose
+Two read-only capabilities: inspect a deployed agent's bindings, and resolve the resource identifiers a new binding needs.
 
-Two related, read-only capabilities:
+## Contents
 
-1. **Inspect a deployed agent's current bindings** (`configure-sharepoint-agent-knowledge.ps1`) —
-   downloads a deployed `.agent` file and reports what it's actually grounded on right now.
-   Distinct from `update-sharepoint-agent`, which edits a *local* package.
-2. **Resolve resource identifiers for a new binding** (`get-agent-resource-identifiers.ps1`) —
-   extracts `site_id`/`web_id`/`list_id`/`unique_id` for a given site-relative folder, per the
-   confirmed working method documented in `docs/research/phase-4-agent-format-learning-
-   journal.md` and `PHASE-4-SHAREPOINT-AGENTS-CRITICAL-LEARNINGS.md`: prior to this skill, these
-   IDs were extracted from a working reference agent by hand, every time a new agent needed
-   correct site isolation. This scripts that manual process.
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-## Correction from the Phase 6 plan (2026-08-03)
+## Constraints
 
-The plan named `task-9-retrieve-topic-metadata.ps1` as this capability's source. Direct reading
-found that script inspects *topic item metadata field values* (`TopicID`, `PublicationOrder`,
-`TopicContentSHA256`, `Status`, `ReviewDate`, `TransitionAction`, `TransitionTarget`) — unrelated
-to agent knowledge-source configuration. It was not extracted from; it remains research-only in
-`tools/`. Both scripts here are new builds addressing the actual capability gap.
+- Read-only: neither script performs a tenant write.
+- Targets are explicit (`-AgentPath`, `-FolderSiteRelativePath`); there is no default.
+- This inspects a deployed agent; editing a local package is `sharepoint-update-sharepoint-agent`.
+- When running an installed copy, pass `-ConfigFile` explicitly.
 
-## Input boundaries
+## Quick start
 
-- `-ConfigFile` — connection/authentication context only.
-- `-AgentPath` / `-FolderSiteRelativePath` — explicit target, no default.
-- **Read-only** — neither script performs any tenant write.
+```powershell
+pwsh -File scripts/get-agent-resource-identifiers.ps1 -ConfigFile config.psd1 -FolderSiteRelativePath "<site-relative folder>"
+```
 
-## Scripts
+## Workflow
 
-- `../../scripts/configure-sharepoint-agent-knowledge.ps1`
-- `../../scripts/get-agent-resource-identifiers.ps1`
+1. To inspect an agent: `configure-sharepoint-agent-knowledge.ps1 -ConfigFile ... -AgentPath ...`.
+2. To bind a new source: `get-agent-resource-identifiers.ps1` for the folder, then use its `site_id`, `web_id`, `list_id` and `unique_id` in the agent's `items_by_url`.
+3. Report the bindings or identifiers with the exact values returned.
 
-## Tests
+## Verification
 
-No executable tests — both scripts require a live tenant connection with no dry-run mode
-possible for a pure read query (consistent with this plugin's other tenant-diagnostic scripts,
-e.g. `diagnose-sharepoint-library.ps1`, which also has no executable test suite).
+Identifiers are non-empty and match the live resource; a folder gets its real `unique_id`, never another folder's GUID or the zero GUID (zeros only for a top-level library). There are no executable tests (a pure read has no dry-run mode).
 
+## References
+
+- [Safety, config and permissions](references/agents-and-skills-safety-and-config.md): read for the gate model of every script, the `-ConfigFile` default caveat and the Copilot permission note.
+- [Knowledge binding details](references/agent-knowledge-binding-details.md): read for the two capabilities and the Phase 6 plan correction.
+- [Agent package authoring](references/agent-package-authoring-details.md): read for `items_by_url` identifier rules.

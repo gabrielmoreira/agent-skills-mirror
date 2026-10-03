@@ -8,75 +8,55 @@ Nanobrowser is an open-source AI web automation Chrome extension that runs multi
 
 ## Development Commands
 
-**Package Manager**: Always use `pnpm` (required, configured in Cursor rules)
+**Package Manager**: Always use `pnpm` 10.34.6 (pinned in `package.json`). Use Node.js 24 LTS; any global pnpm 10+ (or `corepack enable`) switches to the pinned version, and `engines` refuses pnpm 9 and npm. `.npmrc` sets `minimum-release-age=1920`, so pnpm refuses package versions published less than 32 hours ago.
 
 **Core Commands**:
 
 - `pnpm install` - Install dependencies
-- `pnpm dev` - Start development mode with hot reload
-- `pnpm build` - Build production version
-- `pnpm type-check` - Run TypeScript type checking
+- `pnpm dev` - Start WXT development mode with page HMR and extension reloads
+- `pnpm build` - Build the Chromium MV3 extension with WXT
+- `pnpm type-check` - Regenerate i18n types and `.wxt/`, then run TypeScript type checking
 - `pnpm lint` - Run ESLint with auto-fix
 - `pnpm prettier` - Format code with Prettier
 
 **Testing**:
 
-- `pnpm e2e` - Run end-to-end tests (builds and zips first)
-- `pnpm zip` - Create extension zip for distribution
-- `pnpm -F chrome-extension test` - Run unit tests (Vitest) for core extension
-  - Targeted example: `pnpm -F chrome-extension test -- -t "Sanitizer"`
-
-### Workspace Tips
-
-- Scope tasks to a single workspace to speed up runs:
-  - `pnpm -F chrome-extension build`
-  - `pnpm -F packages/ui lint`
-- Prefer workspace-scoped commands over root-wide runs when possible.
+- `pnpm zip` - Build and create an extension zip for distribution
+- `pnpm test` - Run unit tests (Vitest)
+  - Targeted example: `pnpm test -t "Sanitizer"`
 
 Targeted examples (fast path):
-- `pnpm -F pages/side-panel build` — build only the side panel
-- `pnpm -F chrome-extension dev` — dev-watch background/service worker
-- `pnpm -F packages/storage type-check` — TS checks for storage package
-- `pnpm -F pages/side-panel lint -- src/components/ChatInput.tsx` — lint a file
-- `pnpm -F chrome-extension prettier -- src/background/index.ts` — format a file
+- `pnpm exec eslint src/side-panel/components/ChatInput.tsx` — lint a file without auto-fix
+- `pnpm exec prettier --write src/side-panel` — format a directory
 
 **Cleaning**:
 
-- `pnpm clean` - Clean all build artifacts and node_modules
-- `pnpm clean:bundle` - Clean just build outputs
-- `pnpm clean:turbo` - Clear Turbo state/cache
-- `pnpm clean:node_modules` - Remove dependencies in current workspace
+- `pnpm clean` - Remove build outputs (`dist/`, `dist-zip/`, `.wxt/`)
+- `pnpm clean:node_modules` - Remove dependencies
 - `pnpm clean:install` - Clean node_modules and reinstall dependencies
-- `pnpm update-version` - Update version across all packages
+- `pnpm update-version` - Update the version in `package.json`
 
 ## Architecture
 
-This is a **monorepo** using **Turbo** for build orchestration and **pnpm workspaces**.
+This is a **single pnpm package** built by **WXT**, with WXT's default layout at the repo root.
 
-### Workspace Structure
+### Project Structure
 
-**Core Extension**:
-
-- `chrome-extension/` - Main Chrome extension manifest and background scripts
-  - `src/background/` - Background service worker with multi-agent system
+- `wxt.config.ts` - Manifest, Vite settings, aliases, and build hooks
+- `entrypoints/` - Thin wrappers importing the background, content, side panel, and options source
+- `public/` - Static files copied into the build: icons, `permission/`, `buildDomTree.js`, and `_locales/`
+- `src/background/` - Background service worker with multi-agent system
   - `src/background/agent/` - AI agent implementations (Navigator, Planner, Validator)
   - `src/background/browser/` - Browser automation and DOM manipulation
-
-**UI Pages** (`pages/`):
-
-- `side-panel/` - Main chat interface (React + TypeScript + Tailwind)
-- `options/` - Extension settings page (React + TypeScript)
-- `content/` - Content script for page injection
-
-**Shared Packages** (`packages/`):
-
-- `shared/` - Common utilities and types
-- `storage/` - Chrome extension storage abstraction
-- `ui/` - Shared React components
-- `schema-utils/` - Validation schemas
-- `i18n/` - Internationalization
-- Others: `dev-utils/`, `zipper/`, `vite-config/`, `tailwind-config/`, `hmr/`,
-  `tsconfig/`
+  - `src/background/llm/` - AI SDK provider setup, structured generation, and LLM error handling
+- `src/side-panel/` - Main chat interface (React + TypeScript + Tailwind)
+- `src/options/` - Extension settings page (React + TypeScript)
+- `src/content/` - Content script for page injection
+- `src/storage/` - Chrome extension storage abstraction (`@extension/storage`); LLM providers and default models are defined in `src/storage/lib/settings/types.ts`
+- `src/i18n/` - Internationalization (`@extension/i18n`)
+- `src/ui/` - Shared React components and the `withUI` Tailwind helper (`@extension/ui`)
+- `src/shared/` - Common hooks, HOCs, and utilities (`@extension/shared`)
+- `scripts/zip.ts` - Zips `dist/` into `dist-zip/`
 
 ### Multi-Agent System
 
@@ -86,43 +66,46 @@ The core AI system consists of three specialized agents:
 - **Planner** - High-level task planning and strategy
 - **Validator** - Validates task completion and results
 
-Agent logic is under `chrome-extension/src/background/agent/`.
+Agent logic is under `src/background/agent/`.
 
 ### Build System
 
-- **Turbo** manages task dependencies and caching
-- **Vite** bundles each workspace independently
-- **TypeScript** with strict configuration across all packages
+- **WXT** uses Vite to bundle every entrypoint, including shared code, directly from source
+- `@extension/*` imports are aliases to `src/<name>` defined in `wxt.config.ts`; `vitest.config.mts` repeats them, so update both when adding an alias
+- **TypeScript** with strict configuration; the root `tsconfig.json` extends the generated `.wxt/tsconfig.json` for alias paths only
 - **ESLint** + **Prettier** for code quality
-- Each workspace has its own `vite.config.mts` and `tsconfig.json`
 
 ### Key Technologies
 
 - **Chrome Extension Manifest V3**
 - **React 18** with TypeScript
 - **Tailwind CSS** for styling
-- **Vite** for bundling
+- **WXT** with Vite for extension bundling and development
 - **Puppeteer** for browser automation
 - **Chrome APIs** for browser automation
-- **LangChain.js** for LLM integration
+- **Vercel AI SDK v7** (`ai` + `@ai-sdk/*` providers) for LLM integration, isolated in `src/background/llm/`
 
 ## Development Notes
 
 - Extension loads as unpacked from `dist/` directory after build
-- Hot reload works in development mode via Vite HMR
+- WXT uses Vite HMR for pages and reloads the extension for background/content changes
+- Load `dist/` unpacked manually; the browser runner is disabled in `web-ext.config.ts`
+- Shared code under `src/` is bundled from source, so `pnpm dev` hot-updates it without a rebuild
+- Locale edits during `pnpm dev` regenerate the i18n types, and WXT copies `public/_locales` and reloads the extension
+- WXT is pinned to 0.21.4 because the config compensates for version-specific behavior; verify these hooks on upgrades
 - Background scripts run as service workers (Manifest V3)
 - Content scripts inject into web pages for DOM access
 - Multi-agent coordination happens through Chrome messaging APIs
 - Distribution zips are written to `dist-zip/`
-- Build flags: set `__DEV__=true` for watch builds; 
-- Do not edit generated outputs: `dist/**`, `build/**`, `packages/i18n/lib/**`
+- Use `pnpm dev` for development and `pnpm build` for production; Vite sets `import.meta.env.DEV`.
+- Do not edit generated outputs: `dist/**`, `.wxt/**`, `src/i18n/lib/type.ts`
 
 ## Unit Tests
 
 - Framework: Vitest
-- Location/naming: `chrome-extension/src/**/__tests__` with `*.test.ts`
-- Run: `pnpm -F chrome-extension test`
-- Targeted example: `pnpm -F chrome-extension test -- -t "Sanitizer"`
+- Location/naming: `src/**/__tests__` with `*.test.ts`
+- Run: `pnpm test`
+- Targeted example: `pnpm test -t "Sanitizer"`
 - Prefer fast, deterministic tests; mock network/browser APIs
 
 ## Testing Extension
@@ -210,10 +193,10 @@ Use Chrome i18n placeholder format with proper definitions:
 
 ### Generation
 
-- Do not edit generated files under `packages/i18n/lib/**`.
-- The generator `packages/i18n/genenrate-i18n.mjs` runs via the `@extension/i18n`
-  workspace `ready`/`build` scripts to (re)generate types and runtime helpers.
-  Edit source locale JSON in `packages/i18n/locales/**` instead.
+- Do not edit the generated `src/i18n/lib/type.ts`.
+- The generator `src/i18n/generate-i18n.mjs` (re)generates it on `pnpm install`,
+  `pnpm type-check`, `pnpm build`, and locale changes during `pnpm dev`.
+  Edit source locale JSON in `public/_locales/**` instead.
 
 ## Code Quality Standards
 
@@ -238,7 +221,7 @@ Use Chrome i18n placeholder format with proper definitions:
   trailing commas, `printWidth: 120`)
 - ESLint rules include React/Hooks/Import/A11y + TypeScript
 - Components: `PascalCase`; variables/functions: `camelCase`;
-  workspace/package directories: `kebab-case`
+  directories: `kebab-case`
 - Enforced rule: `@typescript-eslint/consistent-type-imports`
   (use `import type { ... } from '...'` for type-only imports)
 
@@ -260,32 +243,28 @@ Use Chrome i18n placeholder format with proper definitions:
 - **URL Validation**: Validate and restrict navigation to prevent malicious redirects
 - **Error Handling**: Avoid exposing sensitive information in error messages or logs
  - **Secrets/Config**: Use `.env.local` (git‑ignored) and prefix variables with `VITE_`.
-   Example: `VITE_POSTHOG_API_KEY`. Vite in `chrome-extension/vite.config.mts` loads
-   `VITE_*` from the parent directory.
+   Example: `VITE_POSTHOG_API_KEY`. Vite loads `VITE_*` from the repo root.
 
 ## Important Reminders
 
 - Always use `pnpm` package manager (required for this project)
-- Node.js version: follow `.nvmrc` and `package.json` engines
-- Use `nvm use` to match `.nvmrc` before installing
+- Node.js version: 24 LTS recommended; `package.json` engines sets the minimum (`>=24.11.0`, the first 24 LTS)
 - `engine-strict=true` is enabled in `.npmrc`; non-matching engines fail install
-- Turbo manages task dependencies and caching across workspaces
 - Extension builds to `dist/` directory which is loaded as unpacked extension
 - Zipped distributions are written to `dist-zip/`
 - Only supports Chrome/Edge 
 - Keep diffs minimal and scoped; avoid mass refactors or reformatting unrelated files
-- Do not modify generated artifacts (`dist/**`, `build/**`, `packages/i18n/lib/**`)
-  or workspace/global configs (`turbo.json`, `pnpm-workspace.yaml`, `tsconfig*`)
+- Do not modify generated artifacts (`dist/**`, `.wxt/**`, the generated `src/i18n/lib` files)
+  or global configs (`wxt.config.ts`, `tsconfig.json`, `package.json` scripts)
   without approval
- - Prefer workspace-scoped checks:
-   `pnpm -F <workspace> type-check`, `pnpm -F <workspace> lint`,
-   `pnpm -F <workspace> prettier -- <changed-file>`, and build if applicable
-- Vite aliases: pages use `@src` for page `src/`; the extension uses
-  `@root`, `@src`, `@assets` (see `chrome-extension/vite.config.mts`). Use
-  `packages/vite-config`’s `withPageConfig` for page workspaces.
+ - Run checks before committing: `pnpm type-check`, `pnpm lint`, `pnpm test`,
+   and `pnpm build` if applicable
+- Vite aliases: `@root` is the repo root, `@src` is `src/`, and `@extension/{storage,i18n,ui,shared}`
+  are `src/<name>` (see `wxt.config.ts`). Page code uses relative imports.
+  Keep WXT entrypoints thin and reuse existing page/background source.
  - Only use scripts defined in `package.json`; do not invent new commands
  - Change policy: ask first for new deps, file renames/moves/deletes, or
-   global/workspace config changes; allowed without asking: read/list files,
-   workspace‑scoped lint/format/type-check/build, and small focused patches
- - Reuse existing building blocks: `packages/ui` components and
-   `packages/tailwind-config` tokens instead of re-implementing
+   global config changes; allowed without asking: read/list files,
+   lint/format/type-check/test/build, and small focused patches
+ - Reuse existing building blocks: `src/ui` components and the page
+   Tailwind configs instead of re-implementing

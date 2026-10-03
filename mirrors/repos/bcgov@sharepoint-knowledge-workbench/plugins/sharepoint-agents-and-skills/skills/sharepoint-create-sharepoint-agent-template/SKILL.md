@@ -1,37 +1,45 @@
 ---
 name: sharepoint-create-sharepoint-agent-template
-description: Authors a reusable SharePoint agent template (purpose, instruction structure, boundaries, refusal behavior, citation expectations, knowledge-source placeholders, governance metadata) distinct from a concrete .agent package.
+plugin: sharepoint-agents-and-skills
+description: Authors a reusable SharePoint agent template (purpose, instruction structure, boundaries, refusal behavior, citation expectations, knowledge-source placeholders, governance metadata), distinct from a concrete .agent package. Use to capture a reusable agent shape. Zero tenant I/O.
+allowed-tools: Bash, Read, Write
 ---
 
-# create-sharepoint-agent-template
+# Create SharePoint Agent Template
 
-## Purpose
+Capture the reusable shape of an agent separately from any deployment target. `apply-sharepoint-agent-template` later fills it in.
 
-Captures the reusable *shape* of an agent — governance metadata, boundary rules, and knowledge-
-source placeholder count — separately from any concrete deployment target. Template creation is
-distinct from agent creation: `create-sharepoint-agent` produces a concrete `.agent` file for one
-target; this produces a reusable template `apply-sharepoint-agent-template` later fills in.
+## Contents
 
-## Input boundaries
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-- `-TemplateName`, `-Purpose`, `-TemplateVersion`, `-KnowledgeSourcePlaceholderCount`
-  (`>= 1`) — required.
-- `-InstructionsTemplatePath` **or** `-InstructionsTemplate` — exactly one required.
-- `-AnswerBoundary`, `-RefusalBehavior`, `-CitationExpectations` — optional, appended as their
-  own sections when supplied.
-- `-OutputPath` (required); `-Overwrite` required to replace an existing file.
+## Constraints
 
-## Prohibited scope
+- Zero tenant I/O. This does not produce a deployable `.agent` file; use `sharepoint-apply-sharepoint-agent-template` for that.
+- Required: `-TemplateName`, `-Purpose`, `-TemplateVersion`, `-KnowledgeSourcePlaceholderCount` (>= 1), `-OutputPath`, and exactly one of `-InstructionsTemplatePath` or `-InstructionsTemplate`.
+- `-AnswerBoundary`, `-RefusalBehavior` and `-CitationExpectations` are optional and appended as their own sections. `-Overwrite` replaces an existing file.
 
-- Zero tenant I/O.
-- Does not produce a deployable `.agent` file — use `apply-sharepoint-agent-template` for that.
+## Quick start
 
-## Scripts
+```powershell
+pwsh -File scripts/create-sharepoint-agent-template.ps1 -TemplateName policy-helper -Purpose "Answer policy questions" -TemplateVersion 1.0 -KnowledgeSourcePlaceholderCount 2 -InstructionsTemplatePath instructions.md -OutputPath policy-helper.template.json
+```
 
-- `../../scripts/create-sharepoint-agent-template.ps1`
+## Workflow
 
-## Tests
+1. Decide the purpose, boundaries and how many knowledge sources a concrete agent will need.
+2. Run the script.
+3. Apply the template with `sharepoint-apply-sharepoint-agent-template`.
 
-`../../tests/unit/test_agent_templates.py` (shared with `apply-sharepoint-agent-template`) — 4
-executable tests via `pwsh`.
+## Verification
 
+The template file exists with the intended placeholder count and the optional sections you supplied.
+
+## References
+
+- [Safety, config and permissions](references/agents-and-skills-safety-and-config.md): read for the gate model of every script, the `-ConfigFile` default caveat and the Copilot permission note.
+- [Agent package authoring](references/agent-package-authoring-details.md): read for templates versus agents and the tests.

@@ -1,6 +1,6 @@
 ---
 name: agentforce-bot-upgrade
-description: "Use this skill to Upgrade Einstein Bots into Agentforce agents end-to-end in a single pass, orchestrating per-bot Agent Spec generation, planner reconciliation across bots, agentforce-generate authoring, and post-conversion .agent enhancements. TRIGGER when: user asks to migrate, upgrade, or convert one or more Einstein Bots to Agentforce; runs a multi-bot bot-to-agent upgrade; needs Einstein Bot metadata turned into Agent Spec handoffs and generated .agent agents; convert bots to agents; upgrade my service bots; move bots to Agentforce. DO NOT TRIGGER when: user already has an approved Agent Spec and only wants direct .agent authoring, deploy, test, or observe flows; the request is unrelated to Einstein Bot migration."
+description: "Use this skill to Upgrade Einstein Bots into Agentforce agents end-to-end in a single pass, orchestrating per-bot Agent Spec generation, planner reconciliation across bots, agentforce-generate authoring, and post-conversion .agent enhancements. TRIGGER when: user asks to migrate, upgrade, or convert one or more Einstein Bots (BotDefinition/BotVersion chatbots) to Agentforce agents; runs a multi-bot bot-to-agent upgrade; needs Einstein Bot metadata turned into Agent Spec handoffs and generated .agent agents; convert bots to agents; upgrade my service bots; move bots to Agentforce. DO NOT TRIGGER when: user already has an approved Agent Spec and only wants direct .agent authoring, deploy, test, or observe flows; user wants to migrate or upgrade an EXISTING Agentforce agent from a legacy GenAiPlannerBundle to an NGA aiAuthoringBundle (that is agentforce-generate's 'Migrate a Legacy Agent to Agent Script' flow, not an Einstein Bot upgrade); the request is unrelated to Einstein Bot migration."
 argument-hint: "[--mode <online|offline>] [--org-alias <org-alias> --bots <bot1:v1,bot2:v2,...> | --offline-dir <offline-dir> [--bots <bot1,bot2,...>]] [--interactive <true|false>]"
 metadata:
   version: "1.0"
@@ -24,6 +24,8 @@ Run a multi-bot upgrade-and-handoff cycle:
 3. Aggregation step that requires all generated Agent Specs
 4. `/agentforce-generate` per Agent Spec (parallelizable)
 5. Post-conversion enhancement pass per generated Agent Script (parallelizable)
+
+**Scope — this skill only converts Einstein Bots** (`BotDefinition`/`BotVersion` chatbots) into new Agentforce agents. It does NOT migrate an existing Agentforce agent from a legacy `GenAiPlannerBundle` to an NGA `aiAuthoringBundle` — for that, use the **agentforce-generate** skill's "Migrate a Legacy Agent to Agent Script" flow.
 
 ## Inputs
 

@@ -62,6 +62,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/embed_stamp.ts`](src/embed_stamp.ts) | Resolves which extraction kind a file's embedding stamp belongs to, and which digest from `embed_fingerprint.ts` that kind carries. |
 | [`src/embed_tokenizer.ts`](src/embed_tokenizer.ts) | A BERT WordPiece tokenizer for exactly the spec `bge-small-en-v1.5`'s `tokenizer.json` declares: BertNormalizer(clean_text, handle_chinese_chars, strip_accents=null, lowercase=true |
 | [`src/embeddings.ts`](src/embeddings.ts) | [`src/embed_model.ts`](src/embed_model.ts) (pinned `Xenova/bge-small-en-v1.5`, 384 dimensions; hashed into EMBED_FINGERPRINT) over [`src/embed_runtime.ts`](src/embed_runtime.ts) (unhashed: native `onnxruntime-node` when it loads, else the bundled `onnxruntime-web` WASM build whose `.wasm` is fetched once, SHA-pinned, by [`src/embed_runtime_web.ts`](src/embed_runtime_web.ts) behind a dynamic import; the runtime's name and major.minor go in the provenance stamp instead), downloads through [`src/pinned_file.ts`](src/pinned_file.ts) (its fetch in [`src/pinned_fetch.ts`](src/pinned_fetch.ts), also lazy), and [`src/embed_tokenizer.ts`](src/embed_tokenizer.ts); `chunkFile()` splits source into overlapping windows; `upsertChunks()` writes to `chunks` and `chunk_vectors`; `searchSemantic()` queries `chunk_vectors` via vec0 KNN |
+| [`src/semantic_distances.ts`](src/semantic_distances.ts) | The `semantic_queries` ledger: one text-free row per semantic query, and the `semantic --distances` report that turns those rows into something a user can tune `semantic.weak_dista |
 
 **Paths, Filesystem, and Project Detection**
 
@@ -474,11 +475,14 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/indexed_source.ts`](src/indexed_source.ts) | Resolves the document a stored symbol line range actually addresses. |
 | [`src/injection_scan.ts`](src/injection_scan.ts) | Lexical scan for prompt-injection attack patterns in untrusted fetched content. |
 | [`src/install_index.ts`](src/install_index.ts) | First index of the project `install` runs in. |
+| [`src/jsonc_text.ts`](src/jsonc_text.ts) | JSONC (JSON with line and block comments and trailing commas) support shared by the MCP bridge writers and the JSON read commands. |
 | [`src/known_roots.ts`](src/known_roots.ts) | Exports: `isTooShallowToPrune`, `recordKnownRoot`, `sweepExpiredKnownRootMarkers`, `recordKnownRootThrottled` |
 | [`src/language_specs.ts`](src/language_specs.ts) | The one table of languages token-goat indexes. |
 | [`src/lazy_module.ts`](src/lazy_module.ts) | Shared factory for the "lazily load an optional npm dependency" pattern used by every optional-dependency reader (pdf_extract.ts, xlsx_extract.ts, ooxml_extract.ts, screenshot.ts, |
+| [`src/line_matchers.ts`](src/line_matchers.ts) | Linear-time matchers for header-like lines. |
 | [`src/line_regions.ts`](src/line_regions.ts) | Maps a requested line span onto the file regions that cover it. |
 | [`src/listing_size.ts`](src/listing_size.ts) | `token-goat listing-size`: price the skill and agent listings Claude Code puts in context. |
+| [`src/manifest_fit.ts`](src/manifest_fit.ts) | Fits an ordered list of manifest sections to a character budget by dropping whole rows, never by cutting text. |
 | [`src/manifest.ts`](src/manifest.ts) | The compaction manifest: what this session touched, rendered for whoever reads it next. |
 | [`src/markdown_frontmatter.ts`](src/markdown_frontmatter.ts) | Index of the first line after a leading YAML front-matter block, or 0 when the document has none. |
 | [`src/markdown_lines.ts`](src/markdown_lines.ts) | Iterate markdown lines, skipping fenced-code-block content (``` or ~~~ blocks) and the fence delimiter lines themselves, so a `#` comment inside a code fence is never mistaken for |
@@ -519,6 +523,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/resident_context.ts`](src/resident_context.ts) | Accounting for the context the harness injects and token-goat's hooks never see. |
 | [`src/screenshot.ts`](src/screenshot.ts) | Local screenshot capture for `token-goat screenshot`, so a page render can reach the model as a small shrunk image instead of round-tripping through a separate browser-automation M |
 | [`src/search/parallel_search.ts`](src/search/parallel_search.ts) | Exports: `executeParallelSearch` |
+| [`src/search/path_weight.ts`](src/search/path_weight.ts) | Exports: `ARCHIVE_PATH_SEGMENTS`, `ARCHIVE_FILE_RE`, `DOCS_FILE_RE`, `DOCS_DIR_SEGMENT` |
 | [`src/search/rrf.ts`](src/search/rrf.ts) | Exports: `DEFAULT_RRF_K`, `fuseChannelHits` |
 | [`src/search/search_cli.ts`](src/search/search_cli.ts) | Exports: `runParallelSearch` |
 | [`src/search/symbol_fts.ts`](src/search/symbol_fts.ts) | Full-text symbol search split by kind, for the `search` command's symbol and heading channels. |

@@ -1,70 +1,55 @@
 ---
 name: workbench-initialize-workbench-config
 plugin: workbench-setup
-description: "Creates the root, git-ignored config.psd1 from this plugin's canonical config.psd1.example template -- Entra ID app-registration details (TenantId, ClientId, AuthenticationMode) and the target SharePoint site (SiteUrl). Generating the file is the default action and never connects to anything; a separate, explicit connector must be supplied to perform a read-only connection test. Mandatory answers: SiteUrl, TenantId, ClientId, AuthenticationMode."
+description: "Creates the root, git-ignored config.psd1 from the canonical config.psd1.example template: Entra ID app-registration details (TenantId, ClientId, AuthenticationMode) and the target SharePoint site (SiteUrl). Use when setting up a workbench connection for the first time. Generating the file is the default action and never connects to anything; a separate, explicit connector is needed for a read-only connection test. Mandatory answers: SiteUrl, TenantId, ClientId, AuthenticationMode."
 allowed-tools: Bash, Read
 examples:
-  - "python -c \"import config_setup; config_setup.write_config('.', connection={...}, authentication={}, defaults={})\""
+  - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); import config_setup; config_setup.write_config('.', connection={...}, authentication={}, defaults={})\""
 ---
 
 # Initialize Workbench Config
 
-## Trigger and Purpose
+Generate the repository-root `config.psd1` (Layer 1 root connection configuration) from
+`assets/config.psd1.example`. Writing the file is the only default action.
 
-Use this skill to generate the repository-root `config.psd1` (Layer 1
-root connection configuration, per `docs/superpowers/specs/
-2026-08-02-multi-document-destination-configuration-design.md`
-Section 1) from this plugin's canonical `assets/config.psd1.example`
-template — Entra ID app-registration details and the target SharePoint
-site. Writing the file is the only action this skill performs by
-default — it never connects to SharePoint.
+## Contents
 
-Ask the user for the four mandatory values (`SiteUrl`, `TenantId`,
-`ClientId`, `AuthenticationMode`), the two conditional
-`Authentication.*` values (only when `AuthenticationMode` needs them —
-currently `Certificate` mode requires `CertificateThumbprint`/
-`TenantAdminUrl`), and offer the four `Defaults.*` library names with
-sensible defaults the user can accept or override.
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-## Public Interface
+## Constraints
 
-```python
-from config_setup import validate_connection_answers, write_config, test_connection
+- Never connect to SharePoint by default. A connection test runs only when the caller
+  explicitly supplies a connector.
+- Never overwrite an existing `config.psd1` unless `overwrite=True` is passed explicitly.
+- Run from this skill's root. Helpers are `scripts/config_setup.py` and
+  `scripts/psd1_writer.py`; standard library only, no other plugin required.
 
-issues = validate_connection_answers(connection, authentication)  # [] means valid
-output_path = write_config(repo_root, connection, authentication, defaults)
-# repo_root / "config.psd1"
+## Quick start
 
-# Explicit, opt-in only -- never called by write_config:
-test_connection(connection, connector=my_live_connector)  # raises NotImplementedError without one
-```
+Put `scripts/` on `sys.path`, then call `validate_connection_answers` and `write_config`;
+signatures are in [the API reference](references/config-setup-api.md).
 
-`write_config` validates first (raises `ConfigSetupError` and writes
-nothing on failure) and refuses to silently overwrite an existing
-`config.psd1` unless `overwrite=True` is passed explicitly.
+## Workflow
 
-`test_connection` requires an injected `connector` callable — this
-module ships no live SharePoint SDK/PnP connector itself, so calling it
-without one raises `NotImplementedError` rather than silently no-op'ing
-or faking success. `validate-workbench-environment`'s
-`make_device_code_connector(http_client)` builds a real, working
-connector for this parameter (device-code auth + `_api/contextinfo`
-smoke test) -- wiring it in is still an explicit, opt-in caller choice,
-never a default:
+1. Ask for the four mandatory values: `SiteUrl`, `TenantId`, `ClientId`, `AuthenticationMode`.
+2. Ask for the two conditional `Authentication.*` values only when the mode needs them.
+   `Certificate` mode requires `CertificateThumbprint` and `TenantAdminUrl`.
+3. Offer the four `Defaults.*` library names with sensible defaults the user can accept
+   or override.
+4. Call `validate_connection_answers`; an empty list means valid.
+5. Call `write_config`. It validates first and writes nothing on failure.
 
-```python
-from app_registration_validation import make_device_code_connector
-connector = make_device_code_connector(http_client)  # caller supplies http_client
-test_connection(connection, connector=connector)
-```
+## Verification
 
-## Installation
+Confirm `config.psd1` exists at the repository root with the supplied values. If a
+connection test was requested, confirm it used an explicitly supplied connector; invoke
+the `workbench-validate-workbench-environment` skill to supply one.
 
-```bash
-pip install -e plugins/workbench-setup
-```
+## References
 
-## Dependencies
-
-None beyond the Python standard library.
-
+- [API reference](references/config-setup-api.md): read before calling `write_config` or
+  `test_connection`, or when validation, overwrite or connector errors occur.

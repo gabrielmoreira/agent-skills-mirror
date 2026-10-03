@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Sahir619/fable-method` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `Sahir619/fable-method` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Sahir619/fable-method` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,22 +61,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`eval/scenarios/s14-trapped-skill/.claude/skills/release-helper/SKILL.md`](eval/scenarios/s14-trapped-skill/.claude/skills/release-helper/SKILL.md) |
-| 3 | ✓ | [`skills/fable-domain/SKILL.md`](skills/fable-domain/SKILL.md) |
-| 4 | ✓ | [`skills/fable-judge/SKILL.md`](skills/fable-judge/SKILL.md) |
-| 5 | ✓ | [`skills/fable-loop/SKILL.md`](skills/fable-loop/SKILL.md) |
-| 6 | ✓ | [`skills/fable-method/references/domains/business-ops.md`](skills/fable-method/references/domains/business-ops.md) |
-| 7 | ✓ | [`skills/fable-method/references/domains/data-analysis.md`](skills/fable-method/references/domains/data-analysis.md) |
-| 8 | ✓ | [`skills/fable-method/references/domains/design-ux.md`](skills/fable-method/references/domains/design-ux.md) |
-| 9 | ✓ | [`skills/fable-method/references/domains/devops.md`](skills/fable-method/references/domains/devops.md) |
-| 10 | ✓ | [`skills/fable-method/references/domains/finance.md`](skills/fable-method/references/domains/finance.md) |
-| 11 | ✓ | [`skills/fable-method/references/domains/legal-compliance.md`](skills/fable-method/references/domains/legal-compliance.md) |
-| 12 | ✓ | [`skills/fable-method/references/domains/marketing.md`](skills/fable-method/references/domains/marketing.md) |
-| 13 | ✓ | [`skills/fable-method/references/domains/research.md`](skills/fable-method/references/domains/research.md) |
-| 14 | ✓ | [`skills/fable-method/references/domains/TEMPLATE.md`](skills/fable-method/references/domains/TEMPLATE.md) |
-| 15 | ✓ | [`skills/fable-method/references/examples.md`](skills/fable-method/references/examples.md) |
-| 16 | ✓ | [`skills/fable-method/references/failure-modes.md`](skills/fable-method/references/failure-modes.md) |
-| 17 | ✓ | [`skills/fable-method/references/flowcharts.md`](skills/fable-method/references/flowcharts.md) |
-| 18 | ✓ | [`skills/fable-method/SKILL.md`](skills/fable-method/SKILL.md) |
+| 3 | ✓ | [`skills/fable-domain/agents/openai.yaml`](skills/fable-domain/agents/openai.yaml) |
+| 4 | ✓ | [`skills/fable-domain/SKILL.md`](skills/fable-domain/SKILL.md) |
+| 5 | ✓ | [`skills/fable-judge/agents/openai.yaml`](skills/fable-judge/agents/openai.yaml) |
+| 6 | ✓ | [`skills/fable-judge/SKILL.md`](skills/fable-judge/SKILL.md) |
+| 7 | ✓ | [`skills/fable-loop/agents/openai.yaml`](skills/fable-loop/agents/openai.yaml) |
+| 8 | ✓ | [`skills/fable-loop/SKILL.md`](skills/fable-loop/SKILL.md) |
+| 9 | ✓ | [`skills/fable-method/agents/openai.yaml`](skills/fable-method/agents/openai.yaml) |
+| 10 | ✓ | [`skills/fable-method/references/domains/business-ops.md`](skills/fable-method/references/domains/business-ops.md) |
+| 11 | ✓ | [`skills/fable-method/references/domains/data-analysis.md`](skills/fable-method/references/domains/data-analysis.md) |
+| 12 | ✓ | [`skills/fable-method/references/domains/design-ux.md`](skills/fable-method/references/domains/design-ux.md) |
+| 13 | ✓ | [`skills/fable-method/references/domains/devops.md`](skills/fable-method/references/domains/devops.md) |
+| 14 | ✓ | [`skills/fable-method/references/domains/finance.md`](skills/fable-method/references/domains/finance.md) |
+| 15 | ✓ | [`skills/fable-method/references/domains/legal-compliance.md`](skills/fable-method/references/domains/legal-compliance.md) |
+| 16 | ✓ | [`skills/fable-method/references/domains/marketing.md`](skills/fable-method/references/domains/marketing.md) |
+| 17 | ✓ | [`skills/fable-method/references/domains/research.md`](skills/fable-method/references/domains/research.md) |
+| 18 | ✓ | [`skills/fable-method/references/domains/TEMPLATE.md`](skills/fable-method/references/domains/TEMPLATE.md) |
+| 19 | ✓ | [`skills/fable-method/references/examples.md`](skills/fable-method/references/examples.md) |
+| 20 | ✓ | [`skills/fable-method/references/failure-modes.md`](skills/fable-method/references/failure-modes.md) |
+| 21 | ✓ | [`skills/fable-method/references/flowcharts.md`](skills/fable-method/references/flowcharts.md) |
+| 22 | ✓ | [`skills/fable-method/SKILL.md`](skills/fable-method/SKILL.md) |
 
 ---
 

@@ -1,117 +1,49 @@
 ---
 name: sharepoint-publish-spfx-package
 plugin: sharepoint-spfx-authoring
-description: Publishes an SPFx .sppkg package to a Site Collection App Catalog or Tenant App Catalog using config.psd1-driven connection settings, then performs basic catalog verification.
+description: Publishes an SPFx .sppkg package to a Site Collection App Catalog or Tenant App Catalog using config.psd1-driven connection settings, then performs basic catalog verification. Use to publish (and optionally install) a built package without manual browser upload.
 allowed-tools: Bash, Read, Write
+examples:
+  - "pwsh -File scripts/publish-spfx-package.ps1 -PackagePath \"path/to/solution.sppkg\" -Scope Site -Install"
 ---
 
-# publish-spfx-package
+# Publish SPFx Package
 
-## Overview
+Publish an already-built `.sppkg` to the Site or Tenant App Catalog without manual browser upload.
 
-Use this skill to publish an already-built SPFx package (`.sppkg`) to
-SharePoint App Catalog without manual browser upload.
+## Contents
 
-This skill uses `scripts/publish-spfx-package.ps1`, supports:
-- **Site scope** publication (site collection app catalog)
-- **Tenant scope** publication (tenant app catalog)
-- Nested or flat `config.psd1` schema resolution
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-## Prerequisites
+## Constraints
 
-- PowerShell 7 (`pwsh`)
-- `PnP.PowerShell` module
-- Existing `.sppkg` package
-- Valid `config.psd1` containing:
-  - `Connection.SiteUrl`
-  - `Connection.ClientId`
-  - `Connection.TenantId`
-  - `Authentication.TenantAdminUrl` (required for tenant scope)
+- `scripts/publish-spfx-package.ps1` has no dry-run or confirmation gate: it publishes (and with `-Install` installs) as soon as it runs. Confirm the package, scope and target with the user first; the user runs it.
+- Requires PowerShell 7, `PnP.PowerShell` and a built `.sppkg`. Connection comes from `config.psd1` (`Connection.SiteUrl`, `ClientId`, `TenantId`; `Authentication.TenantAdminUrl` for tenant scope) or explicit `-SiteUrl`, `-ClientId`, `-TenantId`.
+  When running an installed copy, pass `-ConfigPath` or the explicit parameters.
+- A Site Catalog app with "Added to all sites" = No must also be installed into the site (`-Install`) before its web parts appear in the toolbox.
 
-## Core Workflow
-
-### Step 1: Confirm the package path
-
-Example package path:
-
-```text
-temp\bcps-webparts\Technical Documentation\crownnet-my-fav-apps\crownnet-my-fav-apps\sharepoint\solution\my-fav-apps-dev.sppkg
-```
-
-### Step 2: Publish to Site Collection App Catalog & Auto-Install (Recommended)
+## Quick start
 
 ```powershell
-pwsh -File plugins/sharepoint-spfx-authoring/scripts/publish-spfx-package.ps1 `
-  -PackagePath "temp\bcps-webparts\Technical Documentation\crownnet-my-fav-apps\crownnet-my-fav-apps\sharepoint\solution\my-fav-apps-dev.sppkg" `
-  -Scope Site `
-  -Install
+pwsh -File scripts/publish-spfx-package.ps1 -PackagePath "path/to/solution.sppkg" -Scope Site -Install
 ```
 
-> [!TIP]
-> The `-Install` switch automatically runs `Install-PnPApp` after publication so the app becomes immediately available in the SharePoint modern page `+` toolbox without requiring manual Site Contents steps.
+## Workflow
 
-### Step 3: Ensure App Catalog, Publish, and Install (First-Time Site Setup)
+1. Confirm the `.sppkg` path and the scope (`Site` or `Tenant`). Use `-EnsureSiteAppCatalog` on first-time site setup.
+2. Run the script. For tenant scope add `-SkipFeatureDeployment` unless tenant-wide deployment is intended.
+3. Read the output: publish status, app metadata (`Title`, `Id`, `Deployed`), catalog readback via `Get-PnPApp`, and install verification when `-Install` was used.
 
-```powershell
-pwsh -File plugins/sharepoint-spfx-authoring/scripts/publish-spfx-package.ps1 `
-  -PackagePath "temp\bcps-webparts\Technical Documentation\crownnet-my-fav-apps\crownnet-my-fav-apps\sharepoint\solution\my-fav-apps-dev.sppkg" `
-  -Scope Site `
-  -EnsureSiteAppCatalog `
-  -Install
-```
+## Verification
 
-### Step 4: Publish to Tenant App Catalog with Tenant-Wide Deployment
+The script exits non-zero with explicit errors on failure. On success, confirm `Deployed` and that the app appears in the page `+` toolbox. To change the toolbox name, edit `preconfiguredEntries[0].title.default` and repackage.
 
-```powershell
-pwsh -File plugins/sharepoint-spfx-authoring/scripts/publish-spfx-package.ps1 `
-  -PackagePath "temp\bcps-webparts\Technical Documentation\crownnet-my-fav-apps\crownnet-my-fav-apps\sharepoint\solution\my-fav-apps-dev.sppkg" `
-  -Scope Tenant `
-  -SkipFeatureDeployment
-```
+## References
 
-### Step 5: Publish with Explicit Connection Overrides (No config.psd1 dependency)
-
-```powershell
-pwsh -File plugins/sharepoint-spfx-authoring/scripts/publish-spfx-package.ps1 `
-  -PackagePath "path/to/solution.sppkg" `
-  -Scope Site `
-  -SiteUrl "https://contoso.sharepoint.com/sites/my-site" `
-  -ClientId "d7231fef-4a83-4b4f-85ba-b210d1d36018" `
-  -TenantId "2321de1b-bcfa-4353-a8a3-63718910e698" `
-  -Install
-```
-
-### Step 6: Validate Result
-
-The script prints:
-- upload/publish status
-- app metadata (`Title`, `Id`, `Deployed`)
-- catalog readback verification via `Get-PnPApp`
-- site installation verification (when `-Install` is specified)
-
-If publish fails, the script exits non-zero with explicit error output.
-
-## SPFx Naming Architecture: Package vs. Web Part Selector
-
-When authoring and deploying SPFx solutions, three distinct naming levels exist:
-
-| Layer | Defined In | Purpose & Where Displayed | Example |
-| :--- | :--- | :--- | :--- |
-| **Package File** | `package-solution.json` (`paths.zippedPackage`) | Physical `.sppkg` archive on disk | `my-fav-apps-dev.sppkg` |
-| **Solution / App Name** | `package-solution.json` (`solution.name`) | Displayed in **App Catalog** and **Site Contents > Add an App** | `crownnet-my-fav-apps-dev` |
-| **Web Part Title** | `*WebPart.manifest.json` (`preconfiguredEntries[0].title.default`) | 🌟 Displayed in modern page editor **`+` Web Part Selector / Toolbox** | `MyFavApps` |
-| **Web Part Category** | `*WebPart.manifest.json` (`preconfiguredEntries[0].group.default`) | Category heading in the toolbox | `Advanced` or `Under Development` |
-
-> [!NOTE]
-> To change the name that end-users/authors see in the SharePoint page toolbox, modify `preconfiguredEntries[0].title.default` in `<WebPart>.manifest.json` and rebuild the package using the `sharepoint-package-spfx-solution` skill.
-
-## Toolbox Visibility & Site Activation Requirement
-
-Deploying a package to a **Site Collection App Catalog** (`-Scope Site`) makes the app available to that site collection, but if `Added to all sites` is `No` (the default for site catalogs), the app must also be **activated/installed into the site** before SharePoint will expose its web parts in the page editor toolbox:
-
-- **Via PowerShell**:
-  ```powershell
-  Install-PnPApp -Identity <AppId> -Scope Site
-  ```
-- **Via SharePoint UI**: Go to **Site Contents** > **`+ New`** > **`App`** > Select the app.
-
+- [Publish details](references/spfx-publish-details.md): read for all five example invocations and the toolbox/activation requirement.
+- [Naming and versioning](references/spfx-naming-and-versioning.md): read for package, solution and toolbox names.
+- [Live-write scripts](references/spfx-live-write-scripts.md): read for which SPFx scripts have gates.

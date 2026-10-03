@@ -63,6 +63,11 @@ Use [skill-creator](daymade-skill/skill-creator/SKILL.md) before creating or
 changing a skill. It owns change classification, evidence selection, regression
 review, validation, initialization, and packaging.
 
+For proxy-selection or disruptive VPN recovery changes, enter `tunnel-doctor` and its
+proxy-conflict and network-recovery references. For automatic WeCom integration,
+enter `setup-notifications-via-wecom`; its receipt contract owns accepted/rejected/unknown
+handling, while the worker owns event identity and delivery state.
+
 For Terraform environment isolation or initialization-cache changes, enter
 [`terraform-skill`](terraform-skill/SKILL.md); its bundled reference owns backend/workspace
 identity and fresh-state validation.
@@ -141,6 +146,11 @@ deterministic, Linux-verified) and the runner types (`python-unittest` via
 check the registry before assuming otherwise, and note `unittest discover`
 only collects `unittest.TestCase` subclasses, not bare pytest-style functions.
 
+For browser-backed recurring jobs, enter
+[macos-watchdog](daymade-macos/macos-watchdog/SKILL.md) and apply its deployment
+acceptance before shipping. That Skill owns resource-budget and focus evidence;
+keep the detailed procedure there.
+
 ### Transcript Correction
 
 Use [transcript-fixer](daymade-audio/transcript-fixer/SKILL.md) for transcript
@@ -180,6 +190,17 @@ the delivered artifact. Detailed retrieval mechanics remain in
 `daymade-claude-code/prior-work-retrieval/SKILL.md`.
 
 ### Local Conversation History Boundary
+
+For recent unfinished-request inventories, follow
+[`local-conversation-history`](daymade-claude-code/local-conversation-history/SKILL.md).
+
+For remembered facts or a repeated search request, use that router's evidence
+selection contract. The provider readers own original-record retrieval;
+[`read-codex-history`](daymade-claude-code/read-codex-history/SKILL.md#original-tool-and-record-evidence)
+owns complete Codex tool evidence, and
+[`hybrid history recall`](daymade-claude-code/read-claude-code-history/references/hybrid_history_recall.md#query)
+owns indexed role/phrase filters. Keep commands and source-attribution rules in
+those owners rather than copying them here.
 
 Codex inventory must use the index-only command in
 `daymade-claude-code/read-codex-history/SKILL.md`. If its state database is
@@ -349,6 +370,10 @@ For GitHub-hosted state — PRs, issues, Actions, repository or organization set
 and API/UI mutations — treat `github-ops/SKILL.md` as the canonical operating contract. A command
 receipt is not completion; use that Skill's operation-specific independent readback. Keep detailed
 GitHub SOPs there rather than copying them into this repository-level instruction file.
+For hosted-state writes through `gh`, follow its
+[identity, host and target binding](github-ops/SKILL.md#2-bind-identity-host-and-target)
+before using an operation recipe. For historical account or connector attribution,
+use the [identity-source contract](tibo-reset-codex/references/account-usage.md#区分身份来源与观察时刻).
 
 **Closing a PR unmerged (declined, or superseded by another PR) → delete its head
 branch in the same action.** `gh pr merge --delete-branch` only covers merged PRs.
@@ -398,12 +423,14 @@ git -C <worktree> \
 
 1. **Never commit directly to local `main`.** All work starts on a feature
    branch (`git checkout -b <topic>`), ships via PR, and lands by squash merge.
-2. **After every merge, run the post-merge ritual:** `git checkout main && git pull --ff-only`.
-   A successful ff-only pull proves nobody broke rule 1. If it fails, someone
-   committed to local `main` — inspect `git log origin/main..main` and rebase
-   the stray commits onto a feature branch; do not merge or force-push `main`.
-3. **If step 2's `git checkout main` itself refuses** ("local changes would be
-   overwritten") while you're still on your feature branch: this is not
+2. **After every merge, read the current branch before updating the checkout.**
+   If already on `main`, pull with `--ff-only` without another checkout. If the
+   shared checkout is on another session's branch, coordinate before moving it.
+   A failed pull is not proof of local-main commits: inspect its error and compare
+   the local and remote refs to distinguish divergence, changed files, and a
+   failed remote read. Do not merge or force-push `main` to bypass a refusal.
+3. **If switching your own feature checkout to `main` is refused** ("local
+   changes would be overwritten"): this is not
    automatically the divergence case above. Check whether local `main` is
    merely **stale** (nobody committed to it, it just never got its ref
    updated after a previous merge) before assuming divergence — `git diff
@@ -543,7 +570,7 @@ was the only thing that caught it.)
 **CHANGELOG.md merges as a union** (`.gitattributes`). Parallel PRs add their
 entries at the same spot under `## [Unreleased]`, so two PRs open at the same
 time conflicted there. Merging `origin/main` into a branch locally, or rebasing
-onto it, now keeps both sides' lines without stopping. Two limits:
+onto it, now keeps both sides' lines without stopping. Limits:
 
 - GitHub's mergeability check ignores the attribute, so a PR can still show
   CONFLICTING until `origin/main` is merged into it locally.

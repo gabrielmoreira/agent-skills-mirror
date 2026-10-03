@@ -1,56 +1,56 @@
 ---
 name: content-extract-docx
-plugin: source-document-extraction
-description: Run pandoc against a source .docx and produce a normalized-source-document contract (markdown text, media files, heading structure, defect signals, statistics) for downstream document-structure-analysis.
+plugin: content-extraction
+description: Runs pandoc against a source .docx and produces a normalized-source-document contract (markdown text, media files, heading structure, defect signals, statistics) for downstream structure analysis. Use as the first step when converting a Word document into structured content. Observes the source only; never interprets strategy or writes structured content.
 allowed-tools: Bash, Read
 examples:
-  - "python -c \"from extraction import extract_and_normalize; extract_and_normalize('intake/Manual.docx', 'analysis/Manual')\""
+  - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); from extraction import extract_and_normalize; extract_and_normalize('intake/Manual.docx', 'analysis/Manual')\""
 ---
 
 # Extract DOCX
 
-## Trigger and Purpose
+Extract a source `.docx` into a `normalized-source-document` v1 contract that the structure-analysis
+step consumes without re-parsing.
 
-Use this skill to extract a source `.docx` into a `normalized-source-document`
-v1 contract: raw markdown text (via a single `pandoc` pass), the extracted
-media file list, a source content hash, and source-level observations
-(heading structure, image stats, raw-TOC/defect signals, extended
-statistics) that `document-structure-analysis`'s `recommend_from_normalized` consumes
-without re-parsing.
+## Contents
 
-This plugin only observes the source; it never interprets strategy
-(single/chunked), never proposes topic boundaries, and never writes
-structured content.
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-## Public Interface
+## Constraints
+
+- Observe only. Never choose a strategy (single or chunked), propose topic boundaries, or write
+  structured content.
+- `pandoc` must be on `PATH`; otherwise `dependencies.MissingDependencyError` is raised. A missing
+  `source` raises `FileNotFoundError`.
+- Run from this skill's root with `scripts/` on `sys.path`. No other workbench package is required.
+
+## Quick start
 
 ```python
+import sys; sys.path.insert(0, "scripts")
 from extraction import extract_and_normalize
-
 result = extract_and_normalize(source="intake/Manual.docx", output_dir="analysis/Manual")
 ```
 
-- `source` — path to the source `.docx` file (must exist).
-- `output_dir` — directory to write the transitory `raw/` pandoc output to
-  (created if missing).
-- Returns a `normalized-source-document` v1 dict, validated against this
-  plugin's own bundled schema (see `references/contracts/normalized-source-document.md`,
-  symlinked into this skill folder — no repository-root or sibling-plugin
-  lookup required).
+## Workflow
 
-Raises `FileNotFoundError` if `source` does not exist, and
-`dependencies.MissingDependencyError` if `pandoc` is not on PATH.
+1. Confirm the `.docx` exists and choose an `output_dir` for the transitory `raw/` pandoc output.
+2. Call `extract_and_normalize(source, output_dir)`.
+3. Report the returned `normalized-source-document` v1 dict: markdown text, media file list, content
+   hash, heading structure, defect signals and statistics.
+4. Hand the result to the `content-structure-analysis` plugin; do not interpret it here.
 
-## Installation
+## Verification
 
-```bash
-pip install -e plugins/source-document-extraction
-```
+Confirm the call returned a dict validated against the bundled schema and that `output_dir/raw/`
+holds the pandoc output. Report any raw-TOC or defect signals as observed, not as decisions.
 
-No other package needs to be installed first — this plugin has zero
-dependency on any other workbench distribution or the repository root.
+## References
 
-## Dependencies
-
-Requires `pandoc` on PATH (see repository `DEPENDENCIES.md`).
-
+- [Interface](references/extraction-interface.md): read for arguments, return value, errors and scope.
+- [Normalized source document contract](references/contracts/normalized-source-document.md): read
+  when checking the output shape.

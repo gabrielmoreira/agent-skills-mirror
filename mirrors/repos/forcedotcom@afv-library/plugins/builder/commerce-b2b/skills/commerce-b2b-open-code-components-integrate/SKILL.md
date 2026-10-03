@@ -1,7 +1,7 @@
 ---
 name: commerce-b2b-open-code-components-integrate
-description: "Integrate the official Salesforce B2B Commerce open source component library from GitHub into an existing store's site metadata. Use this skill to copy the library's components and labels so they become available in Experience Builder. TRIGGER when: the user asks to integrate or add open code components, names forcedotcom/b2b-commerce-open-source-components, or wants the official open source library copied into a B2B store. DO NOT TRIGGER when: the user needs to create or retrieve a B2B store (use commerce-b2b-store-create), only map or replace OOTB component definitions (use commerce-b2b-open-code-components-replace), author custom LWCs, or perform general Experience Builder work unrelated to this library."
-allowed-tools: Bash(git clone:*) Bash(cp:*) Bash(python3:*) Bash(sf org list:*) Bash(sf config get:*) Bash(sf project retrieve start:*) Read
+description: "Integrate Salesforce B2B Commerce open source components from GitHub into B2B Commerce stores. Use when users mention \"integrate open code components\", \"open source B2B commerce\", \"add open code components\", \"forcedotcom/b2b-commerce-open-source-components\", or want to add open source commerce components to their store. Copies all components and labels so they become available in Experience Builder."
+allowed-tools: Bash(git clone:*) Bash(cp:*) Bash(sf org list:*) Bash(sf config get:*) Bash(sf project retrieve start:*) Read
 metadata:
   version: "1.0"
   domains: ["Commerce", "Experience"]
@@ -38,13 +38,7 @@ When this skill is triggered, perform these checks automatically before copying.
 
 ### Check 0: Resolve Package Directory
 
-Run the plugin's deterministic resolver from the Salesforce project root:
-
-```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/resolve-package-directory.py"
-```
-
-Use its single stdout line as `<package-dir>` everywhere below. The resolver parses `sfdx-project.json`, selects the entry with `"default": true`, or the first entry when no default is declared. If it exits nonzero, relay its diagnostic to the user and abort; do not guess a package directory or reimplement the selection logic inline.
+Read `sfdx-project.json` and pick the active package directory. Extract `packageDirectories[]` and use the entry with `"default": true`; if no entry is flagged default, use the first entry. Use this value as `<package-dir>` everywhere below. If `sfdx-project.json` is missing or has no `packageDirectories`, tell the user and abort.
 
 ### Check 1: Open Source Repository
 

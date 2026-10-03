@@ -532,7 +532,19 @@ files_modified:
 ```
 
 The `files_modified` list comes from `git status --short` (both staged and unstaged
-modified files). Use relative paths from the repo root.
+modified files). Use relative paths from the repo root. Do not write `remote:` or
+`project_root:` yourself; the stamp step below adds them.
+
+Then stamp the project identity. Several projects can share one checkpoints
+directory (GitLab nested groups did before #3003), so `/context-restore` needs to
+know which project wrote each file. The helper adds `remote:` (canonical origin:
+lowercased host, no credentials, port or `.git`) and `project_root:` to the
+frontmatter:
+
+```bash
+FILE="<the FILE path printed above>"
+~/.claude/skills/gstack/bin/gstack-slug --stamp-checkpoint "$FILE" && echo "STAMPED"
+```
 
 After writing, confirm to the user:
 

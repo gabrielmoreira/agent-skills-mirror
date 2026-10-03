@@ -1,44 +1,46 @@
 ---
 name: sharepoint-restore-sharepoint-agents
-description: Restores .agent files from a local backup back to their tenant locations, dry-run by default with an explicit confirmation gate.
+plugin: sharepoint-agents-and-skills
+description: Restores .agent files from a local backup back to their tenant locations, dry-run by default with an explicit confirmation gate. Use to recover agents saved by the backup skill.
+allowed-tools: Bash, Read
 ---
 
-# restore-sharepoint-agents
+# Restore SharePoint Agents
 
-## Purpose
+Restore files saved by `sharepoint-backup-sharepoint-agents` to their tenant locations.
 
-Restores files previously saved by `backup-sharepoint-agents` back to their tenant locations.
-New build — no prior implementation existed in this repository.
+## Contents
 
-## Input boundaries
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-- `-ConfigFile` — connection/authentication context only.
-- `-Items` (required) — explicit list of `{LocalPath, Url}` hashtables. Fails before any
-  connection attempt if any `LocalPath` doesn't exist.
-- `-Execute` + `-ConfirmExactTarget "CONFIRM-RESTORE"` — both required for any write; dry-run by
-  default.
+## Constraints
 
-## Prohibited scope
+- Dry run by default (zero tenant writes). Any write needs both `-Execute` and `-ConfirmExactTarget "CONFIRM-RESTORE"`; a single `-Execute` is rejected. A real run is a live tenant write that the user runs.
+- `-Items` is a required explicit list of `{LocalPath, Url}` hashtables; it fails before any connection if a `LocalPath` does not exist. No default target list.
+- Running a restored agent in the Copilot UI needs the user to be an explicit Site Owner, even if the restore succeeded.
+- When running an installed copy, pass `-ConfigFile` explicitly.
 
-- No default target list.
-- No write without exact two-part confirmation, matching `rollback-sharepoint-native-skill`'s
-  and `restore-sharepoint-native-skills`'s safety-gate pattern.
+## Quick start
 
-## Troubleshooting & Permissions Note
+```powershell
+pwsh -File scripts/restore-sharepoint-agents.ps1 -ConfigFile config.psd1 -Items @(@{LocalPath='./backup/agent-one.agent'; Url='<server-relative url>'})
+```
 
-> [!IMPORTANT]
-> **SharePoint Copilot UI Permissions**:
-> Even if PnP PowerShell restores and writes the `.agent` file successfully using Site Collection Admin credentials, running/launching the `.agent` inside SharePoint Copilot UI requires the user to be an explicit member of the **Site Owners** group. Without explicit Site Owner permissions, the Copilot panel will fail with *"Something went wrong with this agent. Please try again later or select a different agent"*.
+## Workflow
 
-## Scripts
+1. Build `-Items` from the backup.
+2. Dry run and review what would be restored.
+3. After the user confirms, rerun with `-Execute -ConfirmExactTarget "CONFIRM-RESTORE"`.
 
-- `../../scripts/restore-sharepoint-agents.ps1`
+## Verification
 
-## Tests
+The dry run lists exactly the items to restore; after a real run, each `.agent` is present at its `Url`.
 
-`../../tests/unit/test_restore_sharepoint_agents.py` — 3 executable tests via `pwsh` (dry-run
-performs zero writes, missing-confirmation rejection writes evidence before failing, missing
-local backup file fails before any tenant connection is attempted). Written with the
-evidence-before-`Write-Error` ordering fix already applied (see `restore-sharepoint-native-
-skills`'s SKILL.md for the bug this avoids).
+## References
 
+- [Safety, config and permissions](references/agents-and-skills-safety-and-config.md): read for the gate model of every script, the `-ConfigFile` default caveat and the Copilot permission note.
+- [Backup and restore](references/agent-backup-restore-details.md): read for the restore parameters and tests.

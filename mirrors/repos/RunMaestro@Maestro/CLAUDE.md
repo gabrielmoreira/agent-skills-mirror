@@ -190,6 +190,7 @@ Grep-verified 2026-09-04 (`npm run docs:verify` re-checks every path). This is t
 - **A view preference a user sets by clicking:** `usePersistedToggle(storageKey, defaultValue)`, `AutoRunNoticeBanner` in `src/renderer/hooks/ui/usePersistedToggle.ts`
 - **Sizing a Document Graph node:** `calculateNodeWidth(label, previewCharLimit)`, `calculateNodeHeight(previewText, previewCharLimit)` in `src/renderer/components/DocumentGraph/mindMapLayouts.ts`
 - **A pane width the user sets by dragging:** `useResizablePanel()`, `settingsKey` in `src/renderer/hooks/ui/useResizablePanel.ts`
+- **A dropdown the user resizes by its bottom edge (never off screen):** `useResizableDropdownHeight()`, `fitDropdownHeight` in `src/renderer/hooks/ui/useResizableDropdownHeight.ts`
 - **Sizing a surface to its longest label:** `widestLabelWidth(labels, opts)`, `estimateLabelWidth()` in `src/renderer/utils/labelWidth.ts`
 - **A modal default sized to the screen:** `viewportModalSize({ width, height })`, `defaultSize` in `src/renderer/utils/modalSizing.ts`
 - **Focus after render:** `useFocusAfterRender()`, `useFocusOnMount()` in `src/renderer/hooks/utils/useFocusAfterRender.ts`

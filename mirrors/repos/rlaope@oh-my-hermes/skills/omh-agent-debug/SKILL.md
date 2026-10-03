@@ -101,9 +101,9 @@ Expected outputs:
 
 Artifact expectations:
 
-- agent_debug_report/v1 from `omh quality-evidence agent-debug --hermes-session <id|latest> --json`, which reads Hermes' own session store: tool errors, identical retries after an error, background processes started without notify_on_complete, and compaction boundaries, each cited by session, message, and tool-call id; build the failure pattern, goal/context pressure, and recovery action on those citations, and treat a kind listed unavailable as unchecked
-- agent_failure_capture/v1 separating observed errors and tool loops from inferred root-cause hypotheses
-- contained_recovery_action/v1 with the smallest safe next action and explicit escalation boundary
+- agent_debug_report/v1 from `omh quality-evidence agent-debug --hermes-session <id|latest> --observable <kind> --json` (or `--session-record <jsonl>`, `--turns N:M`): tool errors, identical retries after an error, background processes started without notify_on_complete, and compaction boundaries, each cited by session and message id or record line; treat a kind listed unavailable as unchecked
+- agent_failure_capture/v1 and agent_failure_pattern_hypothesis/v1 in that payload: observed finding ids, unavailable evidence, and at least two competing hypotheses with evidence for and against
+- contained_recovery_action/v1 proposing the smallest reversible step, never executed; sharing is the separate `agent-debug-export`, written only with --confirm-export
 
 Safety rules:
 

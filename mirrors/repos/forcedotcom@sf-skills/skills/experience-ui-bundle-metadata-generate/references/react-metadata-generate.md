@@ -12,7 +12,7 @@ Always pass `--template reactbasic` to scaffold a React/Vite bundle:
 sf template generate ui-bundle -n CoffeeBoutique --template reactbasic
 ```
 
-Pass `--output-dir` to generate at a different location. If you do, pass that same path to `verify-bundle-location.sh` in the verification step.
+Pass `--output-dir` to generate at a different location. If you do, pass that same path to `verify-bundle-location.mjs` in the verification step.
 
 ## What the scaffold produces
 

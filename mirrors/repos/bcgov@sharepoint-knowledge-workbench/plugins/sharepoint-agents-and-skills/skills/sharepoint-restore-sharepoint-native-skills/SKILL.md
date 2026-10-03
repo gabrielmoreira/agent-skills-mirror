@@ -1,42 +1,45 @@
 ---
 name: sharepoint-restore-sharepoint-native-skills
-description: Restores AgentAssets native-skill/template files from a local backup back to their tenant locations, dry-run by default with an explicit confirmation gate.
+plugin: sharepoint-agents-and-skills
+description: Restores AgentAssets native-skill and template files from a local backup back to their tenant locations, dry-run by default with an explicit confirmation gate. Use to recover files saved by the native-skill backup skill.
+allowed-tools: Bash, Read
 ---
 
-# restore-sharepoint-native-skills
+# Restore SharePoint Native Skills
 
-## Purpose
+Restore files saved by `sharepoint-backup-sharepoint-native-skills` to their `AgentAssets` locations.
 
-Restores files previously saved by `backup-sharepoint-native-skills` back to their `AgentAssets`
-tenant locations. New build — no prior implementation existed in this repository.
+## Contents
 
-## Input boundaries
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-- `-ConfigFile` — connection/authentication context only.
-- `-Items` (required) — explicit list of `{LocalPath, Url}` hashtables. Fails before any
-  connection attempt if any `LocalPath` doesn't exist.
-- `-Execute` + `-ConfirmExactTarget "CONFIRM-RESTORE"` — both required for any write; dry-run by
-  default (zero tenant writes, displays exactly what would be restored).
+## Constraints
 
-## Prohibited scope
+- Dry run by default (zero tenant writes, shows exactly what would be restored). Any write needs both `-Execute` and `-ConfirmExactTarget "CONFIRM-RESTORE"`; a wrong string is rejected. A real run is a live tenant write that the user runs.
+- `-Items` is a required explicit list of `{LocalPath, Url}` hashtables; a missing `LocalPath` fails before any connection. No default target list.
+- When running an installed copy, pass `-ConfigFile` explicitly.
 
-- No default target list — every restore target is explicit.
-- No write without exact two-part confirmation, matching
-  `rollback-sharepoint-native-skill`'s safety-gate pattern.
+## Quick start
 
-## Scripts
+```powershell
+pwsh -File scripts/restore-sharepoint-native-skills.ps1 -ConfigFile config.psd1 -Items @(@{LocalPath='./backup/my-skill.md'; Url='AgentAssets/Skills/my-skill/SKILL.md'})
+```
 
-- `../../scripts/restore-sharepoint-native-skills.ps1`
+## Workflow
 
-## Tests
+1. Build `-Items` from the backup.
+2. Dry run and review.
+3. After the user confirms, rerun with `-Execute -ConfirmExactTarget "CONFIRM-RESTORE"`.
 
-`../../tests/unit/test_restore_sharepoint_native_skills.py` — 4 executable tests via `pwsh`
-(dry-run performs zero writes, missing confirmation is rejected, wrong confirmation string is
-rejected, missing local backup file fails before any tenant connection is attempted).
+## Verification
 
-**Real bug found and fixed while writing these tests:** the original implementation wrote its
-`-JsonOutputPath` evidence *after* calling `Write-Error`, which is a terminating statement under
-`$ErrorActionPreference = "Stop"` — the JSON write was dead code. Fixed here, and the same
-pre-existing bug was found and fixed in `rollback-sharepoint-native-skill`'s
-`rollback-skill-deployment.ps1` too (same copied pattern, same defect).
+The dry run lists exactly the items to restore; after a real run, verify with `sharepoint-verify-sharepoint-native-skill`.
 
+## References
+
+- [Safety, config and permissions](references/agents-and-skills-safety-and-config.md): read for the gate model of every script, the `-ConfigFile` default caveat and the Copilot permission note.
+- [Backup and restore](references/agent-backup-restore-details.md): read for the restore parameters and the evidence-ordering bug fix.

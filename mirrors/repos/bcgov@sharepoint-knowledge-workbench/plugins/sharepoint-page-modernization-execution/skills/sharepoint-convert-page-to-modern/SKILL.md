@@ -1,7 +1,7 @@
 ---
 name: sharepoint-convert-page-to-modern
-plugin: sharepoint-content-publication
-description: Converts a single classic SharePoint page to a modern Site Page via ConvertTo-PnPPage and stamps caller-supplied field-mapping/literal metadata onto the converted page. Dry-run by default; real writes gated behind -Execute and a confirmation token.
+plugin: sharepoint-page-modernization-execution
+description: Converts a single classic SharePoint page to a modern Site Page with ConvertTo-PnPPage and stamps caller-supplied field-mapping and literal metadata onto the converted page. Use to convert one classic .aspx page within the same site. Dry-run by default; real writes are gated behind -Execute and a confirmation token.
 allowed-tools: Bash, Read
 examples:
   - "pwsh -File scripts/spo-convert-page-to-modern.ps1 -PageName \"article.aspx\" -SourceLibrary \"ClassicPages\" -Execute -ConfirmToken CONVERT-SPO-PAGE"
@@ -9,51 +9,41 @@ examples:
 
 # Convert Page to Modern
 
-## Trigger and Purpose
+Convert one classic `.aspx` page to a modern Site Page in the same site, carrying over source metadata under different target field names.
 
-Use this skill to convert one classic `.aspx` page to a modern SharePoint
-Site Page within the same site, stamping any source metadata you want
-carried over onto the converted page under different (target) field names.
+## Contents
 
-## Real platform constraint recorded
+- [Constraints](#constraints)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Verification](#verification)
+- [References](#references)
 
-`ConvertTo-PnPPage`'s `-UrlMappingFile`/`-SkipUrlRewriting` parameters only
-apply to cross-site transformations. Converting within one site (this
-skill's scope) does **not** rewrite embedded links in the page body -- run a
-link remediation pass separately (see `sharepoint-link-remediation`) if the
-source content contains embedded links that need fixing.
+## Constraints
 
-## Field mapping is caller-supplied, never built in
+- Dry run by default: it prints the plan and makes zero tenant writes. A real conversion needs `-Execute -ConfirmToken CONVERT-SPO-PAGE` and is a live tenant write that the user runs.
+- Same-site conversion does not rewrite embedded links in the page body (`-UrlMappingFile` and `-SkipUrlRewriting` are cross-site only). Run the `sharepoint-link-remediation` skills separately if links need fixing.
+- Field mapping is caller-supplied. `-FieldMapping` and `-LiteralFieldValues` are optional JSON files; ship and invent no project-specific field names.
+- When running from an installed copy, pass `-ConfigPath` (or `-SiteUrl`, `-ClientId`, `-TenantId`).
 
-`-FieldMapping` (source field internal name -> target field internal name)
-and `-LiteralFieldValues` (target field internal name -> fixed value, e.g. a
-migration tag) are both optional JSON files you provide. No project-specific
-field names ship with this skill.
-
-## Safety
-
-Dry run by default -- prints the plan, makes zero tenant writes. Real writes
-require `-Execute -ConfirmToken CONVERT-SPO-PAGE`.
-
-## Usage
+## Quick start
 
 ```bash
-# Dry run
 pwsh -File scripts/spo-convert-page-to-modern.ps1 -PageName "article.aspx" -SourceLibrary "ClassicPages"
-
-# Real conversion with field mapping
-pwsh -File scripts/spo-convert-page-to-modern.ps1 -PageName "article.aspx" -SourceLibrary "ClassicPages" -FieldMapping field-mapping.json -LiteralFieldValues literals.json -Execute -ConfirmToken CONVERT-SPO-PAGE
 ```
 
-## Scripts
+## Workflow
 
-- `scripts/spo-convert-page-to-modern.ps1` -- real PnP.PowerShell executor (dry-run/-Execute)
+1. Dry run as above and review the plan with the user.
+2. Add `-FieldMapping field-mapping.json -LiteralFieldValues literals.json` if metadata should be carried over.
+3. After the user confirms, rerun with `-Execute -ConfirmToken CONVERT-SPO-PAGE`.
+4. Validate with `sharepoint-validate-page-migration`.
 
-## Provenance
+## Verification
 
-Generalized from the originating SharePoint migration repository's
-`link-conversion/LinkConversion.ps1` -- removed hardcoded destination-site
-name and hardcoded field mapping (project-specific source->target field
-names), replaced with caller-supplied `-FieldMapping`/`-LiteralFieldValues`
-JSON files.
+The dry run lists the page and the fields it would stamp; after a real run the converted page exists in `-TargetLibrary` (default `Site Pages`) with the mapped and literal fields populated.
 
+## References
+
+- [Conversion details](references/page-conversion-details.md): read for field mapping, usage and provenance.
+- [Gates, tokens and config](references/page-execution-gates-and-config.md): read for the token table, the `-ConfigPath` note and the link-rewriting limit.
