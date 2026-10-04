@@ -34,7 +34,7 @@ export type ElementTransform = {
   zIndex?: number;
 };
 
-export type BuiltInElementId = "caption" | "device" | "deviceSecondary";
+export type BuiltInElementId = "caption" | "device" | "deviceSecondary" | "callout";
 export type TextElementId = `text:${string}`;
 export type ImageElementId = `image:${string}`;
 export type ElementId = BuiltInElementId | TextElementId | ImageElementId;
@@ -80,6 +80,16 @@ export type ImageElement = {
   };
 };
 
+/** Magnified loupe of the primary screenshot, placed by transforms.callout. */
+export type Callout = {
+  /** Point of the screenshot to magnify, as 0–1 fractions of its width/height. */
+  focusX: number;
+  focusY: number;
+  /** Magnification relative to the callout's own width (1.5–5). */
+  zoom: number;
+  shape: "circle" | "rounded";
+};
+
 export type Slide = {
   id: string;
   layout: SlideLayout;
@@ -95,6 +105,7 @@ export type Slide = {
   transforms?: Partial<Record<BuiltInElementId, ElementTransform>>;
   textElements?: TextElement[];
   imageElements?: ImageElement[];
+  callout?: Callout;
 };
 
 export type ThemeId =
@@ -155,6 +166,45 @@ export type Theme = {
   muted: string;
 };
 
+// ---------- Scene (deck-wide composition, see lib/scene.ts) ----------
+
+export type SceneBackdrop = "gradient" | "solid" | "aurora" | "spotlight" | "grid" | "dots" | "lines";
+export type SceneDecoration = "blobs" | "rings" | "sparkles" | "none";
+
+export type Scene = {
+  backdrop: SceneBackdrop;
+  /** Lay the backdrop art out across the whole strip so it flows between screens. */
+  span: boolean;
+  decoration: SceneDecoration;
+  /** Device drop shadow strength, 0–100. */
+  shadow: number;
+  /** Accent-coloured light behind each device, 0–100. */
+  glow: number;
+  /** 3D turn of every device in degrees, -30–30. */
+  tilt: number;
+  /** Headline weight, 300–900. */
+  headlineWeight: number;
+  /** Deck-wide multiplier on every headline's size (0.5–2), on top of per-screen sizes. */
+  headlineScale: number;
+  headlineCase: "as-typed" | "upper";
+  /** "auto" keeps each layout's own alignment. */
+  captionAlign: "auto" | "left" | "center";
+};
+
+/** A complete look saved from Style Lab: palette, type, layout rhythm and scene. */
+export type Look = {
+  id: string;
+  name: string;
+  direction: string;
+  themeId: string;
+  fontId: ScreenshotFontId;
+  scene: Scene;
+  /** Layouts applied in order, repeating across the deck. */
+  layouts: SlideLayout[];
+  /** Screens (by position, repeating) that use the inverted background. */
+  inverted: boolean[];
+};
+
 export type ProjectState = {
   schemaVersion?: number;
   appName: string;
@@ -172,4 +222,8 @@ export type ProjectState = {
   // Per-device slide decks so platform switching preserves work
   slidesByDevice: Record<Device, Slide[]>;
   appIcon?: string;    // path under /public (e.g. /app-icon.png)
+  /** Deck-wide composition. Absent = the classic gradient + blobs look. */
+  scene?: Scene;
+  /** Looks starred in Style Lab. */
+  savedLooks?: Look[];
 };

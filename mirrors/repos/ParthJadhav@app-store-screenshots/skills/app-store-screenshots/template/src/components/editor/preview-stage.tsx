@@ -8,6 +8,7 @@ import type {
   ElementId,
   ElementTransform,
   Orientation,
+  Scene,
   SelectedElement,
   Slide,
   Theme,
@@ -25,6 +26,7 @@ type Props = {
   appIcon?: string;
   fontFamily: string;
   connectedCanvas: boolean;
+  scene?: Scene;
   selectedElement: SelectedElement | null;
   onActiveSlideChange: (id: string) => void;
   onLabelChange: (slide: Slide, v: string) => void;
@@ -47,6 +49,7 @@ export function PreviewStage({
   appIcon,
   fontFamily,
   connectedCanvas,
+  scene,
   selectedElement,
   onActiveSlideChange,
   onLabelChange,
@@ -146,6 +149,7 @@ export function PreviewStage({
               appIcon={appIcon}
               fontFamily={fontFamily}
               connectedCanvas={connectedCanvas}
+              scene={scene}
               editable
               previewScale={scale}
               selectedElement={selectedElement}

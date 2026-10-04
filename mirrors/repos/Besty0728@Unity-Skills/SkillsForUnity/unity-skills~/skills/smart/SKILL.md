@@ -43,6 +43,8 @@ Find objects based on component property values (SQL-like).
 | `limit` | int | No | 50 | Max results |
 | `query` | string | No | null | Unsupported shorthand; if provided alone returns a guidance error |
 
+Rejected with `SEMANTIC_INVALID` (and a closest-name suggestion for a misspelled member) instead of silently matching nothing: an unknown `propertyName`, an `op` outside the list, `>`/`<`/`>=`/`<=` on a non-numeric member or with a non-numeric `value`, and anything but `==`/`!=` on a bool.
+
 **Example**:
 ```python
 # Find all lights with intensity > 2
@@ -77,7 +79,7 @@ Auto-fill a List/Array field with matching objects.
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
 | `targetName` | string | Yes | - | Target GameObject |
-| `componentName` | string | Yes | - | Component on target |
+| `componentName` | string | No | - | Component on target |
 | `fieldName` | string | Yes | - | Field to fill |
 | `sourceTag` | string | No | null | Find by tag |
 | `sourceName` | string | No | null | Find by name contains |
@@ -171,7 +173,7 @@ Select all objects that have a specific component.
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `componentName` | string | Yes | - | Component type name to search for |
+| `componentName` | string | No | - | Component type name to search for (`componentType` is an alias used when `componentName` is omitted) |
 
 **Returns:** `{ success, selected, component }`
 

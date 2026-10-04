@@ -63,24 +63,13 @@ skillshare sync --all
 
 ## インタラクティブ管理
 
-`skillshare mcp` または `skillshare mcp list` を実行します。Skill 一覧と同様に、マネージャーは検索用の `/` と詳細表示用の `Enter` に対応しています。接続一覧では、引数・ヘッダー・環境変数の値は非表示になり、URL のクエリも省略されます。
-
-| キー | 動作 |
-|---|---|
-| `a` | 接続を追加 |
-| `i` | 1 つ以上の接続をインポート |
-| `e` | 選択した接続を編集 |
-| `x` | 選択した接続を削除 |
-| `s` | 同期をプレビューして確認 |
-| `b` | クライアント別にバックアップを閲覧し、新しい順に表示 |
-| `r` | ステータスを更新 |
-| `q` | 終了 |
+`skillshare mcp` または `skillshare mcp list` を実行すると、接続の追加・インポート・編集・削除・同期・復元ができます。選択した接続の詳細は一覧の横に表示されます。接続一覧では、引数・ヘッダー・環境変数の値は非表示になり、URL のクエリも省略されます。キーは画面下部に表示されます。
 
 `mcp edit`、`mcp remove`、`mcp restore` は、name またはバックアップ ID が省略された場合に選択メニューを提供します。エディタは command/URL、引数、環境変数、HTTP ヘッダー、bearer-token の環境変数参照、受け取り側の target、[ツールポリシー](#tool-policy)（**ツール**）をカバーします。引数は 1 行につき 1 つのリテラル引数、または JSON 配列で受け付けます。トランスポートを切り替えると、新しい接続タイプに適用されないフィールドはクリアされます。
 
 Add、edit、remove、import では、**Save and sync** または **Save only** の前にプレビューが表示されます。Remove には **Stop managing** もあり、`--keep-files` と同じ動作です。Escape で保留中のドラフトをキャンセルできます。Restore は Agent のエントリへの変更をプレビューし確認しますが、source 定義自体は書き換えません。
 
-サーバー名を指定しないインポートは複数選択に対応しています（`Space` でトグル、`a` ですべて選択）。無効な候補はスキップされます。既存の source 名は `--replace` を指定しない限りスキップされます。バッチに対しては、互換性のある受け取り側クライアントを 1 セット選択してください。バッチ全体が検証された後、source は一度だけ保存されます。その後のネイティブファイル I/O 失敗については、既存の復旧動作が維持されます。
+サーバー名を指定しないインポートは複数選択に対応しています。無効な候補はスキップされます。既存の source 名は `--replace` を指定しない限りスキップされます。バッチに対しては、互換性のある受け取り側クライアントを 1 セット選択してください。バッチ全体が検証された後、source は一度だけ保存されます。その後のネイティブファイル I/O 失敗については、既存の復旧動作が維持されます。
 
 スクリプトからは、name とフラグを指定します。`mcp edit NAME --url URL`、`mcp edit NAME --target CLIENT`、`mcp edit NAME -- command args...` は、他の該当する設定を保持したまま指定されたフィールドを更新します。`--sync` を追加しない限り保存のみを行います。`--no-tui` の場合、remove には name が、restore にはバックアップ ID が必要です。`--dry-run` は変更を保存も同期も行いません。
 
@@ -281,7 +270,7 @@ Agent は自身の global MCP ファイルと project のファイルを合わ�
 | Claude Code | Yes | `~/.claude.json`: この project の `disabledMcpServers` リストにその名前を追加 |
 | OpenCode | Yes | `opencode.json`: `"NAME": {"enabled": false}` |
 | Kilo Code | Yes | `kilo.jsonc`: `"NAME": {"enabled": false}` |
-| Pi | Yes（`mcp.projects` から） | `.pi/mcp.json`: `"NAME": {"command": "...", "enabled": false}`、下記参照 |
+| Pi | Yes（Pi 1.0.1 以降） | `.pi/mcp.json`: `"NAME": {"enabled": false}`、下記参照 |
 | Codex | No | 下記参照 |
 | その他すべてのクライアント | No | 選択するとエラー。何も書き込まれない |
 
@@ -293,12 +282,9 @@ global config がそのサーバーを定義しているマシンでは `enabled
 別のメンバーの Codex の起動を止めてしまう可能性があります。代わりに、マシンごとに `~/.codex/config.toml` で
 `enabled = false` を指定してサーバーをオフにしてください。
 
-Pi は project の同名エントリで global エントリを丸ごと置き換え、`command` も `url` もないエントリは読み飛ばします。
-そのため Pi には、global サーバーの `command`、またはクエリを除いた `url` を `enabled: false` と一緒に書き込みます。
-オフにしたサーバーは起動しないので、args、env、headers は project ファイルに書き込まれず、他の project では
-そのサーバーがそのまま使われます。sync のたびにエントリは global サーバーから書き直されます。global サーバーが
-必要なので、これは global config の `mcp.projects` 配下の project でのみ機能します。project 自身の config からは
-global サーバーが見えないため、そこで `disabled` エントリに `pi` を指定するとエラーになります。
+Pi は project の同名エントリで global エントリを丸ごと置き換えますが、Pi 1.0.1 以降、`command`、`url`、`type` のないエントリは上書きになります。global サーバーの `enabled`、`exposure`、`toolExposure` だけを変え、args、env、認証情報は global サーバーのものが使われます。Pi の `/mcp` が書き込むのも同じエントリです。Pi 1.0.1 より前ではこのエントリは無効として報告されます。
+global の Pi config にそのサーバーがないマシンでは、Pi は起動時に上書き対象のサーバーがないと報告し、残りの設定は読み込みます。
+このスイッチは global サーバーの内容を必要としないため、project モードでも使えます。以前のリリースが global サーバーの `command` または `url` を含めて書き込んだエントリは、次の sync で上書きエントリに書き直されます。
 
 ### OpenCode と Kilo Code
 
@@ -828,6 +814,8 @@ Pi だけの簡単な設定なら、`pi mcp add` でグローバルファイル�
 Pi のサーバー名には英数字、`_`、`-` のみを使えます。`-` と `_` だけが異なる名前は Pi では同じサーバーとして扱われるため、sync は 2 つ目を拒否します。Pi では project のエントリが同名の global
 エントリを丸ごと置き換えます。1 つの project で global サーバーをオフにするには、
 [1 つの project だけで global サーバーをオフにする](#turn-off-a-global-server-in-one-project)を参照してください。
+
+Pi 1.0.1 以降、Pi の `/mcp` は `enabled`、`exposure`、`toolExposure` だけを持つ project エントリを追加でき、同名の global サーバーを上書きします。これはサーバーではないため、インポートでは読み飛ばされます。`disabled` エントリも同じ上書きを書き込むため、ちょうど `{"enabled": false}` である上書きは競合になりません。sync がスイッチを書き込んだ後に Pi で追加した `exposure` などの Pi 設定は、sync が管理する他の Pi エントリと同様に保持されます。Pi でサーバーを再びオンにすると競合になります。project が同名のサーバーを定義している場合、または sync が書き込んでいない上書きが `disabled` エントリと異なる場合、そのエントリを置き換えるか Pi で上書きを削除するまで、sync は競合を報告します。
 
 ### その他の Pi 設定 {#pi-options}
 

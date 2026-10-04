@@ -15,6 +15,7 @@ bun dev       # http://localhost:3000
 
 - **Connected canvas editor** (`src/components/editor/`) — every screen sits on one horizontal canvas, so phones, captions, and other elements can be dragged across screen boundaries and exported as split crops when Connected mode is enabled.
 - **Screen controls** — drag-to-reorder screens, click-to-edit text, screenshot drop targets, per-screen layout switcher, dark/light toggle.
+- **Style Lab and Scene Playground** — compare complete looks for a deck and restyle every screen's backdrop, depth and headline at once. See [Style Lab](#style-lab) and [Scene Playground](#scene-playground).
 - **Image overlays, fonts, backgrounds and undo** — PNG/JPG overlay elements, a live screenshot font menu (with font import), per-screen custom backgrounds, and toolbar Undo/Redo. See [Editor controls](#editor-controls).
 - **Device frames** (`src/components/editor/device-frames.tsx`) — iPhone (PNG mockup), iPad, Apple TV, Apple Watch, CarPlay head unit, Mac window, Android phone, Android tablet (portrait + landscape), feature graphic.
 - **Auto-save (git-trackable)** — every change is persisted within ~600ms to **`app-store-screenshots.json`** at the project root (via `/api/project`) **and** mirrored to `localStorage` as an instant-paint cache. Commit `app-store-screenshots.json` and you can `git clone` to another machine and resume exactly where you left off.
@@ -65,6 +66,32 @@ The toolbar font menu sets the typeface of the screenshot canvas and exports (no
 
 In the inspector's **Elements** card, click **Image**, then **Pick** (or drop) a PNG/JPG. Uploads go through `/api/upload` into `public/screenshots/uploaded/`, like screenshots. The first image sizes the overlay frame to its aspect ratio; after that you can drag, resize, rotate (canvas handle or slider), restack, choose **Fill frame** (crop) or **Whole image**, and fade one edge into the background. In Connected mode overlays can cross screen edges like other elements. Overlays are saved per screen as `imageElements`, and the exporter waits for them to paint just like device screenshots. The Play Store feature graphic has a fixed icon + name + tagline layout, so it doesn't take overlays or text elements.
 
+### Style Lab
+
+**Style Lab** in the toolbar opens four complete looks for the open deck, each from a different direction (Editorial, Playful, Cinematic, Minimal on first open; Swiss Bold, Dreamy, Vintage Poster and Panorama join on **Shuffle**). A look sets the theme, which screens are inverted, the font, headline weight/case/alignment/size, each screen's layout, and the scene. Your current deck is pinned at the top for before/after comparison. Copy and screenshots never change.
+
+- **Keep** locks (Colors, Type, Layout, Scene) hold that part of your deck in every look; Shuffle and **Remix** (another take on one direction) only vary what is unlocked.
+- **Apply** writes the look as one undo step. Changing layout resets that screen's built-in placements (headline, devices, magnifier) to the layout defaults; lock **Layout** to keep hand-placed elements. Phones and portrait tablets get new layouts; landscape, TV, Watch, CarPlay and Mac decks keep theirs.
+- **Save** stars a look into `savedLooks` in the project file, listed under **Saved looks** next time.
+- **Export comparison** downloads one PNG with your deck and all four looks.
+
+Looks come from seeded generators in `src/lib/style-lab.ts`, so the same shuffle always yields the same looks. Add a direction there to extend the lab.
+
+### Scene Playground
+
+**Scene** in the toolbar edits the project-wide `scene`, live on the canvas:
+
+- **Backdrop** — gradient (classic), solid, aurora, spotlight, grid, dots or ruled lines, in the theme's colours. **Flow across screens** lays the backdrop art and decorations out over the whole strip so they cross the seams; each screen still keeps its own base colour, and exports are crops of the same layout.
+- **Decoration** — blobs, rings, sparkles or none.
+- **Device depth** — drop shadow, accent glow and a 3D tilt (−30° to 30°) for every device.
+- **Headline** — weight, as-typed or UPPER case, and Auto/Left/Center alignment.
+
+**Surprise me** rolls a new backdrop and depth; the reset arrow returns to the classic look. A project without `scene` renders exactly as before.
+
+### Magnifier
+
+In the inspector, **Magnifier → Add** places a loupe over the device. Click or drag on the thumbnail (or use arrow keys) to aim it; the ring shows how much of the screenshot the lens covers. **Zoom** is relative to how large the screenshot appears on the device (1.5–5×), and the lens can be a circle or rounded square. Drag, resize, rotate and restack it like any element. It's saved per screen as `callout` plus `transforms.callout`, and is unavailable on no-device layouts and the feature graphic.
+
 ### Undo and redo
 
 The toolbar arrows, `⌘Z` / `Ctrl+Z` and `⇧⌘Z` / `Ctrl+Shift+Z` (or `Ctrl+Y`) step through the last 50 edits of the session: copy, layouts, element moves, text sizes, backgrounds, fonts, themes, overlays and resets. Rapid changes (typing, dragging a slider) collapse into one step. Switching platform, device, orientation or locale isn't an edit, so it doesn't use up an undo step; undoing an edit takes you back to the deck it was made on. While a text field is focused the shortcuts undo that field's typing instead. History resets on reload.
@@ -101,3 +128,19 @@ These routes are for a local editor running in one server process. They have no 
 Uploads are written atomically. Project and upload requests time out after 15 seconds in the editor; image preloads after 10 seconds. Export also stops with a retryable error if font loading takes longer than 15 seconds. Failed preloads can be retried on export, and failed or stalled PNG workers finish through the inline encoder.
 
 The `/screenshots/uploaded/[filename]` and `/fonts/imported/[filename]` routes serve uploads created after server startup, including with `next start`. They accept only the generated hash filenames and supported extensions, preserving the same asset URLs and on-disk locations as the dev server.
+
+## Automated verification
+
+The scaffold includes [Tester Army](https://github.com/tester-army/e2e), pinned to `e2e@0.16.0`, `@e2e-dev/web@0.11.2` and `playwright@1.63.0`. Tests require Node.js 22.12 or newer and installed **Google Chrome**. No model account or API key is needed for the deterministic suite.
+
+```bash
+bun install --frozen-lockfile
+bun run typecheck
+bun run build
+bun run test:e2e
+SCREENSHOTS_E2E_PRODUCTION=1 bun run test:e2e
+```
+
+The runner creates a disposable template copy on port 4312 and removes it after shutdown. Project saves, uploads and fonts go into that copy. It refuses an occupied port; set `SCREENSHOTS_E2E_PORT` to choose another. It never reuses your active editor server. Dev verification uses Next's webpack mode because Turbopack cannot resolve the temporary copy's dependency symlink. Production verification uses the template's existing `.next` build.
+
+Reports, ZIP downloads, failure screenshots and traces are under `.e2e/`; harness logs are in `.e2e/logs/`. `bun run test:e2e:list` lists every selected test. The shipped GitHub workflow runs both dev and production verification using Google Chrome. See [the flow matrix](docs/testing/e2e.md) for coverage and limits.

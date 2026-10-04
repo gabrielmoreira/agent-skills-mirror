@@ -9,6 +9,8 @@ Plannotator is a local, browser-based review layer for agent workflows: it opens
 
 This skill is the knowledge layer. The `plannotator-review`, `plannotator-annotate`, and `plannotator-last` skills are thin launchers for the three most common actions; use this reference when you need to pick the right command or flags yourself.
 
+If your agent has a `plannotator` tool, use it to open Plannotator instead of running the CLI: it returns at once, and the reviewer's feedback arrives later as a message, so end your turn after calling it and wait.
+
 ## Choose the command
 
 | The user wants | Run |
@@ -207,7 +209,7 @@ Recommended: Local only, purged after 30 days
 ```
 
 - `:::question` picks one choice, `:::question-multi` picks any number, `:::question-text` asks for free text (a block with no choices is free text too).
-- The first line is the question. Other prose lines are context.
+- The first line is the question. Other prose lines are context. Most reviewers answer faster with a sentence or two of it: what the choice affects and what you already know. Context can include an image (`![alt](path)`), which helps when the question is about something visual, such as a screen.
 - Choices are task-list items: `- [ ] label`, optionally `- [ ] label — why`. The reviewer can always answer "Other", add a note, or skip.
 - `Recommended: <label>` marks your recommendation. Text that matches no choice is offered as a suggested answer.
 - `- [x]` means the choice is already settled. Use it when you resubmit: keep an answered question with the chosen choice checked, or remove the block and write the decision into the prose.

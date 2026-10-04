@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `arc53/DocsGPT` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `arc53/DocsGPT` — 26 default patterns, 7 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `arc53/DocsGPT` — 26 default patterns, 0 followed patterns, 2 file(s
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 2 |
+| Followed pats | 7 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,13 @@ Mirror of `arc53/DocsGPT` — 26 default patterns, 0 followed patterns, 2 file(s
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `README.md`
+- `HACKTOBERFEST.md`
+- `CONTRIBUTING.md`
+- `CODE_OF_CONDUCT.md`
+- `docs/README.md`
+- `frontend/DESIGN.md`
+- `tests/e2e/README.md`
 
 ## File Index
 
@@ -59,8 +65,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`docs/public/llms.txt`](docs/public/llms.txt) |
+| 1 | ✓ | [`.github/triage/README.md`](.github/triage/README.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`deployment/k8s/optional-mongo/README.md`](deployment/k8s/optional-mongo/README.md) |
+| 4 | ✓ | [`deployment/sandbox/README.md`](deployment/sandbox/README.md) |
+| 5 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 6 | ✓ | [`docs/public/llms.txt`](docs/public/llms.txt) |
+| 7 | ✓ | [`docsgpt/core/models/README.md`](docsgpt/core/models/README.md) |
+| 8 | ✓ | [`extensions/chatwoot/README.md`](extensions/chatwoot/README.md) |
+| 9 | ✓ | [`extensions/react-widget/README.md`](extensions/react-widget/README.md) |
+| 10 | ✓ | [`frontend/PATTERNS.md`](frontend/PATTERNS.md) |
+| 11 | ✓ | [`scripts/e2e/mock_llm_fixtures/README.md`](scripts/e2e/mock_llm_fixtures/README.md) |
+| 12 | ✓ | [`tests/fixtures/many_attachments/README.md`](tests/fixtures/many_attachments/README.md) |
+| 13 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 14 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 15 | → | [`docs/README.md`](docs/README.md) |
+| 16 | → | [`frontend/DESIGN.md`](frontend/DESIGN.md) |
+| 17 | → | [`HACKTOBERFEST.md`](HACKTOBERFEST.md) |
+| 18 | → | [`README.md`](README.md) |
+| 19 | → | [`tests/e2e/README.md`](tests/e2e/README.md) |
 
 ---
 

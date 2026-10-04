@@ -15,7 +15,8 @@ backend, and delegates local OS-level confinement to `tinybox-jail`.
 - `pub enum SandboxBackendKind { None, Local, Docker }` (`types.rs`): which
   backend a session resolved to.
 - `pub struct SandboxPolicy` (`types.rs`): `backend`, `workspace_root`,
-  `read_only_mounts`, `allow_network`, `env_passthrough`, `docker_overrides`.
+  `state_dir`, `read_only_mounts`, `allow_network`, `env_passthrough`,
+  `docker_overrides`.
 - `pub struct DockerOverrides` (`types.rs`): per-session image, network, and
   resource-limit overrides layered on `RuntimeConfig`'s `[runtime.docker]`.
 - `pub struct ElevatedOp` and `pub const ELEVATED_TOOLS` (`types.rs`): tools
@@ -26,13 +27,14 @@ backend, and delegates local OS-level confinement to `tinybox-jail`.
 - `pub const SANDBOX_ENV_PASSTHROUGH` (`ops.rs`): the allowlisted environment
   variables (`PATH`, `HOME`, `TERM`, and so on) forwarded into sandboxed
   execution; no other host env leaks in.
-- `pub fn resolve_sandbox_policy(mode: SandboxMode, action_dir, runtime_config, is_remote_session) -> SandboxPolicy`
+- `pub fn resolve_sandbox_policy(mode: SandboxMode, action_dir, state_dir, runtime_config, is_remote_session) -> SandboxPolicy`
   (`ops.rs`): `SandboxMode::None`/`ReadOnly` resolve to
   `SandboxBackendKind::None`. `Sandboxed` resolves to `Docker` when
   `runtime_config.kind == "docker"` or the session is remote (channel/cron),
   otherwise `Local` (OS jail via `cwd_jail`). `allow_network` is
   `!is_remote_session` for `Sandboxed` and `true` otherwise; `workspace_root`
-  is `action_dir`; `read_only_mounts` is always empty; `docker_overrides` is
+  is `action_dir`; `state_dir` is the core's internal `workspace_dir`;
+  `read_only_mounts` is always empty; `docker_overrides` is
   populated from `[runtime.docker]` only for the `Docker` backend.
 - `pub async fn create_sandbox_backend(policy) -> SandboxBackendHandle`
   (`ops.rs`): instantiates and probes the resolved backend.
@@ -61,9 +63,14 @@ backend, and delegates local OS-level confinement to `tinybox-jail`.
   `policy.workspace_root`, applies `deny_net()` and any read-only mounts from
   the policy, and spawns through `cwd_jail::default_backend()` (falling back
   to `NoopBackend` if no OS jail is available on the host). Output is
-  captured by redirecting stdout/stderr to temp files inside the jail root,
-  because some backends (macOS Seatbelt) rebuild the command and drop piped
-  stdio.
+  captured by redirecting stdout/stderr to files, because some backends
+  (macOS Seatbelt) rebuild the command and drop piped stdio. The files live
+  in a fresh per-call directory, `sandbox_capture_root(state_dir)/<uuid>/`
+  (`<workspace_dir>/artifacts/sandbox-capture/<uuid>/{stdout,stderr}`), which
+  the jail is granted read/write for that spawn only
+  (`Jail::add_read_write`) and which is removed once read, on every exit
+  path. Nothing is written into the user's project, and concurrent calls
+  never share a file (#6961).
 - Docker: `docker::docker_exec` maps the policy onto `tinybox_docker::OneShot`, which runs `docker run --rm` with the host
   `action_dir` mounted read/write at `/workspace`, network `none` by default,
   `--cap-drop ALL` (plus policy-specified extra drops),

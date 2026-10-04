@@ -54,17 +54,22 @@ This repository is the central public toolkit of reusable skills and scripts for
 4. **Creating & Publishing Copilot Agents & Skills**: Authoring, validating, deploying, and managing SharePoint Copilot agents (`.agent` packages) and native Copilot Studio skills in SharePoint.
 5. **Content Maintenance, Continuous Improvement & Document Decomposition**: Transforming how unstructured content is maintained and continuously improved—breaking huge documents/manuals (Word/PDF) into modular, maintainable subpages and topics in SharePoint, governed and supported by Copilot agents and skills (**Content + Template + Renderer = Published Output**).
 
-The ecosystem is composed of **16 independently-installable domain plugins** located under `plugins/`:
-- **Content Conversion & Decomposition (4 plugins):** `content-extraction`, `content-structure-analysis`, `content-assembly`, `content-rendering`
-- **SharePoint Engineering & Migration (11 plugins):** `sharepoint-discovery`, `sharepoint-schema-reconciliation`, `sharepoint-provisioning`, `sharepoint-page-modernization`, `sharepoint-page-modernization-execution`, `sharepoint-link-remediation`, `sharepoint-content-migration`, `sharepoint-migration-planning`, `sharepoint-content-publication`, `sharepoint-spfx-authoring`, `sharepoint-agents-and-skills`
-- **Environment & Setup (1 plugin):** `workbench-setup` (5 foundational skills: `workbench-initialize-workbench-config`, `workbench-initialize-document-workflow`, `workbench-validate-workbench-environment`, `workbench-request-app-registration`, `workbench-resolve-workbench-paths`)
+The ecosystem is composed of **7 independently-installable domain plugins** located under `plugins/` (104 skills; one domain = one plugin, functional groups inside it):
+- **`sharepoint-workbench-setup`** (5 skills): access, connection, project/document configuration, path resolution and readiness.
+- **`sharepoint-document-conversion`** (11 skills): extract, analyze, assemble, render and editorially review manual content.
+- **`sharepoint-site-assessment`** (12 skills): read-only inventory, analysis and assessment of classic/modern sites.
+- **`sharepoint-site-build-and-publish`** (33 skills): create/configure SharePoint objects and publish content (dry-run-first writers).
+- **`sharepoint-site-migration`** (19 skills): plan and run site migration: waves, page modernization, list content, links.
+- **`sharepoint-copilot-agents-and-skills`** (14 skills): author, deploy, verify, back up and restore Copilot agents and native skills.
+- **`sharepoint-spfx-development`** (10 skills): SPFx scaffolding, packaging and both delivery routes.
+- Consolidated plugins (`sharepoint-document-conversion`, `sharepoint-site-build-and-publish`, `sharepoint-site-migration`) keep each original implementation in its own namespace folder under `scripts/`, `tests/` and `references/`; their tests run one namespace per process via `tests/run_namespaces.py`.
 
 Each plugin is self-contained with its own tests, packaging, and skill definitions.
 
 ### Repository Layout
 
 ```
-plugins/                 ← The 16 domain plugins & skill packages
+plugins/                 ← The 7 domain plugins & skill packages
 docs/                    ← Initiative architecture, design specs, and reference catalog
 .agent/rules/            ← Official engineering rules and policies
 .claude-plugin/          ← Marketplace definition (marketplace.json)
@@ -84,36 +89,36 @@ Consumer documents, intake files, run outputs, and project-specific tests are ma
 - Treat `architecture.md` at the repository root as the primary architecture reference for this project.
 - Read and follow `architecture.md` before making architecture-impacting changes, unless the user explicitly overrides it.
 
-### Tenant Usage & Workbench Setup Context (`workbench-setup`)
+### Tenant Usage & Workbench Setup Context (`sharepoint-workbench-setup`)
 
 - Two working tenants are used:
   - **Trial tenancy**: user has **Tenant Admin**; use this first for full-capability experiments and proof-of-concept runs.
-  - **CSB Intranet DEV** (`AG-CSB-intRANET-DEV`): user is **Site Owner / Site Collection Admin**; use for real-site validation after trial confirmation.
-- Prefer the trial tenancy for first-run/high-impact operations, then repeat validated steps on CSB Intranet DEV.
+  - **DEV site** (the designated development SharePoint site): user is **Site Owner / Site Collection Admin**; use for real-site validation after trial confirmation.
+- Prefer the trial tenancy for first-run/high-impact operations, then repeat validated steps on the DEV site.
 - **Connection Configuration & Switching**:
   - `config.psd1` at the repository root is the active configuration file (git-ignored).
-  - Profile templates: `config-trial-tenancy.psd1` (Trial Tenancy) and `config-csb-intranet-dev.psd1` (CSB Intranet DEV).
-  - Use `workbench-initialize-workbench-config` to generate or update `config.psd1`.
+  - Profile templates: `config-trial-tenancy.psd1` (Trial Tenancy) and `config-dev-site.psd1` (DEV site).
+  - Use `workbench-initialize-connection-config` to generate or update `config.psd1`.
   - When switching tenants, update/swap `config.psd1` to the desired profile.
 - **App Registrations & Entra Permissions**:
   - Use `workbench-request-app-registration` for guidance and fillable service-request templates (interactive delegated vs. app-only `Sites.Selected`).
 - **Interactive Scripts & Tenant Writes**:
   - **The user runs interactive/tenant-facing scripts** in their own terminal session (especially those requiring browser-based authentication or tenant writes). Agents must output the exact commands for the user to run rather than launching interactive scripts asynchronously in the background.
 - **Connectivity & Environment Validation Requirement**:
-  - Always verify connection first using `plugins/workbench-setup/skills/workbench-validate-workbench-environment/scripts/test-spo-connection.ps1` or `test-network-connectivity.ps1` after switching profiles or before starting a sequence of tenant operations.
+  - Always verify connection first using `plugins/sharepoint-workbench-setup/skills/workbench-validate-sharepoint-connection/scripts/test-spo-connection.ps1` or `test-network-connectivity.ps1` after switching profiles or before starting a sequence of tenant operations.
 
 ### Canonical Skills Over Custom Scripts (Do Not Recreate Ad-Hoc Scripts)
 
 - **Mandatory Policy**: Never write throwaway, ad-hoc `.ps1` scripts in `temp/` or project roots for standard SharePoint tasks (e.g. provisioning lists, creating views, packaging SPFx solutions, deploying packages, or uploading content).
 - **Use Canonical Skills with Parameters**: Always invoke the existing parameterized scripts in `plugins/` (and mirrored in `.agents/skills/`):
-  - **Environment Connectivity Check**: `pwsh -File plugins/workbench-setup/skills/workbench-validate-workbench-environment/scripts/test-spo-connection.ps1`
-  - **Network & Auth Connectivity Check**: `pwsh -File plugins/workbench-setup/skills/workbench-validate-workbench-environment/scripts/test-network-connectivity.ps1`
-  - **Build & Package SPFx**: `pwsh -File plugins/sharepoint-spfx-authoring/skills/sharepoint-package-spfx-solution/scripts/package-spfx-solution.ps1 -SolutionPath <path>`
-  - **Deploy SPFx Package**: `pwsh -File plugins/sharepoint-spfx-authoring/skills/sharepoint-deploy-spfx-solution/scripts/deploy-spfx-package.ps1 -PackagePath <path> [-Scope Site|Tenant] [-Install]`
-  - **Publish SPFx Directly**: `pwsh -File plugins/sharepoint-spfx-authoring/skills/sharepoint-publish-spfx-package/scripts/publish-spfx-package.ps1 -PackagePath <path>`
-  - **List Provisioning**: `pwsh -File plugins/sharepoint-provisioning/skills/sharepoint-create-list/scripts/spo-provision-list.ps1 -PlanPath <plan.json> -Execute -ConfirmToken PROVISION-SPO-LIST`
-  - **View Configuration**: `pwsh -File plugins/sharepoint-provisioning/skills/sharepoint-create-list-view/scripts/spo-provision-list-view.ps1 -PlanPath <plan.json> -Execute -ConfirmToken PROVISION-SPO-LIST-VIEW`
-  - **Markdown Publishing**: `pwsh -File plugins/sharepoint-content-publication/skills/sharepoint-publish-markdown-to-sharepoint/scripts/spo-publish-markdown-plan.ps1 -PlanPath <plan.json> -Execute -ConfirmToken PUBLISH-SPO-MARKDOWN`
+  - **Environment Connectivity Check**: `pwsh -File plugins/sharepoint-workbench-setup/skills/workbench-validate-sharepoint-connection/scripts/test-spo-connection.ps1`
+  - **Network & Auth Connectivity Check**: `pwsh -File plugins/sharepoint-workbench-setup/skills/workbench-validate-sharepoint-connection/scripts/test-network-connectivity.ps1`
+  - **Build & Package SPFx**: `pwsh -File plugins/sharepoint-spfx-development/skills/sharepoint-package-spfx-solution/scripts/package-spfx-solution.ps1 -SolutionPath <path>`
+  - **Deploy SPFx Package**: `pwsh -File plugins/sharepoint-spfx-development/skills/sharepoint-deploy-spfx-solution/scripts/deploy-spfx-package.ps1 -PackagePath <path> [-Scope Site|Tenant] [-Install]`
+  - **Publish SPFx Directly**: `pwsh -File plugins/sharepoint-spfx-development/skills/sharepoint-publish-spfx-package/scripts/publish-spfx-package.ps1 -PackagePath <path>`
+  - **List Provisioning**: `pwsh -File plugins/sharepoint-site-build-and-publish/skills/sharepoint-create-list/scripts/spo-provision-list.ps1 -PlanPath <plan.json> -Execute -ConfirmToken PROVISION-SPO-LIST`
+  - **View Configuration**: `pwsh -File plugins/sharepoint-site-build-and-publish/skills/sharepoint-create-list-view/scripts/spo-provision-list-view.ps1 -PlanPath <plan.json> -Execute -ConfirmToken PROVISION-SPO-LIST-VIEW`
+  - **Markdown Publishing**: `pwsh -File plugins/sharepoint-site-build-and-publish/skills/sharepoint-publish-markdown-files/scripts/spo-publish-markdown-plan.ps1 -PlanPath <plan.json> -Execute -ConfirmToken PUBLISH-SPO-MARKDOWN`
 - All canonical scripts feature multi-tier `config.psd1` discovery and support direct CLI overrides (`-SiteUrl`, `-ClientId`, `-TenantId`, `-ConfigPath`).
 
 ### Sub-agent usage
@@ -1339,7 +1344,7 @@ rest of this phase and into Phase 1:
   3. `domain-override`: Keep upstream shared skills unmodified; put project customizations in `.agent/rules/local-*` or local `plugins/`.
 - Never make silent undocumented edits to shared skills without either opening an upstream PR or logging an issue.
 
-<!-- plugin: sharepoint-migration-planning / deployment-decision-principles -->
+<!-- plugin: sharepoint-site-migration / deployment-decision-principles -->
 ---
 description: >
   Three decision principles for choosing whether a migration stage needs
@@ -1347,7 +1352,7 @@ description: >
   found during the Phase 9 exhaustive source audit as already-generic
   guidance with no project-specific content.
 globs:
-  - "plugins/sharepoint-migration-planning/**/*"
+  - "plugins/sharepoint-site-migration/**/*"
 ---
 
 # Rule: Deployment Decision Principles
@@ -1377,7 +1382,7 @@ count.
 If an object's entire migration logic is simple and low-volume, a person
 configuring it directly in SharePoint Online may take less time and carry
 less risk than a developer building and testing a generated script for it.
-`generate-sharepoint-wave-scripts` should recommend manual handling for
+`scaffold-migration-wave-scripts` should recommend manual handling for
 these cases rather than generating a script anyway "for completeness."
 
 ## Applying these principles to stage sequencing
@@ -1387,7 +1392,7 @@ these cases rather than generating a script anyway "for completeness."
   generic capability covers it, and it is low-complexity), recommend
   manual handling and say so explicitly — never generate an in-flight
   script for a capability that has not actually been designed or tested.
-- If a source object maps 1:1 to an existing `sharepoint-provisioning`
+- If a source object maps 1:1 to an existing `sharepoint-site-build-and-publish`
   capability (a list, a field, a content type, a calendar), the generated
   wave script should call that capability directly — never reimplement
   provisioning logic that already exists.
@@ -1397,19 +1402,19 @@ these cases rather than generating a script anyway "for completeness."
   artifact's implementation.
 
 
-<!-- plugin: sharepoint-migration-planning / schema-driven-sharepoint-deployment -->
+<!-- plugin: sharepoint-site-migration / schema-driven-sharepoint-deployment -->
 ---
 description: >
   Schema/dependency definitions for a SharePoint migration must live in JSON,
   never hardcoded inside generated or hand-written deployment scripts.
 globs:
-  - "plugins/sharepoint-migration-planning/**/*.py"
-  - "plugins/sharepoint-migration-planning/assets/*.json"
+  - "plugins/sharepoint-site-migration/**/*.py"
+  - "plugins/sharepoint-site-migration/assets/migration-planning/*.json"
 ---
 
 # Rule: Schema-Driven SharePoint Deployment
 
-Same principle already established in `plugins/sharepoint-provisioning/rules/
+Same principle already established in `plugins/sharepoint-site-build-and-publish/rules/
 schema-driven-sharepoint-deployment.md` — kept as a plugin-local copy here because this plugin is
 the one that actually authors deployment scripts. If the two drift, treat that as a defect to
 reconcile, not two independent rules.
@@ -1431,22 +1436,22 @@ what's actually protecting production.
    and its test derive their expectations from different sources, they can drift from each other
    silently — this was the specific failure mode `dependency-matrix.json`'s design is meant to
    prevent.
-3. **Wave order is computed, never hand-assigned.** `analyze-sharepoint-dependency-graph` derives
-   order via topological sort (`sharepoint-migration-planning`'s own `wave_planning.py`) from
+3. **Wave order is computed, never hand-assigned.** `analyze-migration-dependencies` derives
+   order via topological sort (`sharepoint-site-migration`'s own `wave_planning.py`) from
    declared dependencies — it is never a human-maintained sequence of stage numbers.
 4. **A dependency is declared by name, not by wave number.** Referring to "whatever ran in an
    earlier stage" instead of a specific named object is exactly the kind of coupling that goes
    stale when stages are renumbered, split, or reordered.
 
 
-<!-- plugin: sharepoint-migration-planning / test-driven-wave-deployment -->
+<!-- plugin: sharepoint-site-migration / test-driven-wave-deployment -->
 ---
 description: >
   The wave-by-wave test -> deploy -> retest discipline this plugin automates
   is this repository's own TDD rule applied to infrastructure provisioning,
   not a separate convention invented for SharePoint deployment.
 globs:
-  - "plugins/sharepoint-migration-planning/**/*"
+  - "plugins/sharepoint-site-migration/**/*"
 ---
 
 # Rule: Test-Driven Wave Deployment
@@ -1466,7 +1471,7 @@ deployment instead of application code.
 
 ## Why this matters for generated wave scripts
 
-`generate-sharepoint-wave-scripts` produces a deploy script **and** must produce (or reference) a
+`scaffold-migration-wave-scripts` produces a deploy script **and** must produce (or reference) a
 matching validation step for every wave — a generated wave script with no way to independently
 verify it worked is not a complete deliverable, the same way implementation code with no test is
 not complete under this repository's TDD rule.
@@ -1480,7 +1485,7 @@ must present waves as discrete, individually-gated steps — never as one script
 unattended end-to-end.
 
 
-<!-- plugin: sharepoint-schema-reconciliation / schema-driven-sharepoint-deployment -->
+<!-- plugin: sharepoint-site-build-and-publish / schema-driven-sharepoint-deployment -->
 # Schema-Driven SharePoint Deployment
 
 ## Core principle
@@ -1499,7 +1504,7 @@ run, not on a separately-maintained copy someone forgot to update.
 Any object that needs ordered deployment relative to other objects
 declares its dependencies **by name**, in the same shared schema structure
 used for planning and validation (this plugin's generalized
-`DeploymentObject.depends_on`, see `scripts/wave_planning.py`) -- never by
+`DeploymentObject.depends_on`, see `plugins/sharepoint-site-migration/scripts/migration-planning/wave_planning.py`) -- never by
 having its position hand-encoded into a separate, fixed-order orchestrator
 step list. A dependency is "this object depends on that named object," not
 "this object belongs in stage N" -- the latter requires a human to keep the

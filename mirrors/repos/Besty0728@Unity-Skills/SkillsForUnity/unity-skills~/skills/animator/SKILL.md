@@ -78,7 +78,7 @@ Add a parameter to a controller.
 |-----------|------|----------|---------|-------------|
 | `controllerPath` | string | Yes | - | Controller asset path |
 | `paramName` | string | Yes | - | Parameter name |
-| `paramType` | string | Yes | - | float/int/bool/trigger |
+| `paramType` | string | No | float | float/int/bool/trigger |
 | `defaultFloat` | float | No | 0 | Initial float value |
 | `defaultInt` | int | No | 0 | Initial int value |
 | `defaultBool` | bool | No | false | Initial bool value |
@@ -101,7 +101,7 @@ Set a parameter value at runtime (supports `name`/`instanceId`/`path`).
 | `instanceId` | int | No* | GameObject instance ID |
 | `path` | string | No* | GameObject hierarchy path |
 | `paramName` | string | Yes | Parameter name |
-| `paramType` | string | Yes | float/int/bool/trigger |
+| `paramType` | string | No | float/int/bool/trigger (default: float) |
 | `floatValue` | float | No* | Float value |
 | `intValue` | int | No* | Integer value |
 | `boolValue` | bool | No* | Boolean value |
@@ -162,7 +162,7 @@ Add a state to an Animator Controller layer.
 |-----------|------|----------|---------|-------------|
 | `controllerPath` | string | Yes | - | Controller asset path |
 | `stateName` | string | Yes | - | Name for the new state |
-| `clipPath` | string | No | null | Animation clip asset path to assign |
+| `clipPath` | string | No | null | Animation clip asset path to assign; a path that is not an AnimationClip rejects the call before the state is added |
 | `layer` | int | No | 0 | Layer index |
 
 **Returns**: `{success, controller, stateName, layer}`

@@ -90,14 +90,17 @@ return (
 ## Title + description live in navigation metadata
 
 `apps/sim/components/settings/navigation.ts` is the single source of truth (the
-`settings/navigation.ts` in the route tree is only a re-export shim). Every `SETTINGS_SECTION_REGISTRY` entry carries a one-line `description`; `SettingsPanel`
+`settings/navigation.ts` in the route tree is only a re-export shim). Each `SETTINGS_SECTION_REGISTRY` entry's one-line description is
+`unified.description` (a plane projection's `planes.<plane>.description` overrides it where that
+plane's scope differs), or, for a section that exists only on a standalone plane, its
+`planes.<plane>.description`; `SettingsPanel`
 resolves both via `getSettingsSectionMeta(plane, section)` and the
 `SettingsSectionProvider` the settings shell wraps around the active section.
 
 Adding a new settings page:
 
 1. Add the section id to the `UnifiedSettingsSection` union + a `SETTINGS_SECTION_REGISTRY`
-   entry (with `label` **and** `unified.description`) in `components/settings/navigation.ts`. Keep descriptions verb-first, one line,
+   entry (with `label` **and** its description, as described above) in `components/settings/navigation.ts`. Keep descriptions verb-first, one line,
    ~40–55 chars, in the product voice (see `.claude/rules/constitution.md`).
 2. Register its module in `SECTION_MODULES` (`settings/section-warmers.ts`) and render it
    inside the shell's `effectiveSection` switch in `settings/[section]/settings.tsx`.
@@ -218,8 +221,9 @@ and — on activatable rows only — the hover band. Never hand-roll any of it, 
   divider, body. Also carries `headerAccessory` and `action` slots. Never
   re-derive the label/divider chrome; `sim-styling.md` owns those tokens.
 - **`SettingsField`** (`…/components/settings-field`) — a read-only label/value
-  pair in a detail body: muted caption over the value. Pair it with
-  `SETTINGS_FIELD_VALUE_CLASSES` for the value text.
+  pair in a detail body: muted caption over the value. Pass the value as text and it
+  renders the value paragraph itself; pass a node when the value needs its own
+  presentation (a control, an icon beside the value, status styling).
 - **`SettingsEmptyState`** (`…/components/settings-empty-state`) — the canonical
   muted status message, for empty lists, "no results", loading gates, **and
   failed loads** (`tone='error'`). `variant='fill'` (default) centers in the

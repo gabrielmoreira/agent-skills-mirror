@@ -62,24 +62,13 @@ skillshare sync --all
 
 ## 互動式管理
 
-執行 `skillshare mcp` 或 `skillshare mcp list`。與 skills 列表相同，此管理介面支援 `/` 搜尋與 `Enter` 檢視詳情。連線列表會隱藏參數、標頭與環境變數的值，並省略 URL 查詢字串。
-
-| 按鍵 | 動作 |
-|---|---|
-| `a` | 新增連線 |
-| `i` | 匯入一或多個連線 |
-| `e` | 編輯所選連線 |
-| `x` | 移除所選連線 |
-| `s` | 預覽並確認同步 |
-| `b` | 依 client 瀏覽備份，最新在前 |
-| `r` | 重新整理狀態 |
-| `q` | 離開 |
+執行 `skillshare mcp` 或 `skillshare mcp list` 即可新增、匯入、編輯、移除、同步與還原連線；所選連線的詳情顯示在列表旁。連線列表會隱藏參數、標頭與環境變數的值，並省略 URL 查詢字串。按鍵列在畫面底部。
 
 當省略名稱或 backup ID 時，`mcp edit`、`mcp remove` 與 `mcp restore` 會提供選單。編輯器涵蓋 command/URL、參數、環境變數、HTTP headers、bearer-token 環境參照、接收端 targets 與[工具政策](#tool-policy)（**工具**）。參數接受一行一個字面參數，或一個 JSON 陣列。切換傳輸方式會清除不適用於新連線類型的欄位。
 
 Add、edit、remove 與 import 在 **Save and sync** 或 **Save only** 之前會顯示預覽。Remove 另外提供 **Stop managing**，效果與 `--keep-files` 相同。Escape 可取消待處理的草稿。Restore 會預覽並確認對 Agent 項目的變更；它不會改寫 source 定義。
 
-不帶 server 名稱的 import 支援多重選取（`Space` 切換，`a` 全選）。無效的候選項會被跳過；除非指定 `--replace`，否則既有的 source 名稱會被跳過。此批次要選擇一組相容的接收端 clients。整個批次會先驗證完畢，source 才會一次儲存；後續原生檔案 I/O 失敗仍維持既有的復原行為。
+不帶 server 名稱的 import 支援多重選取。無效的候選項會被跳過；除非指定 `--replace`，否則既有的 source 名稱會被跳過。此批次要選擇一組相容的接收端 clients。整個批次會先驗證完畢，source 才會一次儲存；後續原生檔案 I/O 失敗仍維持既有的復原行為。
 
 對於腳本，請提供名稱與 flags。`mcp edit NAME --url URL`、`mcp edit NAME --target CLIENT` 與 `mcp edit NAME -- command args...` 會更新指定欄位，同時保留其他適用的設定。除非加上 `--sync`，否則只會儲存。搭配 `--no-tui` 時，remove 需要名稱，restore 需要 backup ID。`--dry-run` 永遠不會儲存或同步變更。
 
@@ -335,7 +324,7 @@ project 中不要載入，請新增一個**使用該 Agent 的 global 檔案中�
 | Claude Code | 是 | `~/.claude.json`：名稱會加入這個 project 的 `disabledMcpServers` 清單 |
 | OpenCode | 是 | `opencode.json`：`"NAME": {"enabled": false}` |
 | Kilo Code | 是 | `kilo.jsonc`：`"NAME": {"enabled": false}` |
-| Pi | 是，從 `mcp.projects` | `.pi/mcp.json`: `"NAME": {"command": "...", "enabled": false}`，見下方 |
+| Pi | 是，Pi 1.0.1 起 | `.pi/mcp.json`: `"NAME": {"enabled": false}`，見下方 |
 | Codex | 否 | 見下方說明 |
 | 其他所有 client | 否 | 選擇它會是錯誤；不會寫入任何內容 |
 
@@ -352,12 +341,12 @@ global 檔案之上，所以在 global config 有定義該 server 的機器上�
 可能導致另一個隊友的 Codex 無法啟動。請改為逐機器關閉該 server，
 在 `~/.codex/config.toml` 中設定 `enabled = false`。
 
-Pi 會用 project 中的同名項目整筆取代 global 項目，並略過沒有 `command` 或 `url` 的項目。
-因此對 Pi，Skillshare 會寫入 global server 的 `command`，或去掉 query 的 `url`，再加上
-`enabled: false`。被關閉的 server 不會啟動，所以 args、env 和 headers 都不會寫進 project
-檔案，其他 project 也照常使用該 server。每次同步都會依 global server 重寫這個項目。這需要
-global server，所以只適用於 global config 中 `mcp.projects` 底下的 project；project 自己的
-config 看不到 global server，在那裡的 `disabled` 項目中使用 `pi` 會報錯。
+Pi 會用 project 中的同名項目整筆取代 global 項目，但 Pi 1.0.1 起，沒有 `command`、`url` 或
+`type` 的項目改為覆寫：只改 global server 的 `enabled`、`exposure` 和 `toolExposure`，args、env
+和憑證都沿用 global server。Pi 的 `/mcp` 寫的也是同樣的項目。Pi 1.0.1 以前會把它當成無效項目回報。
+在 global Pi config 沒有該 server 的機器上，Pi 啟動時會回報沒有可覆寫的 server，其餘設定照常載入。
+這個開關不需要 global server 的任何內容，所以 project mode 也能用。舊版寫入的、帶有 global server
+`command` 或 `url` 的項目，會在下次同步時改寫成覆寫項目。
 
 ### OpenCode and Kilo Code
 
@@ -883,6 +872,13 @@ Pi 的 server 名稱只接受字母、數字、`_` 和 `-`；只差在 `-` 和 `
 視為同一個 server，因此同步會拒絕第二個。Pi 的 project 項目會整筆取代 global
 中的同名項目；要在單一 project 中關閉 global server，請見
 [Turn off a global server in one project](#turn-off-a-global-server-in-one-project)。
+
+Pi 1.0.1 起，Pi 的 `/mcp` 可以在專案中新增只有 `enabled`、`exposure` 或 `toolExposure` 的項目，
+用來覆寫同名的 global server。它不是 server，所以匯入會略過它。`disabled` 項目寫入的也是這種覆寫，
+所以剛好是 `{"enabled": false}` 的覆寫不算衝突。同步寫入開關後，你在 Pi 中替它加上的 Pi 設定（例如
+`exposure`）會像其他由同步管理的 Pi 項目一樣保留；在 Pi 中把 server 重新開啟則算衝突。如果專案定義了
+同名的 server，或不是同步寫入的覆寫和 `disabled` 項目不同，同步會回報衝突，直到你取代該項目，或在 Pi
+中移除這個覆寫。
 
 ### 其他 Pi 設定 {#pi-options}
 

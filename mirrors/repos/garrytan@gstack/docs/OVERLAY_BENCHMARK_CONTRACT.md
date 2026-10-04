@@ -7,7 +7,7 @@ blocking efficacy contract; historical failures retain their original verdicts.
 
 The contract is defined by `OVERLAY_CONTRACT` in
 `test/helpers/overlay-case-policy.ts`. Every new measurement and aggregate record
-identifies version 2. Eval entry names include `contract-v2` so automated result
+identifies version 3. Eval entry names include `contract-v3` so automated result
 matching cannot silently compare the old and new contracts by the same name.
 Selection IDs for the six retained paid cases stay unchanged.
 
@@ -26,7 +26,7 @@ observations are never replaced with zero or discarded to obtain a passing arm.
 
 | Fixture family | Exact task and scope contract | Additional ON requirement | Measurement |
 | --- | --- | --- | --- |
-| `claude-dedicated-tools-vs-bash` | Read-only workspace; native final JSON maps all five `src/` paths to their exact exported symbol names | Zero Bash calls in every ON sample | Total Bash tool calls |
+| `claude-dedicated-tools-vs-bash` | Read-only workspace; native final JSON maps all five `src/` paths to their exact exported symbol names | Correct output in every ON sample, and at least 20% fewer Bash calls than OFF (when the OFF median is 0, zero Bash in every ON sample) | Total Bash tool calls |
 | `opus-4-7-effort-match-trivial` | Read-only workspace; native final JSON contains the exact version string | Correct answer in every ON sample | Native `usage.output_tokens_details.thinking_tokens` |
 | `opus-4-7-literal-interpretation` | Only `src/auth.ts`, `src/billing.ts`, and `src/notifications.ts` may change; public tests stay frozen; independent behavior checks run outside the writable fixture | All three target behaviors pass in every ON sample | Correct target behaviors, 0..3 |
 
@@ -39,7 +39,8 @@ metric to historical counts of edited files.
 
 OFF literal samples can validly complete 0..3 behaviors; that is the measured
 control variable. OFF dedicated-tool samples can validly use Bash. ON must meet
-the exact requirements above even when its comparison shows a large improvement.
+the exact requirements above even when its comparison shows a large improvement;
+for the dedicated-tools case the 20% Bash comparison itself is part of the gate.
 Scope is checked again after the implementation oracle because importing a
 repaired module can itself change files. Each oracle must emit its unique
 completion marker after its assertions; an implementation exiting zero during

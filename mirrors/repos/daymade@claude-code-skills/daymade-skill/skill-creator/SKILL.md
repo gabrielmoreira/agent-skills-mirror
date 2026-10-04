@@ -27,7 +27,7 @@ At a high level, the process of creating a skill goes like this:
 
 Your job when using this skill is to figure out where the user is in this process and then jump in and help them progress through the applicable stages. Full A/B benchmarking is a capability, not a tax on every edit. Words such as "optimize", "improve", or "comprehensive" describe intent, not failure surface or evaluation budget. Do not create eval files, fan out paired agents, grade outputs, or launch a viewer merely because a task sounds broad or a long conversation precedes it.
 
-Six standing disciplines apply throughout, because these failure modes ship convincing-looking skills that are wrong:
+Standing disciplines apply throughout, because these failure modes ship convincing-looking skills that are wrong:
 
 1. **Verify before you write.** Every technical assertion that enters the skill (endpoint, parameter, command, version, behavior) must trace to something you executed and observed — in this session or an explicitly approved mined one. Can't verify it right now? Either go verify it, or mark it explicitly ("unverified — from memory"). A skill multiplies whatever it contains: verified knowledge compounds, and so do confidently-stated errors. For knowledge skills (content is mostly facts about an external system — API endpoints, parameters, fields, platform behavior), read [references/knowledge-skill-grounding.md](references/knowledge-skill-grounding.md) for the operational version: the authority ladder (observed behavior > machine-readable contract > exercised production code > official docs > memory), evidence-scope annotation and live/replay/synthetic evidence tiers, pre-ship doc-example smoke runs, and the audience/Windows portability checklist. A source-grounding audit once found multiple confident contract claims that contradicted evidence already available to the author (methodology Case 9). **A "landed" claim is verified against the target ref, not the commit message.** When a commit message, changelog entry, or skill section asserts a capability was implemented/fixed/landed, the assertion is not evidence — before reporting it done, and again before any later session builds on it, grep the *target ref itself* (`git show <ref>:<path>`) for that capability's signature strings and read the key lines back. Real incident (2026-09-17): a commit message claimed a voice-input chain had been rewritten to a single-click model, while the pushed ref still carried the hold-to-talk model — only a post-compaction grep of the actual ref caught it. The commit message, the changelog entry, and the author's summary are one source; counting them as three is exactly how such a claim survives review. Criterion: every capability named in the claim has its implementation signature present in the target ref, read from the ref.
 2. **Treat "impossible / not supported" as a hypothesis, not a conclusion.** When a capability seems blocked (an API error wall, a tool that won't connect, a format that won't open), exhaust the observation paths — the UI's own network traffic, an alternative channel, a different documented identifier — before writing "the platform doesn't support this" into a skill. Observed behavior outranks speculative request shapes.
@@ -146,6 +146,8 @@ It's OK to briefly explain terms if you're in doubt, and feel free to clarify te
 ## Creating a skill
 
 ### Capture Intent
+
+Before the first write, follow [Edit Skills at Source Location](#critical-edit-skills-at-source-location).
 
 Start by understanding the user's intent. The current conversation might already contain a workflow the user wants to capture (e.g., they say "turn this into a skill"). If so, extract answers from the live conversation first — the tools used, the sequence of steps, corrections the user made, input/output formats observed. The user may need to fill the gaps, and should confirm before proceeding to the next step.
 
@@ -278,6 +280,20 @@ Choose the **lowest tier that can falsify the changed behavior** before taking a
 | **2 — Sampled behavior** | This is an existing skill; the change affects agent behavior but adds no capability, trigger family, output contract, script behavior, dependency, permission, or external write; and 1–2 named examples with explicit acceptance criteria can exercise the whole changed behavior. A bounded correction to one existing routing or evidence-selection rule stays here even when it changes the chosen path | Run only those 1–2 representative with-skill replays plus the narrow deterministic checks and the one fresh-context review required by discipline #5 | Baselines, paired fan-out, variance analysis, benchmark, viewer, or eval files by default. An explicit request for them goes through the separate evidence-budget gate and does not reclassify the change |
 | **3 — Broad / high-risk** | Any of these is true: any new skill; any new or materially changed capability; broad cross-branch rewrite or methodology expansion; trigger/description optimization (running the optimizer loop, or adding or removing trigger families — shortening a description under the frontmatter rule with every old clause cited by the regression gate is not this); a new workflow branch or materially changed output contract, script capability, dependency, or permission; high-risk automation or external writes; or the changed behavior itself spans 3+ distinct prompt classes, repeated trials, or materially different approaches | Run deterministic gates first, then add only the evidence needed for the named failure axes. The full paired pipeline below is available only after the separate heavy-eval authorization gate passes; Tier 3 by itself does not start it, and the same gate can authorize extra evidence at another tier | Automatic paired fan-out, graders, benchmark, or viewer based only on the Tier 3 label |
 
+For changes to persisted formats or partial state updates, and commands whose output
+may exceed the tool response, load
+[stateful-script-verification.md](references/stateful-script-verification.md).
+Select its affected recipes as narrow deterministic evidence within the chosen tier.
+
+For an operational Skill whose changed workflow needs installation, account
+configuration, a live service or human cooperation, read
+[first use and recovery](references/first-use-and-resume.md) before drafting that
+workflow. Put automatic preparation and continuation in the ordinary entry,
+reuse existing execution owners, and test the affected missing-state, valid-state
+and interrupted-state paths against the original task. A written setup guide,
+healthy process or loaded model alone does not establish first-use success.
+Skip this route for reference-only Skills and self-sufficient file transforms.
+
 #### Heavy-eval authorization gate — separate from tier classification
 
 A tier describes **risk and uncertainty**; it does not authorize token spend or agent fan-out. Passing this gate changes the permitted evidence plan, not the tier. The generic paired baseline → grader → benchmark → viewer pipeline may run only when either:
@@ -294,6 +310,16 @@ Before spawning more than one research, mining, eval, or grading agent, separate
 - For fan-out proposed by the executor rather than explicitly requested, obtain opt-in to that count. If the interactive question tool is unavailable or the user does not answer, take the lighter evidence path; silence is not consent.
 
 If a unit is neither a distinct role/output nor a necessary isolated arm/shard, do not spawn it.
+
+Before preparing disk inputs for an authorized evaluation, declare the necessary
+paths and one cumulative byte budget covering every arm, retry and evidence file,
+with an explicit minimum free-space reserve and session owner. Use the executable
+prepare → monitored run → finish contract in
+[materialization-budget.md](references/materialization-budget.md). Read its measured
+usage and terminal state; finish on success, failure and interruption, retaining
+changed inputs and evidence. Missing limits stop preparation; sampling is not a hard
+filesystem quota. The runner stops on observed overage; the agent must still
+justify scope and verify the business outcome.
 
 Escalate when a lower tier exposes unresolved behavior or contradictory evidence. A user's request to cancel or de-escalate evaluation immediately stops already-launched paired eval agents, baselines, graders, aggregation, and viewer work. Keep the risk classification if it remains informative, but report only the evidence actually run and the axes left unchecked; do not describe an unrun heavy suite as automatically "required" by the label. Do not cancel discipline #5's single fresh-context reviewer when its rule/contract/number threshold is crossed, or any safety gate needed to prevent destructive or external effects. The mechanical existing-skill migration audit, public-skill sanitization, and any domain-specific safety gate also remain independent of this router.
 
@@ -921,6 +947,10 @@ Put results in `<skill-name>-workspace/` as a sibling to the skill directory. Wi
 
 ### Step 1: Run the approved with-skill / baseline pairs
 
+Before making isolated input copies, follow
+[materialization-budget.md](references/materialization-budget.md); export only the
+declared paths from the frozen ref and run all arms under their shared budget.
+
 For each approved test case, run one with-skill sample and its baseline under the same prompt and side-effect budget. These two arms intentionally share one failure axis but require isolated contexts; they are necessary experimental units, not extra reviewer roles. State the total arms and capped concurrency before launch. Run serially by default, and never exceed the authorized unit count.
 
 **With-skill run:**
@@ -1263,33 +1293,29 @@ Editing installed copies first causes changes to be:
 <repo-root>/my-skill/SKILL.md
 ```
 
-**Before any edit**, run a source-location check and say which path is source:
+**Before any creation or edit**, run the source-owner check and say which path is source. This is separate from the private review archive and the runtime installation path:
 
 ```bash
-pwd
-git rev-parse --show-toplevel
-rg -n '"name": "<skill-or-suite-name>"' .claude-plugin/marketplace.json
-find . -path '*/SKILL.md' -maxdepth 4 | rg '(^|/)<skill-name>/SKILL.md$'
+uv run --project <skill-creator-dir> --frozen python <skill-creator-dir>/scripts/source_contract.py check-path <skill-dir> \
+  --phase create --repo <source-repo> --scope marketplace
 ```
+
+Stop on `invalid` or `unknown` before writing. An explicit `--repo` cannot override an existing source owner; for exported owner evidence, pass `--inventory <frozen-owner-inventory.json>`. New marketplace members must be registered before delivery; a permitted draft location is not a completed install.
+
+For managed local sources, omit `--repo` only when the source-sync owner's inventory can establish the repository identity. An unavailable inventory is `unknown`, not permission to guess. Inventory source paths must be qualified absolute paths; missing, null or blank paths cannot borrow the caller's current directory. Linked worktrees are checked by their Git common directory. Project-local Skills use `--scope project`; reviewing or installing third-party packages does not make their cache an authored source.
+
+At delivery, run the read-only check against the requested Skill name and declared source owner, not merely whatever happens to appear in a catalog:
+
+```bash
+uv run --project <skill-creator-dir> --frozen python <skill-creator-dir>/scripts/source_contract.py audit <skill-dir> \
+  --repo <source-repo> --scope marketplace --install-path <installed-skill-entry>
+```
+
+This checks source containment, exact registration and source-backed installation identity. It never proves a current session loaded the Skill. Pass the original user outcome and separate source/install paths to `skill-reviewer`'s delivery contract; a runnable Skill, green tests and catalog visibility cannot substitute for ownership validation. Keep the contract private when it contains local paths. Missing runtime observations remain `unknown`.
 
 If the available-skills list points at `~/.codex/skills`, `~/.claude/skills`, or a plugin cache, do not assume that path is source. Locate the repository-backed source first, edit it, validate it, and only then sync the installed copy when the user needs immediate local runtime use.
 
-**Then answer the follow-up question that decides whether "sync the installed copy" is even work: does the runtime already read the source?** Three installs behave differently, and guessing wrong either wastes a sync or ships an edit the user's next session never sees:
-
-```bash
-ls -la ~/.claude/skills/<name>                       # a symlink into the repo? -> edits are live already
-grep -A3 '"<marketplace-name>"' ~/.claude/plugins/known_marketplaces.json   # "source": "directory" -> reads the repo in place
-```
-
-- **Symlinked** into the source tree → the edit *is* the runtime. Nothing to sync.
-- **Marketplace with `source: directory`** pointing at the repo → same: it reads the working tree, so a version bump is bookkeeping for other consumers, not a local activation step.
-- **Anything cached/copied** (git-sourced marketplace, a `cp -r` install) → the runtime is a separate copy and genuinely needs the official update command before the new content is live.
-
-**And verify activation by content, not by a version string.** A registry can record a path or version that does not exist on disk — one session read a plugin record naming a cache directory with the *new* version number in it and nearly reported the update as live; that directory had never been created, and the real runtime path was a symlink to the source all along. The authoritative check is to grep the runtime file for something only the new version contains:
-
-```bash
-grep -c "<a phrase unique to the new content>" <resolved-runtime-path>/SKILL.md   # 0 = not live
-```
+**Verify the actual consumed file before claiming availability.** A marketplace's registered source path does not identify its installed cache or prove session loading. Resolve the installed entry, read the content at that resolved location, and run the applicable fresh-host check. For source-backed aliases and ordinary versioned plugin copies, follow the installation and verification procedures in [skill-governance](../skill-governance/references/skill-surface-governance.md). Source ownership, installation identity and current session evidence are separate checks.
 
 ### Concurrent sessions on the same skill repo
 
@@ -1350,10 +1376,12 @@ Analyze each example by:
 
 Skip this step if the skill already exists.
 
-When creating a new skill from scratch, always run the `init_skill.py` script:
+When creating a new skill from scratch, run [scripts/init_skill.py](scripts/init_skill.py)
+from the locked skill-creator project:
 
 ```bash
-scripts/init_skill.py <skill-name> --path <output-directory>
+uv run --frozen python -m scripts.init_skill <skill-name> \
+  --path <source-parent> --repo <source-repo> --scope marketplace
 ```
 
 The script creates a template skill directory with proper frontmatter, resource directories, and example files.

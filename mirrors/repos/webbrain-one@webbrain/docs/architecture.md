@@ -946,6 +946,7 @@ Firefox uses `browser.storage.session`.
 | Screenshots | CDP `Page.captureScreenshot` with run-scoped focus emulation for background tabs | `browser.tabs.captureTab()` for direct inactive-tab capture |
 | Conversation/UI persistence | `chrome.storage.session` | `browser.storage.session` |
 | Offscreen document | Yes (fetch proxy + recorder + local WebGPU models) | Not available |
+| Cloud Bridge socket | Offscreen document (`offscreen/cloud-bridge.js`) | Background page (`cloud-bridge.js`) |
 | Trace recorder | IndexedDB (opt-in) | IndexedDB (opt-in) — same `trace/recorder.js` |
 | Duplicate-submit guard | Yes | Not available |
 | `execute_js` | Dev mode through CDP `Runtime.evaluate` | Dev mode through the MV2 content-script evaluator |

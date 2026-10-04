@@ -17,7 +17,9 @@ unexpected event shape. See `docs/cache-verification.md` for the full story.
 
 - **Factory** (`index.ts`): `createCacheMonitorHook(options)` returns a single
   `event` hook. Created at plugin start before config loads so it sees every
-  event; sits outside the init try-block.
+  event; sits outside the init try-block. `disabled_hooks: ["cache-monitor"]`
+  gates the per-event call in `src/index.ts` (call-site gate — the creation
+  stays pre-config, the event fan-out skips the watchdog when disabled).
 - **Per-session state**: `Map<sessionID, SessionCacheState>` tracking completed
   request count, `everReportedCache`, last `cache.read`, warned-since-last-hit
   flag, never-cached streak/input totals, and plateau streak/input totals.
@@ -58,7 +60,8 @@ session.deleted → drop per-session state
 ## Integration
 
 - **Consumer**: `src/index.ts` creates the hook at plugin factory start and
-  routes every event through it.
+  routes every event through it (unless `disabled_hooks` lists
+  `cache-monitor`, in which case the fan-out call is skipped entirely).
 - **Dependencies**: `isRecord` (`src/utils/guards.ts`) for safe event shape
   parsing, `log` (`src/utils/logger.ts`) for warnings (injectable via
   `CacheMonitorOptions.logger` for tests).

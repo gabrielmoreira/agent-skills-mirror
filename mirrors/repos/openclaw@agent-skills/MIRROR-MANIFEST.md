@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/agent-skills` — 26 default patterns, 3 followed patterns, 60 file(s) materialized.
+Mirror of `openclaw/agent-skills` — 26 default patterns, 3 followed patterns, 62 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/agent-skills` — 26 default patterns, 3 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 60 |
+| Files         | 62 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -118,9 +118,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 55 | ✓ | [`skills/session-viewer/scripts/styles.ts`](skills/session-viewer/scripts/styles.ts) |
 | 56 | ✓ | [`skills/session-viewer/SKILL.md`](skills/session-viewer/SKILL.md) |
 | 57 | ✓ | [`skills/session-viewer/tsconfig.json`](skills/session-viewer/tsconfig.json) |
-| 58 | → | [`docs/RELEASING.md`](docs/RELEASING.md) |
-| 59 | → | [`README.md`](README.md) |
-| 60 | → | [`VISION.md`](VISION.md) |
+| 58 | ✓ | [`skills/team-handoff/scripts/team-handoff.sh`](skills/team-handoff/scripts/team-handoff.sh) |
+| 59 | ✓ | [`skills/team-handoff/SKILL.md`](skills/team-handoff/SKILL.md) |
+| 60 | → | [`docs/RELEASING.md`](docs/RELEASING.md) |
+| 61 | → | [`README.md`](README.md) |
+| 62 | → | [`VISION.md`](VISION.md) |
 
 ---
 

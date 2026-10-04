@@ -21,6 +21,36 @@ Extras는 skillshare가 관리하는 추가 리소스 유형입니다 — "skill
 
 ## Commands
 
+### `extras memory` {#extras-memory}
+
+`memory` extra의 공유 Markdown 노트를 관리합니다. 원하는 텍스트 편집기를 사용할 수 있습니다.
+[스크린샷 가이드](../../how-to/daily-tasks/sharing-memory)에서 생성부터 Agent 연결까지 확인하세요.
+
+| 하위 명령 | 동작 |
+|---|---|
+| `init` | Target이 없는 memory extra를 등록하고 누락된 `INDEX.md`, `LEARNED.md`를 생성. 기존 파일과 설정 유지 |
+| `list` | 노트 목록. `--search <text>`로 하위 폴더를 포함한 경로와 내용을 대소문자 구분 없이 검색 |
+| `show <note.md>` | 노트 읽기. `--json`에는 `version` hash 포함 |
+| `write <note.md> --from <file\|->` | 파일 또는 stdin에서 내용 읽기. 새 노트는 `--version`을 생략하고 업데이트는 마지막으로 읽은 version 필요 |
+| `delete <note.md> --version <hash>` | 백업 후 지정 version 삭제. 오래되거나 누락된 version은 거부 |
+| `instructions` | 실제 source 폴더를 가리키는 읽기 지침 출력. `--update-mode passive`(기본값)는 요청할 때만 노트를 업데이트하게 하고, `--update-mode active`는 오래 쓸 사실을 스스로 저장하고 확실하지 않으면 제안하게 합니다 |
+
+각 하위 명령은 `--json`, `-g` / `--global`, `-p` / `--project`, `--help`를 지원합니다.
+Scope는 생략하면 자동 감지합니다. 기본 global 경로는 `~/.config/skillshare/extras/memory/`,
+Project는 `.skillshare/extras/memory/`입니다. 기존 extras source 설정이 적용됩니다.
+
+노트는 상대 `.md` 경로의 UTF-8 파일이며 최대 1 MiB입니다. 숨김 파일, 숨김 폴더, 내부 심볼릭 링크는 제외합니다. 너무 크거나 UTF-8이 아닌 파일은 지원되지 않음으로 목록에 남고 다른 유효한 노트는 사용할 수 있습니다. `wiki/architecture.md`는 필요한 폴더를 생성합니다. Dashboard는 트리, **Preview** / **Source**, **Copy path**, **Edit**, **Delete note**, **History**를 제공합니다. **Move or rename**에서 새 상대 `.md` 경로를 지정합니다. 없는 폴더를 만들고 내용과 권한을 보존하며 기존 대상이나 오래된 version은 거부합니다. 이동 전 원래 경로를 백업합니다. Markdown 링크는 직접 수정하세요. Agent 지침이 가리키는 source 루트의 `INDEX.md`는 그 위치에 유지하세요.
+
+저장은 마지막으로 읽은 version을 확인합니다. 충돌하면 초안을 보존하고 최신 저장 내용을 비교용으로 표시합니다. **Save my draft**는 확인 후 갱신된 version을 사용하며 저장 내용을 백업한 다음 대체합니다. 삭제도 확인, version 검사, 백업을 수행합니다. **History**와 삭제 후 복원 링크는 노트의 절대 경로로 필터링된 **Backup Files**를 엽니다. CLI에서는 `backup files show <absolute-path>`와 `backup files restore <absolute-path> <id>`를 사용합니다.
+
+**New note**의 **Link from INDEX.md**는 인덱스를 읽을 수 있을 때 표시되며 기본으로 선택됩니다. 파일 끝에 링크를 추가하고 version을 확인하며 백업합니다. 실패해도 새 노트는 유지됩니다. **Add to INDEX**로 인덱스에 없는 노트를 추가할 수 있습니다. 깨진 링크는 경고하지만 자동 삭제하지 않습니다. CLI 쓰기는 링크를 추가하지 않습니다.
+
+**Connect to agents**에서 도구와 각각의 업데이트 모드(`passive` 또는 `active`)를 선택하고 **Review changes** → **Apply changes**를 실행하세요. 같은 파일을 읽는 도구는 블록 하나를 공유하므로 모드도 함께 바뀝니다. 설정된 도구의 모드도 같은 검토로 변경할 수 있습니다. 기존 지침 파일이나 공유 소스에 scope/hash 마커 블록을 추가하거나 업데이트하고 다른 내용과 할당은 보존합니다. 변경 내용, 다른 읽기 도구, 알려진 글자 수 제한을 검토할 수 있습니다. 기존 파일을 백업하며 오래된 계획은 거부합니다. 수정되지 않은 오래된 블록은 검토 후 업데이트할 수 있으며 수동 수정되었거나 잘못된 블록은 보존합니다. 동기화되지 않았거나 읽을 수 없는 지침 파일은 건너뜁니다.
+
+**Configured**는 읽기 경로에 현재 안내가 있음을 표시하며 읽었다는 뜻은 아닙니다. **Copy verification prompt**를 새 세션에서 사용하여 `INDEX.md`와 관련 노트를 읽고 전체 경로와 사용자가 추가한 임시 검증 값을 보고하도록 요청하세요. 실제 읽기 이벤트를 수동으로 확인하세요. 읽기 telemetry는 보장하지 않습니다.
+
+**Copy guidance**는 수동 붙여 넣기 대안으로 모드를 골라 복사하며 **Open AGENTS.md**에서 편집할 수 있습니다. 프로젝트 내부 소스는 지침 파일의 위치와 관계없이 **project root** 기준 상대 경로이고 외부 또는 global 소스는 절대 경로입니다. 이동 후 안내를 다시 생성하세요. CLI `instructions`도 같은 scope/hash 블록을 출력합니다. Native automatic memory, 자동 학습, Obsidian 통합을 활성화하지 않습니다.
+
 ### `extras init`
 
 새로운 extra 리소스 유형을 생성합니다.
@@ -83,10 +113,13 @@ skillshare extras init pi-prompt --file system.md --as APPEND_SYSTEM.md \
 `extras init`는 config만 작성합니다. source 파일을 만들지 않으며 동기화하지도 않습니다. single-file extra의 경우 source와 target 파일의 전체 경로를 출력합니다:
 
 ```
+  Source    ~/dotfiles/prompts/system.md
+  Target    ~/.pi/agent/APPEND_SYSTEM.md · merge
+
 ✓ Created extra pi-prompt (single file)
-Source: ~/dotfiles/prompts/system.md
-Target: ~/.pi/agent/APPEND_SYSTEM.md [merge]
-Run 'skillshare sync extras' to sync.
+
+Next
+  skillshare sync extras  sync it
 ```
 
 source 파일이 아직 없으면 source 줄 끝에 `(not found)`가 붙고, 마지막 줄은 `Create the source file, then run 'skillshare sync extras'.`가 됩니다.
@@ -110,27 +143,9 @@ skillshare extras list [--json] [--no-tui] [-p|-g]
 
 #### Interactive TUI
 
-TUI는 왼쪽에 extras 목록, 오른쪽에 detail 패널이 있는 split-pane 인터페이스를 제공합니다. 키 바인딩:
+TTY에서 `extras list`는 대화형 화면을 엽니다. 왼쪽에는 extras, 오른쪽에는 선택한 extra의 target과 파일이 표시됩니다. 여기서 extras를 만들고, 제거하고, sync하고, collect할 수 있으며 target의 모드나 flatten 설정도 바꿀 수 있습니다. 키는 화면 아래쪽에 표시됩니다.
 
-| Key | Action |
-|-----|--------|
-| `↑↓` | 목록 탐색 |
-| `/` | 이름으로 필터링 |
-| `Enter` | Content viewer (source 파일 탐색) |
-| `N` | 새 extra 생성 |
-| `X` | extra 제거 (확인 필요) |
-| `S` | extra를 target(들)에 동기화 |
-| `C` | target(들)에서 수집 |
-| `M` | target의 동기화 mode 변경 |
-| `F` | target의 flatten 켜기/끄기 |
-| `Ctrl+U/D` | detail 패널 스크롤 |
-| `q` / `Ctrl+C` | 종료 |
-
-각 행의 color bar는 종합 동기화 상태를 나타냅니다: cyan = 모두 동기화됨, yellow = drift, red = 동기화 안 됨, gray = source 없음.
-
-여러 target이 있는 extra의 경우, `S`, `C`, `M`, `F`는 target 하위 메뉴를 엽니다. `S`와 `C`는 모든 target을 한 번에 선택할 수 있으며, `M`과 `F`는 특정 target을 선택해야 합니다.
-
-TUI는 `skillshare tui off`로 영구적으로 비활성화할 수 있습니다.
+`skillshare tui off`로 TUI를 영구적으로 끌 수 있습니다.
 
 #### Plain text output
 
@@ -138,15 +153,14 @@ TUI가 비활성화된 경우 (`--no-tui`, `skillshare tui off`, 또는 파이�
 
 ```
 $ skillshare extras list --no-tui
+rules  ~/.config/skillshare/extras/rules · 2 files
+✓ ~/.claude/rules  merge
+✓ ~/.cursor/rules  copy
 
-Extras
-─────────────────────────────────────────
-→ rules  ~/.config/skillshare/extras/rules/ · 2 files
-  ✓ ~/.claude/rules  merge
-  ✓ ~/.cursor/rules  copy
+codex-agents  ~/.config/skillshare/agents · 3 files
+✓ ~/.codex/agents  extension: codex-agents
 
-→ codex-agents  ~/.config/skillshare/agents · 3 files
-  ✓ ~/.codex/agents  extension: codex-agents
+2 extras
 ```
 
 [single-file extra](#single-file-extras)의 경우 source와 각 target은 디렉터리 대신 파일의 전체 경로를 표시합니다.
@@ -230,7 +244,7 @@ skillshare extras rules --remove-target ~/.cursor/rules
 skillshare extras rules --remove-target ~/.cursor/rules --prune
 ```
 
-Web UI(각 target의 mode 드롭다운과 flatten 체크박스)와 TUI(`M` 키)에서도 사용할 수 있습니다.
+Web UI(각 target의 mode 드롭다운과 flatten 체크박스)와 TUI(`e` 키)에서도 사용할 수 있습니다.
 
 ### `extras remove`
 

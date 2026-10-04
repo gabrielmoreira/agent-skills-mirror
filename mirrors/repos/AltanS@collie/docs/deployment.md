@@ -353,6 +353,47 @@ A tunnel made in the Zero Trust dashboard works too: set its public hostname's s
 > **Warning.** Without step 4, anyone who finds the hostname gets a shell on your machine.
 > Cloudflare Access is the door's lock; pairing then decides which device may type.
 
+5. Make Collie check the lock. In the Access application, copy the **Application Audience (AUD)
+   tag**. Add it and your team name to `.env`, then restart.
+
+   ```bash
+   COLLIE_ACCESS_TEAM=myteam          # from myteam.cloudflareaccess.com
+   COLLIE_ACCESS_AUD=<the AUD tag>
+   ```
+
+   Every request through the tunnel must now carry a token that Cloudflare signed for this
+   application. If the Access app is deleted, gets a bypass rule, or has not reached every edge yet,
+   Collie refuses the request instead of showing the panes. The audience check matters: every Access
+   app in a team signs with the same key, so a token for another app is refused too.
+
+   Collie fetches the team's public keys at start and every hour. Until the first fetch works,
+   every remote request gets `503`. If a later fetch fails, Collie keeps the keys it has. Set both
+   lines or neither: one alone refuses every remote request. Either way the bridge log names the
+   problem in one line, so check the log after the restart.
+
+   Only a process on this machine skips the token: a request to `127.0.0.1` or `localhost` that
+   carries no `Cf-*` and no forwarding header (`X-Forwarded-For`, `X-Forwarded-Host`,
+   `X-Forwarded-Proto`, `Forwarded`, `X-Real-Ip`). It still needs pairing to type. `/api/health`
+   and the crew links do not need a token either. `collie doctor` is such a local caller, so a green
+   doctor does not show that the keys loaded or that a token verifies. Open the hostname from the
+   phone to check that.
+   [ADR 0081](../.adr/0081-a-front-doors-signed-identity-is-verified-cloudflare-access-is-the-first-preset.md) has the reasons.
+
+   Keep these rules with the gate on:
+
+   - **One front door at a time.** With Access on, a request through `tailscale serve`, Caddy or
+     Traefik needs a token too, because they add a forwarding header by default.
+     A machine that serves both a tunnel and a tailnet name (`tailscale serve`) loses the tailnet
+     door for browsers: those requests carry no Access token and get `401`.
+   - **No second proxy between `cloudflared` and Collie that makes requests look local.** One that
+     rewrites `Host` to `127.0.0.1` or `localhost` and removes the `Cf-*` and forwarding headers
+     does it on purpose. A bare nginx `proxy_pass http://127.0.0.1:8787` does it by default: it
+     sends `Host: 127.0.0.1:8787` and adds no forwarding header unless you configure one. Those
+     requests skip the token. Point `cloudflared` at Collie directly.
+   - **Do not add Access bypass rules for Collie paths**, not for the manifest, the service worker
+     or the icons. Access adds the token to every request it lets through. A bypassed path carries
+     no token, so Collie answers `401`.
+
 Access redirects to `/cdn-cgi/access/` to log in. Keep `sw.js` and `index.html` uncached, as
 [Routing `/auth/` and caching](#routing-auth-and-caching) says.
 

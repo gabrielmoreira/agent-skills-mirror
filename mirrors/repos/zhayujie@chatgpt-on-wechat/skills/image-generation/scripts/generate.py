@@ -164,6 +164,8 @@ def _compress_image(data: bytes, max_bytes: int = 4 * 1024 * 1024, max_edge: int
 
     img = Image.open(io.BytesIO(data))
     w, h = img.size
+    # Image.resize() clears .format, so read it first.
+    fmt = img.format or "PNG"
 
     if max(w, h) > max_edge:
         ratio = max_edge / max(w, h)
@@ -171,7 +173,6 @@ def _compress_image(data: bytes, max_bytes: int = 4 * 1024 * 1024, max_edge: int
         img = img.resize((w, h), Image.LANCZOS)
 
     buf = io.BytesIO()
-    fmt = img.format or "PNG"
     if fmt.upper() == "JPEG":
         quality = 85
         while True:
@@ -1221,8 +1222,12 @@ def main():
 
     try:
         raw = sys.argv[1]
-        raw = raw.replace('\u201c', '"').replace('\u201d', '"').replace('\u2018', "'").replace('\u2019', "'")
-        args = json.loads(raw)
+        try:
+            args = json.loads(raw)
+        except json.JSONDecodeError:
+            # Curly quotes used as JSON delimiters; never straighten valid payloads.
+            raw = raw.replace('\u201c', '"').replace('\u201d', '"').replace('\u2018', "'").replace('\u2019', "'")
+            args = json.loads(raw)
     except json.JSONDecodeError as e:
         print(json.dumps({"error": f"Invalid JSON: {e}"}))
         sys.exit(1)

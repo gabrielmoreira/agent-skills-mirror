@@ -63,6 +63,10 @@ Use [skill-creator](daymade-skill/skill-creator/SKILL.md) before creating or
 changing a skill. It owns change classification, evidence selection, regression
 review, validation, initialization, and packaging.
 
+When creating or changing an operational Skill's first-use setup or recovery
+workflow, enter `skill-creator` and load its
+[first-use and recovery contract](daymade-skill/skill-creator/references/first-use-and-resume.md).
+
 For proxy-selection or disruptive VPN recovery changes, enter `tunnel-doctor` and its
 proxy-conflict and network-recovery references. For automatic WeCom integration,
 enter `setup-notifications-via-wecom`; its receipt contract owns accepted/rejected/unknown
@@ -134,16 +138,25 @@ cd daymade-skill/skill-creator
 uv run --frozen python -m scripts.quick_validate <skill-path> --audience public
 ```
 
+### Review and evaluation input preparation
+
+When review, replay or evaluation needs input copies, follow
+[the materialization SOP](daymade-skill/skill-creator/references/materialization-budget.md)
+from the locked skill-creator project above. Its
+[CLI](daymade-skill/skill-creator/scripts/materialize.py) owns argument parsing,
+accounting and cleanup behavior. For disk diagnosis, use
+[macos-cleaner](daymade-macos/macos-cleaner/SKILL.md).
+
 ### Automated Test Suites (CI)
 
 A `tests/` directory under a skill does **not** automatically run in CI. The
-"Registered test suites (Linux)" GitHub Actions job only runs directories
-explicitly listed in `scripts/ci/test-suites.txt` — that file's header is the
+registered-suite runner uses `scripts/ci/test-suites.txt` — that file's header is the
 SSOT for the admission criteria (stdlib-only, no network/credentials,
 deterministic, Linux-verified) and the runner types (`python-unittest` via
 `unittest discover`, `node-test`). Adding a test file to an unregistered
-`tests/` directory gives you a suite you can run locally, not CI coverage —
-check the registry before assuming otherwise, and note `unittest discover`
+`tests/` directory does not establish CI coverage. Check the registry and the
+explicit test steps in [.github/workflows/ci.yml](.github/workflows/ci.yml),
+which also runs selected suites directly. Note that `unittest discover`
 only collects `unittest.TestCase` subclasses, not bare pytest-style functions.
 
 For browser-backed recurring jobs, enter
@@ -309,41 +322,19 @@ aligned. That reference owns the request fields and probe commands.
 
 In Claude Code, use `/plugin ...` slash commands. In your terminal, use `claude plugin ...`.
 
-### Source Location Guard for Skill Edits
+### Source Location Guard for Skill Creation and Edits
 
-Before editing an existing skill, verify the **source** path, not just the path currently loaded by Codex / Claude Code.
+Load [skill-creator](daymade-skill/skill-creator/SKILL.md) and follow its canonical
+source preflight before the first write. Its shared source-contract checker owns
+repository identity, marketplace registration and project-local placement; use
+[skill-governance](daymade-skill/skill-governance/SKILL.md) for installation and
+fresh-host readback. Keep source, installed entry and private review archive distinct.
+A registered marketplace source does not prove the installed copy or current host advanced;
+follow the consumed-file checks in that governance reference before claiming activation.
 
-Treat these as installed copies unless proven otherwise:
-- `~/.codex/skills/<skill-name>`
-- `~/.claude/skills/<skill-name>`
-- `~/.agents/skills/<skill-name>`
-- `~/.claude/plugins/cache/...`
-- `~/.codex/plugins/cache/...`
-
-The source for this marketplace is this repository. For single-skill plugins, edit:
-```bash
-<repo-root>/<skill-name>/SKILL.md
-```
-
-For suite skills, edit:
-```bash
-<repo-root>/<suite-name>/<skill-name>/SKILL.md
-```
-
-Required workflow before any skill edit:
-```bash
-pwd
-git rev-parse --show-toplevel
-rg -n '"name": "<skill-or-suite-name>"' .claude-plugin/marketplace.json
-find . -path '*/SKILL.md' -maxdepth 4 | rg '(^|/)<skill-name>/SKILL.md$'
-```
-
-After editing, commit and run `scripts/ci/validate_changed_skills.sh origin/main` (it examines the committed
-diff, so it sees nothing until you commit). It runs the same per-skill `quick_validate` the CI uses;
-repo-level `claude plugin validate --strict .` passes even when a description exceeds the 1024-character
-cap, so a green repo-level validate is not evidence the touched skill will pass.
-
-If the user gives a source path, use that path. If the available skill list points to a different installed copy, update the source first, then sync the installed copy only if the user explicitly needs the current session to use the new version immediately.
+After committing, run `scripts/ci/validate_changed_skills.sh origin/main`; it checks
+the committed diff. A repository-level plugin validation does not replace per-Skill
+validation.
 
 ### Git Operations
 

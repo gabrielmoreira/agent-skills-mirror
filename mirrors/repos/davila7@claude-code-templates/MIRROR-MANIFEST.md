@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `davila7/claude-code-templates` — 26 default patterns, 0 followed patterns, 1184 file(s) materialized.
+Mirror of `davila7/claude-code-templates` — 26 default patterns, 0 followed patterns, 1185 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `davila7/claude-code-templates` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1184 |
+| Files         | 1185 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -1149,100 +1149,101 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1088 | ✓ | [`cli-tool/components/skills/web-data/bright-data-mcp/SKILL.md`](cli-tool/components/skills/web-data/bright-data-mcp/SKILL.md) |
 | 1089 | ✓ | [`cli-tool/components/skills/web-data/data-feeds/SKILL.md`](cli-tool/components/skills/web-data/data-feeds/SKILL.md) |
 | 1090 | ✓ | [`cli-tool/components/skills/web-data/design-mirror/SKILL.md`](cli-tool/components/skills/web-data/design-mirror/SKILL.md) |
-| 1091 | ✓ | [`cli-tool/components/skills/web-data/scrape/SKILL.md`](cli-tool/components/skills/web-data/scrape/SKILL.md) |
-| 1092 | ✓ | [`cli-tool/components/skills/web-data/search/SKILL.md`](cli-tool/components/skills/web-data/search/SKILL.md) |
-| 1093 | ✓ | [`cli-tool/components/skills/web-development/astro/SKILL.md`](cli-tool/components/skills/web-development/astro/SKILL.md) |
-| 1094 | ✓ | [`cli-tool/components/skills/web-development/blockrun/SKILL.md`](cli-tool/components/skills/web-development/blockrun/SKILL.md) |
-| 1095 | ✓ | [`cli-tool/components/skills/web-development/building-blog/SKILL.md`](cli-tool/components/skills/web-development/building-blog/SKILL.md) |
-| 1096 | ✓ | [`cli-tool/components/skills/web-development/chrome-extension-developer/SKILL.md`](cli-tool/components/skills/web-development/chrome-extension-developer/SKILL.md) |
-| 1097 | ✓ | [`cli-tool/components/skills/web-development/drizzle-orm-expert/SKILL.md`](cli-tool/components/skills/web-development/drizzle-orm-expert/SKILL.md) |
-| 1098 | ✓ | [`cli-tool/components/skills/web-development/electron-development/SKILL.md`](cli-tool/components/skills/web-development/electron-development/SKILL.md) |
-| 1099 | ✓ | [`cli-tool/components/skills/web-development/exa-search/SKILL.md`](cli-tool/components/skills/web-development/exa-search/SKILL.md) |
-| 1100 | ✓ | [`cli-tool/components/skills/web-development/expo-deployment/SKILL.md`](cli-tool/components/skills/web-development/expo-deployment/SKILL.md) |
-| 1101 | ✓ | [`cli-tool/components/skills/web-development/fastapi-endpoint/SKILL.md`](cli-tool/components/skills/web-development/fastapi-endpoint/SKILL.md) |
-| 1102 | ✓ | [`cli-tool/components/skills/web-development/firecrawl-scraper/SKILL.md`](cli-tool/components/skills/web-development/firecrawl-scraper/SKILL.md) |
-| 1103 | ✓ | [`cli-tool/components/skills/web-development/hono/SKILL.md`](cli-tool/components/skills/web-development/hono/SKILL.md) |
-| 1104 | ✓ | [`cli-tool/components/skills/web-development/nextjs-app-router-patterns/SKILL.md`](cli-tool/components/skills/web-development/nextjs-app-router-patterns/SKILL.md) |
-| 1105 | ✓ | [`cli-tool/components/skills/web-development/progressive-web-app/SKILL.md`](cli-tool/components/skills/web-development/progressive-web-app/SKILL.md) |
-| 1106 | ✓ | [`cli-tool/components/skills/web-development/react-best-practices/SKILL.md`](cli-tool/components/skills/web-development/react-best-practices/SKILL.md) |
-| 1107 | ✓ | [`cli-tool/components/skills/web-development/react-component-performance/references/examples.md`](cli-tool/components/skills/web-development/react-component-performance/references/examples.md) |
-| 1108 | ✓ | [`cli-tool/components/skills/web-development/react-component-performance/SKILL.md`](cli-tool/components/skills/web-development/react-component-performance/SKILL.md) |
-| 1109 | ✓ | [`cli-tool/components/skills/web-development/react-native-architecture/SKILL.md`](cli-tool/components/skills/web-development/react-native-architecture/SKILL.md) |
-| 1110 | ✓ | [`cli-tool/components/skills/web-development/react-state-management/SKILL.md`](cli-tool/components/skills/web-development/react-state-management/SKILL.md) |
-| 1111 | ✓ | [`cli-tool/components/skills/web-development/roier-seo/SKILL.md`](cli-tool/components/skills/web-development/roier-seo/SKILL.md) |
-| 1112 | ✓ | [`cli-tool/components/skills/web-development/segment-cdp/SKILL.md`](cli-tool/components/skills/web-development/segment-cdp/SKILL.md) |
-| 1113 | ✓ | [`cli-tool/components/skills/web-development/shadcn/cli.md`](cli-tool/components/skills/web-development/shadcn/cli.md) |
-| 1114 | ✓ | [`cli-tool/components/skills/web-development/shadcn/customization.md`](cli-tool/components/skills/web-development/shadcn/customization.md) |
-| 1115 | ✓ | [`cli-tool/components/skills/web-development/shadcn/rules/composition.md`](cli-tool/components/skills/web-development/shadcn/rules/composition.md) |
-| 1116 | ✓ | [`cli-tool/components/skills/web-development/shadcn/SKILL.md`](cli-tool/components/skills/web-development/shadcn/SKILL.md) |
-| 1117 | ✓ | [`cli-tool/components/skills/web-development/shopify-apps/SKILL.md`](cli-tool/components/skills/web-development/shopify-apps/SKILL.md) |
-| 1118 | ✓ | [`cli-tool/components/skills/web-development/shopify-development/SKILL.md`](cli-tool/components/skills/web-development/shopify-development/SKILL.md) |
-| 1119 | ✓ | [`cli-tool/components/skills/web-development/sveltekit/SKILL.md`](cli-tool/components/skills/web-development/sveltekit/SKILL.md) |
-| 1120 | ✓ | [`cli-tool/components/skills/web-development/tailwind-design-system/SKILL.md`](cli-tool/components/skills/web-development/tailwind-design-system/SKILL.md) |
-| 1121 | ✓ | [`cli-tool/components/skills/web-development/tanstack-query-expert/SKILL.md`](cli-tool/components/skills/web-development/tanstack-query-expert/SKILL.md) |
-| 1122 | ✓ | [`cli-tool/components/skills/web-development/tavily-web/SKILL.md`](cli-tool/components/skills/web-development/tavily-web/SKILL.md) |
-| 1123 | ✓ | [`cli-tool/components/skills/web-development/upstash-qstash/SKILL.md`](cli-tool/components/skills/web-development/upstash-qstash/SKILL.md) |
-| 1124 | ✓ | [`cli-tool/components/skills/web-development/web-performance-optimization/SKILL.md`](cli-tool/components/skills/web-development/web-performance-optimization/SKILL.md) |
-| 1125 | ✓ | [`cli-tool/components/skills/web-development/zod-validation-expert/SKILL.md`](cli-tool/components/skills/web-development/zod-validation-expert/SKILL.md) |
-| 1126 | ✓ | [`cli-tool/components/skills/web-development/zustand-store-ts/SKILL.md`](cli-tool/components/skills/web-development/zustand-store-ts/SKILL.md) |
-| 1127 | ✓ | [`cli-tool/components/skills/workflow-automation/dependabot-review/SKILL.md`](cli-tool/components/skills/workflow-automation/dependabot-review/SKILL.md) |
-| 1128 | ✓ | [`cli-tool/components/skills/workflow-automation/github-actions-templates/SKILL.md`](cli-tool/components/skills/workflow-automation/github-actions-templates/SKILL.md) |
-| 1129 | ✓ | [`cli-tool/components/skills/workflow-automation/github-automation/SKILL.md`](cli-tool/components/skills/workflow-automation/github-automation/SKILL.md) |
-| 1130 | ✓ | [`cli-tool/components/skills/workflow-automation/github-workflow-automation/SKILL.md`](cli-tool/components/skills/workflow-automation/github-workflow-automation/SKILL.md) |
-| 1131 | ✓ | [`cli-tool/components/skills/workflow-automation/gitops-workflow/SKILL.md`](cli-tool/components/skills/workflow-automation/gitops-workflow/SKILL.md) |
-| 1132 | ✓ | [`cli-tool/components/skills/workflow-automation/inngest/SKILL.md`](cli-tool/components/skills/workflow-automation/inngest/SKILL.md) |
-| 1133 | ✓ | [`cli-tool/components/skills/workflow-automation/jira-automation/SKILL.md`](cli-tool/components/skills/workflow-automation/jira-automation/SKILL.md) |
-| 1134 | ✓ | [`cli-tool/components/skills/workflow-automation/linear-automation/SKILL.md`](cli-tool/components/skills/workflow-automation/linear-automation/SKILL.md) |
-| 1135 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n-workflow-patterns/SKILL.md`](cli-tool/components/skills/workflow-automation/n8n-workflow-patterns/SKILL.md) |
-| 1136 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-code-javascript/BUILTIN_FUNCTIONS.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-code-javascript/BUILTIN_FUNCTIONS.md) |
-| 1137 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-code-javascript/COMMON_PATTERNS.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-code-javascript/COMMON_PATTERNS.md) |
-| 1138 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-code-javascript/DATA_ACCESS.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-code-javascript/DATA_ACCESS.md) |
-| 1139 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-code-javascript/ERROR_PATTERNS.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-code-javascript/ERROR_PATTERNS.md) |
-| 1140 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-code-javascript/SKILL.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-code-javascript/SKILL.md) |
-| 1141 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-code-python/COMMON_PATTERNS.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-code-python/COMMON_PATTERNS.md) |
-| 1142 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-code-python/DATA_ACCESS.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-code-python/DATA_ACCESS.md) |
-| 1143 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-code-python/ERROR_PATTERNS.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-code-python/ERROR_PATTERNS.md) |
-| 1144 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-code-python/SKILL.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-code-python/SKILL.md) |
-| 1145 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-code-python/STANDARD_LIBRARY.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-code-python/STANDARD_LIBRARY.md) |
-| 1146 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-expression-syntax/COMMON_MISTAKES.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-expression-syntax/COMMON_MISTAKES.md) |
-| 1147 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-expression-syntax/EXAMPLES.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-expression-syntax/EXAMPLES.md) |
-| 1148 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-expression-syntax/SKILL.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-expression-syntax/SKILL.md) |
-| 1149 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-mcp-tools-expert/SEARCH_GUIDE.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-mcp-tools-expert/SEARCH_GUIDE.md) |
-| 1150 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-mcp-tools-expert/SKILL.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-mcp-tools-expert/SKILL.md) |
-| 1151 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-mcp-tools-expert/VALIDATION_GUIDE.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-mcp-tools-expert/VALIDATION_GUIDE.md) |
-| 1152 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-mcp-tools-expert/WORKFLOW_GUIDE.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-mcp-tools-expert/WORKFLOW_GUIDE.md) |
-| 1153 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-node-configuration/DEPENDENCIES.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-node-configuration/DEPENDENCIES.md) |
-| 1154 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-node-configuration/OPERATION_PATTERNS.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-node-configuration/OPERATION_PATTERNS.md) |
-| 1155 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-node-configuration/SKILL.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-node-configuration/SKILL.md) |
-| 1156 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-validation-expert/ERROR_CATALOG.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-validation-expert/ERROR_CATALOG.md) |
-| 1157 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-validation-expert/FALSE_POSITIVES.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-validation-expert/FALSE_POSITIVES.md) |
-| 1158 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-validation-expert/SKILL.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-validation-expert/SKILL.md) |
-| 1159 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/ai_agent_workflow.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/ai_agent_workflow.md) |
-| 1160 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/database_operations.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/database_operations.md) |
-| 1161 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/http_api_integration.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/http_api_integration.md) |
-| 1162 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/scheduled_tasks.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/scheduled_tasks.md) |
-| 1163 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/SKILL.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/SKILL.md) |
-| 1164 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/webhook_processing.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/webhook_processing.md) |
-| 1165 | ✓ | [`cli-tool/components/skills/workflow-automation/planning-with-files/examples.md`](cli-tool/components/skills/workflow-automation/planning-with-files/examples.md) |
-| 1166 | ✓ | [`cli-tool/components/skills/workflow-automation/planning-with-files/reference.md`](cli-tool/components/skills/workflow-automation/planning-with-files/reference.md) |
-| 1167 | ✓ | [`cli-tool/components/skills/workflow-automation/planning-with-files/SKILL.md`](cli-tool/components/skills/workflow-automation/planning-with-files/SKILL.md) |
-| 1168 | ✓ | [`cli-tool/components/skills/workflow-automation/rote/SKILL.md`](cli-tool/components/skills/workflow-automation/rote/SKILL.md) |
-| 1169 | ✓ | [`cli-tool/components/skills/workflow-automation/slack-automation/SKILL.md`](cli-tool/components/skills/workflow-automation/slack-automation/SKILL.md) |
-| 1170 | ✓ | [`cli-tool/components/skills/workflow-automation/trigger-dev/SKILL.md`](cli-tool/components/skills/workflow-automation/trigger-dev/SKILL.md) |
-| 1171 | ✓ | [`cli-tool/components/skills/workflow-automation/workflow-automation/SKILL.md`](cli-tool/components/skills/workflow-automation/workflow-automation/SKILL.md) |
-| 1172 | ✓ | [`cli-tool/components/skills/workflow-automation/yeet/SKILL.md`](cli-tool/components/skills/workflow-automation/yeet/SKILL.md) |
-| 1173 | ✓ | [`cli-tool/components/skills/workflow-automation/zapier-make-patterns/SKILL.md`](cli-tool/components/skills/workflow-automation/zapier-make-patterns/SKILL.md) |
-| 1174 | ✓ | [`cli-tool/templates/common/CLAUDE.md`](cli-tool/templates/common/CLAUDE.md) |
-| 1175 | ✓ | [`cli-tool/templates/javascript-typescript/CLAUDE.md`](cli-tool/templates/javascript-typescript/CLAUDE.md) |
-| 1176 | ✓ | [`cli-tool/templates/javascript-typescript/examples/node-api/CLAUDE.md`](cli-tool/templates/javascript-typescript/examples/node-api/CLAUDE.md) |
-| 1177 | ✓ | [`cli-tool/templates/javascript-typescript/examples/react-app/CLAUDE.md`](cli-tool/templates/javascript-typescript/examples/react-app/CLAUDE.md) |
-| 1178 | ✓ | [`cli-tool/templates/python/CLAUDE.md`](cli-tool/templates/python/CLAUDE.md) |
-| 1179 | ✓ | [`cli-tool/templates/python/examples/django-app/CLAUDE.md`](cli-tool/templates/python/examples/django-app/CLAUDE.md) |
-| 1180 | ✓ | [`cli-tool/templates/python/examples/fastapi-app/CLAUDE.md`](cli-tool/templates/python/examples/fastapi-app/CLAUDE.md) |
-| 1181 | ✓ | [`cli-tool/templates/python/examples/flask-app/CLAUDE.md`](cli-tool/templates/python/examples/flask-app/CLAUDE.md) |
-| 1182 | ✓ | [`cli-tool/templates/ruby/CLAUDE.md`](cli-tool/templates/ruby/CLAUDE.md) |
-| 1183 | ✓ | [`cli-tool/templates/ruby/examples/rails-app/CLAUDE.md`](cli-tool/templates/ruby/examples/rails-app/CLAUDE.md) |
-| 1184 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
+| 1091 | ✓ | [`cli-tool/components/skills/web-data/pricewin-travel-search/SKILL.md`](cli-tool/components/skills/web-data/pricewin-travel-search/SKILL.md) |
+| 1092 | ✓ | [`cli-tool/components/skills/web-data/scrape/SKILL.md`](cli-tool/components/skills/web-data/scrape/SKILL.md) |
+| 1093 | ✓ | [`cli-tool/components/skills/web-data/search/SKILL.md`](cli-tool/components/skills/web-data/search/SKILL.md) |
+| 1094 | ✓ | [`cli-tool/components/skills/web-development/astro/SKILL.md`](cli-tool/components/skills/web-development/astro/SKILL.md) |
+| 1095 | ✓ | [`cli-tool/components/skills/web-development/blockrun/SKILL.md`](cli-tool/components/skills/web-development/blockrun/SKILL.md) |
+| 1096 | ✓ | [`cli-tool/components/skills/web-development/building-blog/SKILL.md`](cli-tool/components/skills/web-development/building-blog/SKILL.md) |
+| 1097 | ✓ | [`cli-tool/components/skills/web-development/chrome-extension-developer/SKILL.md`](cli-tool/components/skills/web-development/chrome-extension-developer/SKILL.md) |
+| 1098 | ✓ | [`cli-tool/components/skills/web-development/drizzle-orm-expert/SKILL.md`](cli-tool/components/skills/web-development/drizzle-orm-expert/SKILL.md) |
+| 1099 | ✓ | [`cli-tool/components/skills/web-development/electron-development/SKILL.md`](cli-tool/components/skills/web-development/electron-development/SKILL.md) |
+| 1100 | ✓ | [`cli-tool/components/skills/web-development/exa-search/SKILL.md`](cli-tool/components/skills/web-development/exa-search/SKILL.md) |
+| 1101 | ✓ | [`cli-tool/components/skills/web-development/expo-deployment/SKILL.md`](cli-tool/components/skills/web-development/expo-deployment/SKILL.md) |
+| 1102 | ✓ | [`cli-tool/components/skills/web-development/fastapi-endpoint/SKILL.md`](cli-tool/components/skills/web-development/fastapi-endpoint/SKILL.md) |
+| 1103 | ✓ | [`cli-tool/components/skills/web-development/firecrawl-scraper/SKILL.md`](cli-tool/components/skills/web-development/firecrawl-scraper/SKILL.md) |
+| 1104 | ✓ | [`cli-tool/components/skills/web-development/hono/SKILL.md`](cli-tool/components/skills/web-development/hono/SKILL.md) |
+| 1105 | ✓ | [`cli-tool/components/skills/web-development/nextjs-app-router-patterns/SKILL.md`](cli-tool/components/skills/web-development/nextjs-app-router-patterns/SKILL.md) |
+| 1106 | ✓ | [`cli-tool/components/skills/web-development/progressive-web-app/SKILL.md`](cli-tool/components/skills/web-development/progressive-web-app/SKILL.md) |
+| 1107 | ✓ | [`cli-tool/components/skills/web-development/react-best-practices/SKILL.md`](cli-tool/components/skills/web-development/react-best-practices/SKILL.md) |
+| 1108 | ✓ | [`cli-tool/components/skills/web-development/react-component-performance/references/examples.md`](cli-tool/components/skills/web-development/react-component-performance/references/examples.md) |
+| 1109 | ✓ | [`cli-tool/components/skills/web-development/react-component-performance/SKILL.md`](cli-tool/components/skills/web-development/react-component-performance/SKILL.md) |
+| 1110 | ✓ | [`cli-tool/components/skills/web-development/react-native-architecture/SKILL.md`](cli-tool/components/skills/web-development/react-native-architecture/SKILL.md) |
+| 1111 | ✓ | [`cli-tool/components/skills/web-development/react-state-management/SKILL.md`](cli-tool/components/skills/web-development/react-state-management/SKILL.md) |
+| 1112 | ✓ | [`cli-tool/components/skills/web-development/roier-seo/SKILL.md`](cli-tool/components/skills/web-development/roier-seo/SKILL.md) |
+| 1113 | ✓ | [`cli-tool/components/skills/web-development/segment-cdp/SKILL.md`](cli-tool/components/skills/web-development/segment-cdp/SKILL.md) |
+| 1114 | ✓ | [`cli-tool/components/skills/web-development/shadcn/cli.md`](cli-tool/components/skills/web-development/shadcn/cli.md) |
+| 1115 | ✓ | [`cli-tool/components/skills/web-development/shadcn/customization.md`](cli-tool/components/skills/web-development/shadcn/customization.md) |
+| 1116 | ✓ | [`cli-tool/components/skills/web-development/shadcn/rules/composition.md`](cli-tool/components/skills/web-development/shadcn/rules/composition.md) |
+| 1117 | ✓ | [`cli-tool/components/skills/web-development/shadcn/SKILL.md`](cli-tool/components/skills/web-development/shadcn/SKILL.md) |
+| 1118 | ✓ | [`cli-tool/components/skills/web-development/shopify-apps/SKILL.md`](cli-tool/components/skills/web-development/shopify-apps/SKILL.md) |
+| 1119 | ✓ | [`cli-tool/components/skills/web-development/shopify-development/SKILL.md`](cli-tool/components/skills/web-development/shopify-development/SKILL.md) |
+| 1120 | ✓ | [`cli-tool/components/skills/web-development/sveltekit/SKILL.md`](cli-tool/components/skills/web-development/sveltekit/SKILL.md) |
+| 1121 | ✓ | [`cli-tool/components/skills/web-development/tailwind-design-system/SKILL.md`](cli-tool/components/skills/web-development/tailwind-design-system/SKILL.md) |
+| 1122 | ✓ | [`cli-tool/components/skills/web-development/tanstack-query-expert/SKILL.md`](cli-tool/components/skills/web-development/tanstack-query-expert/SKILL.md) |
+| 1123 | ✓ | [`cli-tool/components/skills/web-development/tavily-web/SKILL.md`](cli-tool/components/skills/web-development/tavily-web/SKILL.md) |
+| 1124 | ✓ | [`cli-tool/components/skills/web-development/upstash-qstash/SKILL.md`](cli-tool/components/skills/web-development/upstash-qstash/SKILL.md) |
+| 1125 | ✓ | [`cli-tool/components/skills/web-development/web-performance-optimization/SKILL.md`](cli-tool/components/skills/web-development/web-performance-optimization/SKILL.md) |
+| 1126 | ✓ | [`cli-tool/components/skills/web-development/zod-validation-expert/SKILL.md`](cli-tool/components/skills/web-development/zod-validation-expert/SKILL.md) |
+| 1127 | ✓ | [`cli-tool/components/skills/web-development/zustand-store-ts/SKILL.md`](cli-tool/components/skills/web-development/zustand-store-ts/SKILL.md) |
+| 1128 | ✓ | [`cli-tool/components/skills/workflow-automation/dependabot-review/SKILL.md`](cli-tool/components/skills/workflow-automation/dependabot-review/SKILL.md) |
+| 1129 | ✓ | [`cli-tool/components/skills/workflow-automation/github-actions-templates/SKILL.md`](cli-tool/components/skills/workflow-automation/github-actions-templates/SKILL.md) |
+| 1130 | ✓ | [`cli-tool/components/skills/workflow-automation/github-automation/SKILL.md`](cli-tool/components/skills/workflow-automation/github-automation/SKILL.md) |
+| 1131 | ✓ | [`cli-tool/components/skills/workflow-automation/github-workflow-automation/SKILL.md`](cli-tool/components/skills/workflow-automation/github-workflow-automation/SKILL.md) |
+| 1132 | ✓ | [`cli-tool/components/skills/workflow-automation/gitops-workflow/SKILL.md`](cli-tool/components/skills/workflow-automation/gitops-workflow/SKILL.md) |
+| 1133 | ✓ | [`cli-tool/components/skills/workflow-automation/inngest/SKILL.md`](cli-tool/components/skills/workflow-automation/inngest/SKILL.md) |
+| 1134 | ✓ | [`cli-tool/components/skills/workflow-automation/jira-automation/SKILL.md`](cli-tool/components/skills/workflow-automation/jira-automation/SKILL.md) |
+| 1135 | ✓ | [`cli-tool/components/skills/workflow-automation/linear-automation/SKILL.md`](cli-tool/components/skills/workflow-automation/linear-automation/SKILL.md) |
+| 1136 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n-workflow-patterns/SKILL.md`](cli-tool/components/skills/workflow-automation/n8n-workflow-patterns/SKILL.md) |
+| 1137 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-code-javascript/BUILTIN_FUNCTIONS.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-code-javascript/BUILTIN_FUNCTIONS.md) |
+| 1138 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-code-javascript/COMMON_PATTERNS.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-code-javascript/COMMON_PATTERNS.md) |
+| 1139 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-code-javascript/DATA_ACCESS.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-code-javascript/DATA_ACCESS.md) |
+| 1140 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-code-javascript/ERROR_PATTERNS.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-code-javascript/ERROR_PATTERNS.md) |
+| 1141 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-code-javascript/SKILL.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-code-javascript/SKILL.md) |
+| 1142 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-code-python/COMMON_PATTERNS.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-code-python/COMMON_PATTERNS.md) |
+| 1143 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-code-python/DATA_ACCESS.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-code-python/DATA_ACCESS.md) |
+| 1144 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-code-python/ERROR_PATTERNS.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-code-python/ERROR_PATTERNS.md) |
+| 1145 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-code-python/SKILL.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-code-python/SKILL.md) |
+| 1146 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-code-python/STANDARD_LIBRARY.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-code-python/STANDARD_LIBRARY.md) |
+| 1147 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-expression-syntax/COMMON_MISTAKES.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-expression-syntax/COMMON_MISTAKES.md) |
+| 1148 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-expression-syntax/EXAMPLES.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-expression-syntax/EXAMPLES.md) |
+| 1149 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-expression-syntax/SKILL.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-expression-syntax/SKILL.md) |
+| 1150 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-mcp-tools-expert/SEARCH_GUIDE.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-mcp-tools-expert/SEARCH_GUIDE.md) |
+| 1151 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-mcp-tools-expert/SKILL.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-mcp-tools-expert/SKILL.md) |
+| 1152 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-mcp-tools-expert/VALIDATION_GUIDE.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-mcp-tools-expert/VALIDATION_GUIDE.md) |
+| 1153 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-mcp-tools-expert/WORKFLOW_GUIDE.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-mcp-tools-expert/WORKFLOW_GUIDE.md) |
+| 1154 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-node-configuration/DEPENDENCIES.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-node-configuration/DEPENDENCIES.md) |
+| 1155 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-node-configuration/OPERATION_PATTERNS.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-node-configuration/OPERATION_PATTERNS.md) |
+| 1156 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-node-configuration/SKILL.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-node-configuration/SKILL.md) |
+| 1157 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-validation-expert/ERROR_CATALOG.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-validation-expert/ERROR_CATALOG.md) |
+| 1158 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-validation-expert/FALSE_POSITIVES.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-validation-expert/FALSE_POSITIVES.md) |
+| 1159 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-validation-expert/SKILL.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-validation-expert/SKILL.md) |
+| 1160 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/ai_agent_workflow.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/ai_agent_workflow.md) |
+| 1161 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/database_operations.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/database_operations.md) |
+| 1162 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/http_api_integration.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/http_api_integration.md) |
+| 1163 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/scheduled_tasks.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/scheduled_tasks.md) |
+| 1164 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/SKILL.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/SKILL.md) |
+| 1165 | ✓ | [`cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/webhook_processing.md`](cli-tool/components/skills/workflow-automation/n8n/n8n-workflow-patterns/webhook_processing.md) |
+| 1166 | ✓ | [`cli-tool/components/skills/workflow-automation/planning-with-files/examples.md`](cli-tool/components/skills/workflow-automation/planning-with-files/examples.md) |
+| 1167 | ✓ | [`cli-tool/components/skills/workflow-automation/planning-with-files/reference.md`](cli-tool/components/skills/workflow-automation/planning-with-files/reference.md) |
+| 1168 | ✓ | [`cli-tool/components/skills/workflow-automation/planning-with-files/SKILL.md`](cli-tool/components/skills/workflow-automation/planning-with-files/SKILL.md) |
+| 1169 | ✓ | [`cli-tool/components/skills/workflow-automation/rote/SKILL.md`](cli-tool/components/skills/workflow-automation/rote/SKILL.md) |
+| 1170 | ✓ | [`cli-tool/components/skills/workflow-automation/slack-automation/SKILL.md`](cli-tool/components/skills/workflow-automation/slack-automation/SKILL.md) |
+| 1171 | ✓ | [`cli-tool/components/skills/workflow-automation/trigger-dev/SKILL.md`](cli-tool/components/skills/workflow-automation/trigger-dev/SKILL.md) |
+| 1172 | ✓ | [`cli-tool/components/skills/workflow-automation/workflow-automation/SKILL.md`](cli-tool/components/skills/workflow-automation/workflow-automation/SKILL.md) |
+| 1173 | ✓ | [`cli-tool/components/skills/workflow-automation/yeet/SKILL.md`](cli-tool/components/skills/workflow-automation/yeet/SKILL.md) |
+| 1174 | ✓ | [`cli-tool/components/skills/workflow-automation/zapier-make-patterns/SKILL.md`](cli-tool/components/skills/workflow-automation/zapier-make-patterns/SKILL.md) |
+| 1175 | ✓ | [`cli-tool/templates/common/CLAUDE.md`](cli-tool/templates/common/CLAUDE.md) |
+| 1176 | ✓ | [`cli-tool/templates/javascript-typescript/CLAUDE.md`](cli-tool/templates/javascript-typescript/CLAUDE.md) |
+| 1177 | ✓ | [`cli-tool/templates/javascript-typescript/examples/node-api/CLAUDE.md`](cli-tool/templates/javascript-typescript/examples/node-api/CLAUDE.md) |
+| 1178 | ✓ | [`cli-tool/templates/javascript-typescript/examples/react-app/CLAUDE.md`](cli-tool/templates/javascript-typescript/examples/react-app/CLAUDE.md) |
+| 1179 | ✓ | [`cli-tool/templates/python/CLAUDE.md`](cli-tool/templates/python/CLAUDE.md) |
+| 1180 | ✓ | [`cli-tool/templates/python/examples/django-app/CLAUDE.md`](cli-tool/templates/python/examples/django-app/CLAUDE.md) |
+| 1181 | ✓ | [`cli-tool/templates/python/examples/fastapi-app/CLAUDE.md`](cli-tool/templates/python/examples/fastapi-app/CLAUDE.md) |
+| 1182 | ✓ | [`cli-tool/templates/python/examples/flask-app/CLAUDE.md`](cli-tool/templates/python/examples/flask-app/CLAUDE.md) |
+| 1183 | ✓ | [`cli-tool/templates/ruby/CLAUDE.md`](cli-tool/templates/ruby/CLAUDE.md) |
+| 1184 | ✓ | [`cli-tool/templates/ruby/examples/rails-app/CLAUDE.md`](cli-tool/templates/ruby/examples/rails-app/CLAUDE.md) |
+| 1185 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
 
 ---
 

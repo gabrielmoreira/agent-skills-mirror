@@ -5,7 +5,7 @@
 Centralized utilities and shared abstractions used across the oh-my-opencode-slim plugin. This folder provides:
 
 - **Background Job Lifecycle Management**: Singleton registry, lifecycle management, persistence, and supervision for background tasks spawned by sub-agents
-- **Session Management**: Session status tracking, metadata, selection, and utilities for prompt timeout and extraction
+- **Session Management**: Session status tracking, metadata, selection, and timeout/abort utilities
 - **Background Task Concurrency**: Process-local admission scheduler for native background task launches
 - **Evidence & Transcript Handling**: Child session transcript evidence extraction, terminal evidence verification, and session info reads
 - **Projection & State Management**: TUI projection for sidebar state from board records
@@ -35,7 +35,7 @@ Centralized utilities and shared abstractions used across the oh-my-opencode-sli
 
 ### Session & Task Utilities
 
-- **Session** (`session.ts`): Timeout handling, session abort coordination, model reference parsing, and session content extraction utilities
+- **Session** (`session.ts`): Timeout handling, session abort coordination, and model reference parsing
 - **Task** (`task.ts`): XML-inspired task output parsing for extracting task IDs, states, and results from tool output strings
 - **Agent Variant** (`agent-variant.ts`): Agent name normalization (trim/@ prefix) and display name rewriting utilities
 
@@ -97,7 +97,6 @@ Centralized utilities and shared abstractions used across the oh-my-opencode-sli
 
 - **Council Agents** (`src/agents/council.ts`, `src/agents/council-agents.ts`):
   - Uses BackgroundJobBoard for background task management
-  - Uses session utilities for prompt timeout and extraction
   - Uses logger for debug and audit logging
 
 - **Multiplexer** (`src/multiplexer/`):
@@ -157,7 +156,7 @@ Session metadata, the opencode client accessor, and the type-only call-shape con
 | `background-job-terminal-gate.ts` | Terminal evidence verification and attribution |
 | `background-job-fixture.ts` | Test-only board fixtures for adapter/state-machine tests |
 | `tui-reusable-projection.ts` | Board → tui-state projection for sidebar reusable dots |
-| `session.ts` | Session timeout, abort, and extraction utilities |
+| `session.ts` | Session timeout, abort, and model-reference utilities |
 | `session-metadata.ts` | Bounded session → agent/directory store |
 | `session-runtime-status.ts` | Bounded live session-status map reads |
 | `session-selection.ts` | Session selection resolution with provenance |
@@ -175,7 +174,7 @@ Session metadata, the opencode client accessor, and the type-only call-shape con
 | `frontmatter.ts` | Frontmatter parsing for interview documents |
 | `guards.ts` | Type checking utilities |
 | `task.ts` | Task output parsing utilities |
-| `polling.ts` | Generic poll helper |
+| `polling.ts` | Delay helper |
 | `councillor-models.ts` | Pure zod-free helpers normalizing councillor model fallback chains (single model or ordered `id`/`variant` entries) |
 | `opencode-client.ts` | In-process opencode client accessor (imported directly, not re-exported) |
 | `session-calls.contract.ts` | Type-only client call-shape contract (imported directly, not re-exported) |

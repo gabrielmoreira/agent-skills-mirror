@@ -147,7 +147,7 @@ does not substitute for that evidence.
 HTML through `lib/aside-render.ts` / `bin/gstack-render.ts`, which render in
 Aside when `probeAside()` says `READY` and through the browse engine otherwise.
 make-pdf's `*-gate.test.ts` and `test/skill-e2e-diagram.test.ts` (periodic,
-paid) gate on `browserAvailable()` (`make-pdf/test/e2e/browser-available.ts`:
+paid) gate on `browserAvailable()` (`test/helpers/browser-available.ts`:
 `asideAvailable() || resolveBrowseBin() !== null`) — on a Mac they print
 through Aside, on Linux CI through the browse binary `bun run build:gates`
 compiles, and they skip only when neither exists. Only
@@ -647,3 +647,140 @@ a broken tree can't masquerade as flaky). The required CI free lane and the
 Windows lane set the retry knob too, appending every flaky pass to the JSONL ledger it uploads
 (`GSTACK_FLAKE_LEDGER`) — a flaky pass never reds the lane, but it never
 disappears either.
+
+## Test selection and tiers
+
+Moved verbatim from CLAUDE.md (#2096 size limit).
+
+**Diff-based test selection:** `test:evals` and `test:e2e` auto-select tests based
+on `git diff` against the base branch. Each test declares its file dependencies in
+`test/helpers/touchfiles.ts`. Changes to global touchfiles (session-runner, eval-store,
+touchfiles.ts itself) trigger all tests. Use `EVALS_ALL=1` or the `:all` script
+variants to force all tests. Run `eval:select` to preview which tests would run.
+
+**Two-tier system:** Tests are classified as `gate` or `periodic` in `E2E_TIERS`
+(in `test/helpers/touchfiles.ts` — a facade over `touchfiles-data.ts` +
+`test-selection.ts`). CI runs the changed fast PR profile and selected judges
+per PR via evals.yml's sliced lane
+(planner manifest → executors → fail-closed report; engine =
+scripts/test-paid-shards.ts, the same runner as local eval:bg:pr); the free
+suite runs on every PR via `.github/workflows/free-tests.yml` (a REQUIRED
+check, secretless — fork PRs get real signal); ALL periodic tests run weekly
+via evals-periodic.yml (EVALS_ALL, minus the reasoned exclusions in
+`test/helpers/periodic-exclude-data.ts` — reason + tracking required per
+entry), plus a weekly EVALS_ALL gate census. Use `EVALS_TIER=gate` or
+`EVALS_TIER=periodic` to filter locally. When adding new E2E tests, classify them:
+1. Safety guardrail or deterministic functional test? -> `gate`
+2. Quality benchmark, Opus model test, or non-deterministic? -> `periodic`
+3. Requires external service (Codex, Gemini)? -> `periodic`
+
+Tier declarations are enforced by `test/e2e-tier-alignment.test.ts` (free, runs
+in `bun test`): a `skill-e2e-*` file named in a touchfiles dep list whose
+`EVALS_TIER` self-gate disagrees with its declared tier in `E2E_TIERS` fails the
+suite. Files not named in any dep list are reported, not enforced — keep both
+in sync.
+
+## Free suite runner, judge reuse and engine skips
+
+Moved verbatim from CLAUDE.md (#2096 size limit).
+
+`bun run test` routes through `scripts/test-free-shards.ts` (N concurrent
+shard processes, serial within each, packed by recorded per-file durations
+when `scripts/free-test-durations.json` exists — refresh occasionally with
+`bun run test:free --record-durations`; strict-output classification per
+shard: a shard without bun's terminal summary line FAILS — silent truncation
+cannot report green). `TREE_MUTATING` lists the files that still run in their
+own trailing serial shard (today only `test/bootstrap-retention.test.ts`, for
+host-wide procfs visibility); gen-skill-docs tests no longer need it (main()
+guard, and `--out-dir` renders every host into mkdtemps — see
+docs/TESTING_INTERNALS.md). Never type bare `bun test` for the suite: it
+walks the whole repo, loading paid eval files and missing the strict
+classifier.
+It covers skill validation, gen-skill-docs quality checks, browse
+integration tests, the Aside contract pins, and the render-wrapper pins.
+`bun run test:pr` runs the selected short live behaviors and quality judges.
+It reports deferred broad coverage; unknown dependencies restore the full gate,
+and an unmapped prompt without registered coverage blocks planning. Full free
+acceptance and required PR checks must pass before publishing. CI can reuse the
+16 workflow-judge passes for 24 hours when their complete consumed inputs and
+runtime match; records preserve original provenance. The cookie workflow's custom
+input, the other 11 judge cases, dynamic agent tests, and local runs without
+scoped cache configuration stay fresh.
+Scheduled/manual full coverage and `test:release` always run fresh.
+See [testing policy](CONTRIBUTING.md#test-tiers) for commands and measured targets.
+Anything that needs Aside
+itself (`test/skill-e2e-aside.test.ts`, the Aside qa/design E2E cases, the
+live render in `test/aside-render.test.ts`) runs only on a Mac with the Aside
+app open and self-skips elsewhere (`asideAvailable()`). make-pdf's render
+gates and `test/skill-e2e-diagram.test.ts` run through whichever engine
+resolves (`browserAvailable()` — Aside, or the browse binary CI builds with
+`bun run build:gates`) and skip only when neither exists; the fallback
+engine's own tests run everywhere.
+
+### Real-home tripwire
+
+No free test may write the developer's real home. `scripts/lib/free-home-guard.ts`
+snapshots `~/.gstack`, `~/.claude`, `~/.codex`, `~/.agents` and `~/.config/gstack`
+(live session logs excluded) and fails the run when an entry changes.
+
+- A shard that runs alone (`--shard`, CI, the exclusive host-state shard, the
+  flaky retry) owns its window, so the failure names its files.
+- Full-suite shards run concurrently on one HOME and cannot tell whose write a
+  change was. The runner guards that whole phase once and names no shard.
+- `bun run scripts/test-free-shards.ts --attribute-home` names the writer: it
+  runs every file alone with a private HOME (browser cache and git identity
+  still come from the real home) and reports each file that wrote a watched
+  surface. The retained shard directory keeps the written files as evidence.
+
+Fix a writer with `usePrivateStateRoot()` (`test/helpers/private-state-root.ts`)
+or a child HOME/GSTACK_HOME, and resolve product state paths at write time,
+never at import.
+
+## Running evals as an agent: detach
+
+Moved verbatim from CLAUDE.md (#2096 size limit). The short rule stays in
+CLAUDE.md; this is the full mechanism.
+
+When **you (an agent/harness)** launch a long eval/benchmark run, run it through
+`bin/gstack-detach` — NEVER as a plain backgrounded Bash task. A plain background
+task lives in the harness's process group, so a SIGTERM ("polite quit") on a turn
+boundary, a stopped Monitor, or an interruption kills the run mid-flight (observed:
+`script "test:gate" was terminated by signal SIGTERM` ~40 min into a run). On macOS
+the run can also die to idle-sleep. `gstack-detach` fixes both: a fresh session
+(escapes the group SIGTERM) wrapped in `caffeinate -i` (blocks idle-sleep).
+
+- Use the `eval:bg*` scripts (`eval:bg`, `eval:bg:all`, `eval:bg:gate`,
+  `eval:bg:periodic`) — they wrap the eval command in `gstack-detach` with the
+  machine-wide `gstack-evals` lock (concurrent worktrees serialize instead of
+  saturating the shared model API), a per-tier watchdog, and a **run-scoped** log
+  under `~/.gstack-dev/eval-runs/` (no shared-`/tmp` collision). Each prints its
+  log path. `eval:bg:gate` / `eval:bg:periodic` run their tier through the
+  sharded paid runner (`scripts/test-paid-shards.ts`, also exposed as
+  `test:gate:sharded` / `test:periodic:sharded`): one Bun process per test
+  file, an external wall-clock timeout that kills the shard's process GROUP
+  (stray `claude`/`codex` grandchildren included), a per-shard
+  `GSTACK_EVAL_DIR=<evalDir>/shards/<slug>/` honored by the `EvalCollector`
+  constructor, and an aggregate that separates failed vs timed-out vs
+  never-started shards — the detach timeouts (the `--timeout` values on
+  package.json's `eval:bg:gate` / `eval:bg:periodic`;
+  floor enforced against the live shard census by
+  test/eval-detach-timeout-floor.test.ts)
+  are sized against worst-case shard wall clock. `EVALS_JOBS` sets the shard
+  process count (default 8); `EVALS_CONCURRENCY` is bun's --max-concurrency
+  WITHIN a shard (default 2) — they are deliberately separate knobs. `eval:list` / `eval:compare` /
+  `eval:summary` / `eval:flake-rank` read the shard dirs too. Or call
+  `gstack-detach [--lock NAME] [--timeout SECS] [--label LBL] --
+  <cmd>` directly for any long agent job. Export `ANTHROPIC_API_KEY` first (never
+  pass keys in argv).
+- Then **poll the printed logfile** with a death-aware watcher: break on the
+  guaranteed `### gstack-detach EXIT=<code> ###` sentinel (success AND failure are
+  both marked, so silence is never mistaken for success). The detached run survives
+  even if your watcher gets reaped, so re-checking the log always works. Keep
+  checking until the sentinel appears or the user tells you to stop; a long run is
+  expected, and a promise to check later is not a result. At each check, report
+  which tests passed, which are still running, and any failures so far.
+- Why the lock: a shared dev box with several Conductor worktrees will rate-limit
+  the model API if two eval suites run at once (15-way concurrency each), which
+  mass-times-out E2E tests. The lock makes the second run WAIT, not collide.
+- Humans running `bun run test:evals` foreground in their own terminal don't need
+  this — Ctrl-C is intended there. Detachment is for agent-launched runs only.

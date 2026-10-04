@@ -6,7 +6,7 @@ import { Copy, GripVertical, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LAYOUT_LABEL } from "@/lib/constants";
 import { pickText } from "@/lib/locale";
-import type { Device, Orientation, Slide, Theme } from "@/lib/types";
+import type { Device, Orientation, Scene, Slide, Theme } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { DeckCanvas, SlideCanvas, getCanvas } from "./slide-canvas";
 
@@ -23,6 +23,7 @@ type Props = {
   appIcon?: string;
   fontFamily?: string;
   connectedCanvas: boolean;
+  scene?: Scene;
   onSelect: () => void;
   onDelete: () => void;
   onDuplicate: () => void;
@@ -44,6 +45,7 @@ export function SlideThumb({
   appIcon,
   fontFamily,
   connectedCanvas,
+  scene,
   onSelect,
   onDelete,
   onDuplicate,
@@ -121,6 +123,9 @@ export function SlideThumb({
                 fontFamily={fontFamily}
                 connectedCanvas
                 editable={false}
+                scene={scene}
+                stripStart={start}
+                stripCount={slides.length}
               />
             ) : (
               <SlideCanvas
@@ -133,6 +138,9 @@ export function SlideThumb({
                 appIcon={appIcon}
                 fontFamily={fontFamily}
                 editable={false}
+                scene={scene}
+                stripIndex={index}
+                stripCount={slides.length}
               />
             )}
           </div>

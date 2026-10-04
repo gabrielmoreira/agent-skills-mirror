@@ -56,7 +56,7 @@ pnpm evals:e2e <name>
 ## Match the runtime
 
 Check what runtime the changed code ships on before trusting a green run.
-`apps/server` tests run on Bun; Desktop runs that same code on Electron's
+`apps/server` runs on Bun in evals; Desktop runs that same code on Electron's
 Node (undici). If the change touches fetch, streams, signals, GC, or timers,
 run it on the shipping runtime too:
 

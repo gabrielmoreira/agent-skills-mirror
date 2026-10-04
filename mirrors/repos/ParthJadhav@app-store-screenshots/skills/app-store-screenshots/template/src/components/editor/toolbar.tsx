@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { AlertTriangle, Check, Cloud, Download, Redo2, RotateCcw, Undo2, UnfoldHorizontal, Upload } from "lucide-react";
+import { AlertTriangle, Check, Cloud, Download, FlaskConical, Redo2, RotateCcw, Undo2, UnfoldHorizontal, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -29,8 +29,9 @@ import {
   themeById,
 } from "@/lib/constants";
 import { detectPlatform } from "@/lib/defaults";
-import type { Device, ImportedFont, Orientation, Platform, ScreenshotFontId, Theme } from "@/lib/types";
+import type { Device, ImportedFont, Orientation, Platform, Scene, ScreenshotFontId, Theme } from "@/lib/types";
 import { FontImporter, type FontImporterHandle } from "./font-importer";
+import { ScenePlayground } from "./scene-playground";
 
 const IMPORT_FONT_ACTION = "__import-font__";
 
@@ -41,6 +42,9 @@ type Props = {
   setThemeId: (v: string) => void;
   connectedCanvas: boolean;
   setConnectedCanvas: (v: boolean) => void;
+  scene: Scene | undefined;
+  setScene: (scene: Scene | undefined) => void;
+  onOpenStyleLab: () => void;
   fontId: ScreenshotFontId;
   setFontId: (v: ScreenshotFontId) => void;
   importedFont?: ImportedFont;
@@ -129,6 +133,20 @@ export function Toolbar(props: Props) {
         <UnfoldHorizontal className="h-3.5 w-3.5" />
         {props.connectedCanvas ? "Connected" : "Isolated"}
       </Button>
+
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="h-8 gap-1.5 px-2 text-xs"
+        onClick={props.onOpenStyleLab}
+        disabled={props.busy}
+        title="Style Lab: try complete looks for this deck side by side"
+      >
+        <FlaskConical className="h-3.5 w-3.5" />
+        Style Lab
+      </Button>
+      <ScenePlayground scene={props.scene} theme={activeTheme} disabled={props.busy} onChange={props.setScene} />
 
       <Select value={activeTheme.id} onValueChange={props.setThemeId} disabled={props.busy}>
         <SelectTrigger className="h-8 w-40 text-xs" title="Theme" aria-label="Theme">

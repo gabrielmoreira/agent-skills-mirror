@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/hve-core` — 26 default patterns, 4 followed patterns, 239 file(s) materialized.
+Mirror of `microsoft/hve-core` — 26 default patterns, 4 followed patterns, 240 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/hve-core` — 26 default patterns, 4 followed patterns, 239
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 239 |
+| Files         | 240 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -293,14 +293,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 229 | ✓ | [`docs/customization/prompts.md`](docs/customization/prompts.md) |
 | 230 | ✓ | [`docs/customization/skills.md`](docs/customization/skills.md) |
 | 231 | ✓ | [`docs/security/branch-protection.md`](docs/security/branch-protection.md) |
-| 232 | ✓ | [`docs/security/dangerous-workflow-detection.md`](docs/security/dangerous-workflow-detection.md) |
-| 233 | ✓ | [`docs/security/dependency-pinning.md`](docs/security/dependency-pinning.md) |
-| 234 | ✓ | [`docs/security/fuzzing.md`](docs/security/fuzzing.md) |
-| 235 | ✓ | [`docs/security/security-model.md`](docs/security/security-model.md) |
-| 236 | → | [`docs/security/README.md`](docs/security/README.md) |
-| 237 | → | [`docs/security/sbom-verification.md`](docs/security/sbom-verification.md) |
-| 238 | → | [`docs/security/vex-verification.md`](docs/security/vex-verification.md) |
-| 239 | → | [`SECURITY.md`](SECURITY.md) |
+| 232 | ✓ | [`docs/security/code-scanning-alert-lifecycle.md`](docs/security/code-scanning-alert-lifecycle.md) |
+| 233 | ✓ | [`docs/security/dangerous-workflow-detection.md`](docs/security/dangerous-workflow-detection.md) |
+| 234 | ✓ | [`docs/security/dependency-pinning.md`](docs/security/dependency-pinning.md) |
+| 235 | ✓ | [`docs/security/fuzzing.md`](docs/security/fuzzing.md) |
+| 236 | ✓ | [`docs/security/security-model.md`](docs/security/security-model.md) |
+| 237 | → | [`docs/security/README.md`](docs/security/README.md) |
+| 238 | → | [`docs/security/sbom-verification.md`](docs/security/sbom-verification.md) |
+| 239 | → | [`docs/security/vex-verification.md`](docs/security/vex-verification.md) |
+| 240 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

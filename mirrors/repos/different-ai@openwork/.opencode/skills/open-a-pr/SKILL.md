@@ -68,9 +68,9 @@ shows Suspend; after: it does not, and a page still opens and can be used.
 
 - The `before:` here and "What was the situation before?" are the same
   moment. If they disagree, fix one.
-- No spec changed? Say why in one line: `No E2E; unit-tested` or
-  `node --test .github/scripts/pr-proof.test.mjs — 6 passed`. If no evidence
-  comment appears, that is why; do not run a spec locally and paste its output.
+- No spec changed? Say why in one line, e.g. `No E2E; typecheck and build only`.
+  If no evidence comment appears, that is why; do not run a spec locally and
+  paste its output.
 - Red evidence needs no sentence in the body: CI's comment says Failed on
   that SHA and flips on its own when the head goes green. Fix the spec or the
   code; do not narrate the verdict.

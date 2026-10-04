@@ -73,20 +73,9 @@ noninteractive mode에서는 상태를 출력합니다. 이름 없이 noninterac
 
 ## Interactive management
 
-`skillshare mcp` 또는 `skillshare mcp list`를 실행하세요. skill 목록과 마찬가지로, 관리자는
-검색을 위한 `/`와 상세 정보를 위한 `Enter`를 지원합니다. 연결 목록은 인자, 헤더, 환경 변수
-값을 숨기며 URL 쿼리를 생략합니다.
-
-| Key | Action |
-|---|---|
-| `a` | 연결 추가 |
-| `i` | 하나 이상의 연결 import |
-| `e` | 선택한 연결 편집 |
-| `x` | 선택한 연결 제거 |
-| `s` | 동기화 미리보기 및 확인 |
-| `b` | client별로 백업 탐색, 최신순 |
-| `r` | 상태 새로고침 |
-| `q` | 종료 |
+`skillshare mcp` 또는 `skillshare mcp list`를 실행하면 연결을 추가, import, 편집, 제거, 동기화,
+복원할 수 있으며, 선택한 연결의 상세 정보가 목록 옆에 표시됩니다. 연결 목록은 인자, 헤더, 환경 변수
+값을 숨기며 URL 쿼리를 생략합니다. 키는 화면 하단에 표시됩니다.
 
 `mcp edit`, `mcp remove`, `mcp restore`는 이름이나 백업 ID가 생략된 경우 선택 메뉴를
 제공합니다. 편집기는 command/URL, 인자, 환경 변수, HTTP 헤더, bearer-token 환경 참조,
@@ -97,8 +86,7 @@ Add, edit, remove, import는 **Save and sync** 또는 **Save only** 전에 미�
 표시합니다. Remove는 `--keep-files`와 같은 **Stop managing**도 제공합니다. Escape를 누르면 대기 중인 초안이 취소됩니다. Restore는 Agent 항목에 대한
 변경 사항을 미리보고 확인하지만, source 정의는 다시 작성하지 않습니다.
 
-서버 이름 없이 import하면 여러 항목을 선택할 수 있습니다(`Space`로 토글, `a`로 전체
-선택). 유효하지 않은 후보는 건너뛰며, `--replace`를 지정하지 않는 한 기존 source 이름은
+서버 이름 없이 import하면 여러 항목을 선택할 수 있습니다. 유효하지 않은 후보는 건너뛰며, `--replace`를 지정하지 않는 한 기존 source 이름은
 건너뜁니다. 배치 전체에 대해 호환되는 하나의 수신 client 집합을 선택하세요. 전체 배치는
 source가 한 번 저장되기 전에 검증되며, 이후의 네이티브 파일 I/O 실패는 기존 복구 동작을
 유지합니다.
@@ -367,7 +355,7 @@ Agent는 자체 global MCP 파일과 프로젝트 파일을 함께 읽습니다.
 | Claude Code | 예 | `~/.claude.json`: 이름을 이 프로젝트의 `disabledMcpServers` 목록에 추가 |
 | OpenCode | 예 | `opencode.json`: `"NAME": {"enabled": false}` |
 | Kilo Code | 예 | `kilo.jsonc`: `"NAME": {"enabled": false}` |
-| Pi | 예, `mcp.projects`에서 | `.pi/mcp.json`: `"NAME": {"command": "...", "enabled": false}`, 아래 참조 |
+| Pi | 예, Pi 1.0.1부터 | `.pi/mcp.json`: `"NAME": {"enabled": false}`, 아래 참조 |
 | Codex | 아니요 | 아래 참고 |
 | Every other client | 아니요 | 하나를 선택하면 오류가 발생하며 아무것도 작성되지 않음 |
 
@@ -384,13 +372,13 @@ Codex는 다른 이유로 거부됩니다. Codex는 `.codex/config.toml`을 필�
 Codex 시작을 막을 수 있습니다. 대신 `~/.codex/config.toml`에서 `enabled = false`로
 머신별로 서버를 끄세요.
 
-Pi는 같은 이름의 프로젝트 항목으로 global 항목을 통째로 대체하고, `command`나 `url`이 없는 항목은
-건너뜁니다. 그래서 Pi에는 global 서버의 `command`, 또는 query를 뺀 `url`을 `enabled: false`와 함께
-씁니다. 꺼진 서버는 시작되지 않으므로 args, env, headers는 프로젝트 파일에 쓰지 않으며, 다른
-프로젝트는 그 서버를 그대로 사용합니다. sync할 때마다 이 항목은 global 서버를 기준으로 다시
-작성됩니다. global 서버가 필요하므로 global 구성의 `mcp.projects` 아래 프로젝트에서만 동작합니다.
-프로젝트 자체 구성에서는 global 서버를 볼 수 없으므로, 그곳의 `disabled` 항목에 `pi`를 쓰면
-오류가 납니다.
+Pi는 같은 이름의 프로젝트 항목으로 global 항목을 통째로 대체하지만, Pi 1.0.1부터 `command`, `url`,
+`type`이 없는 항목은 덮어쓰기가 됩니다. global 서버의 `enabled`, `exposure`, `toolExposure`만 바꾸고,
+args, env, 자격 증명은 global 서버의 것을 그대로 씁니다. Pi의 `/mcp`가 쓰는 항목도 같습니다. Pi 1.0.1
+이전에는 이 항목을 잘못된 항목으로 보고합니다. global Pi 구성에 그 서버가 없는 머신에서는 Pi가 시작할 때
+덮어쓸 서버가 없다고 보고하고 나머지는 불러옵니다. 이 스위치는 global 서버에서 아무것도 필요로 하지 않으므로
+프로젝트 모드에서도 동작합니다. 이전 릴리스가 global 서버의 `command`나 `url`과 함께 쓴 항목은 다음 sync에서
+덮어쓰기 항목으로 다시 작성됩니다.
 
 ### OpenCode and Kilo Code
 
@@ -945,6 +933,14 @@ Pi 서버 이름에는 영문자, 숫자, `_`, `-`만 쓸 수 있습니다. `-`�
 읽으므로 sync는 두 번째 이름을 거부합니다. Pi에서는 프로젝트 항목이 같은 이름의
 global 항목을 통째로 대체합니다. 한 프로젝트에서 global 서버를 끄려면
 [Turn off a global server in one project](#turn-off-a-global-server-in-one-project)를 참고하세요.
+
+Pi 1.0.1부터 Pi의 `/mcp`는 `enabled`, `exposure`, `toolExposure`만 있는 프로젝트 항목을 추가해
+같은 이름의 global 서버를 덮어쓸 수 있습니다. 이 항목은 서버가 아니므로 가져오기에서 건너뜁니다.
+`disabled` 항목도 같은 덮어쓰기를 쓰므로, 정확히 `{"enabled": false}`인 덮어쓰기는 충돌이 아닙니다.
+sync가 스위치를 쓴 뒤 Pi에서 추가한 `exposure` 같은 Pi 설정은 sync가 관리하는 다른 Pi 항목처럼 유지되고,
+Pi에서 서버를 다시 켜면 충돌입니다. 프로젝트가 같은 이름의 서버를 정의하거나, sync가 쓰지 않은 덮어쓰기가
+`disabled` 항목과 다르면, 그 항목을 대체하거나
+Pi에서 덮어쓰기를 제거할 때까지 sync가 충돌을 보고합니다.
 
 ### 기타 Pi 설정 {#pi-options}
 

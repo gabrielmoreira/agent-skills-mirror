@@ -9,6 +9,7 @@ import type {
   ElementTransform,
   ImageElement,
   Orientation,
+  Scene,
   SelectedElement,
   Slide,
   TextElement,
@@ -35,8 +36,9 @@ import {
 import { imageElementKey, isImageElementId, toImageElementId, toTextElementId } from "@/lib/elements";
 import { img } from "@/lib/image-cache";
 import { pickText, resolveScreenshot } from "@/lib/locale";
-import { slideColors } from "@/lib/contrast";
+import { relativeLuminance, slideColors } from "@/lib/contrast";
 import { defaultTextElementFontSize, slideFontScales } from "@/lib/typography";
+import { sceneOf } from "@/lib/scene";
 import {
   AndroidPhone,
   AppleTV,
@@ -49,6 +51,7 @@ import {
   Phone,
 } from "./device-frames";
 import { ImageElementCanvas } from "./image-element-canvas";
+import { CalloutLoupe, DeviceDepth, SceneBackdrop, shade } from "./scene-layers";
 
 type FrameComp = React.ComponentType<{
   src: string;
@@ -137,6 +140,10 @@ type Props = {
   previewScale?: number;
   /** When true, suppress the "Drop a screenshot here" placeholder. Used for export. */
   hideEmpty?: boolean;
+  scene?: Scene;
+  /** Where this screen sits in the full deck, for backdrops that span the strip. */
+  stripIndex?: number;
+  stripCount?: number;
 };
 
 type DeckEditHandlers = {
@@ -165,6 +172,10 @@ type DeckCanvasProps = {
   previewScale?: number;
   hideEmpty?: boolean;
   showGuides?: boolean;
+  scene?: Scene;
+  /** When `slides` is a slice of a longer deck: its first index and the deck length. */
+  stripStart?: number;
+  stripCount?: number;
 };
 
 // ---------- Editable text helpers ----------
@@ -262,6 +273,7 @@ function Caption({
   edit,
   align = "center",
   inverted,
+  scene,
   onFocus,
 }: {
   cW: number;
@@ -273,6 +285,7 @@ function Caption({
   edit?: EditHandlers;
   align?: "center" | "left";
   inverted?: boolean;
+  scene: Scene;
   onFocus?: () => void;
 }) {
   const { fg, accent } = slideColors(theme, { inverted, backgroundColor: slide.backgroundColor });
@@ -309,40 +322,16 @@ function Caption({
         onFocus={onFocus}
         placeholder="Headline goes here"
         style={{
-          fontSize: unit * 0.092 * headlineScale,
-          fontWeight: 700,
+          fontSize: unit * 0.092 * headlineScale * scene.headlineScale,
+          fontWeight: scene.headlineWeight,
           lineHeight: 0.96,
-          letterSpacing: -unit * 0.001 * headlineScale,
+          letterSpacing: (scene.headlineCase === "upper" ? unit * 0.0015 : -unit * 0.001) * headlineScale,
+          textTransform: scene.headlineCase === "upper" ? "uppercase" : undefined,
           color: fg,
         }}
       />
     </div>
   );
-}
-
-// ---------- Background ----------
-
-function backgroundFor(theme: Theme, inverted?: boolean, customColor?: string) {
-  if (customColor) {
-    return `linear-gradient(160deg, ${customColor} 0%, ${shade(customColor, -6)} 100%)`;
-  }
-  if (inverted) {
-    return `linear-gradient(160deg, ${theme.bgAlt} 0%, ${shade(theme.bgAlt, -8)} 100%)`;
-  }
-  return `linear-gradient(160deg, ${theme.bg} 0%, ${shade(theme.bg, -6)} 100%)`;
-}
-
-function shade(hex: string, percent: number) {
-  const c = hex.replace("#", "");
-  const num = parseInt(c.length === 3 ? c.split("").map((x) => x + x).join("") : c, 16);
-  let r = (num >> 16) & 0xff;
-  let g = (num >> 8) & 0xff;
-  let b = num & 0xff;
-  const amt = Math.round((255 * percent) / 100);
-  r = Math.max(0, Math.min(255, r + amt));
-  g = Math.max(0, Math.min(255, g + amt));
-  b = Math.max(0, Math.min(255, b + amt));
-  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, "0")}`;
 }
 
 // ---------- Decorative blob ----------
@@ -387,6 +376,7 @@ type LayoutRects = {
   caption?: Rect & { align?: "center" | "left" };
   device?: Rect;
   deviceSecondary?: Rect;
+  callout?: Rect;
 };
 
 function getDefaultRects(
@@ -523,7 +513,27 @@ function getSlideGeometry(slide: Slide, device: Device, orientation: Orientation
     slide.layout, cW, cH, frameAspect, fwFrac, fwSmallFrac,
     CONTAINED_DEVICES.has(device),
   );
+  if (slide.callout && defaults.device) defaults.callout = defaultCalloutRect(defaults.device, cW, cH);
   return { cW, cH, Frame, frameAspect, defaults };
+}
+
+// The loupe starts overlapping the device's upper right, inside the screen.
+function defaultCalloutRect(device: Rect, cW: number, cH: number): Rect {
+  const size = Math.min(cW, cH) * 0.44;
+  return {
+    x: Math.min(cW - size - cW * 0.04, device.x + device.width * 0.58),
+    y: Math.max(cH * 0.04, Math.min(cH - size * 1.04, device.y + device.height * 0.16)),
+    width: size,
+    height: size,
+  };
+}
+
+// Share of a frame's width taken by its screen. Close enough for every frame
+// that the callout's zoom reads as "× the size it appears on the device".
+export const SCREEN_WIDTH_FRACTION = 0.9;
+
+export function calloutAvailable(slide: Slide, device: Device) {
+  return device !== "feature-graphic" && slide.layout !== "no-device" && slide.layout !== "feature-graphic";
 }
 
 export function getElementTransform(
@@ -558,6 +568,7 @@ export function getElementTransform(
 function defaultElementZ(id: BuiltInElementId): number {
   if (id === "deviceSecondary") return 2;
   if (id === "device") return 3;
+  if (id === "callout") return 5;
   return 4;
 }
 
@@ -577,8 +588,12 @@ export function SlideCanvas({
   selectedElementId = null,
   previewScale = 1,
   hideEmpty,
+  scene: rawScene,
+  stripIndex = 0,
+  stripCount = 1,
 }: Props) {
   const { cW, cH } = getCanvas(device, orientation);
+  const scene = sceneOf(rawScene);
 
   if (slide.layout === "feature-graphic" || device === "feature-graphic") {
     return (
@@ -614,9 +629,10 @@ export function SlideCanvas({
         fontFamily,
       }}
     >
-      <SlideBackground slide={slide} cW={cW} cH={cH} theme={theme} />
+      <SlideBackground slide={slide} cW={cW} cH={cH} theme={theme} scene={scene} index={stripIndex} count={stripCount} />
       <SlideElements
         slide={slide}
+        scene={scene}
         device={device}
         orientation={orientation}
         theme={theme}
@@ -654,8 +670,12 @@ export function DeckCanvas({
   previewScale = 1,
   hideEmpty,
   showGuides = false,
+  scene: rawScene,
+  stripStart = 0,
+  stripCount,
 }: DeckCanvasProps) {
   const { cW, cH } = getCanvas(device, orientation);
+  const scene = sceneOf(rawScene);
   const totalW = Math.max(1, slides.length) * cW;
 
   return (
@@ -723,7 +743,7 @@ export function DeckCanvas({
               overflow: "hidden",
             }}
           >
-            <SlideBackground slide={slide} cW={cW} cH={cH} theme={theme} />
+            <SlideBackground slide={slide} cW={cW} cH={cH} theme={theme} scene={scene} index={stripStart + index} count={stripCount ?? slides.length} />
             {showGuides && <ScreenGuide cW={cW} cH={cH} index={index} active={active} />}
           </div>
         );
@@ -750,6 +770,7 @@ export function DeckCanvas({
           <SlideElements
             key={`${slide.id}-elements`}
             slide={slide}
+            scene={scene}
             device={device}
             orientation={orientation}
             theme={theme}
@@ -791,28 +812,48 @@ function SlideBackground({
   cW,
   cH,
   theme,
+  scene,
+  index,
+  count,
 }: {
   slide: Slide;
   cW: number;
   cH: number;
   theme: Theme;
+  scene: Scene;
+  index: number;
+  count: number;
 }) {
   const inverted = !!slide.inverted;
+  const colors = slideColors(theme, slide);
   return (
     <div
       style={{
         position: "absolute",
         inset: 0,
         overflow: "hidden",
-        background: backgroundFor(theme, inverted, slide.backgroundColor),
-        color: slideColors(theme, slide).fg,
+        color: colors.fg,
       }}
     >
-      <Blob cW={cW} color={theme.accent} x={-15} y={-10} size={55} opacity={inverted ? 0.25 : 0.32} />
-      <Blob cW={cW} color={theme.accent} x={70} y={75} size={45} opacity={inverted ? 0.18 : 0.25} />
+      <SceneBackdrop
+        scene={scene}
+        theme={theme}
+        cW={cW}
+        cH={cH}
+        index={index}
+        count={count}
+        base={slide.backgroundColor || (inverted ? theme.bgAlt : theme.bg)}
+        fg={colors.fg}
+        accent={theme.accent}
+        dark={isDark(slide.backgroundColor || (inverted ? theme.bgAlt : theme.bg))}
+        inverted={inverted && !slide.backgroundColor}
+        blobsInverted={inverted}
+      />
     </div>
   );
 }
+
+const isDark = (hex: string) => (relativeLuminance(hex) ?? 1) < 0.18;
 
 function ScreenGuide({
   cW,
@@ -957,6 +998,7 @@ function FeatureGraphicCanvas({
 
 function SlideElements({
   slide,
+  scene,
   device,
   orientation,
   theme,
@@ -972,6 +1014,7 @@ function SlideElements({
   allowCrossScreen,
 }: {
   slide: Slide;
+  scene: Scene;
   device: Device;
   orientation: Orientation;
   theme: Theme;
@@ -994,6 +1037,9 @@ function SlideElements({
   const captionRect = rectFor("caption", slide, defaults);
   const deviceRect = rectFor("device", slide, defaults);
   const secondaryRect = rectFor("deviceSecondary", slide, defaults);
+  const calloutRect = slide.callout && deviceRect && calloutAvailable(slide, device)
+    ? rectFor("callout", slide, defaults)
+    : undefined;
 
   function toGlobal(rect: Rect): Rect {
     return { ...rect, x: rect.x + screenX };
@@ -1017,8 +1063,9 @@ function SlideElements({
         locale={locale}
         editable={editable}
         edit={edit}
-        align={captionRect.align || "center"}
+        align={scene.captionAlign === "auto" ? captionRect.align || "center" : scene.captionAlign}
         inverted={inverted}
+        scene={scene}
         onFocus={() => edit?.onSelectElement?.("caption")}
       />
     );
@@ -1080,10 +1127,49 @@ function SlideElements({
         selected={selectedElementId === id}
         onSelect={() => edit?.onSelectElement?.(id)}
       >
-        <Frame
-          src={src}
+        <DeviceDepth scene={scene} cW={cW} accent={theme.accent}>
+          <Frame
+            src={src}
+            hideEmpty={hideEmpty}
+            style={{ width: "100%", height: "100%", ...extraStyle }}
+          />
+        </DeviceDepth>
+      </Movable>
+    );
+  }
+
+  function renderCallout(rect: Rect, deviceWidth: number) {
+    const callout = slide.callout!;
+    const saved = slide.transforms?.callout;
+    const rotation = saved?.rotation ?? 0;
+    const zIndex = saved?.zIndex ?? defaultElementZ("callout");
+    return (
+      <Movable
+        rect={toGlobal(rect)}
+        boundsW={boundsW}
+        boundsH={boundsH}
+        editable={editable}
+        previewScale={previewScale}
+        rotation={rotation}
+        onChange={(t) =>
+          edit?.onElementChange?.(
+            "callout",
+            toLocal({ ...t, rotation: t.rotation ?? rotation, zIndex: t.zIndex ?? zIndex }),
+          )
+        }
+        lockAspectRatio={callout.shape === "circle" ? 1 : undefined}
+        zIndex={zIndex}
+        allowOverflow
+        selected={selectedElementId === "callout"}
+        onSelect={() => edit?.onSelectElement?.("callout")}
+      >
+        <CalloutLoupe
+          callout={callout}
+          src={screenshot}
+          screenWidth={deviceWidth * SCREEN_WIDTH_FRACTION}
+          cW={cW}
+          accent={theme.accent}
           hideEmpty={hideEmpty}
-          style={{ width: "100%", height: "100%", ...extraStyle }}
         />
       </Movable>
     );
@@ -1201,6 +1287,7 @@ function SlideElements({
         )}
       {deviceRect && renderDevice("device", deviceRect, screenshot)}
       {renderCaption()}
+      {calloutRect && deviceRect && renderCallout(calloutRect, deviceRect.width)}
       {(slide.imageElements || []).map(renderImageElement)}
       {(slide.textElements || []).map(renderTextElement)}
     </>

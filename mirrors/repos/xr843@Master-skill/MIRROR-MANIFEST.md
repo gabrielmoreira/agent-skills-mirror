@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xr843/Master-skill` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `xr843/Master-skill` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `xr843/Master-skill` — 26 default patterns, 0 followed patterns, 31 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,12 +84,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | ✓ | [`prompts/intake.md`](prompts/intake.md) |
 | 24 | ✓ | [`prompts/merger.md`](prompts/merger.md) |
 | 25 | ✓ | [`prompts/rag_instructions.md`](prompts/rag_instructions.md) |
-| 26 | ✓ | [`prompts/sutra_analyzer.md`](prompts/sutra_analyzer.md) |
-| 27 | ✓ | [`prompts/teaching_builder.md`](prompts/teaching_builder.md) |
-| 28 | ✓ | [`prompts/voice_analyzer.md`](prompts/voice_analyzer.md) |
-| 29 | ✓ | [`prompts/voice_builder.md`](prompts/voice_builder.md) |
-| 30 | ✓ | [`prompts/voice_reviewer.md`](prompts/voice_reviewer.md) |
-| 31 | ✓ | [`SKILL.md`](SKILL.md) |
+| 26 | ✓ | [`prompts/safety_clause.md`](prompts/safety_clause.md) |
+| 27 | ✓ | [`prompts/sutra_analyzer.md`](prompts/sutra_analyzer.md) |
+| 28 | ✓ | [`prompts/teaching_builder.md`](prompts/teaching_builder.md) |
+| 29 | ✓ | [`prompts/voice_analyzer.md`](prompts/voice_analyzer.md) |
+| 30 | ✓ | [`prompts/voice_builder.md`](prompts/voice_builder.md) |
+| 31 | ✓ | [`prompts/voice_reviewer.md`](prompts/voice_reviewer.md) |
+| 32 | ✓ | [`SKILL.md`](SKILL.md) |
 
 ---
 

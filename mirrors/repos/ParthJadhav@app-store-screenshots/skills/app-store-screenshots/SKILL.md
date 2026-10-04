@@ -219,7 +219,7 @@ function migrateSlide(slide, used) {
   const rawTransforms = slide.transforms && typeof slide.transforms === "object" ? slide.transforms : {};
   for (const [id, transform] of Object.entries(rawTransforms)) {
     const cleaned = cleanTransform(transform);
-    if (["caption", "device", "deviceSecondary"].includes(id) && cleaned) transforms[id] = cleaned;
+    if (["caption", "device", "deviceSecondary", "callout"].includes(id) && cleaned) transforms[id] = cleaned;
   }
   const textIds = new Set();
   const textElements = Array.isArray(slide.textElements)
@@ -261,6 +261,8 @@ function migrateSlide(slide, used) {
     ...(Object.keys(transforms).length ? { transforms } : { transforms: undefined }),
     ...(textElements && textElements.length ? { textElements } : { textElements: undefined }),
     ...(imageElements && imageElements.length ? { imageElements } : { imageElements: undefined }),
+    // The editor clamps magnifier values on load; only a non-object would be rejected.
+    callout: slide.callout && typeof slide.callout === "object" && !Array.isArray(slide.callout) ? slide.callout : undefined,
   };
 }
 
@@ -451,6 +453,8 @@ If the user provided headlines, edit `app-store-screenshots.json` to set:
 - `appIcon` — public path of the app icon (e.g. `"/app-icon.png"` after copying it to `public/app-icon.png`). The Play Store feature graphic shows it; blank uses the app's initial. The icon can also be picked in the feature-graphic inspector.
 - `connectedCanvas` (`true` for new connected decks; migrated legacy decks should stay `false` until the user opts in)
 - Starter slides per device with the user's `label` + `headline` + screenshot paths
+- Optional `scene` for the whole project: `{ backdrop: "gradient"|"solid"|"aurora"|"spotlight"|"grid"|"dots"|"lines", span: boolean, decoration: "blobs"|"rings"|"sparkles"|"none", shadow: 0–100, glow: 0–100, tilt: -30–30, headlineWeight: 300–900, headlineCase: "as-typed"|"upper", captionAlign: "auto"|"left"|"center" }`. Omit it for the classic gradient + blobs look. Pick values that match the chosen style (e.g. `spotlight` + glow for dark pro styles, `lines` + left-aligned serif for editorial); the user can refine it in the editor's **Scene** popover or compare whole looks in **Style Lab**.
+- Optional per-slide `callout: { focusX: 0–1, focusY: 0–1, zoom: 1.5–5, shape: "circle"|"rounded" }` to magnify one detail of the primary screenshot. It sits over the device's upper right unless `transforms.callout` places it.
 - Optional per-slide `typography: { labelScale, headlineScale, appNameScale }` (0.5–2, default 1) when one headline is much longer or shorter than the rest of the deck. `appNameScale` only applies to the feature graphic, where `headlineScale` sizes the tagline.
 
 Otherwise, leave the defaults — the user can rewrite copy in the editor.

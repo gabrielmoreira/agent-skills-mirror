@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zhouxiaoka/autoclip` — 26 default patterns, 2 followed patterns, 10 file(s) materialized.
+Mirror of `zhouxiaoka/autoclip` — 26 default patterns, 2 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zhouxiaoka/autoclip` — 26 default patterns, 2 followed patterns, 10
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,10 +66,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 5 | ✓ | [`docs/RELEASE_1_5_1.md`](docs/RELEASE_1_5_1.md) |
 | 6 | ✓ | [`docs/RELEASE_1_5_2.md`](docs/RELEASE_1_5_2.md) |
-| 7 | ✓ | [`skills/autoclip/SKILL.md`](skills/autoclip/SKILL.md) |
-| 8 | ✓ | [`skills/product-board/SKILL.md`](skills/product-board/SKILL.md) |
-| 9 | → | [`docs/TESTING_ACCEPTANCE.md`](docs/TESTING_ACCEPTANCE.md) |
-| 10 | → | [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) |
+| 7 | ✓ | [`docs/RELEASE_1_5_3.md`](docs/RELEASE_1_5_3.md) |
+| 8 | ✓ | [`skills/autoclip/SKILL.md`](skills/autoclip/SKILL.md) |
+| 9 | ✓ | [`skills/product-board/SKILL.md`](skills/product-board/SKILL.md) |
+| 10 | → | [`docs/TESTING_ACCEPTANCE.md`](docs/TESTING_ACCEPTANCE.md) |
+| 11 | → | [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) |
 
 ---
 

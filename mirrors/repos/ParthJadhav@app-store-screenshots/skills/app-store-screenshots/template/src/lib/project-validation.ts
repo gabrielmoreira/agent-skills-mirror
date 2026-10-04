@@ -28,6 +28,10 @@ export function projectValidationError(value: unknown): string | null {
   if (value.locales !== undefined && (!Array.isArray(value.locales) ||
       value.locales.some(locale => typeof locale !== "string" || !/^[a-zA-Z0-9]+(?:[-_][a-zA-Z0-9]+)*$/.test(locale)) ||
       new Set(value.locales).size !== value.locales.length)) return "locales must be a list of unique locale codes";
+  if (value.scene !== undefined && !record(value.scene)) return "scene must be an object";
+  if (value.savedLooks !== undefined && (!Array.isArray(value.savedLooks) || value.savedLooks.some(look => !record(look)))) {
+    return "savedLooks must be a list of looks";
+  }
   for (const [device, slides] of Object.entries(value.slidesByDevice)) {
     if (!Object.hasOwn(DEVICE_LABEL, device)) return `Unknown deck device: ${device}`;
     if (!Array.isArray(slides)) return `${device} deck must be an array`;
@@ -43,8 +47,11 @@ export function projectValidationError(value: unknown): string | null {
       }
       if (!localized(slide.label) || !localized(slide.headline)) return `${device}: copy must be text or a locale-to-text object`;
       if (slide.inverted !== undefined && typeof slide.inverted !== "boolean") return `${device}: inverted must be a boolean`;
+      // Missing or out-of-range magnifier values are defaulted and clamped on load.
+      if (slide.callout !== undefined && (!record(slide.callout) ||
+        [slide.callout.focusX, slide.callout.focusY, slide.callout.zoom].some(n => n !== undefined && !finite(n)))) return `${device}: invalid callout`;
       if (slide.transforms !== undefined && (!record(slide.transforms) || Object.entries(slide.transforms).some(([key, value]) =>
-        !["caption", "device", "deviceSecondary"].includes(key) || !transform(value)))) return `${device}: invalid element transform`;
+        !["caption", "device", "deviceSecondary", "callout"].includes(key) || !transform(value)))) return `${device}: invalid element transform`;
       for (const key of ["textElements", "imageElements"] as const) {
         const elements = slide[key];
         if (elements === undefined) continue;

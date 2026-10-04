@@ -21,6 +21,36 @@ Extras 是 skillshare 管理的額外資源類型——可以把它想成「給�
 
 ## Commands
 
+### `extras memory` {#extras-memory}
+
+管理 `memory` extra 中的共用 Markdown 筆記，可用任意文字編輯器編輯。
+[記憶共用教學（英文截圖）](../../how-to/daily-tasks/sharing-memory)示範建立、目錄瀏覽與跨 Agent 使用。
+
+| 子命令 | 行為 |
+|---|---|
+| `init` | 建立沒有 targets 的 memory extra，補上缺少的 `INDEX.md`、`LEARNED.md`，保留既有檔案與設定 |
+| `list` | 列出筆記；`--search <text>` 不分大小寫搜尋路徑與內容，包含子資料夾 |
+| `show <note.md>` | 讀取筆記；`--json` 包含 `version` hash |
+| `write <note.md> --from <file\|->` | 從檔案或 stdin 讀取內容；新增時不指定 `--version`，更新須使用最近讀取的 version |
+| `delete <note.md> --version <hash>` | 備份後刪除指定版本，拒絕過期或缺少的 version |
+| `instructions` | 輸出指向實際 source 資料夾的讀取指引；`--update-mode passive`（預設）要求 Agent 只在使用者要求時更新筆記，`--update-mode active` 讓 Agent 自行保存長期有用的事實、拿不準時先提議 |
+
+各子命令支援 `--json`、`-g` / `--global`、`-p` / `--project` 及 `--help`。
+未指定時自動判斷 scope。預設 global 路徑為 `~/.config/skillshare/extras/memory/`，
+project 為 `.skillshare/extras/memory/`；沿用既有 extras source 覆寫設定。
+
+筆記須為相對 `.md` 路徑、UTF-8，最多 1 MiB；排除隱藏檔案、隱藏資料夾及內部符號連結。過大或非 UTF-8 檔案仍列出並標為不支援，其他正常筆記仍可使用。`wiki/architecture.md` 會自動建立資料夾。Dashboard 提供目錄樹、**Preview** / **Source**、**Copy path**、**Edit**、**Delete note** 與 **History**。**Move or rename** 可輸入新的相對 `.md` 路徑，建立缺少的資料夾，保留內容與權限，並拒絕同名目標或過期版本。移動前會在舊路徑備份；Markdown 連結須自行修正。請保留來源根目錄的 `INDEX.md`，供 agent 指引讀取。
+
+儲存檢查最近讀取的 version。衝突會保留草稿，顯示最新儲存內容供比較。**Save my draft** 須確認，使用更新後的 version，備份已儲存內容後再取代。刪除也須確認、檢查版本並備份。**History** 與刪除後的還原連結會開啟 **Backup Files**，以筆記的絕對路徑篩選。CLI 可用 `backup files show <absolute-path>` 與 `backup files restore <absolute-path> <id>`。
+
+**New note** 的 **Link from INDEX.md** 在索引可讀取時顯示並預設勾選，於檔案末尾附加連結，檢查 version 並備份。失敗仍保留新筆記。**Add to INDEX** 可加入未索引的筆記。失效連結會顯示警告，不會自動移除。CLI 寫入不會新增索引連結。
+
+使用 **Connect to agents** 選取工具並為每個工具選擇更新模式（`passive` 或 `active`），再 **Review changes** → **Apply changes**。讀取同一個檔案的工具共用一個區塊，會一起切換模式；已設定工具的模式也能透過同一個預覽變更。此流程將 scope/hash 標記區塊加入或更新至既有 instructions 或共用來源，保留其他內容與指派。可檢查變更、其他讀取工具與已知字元上限。既有檔案會備份，過期預覽會被拒絕。完整但過期的區塊可經檢查後更新；手動修改或格式有誤的區塊會保留。未同步或無法讀取的 instructions 檔案會略過。
+
+**Configured** 僅表示讀取鏈已有目前的指引，不代表已讀取。**Copy verification prompt** 用於新 session，要求 Agent 讀取 `INDEX.md` 與相關筆記、回報完整路徑及使用者加入的臨時驗證值。請手動檢查實際 read tool event；沒有保證可用的讀取 telemetry。
+
+**Copy guidance** 是手動貼上的替代方式，選擇模式後貼上即可；**Open AGENTS.md** 可編輯 instructions。Project 內的來源路徑相對於 **project root**，不依 instructions 檔案位置；外部或 global 來源用絕對路徑，移動後須重新產生。CLI `instructions` 也輸出相同的 scope/hash 區塊。不啟用 native automatic memory、自動學習或 Obsidian 整合。
+
 ### `extras init`
 
 建立新的 extra 資源類型。
@@ -83,10 +113,13 @@ skillshare extras init pi-prompt --file system.md --as APPEND_SYSTEM.md \
 `extras init` 只會寫入設定，不會建立 source 檔案，也不會執行 sync。若是單一檔案 extra，它會印出完整的 source 與 target 檔案路徑：
 
 ```
+  Source    ~/dotfiles/prompts/system.md
+  Target    ~/.pi/agent/APPEND_SYSTEM.md · merge
+
 ✓ Created extra pi-prompt (single file)
-Source: ~/dotfiles/prompts/system.md
-Target: ~/.pi/agent/APPEND_SYSTEM.md [merge]
-Run 'skillshare sync extras' to sync.
+
+Next
+  skillshare sync extras  sync it
 ```
 
 若 source 檔案還不存在，source 那一行結尾會是 `(not found)`，最後一行則是 `Create the source file, then run 'skillshare sync extras'.`
@@ -110,27 +143,9 @@ skillshare extras list [--json] [--no-tui] [-p|-g]
 
 #### Interactive TUI
 
-TUI 提供分割面板介面，左側為 extras 清單，右側為詳細資訊面板。按鍵綁定如下：
+在 TTY 中，`extras list` 會開啟互動式畫面：左側是 extras，右側是選取 extra 的 targets 與檔案。在這裡可以新增、移除、同步與收回（collect）extras，也可以更改某個 target 的模式或 flatten 設定。按鍵列在畫面底部。
 
-| Key | Action |
-|-----|--------|
-| `↑↓` | 瀏覽清單 |
-| `/` | 依名稱篩選 |
-| `Enter` | 內容檢視器（瀏覽 source 檔案） |
-| `N` | 建立新的 extra |
-| `X` | 移除 extra（需確認） |
-| `S` | 將 extra 同步到 target |
-| `C` | 從 target 收集 |
-| `M` | 變更某個 target 的 sync 模式 |
-| `F` | 切換某個 target 的 flatten 開/關 |
-| `Ctrl+U/D` | 捲動詳細資訊面板 |
-| `q` / `Ctrl+C` | 離開 |
-
-每一列的顏色列代表整體同步狀態：cyan（青色）= 全部已同步，yellow（黃色）= drift（有差異），red（紅色）= 未同步，gray（灰色）= 沒有 source。
-
-對於有多個 target 的 extra，`S`、`C`、`M`、`F` 會開啟 target 子選單。`S` 與 `C` 可以一次選取所有 target；`M` 與 `F` 則必須選擇特定的 target。
-
-可以用 `skillshare tui off` 永久停用 TUI。
+可以用 `skillshare tui off` 永久關閉 TUI。
 
 #### Plain text output
 
@@ -138,15 +153,14 @@ TUI 提供分割面板介面，左側為 extras 清單，右側為詳細資訊�
 
 ```
 $ skillshare extras list --no-tui
+rules  ~/.config/skillshare/extras/rules · 2 files
+✓ ~/.claude/rules  merge
+✓ ~/.cursor/rules  copy
 
-Extras
-─────────────────────────────────────────
-→ rules  ~/.config/skillshare/extras/rules/ · 2 files
-  ✓ ~/.claude/rules  merge
-  ✓ ~/.cursor/rules  copy
+codex-agents  ~/.config/skillshare/agents · 3 files
+✓ ~/.codex/agents  extension: codex-agents
 
-→ codex-agents  ~/.config/skillshare/agents · 3 files
-  ✓ ~/.codex/agents  extension: codex-agents
+2 extras
 ```
 
 若是[單一檔案 extra](#single-file-extras)，source 與每個 target 會顯示完整的檔案路徑，而不是目錄。
@@ -230,7 +244,7 @@ skillshare extras rules --remove-target ~/.cursor/rules
 skillshare extras rules --remove-target ~/.cursor/rules --prune
 ```
 
-也可以透過 TUI（`M` 鍵）以及 Web UI（每個 target 上的模式下拉選單與 flatten 核取方塊）操作。
+也可以透過 TUI（`e` 鍵）以及 Web UI（每個 target 上的模式下拉選單與 flatten 核取方塊）操作。
 
 ### `extras remove`
 

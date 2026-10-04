@@ -189,13 +189,14 @@ interface MultiplexerConfig {
   type: 'tmux' | 'zellij' | 'herdr' | 'cmux-tui' | 'kitty' | 'auto' | 'none';
   layout: 'main-horizontal' | 'main-vertical' | 'tiled' | 'even-horizontal' | 'even-vertical';
   main_pane_size?: number; // Percentage for main pane (20-80), tmux main-* only
+  viewer: 'tui' | 'mini';  // TUI surface subagent panes open (default 'tui')
 }
 ```
 
 `zellij_pane_mode` is a deprecated key: it is stripped with a
 once-per-process warning and never reaches the adapter layer. Invalid
-`type`/`layout`/`main_pane_size` values disable pane management with a
-once-per-process diagnostic.
+`type`/`layout`/`main_pane_size`/`cmux_tui_binary`/`viewer` values disable
+pane management with a once-per-process diagnostic.
 
 ### Environment Detection
 

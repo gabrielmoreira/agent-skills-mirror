@@ -625,6 +625,10 @@ loopx canary smoke-suite --suite full-public --jobs 4 --timeout-seconds 120
 The smoke runner gives every check a disposable HOME, host configuration and
 temporary directory, removes inherited registry/runtime routes, disables usage
 telemetry, and stops only that fixture's managed Effect process before cleanup.
+Timeout and caller cancellation also reap the spawned check's isolated process
+group before deleting the fixture, including children retaining output pipes
+after leader exit. This uses the existing OS transport without extending the
+check deadline or stopping unrelated host processes.
 Serial and parallel checks have the same isolation. It preserves the caller's
 PATH: grouped checks append discovery fallbacks rather than overriding an
 explicitly selected toolchain. Prepare Python 3.11+, Node 24, jq and zsh before
@@ -635,7 +639,9 @@ skill still fails; update their owning fixtures when the shipped contract change
 
 每项 smoke 都使用独立的一次性 HOME、宿主配置和临时目录，清除继承的 registry/runtime
 路由，关闭 usage telemetry，并在清理前只停止该 fixture 的 Effect 进程；串行、并行隔离
-一致。分组检查保留调用方 PATH 的优先级，只在末尾补充发现路径。完整发布验证前准备
+一致。超时或调用方取消时，清理目录前还会回收该检查自建的隔离进程组，包括父进程
+退出后仍持有输出管道的子进程；复用已有 OS transport，不延长检查期限，不停止无关
+宿主进程。分组检查保留调用方 PATH 的优先级，只在末尾补充发现路径。完整发布验证前准备
 Python 3.11+、Node 24、jq 和 zsh，并随精确源码回执记录版本。缺工具属于环境缺口，
 不能记成产品失败或成功 skip。宿主材料期待集合保持明确，缺少已发货 skill 仍应失败；
 正式契约变化时同步更新其归属 fixture。
@@ -1038,10 +1044,14 @@ python3 scripts/qualify-doubao-capability-monitor-repair-tool-live.py \
 ```
 
 The regular live suite is
-`actual_default_model_behavior_portfolio_v0`: twenty-one one-arm scenarios and two
+`actual_default_model_behavior_portfolio_v0`: twenty-two one-arm scenarios and two
 attempts each. Its selected-Todo case starts from a production thin heartbeat,
 executes real quota, and requires the model to perform the selected Todo's
-read-only target action. Its required-vision replan case independently builds a
+read-only target action. Its accepted-replan-successor case requires the model
+to select the new primary while an older higher-priority alternative remains
+visible. This is packet interpretation evidence; the real CLI successor tests
+separately prove durable replan writeback and fresh-Turn adoption. Its
+required-vision replan case independently builds a
 hermetic required-profile/missing-vision state with a future monitor and
 peer-owned work. The actor must author an evidence-linked vision, execute the
 projected bound refresh and spend, and pass durable checkpoint, one-spend and
@@ -1122,7 +1132,7 @@ Exact scheduler, vision, writeback, and warning fields stay in deterministic
 action-signature coverage; pair mode keeps TurnEnvelope semantic extraction for
 explicit packet differentials or outcome claims.
 
-常规 live suite 是 `actual_default_model_behavior_portfolio_v0`：21 个 one-arm
+常规 live suite 是 `actual_default_model_behavior_portfolio_v0`：22 个 one-arm
 场景，每个重复 2 次。9 个 core-contract 场景覆盖正常接入、agent 身份与
 goal 选择、selected todo、peer 身份路由、same-agent 续接、最终 human gate、
 健康继续和 projection repair；1 个 effect-settlement 场景覆盖 terminal closeout；

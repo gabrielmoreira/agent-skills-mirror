@@ -3,7 +3,7 @@
 > **Read [`FLYWHEEL.md`](./FLYWHEEL.md) first.** It is how you ship a change end to end here (code → PR → green CI → `[RELEASE]` → PyPI → cloud → verified live) and the non-negotiable "done" bar. This file is the architecture reference; FLYWHEEL.md is the shipping loop.
 
 ## What is this?
-ClawMetry is an open-source, real-time observability and governance layer for **32 AI agent runtimes** — [OpenClaw](https://github.com/openclaw/openclaw), NVIDIA NemoClaw, Goose and Qwen Code free in OSS, the other 28 (Claude Code, Codex, Cursor, Copilot, Gemini CLI, Hermes, Aider, opencode, ...) with the optional Pro plugin. **Never type that number or that list anywhere new: [`SUPPORTED_RUNTIMES.txt`](./SUPPORTED_RUNTIMES.txt) is the generated single source every surface derives from** (`python3 scripts/sync_runtime_count.py`; `--check` fails CI on drift). `pip install clawmetry && clawmetry` — that's it. Zero config, observation by default.
+ClawMetry is an open-source, real-time observability and governance layer for **33 AI agent runtimes** — [OpenClaw](https://github.com/openclaw/openclaw), NVIDIA NemoClaw, Goose and Qwen Code free in OSS, the other 28 (Claude Code, Codex, Cursor, Copilot, Gemini CLI, Hermes, Aider, opencode, ...) with the optional Pro plugin. **Never type that number or that list anywhere new: [`SUPPORTED_RUNTIMES.txt`](./SUPPORTED_RUNTIMES.txt) is the generated single source every surface derives from** (`python3 scripts/sync_runtime_count.py`; `--check` fails CI on drift). `pip install clawmetry && clawmetry` — that's it. Zero config, observation by default.
 
 **Never hardcode the runtime count or the runtime list anywhere new.** The authoritative sources are `entitlements.FREE_RUNTIMES | entitlements.PAID_RUNTIMES` (the catalogue, and what every quoted number is derived from) and `sync._FAMILY_ADAPTER_SPECS` (what the daemon actually loads — a `clawmetry-pro` adapter is inert until it is named there). `scripts/sync_runtime_count.py` rewrites the number in prose and CI fails on drift; the same script checks the chat-channel count against `entitlements.ALL_CHANNELS`.
 
@@ -15,6 +15,7 @@ See `ARCHITECTURE.md` for the full deep dive, and `docs/MODULE_MAP.md` (generate
 - **Zero config** — auto-detects runtimes, OpenClaw workspace, gateway, sessions, logs
 - **Observation by default, control when asked** — see "Control plane" below. Reads never require permission; writes are always user-initiated or policy-declared
 - **DuckDB-first** — the sync daemon ingests filesystem/gateway/OTLP into a local **DuckDB** store (`clawmetry/local_store.py`; the daemon owns the writer lock). Request handlers read from DuckDB via `routes/local_query.py`, **not** raw files — reading raw JSONL/logs inside a handler works locally but returns empty in cloud (the container has no `~/.openclaw`). Optional `history.py` adds a separate SQLite time-series.
+- **Assistant execution stays on the node.** Local `routes/assistant.py` and `routes/dashboards.py` use `clawmetry/assistant_http.py` and typed daemon RPCs. Hosted requests arrive through `clawmetry/assistant_relay.py` as authenticated encrypted operations. Both use one `clawmetry/assistant_executor.py` and `clawmetry/assistant_service.py`, sharing provider limits, SELECT validation, conversations and saved panels. `clawmetry/assistant_receipts.py` atomically commits paid/mutating results with their artifacts; retries cannot start the same paid request again. Do not add inference or a writer fallback inside Flask or the cloud container.
 - **Five ingest paths** (all land in DuckDB): filesystem (JSONL/logs), gateway WebSocket (JSON-RPC), optional OTLP receiver (`/v1/metrics`, `/v1/traces`, `/v1/logs`), runtime hooks (`clawmetry hook <runtime>`, the only pre-tool path), and the HTTP ingest API (`/api/v1/runs/*`) for a runtime with no adapter
 
 ## Key Files
@@ -127,6 +128,7 @@ All HTTP endpoints live here, organised by feature: 70 modules, 82 blueprints, l
 | `docs/BUILD_YOUR_OWN_UI.md` | The keyed read API, its scopes, and how to point a coding agent at it |
 | `docs/CUSTOM_RUNTIME_INGEST.md` | The HTTP ingest API for a runtime with no adapter |
 | `docs/EVENT_RETENTION.md` | Store growth and trimming |
+| `docs/CAPABILITY_GAPS.md` | Opt-in capability-gap export: what a record carries, the E01..E08 mapping, `/api/capability-gaps` |
 | `CHANGELOG.md` | Version history |
 | `CONTRIBUTING.md` | Contribution guidelines |
 | `SECURITY.md` | Security posture |
@@ -285,6 +287,7 @@ CLAWMETRY_GUARD_CRITICAL_USD=...       # Spend-at-risk above which a warning bec
 CLAWMETRY_NOPROG_TOOLS__<RUNTIME>=40   # Per-runtime threshold override (highest layer in resolve_thresholds)
 CLAWMETRY_EGRESS_SETTLE_HOURS=24       # A learned host counts as known only after this long in the cohort's memory, so a swarm cannot vouch for its own destination (0 = off)
 CLAWMETRY_ENFORCE=1                    # Turn entitlement enforcement on (default: GRACE, everything allowed)
+CLAWMETRY_CAPGAP_EXPORT_DIR=...        # Opt-in: append capability-gap records (MIX E01..E08) as JSONL in this directory. Unset = off. docs/CAPABILITY_GAPS.md
 
 # Resource budget (FLYWHEEL.md 1e: the daemon must stay near-invisible)
 CLAWMETRY_DUCKDB_THREADS=2             # DuckDB defaults to every core; never ship an uncapped connection

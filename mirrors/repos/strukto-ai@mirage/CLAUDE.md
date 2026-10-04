@@ -14,7 +14,7 @@ semantics.
 ### Commands
 
 - Python lives in `python/` (`mirage/`, `tests/`). Setup:
-  `cd python && uv sync --all-extras --no-extra camel`. Add dependencies with
+  `cd python && uv sync --all-extras`. Add dependencies with
   `uv add`. Test: `uv run pytest`.
 - TypeScript lives in `typescript/` (`packages/core`, `node`, `browser`,
   `cli`, `server`, `agents`, `dsh`, `opencode`): `pnpm install`,

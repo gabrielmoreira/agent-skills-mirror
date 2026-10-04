@@ -1,7 +1,131 @@
-# CHANGELOG entry format
+# CHANGELOG + VERSION style
 
 Moved verbatim from CLAUDE.md (token-load reduction). Read this BEFORE
 writing any `## [X.Y.Z]` CHANGELOG entry.
+
+## Versioning and branch-scoped entries
+
+Moved verbatim from CLAUDE.md (#2096 size limit). The autonomous version
+policy (choose versions without asking; default to PATCH) stays in CLAUDE.md
+as the single source.
+
+**Versioning invariant (workspace-aware ship).** VERSION is a monotonic ordered
+release identifier, not a strict semver commitment. The bump level
+(major/minor/patch/micro) expresses intent at ship time. Queue-advancing past a
+claimed version within the same bump level is explicitly permitted — if branch A
+claims v1.7.0.0 as a MINOR and branch B is also a MINOR, B lands at v1.8.0.0
+(still a MINOR relative to main). Downstream consumers must NOT rely on
+"MINOR = feature-only, PATCH = fix-only" as a strict contract. This is why
+`bin/gstack-next-version` advances within the chosen bump level rather than
+repicking the level when collisions happen.
+
+**package.json carries the npm-valid translation, not VERSION verbatim.**
+VERSION stays the 4-digit source of truth (e.g. `1.67.0.0`); package.json and
+any subdirectory manifests with a `version` field get the 3-digit npm-valid
+translation (`1.67.0`), and lockfile `version` fields sync only when the
+lockfile already exists. `bin/gstack-version-bump` (via `lib/version-source.ts`)
+owns the translation and judges drift on translated forms — do NOT "fix" the
+apparent mismatch by hand, and do not write a 4-digit version into
+package.json (npm rejects it). Rationale and translation rules live in the
+`lib/version-source.ts` header; `test/gstack-version-bump.test.ts` pins the
+contract.
+
+**VERSION and CHANGELOG are branch-scoped.** Every feature branch that ships gets its
+own version bump and CHANGELOG entry. The entry describes what THIS branch adds —
+not what was already on main.
+
+**The CHANGELOG entry is the diff between main and the shipping branch — what users
+get when they upgrade. NOT how the branch got there.** A reader landing on the entry
+should learn what they can do now that they couldn't before; they should not learn
+about the branch's internal version bumps, the bugs we caught and fixed mid-branch,
+the plan reviews we ran, or the commits we squashed. That is branch development
+narrative. It belongs in PR descriptions and commit messages, not CHANGELOG.
+
+**Never reference branch-internal versions in a CHANGELOG entry.** If your branch
+bumped VERSION from v1.5.0.0 → v1.5.1.0 → v1.6.0.0 during development and only the
+final v1.6.0.0 ships to main, the entry must read as if v1.5.1.0 never existed.
+Concretely, NEVER write:
+- "v1.5.1.0 had a bug that v1.6.0.0 fixes" — readers don't know about v1.5.1.0; it's
+  a branch-internal artifact.
+- "The shipping headline of v1.5.1.0 was broken because..." — same reason. From main's
+  perspective, v1.5.1.0 was never released.
+- "Pre-fix tests encoded the broken behavior" — that's a contributor's victory lap,
+  not a user benefit.
+- "Two surgical edits, both in the dispatch path" — micro-narrative of the patch.
+
+Instead, describe the released system: "Browser-skills run end-to-end with the
+expected tab-access semantics." If a property of the shipped system is worth calling
+out (e.g., "skill spawns get permissive tab access; pair-agent tunnel tokens require
+ownership"), document it as a property, not as a fix. The shipped system is what
+the user gets; the path to that system is invisible to them.
+
+**When to write the CHANGELOG entry:**
+- At `/ship` time (Step 13), not during development or mid-branch.
+- The entry covers ALL commits on this branch vs the base branch.
+- Never fold new work into an existing CHANGELOG entry from a prior version that
+  already landed on main. If main has v0.10.0.0 and your branch adds features,
+  bump to v0.10.1.0 with a new entry — don't edit the v0.10.0.0 entry.
+
+**Key questions before writing:**
+1. What branch am I on? What did THIS branch change?
+2. Is the base branch version already released? (If yes, bump and create new entry.)
+3. Does an existing entry on this branch already cover earlier work? (If yes, replace
+   it with one unified entry for the final version.)
+
+**Merging main does NOT mean adopting main's version.** When you merge origin/main into
+a feature branch, main may bring new CHANGELOG entries and a higher VERSION. Your branch
+still needs its OWN version bump on top. If main is at v0.13.8.0 and your branch adds
+features, bump to v0.13.9.0 with a new entry. Never jam your changes into an entry that
+already landed on main. Your entry goes on top because your branch lands next.
+
+**After merging main, always check:**
+- Does CHANGELOG have your branch's own entry separate from main's entries?
+- Is VERSION higher than main's VERSION?
+- Is your entry the topmost entry in CHANGELOG (above main's latest)?
+If any answer is no, fix it before continuing.
+
+**After any CHANGELOG edit that moves, adds, or removes entries,** immediately run
+`grep "^## \[" CHANGELOG.md` to verify no duplicates and a sensible reverse-chronological
+order. Gaps between version numbers are fine. A branch that ships at v1.6.4.0 without
+a prior v1.5.2.0 or v1.5.3.0 entry on main is correct — those were branch-internal
+version numbers that never landed. Do not back-fill gaps with placeholder entries.
+
+**Never orphan branch-internal versions.** If your branch bumped VERSION several times
+during development (v1.5.1.0 → v1.5.2.0 → v1.6.4.0, say) and those earlier entries were
+never released to main, the final ship consolidates ALL of them into a single entry at
+the final version (v1.6.4.0). Collapse them — delete the old entries and move their
+content into the final entry, re-version table columns accordingly. Readers see one
+release, not a branch diary. Gaps are fine (v1.6.3.0 → v1.6.4.0 with no v1.5.x
+in between on main is correct).
+
+CHANGELOG.md is **for users**, not contributors. Write it like product release notes:
+
+- Lead with what the user can now **do** that they couldn't before. Sell the feature.
+- Use plain language, not implementation details. "You can now..." not "Refactored the..."
+- **Never mention TODOS.md, internal tracking, eval infrastructure, or contributor-facing
+  details.** These are invisible to users and meaningless to them.
+- Put contributor/internal changes in a separate "For contributors" section at the bottom.
+- Every entry should make someone think "oh nice, I want to try that."
+- No jargon: say "every question now tells you which project and branch you're in" not
+  "AskUserQuestion format standardized across skill templates via preamble resolver."
+
+**Only document what shipped between main and this change.** Readers do not care how
+we got here. Keep out of the CHANGELOG, always:
+
+- Branch resyncs, merge commits with main, rebase activity.
+- Plan approvals, review outcomes (CEO / eng / design / outside-voice / codex findings),
+  AskUserQuestion decisions, scope negotiations.
+- "Work queued," "plan approved," "in-progress," "will ship later" — the CHANGELOG
+  documents what DID ship, not what MIGHT ship.
+- Version-bump housekeeping when no user-facing work actually landed.
+
+If the diff between the base branch version and this version has no user-facing change
+(only merges, only CHANGELOG edits, only placeholder work), the honest entry is one
+sentence: "Version bump for branch-ahead discipline. No user-facing changes yet." Stop
+there. Do not pad. Do not explain the plan that will ship eventually. Do not narrate
+the branch's history. When real work lands, the entry will replace this at /ship time.
+
+## Entry format
 
 ### Release-summary format (every `## [X.Y.Z]` entry)
 

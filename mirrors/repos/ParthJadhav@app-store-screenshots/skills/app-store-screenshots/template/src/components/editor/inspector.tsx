@@ -75,7 +75,8 @@ import type {
 } from "@/lib/types";
 import { BackgroundControls } from "./background-controls";
 import { ScreenshotPicker } from "./screenshot-picker";
-import { getCanvas, getElementTransform } from "./slide-canvas";
+import { CalloutControls } from "./callout-controls";
+import { calloutAvailable, getCanvas, getElementTransform } from "./slide-canvas";
 
 type Props = {
   slide: Slide;
@@ -96,6 +97,7 @@ const ELEMENT_LABEL: Record<BuiltInElementId, string> = {
   caption: "Headline",
   device: "Device",
   deviceSecondary: "Back device",
+  callout: "Magnifier",
 };
 
 export function Inspector({
@@ -230,6 +232,16 @@ export function Inspector({
           </div>
         )}
 
+        <CalloutControls
+          slide={slide}
+          device={device}
+          orientation={orientation}
+          locale={locale}
+          available={calloutAvailable(slide, device)}
+          onChange={onChange}
+          onSelectElement={onSelectElement}
+        />
+
         {!isFeatureGraphic && (
           <ElementTransformControls
             slide={slide}
@@ -321,6 +333,7 @@ function ElementTransformControls({
   const present: ElementId[] = ["caption"];
   if (slide.layout !== "no-device") present.push("device");
   if (slide.layout === "two-devices") present.push("deviceSecondary");
+  if (slide.callout && calloutAvailable(slide, device)) present.push("callout");
   for (const element of slide.textElements || []) present.push(toTextElementId(element.id));
   for (const element of slide.imageElements || []) present.push(toImageElementId(element.id));
 
@@ -1145,5 +1158,6 @@ function defaultZ(id: ElementId): number {
   if (isImageElementId(id)) return 5;
   if (id === "deviceSecondary") return 2;
   if (id === "device") return 3;
+  if (id === "callout") return 5;
   return 4; // caption on top
 }

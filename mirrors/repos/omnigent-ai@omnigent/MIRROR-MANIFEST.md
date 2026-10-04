@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `omnigent-ai/omnigent` — 26 default patterns, 0 followed patterns, 64 file(s) materialized.
+Mirror of `omnigent-ai/omnigent` — 26 default patterns, 0 followed patterns, 65 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `omnigent-ai/omnigent` — 26 default patterns, 0 followed patterns, 6
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 64 |
+| Files         | 65 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -91,38 +91,39 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | ✓ | [`dev/resolve-agent/skills/resolve-inputs/review-remediation.md`](dev/resolve-agent/skills/resolve-inputs/review-remediation.md) |
 | 31 | ✓ | [`dev/resolve-agent/skills/resolve-inputs/SKILL.md`](dev/resolve-agent/skills/resolve-inputs/SKILL.md) |
 | 32 | ✓ | [`dev/resolve-agent/skills/resolve-inputs/ticket-only.md`](dev/resolve-agent/skills/resolve-inputs/ticket-only.md) |
-| 33 | ✓ | [`dev/resolve-agent/skills/resolve-publish/SKILL.md`](dev/resolve-agent/skills/resolve-publish/SKILL.md) |
-| 34 | ✓ | [`dev/resolve-agent/skills/resolve-repro-audit/SKILL.md`](dev/resolve-agent/skills/resolve-repro-audit/SKILL.md) |
-| 35 | ✓ | [`dev/resolve-agent/skills/resolve-review-pr/SKILL.md`](dev/resolve-agent/skills/resolve-review-pr/SKILL.md) |
-| 36 | ✓ | [`examples/debby/skills/debate/SKILL.md`](examples/debby/skills/debate/SKILL.md) |
-| 37 | ✓ | [`examples/deep-research/skills/deep-research/SKILL.md`](examples/deep-research/skills/deep-research/SKILL.md) |
-| 38 | ✓ | [`examples/polly/skills/cross-review/SKILL.md`](examples/polly/skills/cross-review/SKILL.md) |
-| 39 | ✓ | [`examples/polly/skills/fanout/SKILL.md`](examples/polly/skills/fanout/SKILL.md) |
-| 40 | ✓ | [`examples/polly/skills/investigate/SKILL.md`](examples/polly/skills/investigate/SKILL.md) |
-| 41 | ✓ | [`examples/scribe/skills/api-docs/SKILL.md`](examples/scribe/skills/api-docs/SKILL.md) |
-| 42 | ✓ | [`examples/scribe/skills/changelog/SKILL.md`](examples/scribe/skills/changelog/SKILL.md) |
-| 43 | ✓ | [`examples/scribe/skills/migration-guide/SKILL.md`](examples/scribe/skills/migration-guide/SKILL.md) |
-| 44 | ✓ | [`examples/sentinel/skills/security-audit/SKILL.md`](examples/sentinel/skills/security-audit/SKILL.md) |
-| 45 | ✓ | [`feature-map/skills/verify-omnigent/SKILL.md`](feature-map/skills/verify-omnigent/SKILL.md) |
-| 46 | ✓ | [`omnigent/onboarding/agent/AGENTS.md`](omnigent/onboarding/agent/AGENTS.md) |
-| 47 | ✓ | [`omnigent/onboarding/agent/skills/build-omnigent/SKILL.md`](omnigent/onboarding/agent/skills/build-omnigent/SKILL.md) |
-| 48 | ✓ | [`omnigent/onboarding/agent/skills/detect-framework/SKILL.md`](omnigent/onboarding/agent/skills/detect-framework/SKILL.md) |
-| 49 | ✓ | [`omnigent/onboarding/agent/skills/omnigent-knowledge/SKILL.md`](omnigent/onboarding/agent/skills/omnigent-knowledge/SKILL.md) |
-| 50 | ✓ | [`tests/e2e/AGENTS.md`](tests/e2e/AGENTS.md) |
-| 51 | ✓ | [`tests/integration/AGENTS.md`](tests/integration/AGENTS.md) |
-| 52 | ✓ | [`tests/resources/agents/codex_skills_all/skills/codex_e2e_xyz_count_b8d4e7/SKILL.md`](tests/resources/agents/codex_skills_all/skills/codex_e2e_xyz_count_b8d4e7/SKILL.md) |
-| 53 | ✓ | [`tests/resources/agents/codex_skills_all/skills/codex_e2e_xyz_greet_a3f9c2/SKILL.md`](tests/resources/agents/codex_skills_all/skills/codex_e2e_xyz_greet_a3f9c2/SKILL.md) |
-| 54 | ✓ | [`tests/resources/agents/codex_skills_list/skills/codex_e2e_xyz_count_b8d4e7/SKILL.md`](tests/resources/agents/codex_skills_list/skills/codex_e2e_xyz_count_b8d4e7/SKILL.md) |
-| 55 | ✓ | [`tests/resources/agents/codex_skills_list/skills/codex_e2e_xyz_greet_a3f9c2/SKILL.md`](tests/resources/agents/codex_skills_list/skills/codex_e2e_xyz_greet_a3f9c2/SKILL.md) |
-| 56 | ✓ | [`tests/resources/agents/codex_skills_none/skills/codex_e2e_xyz_count_b8d4e7/SKILL.md`](tests/resources/agents/codex_skills_none/skills/codex_e2e_xyz_count_b8d4e7/SKILL.md) |
-| 57 | ✓ | [`tests/resources/agents/codex_skills_none/skills/codex_e2e_xyz_greet_a3f9c2/SKILL.md`](tests/resources/agents/codex_skills_none/skills/codex_e2e_xyz_greet_a3f9c2/SKILL.md) |
-| 58 | ✓ | [`tests/resources/agents/pi_skills_all/skills/pi-e2e-xyz-count-d2f6e1/SKILL.md`](tests/resources/agents/pi_skills_all/skills/pi-e2e-xyz-count-d2f6e1/SKILL.md) |
-| 59 | ✓ | [`tests/resources/agents/pi_skills_all/skills/pi-e2e-xyz-greet-c4a8d5/SKILL.md`](tests/resources/agents/pi_skills_all/skills/pi-e2e-xyz-greet-c4a8d5/SKILL.md) |
-| 60 | ✓ | [`tests/resources/agents/pi_skills_list/skills/pi-e2e-xyz-count-d2f6e1/SKILL.md`](tests/resources/agents/pi_skills_list/skills/pi-e2e-xyz-count-d2f6e1/SKILL.md) |
-| 61 | ✓ | [`tests/resources/agents/pi_skills_list/skills/pi-e2e-xyz-greet-c4a8d5/SKILL.md`](tests/resources/agents/pi_skills_list/skills/pi-e2e-xyz-greet-c4a8d5/SKILL.md) |
-| 62 | ✓ | [`tests/resources/agents/pi_skills_none/skills/pi-e2e-xyz-count-d2f6e1/SKILL.md`](tests/resources/agents/pi_skills_none/skills/pi-e2e-xyz-count-d2f6e1/SKILL.md) |
-| 63 | ✓ | [`tests/resources/agents/pi_skills_none/skills/pi-e2e-xyz-greet-c4a8d5/SKILL.md`](tests/resources/agents/pi_skills_none/skills/pi-e2e-xyz-greet-c4a8d5/SKILL.md) |
-| 64 | ✓ | [`tests/resources/examples/archer/skills/deep-research/SKILL.md`](tests/resources/examples/archer/skills/deep-research/SKILL.md) |
+| 33 | ✓ | [`dev/resolve-agent/skills/resolve-investigate/SKILL.md`](dev/resolve-agent/skills/resolve-investigate/SKILL.md) |
+| 34 | ✓ | [`dev/resolve-agent/skills/resolve-publish/SKILL.md`](dev/resolve-agent/skills/resolve-publish/SKILL.md) |
+| 35 | ✓ | [`dev/resolve-agent/skills/resolve-repro-audit/SKILL.md`](dev/resolve-agent/skills/resolve-repro-audit/SKILL.md) |
+| 36 | ✓ | [`dev/resolve-agent/skills/resolve-review-pr/SKILL.md`](dev/resolve-agent/skills/resolve-review-pr/SKILL.md) |
+| 37 | ✓ | [`examples/debby/skills/debate/SKILL.md`](examples/debby/skills/debate/SKILL.md) |
+| 38 | ✓ | [`examples/deep-research/skills/deep-research/SKILL.md`](examples/deep-research/skills/deep-research/SKILL.md) |
+| 39 | ✓ | [`examples/polly/skills/cross-review/SKILL.md`](examples/polly/skills/cross-review/SKILL.md) |
+| 40 | ✓ | [`examples/polly/skills/fanout/SKILL.md`](examples/polly/skills/fanout/SKILL.md) |
+| 41 | ✓ | [`examples/polly/skills/investigate/SKILL.md`](examples/polly/skills/investigate/SKILL.md) |
+| 42 | ✓ | [`examples/scribe/skills/api-docs/SKILL.md`](examples/scribe/skills/api-docs/SKILL.md) |
+| 43 | ✓ | [`examples/scribe/skills/changelog/SKILL.md`](examples/scribe/skills/changelog/SKILL.md) |
+| 44 | ✓ | [`examples/scribe/skills/migration-guide/SKILL.md`](examples/scribe/skills/migration-guide/SKILL.md) |
+| 45 | ✓ | [`examples/sentinel/skills/security-audit/SKILL.md`](examples/sentinel/skills/security-audit/SKILL.md) |
+| 46 | ✓ | [`feature-map/skills/verify-omnigent/SKILL.md`](feature-map/skills/verify-omnigent/SKILL.md) |
+| 47 | ✓ | [`omnigent/onboarding/agent/AGENTS.md`](omnigent/onboarding/agent/AGENTS.md) |
+| 48 | ✓ | [`omnigent/onboarding/agent/skills/build-omnigent/SKILL.md`](omnigent/onboarding/agent/skills/build-omnigent/SKILL.md) |
+| 49 | ✓ | [`omnigent/onboarding/agent/skills/detect-framework/SKILL.md`](omnigent/onboarding/agent/skills/detect-framework/SKILL.md) |
+| 50 | ✓ | [`omnigent/onboarding/agent/skills/omnigent-knowledge/SKILL.md`](omnigent/onboarding/agent/skills/omnigent-knowledge/SKILL.md) |
+| 51 | ✓ | [`tests/e2e/AGENTS.md`](tests/e2e/AGENTS.md) |
+| 52 | ✓ | [`tests/integration/AGENTS.md`](tests/integration/AGENTS.md) |
+| 53 | ✓ | [`tests/resources/agents/codex_skills_all/skills/codex_e2e_xyz_count_b8d4e7/SKILL.md`](tests/resources/agents/codex_skills_all/skills/codex_e2e_xyz_count_b8d4e7/SKILL.md) |
+| 54 | ✓ | [`tests/resources/agents/codex_skills_all/skills/codex_e2e_xyz_greet_a3f9c2/SKILL.md`](tests/resources/agents/codex_skills_all/skills/codex_e2e_xyz_greet_a3f9c2/SKILL.md) |
+| 55 | ✓ | [`tests/resources/agents/codex_skills_list/skills/codex_e2e_xyz_count_b8d4e7/SKILL.md`](tests/resources/agents/codex_skills_list/skills/codex_e2e_xyz_count_b8d4e7/SKILL.md) |
+| 56 | ✓ | [`tests/resources/agents/codex_skills_list/skills/codex_e2e_xyz_greet_a3f9c2/SKILL.md`](tests/resources/agents/codex_skills_list/skills/codex_e2e_xyz_greet_a3f9c2/SKILL.md) |
+| 57 | ✓ | [`tests/resources/agents/codex_skills_none/skills/codex_e2e_xyz_count_b8d4e7/SKILL.md`](tests/resources/agents/codex_skills_none/skills/codex_e2e_xyz_count_b8d4e7/SKILL.md) |
+| 58 | ✓ | [`tests/resources/agents/codex_skills_none/skills/codex_e2e_xyz_greet_a3f9c2/SKILL.md`](tests/resources/agents/codex_skills_none/skills/codex_e2e_xyz_greet_a3f9c2/SKILL.md) |
+| 59 | ✓ | [`tests/resources/agents/pi_skills_all/skills/pi-e2e-xyz-count-d2f6e1/SKILL.md`](tests/resources/agents/pi_skills_all/skills/pi-e2e-xyz-count-d2f6e1/SKILL.md) |
+| 60 | ✓ | [`tests/resources/agents/pi_skills_all/skills/pi-e2e-xyz-greet-c4a8d5/SKILL.md`](tests/resources/agents/pi_skills_all/skills/pi-e2e-xyz-greet-c4a8d5/SKILL.md) |
+| 61 | ✓ | [`tests/resources/agents/pi_skills_list/skills/pi-e2e-xyz-count-d2f6e1/SKILL.md`](tests/resources/agents/pi_skills_list/skills/pi-e2e-xyz-count-d2f6e1/SKILL.md) |
+| 62 | ✓ | [`tests/resources/agents/pi_skills_list/skills/pi-e2e-xyz-greet-c4a8d5/SKILL.md`](tests/resources/agents/pi_skills_list/skills/pi-e2e-xyz-greet-c4a8d5/SKILL.md) |
+| 63 | ✓ | [`tests/resources/agents/pi_skills_none/skills/pi-e2e-xyz-count-d2f6e1/SKILL.md`](tests/resources/agents/pi_skills_none/skills/pi-e2e-xyz-count-d2f6e1/SKILL.md) |
+| 64 | ✓ | [`tests/resources/agents/pi_skills_none/skills/pi-e2e-xyz-greet-c4a8d5/SKILL.md`](tests/resources/agents/pi_skills_none/skills/pi-e2e-xyz-greet-c4a8d5/SKILL.md) |
+| 65 | ✓ | [`tests/resources/examples/archer/skills/deep-research/SKILL.md`](tests/resources/examples/archer/skills/deep-research/SKILL.md) |
 
 ---
 

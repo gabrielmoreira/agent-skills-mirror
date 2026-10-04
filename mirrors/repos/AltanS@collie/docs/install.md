@@ -51,8 +51,8 @@ a Herdr plugin can mirror tmux.
 
 ## Requirements
 
-Collie runs on Linux and macOS. Windows runs only the bridge and is community-supported; see
-[Windows](#windows).
+Collie runs on Linux and macOS. Windows 11 on x64 with Herdr is a supported host, still marked
+experimental; see [Windows support](#windows-support-experimental).
 
 | Tool | Needed for | Purpose |
 | --- | --- | --- |
@@ -87,7 +87,7 @@ Find your system below, run its commands, then go on to [Start it](#start-it).
 | NixOS, or Nix on any system | [Flake package](#nixos-and-nix) |
 | macOS on Apple Silicon | [The install script](#macos) |
 | macOS on Intel | [Build from source](#the-same-result-from-source) |
-| Windows | [Community-supported, bridge only](#windows) |
+| Windows 11 (x64, with Herdr) | [`install.ps1`, experimental](#windows-support-experimental) |
 | Any of these, inside Herdr | [Herdr plugin](#herdr-plugin) |
 
 ### Linux
@@ -158,14 +158,52 @@ PATH. The Tailscale app for Mac can install that command from its settings.
 macOS has no package yet. [mise](#mise) works on a Mac, as does the `aarch64-darwin`
 [Nix](#nix) output.
 
-### Windows
+### Windows support (experimental)
 
-> **Experimental.** Windows is community-supported. Fixes are best effort.
+> **Experimental.** The install was tested against the public v1.16.0 release on a Windows 11
+> virtual machine, and the update was rehearsed against local copies of the release files. Phone
+> access over HTTP through Tailscale Serve was run too. An update between two real releases and the
+> HTTPS form of phone access are not tested yet. The release check requires the Windows zip from now
+> on. Only the maintainer can override that, for a Linux hotfix. "Supported" means the maintainer
+> owns the code and tests it; "experimental" stays until the conditions on the Windows page are all
+> met.
+> [Collie on Windows](windows.md) has the whole page.
 
-The bridge runs on Windows against the Herdr Windows beta. `collie start` and the rest of the
-launcher do not. Run the bridge with Bun, and supply your own front door because `tailscale serve`
-integration is unavailable there. [Windows](../README.md#windows-experimental) in the README has
-the steps. The community Task Scheduler script that lived in `contrib/windows/` is retired.
+Run `install.ps1`. It needs no Bun, Git or `bash`:
+
+```powershell
+irm https://colliepwa.dev/install.ps1 | iex
+```
+
+To read the script first, save it, open it and run it as a file:
+
+```powershell
+Invoke-WebRequest -OutFile install.ps1 https://colliepwa.dev/install.ps1
+notepad install.ps1
+powershell -ExecutionPolicy Bypass -File .\install.ps1
+```
+
+Then open a new terminal and start Herdr. Herdr takes over that terminal, so open a second terminal
+or a Herdr pane and run `collie start` there.
+[Zero to phone](windows.md#zero-to-phone) has every step, including how to open Collie on your
+phone.
+
+What to know before you start:
+
+- **Windows 11 on x64, with Herdr only.** tmux, zellij, Windows 10 and Windows on ARM are not
+  covered.
+- **The binary is unsigned.** SmartScreen can ask before it runs, and Smart App Control can block it.
+  [Windows page](windows.md#unsigned-binary-smartscreen-and-smart-app-control).
+- **You publish the address yourself.** On Linux and macOS `collie start` runs `tailscale serve`
+  for you. On Windows it does not, so you run it by hand: [Reaching it from your phone](windows.md#reaching-it-from-your-phone) has the
+  steps with Tailscale, and
+  [Variant C](deployment.md#variant-c--reverse-proxy-as-the-only-front-door-no-tailscale) covers a
+  reverse proxy.
+- **A Windows machine cannot join a crew in this release.**
+- **A build from source needs Git for Windows' `bash`.** The zip needs no toolchain.
+- **A source checkout never updates itself on Windows.** Moving to the zip install is a one-time
+  manual step: `collie uninstall`, then `install.ps1`. After that `collie update` works.
+  [Update](windows.md#update) has the detail.
 
 ### Standalone
 

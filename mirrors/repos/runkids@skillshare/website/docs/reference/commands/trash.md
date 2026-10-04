@@ -26,60 +26,9 @@ skillshare trash --all list              # List trashed skills + agents
 
 ## Interactive TUI
 
-In a TTY, `trash list` launches an interactive TUI with multi-select, filtering, and inline restore/delete operations. Each item shows a kind badge: `[S]` for skills, `[A]` for agents.
+In a TTY, `trash list` opens an interactive list of trashed items, newest first. Select one or more to restore them or delete them permanently, or empty the whole trash; each asks first. Opening an item shows its files, so you can check it before restoring. The keys are listed at the bottom of the screen. When using `--all` or without a kind filter, skills and agents are listed together.
 
-```
-Trash (global) — 5 items
-
-  [ ] [S] my-skill    (512 B, 2d ago)
-  [x] [S] old-tool    (1.2 KB, 5d ago)
-  [ ] [A] tutor       (2.0 KB, 3d ago)
-  [ ] [S] another     (128 B, 1d ago)
-
-  ─────────────────────────────────────────
-  Name:         old-tool
-  Type:         Skill
-  Trashed:      2026-02-27 14:30:05
-  Size:         1.2 KB
-  Path:         ~/.local/share/skillshare/trash/old-tool_...
-
-  ── SKILL.md ──────────────────────────────
-  ---
-  name: old-tool
-  description: A helpful tool
-  ---
-  # old-tool
-  ...
-
-  ↑↓ navigate  / filter  space select  r restore(1)  d delete(1)  D empty  q quit
-```
-
-When using `--all` or without a kind filter, the TUI merges skills and agents into a single list sorted by date (newest first).
-
-### Key Bindings
-
-| Key | Action |
-|-----|--------|
-| `↑`/`↓` | Navigate items |
-| `←`/`→` | Change page |
-| `/` | Enter filter mode (substring match on name) |
-| `Space` | Toggle select current item |
-| `a` | Toggle select all visible items |
-| `r` | Restore selected items (with confirmation) |
-| `d` | Permanently delete selected items (with confirmation) |
-| `D` | Empty all trash (ignores selection, with confirmation) |
-| `Ctrl+d`/`Ctrl+u` | Scroll detail panel down/up |
-| `q`/`Ctrl+C` | Quit |
-
-In confirmation mode: `y`/`Enter` to confirm, `n`/`Esc` to cancel.
-
-### Batch Operations
-
-When multiple items are selected, `r` and `d` operate on all of them. If some items fail (e.g., restoring a skill whose name already exists in source), the TUI continues processing the remaining items and shows a combined result:
-
-```
-Restored 2 item(s)  Failed: my-skill: already exists
-```
+If some items fail, for example restoring a skill whose name already exists in source, the rest are still processed and the result lists what failed.
 
 Use `--no-tui` to skip the TUI and print plain text instead:
 
@@ -116,11 +65,11 @@ Plain text output:
 
 ```
 Trash
-  my-skill      (1.2 KB, 2d ago)
-  old-helper    (800 B, 5d ago)
+  my-skill      1.2 KB · 2d ago
+  old-helper    800 B · 5d ago
 
-2 item(s), 2.0 KB total
-Items are automatically cleaned up after 7 days
+2 items, 2.0 KB
+  Each item is removed for good 7 days after it was trashed
 ```
 
 ### restore
@@ -133,9 +82,10 @@ skillshare trash agents restore tutor
 ```
 
 ```
-✓ Restored: my-skill
-ℹ Trashed 2d ago, now back in ~/.config/skillshare/skills
-ℹ Run 'skillshare sync' to update targets
+✓ Restore   my-skill → ~/.config/skillshare/skills · trashed 2d ago
+
+Next
+  skillshare sync  link it into your targets again
 ```
 
 For agents, the restore hint will suggest `skillshare sync agents` instead.
@@ -152,7 +102,7 @@ skillshare trash agents delete tutor
 ```
 
 ```
-✓ Permanently deleted: my-skill
+✓ Permanently deleted my-skill
 ```
 
 ### empty
@@ -165,9 +115,9 @@ skillshare trash agents empty
 ```
 
 ```
-⚠ This will permanently delete 3 item(s) from trash
-Continue? [y/N]: y
-✓ Emptied trash: 3 item(s) permanently deleted
+! This will permanently delete 3 items from trash
+? Continue? [y/N] y
+✓ Emptied trash: 3 items permanently deleted · 0.1s
 ```
 
 ## Backup vs Trash

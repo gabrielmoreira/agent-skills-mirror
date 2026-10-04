@@ -17,7 +17,7 @@ import {
 } from "@dnd-kit/sortable";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { Device, Orientation, Slide, Theme } from "@/lib/types";
+import type { Device, Orientation, Scene, Slide, Theme } from "@/lib/types";
 import { newSlide } from "@/lib/defaults";
 import { SlideThumb } from "./slide-thumb";
 
@@ -32,6 +32,7 @@ type Props = {
   appIcon?: string;
   fontFamily?: string;
   connectedCanvas: boolean;
+  scene?: Scene;
   disabled?: boolean;
   onReorder: (next: Slide[]) => void;
   onSelect: (id: string) => void;
@@ -51,6 +52,7 @@ export function Sidebar({
   appIcon,
   fontFamily,
   connectedCanvas,
+  scene,
   disabled,
   onReorder,
   onSelect,
@@ -100,6 +102,7 @@ export function Sidebar({
                   appIcon={appIcon}
                   fontFamily={fontFamily}
                   connectedCanvas={connectedCanvas}
+                  scene={scene}
                   onSelect={() => onSelect(slide.id)}
                   onDelete={() => onDelete(slide.id)}
                   onDuplicate={() => onDuplicate(slide.id)}

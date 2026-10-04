@@ -81,7 +81,7 @@ Find duplicate files by MD5 hash.
 | `searchPath` | string | No | "Assets" | Search path |
 | `limit` | int | No | 50 | Max groups |
 
-**Returns**: `{success, duplicateGroupCount, totalWastedBytes, totalWastedMB, groups: [{count, sizeBytes, wastedBytes, files}]}`
+**Returns**: `{success, duplicateGroupCount, totalWastedBytes, totalWastedMB, groups: [{count, sizeBytes, wastedBytes, files}], skipped: [{path, reason}]}` — `skipped` lists files that could not be read for hashing, so they are not silently missing from the groups.
 
 ```python
 # Find duplicate textures
@@ -114,7 +114,9 @@ Delete specified assets with **two-step confirmation**.
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `paths` | string[] | Yes | Asset paths to delete |
+| `paths` | string[] | No* | Asset paths to delete |
+
+*Required for this preview step; omitted in Step 2, which deletes exactly the paths already captured by `confirmToken`.
 
 **Returns**: `{action: "preview", confirmToken, assetsToDelete, message}`
 

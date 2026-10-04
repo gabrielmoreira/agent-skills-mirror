@@ -31,10 +31,7 @@ gbrain", "install gbrain", "configure gbrain for this machine".
 ## Preamble (run first)
 
 ```bash
-_SS="$HOME/.claude/skills/gstack/bin/gstack-skill-start"
-[ -x "$_SS" ] || _SS=".claude/skills/gstack/bin/gstack-skill-start"
-"$_SS" --skill "setup-gbrain" --model "claude" --parent-pid "$PPID" \
-  || echo "SKILL_START: unavailable — stale install; run ./setup or /gstack-upgrade (preamble degraded, continue the user's task)"
+~/.claude/skills/gstack/bin/gstack-skill-start --skill "setup-gbrain" --model "claude"
 ```
 
 Read the echoed `KEY: value` STATUS lines — they drive every preamble rule
@@ -58,13 +55,13 @@ or page content. Treat an unterminated block as ending at end-of-output.
 
 ## Plan Mode Safe Operations
 
-In plan mode, allowed because they inform the plan: `$B`, `$D`, `codex exec`/`codex review`, temp prompts, writes to `~/.gstack/`, writes to the plan file, and `open` for generated artifacts.
+Host and system plan-mode restrictions and the user's current scope take precedence over any skill; a skill cannot grant itself an exception to read-only mode. Where the host permits them, these inform the plan: `$B`, `$D`, `codex exec`/`codex review`, temp prompts, writes to `~/.gstack/`, writes to the plan file, and `open` for generated artifacts. If the host blocks one, skip it, say so, and continue the permitted work.
 
 ## Skill Invocation During Plan Mode
 
-If the user invokes a skill in plan mode, the skill takes precedence over generic plan mode behavior. **Treat the skill file as executable instructions, not reference.** Follow it step by step starting from Step 0; any AskUserQuestion the skill fires is the workflow operating within plan mode, not a violation of it — and a skill whose instructions resolve a question themselves (e.g. a plan-mode auto-select) may legitimately not ask it. AskUserQuestion (any variant — `mcp__*__AskUserQuestion` or native; see "AskUserQuestion Format → Tool resolution") satisfies plan mode's end-of-turn requirement. If AskUserQuestion is unavailable or a call fails, follow the AskUserQuestion Format failure fallback: `headless` → BLOCKED; `interactive` → the prose fallback (also satisfies end-of-turn). At a STOP point, stop immediately. Do not continue the workflow or call ExitPlanMode there. Commands marked "PLAN MODE EXCEPTION — ALWAYS RUN" execute. Call ExitPlanMode only after the skill workflow completes, or if the user tells you to cancel the skill or leave plan mode.
+If the user invokes a skill in plan mode, run its workflow within the host's plan-mode limits. **Treat the skill file as executable instructions, not reference.** Follow it step by step starting from Step 0; any AskUserQuestion the skill fires is the workflow operating within plan mode, not a violation of it — and a skill whose instructions resolve a question themselves (e.g. a plan-mode auto-select) may legitimately not ask it. AskUserQuestion (any variant — `mcp__*__AskUserQuestion` or native; see "AskUserQuestion Format → Tool resolution") satisfies plan mode's end-of-turn requirement. If AskUserQuestion is unavailable or a call fails, follow the AskUserQuestion Format failure fallback: `headless` → BLOCKED; `interactive` → the prose fallback (also satisfies end-of-turn). At a STOP point, stop immediately. Do not continue the workflow or call ExitPlanMode there. Commands marked "PLAN MODE EXCEPTION — ALWAYS RUN" run only where the host permits them. Call ExitPlanMode only after the skill workflow completes, or if the user tells you to cancel the skill or leave plan mode.
 
-If `PROACTIVE` is `"false"`, do not auto-invoke or proactively suggest skills. If a skill seems useful, ask: "I think /skillname might help here — want me to run it?"
+If `PROACTIVE` is `false`, do not auto-invoke or suggest skills, including by asking whether to run one. Only run skills the user explicitly invokes.
 
 If `SKILL_PREFIX` is `"true"`, suggest/invoke `/gstack-*` names. Disk paths stay `~/.claude/skills/gstack/[skill-name]/SKILL.md`.
 
@@ -207,8 +204,9 @@ turns out to be unnecessary, mark it skipped with a one-line reason.
 non-trivial new features), briefly state your approach before executing. This lets
 the user course-correct cheaply instead of mid-flight.
 
-**Dedicated tools over Bash.** Prefer Read, Edit, Write, Glob, Grep over shell
-equivalents (cat, sed, find, grep). The dedicated tools are cheaper and clearer.
+**Dedicated tools over Bash.** Prefer the host's dedicated file tools (Read, Edit,
+Write, and its search tools when it has them) over shell equivalents (cat, sed,
+find, grep). The dedicated tools are cheaper and clearer.
 
 ## Voice
 
@@ -236,30 +234,7 @@ Bad closer: a tour of every edit, a restatement of the plan, and three paragraph
 At session start or after compaction, recover recent project context.
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-slug 2>/dev/null)"
-_BRANCH=$(git branch --show-current 2>/dev/null | tr -cd 'a-zA-Z0-9._/-') || :; _BRANCH=${_BRANCH:-unknown}
-eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
-_PROJ="$GSTACK_STATE_ROOT/projects/${SLUG:-unknown}"
-if [ -d "$_PROJ" ]; then
-  echo "--- RECENT ARTIFACTS ---"
-  find "$_PROJ/ceo-plans" "$_PROJ/checkpoints" -type f -name "*.md" 2>/dev/null | xargs -r ls -t 2>/dev/null | head -3
-  [ -f "$_PROJ/${BRANCH:-unknown}-reviews.jsonl" ] && echo "REVIEWS: $(wc -l < "$_PROJ/${BRANCH:-unknown}-reviews.jsonl" | tr -d ' ') entries"
-  [ -f "$_PROJ/timeline.jsonl" ] && tail -5 "$_PROJ/timeline.jsonl"
-  if [ -f "$_PROJ/timeline.jsonl" ]; then
-    _LAST=$(grep "\"branch\":\"${_BRANCH}\"" "$_PROJ/timeline.jsonl" 2>/dev/null | grep '"event":"completed"' | tail -1)
-    [ -n "$_LAST" ] && echo "LAST_SESSION: $_LAST"
-    _RECENT_SKILLS=$(grep "\"branch\":\"${_BRANCH}\"" "$_PROJ/timeline.jsonl" 2>/dev/null | grep '"event":"completed"' | tail -3 | grep -o '"skill":"[^"]*"' | sed 's/"skill":"//;s/"//' | tr '\n' ',')
-    [ -n "$_RECENT_SKILLS" ] && echo "RECENT_PATTERN: $_RECENT_SKILLS"
-  fi
-  _LATEST_CP=$(find "$_PROJ/checkpoints" -name "*.md" -type f 2>/dev/null | xargs -r ls -t 2>/dev/null | head -1)
-  [ -n "$_LATEST_CP" ] && echo "LATEST_CHECKPOINT: $_LATEST_CP"
-  if [ -f "$_PROJ/decisions.active.json" ]; then
-    echo "--- ACTIVE DECISIONS (recent, scope-relevant) ---"
-    ~/.claude/skills/gstack/bin/gstack-decision-search --recent 5 2>/dev/null
-    echo "--- END DECISIONS ---"
-  fi
-  echo "--- END ARTIFACTS ---"
-fi
+~/.claude/skills/gstack/bin/gstack-context-recovery
 ```
 
 If artifacts are listed, read the newest useful one. If `LAST_SESSION` or `LATEST_CHECKPOINT` appears, give a 2-sentence welcome back summary. If `RECENT_PATTERN` clearly implies a next skill, suggest it once.
@@ -277,7 +252,7 @@ Applies to AskUserQuestion, user replies, and findings. AskUserQuestion Format i
 - User-turn override wins: if the current message asks for terse / no explanations / just the answer, skip this section.
 - Terse mode (EXPLAIN_LEVEL: terse): no glosses, no outcome-framing layer, shorter responses.
 
-Curated jargon list lives at `~/.claude/skills/gstack/scripts/jargon-list.json` (80+ terms). On the first jargon term you encounter this session, Read that file once; treat the `terms` array as the canonical list. The list is repo-owned and may grow between releases.
+Curated jargon list lives at `~/.claude/skills/gstack/scripts/jargon-list.json`. On the first jargon term you encounter this session, Read that file once; treat the `terms` array as the canonical list. The list is repo-owned and may grow between releases.
 
 
 ## Completeness Principle — Boil the Ocean
@@ -296,13 +271,13 @@ A claimed limitation or requirement ("the API can't do this", "X requires a cred
 
 ## Context Health (soft directive)
 
-During long-running skill sessions, periodically write a brief `[PROGRESS]` summary: done, next, surprises.
+During long-running skill sessions, when you finish a phase or change direction, tell the user in a sentence or two what is done, what is next, and anything surprising.
 
 If you are looping on the same diagnostic, same file, or failed fix variants, STOP and reassess. Consider escalation or /context-save. Progress summaries must NEVER mutate git state.
 
 ## Question Tuning (skip entirely if `QUESTION_TUNING: false`)
 
-Before each decision brief (AskUserQuestion or Conductor/fallback prose), choose `question_id` from `~/.claude/skills/gstack/scripts/question-registry.ts` or `{skill}-{slug}`, then run `printf '%s' "<question summary>" | ~/.claude/skills/gstack/bin/gstack-question-preference --check "<id>" --summary-stdin` (piped summary feeds the one-way keyword net, #2024). `AUTO_DECIDE` means choose the recommended option and say "Auto-decided [summary] → [option] (your preference). Change with /plan-tune." `ASK_NORMALLY` means ask.
+Before each decision brief (AskUserQuestion or Conductor/fallback prose), choose `question_id` from `~/.claude/skills/gstack/scripts/question-registry.ts` or `{skill}-{slug}`, then run `printf '%s' "<question summary>" | ~/.claude/skills/gstack/bin/gstack-question-preference --check "<id>" --summary-stdin` (so the one-way-door keyword check sees the text). `AUTO_DECIDE` means choose the recommended option and say "Auto-decided [summary] → [option] (your preference). Change with /plan-tune." `ASK_NORMALLY` means ask.
 
 **Embed the question_id as a marker in every asked brief**, including ad hoc IDs. Use the same ID for its preference check, question marker, and log. Include `<gstack-qid:{question_id}>` once in the question text itself, not only a command or log. On prose paths, use the explicit reply line. Without the marker, the PreToolUse hook treats AskUserQuestion as observed-only and never auto-decides.
 
@@ -336,13 +311,12 @@ Escalate after 3 failed attempts, uncertain security-sensitive changes, or scope
 
 ## Operational Self-Improvement
 
-Before completing, review the session for durable learnings and log each one —
-this step ALWAYS runs, it is not conditional on something feeling noteworthy
-(#2402: 43 of 44 learnings came from explicit /learn because "if you
-discovered" read as optional). A durable learning is a project quirk, command
-fix, pitfall, or pattern that would save 5+ minutes in a future session. If
-the review genuinely surfaces none, state "No durable learnings this session"
-in your completion summary — an explicit empty result, not a skipped step.
+Before completing, review the session for durable learnings and log each one.
+The review runs every time, not only when something felt noteworthy. A durable
+learning is a project quirk, command fix, pitfall, or pattern that would save
+5+ minutes in a future session. If the review genuinely surfaces none, state
+"No durable learnings this session" in your completion summary — an explicit
+empty result, not a skipped step.
 
 ```bash
 ~/.claude/skills/gstack/bin/gstack-learnings-log '{"skill":"SKILL_NAME","type":"operational","key":"SHORT_KEY","insight":"DESCRIPTION","confidence":N,"source":"observed"}'
@@ -358,7 +332,7 @@ preamble's skill-start output echoed. It also drains the artifacts-sync queue
 (the former skill-end sync step — do not run gstack-brain-sync separately).
 
 **PLAN MODE EXCEPTION — ALWAYS RUN:** This writes telemetry to
-`~/.gstack/analytics/`, matching preamble analytics writes.
+`$GSTACK_STATE_ROOT/analytics/`, matching preamble analytics writes.
 
 ```bash
 ~/.claude/skills/gstack/bin/gstack-skill-end --skill "setup-gbrain" --outcome OUTCOME \
@@ -378,7 +352,7 @@ Skills that run plan reviews (`/plan-*-review`, `/codex review`) include the EXI
 # /setup-gbrain — Coding-Agent Onboarding for gbrain
 
 You are setting up gbrain (https://github.com/garrytan/gbrain), a persistent
-knowledge base, on the user's local Mac so that this coding agent (typically
+knowledge base, on the user's machine so that this coding agent (typically
 Claude Code) can call it as both a CLI and an MCP tool.
 
 **Scope honesty:** This skill's MCP registration step (5a) uses
@@ -386,12 +360,12 @@ Claude Code) can call it as both a CLI and an MCP tool.
 (Cursor, Codex CLI, etc.) will still get the gbrain CLI on PATH — they can
 register `gbrain serve` in their own MCP config manually after setup.
 
-**Audience:** local-Mac users. openclaw/hermes agents typically run in cloud
+**Audience:** local machines (macOS, Linux, Windows). openclaw/hermes agents typically run in cloud
 docker containers with their own gbrain; "sharing" a brain between them and
 local Claude Code is only possible through shared Postgres (Supabase).
 
 ## User-invocable
-When the user types `/setup-gbrain`, run this skill. Three shortcut modes:
+When the user types `/setup-gbrain`, run this skill. Invocation modes:
 
 - `/setup-gbrain` — full flow (default)
 - `/setup-gbrain --repo` — only flip the per-remote policy for the current repo
@@ -415,7 +389,7 @@ sections. Read a section in full before doing its step; do not work from memory.
 | running the Step 1.5 broken-engine remediation — Step 1's detect returned `gbrain_local_status` of `broken-db` or `broken-config` and no shortcut flag was passed | `sections/engine-remediation.md` |
 | initializing the brain in Step 4 — run ONLY the procedure for the path picked in Step 2 (Paths 1/2a/2b/3/4 or Switch; also holds the PAT scope disclosure that `--cleanup-orphans` re-uses) | `sections/brain-init.md` |
 | running the Step 7.5 transcript & memory ingest gate on Paths 1, 2a, 2b, or 3 (Path 4 skips this section entirely — see the skeleton's skip note) | `sections/transcript-gate.md` |
-| persisting the Step 8 `## GBrain Configuration` block to CLAUDE.md (and the Search Guidance block after Step 9 passes) | `sections/claude-md-persist.md` |
+| persisting the Step 8 `## GBrain Configuration` block to CLAUDE.md | `sections/claude-md-persist.md` |
 
 ---
 
@@ -428,10 +402,10 @@ sections. Read a section in full before doing its step; do not work from memory.
 Capture the JSON output. It contains: `gbrain_on_path`, `gbrain_version`,
 `gbrain_config_exists`, `gbrain_engine`, `gbrain_doctor_ok`, `gbrain_mcp_mode`,
 `gstack_brain_sync_mode`, `gstack_brain_git`, `gstack_artifacts_remote`, and
-the v1.34.0.0+ `gbrain_local_status` field (one of: `ok`, `no-cli`,
+the `gbrain_local_status` field (one of: `ok`, `no-cli`,
 `missing-config`, `broken-config`, `broken-db`, `engine-locked`, `timeout`,
-`thin-client`). Treat `timeout` like `ok` (slow-but-healthy engine, #1964) — it
-never triggers Step 1.5 remediation. Treat `thin-client` like `ok` too (#2051):
+`thin-client`). Treat `timeout` like `ok` (slow-but-healthy engine) — it
+never triggers Step 1.5 remediation. Treat `thin-client` like `ok` too:
 the machine is a thin client of a remote-HTTP MCP brain, no local engine by
 design — brain-aware blocks render, and the detect JSON carries
 `gbrain_thin_client: {probed: false}` (config verified; remote reachability
@@ -448,7 +422,7 @@ invocation flags here and skip to the matching step.
 
 ---
 
-## Step 1.5: Broken-local-engine remediation (plan D4)
+## Step 1.5: Broken-local-engine remediation
 
 Read `gbrain_local_status` from the Step 1 detect output. **If it's `broken-db`
 or `broken-config` AND no shortcut flag was passed**, the user has a
@@ -533,7 +507,7 @@ Options (present based on detected state):
 - **2b — Supabase, create manually.** Walk through supabase.com signup
   yourself; paste the URL back when ready.
 - **3 — PGLite local.** Zero accounts, ~30 seconds. Isolated brain on this
-  Mac only. Best for try-first.
+  machine only. Best for try-first.
 - **4 — Remote gbrain MCP.** Someone else (or another machine of yours) is
   already running `gbrain serve` with HTTP transport. You paste the MCP URL
   + a bearer token; this skill registers it as your MCP. No local brain DB,
@@ -541,7 +515,7 @@ Options (present based on detected state):
   machines or run by a teammate.
 - **Switch** (only if Step 1 detected an existing engine): "You already have
   a `<engine>` brain. Migrate it to the other engine?" → runs
-  `gbrain migrate --to <other>` wrapped in `timeout 180s` (D9).
+  `gbrain migrate --to <other>` wrapped in `timeout 180s`.
 
 Do NOT silently pick; fire the AskUserQuestion.
 
@@ -559,9 +533,9 @@ For Paths 1, 2a, 2b, 3, switch — only if `gbrain_on_path=false`:
 ~/.claude/skills/gstack/bin/gstack-gbrain-install
 ```
 
-The installer runs D5 detect-first (probes `~/git/gbrain`, `~/gbrain` first),
-then D19 PATH-shadow validation (post-link `gbrain --version` must match
-install-dir `package.json`). On D19 failure the installer exits 3 with a
+The installer reuses an existing checkout first (probes `~/git/gbrain`, `~/gbrain`),
+then validates PATH shadowing (post-link `gbrain --version` must match
+install-dir `package.json`). On a PATH-shadow failure the installer exits 3 with a
 clear remediation menu; surface the full output to the user and STOP. Do not
 continue the skill — the environment is broken until the user fixes PATH.
 
@@ -597,7 +571,7 @@ doctor output and STOP.
 
 ---
 
-## Step 5a: Register gbrain as Claude Code MCP (D18)
+## Step 5a: Register gbrain as Claude Code MCP
 
 Only if `which claude` resolves. Ask: "Give Claude Code a typed tool surface
 for gbrain? (recommended yes)"
@@ -655,7 +629,7 @@ session start, not mid-session."
 
 ---
 
-## Step 6: Per-remote policy (D3 triad, gated repo-import)
+## Step 6: Per-remote policy (gated repo-import)
 
 If we're in a git repo with an `origin` remote, check the policy:
 
@@ -690,11 +664,7 @@ For `/setup-gbrain --repo` invocations, execute ONLY Step 6 and exit.
 
 ## Step 7: Offer artifacts sync + wire it into gbrain
 
-Renamed from "session memory sync" in v1.27.0.0 — the on-disk concept is
-artifacts (CEO plans, designs, /investigate reports, retros) rather than
-"session memory," which was a confusing name for what was always a
-human-readable artifact bucket. Behavioral transcript ingest is its own
-step (7.5) with its own option set.
+Behavioral transcript ingest is a separate step (7.5).
 
 Separate AskUserQuestion: "Also sync your gstack artifacts (CEO plans,
 designs, reports, retros) to a private git repo that gbrain can index
@@ -719,8 +689,8 @@ URL_FORM=${URL_FORM_SUPPORTED:-false}
 ```
 
 `gstack-artifacts-init` always prints a "Send this to your brain admin" block
-at the end with the exact `gbrain sources add` command. Per codex Finding #3:
-the skill never auto-executes server-side gbrain commands; even if the user
+at the end with the exact `gbrain sources add` command. The skill
+never auto-executes server-side gbrain commands; even if the user
 IS the brain admin, copy-pasting the printed command is the consistent UX.
 
 ### Path 4 (Remote MCP) — done after artifacts-init
@@ -734,7 +704,7 @@ brain admin runs the printed command on the brain host instead. Skip to Step 7.5
 Then wire the artifacts repo into gbrain so its content is searchable from
 any gbrain client. The helper creates a `git worktree` of `~/.gstack/`,
 registers it as a federated source via `gbrain sources add --path
---federated`, and runs an initial `gbrain sync`. Local-Mac only.
+--federated`, and runs an initial `gbrain sync`. Local-stdio paths only.
 
 Capture the database URL out of `~/.gbrain/config.json` first and pass it
 explicitly so the wireup is robust against any other process rewriting
@@ -762,14 +732,15 @@ the prereq is fixed.
 
 ---
 
-## Step 7.5: Transcript & memory ingest gate
+## Step 7.5: Transcript ingest consent
 
 **SKIP entirely on Path 4 (Remote MCP).** Transcript ingest shells out to
 the local `gbrain` CLI which Path 4 doesn't install. Remote-mode users
 rely on the brain server's own ingest cadence — if your brain admin wants
 this machine's transcripts indexed, they pull from your `gstack-artifacts-$USER`
-repo (set up in Step 7) on whatever schedule they prefer. Set
-`gstack-config set transcript_ingest_mode off` and continue to Step 8.
+repo (set up in Step 7) on whatever schedule they prefer. Do not store a
+transcript mode for the user here; transcripts stay skipped until they choose
+(`/sync-gbrain` asks). Continue to Step 8.
 
 For Paths 1, 2a, 2b, 3, run the ingest gate:
 
@@ -781,10 +752,11 @@ For Paths 1, 2a, 2b, 3, run the ingest gate:
 ## Step 8: Persist `## GBrain Configuration` in CLAUDE.md
 
 CLAUDE.md is the audit trail: after a successful setup, persist the
-configuration block. The exact block formats (remote-http vs local-stdio) and
-the post-Step-9 Search Guidance write live in the claude-md-persist section.
+configuration block. The exact block formats (remote-http vs local-stdio) live
+in the claude-md-persist section. The search-guidance block is written only by
+`/sync-gbrain` (Step 10 offers it).
 
-> **STOP.** Before persisting the Step 8 `## GBrain Configuration` block to CLAUDE.md (and the Search Guidance block after Step 9 passes), Read `~/.claude/skills/gstack/setup-gbrain/sections/claude-md-persist.md` and execute it
+> **STOP.** Before persisting the Step 8 `## GBrain Configuration` block to CLAUDE.md, Read `~/.claude/skills/gstack/setup-gbrain/sections/claude-md-persist.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.
 
 ---
@@ -830,7 +802,7 @@ and STOP with a NEEDS_CONTEXT escalation.
 
 ---
 
-## Step 9.5: Brain trust policy (v1.48 brain-aware planning, D4 / Phase 1.5)
+## Step 9.5: Brain trust policy
 
 The brain trust policy controls whether gstack auto-pushes `~/.gstack/`
 artifacts and writes calibration takes back to this brain. It's per-
@@ -885,7 +857,7 @@ After answer, persist:
 ```
 
 If `personal` was selected AND `artifacts_sync_mode` is still `off`, also
-default it to `full` (D4 auto-push convention):
+default it to `full` (personal brains auto-push):
 
 ```bash
 _CURRENT_SYNC=$(~/.claude/skills/gstack/bin/gstack-config get artifacts_sync_mode 2>/dev/null || echo off)
@@ -902,13 +874,13 @@ or first-time-after-upgrade users.
 ## Step 10: GREEN/YELLOW/RED verdict block (idempotent doctor output)
 
 After Steps 1-9 complete, summarize. Re-running `/setup-gbrain` on a
-configured Mac is a first-class doctor path: every step detects existing
+configured machine is a first-class doctor path: every step detects existing
 state, repairs only what's missing, and reports here.
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
+GSTACK_STATE_ROOT=$(~/.claude/skills/gstack/bin/gstack-paths --get GSTACK_STATE_ROOT); : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
 ~/.claude/skills/gstack/bin/gstack-gbrain-detect 2>/dev/null || true
-~/.claude/skills/gstack/bin/gstack-config get transcript_ingest_mode 2>/dev/null || echo "off"
+~/.claude/skills/gstack/bin/gstack-config has transcript_ingest_mode && echo "transcript_ingest_mode: $(~/.claude/skills/gstack/bin/gstack-config get transcript_ingest_mode)" || echo "transcript_ingest_mode: not set"
 ~/.claude/skills/gstack/bin/gstack-config get artifacts_sync_mode 2>/dev/null || echo "off"
 [ -f "$GSTACK_STATE_ROOT"/.gbrain-sync-state.json ] && cat "$GSTACK_STATE_ROOT"/.gbrain-sync-state.json || echo "{}"
 ```
@@ -928,7 +900,7 @@ gbrain status: GREEN  (mode: remote-http)
   Repo policy ..... OK   {read-write|read-only|deny}
   Artifacts repo .. OK   {gstack_artifacts_remote URL}
   Artifacts sync .. OK   {artifacts_sync_mode}
-  Transcripts ..... OK   route to artifacts repo → remote brain (plan D11)
+  Transcripts ..... OK   {recent|all}: route to artifacts repo → remote brain | INFO {off|not set}: skipped
   Code search ..... {OK local-pglite (~/.gbrain/pglite) | N/A declined at Step 4d}
   CLAUDE.md ....... OK
   Smoke test ...... INFO printed for post-restart manual verification
@@ -941,11 +913,11 @@ The **Code search** row reflects the choice at Step 4d:
 - If user picked A (Yes): `OK local-pglite` and `gbrain_local_status == "ok"` going forward.
 - If user picked B (No): `N/A declined at Step 4d` — `gstack-config set local_code_index_offered true` to silence future migration notices.
 
-The **Transcripts** row changed in v1.34.0.0: in remote-http mode,
-gstack-memory-ingest now persists staged transcripts to
-`~/.gstack/transcripts/run-<pid>-<ts>/` and gstack-brain-sync pushes them
-to the artifacts repo. Brain admin's pull job indexes into the remote brain.
-Local PGLite (when present) stays code-only — no transcript pollution.
+The **Transcripts** row: in remote-http mode, gstack-memory-ingest persists
+staged transcripts to `~/.gstack/transcripts/run-<pid>-<ts>/` and
+gstack-brain-sync pushes them to the artifacts repo; the brain admin's pull
+job indexes them into the remote brain. Local PGLite (when present) stays
+code-only.
 
 ### Paths 1, 2a, 2b, 3 (Local stdio)
 
@@ -959,23 +931,35 @@ gbrain status: GREEN  (mode: local-stdio)
   Repo policy ..... OK   <read-write|read-only|deny>
   Code import ..... OK   <last_imported_head>
   Artifacts sync .. OK   <artifacts_sync_mode> to <remote>
-  Transcripts ..... OK   <N> sessions, last ingest <when>
+  Transcripts ..... OK   <recent|all>: <N> sessions, last ingest <when> | INFO <off|not set>: skipped
   CLAUDE.md ....... OK
-  Smoke test ...... OK   put → search → delete round-trip
+  Smoke test ...... OK   put → search round-trip
 
 Run `/setup-gbrain` again any time gbrain feels off; it's safe and idempotent.
 ```
 
+A `not set` transcript mode is not a failure: transcripts stay skipped until
+the user chooses, and `/sync-gbrain` asks.
+
 If any row is YELLOW or RED, the verdict line says so and the failing rows
 surface a one-line "next action" (e.g.,
-`Engine .......... ERR  PGLite corrupt — run \`gbrain restore-from-sync\` (V1.5)`).
-For V1, restore-from-sync is a V1.5 P0 cross-repo TODO; until it ships,
-the user's brain remote (with brain-sync enabled) holds curated artifacts
-as markdown + git, recoverable manually via `gbrain import` from a clone.
+`Engine .......... ERR  PGLite corrupt — re-import from a clone of your brain remote with \`gbrain import\``).
+There is no automatic restore: with brain-sync enabled, the brain remote holds
+curated artifacts as markdown + git, recoverable via `gbrain import` from a
+clone.
+
+### Next: `/sync-gbrain`
+
+This skill does not write the `## GBrain Search Guidance` block in CLAUDE.md;
+`/sync-gbrain` writes it once this repo's code index answers a read. Unless
+the verdict is RED, AskUserQuestion: "Run `/sync-gbrain` now to index this
+repo and add the search guidance to CLAUDE.md?" A) Run it now (read and
+follow the sync-gbrain skill) B) Later. If B, or with `SESSION_KIND: spawned`
+or `headless`, end by naming `/sync-gbrain` as the next step.
 
 ---
 
-## `/setup-gbrain --cleanup-orphans` (D20)
+## `/setup-gbrain --cleanup-orphans`
 
 Re-collect a PAT (show the Path 2a PAT scope disclosure — it lives in the
 brain-init section; read that section if it isn't already loaded), then:
@@ -1006,7 +990,7 @@ At end: `unset SUPABASE_ACCESS_TOKEN`. Revocation reminder.
 
 ---
 
-## Telemetry (D4)
+## Telemetry
 
 The preamble's Telemetry block logs skill success/failure at exit. When
 emitting the event, add these enumerated categorical values to the
@@ -1016,15 +1000,14 @@ telemetry payload (SAFE — no free-form secrets, never the URL or PAT):
   `supabase-manual` | `pglite-local` | `switch-to-supabase` |
   `switch-to-pglite` | `repo-flip-only` | `cleanup-orphans` |
   `resume-provision`
-- `install_performed`: `yes` | `no` (D5 reuse) | `skipped` (pre-existing)
+- `install_performed`: `yes` | `no` (existing checkout reused) | `skipped` (pre-existing)
 - `mcp_registered`: `yes` | `no` | `claude-missing`
 - `trust_tier_set`: `read-write` | `read-only` | `deny` |
   `skip-for-now` | `n/a` (outside git repo)
 
 Never pass `SUPABASE_ACCESS_TOKEN`, `DB_PASS`, `GBRAIN_POOLER_URL`,
 `GBRAIN_DATABASE_URL`, or any `postgresql://` substring to the telemetry
-invocation. The CI grep test in `test/skill-validation.test.ts` enforces
-this at build time.
+invocation.
 
 ---
 
@@ -1035,14 +1018,14 @@ this at build time.
   that holds the pooler URL long-term is `~/.gbrain/config.json`, written
   by gbrain's own `init` at mode 0600 — that's gbrain's discipline, not
   ours.
-- **STOP points are hard.** Gbrain doctor not healthy, D19 PATH shadow, D9
+- **STOP points are hard.** Gbrain doctor not healthy, installer PATH shadow,
   migrate timeout, smoke test failure — each is a STOP. Do not paper over.
 - **Concurrent-run lock.** At skill start, create the parent before acquiring
   the lock atomically. Keep mkdir's error output; missing parents and filesystem
   failures are not evidence of a competing run:
 
   ```bash
-  eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
+  GSTACK_STATE_ROOT=$(~/.claude/skills/gstack/bin/gstack-paths --get GSTACK_STATE_ROOT); : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
   if ! mkdir -p "$GSTACK_STATE_ROOT"; then
     echo "ERROR: Cannot create setup-gbrain lock parent $GSTACK_STATE_ROOT." >&2
     exit 1

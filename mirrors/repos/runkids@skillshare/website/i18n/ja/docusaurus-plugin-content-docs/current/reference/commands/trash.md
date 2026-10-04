@@ -26,60 +26,9 @@ skillshare trash --all list              # trash 内の Skill と agent を一�
 
 ## インタラクティブ TUI
 
-TTY 内では、`trash list` は複数選択、フィルタリング、インライン復元／削除操作を備えたインタラクティブ TUI を起動します。各項目には種別バッジが表示されます: Skill は `[S]`、agent は `[A]` です。
+TTY 上では、`trash list` はゴミ箱内の項目をインタラクティブなリスト（新しい順）で開きます。1 つ以上を選択して復元または完全削除でき、ゴミ箱全体を空にすることもできます。いずれも実行前に確認します。項目を開くとファイルが表示され、復元前に内容を確認できます。キーは画面下部に表示されます。`--all` を使う場合や種類を指定しない場合は、Skill と Agent がまとめて表示されます。
 
-```
-Trash (global) — 5 items
-
-  [ ] [S] my-skill    (512 B, 2d ago)
-  [x] [S] old-tool    (1.2 KB, 5d ago)
-  [ ] [A] tutor       (2.0 KB, 3d ago)
-  [ ] [S] another     (128 B, 1d ago)
-
-  ─────────────────────────────────────────
-  Name:         old-tool
-  Type:         Skill
-  Trashed:      2026-02-27 14:30:05
-  Size:         1.2 KB
-  Path:         ~/.local/share/skillshare/trash/old-tool_...
-
-  ── SKILL.md ──────────────────────────────
-  ---
-  name: old-tool
-  description: A helpful tool
-  ---
-  # old-tool
-  ...
-
-  ↑↓ navigate  / filter  space select  r restore(1)  d delete(1)  D empty  q quit
-```
-
-`--all` を使う場合、または種別フィルタを指定しない場合、TUI は Skill と agent を統合し、日付順（新しい順）にソートされた 1 つのリストにまとめます。
-
-### キーバインド
-
-| キー | 動作 |
-|-----|--------|
-| `↑`/`↓` | 項目を移動 |
-| `←`/`→` | ページを変更 |
-| `/` | フィルタモードに入る（名前の部分一致） |
-| `Space` | 現在の項目の選択を切り替え |
-| `a` | 表示中の全項目の選択を切り替え |
-| `r` | 選択した項目を復元（確認あり） |
-| `d` | 選択した項目を完全に削除（確認あり） |
-| `D` | trash をすべて空にする（選択を無視、確認あり） |
-| `Ctrl+d`/`Ctrl+u` | 詳細パネルを下／上にスクロール |
-| `q`/`Ctrl+C` | 終了 |
-
-確認モードでは: `y`/`Enter` で確定、`n`/`Esc` でキャンセルします。
-
-### バッチ操作
-
-複数の項目が選択されている場合、`r` と `d` はすべての項目に対して動作します。一部の項目が失敗した場合（例: 復元しようとした Skill と同じ名前が既に source に存在する場合）、TUI は残りの項目の処理を続行し、結合された結果を表示します。
-
-```
-Restored 2 item(s)  Failed: my-skill: already exists
-```
+一部の項目が失敗しても（たとえば、復元する Skill と同じ名前がすでにソースにある場合）、残りの項目は処理され、結果に失敗した項目が表示されます。
 
 `--no-tui` を使うと TUI をスキップし、代わりにプレーンテキストを出力します。
 
@@ -116,11 +65,11 @@ skillshare trash --all list --no-tui
 
 ```
 Trash
-  my-skill      (1.2 KB, 2d ago)
-  old-helper    (800 B, 5d ago)
+  my-skill      1.2 KB · 2d ago
+  old-helper    800 B · 5d ago
 
-2 item(s), 2.0 KB total
-Items are automatically cleaned up after 7 days
+2 items, 2.0 KB
+  Each item is removed for good 7 days after it was trashed
 ```
 
 ### restore
@@ -133,9 +82,10 @@ skillshare trash agents restore tutor
 ```
 
 ```
-✓ Restored: my-skill
-ℹ Trashed 2d ago, now back in ~/.config/skillshare/skills
-ℹ Run 'skillshare sync' to update targets
+✓ Restore   my-skill → ~/.config/skillshare/skills · trashed 2d ago
+
+Next
+  skillshare sync  link it into your targets again
 ```
 
 agent の場合、復元時のヒントには代わりに `skillshare sync agents` が提案されます。
@@ -152,7 +102,7 @@ skillshare trash agents delete tutor
 ```
 
 ```
-✓ Permanently deleted: my-skill
+✓ Permanently deleted my-skill
 ```
 
 ### empty
@@ -165,9 +115,9 @@ skillshare trash agents empty
 ```
 
 ```
-⚠ This will permanently delete 3 item(s) from trash
-Continue? [y/N]: y
-✓ Emptied trash: 3 item(s) permanently deleted
+! This will permanently delete 3 items from trash
+? Continue? [y/N] y
+✓ Emptied trash: 3 items permanently deleted · 0.1s
 ```
 
 ## Backup vs Trash

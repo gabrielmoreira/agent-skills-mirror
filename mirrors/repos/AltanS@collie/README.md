@@ -140,6 +140,7 @@ and that is the only way to install it on a phone.
 | | |
 | --- | --- |
 | [**Install**](./docs/install.md) | The front door you need, then the install for your system: Linux, Arch and Omarchy, Nix, macOS, Windows, or as a Herdr plugin. Covers first run, setup on an iPhone or Android phone, updates, and uninstallation |
+| [**Windows**](./docs/windows.md) | Windows 11 with Herdr: what is supported, installing with `install.ps1`, the unsigned binary, updating, long paths, and what is not tested |
 | [**Security**](./docs/security.md) | What a Collie exposes, the defenses, and pairing a device as the write credential |
 | [**Configure**](./docs/configure.md) | The `.env`, your own slash commands, keys, quick replies and typefaces; appearance, Zen mode, language |
 | [**Changes**](./docs/changes.md) | What an agent changed in its workspace: the changed files, their diffs and the last commit, from the pane or the dashboard. Read-only git, nested repos, and the two settings that decide how far it looks |
@@ -189,32 +190,44 @@ isn't in the path at all, [`docs/deployment.md`](./docs/deployment.md) has the r
 - **[D — off-host identity proxy over the tailnet](./docs/deployment.md#variant-d--off-host-identity-proxy-over-the-tailnet)** — one central ingress node fronting Collie among your other services.
 - **[E — any other mesh or tunnel](./docs/deployment.md#variant-e--any-other-mesh-or-tunnel-netbird-zerotier-cloudflare-tunnel)** — NetBird, ZeroTier, Cloudflare Tunnel: you own the ingress, Collie publishes nothing.
 
-## Windows (experimental)
+## Windows
 
-The **bridge** runs on Windows against the Herdr Windows beta; the **launcher** does not. Herdr on
-Windows exposes its control socket as a named pipe derived from the full socket path instead of an
-AF_UNIX socket. Collie connects via `node:net` rather than `Bun.connect` using a single shim,
-[`bridge/dial.ts`](./bridge/dial.ts), which documents the path mapping.
+Linux and macOS: nothing changes for you.
 
-Operational details:
+```powershell
+irm https://colliepwa.dev/install.ps1 | iex
+```
 
-- **Run the bridge directly** with `bun run bridge/index.ts`. There is no systemd unit. Herdr action
-  buttons invoke `bash`, requiring Git Bash on `PATH`. The manifest lists only `linux` and `macos`
-  support to avoid exposing actions that might fail silently.
-- **`tailscale serve` integration is unavailable on Windows.** Follow
-  [Variant C](./docs/deployment.md#variant-c--reverse-proxy-as-the-only-front-door-no-tailscale): bind to
-  loopback, place your own ingress in front, and set `COLLIE_PUBLIC_HOSTS`. The rules in
-  [§Security](./docs/security.md) still apply.
-- **Set `COLLIE_MULTI_SESSION=off`**, as session discovery relies on POSIX paths.
-- The socket path defaults to `%APPDATA%\herdr\herdr.sock`. Override it with `HERDR_SOCKET_PATH`.
-  Explicit `\\.\pipe\…` values pass through directly.
+v1.16.0 is the first release with a Windows zip. The installer was run against that public release on
+a Windows 11 VM, and `collie start`, `status`, `doctor` and `stop` worked. Phone access over HTTP
+through Tailscale Serve was run too. Not tested yet are an update between two real releases on
+Windows and the HTTPS form of Tailscale Serve on Windows, which is why it stays experimental.
 
-**Lifecycle management:** The bridge added named pipe support in 0.15.0. `collie start`, `stop`,
-`restart`, `status` and `uninstall` run it under Task Scheduler (experimental). They replace the
-community script that lived in `contrib/windows/`.
+The release check requires the Windows zip from now on. Only the maintainer can override that, for a
+Linux hotfix.
 
-**Verification:** The bridge logs `[events] stream up` on startup. Event streaming runs over the
-pipe, providing real-time updates without falling back to polling.
+Windows 11 on x64 with Herdr is a supported host: the maintainer owns the code and tests it.
+The conditions for dropping the word are on the Windows page. [**docs/windows.md**](./docs/windows.md)
+has the install, the update, and what is not tested. In short:
+
+- **Tested.** The `windows.yml` workflow runs the bridge, cli and scripts tests on every push, and
+  a Windows 11 VM rehearses an install, an update and a rollback before each release tag.
+  ([ADR 0075](./.adr/0075-windows-is-a-supported-host.md))
+- **Installed without a toolchain.** Each release builds `collie-<version>-windows-x64.zip`, and
+  `scripts/install.ps1` installs it. The binary is unsigned, and Smart App Control can block it.
+- **Run by Task Scheduler.** `collie start`, `stop`, `restart`, `status` and `uninstall` work as they
+  do elsewhere. The task is named `herdr.collie` and starts at your logon.
+- **Not covered.** tmux and zellij (neither has a Windows build), Windows 10, Windows on ARM,
+  a Windows machine joining a crew, and a managed front door: Collie does not run `tailscale serve`
+  on Windows, so bring your own,
+  [Variant C](./docs/deployment.md#variant-c--reverse-proxy-as-the-only-front-door-no-tailscale).
+  Herdr's action buttons need `bash`, so the manifest lists only `linux` and `macos`.
+
+Herdr on Windows exposes its control socket as a named pipe derived from the full socket path instead
+of an AF_UNIX socket. Collie connects through `node:net` rather than `Bun.connect`, with a single shim,
+[`bridge/dial.ts`](./bridge/dial.ts), which documents the path mapping. The socket path defaults to
+`%APPDATA%\herdr\herdr.sock`; override it with `HERDR_SOCKET_PATH`. Explicit `\\.\pipe\...` values pass
+through directly. The bridge logs `[events] stream up` on startup when event streaming runs over the pipe.
 
 `COLLIE_HERDR_DIAL=net` forces the `node:net` dialer on Linux and macOS. This allows testing the
 Windows connection path without a Windows environment; `bridge/dial.test.ts` relies on it.

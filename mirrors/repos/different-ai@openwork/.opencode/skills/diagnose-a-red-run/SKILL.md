@@ -9,7 +9,7 @@ description: Test is red, typecheck failed, CI job failed, flaky, timed out, was
 
 - Record the exact command, commit SHA, exit code, and passed/failed/skipped
   counts. Quote the first actionable failure; do not summarize it away.
-- Classify the check: testkit spec, unit suite, typecheck, build, lint, or CI job.
+- Classify the check: testkit spec, typecheck, build, lint, or CI job.
 
 ## Run a clean control
 

@@ -13,3 +13,6 @@ next-env.d.ts
 # often forbid redistributing them), so keep them out of the template as well.
 public/fonts/imported/*
 !public/fonts/imported/.gitkeep
+
+# Tester Army output
+.e2e/

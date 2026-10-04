@@ -43,6 +43,7 @@ description: [Brief capability statement]. Use when [triggering conditions] - ma
 license: MIT
 metadata:
   author: https://github.com/Jeffallan
+  company: https://synergetic.solutions
   version: "1.0.0"
   domain: frontend
   triggers: keyword1, keyword2, keyword3
@@ -61,12 +62,13 @@ metadata:
 
 **Metadata fields (project-specific):**
 - `author`: GitHub profile URL of the skill author
+- `company`: Optional. URL of the author's company (`https://synergetic.solutions` on skills authored by @jeffallan); omit for contributed skills unless the contributor supplies one
 - `version`: Semantic version string (quoted, e.g., `"1.0.0"`)
 - `domain`: Category from the domain list below
 - `triggers`: Comma-separated searchable keywords
 - `role`: `specialist` | `expert` | `architect` | `engineer`
 - `scope`: `implementation` | `review` | `design` | `system-design` | `testing` | `analysis` | `infrastructure` | `optimization` | `architecture`
-- `output-format`: `code` | `document` | `report` | `architecture` | `specification` | `schema` | `manifests` | `analysis` | `analysis-and-code` | `code+analysis`
+- `output-format`: `code` | `document` | `report` | `architecture` | `specification` | `schema` | `manifests` | `analysis` | `analysis-and-code`
 - `related-skills`: Comma-separated skill directory names (e.g., `fullstack-guardian, test-master`). Must resolve to existing skill directories.
 
 **Domain values:**
@@ -111,6 +113,20 @@ Every `SKILL.md` MUST end with a single canonical Documentation link pointing ba
 
 **When adding or renaming a skill:** update both the directory name (which becomes `{skill-name}`) and the `metadata.domain` consistently with this URL formula, otherwise the backlink will 404.
 
+### Maintainer Credit
+
+Skills authored by @jeffallan (those with `metadata.company: https://synergetic.solutions`) carry one more line, directly above the Documentation backlink, separated by a blank line. It matches the docs site footer credit:
+
+```
+Maintained by [@jeffallan](https://github.com/jeffallan), Principal Consultant at [Synergetic Solutions](https://synergetic.solutions)
+
+[Documentation](https://jeffallan.github.io/claude-skills/skills/{domain}/{skill-name}/)
+```
+
+- The Documentation backlink stays the last line
+- Contributed skills do not get this line unless their `metadata.company` is set to the same URL
+- `syncSkillPages` strips it at build time alongside the Documentation backlink, so the docs site, markdown mirrors, and `llms` files never show it (the site footer shows the same credit once per page)
+
 ---
 
 ### Progressive Disclosure Architecture
@@ -151,6 +167,26 @@ Every `SKILL.md` MUST end with a single canonical Documentation link pointing ba
 3. Preserve progressive disclosure structure
 4. Update related cross-references
 5. Verify routing table accuracy
+
+### When Accepting Contributions
+
+Every external contribution (issue or PR) gets the `gratitude` label, whatever its outcome.
+
+For each PR:
+
+1. Discuss fit with project goals before any merge decision (scope, overlap with existing skills, promotional content), then verify the content
+2. Squash-merge with subject `type(scope): title (#N)`
+   - Conflicted fork PRs: squash locally (`git merge --squash`), add `Co-authored-by:` with the contributor's commit email, then close the PR with a comment pointing at the commit
+3. Record it in a separate commit, `docs(changelog): record #N <summary> under Unreleased`, adding an entry under `[Unreleased]` → Added/Changed/Fixed that ends with `(#N)` (append `closing #ISSUE` when it resolves one)
+4. If skill or reference counts changed, run `python scripts/update-docs.py` in the same push, otherwise `update-docs.py --check` fails CI on main
+5. Post-merge corrections go in their own commit with their own `### Changed` entry
+
+At release time, credit contributors (including issue reporters) in a `### Contributors` section of the version entry:
+
+```markdown
+### Contributors
+- @handle — What they contributed (#N)
+```
 
 ---
 
@@ -299,6 +335,14 @@ After running validation, manually verify:
 # Check no old version references remain (except historical changelog)
 grep -r "OLD_VERSION" --include="*.md" --include="*.json" --include="*.html"
 ```
+
+### 8. Plugin Branch
+
+The plugin ships from the `plugin` branch, not from `main`. Pushing the `vX.Y.Z` tag runs `.github/workflows/publish-plugin.yml`, which rebuilds that branch from `scripts/build-plugin-dist.sh` (only `.claude-plugin/plugin.json`, `skills/`, `commands/`, `references/`, `README.md`, `LICENSE`). Both the marketplace entry and the Claude plugin directory read from it.
+
+- Never edit the `plugin` branch by hand; the next publish overwrites it
+- After the tag push, confirm the workflow succeeded and the branch's latest commit names the new tag
+- A file the plugin needs at runtime must live under one of the shipped paths, or it will be missing from installs
 
 ---
 

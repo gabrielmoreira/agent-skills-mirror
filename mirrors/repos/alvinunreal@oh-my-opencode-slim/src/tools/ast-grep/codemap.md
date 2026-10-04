@@ -34,7 +34,7 @@ The implementation follows a layered architecture:
   - Handles permissions and cleanup
 
 - **Environment & Constants** (`constants.ts`):
-  - Defines supported languages, default limits (timeout, max output bytes, max matches), and language-to-extension mappings
+  - Defines supported languages and default limits (timeout, max output bytes, max matches)
   - Implements path resolution logic that checks: cached binary → npm package → platform-specific package → Homebrew → PATH
 
 - **Public API** (`index.ts`):

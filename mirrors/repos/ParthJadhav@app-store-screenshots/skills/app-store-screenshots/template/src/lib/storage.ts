@@ -6,8 +6,9 @@ import { cleanImportedFont } from "./clean-imported-font";
 import { DEFAULT_PROJECT } from "./defaults";
 import { coerceLocalized } from "./locale";
 import { projectValidationError } from "./project-validation";
+import { cleanCallout, cleanLook, cleanScene } from "./scene";
 import { cleanTypography } from "./typography";
-import type { Device, ElementTransform, ImageElement, ProjectState, ScreenshotFontId, Slide, TextElement } from "./types";
+import type { Device, ElementTransform, ImageElement, Look, ProjectState, ScreenshotFontId, Slide, TextElement } from "./types";
 
 const HISTORY_LIMIT = 50;
 // Coalesce rapid edits (typing, slider drags) into a single undo step.
@@ -112,6 +113,7 @@ function migrateSlide(slide: Slide): Slide {
   const imageElements = Array.isArray(slide.imageElements)
     ? slide.imageElements.map(cleanImageElement).filter((image): image is ImageElement => !!image)
     : undefined;
+  const callout = cleanCallout(slide.callout);
 
   return {
     ...slide,
@@ -122,6 +124,7 @@ function migrateSlide(slide: Slide): Slide {
     ...(transforms && Object.keys(transforms).length > 0 ? { transforms } : { transforms: undefined }),
     ...(textElements && textElements.length > 0 ? { textElements } : { textElements: undefined }),
     ...(imageElements && imageElements.length > 0 ? { imageElements } : { imageElements: undefined }),
+    ...(callout ? { callout } : { callout: undefined }),
   };
 }
 
@@ -137,6 +140,10 @@ function mergeWithDefaults(parsed: Partial<ProjectState>): ProjectState {
       ? parsed.themeId
       : DEFAULT_PROJECT.themeId;
   const importedFont = cleanImportedFont(parsed.importedFont);
+  const scene = cleanScene(parsed.scene);
+  const savedLooks = Array.isArray(parsed.savedLooks)
+    ? parsed.savedLooks.map(cleanLook).filter((look): look is Look => !!look)
+    : [];
   const fontId = cleanFontId(parsed.fontId, !!importedFont);
   const slidesByDevice = parsed.slidesByDevice
     ? Object.fromEntries(
@@ -162,6 +169,8 @@ function mergeWithDefaults(parsed: Partial<ProjectState>): ProjectState {
     themeId,
     fontId,
     ...(importedFont ? { importedFont } : { importedFont: undefined }),
+    ...(scene ? { scene } : { scene: undefined }),
+    ...(savedLooks.length > 0 ? { savedLooks } : { savedLooks: undefined }),
     connectedCanvas,
     slidesByDevice: {
       ...DEFAULT_PROJECT.slidesByDevice,
@@ -343,7 +352,8 @@ export function useProject() {
   // an edit, so it neither takes an undo step nor clears redo. Undo still
   // restores the snapshot's device, which takes you to the deck the undone
   // edit was made on.
-  const setState = useCallback((updater: Updater, options?: { history?: boolean }) => {
+  // Structural actions form their own step and end the typing/slider group.
+  const setState = useCallback((updater: Updater, options?: { history?: boolean; coalesce?: boolean }) => {
     const prev = stateRef.current;
     const next = applyUpdater(updater, prev);
     if (next === prev) return;
@@ -353,12 +363,12 @@ export function useProject() {
       lastPushAt.current = 0;
     } else {
       const now = Date.now();
-      if (now - lastPushAt.current > COALESCE_MS) {
+      if (options?.coalesce === false || now - lastPushAt.current > COALESCE_MS) {
         pastRef.current.push(prev);
         if (pastRef.current.length > HISTORY_LIMIT) pastRef.current.shift();
       }
       futureRef.current.length = 0;
-      lastPushAt.current = now;
+      lastPushAt.current = options?.coalesce === false ? 0 : now;
     }
     commit(next);
   }, [commit]);
@@ -384,7 +394,7 @@ export function useProject() {
   // "Reset all devices" resets the decks only. App name, theme, font, icon and
   // especially `locales` (which has no editor UI) are project settings.
   const reset = useCallback(() => {
-    setState((prev) => ({ ...prev, slidesByDevice: DEFAULT_PROJECT.slidesByDevice }));
+    setState((prev) => ({ ...prev, slidesByDevice: DEFAULT_PROJECT.slidesByDevice }), { coalesce: false });
   }, [setState]);
 
   const resetDevice = useCallback((device: Device) => {
@@ -394,7 +404,7 @@ export function useProject() {
         ...prev.slidesByDevice,
         [device]: DEFAULT_PROJECT.slidesByDevice[device],
       },
-    }));
+    }), { coalesce: false });
   }, [setState]);
 
   return {

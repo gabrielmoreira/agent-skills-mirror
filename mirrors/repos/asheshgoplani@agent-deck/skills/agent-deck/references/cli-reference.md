@@ -157,14 +157,17 @@ agent-deck update --version 1.7.3      # install a specific release (may downgra
 agent-deck update --unattended         # no prompts, no changelog, no stdin
 agent-deck update --unattended --trigger timer|tui|manual
 agent-deck update --check-now          # what a controller's nudge runs on this host
-agent-deck update --install-timer [--dry-run]
+agent-deck update --install-timer [--dry-run] [--json]
+agent-deck update --ensure-timer [--dry-run] [--json]   # install/heal only where no timer is active
 agent-deck update --uninstall-timer [--dry-run]
-agent-deck update --timer-status
+agent-deck update --timer-status [--json]
 ```
 
 - `--unattended` is what the daily timer, the TUI's `auto_install`, and every long-running process's `check_interval` poll (see `[updates]` in the config reference) run. It honours `[updates] auto_install` (off means "nothing installed", exit 0), never runs Homebrew (prints the `brew` command, exit 2), takes `<cache dir>/update.lock` so two runs never replace the binary at once (busy means exit 0), skips the remotes prompt, and exits 1 when the install or the macOS launchd hygiene failed. `--trigger` (default `$AGENTDECK_UPDATE_TRIGGER`, then `manual`) only tags the debug log lines.
 - `--check-now` is the same unattended flow, run on a remote by a controller's nudge instead of by hand: a controller that just installed a release tells each configured remote to check right now, over the same SSH connection `remote list`/`remote update` use, backgrounded so the controller never waits on the remote's download and never sends it any bytes (see "Nudging remotes" in the config reference). A run started this way never nudges its own remotes in turn — the nudge does not fan out across hops.
-- `--install-timer` writes `~/Library/LaunchAgents/com.agentdeck.autoupdate.plist` (macOS, daily at 07:MM with a random minute, program `/bin/sh`) or `~/.config/systemd/user/agent-deck-autoupdate.{service,timer}` (Linux, `OnCalendar=daily`, `RandomizedDelaySec=1h`) and loads it. Installing over an existing timer replaces it; `--dry-run` prints the exact files and commands and executes nothing. The timer's output goes to `<log dir>/auto-update.log` on macOS and the journal on Linux.
+- `--install-timer` writes `~/Library/LaunchAgents/com.agentdeck.autoupdate.plist` (macOS, daily at 07:MM with a random minute, program `/bin/sh`) or `~/.config/systemd/user/agent-deck-autoupdate.{service,timer}` (Linux, `OnCalendar=daily`, `RandomizedDelaySec=1h`) and loads it. An active timer whose files match is left alone (`✓ update timer already active`); a stale or inactive one is rewritten and re-enabled, and any unit file it replaces is first moved to `<file>.bak-agentdeck-<timestamp>`; `--dry-run` prints the exact files and commands and executes nothing. On a host with a hand-made `agentdeck-autoupdate.timer` it migrates: canonical timer installed and verified, legacy timer disabled, both legacy unit files moved to `<file>.bak-agentdeck-<timestamp>`, one line printed (`migrated legacy timer agentdeck-autoupdate.timer -> agent-deck-autoupdate.timer`). No systemd user session (`Failed to connect to bus`) is an error here.
+- `--ensure-timer` is the automatic form (`update --unattended`, the TUI, the notify daemon and `remote update` run the same decision): it honours `[updates] manage_timer`, skips quietly (exit 0) on a host without a systemd user session or launchd GUI domain or for a dev build, and never rewrites an active timer: an owner's edit to the canonical units survives. It installs a missing timer, re-enables an inactive one without rewriting it (`loaded`), and rewrites the pair (with the backup above) only when the service is missing or pins a binary that no longer exists; on macOS it never replaces a loaded plist. A legacy unit in a directory this user cannot write (an admin's `/etc/systemd/user`) is never moved: an active one is stopped (action `stopped` when nothing else changed, never `migrated`), and the result's `note` says it was left in place. A lone `agentdeck-autoupdate.service` whose timer is gone is backed up the same way. `--json` on either prints `{"action": "none|installed|migrated|loaded|stopped|skipped", "reason", "migrated", "backups", "note", "status": {...}, "error"}`.
+- `--timer-status` kinds: `launchd`, `systemd`, `systemd-legacy` (a hand-made `agentdeck-autoupdate.timer`; `legacy_unit` names it, and it is also set next to a canonical timer when both exist), `none`; `--json` prints `{installed, kind, path, active, detail, legacy_unit, legacy_path, last_run, next_run, note}` (`last_run`/`next_run` from `systemctl --user show`, RFC 3339 UTC; `note` says e.g. "no systemd user session"). A controller shows `unknown` for a remote whose binary predates it. The timer's output goes to `<log dir>/auto-update.log` on macOS and the journal on Linux.
 - On macOS every install (interactive, `--version`, the TUI prompt and `--unattended`) re-registers the `com.agentdeck.*` launch agents whose program is the replaced binary (`launchctl bootout` then `bootstrap`, then a `state = running` check for KeepAlive/RunAtLoad agents). Without this they crash-loop with `EX_CONFIG` (exit 78) because macOS ties a launch agent's identity to the file at its program path. If an agent does not come back the command exits 1 and prints the two `launchctl` commands to run by hand; the binary is already updated at that point.
 
 ## Shell Completion
@@ -310,6 +313,17 @@ Auto-detects current session if no ID provided.
 - Claude/Gemini session ID
 - Attached MCPs (local, global, project)
 - tmux session name
+- `substate` / `substate_detail` (omitted when none). Substate `background-work` (Claude) means the foreground turn ended but a Workflow, background agents, shells or a Monitor are still in flight: status is `running`, `substate_detail` reads e.g. `workflow comms-followon-round3 3/5 · 18m32s`, and a `background_work` object carries the structure:
+
+| Field | Meaning |
+|-------|---------|
+| `kind` | `workflow`, `agent`, `bash` or `monitor` |
+| `task` | workflow name, agent / command description, or a count such as `2 shells, 1 monitor` |
+| `step`, `steps` | workflow progress n/m (omitted for other kinds) |
+| `elapsed` | workflow elapsed time as Claude renders it (`18m32s`) |
+| `source` | `pane`, `transcript` or `pane+transcript`: which evidence proved the work in flight |
+
+`list --json`, `status --json -v` and `session children --json` carry the same `background_work` object (omitted when nothing is in flight). When the work reports back the session settles to `waiting` (then `idle` once acknowledged) within one poll (#2473). An open menu (permission prompt, question) or an error banner outranks the work: such a session reads `waiting` / `interactive-menu` or `error` / `auth-401`, never `running`. A question in Claude's reply text ("Would you like me to ...?") is not a menu and does not stop the work from reading `running`.
 
 ### session current
 
@@ -412,6 +426,8 @@ agent-deck session send <id|title> --message-file <file|-> [--wait|--stream|--no
 ```
 
 Use `--message-file` for long or multiline messages, or `--message-file -` for stdin. Do not combine it with an inline message.
+
+Send envelope: a send made from inside an agent-deck session (`AGENTDECK_INSTANCE_ID` set) to a Claude target starts with one line `[agent-deck from:<your session id>]`. The receiver's reply turn is then classified as a `send` (not a human prompt); when you are not the receiver's parent, the reply is also committed to YOUR inbox (also when the receiver has no parent: a peer, or your top-level conductor) as an urgent record with `target_kind:"reply"` (rendered `- [urgent] reply from=<child id> <title>: <status>` by the prompt-time drain and `inbox drain`/`peek`), and an idle sender is woken for it whatever its title. The reply does not wait on the receiver's parent: it lands even while the parent's inbox is full (a stopped parent), and a retried turn never duplicates it or wakes you twice. The receiver's parent keeps its own copy; when the parent itself asked, that copy is its reply, and an idle Claude parent is woken for it whatever its title. `--no-tag` or `[send] tag_sends = false` turns tagging off; a human shell (no env), a sender that is not a Claude-compatible session in the target's profile (shell, Codex, Gemini: it has no prompt-time drain for the reply), `--draft`, a bare slash command, a conductor heartbeat, a send to yourself, a non-Claude target and an already-enveloped message are never tagged. Every `--json` receipt (sync, queued, draft, skipped) carries `"tagged": true|false`; the envelope counts toward `line_too_long` and every other delivery guard. A receiver with `no_transition_notify` never reports its turns, so its identity block tells it to answer with an explicit `session send` instead.
 
 `--json` on its own (no `--wait`, `--stream`, `--no-wait`, `--draft` or `--defer-if-busy`) returns at once with the queued record (`send_id`, `state`, `verdict`) plus the sync keys `success`, `delivery:"queued"`, `submitted:false`, `confirmation:"unknown"`; `session send-status <send_id> --json` follows it to `delivered`/`unknown`. Claude accepts the message while busy; Codex, Pi, shell and unknown harnesses are typed when idle.
 
@@ -916,7 +932,44 @@ agent-deck conductor list [--profile <name>]
 - Bridge daemon is installed only when Telegram and/or Slack is configured in `[conductor]`.
 - Transition notifier daemon (`agent-deck notify-daemon`) is installed by setup and sends event nudges on `running -> waiting|error|idle` transitions (parent first, then conductor fallback).
 
+### notify / outbox / tier-filter - What reaches the human (#2469)
+
+```bash
+agent-deck conductor notify --tier urgent|info [--conductor <name>] [--json] "<text>"   # or --message-file FILE
+agent-deck conductor outbox [--json] [--conductor <name>] [--all] [--ack <id>...]
+agent-deck conductor tier-filter --json [--conductor <name>] [--reply-id <id>] < reply.txt
+agent-deck conductor tier-filter --json [--conductor <name>] --ack <reply-id>
+```
+
+| Command | Description |
+|---------|-------------|
+| `notify` | Queue one item for the human in the durable outbox `runtime/human-outbox/<conductor>.jsonl` (`{id, ts, tier, text, th, acked}`, text capped at 4000 B). The same text within 24 h is one record. Use it from any turn (wake-nudge, Stop-block): replies outside a heartbeat are not forwarded. Urgent never dedups into info: an `info` item with the same text still pending is upgraded to `urgent`, one already delivered gets a new `urgent` record. |
+| `outbox` | List unacked items (`--all` adds delivered ones), or `--ack` ids once delivered; acking twice is a no-op. The bridge polls this every 5 s, forwards each `urgent` item at once as its own `[<name>] <text>` message (at most 10 per poll) and acks it only after a channel accepted it; queued `info` leaves as separate digest messages of at most 20 items. A chunk Telegram cannot parse as HTML is resent as plain text. Unacked items expire after 72 h, and at most 200 items are kept per conductor (acked first, then info, then urgent are dropped). |
+| `tier-filter` | Apply the tier rules to a conductor reply on stdin: `NEED:` / `[urgent]` / `URGENT:` lines go to `send_now` (escalated once as `STILL BLOCKED (N cycles, no reply)` on cycle `[conductor] need_retire_cycles`, then dropped; counts persist in `<conductor>.need.json`), `[info]` / `INFO:` lines are queued, `[STATUS]` and prose stay local. Output `{"send_now":[...],"queued":n,"digest_due":bool,"digest":[...]}`; `digest` holds the unacked info items when `[conductor] human_digest_minutes` passed since the last digest, or whenever there is something to send now. `--reply-id <id>` names a reply the caller delivers itself (the bridge passes the reply's hash, or a fresh id per heartbeat tick): its retire counts stay pending until `--ack <id>` confirms a channel accepted the message, so an undelivered reply (stale token, platform outage), retried or followed by new replies, never advances a line toward `STILL BLOCKED` or the drop. A reply with nothing to send commits at once; an ack for a superseded or already-acked id is a no-op (`{"conductor":...,"reply_id":...,"committed":false}`). Without `--reply-id` the counts commit at once. The outbox and the ledger are owner-only (directory `0700`, files `0600`). |
+
+Without `--conductor`, the name comes from the calling session's title (`conductor-<name>`, via `AGENTDECK_INSTANCE_ID`).
+
 ## Inbox Commands
+
+### peek - Show pending records without consuming
+
+```bash
+agent-deck inbox peek [--json] [<session-id>|self]
+```
+
+Read-only view of the parent's pending records, rendered as the prompt-time drain injects them (`[tier] title (id): status` plus the child's text). Nothing is consumed or marked.
+
+### stats - Communication counters per parent
+
+```bash
+agent-deck inbox stats [--json] [<session-id>|self]
+agent-deck inbox stats [--json] --all
+agent-deck inbox stats --reset <session-id>
+```
+
+Read-only counters (#2469) kept per parent under `runtime/inbox-stats/`: records by tier (`records_urgent`, `records_info`, `records_legacy`), turns suppressed (`noise_suppressed`, `dedup_suppressed`), wakeups (`wakeups_urgent`, `wakeups_digest`, `wakeups_suppressed`), delivery (`drains`, `records_delivered`, `bytes_injected`, `text_bytes`) and `last_urgent_latency_ms`. The text form adds the signal ratio (recorded turns over observed turns). Nothing is consumed.
+
+Every record drained with `inbox drain` now carries `tier`, `trigger`, `text` (the child's new text, capped), `text_hash`, `turn_uuid`, `question` and `seq`; the text form prints the text indented under the record line.
 
 ### dead-letter - Inspect and resolve terminal delivery failures
 
@@ -997,7 +1050,7 @@ agent-deck remote list [--json] [--check]
 agent-deck remote ls [--json] [--check]
 ```
 
-Lists all configured remotes. The VERSION column shows the agent-deck version each remote last reported (learned by the TUI poll, `remote update`, or `--check`), with `↑` when it is older than this controller; `-` means never checked. `--check` asks every remote now (one SSH call each) and refreshes that cache. Use `--json` for scripting (`version`, `version_checked_at`, `outdated`).
+Lists all configured remotes. The VERSION column shows the agent-deck version each remote last reported (learned by the TUI poll, `remote update`, or `--check`), with `↑` when it is older than this controller; `-` means never checked. `--check` asks every remote now (its version, then its `update --timer-status --json`) and refreshes that cache. Use `--json` for scripting (`version`, `version_checked_at`, `outdated`, and `timer: {installed, kind, active, last_run, next_run, legacy_unit, note}` plus `timer_checked_at` once a check has read it). Once a `--check` has read it, the last text column ends with the remote's timer (`timer active (systemd)`, `timer none (nudge only)`, `timer unknown`). A remote whose binary is too old for `--timer-status --json`, or that is unreachable, reports `"kind": "unknown"` and the command still succeeds; `kind: none` means the remote updates only when this controller nudges it, which `remote update --install-timer <name>` fixes.
 
 ### remote sessions
 
@@ -1024,7 +1077,7 @@ Transition notifications are parent-linked, and a `parent_session_id` cannot poi
 | Flag | Description |
 | --- | --- |
 | `--into <session-id>` | Local session whose inbox receives the records (default: the calling session, same resolution as `inbox drain self`) |
-| `--json` | Emit `{remote, host, target_session_id, fetched, written, duplicates, records}` for a conductor heartbeat |
+| `--json` | Emit `{remote, host, target_session_id, fetched, written, duplicates, unknown, writer, records, cursor_before, cursor_after, legacy_export, woke}` for a conductor heartbeat. `cursor_before`/`cursor_after` are the cursor sent and the one saved (equal when it was pinned); both are absent and `legacy_export` is `true` when the remote only speaks the full export. `woke` is `true` when an ingested record woke the conductor. |
 
 - **What it returns.** Completions (from the completion ledger) *and* transitions — including the waiting/error/idle flips of sessions that have no parent on the remote host, which is the normal state for a worker whose conductor is on another machine. Those are kept in a reserved `_unowned` ledger beside the per-parent inboxes; a quota-stalled remote session shows up in a drain because of it. Sessions that opted out with `--no-transition-notify` are never exported.
 - **Read-only on the remote.** It runs the remote's `agent-deck inbox export`, which consumes, truncates and marks nothing. Two conductors draining the same host both receive the records, and the host's own conductor still drains its inbox normally.
@@ -1032,6 +1085,9 @@ Transition notifications are parent-linked, and a `parent_session_id` cannot poi
 - **Records are stored under `<remote>:<child-id>`.** A child id is only unique on the host that minted it — `run-task --child <ID>` takes any string — so two hosts running the same named task would otherwise produce records that destroy each other in the conductor's inbox (every identity rule downstream keys on the child id). The stored id names its host, in the same `<remote>:<session>` spelling the TUI uses for remote sessions.
 - **Honest about failure.** Exit `0` = drained (a reachable remote with nothing pending says so explicitly), `2` = unknown remote / none configured, `3` = the remote could not be reached *or could not read its own records*. Neither an ssh failure nor an unreadable record file on the remote ever reads as "nothing to report".
 - The remote must run a build that has `inbox export`; an older one is reported as a version error pointing at `agent-deck remote update`.
+- **Incremental by cursor.** Each (remote, conductor) pair keeps a cursor in `runtime/remote-cursors/<remote>.<conductor>.json` (`agent-deck inbox cursor`): the newest turn-journal seq received per remote child, the completion-ledger entry received per child, and how far into the remote's `_unowned` ledger it has read. Positions follow write order, not timestamps, so a record stamped earlier than one already received (a completion stamped with the hook's time, a worker in another process, a clock step) still crosses. The drain sends it on stdin as `inbox export --json --after - --with-writer` (a cursor can outgrow a single command-line argument), so the remote answers only what is new, and export and writer status share one SSH round trip. The cursor names only remote children active within the last 14 days (the receiver's consumed-turn horizon, past which a record could not land anyway) whose turn journal still exists; removing a session on the remote removes its journal, so it drops out of the next cursor. The cursor advances only when every record of the batch was inserted or already present; a failed or unconfirmed write pins it, the next drain refetches the batch and the dedup absorbs the overlap. Other parents' inboxes on the remote are not shipped in this mode, and neither is any child whose parent is a session on the remote itself; only children of the conductor on the other machine (and orphans) cross. A remote too old for `--after` (it rejects the flag) gets today's full export; the first such drain saves a position-less `_legacy` cursor so the conductor stays enrolled for `talkback_interval_secs` after it consumes the records. Concurrent drains of one pair (CLI and daemon) serialise the cursor write under a file lock. An urgent record inserted before a later write in the same batch failed still wakes the conductor.
+- **Wakes like a local record.** Ingested records keep the tier the remote classified. If any fresh record has a tier in the conductor's `[inbox] wake_on` (default `urgent`), the idle conductor gets one wake per drain naming the newest one, through the same gate and headline as a local record. Info records never wake.
+- **Scheduled.** `[remotes.<name>] talkback_interval_secs` makes the notify-daemon run this drain on its own for every enrolled conductor (see config-reference.md).
 
 Narrowing a drain to one conductor's children (`--parent <conductor-id>@<host>`) is deferred; it is sugar over this pull.
 
@@ -1066,11 +1122,14 @@ agent-deck remote <name> <command> [arguments]
 ```bash
 agent-deck remote update [name | --all] [--force] [--dry-run] [--json]
 agent-deck remote update [name | --all] --from-build <dir>
+agent-deck remote update --install-timer [name | --all] [--json]
 ```
 
 Downloads and installs the correct agent-deck binary (detected platform/arch) on a specific remote, or with `--all` (or no name) on every configured remote whose version is older than this controller's.
 
 `--from-build <dir>` installs from a local directory of release-layout archives (darwin/arm64, linux/amd64, linux/arm64) instead of downloading a published release — for deploying a verified local build to remotes before it's released. Each archive is still checksum- and version-verified before the atomic install; a remote running a local build takes precedence over one running an equal-or-older published release for restart-watcher purposes. `--force` allows reinstalling the same version or downgrading (normally refused). `--dry-run` verifies the artifacts and prints destination paths without installing. Remotes run one at a time and each is reported as updated, already current, or failed with the reason; a remote that fails stays on its version (the archive is checksum-verified before deploy and the remote is re-checked afterwards, never a partial binary). Exit status is 1 when any remote failed. Remotes follow the controller's version automatically unless `[updates] auto_update_remotes = false` is set (see the config reference). When the remote user cannot write the install directory (a root-owned `/usr/local/bin`), the deploy runs through `sudo -n` if the remote allows passwordless sudo; otherwise it fails with `install path <path> is not writable by <user>` and the remedy (move the binary to `~/.local/bin` behind a symlink at the old path, or run the update with sudo). `agent-deck update` on the remote itself reports the same error for that case. The deploy first resolves the install path through symlinks on the remote (`readlink` style), so the documented "symlink at the old path to `~/.local/bin/agent-deck`" layout works: the file behind the link is replaced, its owner and mode are kept (then made readable and executable for everyone), sudo is used only when the resolved file's directory is unwritable, and a symlink is never replaced by a regular file. When `command -v agent-deck` on the remote resolves to a different file than `agent_deck_path`, both are updated and the report names both, unless the `$PATH` binary is already at that version or newer, in which case it is left alone and the report says so. A file owned by another user is replaced through sudo so its owner is kept, and a non-root deploy keeps the file's group; if owner or group cannot be restored the deploy aborts with the original in place. If the remote cannot say what it runs (the `command -v`, resolve or version probe fails or answers ambiguously) nothing is written and the remote is reported as skipped with the probe error. After the deploy, `command -v agent-deck` must resolve to the deployed file's inode and report the new version. When `agent_deck_path` is set explicitly and that entry is verified by inode to be the deployed file (reporting the new version) but sits off the remote's non-interactive `$PATH`, the update counts as a success with a warning in the report (sessions started via SSH may need PATH); without an explicit `agent_deck_path` the controller itself relies on `$PATH`, so that case stays a failure. The deploy stages to a temp file unique to that run, takes a lock directory next to the binary (`<path>.lock`, treated as abandoned after 15 minutes) so two controllers cannot interleave writes; a remote whose lock another deploy holds is reported as skipped, not failed. While a sweep from this controller is still running (the TUI's startup sweep, say), `remote update --all` waits for it up to two minutes and then reports the remotes it covers as `sweep already in progress, remote <name> is being updated by <pid>` with exit status 0. The version cache is refreshed after each remote's deploy, so `remote list` shows the new version right away.
+
+After each remote it updated or found current (not with `--dry-run`), `remote update` runs that remote's `update --ensure-timer --json`, so the remote installs (or migrates a hand-made `agentdeck-autoupdate.timer` to) its own update timer and stops depending on this controller's nudge; the outcome is appended to the remote's report line (`update timer: ...`, or `update timer not ensured: <error>` for a remote too old for the flag) and never fails the update. `remote update --install-timer [name | --all] [--json]` does only that, with the explicit `update --install-timer --json` on each remote (over the same SSH runner, retried on a dedicated connection when the shared ControlMaster refuses a session, since the install is idempotent), then reads the remote's timer back and caches it for `remote list`; text output is one line per remote (`<name>: migrated legacy timer agentdeck-autoupdate.timer -> agent-deck-autoupdate.timer; now timer active (systemd)`), `--json` an array of `{name, host, ok, action, migrated, summary, error, timer}`. A remote whose binary predates JSON timer output still runs its own `--install-timer` and is reported as `remote binary predates timer migration: <its first line>; update the remote's agent-deck first (agent-deck remote update) so it can retire a hand-made legacy timer` (an old binary's install leaves a hand-made legacy timer running beside the new one), with its timer read back as `unknown`. Exit status is 1 when any remote failed. The TUI's remote update action does the same `--ensure-timer` after a successful deploy, and the remote preview shows the timer under the version line (`update timer active (systemd) · next Oct 4 02:00`, `update timer none · updates only when this controller nudges it`, `update timer unknown`), refreshed with the hourly version check.
 
 ### Examples
 
@@ -1083,6 +1142,7 @@ agent-deck remote attach dev my-session
 agent-deck remote rename dev my-session new-name
 agent-deck remote update --all    # update every remote older than this controller
 agent-deck remote update dev      # update specific remote
+agent-deck remote update --install-timer --all   # give every remote its own update timer
 ```
 
 SSH uses OpenSSH host-key verification and `BatchMode=yes`; unknown or changed hosts fail instead of prompting. Authenticate with an SSH agent or configured key and establish trust in `known_hosts` before registering a remote. `remote update` verifies the downloaded archive against the release checksums before deployment.
@@ -1111,11 +1171,15 @@ agent-deck health --json --since 1h
 agent-deck inbox <session-id>                          # summary for a session's inbox
 agent-deck inbox drain [--json] <session-id>            # consume pending completion events
 agent-deck inbox export [--json]                        # read-only: this host's records, nothing consumed
+agent-deck inbox export --json --after '<cursor>' [--with-writer]  # read-only: only records newer than the cursor
+agent-deck inbox cursor [--json] [<remote>]             # the remote-talkback cursors this machine keeps
 agent-deck inbox dead-letter list|show [--json]         # inspect physical dead-letter / unowned-ledger records
 agent-deck inbox writer-status [--json]                 # is a notify-daemon actually recording transitions here?
 ```
 
 `drain` preserves distinct turns per child and dedups re-delivery via `turn_fingerprint`; run it first on every heartbeat — reading clears the inbox. `export` is what `remote drain` runs over SSH to pull one host's records into another without consuming anything locally. `dead-letter list`/`dead-letter show` inspect records that failed to route, with raw bytes preserved for diagnosis — there is currently no `retry` or `purge` subcommand for dead-letter records (both are explicitly rejected by the CLI; a record must be handled by other means, e.g. fixing the underlying routing issue and re-draining). `writer-status` answers "is anything watching?" — without it, an empty `export` can't be told apart from a host where no notify-daemon has ever run.
+
+`export --after '<cursor>'` (requires `--json`) is the incremental form `remote drain` uses; `--after -` reads the cursor from stdin, which is how `remote drain` sends it. The cursor is `{"<child_id>": <seq>, "_ts": "<RFC3339>", "_ledger": {"<child_id>": "<RFC3339>#<hash>"}, "_unowned": {"n": <count>, "last": "<mark>"}}` (`_ts` is the newest stamp received, informational; a `_ledger` value marks the entry's stamp and outcome; unknown `_` keys are ignored); the reply is `{"records": [...], "cursor_next": {...}}` plus `"writer": {...}` with `--with-writer`. It returns turn-journal lines with seq above the cursor for each child (a child the cursor does not know ships its last 64 lines), each child's completion-ledger record when it differs from the one in `_ledger` (unless a journal line carries the same completion), and the `_unowned` records appended after position `n` (all of them when the record at `n` no longer matches `last`, e.g. after a purge), minus the turns the journal itself delivers (same seq, transcript turn and stale flag). So a turn the journal trimmed before the cursor reached it, or never journaled, still crosses from `_unowned`. A journal line that repeats the last committed transcript turn is judged the way the producer's notifier judged it: within its 2 h dedup window (and the same attention class) the notifier dropped it, so it never ships (one daemon pass journals such a repeat for the snapshot edge of a turn it already emitted); past the window it was committed as a stale-signal turn (issue #2184) and ships keyed on its own time. At the journal's trim boundary the last commit is read from the remote's `_unowned` records. A top-level conductor's journal (no parent, or itself as parent, and a `conductor-` title) never ships, because its producer suppresses those turns (`self_conductor`) and the full export never carries them; a child whose parent is in this host's own registry never ships either (journal lines, completion-ledger entry and `_unowned` records alike): it belongs to that local parent, which holds its records in its own inbox. Only children whose parent this host cannot resolve (the conductor on the other machine) cross. Both kinds of skipped journal still enter `cursor_next` by seq, so a session later parented under the cross-host conductor ships only its new turns. A parentless session without a conductor title is an orphan and its turns do ship. The full export (no `--after`) is unchanged and still ships every inbox. Only the profiles named by the records an export considers are opened, so an old `_unowned` record of a deleted profile does not recreate its store. Journals and ledger entries untouched for 14 days, and records older than that, are neither shipped nor named in `cursor_next`. Without `--after` the output stays the bare JSON array. `cursor` lists the saved cursors (`remote`, `parent`, `updated_at`, `cursor`); text mode prints one line per cursor and one per child seq (a `_legacy` cursor prints as a legacy remote).
 
 ## Codex Hook Commands
 

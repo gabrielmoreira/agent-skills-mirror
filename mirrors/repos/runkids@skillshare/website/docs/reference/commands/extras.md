@@ -13,13 +13,109 @@ Extras are additional resource types managed by skillshare — think of them as 
 Each extra has:
 - A **name** (e.g., `rules`, `prompts`, `commands`)
 - A **source directory** — configurable via `extras_source` or per-extra `source`, defaults to `~/.config/skillshare/extras/<name>/` (global) or `.skillshare/extras/<name>/` (project)
-- One or more **targets** where files are synced to
+- **Targets** where files are synced to; shared memory notes can start with no targets
 
 In the dashboard, **Extras → Folders & files** lists each extra with its targets and mode:
 
 ![Extras › Folders & files: rules and commands synced to their targets](/img/extras-folders.png)
 
 ## Commands
+
+### `extras memory`
+
+Manage shared, user-owned Markdown notes in an extra named `memory`. The files
+work with any text editor. Native agent automatic memory remains separate.
+
+For an illustrated setup, see [Share memory across your AI tools](../../how-to/daily-tasks/sharing-memory.md).
+
+```bash
+skillshare extras memory init -g
+skillshare extras memory write decisions.md --from ./decisions.md -g
+skillshare extras memory list --search architecture --json -g
+skillshare extras memory show decisions.md --json -g
+skillshare extras memory instructions -g
+skillshare extras memory instructions --update-mode active -g
+```
+
+| Subcommand | Behavior |
+|---|---|
+| `init` | Register a folder extra without targets and create missing `INDEX.md` and `LEARNED.md` templates; preserve existing files and configuration |
+| `list` | List notes; `--search <text>` searches filenames and content, case-insensitively |
+| `show <note.md>` | Print a note; `--json` includes its `version` hash |
+| `write <note.md>` | Read UTF-8 content from `--from <file>` or `--from -` (stdin) |
+| `instructions` | Print a scope/hash-marked guidance block; project sources inside the repo use paths relative to the project root. `--update-mode passive` (default) asks agents to update notes only on request; `--update-mode active` lets them save lasting facts and propose notes they are unsure of |
+| `delete <note.md> --version <hash>` | Back up and delete the last read version; reject stale or missing versions |
+
+All subcommands accept `--json`, `--global` / `-g`, `--project` / `-p`, and
+`--help` / `-h`. Scope is auto-detected when omitted. The default source is
+`~/.config/skillshare/extras/memory/` globally and `.skillshare/extras/memory/`
+in a project. Existing `sources.extras`, global `extras_source`, and per-extra
+`source` overrides follow the same resolution as other extras.
+
+For a new note, omit `--version`. To update one, pass the `version` returned by
+`show --json`:
+
+```bash
+version=$(skillshare extras memory show decisions.md --json -g | jq -r '.version')
+skillshare extras memory write decisions.md --from ./updated.md --version "$version" -g
+```
+
+A changed or existing note is rejected when its version does not match.
+Changed files are backed up before replacement and can be inspected with
+[`backup files`](./backup.md). Notes must be UTF-8 Markdown files at most 1 MiB,
+with relative paths. Hidden files, hidden folders, and symbolic links inside
+the source are excluded. The starter `INDEX.md` links to `LEARNED.md`, whose template records
+the date, context, conclusion, and evidence for a lesson. Both are user-editable;
+re-running `init` only creates missing files and never regenerates existing ones.
+`SOUL.md` and `USER.md` are not created by default. These templates do not enable
+automatic learning or native memory integration.
+
+In the dashboard, **Extras → Memory** offers nested creation, search, a collapsible
+folder tree, and **Preview** / **Source**, **Copy path**, **Edit**, **Move or rename**, **Delete note**, and
+**History**. Files over 1 MiB or containing non-UTF-8 data remain listed as
+unsupported; valid notes still work. **Move or rename** accepts a new relative
+`.md` path, creates missing folders, preserves content and permissions, and rejects
+existing destinations or stale versions. The source is backed up at its old path;
+Markdown links are not rewritten automatically. Keep the reading-guidance entry
+point `INDEX.md` at the source root.
+
+Saves check the last-read version. A conflict preserves your draft and displays
+the latest saved content for comparison. **Save my draft** requires confirmation,
+uses the refreshed version, and backs up the saved file before replacement.
+Deletion also checks the saved version, requires confirmation, and backs up the
+note. **History** and the post-deletion restore link open **Backup Files** filtered
+to the note's absolute path.
+
+**New note** offers **Link from INDEX.md**, checked by default when the index is
+readable. It appends a link at EOF with a version check and backup. A failed index
+update leaves the new note intact. **Add to INDEX** links an unindexed note.
+Broken links show a warning; deleted-note links must be removed manually. CLI
+writes do not add index links.
+
+Use **Connect to agents**, select tools and an update mode (`passive` or `active`)
+for each, **Review changes**, then **Apply changes**. Tools reading the same file
+share one block and switch modes together; a configured tool's mode can be
+changed through the same review.
+The dashboard appends or updates a managed reading-guidance block in the existing
+instruction file or shared source, preserving all other content and assignments.
+The review shows file changes, shared readers, and known character-limit warnings.
+It backs up existing files and rejects stale plans. Intact outdated blocks can be
+updated after review; manually modified or malformed blocks are preserved.
+Unsynced or unreadable instruction files are skipped.
+
+**Configured** reports current guidance in a tool's reading chain; it does not
+report a read. **Copy verification prompt** supplies a prompt for a fresh agent
+session: read `INDEX.md` and a relevant note, report the full path and a temporary
+verification value added by the user. Inspect the actual read tool event manually;
+there is no guaranteed read telemetry.
+
+**Copy guidance** is the manual fallback. Choose a mode and paste the block into an
+instruction file the agent reads; **Open AGENTS.md** provides the existing editor.
+In project mode, a source inside the repository is relative to the **project
+root**, regardless of the instruction file's location. An external override or
+global source uses an absolute path; regenerate guidance after relocating it.
+This does not enable native automatic memory, automatic learning, or Obsidian
+integration. Connection and index actions above are dashboard workflows.
 
 ### `extras init`
 
@@ -54,7 +150,7 @@ The wizard asks **What do you want to sync?** after the name: **Folder** or **Si
 | `--global, -g` | Create in global config |
 
 :::note
-`--source` is only supported in global mode. Project mode always uses `.skillshare/extras/<name>/` as the source directory.
+`--source` accepts a custom source in global mode. In project mode it must be a relative path inside the project root.
 :::
 
 **Examples:**
@@ -83,10 +179,13 @@ skillshare extras init pi-prompt --file system.md --as APPEND_SYSTEM.md \
 `extras init` only writes the config. It does not create the source file and does not sync. For a single-file extra it prints the full source and target file paths:
 
 ```
+  Source    ~/dotfiles/prompts/system.md
+  Target    ~/.pi/agent/APPEND_SYSTEM.md · merge
+
 ✓ Created extra pi-prompt (single file)
-Source: ~/dotfiles/prompts/system.md
-Target: ~/.pi/agent/APPEND_SYSTEM.md [merge]
-Run 'skillshare sync extras' to sync.
+
+Next
+  skillshare sync extras  sync it
 ```
 
 If the source file does not exist yet, the source line ends with `(not found)` and the last line reads `Create the source file, then run 'skillshare sync extras'.`
@@ -110,25 +209,7 @@ skillshare extras list [--json] [--no-tui] [-p|-g]
 
 #### Interactive TUI
 
-The TUI provides a split-pane interface with extras list on the left and detail panel on the right. Key bindings:
-
-| Key | Action |
-|-----|--------|
-| `↑↓` | Navigate list |
-| `/` | Filter by name |
-| `Enter` | Content viewer (browse source files) |
-| `N` | Create new extra |
-| `X` | Remove extra (with confirmation) |
-| `S` | Sync extra to target(s) |
-| `C` | Collect from target(s) |
-| `M` | Change sync mode of a target |
-| `F` | Toggle flatten on/off for a target |
-| `Ctrl+U/D` | Scroll detail panel |
-| `q` / `Ctrl+C` | Quit |
-
-The color bar on each row reflects aggregate sync status: cyan = all synced, yellow = drift, red = not synced, gray = no source.
-
-For extras with multiple targets, `S`, `C`, `M`, and `F` open a target sub-menu. `S` and `C` allow selecting all targets at once; `M` and `F` require picking a specific target.
+On a TTY, `extras list` opens an interactive view: extras on the left, and the selected extra's targets and files on the right. From there you can create, remove, sync and collect extras, and change a target's mode or flatten setting. The keys are listed at the bottom of the screen.
 
 The TUI can be permanently disabled with `skillshare tui off`.
 
@@ -138,15 +219,14 @@ When TUI is disabled (via `--no-tui`, `skillshare tui off`, or piped output):
 
 ```
 $ skillshare extras list --no-tui
+rules  ~/.config/skillshare/extras/rules · 2 files
+✓ ~/.claude/rules  merge
+✓ ~/.cursor/rules  copy
 
-Extras
-─────────────────────────────────────────
-→ rules  ~/.config/skillshare/extras/rules/ · 2 files
-  ✓ ~/.claude/rules  merge
-  ✓ ~/.cursor/rules  copy
+codex-agents  ~/.config/skillshare/agents · 3 files
+✓ ~/.codex/agents  extension: codex-agents
 
-→ codex-agents  ~/.config/skillshare/agents · 3 files
-  ✓ ~/.codex/agents  extension: codex-agents
+2 extras
 ```
 
 For a [single-file extra](#single-file-extras), the source and each target show the full file path instead of the directory.
@@ -232,7 +312,7 @@ skillshare extras rules --remove-target ~/.cursor/rules
 skillshare extras rules --remove-target ~/.cursor/rules --prune
 ```
 
-Also available via the TUI (`M` key) and Web UI (mode dropdown and flatten checkbox on each target).
+Also available via the TUI (`e` key) and Web UI (mode dropdown and flatten checkbox on each target).
 
 ### `extras remove`
 

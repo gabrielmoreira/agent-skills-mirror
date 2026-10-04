@@ -11,7 +11,7 @@ Makine bağlantısı, bir OpenCodex **Home** bilgisayarını bir **Child** bilgi
 - Child tarafından başlatılan bağlantı için Child, Home bilgisayarına OpenSSH anahtarıyla giriş yapabilmelidir (parola girişi desteklenmez).
 - Child bilgisayarında OpenCodex 2.66.0 veya sonrası kuruludur (Child tarafından başlatılan bağlantıda Home üzerinde de).
 - Her iki bilgisayar da macOS veya Linux çalıştırır.
-- Bağlantıyı başlatan kontrol paneli o bilgisayarın kendisinde (bağımsız kurulumda tarayıcı veya masaüstü uygulaması) ya da eşleştirilmiş bir Hub oturumu üzerinden açılır.
+- Home üzerinden Child ekleyen kontrol paneli Home üzerinde ya da eşleştirilmiş bir Hub oturumunda açılır. Geçerli bilgisayarı Child'a dönüştürmek için operatörün eşleştirdiği bir kontrol paneli oturumu gerekir; kimlik bilgisi olmadan oluşturulan yerel oturum bu yönlendirme değişikliğini onaylayamaz.
 
 Parolalı SSH ve Windows mevcut akışın dışındadır. Bağlantı iki taraftan da başlatılabilir: aşağıda anlatıldığı gibi Home tarafından ya da "Bu bilgisayarı Child olarak bağlama" bölümünde anlatıldığı gibi Child tarafından.
 
@@ -25,6 +25,17 @@ Parolalı SSH ve Windows mevcut akışın dışındadır. Bağlantı iki tarafta
 
 Kontrol paneli belirteç girmenizi istemez. Önce ana bilgisayarı yoklar ve parmak izini açıkça onaylamadan bağlantıyı uygulamaz.
 
+Child ekleme penceresi, Child’ın bu Home’un sağlayıcılarını SSH üzerinden kullandığını ve yukarıdaki gereksinimleri açıklar. Takma adlar, tarayıcıyı gösteren bilgisayardan değil, OpenCodex’i çalıştıran Home üzerindeki `~/.ssh/config` dosyasından gelir. Tarama başarılı olup hiç ana bilgisayar bulunamazsa aşağıdaki gibi bir `Host` girdisi ekleyip yeniden tarayın. Mevcut bir takma adı elle de girebilirsiniz; seçim veya giriş bağlantı testini etkinleştirir. Pencerede bu kılavuza bağlantı bulunur.
+
+```sshconfig
+Host devbox
+  HostName devbox.example.com
+  User you
+  IdentityFile ~/.ssh/id_ed25519
+```
+
+Tarama başarısız olursa boş liste yerine yükleme hatası, mevcut neden ve yeniden deneme eylemi gösterilir. Bağlantı testinin nedeni ve temizlenmiş SSH ipucu yalnızca etkin pencerede görünür, arkasında yinelenmez. Nedeni ve gerektiğinde aşağıdaki SSH tanılamasını kontrol edip yeniden deneyin. Yeniden tarama girilen takma adı korur ancak bağlantıdan önce parmak izinin yeniden incelenmesini gerektirir.
+
 ## Bu bilgisayarı Child olarak bağlama
 
 Home'un sağlayıcılarını kullanacak bilgisayarda:
@@ -36,7 +47,9 @@ Home'un sağlayıcılarını kullanacak bilgisayarda:
 
 Bağlanmak bu bilgisayardaki OpenCodex'i yeniden başlatır. Zaten çalışan Codex istekleri önce tamamlanır ve yeniden başlatma sırasında yeni istekler bir dakikaya kadar başarısız olabilir. Ardından kontrol paneli kendiliğinden yeniden yüklenir ve Child bağlantısını gösterir. Codex bu bilgisayarda `http://127.0.0.1:<port>/v1` adresini kullanmaya devam eder ve belirteç veya ortam değişkeni ayarlamanız gerekmez: yerel OpenCodex her isteği Home'a aktarır, Home da kendi sağlayıcıları ve hesaplarıyla yanıt verir.
 
-**Child** rolü yalnızca OpenCodex yapılandırılmış bağlantı noktasında çalışırken kullanılabilir, çünkü Child tam olarak o bağlantı noktasında yeniden başlar. Kontrol paneli OpenCodex'in yapılandırılmış bağlantı noktasında çalışmadığını söylerse önce onu o bağlantı noktasında yeniden başlatın.
+**Child** önce bu bilgisayarı eşleştirmenizi istiyorsa bu bilgisayarın yapılandırılmış HTTP geri döngü IP adresindeki kontrol panelini açın; örneğin `http://127.0.0.1:<configured-port>`. Yerel eşleştirme formu yalnızca eşleştirme eksik olduğunda ve kontrol paneli ile API aynı geri döngü kaynağını kullandığında görünür. Formdaki `ocx gui pair --origin "http://127.0.0.1:<configured-port>"` komutunu kopyalayıp bu bilgisayarın terminalinde çalıştırın, ardından tek kullanımlık kodu forma yapıştırın. Formda gösterilen kaynak adresini aynen kullanın; sağlayıcı API anahtarı veya yönetici belirteci eşleştirme kodu değildir. Eksik eşleştirme ile yapılandırılmış bağlantı noktası uyuşmazlığı farklı nedenlerdir.
+
+**Child** rolü ayrıca OpenCodex'in bağımsız çalışma modunda, yapılandırılmış bağlantı noktasında çalışmasını gerektirir, çünkü Child tam olarak o bağlantı noktasında yeniden başlar. Kontrol paneli OpenCodex'in yapılandırılmış bağlantı noktasında çalışmadığını söylerse önce onu o bağlantı noktasında yeniden başlatın.
 
 ## Bağlantı durumu
 

@@ -1,6 +1,6 @@
 ---
 description: "Shareable client view-state lives in the URL via nuqs"
-globs: ["apps/sim/app/**/*.tsx","apps/sim/app/**/*.ts","apps/sim/app/**/search-params.ts","apps/sim/ee/**/*.tsx","apps/sim/ee/**/*.ts"]
+globs: ["apps/sim/app/**/*.tsx","apps/sim/app/workspace/**/*.ts","apps/sim/app/o/**/*.ts","apps/sim/ee/**","apps/sim/hooks/**","apps/sim/stores/**","apps/sim/lib/url-state/**","apps/sim/**/search-params.ts","apps/sim/**/*navigation.ts"]
 ---
 
 <!-- Generated from .claude/rules/sim-url-state.md by `bun run skills:sync`. Edit the source, not this file. -->
@@ -16,7 +16,7 @@ Pick exactly one home for each piece of state (table below). Put state in the UR
 | Home | Trigger | Example |
 | --- | --- | --- |
 | **URL (nuqs)** | Client view-state worth a link: tab, filter, search, sort, pagination, selected-entity id, an open "view" modal/drawer that is a destination | `?tab=licenses`, `?category=Communication`, `?page=3`, `?skillId=abc` |
-| **React Query** | Server/remote data fetched from an endpoint | `useMcpServers(workspaceId)`, `useSkills(workspaceId)` |
+| **React Query** | Server/remote data fetched from an endpoint (hook rules: `.claude/rules/sim-queries.md`) | `useMcpServers(workspaceId)`, `useSkills(workspaceId)` |
 | **Zustand** | Cross-component client state that must NOT be in the URL: high-frequency, large, ephemeral, socket-synced | canvas pan/zoom, live cursor, drag state, resize widths, unsaved buffers |
 | **`useState`** | Purely local single-component UI; also the snappy mirror of a debounced URL search | a hover flag, a transient dialog target, the live text of a debounced search box |
 

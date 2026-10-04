@@ -4,14 +4,14 @@ A **skill-based framework** for building and maintaining an Obsidian knowledge b
 
 ## README Translation Parity
 
-`README.md` and `README_TW.md` are one documentation surface. Keep headings, examples, links, and user-facing behavior aligned between the two translations. The check is advisory and never blocks a PR: the `readme-translation-drift` CI job only reports drift. Run `python tools/check_readme_sync.py` to list commits that changed `README.md` without a later `README_TW.md` update, along with the pending English diff — then translate and backfill those changes into `README_TW.md`. Reviewers assess translation quality.
+`README.md` and every `README_<LANG>.md` translation (today `README_TW.md`) are one documentation surface. Keep headings, examples, links, and user-facing behavior aligned across them. The check is advisory and never blocks a PR: the `readme-translation-drift` CI job only reports drift. Run `python tools/check_readme_sync.py` to list, per translation, the commits that changed `README.md` without a later update to that translation, along with the pending English diff — then translate and backfill those changes. Reviewers assess translation quality. Adding a language is covered in `docs/contributing.md`.
 
 ## Configuration
 
 Resolve config using the Config Resolution Protocol in `llm-wiki/SKILL.md`:
 
 0. **Inline vault override (`@name`)** — if the request contains an `@<name>` token, resolve `<global config dir>/config.<name>` directly, overriding the steps below. See "Targeting a specific vault" right after this list.
-1. **Walk up from CWD** — look for a `.env` file in the current directory, then each parent, up to `$HOME`. Stop at the first `.env` that contains `OBSIDIAN_VAULT_PATH`.
+1. **Walk up from CWD** — look for a `.env` file in the current directory, then each parent, up to `$HOME`. Stop at the first `.env` that contains `OBSIDIAN_VAULT_PATH`. If its value is empty, stop there too: tell the user which `.env` blocked resolution (a blank line copied from `.env.example` does this) instead of falling through to the global config.
 2. **Global config** — if no local `.env` is found, read `<global config dir>/config`.
 3. **Prompt setup** — if neither exists, tell the user to run `wiki-setup`.
 
@@ -176,4 +176,4 @@ For the full pattern (three-layer architecture, page templates, project org), re
 
 Human-facing documentation lives in `docs/` — `installation.md`, `agents.md`, `skills.md`, `cli.md`, `configuration.md`, `architecture.md`, `session-brain.md`, `contributing.md`. `README.md` is a landing page only; when you add a skill, CLI command, or config variable, update the matching `docs/` page rather than the README.
 
-The vault format is structurally conformant with the [Open Knowledge Format (OKF) v0.1](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) — markdown files with YAML frontmatter, category subfolders, reserved `index.md`/`log.md`. `wiki-export` (OKF mode) and `wiki-import` are the bridge: they translate between our native frontmatter (`title`/`category`/`tags`/`sources`/`created`/`updated` + `summary`) and OKF (`type`/`title`/`description`/`resource`/`tags`/`timestamp`), making vaults exchangeable with any OKF tool. The OKF round-trip is lossless; the `graph.json` round-trip is not.
+The vault format is structurally conformant with the [Open Knowledge Format (OKF) v0.2](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) — markdown files with YAML frontmatter, category subfolders, reserved `index.md`/`log.md`. `wiki-export` (OKF mode) and `wiki-import` are the bridge: they translate between our native frontmatter (`title`/`category`/`tags`/`sources`/`created`/`updated` + `summary`) and OKF (`type`/`title`/`description`/`tags`/`generated`/`sources`, plus `status` and `verified` from lifecycle and trust reviews), making vaults exchangeable with any OKF tool. The OKF round-trip is lossless; the `graph.json` round-trip is not.

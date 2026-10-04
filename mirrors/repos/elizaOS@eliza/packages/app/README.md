@@ -112,3 +112,80 @@ the expected phrase while the recognizer control passed; the model/forward-path
 defect remains unresolved (issue #30679). Diagnosis needs a matched canonical
 reference and the first divergent tensor. Microphone capture, phonemization and
 physical speaker playback are outside this IPA-input diagnostic.
+
+## Standalone host speech
+
+Bun hosts may explicitly enable owner-authenticated local speech with
+`ELIZA_KOKORO_ENABLED=1`, an absolute `ELIZA_INFERENCE_LIBRARY`, its reviewed
+`ELIZA_KOKORO_LIBRARY_SHA256`, and an absolute `ELIZA_KOKORO_MODEL_DIR`.
+The worker requires ABI 14 or later, the pinned Kokoro 82M v1.0 GGUF and
+`voices/af_bella.bin`; it does not download assets or use a cloud fallback.
+`GET /api/tts/kokoro/status` reports readiness. `POST /api/tts/kokoro` accepts
+only `{ "text": "..." }` (1–500 characters) and a UUID `X-Request-Id`, returning
+mono PCM16 WAV at 24 kHz. Both require an active owner session, not merely the
+host's static API token, and are available only in local runtime modes.
+
+Each server owns its worker and replay ledger. Runtime replacement stops the
+old worker; closing the server prevents further speech startup. Cancelling a
+request destroys its worker context and a subsequent request initializes a
+new one. Direct compat-handler hosts must call `closeStandaloneKokoro(state)`
+on shutdown and `stopStandaloneKokoro(state)` before replacing the runtime.
+
+With the same reviewed native asset environment, run
+`bun run --cwd packages/app test:tts:standalone` for real HTTP policy, durable
+SQLite session, native speech, replay, host-isolation and cancellation checks.
+The test writes synthetic audio and a report under
+`test-results/standalone-kokoro-http`; it fails if assets are unavailable.
+This qualification does not prove browser playback or Android execution.
+
+### Android secure-store broker
+
+Embedding Android hosts can set `ELIZA_ANDROID_SECURE_STORE_SOCKET` to their
+app-owned broker's abstract socket name (without the leading NUL byte). The host
+captures it when constructing the secure store; an unset or empty value uses
+`ai.elizaos.app.secure-store`. An explicit factory socket path takes precedence.
+The embedding app must start the corresponding app-UID-only Keystore broker;
+this option changes client routing, not broker permissions or availability.
+
+## External Android consumers
+
+Shared local speech sources and reproducible runtime/model tooling are documented
+in [local speech](scripts/local-speech/README.md). The source-export resolver in
+`scripts/lib/consumer-source-resolver.mjs` composes declared Eliza source exports
+for independent Bun hosts; consumers retain their source pin, credentials and policy.
+
+Consumer hosts can use `native-host/task-runtime-gateway.mjs` for authenticated
+SQLite task lifecycles and explicit domain-route extensions. Document/canvas
+bundling and verified ARM64 packaging live in `native-host/build-document-runtime.mjs`
+and `native-host/android-documents.mjs`; consumers supply reviewed source identity,
+canvas version and locked package records. Run `bun run test:consumer-host` here.
+The renderer gateway and Cloud services remain owned by `packages/agent/native-host`
+and `packages/auth/native-host`; these build helpers do not provide device acceptance.
+
+Native hosts can compose `native-host/trace-queue.mjs`, `trace-transport.mjs` and
+`database-lease.mjs` for opt-in, encrypted research uploads. Hosts must supply an
+explicit `validateEvent` policy, private database path/key, authenticated collector
+and lifecycle/cancellation ownership. The queue retains events until the collector
+acknowledges the exact batch durably; overflow records a visible gap and withdrawal
+persists across restart. Event IDs remain database indexes, so validators must keep
+identifiers free of private content. Study definitions, measurement projection and operator UI belong to the host. Uploads never
+start merely by importing these modules. Caller-owned abort signals cancel HTTP
+work; the owner should abort pending transport before awaiting worker shutdown.
+
+
+`research-store.mjs` and `research-server.mjs` provide the opt-in collector: private
+AES-GCM SQLite records, named operator/device roles, enrollment revisions,
+consent-aware ingestion, withdrawal, key rotation and structural-event routes.
+`measurementPolicy.validateDataset` and `.report` are explicit trusted host
+callbacks; the dataset envelope retains study, participants, tasks and coverage
+so withdrawal removes the participant's evidence. The shared server accepts an
+optional `readAsset` callback for the host's fixed console assets. It never serves
+application files by arbitrary request paths.
+
+`task-trace-capture.mjs` reads the existing owner-scoped task journal and emits
+pseudonymous structural events, excluding task text and connector content.
+`research-capture-host.mjs` composes the collector, encrypted queue, exclusive
+lease and caller-cancelled transport. Its explicit start/stop lifecycle preserves
+consent and current-owner fences; importing it starts no collection. Run the
+native-host tests for real SQLite/HTTP evidence, including stop during an
+unanswered request. These modules do not authorize enrolling real participants.

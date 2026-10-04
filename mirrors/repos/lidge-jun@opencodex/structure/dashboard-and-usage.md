@@ -19,7 +19,7 @@ Codex account panels expose no Spark quota toggle or setting and retain quota re
 ## Dashboard surfaces
 
 Dashboard localization uses the English `gui/src/i18n/en.ts` catalog as the complete key and
-placeholder contract. Every registered locale, including Vietnamese, supplies the same keys;
+placeholder contract. Every registered locale, including Vietnamese and Brazilian Portuguese (`pt`, HTML `pt-BR`), supplies the same keys;
 locale-specific Compatibility Lab, log-guard, routing, vision, status-code, and quota-formatting
 maps remain total rather than silently falling back to English.
 
@@ -189,7 +189,6 @@ current physical response contribution, preserving prior sends on the same key w
 repeated inspections twice. Consumers sum the flat attempts once and keep subscription quota
 observations separate from token or API-equivalent cost totals.
 
-
 `src/server/hub-usage.ts` serves `GET /v1/usage` on hubs for an explicit configured data key. The authenticated key selects the aggregate; query parameters cannot select an API-key identity. Unscoped environment/admin credentials and loopback bypass are not admitted. The response projects only this client's numeric totals, provider/model/day rows and incomplete-history metadata through `src/remote/hub-usage.ts`; accounts, raw records and key IDs are omitted. Unknown fields are stripped at every object boundary and the serialized body is capped at 1 MiB.
 
 Custom usage windows are immutable bounds on the streaming accumulator, applied before attribution and daily
@@ -254,7 +253,7 @@ A private per-dispatch identity generation fences the diagnostic independently o
 quota metadata. Both snapshot and account DTO publication omit externally invalidated
 attempts; the generation itself is never serialized or stored in the quota cache.
 The CLI reconstructs the object using a fixed vocabulary and bounded numeric HTTP
-status, so an unexpected management response cannot add raw upstream material.
+status, so an unexpected management response cannot add raw upstream material. An `http_error` may carry `code` only from `CODEX_TERMINAL_AUTH_CODES` (`src/codex/quota-refresh-outcome.ts`; e.g. `token_invalidated` after a plan change revokes the session), and a failed read keeps the main row's last-known plan. Reauth attribution uses current terminal-auth evidence behind the same generation fence; a transient HTTP401 diagnostic does not replace an existing refresh-failure cause.
 
 > Decision record: [ADR-0078](decisions/ADR-0078-usage-accounting.md)
 
@@ -283,7 +282,8 @@ whole rows byte for byte through the shared atomic writer, refuses the rename un
 the exact revision that was copied, and then discards the Logs ring, the retained aggregates and the
 request-history index so no surface serves rows the ledger no longer has.
 `src/usage/summary.ts` turns that file into the `/api/usage` shape — totals, daily zero-filled
-grid, model and provider breakdowns, and `measured / reported / unreported / unsupported / estimated` counts.
+grid, model and provider breakdowns, and `measured / reported / unreported / unsupported / estimated` counts. Each scope also aggregates end-to-end output throughput (#6309): measured output tokens and wall-clock `durationMs` are summed over attempts reporting both, exposing `throughputTokensPerSec` — a token-sum-over-duration-sum, never a mean of per-request rates. `throughputSamples` counts qualifying attempts (legacy rows without attempts contribute one); nonpositive or nonfinite tokens/timing are excluded. The Usage summary and Models/Providers tables display the rate and sample basis, or unavailable when none qualify.
+All three throughput displays use the same finite-number guard as their tooltip; malformed or nonfinite rates are unavailable rather than formatted.
 The management route scans the ledger from its beginning in fixed 1 MiB chunks on a
 cold rebuild, then retains compact numeric aggregate state and resumes at the last verified LF for
 ordinary appends. It does not retain the full input or a normalized object for every request, and
@@ -292,7 +292,7 @@ surface filtering. `managementUsageMaxReadBytes` remains a recognized compatibil
 bounded legacy readers, but it is not an accuracy limit or tuning knob for `GET /api/usage`.
 A Codex-surface response includes an `accounts` breakdown keyed by stable non-PII `accountLogLabel`; cards join it to the management account DTO for 30-day tokens, API-equivalent cost and coverage. New main-pool rows use `main`; legacy bare `openai` rows remain ambiguous.
 A missing `usage.jsonl` returns a zeroed summary with 200 because a fresh install has no usage. Unmeasured requests remain distinct from measured zero through `measured / reported / unreported / unsupported / estimated` counts and their coverage totals.
-The Usage tab renders that shape and the main Dashboard shows its 30-day summary. The 200-entry in-memory `requestLog` is not the aggregation source; the JSONL ledger is. Usage table scrollports in `gui/src/styles-usage-workspace.css` contain absolute screen-reader captions so long tables do not extend the outer document beyond the report; `gui/tests/usage-scroll-browser.ts` measures that boundary and last-row reachability at desktop and mobile widths.
+Normal dashboard pages use the document as their vertical scroller. In `gui/src/styles.css`, body horizontal overflow is clipped without creating a second scrollport; the mobile open-drawer state also locks document overflow. The shared sidebar stays viewport-height through the end of Codex and Claude account pages. `gui/tests/shared-scroll-browser.ts` checks the built entry and App styles with short/long content, both themes, desktop chrome, collapsed navigation and mobile widths. The Usage tab renders that shape and the main Dashboard shows its 30-day summary. The 200-entry in-memory `requestLog` is not the aggregation source; the JSONL ledger is. Usage table scrollports in `gui/src/styles-usage-workspace.css` contain absolute screen-reader captions so long tables do not extend the outer document beyond the report; `gui/tests/usage-scroll-browser.ts` measures that boundary and last-row reachability at desktop and mobile widths.
 Ledger read failures instead return `500 { error: "read_failed" }`. Shared GUI usage admission reads that body before classifying HTTP failure and also rejects the legacy HTTP-200 envelope, so every shared cache retains its last valid report rather than fabricating zero totals.
 > Decision record: [ADR-0106](decisions/ADR-0106-usage-read-failure-contract.md)
 
@@ -334,7 +334,7 @@ selectors, a vendor-only inferred price is unavailable; exact provider and user 
 eligible. Missing trace evidence is not reconstructed from today's configuration. Provider-detail
 model shares use that provider's token total, not the global total. Unknown reserved `policy/`
 selectors are rejected before upstream dispatch; historical rows remain unchanged.
-Expected-price overlays are estimates, not billing reproductions: the Z.AI GLM rows (`zai`, `zhipu-bigmodel`, `zhipu-bigmodel-coding`, `zhipu-bigmodel-responses`) display the published z.ai USD list price on surfaces that actually bill by Coding Plan subscription or CNY-tiered domestic PAYG, and every such row is marked `verified-derived` so the estimate flag reaches the UI.
+Expected-price overlays are estimates, not billing reproductions: the Z.AI GLM rows (`zai`, `zhipu-bigmodel`, `zhipu-bigmodel-coding`, `zhipu-bigmodel-responses`) display the published z.ai USD list price on surfaces that actually bill by Coding Plan subscription or CNY-tiered domestic PAYG, and every such row is marked `verified-derived` so the estimate flag reaches the UI. Antigravity Claude Sonnet and Opus 5.5 base/tier overlays in `src/usage/expected-prices.ts` likewise use Anthropic reference prices with `verified-derived`, so even reported tokens retain an estimated-cost flag.
 
 The management API retains the compact accumulator plus bounded query summaries; it never retains
 normalized per-request rows after a response. File identity changes, shrinkage, same-size metadata
@@ -517,12 +517,11 @@ Native steering generation overrides, explicit public-API eligibility and the co
 
 `compactionRouting` is a persisted configuration setting. Its model and optional effort follow the
 [Responses trigger contract](transports/responses-failover.md#compaction-routing-overrides). Dashboard Overview
-provides model and effort selectors with an explicit Save action, a standing note that the selected
-model's provider receives the entire conversation, and a warning naming that provider once a model
-is chosen; for a combo selector the warning lists the combo's target providers from `GET /api/combos`
-and states that failover targets receive the conversation too. `GET /api/settings` returns
-the override or null; `PUT /api/settings` accepts a complete validated object or null to clear it.
-Save failure restores live settings and deletion provenance; the dashboard retains the draft for retry.
+provides labeled model, trigger, source-scope and effort selectors and warns which provider (or combo targets,
+via `GET /api/combos`) receives the full conversation. The source-scope picker edits `sourceModels` as exact
+model or `provider/*` selectors, keeps saved selectors missing from the catalog visible, and refuses an empty
+selection because the schema would drop the override. The model checklist is searchable and renders at most 300 matches without dropping hidden selections. `GET /api/settings` returns the override or null;
+`PUT /api/settings` accepts a validated object or null to clear it; a failed save restores live settings and deletion provenance while the dashboard keeps the draft for retry.
 
 `src/server/gui-static.ts` serves the dashboard from `gui/dist`, with `OPENCODEX_GUI_DIST` taking
 priority and standalone binaries resolving the copied directory beside `ocx`. Runtime package
@@ -555,7 +554,6 @@ enabling it takes effect without a restart.
   unobserved. `src/quota/reset-activation.ts` installs the sink independently of the poller, so
   `pollSeconds: 0` observes live traffic only.
 
-
 ## Usage history and model identity
 
 `src/server/request-log.ts` preserves upstream `servedModel` independently of route-derived
@@ -571,6 +569,8 @@ Rows also carry the observed protocol path (`protocolTrace`), persisted in `usag
 re-validated on read; the Logs list shows it as a text badge, the detail dialog as a section, and
 `src/server/request-log-filter.ts` owns the `/api/logs` query filters including `protocolMode`; its single-pass query applies provider, conversation, model, account, protocol mode and status before `tail`, then reports the pre-pagination count alongside the offset/limit page.
 [Protocol Paths](data-planes/protocol-paths.md) owns its derivation.
+
+Rows may also carry `genStartMs` and `lastOutputMs`, an observed request-relative pair recorded by `src/server/request-log-generation-window.ts` from the Responses and Anthropic SSE taps: the first output item or content block (reasoning included) to the last output delta. They are proxy observation times, not provider-internal token timing, and `src/usage/log.ts` keeps them only as a pair of nonnegative finite values with `lastOutputMs >= genStartMs`. `decodeTokPerSecondResult` in `src/server/management/shared.ts` prefers that window when the pair is valid and otherwise falls back to the post-TTFT window (`durationMs - firstOutputMs`); both keep the one-second minimum, the `ttft_missing` / `decode_window_too_short` unavailable reasons and `estimated: true`, so a short measured window is still an estimate rather than a provider decode benchmark. The end-to-end tok/s column is unchanged, attempts carry no generation window of their own, and the request-history view does not present one.
 
 Request-history selectors longer than 130 characters persist as a prefix plus a digest of the complete
 selector; exact-match filtering uses the same idempotent encoding. The derived index rebuilds when its

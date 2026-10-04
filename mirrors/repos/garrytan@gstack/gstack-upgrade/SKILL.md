@@ -58,7 +58,7 @@ Tell user: "Auto-upgrade enabled. Future updates will install automatically." Th
 
 **If "Not now":** Write snooze state with escalating backoff (first snooze = 24h, second = 48h, third+ = 1 week), then continue with the current skill. Do not mention the upgrade again.
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
+GSTACK_STATE_ROOT=$(~/.claude/skills/gstack/bin/gstack-paths --get GSTACK_STATE_ROOT); : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
 _SNOOZE_FILE="$GSTACK_STATE_ROOT/update-snoozed"
 _REMOTE_VER="{new}"
 _CUR_LEVEL=0
@@ -130,25 +130,31 @@ Use the install type and directory detected in Step 2:
 
 **For git installs** (global-git, local-git):
 
-Fast-forward first (#2517) — the same policy the session-update auto-upgrade
+Fast-forward first — the same policy the session-update auto-upgrade
 uses. `--autostash` carries local edits over the pull; render-footprint dirt
-is discarded first because it is regenerable and poisons stashes (#2569):
+is discarded first because it is regenerable and poisons stashes:
 ```bash
 cd "$INSTALL_DIR"
-# Discard render-footprint dirt (#2569): pre-v1.67 gbrain-enabled installs
-# ran gen:skill-docs:user IN PLACE, leaving generated SKILL.md / sections
-# files permanently modified. They are regenerable (setup re-renders to
-# ~/.gstack/render), so discarding is lossless.
+# Discard render-footprint dirt: older gbrain-enabled installs rendered
+# generated SKILL.md / sections files IN PLACE. They are regenerable (setup
+# re-renders to ~/.gstack/render), so discarding is lossless.
 git checkout -- 'SKILL.md' '*/SKILL.md' '*/sections/*.md' 2>/dev/null || true
 git fetch origin
 PRE_UPGRADE_COMMIT=$(git rev-parse HEAD)
 echo "PRE_UPGRADE_COMMIT=$PRE_UPGRADE_COMMIT"
 if git pull --ff-only --autostash origin main; then
-  if ./setup; then echo "FF_OK"; else echo "SETUP_FAILED: git update succeeded; stop and inspect setup output (previous commit: $PRE_UPGRADE_COMMIT)" >&2; exit 1; fi
+  if ./setup --refresh-registered; then echo "FF_OK"; else echo "SETUP_FAILED: git update succeeded; stop and inspect setup output (previous commit: $PRE_UPGRADE_COMMIT)" >&2; exit 1; fi
 else
   echo "FF_REFUSED"
 fi
 ```
+
+Setup's `--refresh-registered` refreshes every install this checkout
+registered (each host, global and this project's), prints the source first,
+and ends with an `Upgrade summary` of one row per install. Relay those rows
+as printed. A `failed` row means that host kept its previous install; give
+its retry command and never say every host was refreshed. A `skipped` row
+belongs to another checkout or project; pass on its command, do not run it.
 
 If the output ends with `FF_OK`, the upgrade is done — skip the fallback
 below entirely.
@@ -156,7 +162,7 @@ On `SETUP_FAILED`, STOP; keep user changes and report the recovery commit. There
 
 **Fallback (ff-only refused — local commits or divergence).** `git reset
 --hard` DESTROYS things: a clean tree with unpushed local commits still loses
-those commits. Gate it (#2517):
+those commits. Gate it:
 
 1. Run `git status --porcelain` and `git rev-list origin/main..HEAD --oneline`
    in `$INSTALL_DIR`.
@@ -173,7 +179,7 @@ those commits. Gate it (#2517):
 cd "$INSTALL_DIR"
 STASH_OUTPUT=$(git stash 2>&1)
 git reset --hard origin/main
-./setup
+./setup --refresh-registered
 ```
 If `$STASH_OUTPUT` contains "Saved working directory", warn the user: "Note: local changes were stashed (any modified generated SKILL.md/sections files were discarded first — they regenerate on setup). Run `git stash pop` in the skill directory to restore your own changes."
 
@@ -189,7 +195,7 @@ TMP_DIR=$(mktemp -d) || { echo "ERROR: mktemp failed — aborting upgrade (insta
 git clone --depth 1 https://github.com/garrytan/gstack.git "$TMP_DIR/gstack" || { echo "ERROR: clone failed — aborting upgrade (install untouched)." >&2; rm -rf "$TMP_DIR"; exit 1; }
 mv "$INSTALL_DIR" "$INSTALL_DIR.bak" || { rm -rf "$TMP_DIR"; exit 1; }
 if mv "$TMP_DIR/gstack" "$INSTALL_DIR"; then
-  if (cd "$INSTALL_DIR" && ./setup); then
+  if (cd "$INSTALL_DIR" && ./setup --refresh-registered); then
     rm -rf "$INSTALL_DIR.bak" "$TMP_DIR"
   else
     rm -rf "$INSTALL_DIR"
@@ -241,7 +247,7 @@ Tell user: "Removed vendored copy at `$LOCAL_GSTACK` (team mode active — globa
 ```bash
 [ -e "$LOCAL_GSTACK.bak" ] && { echo "ERROR: stale vendored backup; inspect it before retrying." >&2; exit 1; }
 mv "$LOCAL_GSTACK" "$LOCAL_GSTACK.bak" || exit 1
-if cp -Rf "$INSTALL_DIR" "$LOCAL_GSTACK" && rm -rf "$LOCAL_GSTACK/.git" && (cd "$LOCAL_GSTACK" && ./setup); then
+if cp -Rf "$INSTALL_DIR" "$LOCAL_GSTACK" && rm -rf "$LOCAL_GSTACK/.git" && (cd "$LOCAL_GSTACK" && ./setup --refresh-registered); then
   rm -rf "$LOCAL_GSTACK.bak"
   echo "LOCAL_SYNC_OK"
 else
@@ -286,7 +292,7 @@ for how to add new migrations.
 
 A browse daemon started before the upgrade keeps serving the OLD binary's code
 until it is stopped — it survives `git reset --hard` and `./setup` because the
-running process holds the old executable (#2551). Always run this step, using
+running process holds the old executable. Always run this step, using
 the install directory detected in Step 2.
 
 ```bash
@@ -329,7 +335,7 @@ running. Interpret the `DAEMON_CHECK` result:
 ### Step 5: Write marker + clear cache
 
 ```bash
-eval "$(~/.claude/skills/gstack/bin/gstack-paths)"; : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
+GSTACK_STATE_ROOT=$(~/.claude/skills/gstack/bin/gstack-paths --get GSTACK_STATE_ROOT); : "${GSTACK_STATE_ROOT:?gstack-paths failed; reinstall with ./setup or /gstack-upgrade}"
 mkdir -p "$GSTACK_STATE_ROOT"
 echo "$OLD_VERSION" > "$GSTACK_STATE_ROOT"/just-upgraded-from
 rm -f "$GSTACK_STATE_ROOT"/last-update-check

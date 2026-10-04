@@ -1,0 +1,20 @@
+{
+  "name": "universal-modder",
+  "interface": {
+    "displayName": "universal-modder"
+  },
+  "plugins": [
+    {
+      "name": "universal-modder",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/rehan-remade/universal-modder.git"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

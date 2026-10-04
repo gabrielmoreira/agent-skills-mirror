@@ -167,8 +167,6 @@ command = "llm -m claude-haiku-4.5"
 
 ### aichat
 
-`--code` drops the `<think>` block aichat prints before the message when the model reasons.
-
 ```toml
 [commit.generation]
 command = "aichat -m claude:claude-haiku-4.5 --code"
@@ -630,6 +628,7 @@ On first run without shell integration, Worktrunk offers to install it. On first
 ## Environment variables
 
 All user config options can be overridden with environment variables using the `WORKTRUNK_` prefix.
+Invalid environment overrides are ignored with a warning; other valid overrides still apply.
 
 ### Naming convention
 

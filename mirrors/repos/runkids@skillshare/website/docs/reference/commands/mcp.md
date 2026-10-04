@@ -74,20 +74,10 @@ single transaction.
 
 ## Interactive management
 
-Run `skillshare mcp` or `skillshare mcp list`. Like the skills list, the manager
-supports `/` to search and `Enter` for details. Connection lists hide argument,
-header and environment values, and omit URL queries.
-
-| Key | Action |
-|---|---|
-| `a` | Add a connection |
-| `i` | Import one or more connections |
-| `e` | Edit the selected connection |
-| `x` | Remove the selected connection |
-| `s` | Preview and confirm synchronization |
-| `b` | Browse backups by client, then newest first |
-| `r` | Refresh status |
-| `q` | Quit |
+Run `skillshare mcp` or `skillshare mcp list` to add, import, edit, remove, sync
+and restore connections; the details of the selected one show beside the list.
+Connection lists hide argument, header and environment values, and omit URL
+queries. The keys are listed at the bottom of the screen.
 
 `mcp edit`, `mcp remove`, and `mcp restore` offer selection menus when their name
 or backup ID is omitted. The editor covers command/URL, arguments, environment
@@ -100,8 +90,7 @@ only**. Remove also offers **Stop managing**, the same as `--keep-files`. Escape
 cancels the pending draft. Restore previews and confirms changes
 to Agent entries; it does not rewrite the source definition.
 
-Import without a server name supports multiple selections (`Space` toggles,
-`a` selects all). Invalid candidates are skipped; existing source names are skipped
+Import without a server name supports multiple selections. Invalid candidates are skipped; existing source names are skipped
 unless `--replace` is specified. Select one set of compatible receiving clients
 for the batch. The entire batch is validated before the source is saved once;
 later native-file I/O failures retain the existing recovery behavior.
@@ -380,7 +369,7 @@ This works with four clients only:
 | Claude Code | Yes | `~/.claude.json`: the name, in this project's `disabledMcpServers` list |
 | OpenCode | Yes | `opencode.json`: `"NAME": {"enabled": false}` |
 | Kilo Code | Yes | `kilo.jsonc`: `"NAME": {"enabled": false}` |
-| Pi | Yes, from `mcp.projects` | `.pi/mcp.json`: `"NAME": {"command": "...", "enabled": false}`, see below |
+| Pi | Yes, Pi 1.0.1 and later | `.pi/mcp.json`: `"NAME": {"enabled": false}`, see below |
 | Codex | No | See below |
 | Every other client | No | Selecting one is an error; nothing is written |
 
@@ -397,13 +386,14 @@ no `command` or `url`, and Codex then fails to load its whole configuration with
 could stop Codex from starting for another. Turn the server off per machine instead,
 with `enabled = false` in `~/.codex/config.toml`.
 
-Pi replaces a global entry with the project entry of the same name, and skips an entry
-without a `command` or `url`. So for Pi, Skillshare writes the global server's `command`,
-or its `url` without the query, next to `enabled: false`. A disabled server is never
-started, so args, env and headers stay out of the project file, and other projects keep
-the server. Every sync rewrites the entry from the global server. This needs the global
-server, so it works for a project under `mcp.projects` in the global config; a project's
-own config cannot see the global one, and `pi` in a `disabled` entry there is an error.
+Pi replaces a global entry with the project entry of the same name, but since Pi 1.0.1
+an entry without `command`, `url` or `type` is an override instead: it changes only
+`enabled`, `exposure` and `toolExposure` of the global server, which keeps its args, env
+and credentials. Pi's `/mcp` writes the same entry. Pi before 1.0.1 reports it as invalid.
+On a machine whose global Pi config lacks the server, Pi reports at start that there is no
+server to override, and loads the rest. The switch needs nothing from the global server,
+so it works in project mode too. An entry that earlier releases wrote with the global
+server's `command` or `url` is rewritten as the override on the next sync.
 
 ### OpenCode and Kilo Code
 
@@ -976,6 +966,15 @@ Pi server names allow only letters, digits, `_` and `-`, and Pi reads names that
 only in `-` and `_` as one server, so sync refuses the second. A Pi project entry replaces the
 global entry of the same name; to turn off a global server in one project, see
 [Turn off a global server in one project](#turn-off-a-global-server-in-one-project).
+
+Since Pi 1.0.1, `/mcp` in Pi can add a project entry with only `enabled`, `exposure` or
+`toolExposure`, which overrides the global server of that name. It is not a server, so
+import skips it. A `disabled` entry writes the same override, so one that is exactly
+`{"enabled": false}` is no conflict. Once sync has written the switch, Pi settings you add
+to it in Pi, such as `exposure`, are kept as on any Pi entry sync manages; turning the
+server back on in Pi is a conflict. If the project defines a server with the same name, or
+an override sync did not write differs from the `disabled` entry, sync reports a conflict
+until you replace the entry or remove the override in Pi.
 
 ### Other Pi settings {#pi-options}
 

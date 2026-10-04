@@ -12,8 +12,8 @@ metadata:
 Load this skill when you are acting as the parent orchestrator and the work ahead falls into any of these categories:
 
 - Broad exploration (4+ files to understand, codebase mapping, approach comparison)
-- Multi-file implementation (touching 2+ non-trivial files)
-- Test or build execution
+- A large (tracked) task: its resume test fails, so one writer per task
+- A high-risk change that needs an independent verifier, or a large task's long suites and builds
 - Fresh adversarial review (diffs, PR readiness, incident audit)
 - Multi-step debugging that would flood the parent context
 
@@ -32,8 +32,9 @@ Do NOT load this skill if you are already inside a delegated child task — you 
 | Situation | Action |
 |-----------|--------|
 | Need to read 4+ files to understand | Delegate a narrow exploration worker |
-| Need to write 2+ non-trivial files | Delegate a single writer with the full mission |
-| Need to run tests or builds | Delegate an executor; do not run inline |
+| A large (tracked) task | Delegate a single writer per task with the full mission |
+| A small task's focused test and suite | Run inline, once each |
+| A high-risk change or a large task's long suites | Delegate an executor |
 | Need an adversarial review of a diff | Delegate a fresh-context reviewer |
 | Multi-step debug that grows the context | Delegate a debug worker; feed results back inline |
 | Simple 1-file edit you already understand | Do it inline; no delegation needed |

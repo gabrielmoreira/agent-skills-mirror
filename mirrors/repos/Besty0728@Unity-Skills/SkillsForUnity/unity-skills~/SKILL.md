@@ -1,91 +1,80 @@
 ---
 name: unity-skills
-description: Automate the Unity Editor through a local REST API — create and edit scripts, build scenes and prefabs, manage assets/materials/lighting, run tests, and drive hundreds of Editor operations across modules. Use when the user wants to actually operate the Unity Editor from chat — create or modify GameObjects/scripts/scenes/assets, batch-edit, or run Editor automation — in any language. Not needed for conceptual Unity Q&A that touches no Editor state — read the matching advisory doc under skills/ instead. 当用户要从对话里实际操作 Unity 编辑器（创建/修改/批量编辑/运行测试）时使用，任何语言均可触发；纯概念问答无需本协议。
+description: Automate the Unity Editor through a local REST API — scripts, scenes, prefabs, assets, materials, lighting, tests and hundreds of other Editor operations. Use when the user wants to actually operate the Unity Editor from chat — create, modify or batch-edit GameObjects/scripts/scenes/assets, or run Editor automation — in any language. Not needed for conceptual Unity Q&A that touches no Editor state — read the matching advisory doc under skills/ instead. 当用户要从对话里实际操作 Unity 编辑器（创建/修改/批量编辑/运行测试）时使用，任何语言均可触发；纯概念问答无需本协议。
 compatibility: Requires Unity Editor 2022.3+/6000.x with the UnitySkills package (local REST server on localhost:8090-8100); Python 3 for the bundled client
 ---
 
 # Unity Skills
 
-> Module and reference docs are English-only. Match requests to modules by meaning in any language, and always reply in the user's language.
+> Docs are English-only: match requests to modules by meaning in any language, and always reply in the user's language.
 
-## Route first: automate, or guide the user?
+## Route first
 
-- **Automate** — you call REST skills and drive the Editor yourself. Stay here when the user asked you to do it, or the task needs traversal, search, batch, exact numbers, or consistency across many objects.
-- **Guide** — you name the menus and Inspector fields and write nothing through REST. Switch to [SKILL_GUIDE.md](SKILL_GUIDE.md) (guidance boundary table + `manual-*` routing) when the user asked how to do it themselves, **or** `/health` reports a `surfaceProfile` other than `full`.
+- **Automate** — the user asked you to act, or it needs traversal, search, batch, exact numbers or many objects: drive the Editor via REST.
+- **Guide** — the user wants to do it themselves, or `surfaceProfile` is `guide`: name menus and Inspector fields per [SKILL_GUIDE.md](SKILL_GUIDE.md).
+- **Advise** — a design question that changes nothing: answer from the matching advisory doc ([scriptdesign](skills/scriptdesign/SKILL.md), [architecture](skills/architecture/SKILL.md), [patterns](skills/patterns/SKILL.md), all in the [module index](skills/SKILL.md)), no REST calls.
 
-## First Contact Checklist
+## Target the right Editor
 
-Before the first skill call in a session:
+Ports `8090`–`8100` go first come, first served: add `?expectProject=<project>` (productName or folder name) or the exact `?expectInstance=<instanceId>` to every write. A different Editor answers 409 `INSTANCE_MISMATCH` and runs nothing.
 
-1. **`GET /health`** — discover the server (ports `8090`–`8100`); read `currentMode` (`"approval"` / `"auto"` / `"bypass"`), `panelApprovalRequired`, `pendingCount`, and `surfaceProfile` (`full` / `guide` / `noSceneAuthoring`). `surfaceProfileHint` is text only when the profile is not `full`, else null. **Confirm `projectName` is the project you are editing** — ports are first-come across open Editors; on a mismatch pin `--port` → [operating mode](references/protocol-operating-mode.md).
-2. **Branch on `currentMode`**: under `approval` the first write to any `FullAuto` skill returns `MODE_RESTRICTED` and needs a grant; under `auto`/`bypass` writes execute directly (self-assess risk under `auto`). Grants are single-shot; the permanent form is the user-managed Allowlist. Gates, grant protocol and mode table → [operating mode](references/protocol-operating-mode.md).
-3. **`GET /skills/meta`** — once per session: the constants shared by every skill (`categories`, `operationTypes`, `reservedBodyParameters`, `workflowTrackedSkills`, `schemaVersion`, `defaults`). Read them here, not from each manifest, then start discovery.
+`GET /health` (exempt from the check) has `currentMode`, `surfaceProfile`, `dryRunPolicy`, `instanceId`: probe it once in the same shell command as your first request, adding no other call, then only after a refused write, 409, 503/refused connection or odd mode. `bypass` and `auto` run writes directly, but under `auto` confirm ≥5-object batches, prefab apply, scene-level, asset-overwriting or irreversible changes with the user first (probe alone before those); `approval` gates `FullAuto` writes behind single-shot grants (permanent: the user's Allowlist).
 
-## Schema: pick the cheapest layer
+During a domain reload the port answers 503 or refuses for seconds while its `~/.unity_skills/registry.json` entry reads `reloading`: retry it, never another instance.
 
-Server-cached (ETag/304), off the main thread; send `Accept-Encoding: gzip`.
+## Quick reference
 
-| Layer | Endpoint | Size | Use when |
-|---|---|---|---|
-| **Default: start here** | `GET /skills/recommend?intent=...&includeSchema=true` | 4–14 KB | One intent; scored candidates + schemas. `topN` caps how many (default 10), `wire=v2` about halves it. |
-| directory + category | `GET /skills` then `GET /skills/schema?category=<Category>` | ~19 KB + 13–44 KB | Touches one or two areas. |
-| summary | `GET /skills?summary=1` | ~143 KB | Exploratory / cross-module, or cheaper layers left you unsure. |
-| full schema | `GET /skills/schema` | ~618 KB | Rare; many modules' signatures at once. |
+Every skill is `POST /skill/<name>` with JSON args:
+`curl -s "http://localhost:<port>/skill/gameobject_set_transform?expectProject=<project>" -d '{"name":"Crate","posX":4,"posY":1.5,"posZ":-2}'`
 
-Bare `GET /skills` is the **brief directory** — names by category only; the full listing needs `?full=1`.
+Target objects by `name` or the exact `path`/`instanceId` (likewise `parentPath`, `childPath`); skip lookup calls — a wrong name fails the call and returns candidates.
 
-Schema has exact signatures; the module doc has guardrails, return shapes and traps schema omits. Read both on an unfamiliar module.
+| Call |
+|---|
+| `gameobject_create {name, primitiveType, parentName, x,y,z, rotX,rotY,rotZ, scaleX,scaleY,scaleZ, space}` — x/y/z, rot local to the parent unless `space:"world"`; scale local |
+| `gameobject_set_transform {name, posX,posY,posZ, rotX,rotY,rotZ, scaleX,scaleY,scaleZ, localPosX,localPosY,localPosZ}` — pos, rot world; scale, localPos local; omitted axes kept |
+| `gameobject_find {name, useRegex, component}` · `gameobject_get_info {name}` |
+| `gameobject_rename {name, newName}` · `gameobject_duplicate {name}` |
+| `gameobject_set_parent {childName, parentName}` · `gameobject_set_active {name, active}` |
+| `gameobject_delete {name}` (dryRun first) |
+| `component_add {name, componentType}` |
+| `component_set_property {name, componentType, propertyName, value}` — vectors, colours `"1,2,3"`; references `referenceName`/`referencePath`/`assetPath` |
+| `component_get_properties {name, componentType}` |
+| `material_assign {name, materialPath}` |
+| `light_set_properties {name, r,g,b, intensity, range, spotAngle, shadows}` |
+| `script_create {scriptName, folder, content}` — full source; dryRun first; wait below |
+| `scene_save {}` (dryRun first) |
 
-## Wire format v2 (`?wire=v2`)
+## Everything else: one discovery call
 
-`?wire=v2` slims per-skill entries on `?full=1`, `/skills/schema` (full or scoped), a filtered `/skills`, and recommend — never bare `GET /skills`. v1 is default:
+`GET /skills/recommend?intent=<words>&includeSchema=true&topN=3&wire=v2` → top 3 skills with exact schemas (~1–4 KB); several needs → one more `&intent=<words>` each, same call. Name known → `GET /skills/schema?names=a,b&wire=v2`. Wider layers, v2 fields, constants → [discovery](references/protocol-discovery.md).
 
-- A **`flags`** array replaces v1's six booleans and adds v2-only `longRunning`: `readOnly`, `tracksWorkflow`, `mutatesScene`, `mutatesAssets`, `mayTriggerReload`, `mayEnterPlayMode`, `longRunning`. An absent flag is false.
-- **Omitted means default**: `riskLevel` appears only when not `"low"`, `supportsDryRun` only when `false`, null members are dropped — an absent key is never null.
-- Every v2 response carries a **`defaults`** block — take the rule from the payload, don't memorize it.
+## Execute
 
-## Execute: batch, dryRun gate, anti-hallucination rules
+Several steps, one call: `POST /skills/batch?expectProject=<project>` `{"steps":[{"skill":"gameobject_create","args":{"name":"Rig"}},{"skill":"gameobject_create","args":{"name":"Arm","parentName":"Rig"}}]}` — ≤50 steps; a step may name objects earlier steps created, or use `{"$ref":"$0.instanceId"}`; the first failure skips the rest unless `continueOnError:true`; `?mode=transactional` = all-or-nothing → [batch](skills/batch/SKILL.md).
 
-**`POST /skills/batch`** — up to 50 steps per call (`{"steps":[{"skill","args"}],"continueOnError":false}`; `?mode=dryRun` validates every step): the largest round-trip saving → [batch](skills/batch/SKILL.md).
+**dryRun.** If this table, recommend or schema gave you the signature this session, execute directly: a failed validation runs nothing and returns the dryRun report (all `validation` buckets, parameter list). DryRun first (`?mode=dryRun&wire=v2`) for deletes, `riskLevel` high, `mayTriggerReload`/`mayEnterPlayMode`, approval mode, non-transactional multi-step batches, or when unsure; under a `dryRunPolicy`, execute with the returned `?dryRunToken=`. `valid:true` = no validation errors (`warnings` never block; the target may still be missing); `authorization` previews the permission gate.
 
-Before executing any skill whose exact parameters you don't already hold, dryRun it: `POST /skill/<name>?mode=dryRun`. Iterate until `valid: true`, then execute without `?mode=dryRun`. `valid: true` means the four `validation` error buckets are empty — `warnings` never block, and target existence is never checked. The top-level `authorization` (`{allowed, blockedBy, currentMode, allowlisted, hint}`, plus `surfaceProfile` on a `SURFACE_EXCLUDED` block) previews interception: `blockedBy` is `MODE_RESTRICTED`, `MODE_FORBIDDEN`, `SURFACE_EXCLUDED`, or null when the call would run — settle grants and exclusions there.
+Never invent skill or parameter names: use this table, recommend or schema. On failure read `suggestedFixes`; open a module doc only when a response names one.
 
-After a write, verify in the Editor, not from the echo: `*_get_info` / `*_get_properties` or `find_objects_by_name`.
+## Verify from the read-back
 
-| Rule | Requirement |
+A successful write returns the state read back from the Editor (e.g. world `position`, `valueSet`) — that is the verification; `resolutionNotes` flags a non-exact name match. Use `*_get_info` only for async results or missing fields. Script writes, and `asset_refresh` after you write a `.cs` yourself (`compileTriggered:true`), return `waitUrl`: one GET waits out compile+reload → `status:"completed"`, or `failed` with errors in `resultData.compilation`. One command:
+`u=http://localhost:<port>; c="$u/skill/script_create?expectProject=<project>"; b='{"scriptName":"Spin","content":"<source>"}'; s='{"steps":[{"skill":"component_add","args":{"name":"Crate","componentType":"Spin"}},{"skill":"component_set_property","args":{"name":"Crate","componentType":"Spin","propertyName":"speed","value":"9"}}]}'; curl -s "$c&mode=dryRun" -d "$b" | grep -q '"valid":true' && J=$(curl -s "$c" -d "$b" | tee /dev/stderr | grep -o '/jobs/[^"]*=90') && curl -s --retry 20 --retry-connrefused --retry-all-errors --retry-delay 2 "$u$J" && curl -s "$u/skills/batch?expectProject=<project>" -d "$s"`
+
+## Surface profile and errors
+
+`surfaceProfile` is the user's panel choice; `guide` and `noSceneAuthoring` hide some writes, which answer `SURFACE_EXCLUDED` naming the doc to read or the profile to leave. It is a boundary: do the rest of the task, never retry or route around it ([profiles](references/protocol-operating-mode.md#surface-profile)).
+
+| Code | Meaning → action |
 |---|---|
-| Uncertain parameters | Must dryRun first. Never guess parameters from a skill name. |
-| Skill name mismatch | If the name is absent from schema/recommend results, do not invent it. |
-| Call failure | Read `suggestedFixes`; when pointed to a module doc, actually read it. |
+| `MISSING_PARAM` / `TARGET_NOT_FOUND` | Bad or unresolvable arguments → fix from `details` / locate the target (`gameobject_find`). |
+| `INSTANCE_MISMATCH` (409) | Resend to the port `suggestedFixes` name. |
+| `MISSING_PACKAGE` | Tell the user (dryRun `missingPackages`, recommend `unavailable` show it early); installing is their call. |
+| `MODE_RESTRICTED` / `MODE_FORBIDDEN` | Grant / bypass or Allowlist → [operating mode](references/protocol-operating-mode.md). |
+| other | [error codes](references/protocol-error-codes.md) |
 
-## Surface profile
-
-`surfaceProfile` says which slice of the skill surface the user exposed; only the user can switch it, in the UnitySkills panel. (`guideMode` is legacy; `surfaceProfile` is authoritative.)
-
-| Profile | Hidden | What to do |
-|---|---|---|
-| `full` | nothing | Normal automation. |
-| `guide` | write skills in GameObject, Component, Material, Scene and Sample | Give manual steps via [SKILL_GUIDE.md](SKILL_GUIDE.md) and the `manual-*` docs. Read-only skills there still work, as does every other module. |
-| `noSceneAuthoring` | every scene-authoring write, incl. any `mutatesScene` skill | Do the rest of the task normally; if it genuinely needs scene authoring, say so and let the user switch back to `full`. |
-
-Calling a hidden skill returns **`SURFACE_EXCLUDED`**, and the response names the document to read (or the profile to leave). It is a configuration boundary, not a failure: never retry or route around it through another module.
-
-## Module routing
-
-Every skill is named `module_verb`, so the prefix is the routing key. `GET /skills/recommend?intent=...` ranks candidates, or read the index — all modules with mode labels, incl. docs-only ones (`manual-*`, `*-design`, `unity-cli`) with no REST skills → [module index](skills/SKILL.md).
-
-## Error codes quick reference
-
-| Code | Meaning | Pointer |
-|---|---|---|
-| `MODE_RESTRICTED` / `MODE_FORBIDDEN` | Needs a user grant / needs Bypass or Allowlist. | [operating mode](references/protocol-operating-mode.md) |
-| `SURFACE_EXCLUDED` | Hidden by the current `surfaceProfile`. | "Surface profile" above; read the doc named in the response. |
-| `MISSING_PARAM` / `TARGET_NOT_FOUND` | Bad or unresolvable arguments. | dryRun for the schema; locate the target first. |
-| any other code | — | [error codes](references/protocol-error-codes.md) — transient ones (`COMPILING`/`RATE_LIMIT`/`QUEUE_FULL`/`SERVER_STOPPED`) are auto-retried by the Python client |
-
-## Observability and Unity CLI pointers
-
-Compilation status, events, analytics → [observability](references/protocol-observability.md). Unity CLI cold start (opt-in) → [unity-cli](references/protocol-unity-cli.md)
+Compile status, events, analytics → [observability](references/protocol-observability.md); closed Editor + opt-in Unity CLI → [unity-cli](references/protocol-unity-cli.md).
 
 Current snapshot: `805` REST skills, `56` source files, `54` categories, `82` module doc directories (`54` REST/module docs + `28` advisory docs), Unity `2022.3+`, default timeout `15 minutes`.
 

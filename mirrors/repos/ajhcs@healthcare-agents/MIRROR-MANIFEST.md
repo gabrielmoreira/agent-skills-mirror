@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ajhcs/healthcare-agents` — 26 default patterns, 0 followed patterns, 57 file(s) materialized.
+Mirror of `ajhcs/healthcare-agents` — 26 default patterns, 0 followed patterns, 121 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ajhcs/healthcare-agents` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 57 |
+| Files         | 121 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -114,8 +114,72 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 53 | ✓ | [`agents/strategy-structural-improvement-consultant.md`](agents/strategy-structural-improvement-consultant.md) |
 | 54 | ✓ | [`docs/platforms/claude.md`](docs/platforms/claude.md) |
 | 55 | ✓ | [`skills/healthcare-agents/references/agent-index.json`](skills/healthcare-agents/references/agent-index.json) |
-| 56 | ✓ | [`skills/healthcare-agents/references/workflow-index.json`](skills/healthcare-agents/references/workflow-index.json) |
-| 57 | ✓ | [`skills/healthcare-agents/SKILL.md`](skills/healthcare-agents/SKILL.md) |
+| 56 | ✓ | [`skills/healthcare-agents/references/roles/clinical-care-management-specialist.md`](skills/healthcare-agents/references/roles/clinical-care-management-specialist.md) |
+| 57 | ✓ | [`skills/healthcare-agents/references/roles/clinical-case-manager.md`](skills/healthcare-agents/references/roles/clinical-case-manager.md) |
+| 58 | ✓ | [`skills/healthcare-agents/references/roles/clinical-documentation-improvement-specialist.md`](skills/healthcare-agents/references/roles/clinical-documentation-improvement-specialist.md) |
+| 59 | ✓ | [`skills/healthcare-agents/references/roles/clinical-infection-prevention-specialist.md`](skills/healthcare-agents/references/roles/clinical-infection-prevention-specialist.md) |
+| 60 | ✓ | [`skills/healthcare-agents/references/roles/clinical-prior-authorization-specialist.md`](skills/healthcare-agents/references/roles/clinical-prior-authorization-specialist.md) |
+| 61 | ✓ | [`skills/healthcare-agents/references/roles/clinical-referral-specialist.md`](skills/healthcare-agents/references/roles/clinical-referral-specialist.md) |
+| 62 | ✓ | [`skills/healthcare-agents/references/roles/clinical-research-coordinator.md`](skills/healthcare-agents/references/roles/clinical-research-coordinator.md) |
+| 63 | ✓ | [`skills/healthcare-agents/references/roles/clinical-utilization-management-specialist.md`](skills/healthcare-agents/references/roles/clinical-utilization-management-specialist.md) |
+| 64 | ✓ | [`skills/healthcare-agents/references/roles/emergency-preparedness-coordinator.md`](skills/healthcare-agents/references/roles/emergency-preparedness-coordinator.md) |
+| 65 | ✓ | [`skills/healthcare-agents/references/roles/healthit-clinical-data-analyst.md`](skills/healthcare-agents/references/roles/healthit-clinical-data-analyst.md) |
+| 66 | ✓ | [`skills/healthcare-agents/references/roles/healthit-epic-applications-analyst.md`](skills/healthcare-agents/references/roles/healthit-epic-applications-analyst.md) |
+| 67 | ✓ | [`skills/healthcare-agents/references/roles/healthit-informatics-manager.md`](skills/healthcare-agents/references/roles/healthit-informatics-manager.md) |
+| 68 | ✓ | [`skills/healthcare-agents/references/roles/healthit-information-manager.md`](skills/healthcare-agents/references/roles/healthit-information-manager.md) |
+| 69 | ✓ | [`skills/healthcare-agents/references/roles/healthit-interoperability-engineer.md`](skills/healthcare-agents/references/roles/healthit-interoperability-engineer.md) |
+| 70 | ✓ | [`skills/healthcare-agents/references/roles/healthit-telehealth-program-manager.md`](skills/healthcare-agents/references/roles/healthit-telehealth-program-manager.md) |
+| 71 | ✓ | [`skills/healthcare-agents/references/roles/operations-ambulatory-manager.md`](skills/healthcare-agents/references/roles/operations-ambulatory-manager.md) |
+| 72 | ✓ | [`skills/healthcare-agents/references/roles/operations-home-health-administrator.md`](skills/healthcare-agents/references/roles/operations-home-health-administrator.md) |
+| 73 | ✓ | [`skills/healthcare-agents/references/roles/operations-hospital-administrator.md`](skills/healthcare-agents/references/roles/operations-hospital-administrator.md) |
+| 74 | ✓ | [`skills/healthcare-agents/references/roles/operations-long-term-care-administrator.md`](skills/healthcare-agents/references/roles/operations-long-term-care-administrator.md) |
+| 75 | ✓ | [`skills/healthcare-agents/references/roles/operations-physician-practice-manager.md`](skills/healthcare-agents/references/roles/operations-physician-practice-manager.md) |
+| 76 | ✓ | [`skills/healthcare-agents/references/roles/operations-supply-chain-manager.md`](skills/healthcare-agents/references/roles/operations-supply-chain-manager.md) |
+| 77 | ✓ | [`skills/healthcare-agents/references/roles/operations-workforce-manager.md`](skills/healthcare-agents/references/roles/operations-workforce-manager.md) |
+| 78 | ✓ | [`skills/healthcare-agents/references/roles/payer-credentialing-enrollment-coordinator.md`](skills/healthcare-agents/references/roles/payer-credentialing-enrollment-coordinator.md) |
+| 79 | ✓ | [`skills/healthcare-agents/references/roles/payer-managed-care-analyst.md`](skills/healthcare-agents/references/roles/payer-managed-care-analyst.md) |
+| 80 | ✓ | [`skills/healthcare-agents/references/roles/payer-medicare-medicaid-specialist.md`](skills/healthcare-agents/references/roles/payer-medicare-medicaid-specialist.md) |
+| 81 | ✓ | [`skills/healthcare-agents/references/roles/payer-medicare-outreach-coordinator.md`](skills/healthcare-agents/references/roles/payer-medicare-outreach-coordinator.md) |
+| 82 | ✓ | [`skills/healthcare-agents/references/roles/payer-relations-specialist.md`](skills/healthcare-agents/references/roles/payer-relations-specialist.md) |
+| 83 | ✓ | [`skills/healthcare-agents/references/roles/payer-value-based-care-manager.md`](skills/healthcare-agents/references/roles/payer-value-based-care-manager.md) |
+| 84 | ✓ | [`skills/healthcare-agents/references/roles/pharmacy-benefits-specialist.md`](skills/healthcare-agents/references/roles/pharmacy-benefits-specialist.md) |
+| 85 | ✓ | [`skills/healthcare-agents/references/roles/pharmacy-medication-safety-specialist.md`](skills/healthcare-agents/references/roles/pharmacy-medication-safety-specialist.md) |
+| 86 | ✓ | [`skills/healthcare-agents/references/roles/pophealth-community-health-coordinator.md`](skills/healthcare-agents/references/roles/pophealth-community-health-coordinator.md) |
+| 87 | ✓ | [`skills/healthcare-agents/references/roles/pophealth-population-health-manager.md`](skills/healthcare-agents/references/roles/pophealth-population-health-manager.md) |
+| 88 | ✓ | [`skills/healthcare-agents/references/roles/pophealth-surveillance-coordinator.md`](skills/healthcare-agents/references/roles/pophealth-surveillance-coordinator.md) |
+| 89 | ✓ | [`skills/healthcare-agents/references/roles/quality-accreditation-specialist.md`](skills/healthcare-agents/references/roles/quality-accreditation-specialist.md) |
+| 90 | ✓ | [`skills/healthcare-agents/references/roles/quality-compliance-officer.md`](skills/healthcare-agents/references/roles/quality-compliance-officer.md) |
+| 91 | ✓ | [`skills/healthcare-agents/references/roles/quality-improvement-specialist.md`](skills/healthcare-agents/references/roles/quality-improvement-specialist.md) |
+| 92 | ✓ | [`skills/healthcare-agents/references/roles/quality-patient-experience-coordinator.md`](skills/healthcare-agents/references/roles/quality-patient-experience-coordinator.md) |
+| 93 | ✓ | [`skills/healthcare-agents/references/roles/quality-patient-safety-officer.md`](skills/healthcare-agents/references/roles/quality-patient-safety-officer.md) |
+| 94 | ✓ | [`skills/healthcare-agents/references/roles/quality-process-improvement-analyst.md`](skills/healthcare-agents/references/roles/quality-process-improvement-analyst.md) |
+| 95 | ✓ | [`skills/healthcare-agents/references/roles/quality-risk-manager.md`](skills/healthcare-agents/references/roles/quality-risk-manager.md) |
+| 96 | ✓ | [`skills/healthcare-agents/references/roles/revenue-340b-program-manager.md`](skills/healthcare-agents/references/roles/revenue-340b-program-manager.md) |
+| 97 | ✓ | [`skills/healthcare-agents/references/roles/revenue-chargemaster-analyst.md`](skills/healthcare-agents/references/roles/revenue-chargemaster-analyst.md) |
+| 98 | ✓ | [`skills/healthcare-agents/references/roles/revenue-contract-analyst.md`](skills/healthcare-agents/references/roles/revenue-contract-analyst.md) |
+| 99 | ✓ | [`skills/healthcare-agents/references/roles/revenue-cycle-specialist.md`](skills/healthcare-agents/references/roles/revenue-cycle-specialist.md) |
+| 100 | ✓ | [`skills/healthcare-agents/references/roles/revenue-finance-manager.md`](skills/healthcare-agents/references/roles/revenue-finance-manager.md) |
+| 101 | ✓ | [`skills/healthcare-agents/references/roles/revenue-medical-coding-specialist.md`](skills/healthcare-agents/references/roles/revenue-medical-coding-specialist.md) |
+| 102 | ✓ | [`skills/healthcare-agents/references/roles/strategy-actuarial-advisor.md`](skills/healthcare-agents/references/roles/strategy-actuarial-advisor.md) |
+| 103 | ✓ | [`skills/healthcare-agents/references/roles/strategy-clinical-operations-consultant.md`](skills/healthcare-agents/references/roles/strategy-clinical-operations-consultant.md) |
+| 104 | ✓ | [`skills/healthcare-agents/references/roles/strategy-healthcare-consultant.md`](skills/healthcare-agents/references/roles/strategy-healthcare-consultant.md) |
+| 105 | ✓ | [`skills/healthcare-agents/references/roles/strategy-operations-consultant.md`](skills/healthcare-agents/references/roles/strategy-operations-consultant.md) |
+| 106 | ✓ | [`skills/healthcare-agents/references/roles/strategy-structural-improvement-consultant.md`](skills/healthcare-agents/references/roles/strategy-structural-improvement-consultant.md) |
+| 107 | ✓ | [`skills/healthcare-agents/references/workflow-index.json`](skills/healthcare-agents/references/workflow-index.json) |
+| 108 | ✓ | [`skills/healthcare-agents/SKILL.md`](skills/healthcare-agents/SKILL.md) |
+| 109 | ✓ | [`skills/healthcare-ambulatory-access-backlog/references/workflow.json`](skills/healthcare-ambulatory-access-backlog/references/workflow.json) |
+| 110 | ✓ | [`skills/healthcare-ambulatory-access-backlog/SKILL.md`](skills/healthcare-ambulatory-access-backlog/SKILL.md) |
+| 111 | ✓ | [`skills/healthcare-denial-spike-workup/references/workflow.json`](skills/healthcare-denial-spike-workup/references/workflow.json) |
+| 112 | ✓ | [`skills/healthcare-denial-spike-workup/SKILL.md`](skills/healthcare-denial-spike-workup/SKILL.md) |
+| 113 | ✓ | [`skills/healthcare-discharge-barrier-workplan/references/workflow.json`](skills/healthcare-discharge-barrier-workplan/references/workflow.json) |
+| 114 | ✓ | [`skills/healthcare-discharge-barrier-workplan/SKILL.md`](skills/healthcare-discharge-barrier-workplan/SKILL.md) |
+| 115 | ✓ | [`skills/healthcare-payer-contract-underpayment-review/references/workflow.json`](skills/healthcare-payer-contract-underpayment-review/references/workflow.json) |
+| 116 | ✓ | [`skills/healthcare-payer-contract-underpayment-review/SKILL.md`](skills/healthcare-payer-contract-underpayment-review/SKILL.md) |
+| 117 | ✓ | [`skills/healthcare-prior-authorization-appeal-workup/references/workflow.json`](skills/healthcare-prior-authorization-appeal-workup/references/workflow.json) |
+| 118 | ✓ | [`skills/healthcare-prior-authorization-appeal-workup/SKILL.md`](skills/healthcare-prior-authorization-appeal-workup/SKILL.md) |
+| 119 | ✓ | [`skills/healthcare-survey-readiness-gap-review/references/workflow.json`](skills/healthcare-survey-readiness-gap-review/references/workflow.json) |
+| 120 | ✓ | [`skills/healthcare-survey-readiness-gap-review/SKILL.md`](skills/healthcare-survey-readiness-gap-review/SKILL.md) |
+| 121 | ✓ | [`skills/healthcare-workflow-builder/SKILL.md`](skills/healthcare-workflow-builder/SKILL.md) |
 
 ---
 

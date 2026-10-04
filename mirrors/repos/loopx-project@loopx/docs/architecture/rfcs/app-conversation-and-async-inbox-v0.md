@@ -167,6 +167,17 @@ receipt → observed work or actionable failure → readable answer in the same 
   promise reload recovery. This tab-local cache is not delivery authority.
   Acceptance means the executor received the instructions, not that it adopted
   them or that delegated/team work stopped. Live adoption stays a release gate.
+- The shared App composer owns pending submission, instruction receipts, feedback
+  and unsent images by its existing Goal/Agent conversation key. Waiting in one
+  conversation cannot lock Send in another. Returning retains that conversation's
+  actual wait or receipt; a late completion cannot clear a peer's pending request,
+  replace a newer draft or open an old proposal over the current conversation.
+  Failed delivery restores the submitted text and images together only while
+  that composer's draft is still empty; later text or pasted images take precedence.
+  Navigation now retains unsent images in their original composer, rather than
+  discarding them; nothing is automatically resent. Packaged browser regressions
+  inject delayed receipts and a rejected independent request. This qualifies App
+  state ownership, not live model adoption, host steering or a new effect grant.
 - The compact receipt and full conversation offer the same controls. Failure
   ends the live indicator, preserves the request/partial answer and names the
   next supported action. A completed delegation still shows receiver adoption
@@ -260,6 +271,18 @@ Freeze GQ02/GQ04/GQ08/GQ09 with these observable exits:
   replacement. Record source, packaged UI and real native execution separately
   as passed, failed, blocked or not run.
 
+The existing conversation reader now proposes a bounded GQ02 companion:
+`view=agent_route` observes one exact discovered Goal/Agent through the shared
+TypeScript selector and read-only host adapter. It can locate a unique readable
+binding after archived history without asking the user to copy a session link.
+Unknown or multiple readable bindings remain unresolved, and remote-source
+observation stays unavailable rather than inspecting the local host. The
+manager and ordinary Goal reader share this path; no manager-only lifecycle or
+new execution driver is introduced. Qualification uses a real isolated host
+store and leaves it unchanged. This removes a read-tool gap, not the remaining
+native dispatch, correction adoption, scoped Stop or original-route result exit.
+Installed behavior must be qualified after maintainer merge and promotion.
+
 Then qualify existing G1 with **“Get a small team to check the cash-flow numbers
 and resolve the disagreement.”** Two or three real workers consume versioned
 inputs, independently challenge a period/unit error, adopt the revision and
@@ -294,6 +317,23 @@ Packaged read-only validation uses the production HTTP/store and return
 projection with synthetic receiver results. This closes a saved-answer
 presentation gap; external-conversation selection, native adoption/correction
 and the two real collaboration cycles remain separate acceptance work.
+
+Returned web destinations must be usable in the conversation and its saved
+answer, even when the receiver supplies a plain HTTP(S) URL rather than a named
+Markdown link. Reuse the shared safe prose renderer for Steward, Goal Chat and
+artifacts. Preserve query strings and balanced path punctuation; separate CJK
+prose punctuation from bare destinations. Code stays literal, HTML stays inert,
+and email or unqualified domains are not inferred as destinations. Opening a
+link preserves the original conversation and does not rerun work. The native
+shell must handle these new-window requests too: open HTTP(S) destinations in
+the system browser while retaining the App's origin fence. Do not create a
+privileged child WebView or launch file/custom-protocol handlers. Browser-only
+anchor checks cannot qualify that native interaction. macOS navigation policy
+can precede the new-window delegate: denied external web navigation must still
+reach the browser, while the App keeps its original origin. Asynchronous provider
+setup opens its actual verification URL in the native host; only a browser
+retains a synchronous placeholder for its popup blocker. This is a presentation
+boundary, not evidence that an external artifact is adopted.
 
 Keep WIP on the first journey and demonstrated blockers. Reuse acceptance
 recovery, GoalRef and late-return changes. Shared TS refactors accompany the

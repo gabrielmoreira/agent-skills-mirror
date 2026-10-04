@@ -394,7 +394,7 @@ is why a composer send used to be typed straight into it. Claimed by the last-re
 | `claude--menu-effort-slider--w40-low.txt` | 40 × 40, `low` selected, captured live 2026-09-22: **declines.** At 40 columns with the marker leftmost Claude draws no `▲` at all — `low` is marked by colour alone — so no grammar lifts the screen and the unread-dialog card shows instead |
 | `claude--menu-effort-slider--w40-ultracode.txt` | 40 × 40, `ultracode` selected, captured live 2026-09-22: **declines.** A genuine Claude Code 2.1.278 render glitch — labels truncated (`xhigh      m`), no marker, no divider — so the Effort grammar declines and the generic `menu` grammar lifts with Cancel only |
 | `claude--menu-resume-picker--w120-first.txt` | The `/resume` session picker at 120 × 40, captured live 2026-09-22 on Claude Code 2.1.278 in `/tmp/resume-lab`, pointer on the first of four sessions. Lifts as a `prompt-select` list (resume.ts, ADR 0058): four sessions, each with its meta row as the description, the pointed one sending Enter and the rest walking Down, then Cancel. The footer wraps onto two rows and never names Enter or the arrows |
-| `claude--menu-resume-picker--w120-third.txt` | The same picker, pointer on the third session: the rows above walk Up, the row below walks Down |
+| `claude--menu-resume-picker--w120-third.txt` | The same picker, pointer on the third session: the rows above walk Up, the row below walks Down. With `w120-first` it is the walk pair of this grammar (`harness/walk-pairs.ts`): the pointer moved and four ages ticked (`44 seconds ago` against `1 minute ago`), which `coreSignature` blanks |
 | `claude--menu-resume-picker--w120-search.txt` | The same picker with `hi` typed into the search box: one match, **no pointer glyph**, and the footer changes to `Type to Search · Enter to select · Esc to clear`. The single session sends Enter; the Esc row reads Clear |
 | `claude--menu-resume-picker--w60-first.txt` | 60 × 40, pointer on the first session: the footer wraps onto three rows and still reads whole. The weekly-limit banner above the dialog is kept |
 | `claude--menu-resume-picker--w80-second.txt` | 80 × 40, pointer on the second session |
@@ -947,9 +947,57 @@ half of that test: exactly one styled row with more than one segment.
 | `omp--v18-pi-effort-hint.txt` | `pi` composer: the hint right-aligned on the single draft row between the two rules, status row below | `idle` |
 | `omp--fresh-agents-hint.txt` | Boxed composer with a background subagent running: `← ← to see 1 running agent` right-aligned in the bottom border | `idle` |
 
+## OMP `claude` and `borderless` composer corpus (captured 2026-10-03, oh-my-pi `omp` v18.4.10, herdr 0.9.3, throwaway Herdr pane)
+
+Eight byte-faithful `pane.read format:ansi` captures, taken with `scripts/capture-fixture.sh` from one throwaway Herdr
+pane, for [issue #343](https://github.com/AltanS/collie/issues/343): on omp 18.3.0 `composer.shape: claude` and
+`composer.shape: borderless` showed no composer to Collie, so `composerReady` was false and every Send asked
+"Type anyway?". Each shape ran under a `--config` overlay that set only `composer.shape`, in a fresh `git init` sandbox
+named `collie-omp-shape-sandbox` under `/tmp`, with `PI_CODING_AGENT_DIR` pointing at a copy of the agent directory that
+held nothing but `config.yml`. That keeps the operator's credentials, sessions and hint counters out of the pane, and
+it is why the status row reads `no-model` and the screen carries omp's `No models available` warning and an
+`Update Available` banner. No prompt was sent to any model: the drafts were typed into the editor and never submitted.
+The copy, the sandbox and the overlays were deleted afterwards. **No sanitization pass was needed**: no home path, host,
+account, session id or UUID appears, and the draft text is synthetic. All eight are CRLF with no trailing newline; their
+`wc -l` counts are 34 to 36 (`claude`) and 32 to 34 (`borderless`).
+
+Both shapes draw the `❯` gutter, which the `rule` scanner and the `pi` scanner do not read, so `harness/omp/glyph-prompt.ts`
+locates them from their own tails:
+
+- **`claude`**: a top rule, the `❯` row and its two-space continuation rows, a bottom rule, then the status row as the last
+  non-blank row, **with no blank gap**. The two rules are full width and painted in one colour. With a named session
+  (`/rename`) the top rule carries the title chip right-aligned, `──── Shape lab title ─`, which omp builds from the
+  status line's `session_name` segment; the bottom rule never carries one. The reporter's 18.3.0 paste has a bottom rule
+  shorter than the top, which 18.4.10 does not draw, so the locator takes a bottom rule of any length from eight glyphs up. The 18.3.0 form (a title with no closing rule glyph, where 18.4.10 ends it ` Title ─`, and a shorter bottom rule) is accepted by description and has no capture yet.
+- **`borderless`**: no rule at all. A blank spacer row, the `❯` row and its continuation rows, then the status row directly
+  under them as the last non-blank row. Because nothing frames it, the locator requires the whole tail: a status row of one
+  leading space and styled fields joined by a separator glyph painted as a segment of its own, nothing below it, no box row,
+  and no modal footer.
+
+In both shapes omp 18.4.10 paints the empty-editor key hint right-aligned on the `❯` row (`⇧⇥ to change thinking effort`),
+which is not a draft, and the `❯` glyph itself is unstyled while the draft text carries a foreground. The wrapped drafts
+are one 313-character line wrapped over three rows at 120 columns.
+
+| Fixture | State / what's in it | Herdr status |
+|---|---|---|
+| `omp--v18-4-claude-idle.txt` | Welcome panel, tip, warning and update banner, then the full-width top rule, an empty `❯` row with the key hint, the bottom rule and the status row. No session title in the top rule | not recorded |
+| `omp--v18-4-claude-draft.txt` | The same tail with `COLLIE_CLAUDE_SHAPE_DRAFT` on the `❯` row | not recorded |
+| `omp--v18-4-claude-wrapped.txt` | A 313-character draft wrapped over three rows, the last two behind the two-space gutter | not recorded |
+| `omp--v18-4-claude-titled.txt` | After `/rename Shape lab title`: a `Session renamed to …` notice, and the title chip right-aligned in the top rule | not recorded |
+| `omp--v18-4-claude-titled-draft.txt` | The titled tail with `COLLIE_TITLED_DRAFT` on the `❯` row | not recorded |
+| `omp--v18-4-borderless-idle.txt` | The update banner, a blank row, an empty `❯` row with the key hint and the status row directly under it | not recorded |
+| `omp--v18-4-borderless-draft.txt` | The same tail with `COLLIE_BORDERLESS_DRAFT` on the `❯` row | not recorded |
+| `omp--v18-4-borderless-wrapped.txt` | The same 313-character draft wrapped over three rows above the status row | not recorded |
+
+Both locators are fail-closed: every other omp capture (each modal, the boxed, `rule` and `pi` composers) and every claude,
+codex and grok capture is a rejection cohort, asserted to decline in `harness/omp.test.ts`, and the two shapes decline each
+other's captures. Not captured, and so not read: a `Working` pane (it needs a model; the reporter's status row starts with
+a spinner and a timer, which the locator does not inspect beyond the separator segment), the slash palette (it replaces the
+status row, so the tail no longer matches and the composer reads as absent), and a status row without a separator glyph.
+
 ## OMP 18.4.10 modal corpus (captured 2026-10-02, oh-my-pi `omp` v18.4.10)
 
-Nine captures from omp 18.4.10 (five more for the `ask` tool and five for the tool approval follow below), byte-faithful but for the sanitization pass below, taken to lift `/resume` and to give every other omp modal a declared way out ([ADR 0076](../../../../.adr/0076-the-omp-resume-picker-is-lifted-and-every-omp-modal-has-a-way-out.md)).
+Nine captures from omp 18.4.10 (five more for the `ask` tool, five for the tool approval and twenty-three for the model picker follow below), byte-faithful but for the sanitization pass below, taken to lift `/resume` and to give every other omp modal a declared way out ([ADR 0076](../../../../.adr/0076-the-omp-resume-picker-is-lifted-and-every-omp-modal-has-a-way-out.md)).
 omp 18.4 draws its pickers as a rounded box that fills the pane (59 rows by 109 columns here) and prints **glyph keycaps** in the footer: `⏎` for Enter, `⌦/⌫` for delete, `⇥` for Tab, `⎋` for Escape. omp 17.x to 18.1 printed the same keys as words (`Enter`, `Del/⌫`, `Tab`, `Esc`), so the corpus now holds both dialects of the footer, and `omp/modal.ts` accepts exactly the six spellings of the way out (`⎋ cancel`, `⎋ close`, `⎋ to close`, `Esc cancel`, `Esc close`, `Esc to close`).
 
 The `/resume` captures are the boxed layout of that picker: a titled top border (`╭─ Resume Session (current folder) ─…╮`), a `│ > <typed text> │` search row, sessions as blank-separated groups of three rows (title, first prompt, meta), and a bracketed footer, then the bottom border. The meta row reads `<age> ago · <size> · [current ·] ✔ done|⚠ interrupted · [⑂ fork] · [<cwd>]`, with a double space on each side of every `·`. Both sessions in these captures share one title, so the meta row is what tells them apart on the card. `omp--v18-4-resume-nomatch.txt` is the state with no row to point at: the grammar declines it, and the unread-dialog card with its Escape button stands over the raw mirror.
@@ -1029,6 +1077,75 @@ sandbox's. All five are CRLF with no trailing newline; `wc -l` is 299.
 | `omp--v18-4-approval-write.txt` | `Allow tool: write`, `Path: /tmp/omp-sandbox-approval/note.txt`, `Content:`, `hello approval`, the pointer on Approve. Above it, the transcript records the denied shell command, then the call's own streaming preview | not recorded |
 | `omp--v18-4-approval-write-moved.txt` | The same dialog after one `Down`: `❯ Deny` | not recorded |
 | `omp--v18-4-approval-write-long.txt` | A `write` of fourteen rows, `sample line N for the approval dialog`: the box grows to hold them all. The card shows all fourteen, and so does the raw mirror above it | not recorded |
+
+**Twenty-three more, the same day, for the compact model picker** ([ADR 0079](../../../../.adr/0079-the-omp-model-picker-is-lifted-as-its-visible-window.md)),
+opened with `/switch` in a throwaway Herdr tab. omp ran with a sandbox `HOME` under `/tmp`, a copy of
+an omp setup with dummy provider keys, so the catalogue is omp's own and no real key or session is in
+it; the real `~/.omp` was not touched. The pane was 219 columns by 63 rows (a window of 16 rows), 107
+or 103 by 61 (15 rows), 103 by 30 (5 rows, omp's floor) and 74 by 61. Each moved state is the named
+keys from the screen before it, sent with `herdr pane send-keys`. The context meter grew past some
+models' windows on its own (11k against `openai/gpt-4`'s 8.2k), and for the shortened rows a few local
+`!cat` runs of random words grew it to 157k. `Enter` was never pressed on a model. **No sanitization
+pass was needed**, and that is checked rather than assumed: the operator's user name and host names,
+`collie-workspace`, `/home/`, `/Users/`, `/var/home`, a UUID pattern, an email, an `sk-`/`ghp_`/`AKIA`-
+shaped string, a long hex or base64 token and an OSC escape match nothing in the 23 files (the one
+email-shaped hit is the model id `openrouter/thinkingmachines/inkling`). Above the box is the sandbox
+session's splash and its `omp-s3/cwd` powerline. All are CRLF with no trailing newline; `wc -l` is
+62, 60 or 29.
+
+The session footer is `↑/↓ models · ⏎ use for this session · type to search · @ quick roles · ⎋ close
+· Alt+P task model`. It ends one segment PAST its way out, which `omp/modal.ts` now accepts in this one
+shape. Eighteen captures lift as a `prompt-select` (`omp/switch.ts`): one button per model row on
+screen, by its full id, walked from the pointer, then Close. The current model and over-context rows
+are counted in every walk and not offered; the card's name ends `● current: <id>`. The other five decline.
+
+| Fixture | State / what's in it | Herdr status |
+|---|---|---|
+| `omp--v18-4-switch.txt` | 219 columns. The picker as it opens: three recents, the rule, then the list; the pointer on the current `anthropic/claude-opus-5-5 ●` below the rule; scrollbar thumb at the top; chips row `● current`. Lifts: Up×3 to Up×1 for the recents, Enter on the current, Down×n below | not recorded |
+| `omp--v18-4-switch-moved.txt` | One `Down`: the pointer on `claude-fable-5-1`, the current model one `Up` away, chips row blank | not recorded |
+| `omp--v18-4-switch-moved-up.txt` | From the opening screen, one `Up`: the pointer jumped the rule onto `claude-sonnet-5-5`. The current model is one `Down` away although the rule sits between on screen | not recorded |
+| `omp--v18-4-switch-top.txt` | The pointer on the first recent, `openrouter/google/gemini-3.8-flash` | not recorded |
+| `omp--v18-4-switch-wrapped.txt` | One more `Up`: the list WRAPPED to its last model, `openrouter/xiaomi/mimo-v2.6-pro-ultraspeed`, at the window's bottom edge, thumb at the bottom. Every walk is `Up` | not recorded |
+| `omp--v18-4-switch-top-edge.txt` | From the wrapped screen, `Up` to the window's top edge: the same rows, the pointer on the first, every walk `Down` | not recorded |
+| `omp--v18-4-switch-search.txt` | `sonnet` typed: the first result, the rule after it, a scrollbar | not recorded |
+| `omp--v18-4-switch-search-short.txt` | `opus-5` typed: 13 results, blank rows pad the window, no scrollbar, no rule; the pointer on the current model | not recorded |
+| `omp--v18-4-switch-search-short-moved.txt` | The same after two `Down` | not recorded |
+| `omp--v18-4-switch-overcontext.txt` | `gpt-4` typed: the pointer on `openai/gpt-4 ⦸ context>8.2k`, chips row `⦸ context 11k exceeds 8.2k limit · compacts with current model, then switches`. Over-context rows are not offered; no card row carries `❯` | not recorded |
+| `omp--v18-4-switch-overcontext-moved.txt` | One `Down`: the pointer on `openai/gpt-4.1`; over-context rows further down are counted and left out | not recorded |
+| `omp--v18-4-switch-roles-chips.txt` | With roles set in the sandbox config: the pointer on `claude-fable-5-1`, chips row `● slow ◒ · ○ advisor ◒` | not recorded |
+| `omp--v18-4-switch-narrow.txt` | 107 columns, roles set: the speed column still shows, chips row `● current · ● default ◒` | not recorded |
+| `omp--v18-4-switch-narrow-moved.txt` | Three `Down`: the pointer on `claude-sonnet-5-5` | not recorded |
+| `omp--v18-4-switch-truncated.txt` | 103 columns, 157k context, `nemotron` typed: two rows shortened with `…` (`…-49b-v1.5 ⦸ contex…`, `…-70b-instruct ⦸ context>…`), the pointer on an over-context row, 15 rows and no scrollbar. Shortened rows are not offered | not recorded |
+| `omp--v18-4-switch-truncated-pointed.txt` | The pointer on a shortened row | not recorded |
+| `omp--v18-4-switch-short-pane.txt` | 103 by 30: a window of five, the rule its last row | not recorded |
+| `omp--v18-4-switch-short-pane-scrolled.txt` | `Down` past the rule: the window scrolled, the pointer at its bottom edge | not recorded |
+| `omp--v18-4-switch-nomatch.txt` | `zzqqxx` typed: `No matching models`, no detail rows. Declines; gets the card | not recorded |
+| `omp--v18-4-switch-quick-roles.txt` | `@` typed: `Quick role switch — applies its model and thinking for this session`, `@smol`, `❯ @default ●`, `@slow`, footer `↑/↓ roles · ⏎ apply role model · type to search · ⎋ close`. Declines; gets the card | not recorded |
+| `omp--v18-4-switch-task.txt` | Alt+P: `╭─ Switch Task Model ─╮`, footer `… · ⎋ close · Alt+P session model`. Declines; gets the card | not recorded |
+| `omp--v18-4-switch-nerd.txt` | 103 columns, `symbolPreset: nerd` set in the sandbox config: private-use glyphs for the pointer, marks, search icon and two keycaps. Declines; gets the card | not recorded |
+| `omp--v18-4-switch-clipped.txt` | 74 columns: the footer clipped to `… @ quick roles …`, so no way out is on screen. Declines, and no card, like `/tree` | not recorded |
+
+**Five more, 2026-10-03, for the walk pairs** ([ADR 0080](../../../../.adr/0080-a-pointed-list-is-walked-verified-then-confirmed.md)
+point 5). One picker in one sandbox pane (omp 18.4.10, `HOME` `/tmp/omp-s3/home`, working directory
+`/tmp/omp-s3/cwd`, the same sandbox as the twenty-three above), 138 columns, 45 rows,
+with four models in its window. Four captures of the SAME list with only the pointer moved, and one
+with `son` typed. They exist because a live walked tap found a defect no synthetic
+test had: omp rewrites the two detail rows under the list (the pointed model's facts row and its
+chips row) every time the pointer moves, so a `coreSignature` that kept them made every walked tap
+answer `changed`. Nothing else differs between the four pointer captures, the scrollbar thumb
+included, which the test in `omp/switch.test.ts` checks row by row. **No sanitization pass was
+needed**, and the same scan as above was run on the five (user and host names, `collie-workspace`,
+`/home/`, `/Users/`, `/var/home`, a UUID, an email, a key-shaped string, a long hex or base64 token,
+an OSC escape): no match. Above the box is the sandbox session's splash and its `omp-s3/cwd`
+powerline. All are CRLF with no trailing newline; `wc -l` is 45.
+
+| Fixture | State / what's in it | Herdr status |
+|---|---|---|
+| `omp--v18-4-switch-ptr-opus-current.txt` | The pointer on the current model, `anthropic/claude-opus-5-5 ●`, the first row of the list. That row is hidden from the card, so no card row has the plan `Enter`. Facts row `Claude Opus 5.5 · …`, chips row `● current · ● default ◒` | not recorded |
+| `omp--v18-4-switch-ptr-haiku.txt` | The pointer on `anthropic/claude-haiku-4-5`. Facts row `Claude Haiku 4.5 · …`, chips row `● smol · ○ tiny · ○ memory` | not recorded |
+| `omp--v18-4-switch-ptr-fable.txt` | The pointer on `anthropic/claude-fable-5-1`. Facts row `Claude Fable 5.1 · …`, chips row `● slow ◒ · ○ advisor ◒` | not recorded |
+| `omp--v18-4-switch-ptr-sonnet.txt` | The pointer on `anthropic/claude-sonnet-5-5`. Facts row `Claude Sonnet 5.5 · …`, chips row blank | not recorded |
+| `omp--v18-4-switch-search-son.txt` | `son` typed: the pointer on the first result, `anthropic/claude-sonnet-5-5`, a rule row between the first and second result, chips row blank. Another picker, not the same identity as the four above | not recorded |
 
 ## OMP `ask` answer editor (captured 2026-10-01, oh-my-pi `omp` v18.4.4, herdr 0.9.3, throwaway Herdr pane)
 
@@ -1219,6 +1336,7 @@ wrap, Tab does nothing, Enter confirms, Escape declines, no digit).
 | `oc--draft-single.txt` | One draft row on a two-space-gutter interior row | `idle` |
 | `oc--draft-wrapped.txt` | A long draft word-wrapped onto three interior rows | `idle` |
 | `oc--draft-tree-glyphs.txt` | A four-line draft holding a pasted `tree`: a line, `├── src`, `└── web`, a last line. Captured at 226 columns on opencode 1.18.32, 2026-09-30, for the panel-border rule: a junction alone must not end the draft run, or three of these four lines are lost | `done` |
+| `oc--draft-sidebar-overlay.txt` | The #337 reporter's capture, opencode 1.18.31 with the Models sidebar open: the panel's right edge (`│ … │`) and bottom border (`└──┘`) share rows with the composer's bar run, one draft line between them. Five rows only, plain text without ESC bytes (hand-extracted from the issue, not a `format:ansi` read). Sanitized: the cwd `~/repos/omarchy` became `~/repos/sandbox`, same width | `idle` |
 | `oc--draft-multiline.txt` | A six-line draft typed with hard breaks: a line, a blank line (a bare bar row inside the composer), an indented line, `❯ ls -la`, a `────` rule, a last line. The draft reads whole across the blank line | `done` |
 | `oc--draft-while-working.txt` | A draft typed while `sleep 10 && echo done` ran: the running command and its spinner sit in the transcript above, the status row reads `esc interrupt` | `working` |
 | `oc--working.txt` | The same run with an empty composer | `working` |
