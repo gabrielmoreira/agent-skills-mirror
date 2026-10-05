@@ -14,18 +14,82 @@ Choose one coherent shape for each union value. Required fields are local to tha
 
 | Path | Type/variant | Item schema | Representative required shape |
 | --- | --- | --- | --- |
+| `sections.experience.items[].dates.start` | variant 1 | — | `string` |
+| `sections.experience.items[].dates.start` | variant 2 | — | `null` |
+| `sections.experience.items[].dates.end` | variant 1 | — | `string` |
+| `sections.experience.items[].dates.end` | variant 2 | — | `null` |
+| `sections.experience.items[].roles[].dates.start` | variant 1 | — | `string` |
+| `sections.experience.items[].roles[].dates.start` | variant 2 | — | `null` |
+| `sections.experience.items[].roles[].dates.end` | variant 1 | — | `string` |
+| `sections.experience.items[].roles[].dates.end` | variant 2 | — | `null` |
+| `sections.education.items[].dates.start` | variant 1 | — | `string` |
+| `sections.education.items[].dates.start` | variant 2 | — | `null` |
+| `sections.education.items[].dates.end` | variant 1 | — | `string` |
+| `sections.education.items[].dates.end` | variant 2 | — | `null` |
+| `sections.projects.items[].dates.start` | variant 1 | — | `string` |
+| `sections.projects.items[].dates.start` | variant 2 | — | `null` |
+| `sections.projects.items[].dates.end` | variant 1 | — | `string` |
+| `sections.projects.items[].dates.end` | variant 2 | — | `null` |
+| `sections.awards.items[].dates.start` | variant 1 | — | `string` |
+| `sections.awards.items[].dates.start` | variant 2 | — | `null` |
+| `sections.awards.items[].dates.end` | variant 1 | — | `string` |
+| `sections.awards.items[].dates.end` | variant 2 | — | `null` |
+| `sections.certifications.items[].dates.start` | variant 1 | — | `string` |
+| `sections.certifications.items[].dates.start` | variant 2 | — | `null` |
+| `sections.certifications.items[].dates.end` | variant 1 | — | `string` |
+| `sections.certifications.items[].dates.end` | variant 2 | — | `null` |
+| `sections.publications.items[].dates.start` | variant 1 | — | `string` |
+| `sections.publications.items[].dates.start` | variant 2 | — | `null` |
+| `sections.publications.items[].dates.end` | variant 1 | — | `string` |
+| `sections.publications.items[].dates.end` | variant 2 | — | `null` |
+| `sections.volunteer.items[].dates.start` | variant 1 | — | `string` |
+| `sections.volunteer.items[].dates.start` | variant 2 | — | `null` |
+| `sections.volunteer.items[].dates.end` | variant 1 | — | `string` |
+| `sections.volunteer.items[].dates.end` | variant 2 | — | `null` |
 | `customSections[]` | `summary` | `summaryItemSchema` | `{ id, hidden, content }` |
 | `customSections[]` | `profiles` | `profileItemSchema` | `{ id, hidden, icon, iconColor, network, username, website }` |
 | `customSections[]` | `experience` | `experienceItemSchema` | `{ id, hidden, company, position, location, period, website, description, roles }` |
+| `customSections[].items[].dates.start` | variant 1 | — | `string` |
+| `customSections[].items[].dates.start` | variant 2 | — | `null` |
+| `customSections[].items[].dates.end` | variant 1 | — | `string` |
+| `customSections[].items[].dates.end` | variant 2 | — | `null` |
+| `customSections[].items[].roles[].dates.start` | variant 1 | — | `string` |
+| `customSections[].items[].roles[].dates.start` | variant 2 | — | `null` |
+| `customSections[].items[].roles[].dates.end` | variant 1 | — | `string` |
+| `customSections[].items[].roles[].dates.end` | variant 2 | — | `null` |
 | `customSections[]` | `education` | `educationItemSchema` | `{ id, hidden, school, degree, area, grade, location, period, website, description }` |
+| `customSections[].items[].dates.start` | variant 1 | — | `string` |
+| `customSections[].items[].dates.start` | variant 2 | — | `null` |
+| `customSections[].items[].dates.end` | variant 1 | — | `string` |
+| `customSections[].items[].dates.end` | variant 2 | — | `null` |
 | `customSections[]` | `projects` | `projectItemSchema` | `{ id, hidden, name, period, website, description }` |
+| `customSections[].items[].dates.start` | variant 1 | — | `string` |
+| `customSections[].items[].dates.start` | variant 2 | — | `null` |
+| `customSections[].items[].dates.end` | variant 1 | — | `string` |
+| `customSections[].items[].dates.end` | variant 2 | — | `null` |
 | `customSections[]` | `skills` | `skillItemSchema` | `{ id, hidden, icon, iconColor, name, proficiency, level, keywords }` |
 | `customSections[]` | `languages` | `languageItemSchema` | `{ id, hidden, language, fluency, level }` |
 | `customSections[]` | `interests` | `interestItemSchema` | `{ id, hidden, icon, iconColor, name, keywords }` |
 | `customSections[]` | `awards` | `awardItemSchema` | `{ id, hidden, title, awarder, date, website, description }` |
+| `customSections[].items[].dates.start` | variant 1 | — | `string` |
+| `customSections[].items[].dates.start` | variant 2 | — | `null` |
+| `customSections[].items[].dates.end` | variant 1 | — | `string` |
+| `customSections[].items[].dates.end` | variant 2 | — | `null` |
 | `customSections[]` | `certifications` | `certificationItemSchema` | `{ id, hidden, title, issuer, date, website, description }` |
+| `customSections[].items[].dates.start` | variant 1 | — | `string` |
+| `customSections[].items[].dates.start` | variant 2 | — | `null` |
+| `customSections[].items[].dates.end` | variant 1 | — | `string` |
+| `customSections[].items[].dates.end` | variant 2 | — | `null` |
 | `customSections[]` | `publications` | `publicationItemSchema` | `{ id, hidden, title, publisher, date, website, description }` |
+| `customSections[].items[].dates.start` | variant 1 | — | `string` |
+| `customSections[].items[].dates.start` | variant 2 | — | `null` |
+| `customSections[].items[].dates.end` | variant 1 | — | `string` |
+| `customSections[].items[].dates.end` | variant 2 | — | `null` |
 | `customSections[]` | `volunteer` | `volunteerItemSchema` | `{ id, hidden, organization, location, period, website, description }` |
+| `customSections[].items[].dates.start` | variant 1 | — | `string` |
+| `customSections[].items[].dates.start` | variant 2 | — | `null` |
+| `customSections[].items[].dates.end` | variant 1 | — | `string` |
+| `customSections[].items[].dates.end` | variant 2 | — | `null` |
 | `customSections[]` | `references` | `referenceItemSchema` | `{ id, hidden, name, position, website, phone, description }` |
 | `customSections[]` | `cover-letter` | `coverLetterItemSchema` | `{ id, hidden, recipient, content }` |
 
@@ -84,7 +148,7 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `sections.profiles.items[].hidden` | `boolean` | yes | — | Whether to hide the item from the resume. |
 | `sections.profiles.items[].icon` | `string` | yes | — | The icon to display for the custom field. Must be a valid icon name from @phosphor-icons/web icon set, or an empty string to hide. Default to '' (empty string) when unsure which icons are available. |
 | `sections.profiles.items[].iconColor` | `string` | yes | default: "" | Custom color for the icon, defined as rgba(r, g, b, a). Leave blank to use the template default icon color. |
-| `sections.profiles.items[].network` | `string` | yes | minLength: 1 | The name of the network or platform. |
+| `sections.profiles.items[].network` | `string` | yes | — | The name of the network or platform. Empty while the entry is a draft, which isn't printed. |
 | `sections.profiles.items[].username` | `string` | yes | — | The username of the author on the network or platform. |
 | `sections.profiles.items[].website` | `object` | yes | default: {"url":"","label":"","inlineLink":false} | The link to the profile of the author on the network or platform, if any. |
 | `sections.profiles.items[].website.url` | `string` | yes | — | The URL to show as a link. Must be a valid URL with a protocol (http:// or https://). |
@@ -102,10 +166,19 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `sections.experience.items[]` | `object` | — | — | — |
 | `sections.experience.items[].id` | `string` | yes | — | The unique identifier for the item. Usually generated as a UUID. |
 | `sections.experience.items[].hidden` | `boolean` | yes | — | Whether to hide the item from the resume. |
-| `sections.experience.items[].company` | `string` | yes | minLength: 1 | The name of the company or organization. |
+| `sections.experience.items[].company` | `string` | yes | — | The name of the company or organization. Empty while the entry is a draft, which isn't printed. |
 | `sections.experience.items[].position` | `string` | yes | — | The position held at the company or organization. Used when there is only a single role. If multiple roles are provided in the 'roles' field, this serves as a summary title or can be left blank. |
 | `sections.experience.items[].location` | `string` | yes | — | The location of the company or organization. |
-| `sections.experience.items[].period` | `string` | yes | — | The overall period of time at the company. When multiple roles are used, this should reflect the total tenure. |
+| `sections.experience.items[].period` | `string` | yes | — | The overall period of time at the company, as text. When multiple roles are used, this should reflect the total tenure. Written from `dates` on every save; write `dates` instead. |
+| `sections.experience.items[].dates` | `object` | no | — | Structured dates. Write these rather than the legacy text field (`period` or `date`), which is kept in sync from them. |
+| `sections.experience.items[].dates.start` | `string or null` | yes | default: null | When it started, or the date itself for single-date entries (awards, certifications, publications). |
+| `sections.experience.items[].dates.start` | `string` | yes (variant 1 at sections.experience.items[].dates.start) | — | A year ("2022") or a year and month ("2022-03"). |
+| `sections.experience.items[].dates.start` | `null` | yes (variant 2 at sections.experience.items[].dates.start) | — | — |
+| `sections.experience.items[].dates.end` | `string or null` | yes | default: null | When it ended. Null while ongoing or for single dates. |
+| `sections.experience.items[].dates.end` | `string` | yes (variant 1 at sections.experience.items[].dates.end) | — | A year ("2022") or a year and month ("2022-03"). |
+| `sections.experience.items[].dates.end` | `null` | yes (variant 2 at sections.experience.items[].dates.end) | — | — |
+| `sections.experience.items[].dates.present` | `boolean` | yes | default: false | Whether it's ongoing, printed as 'Present'. |
+| `sections.experience.items[].dates.raw` | `string` | no | — | The original text when it couldn't be read exactly, such as 'Summer 2016'. It's printed as written until the dates are edited, which removes it. |
 | `sections.experience.items[].website` | `object` | yes | default: {"url":"","label":"","inlineLink":false} | The website of the company or organization, if any. |
 | `sections.experience.items[].website.url` | `string` | yes | — | The URL to show as a link. Must be a valid URL with a protocol (http:// or https://). |
 | `sections.experience.items[].website.label` | `string` | yes | — | The label to display for the URL. Leave blank to display the URL as-is. |
@@ -115,7 +188,16 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `sections.experience.items[].roles[]` | `object` | — | — | — |
 | `sections.experience.items[].roles[].id` | `string` | yes | — | The unique identifier for the role. Usually generated as a UUID. |
 | `sections.experience.items[].roles[].position` | `string` | yes | — | The position or job title for this role. |
-| `sections.experience.items[].roles[].period` | `string` | yes | — | The period of time this role was held. |
+| `sections.experience.items[].roles[].period` | `string` | yes | — | The period of time this role was held, as text. Written from `dates` on every save; write `dates` instead. |
+| `sections.experience.items[].roles[].dates` | `object` | no | — | Structured dates. Write these rather than the legacy text field (`period` or `date`), which is kept in sync from them. |
+| `sections.experience.items[].roles[].dates.start` | `string or null` | yes | default: null | When it started, or the date itself for single-date entries (awards, certifications, publications). |
+| `sections.experience.items[].roles[].dates.start` | `string` | yes (variant 1 at sections.experience.items[].roles[].dates.start) | — | A year ("2022") or a year and month ("2022-03"). |
+| `sections.experience.items[].roles[].dates.start` | `null` | yes (variant 2 at sections.experience.items[].roles[].dates.start) | — | — |
+| `sections.experience.items[].roles[].dates.end` | `string or null` | yes | default: null | When it ended. Null while ongoing or for single dates. |
+| `sections.experience.items[].roles[].dates.end` | `string` | yes (variant 1 at sections.experience.items[].roles[].dates.end) | — | A year ("2022") or a year and month ("2022-03"). |
+| `sections.experience.items[].roles[].dates.end` | `null` | yes (variant 2 at sections.experience.items[].roles[].dates.end) | — | — |
+| `sections.experience.items[].roles[].dates.present` | `boolean` | yes | default: false | Whether it's ongoing, printed as 'Present'. |
+| `sections.experience.items[].roles[].dates.raw` | `string` | no | — | The original text when it couldn't be read exactly, such as 'Summer 2016'. It's printed as written until the dates are edited, which removes it. |
 | `sections.experience.items[].roles[].description` | `string` | yes | — | The description of this specific role. This should be a HTML-formatted string. |
 | `sections.education` | `object` | yes | — | The section to display the education of the author. |
 | `sections.education.title` | `string` | yes | — | The title of the section. |
@@ -129,12 +211,21 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `sections.education.items[]` | `object` | — | — | — |
 | `sections.education.items[].id` | `string` | yes | — | The unique identifier for the item. Usually generated as a UUID. |
 | `sections.education.items[].hidden` | `boolean` | yes | — | Whether to hide the item from the resume. |
-| `sections.education.items[].school` | `string` | yes | minLength: 1 | The name of the school or institution. |
+| `sections.education.items[].school` | `string` | yes | — | The name of the school or institution. Empty while the entry is a draft, which isn't printed. |
 | `sections.education.items[].degree` | `string` | yes | — | The degree or qualification obtained. |
 | `sections.education.items[].area` | `string` | yes | — | The area of study or specialization. |
 | `sections.education.items[].grade` | `string` | yes | — | The grade or score achieved. |
 | `sections.education.items[].location` | `string` | yes | — | The location of the school or institution. |
-| `sections.education.items[].period` | `string` | yes | — | The period of time the education was obtained over. |
+| `sections.education.items[].period` | `string` | yes | — | The period of time the education was obtained over, as text. Written from `dates` on every save; write `dates` instead. |
+| `sections.education.items[].dates` | `object` | no | — | Structured dates. Write these rather than the legacy text field (`period` or `date`), which is kept in sync from them. |
+| `sections.education.items[].dates.start` | `string or null` | yes | default: null | When it started, or the date itself for single-date entries (awards, certifications, publications). |
+| `sections.education.items[].dates.start` | `string` | yes (variant 1 at sections.education.items[].dates.start) | — | A year ("2022") or a year and month ("2022-03"). |
+| `sections.education.items[].dates.start` | `null` | yes (variant 2 at sections.education.items[].dates.start) | — | — |
+| `sections.education.items[].dates.end` | `string or null` | yes | default: null | When it ended. Null while ongoing or for single dates. |
+| `sections.education.items[].dates.end` | `string` | yes (variant 1 at sections.education.items[].dates.end) | — | A year ("2022") or a year and month ("2022-03"). |
+| `sections.education.items[].dates.end` | `null` | yes (variant 2 at sections.education.items[].dates.end) | — | — |
+| `sections.education.items[].dates.present` | `boolean` | yes | default: false | Whether it's ongoing, printed as 'Present'. |
+| `sections.education.items[].dates.raw` | `string` | no | — | The original text when it couldn't be read exactly, such as 'Summer 2016'. It's printed as written until the dates are edited, which removes it. |
 | `sections.education.items[].website` | `object` | yes | default: {"url":"","label":"","inlineLink":false} | The website of the school or institution, if any. |
 | `sections.education.items[].website.url` | `string` | yes | — | The URL to show as a link. Must be a valid URL with a protocol (http:// or https://). |
 | `sections.education.items[].website.label` | `string` | yes | — | The label to display for the URL. Leave blank to display the URL as-is. |
@@ -152,8 +243,17 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `sections.projects.items[]` | `object` | — | — | — |
 | `sections.projects.items[].id` | `string` | yes | — | The unique identifier for the item. Usually generated as a UUID. |
 | `sections.projects.items[].hidden` | `boolean` | yes | — | Whether to hide the item from the resume. |
-| `sections.projects.items[].name` | `string` | yes | minLength: 1 | The name of the project. |
-| `sections.projects.items[].period` | `string` | yes | — | The period of time the project was worked on. |
+| `sections.projects.items[].name` | `string` | yes | — | The name of the project. Empty while the entry is a draft, which isn't printed. |
+| `sections.projects.items[].period` | `string` | yes | — | The period of time the project was worked on, as text. Written from `dates` on every save; write `dates` instead. |
+| `sections.projects.items[].dates` | `object` | no | — | Structured dates. Write these rather than the legacy text field (`period` or `date`), which is kept in sync from them. |
+| `sections.projects.items[].dates.start` | `string or null` | yes | default: null | When it started, or the date itself for single-date entries (awards, certifications, publications). |
+| `sections.projects.items[].dates.start` | `string` | yes (variant 1 at sections.projects.items[].dates.start) | — | A year ("2022") or a year and month ("2022-03"). |
+| `sections.projects.items[].dates.start` | `null` | yes (variant 2 at sections.projects.items[].dates.start) | — | — |
+| `sections.projects.items[].dates.end` | `string or null` | yes | default: null | When it ended. Null while ongoing or for single dates. |
+| `sections.projects.items[].dates.end` | `string` | yes (variant 1 at sections.projects.items[].dates.end) | — | A year ("2022") or a year and month ("2022-03"). |
+| `sections.projects.items[].dates.end` | `null` | yes (variant 2 at sections.projects.items[].dates.end) | — | — |
+| `sections.projects.items[].dates.present` | `boolean` | yes | default: false | Whether it's ongoing, printed as 'Present'. |
+| `sections.projects.items[].dates.raw` | `string` | no | — | The original text when it couldn't be read exactly, such as 'Summer 2016'. It's printed as written until the dates are edited, which removes it. |
 | `sections.projects.items[].website` | `object` | yes | default: {"url":"","label":"","inlineLink":false} | The link to the project, if any. |
 | `sections.projects.items[].website.url` | `string` | yes | — | The URL to show as a link. Must be a valid URL with a protocol (http:// or https://). |
 | `sections.projects.items[].website.label` | `string` | yes | — | The label to display for the URL. Leave blank to display the URL as-is. |
@@ -173,7 +273,7 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `sections.skills.items[].hidden` | `boolean` | yes | — | Whether to hide the item from the resume. |
 | `sections.skills.items[].icon` | `string` | yes | — | The icon to display for the custom field. Must be a valid icon name from @phosphor-icons/web icon set, or an empty string to hide. Default to '' (empty string) when unsure which icons are available. |
 | `sections.skills.items[].iconColor` | `string` | yes | default: "" | Custom color for the icon, defined as rgba(r, g, b, a). Leave blank to use the template default icon color. |
-| `sections.skills.items[].name` | `string` | yes | minLength: 1 | The name of the skill. |
+| `sections.skills.items[].name` | `string` | yes | — | The name of the skill. Empty while the entry is a draft, which isn't printed. |
 | `sections.skills.items[].proficiency` | `string` | yes | — | The proficiency level of the skill. Can be any text, such as 'Beginner', 'Intermediate', 'Advanced', etc. |
 | `sections.skills.items[].level` | `number` | yes | minimum: 0; maximum: 5; default: 0 | The proficiency level of the skill, defined as a number between 0 and 5. If set to 0, the icons displaying the level will be hidden. |
 | `sections.skills.items[].keywords` | `array` | yes | default: [] | The keywords associated with the skill, if any. These are displayed as tags below the name. |
@@ -192,7 +292,7 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `sections.languages.items[]` | `object` | — | — | — |
 | `sections.languages.items[].id` | `string` | yes | — | The unique identifier for the item. Usually generated as a UUID. |
 | `sections.languages.items[].hidden` | `boolean` | yes | — | Whether to hide the item from the resume. |
-| `sections.languages.items[].language` | `string` | yes | minLength: 1 | The name of the language the author knows. |
+| `sections.languages.items[].language` | `string` | yes | — | The name of the language the author knows. Empty while the entry is a draft, which isn't printed. |
 | `sections.languages.items[].fluency` | `string` | yes | — | The fluency level of the language. Can be any text, such as 'Native', 'Fluent', 'Conversational', etc. or can also be a CEFR level (A1, A2, B1, B2, C1, C2). |
 | `sections.languages.items[].level` | `number` | yes | minimum: 0; maximum: 5; default: 0 | The proficiency level of the language, defined as a number between 0 and 5. If set to 0, the icons displaying the level will be hidden. |
 | `sections.interests` | `object` | yes | — | The section to display the interests of the author. |
@@ -209,7 +309,7 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `sections.interests.items[].hidden` | `boolean` | yes | — | Whether to hide the item from the resume. |
 | `sections.interests.items[].icon` | `string` | yes | — | The icon to display for the custom field. Must be a valid icon name from @phosphor-icons/web icon set, or an empty string to hide. Default to '' (empty string) when unsure which icons are available. |
 | `sections.interests.items[].iconColor` | `string` | yes | default: "" | Custom color for the icon, defined as rgba(r, g, b, a). Leave blank to use the template default icon color. |
-| `sections.interests.items[].name` | `string` | yes | minLength: 1 | The name of the interest/hobby. |
+| `sections.interests.items[].name` | `string` | yes | — | The name of the interest/hobby. Empty while the entry is a draft, which isn't printed. |
 | `sections.interests.items[].keywords` | `array` | yes | default: [] | The keywords associated with the interest/hobby, if any. These are displayed as tags below the name. |
 | `sections.interests.items[].keywords[]` | `string` | — | — | — |
 | `sections.awards` | `object` | yes | — | The section to display the awards of the author. |
@@ -224,9 +324,18 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `sections.awards.items[]` | `object` | — | — | — |
 | `sections.awards.items[].id` | `string` | yes | — | The unique identifier for the item. Usually generated as a UUID. |
 | `sections.awards.items[].hidden` | `boolean` | yes | — | Whether to hide the item from the resume. |
-| `sections.awards.items[].title` | `string` | yes | minLength: 1 | The title of the award. |
+| `sections.awards.items[].title` | `string` | yes | — | The title of the award. Empty while the entry is a draft, which isn't printed. |
 | `sections.awards.items[].awarder` | `string` | yes | — | The awarder of the award. |
-| `sections.awards.items[].date` | `string` | yes | — | The date when the award was received. |
+| `sections.awards.items[].date` | `string` | yes | — | The date when the award was received, as text. Written from `dates` on every save; write `dates` instead. |
+| `sections.awards.items[].dates` | `object` | no | — | Structured dates. Write these rather than the legacy text field (`period` or `date`), which is kept in sync from them. |
+| `sections.awards.items[].dates.start` | `string or null` | yes | default: null | When it started, or the date itself for single-date entries (awards, certifications, publications). |
+| `sections.awards.items[].dates.start` | `string` | yes (variant 1 at sections.awards.items[].dates.start) | — | A year ("2022") or a year and month ("2022-03"). |
+| `sections.awards.items[].dates.start` | `null` | yes (variant 2 at sections.awards.items[].dates.start) | — | — |
+| `sections.awards.items[].dates.end` | `string or null` | yes | default: null | When it ended. Null while ongoing or for single dates. |
+| `sections.awards.items[].dates.end` | `string` | yes (variant 1 at sections.awards.items[].dates.end) | — | A year ("2022") or a year and month ("2022-03"). |
+| `sections.awards.items[].dates.end` | `null` | yes (variant 2 at sections.awards.items[].dates.end) | — | — |
+| `sections.awards.items[].dates.present` | `boolean` | yes | default: false | Whether it's ongoing, printed as 'Present'. |
+| `sections.awards.items[].dates.raw` | `string` | no | — | The original text when it couldn't be read exactly, such as 'Summer 2016'. It's printed as written until the dates are edited, which removes it. |
 | `sections.awards.items[].website` | `object` | yes | default: {"url":"","label":"","inlineLink":false} | The website of the award, if any. |
 | `sections.awards.items[].website.url` | `string` | yes | — | The URL to show as a link. Must be a valid URL with a protocol (http:// or https://). |
 | `sections.awards.items[].website.label` | `string` | yes | — | The label to display for the URL. Leave blank to display the URL as-is. |
@@ -244,9 +353,18 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `sections.certifications.items[]` | `object` | — | — | — |
 | `sections.certifications.items[].id` | `string` | yes | — | The unique identifier for the item. Usually generated as a UUID. |
 | `sections.certifications.items[].hidden` | `boolean` | yes | — | Whether to hide the item from the resume. |
-| `sections.certifications.items[].title` | `string` | yes | minLength: 1 | The title of the certification. |
+| `sections.certifications.items[].title` | `string` | yes | — | The title of the certification. Empty while the entry is a draft, which isn't printed. |
 | `sections.certifications.items[].issuer` | `string` | yes | — | The issuer of the certification. |
-| `sections.certifications.items[].date` | `string` | yes | — | The date when the certification was received. |
+| `sections.certifications.items[].date` | `string` | yes | — | The date when the certification was received, as text. Written from `dates` on every save; write `dates` instead. |
+| `sections.certifications.items[].dates` | `object` | no | — | Structured dates. Write these rather than the legacy text field (`period` or `date`), which is kept in sync from them. |
+| `sections.certifications.items[].dates.start` | `string or null` | yes | default: null | When it started, or the date itself for single-date entries (awards, certifications, publications). |
+| `sections.certifications.items[].dates.start` | `string` | yes (variant 1 at sections.certifications.items[].dates.start) | — | A year ("2022") or a year and month ("2022-03"). |
+| `sections.certifications.items[].dates.start` | `null` | yes (variant 2 at sections.certifications.items[].dates.start) | — | — |
+| `sections.certifications.items[].dates.end` | `string or null` | yes | default: null | When it ended. Null while ongoing or for single dates. |
+| `sections.certifications.items[].dates.end` | `string` | yes (variant 1 at sections.certifications.items[].dates.end) | — | A year ("2022") or a year and month ("2022-03"). |
+| `sections.certifications.items[].dates.end` | `null` | yes (variant 2 at sections.certifications.items[].dates.end) | — | — |
+| `sections.certifications.items[].dates.present` | `boolean` | yes | default: false | Whether it's ongoing, printed as 'Present'. |
+| `sections.certifications.items[].dates.raw` | `string` | no | — | The original text when it couldn't be read exactly, such as 'Summer 2016'. It's printed as written until the dates are edited, which removes it. |
 | `sections.certifications.items[].website` | `object` | yes | default: {"url":"","label":"","inlineLink":false} | The website of the certification, if any. |
 | `sections.certifications.items[].website.url` | `string` | yes | — | The URL to show as a link. Must be a valid URL with a protocol (http:// or https://). |
 | `sections.certifications.items[].website.label` | `string` | yes | — | The label to display for the URL. Leave blank to display the URL as-is. |
@@ -264,9 +382,18 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `sections.publications.items[]` | `object` | — | — | — |
 | `sections.publications.items[].id` | `string` | yes | — | The unique identifier for the item. Usually generated as a UUID. |
 | `sections.publications.items[].hidden` | `boolean` | yes | — | Whether to hide the item from the resume. |
-| `sections.publications.items[].title` | `string` | yes | minLength: 1 | The title of the publication. |
+| `sections.publications.items[].title` | `string` | yes | — | The title of the publication. Empty while the entry is a draft, which isn't printed. |
 | `sections.publications.items[].publisher` | `string` | yes | — | The publisher of the publication. |
-| `sections.publications.items[].date` | `string` | yes | — | The date when the publication was published. |
+| `sections.publications.items[].date` | `string` | yes | — | The date when the publication was published, as text. Written from `dates` on every save; write `dates` instead. |
+| `sections.publications.items[].dates` | `object` | no | — | Structured dates. Write these rather than the legacy text field (`period` or `date`), which is kept in sync from them. |
+| `sections.publications.items[].dates.start` | `string or null` | yes | default: null | When it started, or the date itself for single-date entries (awards, certifications, publications). |
+| `sections.publications.items[].dates.start` | `string` | yes (variant 1 at sections.publications.items[].dates.start) | — | A year ("2022") or a year and month ("2022-03"). |
+| `sections.publications.items[].dates.start` | `null` | yes (variant 2 at sections.publications.items[].dates.start) | — | — |
+| `sections.publications.items[].dates.end` | `string or null` | yes | default: null | When it ended. Null while ongoing or for single dates. |
+| `sections.publications.items[].dates.end` | `string` | yes (variant 1 at sections.publications.items[].dates.end) | — | A year ("2022") or a year and month ("2022-03"). |
+| `sections.publications.items[].dates.end` | `null` | yes (variant 2 at sections.publications.items[].dates.end) | — | — |
+| `sections.publications.items[].dates.present` | `boolean` | yes | default: false | Whether it's ongoing, printed as 'Present'. |
+| `sections.publications.items[].dates.raw` | `string` | no | — | The original text when it couldn't be read exactly, such as 'Summer 2016'. It's printed as written until the dates are edited, which removes it. |
 | `sections.publications.items[].website` | `object` | yes | default: {"url":"","label":"","inlineLink":false} | The link to the publication, if any. |
 | `sections.publications.items[].website.url` | `string` | yes | — | The URL to show as a link. Must be a valid URL with a protocol (http:// or https://). |
 | `sections.publications.items[].website.label` | `string` | yes | — | The label to display for the URL. Leave blank to display the URL as-is. |
@@ -284,9 +411,18 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `sections.volunteer.items[]` | `object` | — | — | — |
 | `sections.volunteer.items[].id` | `string` | yes | — | The unique identifier for the item. Usually generated as a UUID. |
 | `sections.volunteer.items[].hidden` | `boolean` | yes | — | Whether to hide the item from the resume. |
-| `sections.volunteer.items[].organization` | `string` | yes | minLength: 1 | The name of the organization or company. |
+| `sections.volunteer.items[].organization` | `string` | yes | — | The name of the organization or company. Empty while the entry is a draft, which isn't printed. |
 | `sections.volunteer.items[].location` | `string` | yes | — | The location of the organization or company. |
-| `sections.volunteer.items[].period` | `string` | yes | — | The period of time the author was volunteered at the organization or company. |
+| `sections.volunteer.items[].period` | `string` | yes | — | The period of time the author was volunteered at the organization or company, as text. Written from `dates` on every save; write `dates` instead. |
+| `sections.volunteer.items[].dates` | `object` | no | — | Structured dates. Write these rather than the legacy text field (`period` or `date`), which is kept in sync from them. |
+| `sections.volunteer.items[].dates.start` | `string or null` | yes | default: null | When it started, or the date itself for single-date entries (awards, certifications, publications). |
+| `sections.volunteer.items[].dates.start` | `string` | yes (variant 1 at sections.volunteer.items[].dates.start) | — | A year ("2022") or a year and month ("2022-03"). |
+| `sections.volunteer.items[].dates.start` | `null` | yes (variant 2 at sections.volunteer.items[].dates.start) | — | — |
+| `sections.volunteer.items[].dates.end` | `string or null` | yes | default: null | When it ended. Null while ongoing or for single dates. |
+| `sections.volunteer.items[].dates.end` | `string` | yes (variant 1 at sections.volunteer.items[].dates.end) | — | A year ("2022") or a year and month ("2022-03"). |
+| `sections.volunteer.items[].dates.end` | `null` | yes (variant 2 at sections.volunteer.items[].dates.end) | — | — |
+| `sections.volunteer.items[].dates.present` | `boolean` | yes | default: false | Whether it's ongoing, printed as 'Present'. |
+| `sections.volunteer.items[].dates.raw` | `string` | no | — | The original text when it couldn't be read exactly, such as 'Summer 2016'. It's printed as written until the dates are edited, which removes it. |
 | `sections.volunteer.items[].website` | `object` | yes | default: {"url":"","label":"","inlineLink":false} | The link to the organization or company, if any. |
 | `sections.volunteer.items[].website.url` | `string` | yes | — | The URL to show as a link. Must be a valid URL with a protocol (http:// or https://). |
 | `sections.volunteer.items[].website.label` | `string` | yes | — | The label to display for the URL. Leave blank to display the URL as-is. |
@@ -304,7 +440,7 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `sections.references.items[]` | `object` | — | — | — |
 | `sections.references.items[].id` | `string` | yes | — | The unique identifier for the item. Usually generated as a UUID. |
 | `sections.references.items[].hidden` | `boolean` | yes | — | Whether to hide the item from the resume. |
-| `sections.references.items[].name` | `string` | yes | minLength: 1 | The name of the reference, or a note such as 'Available upon request'. |
+| `sections.references.items[].name` | `string` | yes | — | The name of the reference, or a note such as 'Available upon request'. Empty while the entry is a draft, which isn't printed. |
 | `sections.references.items[].position` | `string` | yes | — | The position or job title of the reference. |
 | `sections.references.items[].website` | `object` | yes | default: {"url":"","label":"","inlineLink":false} | The website or LinkedIn profile of the reference, if any. |
 | `sections.references.items[].website.url` | `string` | yes | — | The URL to show as a link. Must be a valid URL with a protocol (http:// or https://). |
@@ -347,7 +483,7 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `customSections[].items[].hidden` | `boolean` | yes (type profiles, schema profileItemSchema at customSections[]) | — | Whether to hide the item from the resume. |
 | `customSections[].items[].icon` | `string` | yes (type profiles, schema profileItemSchema at customSections[]) | — | The icon to display for the custom field. Must be a valid icon name from @phosphor-icons/web icon set, or an empty string to hide. Default to '' (empty string) when unsure which icons are available. |
 | `customSections[].items[].iconColor` | `string` | yes (type profiles, schema profileItemSchema at customSections[]) | default: "" | Custom color for the icon, defined as rgba(r, g, b, a). Leave blank to use the template default icon color. |
-| `customSections[].items[].network` | `string` | yes (type profiles, schema profileItemSchema at customSections[]) | minLength: 1 | The name of the network or platform. |
+| `customSections[].items[].network` | `string` | yes (type profiles, schema profileItemSchema at customSections[]) | — | The name of the network or platform. Empty while the entry is a draft, which isn't printed. |
 | `customSections[].items[].username` | `string` | yes (type profiles, schema profileItemSchema at customSections[]) | — | The username of the author on the network or platform. |
 | `customSections[].items[].website` | `object` | yes (type profiles, schema profileItemSchema at customSections[]) | default: {"url":"","label":"","inlineLink":false} | The link to the profile of the author on the network or platform, if any. |
 | `customSections[].items[].website.url` | `string` | yes (type profiles, schema profileItemSchema at customSections[]) | — | The URL to show as a link. Must be a valid URL with a protocol (http:// or https://). |
@@ -368,10 +504,19 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `customSections[].items[]` | `object` | — (type experience, schema experienceItemSchema at customSections[]) | — | — |
 | `customSections[].items[].id` | `string` | yes (type experience, schema experienceItemSchema at customSections[]) | — | The unique identifier for the item. Usually generated as a UUID. |
 | `customSections[].items[].hidden` | `boolean` | yes (type experience, schema experienceItemSchema at customSections[]) | — | Whether to hide the item from the resume. |
-| `customSections[].items[].company` | `string` | yes (type experience, schema experienceItemSchema at customSections[]) | minLength: 1 | The name of the company or organization. |
+| `customSections[].items[].company` | `string` | yes (type experience, schema experienceItemSchema at customSections[]) | — | The name of the company or organization. Empty while the entry is a draft, which isn't printed. |
 | `customSections[].items[].position` | `string` | yes (type experience, schema experienceItemSchema at customSections[]) | — | The position held at the company or organization. Used when there is only a single role. If multiple roles are provided in the 'roles' field, this serves as a summary title or can be left blank. |
 | `customSections[].items[].location` | `string` | yes (type experience, schema experienceItemSchema at customSections[]) | — | The location of the company or organization. |
-| `customSections[].items[].period` | `string` | yes (type experience, schema experienceItemSchema at customSections[]) | — | The overall period of time at the company. When multiple roles are used, this should reflect the total tenure. |
+| `customSections[].items[].period` | `string` | yes (type experience, schema experienceItemSchema at customSections[]) | — | The overall period of time at the company, as text. When multiple roles are used, this should reflect the total tenure. Written from `dates` on every save; write `dates` instead. |
+| `customSections[].items[].dates` | `object` | no (type experience, schema experienceItemSchema at customSections[]) | — | Structured dates. Write these rather than the legacy text field (`period` or `date`), which is kept in sync from them. |
+| `customSections[].items[].dates.start` | `string or null` | yes (type experience, schema experienceItemSchema at customSections[]) | default: null | When it started, or the date itself for single-date entries (awards, certifications, publications). |
+| `customSections[].items[].dates.start` | `string` | yes (type experience, schema experienceItemSchema at customSections[]; variant 1 at customSections[].items[].dates.start) | — | A year ("2022") or a year and month ("2022-03"). |
+| `customSections[].items[].dates.start` | `null` | yes (type experience, schema experienceItemSchema at customSections[]; variant 2 at customSections[].items[].dates.start) | — | — |
+| `customSections[].items[].dates.end` | `string or null` | yes (type experience, schema experienceItemSchema at customSections[]) | default: null | When it ended. Null while ongoing or for single dates. |
+| `customSections[].items[].dates.end` | `string` | yes (type experience, schema experienceItemSchema at customSections[]; variant 1 at customSections[].items[].dates.end) | — | A year ("2022") or a year and month ("2022-03"). |
+| `customSections[].items[].dates.end` | `null` | yes (type experience, schema experienceItemSchema at customSections[]; variant 2 at customSections[].items[].dates.end) | — | — |
+| `customSections[].items[].dates.present` | `boolean` | yes (type experience, schema experienceItemSchema at customSections[]) | default: false | Whether it's ongoing, printed as 'Present'. |
+| `customSections[].items[].dates.raw` | `string` | no (type experience, schema experienceItemSchema at customSections[]) | — | The original text when it couldn't be read exactly, such as 'Summer 2016'. It's printed as written until the dates are edited, which removes it. |
 | `customSections[].items[].website` | `object` | yes (type experience, schema experienceItemSchema at customSections[]) | default: {"url":"","label":"","inlineLink":false} | The website of the company or organization, if any. |
 | `customSections[].items[].website.url` | `string` | yes (type experience, schema experienceItemSchema at customSections[]) | — | The URL to show as a link. Must be a valid URL with a protocol (http:// or https://). |
 | `customSections[].items[].website.label` | `string` | yes (type experience, schema experienceItemSchema at customSections[]) | — | The label to display for the URL. Leave blank to display the URL as-is. |
@@ -381,7 +526,16 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `customSections[].items[].roles[]` | `object` | — (type experience, schema experienceItemSchema at customSections[]) | — | — |
 | `customSections[].items[].roles[].id` | `string` | yes (type experience, schema experienceItemSchema at customSections[]) | — | The unique identifier for the role. Usually generated as a UUID. |
 | `customSections[].items[].roles[].position` | `string` | yes (type experience, schema experienceItemSchema at customSections[]) | — | The position or job title for this role. |
-| `customSections[].items[].roles[].period` | `string` | yes (type experience, schema experienceItemSchema at customSections[]) | — | The period of time this role was held. |
+| `customSections[].items[].roles[].period` | `string` | yes (type experience, schema experienceItemSchema at customSections[]) | — | The period of time this role was held, as text. Written from `dates` on every save; write `dates` instead. |
+| `customSections[].items[].roles[].dates` | `object` | no (type experience, schema experienceItemSchema at customSections[]) | — | Structured dates. Write these rather than the legacy text field (`period` or `date`), which is kept in sync from them. |
+| `customSections[].items[].roles[].dates.start` | `string or null` | yes (type experience, schema experienceItemSchema at customSections[]) | default: null | When it started, or the date itself for single-date entries (awards, certifications, publications). |
+| `customSections[].items[].roles[].dates.start` | `string` | yes (type experience, schema experienceItemSchema at customSections[]; variant 1 at customSections[].items[].roles[].dates.start) | — | A year ("2022") or a year and month ("2022-03"). |
+| `customSections[].items[].roles[].dates.start` | `null` | yes (type experience, schema experienceItemSchema at customSections[]; variant 2 at customSections[].items[].roles[].dates.start) | — | — |
+| `customSections[].items[].roles[].dates.end` | `string or null` | yes (type experience, schema experienceItemSchema at customSections[]) | default: null | When it ended. Null while ongoing or for single dates. |
+| `customSections[].items[].roles[].dates.end` | `string` | yes (type experience, schema experienceItemSchema at customSections[]; variant 1 at customSections[].items[].roles[].dates.end) | — | A year ("2022") or a year and month ("2022-03"). |
+| `customSections[].items[].roles[].dates.end` | `null` | yes (type experience, schema experienceItemSchema at customSections[]; variant 2 at customSections[].items[].roles[].dates.end) | — | — |
+| `customSections[].items[].roles[].dates.present` | `boolean` | yes (type experience, schema experienceItemSchema at customSections[]) | default: false | Whether it's ongoing, printed as 'Present'. |
+| `customSections[].items[].roles[].dates.raw` | `string` | no (type experience, schema experienceItemSchema at customSections[]) | — | The original text when it couldn't be read exactly, such as 'Summer 2016'. It's printed as written until the dates are edited, which removes it. |
 | `customSections[].items[].roles[].description` | `string` | yes (type experience, schema experienceItemSchema at customSections[]) | — | The description of this specific role. This should be a HTML-formatted string. |
 | `customSections[]` | `object` | — (type education, schema educationItemSchema at customSections[]) | — | — |
 | `customSections[].title` | `string` | yes (type education, schema educationItemSchema at customSections[]) | — | The title of the section. |
@@ -398,12 +552,21 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `customSections[].items[]` | `object` | — (type education, schema educationItemSchema at customSections[]) | — | — |
 | `customSections[].items[].id` | `string` | yes (type education, schema educationItemSchema at customSections[]) | — | The unique identifier for the item. Usually generated as a UUID. |
 | `customSections[].items[].hidden` | `boolean` | yes (type education, schema educationItemSchema at customSections[]) | — | Whether to hide the item from the resume. |
-| `customSections[].items[].school` | `string` | yes (type education, schema educationItemSchema at customSections[]) | minLength: 1 | The name of the school or institution. |
+| `customSections[].items[].school` | `string` | yes (type education, schema educationItemSchema at customSections[]) | — | The name of the school or institution. Empty while the entry is a draft, which isn't printed. |
 | `customSections[].items[].degree` | `string` | yes (type education, schema educationItemSchema at customSections[]) | — | The degree or qualification obtained. |
 | `customSections[].items[].area` | `string` | yes (type education, schema educationItemSchema at customSections[]) | — | The area of study or specialization. |
 | `customSections[].items[].grade` | `string` | yes (type education, schema educationItemSchema at customSections[]) | — | The grade or score achieved. |
 | `customSections[].items[].location` | `string` | yes (type education, schema educationItemSchema at customSections[]) | — | The location of the school or institution. |
-| `customSections[].items[].period` | `string` | yes (type education, schema educationItemSchema at customSections[]) | — | The period of time the education was obtained over. |
+| `customSections[].items[].period` | `string` | yes (type education, schema educationItemSchema at customSections[]) | — | The period of time the education was obtained over, as text. Written from `dates` on every save; write `dates` instead. |
+| `customSections[].items[].dates` | `object` | no (type education, schema educationItemSchema at customSections[]) | — | Structured dates. Write these rather than the legacy text field (`period` or `date`), which is kept in sync from them. |
+| `customSections[].items[].dates.start` | `string or null` | yes (type education, schema educationItemSchema at customSections[]) | default: null | When it started, or the date itself for single-date entries (awards, certifications, publications). |
+| `customSections[].items[].dates.start` | `string` | yes (type education, schema educationItemSchema at customSections[]; variant 1 at customSections[].items[].dates.start) | — | A year ("2022") or a year and month ("2022-03"). |
+| `customSections[].items[].dates.start` | `null` | yes (type education, schema educationItemSchema at customSections[]; variant 2 at customSections[].items[].dates.start) | — | — |
+| `customSections[].items[].dates.end` | `string or null` | yes (type education, schema educationItemSchema at customSections[]) | default: null | When it ended. Null while ongoing or for single dates. |
+| `customSections[].items[].dates.end` | `string` | yes (type education, schema educationItemSchema at customSections[]; variant 1 at customSections[].items[].dates.end) | — | A year ("2022") or a year and month ("2022-03"). |
+| `customSections[].items[].dates.end` | `null` | yes (type education, schema educationItemSchema at customSections[]; variant 2 at customSections[].items[].dates.end) | — | — |
+| `customSections[].items[].dates.present` | `boolean` | yes (type education, schema educationItemSchema at customSections[]) | default: false | Whether it's ongoing, printed as 'Present'. |
+| `customSections[].items[].dates.raw` | `string` | no (type education, schema educationItemSchema at customSections[]) | — | The original text when it couldn't be read exactly, such as 'Summer 2016'. It's printed as written until the dates are edited, which removes it. |
 | `customSections[].items[].website` | `object` | yes (type education, schema educationItemSchema at customSections[]) | default: {"url":"","label":"","inlineLink":false} | The website of the school or institution, if any. |
 | `customSections[].items[].website.url` | `string` | yes (type education, schema educationItemSchema at customSections[]) | — | The URL to show as a link. Must be a valid URL with a protocol (http:// or https://). |
 | `customSections[].items[].website.label` | `string` | yes (type education, schema educationItemSchema at customSections[]) | — | The label to display for the URL. Leave blank to display the URL as-is. |
@@ -424,8 +587,17 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `customSections[].items[]` | `object` | — (type projects, schema projectItemSchema at customSections[]) | — | — |
 | `customSections[].items[].id` | `string` | yes (type projects, schema projectItemSchema at customSections[]) | — | The unique identifier for the item. Usually generated as a UUID. |
 | `customSections[].items[].hidden` | `boolean` | yes (type projects, schema projectItemSchema at customSections[]) | — | Whether to hide the item from the resume. |
-| `customSections[].items[].name` | `string` | yes (type projects, schema projectItemSchema at customSections[]) | minLength: 1 | The name of the project. |
-| `customSections[].items[].period` | `string` | yes (type projects, schema projectItemSchema at customSections[]) | — | The period of time the project was worked on. |
+| `customSections[].items[].name` | `string` | yes (type projects, schema projectItemSchema at customSections[]) | — | The name of the project. Empty while the entry is a draft, which isn't printed. |
+| `customSections[].items[].period` | `string` | yes (type projects, schema projectItemSchema at customSections[]) | — | The period of time the project was worked on, as text. Written from `dates` on every save; write `dates` instead. |
+| `customSections[].items[].dates` | `object` | no (type projects, schema projectItemSchema at customSections[]) | — | Structured dates. Write these rather than the legacy text field (`period` or `date`), which is kept in sync from them. |
+| `customSections[].items[].dates.start` | `string or null` | yes (type projects, schema projectItemSchema at customSections[]) | default: null | When it started, or the date itself for single-date entries (awards, certifications, publications). |
+| `customSections[].items[].dates.start` | `string` | yes (type projects, schema projectItemSchema at customSections[]; variant 1 at customSections[].items[].dates.start) | — | A year ("2022") or a year and month ("2022-03"). |
+| `customSections[].items[].dates.start` | `null` | yes (type projects, schema projectItemSchema at customSections[]; variant 2 at customSections[].items[].dates.start) | — | — |
+| `customSections[].items[].dates.end` | `string or null` | yes (type projects, schema projectItemSchema at customSections[]) | default: null | When it ended. Null while ongoing or for single dates. |
+| `customSections[].items[].dates.end` | `string` | yes (type projects, schema projectItemSchema at customSections[]; variant 1 at customSections[].items[].dates.end) | — | A year ("2022") or a year and month ("2022-03"). |
+| `customSections[].items[].dates.end` | `null` | yes (type projects, schema projectItemSchema at customSections[]; variant 2 at customSections[].items[].dates.end) | — | — |
+| `customSections[].items[].dates.present` | `boolean` | yes (type projects, schema projectItemSchema at customSections[]) | default: false | Whether it's ongoing, printed as 'Present'. |
+| `customSections[].items[].dates.raw` | `string` | no (type projects, schema projectItemSchema at customSections[]) | — | The original text when it couldn't be read exactly, such as 'Summer 2016'. It's printed as written until the dates are edited, which removes it. |
 | `customSections[].items[].website` | `object` | yes (type projects, schema projectItemSchema at customSections[]) | default: {"url":"","label":"","inlineLink":false} | The link to the project, if any. |
 | `customSections[].items[].website.url` | `string` | yes (type projects, schema projectItemSchema at customSections[]) | — | The URL to show as a link. Must be a valid URL with a protocol (http:// or https://). |
 | `customSections[].items[].website.label` | `string` | yes (type projects, schema projectItemSchema at customSections[]) | — | The label to display for the URL. Leave blank to display the URL as-is. |
@@ -448,7 +620,7 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `customSections[].items[].hidden` | `boolean` | yes (type skills, schema skillItemSchema at customSections[]) | — | Whether to hide the item from the resume. |
 | `customSections[].items[].icon` | `string` | yes (type skills, schema skillItemSchema at customSections[]) | — | The icon to display for the custom field. Must be a valid icon name from @phosphor-icons/web icon set, or an empty string to hide. Default to '' (empty string) when unsure which icons are available. |
 | `customSections[].items[].iconColor` | `string` | yes (type skills, schema skillItemSchema at customSections[]) | default: "" | Custom color for the icon, defined as rgba(r, g, b, a). Leave blank to use the template default icon color. |
-| `customSections[].items[].name` | `string` | yes (type skills, schema skillItemSchema at customSections[]) | minLength: 1 | The name of the skill. |
+| `customSections[].items[].name` | `string` | yes (type skills, schema skillItemSchema at customSections[]) | — | The name of the skill. Empty while the entry is a draft, which isn't printed. |
 | `customSections[].items[].proficiency` | `string` | yes (type skills, schema skillItemSchema at customSections[]) | — | The proficiency level of the skill. Can be any text, such as 'Beginner', 'Intermediate', 'Advanced', etc. |
 | `customSections[].items[].level` | `number` | yes (type skills, schema skillItemSchema at customSections[]) | minimum: 0; maximum: 5; default: 0 | The proficiency level of the skill, defined as a number between 0 and 5. If set to 0, the icons displaying the level will be hidden. |
 | `customSections[].items[].keywords` | `array` | yes (type skills, schema skillItemSchema at customSections[]) | default: [] | The keywords associated with the skill, if any. These are displayed as tags below the name. |
@@ -468,7 +640,7 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `customSections[].items[]` | `object` | — (type languages, schema languageItemSchema at customSections[]) | — | — |
 | `customSections[].items[].id` | `string` | yes (type languages, schema languageItemSchema at customSections[]) | — | The unique identifier for the item. Usually generated as a UUID. |
 | `customSections[].items[].hidden` | `boolean` | yes (type languages, schema languageItemSchema at customSections[]) | — | Whether to hide the item from the resume. |
-| `customSections[].items[].language` | `string` | yes (type languages, schema languageItemSchema at customSections[]) | minLength: 1 | The name of the language the author knows. |
+| `customSections[].items[].language` | `string` | yes (type languages, schema languageItemSchema at customSections[]) | — | The name of the language the author knows. Empty while the entry is a draft, which isn't printed. |
 | `customSections[].items[].fluency` | `string` | yes (type languages, schema languageItemSchema at customSections[]) | — | The fluency level of the language. Can be any text, such as 'Native', 'Fluent', 'Conversational', etc. or can also be a CEFR level (A1, A2, B1, B2, C1, C2). |
 | `customSections[].items[].level` | `number` | yes (type languages, schema languageItemSchema at customSections[]) | minimum: 0; maximum: 5; default: 0 | The proficiency level of the language, defined as a number between 0 and 5. If set to 0, the icons displaying the level will be hidden. |
 | `customSections[]` | `object` | — (type interests, schema interestItemSchema at customSections[]) | — | — |
@@ -488,7 +660,7 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `customSections[].items[].hidden` | `boolean` | yes (type interests, schema interestItemSchema at customSections[]) | — | Whether to hide the item from the resume. |
 | `customSections[].items[].icon` | `string` | yes (type interests, schema interestItemSchema at customSections[]) | — | The icon to display for the custom field. Must be a valid icon name from @phosphor-icons/web icon set, or an empty string to hide. Default to '' (empty string) when unsure which icons are available. |
 | `customSections[].items[].iconColor` | `string` | yes (type interests, schema interestItemSchema at customSections[]) | default: "" | Custom color for the icon, defined as rgba(r, g, b, a). Leave blank to use the template default icon color. |
-| `customSections[].items[].name` | `string` | yes (type interests, schema interestItemSchema at customSections[]) | minLength: 1 | The name of the interest/hobby. |
+| `customSections[].items[].name` | `string` | yes (type interests, schema interestItemSchema at customSections[]) | — | The name of the interest/hobby. Empty while the entry is a draft, which isn't printed. |
 | `customSections[].items[].keywords` | `array` | yes (type interests, schema interestItemSchema at customSections[]) | default: [] | The keywords associated with the interest/hobby, if any. These are displayed as tags below the name. |
 | `customSections[].items[].keywords[]` | `string` | — (type interests, schema interestItemSchema at customSections[]) | — | — |
 | `customSections[]` | `object` | — (type awards, schema awardItemSchema at customSections[]) | — | — |
@@ -506,9 +678,18 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `customSections[].items[]` | `object` | — (type awards, schema awardItemSchema at customSections[]) | — | — |
 | `customSections[].items[].id` | `string` | yes (type awards, schema awardItemSchema at customSections[]) | — | The unique identifier for the item. Usually generated as a UUID. |
 | `customSections[].items[].hidden` | `boolean` | yes (type awards, schema awardItemSchema at customSections[]) | — | Whether to hide the item from the resume. |
-| `customSections[].items[].title` | `string` | yes (type awards, schema awardItemSchema at customSections[]) | minLength: 1 | The title of the award. |
+| `customSections[].items[].title` | `string` | yes (type awards, schema awardItemSchema at customSections[]) | — | The title of the award. Empty while the entry is a draft, which isn't printed. |
 | `customSections[].items[].awarder` | `string` | yes (type awards, schema awardItemSchema at customSections[]) | — | The awarder of the award. |
-| `customSections[].items[].date` | `string` | yes (type awards, schema awardItemSchema at customSections[]) | — | The date when the award was received. |
+| `customSections[].items[].date` | `string` | yes (type awards, schema awardItemSchema at customSections[]) | — | The date when the award was received, as text. Written from `dates` on every save; write `dates` instead. |
+| `customSections[].items[].dates` | `object` | no (type awards, schema awardItemSchema at customSections[]) | — | Structured dates. Write these rather than the legacy text field (`period` or `date`), which is kept in sync from them. |
+| `customSections[].items[].dates.start` | `string or null` | yes (type awards, schema awardItemSchema at customSections[]) | default: null | When it started, or the date itself for single-date entries (awards, certifications, publications). |
+| `customSections[].items[].dates.start` | `string` | yes (type awards, schema awardItemSchema at customSections[]; variant 1 at customSections[].items[].dates.start) | — | A year ("2022") or a year and month ("2022-03"). |
+| `customSections[].items[].dates.start` | `null` | yes (type awards, schema awardItemSchema at customSections[]; variant 2 at customSections[].items[].dates.start) | — | — |
+| `customSections[].items[].dates.end` | `string or null` | yes (type awards, schema awardItemSchema at customSections[]) | default: null | When it ended. Null while ongoing or for single dates. |
+| `customSections[].items[].dates.end` | `string` | yes (type awards, schema awardItemSchema at customSections[]; variant 1 at customSections[].items[].dates.end) | — | A year ("2022") or a year and month ("2022-03"). |
+| `customSections[].items[].dates.end` | `null` | yes (type awards, schema awardItemSchema at customSections[]; variant 2 at customSections[].items[].dates.end) | — | — |
+| `customSections[].items[].dates.present` | `boolean` | yes (type awards, schema awardItemSchema at customSections[]) | default: false | Whether it's ongoing, printed as 'Present'. |
+| `customSections[].items[].dates.raw` | `string` | no (type awards, schema awardItemSchema at customSections[]) | — | The original text when it couldn't be read exactly, such as 'Summer 2016'. It's printed as written until the dates are edited, which removes it. |
 | `customSections[].items[].website` | `object` | yes (type awards, schema awardItemSchema at customSections[]) | default: {"url":"","label":"","inlineLink":false} | The website of the award, if any. |
 | `customSections[].items[].website.url` | `string` | yes (type awards, schema awardItemSchema at customSections[]) | — | The URL to show as a link. Must be a valid URL with a protocol (http:// or https://). |
 | `customSections[].items[].website.label` | `string` | yes (type awards, schema awardItemSchema at customSections[]) | — | The label to display for the URL. Leave blank to display the URL as-is. |
@@ -529,9 +710,18 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `customSections[].items[]` | `object` | — (type certifications, schema certificationItemSchema at customSections[]) | — | — |
 | `customSections[].items[].id` | `string` | yes (type certifications, schema certificationItemSchema at customSections[]) | — | The unique identifier for the item. Usually generated as a UUID. |
 | `customSections[].items[].hidden` | `boolean` | yes (type certifications, schema certificationItemSchema at customSections[]) | — | Whether to hide the item from the resume. |
-| `customSections[].items[].title` | `string` | yes (type certifications, schema certificationItemSchema at customSections[]) | minLength: 1 | The title of the certification. |
+| `customSections[].items[].title` | `string` | yes (type certifications, schema certificationItemSchema at customSections[]) | — | The title of the certification. Empty while the entry is a draft, which isn't printed. |
 | `customSections[].items[].issuer` | `string` | yes (type certifications, schema certificationItemSchema at customSections[]) | — | The issuer of the certification. |
-| `customSections[].items[].date` | `string` | yes (type certifications, schema certificationItemSchema at customSections[]) | — | The date when the certification was received. |
+| `customSections[].items[].date` | `string` | yes (type certifications, schema certificationItemSchema at customSections[]) | — | The date when the certification was received, as text. Written from `dates` on every save; write `dates` instead. |
+| `customSections[].items[].dates` | `object` | no (type certifications, schema certificationItemSchema at customSections[]) | — | Structured dates. Write these rather than the legacy text field (`period` or `date`), which is kept in sync from them. |
+| `customSections[].items[].dates.start` | `string or null` | yes (type certifications, schema certificationItemSchema at customSections[]) | default: null | When it started, or the date itself for single-date entries (awards, certifications, publications). |
+| `customSections[].items[].dates.start` | `string` | yes (type certifications, schema certificationItemSchema at customSections[]; variant 1 at customSections[].items[].dates.start) | — | A year ("2022") or a year and month ("2022-03"). |
+| `customSections[].items[].dates.start` | `null` | yes (type certifications, schema certificationItemSchema at customSections[]; variant 2 at customSections[].items[].dates.start) | — | — |
+| `customSections[].items[].dates.end` | `string or null` | yes (type certifications, schema certificationItemSchema at customSections[]) | default: null | When it ended. Null while ongoing or for single dates. |
+| `customSections[].items[].dates.end` | `string` | yes (type certifications, schema certificationItemSchema at customSections[]; variant 1 at customSections[].items[].dates.end) | — | A year ("2022") or a year and month ("2022-03"). |
+| `customSections[].items[].dates.end` | `null` | yes (type certifications, schema certificationItemSchema at customSections[]; variant 2 at customSections[].items[].dates.end) | — | — |
+| `customSections[].items[].dates.present` | `boolean` | yes (type certifications, schema certificationItemSchema at customSections[]) | default: false | Whether it's ongoing, printed as 'Present'. |
+| `customSections[].items[].dates.raw` | `string` | no (type certifications, schema certificationItemSchema at customSections[]) | — | The original text when it couldn't be read exactly, such as 'Summer 2016'. It's printed as written until the dates are edited, which removes it. |
 | `customSections[].items[].website` | `object` | yes (type certifications, schema certificationItemSchema at customSections[]) | default: {"url":"","label":"","inlineLink":false} | The website of the certification, if any. |
 | `customSections[].items[].website.url` | `string` | yes (type certifications, schema certificationItemSchema at customSections[]) | — | The URL to show as a link. Must be a valid URL with a protocol (http:// or https://). |
 | `customSections[].items[].website.label` | `string` | yes (type certifications, schema certificationItemSchema at customSections[]) | — | The label to display for the URL. Leave blank to display the URL as-is. |
@@ -552,9 +742,18 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `customSections[].items[]` | `object` | — (type publications, schema publicationItemSchema at customSections[]) | — | — |
 | `customSections[].items[].id` | `string` | yes (type publications, schema publicationItemSchema at customSections[]) | — | The unique identifier for the item. Usually generated as a UUID. |
 | `customSections[].items[].hidden` | `boolean` | yes (type publications, schema publicationItemSchema at customSections[]) | — | Whether to hide the item from the resume. |
-| `customSections[].items[].title` | `string` | yes (type publications, schema publicationItemSchema at customSections[]) | minLength: 1 | The title of the publication. |
+| `customSections[].items[].title` | `string` | yes (type publications, schema publicationItemSchema at customSections[]) | — | The title of the publication. Empty while the entry is a draft, which isn't printed. |
 | `customSections[].items[].publisher` | `string` | yes (type publications, schema publicationItemSchema at customSections[]) | — | The publisher of the publication. |
-| `customSections[].items[].date` | `string` | yes (type publications, schema publicationItemSchema at customSections[]) | — | The date when the publication was published. |
+| `customSections[].items[].date` | `string` | yes (type publications, schema publicationItemSchema at customSections[]) | — | The date when the publication was published, as text. Written from `dates` on every save; write `dates` instead. |
+| `customSections[].items[].dates` | `object` | no (type publications, schema publicationItemSchema at customSections[]) | — | Structured dates. Write these rather than the legacy text field (`period` or `date`), which is kept in sync from them. |
+| `customSections[].items[].dates.start` | `string or null` | yes (type publications, schema publicationItemSchema at customSections[]) | default: null | When it started, or the date itself for single-date entries (awards, certifications, publications). |
+| `customSections[].items[].dates.start` | `string` | yes (type publications, schema publicationItemSchema at customSections[]; variant 1 at customSections[].items[].dates.start) | — | A year ("2022") or a year and month ("2022-03"). |
+| `customSections[].items[].dates.start` | `null` | yes (type publications, schema publicationItemSchema at customSections[]; variant 2 at customSections[].items[].dates.start) | — | — |
+| `customSections[].items[].dates.end` | `string or null` | yes (type publications, schema publicationItemSchema at customSections[]) | default: null | When it ended. Null while ongoing or for single dates. |
+| `customSections[].items[].dates.end` | `string` | yes (type publications, schema publicationItemSchema at customSections[]; variant 1 at customSections[].items[].dates.end) | — | A year ("2022") or a year and month ("2022-03"). |
+| `customSections[].items[].dates.end` | `null` | yes (type publications, schema publicationItemSchema at customSections[]; variant 2 at customSections[].items[].dates.end) | — | — |
+| `customSections[].items[].dates.present` | `boolean` | yes (type publications, schema publicationItemSchema at customSections[]) | default: false | Whether it's ongoing, printed as 'Present'. |
+| `customSections[].items[].dates.raw` | `string` | no (type publications, schema publicationItemSchema at customSections[]) | — | The original text when it couldn't be read exactly, such as 'Summer 2016'. It's printed as written until the dates are edited, which removes it. |
 | `customSections[].items[].website` | `object` | yes (type publications, schema publicationItemSchema at customSections[]) | default: {"url":"","label":"","inlineLink":false} | The link to the publication, if any. |
 | `customSections[].items[].website.url` | `string` | yes (type publications, schema publicationItemSchema at customSections[]) | — | The URL to show as a link. Must be a valid URL with a protocol (http:// or https://). |
 | `customSections[].items[].website.label` | `string` | yes (type publications, schema publicationItemSchema at customSections[]) | — | The label to display for the URL. Leave blank to display the URL as-is. |
@@ -575,9 +774,18 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `customSections[].items[]` | `object` | — (type volunteer, schema volunteerItemSchema at customSections[]) | — | — |
 | `customSections[].items[].id` | `string` | yes (type volunteer, schema volunteerItemSchema at customSections[]) | — | The unique identifier for the item. Usually generated as a UUID. |
 | `customSections[].items[].hidden` | `boolean` | yes (type volunteer, schema volunteerItemSchema at customSections[]) | — | Whether to hide the item from the resume. |
-| `customSections[].items[].organization` | `string` | yes (type volunteer, schema volunteerItemSchema at customSections[]) | minLength: 1 | The name of the organization or company. |
+| `customSections[].items[].organization` | `string` | yes (type volunteer, schema volunteerItemSchema at customSections[]) | — | The name of the organization or company. Empty while the entry is a draft, which isn't printed. |
 | `customSections[].items[].location` | `string` | yes (type volunteer, schema volunteerItemSchema at customSections[]) | — | The location of the organization or company. |
-| `customSections[].items[].period` | `string` | yes (type volunteer, schema volunteerItemSchema at customSections[]) | — | The period of time the author was volunteered at the organization or company. |
+| `customSections[].items[].period` | `string` | yes (type volunteer, schema volunteerItemSchema at customSections[]) | — | The period of time the author was volunteered at the organization or company, as text. Written from `dates` on every save; write `dates` instead. |
+| `customSections[].items[].dates` | `object` | no (type volunteer, schema volunteerItemSchema at customSections[]) | — | Structured dates. Write these rather than the legacy text field (`period` or `date`), which is kept in sync from them. |
+| `customSections[].items[].dates.start` | `string or null` | yes (type volunteer, schema volunteerItemSchema at customSections[]) | default: null | When it started, or the date itself for single-date entries (awards, certifications, publications). |
+| `customSections[].items[].dates.start` | `string` | yes (type volunteer, schema volunteerItemSchema at customSections[]; variant 1 at customSections[].items[].dates.start) | — | A year ("2022") or a year and month ("2022-03"). |
+| `customSections[].items[].dates.start` | `null` | yes (type volunteer, schema volunteerItemSchema at customSections[]; variant 2 at customSections[].items[].dates.start) | — | — |
+| `customSections[].items[].dates.end` | `string or null` | yes (type volunteer, schema volunteerItemSchema at customSections[]) | default: null | When it ended. Null while ongoing or for single dates. |
+| `customSections[].items[].dates.end` | `string` | yes (type volunteer, schema volunteerItemSchema at customSections[]; variant 1 at customSections[].items[].dates.end) | — | A year ("2022") or a year and month ("2022-03"). |
+| `customSections[].items[].dates.end` | `null` | yes (type volunteer, schema volunteerItemSchema at customSections[]; variant 2 at customSections[].items[].dates.end) | — | — |
+| `customSections[].items[].dates.present` | `boolean` | yes (type volunteer, schema volunteerItemSchema at customSections[]) | default: false | Whether it's ongoing, printed as 'Present'. |
+| `customSections[].items[].dates.raw` | `string` | no (type volunteer, schema volunteerItemSchema at customSections[]) | — | The original text when it couldn't be read exactly, such as 'Summer 2016'. It's printed as written until the dates are edited, which removes it. |
 | `customSections[].items[].website` | `object` | yes (type volunteer, schema volunteerItemSchema at customSections[]) | default: {"url":"","label":"","inlineLink":false} | The link to the organization or company, if any. |
 | `customSections[].items[].website.url` | `string` | yes (type volunteer, schema volunteerItemSchema at customSections[]) | — | The URL to show as a link. Must be a valid URL with a protocol (http:// or https://). |
 | `customSections[].items[].website.label` | `string` | yes (type volunteer, schema volunteerItemSchema at customSections[]) | — | The label to display for the URL. Leave blank to display the URL as-is. |
@@ -598,7 +806,7 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `customSections[].items[]` | `object` | — (type references, schema referenceItemSchema at customSections[]) | — | — |
 | `customSections[].items[].id` | `string` | yes (type references, schema referenceItemSchema at customSections[]) | — | The unique identifier for the item. Usually generated as a UUID. |
 | `customSections[].items[].hidden` | `boolean` | yes (type references, schema referenceItemSchema at customSections[]) | — | Whether to hide the item from the resume. |
-| `customSections[].items[].name` | `string` | yes (type references, schema referenceItemSchema at customSections[]) | minLength: 1 | The name of the reference, or a note such as 'Available upon request'. |
+| `customSections[].items[].name` | `string` | yes (type references, schema referenceItemSchema at customSections[]) | — | The name of the reference, or a note such as 'Available upon request'. Empty while the entry is a draft, which isn't printed. |
 | `customSections[].items[].position` | `string` | yes (type references, schema referenceItemSchema at customSections[]) | — | The position or job title of the reference. |
 | `customSections[].items[].website` | `object` | yes (type references, schema referenceItemSchema at customSections[]) | default: {"url":"","label":"","inlineLink":false} | The website or LinkedIn profile of the reference, if any. |
 | `customSections[].items[].website.url` | `string` | yes (type references, schema referenceItemSchema at customSections[]) | — | The URL to show as a link. Must be a valid URL with a protocol (http:// or https://). |
@@ -624,9 +832,10 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `customSections[].items[].recipient` | `string` | yes (type cover-letter, schema coverLetterItemSchema at customSections[]) | — | The recipient's address block as HTML (name, title, company, address, email). |
 | `customSections[].items[].content` | `string` | yes (type cover-letter, schema coverLetterItemSchema at customSections[]) | — | The cover letter body as HTML (salutation, paragraphs, closing, signature). |
 | `metadata` | `object` | yes | — | Metadata for the resume, such as template, layout, typography, etc. This section describes the overall design and appearance of the resume. |
-| `metadata.template` | `string` | yes | enum: ["azurill","bronzor","chikorita","ditgar","ditto","gengar","glalie","kakuna","lapras","leafish","meowth","onyx","pikachu","rhyhorn","scizor"]; default: "onyx" | The template to use for the resume. Determines the overall design and appearance of the resume. |
+| `metadata.template` | `string` | yes | enum: ["azurill","bronzor","chikorita","ditgar","ditto","gengar","glalie","kakuna","lapras","leafish","meowth","onyx","pikachu","porygon","rhyhorn","scizor","smeargle"]; default: "onyx" | The template to use for the resume. Determines the overall design and appearance of the resume. |
 | `metadata.layout` | `object` | yes | — | The layout of the resume. Determines the structure and arrangement of the sections on the resume. |
 | `metadata.layout.sidebarWidth` | `number` | yes | minimum: 10; maximum: 50; default: 35 | The width of the sidebar column, defined as a percentage of the page width. |
+| `metadata.layout.sidebarSide` | `string` | no | enum: ["left","right"] | Which side of the page the sidebar column sits on in two-column templates. When unset, each template uses its own side (and right-to-left resumes mirror it). |
 | `metadata.layout.pages` | `array` | yes | — | The pages to display in the layout. |
 | `metadata.layout.pages[]` | `object` | — | — | — |
 | `metadata.layout.pages[].fullWidth` | `boolean` | yes | — | Whether the layout of the page should be full width. If true, the main column will span the entire width of the page. This means that there should be no items in the sidebar column. |
@@ -641,6 +850,7 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `metadata.page.marginY` | `number` | yes | minimum: 0; maximum: 100; default: 12 | The vertical margin of the page, defined in points (pt). |
 | `metadata.page.format` | `string` | yes | enum: ["a4","letter","free-form"]; default: "a4" | The format of the page. Can be 'a4', 'letter', or 'free-form'. |
 | `metadata.page.locale` | `string` | yes | default: "en-US" | The locale of the page. Used for displaying pre-translated section headings, if not overridden. |
+| `metadata.page.dateFormat` | `string` | no | enum: ["short","long","numeric","iso"] | How dates print: 'short' (Mar 2022), 'long' (March 2022), 'numeric' (03/2022) or 'iso' (2022-03). When missing, it's read from how the dates were typed. |
 | `metadata.page.hideLinkUnderline` | `boolean` | yes | default: false | Whether to hide the underlines of the links. |
 | `metadata.page.hideIcons` | `boolean` | yes | default: false | Whether to hide the item-level icons (skills, profiles, interests). |
 | `metadata.page.hideSectionIcons` | `boolean` | yes | default: true | Whether to hide the section heading icons displayed before section titles. |
@@ -665,12 +875,17 @@ Choose one coherent shape for each union value. Required fields are local to tha
 | `metadata.typography.heading.fontWeights[]` | `string` | — | enum: ["100","200","300","400","500","600","700","800","900"] | — |
 | `metadata.typography.heading.fontSize` | `number` | yes | minimum: 6; maximum: 24; default: 11 | The size of the font to use, defined in points (pt). |
 | `metadata.typography.heading.lineHeight` | `number` | yes | minimum: 0.5; maximum: 4; default: 1.5 | The line height of the font to use, defined as a multiplier of the font size (e.g. 1.5 for 1.5x). |
-| `metadata.typography.hyphenation` | `boolean` | no | — | Enable automatic PDF hyphenation using the resume language. Currently supports German. Defaults to false. |
+| `metadata.typography.hyphenation` | `boolean` | no | — | Enable automatic PDF hyphenation using the resume language. Defaults to false. |
 | `metadata.notes` | `string` | yes | — | Personal notes for the resume. Can be used to add any additional information or instructions for the resume. These notes are not displayed on the resume, they are only visible to the author of the resume when editing the resume. This should be a HTML-formatted string. |
-| `metadata.styleRules` | `array` | yes | — | Structured style rules that target semantic resume sections and slots for React PDF rendering. |
+| `metadata.styleRules` | `array` | yes | — | Structured style rules that target semantic resume sections and slots for PDF rendering. |
 | `metadata.styleRules[]` | `any` | — | — | — |
 | `metadata.stylesheet` | `object` | no | — | — |
 | `metadata.stylesheet.mode` | `string` | yes | enum: ["legacy","semantic"] | — |
 | `metadata.stylesheet.source` | `object` | yes | — | — |
 | `metadata.stylesheet.source.languageVersion` | `integer` | yes | exclusiveMinimum: 0; maximum: 9007199254740991 | — |
 | `metadata.stylesheet.source.text` | `string` | yes | — | — |
+| `metadata.check` | `object` | no | — | The author's Check choices for this resume. Not printed; missing until a choice is made. |
+| `metadata.check.ignored` | `array` | yes | default: [] | Check issues the author chose to ignore, by issue key (the rule code and where it applies). |
+| `metadata.check.ignored[]` | `string` | — | — | — |
+| `metadata.check.hiddenTerms` | `array` | yes | default: [] | Job-posting terms the author hid from Job match as not true for them. |
+| `metadata.check.hiddenTerms[]` | `string` | — | — | — |

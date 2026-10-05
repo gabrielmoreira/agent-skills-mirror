@@ -75,9 +75,23 @@ whose repair could not run (section 3) reads the loop as filmed, and its failure
 repair did not run.
 
 RIFE reads three colour channels and no alpha. A frame is therefore interpolated as two
-images — its colour premultiplied over black, and its coverage as a grey image — and put back
-together unpremultiplied (`sprite_gen/video/rife.py`). Coverage below 2/255 is dropped, so no
-faint halo is invented around the body.
+images — its colour, and its coverage as a grey image — and put back together
+(`sprite_gen/video/rife.py`). Coverage below 2/255 is dropped, so no faint halo is invented
+around the body.
+
+The two images are two runs of the flow, and where the picture is hard to follow — two legs
+passing each other — they do not agree: the coverage says body where the colour run still
+carries what lay around the body. Until 2.24 the colour was premultiplied over black, so that
+disagreement came out as a black smear between the legs. The colour image now holds the
+body's own colour around the body (`rife.bleed`): the colour from 0.8 % of the body's height
+inside its solid edge — past a drawn outline — pushed out over the transparent area, coarse to
+fine. A disagreement then reads as the body's fill. Where the frame has coverage its colour is
+its own, outline included, and it is taken from the colour run as it comes out (no division by
+the coverage). A limb RIFE cannot follow at all still comes out pale and soft, never black;
+and where two drawings are too far apart for the flow — legs crossing a long way, as a clip
+drawn on twos gives between its drawings — the legs come out as one shape of fill with no
+outline between them or around them. `rife.smear` measures all three, and a set alignment takes
+the nearer source frame where a made frame melted (section 4).
 
 ### Where — measured 2026-10-03
 
@@ -246,8 +260,42 @@ same number of frames, starting on the same step.
 
 ```bash
 sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-walk/loop \
-  --loop-dir set/back-walk/loop [--length N] [--report set/walk.cycle-align.json]
+  --loop-dir set/back-walk/loop [--view front --view side@right --view back] [--start-foot right] \
+  [--between auto|rife|nearest] [--length N] [--cycles back-walk=2] [--multi-cycle fail|warn] \
+  [--state walk] [--report set/walk.cycle-align.json]
 ```
+
+- **Two cycles in one loop are stopped, and counted by whoever looks**: one length for the set is
+  one beat only if every loop holds one cycle. A loop that holds two strides, resampled to the
+  set's length, walks twice as fast as the rest, arms and legs alike — and pixels cannot tell it
+  from a loop of one stride whose two steps look alike ([video pipeline](video-pipeline.md)
+  section 4, "The fundamental period"). So before anything is resampled each loop is screened as a
+  ring (`align.cycle_screen`, the rule `video-loop` records by, `period.verdict`): a half or a
+  third of it that repeats and is no shorter than the state's gait floor makes the loop a
+  **suspect** — whatever its pose, which is recorded as evidence. A run set stops nearly every
+  time. The state is the one `video-loop` writes in
+  `strip.json` (`state`); `--state` gives it for loops cut before.
+  - A set with a suspect is **stopped before anything is rewritten** (`--multi-cycle fail`, the
+    default): the message and the report name each loop, where it returns (frames and seconds),
+    the evidence (`pose`, `steps`), the arguments that settle it, and the command to run once
+    they are counted (`command`: the same alignment with `--cycles <loop>=<1|2>` for each, to
+    fill in). With no vision call to ask, the agent looks at the loop's frames and gives the count. The report is written with
+    `applied: false`, `refused: "cycle-suspects"` and `suspects` (per loop: `dir`, `name`,
+    `length`, `status`, `candidates`, `settle`); `align.CycleSuspects` carries the same list.
+  - **`--cycles <loop>=k`** is the count that comes back (repeatable; `<loop>` is the
+    `--loop-dir`, its strip's name, its directory's name, or for a `video-set` item's `loop`
+    directory the item's name). `1`: it holds one cycle, aligned as it is. `2` or `3`: one cycle is
+    taken out of the loop as filmed (`cycle.source/`) — round(L/k) frames, from the start whose
+    frame one cycle on is the most like it, read as a ring (`align.take_cycle`) — and that is what
+    is resampled; the loop row records `cycles_given` and `cycle_taken` (`from`, `start`,
+    `length`, `exact`, `repeat_over_step`, `seam_ratio`). `video-loop` is not run again, and a
+    later alignment reads the same filmed frames. A count given where the screen found nothing at
+    1/k is still honoured, with a warning.
+  - Nothing else changes how many cycles a loop holds: without `--cycles` every loop is resampled
+    from all its filmed frames.
+  - `--multi-cycle warn` aligns a suspect set as it is, a warning per suspect.
+  - Who counts: a person looking at the loop, or a vision call asked how often each foot lands.
+    A loop counted once is not remembered — the next alignment needs the same `--cycles`.
 
 - **Length**: the median of the set's own lengths (`--length` overrides). The median is the
   length that needs the fewest made frames across the set; a loop already that long is not
@@ -256,14 +304,100 @@ sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-
   k·L/L*, cyclic. A time within 0.03 of a source frame takes that frame as filmed; only a time
   between two frames is made, by RIFE at that fraction (section 1). An offset of half a frame,
   which would remake every frame, is not offered (section 2).
-- **Foot strike**: each loop is then turned to start where the body is lowest (its solid top
-  line lowest, smoothed 1-2-1) — both feet down just after a heel lands. A walk has two such
-  moments; the first is taken.
+- **Between two source frames** (`--between`): `auto` (default) makes the frame with RIFE,
+  measures it (below) and keeps it unless it has a fault, where the nearer source frame is taken
+  instead and named; `rife` keeps every made frame and names the faulty ones; `nearest` takes the
+  nearer source frame every time, so nothing is made and no RIFE is needed, and the motion keeps
+  the filmed frames at up to half a frame off their time (a loop stretched longer shows a frame
+  twice, which the GIF and WebP hold as one frame of twice the delay). `video-set` passes
+  `--align-between`. `auto` runs RIFE for every frame between two source frames, as `rife` does,
+  and needs it installed the same way.
+- **Smear and melt, per made frame**: `cycle_align.smear` lists every frame RIFE made, with its
+  `method` — `rife` (kept) or `nearest` (the nearer source frame taken instead) — its `faults`,
+  and what it has that neither source frame beside it has (`rife.smear`):
+  - `dark_excess`: dark pixels (luma under 70/255) inside the body beyond the darker neighbour's
+    count, as a fraction of its solid pixels — a black smear raises it, a dark part that only
+    moved (a hat, a watch) does not. Over 0.1 % it is the fault `smear`.
+  - `outline_loss`: of the frame's coverage edge (alpha from 0.1, so a pale ghost limb's edge
+    counts), the share with no dark solid pixel within 2 px, beyond the less outlined
+    neighbour's, as a fraction of its edge. Legs that crossed too far for the flow melt into one
+    shape of fill and lose their outline where they meet the air; a limb left as a ghost has none.
+    Over 5 % it is the fault `outline`. A step the flow follows keeps its outline; a figure drawn
+    without outlines loses none against neighbours that have none, and is not judged by it.
+  - `partial_excess`: part-covered pixels beyond the more ragged neighbour's, as a fraction of
+    its solid pixels. Reported, not judged: a melted frame and a clean one read alike on it.
+
+  Every fault is a line in the report's `warnings` (and on stderr, and in `video-set`'s
+  `warnings`), whichever `--between`: under `auto` it says the nearer source frame was taken
+  there; under `rife` that the frame is kept, to look at in `cycle/`. The report counts the
+  frames kept from RIFE (`made_by_rife`) and those replaced (`replaced`); a loop row lists both
+  (`made_at`, `nearest_at`).
+
+  Why `outline_loss` and not the dark count's other side: a frame half way between two drawings
+  has fewer dark pixels than the darker one wherever the two differ — a watch half hidden, an
+  outline between overlapping legs — so a clean frame reads below zero too. On two outlined legs
+  (`tests/video/test_rife.py`) RIFE's clean frames of a short step read `dark_excess` −1.3 %,
+  lower than its melted frame of a long crossing (−1.1 %); `outline_loss` reads under 3 % for the
+  short step at every fraction and 32 % for the melted frame. The 5 % line is where a frame stops
+  reading as a little soft at a foot and starts reading as melted; it is a reference, not a
+  measured optimum, and frames near it are worth a look either way.
+- **What `auto` costs**: a frame replaced shows the nearer source frame, so the motion there
+  steps as filmed, up to half a frame off its time, and the loop shows fewer distinct drawings a
+  second than `rife` — but no melted one. A clip drawn on twos has a long step between drawings
+  everywhere, so it is replaced most; the frames that land on a small step stay RIFE's.
+- **Foot strike**: each loop is then turned to start as a heel lands (`align.foot_strike`), read
+  off one signal smoothed 1-2-1 — never off the frame's top edge, which a long ear, a hat's
+  point or an antenna owns and which flops on its own rhythm:
+  - `stride` — a side or diagonal walk: the width of the foot band (the lowest 8 % of the frame)
+    is widest as the front heel lands.
+  - `reach` — a front or back walk, whose feet pass one behind the other: the foot nearer the
+    viewer is drawn lowest, and lowest when the feet are furthest apart, so the lowest solid row is.
+  - `body_low` — a body with no legs to read: its top line lowest, the top line being the first
+    row whose longest solid run is at least half the frame's widest, so a narrow ear or antenna is
+    passed over.
+
+  With a view (`--view`, below) the view picks the signal, and the swings only say whether there
+  are legs to read: a side or diagonal view turns on `stride` where the foot band swings by 15 %
+  of the body's height or the lowest row by 1.5 %; a front or back view turns on `reach` where the
+  lowest row swings by 1.5 %. A short-legged figure's swings mislead a threshold either way: from
+  the front its foot band widens past 15 % as the foot behind lifts out of the band, mid-step, and
+  from the side a short step opens the feet by less than 15 %. Without a view the picture alone
+  says: `stride` where the foot band swings by 15 % or more, else `reach` where the lowest row
+  swings by 1.5 %, else `body_low` (and the report says no view was given). A loop with a view and
+  no legs to read has `foot_why` with both swings.
+
+  A body that hardly bobs still turns on its legs; the body's bob is read only where there are
+  no legs. The loop row says which (`turned_on`) and the two swings (`stride_swing`,
+  `reach_swing`).
+- **The same foot in every view** (`--view`, one per `--loop-dir` in order: `front`, `back`, or
+  `side|front_diagonal|back_diagonal@right|left` for the way it faces; `video-set` passes each
+  item's own): a walk lands twice a cycle, half a cycle apart. Each loop starts as the same own
+  foot lands (`--start-foot`, default right), told apart by how the view draws the feet
+  (`align.strike_foot`; which own side is where is `handedness.placement`):
+  - front or back (`depth`): the feet are side by side in the picture, the one nearer the viewer
+    drawn lower. From the front the landing foot is the one stepping toward the viewer, the
+    lower; from the back it is the one stepping away, the higher.
+  - side or diagonal (`shade`): the feet are one in front of the other, so the picture cannot
+    place them, but the far leg is drawn in shade. At the strike where the front foot is the
+    lighter against the back one, the near leg is in front.
+
+  The cue must follow the step — its once-a-cycle swing (first harmonic) at least a quarter of
+  its spread over the cycle, or it is the drawing's own flicker — and, averaged over each strike
+  frame and its two neighbours, the two strikes must differ by 0.015 in luma (shade) or 1 % of
+  the body's height (depth); otherwise the foot is not named. A view seen from behind a diagonal
+  can shade its legs too evenly for this, and is then left unnamed rather than guessed. A loop row carries `view`, `start_foot` and `foot` (the cue, the strikes, their values,
+  the margin, the feet); a loop whose foot is not named starts on its larger strike with
+  `start_foot: null` and `foot_why`, and the report's `warnings` say so — a set whose loops do
+  not all name their foot may not start on one foot. Without `--view` no foot is named and the
+  report says that once. A character drawn without shading on the far leg leaves its side and
+  diagonal views unnamed; mirroring a loop afterwards (a left view made from a right one) swaps
+  its own feet.
 - **Rebuilt in place**: `cycle/`, `<name>.strip.png` / `.strip.json`, `.gif`, `.webp` are
   rewritten at the loop's own cell rules (`cell_height_cap`, body-height target, anchor), at the
   loop's frame rate, so the aligned cycle lasts L*/fps seconds. `strip.json` gains
-  `cycle_align` (`from`, `to`, `taken`, `made_by_rife`, `made_at`, `turned_by`, the seam ratio of
-  the rebuilt cells, and the re-verified GIF/WebP).
+  `cycle_align` (`from`, `to`, `between`, `taken`, `made_by_rife`, `made_at`, `smear` and/or
+  `nearest_at`, `turned_by`, `turned_on`, `view`, `start_foot`, the seam ratio of the rebuilt
+  cells, and the re-verified GIF/WebP).
 - **The cut as filmed is kept** in `cycle.source/` on the first alignment, and every later
   alignment reads from there: running it again, or at another length, never resamples a
   resampled loop. Every loop of the set is resampled before any is rewritten, so a loop that
@@ -276,8 +410,12 @@ directions (`--align-cycles auto`, default; `off` keeps each loop's own length).
 carries `cycle_align` per state and `<state>.cycle-align.json`; a failed alignment is listed as
 `cycle-align:<state>` and the loops stay as cut. Without RIFE the alignment is skipped, not
 failed (section 1, "Without RIFE"); install it and run `video-cycle-align` on the set's loops.
+A set stopped on a suspect is skipped the same way (`reason: "cycle-suspects"`, the loops under
+`suspects`, a warning naming them): count their cycles and run `video-cycle-align --cycles`.
 Cutting a loop again with `video-loop` removes its `cycle.source/`, so the next alignment reads
-the new cut.
+the new cut. An alignment also clears a follow-through (`video-follow`, which moved the old
+cells): `follow.source.png` and the strip's `follow` record are removed and the loop's row says
+`follow_cleared`; run `video-follow` again after it.
 
 How much RIFE that is, on the 2026-10-03 sets (the experiment's `finalize.py`): resampling to
 the median made 18 of 21 frames for a Lite side loop of 27, 20 of 21 for a back-diagonal loop of

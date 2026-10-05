@@ -177,7 +177,7 @@ Use this section to locate a broken runtime boundary in an existing harness. It 
 
 ### Lifecycle, recovery, and concurrency
 
-Apply the rows about workers and durable queues only to runtimes that use those features. Their state model remains in [workflow resume behavior](workflow-orchestration.md#state-and-resume-behavior) and [resident lifecycle](self-refining-recursive-harnesses.md#resident-lifecycle-and-scheduled-wakeups).
+Apply the rows about workers and durable queues only to runtimes that use those features. Their state model remains in [workflow resume behavior](workflow-orchestration.md#state-and-resume-behavior) and [always-on runtime](always-on-agents.md#resident-ownership-and-scheduled-wakeups).
 
 | Symptom | Inspect first | Discriminating probe and useful evidence |
 |---|---|---|

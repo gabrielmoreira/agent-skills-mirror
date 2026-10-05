@@ -108,6 +108,8 @@ goal_update
 skill_invocation
 memory_load
 context_compaction
+instruction_configuration_changed
+tool_configuration_changed
 connector_call
 workflow_plan
 workflow_packet_started
@@ -119,6 +121,32 @@ final_answer
 ```
 
 Typed events improve replay, audit, compaction, evals, and debugging.
+
+### Runtime instruction and tool configuration events
+
+An advanced harness may change scoped instructions or visible tool declarations during a conversation without rewriting its earlier history. Keep this post-MVP: begin with a fixed instruction/tool bundle, then add ordered configuration events when changing task scope or loadouts makes them useful. This section owns their state and replay contract; the [instruction hierarchy](system-prompts-instructions.md#instruction-hierarchy) and [tool policy](tools-and-permissions.md) still determine authority.
+
+Use typed operations against identified instruction sections and tool declarations rather than treating arbitrary conversation text as configuration. A transaction should identify the branch, event/request identity, originating authority, expected configuration version, ordered operations, effective boundary, and resulting version. Instruction operations may add or replace a named section, remove it, or change its order; tool operations may add, update, or remove a declaration by stable identity and schema/version. State the semantics of absent sections, conflicting versions, duplicate identities, and repeated requests. Preserve section authority labels and explicit ordering; a new user or tool message cannot become a higher-priority instruction because of its position.
+
+The host validates authority, operations, identities, and dependencies before committing the transaction. Commit the event and effective configuration version atomically at a request boundary, so each model call uses one complete instruction/tool snapshot. Reject malformed, stale, unauthorized, or incompatible updates with a structured outcome; an idempotent repeat returns the original outcome, while the same identity with a different payload conflicts. An update arriving during generation is queued for a declared later boundary or triggers an explicit cancel-and-restart policy. Do not alter a request already in flight or expose half a transaction.
+
+#### Declarations and executable loadouts
+
+A visible schema describes a capability; it does not install an implementation, bind credentials, or authorize execution. Keep the host's executable loadout and permission state separate from model-visible declarations. Before exposing a tool, resolve its stable identity to an installed, compatible implementation and approved scope through the existing [tool contracts](tools-and-permissions.md#tool-schema-rules) or [environment-adaptive binding lifecycle](environment-adaptive-tools.md). Every physical call still uses current host policy.
+
+Removing a declaration removes it from the effective tool set for later requests. Define whether the same transaction also revokes its binding or execution eligibility. A proposal made under an older snapshot must be checked against current policy before execution; an already executing call follows the declared cancellation/reconciliation policy and receives its terminal result. Removal does not erase earlier calls, results, receipts, or audit evidence. Configuration cleanup and content deletion are distinct operations governed by their existing retention policies.
+
+#### Branch replay and provider projection
+
+Build effective configuration by replaying authorized events in branch order from a trusted initial snapshot. Preserve event identities, versions, section order, and implementation references in checkpoints. A fork inherits configuration only through its selected ancestor; sibling events and later changes do not leak into it. Replay reconstructs declarations and intended state, not live credentials, executable bindings, or approvals: revalidate those through their canonical owners before using them.
+
+Compaction must carry the current effective configuration and its provenance/version independently of conversational summary, together with any configuration delta needed for retained history. A checkpoint records the exact event boundary it covers; reject missing or inconsistent predecessor versions instead of silently falling back to a stale bundle. Follow [context preservation and rehydration](context-memory-compaction.md#rehydration-after-compaction) for the rest of active state.
+
+The adapter may project configuration events into a provider's native ordered-update representation when that API supports and preserves their semantics. Otherwise checkpoint the effective configuration and start a request with the required complete system/tool bundle and compatible selected history, or stop if the provider cannot represent it safely. Record this projection boundary and any provider state-chain reset; appending a lower-authority text message is not an equivalent substitute for a trusted instruction update. Use [provider adapters and state strategies](provider-api-patterns.md#api-adapter-layer) for format and continuation handling, and [per-request routing](agentic-loop.md#per-request-model-routing) before changing destinations.
+
+Active removal does not guarantee that former instruction text or tool definitions are absent from future provider payloads: native updates may retain them in historical messages. When payload exclusion is required, rebuild a compatible checkpoint and selected history, verify the actual serialized payload, and account for lost prefix reuse. Keep required audit history under its separate retention policy.
+
+Record the configuration version actually used by each physical request. Compare native updates and checkpoint fallback for semantic parity and failure recovery using [evals](evals.md); prefix continuity and cache hit rate are separate measurements owned by [prompt caching](prompt-caching-and-cost.md). An append-only event log alone does not prove a provider preserves the earlier request prefix.
 
 ## Durable state outside the prompt
 
@@ -167,6 +195,10 @@ Can execute low-risk actions autonomously within strict scopes, budgets, and aud
 Can continue across multiple turns or sessions toward a measurable objective. Requires durable state, compaction, budget enforcement, checkpoints, and evaluation.
 
 Move up levels only when evals show the simpler level is insufficient.
+
+## Always-on agents and durable runtime
+
+Always-on describes a service that remains available to accept events and resume bounded work, even while inference is idle. Durability describes which accepted inputs, state changes, and outcomes survive specified failures. Neither determines an autonomy level, requires continuously running inference, or implies recursion, self-refinement, or high availability. Use [Always-on Agents and Durable Runtime](always-on-agents.md#taxonomy-and-boundaries) for the post-MVP acceptance, local-commit, task-ownership, application-state, observation, and resident-recovery contracts; keep the simpler request-scoped or resumable baseline first.
 
 ## Minimal viable harness
 

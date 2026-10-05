@@ -150,6 +150,24 @@ Compare candidate models and effort settings against the same quality floor and 
 
 Measure cost per successful task with failed attempts included in total cost, time to first useful rendered output, full-task latency, and tail percentiles as well as medians. Weight results by observed traffic where available and report difficult-task failures separately. Faster tokens or a cheaper call do not imply faster or cheaper completion. Use [prompt caching and cost](prompt-caching-and-cost.md) for cache measurements and stable-prefix design.
 
+## Routing, configuration, and warming evals
+
+Use the contracts in [per-request routing](agentic-loop.md#per-request-model-routing), [configuration events](architecture.md#runtime-instruction-and-tool-configuration-events), and [economic warming](prompt-caching-and-cost.md#economic-cache-warming). Establish fixed-model and no-warming baselines before enabling these post-MVP optimizations. Keep task outcomes and host controls matched; use [model/configuration sweeps](#model-and-configuration-sweeps) for completion economics rather than judging isolated cheap calls.
+
+| Fixture | Required evidence |
+|---|---|
+| Route to a smaller window or incompatible modality/protocol | Capacity and compatibility are checked against the resolved destination before dispatch; compaction/conversion, a declared fallback, or a visible error follows policy without silent content loss. |
+| Tool continuation, provider failure, classifier failure, and retry | Selected/dispatched identities remain distinct; continuation stickiness follows the declared policy; failed attempts and pending tool results retain correct attribution and pairing. |
+| Fork, restore, concurrent state proposal, failed dispatch, and direct summary request | Branch-state inheritance, expected-version rejection, pre/post-dispatch commit timing, and direct-call state behavior match the contract; recovery cannot invent a successful transition. |
+| Cross-provider route with opaque replay data and caller credentials | The adapter handles or rejects replay incompatibility explicitly; credentials resolve for the authorized destination without forwarding source-provider secrets or changing tool authority. |
+| Instruction section/tool add, change, remove, and supported full checkpoint | Native projection and collapsed-checkpoint projection reconstruct the intended effective state; unsupported operations are rejected or use an explicit fallback. |
+| Revoked tool, stale branch, reordered delta, and compaction during a change | Current host policy denies revoked execution; version/order checks prevent stale configuration; rehydration preserves effective state and authority labels. Inspect payloads separately when old text must be excluded. |
+| Known/unknown TTL, low reuse, changed reasoning/output limit, and expired cache | Eligibility and the economic gate distinguish safe refreshes from unproven replay; expired or incompatible requests do not masquerade as cheap hits. |
+| Delayed timer, new real turn, model/configuration change, cancellation, and late completion | Obsolete refreshes are not dispatched or adopted; real work has priority; abort requests, confirmations, completed work, and ambiguous billing remain distinguishable. |
+| Long idle session, repeated refreshes, failures, and abandoned task | Total costs include routing/classification, warming, retries, compaction, and failed/unknown work. Report realized cache reads, refresh waste, completed-task latency, and quality; scheduled warming and estimated savings are not measured savings. |
+
+Payload-shape tests establish adapter construction, not provider cache reuse or model compliance. Combine them with host-policy probes and measured provider usage when making behavioral or economic claims.
+
 ## Speculative tool execution evals
 
 Compare three execution modes with the same model, instructions, tool implementations, permissions, and task set:
@@ -333,6 +351,27 @@ Use controlled interleavings and restorable fixtures for these probes:
 Measure task quality, validated coverage, false-success rate, cost to reach acceptance including failed approaches, elapsed time, unresolved/failure rate, and human intervention. Also measure unintended overlapping work separately from declared replication, coordination/message cost, allocation churn, stale-decision rejection, stale-result adoption, and independence-policy violations. Use runtime records for ownership, transitions, authority, and accounting; a model judge's interpretation of an approach is not evidence that these controls held.
 
 Launch only when the profile improves a declared outcome over the simpler baselines at the required quality floor and within the resource envelope. Authority, ownership, accounting, stale-state, and independent-acceptance probes must have no unresolved control failures; report the trials and observed failures rather than treating a passing suite as universal proof. Keep adaptive allocation disabled when it cannot justify its overhead or when these invariants regress. Acceptance still follows the parent goal and validation policy, not team consensus, scale, or inactivity.
+
+## Always-on and durable runtime evals
+
+Use [always-on agents](always-on-agents.md) for runtime contracts and [concurrent compaction publication](context-memory-compaction.md#concurrent-compaction-publication) for summary placement. Compare a durable single worker with the request-scoped baseline before adding background work or takeover. Keep model, tasks, authority, and resource limits matched; measure accepted-work loss/duplication, recovery time, unresolved effects, false completion, observer lag/gaps, resource growth, and completed-task cost.
+
+| Probe | Required observed result |
+|---|---|
+| Disconnect after admission; retry the same ID, then change its payload | One accepted intent/receipt under the declared conflict and retention policy; admission is not scored as an answer or exactly-once effect. |
+| Busy steering/follow-up/write; withdrawal before and after placement; run failure | Declared ordering and boundary apply; control remains usable; recovery exposes every queued/placed/withdrawn disposition. |
+| Reject storage; lose acknowledgement; fail adoption after commit | Rejection has no partial effect; uncertain state seals mutations and reconciles on reopen; no uncommitted view is published. |
+| Crash before intent, after external acceptance, and before outcome commit | Recorded and current replay policies govern recovery; unknown effects reconcile without blind writes or fabricated success. |
+| Missing/reloaded definition; old/new checkpoint version; migration failure | Compatible work resumes with provenance; incompatible work stays blocked or takes an explicit orphan disposition without invented cleanup. |
+| Owner returns a result with a live foreground child; child fails during fail-fast | Terminal receipt waits for required owned work; held result is not scored as settled completion; parent outcome follows declared policy. |
+| Cancel wait/task/conversation/full background set; noncooperative tool; close/reopen | Each lifetime boundary is observed; abort intent fences later runtime writes; compensation/unknown effects remain distinct from marking; close preserves recoverable work. |
+| Fork inside a multi-entry commit with historical/current/fresh documents | Declared transaction granularity and policies hold; independent incarnations and stored versions survive; task state/current authority are not copied accidentally. |
+| Snapshot attachment races a commit; observer stalls or reconnects after a gap | No acquisition gap; bounded count/bytes; snapshot convergence or retained replay matches the promise; no lossless-audit claim from coalesced views. |
+| Retire/recreate a document; stop with a callback already running | Old incarnation does not follow recreation; active-callback stop/join policy and terminal delivery are explicit. |
+| Concurrent summaries finish out of order; new tail/reset/edit appears; crash around submission/placement | Valid cut wins under the declared equal-cut policy; no tail/configuration loss or duplicate placement; stale/unknown cost remains accounted for. |
+| Process kill and declared host/power failures; takeover with stale writer; duplicate/late wakeup | Recovery matches the storage failure class; fencing holds before takeover; wakeup admission rechecks authority and budgets; acknowledgement does not overstate durability. |
+
+Use controlled interleavings and actual reopened storage, recording source/runtime/storage revisions and failure injection boundaries. Process-crash probes do not substitute for host/power-loss tests, and adapter conformance does not establish distributed ownership. Gate unattended rollout on no unresolved admission, authority, publication, ownership, or false-completion failures in the declared trials; suspend background/takeover features when they cannot justify their complexity.
 
 ## Self-refinement evals
 

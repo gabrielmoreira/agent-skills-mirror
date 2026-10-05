@@ -21,6 +21,10 @@ request remains 3 seconds; it does not determine the playback speed.
   when it fits the window and passes the periodicity gate. Keeping two real repetitions
   is preferable to discarding a potentially distinct phase. This may produce a two-cycle
   loop of a genuine short gait; frames keep their original timing.
+- Nothing is cut shorter than the period found. A half or a third of it that repeats is
+  recorded as a suspect (`cycle.fundamental.suspects`); look at
+  whether the loop shows one stride or two, and tell `video-cycle-align` with `--cycles`
+  ([loop repair](loop-repair.md) section 4).
 - Near-exact short repeats, implausible longer repeats, and non-gait states are not
   extended by that ambiguity policy. There is no character-specific frame count.
 - Alpha, frame counts and seam metrics are checked before the output is accepted.
@@ -94,13 +98,20 @@ fallback below looks past the state's window, and only after this search found n
 ### The gait fallback: a slow walk, or a walk toward the camera
 
 When the local search finds no cycle, `motion-auto` looks once more, for two things a
-front or back gait does that the first search cannot see past:
+front or back gait does that the first search cannot see past. (Since 2.24.0 a clip that changes
+size by 1 % or more, read one cycle on, is held at its first frame's size before the first
+search — [video-pipeline.md](video-pipeline.md) section 4, `size_hold` — so the fallback below
+seldom finds anything left to scale back unless `--size-hold off` was passed. It still reads the
+line through the clip, so a clip the hold left as filmed, whose line reads 3 % or more, is scaled
+back here if the first search found no cycle.)
 
 - **It walked toward the camera, or away from it.** Asked to walk in place, a front walk
   sometimes comes closer, and the body grows through the clip, so the same pose never matches
   itself in size. A straight-line fit of the subject's opaque height measures it; at 3 % or
   more over the clip (`SCALE_DRIFT_MIN`) every frame is scaled back to the first frame's fitted
-  height about its fitted foot point, premultiplied so the soft edge keeps its colour. The
+  height about its fitted foot point, with its coverage and its colour mapped apart
+  (`transform_cell`, [video-pipeline.md](video-pipeline.md) "Cells") so the soft edge keeps its
+  colour and gets no lighter rim or key tint from the resample. The
   search, the cells and the seam gate then all read the scaled-back frames. On the walk clips
   we have kept, the median change is 0.5 % and nine in ten stay under 2.7 %.
 - **It walked slowly.** A calm walk in long clothing can take longer than half the clip per

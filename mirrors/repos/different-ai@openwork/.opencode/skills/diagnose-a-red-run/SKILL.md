@@ -43,6 +43,16 @@ git worktree remove /tmp/openwork-dev-control
 - Teardown `403 fresh_auth_required`: the session aged; a `freshSession` retry
   exists.
 
+## Red core journey (`pr-proof.yml` "Core journey")
+
+- Open the job summary's "Freestyle world" table first: it names the path
+  (reused, fast, full build) and its reason.
+- World preparation failed: read the "builder log" group in the job log; it is
+  the VM's own build or boot output. A fast path that fails falls back to a full
+  build by itself, so a red here is a real build or boot failure.
+- Journey failed: the timeout prints the on-screen state. Reproduce with the
+  `run-tests` core journey command on the same pushed commit.
+
 ## Environment forensics
 
 - Kill by port, not process name. `tsx watch` can orphan its Node child, which

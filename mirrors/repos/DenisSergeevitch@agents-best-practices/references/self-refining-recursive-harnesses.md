@@ -12,6 +12,7 @@ This reference owns only the composition-specific contracts. Reuse the existing 
 
 | Concern | Source of truth |
 |---|---|
+| always-on admission, durable tasks/documents, resident ownership, and observation | [always-on-agents.md](always-on-agents.md) |
 | goals, checkpoints, and done conditions | [planning-and-goals.md](planning-and-goals.md) |
 | prompt context, memory, compaction, and rehydration | [context-memory-compaction.md](context-memory-compaction.md) |
 | planned packets, worker verification, and integration | [workflow-orchestration.md](workflow-orchestration.md) |
@@ -374,51 +375,7 @@ Treat retrieved pages, messages, artifacts, tool output, child output, and exist
 
 ## Resident lifecycle and scheduled wakeups
 
-A resident harness separates client connectivity from session execution. The supervisor owns discovery, leases, recovery, and routing; a session worker owns one live action loop, program environment, and child set. Disconnecting the client does not imply completion, and a live process does not imply that a session still has authority to run.
-
-### Session lease
-
-Use a renewable lease or fencing token so only one worker commits state for a session generation. On takeover, the new worker obtains a higher generation, reconciles durable state, and causes stale workers to fail closed on their next write.
-
-Persist:
-
-```text
-session status and generation
-worker lease and liveness
-last committed event cursor
-program snapshot reference and omissions
-active goal and budgets
-child registry and message cursors
-pending approvals
-scheduled wakeups
-last recovery result
-```
-
-On worker failure, mark in-flight host calls unknown until their idempotency records are reconciled. Never blindly replay an external write. Expire or adopt orphaned children according to policy, and invalidate capabilities that cannot be safely rebound.
-
-### Scheduled wakeup
-
-A schedule is a host-owned request for the session to reconsider its durable goal at a bounded time. It is not permission to continue indefinitely.
-
-Minimal wakeup record:
-
-```yaml
-schedule_id: "..."
-session_id: "..."
-due_at: "..."
-reason: "..."
-input_refs: []
-policy_snapshot_ref: "..."
-idempotency_key: "..."
-misfire_policy: "skip | run_once | reschedule"
-max_runs: 1
-budget: {}
-status: "pending | claimed | completed | skipped | failed | cancelled"
-```
-
-On wakeup, the host rechecks current policy, approvals, goal state, deadline, budgets, and source freshness before starting a turn. Coalesce duplicate wakeups, fence concurrent claims, and record whether a late wakeup was run, skipped, or rescheduled. A heartbeat is only a liveness or reconsideration signal; it does not itself prove progress or authorize a side effect.
-
-Use the stopping and checkpoint contracts in [planning-and-goals.md](planning-and-goals.md). Cancel schedules when the goal completes, authority expires, the user revokes the task, or repeated wakeups make no measurable progress.
+Generic resident ownership, recovery fencing, and bounded scheduled wakeups are canonical in [always-on agents](always-on-agents.md#resident-ownership-and-scheduled-wakeups). Apply that runtime to the program environment and child registry described here; always-on operation alone does not require recursion or self-refinement.
 
 ## Safe build sequence
 

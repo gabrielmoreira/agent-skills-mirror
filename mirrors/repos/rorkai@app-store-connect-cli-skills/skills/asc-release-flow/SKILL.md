@@ -72,7 +72,7 @@ asc release stage \
   --app "APP_ID" \
   --version "1.2.3" \
   --build-id "BUILD_ID" \
-  --metadata-dir "./metadata/version/1.2.3" \
+  --metadata-dir "./metadata" \
   --dry-run \
   --output table
 ```
@@ -84,11 +84,11 @@ asc release stage \
   --app "APP_ID" \
   --version "1.2.3" \
   --build-id "BUILD_ID" \
-  --metadata-dir "./metadata/version/1.2.3" \
+  --metadata-dir "./metadata" \
   --confirm
 ```
 
-Use `--copy-metadata-from "1.2.2"` instead of `--metadata-dir` when carrying localization metadata forward. Add `--strict-validate` when warnings should fail the stage.
+`--metadata-dir` takes the canonical metadata root that contains `app-info/` and `version/<version>/`, the same layout as `asc metadata push --dir`. Use `--copy-metadata-from "1.2.2"` instead of `--metadata-dir` when carrying localization metadata forward. Add `--strict-validate` when warnings should fail the stage.
 
 If the metadata plan contains deletes, the dry run and confirmed run both require `--allow-deletes`. Review those deletes first; the flag also disables fallback to an existing locale when that locale is absent locally.
 
@@ -105,7 +105,7 @@ asc review submit --app "APP_ID" --version "1.2.3" --build-id "BUILD_ID" --dry-r
 asc review submit --app "APP_ID" --version "1.2.3" --build-id "BUILD_ID" --confirm
 ```
 
-Use `--version-id "VERSION_ID"` instead of `--version` when the exact version ID is known. `--build-id` is always required and must identify the intended build.
+Use `--version-id "VERSION_ID"` instead of `--version` when the exact version ID is known. Select the build with `--build-id`, or with `--build-number "45"` to skip the build-ID lookup; it matches only builds of that app, version string, and platform. Right after an upload, prefer `--build-number` over `--latest`, which can still pick the previous upload. Add `--wait` to wait for processing before attaching.
 
 ## Upload or build, then publish
 

@@ -133,13 +133,13 @@ nix develop  # 或使用 direnv
 { inputs, pkgs, ... }:
 
 let
-  peonCursorAdapterPath = "${inputs.peon-ping.packages.${pkgs.system}.default}/share/peon-ping/adapters/cursor.sh";
+  peonCursorAdapterPath = "${inputs.peon-ping.packages.${pkgs.stdenv.hostPlatform.system}.default}/share/peon-ping/adapters/cursor.sh";
 in {
   imports = [ inputs.peon-ping.homeManagerModules.default ];
 
   programs.peon-ping = {
     enable = true;
-    package = inputs.peon-ping.packages.${pkgs.system}.default;
+    package = inputs.peon-ping.packages.${pkgs.stdenv.hostPlatform.system}.default;
     claudeCodeIntegration = true;
 
     settings = {
@@ -209,7 +209,7 @@ in {
 
 **其他 IDE 钩子**：为避免覆盖与 peon-ping 无关的 IDE 设置，其他 IDE 的钩子仍然是可选的。peon-ping 在 [`adapters/`](https://github.com/PeonPing/peon-ping/tree/main/adapters) 下提供如 `cursor.sh` 之类的适配器脚本，你可以这样接入：
   ```sh
-  ${inputs.peon-ping.packages.${pkgs.system}.default}/share/peon-ping/adapters/$YOUR_IDE.sh EVENT_NAME
+  ${inputs.peon-ping.packages.${pkgs.stdenv.hostPlatform.system}.default}/share/peon-ping/adapters/$YOUR_IDE.sh EVENT_NAME
   ```
   参见上方 Cursor 示例。
 
@@ -372,12 +372,13 @@ peon-ping 有三个独立的控制开关，可以混合使用：
 - **suppress_idle_prompt_repeats**（布尔值，默认：`true`）：当终端未聚焦时，Claude Code 会每 ~60 秒重复触发 `idle_prompt` 通知。peon-ping 把 `idle_prompt` 路由到 `task.complete`，让你仍能在需要输入时听到提示——但若不去重，同一个声音会随每次提醒重复播放。当为 `true` 时，如果同一会话已在 `idle_prompt_suppress_window_seconds` 窗口内触发过 `task.complete`，则抑制此次 `idle_prompt`。设为 `false` 可恢复周期性提醒。
 - **idle_prompt_suppress_window_seconds**（数字，默认：`3600`）：`suppress_idle_prompt_repeats` 使用的窗口长度。在某会话播放过 `task.complete` 之后的这么多秒内，该会话后续的 `idle_prompt` 通知保持静默。设为 `0` 可禁用窗口（等同于 `suppress_idle_prompt_repeats: false`）。
 - **suppress_subagent_complete**（布尔值，默认：`false`）：抑制子 Agent 活动产生的声音和通知。当 Claude Code 的 Task 工具并行派发多个子 Agent 时，每个子 Agent 都会触发自己的事件：完成时的提示音、Bash 命令失败时的 `task.error`、权限请求时的 `input.required`。将此选项设为 `true`，则只播放父会话的声音。来自子 Agent 内部的事件通过 Claude Code 在 hook 负载中添加的 `agent_id` 字段识别；独立会话的子 Agent（旧版客户端、其他 IDE）仍通过 SubagentStart 时间窗口启发式识别。
+- **subagent_input_required**（布尔值，默认：`false`）：仅在 `suppress_subagent_complete: true` 时有意义。Claude Code 会把子 Agent 的权限请求（以及 MCP elicitation 对话框）转交到父会话由你处理，子 Agent 会一直阻塞直到你回应。设为 `true` 后，这些提示仍会播放 `input.required` 声音并显示通知，而其他所有子 Agent 事件保持静音。
 - **default_pack**：当没有更具体的规则时使用的备选语音包（默认：`"peon"`）。取代旧的 `active_pack` 键——现有配置在 `peon update` 时自动迁移。
 - **path_rules**：`{ "pattern": "...", "pack": "..." }` 对象数组。根据工作目录使用通配符匹配（`*`、`?`）为会话分配语音包。第一个匹配规则生效，优先级高于 `pack_rotation` 和 `default_pack`，但低于 `session_override` 分配。
 - **exclude_dirs**：glob 或目录模式数组。如果当前工作目录匹配其中一项，**所有声音和通知都会被静音**（钩子日志记录 `suppressed=True reason=excluded_dir pattern=<匹配项>`）。纯目录路径也会匹配其所有子目录，所以 `"~/conductor/workspaces"` 会让整棵目录树都保持静默。适用于后台代理（如 `CodexBar/ClaudeProbe`）、临时目录或不希望发出声音的工作区。
 - **ide_rules**：`{ "ide": "...", "pack": "..." }` 对象数组。在 `path_rules` 之后、轮换与默认包之前按 IDE/source 指定语音包。第一个匹配规则生效。常见 id：`claude`、`codex`、`cursor`、`opencode`、`kilo`、`kiro`、`gemini`、`copilot`、`windsurf`、`kimi`、`antigravity`、`amp`、`deepagents`、`openclaw`、`rovodev`。
 - **pack_rotation**：语音包名称数组（例如 `["peon", "sc_kerrigan", "peasant"]`）。用于 `pack_rotation_mode` 为 `random` 或 `round-robin` 时。留空 `[]` 则仅使用 `default_pack`（或 `path_rules` / `ide_rules`）。
-- **pack_rotation_mode**：`"random"`（默认）、`"round-robin"` 或 `"session_override"`。使用 `random`/`round-robin` 时，每个会话从 `pack_rotation` 中选择一个语音包。使用 `session_override` 时，`/peon-ping-use <pack>` 命令为每个会话分配语音包。无效或缺失的语音包会按层级回退。（`"agentskill"` 作为 `"session_override"` 的旧别名仍被接受。）
+- **pack_rotation_mode**：`"random"`（默认）、`"round-robin"` 或 `"session_override"`。使用 `random`/`round-robin` 时，即使同一目录中有其他活跃会话，每个独立会话也会从 `pack_rotation` 中选择一个语音包。恢复或压缩已有会话时保留其语音包。压缩事件使用新的会话ID时，仅在最近活动的终端和目录均匹配时继承语音包；独立的子代理会话仅在其 `agent_id` 与父会话最近的 `SubagentStart` 匹配时继承。使用 `session_override` 时，`/peon-ping-use <pack>` 命令为每个会话分配语音包。无效或缺失的语音包会按层级回退。（`"agentskill"` 作为 `"session_override"` 的旧别名仍被接受。）
 - **session_ttl_days**（数字，默认：7）：使超过 N 天的陈旧每会话语音包分配过期。防止使用 `session_override` 模式时 `.state.json` 无限增长。
 - **headphones_only**（布尔值，默认：`false`）：仅在检测到耳机或外部音频设备时播放声音。启用后，如果内置扬声器是活动输出，声音将被静音 — 适用于开放式办公室。使用 `peon status` 查看状态。支持 macOS（通过 `system_profiler`）和 Linux（通过 PipeWire `wpctl` 或 PulseAudio `pactl`）。
 - **suppress_sound_when_tab_focused**（布尔值，默认：`false`）：当生成钩子事件的终端标签页处于当前活动/聚焦状态时，跳过声音播放。声音仍会在后台标签页中播放，提醒您其他地方发生了事件。桌面和移动通知不受影响。适用于只想在未查看的标签页中听到音频提示的用户。仅支持 macOS（使用 `osascript` 检查最前端应用和 iTerm2 标签页焦点）。
@@ -622,7 +623,7 @@ peon-ping 适用于任何支持钩子的代理式 IDE。适配器将 IDE 特定�
 | **Kilo CLI** | 适配器 | `bash adapters/kilo.sh` / `powershell adapters/kilo.ps1`（[设置](#kilo-cli-设置)） |
 | **Kiro** | 适配器 | 添加指向 `adapters/kiro.sh`（或 `.ps1`）的钩子条目（[设置](#kiro-设置)） |
 | **Windsurf** | 适配器 | 添加指向 `adapters/windsurf.sh`（或 `.ps1`）的钩子条目（[设置](#windsurf-设置)） |
-| **Google Antigravity** | 适配器 | `bash adapters/antigravity.sh` / `powershell adapters/antigravity.ps1`。无头 / macOS LaunchAgent 场景可用 `bash adapters/antigravity-py.sh --install`（基于 Python `watchdog` 的 25 秒空闲阈值守护进程，需要 `pip3 install watchdog`）。Python 守护进程支持旧版 `conversations/*.pb` 状态，以及较新的 `antigravity-cli` / `antigravity-ide` 的 `conversations/*.db` 和 `brain/**/transcript*.jsonl` 布局。 |
+| **Google Antigravity** | 适配器 | `bash adapters/antigravity.sh` / `powershell adapters/antigravity.ps1`。无头 / macOS LaunchAgent 场景可用 `bash adapters/antigravity-py.sh --install`（基于 Python `watchdog` 的守护进程，需要 `pip3 install watchdog`）。该守护进程解析 `brain/**/transcript.jsonl` 判断回合边界，并从 `cli.log` 读取权限确认提示，可提供与 Claude Code 相同的五种提示音。没有 transcript 的旧版 `conversations/*.pb` 与 `*.db` 会话则回退到 45 秒空闲计时器（`ANTIGRAVITY_IDLE_SECONDS`）。 |
 | **Kimi Code** | 适配器 | `bash adapters/kimi.sh --install` / `powershell adapters/kimi.ps1 -Install`（[设置](#kimi-code-设置)） |
 | **OpenClaw** | 适配器 | 调用 `adapters/openclaw.sh <event>`（或 `openclaw.ps1`），支持所有 CESP 分类和原生 Claude Code 事件名 |
 | **Rovo Dev CLI** | 适配器 | 如果 `~/.rovodev` 存在，`install.sh` 会自动注册，或手动添加钩子到 `~/.rovodev/config.yml`（[设置](#rovo-dev-cli-设置)） |
@@ -795,7 +796,7 @@ powershell -NoProfile -Command "Set-ExecutionPolicy -Scope CurrentUser -Executio
 
 ### OpenCode 设置
 
-[OpenCode](https://opencode.ai/) 的原生 TypeScript 插件，完全符合 [CESP v1.0](https://github.com/PeonPing/openpeon) 规范。
+[OpenCode v2](https://opencode.ai/v2/docs/build/plugins) 的轻量 TypeScript 适配器，将事件转发给已安装的 peon-ping 钩子。请先使用平台安装程序安装 peon-ping。
 
 **快速安装：**
 
@@ -803,12 +804,12 @@ powershell -NoProfile -Command "Set-ExecutionPolicy -Scope CurrentUser -Executio
 curl -fsSL https://raw.githubusercontent.com/PeonPing/peon-ping/main/adapters/opencode.sh | bash
 ```
 
-安装程序将 `peon-ping.ts` 复制到 `~/.config/opencode/plugins/` 并在 `~/.config/opencode/peon-ping/config.json` 创建配置。语音包存储在共享 CESP 路径（`~/.openpeon/packs/`）。
+安装程序遵循 `XDG_CONFIG_HOME`，将 `peon-ping.ts` 复制到 `~/.config/opencode/plugins/`。Windows 用户安装 peon-ping 后，从克隆目录运行 `powershell -NoProfile -File adapters/opencode.ps1`。适配器直接调用 `peon.ps1`，无需 Git Bash。配置、语音包和播放由主 peon-ping 钩子处理。
 
 **功能：**
 
 - **声音播放** — 通过 `afplay`（macOS）、`pw-play`/`paplay`/`ffplay`（Linux）— 与 shell 钩子相同的优先级链
-- **CESP 事件映射** — `session.created` / `session.idle` / `session.error` / `permission.asked` / 快速提示检测都映射到标准 CESP 分类
+- **CESP 事件映射** — 将 v2 的 `session.created`、`session.execution`、`form.created`、`permission.asked` 映射为钩子事件
 - **桌面通知** — 通过 [`terminal-notifier`](https://github.com/julienXX/terminal-notifier) 提供丰富通知（副标题、按项目分组），回退到 `osascript`。仅在终端未获得焦点时触发
 - **终端焦点检测** — 通过 AppleScript 检测你的终端应用（Terminal、iTerm2、Warp、Alacritty、kitty、WezTerm、ghostty、Hyper）是否在最前端
 - **标签页标题** — 更新终端标签页显示任务状态（`● 项目: 工作中...` / `✓ 项目: 完成` / `✗ 项目: 错误`）
@@ -848,7 +849,7 @@ bash ~/.claude/hooks/peon-ping/adapters/opencode/setup-icon.sh
 
 ### Kilo CLI 设置
 
-[Kilo CLI](https://github.com/kilocode/cli) 的原生 TypeScript 插件，完全符合 [CESP v1.0](https://github.com/PeonPing/openpeon) 规范。Kilo CLI 是 OpenCode 的分支，使用相同的插件系统 — 此安装程序下载 OpenCode 插件并为 Kilo 打补丁。
+[Kilo CLI](https://github.com/kilocode/cli) 的原生 TypeScript 插件，完全符合 [CESP v1.0](https://github.com/PeonPing/openpeon) 规范。专用适配器保留 Kilo v1 插件接口，将事件转发给已安装的 peon-ping 钩子。请先使用平台安装程序安装 peon-ping。
 
 **快速安装：**
 
@@ -856,7 +857,7 @@ bash ~/.claude/hooks/peon-ping/adapters/opencode/setup-icon.sh
 curl -fsSL https://raw.githubusercontent.com/PeonPing/peon-ping/main/adapters/kilo.sh | bash
 ```
 
-安装程序将 `peon-ping.ts` 复制到 `~/.config/kilo/plugins/` 并在 `~/.config/kilo/peon-ping/config.json` 创建配置。语音包存储在共享 CESP 路径（`~/.openpeon/packs/`）。
+安装程序遵循 `XDG_CONFIG_HOME`，将专用 Kilo 插件复制到 `~/.config/kilo/plugins/`。播放使用主 peon-ping 安装及其配置。请用 `peon config` 和 `peon packs` 管理设置和语音包。原生 Kilo 会话 ID 会区分独立会话，并在后续事件和插件重新加载时保留相同的语音包身份。
 
 **功能：** 与 [OpenCode 适配器](#opencode-设置)相同 — 声音播放、CESP 事件映射、桌面通知、终端焦点检测、标签页标题、语音包切换、不重复逻辑和刷屏检测。
 
@@ -929,7 +930,7 @@ curl -fsSL https://raw.githubusercontent.com/PeonPing/peon-ping/main/adapters/ki
 
 - `SessionStart`（startup）→ 问候音效（*"准备好了吗？"*、*"是的？"*）
 - `AfterAgent` → 任务完成音效（*"干活，干活。"*、*"完成了！"*）
-- `AfterTool`（成功）→ 任务完成音效；（失败）→ 错误音效（*"我做不到。"*）
+- `AfterTool`（成功）→ 静音；`tool_response.error` → 错误音效（*"我做不到。"*）。也支持旧版顶层 `exit_code`/`stderr` 输入。
 - `Notification` → 系统通知
 
 ### Windsurf 设置

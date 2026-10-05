@@ -9,7 +9,11 @@ Desktop companion application showing active agent GIFs per session. Runs as an 
 The companion communicates with OpenCode host runtime via file-based state sharing (JSON files) and displays animated overlays for active agents:
 
 - Displays animated GIFs for `idle`, `question`, `unknown`, and agent-specific animations (`council`, `designer`, `explorer`, `fixer`, `librarian`, `observer`, `oracle`, `orchestrator`).
+- Agent tiles can expose live session model/variant metadata on hover; waiting-input uses an attention outline without changing the animation contract. Error attention is intentionally deferred until canonical terminal evidence is available.
+- Each waiting-input request carries a monotonic attention generation; native informational attention deduplicates by session/generation so back-to-back questions cannot collapse into one notification. The plugin restores that generation/request fence across manager replacement; ordinary states reset the native request.
 - Animated windows can be resized (S/M/L/XL presets), repositioned via drag-and-drop, and anchored to screen edges.
+- The right-click menu exposes explicit Project/Global OMO preset scopes. Project scope is the default and can create/remove a local override via Inherit; Inherit follows eligible ancestor pins before Global, and project actions are rejected when project configuration is disabled. Global scope changes only the user layer. The native UI writes typed scoped requests into shared state while TypeScript remains the sole owner of config validation and persistence. Pending UI state tracks the target session and clears on completion or target disappearance. Applied request IDs fence side effects from stale queue entries when acknowledgement persistence fails.
+- Project actions stay native and host-independent: open the published session cwd in the platform file manager or copy it through egui clipboard output. The opener is reaped off the UI thread; status is session-scoped, async completion never closes a later menu, and failures reuse the compact Open button instead of increasing menu height.
 - Session state tracks window positions, sizes, and config per project directory using a hidden state file.
 - Animations are pre-generated as 72-frame JPEG sprite sheets (12x6 grid, 200x200 each frame) from companion/VIDEOS/*.mp4 source videos.
 

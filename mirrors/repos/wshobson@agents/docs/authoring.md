@@ -1,9 +1,10 @@
 # Authoring portable plugin content
 
-Plugin content in this repo ships to **six** harnesses: OpenAI Codex CLI, Cursor, OpenCode, the Google Antigravity CLI (`agy`), GitHub Copilot, and Pi. Claude Code is the source-of-truth. The adapter framework handles per-harness
-mechanics (frontmatter rewrites, format transforms, output paths) so you author one set of
-markdown files. But content choices still affect portability — this guide tells you what to
-do, and what to avoid, so the work you do for Claude Code translates cleanly everywhere.
+Plugin content supports seven coding tools: Claude Code, OpenAI Codex CLI, Cursor, OpenCode,
+Google Antigravity CLI (`agy`), GitHub Copilot, and Pi. Author one set of shared Markdown files
+in the canonical Claude Code source format. Adapters rewrite frontmatter, transform formats,
+and generate tool-specific artifacts. Content choices still affect portability, so this guide
+explains how to write content for all supported tools.
 
 ## The principles (from OpenAI's harness-engineering post)
 
@@ -205,7 +206,7 @@ Things that work in Claude Code but degrade across harnesses:
 | `color:` on agents | Cosmetic; dropped everywhere except Claude Code. |
 | Per-agent tool allowlist | Honored only on Claude Code/Antigravity/OpenCode, and on Pi through the subagent extension. Cursor and Codex have coarser models. |
 | Slash commands | Codex converts to skills. Antigravity transpiles to TOML. Copilot emits `.copilot/commands/` prompt files. Pi emits prompt templates under `.pi/prompts/`. |
-| Marketplace registry | Only Claude Code, Cursor, and Antigravity have one. Codex, OpenCode, and Pi have no marketplace; Pi installs packages from npm, git, or a local path. |
+| Marketplace registry | Claude Code, Codex, Cursor, and Antigravity have registries. Codex installs source skills only; use the [generated Codex setup](round-trip-results.md#codex-round-trip) for agents and command-derived skills. OpenCode and Pi have no marketplace; Pi installs packages from npm, git, or a local path. |
 
 When you must use a feature with no equivalent, the `harness_portability` lint won't fire
 (it's not a portability problem — it's a capability gap). Just document the constraint in

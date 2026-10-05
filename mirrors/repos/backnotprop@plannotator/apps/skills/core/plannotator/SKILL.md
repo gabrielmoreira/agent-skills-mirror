@@ -1,19 +1,25 @@
 ---
 name: plannotator
-description: "Reference for using the Plannotator CLI: plan review, code review, annotating files, URLs, folders, and running local apps, annotating the last assistant message, browsing archived plan decisions, and exporting or sharing Guided Reviews. Invoke when asked to use Plannotator for anything not covered by a more specific plannotator-* skill."
+description: "Reference for using Plannotator (its `plannotator` tool when you have one, otherwise the CLI): plan review, code review, annotating files, URLs, folders, and running local apps, annotating the last assistant message, browsing archived plan decisions, and exporting or sharing Guided Reviews. Invoke when asked to use Plannotator for anything not covered by a more specific plannotator-* skill."
 ---
 
 # Plannotator CLI Reference
 
-Plannotator is a local, browser-based review layer for agent workflows: it opens plans, diffs, and documents in an annotation UI, the human marks them up, and the structured feedback comes back to you on stdout. It installs as a single `plannotator` binary plus per-host hooks, so plan review fires automatically when you exit plan mode; every other surface is launched explicitly from the CLI. A session runs on a random localhost port (fixed port 19432 in remote mode) and blocks until the reviewer submits feedback, approves, or closes the tab.
+Plannotator is a local, browser-based review layer for agent workflows: it opens plans, diffs, and documents in an annotation UI, the human marks them up, and the structured feedback comes back to you on stdout. It installs as a single `plannotator` binary plus per-host hooks, so plan review fires automatically when you exit plan mode; every other surface is launched explicitly, with the `plannotator` tool when you have one and with the CLI otherwise. A session runs on a random localhost port (fixed port 19432 in remote mode) and blocks until the reviewer submits feedback, approves, or closes the tab.
 
 This skill is the knowledge layer. The `plannotator-review`, `plannotator-annotate`, and `plannotator-last` skills are thin launchers for the three most common actions; use this reference when you need to pick the right command or flags yourself.
 
-If your agent has a `plannotator` tool, use it to open Plannotator instead of running the CLI: it returns at once, and the reviewer's feedback arrives later as a message, so end your turn after calling it and wait.
+## If you have a `plannotator` tool, always use it
+
+Check your tools before you run any command below. If you have a tool named `plannotator` (it can be listed with a prefix, for example `mcp__plannotator__plannotator` in Claude Code, and can need to be loaded through tool search before you call it), always call it instead of running `plannotator annotate`, `plannotator review`, or `plannotator last`. This includes approvals: call it with `{ "action": "annotate", "target": "<file>", "gate": true }`, not `--gate --json`.
+
+The tool returns at once. End your turn after you call it and wait: the reviewer's decision arrives later as a message. Do not also run the CLI, poll, or reopen the session.
+
+Use the CLI only when you have no such tool, or for what the tool does not do: `archive`, `guide`, `sessions`, review flags other than `--base`, annotate flags other than `--gate` and `--markdown`, and strict gates that a script checks by exit code (`--require-approval`, `--result-file`).
 
 ## Choose the command
 
-| The user wants | Run |
+| The user wants | Run (CLI, when you have no `plannotator` tool) |
 | --- | --- |
 | Review a plan you produced | Nothing. Plan review opens automatically on plan exit via hooks. Never run bare `plannotator` yourself. |
 | Review and explicitly approve a plan/spec saved as a file | `plannotator annotate <file> --gate --json` |
@@ -70,7 +76,7 @@ plannotator annotate <target> [--markdown] [--no-jina] [--app | --static] [--ren
 
 Opens one document, page, or app in the annotation UI and returns the human's annotations on stdout.
 
-Plain `annotate` is feedback-only: it shows **Close** but no **Approve** button. When the user asks to review, approve, accept, or gate a generated plan/spec/document saved as a file, always add `--gate --json`. Do not tell the user they can approve a plain `annotate` session. If the plan is being handed off through the host agent's native plan flow, do not launch `annotate`; let the plan-exit hook open the approval UI automatically.
+Plain `annotate` is feedback-only: it shows **Close** but no **Approve** button. When the user asks to review, approve, accept, or gate a generated plan/spec/document saved as a file, call the `plannotator` tool with `"gate": true` if you have it; otherwise always add `--gate --json`. Do not tell the user they can approve a plain `annotate` session. If the plan is being handed off through the host agent's native plan flow, do not launch `annotate`; let the plan-exit hook open the approval UI automatically.
 
 Targets:
 
@@ -219,6 +225,7 @@ Recommended: Local only, purged after 30 days
 
 ## Do not
 
+- Do not run `plannotator annotate`, `review`, or `last` through a shell when you have a `plannotator` tool; call the tool.
 - Do not parse or scrape the browser UI's HTML; the CLI's stdout (and the documented HTTP API above) is the whole contract.
 - Do not use `--hook` outside a real hook context; use `--json` when you need structured output.
 - Do not run bare `plannotator` interactively; it is the hook entry point.

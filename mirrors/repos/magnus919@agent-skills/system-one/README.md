@@ -4,9 +4,9 @@
 
 Use System One when software needs a bounded judgment—such as a ticket route,
 risk flag, or tool choice—while exact policy and actions remain inspectable
-code. The skill covers hosted Jev, local Laya and CLM, and newer open candidates;
-it helps teams evaluate outputs without treating confidence as permission or
-ground truth.
+code. The skill covers hosted Jev, local Laya and CLM, and newer open candidates,
+including experimental Strands Decider. It helps teams evaluate outputs without
+treating confidence as permission or ground truth.
 
 You'll find decision contracts, integration patterns, calibration and
 comparison methods, and private-model operations. DevOps examples cover
@@ -18,7 +18,10 @@ copying a demo threshold into production.
 The question-design guide shows how to make instructions self-contained, select
 exact values from source candidates, and handle uncertainty and speculative
 branches. It also routes hosted integrations to current provider docs so the
-dated Jev snapshot is not mistaken for a live contract.
+dated Jev snapshot is not mistaken for a live contract. Worked patterns cover
+progressive-disclosure skill suggestions and narration-to-media matching through
+textual captions; the ecosystem radar tracks OpenAI Decisions API as a dated
+preview candidate.
 
 For semantic code linting, the skill shows how to turn a maintained rule into a
 typed check, distinguish local post-edit feedback from a repository scan, and
@@ -52,14 +55,15 @@ semantic lint feedback, open `references/semantic-lint-feedback.md`; for
 incident workflows use `references/devops-decision-patterns.md`; for
 confidence-based escalation use `references/selective-judgment.md`. Hosted Jev
 integration steps are in `references/jev.md`, which directs readers to refresh
-against live provider documentation.
+against live provider documentation. Self-contained qualification probes cover
+arithmetic, freshness, dependencies, and useful relevance versus topical overlap.
 
 Live Jev probes require `--live` and a provider credential in an environment
 variable; never place credentials in source or browser code.
 
 ## Triggers
 
-Use this skill for Jev, Laya, or CLM; typed Choice/Score/Noul decisions; routing
+Use this skill for Jev, Laya, CLM, or experimental Strands Decider; typed Choice/Score/Noul decisions; routing
 or calibration based on model judgment; DevOps decision support; validated
 escalation; private model hosting; and semantic code linting or post-edit
 feedback. It is not for style-only linting, exact policy checks, ordinary

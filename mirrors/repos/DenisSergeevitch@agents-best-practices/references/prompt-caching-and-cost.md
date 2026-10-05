@@ -111,6 +111,28 @@ keep structured output schemas stable
 
 When a tool changes materially, record a prompt/tool bundle version so cache changes are explainable.
 
+## Economic cache warming
+
+Cache warming sends a small refresh request before an existing cache entry is expected to expire. Treat it as an optional post-MVP optimization and compare it with a no-warming baseline under the same task-quality floor. A scheduled refresh does not establish a cache hit or savings.
+
+Bind warming to an immutable snapshot of the exact request sent: provider, physical model, tenant and session scope, serialized prefix, prompt/tool configuration versions, and cache-affecting options. Require a known best-effort cache lifetime for the selected retention tier and evidence that replay is eligible on that exact provider/model path. A reduced output cap is safe only if it preserves cache identity and does not change the effective reasoning settings or budget. If eligibility, lifetime, or that equivalence is unknown, leave warming off. Provider retention is an estimate for scheduling, not a guarantee that the entry remains available.
+
+Evaluate each refresh using current prices and observed reuse patterns:
+
+```text
+expected_refresh_value = p_reuse * cold_incremental_cost - refresh_cost
+```
+
+Here `p_reuse` is the probability of a real request reusing this entry before its next expiry; `cold_incremental_cost` is the extra cost of that request without the cache relative to a cache hit; and `refresh_cost` includes refresh input, cache read/write, output, and reasoning charges. Use a configurable positive margin and decline refreshes when the inputs are unavailable. Recompute the gate before every refresh, and also cap cumulative refresh spend, refreshes wasted without real reuse, and request rate. A positive estimate for one refresh does not justify an unlimited sequence. Use the [loop budget controls](agentic-loop.md#step-budgets) for aggregate accounting rather than granting warming a separate unmetered allowance.
+
+The refresh path must not execute local tools or provider-hosted side effects. Discard its generated content and tool calls; keep its output out of conversation history and task results. Resolve current credentials through the trusted host for the original provider and scope. Keep credential values out of snapshot identifiers, durable records, and traces, using the existing [security and observability controls](security-observability.md).
+
+Give each warming run a fixed lifetime measured from the real request that established it; refreshing must not extend that lifetime. Schedule with a pre-expiry dispatch margin, recheck eligibility and the deadline after any asynchronous decision, and discard a late timer rather than issuing a likely cold refresh. A new real request replaces the run. Changes to model, scope, instructions, tools, cache-affecting options, or compaction invalidate it; obtain a fresh snapshot only after a new eligible real request. Use [runtime configuration events](architecture.md#runtime-instruction-and-tool-configuration-events) to identify these changes.
+
+Invalidation stops future timers and requests cancellation of an in-flight refresh. Cancellation is best effort: discard a stale completion, reconcile any incurred usage separately, and retain the applicable budget reservation while the outcome is unknown. Record refresh outcomes as successful, failed, aborted, or unknown, including observed charges from all outcomes and estimates clearly labeled when final billing is unavailable. Keep these usage records outside the model transcript while including them in session and tenant totals.
+
+Validate warming through provider cache-read telemetry or equivalent backend evidence and subsequent real-request reuse. Report total cost and latency including refreshes, unused refreshes, failures, and cancellation uncertainty; compare against no warming using the [evaluation methodology](evals.md#model-and-configuration-sweeps). Sending a refresh or preserving request bytes alone does not prove that a provider retained the entry or that warming improved completed-task economics.
+
 ## Provider-specific implementation notes
 
 ### OpenAI

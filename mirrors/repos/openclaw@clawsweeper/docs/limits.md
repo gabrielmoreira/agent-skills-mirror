@@ -243,6 +243,27 @@ generation retains its post-generation finalization check rather than an active
 stop loop. Finalization and publication fences remain unchanged. The [startup proof](proof/exact-review-start/README.md)
 records the isolated workflow/process boundary and its limits.
 Explicit command work and publication work bypass the delay.
+
+Items under active churn wait longer. When an item has already completed
+`EXACT_REVIEW_ACTIVE_ITEM_REVIEW_THRESHOLD` (2 by default) successful review
+generations within the trailing `EXACT_REVIEW_ACTIVE_ITEM_WINDOW_MS` (one hour
+by default), its next organic source revision (a review-triggering issue or pull
+request webhook action such as `synchronize` or `edited`) waits
+`EXACT_REVIEW_ACTIVE_ITEM_DEBOUNCE_MS` (ten minutes by default) from the latest
+pending revision. Further revisions still coalesce into that one pending entry,
+capped at `EXACT_REVIEW_ACTIVE_ITEM_DEBOUNCE_MAX_MS` (15 minutes by default) from
+the first pending enqueue, so a continuously pushed pull request is still
+reviewed. The active delay only ever lengthens the ordinary debounce. A
+superseding event still revokes an in-flight lease immediately; only the next
+dispatch waits. Explicit commands, publication, scheduled intake, repair
+follow-ups, and recovery work keep their existing timing, as do first reviews,
+items below the threshold, and the immediate pull request `opened` /
+`ready_for_review` event that creates a queue entry. The queue keeps the completion history in an
+additive `exact_review_queue_review_completions` table keyed by item and
+workflow run, pruned to the window; a store without history behaves as before.
+The next-wake calculation reads the delayed `nextAttemptAt`, so a held item does
+not cause extra polling.
+
 When pending depth reaches
 `EXACT_REVIEW_PENDING_SOFT_LIMIT` (600 by default), new recovery and scheduled
 feed work is shed; this threshold counts review work only, so publication
@@ -251,18 +272,22 @@ events, commands, and publications remain admitted. The queue reports shed
 counts under `lanes.review.shed_reasons_since_reset` and the rolling flow by
 `backpressure` versus `scheduled_rate`; pre-migration totals remain
 `unattributed`. Executed reviews debit a durable 220-review/hour
-scheduled budget with a 24-item burst. The budget meters review executions, not
-admissions: every new claim of a review lease by a workflow run (`/claim`
-starting a new claim generation) debits one token, so organic work consumes the
-budget first, once per run that actually starts. Organic admission itself is
-free and always admitted. Work that never claims a lease is never charged: items
-superseded or coalesced before claim, dedupes, items completed at the
-dispatch-time live check without a run, publication work, and acknowledgement-only
-finalizers. A same-attempt claim retry is the same execution; a rerun attempt,
-retry, or requeue that claims again is another execution. A scheduled admission
-debits its token when admitted, because admission is where scheduled work is
-gated, and marks the item prepaid so its first claim is not charged again; later
-claims of that item are charged like organic ones.
+scheduled budget with a 24-item burst. The budget meters started review
+generations, not admissions or claims: a claim records that its claim generation
+owes one token, and the workflow's startup ownership check, immediately before
+Codex generation, sends `generation_start: true` on the lease heartbeat to pay
+it. Organic work therefore consumes the budget first, once per run that actually
+reaches generation. Organic admission itself is free and always admitted. Work
+that never starts generation is never charged: items superseded or coalesced
+before claim, dedupes, items completed at the dispatch-time live check without a
+run, runs that claim and then exit at live-item admission or lose the lease
+during setup, publication work, and acknowledgement-only finalizers. A retried
+generation-start heartbeat for the same claim generation is the same execution;
+a rerun attempt, retry, or requeue that claims and starts again is another
+execution. A scheduled admission debits its token when admitted, because
+admission is where scheduled work is gated, and marks the item prepaid so its
+first started generation is not charged again; later starts of that item are
+charged like organic ones.
 Organic debt carries on the global bucket down to minus the burst, so scheduled
 work is admitted only after that bounded debt is repaid. Further organic debits
 at the floor are forgotten, so this is not a total-work or spend cap. Scheduled work fills
@@ -517,6 +542,15 @@ These limits are owned by `dashboard/exact-review-queue.ts`, implemented in
   for fresh non-command exact-review events.
 - `EXACT_REVIEW_DISPATCH_DEBOUNCE_MAX_MS` overrides the 180,000 ms maximum
   coalescing window measured from the item's first enqueue.
+- `EXACT_REVIEW_ACTIVE_ITEM_REVIEW_THRESHOLD` overrides the two completed review
+  generations (clamped to 1-100) that mark an item as under active churn.
+- `EXACT_REVIEW_ACTIVE_ITEM_WINDOW_MS` overrides the 3,600,000 ms trailing window
+  for counting those completions (at most 24 hours); `0` disables the
+  active-item debounce.
+- `EXACT_REVIEW_ACTIVE_ITEM_DEBOUNCE_MS` overrides the 600,000 ms delay from the
+  latest organic revision of an active item (at most one hour).
+- `EXACT_REVIEW_ACTIVE_ITEM_DEBOUNCE_MAX_MS` overrides the 900,000 ms cap for that
+  delay, measured from the first pending enqueue (at most one hour).
 - `EXACT_REVIEW_PENDING_SOFT_LIMIT` overrides the pending-depth threshold for
   shedding new recovery and scheduled exact-review work; production sets it to 600.
 - `EXACT_REVIEW_SOURCE_DRIFT_REQUEUE_LIMIT` sets how many consecutive automatic

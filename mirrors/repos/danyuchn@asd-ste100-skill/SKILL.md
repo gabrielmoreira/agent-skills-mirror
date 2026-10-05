@@ -21,7 +21,7 @@ This skill is not for creative or marketing copy — STE is deliberately flat an
 
 ## Two Modes
 
-Pick a mode before rewriting. If the user does not say which, infer from the text type and state the choice in one line.
+Pick a mode before rewriting. If the user does not say which, infer it from the text type. Keep the choice internal unless the user asks for the rule table (see Output Format).
 
 **Strict** — procedures, error messages, tool and function descriptions, inter-agent instructions, safety text. Anywhere a wrong reading has a cost. Apply every rule below, including the hard length caps and one-word-one-meaning discipline.
 

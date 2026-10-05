@@ -22,7 +22,7 @@ The extractor parses bounded text. It **never evaluates, renders, fetches, or ex
 
 Supported grammars are `flowchart` / `graph`, `sequenceDiagram`, `stateDiagram-v2`, and `erDiagram`. Flowcharts accept classic delimiters plus Mermaid v11.3+ `@{ shape: ... }` nodes, multiline Markdown labels, multidirectional links, and labeled links in both the spaced (`B-- yes -->C`) and compact (`B--yes-->C`) forms; a spaced label may be quoted (`B-- "yes, and then" -->C`) to carry commas, pipes, and other delimiters. Sequence activation suffixes and central-connection `()` markers are normalized without changing participants; quoted `participant "Name"` / `actor "Name"` declarations (with or without an `as` alias), `create participant` directives, bidirectional `<<->>` / `<<-->>` arrows, and open `->` / `-->` arrows keep their Mermaid semantics. The digest mirrors the draw.io IR: diagram list, nodes/edges/containers, depth and cycles, shapes, type candidates, budget flags, hubs, entries, terminals, unconnected nodes, collapsible groups, and tables. Mermaid has no source coordinates, so it reports `source layout: none (Mermaid is layout-free)` plus the declared direction.
 
-- `--diagram all` selects every fenced block. Default is diagram 0.
+- `--diagram N` selects one fenced block before parsing, so a malformed or unsupported block elsewhere in the file does not stop it. `--diagram all` selects every fenced block and fails if any of them fails. Default is diagram 0.
 - `--json` emits the full IR, including ER fields and sequence fragments.
 - `--max-rows N` controls digest table length; default 40.
 - `--out PATH` writes the digest without changing its content.
@@ -93,9 +93,10 @@ The extractor reports 9 IR nodes (7 drawable plus 2 containers) and 7 edges; the
 
 ## Multi-block files
 
-Markdown is the Mermaid analogue of multi-page draw.io. The header lists every fenced block with grammar and node/edge counts.
+Markdown is the Mermaid analogue of multi-page draw.io. The header lists every fenced block with grammar and node/edge counts. A block that was not selected and cannot be parsed is listed as `[N] unparsed: <reason>` instead of failing the run; select it to get the exit-2 error.
 
 - With no `--diagram`, inspect diagram 0 and ask which block if the user did not identify one.
+- If the block you need fails, the others stay reachable with `--diagram N`. Report the failure verbatim and do not redraw that block.
 - `--diagram all` creates one independently type-selected output per block, named `<base>-<index>.html`.
 - Do not merge blocks onto one canvas unless asked. Adjacent blocks frequently use different grammars.
 

@@ -180,6 +180,14 @@ pending / needs_review 的内容 ⇒ 绝不进入任何 prompt / recall 路径
 
 `rollout.enabled=false` 是完整 V1 回滚；`compatibility.legacyStaticMemory=true` 只恢复旧的静态段（SQLite / Profile / Pinned），不改变 Core 文件和底层资产。
 
+### 记忆写作偏好
+
+`memory.promptPreferences.{extraction,profile,dreaming}` 分别保存 `{style,supplemental}`；`style` 为 `default | concise | detailed`，默认不追加偏好提示，旧配置保持原行为。Agent 的 `memory.promptPreferences` 对各环节独立覆盖；缺失或 `null` 继承全局，显式 `default` + 空补充要求恢复系统风格。GUI 补充要求最多 512 字，运行时对原始配置另以 2048 UTF-8 字节限长并转义不可信信封。
+
+提取与压缩前提取使用当前 Agent 的提取偏好；既有 JSON 字段、画像/claim 开关、来源、无痕和路由约束仍由固定契约及执行层裁决。手动画像按画像作用域取偏好：Agent 用对应覆盖，Global/Project 用全局；idle/cron 画像继续零 LLM。Dreaming 仍一次调用、共享日记使用全局偏好，Agent 覆盖只作用于其候选的标题/说明；不改变 Deep Resolver、分数阈值、权限或候选资格。
+
+偏好不替换系统提示，不增加调用次数或扩大输出预算；非默认偏好会增加输入 Token。GUI 与 `ha-settings` 的 `memory_runtime`（MEDIUM）共用配置类型与保存归一化路径。配置修改从下一次相关操作生效。
+
 ### Core 预算解析
 
 用户在普通 UI 只看到一个 `totalTokens`（精简 `1000` / 平衡 `1600` / 丰富 `2400` 三档 + 自定义），可在 `[128, 16384]` 内调整。Global / Agent / Project / protocol / topic-read 的细分预算收在高级区。`2400` 是**推荐区间上界**而非硬限，超过只警告 prompt cache / TTFT 成本；`16384` 是防止 raw config 数量级错误的 emergency guard。

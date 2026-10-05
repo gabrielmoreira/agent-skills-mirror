@@ -112,6 +112,14 @@ Use the release dashboard for surrounding build and review signals:
 asc status --app "APP_ID" --include builds,appstore,submission,review --output table
 ```
 
+To wait for the review outcome, poll until it settles. The command exits 0 when approved, 1 when rejected, and 7 when still pending at the timeout:
+
+```bash
+asc status --app "APP_ID" --until review-done --timeout 2h --output json
+```
+
+Status JSON lists suggested follow-ups in `summary.nextCommands`, each marked with whether it mutates App Store Connect. Treat mutating suggestions as proposals that still need the user's authorization.
+
 Use history to distinguish a current stall from earlier rejected or completed submissions:
 
 ```bash

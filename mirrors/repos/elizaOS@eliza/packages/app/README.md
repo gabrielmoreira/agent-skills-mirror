@@ -3,6 +3,11 @@
 Eliza application host, renderer, and native platform tooling for web, desktop, iOS, and
 Android.
 
+`@elizaos/app` is the Node host API. Use `@elizaos/app/browser`
+for renderer composition, `@elizaos/app/auth` for request authorization,
+and `@elizaos/app/dev-tools` for launcher diagnostics. Import shared contracts,
+UI and authentication from their owning packages; the host barrel does not relay them.
+
 Start the app and API with `bun run dev` from the repository root. Native targets
 require their platform SDKs; available build/install commands are in package.json.
 Concurrent worktrees should use `bun run --cwd packages/app dev:shared`. UI changes
@@ -34,6 +39,28 @@ for native builds and physical-device tests.
 Web subscription settings select a registered product with `VITE_ELIZA_APPLICATION_SLOT`;
 agent-backed settings use `ELIZAOS_CLOUD_APPLICATION_SLOT` from the runtime.
 These select a product, not a merchant credential or paid entitlement.
+
+## Disposable hosted Android fixtures
+
+`scripts/mobile/android/hosted-fixture` supplies display/network admission and
+bounded diagnostics for fresh GitHub-hosted AOSP fixtures. Mutating setup requires
+`emulator-5554`, AVD `test` and a single user 0. Display setup additionally
+requires an unsecured observed keyguard; network setup rejects preinstalled
+third-party apps. Boot-device admission
+is specific to the captured API 35 x86_64 topology. Hosts inject ADB execution and
+retain orchestration/output ownership. Never use these helpers to provision a
+physical phone or relax their admission checks to fit an arbitrary emulator.
+Run `node --test scripts/mobile/android/hosted-fixture/*.test.mjs` for the captured
+state and refusal tests; these tests do not establish live emulator qualification.
+
+The `hosted-fixture/webview-provider.mjs` factory adds the pinned Chromium provider
+replacement flow. Hosts must supply nonempty system-package exclusions, the SDK
+environment, an absolute evidence directory and the explicit
+`api35-default-x86_64` fixture acknowledgement. The library never discovers a host
+SDK or executes on import. It authenticates the stock backup, archive, candidate
+APK, signer, live overlay and restarted framework before reporting provisioning;
+runtime feature qualification remains separate. The bundled extractor validates
+archive membership even under Python optimization.
 
 ## Android native plugin verification
 
@@ -147,45 +174,116 @@ captures it when constructing the secure store; an unset or empty value uses
 The embedding app must start the corresponding app-UID-only Keystore broker;
 this option changes client routing, not broker permissions or availability.
 
+External development hosts can use `scripts/lib/dev-process-lifecycle.ts`'s
+`waitForDevelopmentReady` with their own health predicate, startup/poll budgets,
+child-liveness check and cancellation signal. Probes receive that signal and
+must release their resources on cancellation. `scripts/lib/shutdown-drain.ts`
+handles owned-child teardown; use process-group delivery and liveness from
+`kill-process-tree.ts` when children can outlive their launcher. Product ports,
+account matching, inference policy and renderer environment stay with the host.
+
 ## External Android consumers
+
+Modules default to app library dependencies. Set `appDependency: false` for
+independent application/test modules (for example an updater APK); they remain
+addressable Gradle projects without being linked into the consumer app.
+
+`scripts/mobile/android/consumer-host.mjs` generates an owned external Gradle
+project from explicit identity, manifest, variant, source and dependency data.
+It copies no product UI or native service tree. Input paths use declared consumer,
+upstream or dependency roots; selected native files can be copied without admitting
+whole plugin source directories. Existing unmarked projects, identity changes,
+unowned-file collisions and symlink escapes are rejected. Generated ownership
+permits regeneration and removal of formerly selected generated files while
+preserving other build outputs. Hosts keep authored manifests/resources outside
+the generated project and supply already-verified optional runtime payloads. The
+generator owns the non-translatable `app_name` brand string; host resources must
+not redefine it. Other UI strings can use the host's localized resource directories.
+
+The reviewed consumer toolchain remains Gradle 8.13 / AGP 8.13 / Kotlin 2.2.20 /
+JDK 21, independently of the full app's newer default wrapper. The distribution
+and shared wrapper JAR are hash pinned. Run the filesystem contract with
+`node --test scripts/mobile/android/consumer-host.test.mjs`; with SDK 36 and
+build-tools 36.0.0, `node scripts/mobile/android/qualify-consumer-host.mjs` builds
+two independent identities and checks eight host variant APKs plus four separate
+companion APKs. Linked-library compilation and companion asset isolation are checked.
+Reports go to root `test-results/android-consumer-host`. This is build/manifest
+qualification, not installed service, HOME-role, AOSP or device acceptance.
 
 Shared local speech sources and reproducible runtime/model tooling are documented
 in [local speech](scripts/local-speech/README.md). The source-export resolver in
 `scripts/lib/consumer-source-resolver.mjs` composes declared Eliza source exports
-for independent Bun hosts; consumers retain their source pin, credentials and policy.
+for independent Bun hosts; consumers retain their source pin, credentials and policy. `scripts/lib/immutable-workspace-source.mjs`
+authenticates prepared workspace files against an exact commit, including ignored
+files and Git stat-cache bypasses. Hosts declare their generated metadata/output
+paths; declared Turbo outputs and dependency directories are allowed, while
+tracked source bytes remain immutable. Git submodules require separate admission.
 
-Consumer hosts can use `native-host/task-runtime-gateway.mjs` for authenticated
-SQLite task lifecycles and explicit domain-route extensions. Document/canvas
-bundling and verified ARM64 packaging live in `native-host/build-document-runtime.mjs`
-and `native-host/android-documents.mjs`; consumers supply reviewed source identity,
-canvas version and locked package records. Run `bun run test:consumer-host` here.
-The renderer gateway and Cloud services remain owned by `packages/agent/native-host`
-and `packages/auth/native-host`; these build helpers do not provide device acceptance.
+Shared task gateways, document packaging and consent-aware research APIs are
+documented in [the host package](../host/README.md).
 
-Native hosts can compose `native-host/trace-queue.mjs`, `trace-transport.mjs` and
-`database-lease.mjs` for opt-in, encrypted research uploads. Hosts must supply an
-explicit `validateEvent` policy, private database path/key, authenticated collector
-and lifecycle/cancellation ownership. The queue retains events until the collector
-acknowledges the exact batch durably; overflow records a visible gap and withdrawal
-persists across restart. Event IDs remain database indexes, so validators must keep
-identifiers free of private content. Study definitions, measurement projection and operator UI belong to the host. Uploads never
-start merely by importing these modules. Caller-owned abort signals cancel HTTP
-work; the owner should abort pending transport before awaiting worker shutdown.
+External product APK tests can compose `scripts/lib/isolated-android-test.mjs`.
+Supply explicit package/test identities, ABI, fixture AVD name, Android user, APK
+paths and a report directory. The host must own the disposable AVD and any
+secondary-user/provider fixtures; an emulator property alone is not ownership.
+It validates both APK identities and the instrumentation target before installing,
+leases the emulator, refuses existing package data across users, requires complete
+instrumentation, removes its packages after each variant and checks unchanged HOME.
+There are no default command/instrumentation deadlines: callers may supply
+`commandTimeoutMs`, `instrumentationTimeoutMs`, `cleanupTimeoutMs` and an
+AbortSignal. ADB/AAPT work is cancellable; cleanup ignores the aborted operation
+signal, force-stops owned targets and uses its separate caller deadline. If either
+stop fails, it retains both packages and reports `cleanupDeferred`; recover the
+owned fixture explicitly before another run. Callbacks
+receive the signal and must cooperate with cancellation before returning. The
+lease follows the caller environment and remains held for a live process, rather
+than expiring during long instrumentation. Product callbacks own controlled
+fixture provisioning; this runner does not authorize live integrations. Use `testOutputPath` for reports produced inside this checkout.
 
+`scripts/lib/isolated-android-user.mjs` supplies the secondary-user lifecycle for
+caller-owned emulators. Hold the canonical device lease across the entire call;
+supply the exact AVD, stock HOME package, a bounded command executor and a durable
+record callback. It restores owner 0 independently of cancellation. The scenario
+must settle device work and return `{cleaned: true}` only after proving its package
+cleanup; missing proof or a thrown scenario retains the user for explicit recovery.
+It does not provision providers, grant permissions or install product packages.
 
-`research-store.mjs` and `research-server.mjs` provide the opt-in collector: private
-AES-GCM SQLite records, named operator/device roles, enrollment revisions,
-consent-aware ingestion, withdrawal, key rotation and structural-event routes.
-`measurementPolicy.validateDataset` and `.report` are explicit trusted host
-callbacks; the dataset envelope retains study, participants, tasks and coverage
-so withdrawal removes the participant's evidence. The shared server accepts an
-optional `readAsset` callback for the host's fixed console assets. It never serves
-application files by arbitrary request paths.
+For installed upgrades, each variant supplies baseline `apk`/`testApk` and an
+`upgrade: {apk, testApk}` candidate pair. Both pairs are admitted before device
+mutation. `runnerArgs` seeds the baseline; `upgradeRunnerArgs` verifies the
+candidate with the same strict class/method selection. `beforeUpgrade` runs after
+baseline instrumentation; `afterUpgrade` runs after replacing the app but before
+replacing the test APK, allowing product intent-preservation checks. Separate
+phase logs and hashes retain evidence. Installed APK bytes are verified after
+installation, before replacement and before removal. Changed installed code
+retains both packages for explicit recovery instead of deleting an unknown build.
 
-`task-trace-capture.mjs` reads the existing owner-scoped task journal and emits
-pseudonymous structural events, excluding task text and connector content.
-`research-capture-host.mjs` composes the collector, encrypted queue, exclusive
-lease and caller-cancelled transport. Its explicit start/stop lifecycle preserves
-consent and current-owner fences; importing it starts no collection. Run the
-native-host tests for real SQLite/HTTP evidence, including stop during an
-unanswered request. These modules do not authorize enrolling real participants.
+The isolated Android harness also accepts an explicit unique `testClasses` list
+instead of `testClass`, with the complete `expectedTests` count across that suite.
+For one exact method, supply `testMethod` with one class and `expectedTests: 1`;
+the completed method identity must match before acceptance.
+It freezes the selection before asynchronous work, checks every requested class
+through the same strict instrumentation parser, and rejects missing or unexpected
+classes while retaining owned-installation cleanup. This supports product
+platform profiles without duplicating APK admission, leasing or teardown.
+
+Consumer Android hosts can use `scripts/lib/consumer-android-runtime.mjs` to build
+and stage a pinned mobile runtime with byte provenance, supplying their own
+skills and gateway callback. Development checkout inspection lives in
+`scripts/lib/committed-source.mjs`; APK document integrity verification lives in
+`../host/native-host/android-documents.mjs`.
+
+`development-probes.ts` provides dependency-light TCP and authenticated JSON
+readiness transports for development hosts. TCP success does not identify an
+owner; JSON probes reject redirects and bound the body read. Hosts retain
+identity, readiness predicates and process reuse policy.
+
+`createDevelopmentProcessScope` composes owned child registration and signal
+cleanup with the existing process-group drain. It never adopts or restarts a
+process. Hosts choose commands, environments, readiness and diagnostics; call
+`dispose` in finally. `waitForClose` remains valid after an early close event.
+
+`native-host/research-statistics.mjs` supplies Wilson 95% binomial intervals and
+deterministic nearest-rank percentile bootstrap intervals for a mean. Hosts own
+sampling units, cohorts, confidence labels, resample/seed/work budgets and
+interpretation; these calculations do not certify independence or causal effects.

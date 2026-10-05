@@ -14,7 +14,8 @@ Start with one read-only model/tool cycle on the chosen device. Recurring autono
 | typed calls, permission decisions, receipts, and resulting-state limits | [tools and permissions](tools-and-permissions.md) |
 | durable working memory and compaction | [context, memory, and compaction](context-memory-compaction.md) |
 | discovery, schema binding, and drift | [environment-adaptive tools](environment-adaptive-tools.md), [skills and connectors](skills-and-connectors.md) |
-| scheduled goals and continual runtimes | [planning and goals](planning-and-goals.md), [recursive and continual harnesses](self-refining-recursive-harnesses.md) |
+| scheduled goals and resident runtimes | [planning and goals](planning-and-goals.md), [always-on agents](always-on-agents.md#resident-ownership-and-scheduled-wakeups) |
+| programmable context, recursion, and online refinement | [recursive and continual harnesses](self-refining-recursive-harnesses.md) |
 | credentials, injection boundaries, trace handling, and incidents | [security and observability](security-observability.md) |
 | public external communication | [public-board communication](skills-and-connectors.md#agent-communication-via-public-boards) |
 | failure probes and launch methodology | [hardware evals](evals.md#hardware-agent-evals) |

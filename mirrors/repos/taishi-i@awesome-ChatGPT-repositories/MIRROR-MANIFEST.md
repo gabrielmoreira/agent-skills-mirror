@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `taishi-i/awesome-ChatGPT-repositories` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `taishi-i/awesome-ChatGPT-repositories` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `taishi-i/awesome-ChatGPT-repositories` — 26 default patterns, 0 fol
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,6 +63,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.agents/skills/awesome-chatgpt/SKILL.md`](.agents/skills/awesome-chatgpt/SKILL.md) |
 | 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 4 | ✓ | [`plugins/awesome-chatgpt-search/skills/search/SKILL.md`](plugins/awesome-chatgpt-search/skills/search/SKILL.md) |
+| 5 | ✓ | [`skills/awesome-chatgpt-search/agents/openai.yaml`](skills/awesome-chatgpt-search/agents/openai.yaml) |
+| 6 | ✓ | [`skills/awesome-chatgpt-search/data/repos-awesome-lists.json`](skills/awesome-chatgpt-search/data/repos-awesome-lists.json) |
+| 7 | ✓ | [`skills/awesome-chatgpt-search/data/repos-browser-extensions-a.json`](skills/awesome-chatgpt-search/data/repos-browser-extensions-a.json) |
+| 8 | ✓ | [`skills/awesome-chatgpt-search/data/repos-browser-extensions-b.json`](skills/awesome-chatgpt-search/data/repos-browser-extensions-b.json) |
+| 9 | ✓ | [`skills/awesome-chatgpt-search/data/repos-chatbots-a.json`](skills/awesome-chatgpt-search/data/repos-chatbots-a.json) |
+| 10 | ✓ | [`skills/awesome-chatgpt-search/data/repos-chatbots-b.json`](skills/awesome-chatgpt-search/data/repos-chatbots-b.json) |
+| 11 | ✓ | [`skills/awesome-chatgpt-search/data/repos-clis-a.json`](skills/awesome-chatgpt-search/data/repos-clis-a.json) |
+| 12 | ✓ | [`skills/awesome-chatgpt-search/data/repos-clis-b.json`](skills/awesome-chatgpt-search/data/repos-clis-b.json) |
+| 13 | ✓ | [`skills/awesome-chatgpt-search/data/repos-langchain.json`](skills/awesome-chatgpt-search/data/repos-langchain.json) |
+| 14 | ✓ | [`skills/awesome-chatgpt-search/data/repos-nlp-a.json`](skills/awesome-chatgpt-search/data/repos-nlp-a.json) |
+| 15 | ✓ | [`skills/awesome-chatgpt-search/data/repos-nlp-b.json`](skills/awesome-chatgpt-search/data/repos-nlp-b.json) |
+| 16 | ✓ | [`skills/awesome-chatgpt-search/data/repos-openai-a.json`](skills/awesome-chatgpt-search/data/repos-openai-a.json) |
+| 17 | ✓ | [`skills/awesome-chatgpt-search/data/repos-openai-b.json`](skills/awesome-chatgpt-search/data/repos-openai-b.json) |
+| 18 | ✓ | [`skills/awesome-chatgpt-search/data/repos-others-a.json`](skills/awesome-chatgpt-search/data/repos-others-a.json) |
+| 19 | ✓ | [`skills/awesome-chatgpt-search/data/repos-others-b.json`](skills/awesome-chatgpt-search/data/repos-others-b.json) |
+| 20 | ✓ | [`skills/awesome-chatgpt-search/data/repos-prompts.json`](skills/awesome-chatgpt-search/data/repos-prompts.json) |
+| 21 | ✓ | [`skills/awesome-chatgpt-search/data/repos-reimplementations.json`](skills/awesome-chatgpt-search/data/repos-reimplementations.json) |
+| 22 | ✓ | [`skills/awesome-chatgpt-search/data/repos-tutorials.json`](skills/awesome-chatgpt-search/data/repos-tutorials.json) |
+| 23 | ✓ | [`skills/awesome-chatgpt-search/data/repos-unity.json`](skills/awesome-chatgpt-search/data/repos-unity.json) |
+| 24 | ✓ | [`skills/awesome-chatgpt-search/SKILL.md`](skills/awesome-chatgpt-search/SKILL.md) |
 
 ---
 

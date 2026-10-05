@@ -23,7 +23,9 @@ or a `pi install npm:<package>` command, pass `npm:<package>`; the CLI does not 
 It needs a Pi `--target` (not an account running
 another executable), takes no `--source-ref`, `--entry` or `--plugin`, and `discover` rejects
 it. Pi keeps one entry per package name; another version replaces it and keeps its extension
-filters, and `update` skips a package pinned to an exact version. A Pi package another
+filters, and `update` skips a package pinned to an exact version. `check` compares a
+package added without a version with npm's latest; a range, tag or private registry is left
+to Pi. A Pi package another
 Skillshare package already manages is refused. In a project with a `.pi` folder, Pi changes
 packages only after the user trusts the project in Pi. For a multi-plugin
 marketplace, select a named candidate with `--plugin`. Use `--name` to bind
@@ -128,6 +130,12 @@ cannot reach, says why, and still updates the other targets.
   `PI_CODING_AGENT_DIR`, and the account keeps its own bindings. Global scope only. With
   `cli:` it runs that compatible CLI instead (such as `omo` for Pi); a Pi account also sets
   `SENPI_CODING_AGENT_DIR` and `OMO_CODING_AGENT_DIR`. A missing CLI fails, with no fallback.
+- Codex without `cli:`: `codex` on PATH, then Homebrew (`/opt/homebrew/bin`, `/usr/local/bin`) or the
+  Windows installer (`%LOCALAPPDATA%\Programs\OpenAI\Codex\bin`)
+  and the CLI shipped in the Codex desktop app (macOS `ChatGPT.app`, or `Codex.app` from an older install, Windows
+  `%LOCALAPPDATA%\OpenAI\Codex\bin\<version>`). The machine-local env var
+  `SKILLSHARE_CODEX_CLI` overrides the search; prefer it over a path in a shared config.
+  The missing-CLI error lists every place searched.
 - Local directory plugins cannot import unowned folders or marketplace installs.
   Pi 0.99.2 or later can import supported filtered entries without changing
   native settings. Preview shows retained keys; raw entries stay in private state

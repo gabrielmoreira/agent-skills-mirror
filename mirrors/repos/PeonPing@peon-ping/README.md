@@ -151,13 +151,13 @@ For reproducible setups, use the Home Manager module:
 { inputs, pkgs, ... }:
 
 let
-  peonCursorAdapterPath = "${inputs.peon-ping.packages.${pkgs.system}.default}/share/peon-ping/adapters/cursor.sh";
+  peonCursorAdapterPath = "${inputs.peon-ping.packages.${pkgs.stdenv.hostPlatform.system}.default}/share/peon-ping/adapters/cursor.sh";
 in {
   imports = [ inputs.peon-ping.homeManagerModules.default ];
 
   programs.peon-ping = {
     enable = true;
-    package = inputs.peon-ping.packages.${pkgs.system}.default;
+    package = inputs.peon-ping.packages.${pkgs.stdenv.hostPlatform.system}.default;
     claudeCodeIntegration = true;
 
     settings = {
@@ -227,7 +227,7 @@ For packs listed on [openpeon.com](https://openpeon.com/), find the GitHub repos
 
 **Other IDE hooks**: adapters for other IDEs are still opt-in so the module does not overwrite unrelated IDE settings. peon-ping provides adapter scripts such as `cursor.sh` in [`adapters/`](https://github.com/PeonPing/peon-ping/tree/main/adapters), and you can wire them like this:
   ```sh
-  ${inputs.peon-ping.packages.${pkgs.system}.default}/share/peon-ping/adapters/$YOUR_IDE.sh EVENT_NAME
+  ${inputs.peon-ping.packages.${pkgs.stdenv.hostPlatform.system}.default}/share/peon-ping/adapters/$YOUR_IDE.sh EVENT_NAME
   ```
   See the Cursor example above.
 
@@ -461,6 +461,7 @@ This means you can:
 - **suppress_idle_prompt_repeats** (boolean, default: `true`): Claude Code re-fires its `idle_prompt` notification every ~60s while the terminal is unfocused. peon-ping routes `idle_prompt` to `task.complete` so you still get a sound when input is needed — but without dedupe the same sound replays on every poke. When `true`, an `idle_prompt` is suppressed if a `task.complete` for the same session already fired inside `idle_prompt_suppress_window_seconds`. Set to `false` to restore the periodic nudge.
 - **idle_prompt_suppress_window_seconds** (number, default: `3600`): Window used by `suppress_idle_prompt_repeats`. After a `task.complete` fires for a session, subsequent `idle_prompt` notifications for that session stay silent for this many seconds. Set to `0` to disable the window (effectively the same as `suppress_idle_prompt_repeats: false`).
 - **suppress_subagent_complete** (boolean, default: `false`): Suppress sounds and notifications from sub-agent activity. When Claude Code's Task tool dispatches parallel sub-agents, each one fires its own events: a completion sound on finish, `task.error` on failed Bash commands, `input.required` on permission requests. Set this to `true` to hear only the parent session's sounds. Events fired from inside a sub-agent are detected via the `agent_id` field Claude Code adds to their hook payloads; separate-session sub-agents (older clients, other IDEs) are still detected by the SubagentStart timing heuristic.
+- **subagent_input_required** (boolean, default: `false`): Only meaningful with `suppress_subagent_complete: true`. Claude Code passes a sub-agent's permission prompts (and MCP elicitation dialogs) through to you in the parent session, and the sub-agent blocks until you answer. Set this to `true` to keep `input.required` sounds and notifications for those prompts while every other sub-agent event stays silent.
 - **default_pack**: The fallback pack used when no more specific rule applies (default: `"peon"`). Replaces the old `active_pack` key — existing configs are migrated automatically on `peon update`.
 - **path_rules**: Array of `{ "pattern": "...", "pack": "..." }` objects. Assigns a pack to sessions based on the working directory using glob matching (`*`, `?`). First matching rule wins. Beats `pack_rotation` and `default_pack`; overridden by `session_override` assignments.
   ```json
@@ -484,7 +485,7 @@ This means you can:
   ]
   ```
 - **pack_rotation**: Array of pack names (e.g. `["peon", "sc_kerrigan", "peasant"]`). Used when `pack_rotation_mode` is `random` or `round-robin`. Leave empty `[]` to use `default_pack` (or `path_rules` / `ide_rules`) only.
-- **pack_rotation_mode**: `"random"` (default), `"round-robin"`, or `"session_override"`. With `random`/`round-robin`, each session picks one pack from `pack_rotation`. With `session_override`, the `/peon-ping-use <pack>` command assigns a pack per session. Invalid or missing packs fall back through the hierarchy. (`"agentskill"` is accepted as a legacy alias for `"session_override"`.)
+- **pack_rotation_mode**: `"random"` (default), `"round-robin"`, or `"session_override"`. With `random`/`round-robin`, each independent session picks one pack from `pack_rotation`, even when other sessions are active in the same directory. Resuming or compacting a known session keeps its pack. A compact event with a new session ID inherits only when recent activity matches both its terminal and directory; a separate subagent session inherits only when its `agent_id` matches the parent's recent `SubagentStart`. With `session_override`, the `/peon-ping-use <pack>` command assigns a pack per session. Invalid or missing packs fall back through the hierarchy. (`"agentskill"` is accepted as a legacy alias for `"session_override"`.)
 - **session_ttl_days** (number, default: 7): Expire stale per-session pack assignments older than N days. Keeps `.state.json` from growing unbounded when using `session_override` mode.
 - **headphones_only** (boolean, default: `false`): Only play sounds when headphones or external audio devices are detected. When enabled, sounds are suppressed if built-in speakers are the active output — useful for open offices. Check status with `peon status`. Supported on macOS (via `system_profiler`) and Linux (via PipeWire `wpctl` or PulseAudio `pactl`).
 - **terminal_tab_title** (boolean, default: `true`): Update the terminal tab title with the current session status (for example `● project: done`). Set to `false` if you already manage tab titles with your own shell prompt or terminal automation and only want peon-ping's sounds/notifications.
@@ -732,7 +733,7 @@ peon-ping works with any agentic IDE that supports hooks. Adapters translate IDE
 | **Kilo CLI** | Adapter | `bash adapters/kilo.sh` / `powershell adapters/kilo.ps1` ([setup](#kilo-cli-setup)) |
 | **Kiro** | Adapter | Add hook entries pointing to `adapters/kiro.sh` (or `.ps1`) ([setup](#kiro-setup)) |
 | **Windsurf** | Adapter | Add hook entries pointing to `adapters/windsurf.sh` (or `.ps1`) ([setup](#windsurf-setup)) |
-| **Google Antigravity** | Adapter | `bash adapters/antigravity.sh` / `powershell adapters/antigravity.ps1`. For headless / macOS LaunchAgent use, also see `bash adapters/antigravity-py.sh --install` (Python `watchdog` watcher with 25s idle threshold; requires `pip3 install watchdog`). The Python watcher supports legacy `conversations/*.pb` state plus newer `antigravity-cli` / `antigravity-ide` `conversations/*.db` and `brain/**/transcript*.jsonl` layouts. |
+| **Google Antigravity** | Adapter | `bash adapters/antigravity.sh` / `powershell adapters/antigravity.ps1`. For headless / macOS LaunchAgent use, also see `bash adapters/antigravity-py.sh --install` (Python `watchdog` watcher; requires `pip3 install watchdog`). The Python watcher parses `brain/**/transcript.jsonl` for turn boundaries and `cli.log` for permission prompts, giving the same five sounds as Claude Code. Legacy `conversations/*.pb` and `*.db` sessions without a transcript fall back to a 45s idle timer (`ANTIGRAVITY_IDLE_SECONDS`). |
 | **Kimi Code** | Adapter | `bash adapters/kimi.sh --install` / `powershell adapters/kimi.ps1 -Install` ([setup](#kimi-code-setup)) |
 | **OpenClaw** | Adapter | Call `adapters/openclaw.sh <event>` (or `openclaw.ps1`) from your OpenClaw skill |
 | **Rovo Dev CLI** | Adapter | Auto-registered by `install.sh` if `~/.rovodev` exists, or add hooks to `~/.rovodev/config.yml` manually ([setup](#rovo-dev-cli-setup)) |
@@ -912,7 +913,7 @@ Add additional events from the table above as desired. The adapter translates Co
 
 ### OpenCode setup
 
-A native TypeScript plugin for [OpenCode](https://opencode.ai/) with full [CESP v1.0](https://github.com/PeonPing/openpeon) conformance.
+A thin TypeScript adapter for [OpenCode v2](https://opencode.ai/v2/docs/build/plugins) that routes events through the installed peon-ping hook. Install peon-ping first using the platform installer above.
 
 **Quick install:**
 
@@ -920,12 +921,14 @@ A native TypeScript plugin for [OpenCode](https://opencode.ai/) with full [CESP 
 curl -fsSL https://raw.githubusercontent.com/PeonPing/peon-ping/main/adapters/opencode.sh | bash
 ```
 
-The installer copies `peon-ping.ts` to `~/.config/opencode/plugins/` and creates a config at `~/.config/opencode/peon-ping/config.json`. Packs are stored at the shared CESP path (`~/.openpeon/packs/`).
+The installer copies `peon-ping.ts` to `~/.config/opencode/plugins/`, respecting `XDG_CONFIG_HOME`. On native Windows, run `powershell -NoProfile -File adapters/opencode.ps1` from a clone after installing peon-ping. The Windows adapter uses the same OpenCode discovery directory and invokes the installed `peon.ps1` directly, without Git Bash. Config, packs and playback are handled by the main peon-ping installation; use `peon config` and `peon packs` to manage them. `CLAUDE_PEON_DIR` selects a custom hook installation.
+
+This adapter requires OpenCode v2. See [the event mapping and compatibility notes](docs/opencode-v2-events.md) for its API contract and validation requirements.
 
 **Features:**
 
 - **Sound playback** via `afplay` (macOS), `pw-play`/`paplay`/`ffplay` (Linux) — same priority chain as the shell hook
-- **CESP event mapping** — `session.created` / `session.idle` / `session.error` / `permission.asked` / rapid prompt detection all map to standard CESP categories
+- **CESP event mapping**: execution start, success and failure, permission requests and input forms map to standard CESP categories
 - **Desktop notifications** — large overlay banners by default (JXA Cocoa, visible on all screens), or standard notifications via [`terminal-notifier`](https://github.com/julienXX/terminal-notifier) / `osascript`. Fires only when the terminal is not focused.
 - **Terminal focus detection** — checks if your terminal app (Terminal, iTerm2, Warp, Alacritty, kitty, WezTerm, ghostty, Hyper) is frontmost via AppleScript before sending notifications
 - **Tab titles** — updates the terminal tab to show task status (`● project: working...` / `✓ project: done` / `✗ project: error`)
@@ -965,7 +968,7 @@ The script auto-finds the peon icon (Homebrew libexec, OpenCode config, or Claud
 
 ### Kilo CLI setup
 
-A native TypeScript plugin for [Kilo CLI](https://github.com/kilocode/cli) with full [CESP v1.0](https://github.com/PeonPing/openpeon) conformance. Kilo CLI is a fork of OpenCode and uses the same plugin system — this installer downloads the OpenCode plugin and patches it for Kilo.
+A dedicated v1 TypeScript adapter for [Kilo CLI](https://github.com/kilocode/cli) with full [CESP v1.0](https://github.com/PeonPing/openpeon) conformance. It routes events through the installed peon-ping hook. Install peon-ping first using the platform installer above.
 
 **Quick install:**
 
@@ -973,7 +976,7 @@ A native TypeScript plugin for [Kilo CLI](https://github.com/kilocode/cli) with 
 curl -fsSL https://raw.githubusercontent.com/PeonPing/peon-ping/main/adapters/kilo.sh | bash
 ```
 
-The installer copies `peon-ping.ts` to `~/.config/kilo/plugins/` and creates a config at `~/.config/kilo/peon-ping/config.json`. Packs are stored at the shared CESP path (`~/.openpeon/packs/`).
+The installer downloads the dedicated Kilo plugin to `~/.config/kilo/plugins/`, respecting `XDG_CONFIG_HOME`. Playback uses the main peon-ping installation and its configuration. Use `peon config` and `peon packs` to manage settings and packs. Native Kilo session IDs keep independent sessions separate and retain the same pack identity across later events and plugin reloads.
 
 **Features:** Same as the [OpenCode adapter](#opencode-setup) — sound playback, CESP event mapping, desktop notifications, terminal focus detection, tab titles, pack switching, no-repeat logic, and spam detection.
 
@@ -1046,7 +1049,7 @@ A shell adapter for **Gemini CLI** with full [CESP v1.0](https://github.com/Peon
 
 - `SessionStart` (startup) → Greeting sound (*"Ready to work?"*, *"Yes?"*)
 - `AfterAgent` → Task completion sound (*"Work, work."*, *"Job's done!"*)
-- `AfterTool` → Success = Task completion sound, Failure = Error sound (*"I can't do that."*)
+- `AfterTool` → Success = Silent; `tool_response.error` = Error sound (*"I can't do that."*). Legacy top-level `exit_code`/`stderr` input is also supported.
 - `Notification` → System notification
 
 ### Windsurf setup

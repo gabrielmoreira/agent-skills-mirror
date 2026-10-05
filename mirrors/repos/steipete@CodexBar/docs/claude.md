@@ -140,7 +140,9 @@ the cookie import.
   memory beyond the normal 30-minute cache window, ahead of a stale credentials file. Each refresh retries the
   persistent cache. Token expiry, profile changes, cache invalidation, and Never prompt still prevent reuse;
   after a rejected cache write, the next refresh first clears the stale persistent entry, then reuses and persists
-  a still-fresh in-memory credential once that cleanup succeeds.
+  an unexpired in-memory credential even after 30 minutes once that cleanup succeeds. Extended reuse requires
+  evidence of that exact failed write and its original consent; an unrelated invalidation cannot authorize it.
+  This does not discover an external login or enable additional background reads of Claude Code's Keychain item.
 - For the default CLI profile, expired cached or file credentials can adopt a fresh CLI Keychain token after file fallback, even when its fingerprint was already observed during an earlier repair. Existing direct-read consent, prompt policy, cooldown, one-minute freshness-check throttle, and noninteractive-read checks still apply. Custom profiles are not recovered from the unscoped global item, and CLI credentials are never rewritten by this synchronization. Background recovery still requires the Always allow prompts policy; the default Only on user action policy requires an explicit Refresh.
 - Credential selection does not rank unrelated sources by the largest `expiresAt`: expiry establishes validity,
   not account identity or issuance order. A valid profile file remains ahead of Keychain bootstrap. Keychain candidates
@@ -151,12 +153,15 @@ the cookie import.
 - Requires `user:profile` scope (CLI tokens with only `user:inference` cannot call usage).
 - Missing-scope errors require a Claude Code sign-in token with usage access. `claude setup-token` produces a token for model requests and is not a usage-scope recovery step ([Claude Code authentication](https://code.claude.com/docs/en/authentication#generate-a-long-lived-token)). Remove any configured OAuth token override before switching Claude Source to Web/CLI.
 - Endpoints:
-  - `GET https://api.anthropic.com/api/oauth/usage`
+  - `GET https://api.anthropic.com/api/oauth/usage?cedar_ember=1` → usage and saved reset inventory.
+    HTTP 400/403 retries once without the optional query and with the legacy request identity; spending is never skipped.
+    Missing-profile-scope errors, 401, and 429 keep their normal handling without that retry.
   - `GET https://api.anthropic.com/api/oauth/profile` → account identity used to verify that optional Web enrichment
     belongs to the same Claude account.
 - Headers:
   - `Authorization: Bearer <access_token>`
   - `anthropic-beta: oauth-2025-04-20`
+  - Reset inventory uses `claude-cli/<detected-version> (external, cli)`; eligibility remains server-controlled.
 - Mapping:
   - `five_hour` → session window.
   - `seven_day` → weekly window; also becomes the primary fallback when `five_hour` is absent or has no utilization.
@@ -216,6 +221,14 @@ the cookie import.
   2) Chrome/Chromium forks: `~/Library/Application Support/Google/Chrome/*/Cookies`
   3) Firefox: `~/Library/Application Support/Firefox/Profiles/*/cookies.sqlite`
 - Domain: `claude.ai`.
+- Linux: the web source supports an explicitly configured manual `sessionKey` cookie. Automatic browser import,
+  including Firefox import, remains unavailable. This enables the same API request path as macOS; it does not
+  bypass Cloudflare challenges, refresh Claude Code OAuth credentials, or guarantee that a browser session will
+  work outside the browser. Use the OAuth source when the web request is challenged.
+- Linux CLI Auto mode: an existing valid manual cookie makes Web eligible ahead of CLI after upgrading.
+  Web success returns without launching Claude Code; authentication rejection or a Cloudflare challenge falls
+  back to an available CLI using the existing Auto policy. Cancellation stops without launching the CLI.
+  Explicit Web mode does not fall back. Use explicit OAuth mode for passive polling that must not launch the CLI.
 - Cookie name required:
   - `sessionKey` (value prefix `sk-ant-...`).
 - Cached cookies: Keychain cache `com.steipete.codexbar.cache` (account `cookie.claude`, source + timestamp).
@@ -244,7 +257,7 @@ the cookie import.
   cached cookie and prior quota snapshot, identifies the challenge, and links to Settings. Select OAuth for live
   quota windows on that network (the web-only Usage credits balance is unavailable), or try a different network.
   Explicit Web mode remains terminal and never reads OAuth credentials as a fallback.
-- Limit Reset Credits ("Reset for free" in Claude Settings > Usage), Web source only:
+- Limit Reset Credits ("Reset for free" in Claude Settings > Usage), Web and OAuth sources:
   - These are saved resets a user can redeem, separate from the session and weekly reset timestamps already
     supplied by Web, OAuth, and CLI. Existing cookie settings and source selection govern all Web access; this
     feature does not enable cookies, broaden browser discovery, or initiate Web enrichment.
@@ -260,8 +273,8 @@ the cookie import.
     `codexbar serve`: a `Limit Reset Credits` row in `usage.details` (`N available`, next expiry).
   - Live-only: grant IDs are never decoded, the usage request skips the URL cache, and cached or synced snapshots do
     not restore the inventory. A reset used on claude.ai disappears at the next successful refresh.
-  - Source precedence stays unchanged: credits appear only when Web supplies the primary usage snapshot. OAuth
-    and CLI do not report saved reset credits, and optional Web enrichment never adds Web credits to either source,
+  - Source precedence stays unchanged: credits appear only from the source supplying the primary usage snapshot. CLI
+    does not report saved reset credits, and optional Web enrichment never adds Web credits to another source,
     even when the account matches. The menu replaces the generic details row with one shared reset-credit section.
     CodexBar never redeems a reset; use Claude on the web or Claude Desktop.
 

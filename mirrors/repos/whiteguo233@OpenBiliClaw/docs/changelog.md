@@ -2,7 +2,17 @@
 
 > 按里程碑记录各阶段交付内容。每次分支合回 main 时追加条目。
 
-## v0.3.225：聊一聊链接分享、多行输入与逐字流式（2026-10-01）
+## v0.3.226：本地模型自动回退与聊天体验修复（2026-10-04）
+
+- 发布回执、商店审核状态及国内源码/安装包镜像范围见[发布与验证记录](testing/2026-10-04-release-0.3.226.md)；国内下载入口按实际已上传版本标注。
+
+### 修复：本地向量模型自动回退 CPU（2026-10-04）
+
+- 本机真实端到端复验通过：独立 Ollama + 应用 HTTP + 浏览器按钮，实际终止 runner 后恢复、8 次并发、CPU 持续失败与恢复、进程重启、1024 维向量及 SQLite 缓存均已核验；[实测证据](testing/2026-10-04-ollama-cpu-fallback.md#本机端到端复验真实进程故障真实-http真实向量)。Intel Mac 实际使用 CPU，Windows GPU 迁移仍待对应硬件验收。
+
+- 本地 Ollama 向量请求先使用自动加速；遇到原生 runner 崩溃（包括 Windows `0xc0000409` / `0xc0000005`）、明确的 GPU / 内存分配错误或无效向量，原请求以 `num_gpu=0` 重试。同一后端进程的 endpoint/model 保持 CPU 到应用退出，正式调用与诊断共享选择。
+- CPU 返回有效向量才视为恢复；CPU 失败 / 无效向量不入缓存，回退后的健康探针超时不再乐观报告可用。缺模型、鉴权、路径错误、冷加载超时与远端服务不触发模式切换。
+- Windows 包保留 Vulkan 自动加速能力；CUDA/ROCm 仍按现有体积策略裁剪。桌面、移动 Web、插件与 CLI 共用后端逻辑，无新配置项或 UI 开关；详细行为见 [LLM 模块](modules/llm.md#本地-ollama-向量运行模式)，测试证据见 [验证记录](testing/2026-10-04-ollama-cpu-fallback.md)。
 
 ### 修复：最新聊天链路真实请求复验（2026-10-02）
 
@@ -83,6 +93,18 @@
 - **问题**：搜索冷却 / 退避档位 / v_voucher streak / DOM fallback 四项状态此前只是 `BilibiliAPIClient` 的 ClassVar，仅同进程共享；CLI 四进程布局（API 主进程 + worker + discovery worker）下，API 进程被 412 打进 600s 硬冷却后 discovery worker 仍用 API 搜索打同一出口 IP，worker 侧触发的 DOM fallback 信号 API 进程也看不到。
 - **方案**：新增 `bilibili/search_backoff.py`，把四项状态镜像到 `<data_dir>/bilibili_search_backoff.json`——deadline 以墙钟存储（`time.monotonic()` 跨进程不可比），复用 `memory/json_state.py` 的文件锁读-改-写，读取时按「最保守者赢」合并（deadline 取 max；escalation 档位与 streak 只在最长冷却 1800s 的事故窗口内合并，避免陈旧 streak 误触发新进程），任一进程搜索成功后清零计数并传播。状态文件不可写 / 不存在时完全退回进程内行为（fail-open，无新增配置项）；schema 预留 `scope` 字段，为后续按 cookie / proxy 分账留口。回归：`tests/test_bilibili_search_backoff.py` +9 条（412 硬冷却 / DOM fallback / streak 跨进程可见、最保守 deadline 获胜、reset 传播、陈旧计数忽略、禁用与不可写时逐字退回进程内行为、落盘 schema）；新增 `tests/conftest.py` 把套件的状态文件统一重定向到 tmp，避免测试读写真实 `data/`。
 - **文档同步**：`docs/modules/bilibili.md`（搜索风控冷却特性行 + 设计要点第 10 条）。
+
+### 新增 Cheaper Inference 内置 Provider（2026-09-30）
+
+- `provider_type="cheaperinference"` 通过 OpenAI 兼容接口接入 Cheaper Inference，默认 `https://api.cheaperinference.com/v1`、`gpt-5.4-mini`，模型名不带厂商前缀。支持独立实例、调用链、模型发现（只列 `type` 为 `text` 的聊天模型）和请求探测；多模型网关不发送 `reasoning_effort`，embedding 仍需独立配置。
+- 接入后端配置与 API、CLI 和安装向导（菜单第 10 项）、桌面与扩展设置、首次设置向导；补充配置样例、文档和回归测试。只有用户显式配置时才会调用。
+
+### 维护：发版检查与测试隔离（2026-10-04）
+
+- 合并网页搜索的异步资源上下文，兼容 CI 的 Ruff 0.16.10 `SIM117` 检查，维持流式响应关闭顺序和总时限。
+- 修复推荐传输测试创建环境变量后未清理的问题：先登记再删除键，确保真实运行时直接写入的端口 / socket 在测试结束时恢复，避免后续 API 单测误走不存在的推荐 worker。
+
+## v0.3.225：聊一聊链接分享、多行输入与逐字流式（2026-10-01）
 
 ### 特性：聊天回复 token 级流式输出（2026-10-01，feat/token-streaming，issue #83）
 
@@ -294,11 +316,6 @@
 - **openai_compatible 原生 function calling**：`LLMProvider` 新增 `supports_tool_calling` 与 `complete_with_tools()`（默认抛 `LLMToolCallUnsupportedError`）；`OpenAIProvider` 实现 OpenAI `tools=[{"type":"function",...}]` 原生 FC，单次响应多 `tool_calls` 并行解析为 `{"id","name","arguments","arguments_raw"}`，带工具调用的空 content 合法；DeepSeek 继承并保留 thinking max_tokens 下限；`api_flavor="responses"` 与 Ollama 显式标 `False` 走兜底。`LLMRegistry` 新增 `complete_with_tools()` / `complete_with_tools_chain()` / `complete_provider_with_tools()` / `provider_supports_tool_calling()`，复用 fallback 链 cooldown / 限流 / 告警语义并跳过无 FC 能力实例。
 - **`LLMService.complete_with_native_tools()`**：agent loop 单跳入口，接收完整 canonical 消息列表 + OpenAI 工具 schema；路由首选 provider 支持原生 FC 走 native 链，否则把消息展平（assistant.tool_calls → 文本注释、role=tool → `[工具执行结果]`）进 prompt 模拟，解析 `{"tool_call": ...}` / `{"tool_calls": [...]}` 多调用 JSON；两条路径都不注入 core memory（loop 调用方拥有 system prompt）。旧 `complete_with_tools()`（单跳、旧扁平 schema）保持不变。
 - **多跳 `AgentLoop`（`agent/loop.py`）**：`run()` 异步生成器逐跳产出 `AgentEvent`（thinking / tool_call / tool_result / final / step_limit_reached，`to_dict()` 供 M2 SSE 序列化）；默认 64 跳上限（新增 `[agent]` 配置段 `loop_max_steps` / `tool_result_max_chars`，见 `docs/modules/config.md`），超限后发出 step_limit_reached 并以无工具收尾调用让模型汇报进展；未知工具名与参数校验失败以 `ok=false` 结果回填模型自纠；工具结果超长截断并标记。回归：`tests/test_agent_tool_registry.py` / `tests/test_llm_native_tools.py` / `tests/test_agent_loop.py` + `test_config.py` 的 `[agent]` round-trip。
-
-## 新增 Cheaper Inference 内置 Provider（2026-09-30，cheaperinference-provider）
-
-- `provider_type="cheaperinference"` 通过 OpenAI 兼容接口接入 Cheaper Inference，默认 `https://api.cheaperinference.com/v1`、`gpt-5.4-mini`，模型名不带厂商前缀。支持独立实例、调用链、模型发现（只列 `type` 为 `text` 的聊天模型）和请求探测；多模型网关不发送 `reasoning_effort`，embedding 仍需独立配置。
-- 接入后端配置与 API、CLI 和安装向导（菜单第 10 项）、桌面与扩展设置、首次设置向导；补充配置样例、文档和回归测试。只有用户显式配置时才会调用。
 
 ## v0.3.224：自定义回复语气与设置页一键测试（2026-09-19）
 

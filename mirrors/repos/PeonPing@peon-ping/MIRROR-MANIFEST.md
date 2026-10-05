@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `PeonPing/peon-ping` — 26 default patterns, 6 followed patterns, 22 file(s) materialized.
+Mirror of `PeonPing/peon-ping` — 26 default patterns, 7 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `PeonPing/peon-ping` — 26 default patterns, 6 followed patterns, 22 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 6 |
-| Files         | 22 |
+| Followed pats | 7 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -56,6 +56,7 @@ Mirror of `PeonPing/peon-ping` — 26 default patterns, 6 followed patterns, 22 
 - `README_ko.md`
 - `README_zh.md`
 - `README_ja.md`
+- `docs/opencode-v2-events.md`
 - `CONTRIBUTING.md`
 
 ## File Index
@@ -81,11 +82,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | ✓ | [`skills/peon-ping-use/SKILL.md`](skills/peon-ping-use/SKILL.md) |
 | 16 | ✓ | [`tests/fixtures/hook-logging/README.md`](tests/fixtures/hook-logging/README.md) |
 | 17 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 18 | → | [`README_ja.md`](README_ja.md) |
-| 19 | → | [`README_ko.md`](README_ko.md) |
-| 20 | → | [`README_zh.md`](README_zh.md) |
-| 21 | → | [`README.md`](README.md) |
-| 22 | → | [`RELEASING.md`](RELEASING.md) |
+| 18 | → | [`docs/opencode-v2-events.md`](docs/opencode-v2-events.md) |
+| 19 | → | [`README_ja.md`](README_ja.md) |
+| 20 | → | [`README_ko.md`](README_ko.md) |
+| 21 | → | [`README_zh.md`](README_zh.md) |
+| 22 | → | [`README.md`](README.md) |
+| 23 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

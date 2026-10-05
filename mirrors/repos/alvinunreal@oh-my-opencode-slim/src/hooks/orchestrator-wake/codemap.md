@@ -17,7 +17,11 @@ so children are enumerated via `session.list({parentID})` (event-tracked
 fallback), the wake condition is children without a terminal `outcome`
 (staleness-bounded at 3× the interval), and the wake prompt is delivered with
 `delivery: 'queue'`. Config: `orchestratorWake.mode` ('auto' | 'todo' |
-'children', default auto). The v1 code path is unchanged.
+'children', default auto) and `orchestratorWake.periodicWakeEnabled`
+(default true; the config loader derives false on v2 hosts when no layer
+configures the key — the native background notifier owns first-terminal
+delivery there, so only event-driven wakes and their timer-based retries
+run by default). The v1 code path is unchanged.
 
 ## Design
 

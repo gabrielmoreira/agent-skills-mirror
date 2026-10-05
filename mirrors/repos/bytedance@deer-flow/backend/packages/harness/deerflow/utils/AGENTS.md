@@ -32,6 +32,12 @@ optional leading UTF-8 BOM cannot hide a first-line heading or code fence, or
 occupy a preview line. Preserve physical line numbers, embedded U+FEFF
 characters, and the original file bytes.
 
+All outline heading styles skip root-level indented code (four leading spaces
+or a tab after up to three spaces), including PDF-style single and split bold
+headings. Keep legitimate bold headings with up to three spaces and the shared
+conversion-companion path working. Regression coverage lives in
+`tests/test_file_outline_indented_bold.py`.
+
 ### Active Content MIME Types
 
 `text_detection.py::_is_active_content_mime_type` is the shared download-safety
@@ -51,6 +57,9 @@ lives in `tests/test_file_conversion_cancellation.py`.
 
 `host_paths.py` rejects Windows device names for host-visible creation paths on
 every platform, including the `COM`/`LPT` aliases with superscript ¹, ² and ³.
+The console aliases `CONIN$` and `CONOUT$` are reserved too; match them
+case-insensitively before the first dot, without rejecting longer ordinary
+names such as `CONIN$notes.txt`.
 Do not normalize arbitrary Unicode digits into device numbers: names such as
 `COM⁴.txt` and `COM¹notes.txt` are ordinary portable names. Read/removal callers
 retain their existing portability exemptions.

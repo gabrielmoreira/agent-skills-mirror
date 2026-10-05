@@ -109,14 +109,14 @@ archon setup --spawn              # open in a new terminal window
 
 ### `doctor`
 
-Verify your Archon setup. Runs a checklist of common failure points: Claude binary spawn, Codex binary resolution (env → config → vendor → autodetect, reporting which source resolved), gh CLI auth, Pi auth (when Pi is configured as default), OpenCode runtime SDK presence, database reachability, workspace writability, bundled defaults, folder-project detection (contained repos, when run from one), telemetry state, AI credentials connected in Archon, and adapter token pings (Slack/Telegram, best-effort).
+Verify your Archon setup. Runs a checklist of common failure points: Claude binary spawn, Codex binary resolution (env → config → vendor → autodetect, reporting which source resolved), gh CLI auth, the configured assistant's native login, OpenCode runtime SDK presence, database reachability, workspace writability, bundled defaults, folder-project detection (contained repos, when run from one), telemetry state, AI credentials connected in Archon, and adapter token pings (Slack/Telegram, best-effort).
 
 ```bash
 archon doctor
 archon doctor --full   # also probe the OpenCode runtime SDK even when it isn't the configured assistant
 ```
 
-The Codex check skips (never fails) when Codex isn't the configured assistant anywhere and no OpenAI credential is connected, so Claude-only users aren't nagged about a binary they'll never use. The AI credentials check uses each connected credential the way a run would: it decrypts it and refreshes an expired subscription grant (saving the rotated grant). It prints one line per credential and fails when one cannot be used (it cannot be read, or the vendor rejected the refresh), naming the command that reconnects it. It warns when a credential could not be verified, for example because the vendor was unreachable. An API key is reported usable once it decrypts; only a model request proves the vendor accepts it. The OpenCode check only probes that the embedded runtime SDK module resolves — it never boots the runtime (which spawns a child process and binds a port) — and skips unless OpenCode is the configured assistant or `--full` is passed.
+The Codex check skips (never fails) when Codex isn't the configured assistant anywhere and no OpenAI credential is connected, so Claude-only users aren't nagged about a binary they'll never use. The AI credentials check uses each connected credential the way a run would: it decrypts it and refreshes an expired subscription grant (saving the rotated grant). It prints one line per credential and fails when one cannot be used (it cannot be read, or the vendor rejected the refresh), naming the command that reconnects it. It warns when a credential could not be verified, for example because the vendor was unreachable. An API key is reported usable once it decrypts; only a model request proves the vendor accepts it. The assistant login check uses the merged configuration and the provider's own runtime, unless that model's vendor already has a credential connected in Archon. When Archon config names no model (Pi then uses its own default), doctor cannot tell which vendor the run uses, so a missing native login is a warning, not a failure, if you have connected a credential the assistant can use. Pi resolves its configured key during the check, so a key command runs during `archon doctor`; a command that prompts can prompt again at run start. The check builds the runtime a run builds, which runs every provider's `!command` key stored in Pi's `auth.json`, not only the configured provider's. For a model in Pi's catalog, a run resolves a `models.json` key command once when a node starts and uses that key for the whole node, so a short-lived token can expire before a long node ends; a model from an extension provider runs its key command on each request. Pi OAuth checks may refresh through Pi's runtime. Codex reads its native account through app-server and asks it to refresh the sign-in, so a revoked login fails the check (a run does not make this call); an API key is usable once resolved. When Codex is configured for a model provider that needs no OpenAI login, the check is skipped. Claude, Copilot, and OpenCode cannot check their native login without starting a model session, so the check is skipped and reports "not checked". The OpenCode check only probes that the embedded runtime SDK module resolves — it never boots the runtime (which spawns a child process and binds a port) — and skips unless OpenCode is the configured assistant or `--full` is passed. The provider support check warns when the default assistant is a [deprecated provider](/getting-started/ai-assistants/#deprecated-providers).
 
 Exit code 0 if all checks pass or are skipped; 1 if any critical check fails. Adapter pings degrade to `skip` on network errors — a flaky connection does not flip the result red.
 
@@ -296,7 +296,7 @@ Note that a real `run` emits a JSON payload **only** under `--detach`. Without i
 | `--supersedes <run-id>` | Start in a fresh estate while recording that this run replaces a terminal prior run. Unlike `--adopt`, it inherits no checkout. |
 | `--quiet`, `-q` | Suppress all progress output to stderr |
 | `--verbose`, `-v` | Also show tool-level events (tool name and duration) |
-| `--detach` | Run in a detached background child and return immediately. The child does all the work; find it later with `workflow runs`/`workflow get`. For `workflow run`, human output names both files and the `--json` acknowledgement carries `runId`, `transcriptPath` (the structured per-run JSONL), and `logPath` (the detached child process's stdout/stderr capture). These paths are intentionally distinct. Use [`workflow logs <run-id> --follow`](#workflow-logs) for execution events and [`workflow wait <run-id>`](#workflow-wait) when a host needs the next terminal or gate transition. Also available on `approve`/`reject`/`resume`; their acknowledgement differs — see [Detached control verbs](#detached-control-verbs). |
+| `--detach` | Run in a detached background child and return before completion. Exact-id `workflow resume` returns after the child accepts the resume. The child does all the work; find it later with `workflow runs`/`workflow get`. For `workflow run`, human output names both files and the `--json` acknowledgement carries `runId`, `transcriptPath` (the structured per-run JSONL), and `logPath` (the detached child process's stdout/stderr capture). These paths are intentionally distinct. Use [`workflow logs <run-id> --follow`](#workflow-logs) for execution events and [`workflow wait <run-id>`](#workflow-wait) when a host needs the next terminal or gate transition. Also available on `approve`/`reject`/`respond`/`resume`; their acknowledgement differs — see [Detached control verbs](#detached-control-verbs). |
 | `--dry-run` | Simulate deterministic DAG control flow in memory. Creates no run, worktree, session, event, artifact, or provider request. |
 | `--stubs <path>` | YAML mapping of node ids to scalar or structured outputs for `--dry-run`. Relative paths resolve from `--cwd`. |
 | `--stubs-init <path>` | Write a complete stub scaffold for the expanded workflow and exit. Refuses to overwrite an existing file. Relative paths resolve from `--cwd`. |
@@ -651,7 +651,9 @@ entry includes `nodeId` and `state`; nodes with a start event include the origin
 `startedAt`, and terminal nodes with both start and end events include `durationMs`.
 Completed nodes may include an `outputPreview`, truncated after 200 characters with
 ASCII `...`, while failed nodes include `error` (or `Unknown error` when none was
-recorded). Nodes whose provider reported a session include `sessionIds`: the full
+recorded). A node a resume reset for re-running (`always_run`, or a stale cached
+success) reads `pending` until its new attempt starts, matching `terminal_record.nodes`.
+Nodes whose provider reported a session include `sessionIds`: the full
 session id of each attempt and loop iteration, in order. Human `--verbose` output prints
 them on a `Session:` or `Sessions:` line, so you can continue a node's conversation in
 the provider's own tool, for example with `claude --resume <id>`. Claude Code finds a
@@ -821,7 +823,60 @@ In `--json` mode the command is a non-blocking control-plane ack: it validates t
 
 When you already hold a run id, prefer that exact-id form. `workflow run <name> --resume --detach` selects the newest resumable run of that workflow **in the current checkout**, which is a different question — from another worktree it correctly finds nothing, and in a checkout with several historical runs it expresses less than the id you already have. Keep the name form for the case you actually mean: "the latest failed run of this workflow, here."
 
-Adding `--detach` **inverts** that: the child is re-invoked without `--json`, so it takes the inline path and does re-execute the run — just outside your shell. The ack carries `continues: true` to say so. See [Detached control verbs](#detached-control-verbs).
+Adding `--detach` **inverts** that: the child is re-invoked without `--json`, so it takes the inline path and does re-execute the run — just outside your shell. The ack carries `continues: true` to say so. Detached resume acknowledges only after the engine accepts it and clears the old pause. An immediate `workflow wait` can therefore report a genuine new pause, including repeated attention at the same node, but never the cleared pause. See [Detached control verbs](#detached-control-verbs).
+
+### `workflow wake`
+
+Wake due durable time waits, event deadlines, signaled events, and scheduled quota resumes without running a server:
+
+```bash
+archon workflow wake --json
+archon workflow wake --watch --json
+```
+
+A pass scans up to 25 due continuations across the configured install database, regardless of the current directory. It awaits each admitted execution segment. A segment can complete, fail, or pause at another wait or gate; later occurrences belong to another pass. Concurrent CLI and server hosts use the engine's existing occurrence claim, so only one executes a continuation.
+
+`--watch` repeats serial passes, sleeping five seconds between completed passes. Its JSON output is JSONL: one document per pass with `ok`, `action`, `accepted`, and per-run `outcomes`. Outcomes distinguish admission from settlement (`completed`, `paused`, or `failed`). Without `--json`, the command prints a summary and run-specific outcomes.
+
+Exit status is 0 for an empty batch, a concurrent claim loser, a completed segment, or a legitimate pause. Refusals, execution failures, and deferral failures return 1. Watch continues after failures and returns 1 on shutdown if any pass failed. Prerequisite failures defer the exact occurrence for 60 seconds.
+
+The CLI preserves the run's recorded source, inputs, configuration, user, conversation, and working path. It accepts local CLI/API conversations. Container execution, missing paths or captured source, and external platform origins are refused with the run ID and reason. Use manual `workflow resume` for a container, or the server hosting the external conversation. A run stays parked if no waker runs; age never marks it failed.
+
+SIGINT/SIGTERM stops scheduling new passes and drains admitted segments and owner cleanup. Shutdown can wait for a long executing segment. An abrupt kill retains the existing ambiguous-owner behavior; it does not provide automatic recovery of a running segment. On Windows, SIGTERM ends the process immediately, so it behaves as an abrupt kill rather than a drain.
+
+#### Wake timers
+
+On macOS, install a per-install LaunchAgent:
+
+```bash
+archon workflow wake schedule install --interval 5 --json
+archon workflow wake schedule remove --json
+```
+
+The interval is a positive integer in seconds, defaulting to 5. The job invokes `workflow wake --json`, runs at load, and records an absolute executable, working directory, and `ARCHON_HOME`. Reinstalling identical configuration verifies that its launchd job is registered and fails if registration cannot be verified. Remove then install to change its interval or executable. Native installation is macOS-only; see [workflow trigger scheduling](/guides/workflow-triggers/#macos-scheduling-limits) for login, sleep, environment, and scheduler caveats.
+
+On Linux, run a one-pass command from cron (this example checks each minute):
+
+```text
+* * * * * ARCHON_HOME=/home/alice/.archon /home/alice/.local/bin/archon workflow wake --json >> /home/alice/.archon/logs/workflow-wake.log 2>&1
+```
+
+Create the log directory first. For a systemd timer, use `ExecStart=/absolute/path/to/archon workflow wake --json` in a oneshot service, set `Environment=ARCHON_HOME=/absolute/path/to/.archon`, and schedule the service with `OnBootSec=5s` and `OnUnitInactiveSec=5s` in its timer. Enable it with `systemctl --user enable --now <name>.timer`.
+
+On Windows Task Scheduler, select the absolute Archon executable, set arguments to `workflow wake --json`, and configure a repeating trigger. Set `ARCHON_HOME` in the task's environment or invoke a wrapper that sets it, and use that home as the working directory. The OS timer owns cadence and overlap; one pass may outlast its interval.
+
+### `workflow signal`
+
+Signal an exact event wait occurrence and attempt its execution immediately:
+
+```bash
+archon workflow signal <full-run-id> --event checks.complete \
+  --resume-at '2026-10-04T12:00:00.000Z' --data '{"conclusion":"success"}' --json
+```
+
+Use the event name and `metadata.wait.resumeAt` from the run's current state. The full persistent run ID is required; this command does not resolve a short prefix against the invocation directory. `--data` accepts any JSON value and is validated before mutation. Stale, duplicate, expired, mismatched, and non-event occurrences are rejected without resuming.
+
+The result reports `signaled` separately from admission and settlement. If the signal succeeds but execution is refused or fails, it remains durable, the command returns 1, and a later `workflow wake` can retry after the problem is resolved. A concurrent resume winner after a successful signal is a normal outcome.
 
 ### `workflow cancel`
 
@@ -914,18 +969,24 @@ In human mode `approve`/`reject` auto-resume the run inline. In `--json` mode th
 
 #### Detached control verbs
 
-`approve`, `reject`, and `resume` accept `--detach`. The parent validates the run
+`approve`, `reject`, `respond`, and `resume` accept `--detach`. The parent validates the run
 **read-only** with the same preconditions the operation itself enforces, so a
 wrong-status, missing-context, `child_workflow`-blocked, already-resolved, or
 no-working-path run is refused synchronously and nothing is spawned. The parent then
 hands the whole command to a detached child that owns all state mutation in its own
 process group. A shell that dies mid-flight can no longer wedge the run.
 
-The parent also waits out the child's startup window before acking, so a child that
-dies before it starts the run surfaces as an error carrying the tail of its log rather
-than as a success you only discover was false minutes later. A run that simply finishes
-inside that window — a short workflow, or one that fails on its first node — is acked
-normally; its outcome belongs to the run, and `workflow get <run-id>` reports it.
+For `resume`, the parent waits for the child's engine admission receipt before
+acknowledging success, rather than waiting for workflow completion. Even a run that
+immediately pauses again or finishes is acknowledged normally; use `workflow wait`
+to learn that outcome. Confirmation is bounded to 60 seconds. If acceptance is not
+confirmed, the command reports an error with the available log path. The child may
+still continue: inspect the run before retrying. A timeout never stops the child or
+changes run state.
+
+Other detached control verbs use the child's startup window. A child that dies during
+startup surfaces as an error carrying the tail of its log. A run that finishes inside
+that window is acknowledged normally; its outcome belongs to the run.
 
 ```bash
 archon workflow approve <run-id> --detach

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aannoo/hcom` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `aannoo/hcom` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `aannoo/hcom` — 26 default patterns, 0 followed patterns, 11 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 1 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,17 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/hcom-agent-messaging/references/cross-tool.md`](skills/hcom-agent-messaging/references/cross-tool.md) |
-| 2 | ✓ | [`skills/hcom-agent-messaging/references/gotchas.md`](skills/hcom-agent-messaging/references/gotchas.md) |
-| 3 | ✓ | [`skills/hcom-agent-messaging/references/patterns.md`](skills/hcom-agent-messaging/references/patterns.md) |
-| 4 | ✓ | [`skills/hcom-agent-messaging/references/script-template.md`](skills/hcom-agent-messaging/references/script-template.md) |
-| 5 | ✓ | [`skills/hcom-agent-messaging/references/scripts/basic-messaging.sh`](skills/hcom-agent-messaging/references/scripts/basic-messaging.sh) |
-| 6 | ✓ | [`skills/hcom-agent-messaging/references/scripts/cascade-pipeline.sh`](skills/hcom-agent-messaging/references/scripts/cascade-pipeline.sh) |
-| 7 | ✓ | [`skills/hcom-agent-messaging/references/scripts/codex-worker.sh`](skills/hcom-agent-messaging/references/scripts/codex-worker.sh) |
-| 8 | ✓ | [`skills/hcom-agent-messaging/references/scripts/cross-tool-duo.sh`](skills/hcom-agent-messaging/references/scripts/cross-tool-duo.sh) |
-| 9 | ✓ | [`skills/hcom-agent-messaging/references/scripts/ensemble-consensus.sh`](skills/hcom-agent-messaging/references/scripts/ensemble-consensus.sh) |
-| 10 | ✓ | [`skills/hcom-agent-messaging/references/scripts/review-loop.sh`](skills/hcom-agent-messaging/references/scripts/review-loop.sh) |
-| 11 | ✓ | [`skills/hcom-agent-messaging/SKILL.md`](skills/hcom-agent-messaging/SKILL.md) |
+| 1 | ✓ | [`skills/hcom-agent-messaging/SKILL.md`](skills/hcom-agent-messaging/SKILL.md) |
 
 ---
 

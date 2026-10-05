@@ -4,20 +4,6 @@
 
 ```bash
 bun install          # install dependencies
-bun run test:quick   # measured fast deterministic subset for edit feedback
-bun run test         # complete free suite via the strict parallel runner
-bun run test:ubicloud  # complete free suite on an ephemeral 16-vCPU Ubicloud VM (needs UBICLOUD_API_KEY)
-bun run test:pr      # changed fast live probes + selected judges (CI PR default)
-bun run test:evals   # run paid evals: LLM judge + E2E (diff-based, ~$4.35/run max)
-bun run test:evals:all  # run ALL paid evals regardless of diff
-bun run test:gate    # broad gate-tier tests (legacy diff-based command)
-bun run test:release # fresh full gate + periodic censuses
-bun run test:periodic  # run periodic-tier tests only (weekly cron / manual)
-bun run test:gate:sharded    # gate tier via the sharded paid runner (one Bun process per test file)
-bun run test:periodic:sharded  # periodic tier via the sharded paid runner (implies EVALS_ALL=1)
-bun run test:e2e     # run E2E tests only (diff-based, ~$4.20/run max)
-bun run test:e2e:all # run ALL E2E tests regardless of diff
-bun run eval:select  # show which tests would run based on current diff
 bun run dev <cmd>    # run CLI in dev mode, e.g. bun run dev goto https://example.com
 bun run typecheck    # strict tsc over product code (zero errors required)
 bun run typecheck:test  # test-code type-debt ratchet
@@ -25,16 +11,18 @@ bun run build        # gen docs + compile binaries
 bun run gen:skill-docs  # regenerate SKILL.md files from templates
 bun run skill:check  # health dashboard for all skills
 bun run dev:skill    # watch mode: auto-regen + validate on change
-bun run eval:list    # list all eval runs from ~/.gstack/projects/<slug>/evals/
-bun run eval:compare # compare two eval runs (auto-picks most recent)
-bun run eval:summary # aggregate stats across all eval runs
-bun run eval:flake-rank  # rank tests by flake signal (retried passes first; --json, --dir, --since-days)
 bun run slop          # full slop-scan report (all files)
 bun run slop:diff     # slop findings in files changed on this branch only
 bun run audit:manifest  # file slices for /claude-api prompt-audit; rerun it at each frontier-model release (CONTRIBUTING.md)
 ```
 
-`test:evals` requires `ANTHROPIC_API_KEY`. Codex E2E tests (`test/codex-e2e.test.ts`,
+Test and eval commands, their cost and what each needs live in one table:
+[Which command do I run?](CONTRIBUTING.md#which-command-do-i-run). The two you
+need most are `bun run test` (free acceptance) and `bun run eval:bg:pr` (paid,
+changed coverage). Retired names such as `test:evals` and `test:e2e` print their
+replacement and exit 1.
+
+Paid evals require `ANTHROPIC_API_KEY`. Codex E2E tests (`test/codex-e2e.test.ts`,
 `test/codex-e2e-sol-scope.test.ts`) use Codex's own auth — the hermetic runner copies
 only `auth.json` from `${CODEX_HOME:-~/.codex}` and pins `CODEX_HOME` in the child
 env — no `OPENAI_API_KEY` env var needed.
@@ -48,10 +36,11 @@ Debug against real operator state with `EVALS_HERMETIC=0`. Full detail
 (env-shim, seeding tripwires, wiring tests):
 [docs/TESTING_INTERNALS.md](docs/TESTING_INTERNALS.md).
 
-**Test selection and tiers:** `test:evals` and `test:e2e` select tests from
-`git diff` through the dependency lists in `test/helpers/touchfiles.ts`
-(`EVALS_ALL=1` or the `:all` variants force everything; `eval:select`
-previews). Classify every new E2E test in `E2E_TIERS`: safety guardrail or
+**Test selection and tiers:** the sharded paid runner (`test:pr`,
+`eval:bg:pr`, `test:gate:sharded`) selects tests from `git diff` through the
+dependency lists in `test/helpers/touchfiles.ts` (`EVALS_ALL=1` forces
+everything; `eval:select` previews the PR profile, `--profile full` the plain
+touchfile selection). Classify every new E2E test in `E2E_TIERS`: safety guardrail or
 deterministic functional test -> `gate`; quality benchmark, Opus model test,
 non-deterministic, or external service (Codex, Gemini) -> `periodic`.
 `test/e2e-tier-alignment.test.ts` enforces the tiers. CI lanes and periodic
@@ -95,7 +84,12 @@ safety-critical lines; check safety lines case-insensitively, on meaning rather
 than capitals. Leave behavior to E2E cases and judges. Don't pin emphasis,
 capitalization, issue numbers, or a sentence a behavioral check already covers,
 and when a rewrite changes a pinned sentence, replace the pin with a structural
-or meaning-level check instead of pinning the new sentence.
+or meaning-level check instead of pinning the new sentence. The terms are defined
+in [docs/test-value-bar.md](docs/test-value-bar.md) ("Prompt-byte contract",
+"Sentence pin"). Use `test/helpers/prompt-structure.ts` (`between`,
+`expectTokens`, `expectAbsent`, `expectOrdered`, `expectMentions`) for
+template/SKILL.md checks: tokens and order exactly, safety rules as
+case-insensitive keyword co-occurrence in one sentence.
 Projects tune `/ship`'s coverage gate with optional CLAUDE.md `## Test Coverage`
 keys, all absent by default: `Minimum:`, `Target:`, `Generation cap:` (default 5),
 `Base control:` (`auto` or `off`), `Base control budget:` (seconds, default 90) and
@@ -450,17 +444,38 @@ regenerated SKILL.md shifts prompt context.
 
 ## Running evals as an agent: always detach (SIGTERM-proof)
 
-When **you (an agent/harness)** launch a long eval/benchmark run, run it through
-`bin/gstack-detach`, NEVER as a plain backgrounded Bash task: a turn-boundary
-SIGTERM kills that mid-flight. Use the `eval:bg*` scripts (machine-wide
-`gstack-evals` lock, per-tier watchdog, run-scoped log under
-`~/.gstack-dev/eval-runs/`), export `ANTHROPIC_API_KEY` first (never pass keys
-in argv), then poll the printed log until the `### gstack-detach EXIT=<code> ###`
-sentinel; keep checking until it appears or the user tells you to stop, and
-report progress at each check. Detach timeouts are the `--timeout` values on
-package.json's `eval:bg:gate` / `eval:bg:periodic`. Humans running evals in their own terminal don't
-need this. Sharded runner, timeouts and knobs:
-[docs/TESTING_INTERNALS.md](docs/TESTING_INTERNALS.md#running-evals-as-an-agent-detach).
+Never run a long eval as a plain backgrounded Bash task: a turn-boundary SIGTERM
+kills it mid-flight. Run paid evals in the background with `bun run eval:bg:pr`
+(diff-selected PR gate) or `bun run eval:bg:release` (full gate + periodic);
+`eval:bg:gate` and `eval:bg:periodic` run one tier. All four run
+`scripts/eval-bg.ts`, which prints `[eval-bg] backend=<dispatch|local> …` and
+`gstack-detach LOG <path>`, then returns immediately.
+
+- **Dispatch backend** (default when HEAD is clean and pushed to garrytan/gstack
+  and `gh` can dispatch): CI runs the lane on the pushed revision (`evals.yml`
+  and/or `evals-periodic.yml`, verified by `expected_sha`); the local log follows
+  the run and names its URL. Dispatched runs are validation runs: fresh, never
+  writing PR receipts. Commit and push first; uncommitted files or unpushed
+  commits fall back to local and the log says why.
+- **Local backend** (dirty tree, unpushed commits, a fork, no `gh`, or `--local`):
+  the sharded runner on this machine, capped at ceil(1.5 × planned serial seconds
+  / EVALS_JOBS) + 20 min, at most 4 h (`--timeout SECS` overrides). Export
+  `ANTHROPIC_API_KEY` first (never pass keys in argv).
+- **Forcing**: `--dispatch` refuses with the fix ("commit and push, or rerun with
+  --local") instead of falling back; `--local` or `GSTACK_EVAL_BG_MODE=local`
+  always runs here.
+- **Waiting**: poll the log until `### gstack-detach EXIT=<code> ###` (0 passed,
+  1 failed, 130 cancelled, 2 other); silence is not success. Keep checking until
+  it appears or the user tells you to stop, and report progress at each check.
+  `bun run scripts/eval-bg.ts status <log-or-run-id>` prints running, passed,
+  failed, cancelled or incomplete (died without a sentinel).
+- Both backends hold the machine-wide `gstack-evals` lock, so concurrent
+  worktrees queue instead of saturating the API; logs live under
+  `~/.gstack-dev/eval-runs/`. A second `eval:bg:<lane>` for the same revision and
+  base follows the queued, running or green dispatch instead of dispatching again.
+
+Humans running evals in their own terminal don't need this. Backends, caps and
+knobs: [docs/TESTING_INTERNALS.md](docs/TESTING_INTERNALS.md#running-evals-as-an-agent-detach).
 
 ## E2E test fixtures: extract, don't copy
 

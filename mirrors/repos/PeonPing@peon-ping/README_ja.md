@@ -125,13 +125,13 @@ nix develop  # or use direnv
 { inputs, pkgs, ... }:
 
 let
-  peonCursorAdapterPath = "${inputs.peon-ping.packages.${pkgs.system}.default}/share/peon-ping/adapters/cursor.sh";
+  peonCursorAdapterPath = "${inputs.peon-ping.packages.${pkgs.stdenv.hostPlatform.system}.default}/share/peon-ping/adapters/cursor.sh";
 in {
   imports = [ inputs.peon-ping.homeManagerModules.default ];
 
   programs.peon-ping = {
     enable = true;
-    package = inputs.peon-ping.packages.${pkgs.system}.default;
+    package = inputs.peon-ping.packages.${pkgs.stdenv.hostPlatform.system}.default;
     claudeCodeIntegration = true;
 
     settings = {
@@ -201,7 +201,7 @@ in {
 
 **その他の IDE フック**: peon-ping と無関係な IDE 設定を上書きしないよう、その他の IDE フックは引き続き任意です。peon-ping は [`adapters/`](https://github.com/PeonPing/peon-ping/tree/main/adapters) 配下に `cursor.sh` などのアダプタースクリプトを提供しており、次のように接続できます：
   ```sh
-  ${inputs.peon-ping.packages.${pkgs.system}.default}/share/peon-ping/adapters/$YOUR_IDE.sh EVENT_NAME
+  ${inputs.peon-ping.packages.${pkgs.stdenv.hostPlatform.system}.default}/share/peon-ping/adapters/$YOUR_IDE.sh EVENT_NAME
   ```
   上記の Cursor の例を参照してください
 
@@ -350,6 +350,7 @@ peon-ping には3つの独立したコントロールがあり、自由に組み
 - **silent_window_seconds**: N 秒未満のタスクの `task.complete` サウンドと通知を抑制（例: `10` にすると10秒以上かかるタスクのみサウンドが再生される）
 - **session_start_cooldown_seconds**（数値、デフォルト: `30`）: 複数のワークスペースが同時に起動した時（例: OpenCode や Cursor で複数フォルダを開いた時）の挨拶サウンドの重複を排除。最初のセッション開始のみ挨拶が再生され、このウィンドウ内の後続セッションは無音。`0` に設定すると重複排除を無効にし、常に挨拶を再生。
 - **suppress_subagent_complete**（ブール値、デフォルト: `false`）: サブエージェントセッション終了時の `task.complete` サウンドと通知を抑制。Claude Code の Task ツールが並列サブエージェントを起動すると、各サブエージェントの完了時にサウンドが鳴ります — `true` に設定すると親セッションの完了サウンドのみ再生。
+- **subagent_input_required**（ブール値、デフォルト: `false`）: `suppress_subagent_complete: true` のときのみ有効。Claude Code はサブエージェントの権限確認（および MCP の elicitation ダイアログ）を親セッションに転送し、あなたが応答するまでサブエージェントは待機します。`true` に設定すると、これらのプロンプトでは `input.required` サウンドと通知が引き続き鳴り、他のサブエージェントイベントはすべて無音のままになります。
 - **default_pack**: より具体的なルールがない場合に使用されるフォールバックパック（デフォルト: `"peon"`）。旧 `active_pack` キーを置き換え — 既存の設定は `peon update` 時に自動移行。
 - **path_rules**: `{ "pattern": "...", "pack": "..." }` オブジェクトの配列。作業ディレクトリに基づいてグロブマッチング（`*`、`?`）でセッションにパックを割り当て。最初にマッチしたルールが適用。`pack_rotation` と `default_pack` より優先されますが、`session_override` には劣後します。
   ```json
@@ -373,7 +374,7 @@ peon-ping には3つの独立したコントロールがあり、自由に組み
   ]
   ```
 - **pack_rotation**: パック名の配列（例: `["peon", "sc_kerrigan", "peasant"]`）。`pack_rotation_mode` が `random` または `round-robin` の場合に使用。空 `[]` にすると `default_pack`（または `path_rules` / `ide_rules`）のみ使用。
-- **pack_rotation_mode**: `"random"`（デフォルト）、`"round-robin"`、または `"session_override"`。`random`/`round-robin` では各セッションが `pack_rotation` から1つのパックを選択。`session_override` では `/peon-ping-use <pack>` コマンドでセッションごとにパックを割り当て。無効または欠落したパックは階層をフォールバック。（`"agentskill"` は `"session_override"` のレガシーエイリアスとして受け入れられます。）
+- **pack_rotation_mode**: `"random"`（デフォルト）、`"round-robin"`、または `"session_override"`。`random`/`round-robin` では、同じディレクトリで他のセッションが動作中でも、独立した各セッションが `pack_rotation` から1つのパックを選択。既知のセッションの再開やコンパクションではパックを維持。新しいセッションIDのコンパクションでは、直近のアクティビティの端末とディレクトリが両方一致する場合のみ継承。別セッションのサブエージェントでは、`agent_id` が親の直近の `SubagentStart` と一致する場合のみ継承。`session_override` では `/peon-ping-use <pack>` コマンドでセッションごとにパックを割り当て。無効または欠落したパックは階層をフォールバック。（`"agentskill"` は `"session_override"` のレガシーエイリアスとして受け入れられます。）
 - **session_ttl_days**（数値、デフォルト: 7）: N 日以上古いセッションごとのパック割り当てを期限切れにします。`session_override` モード使用時に `.state.json` が無制限に増大するのを防ぎます。
 - **headphones_only**（ブール値、デフォルト: `false`）: ヘッドフォンまたは外部オーディオデバイスが検出された場合のみサウンドを再生。有効にすると内蔵スピーカーがアクティブ出力の場合にサウンドが抑制されます — オープンオフィスに便利。`peon status` でステータスを確認。macOS（`system_profiler` 経由）および Linux（PipeWire `wpctl` または PulseAudio `pactl` 経由）に対応。
 - **suppress_sound_when_tab_focused**（ブール値、デフォルト: `false`）: フックイベントを生成したターミナルタブが現在アクティブ/フォーカスされている場合、サウンド再生をスキップ。バックグラウンドタブでは他の場所で何かが起きたことをアラートとしてサウンドが再生されます。デスクトップとモバイル通知には影響しません。監視していないタブからのみオーディオキューが欲しい場合に便利。macOS のみ（`osascript` で最前面アプリと iTerm2 タブフォーカスを確認）。
@@ -622,7 +623,7 @@ peon-ping はフックをサポートする任意のエージェント型 IDE �
 | **Kilo CLI** | アダプター | `bash adapters/kilo.sh` / `powershell adapters/kilo.ps1`（[セットアップ](#kilo-cli-セットアップ)） |
 | **Kiro** | アダプター | `adapters/kiro.sh`（または `.ps1`）を指すフックエントリを追加（[セットアップ](#kiro-セットアップ)） |
 | **Windsurf** | アダプター | `adapters/windsurf.sh`（または `.ps1`）を指すフックエントリを追加（[セットアップ](#windsurf-セットアップ)） |
-| **Google Antigravity** | アダプター | `bash adapters/antigravity.sh` / `powershell adapters/antigravity.ps1`。ヘッドレス / macOS LaunchAgent 用途には `bash adapters/antigravity-py.sh --install`（Python `watchdog` ベース、25 秒のアイドル閾値、`pip3 install watchdog` が必要）もあります。Python ウォッチャーは旧来の `conversations/*.pb` 状態に加え、新しい `antigravity-cli` / `antigravity-ide` の `conversations/*.db` と `brain/**/transcript*.jsonl` レイアウトにも対応しています。 |
+| **Google Antigravity** | アダプター | `bash adapters/antigravity.sh` / `powershell adapters/antigravity.ps1`。ヘッドレス / macOS LaunchAgent 用途には `bash adapters/antigravity-py.sh --install`（Python `watchdog` ベース、`pip3 install watchdog` が必要）もあります。Python ウォッチャーは `brain/**/transcript.jsonl` からターンの境界を、`cli.log` から許可要求を読み取り、Claude Code と同じ 5 種類の通知音を提供します。transcript がない旧来の `conversations/*.pb` と `*.db` セッションには 45 秒のアイドルタイマー（`ANTIGRAVITY_IDLE_SECONDS`）を使用します。 |
 | **Kimi Code** | アダプター | `bash adapters/kimi.sh --install` / `powershell adapters/kimi.ps1 -Install`（[セットアップ](#kimi-code-セットアップ)） |
 | **OpenClaw** | アダプター | OpenClaw スキルから `adapters/openclaw.sh <event>`（または `openclaw.ps1`）を呼び出し |
 | **Rovo Dev CLI** | アダプター | `~/.rovodev` が存在する場合 `install.sh` が自動登録、または `~/.rovodev/config.yml` にフックを手動追加（[セットアップ](#rovo-dev-cli-セットアップ)） |
@@ -768,7 +769,7 @@ peon-ping は `hooks.json` を作成せず、inline hooks を `~/.codex/config.t
 
 ### OpenCode セットアップ
 
-[OpenCode](https://opencode.ai/) 用のネイティブ TypeScript プラグイン。[CESP v1.0](https://github.com/PeonPing/openpeon) に完全準拠。
+[OpenCode v2](https://opencode.ai/v2/docs/build/plugins) 用の薄い TypeScript アダプター。イベントをインストール済みの peon-ping フックに転送します。先にプラットフォーム用の peon-ping インストーラーを実行してください。
 
 **クイックインストール：**
 
@@ -776,12 +777,12 @@ peon-ping は `hooks.json` を作成せず、inline hooks を `~/.codex/config.t
 curl -fsSL https://raw.githubusercontent.com/PeonPing/peon-ping/main/adapters/opencode.sh | bash
 ```
 
-インストーラーは `peon-ping.ts` を `~/.config/opencode/plugins/` にコピーし、`~/.config/opencode/peon-ping/config.json` に設定を作成します。パックは共有 CESP パス（`~/.openpeon/packs/`）に保存されます。
+インストーラーは `XDG_CONFIG_HOME` に従って `peon-ping.ts` を `~/.config/opencode/plugins/` にコピーします。Windows ではクローンから `powershell -NoProfile -File adapters/opencode.ps1` を実行。`peon.ps1` を直接呼び出すため Git Bash は不要です。設定、パック、再生はメインの peon-ping フックが処理します。
 
 **機能：**
 
 - **サウンド再生** — `afplay`（macOS）、`pw-play`/`paplay`/`ffplay`（Linux）経由 — シェルフックと同じ優先チェーン
-- **CESP イベントマッピング** — `session.created` / `session.idle` / `session.error` / `permission.asked` / 高速プロンプト検出がすべて標準 CESP カテゴリにマッピング
+- **CESP イベントマッピング** — v2 の `session.created`、`session.execution`、`form.created`、`permission.asked` をフックイベントにマッピング
 - **デスクトップ通知** — デフォルトで大型オーバーレイバナー（JXA Cocoa、全画面で表示）、または [`terminal-notifier`](https://github.com/julienXX/terminal-notifier) / `osascript` 経由の標準通知。ターミナルがフォーカスされていない場合のみ発火
 - **ターミナルフォーカス検出** — AppleScript でターミナルアプリ（Terminal、iTerm2、Warp、Alacritty、kitty、WezTerm、ghostty、Hyper）が最前面かどうかを確認
 - **タブタイトル** — ターミナルタブにタスクステータスを表示（`● project: working...` / `✓ project: done` / `✗ project: error`）
@@ -821,7 +822,7 @@ bash ~/.claude/hooks/peon-ping/adapters/opencode/setup-icon.sh
 
 ### Kilo CLI セットアップ
 
-[Kilo CLI](https://github.com/kilocode/cli) 用のネイティブ TypeScript プラグイン。[CESP v1.0](https://github.com/PeonPing/openpeon) に完全準拠。Kilo CLI は OpenCode のフォークで同じプラグインシステムを使用 — このインストーラーは OpenCode プラグインをダウンロードして Kilo 用にパッチします。
+[Kilo CLI](https://github.com/kilocode/cli) 用のネイティブ TypeScript プラグイン。[CESP v1.0](https://github.com/PeonPing/openpeon) に完全準拠。Kilo の v1 プラグイン形式を維持する専用アダプターで、イベントをインストール済みの peon-ping フックに転送します。先にプラットフォーム用の peon-ping インストーラーを実行してください。
 
 **クイックインストール：**
 
@@ -829,7 +830,7 @@ bash ~/.claude/hooks/peon-ping/adapters/opencode/setup-icon.sh
 curl -fsSL https://raw.githubusercontent.com/PeonPing/peon-ping/main/adapters/kilo.sh | bash
 ```
 
-インストーラーは `peon-ping.ts` を `~/.config/kilo/plugins/` にコピーし、`~/.config/kilo/peon-ping/config.json` に設定を作成します。パックは共有 CESP パス（`~/.openpeon/packs/`）に保存されます。
+インストーラーは `XDG_CONFIG_HOME` に従って専用の Kilo プラグインを `~/.config/kilo/plugins/` にコピーします。再生にはメインの peon-ping インストールとその設定を使用します。設定とパックは `peon config`、`peon packs` で管理してください。Kilo のネイティブセッション ID を使用するため、独立したセッションは区別され、後続イベントやプラグインの再読み込みでもパックの識別情報が維持されます。
 
 **機能:** [OpenCode アダプター](#opencode-セットアップ)と同じ — サウンド再生、CESP イベントマッピング、デスクトップ通知、ターミナルフォーカス検出、タブタイトル、パック切り替え、リピート防止ロジック、スパム検出。
 
@@ -902,7 +903,7 @@ curl -fsSL https://raw.githubusercontent.com/PeonPing/peon-ping/main/adapters/ki
 
 - `SessionStart`（startup）→ 挨拶サウンド（*"Ready to work?"*、*"Yes?"*）
 - `AfterAgent` → タスク完了サウンド（*"Work, work."*、*"Job's done!"*）
-- `AfterTool` → 成功 = タスク完了サウンド、失敗 = エラーサウンド（*"I can't do that."*）
+- `AfterTool` → 成功 = 無音、`tool_response.error` = エラーサウンド（*"I can't do that."*）。従来のトップレベル `exit_code`/`stderr` 入力にも対応。
 - `Notification` → システム通知
 
 ### Windsurf セットアップ

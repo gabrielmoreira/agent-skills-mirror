@@ -28,7 +28,7 @@ Each agent is a **prompt-driven specialist** with a factory function that create
 - **User overrides**: From `~/.config/opencode/oh-my-opencode-slim.json` via `loadAgentPrompt()`
 - **Agent colors**: Optional per-agent hex or theme-color overrides; no defaults (colorless agents get the host TUI's distinct palette colors)
 - **Permission wildcards**: Applied via `applyDefaultPermissions()` in `index.ts`
-- **Read-only role matrices**: `createRolePermission()` (`role-definitions.ts`) bakes the enforced matrix into explorer/librarian/oracle/observer — the councillor-proven wildcard-deny base plus read/glob/grep/lsp/list/codesearch/ast_grep_search and webfetch/websearch allows. MCP keys are deliberately not baked: the registry derives every `<mcp>_*` rule from the effective `mcps` list, so user narrowing stays authoritative. An explicit `agents.<name>.permission` replaces the matrix wholesale.
+- **Read-only role matrices**: `createRolePermission()` (`role-definitions.ts`) bakes the enforced matrix into explorer/librarian/oracle/observer — the wildcard-deny base plus read/glob/grep/lsp/list/codesearch/ast_grep_search and webfetch/websearch allows. MCP keys are deliberately not baked: the registry derives every `<mcp>_*` rule from the effective `mcps` list, so user narrowing stays authoritative. An explicit `agents.<name>.permission` replaces the matrix wholesale.
 - **Model resolution**: Supports string models, explicit `inheritModelFrom` policies, and priority-ordered arrays (`_modelArray`) for runtime fallback
 - **Skill permissions**: Per-agent MCP and tool access controlled via `getSkillPermissionsForAgent()`
 - **Council synthesis**: Uses `createSynthesisOnlyPermission()` to block tool calls while allowing synthesis from councillor responses

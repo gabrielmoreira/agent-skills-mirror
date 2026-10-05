@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed patterns, 68 file(s) materialized.
+Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed patterns, 187 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 68 |
+| Files         | 187 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -127,6 +127,125 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 66 | ✓ | [`Anthropic/claude-design/skills/save-as-standalone-html/SKILL.md`](Anthropic/claude-design/skills/save-as-standalone-html/SKILL.md) |
 | 67 | ✓ | [`Anthropic/claude-design/skills/web-research/SKILL.md`](Anthropic/claude-design/skills/web-research/SKILL.md) |
 | 68 | ✓ | [`Anthropic/claude-design/skills/wireframe/SKILL.md`](Anthropic/claude-design/skills/wireframe/SKILL.md) |
+| 69 | ✓ | [`Meta/muse-agent/AGENTS.md`](Meta/muse-agent/AGENTS.md) |
+| 70 | ✓ | [`Meta/muse-agent/docs/voice.md`](Meta/muse-agent/docs/voice.md) |
+| 71 | ✓ | [`Meta/muse-agent/skills/apple-healthkit/SKILL.md`](Meta/muse-agent/skills/apple-healthkit/SKILL.md) |
+| 72 | ✓ | [`Meta/muse-agent/skills/artifacts/document/SKILL.md`](Meta/muse-agent/skills/artifacts/document/SKILL.md) |
+| 73 | ✓ | [`Meta/muse-agent/skills/artifacts/markdown/SKILL.md`](Meta/muse-agent/skills/artifacts/markdown/SKILL.md) |
+| 74 | ✓ | [`Meta/muse-agent/skills/artifacts/pdf/SKILL.md`](Meta/muse-agent/skills/artifacts/pdf/SKILL.md) |
+| 75 | ✓ | [`Meta/muse-agent/skills/artifacts/presentation/SKILL.md`](Meta/muse-agent/skills/artifacts/presentation/SKILL.md) |
+| 76 | ✓ | [`Meta/muse-agent/skills/artifacts/spreadsheet/SKILL.md`](Meta/muse-agent/skills/artifacts/spreadsheet/SKILL.md) |
+| 77 | ✓ | [`Meta/muse-agent/skills/artifacts/testing/SKILL.md`](Meta/muse-agent/skills/artifacts/testing/SKILL.md) |
+| 78 | ✓ | [`Meta/muse-agent/skills/asana/SKILL.md`](Meta/muse-agent/skills/asana/SKILL.md) |
+| 79 | ✓ | [`Meta/muse-agent/skills/booking/SKILL.md`](Meta/muse-agent/skills/booking/SKILL.md) |
+| 80 | ✓ | [`Meta/muse-agent/skills/box/SKILL.md`](Meta/muse-agent/skills/box/SKILL.md) |
+| 81 | ✓ | [`Meta/muse-agent/skills/calendly/SKILL.md`](Meta/muse-agent/skills/calendly/SKILL.md) |
+| 82 | ✓ | [`Meta/muse-agent/skills/canva/SKILL.md`](Meta/muse-agent/skills/canva/SKILL.md) |
+| 83 | ✓ | [`Meta/muse-agent/skills/device-data/SKILL.md`](Meta/muse-agent/skills/device-data/SKILL.md) |
+| 84 | ✓ | [`Meta/muse-agent/skills/dropbox/SKILL.md`](Meta/muse-agent/skills/dropbox/SKILL.md) |
+| 85 | ✓ | [`Meta/muse-agent/skills/duffel/SKILL.md`](Meta/muse-agent/skills/duffel/SKILL.md) |
+| 86 | ✓ | [`Meta/muse-agent/skills/evernote/SKILL.md`](Meta/muse-agent/skills/evernote/SKILL.md) |
+| 87 | ✓ | [`Meta/muse-agent/skills/facebook-cli/SKILL.md`](Meta/muse-agent/skills/facebook-cli/SKILL.md) |
+| 88 | ✓ | [`Meta/muse-agent/skills/facebook/SKILL.md`](Meta/muse-agent/skills/facebook/SKILL.md) |
+| 89 | ✓ | [`Meta/muse-agent/skills/figma/SKILL.md`](Meta/muse-agent/skills/figma/SKILL.md) |
+| 90 | ✓ | [`Meta/muse-agent/skills/flightaware/SKILL.md`](Meta/muse-agent/skills/flightaware/SKILL.md) |
+| 91 | ✓ | [`Meta/muse-agent/skills/forget/SKILL.md`](Meta/muse-agent/skills/forget/SKILL.md) |
+| 92 | ✓ | [`Meta/muse-agent/skills/function-health/SKILL.md`](Meta/muse-agent/skills/function-health/SKILL.md) |
+| 93 | ✓ | [`Meta/muse-agent/skills/generate_podcast/SKILL.md`](Meta/muse-agent/skills/generate_podcast/SKILL.md) |
+| 94 | ✓ | [`Meta/muse-agent/skills/ghl/SKILL.md`](Meta/muse-agent/skills/ghl/SKILL.md) |
+| 95 | ✓ | [`Meta/muse-agent/skills/github/SKILL.md`](Meta/muse-agent/skills/github/SKILL.md) |
+| 96 | ✓ | [`Meta/muse-agent/skills/gmail/SKILL.md`](Meta/muse-agent/skills/gmail/SKILL.md) |
+| 97 | ✓ | [`Meta/muse-agent/skills/goals/SKILL.md`](Meta/muse-agent/skills/goals/SKILL.md) |
+| 98 | ✓ | [`Meta/muse-agent/skills/google-calendar/SKILL.md`](Meta/muse-agent/skills/google-calendar/SKILL.md) |
+| 99 | ✓ | [`Meta/muse-agent/skills/google-contacts/SKILL.md`](Meta/muse-agent/skills/google-contacts/SKILL.md) |
+| 100 | ✓ | [`Meta/muse-agent/skills/google-docs/SKILL.md`](Meta/muse-agent/skills/google-docs/SKILL.md) |
+| 101 | ✓ | [`Meta/muse-agent/skills/google-drive/SKILL.md`](Meta/muse-agent/skills/google-drive/SKILL.md) |
+| 102 | ✓ | [`Meta/muse-agent/skills/google-forms/SKILL.md`](Meta/muse-agent/skills/google-forms/SKILL.md) |
+| 103 | ✓ | [`Meta/muse-agent/skills/google-health-connect/SKILL.md`](Meta/muse-agent/skills/google-health-connect/SKILL.md) |
+| 104 | ✓ | [`Meta/muse-agent/skills/google-sheets/SKILL.md`](Meta/muse-agent/skills/google-sheets/SKILL.md) |
+| 105 | ✓ | [`Meta/muse-agent/skills/google-slides/SKILL.md`](Meta/muse-agent/skills/google-slides/SKILL.md) |
+| 106 | ✓ | [`Meta/muse-agent/skills/google-tasks/SKILL.md`](Meta/muse-agent/skills/google-tasks/SKILL.md) |
+| 107 | ✓ | [`Meta/muse-agent/skills/granola/SKILL.md`](Meta/muse-agent/skills/granola/SKILL.md) |
+| 108 | ✓ | [`Meta/muse-agent/skills/healthex/SKILL.md`](Meta/muse-agent/skills/healthex/SKILL.md) |
+| 109 | ✓ | [`Meta/muse-agent/skills/image-search/SKILL.md`](Meta/muse-agent/skills/image-search/SKILL.md) |
+| 110 | ✓ | [`Meta/muse-agent/skills/instagram-messages/SKILL.md`](Meta/muse-agent/skills/instagram-messages/SKILL.md) |
+| 111 | ✓ | [`Meta/muse-agent/skills/instagram/SKILL.md`](Meta/muse-agent/skills/instagram/SKILL.md) |
+| 112 | ✓ | [`Meta/muse-agent/skills/klaviyo/SKILL.md`](Meta/muse-agent/skills/klaviyo/SKILL.md) |
+| 113 | ✓ | [`Meta/muse-agent/skills/linear/SKILL.md`](Meta/muse-agent/skills/linear/SKILL.md) |
+| 114 | ✓ | [`Meta/muse-agent/skills/lovable/SKILL.md`](Meta/muse-agent/skills/lovable/SKILL.md) |
+| 115 | ✓ | [`Meta/muse-agent/skills/magic-moment/SKILL.md`](Meta/muse-agent/skills/magic-moment/SKILL.md) |
+| 116 | ✓ | [`Meta/muse-agent/skills/media-library/SKILL.md`](Meta/muse-agent/skills/media-library/SKILL.md) |
+| 117 | ✓ | [`Meta/muse-agent/skills/messenger/SKILL.md`](Meta/muse-agent/skills/messenger/SKILL.md) |
+| 118 | ✓ | [`Meta/muse-agent/skills/meta-ads/SKILL.md`](Meta/muse-agent/skills/meta-ads/SKILL.md) |
+| 119 | ✓ | [`Meta/muse-agent/skills/meta-threads/SKILL.md`](Meta/muse-agent/skills/meta-threads/SKILL.md) |
+| 120 | ✓ | [`Meta/muse-agent/skills/muse_db/SKILL.md`](Meta/muse-agent/skills/muse_db/SKILL.md) |
+| 121 | ✓ | [`Meta/muse-agent/skills/muse-early-access/SKILL.md`](Meta/muse-agent/skills/muse-early-access/SKILL.md) |
+| 122 | ✓ | [`Meta/muse-agent/skills/muse-feedback/SKILL.md`](Meta/muse-agent/skills/muse-feedback/SKILL.md) |
+| 123 | ✓ | [`Meta/muse-agent/skills/notion/SKILL.md`](Meta/muse-agent/skills/notion/SKILL.md) |
+| 124 | ✓ | [`Meta/muse-agent/skills/opentable/SKILL.md`](Meta/muse-agent/skills/opentable/SKILL.md) |
+| 125 | ✓ | [`Meta/muse-agent/skills/outlook-calendar/SKILL.md`](Meta/muse-agent/skills/outlook-calendar/SKILL.md) |
+| 126 | ✓ | [`Meta/muse-agent/skills/outlook-contacts/SKILL.md`](Meta/muse-agent/skills/outlook-contacts/SKILL.md) |
+| 127 | ✓ | [`Meta/muse-agent/skills/outlook-mail/SKILL.md`](Meta/muse-agent/skills/outlook-mail/SKILL.md) |
+| 128 | ✓ | [`Meta/muse-agent/skills/peloton/SKILL.md`](Meta/muse-agent/skills/peloton/SKILL.md) |
+| 129 | ✓ | [`Meta/muse-agent/skills/philips-hue/SKILL.md`](Meta/muse-agent/skills/philips-hue/SKILL.md) |
+| 130 | ✓ | [`Meta/muse-agent/skills/places-search/SKILL.md`](Meta/muse-agent/skills/places-search/SKILL.md) |
+| 131 | ✓ | [`Meta/muse-agent/skills/plaid/SKILL.md`](Meta/muse-agent/skills/plaid/SKILL.md) |
+| 132 | ✓ | [`Meta/muse-agent/skills/podcast/SKILL.md`](Meta/muse-agent/skills/podcast/SKILL.md) |
+| 133 | ✓ | [`Meta/muse-agent/skills/printify/SKILL.md`](Meta/muse-agent/skills/printify/SKILL.md) |
+| 134 | ✓ | [`Meta/muse-agent/skills/quickbooks/SKILL.md`](Meta/muse-agent/skills/quickbooks/SKILL.md) |
+| 135 | ✓ | [`Meta/muse-agent/skills/replit/SKILL.md`](Meta/muse-agent/skills/replit/SKILL.md) |
+| 136 | ✓ | [`Meta/muse-agent/skills/self-awareness/SKILL.md`](Meta/muse-agent/skills/self-awareness/SKILL.md) |
+| 137 | ✓ | [`Meta/muse-agent/skills/share-ideas/SKILL.md`](Meta/muse-agent/skills/share-ideas/SKILL.md) |
+| 138 | ✓ | [`Meta/muse-agent/skills/shopify/SKILL.md`](Meta/muse-agent/skills/shopify/SKILL.md) |
+| 139 | ✓ | [`Meta/muse-agent/skills/shopping/SKILL.md`](Meta/muse-agent/skills/shopping/SKILL.md) |
+| 140 | ✓ | [`Meta/muse-agent/skills/skill-creator/SKILL.md`](Meta/muse-agent/skills/skill-creator/SKILL.md) |
+| 141 | ✓ | [`Meta/muse-agent/skills/slack/SKILL.md`](Meta/muse-agent/skills/slack/SKILL.md) |
+| 142 | ✓ | [`Meta/muse-agent/skills/social-content-performance/SKILL.md`](Meta/muse-agent/skills/social-content-performance/SKILL.md) |
+| 143 | ✓ | [`Meta/muse-agent/skills/spotify/SKILL.md`](Meta/muse-agent/skills/spotify/SKILL.md) |
+| 144 | ✓ | [`Meta/muse-agent/skills/stripe/SKILL.md`](Meta/muse-agent/skills/stripe/SKILL.md) |
+| 145 | ✓ | [`Meta/muse-agent/skills/subscription-status/SKILL.md`](Meta/muse-agent/skills/subscription-status/SKILL.md) |
+| 146 | ✓ | [`Meta/muse-agent/skills/tailscale/SKILL.md`](Meta/muse-agent/skills/tailscale/SKILL.md) |
+| 147 | ✓ | [`Meta/muse-agent/skills/tessie/SKILL.md`](Meta/muse-agent/skills/tessie/SKILL.md) |
+| 148 | ✓ | [`Meta/muse-agent/skills/threads-messages/SKILL.md`](Meta/muse-agent/skills/threads-messages/SKILL.md) |
+| 149 | ✓ | [`Meta/muse-agent/skills/threads/SKILL.md`](Meta/muse-agent/skills/threads/SKILL.md) |
+| 150 | ✓ | [`Meta/muse-agent/skills/ticketmaster/SKILL.md`](Meta/muse-agent/skills/ticketmaster/SKILL.md) |
+| 151 | ✓ | [`Meta/muse-agent/skills/todoist/SKILL.md`](Meta/muse-agent/skills/todoist/SKILL.md) |
+| 152 | ✓ | [`Meta/muse-agent/skills/travel-planning/SKILL.md`](Meta/muse-agent/skills/travel-planning/SKILL.md) |
+| 153 | ✓ | [`Meta/muse-agent/skills/tts/SKILL.md`](Meta/muse-agent/skills/tts/SKILL.md) |
+| 154 | ✓ | [`Meta/muse-agent/skills/vercel/SKILL.md`](Meta/muse-agent/skills/vercel/SKILL.md) |
+| 155 | ✓ | [`Meta/muse-agent/skills/voice-calls/SKILL.md`](Meta/muse-agent/skills/voice-calls/SKILL.md) |
+| 156 | ✓ | [`Meta/muse-agent/skills/voice-design/SKILL.md`](Meta/muse-agent/skills/voice-design/SKILL.md) |
+| 157 | ✓ | [`Meta/muse-agent/skills/voice-selector/SKILL.md`](Meta/muse-agent/skills/voice-selector/SKILL.md) |
+| 158 | ✓ | [`Meta/muse-agent/skills/wearable-device-skills/SKILL.md`](Meta/muse-agent/skills/wearable-device-skills/SKILL.md) |
+| 159 | ✓ | [`Meta/muse-agent/skills/wearables-comms/SKILL.md`](Meta/muse-agent/skills/wearables-comms/SKILL.md) |
+| 160 | ✓ | [`Meta/muse-agent/skills/wide-research/SKILL.md`](Meta/muse-agent/skills/wide-research/SKILL.md) |
+| 161 | ✓ | [`Meta/muse-agent/skills/withings/SKILL.md`](Meta/muse-agent/skills/withings/SKILL.md) |
+| 162 | ✓ | [`Meta/muse-agent/skills/zapier/SKILL.md`](Meta/muse-agent/skills/zapier/SKILL.md) |
+| 163 | ✓ | [`Meta/muse-agent/skills/zoom/SKILL.md`](Meta/muse-agent/skills/zoom/SKILL.md) |
+| 164 | ✓ | [`Meta/muse-code/plugins/threejs/skills/threejs/SKILL.md`](Meta/muse-code/plugins/threejs/skills/threejs/SKILL.md) |
+| 165 | ✓ | [`Meta/muse-code/skills/agents/SKILL.md`](Meta/muse-code/skills/agents/SKILL.md) |
+| 166 | ✓ | [`Meta/muse-code/skills/browser-app-delivery/SKILL.md`](Meta/muse-code/skills/browser-app-delivery/SKILL.md) |
+| 167 | ✓ | [`Meta/muse-code/skills/create-plugin/SKILL.md`](Meta/muse-code/skills/create-plugin/SKILL.md) |
+| 168 | ✓ | [`Meta/muse-code/skills/create-skill/SKILL.md`](Meta/muse-code/skills/create-skill/SKILL.md) |
+| 169 | ✓ | [`Meta/muse-code/skills/doctor/SKILL.md`](Meta/muse-code/skills/doctor/SKILL.md) |
+| 170 | ✓ | [`Meta/muse-code/skills/durable-test-collateral/SKILL.md`](Meta/muse-code/skills/durable-test-collateral/SKILL.md) |
+| 171 | ✓ | [`Meta/muse-code/skills/fleet-manager/SKILL.md`](Meta/muse-code/skills/fleet-manager/SKILL.md) |
+| 172 | ✓ | [`Meta/muse-code/skills/git/SKILL.md`](Meta/muse-code/skills/git/SKILL.md) |
+| 173 | ✓ | [`Meta/muse-code/skills/greenfield-project-scaffolding/SKILL.md`](Meta/muse-code/skills/greenfield-project-scaffolding/SKILL.md) |
+| 174 | ✓ | [`Meta/muse-code/skills/grill-and-record/SKILL.md`](Meta/muse-code/skills/grill-and-record/SKILL.md) |
+| 175 | ✓ | [`Meta/muse-code/skills/grill/SKILL.md`](Meta/muse-code/skills/grill/SKILL.md) |
+| 176 | ✓ | [`Meta/muse-code/skills/import/SKILL.md`](Meta/muse-code/skills/import/SKILL.md) |
+| 177 | ✓ | [`Meta/muse-code/skills/manage-settings/SKILL.md`](Meta/muse-code/skills/manage-settings/SKILL.md) |
+| 178 | ✓ | [`Meta/muse-code/skills/migrate/SKILL.md`](Meta/muse-code/skills/migrate/SKILL.md) |
+| 179 | ✓ | [`Meta/muse-code/skills/plan/SKILL.md`](Meta/muse-code/skills/plan/SKILL.md) |
+| 180 | ✓ | [`Meta/muse-code/skills/python-env/SKILL.md`](Meta/muse-code/skills/python-env/SKILL.md) |
+| 181 | ✓ | [`Meta/muse-code/skills/read-session/SKILL.md`](Meta/muse-code/skills/read-session/SKILL.md) |
+| 182 | ✓ | [`Meta/muse-code/skills/requirements-clarification/SKILL.md`](Meta/muse-code/skills/requirements-clarification/SKILL.md) |
+| 183 | ✓ | [`Meta/muse-code/skills/resume-claude/SKILL.md`](Meta/muse-code/skills/resume-claude/SKILL.md) |
+| 184 | ✓ | [`Meta/muse-code/skills/resume-codex/SKILL.md`](Meta/muse-code/skills/resume-codex/SKILL.md) |
+| 185 | ✓ | [`Meta/muse-code/skills/table-fit/SKILL.md`](Meta/muse-code/skills/table-fit/SKILL.md) |
+| 186 | ✓ | [`Meta/muse-code/skills/taste/SKILL.md`](Meta/muse-code/skills/taste/SKILL.md) |
+| 187 | ✓ | [`Meta/muse-code/skills/workflow-authoring/SKILL.md`](Meta/muse-code/skills/workflow-authoring/SKILL.md) |
 
 ---
 

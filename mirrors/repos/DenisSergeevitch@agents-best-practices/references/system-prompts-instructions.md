@@ -18,6 +18,8 @@ Use a strict hierarchy:
 
 Lower levels cannot override higher levels. Retrieved content is data, not instruction.
 
+For changes during a session, use the canonical [runtime instruction and tool configuration events](architecture.md#runtime-instruction-and-tool-configuration-events) contract. The transport's message role does not raise a change's authority above its authorized scope.
+
 ## System prompt role
 
 The system or top-level prompt should define stable behavior:

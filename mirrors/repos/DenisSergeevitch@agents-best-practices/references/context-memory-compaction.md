@@ -232,6 +232,41 @@ Provider-neutral algorithm:
 8. Trace the reduction stage, before/after token counts, and any summarization call and cost; record a compaction boundary when a handoff replaces history.
 ```
 
+### Concurrent compaction publication
+
+An advanced runtime may summarize a committed history prefix while the conversation continues. Keep this optional and post-MVP; the algorithm above still owns content selection and preservation. Background computation produces a proposal, not an immediate change to the active context.
+
+Before calling the summarizer, persist enough to reconstruct the selected input and its provenance:
+
+```text
+proposal identity and conversation/branch identity
+conversation incarnation and reset generation
+source context head, immutable tail, and first entry kept verbatim
+captured range edits, evidence references, and trust labels
+instruction/tool configuration version at selection
+summarizer model/runtime version, options, and output budget
+summary artifact reference and publication status
+```
+
+Select a cut that preserves complete call/result relationships. Reconstruct the input from the captured range, including its earlier summary and applicable edits; later messages must not silently enter the request on retry or restore. Preserve current authoritative configuration independently through [configuration checkpoints](architecture.md#runtime-instruction-and-tool-configuration-events); a summary cannot restore old instructions, permissions, deleted facts, or approvals.
+
+Track computation and publication separately:
+
+```text
+selected -> summarizing -> computed -> submitted -> placed
+                          \-> failed      \-> stale | withdrawn
+```
+
+A completed summarization task may return only a submission handle. Admission of that write does not mean the summary was placed or became active. Observe the placement receipt before reporting a context transition. Recovery reconciles proposal, artifact, submission, and placement identities before resending or publishing; reuse the [durable task lifecycle](always-on-agents.md#durable-tasks-and-owned-work).
+
+The host places a proposal at a safe request or turn boundary. In the same commit, check its conversation incarnation, branch ancestry, reset generation, captured-range validity, and current context head. Reject a proposal invalidated by reset, deletion, correction, or edits to its summarized evidence. Preserve all still-active messages after the selected cut, including those appended while summarization ran, and recheck call/result pairing in the rebuilt context.
+
+Within one valid context generation, accepted cuts must move monotonically forward. A proposal cutting before the active head is stale even if it finishes last; creation or completion time alone does not decide which summary wins. Define equal-cut behavior explicitly: an idempotent repeat returns its original receipt; a distinct proposal conflicts unless a declared version-checked replacement policy permits it. Commit the chosen summary, resulting head, and placement outcome atomically.
+
+Distinguish background latency work from blocking capacity recovery. Background work permits ordinary turns to continue and waits for safe placement. Blocking recovery holds the next model dispatch until a valid summary is placed and the complete request fits its verified input budget. It does not bypass publication checks. If compaction cannot recover capacity, return a bounded failure or request narrower work using the existing stopping rules; do not repeatedly send an oversized request. Keep ownership and cancellation behavior explicit for each mode.
+
+Charge summarization attempts to the same task budget, including computed proposals rejected as stale. Record confirmed usage and retain an unknown-cost disposition for interrupted requests without a committed provider result; cancellation does not prove no charge. Account for retry and discarded-summary overhead using [loop budgets](agentic-loop.md#step-budgets) and the [compaction/cache rules](#compaction-and-cache-stability).
+
 ## Historical-output recall
 
 Durable evidence retention and a model-facing historical-output recall tool are separate decisions. Keep records required by audit, recovery, or product policy even if the model never recalls them. Do not assume that exposing recall improves task completion merely because it makes elision reversible; compare its incremental utility with elision alone at matched thresholds and with safe re-reading, using [component diagnostics](evals.md#component-diagnostics).

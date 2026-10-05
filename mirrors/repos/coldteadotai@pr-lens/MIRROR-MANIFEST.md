@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `coldteadotai/pr-lens` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `coldteadotai/pr-lens` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `coldteadotai/pr-lens` — 26 default patterns, 0 followed patterns, 9
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,10 +64,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`packages/agent-skill/SKILL.md`](packages/agent-skill/SKILL.md) |
 | 4 | ✓ | [`skills/eli5/SKILL.md`](skills/eli5/SKILL.md) |
 | 5 | ✓ | [`skills/pr-lens/LICENSE`](skills/pr-lens/LICENSE) |
-| 6 | ✓ | [`skills/pr-lens/references/config.md`](skills/pr-lens/references/config.md) |
-| 7 | ✓ | [`skills/pr-lens/references/example.graph.json`](skills/pr-lens/references/example.graph.json) |
-| 8 | ✓ | [`skills/pr-lens/references/graph-document.md`](skills/pr-lens/references/graph-document.md) |
-| 9 | ✓ | [`skills/pr-lens/SKILL.md`](skills/pr-lens/SKILL.md) |
+| 6 | ✓ | [`skills/pr-lens/SKILL.md`](skills/pr-lens/SKILL.md) |
 
 ---
 

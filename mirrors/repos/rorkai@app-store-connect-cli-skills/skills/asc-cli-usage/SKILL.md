@@ -52,6 +52,7 @@ Use this skill when you need to run or design `asc` commands for App Store Conne
 - Prefer keychain auth via `asc auth login`.
 - Fallback env vars: `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_PRIVATE_KEY_PATH`, `ASC_PRIVATE_KEY`, `ASC_PRIVATE_KEY_B64`.
 - `ASC_APP_ID` can provide a default app ID.
+- App Store Server API reads (transactions, subscription status, refunds, notification history) live under `asc storekit` and use separate In-App Purchase keys registered with `asc storekit auth login`, not `asc auth` profiles.
 - When permissions are unclear, inspect exact API key role coverage with `asc web auth capabilities`.
   - This lives under the web-session auth surface.
   - It can resolve the current local auth by default, or inspect a specific key with `--key-id`.

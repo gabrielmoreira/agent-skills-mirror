@@ -240,9 +240,9 @@ At each checkpoint, record:
 
 ## Timed re-entry for long-running goals
 
-A durable goal record does not execute itself. In an advanced resident harness, a host-owned heartbeat may periodically reconsider active work, while a schedule requests re-entry at a specific time or interval. Both should enqueue a normal permissioned turn rather than invoke tools directly.
+A durable goal record does not execute itself. In an advanced always-on or resident harness, a host-owned heartbeat may periodically reconsider active work, while a schedule requests re-entry at a specific time or interval. Both should enqueue a normal permissioned turn rather than invoke tools directly. This lifecycle does not require recursive delegation or self-refinement.
 
-Store a stable wakeup ID, goal and session references, due time, recurrence and time zone, lease, attempt count, misfire policy, and last outcome. Claim wakeups atomically, coalesce duplicates, make handlers idempotent, and re-read durable goal state before acting so a stale timer cannot revive completed, paused, cancelled, or superseded work. Define explicit skip, catch-up, retry, and expiry behavior for downtime. See [self-refining recursive harnesses](self-refining-recursive-harnesses.md) for the resident lifecycle that makes timed re-entry reliable.
+Re-read durable goal state before acting so a stale timer cannot revive completed, paused, cancelled, or superseded work. Define the goal's recurrence/time zone, retry, expiry, and progress expectations alongside its budget and done condition. The canonical wakeup record, ownership/claim rules, duplicate coalescing, and downtime disposition belong to [resident ownership and scheduled wakeups](always-on-agents.md#resident-ownership-and-scheduled-wakeups).
 
 ## Stopping conditions
 

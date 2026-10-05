@@ -382,7 +382,7 @@ sandboxing, timeouts, and progress events.
 - Set `config_path` with `workspace_dir`, and set a turn origin with its access
   tier. `Access::full()` configures both access fields. Every agent on a
   runtime shares its `config_path` (credentials, keyring, API key).
-- Copy skills into an agent's `personalities/<id>/skills/` (what
+- Copy skills into an agent's `agents/<id>/skills/` (what
   `AgentSpec::skills_dir` does) because skill discovery rejects symlinked
   bundles. Library agents hide the operator's `~/.openhuman/skills` unless
   `include_user_skills(true)`.

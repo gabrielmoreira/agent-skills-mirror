@@ -112,6 +112,32 @@ hosted or provider-assisted loop
 
 Even when the provider supports hosted tools, keep business-critical authorization and audit in the harness.
 
+## Per-request model routing
+
+After measuring a fixed-model loop, an advanced harness may expose a selected logical model that resolves to a physical model for each request. This is a post-MVP dispatch policy, not a new model or authority level. Keep the selected model and requested reasoning setting distinct from the physical provider/model and effective reasoning setting recorded for each attempt.
+
+Route at a complete request boundary, before starting its stream. Give the router the request reason, selected configuration, current branch state, latest successful physical response, and any failed attempt being retried. Make continuation and retry behavior explicit:
+
+| Request reason | Required policy decision |
+|---|---|
+| New user turn | Choose a destination from approved candidates using the current task and versioned routing state. |
+| Tool-result or other continuation | Declare whether the run stays with the previous physical model or may reroute; preserve pending call/result relationships. |
+| Retry | Identify the failed physical request separately from the last successful response; declare sticky retry, escalation, and permitted fallback conditions. |
+| Direct utility call, such as a compaction summary | Declare its route and budget independently; default to no mutation of the conversation branch's routing state. |
+
+Before dispatch, the host must verify:
+
+1. **Destination access.** Resolve credentials for the physical destination and check tenant, data-disclosure, and deployment policy there. A logical catalogue entry or another provider's credentials do not establish usable destination access.
+2. **Action compatibility.** Check required input modalities, tool calling, structured output, reasoning settings, and any programmatic action interface against the physical model and adapter. Do not silently replace required inputs or capabilities with placeholders; reject the route or record an explicitly permitted lossy conversion.
+3. **History compatibility.** Project typed conversation history while preserving substantive observations and call/result identities. Provider-native reasoning signatures, continuation tokens, and stored-response references may be valid only for their originating model or provider. Use a tested conversion or full-context restart when allowed; never forge compatibility or silently discard task-critical evidence. See [provider adapters and state strategies](provider-api-patterns.md#api-adapter-layer).
+4. **Actual request limits.** Recount the projected input against the destination's verified context/output limits with observation and output headroom. Logical selection metadata, a previous route's limits, and unknown model defaults cannot substitute for this check; use [context reduction](context-memory-compaction.md#staged-reduction-under-context-pressure) when needed.
+
+Keep routing state outside the prompt under branch identity, router/configuration version, and state version. Validate updates against the expected version; record the accepted destination, reason, prior state, and resulting state together at a documented dispatch commit boundary after the checks above. A rejected or failed routing decision does not commit its candidate state. An admitted request that later fails or aborts retains an explicit attempt record and the committed state; record the latest successful route separately. Recovery must reconcile these records before another transition, and branch replay must not import a later sibling branch's routing state. Version or schema incompatibility requires an explicit migration, reset, or stopped outcome.
+
+Routing is not a side-effect retry policy. Preserve the existing [retry rules](#retry-policy), [tool permissions](tools-and-permissions.md), and [configuration events](architecture.md#runtime-instruction-and-tool-configuration-events). Bound router latency, retries, escalations, and physical attempts under aggregate task budgets; record actual usage for every attempted destination. If the router fails, credentials are missing, or no compatible model fits, return a structured failure or use an already configured and equally validated fallback. Do not recurse through logical routes or silently substitute a destination.
+
+Evaluate the routed policy against fixed-model baselines at the same task quality and authority floor using [model/configuration comparisons](evals.md#model-and-configuration-sweeps). Include router overhead, cold caches, failed attempts, and configuration transitions in completion cost and latency; cheaper individual calls do not establish a cheaper completed task.
+
 ## Step budgets
 
 Use explicit budgets:

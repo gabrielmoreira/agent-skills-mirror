@@ -84,8 +84,7 @@ is actually for.
 | `desktop-automation` | — | — | **DROP** | AX / `computer` tool family drives a **local desktop UI** — meaningless headless | `uiautomation` |
 | `tui` | OFF | — | **DROP** | `openhuman tui`/`chat` terminal UI — no terminal in a library host | `ratatui`, `crossterm`, `unicode-width` |
 
-**Non-default optional features** (`sandbox-landlock`,
-`browser-native`/`fantoccini`, `whatsapp-web`,
+**Non-default optional features** (`browser-native`/`fantoccini`, `whatsapp-web`,
 `e2e-test-support`, `rss-bench`, `rss-bench-dhat`) are all default-OFF, so a
 `--no-default-features` build never links them unless explicitly added. None are
 needed for opencompany; `rss-bench`/`rss-bench-dhat` are dev/benchmark-only.
@@ -172,8 +171,8 @@ build-fact error:
 - **tui:** `openhuman tui` / `chat` returns "tui feature disabled at compile time".
 
 Everything the opencompany use cases need remains: the agent harness + turn
-runner, subagent delegation (`spawn_parallel_agents`), the full memory stack
-(TinyCortex store/tree/queue/ingest + PII/injection detectors), threads, config,
+runner, subagent delegation (`spawn_parallel_agents`), the Memory v2 host
+(engine binding, sources, conversations, context + secret/PII scrubbing), threads, config,
 security policy, provider routing/inference, `skills` (SKILL.md discovery/install
 + node/python execution + `run_workflow`/`await_workflow`), and `flows` (saved
 graph create/run/schedule + `workflow_builder`/`flow_discovery` agents).
@@ -245,10 +244,6 @@ prioritization.
    into its own sub-gate would reclaim most of that 12.7 MiB while keeping the
    flows graph engine. Currently all-or-nothing.
 
-3. **`git2` (vendored libgit2).** Always-on native dependency of the `memory_diff`
-   change-ledger (git-backed snapshots/checkpoints/diffs). A large vendored C lib.
-   If a library host does not need git-backed memory diffs, this is a candidate for
-   a future gate.
 
 4. **`reqwest` dual TLS backends.** The root `reqwest` enables both `rustls-tls`
    **and** `native-tls` — two full TLS stacks linked simultaneously. A headless

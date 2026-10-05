@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `multica-ai/multica` — 26 default patterns, 10 followed patterns, 31 file(s) materialized.
+Mirror of `multica-ai/multica` — 26 default patterns, 10 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `multica-ai/multica` — 26 default patterns, 10 followed patterns, 31
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 10 |
-| Files         | 31 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,21 +84,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`server/cmd/backfill_issue_last_activity/README.md`](server/cmd/backfill_issue_last_activity/README.md) |
 | 15 | ✓ | [`server/cmd/migrate/README.md`](server/cmd/migrate/README.md) |
 | 16 | ✓ | [`server/internal/entitlement/README.md`](server/internal/entitlement/README.md) |
-| 17 | ✓ | [`server/internal/service/builtin_skills_legacy/multica-working-on-issues/SKILL.md`](server/internal/service/builtin_skills_legacy/multica-working-on-issues/SKILL.md) |
-| 18 | ✓ | [`server/internal/service/builtin_skills/multica-onboarding/SKILL.md`](server/internal/service/builtin_skills/multica-onboarding/SKILL.md) |
-| 19 | ✓ | [`server/internal/service/builtin_skills/multica-platform/SKILL.md`](server/internal/service/builtin_skills/multica-platform/SKILL.md) |
-| 20 | ✓ | [`server/pkg/composio/README.md`](server/pkg/composio/README.md) |
-| 21 | ✓ | [`server/pkg/publicapi/v1/README.md`](server/pkg/publicapi/v1/README.md) |
-| 22 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
-| 23 | → | [`apps/mobile/README.md`](apps/mobile/README.md) |
-| 24 | → | [`CLI_AND_DAEMON.md`](CLI_AND_DAEMON.md) |
-| 25 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 26 | → | [`README.md`](README.md) |
-| 27 | → | [`README.zh.md`](README.zh.md) |
-| 28 | → | [`SELF_HOSTING_ADVANCED.md`](SELF_HOSTING_ADVANCED.md) |
-| 29 | → | [`SELF_HOSTING.md`](SELF_HOSTING.md) |
-| 30 | → | [`VISION.md`](VISION.md) |
-| 31 | → | [`VISION.zh.md`](VISION.zh.md) |
+| 17 | ✓ | [`server/internal/service/builtin_skills/multica-onboarding/SKILL.md`](server/internal/service/builtin_skills/multica-onboarding/SKILL.md) |
+| 18 | ✓ | [`server/internal/service/builtin_skills/multica-platform/SKILL.md`](server/internal/service/builtin_skills/multica-platform/SKILL.md) |
+| 19 | ✓ | [`server/pkg/composio/README.md`](server/pkg/composio/README.md) |
+| 20 | ✓ | [`server/pkg/publicapi/v1/README.md`](server/pkg/publicapi/v1/README.md) |
+| 21 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
+| 22 | → | [`apps/mobile/README.md`](apps/mobile/README.md) |
+| 23 | → | [`CLI_AND_DAEMON.md`](CLI_AND_DAEMON.md) |
+| 24 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 25 | → | [`README.md`](README.md) |
+| 26 | → | [`README.zh.md`](README.zh.md) |
+| 27 | → | [`SELF_HOSTING_ADVANCED.md`](SELF_HOSTING_ADVANCED.md) |
+| 28 | → | [`SELF_HOSTING.md`](SELF_HOSTING.md) |
+| 29 | → | [`VISION.md`](VISION.md) |
+| 30 | → | [`VISION.zh.md`](VISION.zh.md) |
 
 ---
 

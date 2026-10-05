@@ -184,7 +184,7 @@ asc review details-create \
   --contact-first-name "Dev" \
   --contact-last-name "Support" \
   --contact-email "dev@example.com" \
-  --contact-phone "+1 555 0100" \
+  --contact-phone "+1 408 555 0100" \
   --notes "Explain the reviewer access path here."
 ```
 

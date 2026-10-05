@@ -20,7 +20,7 @@ description: >
 
 # TradingView MCP (Headless Market Data)
 
-Market data via the bundled [`tradingview` MCP server](https://github.com/atilaahmettaner/tradingview-mcp) — TradingView's public scanner API plus Yahoo Finance, spoken over MCP. **No TradingView desktop app or account.** Most tools need no API key. The server ships with this plugin (`.mcp.json`) and starts automatically; its 37 tools appear under the plugin's `tradingview` MCP namespace (load them through the client's deferred-tool mechanism when necessary).
+Market data via the bundled [`tradingview` MCP server](https://github.com/atilaahmettaner/tradingview-mcp) — TradingView's public scanner API plus Yahoo Finance, spoken over MCP. **No TradingView desktop app or account.** Most tools need no API key. The server ships with this plugin (`.mcp.json`) and starts automatically; its 39 tools appear under the plugin's `tradingview` MCP namespace (load them through the client's deferred-tool mechanism when necessary).
 
 **Read-only.** Nothing here places trades or mutates any account.
 
@@ -69,6 +69,7 @@ Prefer one focused call for a simple question. For a research brief, combine onl
 | `combined_analysis(symbol, exchange, timeframe)` | TA + news + sentiment in one call (news legs need `MARKETAUX_API_TOKEN`). |
 | `multi_agent_analysis(symbol, exchange, timeframe)` | Technical vs Sentiment vs Risk "debate" summary. |
 | `volume_confirmation_analysis(symbol, exchange, timeframe)` | Is the move volume-confirmed? |
+| `smart_money_analysis(symbol, exchange, period, interval)` | Accumulation/distribution proxy from Yahoo OHLCV (banker/hot-money RSI split, banker-fund oscillator, CMF+MFI+OBV composite). Formula-based proxy, **not** real institutional-flow data. `exchange` **defaults to `EGX`** (appends `.CA`) — pass `NASDAQ`/`NYSE` for US tickers. |
 
 ### Exchange-wide scans
 
@@ -111,7 +112,7 @@ Prefer one focused call for a simple question. For a research brief, combine onl
 
 ### Regional extras
 
-`egx_*` (Egyptian Exchange suite) — rarely relevant; also BIST, HKEX, SSE, SZSE, TWSE supported via the `exchange` param on scan tools.
+`egx_*` (Egyptian Exchange suite, incl. `egx_smart_money_scanner`) — rarely relevant; also BIST, HKEX, SSE, SZSE, TWSE supported via the `exchange` param on scan tools.
 
 ## Step 3: Normalize inputs
 

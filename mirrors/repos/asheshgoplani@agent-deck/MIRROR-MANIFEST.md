@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `asheshgoplani/agent-deck` — 26 default patterns, 0 followed patterns, 55 file(s) materialized.
+Mirror of `asheshgoplani/agent-deck` — 26 default patterns, 0 followed patterns, 68 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `asheshgoplani/agent-deck` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 55 |
+| Files         | 68 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -103,17 +103,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 42 | ✓ | [`skills/agent-deck/scripts/self-improvement/run-analyzers.sh`](skills/agent-deck/scripts/self-improvement/run-analyzers.sh) |
 | 43 | ✓ | [`skills/agent-deck/scripts/self-improvement/sanitize.py`](skills/agent-deck/scripts/self-improvement/sanitize.py) |
 | 44 | ✓ | [`skills/agent-deck/SKILL.md`](skills/agent-deck/SKILL.md) |
-| 45 | ✓ | [`skills/fleet/evals/evals.json`](skills/fleet/evals/evals.json) |
-| 46 | ✓ | [`skills/fleet/evals/RUNNER.md`](skills/fleet/evals/RUNNER.md) |
-| 47 | ✓ | [`skills/fleet/SKILL.md`](skills/fleet/SKILL.md) |
-| 48 | ✓ | [`skills/session-share/evals/evals.json`](skills/session-share/evals/evals.json) |
-| 49 | ✓ | [`skills/session-share/evals/RUNNER.md`](skills/session-share/evals/RUNNER.md) |
-| 50 | ✓ | [`skills/session-share/scripts/.gitkeep`](skills/session-share/scripts/.gitkeep) |
-| 51 | ✓ | [`skills/session-share/scripts/export.sh`](skills/session-share/scripts/export.sh) |
-| 52 | ✓ | [`skills/session-share/scripts/import.sh`](skills/session-share/scripts/import.sh) |
-| 53 | ✓ | [`skills/session-share/scripts/utils.sh`](skills/session-share/scripts/utils.sh) |
-| 54 | ✓ | [`skills/session-share/SKILL.md`](skills/session-share/SKILL.md) |
-| 55 | ✓ | [`skills/session-share/tests/test_export_895_regression.sh`](skills/session-share/tests/test_export_895_regression.sh) |
+| 45 | ✓ | [`skills/deck-repro/evals/evals.json`](skills/deck-repro/evals/evals.json) |
+| 46 | ✓ | [`skills/deck-repro/references/contract.md`](skills/deck-repro/references/contract.md) |
+| 47 | ✓ | [`skills/deck-repro/scripts/run.py`](skills/deck-repro/scripts/run.py) |
+| 48 | ✓ | [`skills/deck-repro/scripts/test_validate.py`](skills/deck-repro/scripts/test_validate.py) |
+| 49 | ✓ | [`skills/deck-repro/scripts/validate.py`](skills/deck-repro/scripts/validate.py) |
+| 50 | ✓ | [`skills/deck-repro/SKILL.md`](skills/deck-repro/SKILL.md) |
+| 51 | ✓ | [`skills/deck-retro/evals/evals.json`](skills/deck-retro/evals/evals.json) |
+| 52 | ✓ | [`skills/deck-retro/references/config.example.json`](skills/deck-retro/references/config.example.json) |
+| 53 | ✓ | [`skills/deck-retro/references/metrics.md`](skills/deck-retro/references/metrics.md) |
+| 54 | ✓ | [`skills/deck-retro/scripts/measure.py`](skills/deck-retro/scripts/measure.py) |
+| 55 | ✓ | [`skills/deck-retro/scripts/test_measure.py`](skills/deck-retro/scripts/test_measure.py) |
+| 56 | ✓ | [`skills/deck-retro/scripts/wakes.py`](skills/deck-retro/scripts/wakes.py) |
+| 57 | ✓ | [`skills/deck-retro/SKILL.md`](skills/deck-retro/SKILL.md) |
+| 58 | ✓ | [`skills/fleet/evals/evals.json`](skills/fleet/evals/evals.json) |
+| 59 | ✓ | [`skills/fleet/evals/RUNNER.md`](skills/fleet/evals/RUNNER.md) |
+| 60 | ✓ | [`skills/fleet/SKILL.md`](skills/fleet/SKILL.md) |
+| 61 | ✓ | [`skills/session-share/evals/evals.json`](skills/session-share/evals/evals.json) |
+| 62 | ✓ | [`skills/session-share/evals/RUNNER.md`](skills/session-share/evals/RUNNER.md) |
+| 63 | ✓ | [`skills/session-share/scripts/.gitkeep`](skills/session-share/scripts/.gitkeep) |
+| 64 | ✓ | [`skills/session-share/scripts/export.sh`](skills/session-share/scripts/export.sh) |
+| 65 | ✓ | [`skills/session-share/scripts/import.sh`](skills/session-share/scripts/import.sh) |
+| 66 | ✓ | [`skills/session-share/scripts/utils.sh`](skills/session-share/scripts/utils.sh) |
+| 67 | ✓ | [`skills/session-share/SKILL.md`](skills/session-share/SKILL.md) |
+| 68 | ✓ | [`skills/session-share/tests/test_export_895_regression.sh`](skills/session-share/tests/test_export_895_regression.sh) |
 
 ---
 

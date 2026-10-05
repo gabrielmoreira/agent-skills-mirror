@@ -21,6 +21,33 @@
 - [ ] Traces and evals are defined before launch.
 - [ ] First rollout is limited, monitored, or shadow-mode.
 
+## Per-request model routing checklist
+
+- [ ] A fixed-model baseline and matched quality/cost/latency comparison justify post-MVP routing.
+- [ ] Selected router identity and actual model/reasoning configuration are recorded separately.
+- [ ] Destination credentials, scope, modalities, protocol, and complete-request capacity are checked before dispatch.
+- [ ] Continuation, retry, fallback, and direct-request behavior preserve tool-result pairing and treat provider replay data as opaque.
+- [ ] Branch-state inheritance, version checks, commit timing, and failure behavior are explicit.
+- [ ] Router/classifier/retry/compaction costs count toward the same budget; routing cannot change permissions.
+
+## Runtime configuration event checklist
+
+- [ ] Ordered, versioned instruction/tool changes have authorized origin, scope, and a safe commit boundary.
+- [ ] Replay and compaction preserve the effective configuration without promoting observations into instructions.
+- [ ] Model-visible declarations reconcile with executable capabilities; revocation is enforced at invocation.
+- [ ] Provider-native updates and checkpoint fallback are tested for additions, replacements, and removals.
+- [ ] Removal from active state is distinguished from excluding historical content from future payloads.
+- [ ] Recovery and branch conflicts fail closed rather than restoring stale authority.
+
+## Economic cache warming checklist
+
+- [ ] A no-warming baseline justifies the optional post-MVP optimization.
+- [ ] Exact scope/request identity, best-effort lifetime, and replay-safe output/reasoning options determine eligibility.
+- [ ] Refreshes cannot execute tools or hosted effects, alter conversation state, or preempt real work.
+- [ ] Reuse-weighted avoided cost exceeds refresh cost, and cumulative spend/rate/time limits are enforced.
+- [ ] Context/model/configuration changes, missed deadlines, and cancellation invalidate scheduled and in-flight work.
+- [ ] Successful, failed, aborted, late, and unknown refresh outcomes are accounted for; requested cancellation is not proof of no charge.
+
 ## Hardware agent and board deployment checklist
 
 - [ ] Inference location and dependencies on a running host are explicit.
@@ -242,6 +269,21 @@ Use [adaptive agent teams](adaptive-agent-teams.md) for the contracts and [adapt
 - [ ] Any self-update policy names its canonical source, keeps package revisions consistent, preserves local changes, respects installation permissions, and discloses unverified freshness.
 - [ ] Predictive loading is measured against on-demand loading and preserves version, scope, and cache ordering.
 
+## Always-on and durable runtime checklist
+
+- [ ] Availability, recoverability, ownership topology, and demonstrated storage failure classes are stated separately.
+- [ ] Accepted/queued/placed/answered/withdrawn receipts and request-identity payload/retention policy survive restart.
+- [ ] Follow-up, steering, passive-write, and control lanes have explicit safe boundaries and failure dispositions.
+- [ ] Local transcript/task/document/receipt commits publish only after settlement; uncertain storage/adoption seals mutation until reconciliation.
+- [ ] External effect intent/outcome windows and persisted/current replay eligibility resolve through the existing tool policy.
+- [ ] Task checkpoints, definition versions, migrations, blocked work, invocation fencing, and orphan disposition are explicit.
+- [ ] Held outcomes, owned foreground drain, terminal receipts, background boundaries, cancellation, and suspension remain distinguishable.
+- [ ] Document scope/incarnation/history/fork policy and commit-granular historical copying cannot copy live tasks or authority accidentally.
+- [ ] Snapshot attachment, delivery/replay cursor types, overflow/gap recovery, count/byte limits, and active-callback cleanup are tested.
+- [ ] Concurrent compaction pins its range, preserves the new tail, rejects stale publication, and accounts for stale/unknown attempts.
+- [ ] Takeover fences stale writers; wakeups revalidate authority and stop under goal/deadline/budget rules.
+- [ ] Crash-window, cancellation, fork, migration, observer, and compaction probes pass with unresolved effects and data-loss exposure reported.
+
 ## Self-refining recursive harness checklist
 
 - [ ] The advanced profile is justified by measured baseline failures or gains and marked post-MVP.
@@ -258,7 +300,7 @@ Use [adaptive agent teams](adaptive-agent-teams.md) for the contracts and [adapt
 - [ ] Regressions trigger automatic rollback or quarantine; promotion requires explicit evidence.
 - [ ] Changes remain session-local by default; cross-session or global promotion has a separate gate.
 - [ ] Executable skill changes receive sandbox, dependency, capability, provenance, and regression checks.
-- [ ] Retained, daemon-backed, and scheduled runs handle cancellation, recovery, missed ticks, backpressure, idempotency, attribution, and garbage collection.
+- [ ] Retained children handle cancellation, recovery, message backpressure, idempotency, attribution, and garbage collection; resident/scheduled runs pass the [always-on checklist](#always-on-and-durable-runtime-checklist).
 - [ ] Adversarial evals cover persistent prompt injection, reward hacking, authority escalation, cross-session leakage, and unbounded state growth.
 
 ## MCP/external connector checklist

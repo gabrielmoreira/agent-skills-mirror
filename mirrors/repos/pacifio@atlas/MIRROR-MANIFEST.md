@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pacifio/atlas` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `pacifio/atlas` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pacifio/atlas` — 26 default patterns, 0 followed patterns, 5 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,10 +60,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`src-tauri/resources/skills/atlas-self-configure/SKILL.md`](src-tauri/resources/skills/atlas-self-configure/SKILL.md) |
-| 2 | ✓ | [`vendor/atlas-engine/skills/src/assets/samples/plugin-creator/SKILL.md`](vendor/atlas-engine/skills/src/assets/samples/plugin-creator/SKILL.md) |
-| 3 | ✓ | [`vendor/atlas-engine/skills/src/assets/samples/review-agent/SKILL.md`](vendor/atlas-engine/skills/src/assets/samples/review-agent/SKILL.md) |
-| 4 | ✓ | [`vendor/atlas-engine/skills/src/assets/samples/skill-creator/SKILL.md`](vendor/atlas-engine/skills/src/assets/samples/skill-creator/SKILL.md) |
-| 5 | ✓ | [`vendor/atlas-engine/skills/src/assets/samples/skill-installer/SKILL.md`](vendor/atlas-engine/skills/src/assets/samples/skill-installer/SKILL.md) |
+| 2 | ✓ | [`src-tauri/resources/skills/remember/SKILL.md`](src-tauri/resources/skills/remember/SKILL.md) |
+| 3 | ✓ | [`vendor/atlas-engine/skills/src/assets/samples/plugin-creator/SKILL.md`](vendor/atlas-engine/skills/src/assets/samples/plugin-creator/SKILL.md) |
+| 4 | ✓ | [`vendor/atlas-engine/skills/src/assets/samples/review-agent/SKILL.md`](vendor/atlas-engine/skills/src/assets/samples/review-agent/SKILL.md) |
+| 5 | ✓ | [`vendor/atlas-engine/skills/src/assets/samples/skill-creator/SKILL.md`](vendor/atlas-engine/skills/src/assets/samples/skill-creator/SKILL.md) |
+| 6 | ✓ | [`vendor/atlas-engine/skills/src/assets/samples/skill-installer/SKILL.md`](vendor/atlas-engine/skills/src/assets/samples/skill-installer/SKILL.md) |
 
 ---
 

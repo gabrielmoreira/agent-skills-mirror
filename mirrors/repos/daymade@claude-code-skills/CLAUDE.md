@@ -92,14 +92,11 @@ when verifying an existing baseline; consult
 [source snapshot archives](daymade-skill/skill-creator/references/source-snapshot-archives.md)
 before archiving or restoring it.
 
-For hook loop and reminder semantics, load
-`daymade-claude-code:claude-code-hooks` and follow rule 7. Keep recurring
-advisory injectors available for the whole session, using cadence/hysteresis
-and reset semantics to limit frequency; never add a lifetime session cap.
-Reserve repetition budgets for blocking remediation loops whose capped exit is
-explicitly blocked, unshipped, or pending. Test advisory liveness across later
-fully-due windows, and leave current thresholds in the owning implementation
-rather than copying them into this file.
+For hook creation, consolidation, registration or recovery, load
+[`daymade-claude-code:claude-code-hooks`](daymade-claude-code/claude-code-hooks/SKILL.md)
+and follow its Build order and installer-owned recovery contract. Follow that
+Skill's rule 7 for loop and reminder semantics; keep current thresholds in the
+owning implementation.
 
 Python entry points registered as synchronous Claude Code/Codex lifecycle hooks or
 background services (LaunchAgents included) must call a fixed direct interpreter
@@ -144,8 +141,11 @@ When review, replay or evaluation needs input copies, follow
 [the materialization SOP](daymade-skill/skill-creator/references/materialization-budget.md)
 from the locked skill-creator project above. Its
 [CLI](daymade-skill/skill-creator/scripts/materialize.py) owns argument parsing,
-accounting and cleanup behavior. For disk diagnosis, use
-[macos-cleaner](daymade-macos/macos-cleaner/SKILL.md).
+accounting, retry eligibility and cleanup behavior. For disk diagnosis, cleanup
+recovery, or capacity checks before necessary backup/copy/extraction, use
+[macos-cleaner](daymade-macos/macos-cleaner/SKILL.md) and its
+[necessary-copy capacity preflight](daymade-macos/macos-cleaner/references/safety_rules.md#necessary-copy-capacity-preflight).
+When changing measurement, run the SOP's targeted regression suite before shipping.
 
 ### Automated Test Suites (CI)
 
@@ -246,6 +246,13 @@ tests, and those owners aligned; README and changelog entries should point to
 them instead of restating volatile protocol facts. The repository-wide
 local-source activation contract below still applies—never hand-create Codex
 Skill links.
+
+### Ghostty Terminal Sessions
+
+For snapshotting, restoring or reconciling Claude Code / Codex sessions in Ghostty
+across reboots, enter [`ghostty-use`](ghostty-use/SKILL.md). Its bundled script owns
+liveness classification and the paste-restore + auto-reconciliation loop; keep the
+storage-layout facts and macOS Ghostty limits in its references rather than here.
 
 ### Codex Quota and Account Checks
 
@@ -386,6 +393,10 @@ Squash-merged PRs rewrite commits under new SHAs, so every direct commit to
 local `main` guarantees divergence the moment its PR merges. These rules keep
 `main` clean:
 
+Before pushing shipped Skill changes, follow
+[skill release readiness](daymade-skill/skill-creator/references/release-readiness.md).
+The existing pre-push entry checks committed current-review evidence for the exact head.
+
 `.githooks/pre-commit` and `.githooks/pre-push` dispatch to
 `scripts/git-mainline-guard.mjs`, which rejects direct local-main work and stale
 marketplace manifests or reused plugin versions against current main. The
@@ -394,7 +405,8 @@ repository **from the canonical primary main checkout** with
 `git config core.hooksPath "$(pwd -P)/.githooks"`. The absolute path matters:
 `core.hooksPath` is shared by linked worktrees, so a relative path would let a
 stale feature worktree select its own stale dispatcher. CI and the GitHub main
-ruleset independently require the same release checks on every PR.
+ruleset independently enforce version progression on PRs; private review
+evidence is checked locally by pre-push, as defined in the linked release SOP.
 
 **Push through the remote name, never a bare URL.** The guard resolves the
 remote from its argument (`process.argv[3]`) and then fetches

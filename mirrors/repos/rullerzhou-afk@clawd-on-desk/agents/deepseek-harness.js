@@ -1,10 +1,11 @@
-// DeepSeek Harness web-profile integration. A Clawd-managed in-process DSH
-// plugin observes public session events and prepends a blocking ordinary-tool
-// approval listener. ask_user_question remains entirely native to DSH.
+// DeepSeek Harness integration. A Clawd-managed in-process DSH plugin observes
+// public session events and prepends a blocking ordinary-tool approval listener.
+// DSH has two carriers sharing one agent id: the web profile and the desktop
+// app, each with its own profile. ask_user_question remains native to DSH.
 
 module.exports = {
   id: "deepseek-harness",
-  name: "DeepSeek Harness (web, experimental)",
+  name: "DeepSeek Harness (experimental)",
   // DSH runs through Node, so generic process-name recovery would claim
   // unrelated Node sessions. Plugin lifecycle events are authoritative.
   processNames: { win: [], mac: [], linux: [] },
