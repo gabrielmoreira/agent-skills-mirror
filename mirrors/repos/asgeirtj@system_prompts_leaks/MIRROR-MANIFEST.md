@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed patterns, 187 file(s) materialized.
+Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed patterns, 216 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `asgeirtj/system_prompts_leaks` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 187 |
+| Files         | 216 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -246,6 +246,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 185 | ✓ | [`Meta/muse-code/skills/table-fit/SKILL.md`](Meta/muse-code/skills/table-fit/SKILL.md) |
 | 186 | ✓ | [`Meta/muse-code/skills/taste/SKILL.md`](Meta/muse-code/skills/taste/SKILL.md) |
 | 187 | ✓ | [`Meta/muse-code/skills/workflow-authoring/SKILL.md`](Meta/muse-code/skills/workflow-authoring/SKILL.md) |
+| 188 | ✓ | [`OpenAI/dots/skills/action-items/SKILL.md`](OpenAI/dots/skills/action-items/SKILL.md) |
+| 189 | ✓ | [`OpenAI/dots/skills/docs-artifact/SKILL.md`](OpenAI/dots/skills/docs-artifact/SKILL.md) |
+| 190 | ✓ | [`OpenAI/dots/skills/document-signing/SKILL.md`](OpenAI/dots/skills/document-signing/SKILL.md) |
+| 191 | ✓ | [`OpenAI/dots/skills/documents/SKILL.md`](OpenAI/dots/skills/documents/SKILL.md) |
+| 192 | ✓ | [`OpenAI/dots/skills/email/SKILL.md`](OpenAI/dots/skills/email/SKILL.md) |
+| 193 | ✓ | [`OpenAI/dots/skills/faq/SKILL.md`](OpenAI/dots/skills/faq/SKILL.md) |
+| 194 | ✓ | [`OpenAI/dots/skills/flights/SKILL.md`](OpenAI/dots/skills/flights/SKILL.md) |
+| 195 | ✓ | [`OpenAI/dots/skills/food-ordering/SKILL.md`](OpenAI/dots/skills/food-ordering/SKILL.md) |
+| 196 | ✓ | [`OpenAI/dots/skills/form-filling/SKILL.md`](OpenAI/dots/skills/form-filling/SKILL.md) |
+| 197 | ✓ | [`OpenAI/dots/skills/library/SKILL.md`](OpenAI/dots/skills/library/SKILL.md) |
+| 198 | ✓ | [`OpenAI/dots/skills/maintain-space/SKILL.md`](OpenAI/dots/skills/maintain-space/SKILL.md) |
+| 199 | ✓ | [`OpenAI/dots/skills/manage-schedules/SKILL.md`](OpenAI/dots/skills/manage-schedules/SKILL.md) |
+| 200 | ✓ | [`OpenAI/dots/skills/o-computer-personalization/SKILL.md`](OpenAI/dots/skills/o-computer-personalization/SKILL.md) |
+| 201 | ✓ | [`OpenAI/dots/skills/organize-space/SKILL.md`](OpenAI/dots/skills/organize-space/SKILL.md) |
+| 202 | ✓ | [`OpenAI/dots/skills/presentations/SKILL.md`](OpenAI/dots/skills/presentations/SKILL.md) |
+| 203 | ✓ | [`OpenAI/dots/skills/remote-environments/SKILL.md`](OpenAI/dots/skills/remote-environments/SKILL.md) |
+| 204 | ✓ | [`OpenAI/dots/skills/restaurant-booking/SKILL.md`](OpenAI/dots/skills/restaurant-booking/SKILL.md) |
+| 205 | ✓ | [`OpenAI/dots/skills/restaurant-recommendations/SKILL.md`](OpenAI/dots/skills/restaurant-recommendations/SKILL.md) |
+| 206 | ✓ | [`OpenAI/dots/skills/scheduling/SKILL.md`](OpenAI/dots/skills/scheduling/SKILL.md) |
+| 207 | ✓ | [`OpenAI/dots/skills/secure-me/SKILL.md`](OpenAI/dots/skills/secure-me/SKILL.md) |
+| 208 | ✓ | [`OpenAI/dots/skills/sheets-artifact/SKILL.md`](OpenAI/dots/skills/sheets-artifact/SKILL.md) |
+| 209 | ✓ | [`OpenAI/dots/skills/shopping/SKILL.md`](OpenAI/dots/skills/shopping/SKILL.md) |
+| 210 | ✓ | [`OpenAI/dots/skills/sites/SKILL.md`](OpenAI/dots/skills/sites/SKILL.md) |
+| 211 | ✓ | [`OpenAI/dots/skills/slack/SKILL.md`](OpenAI/dots/skills/slack/SKILL.md) |
+| 212 | ✓ | [`OpenAI/dots/skills/slides-artifact/SKILL.md`](OpenAI/dots/skills/slides-artifact/SKILL.md) |
+| 213 | ✓ | [`OpenAI/dots/skills/software-engineering/SKILL.md`](OpenAI/dots/skills/software-engineering/SKILL.md) |
+| 214 | ✓ | [`OpenAI/dots/skills/write-page/SKILL.md`](OpenAI/dots/skills/write-page/SKILL.md) |
+| 215 | ✓ | [`OpenAI/dots/skills/writing-style/SKILL.md`](OpenAI/dots/skills/writing-style/SKILL.md) |
+| 216 | ✓ | [`OpenAI/dots/voice.md`](OpenAI/dots/voice.md) |
 
 ---
 

@@ -39,6 +39,11 @@ print(report.outcome, [f.status for f in report.findings])
 
 ## Workflow
 
+For bulk before/after comparisons, use `sharepoint-extract-links` to export a source-attributed
+CSV after conversion/publication, including modern stored fields. `ResolvedUrl` means URL
+normalization only; use a resolver to establish existence. CSV rows must be adapted to the
+existing LinkInventory contract. See [bulk content workflow](references/bulk-content-link-workflow.md).
+
 1. Build a `LinkInventory` with `sharepoint-extract-links`.
 2. Choose the resolver (built-in local-path, or custom) and call `validate_link_integrity(inventory, resolver)`.
 3. Report each `LinkFinding` status and the overall `outcome`.

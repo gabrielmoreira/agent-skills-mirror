@@ -23,6 +23,11 @@ lives in `tests/test_utils_llm_text.py`.
 
 ### Agent / Tool Assembly Off-Load
 
+`start_run` also resolves the factory through `run_assembly` before admission:
+cold imports cannot occupy the loop or its default pool, and import errors
+cannot admit a run. `tests/blocking_io/test_agent_factory_resolve_offloop.py`
+pins offload, executor isolation, request context, and failure ordering.
+
 Tool and agent assembly re-enters `get_available_tools()` and may block on MCP discovery, so the four async assembly entry points — `run_agent`'s `agent_factory` call, `task_tool`, durable batch `_execute_item`, and `abuild_checkpoint_state_accessor` — dispatch through `deerflow.utils.assembly_io.run_assembly`, a dedicated ContextVar-preserving bounded executor (`DEER_FLOW_ASSEMBLY_WORKERS`, default 8) rather than the loop's default executor; a hung MCP server therefore parks an assembly worker instead of queueing unrelated default-executor work, and the pool logs a warning when pending assemblies exceed the worker count. `tests/blocking_io/test_tool_assembly_offloop.py` pins all four offloads plus the ContextVar propagation.
 
 ### Uploaded Document Summaries
@@ -37,6 +42,12 @@ or a tab after up to three spaces), including PDF-style single and split bold
 headings. Keep legitimate bold headings with up to three spaces and the shared
 conversion-companion path working. Regression coverage lives in
 `tests/test_file_outline_indented_bold.py`.
+
+Split-bold headings reject numeric/punctuation/currency-only blocks after the
+section number, including parentheses, signs, leading whitespace, and `$€£¥`.
+Apply the check to the second through fourth blocks; preserve the four-block
+limit, punctuated titles containing text, and non-ASCII titles. Coverage lives
+in `tests/test_file_outline_split_bold.py`.
 
 ### Active Content MIME Types
 

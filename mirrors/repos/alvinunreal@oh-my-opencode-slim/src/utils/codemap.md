@@ -48,6 +48,7 @@ Centralized utilities and shared abstractions used across the oh-my-opencode-sli
 - **Internal Initiator** (`internal-initiator.ts`): Marker and strict native-background-notification recognition for internally-initiated agent messages
 - **System Collapse** (`system-collapse.ts`): System message collapsing by joining with double-newlines
 - **Compat** (`compat.ts`): Cross-platform spawn with output collection and Windows command resolution
+- **PID File Lock** (`pid-file-lock.ts`): Cross-process PID-guarded directory lock with owner-token-guarded release (compare-then-delete), atomic stale-owner takeover (rename), young-lock fallback, live-owner age cap, and sync (`Atomics.wait`, off-main-thread only) plus async (`setTimeout`) retry wrappers
 - **Zip Extractor** (`zip-extractor.ts`): Cross-platform zip extraction with Windows-aware fallbacks
 - **Escape HTML** (`escape-html.ts`): HTML escaping helper for interview UI
 - **Frontmatter** (`frontmatter.ts`): Frontmatter parsing for interview documents
@@ -173,6 +174,7 @@ Session metadata, the opencode client accessor, and the type-only call-shape con
 | `internal-initiator.ts` | Internal agent message marker system |
 | `system-collapse.ts` | System message collapsing utility |
 | `compat.ts` | Cross-platform spawn and Windows command resolution |
+| `pid-file-lock.ts` | Cross-process PID-guarded directory lock with owner-token-guarded release, stale-owner recovery and age cap |
 | `zip-extractor.ts` | Cross-platform zip extraction |
 | `escape-html.ts` | HTML escaping helper |
 | `frontmatter.ts` | Frontmatter parsing for interview documents |

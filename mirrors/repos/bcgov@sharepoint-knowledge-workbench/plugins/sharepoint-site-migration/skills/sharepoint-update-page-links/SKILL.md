@@ -42,6 +42,11 @@ print(plan.outcome, plan.to_dict()["would_change"])
 
 ## Workflow
 
+For site-wide static or modern page remediation, first run the Python bulk CSV exporter in
+`sharepoint-extract-links`. Preserve source URLs and review destination mappings before rewriting.
+For modern pages, collect stored page fields and use the existing field executor; CSV extraction
+does not write changes. Re-extract after applying. See [bulk content workflow](references/bulk-content-link-workflow.md).
+
 1. Load the ruleset and plan: `plan_remediation(documents, ruleset)`. Review `would_change` with the user.
 2. Apply only after review, with a real writer and the plan's own token: `apply_remediation(plan, writer=..., dry_run=False,
    confirm=plan.confirmation_token)`; or use the PowerShell executor with an augmented plan JSON.

@@ -141,18 +141,22 @@ flowchart TD
 - Copilot 新建默认列表移除 7 月已退役的 Gemini 2.5 Pro / 3 Flash，以及 9 月 1 日将退役的 Gemini 3.1 Pro、Opus 4.6、Sonnet 4.6、Raptor mini。Sonnet 4.6 年付个人计划的例外仍可自行配置，既有配置不删除，也不把账户目录等同于全局可用性。[7 月公告](https://github.blog/changelog/2026-07-31-gemini-2-5-pro-and-gemini-3-flash-deprecated/)、[9 月退役公告](https://github.blog/changelog/2026-07-31-upcoming-august-2026-model-deprecations-in-github-copilot/)
 - OpenAI 直连的 GPT-5.6 / Sol 基础输入/输出价为每百万令牌 4/20 美元，促销至少持续至 2026-11-21；Sonnet 5 直连基础价为 2/10 美元，已转为长期定价。同步内置估算表，不覆盖用户价格或网关模板报价。缓存、长上下文阶梯、实际账单与历史价不是本表表达的内容，大盘仍是估算而非账单；促销结束前重新核验。[Sol 定价](https://developers.openai.com/api/docs/models/gpt-5.6-sol)、[Claude 定价](https://platform.claude.com/docs/en/about-claude/pricing)
 
+#### 2026-10-05 Fireworks 精确退役候选
+
+01 专项本周成功归档确认 GLM 5.2 Fast 与 Kimi K2.6 Turbo/Fast 已退役；官方公告分别在 9 月 26 日确认 9 月 25 日退役生效、8 月 27 日列出 Turbo/Fast 退役。新建模板仅移除 `accounts/fireworks/routers/glm-5p2-fast` 和 `accounts/fireworks/routers/kimi-k2p6-turbo`。历史保存配置和 Dedicated ID 仍按字符串读写，不自动迁移；其它 router 不依名称相似删除。GLM 5.3/Kimi K3 替代路由及合成工具/流式/usage 验收仍待证据，本轮不新增候选。[官方变更记录](https://docs.fireworks.ai/updates/changelog)
+
 #### 2026-09-21 DeepSeek Flash 与退役目录
 
 DeepSeek 新建直连模板使用官方规范 ID `deepseek-flash`（V4.1 Flash），文本/图片、百万上下文与 384,000 最大输出；保留文本版 `deepseek-v4-pro`。新 Flash 模板和规范 ID 的兜底估价采用高峰输入/输出 0.30/1.20 美元每百万令牌；峰谷、缓存和公共假期没有纳入实际账单结算。旧 Flash 别名仍由官方接受，既有用户模型、显式文本输入限制与用户价格不自动改写，网关旧别名兜底报价也不按直连公告批量覆盖。[模型和价格](https://api-docs.deepseek.com/quick_start/pricing/)
 
 只对官方 HTTPS 主机、443 端口和精确 Flash/Pro 型号应用 Chat 请求契约：模型 `reasoning=false` 或有效样式为 `None` 时优先关闭，即使仍保留旧档位；`none`（包含运行时关闭后得到的空值）也显式发送 `thinking.type=disabled`，开启时 `minimal/low → low`、`medium/high/xhigh → high`、`max → max`。档位在进入适配器前保留，不修改用户偏好；历史 `reasoning_content` 的既有工具回放规则不变，也不能借此清除旧历史。其他端点/协议保持原映射。[思考契约](https://api-docs.deepseek.com/guides/thinking_mode)
 
-Fireworks 新建模板移除公告精确命中的 `accounts/fireworks/models/kimi-k2p6`（2026-09-25 无服务器退役）。`glm-5p2-fast`、`kimi-k2p6-turbo` 等路由映射仍待证据；不因名字相似删除用户专属部署或宣称替代模型已验证。[官方退役公告](https://docs.fireworks.ai/updates/changelog#upcoming-serverless-deprecation-older-deepseek-glm-muse-and-kimi-models)
+Fireworks 新建模板移除公告精确命中的 `accounts/fireworks/models/kimi-k2p6`（2026-09-25 无服务器退役）。此段记录历史证据边界；上述两个 Fast/Turbo 路由已由 10 月 5 日成功归档及官方公告确认并移除，其它别名仍待证据；不因名字相似删除用户专属部署或宣称替代模型已验证。[官方退役公告](https://docs.fireworks.ai/updates/changelog#upcoming-serverless-deprecation-older-deepseek-glm-muse-and-kimi-models)
 
 #### 2026-09-07 模型与会话兼容边界
 
 - 新建 OpenAI Responses 模板提供 `gpt-6-astra`（1,050,000 上下文、128,000 最大输出）；仅 `https://api.openai.com` 的精确模型 ID 采用 `low / medium / high / xhigh / max`，`none`、`minimal` 及未设置值映射为 `low`，省略温度等不支持的采样字段。直连 Chat 仅允许无工具请求；工具循环提示改用 Responses。中转端点沿其原有策略，不自动改用户模型、协议、报价。[官方请求规则](https://developers.openai.com/api/docs/guides/latest-model)
-- Cerebras 的四项公共退役型号从新建列表移除；Together 的旧 DeepSeek V4 Pro 替换为 `deepseek-ai/DeepSeek-V4-Pro-0813`。用户已存配置与专属部署不迁移、不全局禁用同名 ID。Astra 与 Fable 5.1 的模板基础价均为每百万令牌输入 10 / 输出 50 美元；Astra 超过 272,000 输入令牌的阶梯及缓存、地区费用不由这两个字段表达，不能据大盘估算做完整账单核对。
+- Cerebras 的四项公共退役型号从新建列表移除；Together 曾用 `deepseek-ai/DeepSeek-V4-Pro-0813` 替换更早的 V4 Pro，但 2026-09-28 的新建目录已按[官方弃用公告](https://docs.together.ai/docs/deprecations)移除已下线的 `moonshotai/Kimi-K2.6` 和将在 09-29 退役的 `deepseek-ai/DeepSeek-V4-Pro-0813`。用户已存配置与专属部署不迁移、不全局禁用同名 ID。Astra 与 Fable 5.1 的模板基础价均为每百万令牌输入 10 / 输出 50 美元；Astra 超过 272,000 输入令牌的阶梯及缓存、地区费用不由这两个字段表达，不能据大盘估算做完整账单核对。
 - Anthropic 流式解析完整保存原始 `thinking`、`signature_delta` 拼接结果、`redacted_thinking.data`、文本和工具块顺序，包括最终轮。禁止用界面思考文本重建无签名块；其他协议的 `reasoning_content` 不转换成 Claude 思考。原始块进入会话历史，界面提示独立投影。
 - 官方端点启用 `thinking-binding-controls-2026-08-01`，思考配置加 `block_binding.prefix_mismatch_behavior=drop_block`；Fable 5.1 即使未选档位也显式用自适应思考。动态系统前缀、工具表、压缩后缀或切旧模型仍可能使已有块失效，由服务端裁决；`input_transformations` 的前缀或模型失配会显示提示并记录稳定诊断原因，重复流事件去重，本地原块保留。无法验证的签名拒绝属于请求契约终态，不自动删块重试。这是一条明确可观察的兼容路径，不保证跨模型完整思考连续性。[官方绑定控制](https://platform.claude.com/docs/en/build-with-claude/preserved-thinking)
 

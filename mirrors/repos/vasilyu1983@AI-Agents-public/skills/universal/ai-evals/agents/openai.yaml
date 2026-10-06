@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Evals & Fine-Tuning"
+  short_description: "Evaluates LLM, agent, responsible, and multimodal AI"
+  default_prompt: "Use $ai-evals for trustworthy LLM/agent, responsible-AI, and multimodal evaluation: judge calibration, fairness/privacy/oversight evidence, grounding, red teaming, thresholds, and optimization gates."

@@ -1,5 +1,8 @@
 # Claude Skills — The Complete Guide
 
+> [!NOTE]
+> From the previous edition, not yet re-verified. The guide is being rebuilt as lessons; this page keeps the earlier material reachable until they land.
+
 *~30 min read · [← Back to README](../README.md#claude-skills)*
 
 > **Mental model:** Skills package a workflow into a markdown file Claude can run. Two flavors — officially one system now: *slash skills* you invoke with `/name`, and *Agent Skills* Claude reaches for automatically when their description matches the task. `.claude/commands/deploy.md` and `.claude/skills/deploy/SKILL.md` both create `/deploy`.
@@ -21,7 +24,7 @@ First match wins:
 | 3 | Plugin-provided skills | Namespaced as `/plugin:name`, so on a name clash both load |
 | 4 | Built-in skills | Shipped with Claude Code |
 
-User beats project, enterprise skills beat both, and a skill beats a same-named file in `.claude/commands/`. Your skill replaces a same-named bundled skill (or, in a local terminal session, a built-in command), but not its aliases ([official rules](https://code.claude.com/docs/en/skills#resolve-skills-that-share-a-name)). This repo's custom `/review` was meant to shadow the built-in one, but since v2.1.223 the built-in `/review` is an alias of the bundled `/code-review` skill, and the docs don't say whether a project `review` file overrides that alias.
+User beats project, enterprise skills beat both, and a skill beats a same-named file in `.claude/commands/`. Your skill replaces a same-named bundled skill (or, in a local terminal session, a built-in command), but not its aliases ([official rules](https://code.claude.com/docs/en/skills#resolve-skills-that-share-a-name)).
 
 ## Two flavors of skills
 
@@ -35,22 +38,19 @@ User beats project, enterprise skills beat both, and a skill beats a same-named 
 | **Extras** | — | A whole directory for supporting files (`scripts/`, `references/`, `assets/`) |
 | **Best for** | Workflows you want to trigger explicitly | Capabilities Claude should reach for when relevant |
 
-> 💡 **Which to write?** Start with slash skills — simpler, no frontmatter, and you control invocation. Reach for Agent Skills when you want Claude to *decide* when the workflow applies (e.g., "if the user asks about PDFs, invoke `pdf-handler`"). The wider community has converged on Agent Skills as the format for shareable capabilities — see [The skills ecosystem](#the-skills-ecosystem) below.
+> 💡 **Which to write?** For new work, prefer a skill in `.claude/skills/<name>/SKILL.md`: a file in `.claude/commands/` is the older format and still works, but a skill also supports supporting files ([Skills](https://code.claude.com/docs/en/skills#where-skills-live)). Add `disable-model-invocation: true` when only you should start it, or leave it off to let Claude *decide* when the workflow applies (e.g., "if the user asks about PDFs, invoke `pdf-handler`").
 
-This guide focuses on **slash skills** (the seven shipped in this repo's `.claude/commands/`). Agent Skills follow most of the same patterns — name, description, structured prompt — plus YAML frontmatter and the `.claude/skills/<name>/SKILL.md` layout.
+Most examples in this guide are **slash skills**, the older `.claude/commands/` format, which still works. Agent Skills follow the same patterns and frontmatter, plus the `name` and `paths` fields and the `.claude/skills/<name>/SKILL.md` layout, whose folder can hold supporting files.
 
 ## Contents
 
 - [Quickstart: your first skill in 3 minutes](#quickstart-your-first-skill-3-minutes)
 - [What are Claude Skills?](#what-are-claude-skills)
 - [Built-in skills vs custom skills](#built-in-skills-vs-custom-skills)
-- [Available skills reference](#available-skills-reference)
-- [Using skills in your workflow](#using-skills-in-your-workflow)
 - [Skills FAQ](#skills-faq)
 - [Creating custom skills](#creating-custom-skills)
 - [Troubleshooting skills](#troubleshooting-skills)
 - [Skills best practices](#skills-best-practices)
-- [The skills ecosystem](#the-skills-ecosystem)
 
 ---
 
@@ -116,220 +116,17 @@ Claude Skills (a.k.a. *custom slash commands*) are markdown files in `.claude/co
 | `debug` | Troubleshoot the current session and configuration | `/debug` |
 | `keybindings-help` | Customize keyboard shortcuts and modify `~/.claude/keybindings.json` | `/keybindings-help` |
 
-**Custom skills** (shipped in this repository):
+**Custom skill** (shipped in this repository):
 
 | Skill | Format | What it does |
 |---|---|---|
-| `/pr` | Slash | Automated pull request creation with branch management and commit splitting |
-| `/review` | Slash | Multi-perspective code review (PM, Dev, QA, Security, DevOps, UX) |
-| `/test` | Slash | Unit testing best-practices checklist for LLM-driven test generation |
-| `/tdd` | Slash | Complete test-driven development workflow with Red-Green-Refactor cycle |
-| `/five` | Slash | Five Whys root-cause analysis for debugging and problem-solving |
-| `/ux` | Slash | User-experience designer persona for empathetic, user-centric design |
-| `/todo` | Slash | Task management in `todos.md` with due dates and completion tracking |
-| `/claude-md-review` | **Agent Skill** | Audits a `CLAUDE.md` for vagueness, dead file paths, stale commands, and bloat — and Claude reaches for it on its own when a project's instructions look like the problem |
+| `/claude-md-review` | **Agent Skill** | Audits a `CLAUDE.md` for vagueness, dead file paths, stale commands, and bloat, and Claude reaches for it on its own when a project's instructions look like the problem |
 
-The first seven live in [`.claude/commands/`](../.claude/commands) as plain markdown. [`/claude-md-review`](../.claude/skills/claude-md-review/SKILL.md) lives in `.claude/skills/` and is the worked example of the [frontmatter contract](#frontmatter-reference) — read it alongside the field table below.
-
-> 💡 **Pro tip:** Start with simple skills like `/five` or `/todo` to understand the pattern, then progress to complex workflows like `/tdd` or `/review`.
+[`/claude-md-review`](../.claude/skills/claude-md-review/SKILL.md) lives in `.claude/skills/` and is the worked example of the [frontmatter contract](#frontmatter-reference). Read it alongside the field table below. The seven slash commands this table used to list were removed; see the [CHANGELOG](../CHANGELOG.md#removed-live-config).
 
 ---
 
-<a id="available-skills-reference"></a>
-
-## Available skills reference
-
-### 🔹 Workflow & process
-
-**`/pr` — Pull Request Creation**
-- Automatically creates feature branch from current changes
-- Formats code using project linter (e.g., Biome)
-- Intelligently splits changes into logical, atomic commits
-- Generates descriptive commit messages for each unit of work
-- Pushes to remote and creates PR with summary and test plan
-- **Perfect for:** Teams requiring consistent PR quality and commit hygiene
-
-**`/tdd` — Test-Driven Development**
-- Enforces strict Red-Green-Refactor cycle
-- Guides through: failing test → minimal implementation → refactoring
-- Maintains feature notes in `notes/features/` for long-term memory
-- Ensures tests pass before commits, commits only when green
-- Integrates with feature branch workflows
-- **Perfect for:** Projects requiring high code quality and comprehensive test coverage
-
-### 🔹 Quality & review
-
-**`/review` — Multi-Perspective Code Review**
-
-Six-role review framework:
-
-1. **Product Manager** — Business value, user experience, strategic alignment
-2. **Developer** — Code quality, maintainability, performance, best practices
-3. **QA Engineer** — Test coverage, edge cases, regression risks
-4. **Security Engineer** — Vulnerabilities, data handling, compliance (OWASP, GDPR)
-5. **DevOps** — CI/CD integration, infrastructure, monitoring
-6. **UI/UX Designer** — Visual consistency, usability, accessibility
-
-- Enforces "fix now, not later" philosophy for all recommendations
-- Posts comprehensive review directly to GitHub PR as a comment
-- **Perfect for:** Critical PRs, production releases, architecture changes
-- **Note:** When run on your own PR, this posts a review comment from your account
-
-**`/test` — Unit Testing Best Practices**
-- Comprehensive checklist for writing robust unit tests
-- Focuses on testing internal logic, not API endpoints
-- Covers context verification, test structure, test cases, isolation, assertions
-- Includes strict guidance against over-mocking and framework bindings
-- Encourages spawning sub-agents for complex test flows
-- **Perfect for:** Ensuring consistent, maintainable test suites
-
-### 🔹 Persona & methodology
-
-**`/five` — Five Whys Root-Cause Analysis**
-- Systematic investigation technique drilling from symptoms to root causes
-- Iteratively asks "why" to uncover fundamental issues
-- Validates findings by working backwards from root cause
-- Proposes solutions addressing systemic problems, not just symptoms
-- Handles both technical and process-related causes
-- **Perfect for:** Debugging production incidents, understanding recurring bugs
-
-**`/ux` — User Experience Designer Persona**
-
-Claude becomes an empathetic UX specialist:
-
-- Conducts user research identifying needs, pain points, motivations
-- Designs accessible, aesthetically pleasing interfaces
-- Prioritizes user needs above all other considerations
-- Creates thoughtful micro-interactions and anticipates edge cases
-- Generates precise prompts for AI UI generation tools
-- **Perfect for:** Design-first projects, prototyping, user-centric product development
-
-### 🔹 Task management
-
-**`/todo` — Project Task Manager**
-- Manages `todos.md` in project root with Active/Completed sections
-- Supports due dates/times with smart sorting (due tasks prioritized)
-- Commands: `add`, `complete`, `remove`, `undo`, `list`, `past due`, `next`
-- Auto-numbers todos for easy reference
-- Tracks completion timestamps
-- **Perfect for:** Sprint planning, personal task tracking, session continuity
-
----
-
-<a id="using-skills-in-workflow"></a>
-<a id="using-skills-in-your-workflow"></a>
-
-## Using skills in your workflow
-
-**Basic invocation:**
-
-```bash
-# In Claude Code CLI
-/skill-name
-
-# With arguments (for skills that accept them)
-/todo add "Fix navigation bug"
-/review https://github.com/user/repo/pull/123
-```
-
-**Workflow prerequisites:**
-
-Before using these workflow combinations, ensure you have:
-
-- ✅ Git repository initialized (`git init`)
-- ✅ Remote repository configured (`git remote -v` shows your repo)
-- ✅ Commit permissions to your repository
-- ✅ GitHub authentication configured (for `/review` and `/pr` skills)
-- ✅ Skills installed in `.claude/commands/` or `~/.claude/commands/`
-- ✅ Current working directory is your project root
-
-**Workflow execution notes:**
-
-- Skills execute sequentially — wait for each to complete before invoking the next
-- Skills do **not** auto-chain — you must type each `/skill-name` command manually
-- If a skill fails, address the error before proceeding to the next step
-- Use `/help` to verify skill availability before running workflows
-
-### Recipe 1: Complete feature development
-
-```bash
-# Start with TDD workflow
-/tdd
-# Claude guides through Red-Green-Refactor cycle
-
-# Ensure tests pass
-/test
-# Validates test coverage and quality
-
-# Create PR with automatic commit splitting
-/pr
-# Creates branch, commits, and opens PR
-
-# Conduct comprehensive review (optional — creates PR comment)
-/review
-```
-
-**Common issues:**
-
-- **`/tdd` fails:** Ensure tests are properly written; review test syntax
-- **`/test` reports failures:** Fix failing tests before proceeding to `/pr`
-- **`/pr` merge conflicts:** Resolve conflicts manually, then retry
-- **`/review` auth failure:** Run `gh auth login` to configure GitHub CLI
-- **No Biome configured:** `/pr` assumes Biome formatter; install or modify skill
-
-### Recipe 2: Bug investigation & resolution
-
-```bash
-# Identify root cause
-/five
-# Five Whys analysis to find systemic issues
-
-# Implement fix using TDD
-/tdd
-# Write failing test, implement fix, refactor
-
-# Verify with unit tests
-/test
-# Ensure all tests pass
-
-# Submit PR
-/pr
-```
-
-**Common issues:**
-
-- **`/five` identifies unfixable issue:** Root cause may require architecture changes
-- **Bug in dependency:** Report upstream; consider workaround or fork
-- **`/tdd` tests pass but bug persists:** Review test coverage; bug may be in untested code
-
-### Recipe 3: UX-focused development
-
-```bash
-# Start with user-centric design
-/ux
-# Claude adopts UX designer persona
-
-# Implement with tests
-/test
-# Build with test coverage
-
-# Review for accessibility and usability
-/review
-# Multi-perspective review including UX
-```
-
-**Common issues:**
-
-- **`/ux` suggestions conflict with brand:** Provide brand guidelines as context
-- **`/review` finds accessibility violations:** Address WCAG issues before merge
-- **Performance issues with new UI:** Use browser profiling tools; optimize assets
-
-> 💡 **Workflow tips:**
-> - **Chain skills sequentially** — Skills execute one at a time; wait for completion before invoking the next.
-> - **Combine with hooks** for automatic skill invocation on events (see [Hooks](../README.md#hooks) section).
-> - **Use `/todo`** at session start to maintain context across interruptions.
-> - **Run `/review`** on your own PRs before requesting human review (note: posts as a PR comment from your account).
-> - **Skills don't auto-chain** — each `/skill` must be invoked manually; they don't call each other automatically.
+<a id="available-skills-reference"></a><a id="-workflow--process"></a><a id="-quality--review"></a><a id="-persona--methodology"></a><a id="-task-management"></a><a id="using-skills-in-workflow"></a><a id="using-skills-in-your-workflow"></a><a id="recipe-1-complete-feature-development"></a><a id="recipe-2-bug-investigation--resolution"></a><a id="recipe-3-ux-focused-development"></a>This repo's skills catalog and workflow recipes were removed with the slash commands they described; see the [CHANGELOG](../CHANGELOG.md#removed-live-config).
 
 ---
 
@@ -360,7 +157,7 @@ Always review `.claude/commands/` files from cloned repositories before invoking
 
 **Q: Can I modify built-in skills?**
 
-No. Built-in skills (`/dataviz`, `/debug`, `/keybindings-help`, …) ship with Claude Code and cannot be modified directly. You can create your own custom skill with a similar name for custom behavior: your skill replaces a same-named bundled skill (or, in a local terminal session, a built-in command), but not its aliases (this repo's custom `/review` was meant to shadow the built-in `/review` that way, but since v2.1.223 the built-in `/review` is an alias of `/code-review`, and the docs don't say whether a project `review` file overrides it).
+No. Built-in skills (`/dataviz`, `/debug`, `/keybindings-help`, …) ship with Claude Code and cannot be modified directly. You can create your own custom skill with a similar name for custom behavior: your skill replaces a same-named bundled skill (or, in a local terminal session, a built-in command), but not its aliases.
 
 **Q: How do I share skills with my team?**
 
@@ -474,7 +271,7 @@ Brief description of what this skill does.
 
 **3. Example: simple skill**
 
-A simplified version of this repo's [`.claude/commands/five.md`](../.claude/commands/five.md) (the real file adds usage notes, variables, and worked examples):
+A small root-cause skill, saved as `.claude/commands/five.md`:
 
 ```markdown
 # Five Whys Analysis
@@ -494,11 +291,11 @@ Apply the Five Whys root cause analysis technique to investigate issues.
 - Multiple root causes may exist — explore different branches
 ```
 
-> 💡 Copy this to `.claude/commands/five.md` to use it immediately — or grab [the full version](../.claude/commands/five.md) from this repo.
+> 💡 Copy this to `.claude/commands/five.md`, then start a new session to use it as `/five`.
 
 **4. Example: complex skill (complete file)**
 
-Complete contents of `.claude/commands/pr.md`:
+A complete skill file, saved as `.claude/commands/pr.md` in your project:
 
 ```markdown
 # Create Pull Request Command
@@ -656,7 +453,7 @@ Analyze the code at the provided file path or URL.
 2. Perform code review...
 ```
 
-> **Note:** `$ARGUMENTS` is a supported placeholder in custom commands/skills — this repo's own [`.claude/commands/review.md`](../.claude/commands/review.md) uses it (`**PR Link/Number**: $ARGUMENTS`). Plain trailing text after the command also works: Claude sees whatever you type after `/skill-name` as part of the request context. See the [official commands reference](https://code.claude.com/docs/en/commands).
+> **Note:** `$ARGUMENTS` is a supported placeholder in custom commands and skills, for example `**PR Link/Number**: $ARGUMENTS`. Plain trailing text after the command also works: Claude sees whatever you type after `/skill-name` as part of the request context. See [Pass arguments to skills](https://code.claude.com/docs/en/skills#pass-arguments-to-skills).
 
 ### ❌ Don't
 
@@ -729,144 +526,13 @@ Analyze the code at the provided file path or URL.
 
 ---
 
-## The skills ecosystem
-
-A vibrant community has formed around Agent Skills since Anthropic open-sourced the SKILL.md format. Beyond the seven custom slash skills shipped in this repo, you'll find an official Anthropic catalog, multiple marketplaces with thousands of skills indexed, and curated "awesome" lists that point at high-signal contributors.
-
-### Official Anthropic resources
-
-| Resource | What it is |
-|---|---|
-| [**anthropics/skills**](https://github.com/anthropics/skills) | Anthropic's public repo of authored Agent Skills (PDF/document creation, brand guidelines, slide generation, etc.). The reference implementation for the SKILL.md format. |
-| [**agentskills.io**](https://agentskills.io/specification) | Open specification for the SKILL.md format and frontmatter contract. Source on [GitHub → `agentskills/agentskills`](https://github.com/agentskills/agentskills). |
-| [Anthropic Skills docs](https://code.claude.com/docs/en/skills) | Authoritative usage guide — invocation, scopes, packaging, sharing. |
-
-### Marketplaces & registries
-
-| Marketplace | URL | Focus |
-|---|---|---|
-| **SkillHub** | [skillhub.club](https://www.skillhub.club/) | ~100K+ AI-evaluated skills auto-indexed from public GitHub repos. Searchable by category. |
-| **SkillsMP** | [skillsmp.com](https://skillsmp.com/) | Millions of skills aggregated across GitHub (3M+ advertised as of October 4, 2026). Independent (not Anthropic-affiliated). Filters by occupation, popularity, author. |
-| **Smithery** | [smithery.ai/skills](https://smithery.ai/skills) | Originally an MCP-server registry; now covers Agent Skills too. Includes a CLI for discovery and install. |
-| **skills.sh** | [skills.sh](https://skills.sh/) | Vercel's open agent-skills ecosystem (launched January 2026). |
-
-> 📦 **Official plugin marketplaces:** Anthropic publishes [three general-purpose plugin marketplaces](https://code.claude.com/docs/en/plugins/anthropic-marketplaces) for Claude Code: *claude-plugins-official* (auto-registered on first launch), the reviewed community marketplace (`/plugin marketplace add anthropics/claude-plugins-community`), and the demo marketplace in `anthropics/claude-code`. Plugins can bundle skills, commands, agents, hooks, and MCP servers in one install. See the [plugins docs](https://code.claude.com/docs/en/plugins).
-
-> ⚠️ Marketplaces aggregate community content and don't vet every entry. Read `SKILL.md` (and any `scripts/` it references) before installing — the same care you'd apply to a shell script.
-
-### Curated "awesome" lists
-
-| List | Slant |
-|---|---|
-| [**travisvn/awesome-claude-skills**](https://github.com/travisvn/awesome-claude-skills) | Broadest community list with creation guides, security notes, and best-practice picks. |
-| [**ComposioHQ/awesome-claude-skills**](https://github.com/ComposioHQ/awesome-claude-skills) | 1000+ production-ready skills organized by category; integrates with Composio's Connect-Apps for 500+ external apps. |
-| [**jesseotremblay/claude-skills**](https://github.com/jesseotremblay/claude-skills) | Skill-creator toolkit + business-analysis library (SWOT, market sizing, [market research](https://github.com/jesseotremblay/claude-skills/tree/main/market-research)). |
-| [**mattpocock/skills**](https://github.com/mattpocock/skills) | Engineering-focused composable skills (TDD, debugging, triage). Includes the well-known [`grill-me`](https://github.com/mattpocock/skills/blob/main/skills/productivity/grill-me/SKILL.md). |
-
-### Notable community skills, by category
-
-These are skills that surface repeatedly across SkillHub, SkillsMP, and the awesome lists. Most are Agent Skills (`SKILL.md`) — install via the marketplace UI, the [`skill-installer`](#-skill-installer) skill, or by copying the folder into `.claude/skills/<name>/`.
-
-#### Engineering & development
-
-| Skill | What it adds |
-|---|---|
-| `backend-dev-guidelines` | House-style backend patterns and review checklist |
-| `nodejs-backend-patterns` | Node.js architecture, async patterns, error handling |
-| `react` | Component conventions, hook idioms, and refactoring guidance |
-| `frontend-design` | Design-system implementation aligned with brand tokens |
-| `senior-data-engineer` | Data engineering reviewer / mentor persona |
-
-#### Quality, review & debugging
-
-| Skill | What it adds |
-|---|---|
-| `github-code-review` | Structured GitHub PR reviews with inline comments |
-| `peer-review` | Multi-perspective peer review (engineering + product lenses) |
-| `docs-review` | Documentation audit — clarity, accuracy, structure |
-| `verification-quality` | Verifies output meets a defined quality bar before sign-off |
-| `evaluation` | Systematic output evaluation with rubrics |
-| `systematic-debugging` | Methodical bug investigation with hypothesis tracking |
-
-#### Skill & tool development
-
-| Skill | What it adds |
-|---|---|
-| `skill-creator` | Scaffolds a new SKILL.md with valid frontmatter |
-| <a id="-skill-installer"></a>`skill-installer` | Installs Agent Skills from a registry or repo into `.claude/skills/` |
-| `mcp-builder` | MCP server scaffolding aligned with the protocol spec |
-| `tool-design` | Designing well-shaped tool interfaces for agents |
-
-#### Reasoning & process
-
-| Skill | What it adds |
-|---|---|
-| `brainstorming` | Structured brainstorming protocols (SCAMPER, lateral, etc.) |
-| `scientific-critical-thinking` | Critical-thinking framework for claim evaluation |
-| `scientific-problem-selection` | Picking tractable, high-leverage problems |
-| `prompt-engineering-patterns` | Reusable prompting patterns and anti-patterns |
-| `behavioral-modes` | Switch Claude into focused working modes (architect, reviewer, …) |
-
-#### Research & business
-
-| Skill | What it adds |
-|---|---|
-| `market-research-reports` | Structured market research deliverable |
-| `market-sizing-analysis` | TAM / SAM / SOM methodology, defensible bottom-up |
-| `product-strategist` | Product strategy persona — positioning, GTM, prioritization |
-
-#### Memory, context & ops
-
-| Skill | What it adds |
-|---|---|
-| `memory-systems` | Long-term memory patterns for agents |
-| `context-optimization` | Manage the context window efficiently across long sessions |
-| `context-degradation` | Recover gracefully when context drift sets in |
-| `file-search` | Improved repository search heuristics |
-| `reasoningbank-agentdb` | Reasoning + agent-DB integration patterns |
-
-#### Workflow & collaboration
-
-| Skill | What it adds |
-|---|---|
-| `pair-programming` | Structured pair-programming sessions with the model |
-| `agentic-jujutsu` | Agent orchestration techniques for multi-step problems |
-| `superpowers` / `using-superpowers` | Power-user toolkit; community-maintained meta-skill |
-
-#### Output formats & creative
-
-| Skill | What it adds |
-|---|---|
-| `pptx` | Generate PowerPoint decks programmatically |
-| `algorithmic-art` | Generative-art workflows and reusable scaffolds |
-
-### Installing a community skill
-
-Three common paths, listed in order of friction:
-
-1. **Marketplace one-click install.** SkillHub, SkillsMP, and Smithery offer a copy/install button that drops the skill folder into the right place.
-2. **Install via `skill-installer`.** Once you've installed [`skill-installer`](#-skill-installer) once, ask Claude *"install the X skill from Y registry"* and it handles the rest.
-3. **Manual copy from source.** Clone the source repo and drop `<name>/SKILL.md` (plus any `scripts/`, `references/`, `assets/` subfolders) into `.claude/skills/<name>/` for project scope or `~/.claude/skills/<name>/` for user scope.
-
-```bash
-# Manual install of a community Agent Skill
-mkdir -p .claude/skills
-git clone https://github.com/<author>/<repo>.git /tmp/src
-cp -r /tmp/src/<skill-name>/ .claude/skills/<skill-name>/
-
-# Verify the skill loaded
-claude
-> /help            # custom skills appear in the command list
-> /reload-skills   # reload skill files without restarting (v2.1.152+)
-```
-
-> 💡 **Convert a slash skill to an Agent Skill.** Move `.claude/commands/<name>.md` to `.claude/skills/<name>/SKILL.md` and add a `description`. Claude will then invoke it automatically when the description matches the request, on top of you still being able to type `/<name>`.
+<a id="the-skills-ecosystem"></a><a id="official-anthropic-resources"></a><a id="marketplaces--registries"></a><a id="curated-awesome-lists"></a><a id="notable-community-skills-by-category"></a><a id="engineering--development"></a><a id="quality-review--debugging"></a><a id="skill--tool-development"></a><a id="-skill-installer"></a><a id="reasoning--process"></a><a id="research--business"></a><a id="memory-context--ops"></a><a id="workflow--collaboration"></a><a id="output-formats--creative"></a><a id="installing-a-community-skill"></a>Removed: third-party skill registries, curated lists and community skill names that no lesson uses. To find more skills, start with Anthropic's [plugin marketplaces](https://code.claude.com/docs/en/plugins/anthropic-marketplaces). See the [CHANGELOG](../CHANGELOG.md#removed-listings).
 
 <a id="frontmatter-reference"></a>
 
 ### Frontmatter reference
 
-**Every field is optional.** Only `description` is *recommended* — it's how Claude decides when to apply the skill. Without it, the first paragraph of the body is used instead.
+**Every field is optional.** Only `description` is *recommended*: it's how Claude decides when to apply the skill. Without it, Claude Code uses the first non-empty line of the body instead ([Skills](https://code.claude.com/docs/en/skills#frontmatter-reference)).
 
 ```yaml
 ---

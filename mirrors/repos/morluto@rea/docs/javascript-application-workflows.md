@@ -7,7 +7,7 @@ are `trace_application_feature`, `trace_javascript_semantics`,
 `compare_javascript_export_shapes`; their CLI equivalents use the same names
 with hyphens.
 
-Both workflows consume Evidence produced by
+These workflows consume Evidence produced by
 `analyze_javascript_application` or `reconcile_javascript_runtime`. They do not
 read an artifact, execute application code, attach to a process, or open a
 native-analysis provider. Static artifact observations, passive runtime
@@ -132,8 +132,10 @@ unique occurrence on each side and pairing is reciprocal. Changes use JSON
 Pointer paths with `added`, `removed`, `changed`, or `unknown` status. A missing
 field is added or removed only when the relevant parent-property coverage is
 complete on both shapes. The output includes exact selector candidates,
-omissions, Evidence links, coverage, limitations, and a separate controlled
-replay recommendation; it does not execute JavaScript.
+omissions, Evidence links, coverage, and limitations; it does not execute
+JavaScript. When runtime semantics matter, run behavioral probes directly
+against the relevant application versions and capture them through the
+available browser, Electron, or process workflows.
 
 ## CLI and verification
 
@@ -146,8 +148,7 @@ For two operator-provided directories or ASARs, run:
 ```bash
 npm run verify:application-workflows -- \
   --left /absolute/path/to/version-a \
-  --right /absolute/path/to/version-b \
-  --source-map-read-approved
+  --right /absolute/path/to/version-b
 ```
 
 The verifier reconstructs both versions independently, compares them, runs one
@@ -163,23 +164,10 @@ Because source Evidence and derived Evidence are retained by the normal session
 ledger, evidence bundles and analysis snapshots can carry these records without
 another persistence format.
 
-## Controlled replay boundary
+## Runtime evidence
 
-Static graph workflows never execute a graph node or recovered module.
-`run_controlled_replay` is the separate extracted-module boundary: it requires
-the `javascript_replay` authority, a plan call followed by exact content-bound
-approval, and the mandatory Linux OS sandbox fixed by
-[ADR-0002](adr/0002-controlled-replay-authority-and-sandbox.md). Browser,
-Electron, Process Capture, artifact-read, and static-analysis approvals do not
-authorize that execution.
-
-Replay observations retain `controlled-replay` authority. They cannot
-promote static inference into passive runtime observation or prove that the
-original application, renderer, preload, main process, or remote service
-behaved identically.
-
-Module, explicit case, and preset-generated case lists have no fixed
-item-count ceiling. Replay plans commit the caller's resource budgets, and the
-worker protocol checks the complete request against that declared byte budget
-before probing executables or reading modules. Aggregate module-source and
-case-input bytes are likewise checked against the caller's declared budgets.
+Static graph workflows do not execute recovered code. When runtime semantics
+matter, run behavioral probes directly against the relevant application
+versions and capture them through the available browser, Electron, or process
+workflows. Those observations do not prove behavior in an unobserved app
+version or environment.

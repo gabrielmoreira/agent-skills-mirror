@@ -9,7 +9,8 @@ files directly. Implementation leaves are private; JSON catalog assets retain
 explicit data exports. Hosts compose database adapters, model providers and
 `@elizaos/plugin-assistant` explicitly.
 
-HTTP lifecycle, process guards, restart, application configuration and boot environment resolution live
+HTTP lifecycle, native platform detection and library policy, build variants,
+process guards, restart, application configuration and boot environment resolution live
 in `@elizaos/host`, with browser-safe configuration in `@elizaos/host/protocol`.
 Portable acoustic processing lives in `@elizaos/voice`.
 Cross-domain DTOs and validation live in `@elizaos/contracts`. Core imports none
@@ -19,6 +20,10 @@ Runtime settings are per-agent. Explicit host environment fallbacks remain for
 the secret/PII master switches and process execution policies; per-agent switch
 values take precedence. Model context, authorization evidence and effect receipts
 remain complete. Source restoration requires its original authorized binding.
+
+Pass-through model results honor cancellation when their lazy `text` promise is
+consumed, including after the provider body completes or while finish metadata
+is pending. Cancelled text rejects with the owning signal's original reason.
 
 `asRecord` accepts plain records; `asObjectRecord` also accepts class and built-in
 object instances. Both reject arrays and null. `hasPlainObjectTag` checks the
@@ -43,3 +48,9 @@ retains admitted history on failure, fences stale replies across task switches,
 and polls until a terminal task has no unknown outcome. It never runs task actions.
 Hosts own activity labels, layout, reading position, error copy, and task-control
 refresh policy. Observer snapshots are detached from the admitted history.
+
+`admitTaskChoiceResponse` in the browser-safe protocol barrel validates optional reply widgets, enforces a host-supplied count limit and binds every widget to the requesting task ID/epoch. It returns detached widget data. Hosts retain count policy, UI and error wording; successful admission grants no execution authority.
+
+Integration checks live in `test/`; unit `.test.ts` files have been removed from
+`src/`. Packed-consumer verification exercises published exports and runtime
+initialization. Live model checks remain opt-in.

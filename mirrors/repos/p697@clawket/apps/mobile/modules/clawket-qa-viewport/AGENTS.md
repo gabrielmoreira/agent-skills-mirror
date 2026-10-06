@@ -1,0 +1,7 @@
+# Android QA viewport observations
+
+This local Expo module is a diagnostic consumer, not a scrolling or rendering controller. Registration is inert. Bind only after the existing explicit QA sampler accepts Start, with the four JS opt-in gates plus exact native `.qa`, debuggable, React Native 0.86.3 and Fabric checks. Expo's exposed context must be an actual `ReactContext` before resolving the Fabric manager; otherwise fail closed. Keep one accepted/unknown arm per process; do not rebind on foreground or ReactHost replacement.
+
+Callbacks run on the UI thread and check the captured host, direct child and generation. Retire before removing listeners; late callbacks and an old caller's Stop cannot affect a replacement generation. Keep only weak view references and a 64-event scalar ring, with sequence/dropped/rejected counts. No text, native tags, identities, paths, exception messages, event push, timers, geometry queries on Read, view mutations, file I/O or backend access.
+
+Dimensions/offsets are native pixels; density is captured once. Time is elapsed Android uptime from this native capture, not the JS clock. Parent child-layout and manager mount phases are not all-cell or paint acknowledgements. Read copies historical records, not current attachment/liveness. Module absence preserves V1/V2; strict V3 consumer failures report fixed unavailable metadata. See `../../docs/engineering-baseline.md` for lifecycle and evidence limits. Native compilation and physical callback coverage need separate validation; host tests alone cannot prove them.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Agent QA"
+  short_description: "Builds agent evals, including carried-workspace coding trajectories"
+  default_prompt: "Use $qa-agent-testing to design LLM-agent evaluation for tool, trace, red-team, regression, multi-agent, and carried-workspace trajectory behavior."

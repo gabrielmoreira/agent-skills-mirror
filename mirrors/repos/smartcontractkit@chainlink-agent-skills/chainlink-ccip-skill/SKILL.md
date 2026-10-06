@@ -5,7 +5,7 @@ license: MIT
 compatibility: Designed for AI agents that implement https://agentskills.io/specification, including Claude Code, Cursor Composer, and Codex-style workflows.
 allowed-tools: Read WebFetch Write Edit
 metadata:
-  version: "0.0.10"
+  version: "0.0.11"
 ---
 
 # Chainlink CCIP Skill
@@ -18,7 +18,7 @@ For any request outside this skill's scope, answer wholly within the owning capa
 
 | Trigger | Reference |
 |---|---|
-| Live message status/search, lane inventory/latency, chain/contracts, verifiers, intent status; API/MCP schemas | [API](references/ccip-api.md) |
+| Live message status/search, lane inventory/latency, chain/contracts, verifiers, CCT token records, intent status; API/MCP schemas | [API](references/ccip-api.md) |
 | CCIP CLI/API/SDK, fee estimate, no-contract send or bridge | [Tools](references/ccip-tools.md) |
 | TypeScript fees, transfers, messaging, status, unsigned send | [SDK](references/ccip-sdk-examples.md) |
 | Route connectivity, network classification, supported tokens | [Discovery](references/ccip-discovery.md) |

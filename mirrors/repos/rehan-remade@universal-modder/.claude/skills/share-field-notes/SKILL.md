@@ -69,6 +69,7 @@ um kb pr knowledge/games/<game>/<note>.md --yes    # branch, commit, push (fork 
 - **Never include:**
   - game files or extracted assets;
   - decompiled code dumps;
+  - leaked code, SDKs, builds or license keys (what you learned from them, in your own words, is fine);
   - anything that cheats other players or bypasses anti-cheat, DRM or ownership checks (every game is in
     scope, multiplayer and servers you host included).
 

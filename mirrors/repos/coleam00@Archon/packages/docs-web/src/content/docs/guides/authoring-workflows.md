@@ -227,10 +227,10 @@ nodes:
 | `when` | string | — | Condition expression. Node is skipped if false. See [Condition Syntax](#when-condition-syntax) |
 | `trigger_rule` | string | `all_success` | Join semantics when multiple upstreams exist. Distinct from a fan-out node's [`fan_out.join`](#the-four-fields), which reduces one node's N children and defaults to `all_done` |
 | `context` | `'fresh'` \| `'shared'` \| `{ resume: node-id }` | — | `fresh` = new session; `shared` = inherit the ambient prior session in a sequential layer; `resume` = fork the exact completed upstream node's session. Parallel layers require named resume or fresh context |
-| `idle_timeout` | number | — | Kill node if idle for this many milliseconds |
+| `idle_timeout` | number | — | Kill node after this many milliseconds without a provider chunk. Any chunk counts as progress, thinking included. Reported live background work suspends the timer |
 | `retry` | object | — | Per-node retry configuration. See [Retry Configuration](#retry-configuration) |
 | `mutates_checkout` | boolean | — | `false` asserts this node leaves the git checkout untouched. The engine compares `git status` before and after the node and fails it, naming the changed paths, if anything outside the run's artifacts, state, and log directories changed. Enforced on `command`, `prompt`, `bash`, and `script` nodes; the check is skipped outside a git repository. A layer whose parallel nodes all declare it still runs in parallel, and a violation there also names the guarded siblings that ran in the same layer, since the change may not be the failing node's alone. Since one snapshot covers the whole checkout, every guarded node running when the write lands fails, not only the writer. A layer that mixes guarded nodes with any node that isn't checkout-guarded (a node of another kind, or one without `mutates_checkout: false`) runs one node at a time, so a sibling's write is never blamed on a guarded node. Distinct from the workflow-level [`mutates_checkout`](#running-sub-runs-side-by-side), which controls the path lock |
-| `always_run` | boolean | `false` | Opt out of resume caching: re-run this node on resume even if a prior run completed it. See [Opting Out of Resume Caching](#opting-out-of-resume-caching) |
+| `always_run` | boolean | `false` | Not a scheduling field: it does not change whether the node runs in a normal pass (use `when:` and `trigger_rule` for that). It opts the node out of the resume cache, so on resume it is evaluated again instead of replaying a prior completion, and still runs only if its `when:` and `trigger_rule` allow it. See [Opting Out of Resume Caching](#opting-out-of-resume-caching) |
 | `output_type` | string | — | Semantic label for this node's output (e.g. `'plan'`, `'findings'`, `'code'`). When set, the executor writes a typed output + metadata pair after the node completes (best-effort). Top-level nodes use `$ARTIFACTS_DIR/nodes/<id>.md` + `<id>.meta.json`; loop-body executions use [iteration-specific paths](#the-artifact-chain). |
 
 **AI node options** — apply to `command` and `prompt` nodes:
@@ -289,7 +289,7 @@ Scalar `context: shared` is only for ambient session threading through a sequent
 This is an exact, immutable fork contract:
 
 - Source and consumer must resolve to the same provider.
-- Claude and Pi support immutable forks. Codex explicitly does not; an omitted fork capability is also unsupported.
+- Claude, Codex and Pi support immutable forks. A provider that omits the fork capability does not.
 - A missing source handle, unavailable prior context, missing branch handle, or provider that reuses the source session fails the node. Named resume never falls back to a fresh session.
 - Two parallel consumers may name the same source; each receives its own branch while the source remains unchanged.
 - Run resume restores these private handles for completed nodes, so a pause or process restart does not lose declared ancestry. Each node's full session ID is recorded on its node record; transcripts and logs carry at most an eight-character preview.
@@ -311,8 +311,8 @@ Most of these fields map directly to Claude Agent SDK options. `maxBudgetUsd`, `
 The ladder is the union of every provider's vocabulary. Codex accepts all eight
 rungs. Other providers clamp an unsupported rung to the nearest weaker value;
 only when no weaker value exists do they use the shallowest stronger value.
-For example, `persistent` and `ultra` become `max` on Claude and Pi or `xhigh`
-on Copilot, while `minimal` becomes `low` on Claude and Copilot.
+For example, `persistent` and `ultra` become `max` on Claude, Pi,
+and Copilot, while `minimal` becomes `low` on Claude and Copilot.
 
 `thinking:` has been removed. A workflow, node, tier, or alias that still uses
 it fails validation with an error directing the author to `effort:`.
@@ -612,20 +612,27 @@ substitution instead of splicing in the failed producer's leftover output; a `ba
 `prompt:`/`command:` body must not assume a dependency succeeded just because it was
 allowed to run (`trigger_rule: all_done`).
 
-:::caution[Double-quoting `$node.output` in `bash:` nodes is a silent footgun]
-In `bash:` nodes, `$nodeId.output` and `$nodeId.output.field` are injected pre-quoted by Archon. For small outputs, values are **single-quoted inline** — the quoting is already provided by the substitution. For outputs exceeding 32 KB, Archon spills to the run-owned `$ARTIFACTS_DIR/.archon/node-output-spills/<node>[.<field>].nodeoutput` file and substitutes `$(cat '<path>')` instead. These files follow the [run-artifact retention lifecycle](/reference/archon-directories/#user-level-archon). Wrapping the substitution in double quotes breaks the **small (inline) case**: `var="$n.output"` becomes `var="'value'"`, embedding the literal single-quotes as part of the value. (For the large `$(cat ...)` case, double-quoting is harmless — `var="$(cat ...)"` is correct bash — but you can't know the output's size at author time, so the rule is unconditional: never double-quote.)
+:::caution[Assign output references, then quote the variable in shell bodies]
+In `bash:` and `until_bash:`, Archon injects `$nodeId.output`, `$nodeId.output.field`, and `$LOOP_PREV.nodeId.output[.field]` using two forms:
+
+- Small string outputs are single-quoted inline, such as `'a b   c *'`.
+- Outputs exceeding 32 KB spill to the run-owned `$ARTIFACTS_DIR/.archon/node-output-spills/<node>[.<field>].nodeoutput` file and become `$(cat '<path>')`. These files follow the [run-artifact retention lifecycle](/reference/archon-directories/#user-level-archon).
+
+A bare argument such as `printf '%s' $emit.output` works with the inline form, but the unquoted command substitution in the spill form splits words and expands globs. Wrapping the reference in double quotes breaks the inline form instead: `value="$emit.output"` becomes `value="'a b   c *'"`, preserving the single quotes as data. Single quotes around a reference also produce the wrong value.
+
+**Rule: assign, then quote the variable.** Keep the reference as the whole, unquoted assignment value; quote the shell variable wherever you use it:
 
 ```bash
-# WRONG — produces status="'ok'" (single quotes become part of the value)
-status="$emit.output.status"
-[ "$status" = "ok" ]   # → always false
+value=$emit.output
+printf '%s' "$value"
 
-# CORRECT — leave unquoted; bash assigns: status=ok
 status=$emit.output.status
-[ "$status" = "ok" ]   # → true
+[ "$status" = "ok" ]
 ```
 
-**Rule:** use `var=$node.output.field`, never `var="$node.output.field"`. This applies whether the output is small (single-quoted inline) or large (`$(cat ...)`). Numeric and boolean fields are injected raw (without quotes), so double-quoting accidentally "works" for them — making the bug intermittent and hard to spot.
+Assignments suppress word splitting and glob expansion in both regimes. `export value=$emit.output` and `local value=$emit.output` are also safe. Numeric and boolean fields are injected raw, but use the same idiom so a change to a string value remains safe.
+
+`archon validate workflows` warns about quoted references and bare references outside complete assignments. Heredoc bodies remain outside this check.
 :::
 
 ### `output_format` for Structured JSON
@@ -995,6 +1002,8 @@ Run it once with `"add OAuth login"`, again with `"now add MFA"` — each role c
 
 Sessions are keyed by `(workflow_name, node_id, scope_key, provider)`. The scope is the conversation that launched the run, so each chat thread has its own per-node memory. A run the Web UI or REST API starts in the background still belongs to the chat it was launched from, so runs from one chat continue each other's sessions.
 
+A run started without a conversation (for example, by code that calls the workflow engine or store with no origin) has no scope. Its `persist_session` nodes start fresh, save nothing for later runs, and get no scope artifacts. Resuming that run is unaffected: it continues from its own completed nodes like any other run.
+
 The **CLI is different**: each `archon workflow run` mints a fresh conversation UUID, so persisted sessions won't resume between separate invocations unless you pass the same `--conversation-id <id>` on each run.
 
 ### Concurrent runs
@@ -1002,8 +1011,8 @@ The **CLI is different**: each `archon workflow run` mints a fresh conversation 
 Two runs of the same workflow in the same scope can run at the same time. Neither waits for the other, and they never write into the same provider conversation:
 
 - When a run starts, it reads the scope's persisted sessions once. Each `persist_session` node continues from that copy, not from a session another run saved after this run started.
-- The node continues the saved session only when its provider can **fork** it (declares `sessionFork: true`). The fork is a new session with the saved history, so the saved one stays unchanged. Claude and Pi fork.
-- A provider that cannot fork would resume the saved session in place, so two runs could append to one conversation. Instead, the node does not continue it. The run records a `node_session_not_continued` workflow event naming the session it skipped (an 8-character preview) and posts a notice in the conversation. `archon validate workflows` also warns before any run, but only for a node whose provider is written in the workflow file itself; a node from an included block, or one whose provider comes from config defaults or a `model:` alias, is checked only when it runs. Codex, OpenCode and Copilot are in this group today, so their `persist_session` nodes do not carry context between runs; pass state between runs through artifacts instead.
+- The node continues the saved session only when its provider can **fork** it (declares `sessionFork: true`). The fork is a new session with the saved history, so the saved one stays unchanged. Claude, Codex and Pi fork.
+- A provider that cannot fork would resume the saved session in place, so two runs could append to one conversation. Instead, the node does not continue it. The run records a `node_session_not_continued` workflow event naming the session it skipped (an 8-character preview) and posts a notice in the conversation. `archon validate workflows` also warns before any run, but only for a node whose provider is written in the workflow file itself; a node from an included block, or one whose provider comes from config defaults or a `model:` alias, is checked only when it runs. OpenCode and Copilot are in this group today, so their `persist_session` nodes do not carry context between runs; pass state between runs through artifacts instead.
 - When a node finishes with a session, that session becomes the saved one. With overlapping runs, the run whose node finished last wins. A node that finishes without a session id leaves the saved session as it was.
 
 ### Workflow-level default
@@ -1059,11 +1068,11 @@ If the stored session is gone (for example, a Pi JSONL file was moved), the prov
 
 The node still completes on that fresh session, and its new session id is persisted so the *next* run continues from it. The node is **not** re-run — the fresh session is already a clean start, so re-running would only repeat it. Expect this only for `persist_session` nodes whose prior session became unavailable; warm resumes and first-time runs are unaffected.
 
-Codex does not fall back: a thread it cannot resume fails the node as `unknown`, with Codex's own error as evidence (for example `no rollout found for thread id …`). Codex reports a missing thread with the same JSON-RPC code as any other invalid request, so Archon cannot tell it apart safely enough to start over on its own. Codex cannot fork a session, so a `persist_session` node on Codex never continues an earlier run's thread (see [Concurrent runs](#concurrent-runs)); a Codex resume only continues a thread from the same run, which is gone only if something removed it mid-run.
+Codex does not fall back: a thread it cannot resume or fork fails the node as `unknown`, with Codex's own error as evidence (for example `no rollout found for thread id …`). Codex reports a missing thread with the same JSON-RPC code as any other invalid request, so Archon cannot tell it apart safely enough to start over on its own. A `persist_session` node on Codex forks the thread an earlier run saved, so once that thread is gone (its rollout under the Codex home was deleted, or the run uses another `CODEX_HOME`) the node fails on every run in that scope. Clear the saved session with [`archon workflow reset-sessions`](/reference/cli/#workflow-reset-sessions) to start the node fresh.
 
 #### By-reference recovery via scope artifacts
 
-A lost session doesn't have to mean lost context. Workflows that use `persist_session` also get a **stable cross-invocation artifact scope** at `scopes/<workflow>/<scope>/` (a sibling of the per-run `runs/<id>/` directory, under the same artifacts root; the scope is the launching conversation's UUID — the same key sessions use). Whenever a persistence-participating node also declares an `output_type`, the engine mirrors its typed output sidecar (`nodes/<id>.md` + `nodes/<id>.meta.json`) into that scope directory in addition to the run directory.
+A lost session doesn't have to mean lost context. Workflows that use `persist_session` in a run launched from a conversation also get a **stable cross-invocation artifact scope** at `scopes/<workflow>/<scope>/` (a sibling of the per-run `runs/<id>/` directory, under the same artifacts root; the scope is the launching conversation's UUID — the same key sessions use). Whenever a persistence-participating node also declares an `output_type`, the engine mirrors its typed output sidecar (`nodes/<id>.md` + `nodes/<id>.meta.json`) into that scope directory in addition to the run directory.
 
 On a cold resume, the warning then goes further: if the scope directory holds typed artifacts from an *earlier* invocation, the message lists them **by reference** (file paths — never pasted content), so the recovered context can be read on demand:
 
@@ -2134,11 +2143,10 @@ statement about the children:
 | write to the repo | `isolation: worktree` on each **`workflow:` node** |
 | must not overlap at all | sequence them with `depends_on` |
 
-One constraint applies however the checkouts are arranged: **one blocking child gate at a
-time.** Two children in the same layer that both pause for approval contend for the parent
-run's single approval slot — the second pause is silently dropped, and that child stays
-unmentioned until a later resume re-pauses on it. Sequence gated sub-runs with `depends_on`
-until a later slice adds real concurrent gating.
+Each 1:1 child run presents its own approval gate independently, addressed by its own run
+ID. Concurrent children can both pause for approval; the parent stays blocked until its
+children finish. Within a single run, gates are presented one at a time, and deferred gates
+re-run when that run resumes.
 
 ### Fanning out over a list with `fan_out:`
 
@@ -2202,7 +2210,7 @@ consequences worth planning for:
 
 | `join` | The node succeeds when… | `$<id>.output` |
 |--------|------------------------|----------------|
-| `all_done` (default) | every child reached a terminal state | JSON array in item order — each element is the child's **result value** (a structured child's terminal payload lands as the object itself, single-encoded; a text child's output stays the raw string), with each failed/cancelled child represented as `{ archon_failed: true, error, status }` in its slot |
+| `all_done` (default) | every child reached a terminal state and at least one child run was created (or the item list was empty) | JSON array in item order — each element is the child's **result value** (a structured child's terminal payload lands as the object itself, single-encoded; a text child's output stays the raw string), with each failed/cancelled child represented as `{ archon_failed: true, error, status }` in its slot |
 | `all_success` | every child completed | same array; any failed or cancelled child fails the node instead |
 | `first_success` | — | Racing: **rejected**, not deferred — see below. Rejected at load rather than silently treated as another join |
 
@@ -2211,6 +2219,20 @@ child that fails does not stop its siblings, does not stop later items from bein
 and does not change any other child's outcome. `all_success` still fails the node if any
 child failed — it just reaches that verdict after everyone has finished rather than by
 ending the others early. The failure message names the child that failed.
+
+A non-empty `workflow:` fan-out fails if **no child run row was created**, even with
+`all_done`. The error names the node, the number of refused children, and the first
+refusal reason. Resume re-dispatches this failed node. If at least one child run was
+created, `all_done` still completes with the same failure markers for failed and refused
+children, even if every child that started failed. An empty item list still completes
+with `[]`.
+
+Resume skips a completed fan-out and reports how many children were previously refused.
+It does not repeat children that ran, including failed children in an `all_done` batch.
+Resume uses the captured parent source, so correcting a binding in that source requires
+a fresh launch. Project child workflows still resolve from the live authoring directory
+when spawned; installed packs remain captured. A transient refusal may also clear before
+resume.
 
 ##### Why `all_done` is the default
 

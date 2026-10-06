@@ -496,8 +496,14 @@ configured LLM provider. The article fallback is limited to allowlisted
 `nytimes.com` URLs (including The Athletic paths) and sends only that URL
 without browser credentials or cookies. The transcript tool is limited to
 YouTube/youtu.be URLs, while the media tools are limited to public media hosts
-declared in the skill manifest. The read-only article, transcript, and resolver
-tools do not require
+declared in the skill manifest. Mastodon status URLs must use HTTPS and a
+known instance host or an instance verified through public NodeInfo metadata.
+For unknown hosts, WebBrain first reads `/.well-known/nodeinfo` and its
+same-origin metadata link without cookies or credentials, with redirects
+blocked. Those checks do not include the post path, query string, or fragment.
+Only the verified status origin and path are sent to FreeSkillz; Mastodon query
+strings and fragments are discarded. The read-only article, transcript, and
+resolver tools do not require
 `/allow-api`; `download_public_media` is available only in action modes and
 requires download permission because it creates a short-lived provider job,
 saves the completed file through the browser Downloads API, and then asks the

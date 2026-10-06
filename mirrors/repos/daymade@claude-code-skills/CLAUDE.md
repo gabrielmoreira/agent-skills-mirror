@@ -63,6 +63,13 @@ Use [skill-creator](daymade-skill/skill-creator/SKILL.md) before creating or
 changing a skill. It owns change classification, evidence selection, regression
 review, validation, initialization, and packaging.
 
+For its audit, release, source-contract or materialization commands from another
+working directory, use the [fixed command entry](daymade-skill/skill-creator/references/fixed-command-entry.md).
+
+For saved HTML batches, follow [the conversion owner](daymade-docs/doc-to-markdown/references/html-conversion.md#gate-a-batch-through-the-existing-recipe)
+and its actual-reader pilot before expansion. Keep conversion evidence and reader
+observations separate; this file does not define another batch recipe.
+
 When creating or changing an operational Skill's first-use setup or recovery
 workflow, enter `skill-creator` and load its
 [first-use and recovery contract](daymade-skill/skill-creator/references/first-use-and-resume.md).
@@ -375,17 +382,12 @@ use the [identity-source contract](tibo-reset-codex/references/account-usage.md#
 
 **Closing a PR unmerged (declined, or superseded by another PR) → delete its head
 branch in the same action.** `gh pr merge --delete-branch` only covers merged PRs.
-⚠️ Deleting the branch does NOT remove `refs/pull/<N>/head` — GitHub keeps serving
-that ref, so the commits remain publicly fetchable by anyone who fetches it, and the
-branch listing (plus the weekly `stale-branch-watch`, which only sees branch refs)
-loses sight of the residue. Branch deletion closes the *discoverable* surface, which
-is still worth doing at close time. But if the content needs **sanitizing**, branch
-deletion alone is cosmetic — first move the pull ref to a sanitized commit (reopen
-the PR → push the fix → close again; pushes do not move a *closed* PR's ref), then
-delete the branch, and accept that the old SHAs stay addressable from GitHub's object
-cache until GC — a guaranteed purge requires a GitHub support ticket. (2026-08-17: a
-closed-superseded PR's branch carried an unsanitized fixture for 13 days after the
-fix was written; the pull ref had to be moved via the reopen dance before deletion.)
+Use `github-ops`'s [exact-tip branch retirement workflow](github-ops/references/pr_operations.md#converging-parallel-prs-and-retiring-remote-branches).
+For sensitive publication residuals, first enter `github-sensitive-data-cleanup`'s
+[surface selection](github-sensitive-data-cleanup/SKILL.md#step-05-bind-each-exposed-surface);
+approved PR body revision removal follows `github-ops`'s
+[edit-history cleanup](github-ops/references/pr_operations.md#pr-body-edit-history-cleanup).
+Keep detailed procedures and completion limits in those owners.
 
 ### Local `main` Is a Read-Only Mirror
 
@@ -662,7 +664,7 @@ https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices.md
 
 Infrastructure/SRE operating contracts stay in their owning Skills rather than this repository guide:
 `terraform-skill` owns generic Terraform release safety and environment-parity rules; an application's
-project-level health-check Skill owns that application's concrete audit facets. Keep those two layers
+project-level health-check Skill owns that application's concrete audit facets. Keep those layers
 aligned without copying project hostnames, variable lists, or rollout commands into this file.
 
 ## Plugin and Skill Architecture

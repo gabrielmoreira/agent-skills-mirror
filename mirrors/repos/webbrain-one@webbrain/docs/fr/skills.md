@@ -91,6 +91,11 @@ onglets NYTimes / The Athletic, elle est préactivée pour l'exécution en cours
 afin qu'un `pageGate` bloquant structuré puisse router directement vers le repli
 d'article sans identifiants.
 
+Les téléchargements vidéo publics incluent Bluesky et Mastodon. FreeSkillz
+assemble les flux HLS Bluesky en un seul MP4 avec audio sur le serveur. Les
+permaliens de statuts Mastodon fonctionnent sur les instances publiques. Sur un
+fil ou un profil, identifier d’abord la cible visible et son permalien exact.
+
 #### Assistant OTP / code de vérification
 
 Ne se charge que pour les demandes pertinentes et ne déclare aucun outil réseau

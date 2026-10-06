@@ -4,7 +4,7 @@
 
 # REA：逆向工程一切
 
-### 一个 CLI 与 MCP 服务器，让编程智能体逆向工程任何程序
+### 使用智能体逆向工程任何程序，从应用行为到原生二进制文件。
 
 **看到喜欢的功能。理解它的原理。按照你的方式实现。**
 
@@ -13,35 +13,49 @@
 [![MCP tool catalog](https://img.shields.io/badge/MCP-tool_catalog-5c4ee5?style=flat-square)](#调查工具目录)
 [![Node.js 22+](https://img.shields.io/badge/Node.js-22.19%2B-339933?style=flat-square&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![MIT license](https://img.shields.io/badge/license-MIT-f4c430?style=flat-square)](LICENSE)
+[![Discord](https://img.shields.io/discord/1556595354999332884?logo=discord&logoColor=white&label=Discord&color=5865F2)](https://discord.gg/GkcryMnJDM)
 
-[快速开始](#快速开始) · [从二进制到行为](#从二进制到行为) · [工具目录](#调查工具目录) · [工作原理](#工作原理) · [常见问题](#常见问题)
+[快速开始](#快速开始) · [当前状态](#当前状态) · [从二进制到行为](#从二进制到行为) · [调查工具目录](#调查工具目录) · [路线图](#路线图) · [工作原理](#工作原理)
+
+<table aria-label="REA community">
+<tr>
+<td align="center" width="360">
+  <a href="https://discord.gg/GkcryMnJDM">
+    <img src="docs/assets/discord.svg" height="42" alt="Discord" /><br />
+    <strong>加入逆向工程社区</strong>
+  </a><br />
+  <sub>Discord · 问答 · 成果分享</sub>
+</td>
+</tr>
+</table>
 
 <br />
 
-<code>curl -fsSL https://raw.githubusercontent.com/morluto/rea/main/install.sh | bash</code>
+<code>npx rea-agents setup</code>
+
+<br />
+
+<img src="docs/assets/rea-hopper-analysis.png" alt="REA 在 Hopper 中启动分析桥并检查原生二进制文件" width="1200" />
 
 </div>
 
 ---
 
-看到某个应用中想加入自己产品的功能？即使没有源代码，也可以把应用交给编程智能体。借助 REA，智能体能够调查该功能、理解其工作原理，并按照你的技术栈、设计和需求构建适合你产品的版本。
+看到某个应用中想加入自己产品的功能？让智能体用 REA 调查它。即使没有源代码，智能体也可以检查应用、解释功能的工作方式、展示证据，并为你的项目实现类似功能。
 
-REA 通过一个 CLI 与 MCP 服务器实现这套流程。智能体可以检查编译后的应用、追踪功能的工作方式，并把了解到的内容用于日常编码。REA 在一个接口背后处理复杂的逆向工程工具。
+REA 提供原生二进制、JavaScript 与 Electron 应用、.NET 程序集和网站的分析工具。你可以从智能体或终端使用它们。分析在本机运行，结果会说明证据和限制。
+
+Setup 可以配置智能体、连接已安装的 Hopper 或 Ghidra，也可以在你批准后安装 Hopper。
 
 ## 直接询问智能体
 
-```bash
-npx rea-agents setup
-```
-
-然后说：
+完成[设置](#快速开始)后，重启智能体并提出问题：
 
 ```text
-逆向工程“备忘录”应用。解释搜索功能的工作方式，
-说明你是如何得出结论的，然后为我的项目构建类似功能。
+解释“备忘录”应用的搜索功能，展示证据，然后为我的项目实现类似功能。
 ```
 
-“备忘录”只是示例。你可以说出任何想了解的应用，也可以让智能体先从概览开始。
+把“备忘录”替换成你想了解的应用，也可以先请求概览。
 
 ## 从二进制到行为
 
@@ -53,69 +67,95 @@ REA 让调查始终以二进制证据为依据。它不会声称能恢复原始�
 
 ## 为什么选择 REA
 
-|                  |                                                                |
-| ---------------- | -------------------------------------------------------------- |
-| **为智能体设计** | 直接询问编译后应用的行为，让智能体搜集证据，而不是猜测。       |
-| **CLI 与 MCP**   | 在终端或编程智能体中使用同一套逆向工程能力。                   |
-| **处理复杂流程** | REA 负责工具设置、打开应用、维持调查过程，并在完成后清理资源。 |
-| **完整工作流**   | 从初步概览推进到伪代码、调用关系、类型和实现线索。             |
-| **本地运行**     | 分析在你的 Mac 上运行；REA 不会把二进制上传到托管式分析服务。  |
-| **保留上下文**   | 连续调查多个二进制文件，无需为每个问题重新开始整个分析过程。   |
+|                  |                                                                      |
+| ---------------- | -------------------------------------------------------------------- |
+| **为智能体设计** | 直接询问编译后应用的行为，让智能体搜集证据，而不是猜测。             |
+| **CLI 与 MCP**   | 在终端或编程智能体中使用同一套逆向工程能力。                         |
+| **处理复杂流程** | REA 负责工具设置、打开应用、维持调查过程，并在完成后清理资源。       |
+| **完整工作流**   | 从初步概览推进到伪代码、调用关系、类型和实现线索。                   |
+| **本地运行**     | 分析在受支持的本机系统上运行；REA 不会把二进制上传到托管式分析服务。 |
+| **保留上下文**   | 连续调查多个二进制文件，无需为每个问题重新开始整个分析过程。         |
 
 ## 快速开始
 
-### 使用编程智能体（推荐）
+### 运行设置（推荐）
+
+配置 REA 与智能体的连接：
 
 ```bash
-npx --yes rea-agents@latest setup
+npx rea-agents setup
 ```
 
-让智能体设置 REA。它会检查你的 Mac，说明需要安装的内容，先征得同意，并引导你处理系统提示。如果智能体要求重启以加载完整工具，请在设置后重启。
+Setup 首先让你多选要连接的智能体。已有 REA 注册默认选中；仅被检测到的客户端不会自动选中，也可以手动选择尚未配置的客户端。查看具体路径和变更后再批准。所选智能体默认安装 REA 工作流；Hopper 是单独的可选操作，需要单独批准。Setup 也可以记录现有 Ghidra 的路径。
 
-### 开始之前
+Setup 会先展示变更并备份已有配置。要求与更多选项见[安装与设置](docs/installation.md)。
 
-- macOS 12 或更高版本
-- Ubuntu 24.04+、Fedora 41+ 或 64 位 Arch Linux
-- Node.js 22.19+ 或 24.11+，以及随 Node 安装的 npm
+### 使用智能体
 
-`rea setup` 会先显示完整变更计划并请求确认。它不会安装或更新 Homebrew、Node.js 或 npm。缺少 [Hopper](https://www.hopperapp.com/) 时，Setup 会提议安装官方软件包；Hopper 是需要单独许可证的独立软件。
+设置完成后，重启智能体并描述你想了解的应用或功能。REA 支持 Claude Code、Claude Desktop、Codex、Cursor、Gemini CLI、Windsurf、Devin、OpenCode、Antigravity、GitHub Copilot CLI 和 VS Code。已有 REA 注册默认选中；其他检测到的客户端需手动选择。其他智能体可以使用下方的 MCP 配置。
 
-如果你已在 64 位 Linux 上安装 Ghidra 12.1.4 PUBLIC 和完整的 64 位 JDK 21，Setup 也可以在批准后登记 `GHIDRA_INSTALL_DIR` 和可选的 `JAVA_HOME`。REA 不会下载、安装或修改 Ghidra 或 Java。Ghidra provider 在隔离的只读 headless 会话中提供清单、反编译、汇编、调用关系、带类型的引用、xref、CFG 与函数 dossier；GUI 状态和修改操作仍不可用。
+Hopper 支持演示模式。如果首次启动时出现提示，选择演示模式或输入已有许可证。
 
-#### Linux 安装与故障排除
+### 从终端运行
 
-在 Ubuntu 24.04+、Fedora 41+ 和 64 位 Arch Linux 上，REA 会下载 Hopper 官方的 DEB、RPM 或 Arch 软件包，验证发布方提供的大小和校验和，然后通过 `apt-get`、`dnf` 或 `pacman` 安装依赖。非 root 运行时，`pkexec` 会显示系统授权提示；REA 不调用 `sudo`。
-
-默认启动器是 `/opt/hopper/bin/Hopper`。自定义安装可设置 `HOPPER_LAUNCHER_PATH`。如果 Doctor 报告缺少分析引擎，请运行 `ldd /opt/hopper/bin/Hopper | grep 'not found'`，安装缺少的系统库后重新运行 `rea setup`。REA 会在私有 Xvfb 显示器上运行受支持的 Hopper 演示版，并为每个分析会话选择 Hopper 提供的演示模式；无需桌面 `DISPLAY` 或付费许可证，但演示版受厂商限制。Linux 上还应确保 `~/.local/bin` 位于 `PATH` 中。
-
-```bash
-# 1. 安装和配置 REA
-curl -fsSL https://raw.githubusercontent.com/morluto/rea/main/install.sh | bash
-npx --yes rea-agents@latest setup
-```
-
-如果 macOS 或安装程序要求确认，请完成提示，然后再次运行同一命令。
-
-### 2. 重启编程智能体
-
-Setup 会检测 Claude Code、Claude Desktop、Codex、Cursor、Gemini CLI、Windsurf 和 Devin。它会自动配置检测到的前六种客户端；由于目前没有明确的本地 MCP 配置边界，检测到 Devin 时只会报告而不会修改。重启已配置的客户端，让它加载 REA。
-
-### 3. 直接询问智能体
-
-你可以直接说出应用名称。编程智能体会找到应用，并把 REA 所需的程序文件交给它。
-
-```text
-使用 REA 逆向工程“备忘录”应用。解释搜索功能的工作方式，展示证据，
-然后使用 SQLite 为我的项目构建一个类似功能。
-```
-
-如果遇到问题，请运行：
+设置完成后：
 
 ```bash
 npx -y rea-agents@latest doctor
-rea uninstall
-rea uninstall --purge-data
+npx -y rea-agents@latest analyze /Applications/Notes.app
 ```
+
+### 安装 rea 命令
+
+安装命令行工具：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/morluto/rea/main/install.sh | bash
+```
+
+需要预先安装 Node.js 和 npm。在终端中运行时，安装程序会安装 `rea` 并启动设置。
+
+也可以用 npm 安装，再运行设置：
+
+```bash
+npm install --global rea-agents
+rea setup
+```
+
+### 运行要求
+
+- macOS 12 或更高版本
+- Ubuntu 24.04+、Fedora 41+ 或 64 位 Arch Linux
+- Node.js 22.19+ 或 24.11+，以及 npm
+
+原生二进制分析需要 Hopper 或 Ghidra。Hopper 是独立软件；演示模式有厂商规定的限制，不要求购买许可证。
+
+Ghidra 支持 Linux x64 和 macOS x64/arm64。单独安装 Ghidra 12.1.4 和完整的 64 位 JDK 21，然后配置 REA 使用它们。macOS 还需要对应架构的原生反编译器。
+
+Setup 可以验证安装并保存路径，不会安装或升级 Ghidra、Java、Node.js、npm 或 Homebrew。
+
+Windows Ghidra 分析目前不可用。进程归属、私有目录权限和安全路径检查尚未实现，正确安装 Ghidra 和 Java 也不能启用分析。详见 [Windows Ghidra P0](docs/windows-ghidra-p0.md)。
+
+### 故障排查
+
+运行 `npx -y rea-agents@latest doctor`，检查主机、依赖、分析工具和智能体配置。该命令不会修改文件。添加 `--json` 可获取结构化诊断。
+
+Linux 上的默认 Hopper 启动器为 `/opt/hopper/bin/Hopper`。其他路径可通过 `HOPPER_LAUNCHER_PATH` 指定。如果文件存在但仍报告缺少分析引擎，运行 `ldd /opt/hopper/bin/Hopper | grep 'not found'` 检查缺少的系统库。安装详情见 [Hopper 指南](docs/installation.md#hopper)。
+
+### 更新与卸载
+
+- `rea update` 更新当前 REA 安装。
+- `rea uninstall` 移除 REA 管理的智能体配置项和工作流文件，保留 Hopper。
+- `rea uninstall --purge-data` 还会删除 REA 的缓存和状态。仅在需要移除这些数据时使用。
+
+## 当前状态
+
+REA 可以通过 CLI 和 MCP 分析原生二进制、JavaScript/Electron 应用、.NET 程序集和网站。具体操作取决于主机、目标和所选分析工具。
+
+- Hopper 支持原生分析和注释操作；GUI 行为取决于平台。
+- Ghidra 在 Linux x64 和 macOS x64/arm64 上提供 22 项只读操作，包括清单、搜索、反编译、汇编、调用关系、引用、指令与类型检查。它不提供 GUI 或修改操作。
+- 浏览器、Electron 和进程运行时工作流有独立的配置、批准和生命周期要求。详见 [English README](README.md#current-status) 中的完整状态说明。
+- Windows Ghidra 分析尚未启用，跟踪进展见 [#527](https://github.com/morluto/rea/issues/527)。
 
 ## 一个提示词，完成一次完整调查
 
@@ -149,22 +189,26 @@ REA 负责第 1–5 步中的二进制分析。第 6 步由智能体使用其常
 
 ## 调查工具目录
 
-| 工具类别          | 数量 | 示例                                                                                                                                                |
-| ----------------- | ---: | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 二进制检查        |   39 | 过程、伪代码、汇编、字符串、名称、段、调用者、被调用者、交叉引用、注释                                                                              |
-| 组合分析          |   15 | `binary_overview`, `analyze_function`, `inspect_native_api`, `batch_decompile`, `get_call_graph`, `find_xrefs_to_name`、Swift 与 ObjC 发现          |
-| macOS 原生工具    |    7 | Mach-O 元数据、代码签名、plist、架构与 Swift 符号还原，无需启动 Hopper                                                                              |
-| 制品图谱          |    5 | 目录及支持的软件包内联检查、Interface Builder UI 图解、Apple 资源目录元数据分页检查，以及显式选择的事务式提取                                       |
-| Managed PE/CLI    |    8 | PE/CLI 身份、元数据成员、CIL 哈希、P/Invoke/原生边界声明与验证、应用图谱投影、反编译重建导入、结构化 token 重映射、运行时关联计划与跨版本比较       |
-| 浏览器观察        |    9 | 精确来源 CDP 抓取、bundle/source map 分析、WebMCP 发现、会话时间线、capture diff 与视觉证据                                                         |
-| Electron 分析     |    5 | 限定 canonical 文件根的被动观察、有界静态应用映射，以及基于 Evidence 的静态/运行时对账                                                              |
-| JavaScript 运行时 |    2 | 经批准的只附加 Node/Electron Inspector 目标发现，以及不执行求值或插桩的有界脚本和执行上下文观察                                                     |
-| 应用工作流        |   10 | 有界跨层追踪、唯一匹配跨版本图比较、静态导出返回形状比较、经批准的 Linux 隔离 extracted-module replay、托管运行时表征、重建覆盖闭合和确定性义务账本 |
-| 二进制会话        |   22 | `open_binary`、`binary_session`、证据包、有限重放状态机、进程、制品与函数比较、残余未知项注册表                                                     |
+| 工具类别          | 数量 | 用途                                                      |
+| ----------------- | ---: | --------------------------------------------------------- |
+| 二进制检查        |   39 | 函数、伪代码、汇编、字符串、符号、段、引用与注释          |
+| 组合分析          |   14 | 概览、函数分析、批量反编译、调用图、Swift 与 ObjC 检查    |
+| macOS 原生工具    |    7 | Mach-O 元数据、代码签名、plist、架构与 Swift 符号还原     |
+| 制品检查          |    5 | 目录与软件包检查、Interface Builder、Apple 资源目录与提取 |
+| .NET PE/CLI       |    7 | 程序集身份、元数据、CIL、原生调用声明、成员比较与重建导入 |
+| 浏览器观察        |    9 | 页面、脚本、来源映射、WebMCP 工具、截图与捕获比较         |
+| Electron 分析     |    5 | 页面观察、应用结构与静态/运行时结果关联                   |
+| JavaScript 运行时 |    2 | 连接现有 Node/Electron Inspector，观察脚本与执行上下文    |
+| 应用工作流        |    7 | 功能追踪、版本比较、返回结构比较与重建验证                |
+| 二进制会话        |   21 | 目标切换、证据包、进程与函数比较、待解决问题记录          |
+
+## 路线图
+
+接下来的工作包括更多原生目标验证、JavaScript 与 .NET 跨版本比较，以及运行时观察和重建验证。当前设置已支持选择智能体集成和 Hopper 安装；安装其他分析工具仍是后续工作。详见[安装路线图](docs/roadmap.md)和[分析工具评估](docs/provider-evaluation.md)。
 
 ## 与其他编程智能体一起使用
 
-Setup 会检测 Claude Code、Claude Desktop、Codex、Cursor、Gemini CLI、Windsurf 和 Devin，并自动配置检测到的前六种客户端；检测到 Devin 时只会报告而不会修改。任何支持本地 MCP 服务器的编程智能体都可以使用以下配置连接 REA。
+Setup 支持 Claude Code、Claude Desktop、Codex、Cursor、Gemini CLI、Windsurf、Devin、OpenCode、Antigravity、GitHub Copilot CLI 和 VS Code。已有 REA 注册默认选中；其他检测到的客户端需手动选择。任何支持本地 MCP 服务器的智能体都可以使用以下配置连接 REA。
 
 <!-- x-release-please-start-version -->
 
@@ -173,7 +217,7 @@ Setup 会检测 Claude Code、Claude Desktop、Codex、Cursor、Gemini CLI、Win
   "mcpServers": {
     "rea": {
       "command": "npx",
-      "args": ["-y", "rea-agents@3.2.1", "mcp"]
+      "args": ["-y", "rea-agents@4.0.1", "mcp"]
     }
   }
 }
@@ -193,7 +237,7 @@ flowchart LR
     Ghidra --> App
 ```
 
-CLI 与 MCP 服务器使用相同的分析引擎。终端命令完成后会关闭应用；智能体会话则会在调查期间保持应用打开。
+CLI 与 MCP 服务器使用相同的分析流程。终端命令完成后释放自己创建的桥接会话；智能体会话可以在调查期间保持连接。关闭 REA 会话不会退出用户正在使用的 Hopper 应用。
 
 ## CLI
 
@@ -223,7 +267,7 @@ REA 会推导明确的格式和架构参数，以避免常见的 FAT 与 ARM 选
 
 ## 安全模型
 
-每个桥会话都使用随机能力令牌和仅限当前用户的 Unix 套接字。协议消息有大小限制，面向调用者的错误不会暴露启动器 stderr 或内部异常原因。Ghidra 会话还使用隔离的临时项目，不会打开或修改用户自己的 Ghidra 项目。
+每个桥会话都使用随机能力令牌和仅限当前用户的 Unix 套接字。诊断保留本机路径、摘要和错误位置等排查信息，同时移除凭据和认证令牌。Ghidra 会话还使用隔离的临时项目，不会打开或修改用户自己的 Ghidra 项目。
 
 这不是沙箱，也无法防御以同一操作系统用户身份运行的恶意进程。打开不可信二进制文件会让所选本地提供商以当前用户权限进行解析和分析。请按照 [SECURITY.md](SECURITY.md) 中的私密流程报告漏洞。
 
@@ -231,7 +275,7 @@ REA 会推导明确的格式和架构参数，以避免常见的 FAT 与 ARM 选
 
 <details><summary><strong>Hopper 是否需要提前运行？</strong></summary>
 
-不需要。REA 会在操作需要时启动 Hopper，也支持已经运行的 Hopper。
+不需要。REA 会在操作需要时启动 Hopper。Hopper 已经运行时也可以使用，但 REA 会打开新的分析文档，不会连接并复用现有 GUI 文档。
 
 </details>
 

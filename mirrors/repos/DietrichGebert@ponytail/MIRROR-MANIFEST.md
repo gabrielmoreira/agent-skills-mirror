@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `DietrichGebert/ponytail` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
+Mirror of `DietrichGebert/ponytail` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `DietrichGebert/ponytail` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 17 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,12 +70,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`.openclaw/skills/ponytail-review/SKILL.md`](.openclaw/skills/ponytail-review/SKILL.md) |
 | 10 | ✓ | [`.openclaw/skills/ponytail/SKILL.md`](.openclaw/skills/ponytail/SKILL.md) |
 | 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 12 | ✓ | [`skills/ponytail-audit/SKILL.md`](skills/ponytail-audit/SKILL.md) |
-| 13 | ✓ | [`skills/ponytail-debt/SKILL.md`](skills/ponytail-debt/SKILL.md) |
-| 14 | ✓ | [`skills/ponytail-gain/SKILL.md`](skills/ponytail-gain/SKILL.md) |
-| 15 | ✓ | [`skills/ponytail-help/SKILL.md`](skills/ponytail-help/SKILL.md) |
-| 16 | ✓ | [`skills/ponytail-review/SKILL.md`](skills/ponytail-review/SKILL.md) |
-| 17 | ✓ | [`skills/ponytail/SKILL.md`](skills/ponytail/SKILL.md) |
+| 12 | ✓ | [`skills/plugin.json`](skills/plugin.json) |
+| 13 | ✓ | [`skills/ponytail-audit/SKILL.md`](skills/ponytail-audit/SKILL.md) |
+| 14 | ✓ | [`skills/ponytail-debt/SKILL.md`](skills/ponytail-debt/SKILL.md) |
+| 15 | ✓ | [`skills/ponytail-gain/SKILL.md`](skills/ponytail-gain/SKILL.md) |
+| 16 | ✓ | [`skills/ponytail-help/SKILL.md`](skills/ponytail-help/SKILL.md) |
+| 17 | ✓ | [`skills/ponytail-review/SKILL.md`](skills/ponytail-review/SKILL.md) |
+| 18 | ✓ | [`skills/ponytail/SKILL.md`](skills/ponytail/SKILL.md) |
 
 ---
 

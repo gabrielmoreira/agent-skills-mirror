@@ -1,26 +1,31 @@
 # Managed-code analysis plan
 
-This document turns
-[ADR-0003](adr/0003-managed-code-evidence-and-provider-boundary.md) into an
-implementation and verification plan. REA currently ships read-only PE/CLI
-triage and exact identity through `inspect_managed_artifact` and
-`rea inspect-managed-artifact`, plus file-backed metadata, signature,
-method-body CIL, exception-region, call-edge, and field-access inspection
-through `inspect_managed_members` and `rea inspect-managed-members`, and
-declared ModuleRef/ImplMap/PInvoke and native implementation boundary inventory
-through `inspect_managed_native_boundaries` and
-`rea inspect-managed-native-boundaries`, plus obfuscation-resistant member
-comparison through `compare_managed_members` and `rea compare-managed-members`,
-managed/native export or function Evidence matching through
-`verify_managed_native_boundaries` and `rea verify-managed-native-boundaries`,
-decompiler reconstruction import through `import_managed_reconstruction` and
-`rea import-managed-reconstruction`, and default-disabled runtime-correlation
-admission planning through `plan_managed_runtime_correlation` and
-`rea plan-managed-runtime-correlation`, plus static managed graph projection
-through `project_managed_application_graph` and
-`rea project-managed-application-graph`. Native-body bridge mapping and runtime
-execution remain planned behavior. The current product inventory remains the
-one in [`product-catalog.json`](product-catalog.json).
+REA inspects .NET PE/CLI artifacts without loading or executing their code.
+It can identify an assembly, inspect metadata and CIL, compare members across
+builds, and connect declared native calls to supplied native-analysis evidence.
+CIL is Common Intermediate Language, the instruction format used by managed
+assemblies.
+
+The seven shipped tools are:
+
+| Task                                                                        | MCP tool                            |
+| --------------------------------------------------------------------------- | ----------------------------------- |
+| Identify an artifact and its managed deployment form                        | `inspect_managed_artifact`          |
+| Inspect types, signatures, method bodies, calls, and field access           | `inspect_managed_members`           |
+| List declared native calls and native implementation indicators             | `inspect_managed_native_boundaries` |
+| Compare members across builds and map build-local tokens                    | `compare_managed_members`           |
+| Check native call declarations against supplied export or function evidence | `verify_managed_native_boundaries`  |
+| Import decompiled code against verified static member identities            | `import_managed_reconstruction`     |
+| Add managed findings to an application graph                                | `project_managed_application_graph` |
+
+Each has a matching CLI command: replace underscores with hyphens and prefix
+the name with `rea`, for example `rea inspect-managed-artifact`.
+Native-body bridge mapping remains planned; managed runtime execution is not
+part of the current tool set.
+
+This guide describes the implementation and verification of
+[ADR-0003](adr/0003-managed-code-evidence-and-provider-boundary.md). The canonical
+tool inventory is [`product-catalog.json`](product-catalog.json).
 
 ## Analysis objective
 
@@ -32,8 +37,8 @@ collapsing them:
 3. What source-like or behavioral structure can be reconstructed or inferred?
 4. Which findings survive an exact-build check or a cross-build structural
    comparison?
-5. Which remaining questions require native analysis or a separately
-   authorized runtime experiment?
+5. Which remaining questions require native analysis or runtime evidence that
+   static inspection cannot supply?
 
 The ordinary workflow ends at question four. Static analysis never loads or
 executes the target.
@@ -151,7 +156,7 @@ UTF-8 encoding, and lowercase hexadecimal output.
 ### Epistemic commitment
 
 - authority: static bytes, reconstruction, structural inference, independent
-  validation, native provider, or separately authorized runtime;
+  validation, native provider, or future runtime observation;
 - state: observed, inferred, unknown, or unavailable;
 - confidence independent of authority;
 - coverage and admitted/dropped counts;
@@ -216,31 +221,34 @@ The workflow produces separate observation, inference, validation, and unknown
 tables. It may say that a method is a strong candidate for a role; it cannot
 turn that role into the method's durable identity.
 
-Cross-version matching is two-stage:
+Cross-version matching first prefers exact CIL/signature identity. When that
+does not match, it pairs an exact declared type, method name, and raw signature
+before trying structural body shape. The exact-signature key uses names only
+as part of that full tuple; names alone never select a pair. Duplicate tuples
+remain ambiguous rather than being paired by token order.
 
-1. Exact identity requires compatible artifact/module commitments and exact
-   raw CIL identity; no standalone complete-method-body digest is exposed.
-2. Structural identity compares normalized signatures, the limited
-   decoded-CIL tuple fingerprint, constants, and bounded shape context. It
-   reports all candidates at the winning score and remains ambiguous when the
-   evidence does not distinguish them. The digest does not itself remap
-   metadata tokens.
+For a matched method, an unavailable or partial body makes body-shape facets
+unknown while preserving observed signature differences. Structural identity
+compares normalized signatures, the limited decoded-CIL tuple fingerprint,
+constants, and bounded shape context. It reports all candidates at the winning
+score and remains ambiguous when the evidence does not distinguish them. The
+digest does not itself remap metadata tokens.
 
 Tokens are always remapped through observed structure. A caller cannot carry
 `0x06001234` into a new MVID and assume it names the same method.
 
 ## Managed/native boundary rules
 
-| Boundary                | Managed observation                                                     | Native observation                                                               | Permitted link                                                       |
-| ----------------------- | ----------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| P/Invoke                | Module, entry point, charset/calling-convention flags, declaring method | Import/export/symbol/function evidence from the selected deep provider           | Exact declared-name/module link or qualified resolution inference    |
-| COM                     | Interop attributes, GUIDs, imported interfaces, method signatures       | Native registration/vtable evidence when independently available                 | Identifier/signature inference with explicit environment limitations |
-| C++/CLI                 | Managed declaration and implementation flags                            | Native body/function evidence                                                    | Only a provider-supported bridge observation; never token-as-address |
-| ReadyToRun              | Component/header and per-method CIL/native availability                 | Native section/function evidence                                                 | Authenticated image mapping with format/profile version              |
-| Unmanaged export        | Export metadata/attribute when present                                  | PE export and native thunk/function                                              | Exact export identity plus provider-qualified address                |
-| Single-file host        | Bundle entry/component identity                                         | Host and native component evidence                                               | Outer bundle plus component digest/extent commitment                 |
-| Unity IL2CPP            | Supported metadata entity with authenticated pairing                    | Generated native function/type evidence                                          | Versioned IL2CPP mapping only; no invented CIL                       |
-| Runtime-resolved native | API/constant/data-flow candidate                                        | Loaded-module/symbol observation only under separate runtime execution authority | Static candidate remains inference until separately observed         |
+| Boundary                | Managed observation                                                     | Native observation                                                              | Permitted link                                                       |
+| ----------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| P/Invoke                | Module, entry point, charset/calling-convention flags, declaring method | Import/export/symbol/function evidence from the selected deep provider          | Exact declared-name/module link or qualified resolution inference    |
+| COM                     | Interop attributes, GUIDs, imported interfaces, method signatures       | Native registration/vtable evidence when independently available                | Identifier/signature inference with explicit environment limitations |
+| C++/CLI                 | Managed declaration and implementation flags                            | Native body/function evidence                                                   | Only a provider-supported bridge observation; never token-as-address |
+| ReadyToRun              | Component/header and per-method CIL/native availability                 | Native section/function evidence                                                | Authenticated image mapping with format/profile version              |
+| Unmanaged export        | Export metadata/attribute when present                                  | PE export and native thunk/function                                             | Exact export identity plus provider-qualified address                |
+| Single-file host        | Bundle entry/component identity                                         | Host and native component evidence                                              | Outer bundle plus component digest/extent commitment                 |
+| Unity IL2CPP            | Supported metadata entity with authenticated pairing                    | Generated native function/type evidence                                         | Versioned IL2CPP mapping only; no invented CIL                       |
+| Runtime-resolved native | API/constant/data-flow candidate                                        | Loaded-module/symbol observation from an independently collected runtime source | Static candidate remains inference until separately observed         |
 
 Declared import inventory supports a bounded positive claim. Its absence does
 not exclude dynamic resolution, generated code, protected code, native helpers,
@@ -397,25 +405,13 @@ The benchmark may prove that REA reproduces selected facts for that exact local
 build. It cannot establish general support on its own; source-built conformance
 remains the admission requirement.
 
-## Runtime admission boundary
+## Runtime behavior boundary
 
-The later runtime track is not an extension flag on a static operation. Its
-design must expose whether it attaches to an existing process, launches a new
-process, loads an assembly, uses reflection, installs a debugger/profiler, or
-instruments code. Each effect needs separate approval and exact-build checks.
-
-At minimum, admission requires target SHA-256, MVID, normalized signature and
-body/CIL commitment, CLR family, OS, architecture, tool version, scenario
-limits, output policy, and cleanup ownership to match. Any mismatch fails before
-the experiment. It must not contact real services/accounts or claim that an
-instrumented path represents an ordinary launch unless that proposition is
-independently tested.
-
-The shipped `plan_managed_runtime_correlation` path admits only a
-default-disabled, permission-gated experiment plan and records that no target
-code was executed. Until a separate executor is designed and shipped, runtime
-behavior questions remain explicit unknowns with suggested probes; static
-support does not perform them.
+Managed inspection does not execute assemblies or observe CLR internals.
+Questions about actual behavior remain unknown until supported runtime
+evidence is collected. A direct process capture can retain declared inputs,
+outputs, filesystem and protocol activity for a target run; it does not prove
+which managed methods executed or how the CLR resolved them.
 
 ## Delivery sequence
 
@@ -437,9 +433,7 @@ The managed-code track advances as reviewable pull requests:
    PE/CLI corpus shipped through `npm run verify:managed`; optional BYO
    `ilspycmd` real-tool oracle shipped through `REA_ILSPY_CMD_PATH`; dnSpy and
    pinned Windows checks remain planned); and
-8. separately authorized runtime-correlation admission planning (shipped; no
-   runtime execution);
-9. managed static Evidence projection into the application graph (shipped).
+8. managed static Evidence projection into the application graph (shipped).
 
 Each implementation PR updates generated product facts only for behavior it
 actually ships and states which real-tool checks were performed.

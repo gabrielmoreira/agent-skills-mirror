@@ -65,3 +65,7 @@ verify the identity through a trusted console/administrator and follow
 `docs/MULTIVENDOR-SSH-MIGRATION.md`; never disable checking as an automatic retry.
 Raw commands remain read-only even when write tools are enabled. Configuration
 must use the gated `apply_config` path with the required approvals and baseline.
+
+## MCP Tasks
+
+For eligible tools, a client declaring the current Tasks extension may receive a task handle. Retain it and poll for the terminal result; do not resubmit pending work. Ordinary clients continue receiving foreground results. A handle is not execution success or approval: preserve required baseline/change-control checks before invocation and verify the completed result afterward. Cancellation cannot undo commands already sent. Investigate unknown outcomes before retrying. pyATS retains completed results in SQLite and lets started work finish; other FastMCP tools default to ephemeral state and cooperative cancellation. See `docs/MCP-TASKS.md`.

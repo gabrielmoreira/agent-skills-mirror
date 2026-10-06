@@ -13,12 +13,12 @@ Each agent is a **prompt-driven specialist** with a factory function that create
 | Agent | Factory | Role | Permissions | Model Default |
 |-------|---------|------|-------------|---------------|
 | **orchestrator** | `createOrchestratorAgent()` | Workflow manager that delegates tasks to specialists | Primary agent with full tool access | Resolved from config or runtime preset |
-| **explorer** | `createExplorerAgent()` | Fast codebase search and pattern matching | Enforced read-only matrix (inspection + web research) | DEFAULT_MODELS.explorer |
-| **librarian** | `createLibrarianAgent()` | External documentation and library research | Enforced read-only matrix (inspection + web research) | DEFAULT_MODELS.librarian |
-| **oracle** | `createOracleAgent()` | Strategic technical advisor and code reviewer | Enforced read-only matrix (inspection + web research) | DEFAULT_MODELS.oracle |
+| **explorer** | `createExplorerAgent()` | Fast codebase search and pattern matching | Read-only by prompt (glob, grep, ast_grep_search) | DEFAULT_MODELS.explorer |
+| **librarian** | `createLibrarianAgent()` | External documentation and library research | Read-only by prompt (context7, gh_grep) | DEFAULT_MODELS.librarian |
+| **oracle** | `createOracleAgent()` | Strategic technical advisor and code reviewer | Read-only by prompt (read, glob, grep, ast_grep_search) | DEFAULT_MODELS.oracle |
 | **designer** | `createDesignerAgent()` | UI/UX design, review, and implementation | Read/write (read, glob, grep, write, edit) | DEFAULT_MODELS.designer |
 | **fixer** | `createFixerAgent()` | Fast implementation specialist for bounded tasks | Read/write (read, glob, grep, write, edit) | DEFAULT_MODELS.fixer |
-| **observer** | `createObserverAgent()` | Visual analysis specialist (images, PDFs, diagrams) | Enforced read-only matrix (inspection + web research) | DEFAULT_MODELS.observer |
+| **observer** | `createObserverAgent()` | Visual analysis specialist (images, PDFs, diagrams) | Read-only by prompt (read, glob, grep, ast_grep_search) | DEFAULT_MODELS.observer |
 | **council** | `createCouncilAgent()` | Multi-model consensus synthesis (read-only, no tools) | Read-only (council permission) | DEFAULT_MODELS.council |
 | **councillor** | Created dynamically by `buildCouncillorAgents()` | Read-only council advisor; registered per preset seat as `councillor-<name>` | Read-only (read, glob, grep, ast_grep_search) | Inherited from council preset |
 
@@ -28,7 +28,6 @@ Each agent is a **prompt-driven specialist** with a factory function that create
 - **User overrides**: From `~/.config/opencode/oh-my-opencode-slim.json` via `loadAgentPrompt()`
 - **Agent colors**: Optional per-agent hex or theme-color overrides; no defaults (colorless agents get the host TUI's distinct palette colors)
 - **Permission wildcards**: Applied via `applyDefaultPermissions()` in `index.ts`
-- **Read-only role matrices**: `createRolePermission()` (`role-definitions.ts`) bakes the enforced matrix into explorer/librarian/oracle/observer — the wildcard-deny base plus read/glob/grep/lsp/list/codesearch/ast_grep_search and webfetch/websearch allows. MCP keys are deliberately not baked: the registry derives every `<mcp>_*` rule from the effective `mcps` list, so user narrowing stays authoritative. An explicit `agents.<name>.permission` replaces the matrix wholesale.
 - **Model resolution**: Supports string models, explicit `inheritModelFrom` policies, and priority-ordered arrays (`_modelArray`) for runtime fallback
 - **Skill permissions**: Per-agent MCP and tool access controlled via `getSkillPermissionsForAgent()`
 - **Council synthesis**: Uses `createSynthesisOnlyPermission()` to block tool calls while allowing synthesis from councillor responses
@@ -37,7 +36,7 @@ Each agent is a **prompt-driven specialist** with a factory function that create
 
 1. **Agent creation**: `createAgents(config)` instantiates all agents with merged configuration
 2. **Dynamic councillors**: `buildCouncillorAgents()` (`council-agents.ts`) creates one `councillor-<name>` subagent per council preset seat, attaching `_modelArray` fallback chains for multi-model councillors
-3. **Permission application**: `applyDefaultPermissions()` appends the default denies (question, task control, wait_for_user, marketplace tools) and skill grants on top of each agent's map, preserving key order
+3. **Permission application**: `applyDefaultPermissions()` sets `question` to allow (an explicit deny is kept), denies task control, `wait_for_user` and marketplace tools for every agent except the orchestrator, and adds skill grants on top of each agent's map, preserving key order
 4. **Task-rejection instruction**: `appendTaskRejectionInstruction()` appends the "outside your role" instruction to specialist prompts (`task-rejection.ts`)
 5. **Display name injection**: Orchestrator prompt rewrites `@agent` mentions to user-configured display names
 6. **Configuration export**: `getAgentConfigs()` converts `AgentDefinition` to OpenCode SDK format with classification metadata
@@ -77,7 +76,9 @@ const displayNameMap = new Map<string, string>();
 // ... populate from orchestrator and all subagents ...
 injectDisplayNames(orchestrator, displayNameMap);
 
-// 5. Inject council-dispatch instructions when dynamic councillors exist
+// 5. Append the static council seat pointer when dynamic councillors exist
+//    (the full dispatch block is injected per-message by the council-inject
+//    hook on keyword-triggered turns — see src/hooks/council-inject/)
 // 6. Return agents array [orchestrator, ...allSubAgents]
 return [orchestrator, ...allSubAgents];
 ```
@@ -89,13 +90,17 @@ The council agent is a synthesis-only specialist:
 - Has NO tools - cannot read, glob, grep, or run shell commands
 - Follows mandatory Synthesis Process steps before producing output
 - Formats output with Council Response, Per-Councillor Details, and Council Summary sections
-- Uses `ensureCouncilCompactionException()` to inject compaction exception idempotently
+- `ensureCouncilSynthesisReinforcement()` re-applies the dual-track synthesis
+  reinforcement (lean pointer when the base keeps the report format; compact
+  fallback when a custom prompt override dropped it) to the final effective
+  prompt; `ensureCouncilCompactionException()` keeps the host-template
+  exception idempotently
 
 ### Model Resolution and Fallback
 
 - **Priority arrays**: When `model` is configured as an array in user config, it's stored as `_modelArray`
 - **Explicit inheritance**: `inheritModelFrom: "session"` and `"orchestrator"` leave the agent model unset so OpenCode follows the live parent/orchestrator model, including later runtime fallback switches
-- **Runtime fallback**: ForegroundFallbackManager resolves models at runtime when API errors occur; delegated children follow a live parent fallback through v2's per-call model override or hidden v1 agent routes for secondary chain entries
+- **Runtime fallback**: ForegroundFallbackManager resolves models at runtime when API errors occur; independent specialist chains follow a real parent fallback through v2's per-call model/variant override or v1 prompt-claimed intentions: host state validates new children, while `task_id` and `task_revive` identify resumes; v1 `task_message` preserves transcript execution selection rather than stale session metadata
 - **Preset overrides**: Runtime presets can override model/variant/temperature per agent
 
 ## Integration

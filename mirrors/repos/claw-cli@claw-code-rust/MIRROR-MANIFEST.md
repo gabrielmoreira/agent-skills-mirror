@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `claw-cli/claw-code-rust` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `claw-cli/claw-code-rust` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `claw-cli/claw-code-rust` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,15 +61,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`apps/desktop/AGENTS.md`](apps/desktop/AGENTS.md) |
-| 3 | ✓ | [`crates/server/AGENTS.md`](crates/server/AGENTS.md) |
-| 4 | ✓ | [`crates/server/skills/.system/skill-creator/SKILL.md`](crates/server/skills/.system/skill-creator/SKILL.md) |
-| 5 | ✓ | [`crates/server/skills/.system/skill-installer/SKILL.md`](crates/server/skills/.system/skill-installer/SKILL.md) |
-| 6 | ✓ | [`crates/skills/src/assets/samples/deep-research/SKILL.md`](crates/skills/src/assets/samples/deep-research/SKILL.md) |
-| 7 | ✓ | [`crates/skills/src/assets/samples/skill-creator/SKILL.md`](crates/skills/src/assets/samples/skill-creator/SKILL.md) |
-| 8 | ✓ | [`crates/skills/src/assets/samples/skill-installer/SKILL.md`](crates/skills/src/assets/samples/skill-installer/SKILL.md) |
-| 9 | ✓ | [`crates/tui/AGENTS.md`](crates/tui/AGENTS.md) |
-| 10 | ✓ | [`crates/tui/src/bottom_pane/AGENTS.md`](crates/tui/src/bottom_pane/AGENTS.md) |
-| 11 | ✓ | [`specs/AGENTS.md`](specs/AGENTS.md) |
+| 3 | ✓ | [`apps/tui/AGENTS.md`](apps/tui/AGENTS.md) |
+| 4 | ✓ | [`crates/core/rlm_skills/agent_observe/SKILL.md`](crates/core/rlm_skills/agent_observe/SKILL.md) |
+| 5 | ✓ | [`crates/core/rlm_skills/compact/SKILL.md`](crates/core/rlm_skills/compact/SKILL.md) |
+| 6 | ✓ | [`crates/core/rlm_skills/goal/SKILL.md`](crates/core/rlm_skills/goal/SKILL.md) |
+| 7 | ✓ | [`crates/core/rlm_skills/refine/SKILL.md`](crates/core/rlm_skills/refine/SKILL.md) |
+| 8 | ✓ | [`crates/server/AGENTS.md`](crates/server/AGENTS.md) |
+| 9 | ✓ | [`crates/server/skills/.system/skill-creator/SKILL.md`](crates/server/skills/.system/skill-creator/SKILL.md) |
+| 10 | ✓ | [`crates/server/skills/.system/skill-installer/SKILL.md`](crates/server/skills/.system/skill-installer/SKILL.md) |
+| 11 | ✓ | [`crates/skills/assets/bundled/agent-message/SKILL.md`](crates/skills/assets/bundled/agent-message/SKILL.md) |
+| 12 | ✓ | [`crates/skills/assets/bundled/agent-observe/SKILL.md`](crates/skills/assets/bundled/agent-observe/SKILL.md) |
+| 13 | ✓ | [`crates/skills/assets/bundled/attach-image/SKILL.md`](crates/skills/assets/bundled/attach-image/SKILL.md) |
+| 14 | ✓ | [`crates/skills/assets/bundled/compact/SKILL.md`](crates/skills/assets/bundled/compact/SKILL.md) |
+| 15 | ✓ | [`crates/skills/assets/bundled/edit/SKILL.md`](crates/skills/assets/bundled/edit/SKILL.md) |
+| 16 | ✓ | [`crates/skills/assets/bundled/goal/SKILL.md`](crates/skills/assets/bundled/goal/SKILL.md) |
+| 17 | ✓ | [`crates/skills/assets/bundled/linear/SKILL.md`](crates/skills/assets/bundled/linear/SKILL.md) |
+| 18 | ✓ | [`crates/skills/assets/bundled/notion/SKILL.md`](crates/skills/assets/bundled/notion/SKILL.md) |
+| 19 | ✓ | [`crates/skills/assets/bundled/refine/SKILL.md`](crates/skills/assets/bundled/refine/SKILL.md) |
+| 20 | ✓ | [`crates/skills/assets/bundled/rlm-heartbeat/SKILL.md`](crates/skills/assets/bundled/rlm-heartbeat/SKILL.md) |
+| 21 | ✓ | [`crates/skills/assets/bundled/skill-creator/SKILL.md`](crates/skills/assets/bundled/skill-creator/SKILL.md) |
+| 22 | ✓ | [`crates/skills/assets/bundled/websearch/SKILL.md`](crates/skills/assets/bundled/websearch/SKILL.md) |
+| 23 | ✓ | [`crates/skills/src/assets/samples/deep-research/SKILL.md`](crates/skills/src/assets/samples/deep-research/SKILL.md) |
+| 24 | ✓ | [`crates/skills/src/assets/samples/skill-creator/SKILL.md`](crates/skills/src/assets/samples/skill-creator/SKILL.md) |
+| 25 | ✓ | [`crates/skills/src/assets/samples/skill-installer/SKILL.md`](crates/skills/src/assets/samples/skill-installer/SKILL.md) |
 
 ---
 

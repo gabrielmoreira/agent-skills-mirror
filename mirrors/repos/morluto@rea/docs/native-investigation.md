@@ -25,7 +25,7 @@ coverage and unknowns. The CLI and MCP use the same application workflows.
   a source-owned AppKit XIB with `ibtool`. Storyboards require an installed
   iOS platform; unsupported archive forms remain explicit.
 - `inspect_native_dispatch_metadata` / `rea inspect-native-dispatch-metadata
-<app-or-binary>` prefers a validated macOS Mach-O byte reader. It decodes
+  <app-or-binary>` prefers a validated macOS Mach-O byte reader. It decodes
   64-bit little-endian Objective-C class/metaclass records, superclass pointers,
   absolute/relative method entries, ivar offsets/sizes/alignment and protocol
   declarations. It also decodes simple Swift conformances, static synchronous
@@ -96,41 +96,62 @@ The provider dossier itself retains up to 3,000 p-code operations, 64 inputs per
 operation and 12,000 def-use edges, with explicit omitted counts. A `STORE`
 may describe stack memory and does not itself prove persistent state.
 
+Jump-table evidence keeps numeric `mappings`, explicit `default_targets`, and
+backing `data_sources` separate. A null case value denotes an unresolved
+case, never a known default. Ghidra pairs typed case/default tokens with the
+recovered block entry and its unique indirect dispatch predecessor; it does
+not zip unequal label and destination arrays. Shared case bodies retain each
+label. Negative numeric tokens are checked against their encoded magnitude;
+nonliteral, ambiguous, or nonexact JSON integer labels remain unknown.
+Unknown-label diagnostics retain the token text, encoded unsigned magnitude,
+target and dispatch so callers can inspect the original observations.
+Decompiler load-table metadata supplies observed entry sizes and counts
+without assigning every backing table to each mapping. These observations
+describe the decompiler's recovered switch, not guaranteed original source.
+Legacy records without `default_targets` normalize to an empty array and
+retain their existing unresolved mappings.
+
 AArch64 jump-table recovery additionally verifies byte and halfword relative
 forms from unsigned bounds, register definitions, table loads, branch bases,
 scaled ADD/BR instructions and the recovered target set. It reads exactly the
 proven count and preserves unknowns for other forms. Real ELF and host ARM64
 Mach-O fixtures check each case against source-owned return values.
 
-## Approved native desktop observation
+## Native desktop observation
 
-`observe_native_ui` captures one explicit existing PID/window ID after
-`observation_approved: true`. Screenshots use a selected-window ScreenCaptureKit
+`observe_native_ui` captures one explicitly selected existing PID/window ID.
+Screenshots use a selected-window ScreenCaptureKit
 filter on macOS 14+; accessibility reads stay within that window. Missing Screen
 Recording/Accessibility permissions produce actionable errors without broad
 capture or automatic permission prompts. Executable bytes and process launch
 time guard against a different target or PID reuse. AX selection requires one
 unique geometry match; ambiguity fails closed.
 
-`capture_native_ui_scenario` additionally requires `actions_approved: true` and
-`restore: "leave-as-is"`. Steps select AX child-index paths for press, increment/
+`capture_native_ui_scenario` takes AX child-index paths for press, increment/
 decrement scrolling and text-value entry, or bounded waits. No global event
 injection is used. Unsupported AX actions fail explicitly. The result preserves
 ordered before/after captures and gaps; an action may have occurred before a
-post-action capture fails. The caller must choose whether to recover app state.
+post-action capture fails. Application state is left as-is; REA does not attempt
+to restore it.
 
-Scenarios allow 16 steps, 30 seconds of total waits, 2,000 AX nodes per capture,
-8 MiB PNGs and 64 MiB output within a 180-second deadline. REA compiles one owned
-helper per scenario, removes its temporary compiler cache and stops its helper
-on cancellation. It does not launch or own the selected application. Approved
-UI actions may change application data or trigger network activity.
+Scenarios accept caller-selected action lists and accessibility node counts.
+Individual waits cannot exceed the operation's 180-second deadline, and the
+complete scenario result has a 64 MiB output budget. Screenshots are scaled to
+at most 2,048 pixels and captured only for the selected window. REA compiles one
+owned helper per scenario, removes its temporary compiler cache and stops its
+helper on cancellation. It does not launch or own the selected application. UI
+actions may change application data or trigger network activity.
 
 ## Provider and verification boundaries
 
-Ghidra 12.1.4 with a full 64-bit JDK 21 is bring-your-own. Linux x64 and macOS
-x64/arm64 are admitted; macOS requires the matching native decompiler. Windows
-x64 P0 remains limited to approved native PE applications. There is no GUI or
-mutation authority and no automatic fallback to Hopper.
+Install Ghidra 12.1.4 and a full 64-bit JDK 21 separately, then configure REA to
+use them. Ghidra analysis supports Linux x64 and macOS x64/arm64; macOS requires
+the matching native decompiler. Windows Ghidra analysis is unavailable until
+Job Object process ownership, private runtime DACLs, and reparse-safe path checks
+are implemented and verified. See [Windows Ghidra P0](windows-ghidra-p0.md) and
+[issue #527](https://github.com/morluto/rea/issues/527).
+Ghidra has no GUI or mutation authority, and REA never falls back automatically
+to Hopper.
 
 - `npm run verify:ghidra`: host-native debug/stripped targets, native type layout,
   instruction/call facts, value dependencies and process/project cleanup.
@@ -138,8 +159,12 @@ mutation authority and no automatic fallback to Hopper.
   relative tables, plus ARM64 Mach-O on an ARM64 macOS host.
 - `npm run verify:apple-dispatch`: source-built Objective-C protocols/classes and
   Swift conformances/vtables, repeated after stripping local symbols.
-- `npm run verify:native-ui`: one source-owned fixture window, selected capture
-  or a reported OS permission denial, changed-target rejection and cleanup.
+- `npm run verify:native-ui`: one source-owned fixture window, successful
+  selected-window capture and actions, changed-target rejection, and cleanup.
+  Missing OS permissions fail this lane.
+- `npm run verify:native-ui:permissions`: permits a permission-denial result and
+  reports `positive_e2e: false` when capture is denied. That result verifies the
+  OS permission boundary, not successful UI capture or actions.
 
 macOS ARM64 is the real host verified during this implementation. Admission of
 macOS Intel does not claim an Intel verification run. Unsupported metadata and

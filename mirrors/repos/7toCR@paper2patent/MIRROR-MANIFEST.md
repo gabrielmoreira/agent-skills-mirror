@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `7toCR/paper2patent` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `7toCR/paper2patent` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `7toCR/paper2patent` — 26 default patterns, 0 followed patterns, 16 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,16 +65,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 5 | ✓ | [`GEMINI.md`](GEMINI.md) |
 | 6 | ✓ | [`skills/paper2patent/agents/openai.yaml`](skills/paper2patent/agents/openai.yaml) |
-| 7 | ✓ | [`skills/paper2patent/references/claims-and-specification-rules.md`](skills/paper2patent/references/claims-and-specification-rules.md) |
-| 8 | ✓ | [`skills/paper2patent/references/document-generation.md`](skills/paper2patent/references/document-generation.md) |
-| 9 | ✓ | [`skills/paper2patent/references/drawing-generation.md`](skills/paper2patent/references/drawing-generation.md) |
-| 10 | ✓ | [`skills/paper2patent/references/input-requirements.md`](skills/paper2patent/references/input-requirements.md) |
-| 11 | ✓ | [`skills/paper2patent/references/quality-checklist.md`](skills/paper2patent/references/quality-checklist.md) |
-| 12 | ✓ | [`skills/paper2patent/references/text-conversion-workflow.md`](skills/paper2patent/references/text-conversion-workflow.md) |
-| 13 | ✓ | [`skills/paper2patent/scripts/export_patent_pdf.py`](skills/paper2patent/scripts/export_patent_pdf.py) |
-| 14 | ✓ | [`skills/paper2patent/scripts/generate_patent_docx.py`](skills/paper2patent/scripts/generate_patent_docx.py) |
-| 15 | ✓ | [`skills/paper2patent/scripts/generate_patent_drawings.py`](skills/paper2patent/scripts/generate_patent_drawings.py) |
-| 16 | ✓ | [`skills/paper2patent/SKILL.md`](skills/paper2patent/SKILL.md) |
+| 7 | ✓ | [`skills/paper2patent/assets/example_patent_content.json`](skills/paper2patent/assets/example_patent_content.json) |
+| 8 | ✓ | [`skills/paper2patent/references/claims-and-specification-rules.md`](skills/paper2patent/references/claims-and-specification-rules.md) |
+| 9 | ✓ | [`skills/paper2patent/references/claims-drafting.md`](skills/paper2patent/references/claims-drafting.md) |
+| 10 | ✓ | [`skills/paper2patent/references/document-generation.md`](skills/paper2patent/references/document-generation.md) |
+| 11 | ✓ | [`skills/paper2patent/references/drawing-generation.md`](skills/paper2patent/references/drawing-generation.md) |
+| 12 | ✓ | [`skills/paper2patent/references/input-requirements.md`](skills/paper2patent/references/input-requirements.md) |
+| 13 | ✓ | [`skills/paper2patent/references/patent-drafting-standard.md`](skills/paper2patent/references/patent-drafting-standard.md) |
+| 14 | ✓ | [`skills/paper2patent/references/patentability-and-disclosure.md`](skills/paper2patent/references/patentability-and-disclosure.md) |
+| 15 | ✓ | [`skills/paper2patent/references/quality-checklist.md`](skills/paper2patent/references/quality-checklist.md) |
+| 16 | ✓ | [`skills/paper2patent/references/text-conversion-workflow.md`](skills/paper2patent/references/text-conversion-workflow.md) |
+| 17 | ✓ | [`skills/paper2patent/scripts/check_patent_draft.py`](skills/paper2patent/scripts/check_patent_draft.py) |
+| 18 | ✓ | [`skills/paper2patent/scripts/export_patent_pdf.py`](skills/paper2patent/scripts/export_patent_pdf.py) |
+| 19 | ✓ | [`skills/paper2patent/scripts/generate_patent_docx.py`](skills/paper2patent/scripts/generate_patent_docx.py) |
+| 20 | ✓ | [`skills/paper2patent/scripts/generate_patent_drawings.py`](skills/paper2patent/scripts/generate_patent_drawings.py) |
+| 21 | ✓ | [`skills/paper2patent/scripts/patent_common.py`](skills/paper2patent/scripts/patent_common.py) |
+| 22 | ✓ | [`skills/paper2patent/SKILL.md`](skills/paper2patent/SKILL.md) |
 
 ---
 

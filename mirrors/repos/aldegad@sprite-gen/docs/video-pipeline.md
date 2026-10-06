@@ -253,6 +253,68 @@ back walk, on the base's own key, kept as `walk-start.png` with its report and r
 prompt and base are the same; a base on no chroma key is refused with `--walk-start as-given`, which
 films from the base itself. Side and diagonal walks, and every other state, film from the base.
 
+### A body that is not a person — `--body-plan`
+
+The measured sentences above were measured on people, and five of them name what only a person has:
+the Lite walk calm swings the arms (`LITE_WALK_TEXT`), the Lite back-diagonal head hold moves the
+arms (`LITE_HEAD_TEXT`), the idle plants both feet and settles the chest, shoulders and arms
+(`MOTION_TEXT["idle"]`), the front or back mid-step redraw puts one foot under each hip with the
+arms swinging (`WALK_START_TEXT`), and the view sentence the still is drawn with points the chest,
+hips and the toes or heels of both feet at the viewer, or the backs of the shoes (`STILL_VIEW_TEXT`). Said of a horse, a pig or a dog, they walk it on a person's legs or
+stand it up on two. The walk and run sentences themselves name no limb (since 2.0.0's "`video-set`
+motion templates no longer assume a biped"); these came later and were said to every body.
+
+`video-set --body-plan`, `video-prompt --body-plan`, `gen --direction --body-plan`, `prepare
+--body-plan` and
+`build_prompt(body_plan=...)`, `walk_start_prompt(body_plan=...)`, `still_view_text(body_plan=...)`,
+`gen.still_prompt(body_plan=...)` name what the subject stands on (`sprite_gen/video/body_plan.py`):
+`biped` (the default), `quadruped` or `legless` for the character, or one `<figure>=<plan>` per figure
+of a scene (`--body-plan "the man=biped" --body-plan "the horse=quadruped"`). No body plan, or one
+biped, keeps every prompt byte for byte. Any other body gets:
+
+| Sentence | for a body that is not one biped |
+|---|---|
+| after the motion sentence (or the caller's `--motion`) | what it stands on (`body_plan.text`): "It stays on all four legs, as in the image, and never rises onto its hind legs." / "It has no legs, as in the image, and never grows legs or feet." / "Each figure keeps the body it has in the image: the man on two legs; the horse on all four legs, never rising onto its hind legs." |
+| idle | `IDLE_TEXT_ANY_BODY`: the same stillness, standing or resting as in the image, no feet counted, no chest, shoulders or arms |
+| attack | `ATTACK_TEXT_ANY_BODY`: the same timed strike "with what it is already holding, or with its own body if it holds nothing", then `HOLD_TEXT_ANY_BODY["attack"]`: anything it holds stays held the same way, a part the strike does not use stays where it is drawn, no hand counted. Which part strikes (a bite, a head-butt, a forefoot) is not guessed: a caller who knows says it with `--motion`, which gets `HOLD_TEXT_ANY_BODY` after it |
+| Lite walk calm | `LITE_WALK_TEXT_LEGGED` (no arm swing; never trotting or galloping) or, with a figure without legs, `LITE_WALK_TEXT_LEGLESS` (no steps or feet) |
+| Lite back-diagonal head hold | `LITE_HEAD_TEXT_ANY_BODY`: what moves is what it moves on and its loose ends (a tail, a mane, hair) |
+| the still's view sentence (`still_view_text`, `gen --direction`) | `STILL_VIEW_TEXT_ANY_BODY` for the front, back and diagonal views (where the body and head point; no feet, chest, hips, shoulders or shoes), the side view's `VIEW_TEXT` as it is, each ending in what it stands on (`body_plan.still_text`): ", standing on all four legs, not rearing onto its hind legs" / ", resting on its base without legs, never growing any" / ", each figure with the body it has: the man on two legs; the horse on all four legs, never rising onto its hind legs" |
+| front or back mid-step redraw | `WALK_START_TEXT_ANY_BODY`: one leg lifted, the others planted, then what it stands on; a body without legs has no step to catch and films from its base (`starts_mid_step` is false, `video-prompt` gives no `start_still`) |
+
+Only the biped sentences were measured on clips; the others say no part the body lacks and are not
+yet measured. `--handed` keeps its own sentences (its arm sentences are for an item on an arm).
+`video-set`, `video-prompt --json` and `gen`'s `extra.view` record the plan as `body_plan`. An app
+that draws the still itself with `still_view_text` and films with `build_prompt` passes the same
+`body_plan` to both: the clip starts from that still.
+
+#### The sheet rows — `prepare --body-plan`
+
+The rows `prepare` writes for an image model (`prompts/<state>.txt`, [atlas workflow](atlas-workflow.md))
+were measured on people too. The walk and run rows moved "body, arm, leg, hair, and prop", the front and
+three-quarter-front walks "alternating leg, arm, shoulder", the diagonal runs traded "foot-contact phases"
+of "the left and right legs", the wave was "arm pose only: arm down, arm raised, hand tilted" (its default
+action "friendly hand wave gesture"), every row's anchor lock spent its motion on "arm counter-swing" and
+turned "the body, feet, shoulders", and a diagonal row read its facing by "shoulder overlap, hand/foot
+placement". `prepare --body-plan` (the same plans and scene form; repeatable; over the request's
+`body_plan`) gives a body that is not one biped:
+
+| Row sentence | for a body that is not one biped |
+|---|---|
+| walk, run, `running-right` / `-left` (`STATE_REQUIREMENTS`) | `STATE_REQUIREMENTS_ANY_BODY`: locomotion through "the movement of the body, whatever it moves on, loose parts such as hair, a mane or a tail, and props only" |
+| `frontwalk`, `45_frontwalk` | "alternating steps of whatever it walks on and body-height changes"; "the contact and passing poses" |
+| the diagonal runs | "alternating contact phases of whatever it moves on so the two sides clearly trade forward reach" |
+| wave | the one side that lifts, as the clip's wave does (`MOTION_TEXT["wave"]`): "lowered, lifted, swaying, returning", the body planted where it stands or rests; the default action `DEFAULT_ACTIONS_ANY_BODY["wave"]` where the request names none |
+| anchor lock (`ANCHOR_LOCK`) | `ANCHOR_LOCK_ANY_BODY`: "the contacts of whatever it moves on, body height, body lean, head bob, the bounce of hair, a mane or a tail"; rotate "the body, face angle, and gaze"; "step phase", "contacts" |
+| a diagonal row's facing | "the silhouette of hair, a mane or a tail, the overlap of near and far parts" |
+| every row, last state requirement | what it stands on (`body_plan.text`), as after a clip's motion sentence |
+
+The run records the plan in `sprite-request.json` as `body_plan` (absent without one), and a run
+prepared again from that request keeps it. No body plan, or one biped, writes every row prompt as
+2.32.0 did, byte for byte (`tests/fixtures/prepare-rows-v2.32.0.json.gz`, `tests/gen/test_prompt_freeze.py`).
+The new rows are not yet measured on an image model. A request's own `action` is its own words and is
+never rewritten.
+
 ### A clip from a video MCP on your agent — ZCRE
 
 sprite-gen never calls a video MCP. When your own agent (Claude, Codex) has one connected — ZCRE's
@@ -291,7 +353,12 @@ order, so that every loop starts as the same own foot lands wherever its view ca
 apart. A frame that falls between two source frames is made by RIFE, and the command fails where one
 is needed and RIFE is not installed; `--between nearest` makes none. A frame RIFE made that melted
 (lost its outline where legs crossed too far) is replaced by the nearer source frame and named
-(`--between auto`, the default; [loop repair](loop-repair.md) section 4).
+(`--between auto`, the default; [loop repair](loop-repair.md) section 4). A loop whose view cannot
+tell its feet apart — or tells them apart by too small a margin (`foot_why` `low-margin`) — starts
+on its larger strike and is listed under the report's `unnamed_feet` with its two strike frames in
+`cycle/`: look at the first, say which own foot lands there, and run the same alignment again with
+`--foot <loop>=left|right` — that loop alone turns to start on the set's foot
+(`start_foot_source: "given"`).
 
 `--character` or `--motion` words that turn the subject another way than `--facing`, or put a
 `--handed` item on its other side, come back in `warnings`; the prompt is the same either way
@@ -302,7 +369,7 @@ ends on the canvas (`last_frame`), the loop cut (`cycle`) and the canvas, clip, 
 commands with placeholders; a front or back walk adds `start_still`, the mid-step redraw `video-set`
 makes before its canvas (`sprite-gen gen --ref`, your image provider). Its `loop` command names no
 `--anchor` and it lists no set command: add `--anchor motion-auto` for a walk or run, and run
-`video-cycle-align` for a set, as above. `--character`, `--motion` and `--model` reach the
+`video-cycle-align` for a set, as above. `--character`, `--motion`, `--model` and `--body-plan` reach the
 prompt as they reach `build_prompt`. What the ZCRE route supports:
 
 | | Through ZCRE's MCP |
@@ -623,6 +690,11 @@ was 17). `video-loop` therefore:
    ranking. `cycle.selection` records the half-open source-pair range, repeat
    error, normalised error, wrap penalty and combined score; `next_frame_distance`
    retains the single-frame diagnostic. Fixed cuts do not use this ranking.
+   The seam is an area measure: a thin part (a staff, a flag) that jumps at the wrap
+   changes few pixels and hardly moves it. `--anchor motion-auto` also weighs the top
+   of the silhouette at the wrap and chooses again when it jumps, and every walk or run
+   reports that jump and warns on it ([loop repair](loop-repair.md) section 3,
+   "The seam pop").
 
 This neighbourhood check measures temporal consistency, not anatomical leg
 identity. A consistently repeated malformed motion can still score well; visual
@@ -755,6 +827,29 @@ filmed with a warning (`--repair on` fails instead). See [loop repair](loop-repa
 moves are reported (`jolt`); beyond the reference bounds that is a warning line, and a gate
 (`video-loop: loop jolts — …`) only when `--jolt-max` / `--head-step-max` are passed.
 
+**Held drawings: recorded on every loop.** A video model may film a walk at 12 drawings a second
+inside a 24 fps clip, each drawing shown for two frames ("on twos", or three: "on threes"). The
+report's `drawings` says so, read over the whole clip as keyed, before any cut
+(`sprite_gen/video/held.py`): `hold` (1 every frame a drawing, 2 or 3; `null` with a `why` for a
+clip too short or still), `drawings` and `drawings_per_second`, `held_steps`, and `contrast` per
+hold — the held steps over the change steps, the evidence. `cycle_drawings` is the same reading over
+the cut alone, on the clip's steps from the cut's first frame into the frame after its last (`start`,
+`length`, `steps`; `null` with a `why` under 12 steps, one window). `strip.json` carries both
+(`drawings`: `hold`, `drawings_per_second`, `contrast`, `frames`; `cycle_drawings`: `start`,
+`length`, `steps`, `hold`, `drawings_per_second`, `contrast`, `why`) for `video-cycle-align`, which
+reads the cut's: a clip may hold its drawings for only part of its length. The second frame of a pair is rarely a
+byte copy: the model redraws it a little, so its step is small, not zero, and a rule that calls a
+step held under a fraction of the median step misses it (with half the steps held the median falls
+between the two kinds). So the judgement reads the rhythm: for a hold of 2 or 3, in windows of 12
+steps, the phase whose every second (or third) step is the change, its held steps' median over its
+change steps' median; under 0.3 the clip is held, and each step is then held when it is under the
+geometric midpoint of the two kinds' means. A motion filmed every frame has no such rhythm — its
+steps swell and shrink with the stride over a dozen frames — and a clip whose steps alternate long
+and short but move every frame reads above it; so does a frame repeated now and then (a 20 fps
+clip carried at 24). Nothing is refused here: played at its own rate a held loop is ordinary
+limited animation. It matters when `video-cycle-align` stretches it ([loop repair](loop-repair.md)
+section 4, "Held drawings").
+
 ### One-shot actions — `--cycle auto|periodic|one-shot`
 
 A video model asked to jump "over and over" sometimes jumps once and stands for the
@@ -782,7 +877,9 @@ animation gates apply. `--cycle periodic` refuses a weak periodic candidate;
 `--cycle one-shot` forces return detection. Stationary clips, jitter and actions
 without an observed return fail loud. Selection and seam refusals write the requested
 report before exiting: `status = "failed"`, error, window, candidate start/length,
-seam numerator/denominator and repetition/return evidence. Undefined ratios are JSON
+seam numerator/denominator and repetition/return evidence. A walk or run refused by the
+`--anchor motion-auto` search names the windows it measured and refused, best first
+([loop review](loop-review.md), "The gait fallback"). Undefined ratios are JSON
 `null`; success records `status = "passed"`. `--cycle fixed --start N --length L` skips detection and cuts exactly
 those frames — for a clip that holds too few repeats for the periodicity gate but whose
 cycle is known (the 2026-09-09 reel jump: 2.3 hops in 145 frames). It is an explicit
@@ -884,9 +981,12 @@ and turned to start as the same own foot lands in every view — read off the le
 ear or a hat's point, and the foot told apart by the item's own view and facing (`--align-cycles
 auto`, the default; `off` keeps each loop's own length). The same step stands alone as
 `sprite-gen video-cycle-align --loop-dir … --view …`. `set.report.json` carries `cycle_align`
-per state (with `start_foot` per item), a failed alignment is listed as `cycle-align:<state>`,
+per state (with `start_foot` and `start_foot_source` per item, and the loops whose foot nobody named
+under `unnamed_feet`, told back with `--align-foot <item>=left|right`), a failed alignment is listed as `cycle-align:<state>`,
 and a made frame with a smear, one that melted and was replaced, or a loop whose foot could not be named is a line under
-`warnings`. Two cases skip the alignment with a warning instead of failing it (`applied: false`,
+`warnings`. A held loop stretched past what an interpolator bridges is named for a new take: the
+state's `retake` (reason `held-drawings`, with its numbers; per item under `cycle_align.retake`) and
+a warning line ([loop repair](loop-repair.md) section 4, "Held drawings"). Two cases skip the alignment with a warning instead of failing it (`applied: false`,
 `reason`, and a line under the report's `warnings`): no RIFE (`rife-not-installed`), and a loop
 that may hold more than one cycle (`cycle-suspects`, the loops under `suspects`; count them, then
 `video-cycle-align --cycles <loop>=<k>`). See [loop repair](loop-repair.md) section 4.

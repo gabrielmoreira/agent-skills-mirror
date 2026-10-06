@@ -13,6 +13,8 @@
 > [`ha-media/src/audio_generate/`](../../../crates/ha-media/src/audio_generate/)。图/音生成唯一入口
 > `execute_image` / `execute_audio`。
 
+2026-10-05 图像目录维护：OpenAI 新建模板不再推荐已退役的 `dall-e-3`；Google 新建模板采用 `gemini-3.1-flash-image` / `gemini-3-pro-image`，移除旧 preview、2.5 Flash Image 和 Imagen 4 直连预设。仅修改内置新建目录，保留用户已存配置及其他渠道自己的 ID。`gpt-image-1` 的 2026-10-23 截止日期继续跟踪；新质量/透明/格式/压缩字段及真实输出验收仍待后续合同，不据目录更新宣称已支持。
+
 ## 1. 核心思想
 
 生成类服务商是一片碎片化的荒野：OpenAI 既能生图又能 TTS，ElevenLabs 只做语音，火山、混元、

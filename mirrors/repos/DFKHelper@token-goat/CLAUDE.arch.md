@@ -96,6 +96,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/hooks_grep.ts`](src/hooks_grep.ts) | post_tool_use / pre_tool_use handlers for the Grep tool. |
 | [`src/hooks_index.ts`](src/hooks_index.ts) | `appendDirtyPath()` — atomic append to `queue/dirty.txt`; `preCompactIndexHandler()` — drains any remaining dirty queue before compaction |
 | [`src/hooks_mcp.ts`](src/hooks_mcp.ts) | `preMcpHandler()` / `postMcpHandler()` — cache read-only `mcp__*` results into the bash-output store; deny an identical repeat with a `bash-output <id>` recall hint |
+| [`src/hooks_read_policy.ts`](src/hooks_read_policy.ts) | Exports: `ReadPolicyContext`, `ReadPolicyDecision`, `evaluateFirstReadSymbolPolicy` |
 | [`src/hooks_read_post.ts`](src/hooks_read_post.ts) | `postReadHandler()` — snapshot update, session recording, `elideAlreadyServedLines()` and `foldCodeBodies()` on the delivered text |
 | [`src/hooks_read_slice.ts`](src/hooks_read_slice.ts) | Line windowing, slice estimation, line diffing, and truncated-read detection. |
 | [`src/hooks_read.ts`](src/hooks_read.ts) | `preReadHandler()` — session hint, diff-on-reread, image intercept, large-file gate, surgical-hint injection |
@@ -513,6 +514,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/pending_context.ts`](src/pending_context.ts) | Deferred hint delivery, for harnesses that run a prompt-submit hook but discard its response. |
 | [`src/pinned_fetch.ts`](src/pinned_fetch.ts) | Hashing, copying and downloading files pinned by digest and length. |
 | [`src/pinned_file.ts`](src/pinned_file.ts) | Files held to a SHA-256 and byte length recorded in this repository. |
+| [`src/powershell_compat.ts`](src/powershell_compat.ts) | Adapts bash-style heredocs and inline Python scripts with complex quotes for reliable execution under PowerShell (both pwsh 7+ and Windows PowerShell 5.1). |
 | [`src/pptx_extract.ts`](src/pptx_extract.ts) | PowerPoint (.pptx) narrow-slice reader. |
 | [`src/pr_slice.ts`](src/pr_slice.ts) | Surgical GitHub PR reads via the `gh` CLI. |
 | [`src/probe_marker.ts`](src/probe_marker.ts) | The hook half of `token-goat doctor --probe`. |

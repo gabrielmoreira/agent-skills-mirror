@@ -139,12 +139,13 @@ existing single-tenant call sites keep working unmodified.
 `runtime/mod.rs` declares two constants every multi-thread runtime that may
 host an agent turn must set:
 
-- `AGENT_WORKER_STACK_BYTES` (16 MiB): a single agent turn is a very large
+- `AGENT_WORKER_STACK_BYTES` (20 MiB): a single agent turn is a very large
   async state machine (system prompt + hundreds of tool specs + the nested
   provider/tool loop), and delegating to a sub-agent nests another one. That
   overflows tokio's default 2 MiB worker stack and aborts the process.
 - `MAX_BLOCKING_THREADS` (64): tokio defaults this to 512, which combined
-  with the raised stack size could pin up to `512 × 16 MiB` of idle stack.
+  with the raised stack size could reserve up to `64 × 20 MiB` of virtual
+  stack space. Physical pages are committed as a thread's stack grows.
   `spawn_blocking` on these runtimes backs SQLite, filesystem grep/glob,
   document parsing, and URL guarding: bounded, bursty concurrency, so 64
   leaves headroom while capping the idle footprint.

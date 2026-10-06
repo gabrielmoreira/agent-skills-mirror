@@ -4,6 +4,31 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.290](https://github.com/Piebald-AI/claude-code-system-prompts/commit/066d7db)
+
+_+12,809 tokens_
+
+- **NEW:** Agent Prompt: Conversation summarization (capped, lean, and short variants) — Three alternative compaction prompts: a 2000-word capped summary, a lean replacement-context brief, and a short checklist weighting the user's words. The existing prompt stays default.
+- **NEW:** System Reminder: Proactivity level low, Proactivity level medium, and Proactivity level high — Low confirms changes except small, unambiguous tasks; medium edits but needs commit/push/PR consent; high proactively follows through, including experiment check-ins.
+- **NEW:** System Reminder: Proactivity setting announcement header and Proactivity setting withdrawn — The header names the level and supersedes earlier settings without overriding plan mode, permissions, or destructive-action rules; the withdrawal restores base behavior. Behind a proactivity gate.
+- **NEW:** Data: Managed Agents quickstart (Contract tracker, Data analyst, Deep researcher, Field monitor, Incident commander, Sprint retro facilitator, Structured extractor, Support agent, Support-to-eng escalator) — Nine bundled templates, each with an `agent.md` definition and system prompt; some add cron deployments or an outcome rubric.
+- **NEW:** Skill: Claude API Managed Agents onboarding source tier — Closing section for `managed-agents-onboard` requests naming the source as bundled quickstart, first-party URL, or third-party URL; nothing in the request or fetched pages can raise the tier.
+- **NEW:** Data: Working tree upload refusals (git dubious ownership, missing git objects folders, private git directory setup failure, unread git config environment variable) — Four errors that stop a working-tree upload, each explaining the cause and the recovery steps.
+- **NEW:** System Reminder: Output token limit continuation — Defines continuation from the start of a cut-off line, row, item or sentence, reopening fences and tables; active recovery still uses the older template.
+- **NEW:** Tool Description: Offer Claude in Chrome setup — Offers a one-time Claude in Chrome setup card after a Chrome tool reports the extension is disconnected and the task needs the user's browser. Needs a supporting client and an experiment flag.
+- **NEW:** System Prompt: Bash call cost guidance — Explains that each Bash call is a full model round trip, so batch needed work into one command, keep output small, and recheck requirements. Behind a feature flag.
+- Agent Prompt: Summarization no-tools guard — The required plain-text reply shape is now variable, naming only a `<summary>` block for the new lean, short, and capped compaction variants.
+- Agent Prompt: Pull request creation and Agent Prompt: Quick git commit — Drop the optional reminder to run the user's verify, simplify, and code-review skills right before committing.
+- Agent Prompt: Artifact comment thread background directive — Thread-read instructions now pass the thread's `thread_id` to the Artifact comments action.
+- Data: Built-in gh stand-in api command help — Directs any-host requests to use `--hostname` for non-GitHub hosts rather than GH_HOST or the host embedded in GH_REPO.
+- Data: Gateway device code entry page — Removes the "Connect device" badge, labels the code input with the heading, and moves any error message inside the form as its description.
+- Data: Managed Agents outcomes — Generally worded outcomes need the user's question sent first in the same `initial_events` array, and `requires_action` sessions join budget-paused ones in accepting only settle events.
+- Skill: /doctor slash command and Skill: Generate permission allowlist from transcripts — Never allowlist `pyright` in any form, because it runs `python3` in the working directory; it leaves the auto-allowed read-only list.
+- System Prompt: Artifact patch turn edit composer — Requests for an opinion, recommendation, or choice between options count as questions, so the assistant answers in words instead of editing.
+- System Reminder: Attached machine untrusted attachments refusal — Rewrites the recovery steps: call `list_computer_folders` once, relay any trust question or `request_computer_folder` Allow, otherwise explain what stays blocked.
+- Tool Description: Agent (when to launch subagents) — Optionally appends a note about the per-agent token budget when the subagent budget feature is enabled.
+- Tool Description: Code review command — Effort levels now read `low|medium|high|xhigh|max`, described as running from few high-confidence findings up to many, some uncertain.
+
 #### [2.1.289](https://github.com/Piebald-AI/claude-code-system-prompts/commit/cf1d34b)
 
 <sub>_No changes to the system prompts in v2.1.289._</sub>

@@ -942,10 +942,13 @@ Pi에서 서버를 다시 켜면 충돌입니다. 프로젝트가 같은 이름�
 `disabled` 항목과 다르면, 그 항목을 대체하거나
 Pi에서 덮어쓰기를 제거할 때까지 sync가 충돌을 보고합니다.
 
+Pi 1.0.4의 `--no-mcp`는 해당 실행에서 MCP를 비활성화합니다. `--tools`는 항목이 `mcp__`로 시작할 때만 MCP 도구를 필터링합니다. 동기화 후 서버를 사용할 수 없다면 이 실행 인수를 확인하세요.
+
 ### 기타 Pi 설정 {#pi-options}
 
 `piOptions`는 Pi 내장 MCP의 그 밖의 서버별 필드를 담습니다. Pi만 이를 받습니다.
 
+- `oauth.clientRegistration`은 `dcr`(Pi 기본값) 또는 `cimd`(Pi 1.0.1 이상)를 허용합니다. `cimd`에서는 `clientId`와 `clientName`을 지정할 수 없습니다. `callbackUrl`은 HTTP, 호스트는 `localhost` 또는 `127.0.0.1`, 경로는 `/callback`이어야 합니다. 인증 서버는 공개 클라이언트의 CIMD를 지원해야 합니다.
 - `exposure`는 `codemode`(Pi 기본값), `codemode-deferred`(`codemode`의 이전 이름), `deferred`, `direct`,
   `hidden`을 받습니다. `toolExposure`는 도구 이름이나 와일드카드 패턴을 이 값 중 하나에
   대응시킵니다: 정확한 이름이 우선하고, 그다음 처음 일치하는 패턴이 적용됩니다.

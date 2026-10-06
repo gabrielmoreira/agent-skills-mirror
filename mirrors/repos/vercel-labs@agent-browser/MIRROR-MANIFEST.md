@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vercel-labs/agent-browser` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `vercel-labs/agent-browser` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel-labs/agent-browser` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,18 +60,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`examples/eve/AGENTS.md`](examples/eve/AGENTS.md) |
-| 3 | ✓ | [`examples/eve/CLAUDE.md`](examples/eve/CLAUDE.md) |
-| 4 | ✓ | [`skill-data/agentcore/SKILL.md`](skill-data/agentcore/SKILL.md) |
-| 5 | ✓ | [`skill-data/core/SKILL.md`](skill-data/core/SKILL.md) |
-| 6 | ✓ | [`skill-data/derive-client/SKILL.md`](skill-data/derive-client/SKILL.md) |
-| 7 | ✓ | [`skill-data/dogfood/SKILL.md`](skill-data/dogfood/SKILL.md) |
-| 8 | ✓ | [`skill-data/electron/SKILL.md`](skill-data/electron/SKILL.md) |
-| 9 | ✓ | [`skill-data/protected-vercel-deployments/SKILL.md`](skill-data/protected-vercel-deployments/SKILL.md) |
-| 10 | ✓ | [`skill-data/slack/SKILL.md`](skill-data/slack/SKILL.md) |
-| 11 | ✓ | [`skill-data/vercel-sandbox/SKILL.md`](skill-data/vercel-sandbox/SKILL.md) |
-| 12 | ✓ | [`skill-data/webmcp-gen/SKILL.md`](skill-data/webmcp-gen/SKILL.md) |
-| 13 | ✓ | [`skills/agent-browser/SKILL.md`](skills/agent-browser/SKILL.md) |
+| 2 | ✓ | [`docs/src/app/llms.txt/route.ts`](docs/src/app/llms.txt/route.ts) |
+| 3 | ✓ | [`examples/eve/AGENTS.md`](examples/eve/AGENTS.md) |
+| 4 | ✓ | [`examples/eve/CLAUDE.md`](examples/eve/CLAUDE.md) |
+| 5 | ✓ | [`skill-data/agentcore/SKILL.md`](skill-data/agentcore/SKILL.md) |
+| 6 | ✓ | [`skill-data/core/SKILL.md`](skill-data/core/SKILL.md) |
+| 7 | ✓ | [`skill-data/derive-client/SKILL.md`](skill-data/derive-client/SKILL.md) |
+| 8 | ✓ | [`skill-data/dogfood/SKILL.md`](skill-data/dogfood/SKILL.md) |
+| 9 | ✓ | [`skill-data/electron/SKILL.md`](skill-data/electron/SKILL.md) |
+| 10 | ✓ | [`skill-data/protected-vercel-deployments/SKILL.md`](skill-data/protected-vercel-deployments/SKILL.md) |
+| 11 | ✓ | [`skill-data/slack/SKILL.md`](skill-data/slack/SKILL.md) |
+| 12 | ✓ | [`skill-data/vercel-sandbox/SKILL.md`](skill-data/vercel-sandbox/SKILL.md) |
+| 13 | ✓ | [`skill-data/webmcp-gen/SKILL.md`](skill-data/webmcp-gen/SKILL.md) |
+| 14 | ✓ | [`skills/agent-browser/SKILL.md`](skills/agent-browser/SKILL.md) |
 
 ---
 

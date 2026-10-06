@@ -38,17 +38,22 @@ with the suite and excluded from package builds; broader runtime and provider
 fixtures remain under `tests/fixtures/**`.
 
 `tests/process-global/**` is reserved for cases with a demonstrated dependency
-on process-global state. Those tests run without file parallelism. Reusable,
+on process-global state. Those tests use isolated forks so environment and
+exit-status changes cannot leak between files. Serialize a case only when it
+demonstrably shares an external resource that cannot be isolated. Reusable,
 test-scoped fixtures live under `tests/support/**`; immutable source artifacts
 remain under `tests/fixtures/**`.
 The process-global Vitest configuration contract rejects new direct temporary-root
 creation outside the workspace seam and its narrowly documented boundary/package
 exceptions.
 
-Real Hopper, Ghidra, browser, package, managed-code, and controlled-replay
-claims belong to their explicit `npm run verify:*` lanes. They are not inferred
-from mocks or folded into the deterministic local gate. Real model trials are
-manual; Vitest covers only deterministic evaluator logic.
+Real Hopper, Ghidra, browser, package, and managed-code claims belong to their
+explicit `npm run verify:*` lanes. The reconstruction-readiness lane also
+checks deterministic rerun, tamper, and stale-input handling; those checks do
+not execute extracted JavaScript modules. When application runtime behavior is
+needed, exercise the actual target through browser, Electron, or process
+capture. Real model trials are manual; Vitest covers deterministic evaluator
+logic.
 
 ## End-to-end, integration and golden evidence
 
@@ -95,6 +100,7 @@ that a host or target is covered when it was skipped.
 | Ghidra lane                                | Supported runner/target                                                            | Additional local tools                                              |
 | ------------------------------------------ | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | `npm run verify:ghidra`                    | Linux x64 ELF or macOS x64/arm64 Mach-O                                            | Host C compiler, Ghidra 12.1.4, and full JDK 21                     |
+| `npm run verify:ghidra:switch`             | Linux x64 ELF; GCC/Clang optimized and stripped switch fixtures                    | GCC, Clang, GNU nm/objdump/strip, Ghidra 12.1.4, and full JDK 21    |
 | `npm run verify:ghidra:aarch64-jump-table` | Any supported Ghidra host; AArch64 ELF; byte/halfword tables; host ARM64 Mach-O    | Clang with AArch64 target support, Ghidra 12.1.4, and full JDK 21   |
 | `npm run verify:ghidra:cross-format`       | Any supported Ghidra host; also analyzes AArch64 ELF, x86-64 PE, and x86-64 Mach-O | `clang`, LLD, and `lld-link` in addition to host-lane prerequisites |
 | `npm run verify:ghidra:windows`            | Controlled Windows x64 with native x86-64 PE                                       | Ghidra 12.1.4, full JDK 21, and the Windows P0 fixture toolchain    |
@@ -104,10 +110,48 @@ production CLI and a separate stdio MCP process. It compares complete dependency
 graphs, validates Evidence and upstream/workflow profiles, checks capability
 discovery, and closes the MCP session. No provider or transport is mocked.
 
+The Linux switch lane checks dense, sparse-with-holes, shared-body, nonzero,
+negative, and nonexact JSON integer labels plus a comparison-only control.
+Independent source labels, ELF file bytes, table slots, and bounds branches
+define expected case/default destinations. Production CLI and MCP must agree;
+debug labels must retain their signed values. For stripped negative fixtures,
+the independently checked 32-bit dispatch permits equivalent unsigned labels
+only alongside the reported low-confidence `undefined4` parameter; original
+source signedness remains unknown and the ABI residual must remain visible.
+unsafe labels remain unresolved and every recovered destination is retained.
+The compiler oracle also injects malformed records to check that its assertions
+reject missing/default-confused labels, wrong destinations, and numeric guesses.
+It also invokes the actual bridge methods on detached Ghidra model objects to
+check ambiguous dispatches, signed literals, precision bounds, shared targets,
+and conflicting labels. This reflection fixture depends on the pinned Ghidra
+model and does not claim a compiler produced those synthetic graph shapes.
+Pass `--entrypoint /path/to/installed/rea-agents/scripts/rea.mjs` directly to
+`scripts/verify-real-ghidra-switch.mjs` to verify an installed package through
+the same compiler oracles and CLI/MCP checks.
+
 The cross-format Ghidra lane also analyzes an optimized AArch64 ELF switch
 fixture. It checks the recovered case values against the source cases and
 requires unresolved table bounds or case mappings to remain visible as
 residual unknowns.
+
+`npm run verify:inspector` requires the supported Node.js runtime and installed
+REA dependencies. CI runs it on Linux and Windows. It starts owned loopback
+Node Inspector fixtures and verifies discovery and passive observation through
+the CLI and stdio MCP, including special filenames, unresolved discovery
+locations, and independently resolved loaded scripts. Double-quote filenames
+are tested on POSIX only because Windows does not support them.
+
+## DOS Ghidra analysis
+
+`npm run verify:ghidra:dos` requires the supported Ghidra and JDK installation
+on Linux x64 or macOS x64/arm64. It generates a source-owned MZ fixture without
+a DOS emulator or compiler, then checks real 16-bit decoding, segment
+relocation, near/far calls, decompilation, disjoint function body ranges,
+stable CLI/MCP observations, unchanged source bytes, and owned process/project
+cleanup. Raw p-code address-space selector tokens are reported separately from
+the stable observation comparison. Linux x64 is verified; macOS DOS remains
+unverified. This lane is separate from host-native and optional cross-format
+verification. See [DOS analysis](ghidra-dos.md).
 
 ## Apple Interface Builder archives
 
@@ -122,26 +166,56 @@ not make native host acceptance unavailable.
 
 ## Developer commands
 
-`npm test` runs every deterministic project once. The narrower feedback loops
-are:
+Use source feedback while editing, explicit boundary checks for the changed
+behavior, and complete CI evidence before merging.
 
-| Command                   | Scope                                                                                                                  |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `npm run test:fast`       | Domain, service, adapter, composition, boundary, MCP boundary, and conformance projects                                |
-| `npm run test:local`      | Changed and related tests without the build step; lightweight local feedback loop                                      |
-| `npm run test:boundary`   | Boundary, MCP boundary, and process-global projects                                                                    |
-| `npm run test:mcp`        | MCP boundary project only                                                                                              |
-| `npm run test:acceptance` | Complete CLI and MCP acceptance workflows                                                                              |
-| `npm run test:changed`    | Changed tests in non-serial projects via Vitest's import graph                                                         |
-| `npm run test:watch`      | Changed domain, service, adapter, composition, boundary, MCP boundary, conformance, and evaluation tests in watch mode |
-| `npm run test:watch:all`  | Changed tests from every deterministic project in watch mode                                                           |
-| `npm run check:changed`   | Cached static checks followed by changed tests                                                                         |
-| `npm run check:pr`        | Static, generated-document, and complete deterministic PR gate                                                         |
+| Command                           | Scope                                                                                                                   |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `npm run test:local`              | Dirty source tests via the import graph, without build; explicit source paths run regardless of Git status              |
+| `npm run test:focused -- PATH...` | Exact existing test files; compiled boundaries build first, and unmatched paths fail                                    |
+| `npm run test:changed`            | Source tests affected since the merge base with `origin/main`, including committed and dirty changes                    |
+| `npm run test:fast`               | All domain, service, adapter, composition, conformance, and evaluation tests without build                              |
+| `npm run test:boundary`           | Boundary, MCP boundary, process boundary, and process-global projects                                                   |
+| `npm run test:mcp`                | MCP boundary project                                                                                                    |
+| `npm run test:acceptance`         | Complete compiled CLI and MCP acceptance workflows                                                                      |
+| `npm run test:watch`              | Dirty source tests in watch mode, without build                                                                         |
+| `npm run test:watch:all`          | Changed tests from every project; builds at startup, so rebuild after production edits before relying on compiled tests |
+| `npm run check:changed`           | Cached typecheck/lint and branch-related source feedback                                                                |
+| `npm run check:pr`                | Opt-in complete local deterministic gate and generated-file checks                                                      |
+| `npm run docs:check`              | Committed generated-document freshness, without API HTML rendering                                                      |
 
-Changed-test selection is a fast feedback aid, not release evidence. It can
-miss behavior connected through runtime registration, generated data, shell
-entrypoints, or other relationships that are absent from the import graph.
-Use `npm run check:pr` before handing off a contribution.
+For example:
+
+```bash
+npm run test:local -- src/config.test.ts
+npm run test:focused -- tests/acceptance/applications/runtime.test.ts
+npm run test:changed -- --base origin/main
+npm run test:changed -- --dry-run
+```
+
+`test:focused` accepts exact repository-relative test file paths. Source-only
+paths do not build; boundary, acceptance, process-global, or unfamiliar `tests/`
+paths build conservatively. Tests use Vitest concurrency and isolated
+workspaces; commands do not hold a broad test lock. Build and documentation
+writers retain checkout-local locks for their shared output files. Explicit
+selections do not use `--changed` or permit zero-test success.
+The dry-run option reports the chosen merge base, scope and build prerequisite
+without executing tests or building. A missing Git base reports how to fetch
+it or select another revision.
+
+Changed selection can miss runtime registration, generated data, shell
+entrypoints, bridges, or other relationships absent from the import graph.
+An empty changed selection means no tests were selected, not verified
+correctness. Select relevant boundary files and real-provider lanes explicitly.
+Source projects also contain large capacity regressions; `test:fast` promises
+no compiled-runtime prerequisite, not a fixed time budget.
+
+Routine iterations and rebases need focused regressions and relevant checks.
+Before handing off a PR, run `npm run check` and generated-document checks when
+applicable; CI owns the full suite and coverage. Use the full local gate for
+broad changes or diagnosing CI, rather than after every edit. Package/install
+changes additionally need package verification; provider changes need actual
+provider evidence.
 
 Local full-suite Vitest runs use up to two workers and schedule projects one
 at a time. Process, acceptance and process-global projects serialize their
@@ -155,8 +229,8 @@ process-global, and other boundary projects retain per-file isolation.
 `npm test`, `npm run docs:check`, and `npm run docs:generate` share
 repository-local locks and fail fast when the same class of command is already
 running. The `npm test` build is inside that lock. `check:pr` runs its test task
-before starting documentation validation, so TypeDoc does not compete with the
-full suite for memory.
+before starting generated-document validation. TypeDoc rendering is a separate
+command and CI step.
 
 Vitest and Node persistent compile caches are deliberately not enabled by
 default. To evaluate repeated local runs, opt in for both cold and warm
@@ -190,8 +264,9 @@ for another.
 The PR acceptance target is a median `npm run check:pr` wall time below three
 minutes across three warm-build runs on the benchmark host. Keep Vitest caches
 cold unless separately identified. A PR that touches packaging or real-system
-behavior also requires `npm run verify:package` and the applicable
-`verify:*` lanes.
+behavior requires the applicable `verify:*` lanes; packaging and installation
+changes also require `npm run verify:package`. The full-gate benchmark measures
+that explicit lane, not the routine iteration requirement.
 
 ## Apple native metadata and UI
 
@@ -199,9 +274,9 @@ behavior also requires `npm run verify:package` and the applicable
 conformance/vtable fixtures, inspects their bytes and repeats after stripping
 local symbols. It requires macOS and the host Xcode toolchain; targets are not
 executed. `npm run verify:native-ui` launches exactly one source-owned fixture
-window and requires successful selected-window capture and approved actions.
-Permission denial fails the positive lane. `npm run verify:native-ui:permissions`
-allows a permission-boundary-only result and explicitly reports
+window and requires successful selected-window capture and selected actions.
+An OS permission denial fails the positive lane. `npm run verify:native-ui:permissions`
+allows a host-permission-boundary-only result and explicitly reports
 `positive_e2e: false`; it must not be reported as capture/action proof.
 Both commands reject a changed executable digest and clean up the fixture
 process and helper. These lanes require an interactive macOS desktop. See [native investigation](native-investigation.md)

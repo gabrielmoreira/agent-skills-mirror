@@ -34,6 +34,11 @@ pwsh -File scripts/spo-validate-page-conversion.ps1 -ManifestPath run-manifest.c
 
 ## Workflow
 
+Page arrival/metadata checks do not establish embedded-link correctness. After this validation,
+export modern stored fields with `sharepoint-extract-links`, run the Python CSV extractor and
+validate resulting destinations separately with `sharepoint-validate-link-integrity`.
+See [bulk content workflow](references/bulk-content-link-workflow.md).
+
 1. Get the run manifest from `sharepoint-convert-page-library-to-modern` and the mapping files used.
 2. Run the script; add `-IncludeSkipped` to include pages recorded as Skipped.
 3. Report the pass/fail results from the report file.

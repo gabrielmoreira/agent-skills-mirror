@@ -303,6 +303,8 @@ R5 短包投影也完整保留已有 CLI 结算计划，包括 effect identity�
 尚未验收，8 KiB 目标和交付时增长检查保持不变。见
 [TurnEnvelope](../../reference/protocols/turn-envelope-v0.md)。
 
+现有 R5 CLI 支持在展示投影前显式保存完整决策（`quota should-run --decision-output-dir`，要求明确 Turn id）。每次调用使用新的私有目录；读取观察不重跑 guard，选择 Todo 或变更 lease 后仍须重新准入。Python 仅适配文件传输，复用共享决策与 TypeScript envelope owner。本阶段解决显式调用方遭遇输出截断后的读回，不代表 worker 已采用、normal/replan 上下文自动选择或模型效率已验收。参见 [TurnEnvelope 捕获契约](../../reference/protocols/turn-envelope-v0.md)。
+
 ### 还缺什么
 
 - 通用共享 executor 被有意保留为空。当前 adapter 共享 plan/receipt algebra，却拥有不同的执行边界，因此 M7.3 应以 no-follow-up 关闭，而不是用推测性 framework 填充。

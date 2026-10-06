@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mblode/agent-skills` — 26 default patterns, 1 followed patterns, 497 file(s) materialized.
+Mirror of `mblode/agent-skills` — 26 default patterns, 1 followed patterns, 498 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mblode/agent-skills` — 26 default patterns, 1 followed patterns, 49
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 497 |
+| Files         | 498 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -475,87 +475,88 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 414 | ✓ | [`skills/ui-design/ideas.md`](skills/ui-design/ideas.md) |
 | 415 | ✓ | [`skills/ui-design/make-responsive.md`](skills/ui-design/make-responsive.md) |
 | 416 | ✓ | [`skills/ui-design/markup-from-image.md`](skills/ui-design/markup-from-image.md) |
-| 417 | ✓ | [`skills/ui-design/references/craft-checklist.md`](skills/ui-design/references/craft-checklist.md) |
-| 418 | ✓ | [`skills/ui-design/references/defer-to-other-tools.md`](skills/ui-design/references/defer-to-other-tools.md) |
-| 419 | ✓ | [`skills/ui-design/references/design-system-extract.md`](skills/ui-design/references/design-system-extract.md) |
-| 420 | ✓ | [`skills/ui-design/references/feature-playbooks.md`](skills/ui-design/references/feature-playbooks.md) |
-| 421 | ✓ | [`skills/ui-design/references/output-adapters.md`](skills/ui-design/references/output-adapters.md) |
-| 422 | ✓ | [`skills/ui-design/references/ship-readiness.md`](skills/ui-design/references/ship-readiness.md) |
-| 423 | ✓ | [`skills/ui-design/references/states-coverage.md`](skills/ui-design/references/states-coverage.md) |
-| 424 | ✓ | [`skills/ui-design/rules/_sections.md`](skills/ui-design/rules/_sections.md) |
-| 425 | ✓ | [`skills/ui-design/rules/_template.md`](skills/ui-design/rules/_template.md) |
-| 426 | ✓ | [`skills/ui-design/rules/a11y-color-only-meaning.md`](skills/ui-design/rules/a11y-color-only-meaning.md) |
-| 427 | ✓ | [`skills/ui-design/rules/a11y-data-table-semantics.md`](skills/ui-design/rules/a11y-data-table-semantics.md) |
-| 428 | ✓ | [`skills/ui-design/rules/a11y-disabled-control-tooltip.md`](skills/ui-design/rules/a11y-disabled-control-tooltip.md) |
-| 429 | ✓ | [`skills/ui-design/rules/a11y-icon-controls-labeled.md`](skills/ui-design/rules/a11y-icon-controls-labeled.md) |
-| 430 | ✓ | [`skills/ui-design/rules/a11y-image-alt-text.md`](skills/ui-design/rules/a11y-image-alt-text.md) |
-| 431 | ✓ | [`skills/ui-design/rules/a11y-media-captions.md`](skills/ui-design/rules/a11y-media-captions.md) |
-| 432 | ✓ | [`skills/ui-design/rules/a11y-semantic-html-first.md`](skills/ui-design/rules/a11y-semantic-html-first.md) |
-| 433 | ✓ | [`skills/ui-design/rules/a11y-skip-link-heading-order.md`](skills/ui-design/rules/a11y-skip-link-heading-order.md) |
-| 434 | ✓ | [`skills/ui-design/rules/a11y-tooltip-no-interactive.md`](skills/ui-design/rules/a11y-tooltip-no-interactive.md) |
-| 435 | ✓ | [`skills/ui-design/rules/async-no-error-boundary.md`](skills/ui-design/rules/async-no-error-boundary.md) |
-| 436 | ✓ | [`skills/ui-design/rules/async-no-suspense-boundary.md`](skills/ui-design/rules/async-no-suspense-boundary.md) |
-| 437 | ✓ | [`skills/ui-design/rules/async-optimistic-without-rollback.md`](skills/ui-design/rules/async-optimistic-without-rollback.md) |
-| 438 | ✓ | [`skills/ui-design/rules/async-out-of-order-responses.md`](skills/ui-design/rules/async-out-of-order-responses.md) |
-| 439 | ✓ | [`skills/ui-design/rules/dark-i18n-rtl-untested.md`](skills/ui-design/rules/dark-i18n-rtl-untested.md) |
-| 440 | ✓ | [`skills/ui-design/rules/dark-i18n-untested.md`](skills/ui-design/rules/dark-i18n-untested.md) |
-| 441 | ✓ | [`skills/ui-design/rules/focus-broken-focus-trap.md`](skills/ui-design/rules/focus-broken-focus-trap.md) |
-| 442 | ✓ | [`skills/ui-design/rules/focus-not-restored.md`](skills/ui-design/rules/focus-not-restored.md) |
-| 443 | ✓ | [`skills/ui-design/rules/focus-on-dynamic-content.md`](skills/ui-design/rules/focus-on-dynamic-content.md) |
-| 444 | ✓ | [`skills/ui-design/rules/forms-dont-block-paste-ime.md`](skills/ui-design/rules/forms-dont-block-paste-ime.md) |
-| 445 | ✓ | [`skills/ui-design/rules/forms-error-association.md`](skills/ui-design/rules/forms-error-association.md) |
-| 446 | ✓ | [`skills/ui-design/rules/forms-inline-errors-first-focus.md`](skills/ui-design/rules/forms-inline-errors-first-focus.md) |
-| 447 | ✓ | [`skills/ui-design/rules/forms-input-affix-hit-target.md`](skills/ui-design/rules/forms-input-affix-hit-target.md) |
-| 448 | ✓ | [`skills/ui-design/rules/forms-labels-and-autocomplete.md`](skills/ui-design/rules/forms-labels-and-autocomplete.md) |
-| 449 | ✓ | [`skills/ui-design/rules/forms-lost-data-on-error.md`](skills/ui-design/rules/forms-lost-data-on-error.md) |
-| 450 | ✓ | [`skills/ui-design/rules/forms-mobile-input-font-size.md`](skills/ui-design/rules/forms-mobile-input-font-size.md) |
-| 451 | ✓ | [`skills/ui-design/rules/forms-no-disable-while-submitting.md`](skills/ui-design/rules/forms-no-disable-while-submitting.md) |
-| 452 | ✓ | [`skills/ui-design/rules/forms-use-form-status-misuse.md`](skills/ui-design/rules/forms-use-form-status-misuse.md) |
-| 453 | ✓ | [`skills/ui-design/rules/interaction-focus-visible.md`](skills/ui-design/rules/interaction-focus-visible.md) |
-| 454 | ✓ | [`skills/ui-design/rules/interaction-keyboard-operable.md`](skills/ui-design/rules/interaction-keyboard-operable.md) |
-| 455 | ✓ | [`skills/ui-design/rules/interaction-target-size.md`](skills/ui-design/rules/interaction-target-size.md) |
-| 456 | ✓ | [`skills/ui-design/rules/layout-long-content-safety.md`](skills/ui-design/rules/layout-long-content-safety.md) |
-| 457 | ✓ | [`skills/ui-design/rules/microcopy-leaked-error-message.md`](skills/ui-design/rules/microcopy-leaked-error-message.md) |
-| 458 | ✓ | [`skills/ui-design/rules/microcopy-vague-error.md`](skills/ui-design/rules/microcopy-vague-error.md) |
-| 459 | ✓ | [`skills/ui-design/rules/mobile-hover-only-affordance.md`](skills/ui-design/rules/mobile-hover-only-affordance.md) |
-| 460 | ✓ | [`skills/ui-design/rules/mobile-viewport-scaling.md`](skills/ui-design/rules/mobile-viewport-scaling.md) |
-| 461 | ✓ | [`skills/ui-design/rules/nav-live-region-feedback.md`](skills/ui-design/rules/nav-live-region-feedback.md) |
-| 462 | ✓ | [`skills/ui-design/rules/nav-semantic-links.md`](skills/ui-design/rules/nav-semantic-links.md) |
-| 463 | ✓ | [`skills/ui-design/rules/perf-image-dimensions-and-priority.md`](skills/ui-design/rules/perf-image-dimensions-and-priority.md) |
-| 464 | ✓ | [`skills/ui-design/rules/perf-virtualize-large-lists.md`](skills/ui-design/rules/perf-virtualize-large-lists.md) |
-| 465 | ✓ | [`skills/ui-design/rules/slop-affordance-mismatch.md`](skills/ui-design/rules/slop-affordance-mismatch.md) |
-| 466 | ✓ | [`skills/ui-design/rules/slop-decoration-no-role.md`](skills/ui-design/rules/slop-decoration-no-role.md) |
-| 467 | ✓ | [`skills/ui-design/rules/slop-decorative-ordinals.md`](skills/ui-design/rules/slop-decorative-ordinals.md) |
-| 468 | ✓ | [`skills/ui-design/rules/slop-external-arrow-internal-link.md`](skills/ui-design/rules/slop-external-arrow-internal-link.md) |
-| 469 | ✓ | [`skills/ui-design/rules/slop-eyebrow-overuse.md`](skills/ui-design/rules/slop-eyebrow-overuse.md) |
-| 470 | ✓ | [`skills/ui-design/rules/slop-fact-padding.md`](skills/ui-design/rules/slop-fact-padding.md) |
-| 471 | ✓ | [`skills/ui-design/rules/slop-faux-product-chrome.md`](skills/ui-design/rules/slop-faux-product-chrome.md) |
-| 472 | ✓ | [`skills/ui-design/rules/slop-invented-behaviour.md`](skills/ui-design/rules/slop-invented-behaviour.md) |
-| 473 | ✓ | [`skills/ui-design/rules/slop-near-duplicate-scale.md`](skills/ui-design/rules/slop-near-duplicate-scale.md) |
-| 474 | ✓ | [`skills/ui-design/rules/slop-slogan-headings.md`](skills/ui-design/rules/slop-slogan-headings.md) |
-| 475 | ✓ | [`skills/ui-design/rules/slop-token-drift.md`](skills/ui-design/rules/slop-token-drift.md) |
-| 476 | ✓ | [`skills/ui-design/rules/slop-unverifiable-proof.md`](skills/ui-design/rules/slop-unverifiable-proof.md) |
-| 477 | ✓ | [`skills/ui-design/rules/states-layout-shift.md`](skills/ui-design/rules/states-layout-shift.md) |
-| 478 | ✓ | [`skills/ui-design/rules/states-no-empty-state.md`](skills/ui-design/rules/states-no-empty-state.md) |
-| 479 | ✓ | [`skills/ui-design/rules/states-no-error-state.md`](skills/ui-design/rules/states-no-error-state.md) |
-| 480 | ✓ | [`skills/ui-design/rules/type-hover-weight-shift.md`](skills/ui-design/rules/type-hover-weight-shift.md) |
-| 481 | ✓ | [`skills/ui-design/rules/type-readable-scale.md`](skills/ui-design/rules/type-readable-scale.md) |
-| 482 | ✓ | [`skills/ui-design/SKILL.md`](skills/ui-design/SKILL.md) |
-| 483 | ✓ | [`skills/ui-verification/evals/evals.json`](skills/ui-verification/evals/evals.json) |
-| 484 | ✓ | [`skills/ui-verification/probes/axe-scan.md`](skills/ui-verification/probes/axe-scan.md) |
-| 485 | ✓ | [`skills/ui-verification/probes/console-network.md`](skills/ui-verification/probes/console-network.md) |
-| 486 | ✓ | [`skills/ui-verification/probes/failure-injection.md`](skills/ui-verification/probes/failure-injection.md) |
-| 487 | ✓ | [`skills/ui-verification/probes/focus-walk.md`](skills/ui-verification/probes/focus-walk.md) |
-| 488 | ✓ | [`skills/ui-verification/probes/layout-shift.md`](skills/ui-verification/probes/layout-shift.md) |
-| 489 | ✓ | [`skills/ui-verification/probes/target-size.md`](skills/ui-verification/probes/target-size.md) |
-| 490 | ✓ | [`skills/ui-verification/probes/theme-locale-matrix.md`](skills/ui-verification/probes/theme-locale-matrix.md) |
-| 491 | ✓ | [`skills/ui-verification/probes/viewport-stress.md`](skills/ui-verification/probes/viewport-stress.md) |
-| 492 | ✓ | [`skills/ui-verification/probes/web-vitals.md`](skills/ui-verification/probes/web-vitals.md) |
-| 493 | ✓ | [`skills/ui-verification/references/evidence-output.md`](skills/ui-verification/references/evidence-output.md) |
-| 494 | ✓ | [`skills/ui-verification/references/rule-coverage.md`](skills/ui-verification/references/rule-coverage.md) |
-| 495 | ✓ | [`skills/ui-verification/references/session-setup.md`](skills/ui-verification/references/session-setup.md) |
-| 496 | ✓ | [`skills/ui-verification/SKILL.md`](skills/ui-verification/SKILL.md) |
-| 497 | → | [`LICENSE.md`](LICENSE.md) |
+| 417 | ✓ | [`skills/ui-design/references/break-catalog.md`](skills/ui-design/references/break-catalog.md) |
+| 418 | ✓ | [`skills/ui-design/references/craft-checklist.md`](skills/ui-design/references/craft-checklist.md) |
+| 419 | ✓ | [`skills/ui-design/references/defer-to-other-tools.md`](skills/ui-design/references/defer-to-other-tools.md) |
+| 420 | ✓ | [`skills/ui-design/references/design-system-extract.md`](skills/ui-design/references/design-system-extract.md) |
+| 421 | ✓ | [`skills/ui-design/references/feature-playbooks.md`](skills/ui-design/references/feature-playbooks.md) |
+| 422 | ✓ | [`skills/ui-design/references/output-adapters.md`](skills/ui-design/references/output-adapters.md) |
+| 423 | ✓ | [`skills/ui-design/references/ship-readiness.md`](skills/ui-design/references/ship-readiness.md) |
+| 424 | ✓ | [`skills/ui-design/references/states-coverage.md`](skills/ui-design/references/states-coverage.md) |
+| 425 | ✓ | [`skills/ui-design/rules/_sections.md`](skills/ui-design/rules/_sections.md) |
+| 426 | ✓ | [`skills/ui-design/rules/_template.md`](skills/ui-design/rules/_template.md) |
+| 427 | ✓ | [`skills/ui-design/rules/a11y-color-only-meaning.md`](skills/ui-design/rules/a11y-color-only-meaning.md) |
+| 428 | ✓ | [`skills/ui-design/rules/a11y-data-table-semantics.md`](skills/ui-design/rules/a11y-data-table-semantics.md) |
+| 429 | ✓ | [`skills/ui-design/rules/a11y-disabled-control-tooltip.md`](skills/ui-design/rules/a11y-disabled-control-tooltip.md) |
+| 430 | ✓ | [`skills/ui-design/rules/a11y-icon-controls-labeled.md`](skills/ui-design/rules/a11y-icon-controls-labeled.md) |
+| 431 | ✓ | [`skills/ui-design/rules/a11y-image-alt-text.md`](skills/ui-design/rules/a11y-image-alt-text.md) |
+| 432 | ✓ | [`skills/ui-design/rules/a11y-media-captions.md`](skills/ui-design/rules/a11y-media-captions.md) |
+| 433 | ✓ | [`skills/ui-design/rules/a11y-semantic-html-first.md`](skills/ui-design/rules/a11y-semantic-html-first.md) |
+| 434 | ✓ | [`skills/ui-design/rules/a11y-skip-link-heading-order.md`](skills/ui-design/rules/a11y-skip-link-heading-order.md) |
+| 435 | ✓ | [`skills/ui-design/rules/a11y-tooltip-no-interactive.md`](skills/ui-design/rules/a11y-tooltip-no-interactive.md) |
+| 436 | ✓ | [`skills/ui-design/rules/async-no-error-boundary.md`](skills/ui-design/rules/async-no-error-boundary.md) |
+| 437 | ✓ | [`skills/ui-design/rules/async-no-suspense-boundary.md`](skills/ui-design/rules/async-no-suspense-boundary.md) |
+| 438 | ✓ | [`skills/ui-design/rules/async-optimistic-without-rollback.md`](skills/ui-design/rules/async-optimistic-without-rollback.md) |
+| 439 | ✓ | [`skills/ui-design/rules/async-out-of-order-responses.md`](skills/ui-design/rules/async-out-of-order-responses.md) |
+| 440 | ✓ | [`skills/ui-design/rules/dark-i18n-rtl-untested.md`](skills/ui-design/rules/dark-i18n-rtl-untested.md) |
+| 441 | ✓ | [`skills/ui-design/rules/dark-i18n-untested.md`](skills/ui-design/rules/dark-i18n-untested.md) |
+| 442 | ✓ | [`skills/ui-design/rules/focus-broken-focus-trap.md`](skills/ui-design/rules/focus-broken-focus-trap.md) |
+| 443 | ✓ | [`skills/ui-design/rules/focus-not-restored.md`](skills/ui-design/rules/focus-not-restored.md) |
+| 444 | ✓ | [`skills/ui-design/rules/focus-on-dynamic-content.md`](skills/ui-design/rules/focus-on-dynamic-content.md) |
+| 445 | ✓ | [`skills/ui-design/rules/forms-dont-block-paste-ime.md`](skills/ui-design/rules/forms-dont-block-paste-ime.md) |
+| 446 | ✓ | [`skills/ui-design/rules/forms-error-association.md`](skills/ui-design/rules/forms-error-association.md) |
+| 447 | ✓ | [`skills/ui-design/rules/forms-inline-errors-first-focus.md`](skills/ui-design/rules/forms-inline-errors-first-focus.md) |
+| 448 | ✓ | [`skills/ui-design/rules/forms-input-affix-hit-target.md`](skills/ui-design/rules/forms-input-affix-hit-target.md) |
+| 449 | ✓ | [`skills/ui-design/rules/forms-labels-and-autocomplete.md`](skills/ui-design/rules/forms-labels-and-autocomplete.md) |
+| 450 | ✓ | [`skills/ui-design/rules/forms-lost-data-on-error.md`](skills/ui-design/rules/forms-lost-data-on-error.md) |
+| 451 | ✓ | [`skills/ui-design/rules/forms-mobile-input-font-size.md`](skills/ui-design/rules/forms-mobile-input-font-size.md) |
+| 452 | ✓ | [`skills/ui-design/rules/forms-no-disable-while-submitting.md`](skills/ui-design/rules/forms-no-disable-while-submitting.md) |
+| 453 | ✓ | [`skills/ui-design/rules/forms-use-form-status-misuse.md`](skills/ui-design/rules/forms-use-form-status-misuse.md) |
+| 454 | ✓ | [`skills/ui-design/rules/interaction-focus-visible.md`](skills/ui-design/rules/interaction-focus-visible.md) |
+| 455 | ✓ | [`skills/ui-design/rules/interaction-keyboard-operable.md`](skills/ui-design/rules/interaction-keyboard-operable.md) |
+| 456 | ✓ | [`skills/ui-design/rules/interaction-target-size.md`](skills/ui-design/rules/interaction-target-size.md) |
+| 457 | ✓ | [`skills/ui-design/rules/layout-long-content-safety.md`](skills/ui-design/rules/layout-long-content-safety.md) |
+| 458 | ✓ | [`skills/ui-design/rules/microcopy-leaked-error-message.md`](skills/ui-design/rules/microcopy-leaked-error-message.md) |
+| 459 | ✓ | [`skills/ui-design/rules/microcopy-vague-error.md`](skills/ui-design/rules/microcopy-vague-error.md) |
+| 460 | ✓ | [`skills/ui-design/rules/mobile-hover-only-affordance.md`](skills/ui-design/rules/mobile-hover-only-affordance.md) |
+| 461 | ✓ | [`skills/ui-design/rules/mobile-viewport-scaling.md`](skills/ui-design/rules/mobile-viewport-scaling.md) |
+| 462 | ✓ | [`skills/ui-design/rules/nav-live-region-feedback.md`](skills/ui-design/rules/nav-live-region-feedback.md) |
+| 463 | ✓ | [`skills/ui-design/rules/nav-semantic-links.md`](skills/ui-design/rules/nav-semantic-links.md) |
+| 464 | ✓ | [`skills/ui-design/rules/perf-image-dimensions-and-priority.md`](skills/ui-design/rules/perf-image-dimensions-and-priority.md) |
+| 465 | ✓ | [`skills/ui-design/rules/perf-virtualize-large-lists.md`](skills/ui-design/rules/perf-virtualize-large-lists.md) |
+| 466 | ✓ | [`skills/ui-design/rules/slop-affordance-mismatch.md`](skills/ui-design/rules/slop-affordance-mismatch.md) |
+| 467 | ✓ | [`skills/ui-design/rules/slop-decoration-no-role.md`](skills/ui-design/rules/slop-decoration-no-role.md) |
+| 468 | ✓ | [`skills/ui-design/rules/slop-decorative-ordinals.md`](skills/ui-design/rules/slop-decorative-ordinals.md) |
+| 469 | ✓ | [`skills/ui-design/rules/slop-external-arrow-internal-link.md`](skills/ui-design/rules/slop-external-arrow-internal-link.md) |
+| 470 | ✓ | [`skills/ui-design/rules/slop-eyebrow-overuse.md`](skills/ui-design/rules/slop-eyebrow-overuse.md) |
+| 471 | ✓ | [`skills/ui-design/rules/slop-fact-padding.md`](skills/ui-design/rules/slop-fact-padding.md) |
+| 472 | ✓ | [`skills/ui-design/rules/slop-faux-product-chrome.md`](skills/ui-design/rules/slop-faux-product-chrome.md) |
+| 473 | ✓ | [`skills/ui-design/rules/slop-invented-behaviour.md`](skills/ui-design/rules/slop-invented-behaviour.md) |
+| 474 | ✓ | [`skills/ui-design/rules/slop-near-duplicate-scale.md`](skills/ui-design/rules/slop-near-duplicate-scale.md) |
+| 475 | ✓ | [`skills/ui-design/rules/slop-slogan-headings.md`](skills/ui-design/rules/slop-slogan-headings.md) |
+| 476 | ✓ | [`skills/ui-design/rules/slop-token-drift.md`](skills/ui-design/rules/slop-token-drift.md) |
+| 477 | ✓ | [`skills/ui-design/rules/slop-unverifiable-proof.md`](skills/ui-design/rules/slop-unverifiable-proof.md) |
+| 478 | ✓ | [`skills/ui-design/rules/states-layout-shift.md`](skills/ui-design/rules/states-layout-shift.md) |
+| 479 | ✓ | [`skills/ui-design/rules/states-no-empty-state.md`](skills/ui-design/rules/states-no-empty-state.md) |
+| 480 | ✓ | [`skills/ui-design/rules/states-no-error-state.md`](skills/ui-design/rules/states-no-error-state.md) |
+| 481 | ✓ | [`skills/ui-design/rules/type-hover-weight-shift.md`](skills/ui-design/rules/type-hover-weight-shift.md) |
+| 482 | ✓ | [`skills/ui-design/rules/type-readable-scale.md`](skills/ui-design/rules/type-readable-scale.md) |
+| 483 | ✓ | [`skills/ui-design/SKILL.md`](skills/ui-design/SKILL.md) |
+| 484 | ✓ | [`skills/ui-verification/evals/evals.json`](skills/ui-verification/evals/evals.json) |
+| 485 | ✓ | [`skills/ui-verification/probes/axe-scan.md`](skills/ui-verification/probes/axe-scan.md) |
+| 486 | ✓ | [`skills/ui-verification/probes/console-network.md`](skills/ui-verification/probes/console-network.md) |
+| 487 | ✓ | [`skills/ui-verification/probes/failure-injection.md`](skills/ui-verification/probes/failure-injection.md) |
+| 488 | ✓ | [`skills/ui-verification/probes/focus-walk.md`](skills/ui-verification/probes/focus-walk.md) |
+| 489 | ✓ | [`skills/ui-verification/probes/layout-shift.md`](skills/ui-verification/probes/layout-shift.md) |
+| 490 | ✓ | [`skills/ui-verification/probes/target-size.md`](skills/ui-verification/probes/target-size.md) |
+| 491 | ✓ | [`skills/ui-verification/probes/theme-locale-matrix.md`](skills/ui-verification/probes/theme-locale-matrix.md) |
+| 492 | ✓ | [`skills/ui-verification/probes/viewport-stress.md`](skills/ui-verification/probes/viewport-stress.md) |
+| 493 | ✓ | [`skills/ui-verification/probes/web-vitals.md`](skills/ui-verification/probes/web-vitals.md) |
+| 494 | ✓ | [`skills/ui-verification/references/evidence-output.md`](skills/ui-verification/references/evidence-output.md) |
+| 495 | ✓ | [`skills/ui-verification/references/rule-coverage.md`](skills/ui-verification/references/rule-coverage.md) |
+| 496 | ✓ | [`skills/ui-verification/references/session-setup.md`](skills/ui-verification/references/session-setup.md) |
+| 497 | ✓ | [`skills/ui-verification/SKILL.md`](skills/ui-verification/SKILL.md) |
+| 498 | → | [`LICENSE.md`](LICENSE.md) |
 
 ---
 

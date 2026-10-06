@@ -20,6 +20,7 @@ plannotator/
 │   │   ├── commands/             # Slash command stubs (review, annotate, last — plugin intercepts execution)
 │   │   ├── index.ts              # OpenCode 1 entry with submit_plan tool + review/annotate event handlers
 │   │   ├── server.ts             # OpenCode 2 adapter (stable @opencode/plugin types; older-host capability fallbacks)
+│   │   ├── plannotator-tool.ts   # OpenCode 2 `plannotator` tool + per-session launch record (list/close); see "OpenCode 2: the plannotator tool"
 │   │   ├── plannotator.html      # Built plan review app
 │   │   └── review-editor.html    # Built code review app
 │   ├── amp-plugin/               # Amp plugin
@@ -149,13 +150,14 @@ claude --plugin-dir ./apps/hook
 | `PLANNOTATOR_SHARE_URL` | Custom base URL for share links (self-hosted portal). Default: `https://share.plannotator.ai`. |
 | `PLANNOTATOR_PASTE_URL` | Base URL of the paste service API for short URL sharing. Default: `https://plannotator-paste.plannotator.workers.dev`. |
 | `PLANNOTATOR_CLAUDE_MOD` | Switch for the Claude Code mod (non-blocking plan review, annotate, code review and annotate-last, the `plannotator` tool, the take-over of agent-run Bash `plannotator` commands, plus Ask this session; see "Claude Code mod"). **Default: on** wherever Claude Code runs hooks modules (2.1.287+, interactive CLI sessions; the mod still stands down by itself in `-p` / SDK sessions and where `/bin/sh` is missing, i.e. Windows). Set to `0` / `false` / `off` / `disabled` to turn it off, which leaves the module inert (every hook passes through, no command or tool is registered, no Bash command is taken over, no environment is set) so the classic PermissionRequest hook and `/plannotator-*` skills run exactly as before; `1` / `true` / `on` force it on, and empty or unrecognized counts as unset (on). Can also be turned off via `~/.plannotator/config.json` (`{ "claudeCodeMod": false }`, read from the data dir); the env var takes precedence (`resolveClaudeCodeMod` in `packages/shared/config.ts`, mirrored by `apps/hook/hooks/mod/enabled.ts` because a hooks module can import only its own files; `enabled.test.ts` keeps them in step). Read once when Claude Code starts, so a change applies to the next session start. Set it in the shell that starts Claude Code or in Claude Code's `settings.json` `env`. The plugin installs from the repo and the `plannotator` binary updates separately, so the mod also runs against older binaries; see "Version skew" in the mod section for what degrades. |
+| `PLANNOTATOR_AGENT_TOOL` | Switch for the `plannotator` agent tool (`packages/shared/plannotator-tool.ts`) on the hosts that register it. **Default per host** (owner's call, one table: `AGENT_TOOL_DEFAULTS` in `packages/shared/config.ts`): **on for the Claude Code mod** (the tool is deferred behind tool search there, so it costs about its name until used), **off on Pi and OpenCode 2** (a full tool definition in every request). `1` / `true` / `on` turn it on and `0` / `false` / `off` / `disabled` turn it off on every host, overriding the host default in both directions; empty or unrecognized counts as unset. Off removes ONLY the tool: the `/plannotator-*` slash commands, plan review, Ask this session and (Claude Code) the take-over of agent-run Bash `plannotator` commands, which adds nothing to the model's context, are unchanged, and an agent that wants Plannotator runs the CLI. Can also be set via `~/.plannotator/config.json` (`{ "agentTool": true }` / `false`, read from the data dir; allowlisted, boolean only, on `POST /api/config` in both runtimes, which refuses a cross-origin write with `403` on every plan, review and annotate server: `isSameOriginOrNoOrigin` in `packages/shared/request-origin.ts`, the guard the other state-changing endpoints use (review progress, guide share links, the CallDiff install), since a page on another site can send a preflight-free `text/plain` POST. It passes a request with no Origin, an Origin naming the request host, or the browser's own `Sec-Fetch-Site: same-origin`, and refuses `Origin: null`, `same-site` and `cross-site`. The `Sec-Fetch-Site` leg is what lets the VS Code panel write: its cookie proxy serves the page from `http://127.0.0.1:<proxy port>` and rewrites Host to the server, so Origin and Host differ. Before it, `/api/review-progress` and `/api/call-flow/install` were already refused in the VS Code panel (silently: the client ignores the failure); they work there now too. `cookie-proxy.ts` additionally re-anchors an Origin equal to its own origin onto the upstream, for browsers without Fetch Metadata; `vscode-proxy-writes.test.ts` (Bun and Pi) covers both shapes); the env var takes precedence (`resolveAgentTool(config, env, host)` in `packages/shared/config.ts`; the mod's mirror `resolveAgentToolEnabled` lives in `apps/hook/hooks/mod/enabled.ts`, kept equal to the claude-code row by `enabled.test.ts`). `getServerConfig(gitUser, agentToolIntegration)` advertises it for a later Settings toggle / one-time "turn it on" offer, but only where the integration that started the server registers the tool: `agentToolHost` is the session-bridge host, not the agent origin (Bun: `agentToolHostForServer` in `packages/server/ai-runtime.ts`, an in-process bridge's host, else `launchingSessionHost()`, the `PLANNOTATOR_SESSION_BRIDGE_HOST` the Claude Code mod / OpenCode 2 plugin hand the CLI, read once at startup and kept in remote mode and after the `--tailscale` discard, where Ask this session is off but the integration still started the session; Pi: always `pi`, since its servers run inside the extension). With no such integration (the classic Claude Code hook, the mod off, `-p`, Windows, OpenCode 1, a person at a shell) every `agentTool*` field is absent except an `agentTool` config.json sets. Known gap: OpenCode 2's embedded plan review passes its bridge only when the host has `session.generate`, so on an older V2 host that one review advertises nothing. Fields: `agentTool` (the config value, or the host default while unset), `agentToolConfigured` (config.json holds an explicit choice), `agentToolEnv` (present when the env var overrides the file) and `agentToolEnabled` (the effective value, for the NEXT session). **Read once per session start and never mid-session**, because the tool list is part of every request's prompt prefix and changing it would miss the prompt cache: a change applies to the next session (Pi: the next session or `/reload`; OpenCode 2: the next OpenCode start; Claude Code: the next Claude Code start). |
 | `PLANNOTATOR_HOST_RESULT_FILE` | Set by a host that starts the CLI detached (the Claude Code mod): when a review, annotate, annotate-last or `claude-mod-plan` session settles, the CLI writes one JSON decision record there atomically (mode 0600), with the agent message composed from the configured prompts. Only a path named `result.json` inside `<data dir>/claude-code-mod/` is accepted (`isAllowedHostResultPath`); anything else is ignored with a stderr warning, so the variable cannot make the CLI create or replace an arbitrary file. Taken at startup and removed from the environment. Stdout is unchanged. See "Claude Code mod". |
 | `PLANNOTATOR_HOST_MESSAGES_FILE` | Set by the Claude Code mod for `annotate-last --stdin` (ignored without `--stdin`): a `messages.json` inside `<data dir>/claude-code-mod/` (`isAllowedHostMessagesPath`; anything else is ignored with a stderr warning) holding `{ v: 1, messages: [{ messageId, text, timestamp? }] }`, newest first, which the CLI shows as the message picker instead of the single stdin message. Validated fail-closed (1..25 entries, string fields, unique ids, 2 MiB per message, 8 MiB file); a malformed file exits 1 with the reason. Taken at startup and removed from the environment. A CLI that predates it ignores it and opens the stdin text. See "Claude Code mod". |
 | `PLANNOTATOR_SESSION_TAG` | Set by the Claude Code mod in its session's environment (`claude-code:<session id>`), so processes the session starts can be matched to it; recorded as `hostSession` in the `sessions/` registry. Not meant to be set by hand. |
 | `PLANNOTATOR_MOD_DEBUG` | Set to `1` before starting Claude Code to have the Claude Code mod write `claude-code-mod/debug.log` in the data dir (launches, results, turns, bridge commands). Default: off. |
 | `PLANNOTATOR_ORIGIN` | Explicit agent-origin override at the top of the detection chain. Valid values: `claude-code`, `amp`, `droid`, `opencode`, `codex`, `copilot-cli`, `gemini-cli`, `kiro-cli`, `mistral-vibe`, `pi`, `oh-my-pi`. Invalid values silently fall through to env-based detection. Unset by default. |
 | `PLANNOTATOR_JINA` | Set to `0` / `false` to disable Jina Reader for URL annotation, or `1` / `true` to enable. Default: enabled. Can also be set via `~/.plannotator/config.json` (`{ "jina": false }`) or per-invocation via `--no-jina`. |
-| `PLANNOTATOR_ANNOTATE_HISTORY` | Set to `0` / `false` to disable ALL annotate-session writes to the data dir: per-file version history (no copies of annotated files are written; the annotate version diff is unavailable) AND the durable submitted-feedback records (#678) that single-local-file annotate sessions otherwise write to `history/{project}/{slug}/submissions/` before deleting the draft on submit. Disabling it keeps annotate sessions fully stateless but also gives up that submit crash-recovery record. URL and annotate-last sessions never write either kind of data regardless of this flag. Folder sessions write no submitted-feedback records, but they do participate in per-file version history: the first time a session serves a file through /api/doc it snapshots that file (lazily, memoized per resolved path for the life of the server), which is what powers the per-file version diff when a folder file is reopened later; setting this flag to 0 disables those folder snapshots too. Setting it to 0 additionally suppresses **feedback archive** records for every annotate surface (single file, folder, URL, live app, annotate-last), so "fully stateless annotate session" stays literally true regardless of `PLANNOTATOR_FEEDBACK_HISTORY`. Raw-HTML and live-app pinpoints write their element context (selector, ancestor path, allowlisted attributes, visible text, a collapsed HTML skeleton, and the live route) into the submission records and drafts too; form values and inline handlers are never captured. Default: enabled. Can also be set via `~/.plannotator/config.json` (`{ "annotateHistory": false }`); the env var takes precedence. |
+| `PLANNOTATOR_ANNOTATE_HISTORY` | Set to `0` / `false` to disable ALL annotate-session writes to the data dir: per-file version history (no copies of annotated files are written; the annotate version diff is unavailable) AND the durable submitted-feedback records (#678) that single-local-file annotate sessions otherwise write to `history/{project}/{slug}/submissions/` before deleting the draft on submit. Disabling it keeps annotate sessions fully stateless but also gives up that submit crash-recovery record. URL and annotate-last sessions never write either kind of data regardless of this flag. Folder sessions write no submitted-feedback records, but they do participate in per-file version history: the first time a session serves a file through /api/doc it snapshots that file (lazily, memoized per resolved path for the life of the server), which is what powers the per-file version diff when a folder file is reopened later; setting this flag to 0 disables those folder snapshots too. A review of several files (bundle) snapshots each of its text files when it opens, through the same pipeline, governed the same way. Setting it to 0 additionally suppresses **feedback archive** records for every annotate surface (single file, folder, URL, live app, annotate-last), so "fully stateless annotate session" stays literally true regardless of `PLANNOTATOR_FEEDBACK_HISTORY`, with one exception: annotation drafts (`drafts/`, including the path-keyed copies described under "Annotate drafts follow the file") are crash recovery and are still written; they are deleted when the review is decided. Raw-HTML and live-app pinpoints write their element context (selector, ancestor path, allowlisted attributes, visible text, a collapsed HTML skeleton, and the live route) into the submission records and drafts too; form values and inline handlers are never captured. Default: enabled. Can also be set via `~/.plannotator/config.json` (`{ "annotateHistory": false }`); the env var takes precedence. |
 | `PLANNOTATOR_FEEDBACK_HISTORY` | Set to `0` / `false` to stop archiving submitted feedback under `~/.plannotator/feedback/` (or `PLANNOTATOR_DATA_DIR`). Default: enabled, which appends one record per submission at decision-settlement time on all three surfaces and in both runtimes: plan approve/deny, code review Send Feedback / Approve (LGTM) / Close, and every annotate submit / approve / close. A review posted straight to GitHub, GitLab or Bitbucket with `POST /api/pr-action` is delivered to the platform and is not archived locally yet. **Note that this writes the user's own feedback text, the document and code excerpts it quotes, and per-annotation metadata to disk, and nothing prunes the directory** (same policy as `plans/`, `history/`, and `guides/`); delete `~/.plannotator/feedback/` or a project subdirectory to forget, or set this to 0 to never write. Code-review records carry diff IDENTITY only (vcsType, diffType, base, gitRef, snapshotId, cwd, PR metadata, changed-file count, patch byte count), never the patch bytes; plan records carry the decision text plus a reference to the `history/{project}/{slug}/NNN.md` version the decision was made on, never a second copy of the plan. Externally sourced annotations (linters, review agents, WebMCP browser agents) are included but keep their `source` / `author` tags, so `source == null` selects the reviewer's own comments; agent job outputs (guides, tours) are not archived. This knob governs only the new archive: the `planSave` decision snapshots in `plans/` and the #678 annotate submission records under `history/` are unaffected. Annotate surfaces honor `PLANNOTATOR_ANNOTATE_HISTORY` as well. Can also be set via `~/.plannotator/config.json` (`{ "feedbackHistory": false }`); the env var takes precedence. |
 | `PLANNOTATOR_GUIDE_VIEWER_URL` | Base URL of the portable Guided Review viewer that exported guides pin (default `https://guides.show/v1/`). Must be `https:` (or `http:` on localhost for local viewer builds — `bun run --cwd apps/guides-show serve:local`); anything else is ignored. Read by the export endpoints of both servers and by `plannotator guide export` (which also accepts `--viewer-url`). |
 | `PLANNOTATOR_GUIDE_SHARE_URL` | Base URL of the guide host that Guided Review share links are created on: the review UI's "Create share link", `plannotator guide share`, and `plannotator guide unshare` upload to and delete from it (default `https://guides.show`; the origin of your own deployment of its Cloudflare Worker otherwise, see the `apps/guides-show` README). Must be `http(s)`; credentials, query and fragment are dropped and a trailing slash is trimmed; an invalid value warns once on stderr and falls back to the default so a share setting can never break a server launch or CLI run. An empty-but-set env var counts as unset. Can also be set via `~/.plannotator/config.json` (`{ "guideShareUrl": "https://guides.example.com" }`); the env var takes precedence; there is no per-invocation flag. Resolved by `resolveGuideShareUrl` in `packages/shared/config.ts`. Whether sharing is allowed at all is `PLANNOTATOR_SHARE` (`disabled` turns guide share links off entirely). Removal always goes to the host a saved guide's record names, never merely the currently configured URL, so changing this after sharing does not strand a link. |
@@ -281,6 +283,109 @@ execute the unreviewed edits (to keep them, the user returns to plan mode and
 the agent resubmits). Auto-approved plans (no UI) keep the file as their
 source.
 
+### Pi: the `plannotator` tool
+
+The extension registers the shared tool contract
+(`packages/shared/plannotator-tool.ts`, vendored as
+`generated/plannotator-tool.ts`) with `pi.registerTool`: name, description,
+validation (`parsePlannotatorToolInput`), argument mapping and result text all
+come from it, and `parameters` is `PLANNOTATOR_TOOL_INPUT_SCHEMA` itself
+(plain JSON Schema, which Pi validates without a TypeBox Kind since 0.79.1,
+the peer floor; `plannotator-tool.test.ts` runs the installed Pi's
+`validateToolArguments` against it). `executionMode: "sequential"` (#1622: an
+"edit, then open" batch opens the edited file).
+
+**Registration and activation are decided once per session.** The tool is
+OFF by default on Pi and registered only when the agent tool switch turns it on
+(`PLANNOTATOR_AGENT_TOOL=1` / `{ "agentTool": true }`, `resolveAgentTool(...,
+"pi")` read once when the extension instance loads; Pi builds a new instance
+per session and per `/reload`). Off, nothing is registered and the slash
+commands are unchanged. It is registered with
+`defaultActive: false` (Pi 0.99+ then leaves it inactive; older Pi ignores the
+key and activates every registered tool), and the first `session_start`
+(`settleAgentToolActivation`) makes it active when `ctx.hasUI`, inactive in
+print/JSON mode, before the session's first request, and never touches it
+again. Plan mode's `setActiveTools` calls add and release only the tools they
+own, so `plannotator` stays in the tool list (and the prompt prefix) through
+planning, execution, completion, leaving plan mode, `/tree` and `/reload`:
+`agent-tool-stability.test.ts` drives that whole lifecycle over a fake Pi that
+models both activation rules and fails on any request without the tool or any
+`setActiveTools` that flips it after the start; it also pins the registered
+description/parameters to the shared constants, no `promptSnippet` /
+`promptGuidelines` on any Plannotator tool, and no `systemPrompt` from
+`before_agent_start`.
+
+**The bundled knowledge skill is user-invoked only.** `vendor.sh` adds
+`disable-model-invocation: true` to the vendored copy's frontmatter (the
+source `apps/skills/core/plannotator` stays model-invocable for the installers
+that ask, #1377), so an npm-only Pi install keeps the #842 promise of no
+Plannotator skill in Pi's system prompt; `/skill:plannotator` still loads it,
+and the model learns the tool from the tool's own description. A CLI install's
+`~/.agents/skills` copy still wins when present (#1642) and carries the
+installer's model-invocation choice.
+
+**One launch path.** `/plannotator-review`, `/plannotator-annotate`,
+`/plannotator-last` and the tool share `launchCodeReview` / `launchAnnotate` /
+`launchLastMessage` in `apps/pi-extension/index.ts` (in-process server,
+"Ask this session" bridge, decision as a `followUp` message). The commands
+notify a launch error; the tool throws it, which Pi reports as an error
+result. Tool differences: the annotate target is ONE argument, so the #1182
+tolerant word split never runs on it (`tolerant: false`); an opened review
+returns `plannotatorToolOpenedText` with `terminate: true`, so the turn ends
+and the session is idle for Ask; a gated session the tool opened delivers a
+bare Approve as a message (`deliverApproval`, the mod's rule). The tool's
+`last` skips the assistant entry holding the calling tool call
+(`isAssistantEntryForToolCall` in `assistant-message.ts`): Pi saves an
+assistant message at message_end, before its tools run, so otherwise the
+agent's own "opening it now" message would open, and would head the picker.
+On one fixed port (remote mode or a single `PLANNOTATOR_PORT`, read from
+`getServerPorts`) a second open is refused while any review is open
+(`fixedPortBusyText` names it), because the new server would otherwise
+self-preempt the open one silently. A list target opens ONE `annotate-bundle`
+review through the same `launchAnnotate` the slash command uses: the list goes
+to the shared `selectAnnotateTokenTarget` as pre-split tokens (paths with
+spaces survive), only the `bundle` selection opens (a missing entry answers
+`buildMissingAnnotateFilesMessage`; a folder, URL or bare name refuses, so the
+tool never opens fewer files than named), `resolveAnnotateBundleFiles` checks
+types and size, and the subject is `plannotatorBundleSubject` (`2 files:
+spec.md, notes.md`) in the result, list, close and decision heading; feedback
+names every file (`Files:` + `annotateBundleTargetText`). A session without
+UI (print/JSON mode) never has the tool active (see above), and a call that
+reaches it anyway is refused, since nothing could deliver the decision later.
+
+**Sessions, list and close.** Every review the extension opens (tool,
+commands, `plannotator_submit_plan`) is recorded in ONE process-wide registry
+(`getProcessPiReviewRegistry` in `apps/pi-extension/plannotator-tool-host.ts`,
+on `globalThis`) with a `pn-` id until its decision settles. Process-wide
+because Pi builds a new extension instance on `/reload` and `/resume`, and a
+per-instance map would forget the open reviews of a session that merely
+reloaded. `list` and `close` see only entries whose owner is the calling ctx's
+`sessionManager.getSessionId()`, so another session's reviews (including the
+previous one after `/new`) are never in reach; the global `sessions/` registry
+is never read. `unsent` and `decided` come from the server's
+in-process `hostControl.status()`; `close` calls `hostControl.close()` (the
+reviewer's Close marked `closedBy: "agent"`, draft kept, tab told), so it
+works in remote mode too, where the HTTP endpoints are off. A review the agent
+closed delivers nothing: its decision handler notifies "the agent closed …"
+instead (user-facing notices name a last-message review "the agent's last
+message"; agent-facing texts say "your last message"). Plan reviews are listed
+as `Plan vN` (the history version, read from `updatePlan`'s no-op answer for
+the same text, and from each revision) and never closed.
+Review, annotate and last decisions (commands included) now start with
+`plannotatorDecisionHeading` (`Plannotator: notes.md (pn-3f2a9c) — Feedback ·
+2 comments.`); outcomes follow the mod: a code review that is not an approval
+is `Changes requested` (` · N comments` when it carries annotations), and the
+PR-platform status post, which the review server marks `platform: true`
+(#1719, `classifyReviewOutcome` in `apps/pi-extension/review-outcome.ts`), is
+`Review posted` (`PLANNOTATOR_OUTCOME_REVIEW_POSTED`, shared with OpenCode 2) and delivered verbatim, without the verification
+suffix. Every review decision whose feedback has content is delivered,
+zero annotations included (PR description, PR comment and editor notes ride
+only in the feedback text); nothing is inferred from the annotation count.
+Plan decisions are unchanged. Pi cannot take over an agent's
+shell `plannotator` command: its `tool_call` event can only block a call, which
+the model reads as an error, so the skill's "use the tool" line is what steers
+it.
+
 ### Claude Code mod: non-blocking plan review, annotate, review and last
 
 Where Claude Code runs hooks modules ("Claude Mods": function hooks, CLI only,
@@ -359,15 +464,67 @@ review; verified live, `claude --continue` reattached and delivered it.
 like the bridge token: when a review, annotate, annotate-last or
 `claude-mod-plan` session settles, the CLI writes ONE JSON record there
 atomically (temp + rename): `{ v: 1, surface, decision, message, noop,
-annotationCount?, platform?, withNotes?, approvedPlan?, permissionMode? }`.
+annotationCount?, platform?, withNotes?, approvedPlan?, permissionMode?,
+documents? }` (`documents`: a review of several files names each file with its
+comment count, in review order).
 `message` is composed from the configured prompts exactly as other hosts do
 (review: the CLI's own output; annotate: the file/message feedback and
 approved-with-notes prompts OpenCode and Pi use; plan: `composePlanDeniedMessage`
 / the approved prompts), so the mod never re-implements prompts. Stdout is
 unchanged for every caller. `noop` marks what never starts a turn: Done with
-nothing to send, review LGTM, Close, and a review posted straight to the PR
-platform (`platform: true`, logged plus a `$.prompt.suggest` to address the
-comments).
+nothing to send, review LGTM, Close, a truly empty review submit (no feedback
+text and no annotations), and a review posted straight to the PR platform
+(`platform: true`, logged plus a `$.prompt.suggest` to address the comments).
+**The platform post is marked explicitly, never inferred from zero
+annotations:** the review editor puts only code comments in `annotations`, while
+PR description comments, PR comment notes and VS Code editor comments ride only
+in the feedback markdown, so a review made only of those has an empty
+`annotations` and is ordinary feedback (delivered, `noop: false`,
+`annotationCount: 0`, and given the request-changes suffix). The platform path's
+status post sends `platform: true` in its `/api/feedback` body; both review
+servers carry it onto the decision only when it is boolean `true`, and every
+consumer decides on that flag: `reviewHostResult` (noop + `platform`),
+`buildReviewOutput` (CLI stdout and `--json`, which Amp reads; the status line
+gets no suffix), OpenCode's embedded `/plannotator-review`, the OpenCode CLI
+bridge (`opencode-review` always emits `platform` as a boolean; a missing field
+means an older CLI and falls back to the old `isPRMode` rule), Pi
+(`classifyReviewOutcome`, `apps/pi-extension/review-outcome.ts`; the event API's
+`code-review` result carries the same field). Client and server ship together
+in each binary and package, so the flag is always present where it is needed.
+The mod's `legacyResult` (an older CLI's stdout) never inferred the platform
+post; there a status line arrives as a feedback turn, as before. The feedback
+archive does not classify the platform post either: its decision comes from
+`approved` and whether the body has content. Introduced in 0.28.0, where zero
+annotations read as the platform post and the mod sent nothing (fixed 0.28.4;
+the mod also guards records from those CLIs, see "Version skew").
+An annotate Done with nothing to send still posts the legacy
+zero-state sentence ("User reviewed the document and has no feedback.") as
+`feedback`, because plain stdout, `--json` and the OpenCode/Pi consumers print
+or deliver those bytes; the editor additionally marks that body
+`nothingToSend: true`, which both annotate servers carry onto the decision only
+alongside empty `annotations`/`codeAnnotations` (`isNothingToSendFeedbackBody`,
+`packages/shared/annotate-decision.ts`), and `annotateHostResult` turns it into
+a `noop` record. Every plugin host that turns a decision into an agent message
+skips it the same way: Pi's
+`classifyAnnotateOutcome` reads it as "Annotation closed (no feedback).", the
+OpenCode embedded handlers (`commands.ts`) send no prompt (on OpenCode 1 the
+command's own message still runs its one empty turn, the known OC1 limit; no
+second turn is added), and the OpenCode CLI bridge (OpenCode 1 CLI runtime and
+OpenCode 2 native commands) reads the additive `nothingToSend: true` the CLI
+adds to its `--json` / `opencode-annotate-last` record in that case only, as do
+the Amp plugin (`formatAnnotationFeedback`) and the Droid plugin
+(`emitAnnotateDecision`), which also read `annotate --json`. Skill-run hosts
+(the classic Claude Code skill, Codex, Gemini, Copilot, Vibe, Kiro) still hand
+the model the plain-stdout sentence, which is the unchanged stdout contract. The
+feedback archive still records a bare Done as `feedback` with the sentence.
+Multi-message annotate-last merges SSE external (agent / WebMCP) comments into
+the current message's entry (`mergeExternalsIntoMessageEntries`), so they reach
+the exported feedback, the submit body and the nothing-to-send check. The mod's `legacyResult` recognizes the two zero-state
+sentences printed by a CLI older than the result file (#1701). The submit
+body's `annotations` carries every document's comments (folder sessions,
+linked documents, every message in multi-message annotate-last;
+`collectSubmittedAnnotations` in `packages/editor/feedbackDocuments.ts`), so
+`annotationCount` matches the feedback text.
 
 **Version skew.** The plugin installs from the repo's main branch and the
 binary updates separately, so with the mod on by default it routinely runs
@@ -397,6 +554,19 @@ released 0.27.25 and 0.27.10 binaries as processes:
   approved-with-notes prompt as "Approved with notes" (a user-customized
   approved prompt cannot be told apart and arrives as feedback). Close and an
   empty Done log only.
+- Review platform flag (0.28.0 to 0.28.3 CLIs): those CLIs wrote `platform:
+  true, noop: true` for ANY request-changes review with zero code annotations,
+  so feedback made only of PR description, PR comment or editor comments would
+  be logged and never delivered. The mod carries a narrow old-CLI guard
+  (`misreadAsPlatformPost` in `delivery.ts`): a review record is treated as the
+  real platform post only when its message is one of the editor's status lines
+  (`isPlatformStatusLine`: `Pull request|Merge request approved|reviewed on …`
+  or `Changes requested on …`, the shapes `statusMessage` in
+  `packages/review-editor/App.tsx` builds); any other non-empty `platform`
+  record is delivered as review feedback (without the request-changes suffix,
+  which those CLIs never added to it). A fixed CLI sets `platform` only on the
+  real status post, which always matches, so it never takes this path. If the
+  editor's status-line wording changes, update the pattern and its test.
 - `last`: the old CLI ignores `PLANNOTATOR_HOST_MESSAGES_FILE` and opens the
   newest message from stdin (no picker), though the command line still says
   "N messages, newest first".
@@ -404,6 +574,30 @@ released 0.27.25 and 0.27.10 binaries as processes:
   mod's bridge stops, and Ask AI offers only its providers.
 - A CLI before 0.19.24 writes no ready file: commands wait their full 45 s /
   15 s and say "Starting…", and decisions still arrive at exit.
+- The tool's `list` and `close` (contract v2): a CLI without
+  `/api/host/status` lists its reviews with `unsent: unknown`. `close` counts as
+  closed ONLY a JSON answer with a numeric `unsentAnnotations`
+  (`classifyHostCloseAnswer` in `controller.ts`): 0.24–0.28.3 answer a JSON
+  `404` and 0.19.24–0.23.x (before the `/api/*` 404 guard, #748) their app page
+  with `200 text/html`, and both read as "an older Plannotator", never as
+  closed. A CURRENT CLI with host control turned off (remote mode) answers
+  `404 { code: "host_control_disabled" }` instead, which the mod never TERMs:
+  the close reports that the review runs in remote mode and should be closed
+  from the tab. Only for an older CLI does the mod TERM the process
+  (`STOP_SCRIPT`), and only if the launch's `result.json` / `exit` is still
+  absent and the pid still names a `plannotator` process (`ps -o args=`);
+  nothing answering on the port (a stale or reused pid after a reboot) is never
+  signalled, and where `ps` cannot verify a pid (missing, as on Debian slim
+  without procps, or without `-p`, as BusyBox's) the script signals nothing
+  and the close says the review was left running. In every such case the close
+  reports failure. After a TERM close, a decision record without `closedBy` (or an
+  older CLI's exit 0) is the reviewer's and is delivered as usual. **Remaining
+  window:** these CLIs publish a decision only after a 1.5 s post-decision
+  sleep and nothing on their HTTP surface says a decision is pending, so a
+  decision the reviewer makes in the ~1.5 s before the TERM is lost (and those
+  CLIs had already deleted the draft on submit; the feedback archive record
+  survives where it is on). A CLI with the endpoint has no such window: its
+  close is refused with `409` once the reviewer decided.
 
 **Commands.** `/plannotator-review`, `/plannotator-annotate` and
 `/plannotator-last` keep their names (spec open question 7, conservative): when
@@ -457,9 +651,15 @@ classic path, which falls back to the pre-compaction file.
 blocks and gives Ask AI a separate AI. The mod registers a real tool instead:
 `$.tool.register({ name: "plannotator", description, inputSchema })` at
 `session.start`, right after the commands, and only when the mod is on (the
-knob not turned off, an interactive session, `/bin/sh` present); with the switch off,
-in `-p`/SDK runs and on Windows nothing is registered and Claude keeps the CLI
-through the `plannotator` skill. The engine names it `mcp__plannotator__plannotator`
+knob not turned off, an interactive session, `/bin/sh` present) and the agent tool
+switch is on (on by default here; `PLANNOTATOR_AGENT_TOOL=0` / `{ "agentTool": false }` turn it off; `resolveAgentToolEnabled`
+in `hooks/mod/enabled.ts`, read with the mod switch at the first `session.start`
+of the process, never re-read); with either switch off, in `-p`/SDK runs and on
+Windows nothing is registered and Claude keeps the CLI through the `plannotator`
+skill. With only the agent tool off, the rest of the mod runs: the slash
+commands, non-blocking ExitPlanMode, Ask this session, and the Bash take-over
+below, which stays because it adds nothing to Claude's context (it changes only
+what a `plannotator` command Claude already chose to run does). The engine names it `mcp__plannotator__plannotator`
 (the register call returns the full name, which `register.ts` keeps) and serves
 it through a loopback MCP server; the mod's `tool.call` hook answers every call
 itself (`{ result }` / `{ deny }`), so no other hook or permission prompt runs
@@ -491,6 +691,56 @@ only its name until it searches; with the updated skill it searched and called
 the tool for "open notes.md in plannotator", while a profile still holding the
 older installed skill text loaded that skill and ran the CLI instead.
 
+**Contract v2: session ids, `list` and `close` (agent sessions, 0.29).** Every
+review the mod opens has a session id, `pn-` + the six hex digits that end its
+launch id (`sessionIdOf` in `controller.ts`; unique among the session's open
+launches). The tool result's first line is `Session: pn-3f2a9c`, and every
+decision turn's first line names it (`plannotatorDecisionHeading`:
+`Plannotator: notes.md (pn-3f2a9c) — Feedback · 3 comments.`); slash-command
+output is unchanged. `action: "list"` reports the reviews opened in THIS Claude
+session, by the tool or by the user's `/plannotator-*` commands (the launch
+store is already per session id; the global `sessions/` registry is never
+read): id, kind, subject, url, age, state and `unsent: N` from the server's
+`GET /api/host/status` (`unknown` for an older CLI). `unsent` counts only the
+reviewer's own draft comments (`countUnsentDraftComments`: entries without a
+`source`, so review-agent, WebMCP and linter findings are not counted, plus
+code review's PR description and PR comment notes).
+`action: "close"` takes `session: "pn-…"` or `"all"` and calls
+`POST /api/host/close` (see "Host session control" under Server API): the
+reviewer's Close, marked `closedBy: "agent"`, with the draft KEPT and the open
+tab told over the external-annotation SSE (`session-closed`, which the editor
+and review app show as "Closed by the Agent" with the unsent count). The result
+reports how many unsent comments stay saved as a draft. The copy promises no
+restore beyond each surface's own draft key (`agentClosedSubtitle`: annotate
+drafts come back for the same unchanged document, code review drafts for the
+same changes; path-keyed annotate drafts are #1710). Nothing is delivered for
+that review afterwards (the launch is marked `closedByAgent` and settles with
+one log line), except a decision record WITHOUT `closedBy`, which is the
+reviewer's and is delivered. Plan reviews are listed but never closed (`close
+all` skips them, a plan id is refused). An id this session did not open is "not
+found". Against an older CLI the mod falls back to `TERM` under the checks
+described in "Version skew" above (`stopArgv`), which ends the server without a
+decision and never deletes a draft. The contract also
+accepts `target` as a list for annotate (validated, duplicates dropped, a
+one-item list is the plain call): a review of several files (a bundle, see
+"Several files in one review" under the Annotate Flow). `plannotatorToolArgs`
+passes the paths as the CLI's arguments, one each, in order (a bare list entry
+such as `README` is passed as `./README`, so a missing one fails the whole list
+instead of being read as prose), and the session is
+named `plannotatorBundleSubject` ("3 files: spec.md, mock.html, notes.md"), in
+the opened text, the session list and the decision heading. The tool
+description says "Pass a list as `target` to review several files together, in
+the order you want them read." Version skew: a CLI that predates bundles answers
+several paths with its ambiguity error WITHOUT the bundle hint line
+(`isOlderCliBundleRefusal`, which compares against `PLANNOTATOR_BUNDLE_HINT_LINE`,
+a copy of `ANNOTATE_BUNDLE_HINT` pinned equal by `annotate-target.test.ts`); the
+mod then answers `PLANNOTATOR_TOOL_BUNDLE_UNAVAILABLE_TEXT` ("update Plannotator
+to open several files at once") for the tool, and for `/plannotator-annotate`
+when every word reads as a file path (`isSeveralFilePaths`). There is no
+`reply` action: it was reserved for live comments and always errored, so it
+was taken out of the schema; it comes back with the comment loop. Design:
+`.product/drafts/agent-sessions-0.29/DESIGN.md`.
+
 **Agent-run CLI commands are taken over (Bash).** Because the tool is deferred
 and the skill also documents the CLI, Claude sometimes runs
 `plannotator annotate x.html --gate --json` in Bash anyway; that blocked the
@@ -511,20 +761,22 @@ its own cwd or worktree, while the mod launches in the session's cwd, so its
 quote; quoting follows `splitShellWords`, nothing is expanded) whose program is
 exactly `plannotator` (the binary on PATH; a path such as `./plannotator` or
 `/tmp/dev/plannotator` is a dev build and runs for real), subcommand
-`annotate` (one target, `--gate`, `--markdown`), `review` (at most one target, `--base <ref>`),
+`annotate` (one target, or several that all read as file paths, `looksLikeFilePath`: a separator, a leading `~` `.` `@`, or a file extension; they become `target: [...]`, a review of several files; plus `--gate`, `--markdown`), `review` (at most one target, `--base <ref>`),
 or `annotate-last` / `last` (no arguments); `--json` is accepted and dropped
 (the decision arrives as a message), and the result must pass
 `parsePlannotatorToolInput`. Everything else runs as written: other
 subcommands, every other flag (`--require-approval`, `--result-file`, `--hook`,
 `--tailscale`, `--static`, `--app`, `--no-jina`, `--render-html`,
 `--diff-type`, `--local`, `--patch-file`, `--stdin`, `--help`, ...), repeated
-flags, several targets, environment prefixes, and any compound command
+flags, several targets that are not all file paths (prose, which the CLI's
+tolerant resolution reads) or several review targets, environment prefixes, and any compound command
 (`cd x && plannotator ...`, pipes, redirects, substitutions), so scripted
 strict gates keep the real CLI and its exit codes. With the mod off, in `-p`/SDK
 runs and on Windows nothing is taken over. The CLI the mod launches runs in the
 session's cwd (`$.process.run`'s default), the same as for the tool. Pi and
 OpenCode do not take over shell runs: there an agent-run `plannotator` command
-still runs the CLI.
+still runs the CLI (Pi registers the tool itself; see "Pi: the `plannotator`
+tool").
 
 **Plan review.** The `tool.call` hook on the main loop's ExitPlanMode resolves
 the plan (the plan file when it is an absolute `.md` regular file within the
@@ -589,7 +841,32 @@ for a prompt its code submitted (the debug log says "skipped: re-entry"), so the
 mod's `prompt.submit` hook sees every OTHER prompt (the user's Enter, a
 notification, another plugin); a turn whose text is exactly one of those is
 never claimed, so a prompt the user typed can neither be streamed to
-Plannotator nor aborted by a cancel, whatever it says. Plan review does not block the session
+Plannotator nor aborted by a cancel, whatever it says. Another plugin's prompt
+reaches `turn.start` inside the engine's "The <name> plugin sent a message:"
+frame while `prompt.submit` saw it bare, so the match also strips that frame.
+**Take-over** (`turns.ts`): a prompt typed or delivered while a turn runs fires
+`prompt.submit` at Enter with that turn's `turnId`, and the engine folds it
+into the turn's next model request. When that turn is our question's and the
+origin is on an ALLOWLIST of messages the model must now answer (`composer`,
+`bridge`, `slack-ping`, `channel`; never `peer` (owner's call: a peer
+session's reply streaming into the panel is better than losing the reviewer's
+answer), `task-notification`, `peer-send-message`, `scheduled-trigger`,
+`observer*`, `coordinator`,
+`projects-relay`, `auto-continuation`, `unclassified` or a kind added later),
+streaming stops the moment the prompt reaches the mod's `prompt.submit` hook,
+BEFORE `next(e)` runs the hooks beneath (a slow one cannot let the next step
+through); the take-over is confirmed when `next(e)` resolves with the prompt,
+and a prompt a hook beneath drops releases the hold. The step in flight was
+requested before their prompt, so its output is held and released when the
+question settles: at the turn's next `turn.step` (that request carries their
+prompt) as `done` when the response before it ended the answer (`stop` chunk
+`end_turn`, no tool call) and some answer text was shown, else as `taken_over`
+(a thinking-only final response would otherwise settle an empty answer); or at `turn.complete` when no
+step followed, as `done` with the turn's answer (their prompt then runs as a
+turn of its own). The note reads "You typed into this session…" for
+`composer` / `bridge` and the neutral "Another message entered this session…"
+otherwise. From the take-over on, a cancel closes only the question and an
+interrupt answers `ok: false`; Plannotator never aborts that turn. Plan review does not block the session
 under the mod, so the status is never `blocked` and plan review gets real turns
 too (verified live). Polls ask for 15 s (750 ms while our question streams, so
 deltas flush), and stop on 401/403/404/405/503 (`404` = an older CLI without
@@ -609,6 +886,115 @@ otherwise try to load; bun skips `apps/hook/tests/` through `pathIgnorePatterns`
 Typecheck: `apps/hook/hooks/mod/tsconfig.json` (no DOM, no Node; `globals.d.ts`
 declares the few web APIs a hooks module has). `PLANNOTATOR_MOD_DEBUG=1` writes
 `claude-code-mod/debug.log` in the data dir.
+
+### OpenCode 2: the `plannotator` tool
+
+The OpenCode 2 plugin (`apps/opencode-plugin/server.ts`, `registerPlannotatorTool`)
+registers the same `plannotator` tool the Claude Code mod does, through
+`ctx.tool.transform` → `tools.add`, with the shared contract itself
+(`PLANNOTATOR_TOOL_NAME` / `_DESCRIPTION` / `_INPUT_SCHEMA` and
+`parsePlannotatorToolInput` from `packages/shared/plannotator-tool.ts`, never a
+copy; `plannotator-tool.test.ts` checks the registered schema IS the shared
+object). It is OFF by default on OpenCode 2; turned on (`PLANNOTATOR_AGENT_TOOL=1`
+/ `{ "agentTool": true }`, `resolveAgentTool(loadConfig(), process.env,
+"opencode")`, read once at plugin setup; a change applies when OpenCode
+restarts) it is registered for every workflow (`manual` included), and not at
+all where the decision could never come back: a tool draft without `add` (an
+older V2 host, probed inside the callback like the native commands' draft) or
+a session domain without `prompt`. OpenCode 1 gets no tool in 0.29 (design
+decision; its `plugin.tool` route is feasible).
+
+**Open (annotate, review, last).** Each call runs the SAME launch the native
+slash commands use (`runNativeCommand` → `handleCliCommand`: a `plannotator`
+CLI child, the pull-bridge token so "Ask this session" works, the ready file,
+the decision delivered later to the calling session with `session.prompt`),
+and the tool returns as soon as the ready file names the url (up to 45 s for
+review, 15 s otherwise, then the "starting" text): `Session: pn-…` plus
+`plannotatorToolOpenedText`. A refused argument or the CLI's startup error is
+the result text (`Plannotator could not start: …`; results are always text,
+since the promise adapter turns a rejected `execute` into a defect). The
+annotate target is passed as ONE argument (`toolLaunchRequest` builds
+`ParsedAnnotateArgs` instead of re-parsing a string, so `my notes.md` stays one
+path); review words are quoted for `parseReviewArgs`' string form
+(`quoteReviewWord`). A gated tool session delivers its bare approval
+(`Plannotator: notes.md (pn-…) — Approved.`), like the mod; a slash command's
+bare gated approval still sends nothing. A list of files (two or more after the
+contract drops duplicates) opens ONE bundle review through the same launch:
+`handleCliCommand`'s `annotateBundle` passes each entry as its own CLI argument
+in the agent's order (never re-split, and a single tool target is never read as
+several words), the subject is `plannotatorBundleSubject` (`2 files: a.md,
+b.html`) in the result, `list` and the decision heading, and the feedback is
+framed under `Files: …` as the slash command's bundle is. An older CLI's
+several-paths ambiguity error (`isOlderCliBundleRefusal`) makes the result
+`PLANNOTATOR_TOOL_BUNDLE_UNAVAILABLE_TEXT`. When a launch
+answered "starting" and its CLI then fails before the page opens, the session
+gets one message (`plannotatorLateFailureText`: `Plannotator: notes.md (pn-…) —
+Did not open.` plus the CLI's error), delivered with `session.prompt`
+(`queue`), so neither the agent nor the person waits for a decision that never
+comes; OpenCode 2's plugin context has no toast surface, so that transcript
+message is the visible signal. A command that merely ends without a ready file
+sends nothing (a CLI older than 0.19.24 writes none and delivers its decision
+at exit). Subagents work as on the mod: a subagent's (child) session resolves
+to its root session (`resolveRootSession` walks `parentID`), which owns the
+review, gets its decision and lists or closes it; only `last` is refused from a
+subagent (`PLANNOTATOR_TOOL_SUBAGENT_LAST_TEXT`, the mod's wording), since it
+reads the main session's messages. Ask this session for such a review asks the
+root session. Not verified live: delivery to the root while it still waits on
+the subagent relies on `queue` delivery. Tool launches always queue their
+decision (`createV2BridgeClient`'s `alwaysQueue`), even while their session-URL
+notice is still a pending steer: the session is mid-turn when a tool launch
+posts that notice (the tool call itself, or the root waiting on a subagent), so
+the notice is promoted inside that turn, and the slash commands' co-promoting
+steer (#1515) would instead push a late decision into a running turn. No
+shell take-over: nothing in the OpenCode 2 plugin API can answer a shell call.
+
+**Session ids, list and close.** `OpenCodeLaunchRegistry` (one per plugin
+instance) records every review a session opens: tool calls, its slash commands
+(`runNativeCommand` with `launches`), and its `submit_plan` review (listed,
+never closable). Every recorded launch's decision message starts with
+`plannotatorDecisionHeading` (`withDecisionHeading` in `cli-bridge.ts`), slash
+commands included, so `list` and the decision name the same id. Its outcome
+uses the mod's words: `Feedback · N comments`, `Approved with notes · N
+comments`, `Approved`, and for code review (local or PR) `Changes requested ·
+N comments`. The count comes from the CLI's additive `annotationCount` on the
+`annotate --json`, `opencode-annotate-last` and `opencode-review` records (an
+older CLI omits it and the heading has no count). A PR-platform status post
+reads `Review posted` (`PLANNOTATOR_OUTCOME_REVIEW_POSTED`, the same words as Pi) and is decided by the record's `platform` flag (#1719;
+`isPlatformPost`, falling back to `isPRMode` only for a CLI without the flag),
+never inferred from zero annotations, so description-only PR feedback is
+`Changes requested`. `list` and
+`close` see only the calling OpenCode session's launches (never the global
+`sessions/` registry; another session's id is "not found"). `list` reads
+`GET /api/host/status` with the launch's token for `unsent` and `decided`
+(`readHostStatusAnswer`; `unknown` for an older CLI). `close` posts
+`POST /api/host/close` and reads the answer with `classifyHostCloseAnswer`
+(`packages/shared/host-control.ts`, the mod's rule): closed (draft kept, the
+tab told, nothing delivered, since the CLI's record is then `dismissed`),
+decided (the reviewer's decision is on its way), refused, turned off (left
+running; the text says remote mode only when the ready file did, and otherwise
+names a server started without a host token), or not answering (left
+running). `close all` skips plan reviews silently; only an explicit plan id
+gets the "not closable" line. A close that stopped an older CLI is logged as
+the agent's close, not as a CLI failure (`isClosedByAgent`). Only a server that
+answered as an older Plannotator without the endpoint (an uncoded JSON `404`
+or its app page) is stopped instead: SIGTERM to the plugin's own child process
+(`terminate` from `runPlannotatorCli`'s observer), which never deletes a
+draft; a decision such a CLI is still publishing is lost, as on the mod.
+
+Tests: `apps/opencode-plugin/plannotator-tool.test.ts` (registration against
+older drafts and without `prompt`, refusals, and the real launch path against a
+stub CLI that serves the real host-control guards: open → url and id → list →
+decision heading in the right session, gated bare approval, close with the
+token, turned-off close leaves the server up, older CLI stopped, startup
+error, a slash command listed). Checked live on OpenCode 2.0.22 with a fake
+model: the model's tool call opened annotate and review, `list` showed the
+server's count, the reviewer's feedback and a gated approval arrived as new
+turns headed with the id, `close all` closed a review holding 2 draft comments
+with no turn delivered, and Ask AI showed "Ask this session". A list target
+(`["notes.md", "mock.html"]`) opened one `annotate-bundle` session in that
+order, `list` named it `2 files: notes.md, mock.html`, its feedback arrived
+headed `— Feedback · 2 comments.` under `Files: notes.md, mock.html`, and
+`close all` closed a second bundle.
 
 ### Codex Stop hook: which turn the plan belongs to
 
@@ -953,6 +1339,48 @@ compiled CLI, real review app) whose model calls went to a scripted local stand-
 Messages API, so the question, the Read tool call and the streamed answer are real traffic with
 scripted model text. Offline it says the video could not load; reduced motion waits on the poster.
 
+### Agent tool switch: Settings row and first-run offer
+
+The `plannotator` agent tool (off by default on Pi and OpenCode 2, on for the Claude Code mod)
+has a switch in Settings → General on plan review, annotate and code review, and a one-time
+offer on Pi and OpenCode 2. Both read `parseAgentToolSetting(serverConfig)`
+(`packages/ui/utils/agentToolSetting.ts`): present only when the server reports
+`agentToolHost` and `agentToolEnabled` (the integration that launched the server has the tool),
+so OpenCode 1, Codex, the classic hook and `@plannotator/ui` hosts (which pass neither
+`agentToolSetting` nor `onAgentToolChange` to `Settings`) get nothing. An OpenCode bridge
+alone is not enough: the plugin also reports that its host can register the tool (a
+`tool.transform` domain) as `PLANNOTATOR_OPENCODE_TOOL_CAPABLE=1` on the CLI it launches and
+`opencodeToolCapable` on its in-process plan server (`agentToolHostForServer` in
+`packages/server/ai-runtime.ts`), so an OpenCode host without the domain, or an older plugin,
+gets no switch and no offer. The row says when a change applies: the next Pi session, the next
+time Claude Code / OpenCode starts (the mod and the OpenCode plugin decide once per process).
+Writes go through
+`saveAgentToolSetting` (POST `/api/config` `{ agentTool }`, awaited, not the settings registry's
+debounced best-effort write-back); the handlers answer 500 when the value did not reach
+config.json (`agentToolSaveFailed`), and both surfaces show that. The row is locked with a note
+when `agentToolEnv` is set. One `useAgentToolSetting` per App feeds both, so a change in one
+shows in the other.
+
+The offer (`AgentToolAnnouncementDialog`, `packages/ui/utils/agentToolAnnouncement.ts`, cookie
+`plannotator-announce-agent-tool-seen`, a plain storage key for the registry-seeding reason)
+follows the announcement shell (portal, `z-[100]`, Escape / Tab wrap / focus restore, backdrop
+dismiss, capture-phase `Mod+Enter` swallow) but collects a decision. Approved design ("Loop",
+`.product/approved/agent-tool-dialog/`): a theme-token SVG of the round trip over the question
+"Do you use Plannotator as a skill?", two example requests, one line of why, the token cost,
+and the buttons "No, I’ll just use slash commands" (initial focus) and "Yes, turn it on"; change
+copy there first. The dialog cannot close while a save is in flight, a failure shows the reason
+with "Try again", success says when it starts and offers Done. Declining, Escape, the backdrop
+and a successful save write the cookie; a failed
+save does not. It shows only for a Pi / OpenCode 2 host whose next-session value is off, never
+chosen in config.json (`agentToolConfigured`), and not set by the env. Ordering: LAST in each
+app's chain, after terminal tools (latched, `agentToolAnnouncementPendingThisLoad`) and after
+"Ask this session" per load (`earlierAnnouncementMayShow`: that one was shown this load, or is
+pending and its capabilities answer is outstanding or eligible), so never two announcements on
+one load, while a reader who is never connected still gets the offer. Same deferrals as the
+others (archive, shared, no server, compact, loading) and the same
+`useFirstRunAnnouncementWindow`. Code review's destination spotlight, auto-viewed toast and
+history-shortcut guard defer behind it.
+
 ### Review drafts and PR pushes (#1590)
 
 Code-review drafts (`/api/draft`) are keyed by `contentHash(rawPatch)`, so a local review whose diff changes still starts without its old draft (unchanged, out of scope). **PR mode only** additionally stores the draft under a stable target key, `prDraftTargetKey(meta, scope)` = `pr-` + hash of platform + host + repo (`owner/repo` or GitLab `projectPath`, lower-cased) + PR number + diff scope (`layer` / `full-stack` are different patches). All of it lives in `packages/shared/review-draft.ts` (vendored to Pi); both review servers hold one `createReviewDraftSession()` and route `/api/draft`, `/api/feedback` and `/api/exit` through it (without a target key every call is the plain `draft.ts` call, including the historical always-`ok` save response).
@@ -1040,9 +1468,9 @@ Ask AI providers are detected independently from installed/authenticated local C
 
 Automatic resolution is session-only and never writes a preference. Explicit per-origin choices are persisted in cookies, so a user can override the automatic match for one agent without changing the default for another.
 
-**"Ask this session" (session bridge).** A host can let Ask AI be answered by the agent session that opened Plannotator instead of a separate SDK agent. The host implements the small `SessionBridge` interface (`packages/ai/session-bridge.ts`, vendored to Pi: `host`, `status()` = `ready | busy | blocked | gone`, `modes { turn, transient }`, `ask(req, sink, signal)`, optional `interrupt()`) and passes it as `sessionBridge` to the server (`startReviewServer` / `startAnnotateServer` / plan `ServerOptions` on Bun; review, annotate and plan review on Pi), which then registers `SessionBridgeProvider` under id `session-bridge` as the ONLY Ask AI provider, behind the unchanged `/api/ai/*` endpoints: with a bridge (in-process or pull) the SDK providers go into a separate catalog-only registry (`catalogRegistry` on `createAIEndpoints`, set by `createAIRuntime` / `createPiAIRuntime`), so `/api/ai/capabilities` lists only the bridge under `providers` and makes it `defaultProvider`, and `/api/ai/session` answers `503` for any other provider id whatever the client saved. The catalog-only providers exist so the agent-job launchers (Review Agents, Code Tour, Guided Review) keep their discovered Claude / Codex model lists: `?activate=<id>` naming one runs its discovery and reports it under `catalogProviders`, which only `useModelCatalogs` reads; Ask AI never reads that field. Without a bridge (no mod, OpenCode 1, remote mode, `--tailscale`) the SDK providers register exactly as before. `/api/ai/capabilities` adds `label` ("Ask this session · Pi") and live `sessionBridge { host, status, modes }` for it, `models: []` (no model picker). The provider, not the host, enforces one question at a time across threads (`ask_in_flight`), sends no system prompt (the question carries the `SESSION_ASK_HEADER` line plus the surface), and never interrupts implicitly: a busy session answers `agent_busy`, and the client re-asks with `/api/ai/query` `busyPolicy: "wait"` ("Ask when it finishes", streams `status: waiting` until idle) or `"interrupt"` ("Interrupt and ask now", host `interrupt()` then ask). `session_gone` / `session_blocked` offer no other AI (there is none): the answer shows a plain note that the session that opened Plannotator is gone, or waiting on this decision, and Ask AI cannot reach it. Abort cancels only our question; the runtime `detach()`es the bridge before teardown so a decision/exit never stops a turn already running. Client (`resolveAIProviderSelection`): a bridge in the list is the selection in every status, ahead of any saved pick; without one the order is unchanged. The saved provider cookies are never rewritten for this, so a pick still applies to sessions without a bridge; with a bridge the Ask AI bars and Settings → AI show only its label (no provider or model picker). Code review sends the diff's identity (`buildSessionReviewIdentity`), never the patch. **Pi** (`apps/pi-extension/pi-session-bridge.ts`): review, annotate, last and plan review (plan review no longer blocks the session, see "Pi plan review does not block" below), off in remote mode; the question is a `pi.sendMessage({ customType: "plannotator-ask", display: true, details: { askId } }, { triggerTurn: true })` turn read back from `message_start` / `message_update` text deltas / `tool_execution_start` / `agent_end`; listeners register once at load because `pi.on` returns no unsubscribe before Pi 1.0. **OpenCode 2** (`apps/opencode-plugin/opencode-session-bridge.ts`): review, annotate and last ask a real turn — `ctx.session.prompt({ id, text, delivery: "steer", metadata: { source: "plannotator-ask" } })` under a message id generated in OpenCode's own ascending `msg_` format, streamed back from `ctx.event.subscribe()` (`session.inbox.delivered` with our id starts the answer, then `session.text.delta` / `text.ended` / `tool.input.started`, ended by `session.execution.succeeded|failed|interrupted`), with `session.wait` + `session.context` as the fallback when the event stream is missing (upstream #44788). Delivery is "steer", not "queue", on purpose: every V2 command leaves its session-URL notice as a pending steer row, and a queued question would wake the session with that notice promoted alone as its own model turn (seen live on 2.0.22). Busy comes from the execution events cross-checked by a single outstanding `session.wait` probe; abort and "Interrupt and ask now" use `session.interrupt` (whole execution), only on a turn that is ours or on the reviewer's explicit choice. Plan review answers from context only ("Quick answer from this session · OpenCode", `modes { turn: false, transient: true }`): `submit_plan` is a pending tool call, so a real turn cannot run until the decision (a prompt sent then waits for the tool result, verified live), and `markPlanReviewPending` makes EVERY bridge on that session report `blocked` so nothing can interrupt the review. The quick answer is `session.generate` (no transcript write; verified live on 2.0.22 with OpenAI during a pending `submit_plan`, and `@opencode/ai`'s `normalizeToolHistory` fills the unfinished call with an error result for every provider); it still offers the model its tools, so the question carries `SESSION_ASK_TRANSIENT_NOTE` and an empty answer (a tool call) is reported as a failure. The embedded plan server takes the bridge in-process; review/annotate/last and the CLI plan fallback run the `plannotator` CLI as a child and use the pull bridge below. **OpenCode 1** has no bridge (a second adapter over V1's different message/event model, not a small lift). **Claude Code** answers through its mod over the pull bridge below (review, annotate, last and plan review, all real turns; see "Claude Code mod"); without the mod Claude Code has no bridge.
+**"Ask this session" (session bridge).** A host can let Ask AI be answered by the agent session that opened Plannotator instead of a separate SDK agent. The host implements the small `SessionBridge` interface (`packages/ai/session-bridge.ts`, vendored to Pi: `host`, `status()` = `ready | busy | blocked | gone`, `modes { turn, transient }`, `ask(req, sink, signal)`, optional `interrupt()`) and passes it as `sessionBridge` to the server (`startReviewServer` / `startAnnotateServer` / plan `ServerOptions` on Bun; review, annotate and plan review on Pi), which then registers `SessionBridgeProvider` under id `session-bridge` as the ONLY Ask AI provider, behind the unchanged `/api/ai/*` endpoints: with a bridge (in-process or pull) the SDK providers go into a separate catalog-only registry (`catalogRegistry` on `createAIEndpoints`, set by `createAIRuntime` / `createPiAIRuntime`), so `/api/ai/capabilities` lists only the bridge under `providers` and makes it `defaultProvider`, and `/api/ai/session` answers `503` for any other provider id whatever the client saved. The catalog-only providers exist so the agent-job launchers (Review Agents, Code Tour, Guided Review) keep their discovered Claude / Codex model lists: `?activate=<id>` naming one runs its discovery and reports it under `catalogProviders`, which only `useModelCatalogs` reads; Ask AI never reads that field. Without a bridge (no mod, OpenCode 1, remote mode, `--tailscale`) the SDK providers register exactly as before. `/api/ai/capabilities` adds `label` ("Ask this session · Pi") and live `sessionBridge { host, status, modes }` for it, `models: []` (no model picker). The provider, not the host, enforces one question at a time across threads (`ask_in_flight`), sends no system prompt (the question carries the `SESSION_ASK_HEADER` line plus the surface), and never interrupts implicitly: a busy session answers `agent_busy`, and the client re-asks with `/api/ai/query` `busyPolicy: "wait"` ("Ask when it finishes", streams `status: waiting` until idle) or `"interrupt"` ("Interrupt and ask now", host `interrupt()` then ask). `session_gone` / `session_blocked` offer no other AI (there is none): the answer shows a plain note that the session that opened Plannotator is gone, or waiting on this decision, and Ask AI cannot reach it. Abort cancels only our question; the runtime `detach()`es the bridge before teardown so a decision/exit never stops a turn already running. **Take-over (every host):** once another message enters the turn answering our question (the person typing into the session, another extension's steer; never a background task's notification, an engine notice, a compaction, or on Claude Code a peer session's message), the rest of that turn answers THAT message, so the host stops streaming at once, keeps what it already sent, and settles with the bridge error code `taken_over` (`SessionBridgeErrorCode`; the provider maps it to `session_taken_over` with `SESSION_ASK_TAKEN_OVER_TEXT`, the neutral "Another message entered this session while it was answering, so the rest of the reply went to that message."; the Claude Code mod sends `SESSION_ASK_TAKEN_OVER_BY_PERSON_TEXT`, "You typed into this session…", when it knows the person typed it). When the answer had already finished before the other message entered (the turn's last model response stopped with no tool call: Claude `end_turn`, Pi `stop`, OpenCode `finish: "stop"` with no `session.tool.input.started` in that step, since some OpenAI-compatible providers report "stop" on a tool-calling step; and some answer text was shown), it settles `done` instead: a follow-up such as Plannotator's own decision never turns a complete answer into a cut one. From then on neither a Stop nor "Interrupt and ask now" stops that turn: Stop only closes the question, and `interrupt()` refuses (`SESSION_ASK_TAKEN_OVER_INTERRUPT_TEXT`) while the taken-over run lasts. The client (`useAIChat`) treats `session_taken_over` as a note, not an error: the partial answer stays and `SessionAskNote` renders the text under it (`response.notice`). Per host: Claude Code mod, `prompt.submit` with the question turn's `turnId` from an allowlisted origin (see "Claude Code mod"); Pi, a `user` message, or a custom message other than ours delivered right after a `turn_start` (a steer or follow-up), in the run answering our question; a non-triggering display-only custom message (e.g. `plannotator-handoff`) is appended at `turn_end`, outside that window, and takes nothing over; the run stays protected until `agent_settled` (idle on Pi without it), so an error retry of the person's run is covered; OpenCode 2, a `session.inbox.delivered` for another row whose kind, read from `session.inbox.enqueued` (`item.type`), is `user` (synthetic, compaction, move and unseen rows never take over), after ours was delivered AND the model began answering (`session.step.started` or any answer output), so a command's session-URL notice promoted in the same batch as the question is not a take-over. **Older servers:** the pull server advertises the codes it knows as `features` on every poll answer (`SESSION_BRIDGE_POLL_FEATURES`, today `["taken_over"]`). A pull host (the mod's `bridge.ts`, `runPullSessionBridgeClient`) talking to a server without `taken_over` settles a take-over as `done` with the partial answer plus the note as its last paragraph (`takenOverFallback`), because an older server reads the unknown code as `failed` and its UI would replace the partial answer with the error. Client (`resolveAIProviderSelection`): a bridge in the list is the selection in every status, ahead of any saved pick; without one the order is unchanged. The saved provider cookies are never rewritten for this, so a pick still applies to sessions without a bridge; with a bridge the Ask AI bars and Settings → AI show only its label (no provider or model picker). Code review sends the diff's identity (`buildSessionReviewIdentity`), never the patch. **Pi** (`apps/pi-extension/pi-session-bridge.ts`): review, annotate, last and plan review (plan review no longer blocks the session, see "Pi plan review does not block" below), off in remote mode; the question is a `pi.sendMessage({ customType: "plannotator-ask", display: true, details: { askId } }, { triggerTurn: true })` turn read back from `message_start` / `message_update` text deltas / `tool_execution_start` / `agent_end`; listeners register once at load because `pi.on` returns no unsubscribe before Pi 1.0. **OpenCode 2** (`apps/opencode-plugin/opencode-session-bridge.ts`): review, annotate and last ask a real turn — `ctx.session.prompt({ id, text, delivery: "steer", metadata: { source: "plannotator-ask" } })` under a message id generated in OpenCode's own ascending `msg_` format, streamed back from `ctx.event.subscribe()` (`session.inbox.delivered` with our id starts the answer, then `session.text.delta` / `text.ended` / `tool.input.started`, ended by `session.execution.succeeded|failed|interrupted`), with `session.wait` + `session.context` as the fallback when the event stream is missing (upstream #44788). Delivery is "steer", not "queue", on purpose: every V2 command leaves its session-URL notice as a pending steer row, and a queued question would wake the session with that notice promoted alone as its own model turn (seen live on 2.0.22). Busy comes from the execution events cross-checked by a single outstanding `session.wait` probe; abort and "Interrupt and ask now" use `session.interrupt` (whole execution), only on a turn that is ours or on the reviewer's explicit choice. Plan review answers from context only ("Quick answer from this session · OpenCode", `modes { turn: false, transient: true }`): `submit_plan` is a pending tool call, so a real turn cannot run until the decision (a prompt sent then waits for the tool result, verified live), and `markPlanReviewPending` makes EVERY bridge on that session report `blocked` so nothing can interrupt the review. The quick answer is `session.generate` (no transcript write; verified live on 2.0.22 with OpenAI during a pending `submit_plan`, and `@opencode/ai`'s `normalizeToolHistory` fills the unfinished call with an error result for every provider); it still offers the model its tools, so the question carries `SESSION_ASK_TRANSIENT_NOTE` and an empty answer (a tool call) is reported as a failure. The embedded plan server takes the bridge in-process; review/annotate/last and the CLI plan fallback run the `plannotator` CLI as a child and use the pull bridge below. **OpenCode 1** has no bridge (a second adapter over V1's different message/event model, not a small lift). **Claude Code** answers through its mod over the pull bridge below (review, annotate, last and plan review, all real turns; see "Claude Code mod"); without the mod Claude Code has no bridge.
 
-**Pull bridge (host-neutral, `packages/ai/session-bridge-pull.ts` server half, vendored to Pi; `session-bridge-pull-client.ts` host half).** For a host that runs the Plannotator server as a SEPARATE process and must not open a listener of its own (the OpenCode plugin's CLI child and the Claude Code mod). The host generates a per-launch secret and starts the server with `PLANNOTATOR_SESSION_BRIDGE_TOKEN` (>= 32 chars), `PLANNOTATOR_SESSION_BRIDGE_HOST` (`opencode` / `claude-code` / `pi`) and optional `PLANNOTATOR_SESSION_BRIDGE_MODES` (`turn,transient`; default `turn`). The Bun CLI takes that config at its very first line (`takeEnvPullSessionBridgeConfig`, cached once per process; `createAIRuntime` reads the cache) and deletes the three variables, so nothing it spawns (git/gh before the server starts, agent jobs, terminals, the auto-update wrapper) inherits the token; `--tailscale` discards it outright (`discardEnvPullSessionBridgeConfig`). The runtime registers the same `SessionBridgeProvider` over it; it is off in remote mode and under `--tailscale` (and an in-process bridge wins). Pi's `createPiAIRuntime` accepts the same config as its `pullSessionBridge` option (no env takeover: Pi itself always bridges in-process). The host learns the port (OpenCode: `PLANNOTATOR_READY_FILE`) and then talks to two endpoints on `http://127.0.0.1:<port>`, both `POST` + JSON with `Authorization: Bearer <token>`: `/api/ai/bridge/poll` `{ status?, modes?, waitMs? }` long-polls (clamped to 25s; answers early when there is work) and returns `{ commands, closing?, superseded? }`, commands being `{ type: "ask", askId, text, mode }`, `{ type: "cancel", askId }` and `{ type: "interrupt", interruptId }`; `/api/ai/bridge/event` takes one event or `{ events: [...] }` — `started`, `delta`, `tool`, `done`, `error` (per question, `code` one of `busy|blocked|gone|aborted|failed`), `status`, and `interrupted { interruptId, ok, message? }` — and answers `409 { code: "ask_not_active" }` for a question that is no longer running, which tells the host to stop it. Commands are re-sent every ~5s until acknowledged (any event for that question; `interrupted` for an interrupt), so hosts dedupe by id. Guards, in order: a loopback Host with the server's own port (the runtime's `authorizeSessionBridgeRequest`, `403 session_bridge_forbidden_host`), no `Origin` header (`403`, a browser is never the host), the bearer token (`401`); without a pull bridge both paths answer `404`, which an older-binary-aware host treats as "no bridge". Liveness: until the host's first request the bridge reports `ready` (a question waits for the first poll); no first request within 30s, or 30s with no open poll after that, is `gone`, and a running question then fails `session_gone`. The newest poll supersedes an open one. A reviewer's Stop drops a question the host never confirmed, else queues `cancel` and frees the slot when the host confirms (or after 15s); `detach()` (decision / shutdown) drops only unconfirmed questions, and `dispose()` answers the open poll `closing`. Both runtimes route the two paths through `createAIEndpoints` (`pullBridge` dep), and Bun lifts the idle timeout for the poll (`isLongLivedAIEndpointPath`). Tests: `packages/ai/session-bridge-pull.test.ts` (fake host over the real client: streaming, early question, busy wait / interrupt, abort before and after pickup, host disappears, never connects, transient, bad token / Origin / rebinding Host, supersede, dispose, detach), `packages/server/ai-runtime.sessionBridge.test.ts` (env takeover, scrub, remote-off), `apps/opencode-plugin/session-bridge-cli.test.ts` (plugin ↔ CLI child end to end).
+**Pull bridge (host-neutral, `packages/ai/session-bridge-pull.ts` server half, vendored to Pi; `session-bridge-pull-client.ts` host half).** For a host that runs the Plannotator server as a SEPARATE process and must not open a listener of its own (the OpenCode plugin's CLI child and the Claude Code mod). The host generates a per-launch secret and starts the server with `PLANNOTATOR_SESSION_BRIDGE_TOKEN` (>= 32 chars), `PLANNOTATOR_SESSION_BRIDGE_HOST` (`opencode` / `claude-code` / `pi`) and optional `PLANNOTATOR_SESSION_BRIDGE_MODES` (`turn,transient`; default `turn`). The Bun CLI takes that config at its very first line (`takeEnvPullSessionBridgeConfig`, cached once per process; `createAIRuntime` reads the cache) and deletes the three variables, so nothing it spawns (git/gh before the server starts, agent jobs, terminals, the auto-update wrapper) inherits the token; `--tailscale` discards it outright (`discardEnvPullSessionBridgeConfig`). The runtime registers the same `SessionBridgeProvider` over it; it is off in remote mode and under `--tailscale` (and an in-process bridge wins). Pi's `createPiAIRuntime` accepts the same config as its `pullSessionBridge` option (no env takeover: Pi itself always bridges in-process). The host learns the port (OpenCode: `PLANNOTATOR_READY_FILE`) and then talks to two endpoints on `http://127.0.0.1:<port>`, both `POST` + JSON with `Authorization: Bearer <token>`: `/api/ai/bridge/poll` `{ status?, modes?, waitMs? }` long-polls (clamped to 25s; answers early when there is work) and returns `{ commands, closing?, superseded? }`, commands being `{ type: "ask", askId, text, mode }`, `{ type: "cancel", askId }` and `{ type: "interrupt", interruptId }`; `/api/ai/bridge/event` takes one event or `{ events: [...] }` — `started`, `delta`, `tool`, `done`, `error` (per question, `code` one of `busy|blocked|gone|aborted|failed|taken_over`; anything else reads as `failed`); every poll answer also carries `features` (optional protocol features the server knows, `SESSION_BRIDGE_POLL_FEATURES`), `status`, and `interrupted { interruptId, ok, message? }` — and answers `409 { code: "ask_not_active" }` for a question that is no longer running, which tells the host to stop it. Commands are re-sent every ~5s until acknowledged (any event for that question; `interrupted` for an interrupt), so hosts dedupe by id. Guards, in order: a loopback Host with the server's own port (the runtime's `authorizeSessionBridgeRequest`, `403 session_bridge_forbidden_host`), no `Origin` header (`403`, a browser is never the host), the bearer token (`401`); without a pull bridge both paths answer `404`, which an older-binary-aware host treats as "no bridge". Liveness: until the host's first request the bridge reports `ready` (a question waits for the first poll); no first request within 30s, or 30s with no open poll after that, is `gone`, and a running question then fails `session_gone`. The newest poll supersedes an open one. A reviewer's Stop drops a question the host never confirmed, else queues `cancel` and frees the slot when the host confirms (or after 15s); `detach()` (decision / shutdown) drops only unconfirmed questions, and `dispose()` answers the open poll `closing`. Both runtimes route the two paths through `createAIEndpoints` (`pullBridge` dep), and Bun lifts the idle timeout for the poll (`isLongLivedAIEndpointPath`). Tests: `packages/ai/session-bridge-pull.test.ts` (fake host over the real client: streaming, early question, busy wait / interrupt, abort before and after pickup, host disappears, never connects, transient, bad token / Origin / rebinding Host, supersede, dispose, detach), `packages/server/ai-runtime.sessionBridge.test.ts` (env takeover, scrub, remote-off), `apps/opencode-plugin/session-bridge-cli.test.ts` (plugin ↔ CLI child end to end).
 
 **Model lists come from the installed tools, not hand lists.** Claude's list is the SDK's `supportedModels()` against the installed `claude` (a throwaway process with no prompt, `settingSources: []` so no user hooks run, no MCP servers, 10s cap, ~0.5s measured); Codex's is the app-server `model/list`. Both run lazily behind the provider initializer (`?activate=` or the first session), never at startup; a success is kept for the process, a failure may be retried after 60s (`createBestEffortOnce`), and the capabilities answer marks each such provider's list `modelsSource: 'fallback' | 'discovered'` so the client forgets a fallback answer and retries on its next load. The same discovery captures the tool version once (`claude --version` run alongside it; codex from the app-server initialize `userAgent`, via `cliVersionFrom`), kept even when discovery fails, and the answer carries it as an optional `toolVersion`; every Claude/Codex model picker (Agents tab launchers, Guided Review, Ask AI bars, Settings) shows a muted `ModelSourceHint` line ("From your installed Codex 0.155.1", or the built-in-list variant on `fallback`) only when `toolVersion` is present, so a host that omits it gets no hint. Both runtimes share `createDeferredModelDiscovery`: an `?activate=` probe waits for discovery, and so does a session for every provider except Claude, whose sessions resolve the model against the current list while discovery finishes in the background, so the first Ask AI answer does not wait on it — except when that list is still the fallback and lacks the requested pick (e.g. `opus[1m]`), where the session waits for discovery rather than silently running a different model once. One shape, `CatalogModel` in `packages/core/model-catalog.ts` (id, label, efforts + default effort, fast mode, `resolvedId`), serves Ask AI AND the review / Code Tour / Guided Review launchers: `useModelCatalogs` (`packages/ui/hooks/`) fetches the same `/api/ai/capabilities?activate=` answer for the ONE engine a launcher is set to, and `useAgentSettings` resolves saved picks against it at read time (the cookie is never rewritten). ONE resolver, `resolveModelChoice`, is used by the launchers, Ask AI's client (`aiProvider.ts`) and the AI session endpoint: exact id → the alias whose `resolvedId` covers it → the same family's alias (`claude-opus-5` → `opus`) → the surface default (Claude `opus` for review, `sonnet` for tour/guide; Codex `''` = the model the Codex list marks default, except Guided Review, which prefers `gpt-6-luna` when offered: `PREFERRED_GUIDE_CODEX_MODEL`) → the catalog default; it never moves a pick onto a `[1m]` id unless the pick was one. Efforts clamp to the model's own levels, launches wait until the catalog settles, and a loading row shows meanwhile. The Claude catalog drops the SDK's `default` pointer row and adds a bare latest alias per family offered, and always offers `opus` / `sonnet` / `haiku` (some CLIs, e.g. Claude Code 2.1.141, name Opus only through the `default` row, whose description then supplies the version); alias labels carry the version parsed from the row's `resolvedModel` (`claudeModelVersion`: "Opus 5.5 (latest)"), since the SDK's `displayName` has none. Codex fast mode is dropped when resolution replaces a saved model with a different one; changing Fast or reasoning then re-keys the section to the model shown. Codex fast support is read from `serviceTiers` (a `priority`/`fast` tier) as well as the deprecated `additionalSpeedTiers`. The only static lists are the small `CLAUDE_FALLBACK_MODELS` / `CODEX_FALLBACK_MODELS`, used when discovery fails.
 
@@ -1081,6 +1509,9 @@ Input type detected:
                forces the classic conversion pipeline; --app forces live mode
                and fails loudly when it cannot apply.
   folder/    → file browser opened, files converted on demand
+  a.md b.html c.md (several existing file paths)
+             → ONE review of all of them, in that order (mode
+               "annotate-bundle"; see "Several files in one review" below)
         ↓
 Annotate server starts (reuses plan editor HTML with mode:"annotate")
         ↓
@@ -1162,16 +1593,39 @@ were silent no-ops.
 Slash-command hosts forward raw user words to `plannotator annotate` verbatim (on Claude Code through a bash-substitution prefix that runs before the model sees anything), so non-strict invocations resolve their arguments in three tiers. The shared logic lives in `packages/shared/annotate-target.ts` (vendored to Pi) and is wired into the CLI's annotate branch plus the OpenCode and Pi command parsers:
 
 1. A single-token invocation runs the classic pipeline unchanged: a bare correct path behaves exactly as before, and a lone typo'd path still fails with `File not found` and exit `1`.
-2. With several tokens, each token is probed; exactly one naming an existing file, URL, or folder proceeds with it (`annotate look at notes.md please` opens `notes.md`). Two or more resolving tokens error naming every candidate rather than guessing, which also means `annotate a.md b.md` (previously: silently opened `a.md`, ignoring `b.md`) is now that error. Bare directory names only count as targets when they are the sole argument, so a stray word matching a directory (or `.`) cannot hijack the fast path; unrecognized dash-prefixed tokens disable the tolerance entirely so a typo'd flag (`--no-jna`) errors the way it always did instead of being silently skipped.
+2. With several tokens, each token is probed; exactly one naming an existing file, URL, or folder proceeds with it (`annotate look at notes.md please` opens `notes.md`). **Bundle rule (0.29), checked first:** when EVERY token is an existing regular file named by its path (resolved from the cwd, `~` or an `@` prefix; `probeAnnotateBundlePath`, never a name found only by searching the project, never a URL or folder), they open as one review in the typed order with duplicates dropped (`selectAnnotateTokenTarget(..., { bundlePath })` → `{ kind: "bundle" }`; the same file twice is `single`, on every host); an existing file of an unsupported type or over the 2MB cap among them fails naming it (`resolveAnnotateBundleFiles`; a `.env` is named as refused). When every token READS as a file path (`looksLikeFilePath` from the tool contract: a separator, a leading `~` `.` `@`, or an extension) but some name nothing at all (nothing exists at the path, `annotatePathExists`, and nothing is found by search), the selection is `{ kind: "missing" }` and the host fails naming them (`buildMissingAnnotateFilesMessage`, exit 1, or 2 under a strict gate): an explicit list of files with a typo never narrows to the files that exist. An existing path is never missing, so a stray `.` or `..` beside a file still opens the file and an existing folder keeps the ambiguity error. Known edge: a dotted word such as `Node.js` or `v2.0` reads as a file path, so `annotate notes.md about Node.js` is prose (fast path) but `annotate notes.md Node.js` fails naming `Node.js` when no such file exists. Otherwise two or more resolving tokens (prose around them, a URL or folder among them, a searched name) error naming every candidate rather than guessing, and the error gains one hint line, `ANNOTATE_BUNDLE_HINT` ("To review several files together, pass only their paths: plannotator annotate a.md b.html"), on hosts that open bundles. A host that cannot open bundles passes no `bundlePath` and keeps the #1182 tiers exactly. Bare directory names only count as targets when they are the sole argument, so a stray word matching a directory (or `.`) cannot hijack the fast path; unrecognized dash-prefixed tokens disable the tolerance entirely so a typo'd flag (`--no-jna`) errors the way it always did instead of being silently skipped.
 3. When nothing resolves, the CLI emits an agent-addressed handoff that echoes the words tried and asks the reading agent to re-run with a concrete target (content flags such as `--markdown` / `--no-jina` / `--render-html` are echoed for the re-run; transport flags are not). In plain mode the handoff goes to **stdout with exit `0`**, because a non-zero exit from a Claude Code bang-prefix skill aborts the prompt before the model sees any output; with `--json` / `--hook` it goes to stderr with exit `1` so machine-readable stdout stays reserved for decision records. OpenCode and Pi surface the same message as a host notification.
 
-Strict invocations (`--require-approval` / `--result-file`) bypass all three tiers: `args[1]` is the target and a typo'd path stays a startup failure with exit `2`.
+Strict invocations (`--require-approval` / `--result-file`) bypass all three tiers: `args[1]` is the target and a typo'd path stays a startup failure with exit `2`. With several arguments, a strict gate takes only the bundle rule: several existing file paths make one review (approve covers every file); anything else exits `2` ("File not found: <first>" when the first argument names nothing, else "A strict annotate gate takes one target, or only existing file paths…"), where extra words used to be silently ignored. The refusal is decided by probe and stat only: nothing is fetched, probed live, or reported as resolved first.
+
+### Several files in one review (annotate bundles)
+
+`plannotator annotate spec.md mock.html notes.md`, the `plannotator` tool's `target: [...]`, a taken-over Bash command with several file paths, and `/plannotator-annotate a.md b.md` on Pi and OpenCode (embedded and CLI-bridge) open ONE review of the listed files, in the given order, with ONE decision (owner decisions: no flag, no file-count limit, per-file decisions later). Design: `.product/drafts/agent-sessions-0.29/DESIGN.md` section A.
+
+- **Server mode `annotate-bundle`** in both runtimes (`packages/server/annotate.ts`, mirrored in `apps/pi-extension/server/serverAnnotate.ts`): options `bundleFiles: AnnotateBundleFile[]` (`{ path, renderAs }`, from `packages/shared/annotate-bundle.ts`, deliberately not in `@plannotator/core` so the published core export map is unchanged; two or more or the server throws) and `filePath` = the bundle root (`annotateBundleRoot`, the deepest directory holding every file, compared by path segment). `/api/plan` adds `bundle` (the list, in order) and `projectRoot` = the bundle root. `/api/doc` serves the files and what they link to under the single-file rule: reference roots are the cwd plus each file's own directory, and for a symlinked file also its target's whole directory, as a single-file session on that path would (`bundlePaths` on `getAnnotateReferenceRootPaths`), so a document beside a bundle file opens as a linked document exactly as from that file alone, and anything outside is `403`. The editor never walks the bundle root. Each text file's version history is saved when the review opens (the folder pipeline's per-file memo, run eagerly; raw HTML keeps none, as in folders), and `/api/doc` returns its version fields. Source save (Edit Mode writes) is off in bundles.
+- **Drafts:** the session draft is keyed by the ordered list (`bundle:\0<paths>`), and every file's comments are also saved under that file's path key (#1710's document copies), so they follow the file into a single-file, folder or other bundle session. Host status `documents` lists the files.
+- **Decision record:** the host result record (`PLANNOTATOR_HOST_RESULT_FILE`) and the feedback archive gain `documents: [{ path, annotationCount }]` in bundle order (`annotateBundleDocumentCounts`, counted from each submitted annotation's `documentPath`). The archive record's surface is `annotate-bundle` with `target.documents` and no `filePath`. The agent message frames the feedback with `Files: <path>, <path>` (`annotateBundleTargetText`) on every host.
+- **Editor** (`packages/editor/App.tsx`): a folder session (`annotateSource` stays `'folder'`) with `bundleFiles` state. The first file opens by itself; the header's `BundleSwitcher` (`packages/editor/components/BundleSwitcher.tsx`, "2 of 3 · mock.html ‹ ›", desktop; the compact shell names the position in its title and offers Previous/Next file in its Options menu) and the Files tab follow the given order: the tab shows the bundle as a synthetic, never-fetched file-browser section (`bundleDirState`, merged into `navigatorFileBrowser` beside any configured directories; the filesystem root is the empty dir path so `${dir}/${node}` stays absolute). A link from one bundle file to another opens it as that bundle file. A bundle file has no Close pill, no sidebar "Back to…" and no HTML header Back (the switcher moves between the files); a document a bundle file links to goes back to the last bundle file shown (`bundleBackPath`, the first file before any), never to the folder's empty "choose a file" state (`DocBadges`' `onBack` is optional for the `folder-file` variant). The export lists one section per file in bundle order under `BUNDLE_DOC_EXPORT_HEADING` ("File Feedback"; `resolveFeedbackSections({ bundleOrder })`, unlisted linked documents after), the All files panel follows the same order (`groupAnnotationsByDocument`'s `order`), and Ask AI's context carries `bundlePosition`, so the session-bridge surface line reads "annotating /…/mock.html, file 2 of 3".
+- **Version skew:** an older CLI answers several paths with the ambiguity error lacking `ANNOTATE_BUNDLE_HINT`; the Claude Code mod and the OpenCode CLI bridge recognize that (`isOlderCliBundleRefusal`) and say to update Plannotator to open several files at once. An older host never sends a list.
+
+Tests: the selection table in `packages/shared/annotate-target.test.ts`; `packages/server/annotate-bundle.scenarios.ts` (both runtimes); `apps/hook/server/annotate-bundle-cli.test.ts` (the CLI as a process: order, one decision, the host record's `documents`, strict gates, the hint); `packages/shared/annotate-bundle.test.ts`; the mod's `controller.test.ts` and `plannotator-tool*.test.ts`; OpenCode `commands.test.ts` and `cli-bridge.test.ts`; and the DOM test `packages/editor/App.bundle.test.tsx` (first file opens, switcher and file list in order, one section per file in bundle order).
 
 The bang prefix in the Claude Code skill is deliberate: #872 (commit `aac5aacb`, "restore `/plannotator-*` bash execution on Claude Code") put it back so the slash command never depends on the model choosing to run the binary. Argument-shape problems belong here in the CLI's resolution, not in the skill templates.
 
+### Annotate drafts follow the file
+
+Annotate drafts used to be keyed only by a hash of the document text, so an agent edit plus a reopen lost the reviewer's unsent comments. `packages/shared/annotate-draft.ts` (vendored to Pi; both servers route `/api/draft` and `/api/draft/document` through `createAnnotateDraftSession`) applies the #1590 pattern:
+
+- **Single local file** (mode `annotate`, not a URL): the draft is also saved under `annotateFileDraftKey(<abs path>)`, reusing `review-draft.ts`'s dual-key logic with the content key as the "patch" key. Load prefers the content copy unless the path copy is strictly newer by `draftGeneration`; the path copy remembers every content key it was saved on (`patchKeys`, server-stamped, stripped from client bodies and from load responses); its tombstone guards both keys. Restored comments re-anchor by text and one whose text is gone shows the existing Unanchored chip and still exports, with no line label. Because block ids are positional, the highlighter's restore report lists under `moved` every comment whose stored `blockId` no longer holds its text (the block its highlight landed in, or `''` when the text is gone, which is also reported unanchored whether or not stored positions existed), and App writes that back (`applyRestoredAnchors`, `packages/editor/restoredAnchors.ts`), so export line labels name the lines the text is on now; an unchanged document reports nothing and exports byte-identically. Only rows that own a text highlight go through that restore (`annotationOwnsHighlight`, `packages/ui/utils/annotationOwnsHighlight.ts`: not diff-view comments with their `diff-block-N` ids, general comments, checkbox toggles or question answers); every re-apply caller (draft restore, `useLinkedDoc`'s back/re-open, per-document copies) filters with it, and the highlighter and `applyRestoredAnchors` skip the same rows, so a diff-view comment's `blockId` is never rewritten. Behavior change worth a release note: any restored comment the restore cannot paint now shows the Unanchored chip, not only one whose stored positions landed on other text, so comments with no stored positions (share-link imports, external/SSE comments, Edit Mode repaints) are chipped when their quote is not in the document. A save refused as stale (another session on the same file decided or saved ahead) answers `409 { ok: false, error, found, draftGeneration }`; `DraftTransport.save` may resolve `{ staleGeneration }` and the hook raises its counter above it and saves once more, so the reviewer's comments are not silently left unsaved.
+- **Per-document copies:** every document a local-file or folder session holds comments on, other than the session's own root, is saved under that document's path key by the client hook `packages/editor/hooks/useDocumentDrafts.ts` (pure planning in `packages/editor/documentDrafts.ts`), and merged in the first time the document opens in a session (ids already held are skipped; a toast says how many came back). So a file's comments follow it between a folder session and a session on the file alone. These writes are generation-stamped by the server (one above whatever the key has seen), so a single-file session that later loads the copy resumes above it. A document is written only after its copy was read, and sent empty only when it was sent with content before. With per-document copies on, the session draft carries the ROOT document's comments even while another document is open (`composeSessionDraft` in `documentDrafts.ts`), plus every document the server keeps no copy for: one it refuses (`400`/`403`: outside the session's roots such as an Obsidian vault document, a symlink alias of the root, not a regular file) and a copy of the root opened through a self-link, so those stay crash-recoverable as before. Paths are canonicalized with `realpath` and must name an existing regular file (`canonicalDocumentPath`), so an alias shares its target's key.
+- **Clearing:** a decision (`/api/feedback`, `/api/approve`, and the reviewer's Close `/api/exit`, which deleted the draft before this too) clears the session's keys and the path copy of every document the session wrote or restored from, then refuses session-draft saves (`409 { decided: true }`, even above the tombstone, so a second tab cannot put back comments that were just sent; never retried by the client) and document writes (`409`). A client DELETE (everything removed, banner dismissed) clears only the session draft's keys. The client-lease auto-dismiss keeps everything, as before. An agent close (`POST /api/host/close`, `closedBy: "agent"`) is the other exception: it KEEPS the session draft, its path copy and every document copy (`closeKeepingDraft`), so they come back when the file is reopened, even after an edit. Saves and document writes that arrive after it still land (the tab also flushes its pending debounced saves when the session-closed event arrives, `flushPendingSave` / `flushPendingWrite`), so a comment typed just before the close is kept; only the closed tab's DELETE is ignored. The closed-tab copy (`packages/ui/utils/agentClosed.ts`) says per case what brings the draft back: a local file or folder even after edits, a URL or agent message only unchanged, a live app by its address. The host status/close `unsentAnnotations` count is the session draft the session would restore plus every document copy it covered (`countUnsent`).
+- **Scope:** URL, live-app and annotate-last sessions have no path key and no document copies. Drafts are crash recovery, not history, so `PLANNOTATOR_ANNOTATE_HISTORY` does not govern them. Known edges: two open sessions on the same file write the same path key and the last save wins; the key is the file's path only, so a raw-HTML session and a `--markdown` session on the same `.html` share one copy (raw-HTML pinpoints restored into the converted view, or the other way round, show as Unanchored); and the key follows the path's spelling after `realpath`, so a file reached through a hard link or a different mount is a different key.
+
+Tests: `packages/server/annotate-draft.scenarios.ts` (run against both runtimes by `packages/server/annotate-draft.test.ts` and `apps/pi-extension/server/serverAnnotate-drafts.test.ts`), `packages/editor/documentDrafts.test.ts`, `packages/editor/restoredAnchors.test.ts`, and the DOM tests `packages/editor/App.documentDrafts.test.tsx`, `packages/editor/annotationDraftStaleRetry.test.tsx` (the 409 retry against real draft sessions), `packages/editor/App.restoreAcrossEdit.test.tsx` (line labels and chips after a restore across an edit), `packages/ui/components/Viewer.restoreMovedAnchors.test.tsx` and `packages/ui/hooks/useLinkedDoc.reapplyFilter.test.tsx`.
+
 ### Strict direct annotate results
 
-Direct `plannotator annotate` invocations may add `--require-approval` and/or `--result-file <path>` only with `--gate --json`; both reject `--hook` and are not shared with OpenCode/Pi slash-command parsing. When neither strict option is present, single-target invocations keep the legacy plaintext, JSON, hook, and exit behavior unchanged; multi-token invocations go through the tolerant tiers described under "Tolerant argument resolution" above.
+Direct `plannotator annotate` invocations may add `--require-approval` and/or `--result-file <path>` only with `--gate --json`; both reject `--hook` and are not shared with OpenCode/Pi slash-command parsing. When neither strict option is present, single-target invocations keep the legacy plaintext, JSON, hook, and exit behavior unchanged, with two additive JSON fields. First, a non-gated Done with nothing to send prints `{"decision":"annotated","feedback":"User reviewed the document and has no feedback.","nothingToSend":true,"annotationCount":0}` (`nothingToSend` appears only in that case and only on the non-strict `--json` record and the `opencode-annotate-last` record; decision values, the feedback text, plaintext, `--hook` output, the strict-gate record and every exit code are unchanged; the OpenCode CLI bridge, Amp and Droid read it; #1701). Second, `annotationCount` (the number of annotations the decision carried) rides every approved and annotated record of the non-strict `--json` output, `opencode-annotate-last`, and `opencode-review`; the OpenCode bridge names it in its decision heading, and the strict-gate record does not carry it. Multi-token invocations go through the tolerant tiers described under "Tolerant argument resolution" above; several existing file paths open one review of all of them (strict gates included).
 
 Strict decisions use one newline-terminated JSON record on stdout and, when requested, identical bytes in the result file. Exit codes follow the grep convention: approval exits `0`; with `--require-approval`, annotated and dismissed decisions are published before exiting `1` (negative human outcome); usage/startup/validation failures — bad flag combinations, strict flags outside `annotate --gate --json`, a missing `--result-file` parent, a pre-existing or dangling-symlink destination, and every annotate startup failure (missing path, unreachable URL, empty folder, ambiguous name, missing file, oversized file) — exit `2` (the gate itself was misconfigured or could not start). Those startup sites exit `1` as before for non-strict invocations, with one deliberate exception: the multi-token zero-resolve handoff is not a startup failure, so in plain non-strict mode it prints on stdout and exits `0` (under `--json`/`--hook` it stays stderr + exit `1`). Under a strict flag `1` is reserved for "the reviewer did not approve", so a typo'd path must never masquerade as a rejection. Post-decision publication failures (destination appears between validation and publish, hard links unavailable) also exit `2`: the result *file* was not published, so they present as environment errors — "the gate could not publish its result" — never as a reviewer outcome, and never as approval (still fail-closed, since only `0` means approved). The stdout decision record is written **before** result-file publication and is still emitted whenever the decision itself completed; only a stdout write failure leaves no record anywhere. Signal deaths keep `128+n`. Result paths resolve from the invocation working directory, require an existing parent and absent destination, and publish via a flushed/closed `0600` same-directory temporary file plus an atomic no-clobber hard link—never copy or overwrite fallback (the `0600` mode is a no-op on Windows, and the atomic link/rename is not followed by a parent-directory fsync, so publication is atomic but not crash-durable). Keep reviewed sources at stable project paths; unique result and diagnostic log files may use a narrow temporary directory. Explicit Close emits `dismissed`; missing results or process/browser failures are recovery cases, never approval.
 
@@ -1251,6 +1705,7 @@ During normal plan review, an Archive sidebar tab provides the same browsing via
 | `/api/external-annotations` | POST | Add external annotations (single or batch `{ annotations: [...] }`) |
 | `/api/external-annotations` | PATCH | Update fields on a single annotation (`?id=`). The body is allowlisted and field-validated by `validateAnnotationPatch` (`@plannotator/core/external-annotation`, both runtimes) with the SAME validators POST applies — `diagramAnchor` / `htmlAnchor` / `elementContext` / the target arrays through their own fail-closed parsers, `inReplyTo` through `validateReplyTarget`, the scalars by type and cap. A bad value is `400`, unknown keys are dropped, `id` and `source` stay immutable, and `null` clears an optional field but is refused on an anchor or a structural one |
 | `/api/external-annotations` | DELETE | Remove by `?id=`, `?source=`, or clear all |
+| `/api/host/status` | GET | Host-only (see "Host session control" below): `{ kind: "plan", documents: [], unsentAnnotations, decided }`. A plan review has no host close (`POST /api/host/close` answers `409 { code: "not_closable" }`). |
 
 ### Review Server (`packages/server/review.ts`)
 
@@ -1270,7 +1725,7 @@ During normal plan review, an Archive sidebar tab provides the same browsing via
 | `/api/review-image`   | GET    | One side of a changed image as raw bytes for the Before/After preview (`?path=&side=old\|new&snapshot=`; #1598). Serves only a file in the current patch whose chunk has no hunks and whose path is `png jpg jpeg gif webp svg avif bmp ico apng`; the old path is taken from the chunk, never the client. `Content-Type` is sniffed from magic bytes; every image response carries `nosniff`, `Content-Security-Policy: sandbox; …` and `Cross-Origin-Resource-Policy: same-origin`, plus `ETag` (304 on `If-None-Match`) and `X-Image-Width`/`X-Image-Height` when the header parses. Errors are JSON `{ reason, error }`: `400 unavailable\|bad-request`, `404 not-in-diff\|absent\|missing`, `409 stale`, `413 too-large` (10 MB per side or 50 megapixels), `415 not-image\|lfs-pointer`, `502 fetch-failed`. Advertised by `imagePreviewSupported` on every diff payload (false for static-patch and P4 sessions). |
 | `/api/git-add`        | POST   | Stage/unstage a file (body: `{ filePath, undo? }`) |
 | `/api/review-progress?snapshot=<snapshotId>` | GET/POST | Load or save durable viewed-file progress. GET returns `{ available, key?, fingerprints?, viewedFiles?, suppressedFiles? }`; POST takes `{ key, changes: [{ path, fingerprint, viewed }] }`. Stale snapshots return 409. |
-| `/api/feedback`       | POST   | Submit review (body: feedback, annotations, agentSwitch) |
+| `/api/feedback`       | POST   | Submit review (body: feedback, annotations, agentSwitch, platform?). `platform: true` (boolean only) marks the status post the PR-platform path sends after `/api/pr-action`; it rides onto the decision, where the Claude Code mod logs it instead of starting a turn and OpenCode, Pi, CLI stdout and Amp deliver the status line verbatim without the request-changes suffix. Never infer it from empty `annotations` (see "Host result file") |
 | `/api/image`          | GET    | Serve image by path query param            |
 | `/api/upload`         | POST   | Upload image, returns `{ path, originalName }` |
 | `/api/draft`          | GET/POST/DELETE | Auto-save annotation drafts to survive server crashes |
@@ -1287,6 +1742,8 @@ During normal plan review, an Archive sidebar tab provides the same browsing via
 | `/api/external-annotations` | POST | Add external annotations (single or batch `{ annotations: [...] }`) |
 | `/api/external-annotations` | PATCH | Update fields on a single annotation (`?id=`). The body is allowlisted and field-validated by `validateAnnotationPatch` (`@plannotator/core/external-annotation`, both runtimes) with the SAME validators POST applies — `diagramAnchor` / `htmlAnchor` / `elementContext` / the target arrays through their own fail-closed parsers, `inReplyTo` through `validateReplyTarget`, the scalars by type and cap. A bad value is `400`, unknown keys are dropped, `id` and `source` stay immutable, and `null` clears an optional field but is refused on an anchor or a structural one |
 | `/api/external-annotations` | DELETE | Remove by `?id=`, `?source=`, or clear all |
+| `/api/host/status` | GET | Host-only (see "Host session control" below): `{ kind, documents, unsentAnnotations, decided }`; counts only, never comment text |
+| `/api/host/close` | POST | Host-only: the reviewer's Close marked `closedBy: "agent"`, KEEPING the draft; tells open tabs over the external-annotation SSE (`session-closed`) and answers `{ unsentAnnotations }`; `409 { code: "already_decided" }` once decided |
 | `/api/agents/capabilities` | GET | Check available agent providers (claude, codex, tour, guide, cursor, opencode, pi, copilot) |
 | `/api/agents/review-profiles` | GET | List launchable review profiles (enabled skills + builtin default) |
 | `/api/agents/skills` | GET | List all discovered skills for the add-a-review picker (each flagged `enabled`) |
@@ -1320,7 +1777,7 @@ During normal plan review, an Archive sidebar tab provides the same browsing via
 
 | Endpoint              | Method | Purpose                                    |
 | --------------------- | ------ | ------------------------------------------ |
-| `/api/plan`           | GET    | Returns `{ plan, origin, mode: "annotate", filePath, sourceInfo?, gate, renderAs?, rawHtml?, previousPlan?, versionInfo?, diffCurrent?, diffHtml? }`. `renderAs` is `"markdown"`, `"html"`, or — for a whole-file diagram source (`.mmd`/`.mermaid`/`.dot`/`.gv`) — `"mermaid"` / `"graphviz"`, in which case `plan` is the file's RAW text and the editor renders it as one diagram block (see "Diagram files"). The decision is the pure, shared `annotateDiagramRenderKind` (`packages/core/annotatable.ts`), so a raw-HTML, converted, URL, folder, message or live-app session is never a diagram session in either runtime. The last four power the per-file version diff: `previousPlan`/`versionInfo`/`diffCurrent` for the markdown diff, `diffHtml` (the previous→current page rendered with inline `<ins>`/`<del>`) for `--render-html` files. A local rendered-HTML root is served from its CURRENT bytes on every read (`readRootHtml`), with the startup snapshot as the fallback when the file is missing, unreadable, or over the 2MB cap; when the served bytes differ from the snapshot, `previousPlan`/`versionInfo` still name the saved baseline and `diffCurrent`/`diffHtml` are recomputed against the served bytes (`htmlDiff` is pure; a GET never writes history), so a reload after an agent edit keeps the version diff. `/api/doc` carries the same recomputed `previousPlan`/`versionInfo`/`diffHtml` when it serves that root document (the in-app Refresh path, `rootHtmlVersionDiff`), and nothing extra for any other document. Live app sessions return `{ mode: "annotate-app", appUrl, targetUrl, liveToken, sharingEnabled: false, ... }` instead: no rawHtml, no version fields (see "Live app annotation"). |
+| `/api/plan`           | GET    | Returns `{ plan, origin, mode: "annotate", filePath, sourceInfo?, gate, renderAs?, rawHtml?, previousPlan?, versionInfo?, diffCurrent?, diffHtml? }`. `renderAs` is `"markdown"`, `"html"`, or — for a whole-file diagram source (`.mmd`/`.mermaid`/`.dot`/`.gv`) — `"mermaid"` / `"graphviz"`, in which case `plan` is the file's RAW text and the editor renders it as one diagram block (see "Diagram files"). The decision is the pure, shared `annotateDiagramRenderKind` (`packages/core/annotatable.ts`), so a raw-HTML, converted, URL, folder, message or live-app session is never a diagram session in either runtime. The last four power the per-file version diff: `previousPlan`/`versionInfo`/`diffCurrent` for the markdown diff, `diffHtml` (the previous→current page rendered with inline `<ins>`/`<del>`) for `--render-html` files. A local rendered-HTML root is served from its CURRENT bytes on every read (`readRootHtml`), with the startup snapshot as the fallback when the file is missing, unreadable, or over the 2MB cap; when the served bytes differ from the snapshot, `previousPlan`/`versionInfo` still name the saved baseline and `diffCurrent`/`diffHtml` are recomputed against the served bytes (`htmlDiff` is pure; a GET never writes history), so a reload after an agent edit keeps the version diff. `/api/doc` carries the same recomputed `previousPlan`/`versionInfo`/`diffHtml` when it serves that root document (the in-app Refresh path, `rootHtmlVersionDiff`), and nothing extra for any other document. Live app sessions return `{ mode: "annotate-app", appUrl, targetUrl, liveToken, sharingEnabled: false, ... }` instead: no rawHtml, no version fields (see "Live app annotation"). A review of several files answers `{ mode: "annotate-bundle", plan: "", bundle: [{ path, renderAs }], projectRoot: <bundle root>, documentDrafts: true, ... }` (see "Several files in one review"). |
 | `/api/plan/version`   | GET    | Fetch a specific stored version of the annotated file (`?v=N`) |
 | `/api/plan/versions`  | GET    | List all stored versions of the annotated file |
 | `/api/feedback`       | POST   | Submit annotations (body: feedback, annotations) |
@@ -1335,7 +1792,8 @@ During normal plan review, an Archive sidebar tab provides the same browsing via
 | `/api/doc/exists`     | POST   | Batch-validate code-file paths (body: `{ paths: string[], base?: string }`) |
 | `/api/skills`         | GET    | List global agent skills for comment skill references (`{ skills: [{ name, root, description?, humanOnly, dir }] }`) |
 | `/api/skills/content` | GET    | SKILL.md contents of one discovered skill for human-only feedback injection (`?name=<skill>`) returns `{ skill: { name, dir, path, content, truncated, humanOnly } }`; the name is matched against discovery only, never used as a path |
-| `/api/draft`          | GET/POST/DELETE | Auto-save annotation drafts to survive server crashes |
+| `/api/draft`          | GET/POST/DELETE | Auto-save annotation drafts to survive server crashes. A single local file is keyed by its content AND its path (see "Annotate drafts follow the file"); with the path copy in use a stale save answers `409 { ok: false, error: "stale draft generation", found, draftGeneration }`, and the client (`useAnnotationDraft`, default transport) adopts `draftGeneration` and saves once more above it. After the review is decided every save (any session kind, any generation) answers `409 { ok: false, decided: true, error, found, draftGeneration }`, which the client never retries |
+| `/api/draft/document` | GET/POST | Per-document draft copies (local-file and folder sessions; `/api/plan` advertises `documentDrafts: true`): GET `?path=<abs>` returns `{ found, annotations, globalAttachments }` (404 when none, 400 when the path is not an existing regular file, 403 outside the session's roots or for a single-file session's own file, symlink aliases included); POST `{ documents: [{ path, annotations, globalAttachments? }] }` returns `{ ok, written, rejected? }`, an empty list clears that copy, and `409` after a decision |
 | `/api/annotate/client-lease` | GET (SSE) | Client lease for local direct structured gates: each open stream is one connected review surface. 404 when the capability is not advertised. |
 | `/api/agent-terminal/pty/<token>` | WebSocket | Tokenized PTY bridge for the optional annotate-mode agent terminal |
 | `/api/ai/capabilities` | GET | Check if AI features are available |
@@ -1349,8 +1807,40 @@ During normal plan review, an Archive sidebar tab provides the same browsing via
 | `/api/external-annotations` | POST | Add external annotations (single or batch `{ annotations: [...] }`) |
 | `/api/external-annotations` | PATCH | Update fields on a single annotation (`?id=`). The body is allowlisted and field-validated by `validateAnnotationPatch` (`@plannotator/core/external-annotation`, both runtimes) with the SAME validators POST applies — `diagramAnchor` / `htmlAnchor` / `elementContext` / the target arrays through their own fail-closed parsers, `inReplyTo` through `validateReplyTarget`, the scalars by type and cap. A bad value is `400`, unknown keys are dropped, `id` and `source` stay immutable, and `null` clears an optional field but is refused on an anchor or a structural one |
 | `/api/external-annotations` | DELETE | Remove by `?id=`, `?source=`, or clear all |
+| `/api/host/status` | GET | Host-only (see "Host session control" below): `{ kind, documents, unsentAnnotations, decided }`; counts only, never comment text |
+| `/api/host/close` | POST | Host-only: the reviewer's Close marked `closedBy: "agent"`, KEEPING the draft; tells open tabs over the external-annotation SSE (`session-closed`) and answers `{ unsentAnnotations }`; `409 { code: "already_decided" }` once decided |
 
 All servers use random ports locally or fixed port (`19432`) in remote mode.
+
+### Host session control
+
+`GET /api/host/status` and `POST /api/host/close` (`packages/shared/host-control.ts`,
+vendored to Pi; Bun adapter `packages/server/host-control.ts`, Pi adapter
+`apps/pi-extension/server/host-control.ts`) let the agent session that launched a
+review ask what it holds and close it. Guarded exactly like the pull bridge: a
+loopback Host naming the server's port (`403`), no `Origin` (`403`), and
+`Authorization: Bearer <token>` (`401`), the launch's `PLANNOTATOR_SESSION_BRIDGE_TOKEN`
+(Bun default; servers also take `hostControlToken`). Without a token the paths answer
+`404 { error: "Not found", code: "host_control_disabled" }` (`HOST_CONTROL_DISABLED_CODE`),
+which a host reads as "turned off" rather than "an older Plannotator" (an uncoded `404`);
+they are off in remote mode, and
+`--tailscale` discards the env token. Unlike the pull bridge they still answer under
+`PLANNOTATOR_AI=disabled` (closing a review is not an AI feature). Once a session is
+decided (a host close included), the review servers refuse a late `/api/feedback` or
+`/api/exit` with `409` (both runtimes, like annotate), so a tab still open after the
+close neither deletes the kept draft nor gets an ok for feedback nobody receives.
+Close settles the decision as `exit` with
+`closedBy: "agent"` and `unsentAnnotations` (no draft delete, no feedback-archive
+record: the reviewer decided nothing), broadcasts `{ type: "session-closed", by:
+"agent", unsentAnnotations }` on the external-annotation stream (`broadcast` on both
+runtimes' handlers; `useExternalAnnotations`'s `onSessionClosed`), and the CLI's
+host result record carries the same `closedBy` / `unsentAnnotations` on its
+`dismissed` record. Every server result also exposes `hostControl` (`status()`,
+`close?()`) for hosts that run the server in-process (Pi, the OpenCode 2 embedded
+plan server). Plan servers implement status only. A host that calls the endpoints
+over HTTP reads the answers with `classifyHostCloseAnswer` / `readHostStatusAnswer`
+from the same shared module (the OpenCode 2 tool); the Claude Code mod keeps its own
+copy of that rule because a hooks module imports only its own folder.
 
 ### Paste Service (`apps/paste-service/`)
 
@@ -1456,8 +1946,15 @@ Details that surprise people:
   would signal a real shape change rather than the arrival of new keys.
 - **Folder-session records name the folder, not the open document.** A folder
   annotate session submits one body of feedback for the session, so
-  `target.filePath` is the session's folder; the per-document path is not part
-  of the record.
+  `target.filePath` is the session's folder. The record's `annotations` hold
+  every document's comments (not only the open one's), and each comment made
+  on a document other than the session's own target carries the additive
+  `documentPath` field naming that document (absent means the session's own
+  target or message; distinct from `file`, a code annotation's file).
+- **Records of a review of several files name every file.** Surface
+  `annotate-bundle` (additive), no `target.filePath`, and the additive
+  `target.documents: [{ path, annotationCount }]` in review order; every
+  comment on a file carries its `documentPath`.
 - **URL-session records store the full URL, query string included**, because
   that is the page that was reviewed. A URL carrying a token in its query is
   therefore written to disk; the opt-out is the control for that.
@@ -1489,7 +1986,7 @@ When a user denies a plan and Claude resubmits, the UI shows what changed betwee
 
 **State** (`packages/ui/hooks/usePlanDiff.ts`): Manages base version selection, diff computation, and version fetching. The server sends `previousPlan` with the initial `/api/plan` response; the hook auto-diffs against it. Users can select any prior version from the sidebar Version Browser.
 
-**Diff annotations:** The clean diff view supports block-level annotation — hover over added/removed/modified sections to annotate entire blocks. Annotations carry a `diffContext` field (`added`/`removed`/`modified`). Exported feedback includes `[In diff content]` labels.
+**Diff annotations:** The clean diff view supports block-level annotation — hover over added/removed/modified sections to annotate entire blocks. Annotations carry a `diffContext` field (`added`/`removed`/`modified`). Exported feedback includes `[In diff content]` labels. A diff annotation's `blockId` is `diff-block-N` (N indexes the diff against the selected base, not a document block), so the export cannot place it in the document: diff comments print together AFTER the document's other comments, in diff order (`sortAnnotationsInDocumentOrder` in `packages/ui/utils/parser.ts`); a document with no diff comments sorts exactly as before.
 
 **Annotation hook** (`packages/ui/hooks/useAnnotationHighlighter.ts`): Annotation infrastructure used by `Viewer.tsx`. Manages web-highlighter lifecycle, toolbar/popover state, annotation creation, text-based restoration, and scroll-to-selected. The diff view uses its own block-level hover system instead.
 
@@ -1605,11 +2102,11 @@ Text highlighting uses `web-highlighter` library. Code blocks use manual `<mark>
 
 **Annotation undo/redo:** each plan, annotate, or code-review app keeps one bounded 50-action stack for the active surface. `Mod+Z` undoes; `Mod+Shift+Z` and `Mod+Y` redo. Only local human annotation mutations are recorded, and a new mutation discards the redo branch. Native inputs, textareas, contenteditable regions, CodeMirror, dialogs/popovers, the Image Annotator, and an open Review Edit Mode session keep ownership of their own history shortcuts. External/agent writes do not enter annotation history; direct source changes, draft/share restore, refresh or diff replacement, identity changes, navigation to another document/message/review context, submission, and other baseline replacements clear it. The Image Annotator keeps a separate stroke undo/redo stack while its overlay is open.
 
-**Cross-file annotations (multi-document annotate sessions).** A folder session — and any session whose linked documents carry feedback — spreads one body of feedback over many documents, so the annotations panel has a scope toggle in its header: **This file | All files**. It appears only when feedback exists outside the open document (`isMultiDocumentSession` in `packages/editor/App.tsx`); message multi-select keeps its own cross-message surface and is excluded. The toggle replaces the old `+N in M other files` flash affordance as the primary answer to "there are comments elsewhere"; the flash survives as a "Show in files" link at the foot of the All files view, and the header keeps a quiet `+N elsewhere` count while the scope is This file.
+**Cross-file annotations (multi-document annotate sessions).** A folder session — a review of several files (bundle), and any session whose linked documents carry feedback — spreads one body of feedback over many documents, so the annotations panel has a scope toggle in its header: **This file | All files**. It appears only when feedback exists outside the open document (`isMultiDocumentSession` in `packages/editor/App.tsx`); message multi-select keeps its own cross-message surface and is excluded. The toggle replaces the old `+N in M other files` flash affordance as the primary answer to "there are comments elsewhere"; the flash survives as a "Show in files" link at the foot of the All files view, and the header keeps a quiet `+N elsewhere` count while the scope is This file.
 
 *Default rule* (`resolveInitialAnnotationScope`, `packages/ui/utils/annotationScope.ts`): the saved preference wins, except that a document with **no feedback of its own while other documents have some** opens on All files — that is the frustration the view exists for. It is re-resolved on every document change (keyed on the open document only, so a toggle is never yanked away mid-document), and the explicit choice persists per browser in the `plannotator-annotation-scope` cookie. One exception: arriving by clicking a card in the All files list keeps the All files scope, because that list is where the reviewer was.
 
-*Grouping* is `groupAnnotationsByDocument` (pure, same file): one collapsible group per document that actually carries feedback, the open document first and the rest by path, labelled relative to the deepest session root the file browser knows. Cards are the same `AnnotationCard` the single-document timeline renders, so quote, comment, type, images, replies, Edit and Delete behave identically.
+*Grouping* is `groupAnnotationsByDocument` (pure, same file): one collapsible group per document that actually carries feedback, the open document first and the rest by path (in a bundle: the bundle's own order, the open file in its place, anything else after), labelled relative to the deepest session root the file browser knows. Cards are the same `AnnotationCard` the single-document timeline renders, so quote, comment, type, images, replies, Edit and Delete behave identically.
 
 *Editing another document's comments* writes straight into that document's stored annotations through `useLinkedDoc`'s `updateStoredAnnotations` (the linked-doc cache, or the stashed source document); the active document is refused outright, since its annotations are host state. The export reads the same store, so a cross-file delete is reflected in what is submitted. *Export split:* `getDocAnnotations()` also carries the OPEN document's live state (for counts and the panel), so an export must never read it beside the host's live annotations — that printed the open document twice (every folder session, and any session submitted while a linked document was open). Every export goes through `useLinkedDoc.getFeedbackDocuments()` (`{ root, documents }`: the stashed root while a linked document is open, else null, and every other document once by path) and `resolveFeedbackSections` (`packages/editor/feedbackDocuments.ts`): the root (plan, file, or folder-level comments, plus SSE externals) under the session heading, every other document under its own path. A folder session titles that second section `Folder Document Feedback` ("files in the reviewed folder"), not the plan wording. Every document's entries are rendered by the ONE renderer `exportAnnotations` uses (`renderAnnotationEntries` in `packages/ui/utils/parser.ts`: document order, `[In diff content]`, quick labels + tip + Label Summary, threaded replies), so a document reads the same whichever section carries it. A cache entry under the root's own path (the root opened from itself, e.g. an HTML "Home" link) is a separate copy and is exported under its path, never dropped. **These cross-file mutations are deliberately not undoable:** the annotation history stack describes the open document's surface, and an entry that undid into a document the reviewer is not looking at would restore invisible state. `Mod+Z` still covers everything done in the open document.
 
@@ -1629,11 +2126,11 @@ Share links carry the FENCED form in the payload's `p` (`shareableDocumentMarkdo
 
 **Raw-HTML annotate:** the sandboxed viewer never mutates the visited page's DOM. Committed annotations render as numbered placed comment markers plus overlay-projected highlight rectangles inside a shadow-rooted fixed overlay host: the durable anchor data (element selector, text snapshot, normalized selected point) is persisted, and the markers/highlights are disposable projections re-resolved from it on every reconcile. Shift-click multi-select joins additional elements to one comment (`htmlAdditionalTargets`).
 
-**Element context (agent-facing).** A pinpoint also captures a bounded description of the element at click time, `elementContext` on the annotation (`HtmlElementContext` in `packages/ui/types.ts`; extra targets carry a smaller one as `context`), built by `buildElementContext` in the bridge and re-validated at the parent trust boundary by `parseHtmlElementContext`, which lives in `packages/core/html-anchor.ts` beside `parseHtmlElementAnchor` (#1549); `useHtmlAnnotation.ts` imports and re-exports it rather than mirroring it, and the host persistence helpers in that same core module (`buildPersistedHtmlAnchor`, `projectHostThreads`) run it too, so a host that persists and projects through core keeps the field instead of dropping it on save. It is purely descriptive, never read by restore. Fields: tag, id, author classes, an ancestor `path`, explicit-or-implicit `role`, accessible `name`, an ALLOWLISTED attribute set (href/src scrubbed of query and fragment, `data:` truncated to its media type), rendered `text` (300), a collapsed HTML `outline` (600 chars; two child levels, then one, then a per-tag count, whichever first fits), child count, viewport `rect`, nearest `landmark` and `heading`, a `component` hint from `data-component`/`data-testid` ancestry (deliberately no React fiber reads), and in live-app sessions the `page` route and title. Never captured: form values, `on*` handlers, `style`, script/style/template contents, full innerHTML. Hard cap 2 KiB serialized per primary (1 KiB per extra target), shedding outline → text → attrs → classes → path → heading → landmark → component. Under the persisted anchor's own 16 KiB budget `buildPersistedHtmlAnchor` sheds contexts — per-target first, from the end, then the primary — BEFORE it drops any target, since a context is descriptive and re-derivable on the next click while a dropped target loses a marker the reviewer placed; `DEFAULT_HTML_ANCHOR_MAX_BYTES` is unchanged and the dropped-target counts still count targets only. The export (`elementContextExportBlock` in `packages/ui/utils/parser.ts`) prints a 4-backtick `html` fence of the outline plus `selector` / `path` / `role` · `name` · `component` / `attrs` / `text` / `box` / `near` lines under the comment; a text-less pinpoint's placeholder quote names WHICH element it is, not just its kind: the hover label plus the accessible name (`ctxName`: aria-label, alt, title, …) plus, for media (`img`, `video`/`audio` and their `<source>`, `iframe`, `embed`, `object`, `input type=image`, svg `<image>`), the source FILE name through the same `ctxScrubUrl` scrub (`[element: Image "Team photo" (team.jpg)]`, `[element: Image (data:image/png)]`; brackets and double quotes are swapped so it stays one token; `describeTextlessElement` in the bridge, used for the primary and every shift-click extra target). Restore never reads that quote (the anchor binds a text-less element), so pins saved with the older bare `[element: Image]` keep restoring. The export rewrites the placeholder to `Feedback on the <nav> element — "Primary"` in the heading, plus the `src` file name for media (`Feedback on the <img> element (jane.png)`), while a pinpoint with real quoted text keeps its quote line and gains the block. In srcdoc sessions `ctxScrubUrl` also drops the session's `/api/html-assets/<token>/` prefix, so a `src` reads as the author's own document-relative path, percent-decoded (`jane doe.png`). **Ask AI** carries the same identity: a question asked from a pinpoint composer sends `elementIdentityForAskAI(draftTargets)` (`packages/ui/utils/parser.ts`, the identity lines of `elementContextExportBlock` with `includeOutline: false`, numbered per element) as the scope's `detail`, which `buildDefaultPrompt` appends under "Selected element:" and the chat never displays; SDK providers, "Ask this session" and the agent terminal all send that prompt. It carries no query strings: the live route and an `href`/`src` selector rung are scrubbed to `?…` there (the persisted annotation keeps them). Annotations without the field export byte-identically. The grouped live-app export omits the `route` line (the `## Page:` heading carries it); `exportAnnotationEntry` (one annotation, no number) includes it; it is a pure helper for hosts and tests, and the annotation panel's card chrome is unchanged. Both helpers also take `includeOutline` (default `true`): `false` prints the identity lines without the fenced outline, for model turns where the 600-char outline is the expensive part per annotation. Share links drop `elementContext` exactly like anchors. The feedback archive records identity only (`elementTag`, `elementSelector`, `elementPath`, `elementRole`, `elementName`, `pageUrl`), never the outline. No `BRIDGE_PROTOCOL_VERSION` bump: the field is additive in both directions.
+**Element context (agent-facing).** A pinpoint also captures a bounded description of the element at click time, `elementContext` on the annotation (`HtmlElementContext` in `packages/ui/types.ts`; extra targets carry a smaller one as `context`), built by `buildElementContext` in the bridge and re-validated at the parent trust boundary by `parseHtmlElementContext`, which lives in `packages/core/html-anchor.ts` beside `parseHtmlElementAnchor` (#1549); `useHtmlAnnotation.ts` imports and re-exports it rather than mirroring it, and the host persistence helpers in that same core module (`buildPersistedHtmlAnchor`, `projectHostThreads`) run it too, so a host that persists and projects through core keeps the field instead of dropping it on save. It is purely descriptive, never read by restore. Fields: tag, id, author classes, an ancestor `path`, explicit-or-implicit `role`, accessible `name`, an ALLOWLISTED attribute set (href/src scrubbed of query and fragment, `data:` truncated to its media type), rendered `text` (300), a collapsed HTML `outline` (600 chars; two child levels, then one, then a per-tag count, whichever first fits), child count, viewport `rect`, nearest `landmark` and `heading`, a `component` hint from `data-component`/`data-testid` ancestry (deliberately no React fiber reads), and in live-app sessions the `page` route and title. Never captured: form values, `on*` handlers, `style`, script/style/template contents, full innerHTML. Hard cap 2 KiB serialized per primary (1 KiB per extra target), shedding outline → text → attrs → classes → path → heading → landmark → component → sourceName (one order, `ELEMENT_CONTEXT_SHED_ORDER` in core, mirrored by the bridge's `CTX_SHED_ORDER`; a test keeps them equal). Under the persisted anchor's own 16 KiB budget `buildPersistedHtmlAnchor` sheds contexts — per-target first, from the end, then the primary — BEFORE it drops any target, since a context is descriptive and re-derivable on the next click while a dropped target loses a marker the reviewer placed; `DEFAULT_HTML_ANCHOR_MAX_BYTES` is unchanged and the dropped-target counts still count targets only. The export (`elementContextExportBlock` in `packages/ui/utils/parser.ts`) prints a 4-backtick `html` fence of the outline plus `selector` / `path` / `role` · `name` · `component` / `attrs` / `text` / `box` / `near` lines under the comment; a text-less pinpoint's placeholder quote names WHICH element it is, not just its kind: the hover label plus the accessible name (`ctxName`: aria-label, alt, title, …) plus, for media (`img`, `video`/`audio` and their `<source>`, `iframe`, `embed`, `object`, `input type=image`, svg `<image>`), the source FILE name through the same `ctxScrubUrl` scrub (`[element: Image "Team photo" (team.jpg)]`, `[element: Image (data:image/png)]`; brackets and double quotes are swapped so it stays one token; `describeTextlessElement` in the bridge, used for the primary and every shift-click extra target). Restore never reads that quote (the anchor binds a text-less element), so pins saved with the older bare `[element: Image]` keep restoring. The export rewrites the placeholder to `Feedback on the <nav> element — "Primary"` in the heading, plus the media file name (`Feedback on the <img> element (jane.png)`), read from the context's `sourceName`: the bridge records the file `describeTextlessElement` names (src, a lazy `data-src` over a `data:` placeholder, `srcset`, `<picture><source srcset>`, a video's `<source>` or `poster`, scrubbed the same way), so the heading and the composer quote always name the same file; contexts saved without `sourceName` fall back to the scrubbed `src` attribute, while a pinpoint with real quoted text keeps its quote line and gains the block. In srcdoc sessions `ctxScrubUrl` also drops the session's `/api/html-assets/<token>/` prefix, so a `src` reads as the author's own document-relative path, percent-decoded (`jane doe.png`). **Ask AI** carries the same identity: a question asked from a pinpoint composer sends `elementIdentityForAskAI(draftTargets)` (`packages/ui/utils/parser.ts`, the identity lines of `elementContextExportBlock` with `includeOutline: false`, numbered per element) as the scope's `detail`, which `buildDefaultPrompt` appends under "Selected element:" and the chat never displays; SDK providers, "Ask this session" and the agent terminal all send that prompt. It carries no query strings: the live route and an `href`/`src` selector rung are scrubbed to `?…` there (the persisted annotation keeps them). Annotations without the field export byte-identically. The grouped live-app export omits the `route` line (the `## Page:` heading carries it); `exportAnnotationEntry` (one annotation, no number) includes it; it is a pure helper for hosts and tests, and the annotation panel's card chrome is unchanged. Both helpers also take `includeOutline` (default `true`): `false` prints the identity lines without the fenced outline, for model turns where the 600-char outline is the expensive part per annotation. Share links drop `elementContext` exactly like anchors. The feedback archive records identity only (`elementTag`, `elementSelector`, `elementPath`, `elementRole`, `elementName`, `pageUrl`), never the outline. No `BRIDGE_PROTOCOL_VERSION` bump: the field is additive in both directions.
 
 **HTML and live-app interaction model:** raw-HTML sessions and live app sessions (`mode: "annotate-app"`) share one contract. Both open with pinpoint **armed** (`htmlAnnotateArmed` defaults to `true`, `packages/editor/App.tsx:493`; live sessions open armed like every other HTML surface, `App.tsx:2871`). `Esc` walks a ladder instead of exiting outright: a pending draft closes first, then the pinpoint hover outline clears, and only then does `Esc` drop the surface to **Interact**, where the bridge goes passive so clicks, forms, text selection, and SPA navigation reach the page natively (`packages/ui/components/html-viewer/bridge-script.ts:3066-3080`; committed markers stay visible and a marker click still opens its comment, and in Interact an open drag-comment draft still closes before `Esc` is handed back to the page). Vim owns its own ladder and is skipped here. The header **pen** button toggles Annotate/Interact (`packages/editor/components/AppHeader.tsx:386-404`, `aria-pressed`), as does `Mod+Shift+A` (`packages/ui/shortcuts/plan-review/htmlAnnotate.shortcuts.ts`) — a real toggle in BOTH directions, which is what makes it the answer to "Esc dropped me to Interact, how do I get back?". Disarming through either path tears down any pending draft, because the bridge's `set-annotate-mode(false)` handler clears every pending affordance (`bridge-script.ts:719-739`), exactly as the Esc ladder does. The bridge mirrors the chord inside the iframe on the capture phase and forwards it to the parent, so it works whichever document owns focus. Text drag-selection commenting is **always live**, on both surfaces and in both states, ungated from the armed flag and from the input method (`bridge-script.ts:384-386`, `:1420-1436`): while armed, a click pins an element and a drag selects text at the same time, and the one-shot `dragEndedClick` guard stops a completed drag's trailing click from re-pinning (`bridge-script.ts:1381-1390`).
 
-These surfaces are **comment-only**. `redline` (auto-DELETION) and `quickLabel` are clamped at the trust boundary, which is the parent's postMessage ingest rather than the server, covering the host mode and a page-supplied `modeOverride` alike so a hostile page cannot force a DELETION (`packages/ui/components/html-viewer/useHtmlAnnotation.ts:535-547`). Only CREATION is restricted: persisted DELETION annotations still restore and still render their deletion styling (`useHtmlAnnotation.ts:903`). The selection toolbar drops Delete and the label picker behind a `commentOnly` seam and keeps exactly one label affordance, the hardcoded 👍 "Looks good" for text selections (`HtmlViewer` filters its `onQuickLabel` handler to `THUMBS_UP_LABEL`); markdown surfaces keep the full toolbar. The pinpoint comment composer has no one-click "Looks good": a reviewer who wants one selects text and uses the toolbar's 👍. HTML surfaces also pin the viewer input method to pinpoint (`App.tsx:5480`), so there is no floating input-method toolstrip on them at all (`toolstripVisible` is gated on `!isHtmlSurface`, `App.tsx:2788-2793`) and the `Shift+1`-`4` annotation-mode shortcuts cannot fire there. A header **eye** button immediately left of the pen toggles Show/Hide tools, as does `Mod+Shift+X` (same scope, same bridge forwarding as the pen chord — the binding is deliberately un-mnemonic because every mnemonic letter is a browser chord: H is Chrome Home / Firefox history, E/I/J/K/C devtools, B/O bookmarks, V paste-as-plain-text, T reopen tab): hiding REMOVES all floating chrome over the page from the DOM (the sidebar tongue tabs and the comment/attachments cluster) rather than merely hiding it (`AppHeader.tsx:364-385`, `App.tsx:5193`, `HtmlViewer.tsx:810`). These surfaces **open with the tools hidden** — `DEFAULT_HTML_CHROME_STATE.toolsHidden` is true and `App.tsx` seeds `htmlToolsHidden` true so nothing flashes before the restore effect — because an HTML document is authored to fill the viewport. A fresh persisted record still wins in both directions, so a reviewer who showed the tools keeps them — in a folder annotate session too, which restores and records the `toolsHidden` half while leaving the sidebar/panel halves alone, since its file browser owns the sidebar for the whole session (`mergeHtmlChromeState`). The toggle lives in the header (and in the compact Options menu), so hidden — default or restored — always has a way back, which is what makes both honoring the persisted `toolsHidden` cookie and defaulting to hidden safe (`packages/ui/utils/htmlChrome.ts`). Note the version-diff "Show changes" control lives in that floating cluster, so it is behind the eye on a fresh session. All three header controls (eye, pen, Refresh) describe themselves through the app's `Tooltip` rather than a native `title` (`packages/ui/components/HtmlSurfaceControls.tsx`): two lines, the control's description — still the host-overridable `labels` string — over its shortcut as keycaps from `formatShortcutBindingTokens`, so the chord is never a hardcoded "Cmd". Because `title` no longer supplies the accessible name, the pen carries an explicit `aria-label` (defaulting to its description), the eye keeps its sr-only text and the Refresh its `aria-label`; the shortcut is additionally attached as a persistent `aria-describedby` span, because this Base UI build tags the popup with no ARIA at all. Refresh has no chord and renders no keycap row; `shortcuts` on the component overrides the bindings per control, defaulting to the `html-annotate` scope so the tooltips cannot drift from what the app dispatches.
+These surfaces are **comment-only**. `redline` (auto-DELETION) and `quickLabel` are clamped at the trust boundary, which is the parent's postMessage ingest rather than the server, covering the host mode and a page-supplied `modeOverride` alike so a hostile page cannot force a DELETION (`packages/ui/components/html-viewer/useHtmlAnnotation.ts:535-547`). Only CREATION is restricted: persisted DELETION annotations still restore and still render their deletion styling (`useHtmlAnnotation.ts:903`). The selection toolbar drops Delete and the label picker behind a `commentOnly` seam and keeps exactly one label affordance, the hardcoded 👍 "Looks good" for text selections (`HtmlViewer` filters its `onQuickLabel` handler to `THUMBS_UP_LABEL`); markdown surfaces keep the full toolbar. A pinpoint click opens the comment composer directly and never shows that toolbar, so the composer carries the same one-click 👍: an emoji-only button beside Save (`aria-label` and tooltip "Looks good", `data-quick-look-good`), passed by `HtmlViewer` as `CommentPopover`'s `onQuickLookGood` (absent on markdown and global composers). It goes through the same commit path as a typed comment (`commitComposerDraft` in `useHtmlAnnotation`), so the result is the toolbar's `THUMBS_UP_LABEL` quick-label COMMENT on the pinned element with its anchor, element context and shift-click extra targets. It is disabled once anything is typed or attached (a click never discards a draft) and takes no key: Mod+Enter still saves the typed comment. HTML surfaces also pin the viewer input method to pinpoint (`App.tsx:5480`), so there is no floating input-method toolstrip on them at all (`toolstripVisible` is gated on `!isHtmlSurface`, `App.tsx:2788-2793`) and the `Shift+1`-`4` annotation-mode shortcuts cannot fire there. A header **eye** button immediately left of the pen toggles Show/Hide tools, as does `Mod+Shift+X` (same scope, same bridge forwarding as the pen chord — the binding is deliberately un-mnemonic because every mnemonic letter is a browser chord: H is Chrome Home / Firefox history, E/I/J/K/C devtools, B/O bookmarks, V paste-as-plain-text, T reopen tab): hiding REMOVES all floating chrome over the page from the DOM (the sidebar tongue tabs and the comment/attachments cluster) rather than merely hiding it (`AppHeader.tsx:364-385`, `App.tsx:5193`, `HtmlViewer.tsx:810`). These surfaces **open with the tools hidden** — `DEFAULT_HTML_CHROME_STATE.toolsHidden` is true and `App.tsx` seeds `htmlToolsHidden` true so nothing flashes before the restore effect — because an HTML document is authored to fill the viewport. A fresh persisted record still wins in both directions, so a reviewer who showed the tools keeps them — in a folder annotate session too, which restores and records the `toolsHidden` half while leaving the sidebar/panel halves alone, since its file browser owns the sidebar for the whole session (`mergeHtmlChromeState`). The toggle lives in the header (and in the compact Options menu), so hidden — default or restored — always has a way back, which is what makes both honoring the persisted `toolsHidden` cookie and defaulting to hidden safe (`packages/ui/utils/htmlChrome.ts`). Note the version-diff "Show changes" control lives in that floating cluster, so it is behind the eye on a fresh session. All three header controls (eye, pen, Refresh) describe themselves through the app's `Tooltip` rather than a native `title` (`packages/ui/components/HtmlSurfaceControls.tsx`): two lines, the control's description — still the host-overridable `labels` string — over its shortcut as keycaps from `formatShortcutBindingTokens`, so the chord is never a hardcoded "Cmd". Because `title` no longer supplies the accessible name, the pen carries an explicit `aria-label` (defaulting to its description), the eye keeps its sr-only text and the Refresh its `aria-label`; the shortcut is additionally attached as a persistent `aria-describedby` span, because this Base UI build tags the popup with no ARIA at all. Refresh has no chord and renders no keycap row; `shortcuts` on the component overrides the bindings per control, defaulting to the `html-annotate` scope so the tooltips cannot drift from what the app dispatches.
 
 **HTML Refresh (#1232).** A local rendered-HTML session can re-read its file from disk without reloading the tab, for the loop where an agent edits the page while the reviewer keeps annotating. The header **Refresh** button (left of the eye, `data-html-refresh`, titled "Refresh HTML from disk") fetches the active document through `/api/doc`, hands the bytes to the app, and remounts the viewer under a bumped `reloadGeneration` key (`packages/editor/App.tsx`, viewer `key`). The engine is the published `useHtmlRefresh` (`packages/ui/hooks/useHtmlRefresh.ts`: superseded and cross-document fetches are dropped, one restore acknowledgement per generation) and Plannotator's binding over `fetchHtmlDocumentSnapshot` is `packages/editor/hooks/useHtmlRefresh.ts` (toasts for refreshed, missing, and unavailable). Committed annotations survive on their durable anchors: the remounted viewer re-resolves every element selector and text snapshot against the new page, and the ones it cannot re-anchor are reported once (`onUnanchoredChange` to `reportAnnotationRestore`), toasted, and marked with an **Unanchored** chip in the annotations panel (`htmlUnanchoredIds` in App, cleared when the document changes); their comments stay in the panel and still export. A refresh keeps the version diff: for the root document `/api/doc` carries `previousPlan`/`versionInfo`/`diffHtml` recomputed against the bytes just read (see the annotate `/api/plan` row), `applyRefreshedHtml` sets them and resets `isPlanDiffActive`, so the view returns to normal mode with "Show changes" still available; a tab reload converges on the same state because `/api/plan` serves the current bytes and recomputes the same diff. `/api/share-html` shares the current bytes too. Only local files refresh: `canRefresh` is false for `http(s)` paths and live-app sessions, and the control is absent on read-only (archive) documents. The compact touch shell renders no header controls (`HtmlSurfaceControls` returns null when `compact`), so its Options menu offers "Refresh from disk" beside the Show/Hide tools and Interact/Annotate actions (`compactDocumentActions` in App, disabled while a refresh is in flight); a host that passes `canRefresh` and `onRefresh` to `HtmlSurfaceControls` gets the Refresh button with or without the eye.
 

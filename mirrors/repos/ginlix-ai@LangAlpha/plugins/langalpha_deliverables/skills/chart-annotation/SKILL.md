@@ -1,6 +1,6 @@
 ---
 name: chart-annotation
-description: Draw price lines, trendlines, zones, and event markers directly on a stock's price chart. Reach for it whenever you'd otherwise describe a level, pattern, or event in prose. Renders live on MarketView and as a clickable preview card in any other chat.
+description: Extra guidance for draw_chart_annotation, which works without loading this. Covers choosing between similar variants, aligning times to bars, several charts in one turn, and answering a chart selection the user sends.
 ---
 
 # Chart Annotation Skill
@@ -9,18 +9,18 @@ description: Draw price lines, trendlines, zones, and event markers directly on 
 
 You want to call out a technical level, a pattern, or an event on a stock's
 price chart. Drawing directly on the chart is almost always clearer than
-describing it in prose. Reach for this skill whenever you would otherwise
-say "look at the level around 205" or "notice the downtrend from October to
-December".
+describing it in prose. Reach for `draw_chart_annotation` whenever you would
+otherwise say "look at the level around 205" or "notice the downtrend from
+October to December".
 
 **MarketView** is the app's live, trading-chart style price chart page (pan,
 zoom, switch timeframes). You do **not** need the user to be on it to
-annotate. If they are, the drawing appears on their live chart immediately. If
-they are in any other chat, the same drawing renders as a clickable preview
-card that expands into MarketView — so annotate freely whenever it helps, then
-mention the user can click it to open the full chart.
+annotate. If they are, the drawing appears on their live chart immediately.
+Anywhere else in the app, the same drawing renders as a chart card in the chat
+that opens the live chart beside the conversation, so annotate freely whenever
+it helps, then mention the user can click the card to see it.
 
-This skill provides two tools:
+Both tools are always available; this guide is how to use them well:
 
 - `draw_chart_annotation` — add a single annotation to a chart.
 - `manage_chart_annotations` — list, remove, or clear annotations.
@@ -30,10 +30,10 @@ This skill provides two tools:
 There are two ways to show price information visually — pick by what the user
 needs:
 
-- **This skill (interactive).** Annotations land on the live, pannable
-  MarketView chart (or a preview card that opens it). Best when the user just
-  wants to *see and explore* a level, pattern, or event themselves — quick,
-  in-the-moment, nothing to hand off.
+- **The annotation tools (interactive).** Annotations land on a live,
+  pannable chart: MarketView's, or the one a chart card in the chat opens. Best
+  when the user just wants to *see and explore* a level, pattern, or event
+  themselves — quick, in-the-moment, nothing to hand off.
 - **A Python chart (deliverable).** A static image you render with code and
   embed in a report or document. Best when the output is a *deliverable* the
   user keeps, shares, or exports — a research note, PDF, or deck.
@@ -50,7 +50,7 @@ Every annotation belongs to a chart identified by its **ticker + timeframe**
   chart** (annotations accumulate on it).
 - Use a **different ticker or timeframe** to start a **separate** chart — so
   you can draw several charts in one turn (e.g. `AAPL:1day` and `AAPL:1hour`,
-  or `AAPL:1day` and `MSFT:1day`), each rendered as its own preview.
+  or `AAPL:1day` and `MSFT:1day`), each rendered as its own card.
 
 Always pass the ticker the user is discussing. `timeframe` defaults to
 `1day`; set it to match the interval the user is viewing (one of `1min`,
@@ -235,8 +235,8 @@ manage_chart_annotations(symbol="NVDA", action="clear_all")
   call.
 - `clear_all` must not be given `ids`. Use `remove` for partial deletion.
 - Existing chart primitives the user set up themselves (52W high,
-  analyst target lines, earnings markers) are **not** managed by this
-  skill and are never touched by clear_all.
+  analyst target lines, earnings markers) are **not** managed by these
+  tools and are never touched by clear_all.
 
 ---
 

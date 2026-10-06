@@ -7,13 +7,11 @@ have equivalent `rea list-javascript-runtime-targets` and
 `rea observe-javascript-runtime` commands. Successful calls return
 deterministic Evidence.
 
-This authority is disabled by default and is separate from browser CDP,
-Electron file-page inspection, Process Capture, and controlled JavaScript
-replay:
+Each request supplies the loopback Inspector endpoint and, for observation, the
+target ID. This surface is separate from browser CDP, Electron file-page
+inspection, and Process Capture:
 
 ```bash
-export REA_V8_INSPECTOR_OBSERVE_ENABLED=true
-
 rea list-javascript-runtime-targets http://127.0.0.1:9229 \
   --json
 rea observe-javascript-runtime http://127.0.0.1:9229 TARGET_ID \
@@ -26,6 +24,38 @@ The caller supplies the literal-loopback HTTP endpoint directly. Selecting an en
 array.
 
 For the MCP follow-up call, pass the same literal-loopback endpoint and the selected target ID to `observe_javascript_runtime`. REA rediscovers targets and validates the ID against the live endpoint before observation.
+
+### Discovery file locations
+
+Node's `/json/list` reports a best-effort pathname prefixed with `file://`,
+without URI encoding. On POSIX, REA interprets unambiguous paths literally,
+including `#` and `%` in filenames. Node also replaces backslashes and double
+quotes with underscores. That transformation cannot be reversed reliably:
+an underscore may already be part of the original filename.
+
+Windows paths, ambiguous underscore paths, and local discovery paths that
+cannot be verified remain eligible by their endpoint and exact target ID.
+Their target location preserves the reported value:
+
+```json
+{
+  "kind": "unresolved",
+  "reported_url": "file://C:_tools_entry.js",
+  "reason": "unverifiable-file-location"
+}
+```
+
+This location does not claim that a file exists or authorize reading its
+contents. Listing remains HTTP-only. Observation resolves loaded script
+locations independently from `Debugger.scriptParsed` file URLs, preserving
+the existing checks for local files and encoded separators. Unsupported
+schemes, remote file hosts, and a bare `file://` remain excluded. These Node
+discovery rules do not apply to page targets or other runtime products.
+
+Reconciliation retains an unresolved `target_location` object and reports
+`runtime-location-unresolved` with unknown confidence for that target. It
+does not derive a static match from the reported pathname; verified loaded
+script locations remain available for independent matching.
 
 ## Passive protocol boundary
 
@@ -66,14 +96,14 @@ Electron role, so Evidence records the role authority as
 `caller-declared-unverified`.
 
 Electron main, preload, and renderer behavior can therefore be observed only
-as separate approved Inspector targets. The provider does not infer that two
+as separate Inspector targets. The provider does not infer that two
 targets belong to the same Electron application.
 
 ## Capture and determinism
 
 Every observation records its time window and returns all valid script and
 execution-context events received during it. Per-location protocol validation
-remains in force. Scripts are authorized after capture, deduplicated by stable
+remains in force. Scripts are validated after capture, deduplicated by stable
 metadata, and canonically sorted. Wall-clock timestamps and protocol script IDs
 are excluded from the durable result, so identical inputs and captured metadata
 produce the same Evidence ID.
@@ -88,8 +118,8 @@ behavior does not occur.
 Pass the resulting observation Evidence and an
 `analyze_javascript_application` Evidence record to
 `reconcile_javascript_runtime`. The reconciliation accepts this provider
-alongside passive web and Electron page captures. Exact approved file or URL
-mappings can correlate script presence with JavaScript Application Graph
+alongside passive web and Electron page captures. Exact file or URL mappings
+supplied with the request can correlate script presence with JavaScript Application Graph
 assets. Because this provider never reads source bytes, matches normally use a
 unique authorized location and remain weaker than captured-byte identity.
 Builtin `node:` scripts remain runtime-only nodes unless a future explicit

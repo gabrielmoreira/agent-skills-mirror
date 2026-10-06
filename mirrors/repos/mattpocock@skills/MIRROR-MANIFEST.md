@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mattpocock/skills` — 26 default patterns, 0 followed patterns, 113 file(s) materialized.
+Mirror of `mattpocock/skills` — 26 default patterns, 0 followed patterns, 115 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mattpocock/skills` — 26 default patterns, 0 followed patterns, 113 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 113 |
+| Files         | 115 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -128,50 +128,52 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 67 | ✓ | [`skills/engineering/wizard/agents/openai.yaml`](skills/engineering/wizard/agents/openai.yaml) |
 | 68 | ✓ | [`skills/engineering/wizard/SKILL.md`](skills/engineering/wizard/SKILL.md) |
 | 69 | ✓ | [`skills/engineering/wizard/template.sh`](skills/engineering/wizard/template.sh) |
-| 70 | ✓ | [`skills/in-progress/claude-handoff/agents/openai.yaml`](skills/in-progress/claude-handoff/agents/openai.yaml) |
-| 71 | ✓ | [`skills/in-progress/claude-handoff/SKILL.md`](skills/in-progress/claude-handoff/SKILL.md) |
-| 72 | ✓ | [`skills/in-progress/loop-me/agents/openai.yaml`](skills/in-progress/loop-me/agents/openai.yaml) |
-| 73 | ✓ | [`skills/in-progress/loop-me/SKILL.md`](skills/in-progress/loop-me/SKILL.md) |
-| 74 | ✓ | [`skills/in-progress/README.md`](skills/in-progress/README.md) |
-| 75 | ✓ | [`skills/in-progress/setup-ts-deep-modules/agents/openai.yaml`](skills/in-progress/setup-ts-deep-modules/agents/openai.yaml) |
-| 76 | ✓ | [`skills/in-progress/setup-ts-deep-modules/dependency-cruiser.config.cjs`](skills/in-progress/setup-ts-deep-modules/dependency-cruiser.config.cjs) |
-| 77 | ✓ | [`skills/in-progress/setup-ts-deep-modules/SKILL.md`](skills/in-progress/setup-ts-deep-modules/SKILL.md) |
-| 78 | ✓ | [`skills/in-progress/writing-beats/agents/openai.yaml`](skills/in-progress/writing-beats/agents/openai.yaml) |
-| 79 | ✓ | [`skills/in-progress/writing-beats/SKILL.md`](skills/in-progress/writing-beats/SKILL.md) |
-| 80 | ✓ | [`skills/in-progress/writing-fragments/agents/openai.yaml`](skills/in-progress/writing-fragments/agents/openai.yaml) |
-| 81 | ✓ | [`skills/in-progress/writing-fragments/SKILL.md`](skills/in-progress/writing-fragments/SKILL.md) |
-| 82 | ✓ | [`skills/in-progress/writing-shape/agents/openai.yaml`](skills/in-progress/writing-shape/agents/openai.yaml) |
-| 83 | ✓ | [`skills/in-progress/writing-shape/SKILL.md`](skills/in-progress/writing-shape/SKILL.md) |
-| 84 | ✓ | [`skills/misc/git-guardrails-claude-code/agents/openai.yaml`](skills/misc/git-guardrails-claude-code/agents/openai.yaml) |
-| 85 | ✓ | [`skills/misc/git-guardrails-claude-code/scripts/block-dangerous-git.sh`](skills/misc/git-guardrails-claude-code/scripts/block-dangerous-git.sh) |
-| 86 | ✓ | [`skills/misc/git-guardrails-claude-code/SKILL.md`](skills/misc/git-guardrails-claude-code/SKILL.md) |
-| 87 | ✓ | [`skills/misc/migrate-to-shoehorn/agents/openai.yaml`](skills/misc/migrate-to-shoehorn/agents/openai.yaml) |
-| 88 | ✓ | [`skills/misc/migrate-to-shoehorn/SKILL.md`](skills/misc/migrate-to-shoehorn/SKILL.md) |
-| 89 | ✓ | [`skills/misc/README.md`](skills/misc/README.md) |
-| 90 | ✓ | [`skills/misc/scaffold-exercises/agents/openai.yaml`](skills/misc/scaffold-exercises/agents/openai.yaml) |
-| 91 | ✓ | [`skills/misc/scaffold-exercises/SKILL.md`](skills/misc/scaffold-exercises/SKILL.md) |
-| 92 | ✓ | [`skills/misc/setup-pre-commit/agents/openai.yaml`](skills/misc/setup-pre-commit/agents/openai.yaml) |
-| 93 | ✓ | [`skills/misc/setup-pre-commit/SKILL.md`](skills/misc/setup-pre-commit/SKILL.md) |
-| 94 | ✓ | [`skills/productivity/grill-me/agents/openai.yaml`](skills/productivity/grill-me/agents/openai.yaml) |
-| 95 | ✓ | [`skills/productivity/grill-me/SKILL.md`](skills/productivity/grill-me/SKILL.md) |
-| 96 | ✓ | [`skills/productivity/grilling/agents/openai.yaml`](skills/productivity/grilling/agents/openai.yaml) |
-| 97 | ✓ | [`skills/productivity/grilling/SKILL.md`](skills/productivity/grilling/SKILL.md) |
-| 98 | ✓ | [`skills/productivity/handoff/agents/openai.yaml`](skills/productivity/handoff/agents/openai.yaml) |
-| 99 | ✓ | [`skills/productivity/handoff/SKILL.md`](skills/productivity/handoff/SKILL.md) |
-| 100 | ✓ | [`skills/productivity/README.md`](skills/productivity/README.md) |
-| 101 | ✓ | [`skills/productivity/teach/agents/openai.yaml`](skills/productivity/teach/agents/openai.yaml) |
-| 102 | ✓ | [`skills/productivity/teach/GLOSSARY-FORMAT.md`](skills/productivity/teach/GLOSSARY-FORMAT.md) |
-| 103 | ✓ | [`skills/productivity/teach/LEARNING-RECORD-FORMAT.md`](skills/productivity/teach/LEARNING-RECORD-FORMAT.md) |
-| 104 | ✓ | [`skills/productivity/teach/MISSION-FORMAT.md`](skills/productivity/teach/MISSION-FORMAT.md) |
-| 105 | ✓ | [`skills/productivity/teach/RESOURCES-FORMAT.md`](skills/productivity/teach/RESOURCES-FORMAT.md) |
-| 106 | ✓ | [`skills/productivity/teach/SKILL.md`](skills/productivity/teach/SKILL.md) |
-| 107 | ✓ | [`skills/productivity/to-questionnaire/agents/openai.yaml`](skills/productivity/to-questionnaire/agents/openai.yaml) |
-| 108 | ✓ | [`skills/productivity/to-questionnaire/SKILL.md`](skills/productivity/to-questionnaire/SKILL.md) |
-| 109 | ✓ | [`skills/productivity/wait-what/agents/openai.yaml`](skills/productivity/wait-what/agents/openai.yaml) |
-| 110 | ✓ | [`skills/productivity/wait-what/SKILL.md`](skills/productivity/wait-what/SKILL.md) |
-| 111 | ✓ | [`skills/productivity/writing-for-agents/agents/openai.yaml`](skills/productivity/writing-for-agents/agents/openai.yaml) |
-| 112 | ✓ | [`skills/productivity/writing-for-agents/SKILL-MECHANICS.md`](skills/productivity/writing-for-agents/SKILL-MECHANICS.md) |
-| 113 | ✓ | [`skills/productivity/writing-for-agents/SKILL.md`](skills/productivity/writing-for-agents/SKILL.md) |
+| 70 | ✓ | [`skills/in-progress/chief-of-staff/agents/openai.yaml`](skills/in-progress/chief-of-staff/agents/openai.yaml) |
+| 71 | ✓ | [`skills/in-progress/chief-of-staff/SKILL.md`](skills/in-progress/chief-of-staff/SKILL.md) |
+| 72 | ✓ | [`skills/in-progress/claude-handoff/agents/openai.yaml`](skills/in-progress/claude-handoff/agents/openai.yaml) |
+| 73 | ✓ | [`skills/in-progress/claude-handoff/SKILL.md`](skills/in-progress/claude-handoff/SKILL.md) |
+| 74 | ✓ | [`skills/in-progress/loop-me/agents/openai.yaml`](skills/in-progress/loop-me/agents/openai.yaml) |
+| 75 | ✓ | [`skills/in-progress/loop-me/SKILL.md`](skills/in-progress/loop-me/SKILL.md) |
+| 76 | ✓ | [`skills/in-progress/README.md`](skills/in-progress/README.md) |
+| 77 | ✓ | [`skills/in-progress/setup-ts-deep-modules/agents/openai.yaml`](skills/in-progress/setup-ts-deep-modules/agents/openai.yaml) |
+| 78 | ✓ | [`skills/in-progress/setup-ts-deep-modules/dependency-cruiser.config.cjs`](skills/in-progress/setup-ts-deep-modules/dependency-cruiser.config.cjs) |
+| 79 | ✓ | [`skills/in-progress/setup-ts-deep-modules/SKILL.md`](skills/in-progress/setup-ts-deep-modules/SKILL.md) |
+| 80 | ✓ | [`skills/in-progress/writing-beats/agents/openai.yaml`](skills/in-progress/writing-beats/agents/openai.yaml) |
+| 81 | ✓ | [`skills/in-progress/writing-beats/SKILL.md`](skills/in-progress/writing-beats/SKILL.md) |
+| 82 | ✓ | [`skills/in-progress/writing-fragments/agents/openai.yaml`](skills/in-progress/writing-fragments/agents/openai.yaml) |
+| 83 | ✓ | [`skills/in-progress/writing-fragments/SKILL.md`](skills/in-progress/writing-fragments/SKILL.md) |
+| 84 | ✓ | [`skills/in-progress/writing-shape/agents/openai.yaml`](skills/in-progress/writing-shape/agents/openai.yaml) |
+| 85 | ✓ | [`skills/in-progress/writing-shape/SKILL.md`](skills/in-progress/writing-shape/SKILL.md) |
+| 86 | ✓ | [`skills/misc/git-guardrails-claude-code/agents/openai.yaml`](skills/misc/git-guardrails-claude-code/agents/openai.yaml) |
+| 87 | ✓ | [`skills/misc/git-guardrails-claude-code/scripts/block-dangerous-git.sh`](skills/misc/git-guardrails-claude-code/scripts/block-dangerous-git.sh) |
+| 88 | ✓ | [`skills/misc/git-guardrails-claude-code/SKILL.md`](skills/misc/git-guardrails-claude-code/SKILL.md) |
+| 89 | ✓ | [`skills/misc/migrate-to-shoehorn/agents/openai.yaml`](skills/misc/migrate-to-shoehorn/agents/openai.yaml) |
+| 90 | ✓ | [`skills/misc/migrate-to-shoehorn/SKILL.md`](skills/misc/migrate-to-shoehorn/SKILL.md) |
+| 91 | ✓ | [`skills/misc/README.md`](skills/misc/README.md) |
+| 92 | ✓ | [`skills/misc/scaffold-exercises/agents/openai.yaml`](skills/misc/scaffold-exercises/agents/openai.yaml) |
+| 93 | ✓ | [`skills/misc/scaffold-exercises/SKILL.md`](skills/misc/scaffold-exercises/SKILL.md) |
+| 94 | ✓ | [`skills/misc/setup-pre-commit/agents/openai.yaml`](skills/misc/setup-pre-commit/agents/openai.yaml) |
+| 95 | ✓ | [`skills/misc/setup-pre-commit/SKILL.md`](skills/misc/setup-pre-commit/SKILL.md) |
+| 96 | ✓ | [`skills/productivity/grill-me/agents/openai.yaml`](skills/productivity/grill-me/agents/openai.yaml) |
+| 97 | ✓ | [`skills/productivity/grill-me/SKILL.md`](skills/productivity/grill-me/SKILL.md) |
+| 98 | ✓ | [`skills/productivity/grilling/agents/openai.yaml`](skills/productivity/grilling/agents/openai.yaml) |
+| 99 | ✓ | [`skills/productivity/grilling/SKILL.md`](skills/productivity/grilling/SKILL.md) |
+| 100 | ✓ | [`skills/productivity/handoff/agents/openai.yaml`](skills/productivity/handoff/agents/openai.yaml) |
+| 101 | ✓ | [`skills/productivity/handoff/SKILL.md`](skills/productivity/handoff/SKILL.md) |
+| 102 | ✓ | [`skills/productivity/README.md`](skills/productivity/README.md) |
+| 103 | ✓ | [`skills/productivity/teach/agents/openai.yaml`](skills/productivity/teach/agents/openai.yaml) |
+| 104 | ✓ | [`skills/productivity/teach/GLOSSARY-FORMAT.md`](skills/productivity/teach/GLOSSARY-FORMAT.md) |
+| 105 | ✓ | [`skills/productivity/teach/LEARNING-RECORD-FORMAT.md`](skills/productivity/teach/LEARNING-RECORD-FORMAT.md) |
+| 106 | ✓ | [`skills/productivity/teach/MISSION-FORMAT.md`](skills/productivity/teach/MISSION-FORMAT.md) |
+| 107 | ✓ | [`skills/productivity/teach/RESOURCES-FORMAT.md`](skills/productivity/teach/RESOURCES-FORMAT.md) |
+| 108 | ✓ | [`skills/productivity/teach/SKILL.md`](skills/productivity/teach/SKILL.md) |
+| 109 | ✓ | [`skills/productivity/to-questionnaire/agents/openai.yaml`](skills/productivity/to-questionnaire/agents/openai.yaml) |
+| 110 | ✓ | [`skills/productivity/to-questionnaire/SKILL.md`](skills/productivity/to-questionnaire/SKILL.md) |
+| 111 | ✓ | [`skills/productivity/wait-what/agents/openai.yaml`](skills/productivity/wait-what/agents/openai.yaml) |
+| 112 | ✓ | [`skills/productivity/wait-what/SKILL.md`](skills/productivity/wait-what/SKILL.md) |
+| 113 | ✓ | [`skills/productivity/writing-for-agents/agents/openai.yaml`](skills/productivity/writing-for-agents/agents/openai.yaml) |
+| 114 | ✓ | [`skills/productivity/writing-for-agents/SKILL-MECHANICS.md`](skills/productivity/writing-for-agents/SKILL-MECHANICS.md) |
+| 115 | ✓ | [`skills/productivity/writing-for-agents/SKILL.md`](skills/productivity/writing-for-agents/SKILL.md) |
 
 ---
 

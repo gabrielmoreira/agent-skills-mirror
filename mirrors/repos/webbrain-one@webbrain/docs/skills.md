@@ -79,6 +79,11 @@ On NYTimes / The Athletic tabs it is preactivated for the current run so a
 structured blocking `pageGate` can route directly to the credentialless article
 fallback.
 
+Public video downloads include Bluesky and Mastodon. Bluesky post permalinks
+are sent to FreeSkillz for server-side HLS assembly into one MP4 with audio.
+Mastodon status permalinks work across public instances. On feeds/profiles,
+first identify the visible target and obtain its exact post/status link.
+
 #### OTP / verification-code helper
 
 Loads only for relevant requests and declares no external network tool. On Mid

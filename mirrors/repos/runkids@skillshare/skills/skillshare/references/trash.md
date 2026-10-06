@@ -1,5 +1,7 @@
 # Trash (Soft-Delete)
 
+When moving a skill to trash across filesystems, nested file and directory links are preserved as links with their original target text; their targets are never copied or deleted.
+
 `skillshare uninstall` moves skills and agents to trash with 7-day retention instead of permanent deletion.
 
 ## Commands

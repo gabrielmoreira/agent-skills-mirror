@@ -136,6 +136,7 @@ skillshare sync --json
   "ignored_skills": ["_team/vendor/lib", "test-draft"],
   "dry_run": false,
   "duration": "0.234s",
+  "warnings": ["source link _dev-skills not followed: target is missing; kept existing target entries, nothing pruned this run"],
   "details": [
     {
       "name": "claude",
@@ -167,6 +168,8 @@ skillshare sync --json
 ```
 
 `ignored_count`와 `ignored_skills` 필드는 `.skillignore`(및 존재하는 경우 `.skillignore.local`)에 의해 제외된 skill을 보여줍니다. 이 항목들은 discovery 시점에 필터링되어 어떤 target에도 도달하지 않습니다. `.skillignore.local`이 적용 중일 때는 text 출력에 `.local` source 힌트가 포함됩니다. 패턴 문법은 [.skillignore](/docs/reference/appendix/file-structure#skillignore-optional)를 참고하세요.
+
+`warnings`는 첫 번째 수준의 source 링크를 따라가지 않은 경우에만 나타납니다([`follow_source_links`](../targets/configuration.md#follow_source_links) 참고). 링크의 대상을 사용할 수 없어 target 항목을 유지한 실행은 거기에 그 사실을 표시하며, 이 경우 `pruned`는 의도적으로 `0`입니다.
 
 ### 동작 방식
 

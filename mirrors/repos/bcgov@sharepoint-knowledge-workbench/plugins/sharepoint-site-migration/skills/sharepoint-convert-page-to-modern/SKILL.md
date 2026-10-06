@@ -34,6 +34,11 @@ pwsh -File scripts/spo-convert-page-to-modern.ps1 -PageName "article.aspx" -Sour
 
 ## Workflow
 
+Use the file/link inventory from `sharepoint-collect-site-inventory` and `sharepoint-extract-links`
+to identify source pages and references before conversion. After conversion, export stored modern
+page fields and re-extract links; downloading `.aspx` alone does not capture the full page canvas.
+See [bulk content workflow](references/bulk-content-link-workflow.md).
+
 1. Dry run as above and review the plan with the user.
 2. Add `-FieldMapping field-mapping.json -LiteralFieldValues literals.json` if metadata should be carried over.
 3. After the user confirms, rerun with `-Execute -ConfirmToken CONVERT-SPO-PAGE`.

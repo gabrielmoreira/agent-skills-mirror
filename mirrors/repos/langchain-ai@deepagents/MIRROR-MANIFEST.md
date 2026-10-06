@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langchain-ai/deepagents` — 26 default patterns, 6 followed patterns, 51 file(s) materialized.
+Mirror of `langchain-ai/deepagents` — 26 default patterns, 6 followed patterns, 52 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langchain-ai/deepagents` — 26 default patterns, 6 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 51 |
+| Files         | 52 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -95,26 +95,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`examples/text-to-sql-agent/skills/schema-exploration/SKILL.md`](examples/text-to-sql-agent/skills/schema-exploration/SKILL.md) |
 | 30 | ✓ | [`libs/code/AGENTS.md`](libs/code/AGENTS.md) |
 | 31 | ✓ | [`libs/code/ARCHITECTURE.md`](libs/code/ARCHITECTURE.md) |
-| 32 | ✓ | [`libs/code/deepagents_code/built_in_skills/deepagents-thread-inspector/SKILL.md`](libs/code/deepagents_code/built_in_skills/deepagents-thread-inspector/SKILL.md) |
-| 33 | ✓ | [`libs/code/deepagents_code/built_in_skills/remember/SKILL.md`](libs/code/deepagents_code/built_in_skills/remember/SKILL.md) |
-| 34 | ✓ | [`libs/code/deepagents_code/built_in_skills/skill-creator/SKILL.md`](libs/code/deepagents_code/built_in_skills/skill-creator/SKILL.md) |
-| 35 | ✓ | [`libs/code/examples/skills/arxiv-search/SKILL.md`](libs/code/examples/skills/arxiv-search/SKILL.md) |
-| 36 | ✓ | [`libs/code/examples/skills/langgraph-docs/SKILL.md`](libs/code/examples/skills/langgraph-docs/SKILL.md) |
-| 37 | ✓ | [`libs/code/examples/skills/skill-creator/SKILL.md`](libs/code/examples/skills/skill-creator/SKILL.md) |
-| 38 | ✓ | [`libs/code/examples/skills/web-research/SKILL.md`](libs/code/examples/skills/web-research/SKILL.md) |
-| 39 | ✓ | [`libs/evals/AGENTS.md`](libs/evals/AGENTS.md) |
-| 40 | ✓ | [`libs/partners/AGENTS.md`](libs/partners/AGENTS.md) |
-| 41 | ✓ | [`libs/talon/deepagents_talon/defaults/AGENTS.md`](libs/talon/deepagents_talon/defaults/AGENTS.md) |
-| 42 | ✓ | [`libs/talon/deepagents_talon/defaults/agents/external-research/AGENTS.md`](libs/talon/deepagents_talon/defaults/agents/external-research/AGENTS.md) |
-| 43 | ✓ | [`libs/talon/deepagents_talon/defaults/agents/internal-research/AGENTS.md`](libs/talon/deepagents_talon/defaults/agents/internal-research/AGENTS.md) |
-| 44 | ✓ | [`libs/talon/deepagents_talon/defaults/skills/configuration-hardening/SKILL.md`](libs/talon/deepagents_talon/defaults/skills/configuration-hardening/SKILL.md) |
-| 45 | ✓ | [`libs/talon/deepagents_talon/defaults/skills/safety/SKILL.md`](libs/talon/deepagents_talon/defaults/skills/safety/SKILL.md) |
-| 46 | → | [`.github/LAYOUT.md`](.github/LAYOUT.md) |
-| 47 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 48 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
-| 49 | → | [`libs/ARCHITECTURE.md`](libs/ARCHITECTURE.md) |
-| 50 | → | [`libs/code/DEVELOPMENT.md`](libs/code/DEVELOPMENT.md) |
-| 51 | → | [`libs/DEVELOPMENT.md`](libs/DEVELOPMENT.md) |
+| 32 | ✓ | [`libs/code/deepagents_code/built_in_skills/deepagents-plugin-discovery/SKILL.md`](libs/code/deepagents_code/built_in_skills/deepagents-plugin-discovery/SKILL.md) |
+| 33 | ✓ | [`libs/code/deepagents_code/built_in_skills/deepagents-thread-inspector/SKILL.md`](libs/code/deepagents_code/built_in_skills/deepagents-thread-inspector/SKILL.md) |
+| 34 | ✓ | [`libs/code/deepagents_code/built_in_skills/remember/SKILL.md`](libs/code/deepagents_code/built_in_skills/remember/SKILL.md) |
+| 35 | ✓ | [`libs/code/deepagents_code/built_in_skills/skill-creator/SKILL.md`](libs/code/deepagents_code/built_in_skills/skill-creator/SKILL.md) |
+| 36 | ✓ | [`libs/code/examples/skills/arxiv-search/SKILL.md`](libs/code/examples/skills/arxiv-search/SKILL.md) |
+| 37 | ✓ | [`libs/code/examples/skills/langgraph-docs/SKILL.md`](libs/code/examples/skills/langgraph-docs/SKILL.md) |
+| 38 | ✓ | [`libs/code/examples/skills/skill-creator/SKILL.md`](libs/code/examples/skills/skill-creator/SKILL.md) |
+| 39 | ✓ | [`libs/code/examples/skills/web-research/SKILL.md`](libs/code/examples/skills/web-research/SKILL.md) |
+| 40 | ✓ | [`libs/evals/AGENTS.md`](libs/evals/AGENTS.md) |
+| 41 | ✓ | [`libs/partners/AGENTS.md`](libs/partners/AGENTS.md) |
+| 42 | ✓ | [`libs/talon/deepagents_talon/defaults/AGENTS.md`](libs/talon/deepagents_talon/defaults/AGENTS.md) |
+| 43 | ✓ | [`libs/talon/deepagents_talon/defaults/agents/external-research/AGENTS.md`](libs/talon/deepagents_talon/defaults/agents/external-research/AGENTS.md) |
+| 44 | ✓ | [`libs/talon/deepagents_talon/defaults/agents/internal-research/AGENTS.md`](libs/talon/deepagents_talon/defaults/agents/internal-research/AGENTS.md) |
+| 45 | ✓ | [`libs/talon/deepagents_talon/defaults/skills/configuration-hardening/SKILL.md`](libs/talon/deepagents_talon/defaults/skills/configuration-hardening/SKILL.md) |
+| 46 | ✓ | [`libs/talon/deepagents_talon/defaults/skills/safety/SKILL.md`](libs/talon/deepagents_talon/defaults/skills/safety/SKILL.md) |
+| 47 | → | [`.github/LAYOUT.md`](.github/LAYOUT.md) |
+| 48 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 49 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
+| 50 | → | [`libs/ARCHITECTURE.md`](libs/ARCHITECTURE.md) |
+| 51 | → | [`libs/code/DEVELOPMENT.md`](libs/code/DEVELOPMENT.md) |
+| 52 | → | [`libs/DEVELOPMENT.md`](libs/DEVELOPMENT.md) |
 
 ---
 

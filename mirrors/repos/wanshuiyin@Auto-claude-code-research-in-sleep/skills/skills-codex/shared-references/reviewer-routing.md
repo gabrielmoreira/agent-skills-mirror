@@ -34,6 +34,12 @@ This is the base default for `skills/skills-codex/`. No ARIS `— effort:` level
 > A deterministic verifier may also record accepted. `oracle-pro` is GPT family,
 > so it remains provisional for a Codex executor.
 
+## Optional direct Grok / Antigravity consultation
+
+When explicitly requested by the user, separately registered Grok or Antigravity MCP tools can read files and discuss a question: `grok` / `grok-reply` (default `grok-4.7` + `xhigh`) and `antigravity` / `antigravity-reply` (default `gemini-3.8-flash-high` + `high`). Pass `prompt` and an explicit `cwd` on the first call; use that service's saved `threadId` and `prompt` for follow-ups. See [grok-exec](../../../mcp-servers/grok-exec/README.md) and [antigravity-exec](../../../mcp-servers/antigravity-exec/README.md) for installation and tool contracts.
+
+These are direct consultation tools, not additional `— reviewer:` values. Installing them does not replace a skill's reviewer calls or satisfy its acceptance gate automatically. The existing mainline `— reviewer: agy` route remains `gemini-review`; the Codex base retains `spawn_agent` / `send_input`, and the Gemini overlay retains `review*`. Follow each skill's current reviewer contract for formal reviews.
+
 ## Default Pattern
 
 Single-round review:

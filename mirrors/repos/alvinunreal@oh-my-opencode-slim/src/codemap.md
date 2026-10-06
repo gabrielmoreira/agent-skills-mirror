@@ -66,7 +66,7 @@ OpenCode Core → Plugin Initialization (index.ts)
 4. **Tool Registration**: Tools are created conditionally based on config (task_cancel, task_message, task_revive, task_status, task_result, wait_for_user, webfetch, AST-grep, acp_run)
 5. **MCP Registration**: Built-in MCPs are created (context7, gh_grep)
 6. **Hook Initialization**: Auto-update checker, phase reminders, skill filters, task-session manager, cache monitor, orchestrator-wake scheduler, etc.
-7. **Runtime Model Resolution**: Resolves model arrays to startup primaries, installs hidden v1 secondary-model routes, and keeps delegated children plus native completion turns on the parent's live fallback provider
+7. **Runtime Model Resolution**: Resolves model arrays to startup primaries; v1 `task` and `task_revive` share prompt-claimed live fallback intentions, `task_message` pins transcript execution selection excluding compaction summaries, and v2 uses per-call `model#variant` overrides; internal v1 completions still follow the continuation policy
 8. **TUI State Sync**: `recordTuiAgentModels()` captures resolved models/variants for TUI display
 9. **Health Check**: Validates agent/tool/MCP counts against `HEALTH_CHECK` thresholds, adjusted for disabled baseline tools via `minimumExpectedToolCount`
 10. **Companion Management**: Ensures companion version compatibility
@@ -90,7 +90,7 @@ lifecycle lives in the TUI entry's dependency graph (`multiplexer/client/`).
 7. **Sidebar Rendering**: Renders sidebar with:
    - Plugin header (OMO-Slim + version)
    - Config status warning (if invalid)
-   - Agent list with model/variant details and Braille activity indicators
+   - Agent list with resolved model names and Braille activity indicators
 8. **Lifecycle Management**: Cleans up refresh/animation timers, unsubscribes
    pane events, stops timers, and best-effort closes this client's panes on
    dispose

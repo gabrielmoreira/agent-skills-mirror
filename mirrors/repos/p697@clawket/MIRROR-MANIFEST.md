@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `p697/clawket` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `p697/clawket` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `p697/clawket` — 26 default patterns, 0 followed patterns, 14 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,15 +64,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`apps/bridge-cli/CLAUDE.md`](apps/bridge-cli/CLAUDE.md) |
 | 4 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
 | 5 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
-| 6 | ✓ | [`apps/speech-worker/AGENTS.md`](apps/speech-worker/AGENTS.md) |
-| 7 | ✓ | [`apps/speech-worker/CLAUDE.md`](apps/speech-worker/CLAUDE.md) |
-| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 9 | ✓ | [`packages/agent-protocol/AGENTS.md`](packages/agent-protocol/AGENTS.md) |
-| 10 | ✓ | [`packages/agent-protocol/CLAUDE.md`](packages/agent-protocol/CLAUDE.md) |
-| 11 | ✓ | [`packages/bridge-runtime/AGENTS.md`](packages/bridge-runtime/AGENTS.md) |
-| 12 | ✓ | [`packages/bridge-runtime/CLAUDE.md`](packages/bridge-runtime/CLAUDE.md) |
-| 13 | ✓ | [`packages/relay-shared/AGENTS.md`](packages/relay-shared/AGENTS.md) |
-| 14 | ✓ | [`packages/relay-shared/CLAUDE.md`](packages/relay-shared/CLAUDE.md) |
+| 6 | ✓ | [`apps/mobile/modules/clawket-qa-viewport/AGENTS.md`](apps/mobile/modules/clawket-qa-viewport/AGENTS.md) |
+| 7 | ✓ | [`apps/mobile/modules/clawket-qa-viewport/CLAUDE.md`](apps/mobile/modules/clawket-qa-viewport/CLAUDE.md) |
+| 8 | ✓ | [`apps/speech-worker/AGENTS.md`](apps/speech-worker/AGENTS.md) |
+| 9 | ✓ | [`apps/speech-worker/CLAUDE.md`](apps/speech-worker/CLAUDE.md) |
+| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 11 | ✓ | [`packages/agent-protocol/AGENTS.md`](packages/agent-protocol/AGENTS.md) |
+| 12 | ✓ | [`packages/agent-protocol/CLAUDE.md`](packages/agent-protocol/CLAUDE.md) |
+| 13 | ✓ | [`packages/bridge-runtime/AGENTS.md`](packages/bridge-runtime/AGENTS.md) |
+| 14 | ✓ | [`packages/bridge-runtime/CLAUDE.md`](packages/bridge-runtime/CLAUDE.md) |
+| 15 | ✓ | [`packages/relay-shared/AGENTS.md`](packages/relay-shared/AGENTS.md) |
+| 16 | ✓ | [`packages/relay-shared/CLAUDE.md`](packages/relay-shared/CLAUDE.md) |
 
 ---
 

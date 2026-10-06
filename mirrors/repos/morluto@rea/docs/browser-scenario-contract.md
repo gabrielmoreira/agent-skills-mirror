@@ -3,42 +3,49 @@
 `capture_browser_scenario` accepts the provider-neutral
 `browserScenarioSchema` through both MCP and the
 `capture-browser-scenario INPUT_JSON` CLI command. The request is declarative:
-it admits a fixed action vocabulary, exact HTTP(S) origins, deterministic
-browser settings, explicit storage and request replay, and provider-owned
+it admits a fixed action vocabulary, explicit HTTP(S) targets, deterministic
+browser settings, explicit storage seeds, and provider-owned
 liveness deadlines. `INPUT_JSON` may be inline JSON or a JSON file path.
 
-The minimal request contains only browser launch/connect authority, `start_url`,
-`allowed_origins`, and at least one `actions` entry. Environment settings,
-empty storage, disabled request replay, the required redaction policy, and a
-final sanitized URL capture are supplied by default. Add secret declarations,
-storage seeds, replay routes, query redaction names, and additional artifact or
-event capture only when the investigation needs them. Action, secret, storage,
-and replay-route counts are not capped. Duration, action, and navigation
+The minimal request contains only browser launch/connect selection, `start_url`,
+and at least one `actions` entry. Launch `headless` defaults to `true` and can
+be set to `false` where the host supports a visible browser. Navigations follow
+the destinations named by the scenario and the page's ordinary browser requests;
+there is no separate origin allowlist or request-interception layer. Environment
+settings (including service workers blocked by default), empty storage, and a
+final sanitized URL capture are supplied by default. Set
+`environment.service_workers` to `allow` when the application requires them.
+Add secret declarations, storage seeds, and additional artifact or event
+capture only when needed. Action, secret, and storage counts are not capped.
+Duration, action, and navigation
 timeouts remain fixed provider-owned liveness limits; the request does not
 accept a caller-controlled `limits` object.
 
 The browser boundary is part of the contract. Launch mode requires a
-caller-selected absolute executable, a provider-owned temporary profile,
-headless operation, and close-plus-delete cleanup. Connect mode accepts only an
-explicit-port loopback CDP endpoint, declares the browser externally owned, and
-permits disconnect-only cleanup. The Playwright driver preserves this
+caller-selected executable and always uses a provider-owned temporary profile
+that is closed and deleted during cleanup. Connect mode accepts only an
+explicit-port loopback CDP endpoint. The Playwright driver preserves this
 distinction: it closes and deletes provider-owned profiles, but only disconnects
 from an external CDP browser. Real-browser verification checks both outcomes and
 confirms that an attached external browser remains alive.
 
-URLs contain a query-free HTTP(S) base plus ordered query entries. Every query,
-form, storage, cookie, and replay value is either an explicitly public literal
-or a reference to a declared environment-backed secret. Raw credentials in
-URLs and literal credential headers are rejected. Secret query names must also
-appear in the redaction policy, and the required credential headers cannot be
-removed from that policy. Durable results must replace resolved secret values
+HTTP(S) URLs may include ordinary query values and fragments directly. Use
+ordered structured query entries when a value needs to reference a declared
+environment-backed secret. Form, storage, and cookie values are either literal
+strings or declared secret references. Raw URL userinfo credentials are rejected.
+Captured credential-header
+values are not retained, and declared secret values are redacted automatically.
+A secret may be declared solely to
+redact matching observed content; every secret reference in an action, URL,
+storage value still needs a declaration. Ordinary query values
+and fragments remain intact. Durable results replace resolved secret values
 with their secret references.
 
-Every start, navigation, storage, replay, and redirect origin must be listed in
-`allowed_origins`. Unsupported action tags, unknown fields, duplicate step or
-route IDs, undeclared or unused secrets, and provider-owned replay headers fail
-validation. HTTP and WebSocket routing enforces the same declared scope. Exact
-replay may abort unmatched requests or pass through only approved origins.
+The exact `start_url`, navigation destinations, and storage-seed origins define
+the inputs to a scenario; ordinary page requests are handled by the browser.
+Storage cookies are scoped to the page URL at each capture. Unsupported action
+tags, unknown fields, duplicate step IDs, and undeclared secret references fail
+validation.
 
 The result is Evidence with an initial state followed by one record per
 declared action. Each step reports action status, elapsed time, sanitized URLs,
@@ -53,21 +60,30 @@ inline without application-defined size ceilings. Other missing sections
 remain explicit and make the capture ineligible for equality claims.
 Attach-mode captures also declare the unavoidable pre-attach event gap.
 
-Browser automation is disabled by default. The administrator ceiling is
-configured with:
+Selected event families are observed on the root page and discovered descendant
+popups, including nested popups. Popup lifecycle records are emitted only when
+`popups` is selected. Launch-mode network observation starts at the owned
+context before navigation, so popup document requests, redirects, and responses
+are included once. Connected contexts can contain unrelated tabs: only network
+events with a frame belonging to the root or a discovered popup are retained.
+Initial popup requests without a frame cannot be attributed in shared contexts
+and are omitted; attach coverage remains incomplete.
 
-- `REA_BROWSER_SCENARIO_ENABLED`
-- `REA_BROWSER_SCENARIO_EXECUTABLE_ROOTS_JSON`
-- `REA_BROWSER_SCENARIO_CDP_ENDPOINTS_JSON`
-- `REA_BROWSER_SCENARIO_ALLOWED_ORIGINS_JSON`
-- `REA_BROWSER_SCENARIO_ALLOWED_ENV_JSON`
+Playwright reports new popup Pages after their first navigation has committed.
+It buffers early console messages and page errors, but the pinned API cannot
+recover every earlier frame, worker, WebSocket, or download event. If one of
+those families is selected and a popup is discovered, REA reports the family gap
+in `limitations`, marks `events` missing, and disables equality eligibility.
+Later events remain available; no initial navigation is synthesized from the
+popup's current URL.
 
-Unlike passive observation, browser automation is not granted automatically.
-Use an explicit project/session grant, or opt into the administrator grant with
-`REA_BROWSER_SCENARIO_AUTO_GRANT=true` for a trusted unattended environment.
-Authorization commits the exact executable or CDP endpoint, origins, environment
-variable names, network class, and scenario digest before any browser side
-effect.
+Each request names the exact launch executable or loopback CDP endpoint, target,
+actions, and capture behavior. Origin filters and environment-variable names
+are included when the scenario needs them.
+Launch owns a temporary profile; connect mode disconnects from the selected
+external browser without closing it. The request itself defines the operation;
+there is no additional REA grant step. The browser and host still enforce their
+own access and process rules.
 
 ## Scenario comparison
 

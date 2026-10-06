@@ -4,22 +4,27 @@ REA separates installing its CLI from configuring external software and agents.
 
 ## Start setup
 
-The recommended setup entrypoint is:
+Start setup with:
 
 ```bash
-npx --yes rea-agents@latest setup
+npx rea-agents setup
 ```
 
-If npm asks to download and run the package, that approval applies only to the
-current package-runner invocation. REA still prints its own setup plan and asks
-for separate approval before changing agent configuration or installing a
-product-owned component.
+If npm asks to download and run REA, that approval applies only to downloading
+the package. REA shows its own plan and asks before changing agent configuration
+or installing Hopper.
 
-The explicit `@latest` request prevents a project dependency or stale npx cache
-entry from choosing the setup version.
-REA runs the version npm selected and never silently replaces an intentional
-version request after launch. To repair registrations written by an older
-release, rerun the command above and review the resulting setup plan.
+The short command can use a REA version installed in the current project. To
+request the latest release explicitly, use:
+
+```bash
+npx rea-agents@latest setup
+```
+
+REA runs the version npm selects. To update older agent registrations, run the
+latest-version command and review its setup plan. For unattended package
+downloads, add `--yes` before the package name; this does not approve REA's
+setup changes.
 
 For an intentional rollback, make the package request explicit:
 
@@ -35,7 +40,7 @@ REA supports Node.js 22.19+ and 24.11+ (including newer releases). It uses the n
 
 Running `npm install rea-agents` without `--global` installs the executable only
 in the current project's `node_modules/.bin`; it does not make `rea` available
-on the shell `PATH`. Use the explicit setup command above for the guided setup
+on the shell `PATH`. Use the setup command above for the guided setup
 journey, `npx -y rea-agents@latest` for unattended one-off commands, or install globally
 with `npm install --global rea-agents` for a shell-visible `rea` command.
 
@@ -56,60 +61,64 @@ curl -fsSL https://raw.githubusercontent.com/morluto/rea/main/install.sh |
 
 Supported options are `--version <semver>`, `--dry-run`, `--no-setup`, `--no-prompt`, and `--verbose`. Neither `--no-prompt` nor a non-interactive shell grants permission to install external dependencies.
 
+## Supported agents
+
+Setup can configure these clients for REA's local MCP server:
+
+| Client             | `--client` value |
+| ------------------ | ---------------- |
+| Claude Code        | `claude_code`    |
+| Claude Desktop     | `claude_desktop` |
+| Codex              | `codex`          |
+| Cursor             | `cursor`         |
+| Gemini CLI         | `gemini_cli`     |
+| Windsurf           | `windsurf`       |
+| Devin              | `devin`          |
+| OpenCode           | `opencode`       |
+| Antigravity        | `antigravity`    |
+| GitHub Copilot CLI | `copilot_cli`    |
+| VS Code            | `vscode`         |
+
 ## Review setup changes
 
-`rea setup` uses an inline, scroll-preserving journey inspired by the clarity of
-PostHog's CLI wizard. It begins with the outcome instead of the installer
-mechanics:
+`rea setup` first offers the supported agents in a multi-select. Existing REA
+registrations are selected by default. Newly detected clients remain available
+but unselected: detection gives setup context, not permission to add a new
+registration. Clients without a detected configuration can still be selected.
+Explicit `--client` flags skip this question.
 
-- investigate local applications from a supported agent;
-- recover evidence through an available deep-analysis provider;
-- use the bundled skill for a repeatable investigation workflow.
+Setup adds MCP access for selected clients. It installs REA's bundled workflow
+with those integrations by default; use `--skill=false` to omit it. If no agent
+is selected, setup offers the workflow separately for CLI use, with No as the
+default. Hopper is a separate optional choice: setup shows its proposed
+installation or connection and requires its own explicit approval. It can also
+save verified paths for an existing Ghidra installation.
 
-REA then summarizes the detected clients and asks which capabilities to set up.
-The capability picker pre-selects `Agent integration` (the MCP registration and
-matching guided workflow together) when detected agents exist, and presents the
-optional Hopper provider alongside it. Selecting agent integration opens a second
-checklist for the exact detected agents that should receive a registration; all
-detected agents are pre-selected. Detection provides context and pre-selection;
-it does not authorize a configuration write until the user confirms.
+After selection, review the plan's exact paths and changes and approve before
+REA writes files or installs Hopper. You can cancel at any prompt.
 
-Because the user has explicitly invoked `rea setup`, the wizard biases toward the
-happy path: capabilities and agents are pre-selected, and the final approval
-defaults to **Yes**. The user can still deselect any item or cancel at any prompt.
-Choosing no capabilities exits without changes. Selecting agent integration
-always includes the bundled skill, even if all agents are deselected. The picker
-keeps its navigation, selection, confirmation, and cancellation keys visible
-instead of relying on a transient hint.
+Before applying changes, REA checks your current configuration. The plan lists:
 
-Every selected path converges on the same exact preflight. REA validates the
-current state, prints the proposed effects, and asks for final approval with
-**Yes** as the default. Selection alone never authorizes a mutation. The plan
-identifies:
-
-- an existing Hopper installation, a validated bring-your-own Ghidra environment, or the official Hopper package it proposes to install;
+- an existing Hopper installation, a verified existing Ghidra installation, or the official Hopper package it proposes to install;
 - each detected agent configuration path;
 - the REA skill destination;
 - external software, network origins, integrity evidence, and package-manager
   commands.
 
 Malformed or unsafe existing configuration blocks the whole transaction before
-Hopper installation or any file write. Declining, pressing Ctrl-C, or selecting
-nothing makes no changes. Agent configuration writes preserve unrelated
+Hopper installation or any file write. Declining or pressing Ctrl-C makes no
+changes. Agent configuration writes preserve unrelated
 entries, create backups, use atomic replacement, and verify their result.
 
-Progress remains append-only so completed and failed operations stay visible in
-terminal history. After a successful run, the completion message names the
-verified capabilities now available—for example configured MCP clients, the
-selected analysis provider, and the installed skill—and gives the corresponding
-next action. When an agent must restart to load its registration, REA says so;
-otherwise it suggests beginning an investigation. It does not advertise a
-capability that the final diagnostic check did not verify.
+After setup, REA reports which agents, analysis tools, and workflow files passed
+its final checks. Restart any agent named in the completion message, then begin
+your investigation. Failed steps and diagnostics remain in terminal history.
 
-Select exact clients in scripts with repeatable `--client` flags, or retain
-automatic discovery explicitly with `--all-detected`. Use `--skill=false` to
-override the normal bundled-skill installation and `--dry-run` for a read-only
-plan:
+Select exact clients in scripts with repeatable `--client` flags. Each explicit
+client skips interactive selection. Use `--all-detected` only when you intend
+to configure every detected supported client. `--skill=false` omits the
+workflow, and `--dry-run` returns a read-only plan with status `planned` and
+exit code 0:
 
 ```bash
 rea setup --client codex --client cursor --skill=false --dry-run
@@ -117,13 +126,20 @@ rea setup --client codex --client cursor --skill=false --dry-run
 
 Prompt UI and progress are written to stderr so stdout remains available for
 structured results and pipelines. `NO_COLOR=1` disables color. Use
-`--accessible` for sequential, vertically rendered yes/no prompts.
+`--accessible` for sequential, vertically rendered yes/no prompts. Implicit
+interactive setup requires stdin, stdout, and stderr to all be terminals; when
+any stream is redirected, setup stays non-interactive. Declining or cancelling
+returns status `cancelled` with exit code 0.
 
-For automation, `rea setup --json` reports the plan without applying it.
-Prefer pairing `--yes` with explicit scope such as `--client codex`,
-or `--all-detected`. Legacy unscoped `--yes` remains compatible for
-this release but emits a deprecation warning. Installing missing Hopper
-non-interactively additionally requires `--install-hopper`:
+For automation, `rea setup --json` reports the plan and a compact `.doctor`
+readiness projection without applying it. Use `rea doctor --json` for full
+health diagnostics and canonical tool catalog details. Pair
+`--yes` with explicit scope such as `--client codex`, or use
+`--all-detected` when the broad scope is intended. Without a scope flag,
+`--yes` is limited to existing REA-owned registrations; it does not select all
+detected clients. An unapproved actual apply reports `needs_confirmation` and
+exits 1. Installing missing Hopper non-interactively additionally requires
+`--install-hopper`:
 
 ```bash
 rea setup --yes --all-detected --install-hopper --json
@@ -131,11 +147,14 @@ rea setup --yes --all-detected --install-hopper --json
 
 Setup pins package-runner MCP registrations to the exact installed REA version,
 installs the matching skill and on-demand references in the same plan, and adds
-`startup_timeout_sec = 30` for Codex. Interactive `rea upgrade` installs the new
-executable and then opens the updated `rea setup --all-detected` plan for
-separate approval. Structured or non-TTY upgrades defer that integration sync.
-Use the same setup command to migrate floating, unversioned, or stale
-registrations, then restart changed clients.
+`startup_timeout_sec = 30` for Codex. `rea update` installs the exact resolved
+release into the npm prefix that owns the running package, then checks the new
+executable's version before reporting success. It does not reopen onboarding.
+Release lookup and installation both use npm's configured registry.
+Its maintenance plan selects only existing REA registrations and an already
+installed REA skill. Run the returned scoped setup command to review and approve
+those changes, then restart affected agents. The plan is returned in terminal,
+non-TTY, and JSON modes without applying configuration changes.
 
 ## Hopper
 
@@ -193,15 +212,22 @@ copying license secrets into logs, or killing unrelated Hopper processes.
 
 ## Ghidra
 
-REA's Ghidra provider is bring-your-own and supports Linux x64 with the exact
-official Ghidra 12.1.4 release and a 64-bit full JDK 21. macOS is not an
-admitted Ghidra host. An experimental
-Windows x64 P0 supports approved native x86-64 PE applications. It supplies
-discovery, analysis-profile commitment, an isolated read-only headless session,
-ten inventory/name/search operations and nine function-analysis operations,
-for 19 read-only operations total. Function analysis covers metadata,
-decompilation, assembly, resolved calls, typed references, xrefs, CFG, and
-dossiers. GUI state and analysis mutations remain unavailable through Ghidra.
+REA connects to an existing Ghidra installation on Linux x64 or macOS x64/arm64.
+It requires Ghidra 12.1.4 and a 64-bit full JDK 21. On macOS, the installation
+must include the native decompiler for the host architecture; REA does not
+build it or change Gatekeeper quarantine settings.
+
+The adapter exposes 22 read-only operations: ten inventory/name/search
+operations and twelve function-analysis operations. These cover metadata,
+decompilation, assembly, resolved calls, typed references, xrefs, function
+dossiers, instructions, and recovered data types. GUI controls and annotation
+changes require Hopper.
+
+Windows Ghidra operations are currently unavailable. The adapter reports
+`unsupported_host` until verified Job Object process ownership, private runtime
+DACLs, and reparse-safe path admission are implemented. The
+[Windows Ghidra P0 guide](windows-ghidra-p0.md) describes the intended boundary
+and remaining controls.
 
 Extract Ghidra and install the JDK outside REA, then export absolute paths:
 
@@ -212,7 +238,7 @@ rea doctor --json
 rea setup
 ```
 
-PowerShell configuration for Windows uses the same non-secret paths:
+For Windows diagnostics, use the same installation paths in PowerShell. These settings do not enable the blocked analysis operations:
 
 ```powershell
 $env:GHIDRA_INSTALL_DIR = "C:\tools\ghidra_12.1.4_PUBLIC"
@@ -221,10 +247,12 @@ rea doctor --json
 rea providers --json
 ```
 
-`rea setup` does not mutate Windows client configuration or install Hopper,
-Ghidra, Java, Python, or another package. Register the built `rea mcp` command
-manually in the intended client and preserve the two environment variables.
-See [Windows Ghidra P0](windows-ghidra-p0.md) for a complete example.
+`rea setup` can configure supported Windows agents and install the bundled
+REA skill after approval. Direct registrations use Node to launch REA's entry
+script; package-runner registrations use the pinned `npx` command. Hopper
+installation remains unavailable on Windows. Setup never installs Ghidra,
+Java, or Python, and agent registration does not enable blocked Ghidra
+operations. See [Windows Ghidra P0](windows-ghidra-p0.md) for provider diagnostics.
 
 Doctor validates the platform, architecture, application version,
 `support/analyzeHeadless` or `support/analyzeHeadless.bat`, Java
@@ -237,12 +265,10 @@ installs, upgrades, or modifies Ghidra or Java.
 Each verified session uses an ephemeral temporary project and isolated
 home/cache/config/temp paths. REA passes `-readOnly`, `-deleteProject`, uses
 Ghidra's default analysis and resource settings, and loads its packaged Java
-bridge via `-scriptPath`; it never opens an existing user project. Linux uses a
-current-user-only local bridge socket and descriptor. Windows P0 uses
-token-authenticated IPv4 loopback, a token-free endpoint record, and bounded
-process-tree termination. It does not yet prove private DACL,
-reparse-point-safe, or Job Object semantics; use only approved non-sensitive
-fixtures.
+bridge via `-scriptPath`; it never opens an existing user project. Linux and
+macOS use a current-user-only local bridge socket and descriptor. The
+experimental Windows transport uses authenticated IPv4 loopback, but missing
+native ownership and path controls keep Windows operations unavailable.
 
 Operations begin only after default auto-analysis completes. The provider
 startup deadline fails the open rather than exposing partial analysis. One
@@ -256,8 +282,9 @@ remain unknown, reference-kind provenance is preserved, and provider-specific
 pseudocode is never treated as original source or Hopper-equivalent text.
 
 Run `GHIDRA_INSTALL_DIR=... npm run verify:ghidra` from a source checkout to
-compile and analyze debug and stripped x86-64 ELF fixtures on Linux x64. This lane needs only a host C compiler
-in addition to Ghidra and its JDK.
+compile and analyze debug and stripped host-native fixtures (ELF on Linux x64
+or Mach-O on macOS), plus a native DWARF 4 type-layout object. This lane needs a
+host C compiler in addition to Ghidra and its JDK.
 
 Run `GHIDRA_INSTALL_DIR=... npm run verify:ghidra:cross-format` to add AArch64
 ELF, x86-64 PE, and x86-64 Mach-O fixture coverage. This separate lane needs
@@ -267,12 +294,14 @@ host-native Ghidra acceptance lane.
 
 On a controlled Windows x64 runner, use
 `npm run verify:ghidra:windows`. The verifier generates a deterministic native
-PE fixture from source bytes, exercises every admitted Ghidra operation, checks
-target/snapshot/import digest identity, and requires complete runtime cleanup.
+PE fixture from source bytes and requires the Windows native authority before
+opening the provider. This lane remains blocked until those controls are
+implemented; its intended checks include operation coverage, digest identity,
+and complete runtime cleanup.
 
 ## Diagnose, update, and remove
 
-`rea doctor --json` is strictly read-only. `rea upgrade` updates only the npm installation that owns the running CLI. `rea uninstall` removes only REA-owned agent registrations and skill files; `--purge-data` additionally removes REA cache and state paths.
+`rea doctor --json` is strictly read-only. `rea update` updates only the npm installation that owns the running CLI. Source checkouts and package-runner copies must be updated through the mechanism that owns them; a fresh package-runner invocation can use `npx rea-agents@latest`. `rea uninstall` removes only REA-owned agent registrations and skill files; `--purge-data` additionally removes REA cache and state paths.
 
 ## MCP Registry
 

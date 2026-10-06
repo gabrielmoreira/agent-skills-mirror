@@ -798,11 +798,19 @@ Dreaming 的 claim 读路径 / effective-status / hidden-set / scope 过滤 / ev
 - **凭据隔离**：非密钥配置落 `AppConfig.memoryProviders`（id、kind、display name、enabled、sync policy、readiness、last sync/error）；endpoint、scope id、protocol、API key 单独落 `~/.hope-agent/credentials/external-memory/{provider}.json`（`write_secure_file` 原子写 + 受限权限），也可用 `HOPE_AGENT_EXTERNAL_MEMORY_<ID>_*` 环境变量覆盖。owner read API **永不回传 API key、完整 endpoint path/query 或凭据文件路径**。
 - **出站过 SSRF**：endpoint 禁 URL credentials/query/fragment，每次请求前走统一 `check_url`；HTTP client 30s timeout、禁 redirect、2MB response cap、固定 UA。
 - **pull 不直写 active memory**：拉回内容统一写 `reference` claim（status=`needs_review`，带 provider evidence），经 Lucid Review 才可能成为 active claim；账本按 remote id + content/version hash 去重，各类上限有硬 cap。
-- **调度与账本**：手动同步、3s 本地写 debounce 和 5min 周期 pull/reconcile 先经进程级 async mutex，再共用 `credentials/external-memory/sync.lock` 的稳定操作系统排他锁；跨进程锁从权威 `config.json`、凭据与账本水合前一直持有到最后一份检查点与健康状态落盘，拿锁后必须重新读取磁盘配置并按 owner / automatic 来源重新裁决实时开关与同步策略，禁止沿用排队前的进程缓存。5min 周期入口不得在拿锁前按进程缓存提前返回，否则另一进程启用自动策略后 Primary 会永久失活。owner 的连接探测、凭据保存 / 清除、Provider 配置变更及孤儿文件清理也必须进入同一锁事务，并在验证或读改写前刷新配置缓存；最终健康 / readiness 更新经 `mutate_config` 的 `config.write.lock` 权威磁盘事务提交，配置读取与写入之间不允许其它进程插入设置写。桌面、Server 和 ACP 共享数据目录时不得让旧缓存重建已删除 Provider、用旧策略或凭据继续导出、重建已删除账本、覆盖无关设置或相互覆盖游标。锁顺序固定为操作系统状态锁 → Provider 进程内写锁 → 配置写锁。单 provider 120s 协作式请求预算（预算耗尽不发新请求，但当前 HTTP 请求与已开始的 claim/ledger checkpoint 必须完成后才释放锁）。账本落 `{provider}.sync.json`，仅 Primary 启动自动任务，`manual` policy 永不被后台调度。切换 endpoint/subject/protocol 清账本，单纯轮换 API key 保留断点。
+- **调度与账本**：手动同步、3s 本地写 debounce 和 5min 周期 pull/reconcile 先经进程级 async mutex，再共用 `credentials/external-memory/sync.lock` 的稳定操作系统排他锁；跨进程锁从权威 `config.json`、凭据与账本水合前一直持有到最后一份检查点与健康状态落盘，拿锁后必须重新读取磁盘配置并按 owner / automatic 来源重新裁决实时开关与同步策略，禁止沿用排队前的进程缓存。5min 周期入口不得在拿锁前按进程缓存提前返回，否则另一进程启用自动策略后 Primary 会永久失活。owner 的连接探测、凭据保存 / 清除、Provider 配置变更及孤儿文件清理也必须进入同一锁事务，并在验证或读改写前刷新配置缓存；最终健康 / readiness 更新经 `mutate_config` 的 `config.write.lock` 权威磁盘事务提交，配置读取与写入之间不允许其它进程插入设置写。桌面、Server 和 ACP 共享数据目录时不得让旧缓存重建已删除 Provider、用旧策略或凭据继续导出、重建已删除账本、覆盖无关设置或相互覆盖游标。锁顺序固定为操作系统状态锁 → Provider 进程内写锁 → 配置写锁。单 provider 120s 协作式请求预算（预算耗尽不发新请求，但当前 HTTP 请求与已开始的 claim/ledger checkpoint 必须完成后才释放锁）。账本落 `{provider}.sync.json`，仅 Primary 启动自动任务，`manual` policy 永不被后台调度。切换 endpoint/subject/protocol 通常清账本，单纯轮换 API key 保留断点；存在 OpenViking 未决导出时，凭据保存或清除均保留原账本围栏，账本损坏、不可读或版本不支持时保留原件而不阻止凭据清除或轮换，清除仍删除密钥；只有恢复原身份并对账终态后才能按普通规则清理。
 
 Owner 面严格区分"如果执行会怎样"（`get_external_memory_providers_preflight` / preflight report，只读、不发外部 IO）与"实际发生了什么"（`run_external_memory_provider_sync` / sync report，逐 provider status + 是否真实 IO + 计数）；有未保存草稿时禁运行。
 
 ---
+
+### OpenViking 导出终态与不确定写入
+
+OpenViking 的 `commit` 顶层 `status=ok` 只确认归档请求，`result.status=accepted` 和 `task_id` 不代表后台抽取完成。导出在发送首个消息批次前，将会话 ID、记忆 ID/摘要和凭据身份指纹写入既有同步账本的 `openVikingPendingExports`；不保存记忆正文或密钥。后续处于有效策略的同步先对账该批次，包括切换为 `pull_only`；策略仍控制是否允许新导出。只有同一身份的 `GET /api/v1/tasks/{task_id}` 返回匹配的 `session_commit` / 会话身份、`completed` 与合法结果，才发布完成摘要和导出计数。空 `memories_extracted` 对象是合法零变更；还须有明确的 `memory_extraction.skipped=0` 和空 `skipped_operations`。缺失结果、非法计数、非空错误或跳过的抽取操作不能报完成。旧版仅返回抽取计数与 `memory_diff_uri` 时，跳过状态仍未知，保持待对账，不发布摘要；本轮不读取独立 diff，最低版本门通过不代表终态导出已验收。
+
+`pending/running/cancelling` 每轮只探测一次，继续保留待对账批次；失败、取消、404、空响应、解析失败、丢失响应及无 task ID 的不确定写入保持冻结，不重新添加消息或重新 commit。凭据指纹包含 endpoint、subject、protocol 和 API key，密钥变更时也不得拿新身份读取旧 task；这比普通 key 轮换保留断点更严格。删除 Provider 的整表保存与显式 patch 路径均清除孤儿凭据，但保留未决、损坏或未知版本账本作为保护记录；重建相同 ID 仍须对账，辅助清理错误不提前中止其它凭据删除。无未决且可验证的普通账本仍随孤儿清理移除。需所有者在原服务中核对任务、归档与实际结果后再决定连接清理或重建；不得仅删除本地账本来自动重试。该围栏不保证服务端 exactly-once，也不反向认证历史版本已经记录的完成摘要。HTTP、账本与最终健康状态仍沿现有跨进程锁、SSRF、预算和安全写入口，不投影为 `JobManager` 任务。
+
+匿名本地 wire fixture 覆盖任务轮询、未决与失败终态、身份变更和账本序列化恢复；0.4.16/0.4.17/0.4.20/0.4.22 的路由已静态核对，wire 按回执结构覆盖明确零跳过、已跳过与缺少跳过证明，不把版本号套在合成响应上当作真实部署兼容性或记忆抽取质量验收。
 
 ## 十五、无痕会话（Incognito）联动
 

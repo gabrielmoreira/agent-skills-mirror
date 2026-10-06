@@ -90,6 +90,8 @@ Next
 
 agent の場合、復元時のヒントには代わりに `skillshare sync agents` が提案されます。
 
+trash に移動された [source リンク](../targets/configuration.md#follow_source_links)は `link → <target>` として一覧表示され、リンク先のコピーとしてではなく、再びリンク（またはジャンクション）として復元されます。たどられたリンクの背後から trash に移動された skill（`_dev-skills/foo`）は、`follow_source_links` がオンであれば実際のチェックアウトに復元されます。設定がオフの場合、またはチェックアウトの下にネストされたリンクが別の場所を指している場合、復元は失敗し、trash のエントリは保持されます。
+
 同じ名前の項目が既に source に存在する場合、復元は失敗します。先に既存の項目をアンインストールするか、別の名前を使用してください。
 
 ### delete（エイリアス: `rm`）

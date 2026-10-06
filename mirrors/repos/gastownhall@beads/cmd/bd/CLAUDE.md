@@ -1,0 +1,1 @@
+cache/repos/github.com/gastownhall@beads/cmd/bd/AGENTS.md

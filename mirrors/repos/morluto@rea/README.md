@@ -13,44 +13,52 @@
 [![MCP tool catalog](https://img.shields.io/badge/MCP-tool_catalog-5c4ee5?style=flat-square)](#tool-catalog-for-investigation)
 [![Node.js 22+](https://img.shields.io/badge/Node.js-22.19%2B-339933?style=flat-square&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![MIT license](https://img.shields.io/badge/license-MIT-f4c430?style=flat-square)](LICENSE)
+[![Discord](https://img.shields.io/discord/1556595354999332884?logo=discord&logoColor=white&label=Discord&color=5865F2)](https://discord.gg/GkcryMnJDM)
 
 [Quick start](#quick-start) · [Current status](#current-status) · [Investigation model](#the-investigation-model) · [Tool catalog](#tool-catalog-for-investigation) · [Roadmap](#roadmap) · [How it works](#how-it-works)
 
-<br />
-
-<code>npm install --global rea-agents && rea setup</code>
+<code>npx rea-agents setup</code>
 
 <br />
 
 <img src="docs/assets/rea-hopper-analysis.png" alt="REA launching its analysis bridge inside Hopper while inspecting a native binary" width="1200" />
 
+<br />
+
+<table aria-label="REA community">
+<tr>
+<td align="center" width="360">
+  <a href="https://discord.gg/GkcryMnJDM">
+    <img src="docs/assets/discord.svg" height="42" alt="Discord" /><br />
+    <strong>Join the Reverse Engineering Community</strong>
+  </a><br />
+  <sub>Discord · Q&amp;A · Show and Tell</sub>
+</td>
+</tr>
+</table>
+
+<br />
+
 </div>
 
 ---
 
-See a feature in an app that you want in your own product? Give the app to your agent—even without its source code. With REA, the agent can investigate the feature, explain how it works, show its evidence, and build a version adapted to your stack and requirements.
+See a feature in an app that you want in your own product? Ask your agent to investigate it with REA. It can inspect the app without its source code, explain how the feature works, show the evidence, and build a version for your project.
 
-REA gives agents one consistent way to investigate software. Today that includes deep native analysis and function dossiers through Hopper or bring-your-own Ghidra on Linux and macOS, plus an experimental Windows x64 Ghidra P0 for approved native PE applications; execution-free managed PE/CLI triage; reproducible Evidence records; controlled process capture; passive website, Electron page, and Node/Electron V8 Inspector observation; JavaScript/source-map reconstruction; and provider-neutral graphs for connecting application layers without confusing static inference with runtime observation. The longer-term toolkit extends the same agent workflow to APIs, protocols, mobile artifacts, firmware, richer runtime behavior, and differences between versions.
+REA connects your agent to tools for inspecting native binaries, JavaScript and Electron apps, .NET assemblies, and websites. You can also use the same tools from your terminal. Analysis runs locally, and results include the evidence and limitations behind each conclusion.
 
-Reverse engineering normally makes the operator choose a tool, learn its API, move evidence between programs, and decide what to inspect next. REA gives that work to the agent through commands, skills, structured results, and repeatable investigation workflows.
+Setup configures your agent and connects it to Hopper or Ghidra. If you need an analysis tool, setup can install Hopper for you.
 
 ## Just ask your agent
 
-Run setup once. Agent integration installs an aligned MCP registration and the
-bundled routing skill together:
-
-```bash
-npx rea-agents setup
-```
-
-Then ask:
+After [setup](#quick-start), restart your agent and ask:
 
 ```text
 Understand how search works in the Notes app, show me the evidence, and build a
 similar feature for my project.
 ```
 
-Notes is only an example. Name any app you want to understand, or ask the agent to start with an overview.
+Replace Notes with the app you want to understand, or ask for an overview first.
 
 ## The investigation model
 
@@ -79,119 +87,69 @@ REA shows how it reached its conclusions. It does not claim to recover original 
 | ------------------------ | ----------------------------------------------------------------------------------------------------- |
 | **Built for agents**     | Ask what an app does and let your agent inspect it instead of guessing.                               |
 | **CLI and MCP**          | Run the same reverse-engineering capabilities from your terminal or agent.                            |
-| **Complexity handled**   | REA installs and manages the reverse-engineering tools behind the scenes.                             |
+| **Guided setup**         | Configure your agent, connect an existing analysis tool, or install Hopper with your approval.        |
 | **From insight to code** | Understand a feature, then build your own version in the same coding session.                         |
 | **Local by design**      | Analysis runs on your supported local host. REA does not upload the app to a hosted analysis service. |
 | **Keeps context**        | Investigate several apps without starting over for every question.                                    |
 
 ## Quick start
 
-### Run setup — recommended
+### Run setup (recommended)
+
+Set up REA with your agent:
 
 ```bash
-npx --yes rea-agents@latest setup
+npx rea-agents setup
 ```
 
-The npm package-runner prompt, when shown, approves downloading REA for this
-invocation; it does not approve any setup changes. The REA wizard separately
-shows its complete plan and asks before applying it. Setup does not update
-Homebrew, Node.js, or npm. The setup command opens with the work it
-enables: investigate local apps from an agent, recover evidence through a
-deep-analysis provider, and reuse REA's guided workflow. It summarizes the
-detected agents, then asks which capabilities to set up: agent integration
-(MCP plus the matching guided workflow) and—when needed—the Hopper provider.
-Nothing is preselected. Choosing agent integration opens a second empty
-checklist for the specific detected agents that should receive a registration.
+Choose which supported agents should use REA, then review the exact paths and changes before approving. Existing REA registrations are selected by default; newly detected agents are available to select, but detection alone does not select them. Setup adds MCP access and REA's guided workflow for selected agents. Hopper is a separate optional choice with its own consent. Setup can also record an existing Ghidra installation.
 
-`@latest` makes the requested release explicit and asks npm for the release
-currently published under that tag. REA does not silently replace the package
-version npm selected. Intentional rollbacks therefore remain available through
-an exact package request.
+Setup shows its changes before applying them and backs up existing configuration. See [Installation and setup](docs/installation.md) for requirements and setup options.
 
-REA keeps the journey inline so its history remains in the terminal. Selecting
-a capability does not select every detected target or authorize a change.
-Before anything changes, REA validates existing configuration, prints exact
-paths and external effects, and asks for final approval with **No** as the
-default. The screen keeps the available keys visible while you choose; Ctrl-C
-and declining leave the system unchanged.
+### With an agent (recommended)
 
-REA detects Claude Code, Claude Desktop, Codex, Cursor, Gemini CLI, Windsurf, and Devin. It configures the first six when detected; Devin is reported but left unchanged because it has no documented local MCP configuration boundary. Registrations are additive, backup-first, and read back after writing. You can safely rerun setup.
+After setup, restart your agent and [describe the app or feature](#just-ask-your-agent) you want to understand. Hopper can run in demo mode; if it shows a first-run prompt, choose the demo or enter an existing license.
 
-Use `rea setup --dry-run` to inspect the plan, repeat `--client` to select exact
-agents, and `--accessible` for sequential vertical prompts. Machine output
-remains available through `--json`; prompt UI and progress go to stderr.
+REA supports Claude Code, Claude Desktop, Codex, Cursor, Gemini CLI, Windsurf, Devin, OpenCode, Antigravity, GitHub Copilot CLI, and VS Code. Existing REA registrations are selected by default during setup; other detected agents remain unselected until chosen. Other agents can use the [manual MCP configuration](#manual-mcp-configuration).
 
-After a successful setup, REA reports the capabilities now ready to use and a
-concrete next step, such as restarting a configured agent before asking it to
-investigate an application. It does not claim an integration or provider is
-ready unless setup and its final diagnostic check verified it.
+### From the terminal with npx
 
-An optional curl wrapper installs the same CLI package and starts setup only when a terminal is available:
+After setup, run:
+
+```bash
+npx -y rea-agents@latest doctor
+npx -y rea-agents@latest analyze /Applications/Notes.app
+```
+
+### Install the rea command
+
+Install the command-line interface:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/morluto/rea/main/install.sh | bash
 ```
 
-Pass installer options after `bash -s --`, for example `--dry-run`, `--no-setup`, or `--version 1.0.0`. The curl wrapper never installs prerequisites or configures integrations itself. See [Installation and setup](docs/installation.md) for its exact mutation boundary.
+The installer adds `rea` to your system and starts setup when run in a terminal. It requires Node.js and npm to be installed already.
 
-### With an agent — recommended
-
-```bash
-npx --yes rea-agents@latest setup
-```
-
-Choose Agent Integration in the reviewed setup plan. REA installs the pinned MCP
-registration and its matching routing skill as one transaction. After setup,
-restart the configured agent so it loads the aligned integration.
-
-Review the setup plan, approve it if appropriate, then describe the app or feature you want to understand. Hopper can run in its free demo mode; if it shows a first-run prompt, choose the demo or enter an existing license.
-
-### From Terminal — no installation
-
-```bash
-npx --yes rea-agents@latest setup
-npx -y rea-agents@latest doctor
-npx -y rea-agents@latest analyze /Applications/Notes.app
-```
-
-Review the setup plan before confirming it. Restart a configured agent so it loads REA.
-
-### From Terminal — install the `rea` command
+Alternatively, install with npm, then run setup:
 
 ```bash
 npm install --global rea-agents
 rea setup
-rea doctor
-rea analyze /Applications/Notes.app
 ```
 
-Update that global installation in place:
-
-```bash
-rea upgrade
-```
-
-REA checks npm for the latest release and verifies that the running package is
-the global installation it will replace. Source, local, and `npx` copies report
-the manual `npm install --global rea-agents@latest` command instead of updating
-an unrelated global package.
-
-Choose either the no-install commands or the global installation. You do not need both.
-
-`npm install rea-agents` without `--global` installs `rea` only into the
-current project's `node_modules/.bin`; it does not add `rea` to your shell
-`PATH`. Use the `npx` commands above for one-off runs or `--global` when you
-want a shell-visible `rea` command.
+Update either installation with `rea update`.
 
 ### Requirements
 
 - macOS 12 or newer
 - Ubuntu 24.04+, Fedora 41+, or 64-bit Arch Linux
-- Windows x64 for the experimental, Ghidra-only native PE P0 boundary
 - Node.js 22.19+ or 24.11+ (including newer releases)
 - npm; REA does not require or install a particular npm version
 
-Deep binary operations use [Hopper](https://www.hopperapp.com/), a separate desktop application with its own license, or a caller-selected Ghidra provider. Ghidra supplies read-only inventory, function metadata, decompilation, assembly, resolved calls, typed references, xrefs, CFG, and function dossiers; GUI state and mutations remain unavailable through that provider. Setup reuses an existing Hopper installation or an operator-supplied Ghidra installation. It never downloads Ghidra or installs Java. If neither provider is ready, interactive setup proposes Hopper; unattended Hopper installation requires `rea setup --yes --install-hopper`.
+Native binary analysis requires [Hopper](https://www.hopperapp.com/) or [Ghidra](#ghidra-read-only-analysis-provider). Hopper is separate software with its own license; its demo supports analysis with vendor-defined limits. REA can use Ghidra that you have already installed.
+
+Windows Ghidra support is experimental and currently unavailable. The required Windows process ownership, private-directory permissions, and safe-path checks are not implemented. See [Windows Ghidra P0](docs/windows-ghidra-p0.md) for the remaining requirements.
 
 If something is not working, run:
 
@@ -199,13 +157,13 @@ If something is not working, run:
 npx -y rea-agents@latest doctor
 ```
 
-`rea doctor --json` is read-only and distinguishes unsupported hosts, missing dependencies, a missing local analysis engine, configuration drift, and healthy checks. Paid-license activation is optional: on Linux, REA runs the supported Hopper demo build on a private Xvfb display and selects Hopper's offered demo mode for each analysis session.
+`doctor` checks your host, dependencies, analysis tools, and agent configuration without changing them. Use `--json` for structured diagnostics.
 
 ### Linux installation and troubleshooting
 
-On macOS, approved setup downloads Hopper's official DMG, verifies it, and installs the app into `~/Applications` without Homebrew or administrator privileges. Hopper may show its demo or license prompt when first opened; no manual drag-and-drop is required.
+On macOS, setup can install Hopper in `~/Applications` after approval. It verifies the official download and does not need Homebrew or administrator privileges.
 
-On Ubuntu 24.04+, Fedora 41+, and 64-bit Arch Linux, approved setup downloads the pinned official Hopper 6.4.2 package, restricts downloads to Hopper's public origin, verifies the published size and checksum, and invokes `apt-get`, `dnf`, or `pacman` to install Hopper and the Xvfb, Python, X11, and XTEST packages used by demo sessions. When REA is not already running as root, `pkexec` presents the system authorization prompt. REA never invokes `sudo`. Demo sessions run on an isolated 1280×1024 Xvfb display. REA verifies the exact supported Hopper binary, its owned process ancestry, the expected dialog geometry, and bridge state before selecting `Try the Demo`; any mismatch fails closed.
+On supported Linux distributions, setup can install Hopper and its demo-session dependencies through your system package manager. You may see a system authorization prompt. Demo sessions use a private virtual display, leaving your desktop alone. See [Hopper installation](docs/installation.md#hopper) for download verification and platform details.
 
 The normal Linux launcher is `/opt/hopper/bin/Hopper`. If Hopper was installed elsewhere:
 
@@ -220,13 +178,15 @@ If doctor reports a missing analysis engine even though the file exists, inspect
 ldd /opt/hopper/bin/Hopper | grep 'not found'
 ```
 
-Install the missing distribution packages and rerun `rea setup`. Linux demo automation requires `Xvfb`, Python 3, `libX11.so.6`, and `libXtst.so.6`; approved setup installs those direct runtime dependencies and does not interact with the user's desktop display. Hopper's free demo supports analysis with vendor-defined limits, and a paid license is optional. The curl installer places the `rea` command in `~/.local/bin` on Linux; add that directory to future shell `PATH` values if it is not already present.
+Install the missing packages and rerun `rea setup`. The Linux demo needs Xvfb, Python 3, X11, and XTEST; approved setup installs these dependencies. If you use the curl installer, add `~/.local/bin` to your shell `PATH` when needed.
 
 REA defaults `HOPPER_LAUNCHER_PATH` to `/Applications/Hopper Disassembler.app/Contents/MacOS/hopper` on macOS and `/opt/hopper/bin/Hopper` on Linux. Explicit configuration always takes precedence.
 
 ### Ghidra read-only analysis provider
 
-The Ghidra adapter supports the exact official Ghidra 12.1.4 release with a 64-bit full JDK 21 on Linux x64 and macOS x64/arm64. macOS additionally requires the matching native Ghidra decompiler; the adapter does not build or install it. The adapter also provides an experimental Windows x64 P0 limited to approved native x86-64 PE applications. Download and extract those projects yourself, then configure absolute paths:
+Already use Ghidra? REA can connect it to your agent on Linux x64 or macOS x64/arm64. It requires **Ghidra 12.1.4** and a **64-bit JDK 21**. On macOS, your Ghidra installation must also include the native decompiler for your architecture.
+
+Set the installation paths, then run setup:
 
 ```bash
 export GHIDRA_INSTALL_DIR=/absolute/path/to/ghidra_12.1.4_PUBLIC
@@ -236,21 +196,15 @@ rea setup
 rea providers --json
 ```
 
-Doctor distinguishes missing configuration, a bad installation root, the wrong Ghidra or Java version, a JRE without `javac`, a missing `support/analyzeHeadless`, and an unsupported platform or architecture. Approved setup only copies the verified non-secret paths into detected MCP registrations; it does not modify the Ghidra installation or install/download Ghidra or Java.
+Setup checks the installations and saves their paths in your selected agents' configuration after approval. Ghidra and Java must already be installed; REA does not download or change them.
 
-On Windows, set the same variables in PowerShell and run `rea doctor --json`; automated `rea setup` and Hopper installation remain unavailable. The P0 target boundary rejects DLLs, managed PE files, non-x86-64 images, mutable/hostile inputs, and non-PE formats. See the [Windows Ghidra P0 operations guide](docs/windows-ghidra-p0.md) for registration, exact limitations, CI evidence, and acceptance gates.
+The adapter exposes **22 read-only operations** for functions, strings, symbols, assembly, decompilation, calls, references, instructions, and data types. These also support REA's overview, search, call-graph, and function-analysis workflows. Ghidra does not provide GUI controls or annotation changes through REA.
 
-REA loads its packaged Java `HeadlessScript` with `-scriptPath`, copies and digest-verifies the target in an ephemeral runtime, enables `-readOnly` and `-deleteProject`, and authenticates every request. Auto-analysis completes before operations are served; startup has a deadline, while tool requests run until a result, caller cancellation, or provider shutdown. Linux and macOS use a mode-0600 Unix socket. Windows P0 uses token-authenticated IPv4 loopback and a token-free endpoint record because Node path-based IPC does not connect to Java AF_UNIX sockets on Windows. The bridge verifies Ghidra's imported-byte SHA-256 before serving any operation.
+REA analyzes a temporary copy of the target and removes the temporary project when the session closes. Results identify what Ghidra observed and what it could not resolve. Decompilation produces pseudocode rather than the original source.
 
-The Ghidra adapter declares 22 direct and enhanced operations. Its ten inventory operations are `list_documents`, `list_procedures`, `list_strings`, `list_names`, `list_segments`, `address_name`, `procedure_address`, `resolve_containing_procedure`, `search_procedures`, and `search_strings`. It also admits `procedure_info`, `procedure_pseudo_code`, `procedure_assembly`, `read_function_instructions`, `procedure_callers`, `procedure_callees`, `procedure_references`, `xrefs`, `analyze_function`, `inspect_native_instruction`, `resolve_native_call_targets`, and `inspect_native_data_type`. The exact-object primitives report instruction tokens, static call targets, and recovered database layouts; unsupported facets remain explicit. `trace_native_values` composes bounded decompiler-derived argument/parameter and return/output dependencies across resolved calls. `read_function_instructions` is the offset-paginated fast path for raw instruction windows: it does not invoke the decompiler or whole-program name/string inventories, and is also exposed as `rea instructions`. These capabilities enable the shared Swift/Objective-C inventory workflows, `binary_overview`, `batch_decompile`, `get_call_graph`, `find_xrefs_to_name`, `trace_feature`, and complete function dossiers. Default-space addresses are lowercase `0x` hexadecimal. Other spaces, including `EXTERNAL`, use `<percent-encoded-space>:0x<hex>`. Symbol results identify primary, dynamic, external, type, and source facts; procedures distinguish external functions and thunks; strings identify charset, missing-terminator state, byte length, and value truncation; memory-block ends are exclusive and permissions come directly from Ghidra.
+Ghidra also imports DOS MZ executables with an explicit 16-bit x86 real-mode profile. Function results include complete observed body ranges, distinguishing owned bytes from the enclosing span. See the [DOS analysis guide](docs/ghidra-dos.md) for addresses, packing, and verification boundaries.
 
-The bridge serves operations only after auto-analysis completes. Each Program owns one persistent `DecompInterface`, and a serial FIFO keeps Ghidra API access on the owning program's thread; it has no fixed queue length or per-operation deadline. Reference results preserve Ghidra's call/jump/data/read/write/indirect/computed/external facts, while unresolved targetless flows remain explicitly unknown. Synthetic entry-point references without actionable memory sources are omitted. Pseudocode and assembly are provider-specific observations, not original source or Hopper-equivalent text. Caller cancellation and provider shutdown remain available; provider results are returned without a fixed response-size ceiling.
-
-`npm run verify:ghidra` builds debug and stripped host-native fixtures (Linux x64 ELF or macOS Mach-O) and a native DWARF 4 type-layout object. Against real Ghidra 12.1.4 it validates every admitted operation, direct and indirect calls, imports/exports/thunks, typed references, strings/xrefs, multi-block CFG, cancellation, deadlines, concurrency, malformed inputs, and complete process/project cleanup. It needs a host C compiler and the Ghidra/JDK prerequisites above.
-
-`npm run verify:ghidra:cross-format` adds AArch64 ELF, x86-64 PE, and x86-64 Mach-O fixtures. This separate lane requires `clang`, LLD, and `lld-link`; use `REA_CLANG`, `REA_LLD`, or `REA_LLD_LINK` to select alternate command paths. It preflights the required toolchain before compiling fixtures.
-
-`npm run verify:ghidra:windows` uses a deterministic source-owned native x86-64 PE application and requires the Windows P0 operations, target/snapshot/import digest linkage, authenticated loopback transport, and cleanup on a controlled Windows x64 Ghidra 12.1.4 runner. This proof does not establish Job Object ownership, private DACLs, or reparse-point-safe authority.
+Windows operations remain unavailable pending the controls described in the [Windows Ghidra P0 guide](docs/windows-ghidra-p0.md). See [Ghidra installation](docs/installation.md#ghidra), [provider evaluation](docs/provider-evaluation.md), and [testing](docs/testing.md) for configuration details, coverage, and real-provider verification.
 
 To remove only REA-owned MCP registrations and the managed skill:
 
@@ -263,15 +217,15 @@ Uninstall preserves Hopper, Node.js, Evidence files, captures, unrelated skills,
 
 ### CLI or agent?
 
-| If you want to…                                                  | Use                                                                       |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Ask an agent to investigate an app and build a feature           | Install the skill, then talk to your agent                                |
-| Inspect or decompile one part of an app from the Terminal        | `rea analyze` or `rea decompile`                                          |
-| Validate, canonicalize, or compare Evidence bundles              | `rea evidence-import`, `rea evidence-export`, or `rea compare`            |
-| Map a local JavaScript/Electron application without executing it | `rea analyze PATH` or `rea analyze-javascript-application`                |
-| Reuse immutable analysis results without relaunching a provider  | Pass `--snapshot /approved/path/analysis.json` to a deep-analysis command |
-| Import source as historical reference                            | `rea import-reference-source`                                             |
-| Capture or compare controlled process behavior                   | `rea capture-process` or `rea compare-process-captures`                   |
+| If you want to…                                                  | Use                                                                 |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Ask an agent to investigate an app and build a feature           | Run setup, restart your agent, then describe the task               |
+| Inspect or decompile one part of an app from the Terminal        | `rea analyze` or `rea decompile`                                    |
+| Validate, canonicalize, or compare Evidence bundles              | `rea evidence-import`, `rea evidence-export`, or `rea compare`      |
+| Map a local JavaScript/Electron application without executing it | `rea analyze PATH` or `rea analyze-javascript-application`          |
+| Reuse immutable analysis results without relaunching a provider  | Pass `--snapshot /path/to/analysis.json` to a deep-analysis command |
+| Import source as historical reference                            | `rea import-reference-source`                                       |
+| Capture or compare controlled process behavior                   | `rea capture-process` or `rea compare-process-captures`             |
 
 ```bash
 rea evidence-import /absolute/path/to/evidence/bundle.json
@@ -279,8 +233,7 @@ rea evidence-export /absolute/path/to/evidence/bundle.json /absolute/path/to/evi
 rea compare /absolute/path/to/evidence/left.json /absolute/path/to/evidence/right.json
 ```
 
-JavaScript application analysis reads the selected directory or ASAR directly;
-the command uses the supplied path directly:
+Analyze a JavaScript application directory or ASAR without executing it:
 
 ```bash
 rea analyze /absolute/path/to/releases/app.asar --json
@@ -292,25 +245,15 @@ static JavaScript application provider when neither `--provider` nor
 `--snapshot` is supplied. Both routes return the analysis and its Evidence
 context inline.
 
-Historical source import takes the directory directly and never treats source
-as current behavioral authority:
+Import an older source tree as a reference. REA keeps it separate from observations of the current app:
 
 ```bash
 rea import-reference-source /absolute/path/to/source
 ```
 
-Imports read the path supplied to the command and validate every Evidence ID and manifest. Exports never replace an existing file unless `--overwrite` is explicit.
+Imports read the path supplied to the command. File names do not cause automatic omissions; files are represented by hashes and metadata. To exclude selected paths, set `REA_REFERENCE_SECRET_PATTERNS_JSON` to a JSON string array of ignore patterns. Exports never replace an existing file unless `--overwrite` is explicit.
 
-Provider-neutral analysis snapshots persist successful, immutable REA calls and
-their Evidence records. They are exact caches rather than Hopper databases:
-REA reuses a v2 entry only when the binary digest, kind, format, architecture,
-operation parameters, concrete provider build, and canonical analysis-profile
-digest match. Hopper loader defaults and configured overrides are normalized by
-the Hopper adapter and committed to that profile, so overrides occupy a distinct
-safe cache partition instead of disabling snapshots. Cursor-dependent and
-mutating calls are never cached. Snapshot files can contain proprietary analysis
-results and local paths, so REA keeps them local and writes them with owner-only
-permissions. The caller supplies the snapshot path directly:
+Use a snapshot to save successful analysis results and reuse them on later runs. REA reuses a result only when the target bytes, operation, parameters, analysis tool, and settings match. It does not cache changes or cursor-dependent calls. Snapshot files stay local and use owner-only permissions.
 
 ```bash
 rea analyze /absolute/path/to/app --snapshot /absolute/path/to/analysis/app.json
@@ -318,10 +261,10 @@ rea analyze /absolute/path/to/app --snapshot /absolute/path/to/analysis/app.json
 rea analyze /absolute/path/to/app --snapshot /absolute/path/to/analysis/app.json
 ```
 
-Exact CLI evidence replays happen before any provider process starts. In MCP sessions,
+Exact CLI cached-evidence reads happen before any provider process starts. In MCP sessions,
 pass `snapshot_path` to `open_binary` to import a snapshot atomically while
 opening its matching target; MCP providers may still start before a cached call
-is replayed. Pass `snapshot_path` and, when required, `overwrite: true` to
+result is returned. Pass `snapshot_path` and, when required, `overwrite: true` to
 `close_binary` to save atomically before Hopper resources are released. If the
 save fails, REA deliberately leaves the session open.
 
@@ -343,7 +286,7 @@ REA gives the agent a clear path from that request to working code:
 |    5 | Decompiles the relevant routines        | `procedure_pseudo_code`, `procedure_assembly`, `batch_decompile` |
 |    6 | Builds the feature in your project      | code adapted to your stack, product, and requirements            |
 
-REA handles the app analysis in steps 1–5. The agent performs step 6 with its normal file-editing and test tools, using what it learned about the app.
+REA handles the app analysis in steps 1 through 5. The agent performs step 6 with its normal file-editing and test tools, using what it learned about the app.
 
 ## What agents can do
 
@@ -356,157 +299,119 @@ REA handles the app analysis in steps 1–5. The agent performs step 6 with its 
 - Analyze Swift and Objective-C metadata without manually untangling every mangled symbol.
 - Leave names, comments, and bookmarks in Hopper so human and agent analysis reinforce each other.
 
-See [native investigation](docs/native-investigation.md) for keyed archives, instruction/call/type primitives, typed dispatch metadata, value traces and approved native desktop observation.
+See [native investigation](docs/native-investigation.md) for keyed archives, instruction/call/type primitives, typed dispatch metadata, value traces and native desktop observation.
 
 ## Tool catalog for investigation
 
-| Tool family               | Count | Examples                                                                                                                                                                                                                                                                                        |
-| ------------------------- | ----: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Native inspection         |    39 | procedures, pseudocode, assembly, strings, names, segments, callers, callees, xrefs, annotations, bounded byte reads, file-offset translation                                                                                                                                                   |
-| Investigation workflows   |    15 | `binary_overview`, `analyze_function`, `inspect_native_api`, `inspect_native_dispatch_metadata`, `batch_decompile`, `trace_feature`, `trace_native_investigation`, exact string-to-code lookup, bounded call paths, call graphs, Swift and Objective-C discovery                                |
-| Native macOS utilities    |     7 | Mach-O metadata, code signatures, plists, architectures, Swift demangling; Hopper-free and provenance-bearing                                                                                                                                                                                   |
-| Artifact graph            |     5 | complete inline inspection of directories and supported packages, compiled Interface Builder UI graph decoding, paginated Apple asset catalog metadata, plus explicitly selected extraction into an absent owned tree                                                                           |
-| Managed PE/CLI            |     8 | PE/CLI identity, metadata members, CIL hashes, P/Invoke/native-boundary declarations and verification, application-graph projection, decompiler reconstruction import, token remapping, runtime-correlation plans, and version comparison                                                       |
-| Browser observation       |     9 | exact-origin passive CDP capture, bundle and source-map analysis, WebMCP discovery, session timelines, capture diff, visual evidence, and bounded Playwright scenarios                                                                                                                          |
-| Electron analysis         |     5 | passive root-confined observation, static application mapping, evidence-backed static/runtime reconciliation, and provider-owned click/wait scenarios                                                                                                                                           |
-| JavaScript runtime        |     2 | approved attach-only Node/Electron Inspector target discovery plus bounded script and execution-context observation without evaluation or instrumentation                                                                                                                                       |
-| Application workflows     |    10 | complete cross-layer traces, unique-only version matching, historical-source to bundle mapping, static export return-shape comparison, approved Linux-isolated extracted-module replay, managed-runtime characterization, reconstruction coverage closure, and deterministic obligation ledgers |
-| Workspace and observation |    22 | target lifecycle, inline Evidence bundle retrieval, aggregate navigation/address context, direct finite replay-machine evaluation, process/artifact/function comparison, evidence-linked residual-unknown lifecycle                                                                             |
+| Tool family               | Count | Examples                                                                                                                                                  |
+| ------------------------- | ----: | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Native inspection         |    39 | functions, pseudocode, assembly, strings, symbols, calls, references, annotations, byte reads, and file offsets                                           |
+| Investigation workflows   |    14 | app overviews, function dossiers, native APIs and dispatch, batch decompilation, feature traces, call paths, call graphs, Swift and Objective-C discovery |
+| Native macOS utilities    |     7 | Mach-O metadata, code signatures, plists, architectures, and Swift demangling without launching Hopper                                                    |
+| Artifact graph            |     5 | directory and package inventories, compiled Interface Builder files, Apple asset catalogs, and extraction                                                 |
+| Managed PE/CLI            |     7 | .NET identity, metadata, CIL instructions, native dependencies, reconstruction imports, and build comparisons                                             |
+| Browser observation       |     9 | page structure, network metadata, scripts, source maps, WebMCP discovery, screenshots, and capture comparisons                                            |
+| Electron analysis         |     5 | renderer observation, static app mapping, and static/runtime reconciliation                                                                               |
+| JavaScript runtime        |     2 | Node/Electron Inspector target discovery, script locations, and execution-context events                                                                  |
+| Application workflows     |     7 | cross-layer feature traces, build comparisons, historical source mapping, static return-shape comparison, and reconstruction checks                       |
+| Workspace and observation |    21 | sessions, evidence bundles, navigation context, process/artifact/function comparisons, and open-question tracking                                         |
 
-The public interface describes what the agent is trying to learn. Providers decide how to answer. macOS utilities handle common semantic inspection without launching Hopper; Hopper handles deeper native analysis; the process harness implements controlled behavioral capture.
+The public interface describes what the agent is trying to learn. Providers decide how to answer. macOS utilities handle common semantic inspection without launching Hopper; Hopper handles deeper native analysis; the process harness records direct behavioral captures.
 
 ## Current status
 
-REA is already useful for native application, browser, and Electron investigation on supported macOS and Linux hosts, plus the bounded Windows Ghidra P0 described above:
+REA supports native application, JavaScript, Electron, .NET, and browser investigation on macOS and Linux. Individual tools have platform and runtime prerequisites; use `rea capabilities` to check what is available on your host.
 
-- Open Mach-O, ELF, PE, `.app`, ZIP, APK, IPA, ASAR, plist, JavaScript, source-map, and generic analysis-database targets; Hopper remains the only adapter that accepts legacy `.hop` databases.
-- Discover deep-analysis candidates without starting them, choose deterministically, and retain one immutable provider/profile binding until an explicit switch or close; provider failures never trigger transparent fallback.
-- Attach to a user-owned Chrome-family browser over a configured loopback CDP endpoint; capture exact-origin web structure, safe metadata, approved value-free payload shapes, bundle/source-map evidence, WebMCP declarations, user-action timelines, capture diffs, and explicitly approved screenshots without navigation or JavaScript evaluation.
-- Inspect Electron `file://` renderer pages through a separate canonical-root permission boundary without invoking Electron APIs; script contents remain separately approved and byte bounded.
-- Attach to one exact approved Node or Electron V8 Inspector target and retain bounded `scriptParsed` plus execution-context lifecycle metadata without evaluation, breakpoints, resume, source reads, or instrumentation. require/import edges, EventEmitter activity, Electron IPC, PID identity, and role identity remain unknown. See [passive Node and Electron runtime observation](docs/javascript-runtime-observation.md).
-- Validate and canonically serialize a provider-neutral [JavaScript Application Graph](docs/javascript-application-graph.md) spanning packages, ASAR entries, Electron roles, JavaScript/source-map entities, browser/runtime instances, IPC, endpoints, storage, and native add-ons. This shipped domain contract performs no extraction or I/O by itself.
-- Reconstruct static package, entrypoint, Webpack/Rspack module, import, worker, endpoint, storage, source-map, BrowserWindow, preload, contextBridge, IPC, utility-process, and native-add-on structure from a selected local directory or ASAR through `analyze_javascript_application` or `rea analyze-javascript-application`. Results and Evidence context are returned inline. The AST-only [application service](docs/javascript-artifact-reconstruction.md) never executes bootstrap code, pairs only unique exact literal IPC channels, and reports dynamic or ambiguous channels as unresolved.
-- Reconcile that static graph with existing passive web or Electron Evidence through `reconcile_javascript_runtime` or `rea reconcile-javascript-runtime`. Exact captured bytes outrank caller-declared file/URL mappings; target, frame, script, worker, cache, and asset ambiguity stays explicit, source-map authority stays separate, and a module resident in an observed bundle is never reported as executed. See [JavaScript static/runtime reconciliation](docs/javascript-runtime-reconciliation.md).
-- Trace a literal route, string, API, IPC channel, module, or native export through the complete reachable graph in authenticated application Evidence, then hand exact native artifact digests and requested exports to retained Ghidra or Hopper Evidence without automatic provider switching. Compare application versions using unique-only digest, source-map, structural, and semantic tiers; map a committed historical source inventory to bundle nodes with explicit digest and path scores; compare one exact JavaScript export's static return shapes through unique literal discriminants and JSON Pointer changes. Duplicate, dynamic, incomplete, ambiguous, and truncated facts stay unknown. See [cross-layer JavaScript application workflows](docs/javascript-application-workflows.md).
-- Classify PE/CLI managed artifacts with `inspect_managed_artifact` / `rea inspect-managed-artifact`, inspect file-backed metadata members, signatures, raw CIL hashes, decoded-instruction-tuple fingerprints, separately reported exception regions, call edges, and field-access anchors with `inspect_managed_members` / `rea inspect-managed-members`, inventory declared ModuleRef/ImplMap/PInvoke and non-IL method boundary indicators with `inspect_managed_native_boundaries` / `rea inspect-managed-native-boundaries`, then compare two authenticated member observations with `compare_managed_members` / `rea compare-managed-members`. `verify_managed_native_boundaries` / `rea verify-managed-native-boundaries` checks managed P/Invoke declarations against authenticated native export or function Evidence while keeping verified, inferred, contradicted, and unresolved states distinct. The comparison treats build-local tokens as build-local and uses unique decoded-CIL/signature and structural method-shape tiers, never names alone; tuple fingerprints do not themselves resolve tokens or fully commit control flow. `project_managed_application_graph` / `rea project-managed-application-graph` projects authenticated managed artifact/member/native-boundary Evidence into the existing application graph for cross-layer feature tracing. `import_managed_reconstruction` / `rea import-managed-reconstruction` admits user-supplied decompiler C#/IL/pseudocode as analyst inference only after exact artifact SHA-256, MVID, signature, and decoded-IL commitments match. Separately, `plan_managed_runtime_correlation` / `rea plan-managed-runtime-correlation` can admit a default-disabled, permission-gated runtime-correlation plan locked to the same build evidence. These paths never load the assembly, resolve CLR dependencies, execute target code, run a decompiler, or translate managed tokens into native addresses; complete normalized-CIL semantics, native-body bridge mapping, and an actual runtime executor remain future managed-code contracts.
-- Configure `REA_ILSPY_CMD_PATH=/absolute/path/to/ilspycmd` only when you want
-  doctor and `verify:managed` to inspect a bring-your-own ILSpy command as a
-  real reconstruction oracle. REA does not install ILSpy and does not treat
-  decompiler text as canonical metadata or CIL observation.
-- Traverse content-addressed artifact graphs without extraction; on macOS, read-only DMG traversal additionally requires `native_mount_approved: true` and `REA_ARTIFACT_NATIVE_MOUNT_ENABLED=true`. Materialize only approved occurrences into absent output roots.
-- Build function dossiers with pseudocode, assembly, CFG edges, comments, calls, references, strings, and names.
-- Search and trace features across symbols, strings, metadata, references, and call paths.
-- Record every successful result as deterministic Evidence with artifact and provider identity, confidence, authority, limitations, and locations.
-- Export and import evidence bundles across sessions.
-- Capture approved PTY scenarios as Process Capture Evidence, including committed run manifests, raw and rendered terminal frames, scripted interactions, descendant settlement, named filesystem checkpoints, deterministic command shims, and loopback HTTP/WebSocket exchanges.
-- Validate finite replay machines without launching a target through `run_replay_machine` or `rea run-replay-machine`; ordered events return typed decisions, actions, captured aliases, transition journals, final state, and exact limit use without echoing request or captured values.
-- Compare complete artifact inventories by stable path, content, metadata, and relations; incomplete evidence never implies equivalence.
-- Compare explicit function dossiers across text, calls, references, strings, and address-normalized CFG topology with per-facet unknowns.
-- Compare canonical Evidence bundles by exact membership, explicit observation pairs, and residual-unknown histories without turning omissions into behavioral absence.
-- Aggregate runtime comparisons into observed behavior changes while keeping static artifact/function differences labeled as candidates.
-- Build Evidence-cited direct call paths by exact address without treating missing dossiers as graph leaves.
-- Correlate exact static/runtime findings through explicit hypotheses without claiming causality from cochange.
-- Verify finite behavioral and structural reconstruction specifications with pass, fail, and unknown kept distinct.
-- Track residual unknowns through immutable CAS revisions, evidence-qualified resolution, contradictions, probes, and validated dependency relationships.
-- Evidence-producing workflows record returned residual uncertainty as residual unknowns linked to their result Evidence. Errors without supporting Evidence do not create registry records.
-- Start six [guided MCP workflows](docs/mcp-prompts.md) with live, session-aware completion for documents, procedures, providers, evidence, captures, artifact IDs, and active unknowns.
+- **Native binaries:** Open Mach-O, ELF, PE, and Mac `.app` targets through Hopper or Ghidra. Inspect functions, strings, assembly, decompilation, calls, and references. Hopper also accepts `.hop` databases and supports annotations.
+- **Packages and resources:** Inspect directories, ZIP, APK, IPA, ASAR, plists, compiled Interface Builder files, and Apple asset catalogs. Artifact requests name the input and requested extraction or traversal directly; macOS DMG traversal also requires the host's native mounting support.
+- **JavaScript and Electron:** Map modules, imports, source maps, routes, IPC channels, storage, and native add-ons without running the app. Compare builds and trace a feature across the recovered graph. Dynamic and ambiguous relationships remain unresolved. See [JavaScript application workflows](docs/javascript-application-workflows.md).
+- **Websites:** Inspect a selected page in an existing Chrome-family browser. Capture page structure, network metadata, script evidence, and screenshots requested by the call. Passive observation does not navigate or execute page JavaScript. See [browser observation](docs/browser-observation.md).
+- **Electron and Node runtime observation:** Inspect selected Electron pages or attach to a Node/Electron V8 Inspector target. Inspector observation records script locations and execution-context events; it does not infer imports, IPC activity, or which modules executed. See [runtime observation](docs/javascript-runtime-observation.md).
+- **.NET assemblies:** Inspect metadata and CIL instructions, compare builds, and check declared native dependencies without loading or running the assembly. Imported decompiler output is labeled as analyst inference. See [managed-code analysis](docs/managed-code-analysis.md).
+- **Controlled behavior capture:** Run process, browser, or Electron scenarios with the target, actions, and lifecycle declared in each request, then compare the resulting evidence. Missing observations cannot establish that two runs behaved the same way.
+- **Evidence and comparison:** Save results with artifact identity, provider, locations, confidence, and limitations. Export or import bundles, compare artifacts and functions, and connect static findings to runtime observations without claiming causality from correlation.
+- **Open questions:** Track unresolved findings, contradictions, and follow-up probes. Reconstruction checks report pass, fail, or unknown rather than treating missing evidence as a pass.
+- **Guided workflows:** Start six [MCP investigation workflows](docs/mcp-prompts.md) with suggestions based on your current session.
 
-Hopper is the first provider, not the boundary of the project. Some current workflows still require Hopper and macOS; every evidence record identifies the provider and limitations behind its result.
+Windows Ghidra operations are currently unavailable. Hopper-only features, such as GUI controls and annotations, are not available through Ghidra.
 
 ### Website observation with CDP
 
-REA can inspect an already-running Chrome-family browser that you own. Browser observation is disabled by default and requires a literal loopback CDP endpoint plus exact approved page origins:
+REA can inspect an already-running Chrome-family browser through a literal loopback CDP endpoint. Each request names the endpoint and target; an optional origin filter can narrow discovery:
 
 ```bash
-export REA_BROWSER_OBSERVE_ENABLED=true
-export REA_BROWSER_CDP_ENDPOINTS_JSON='["http://127.0.0.1:9222"]'
-export REA_BROWSER_ALLOWED_ORIGINS_JSON='["http://127.0.0.1:3000"]'
-
-rea list-browser-targets http://127.0.0.1:9222 --approved --json
-rea inspect-web-page http://127.0.0.1:9222 TARGET_ID --approved --json
+rea list-browser-targets http://127.0.0.1:9222 --json
+rea inspect-web-page http://127.0.0.1:9222 TARGET_ID --json
 ```
 
-All eight browser tools expose the same Evidence contracts over CLI and MCP. Inspection is passive: REA does not evaluate page JavaScript, navigate, click, close the page, or close the browser. Query values, credentials, cookies, authorization headers, storage values, and raw JSON or WebSocket values are never retained. Separately approved captures can retain bounded redacted console primitives, value-free JSON/WebSocket shapes, script sources, accessibility text, or screenshot pixels. Existing activity before attach is explicitly unavailable. See [Website observation with CDP](docs/browser-observation.md) for browser startup, schemas, limits, and the threat model.
+The eight passive browser tools work through both CLI and MCP. They inspect the selected page without navigating, clicking, or evaluating its JavaScript. Credentials, cookies, authorization headers, and raw payload values are not retained. A request selects whether to include script sources, accessibility text, screenshots, or console and payload summaries. REA cannot observe activity that happened before it attached. See [browser observation](docs/browser-observation.md) for browser startup, capture options, and limits.
 
 ### Controlled browser scenarios
 
-`capture_browser_scenario` is a separate, explicitly mutating browser boundary.
-It runs only the fixed, versioned scenario vocabulary through Playwright and
-returns step-indexed Evidence for screenshots, DOM, accessibility, URL/history,
-storage, console/errors, network, WebSockets, frames, workers, popups, and
-cancelled downloads. Missing or truncated sections can never support equality
-claims.
+`capture_browser_scenario` runs a caller-declared sequence of browser actions through
+Playwright. Unlike passive observation, it can interact with the page. Each
+step records evidence such as screenshots, page structure, navigation, and
+network activity. Missing or truncated observations cannot establish that two
+runs behaved the same way.
 
 ```bash
-export REA_BROWSER_SCENARIO_ENABLED=true
-export REA_BROWSER_SCENARIO_EXECUTABLE_ROOTS_JSON='["/usr/bin"]'
-export REA_BROWSER_SCENARIO_CDP_ENDPOINTS_JSON='["http://127.0.0.1:9222"]'
-export REA_BROWSER_SCENARIO_ALLOWED_ORIGINS_JSON='["http://127.0.0.1:3000"]'
-export REA_BROWSER_SCENARIO_ALLOWED_ENV_JSON='["REA_TEST_PASSWORD"]'
-
 rea capture-browser-scenario ./scenario.json --json
 ```
 
 Launch mode owns a temporary browser profile and removes it after terminating
 the launched browser. Connect mode accepts one exact loopback CDP target and
-disconnects without closing the external browser. Automation has no default
-grant: use the shared project/session policy, or set
-`REA_BROWSER_SCENARIO_AUTO_GRANT=true` only for a trusted unattended
-environment. Scenario JSON contains secret references and environment-variable
-names, never secret values. See the
+disconnects without closing the external browser. The request supplies the
+selected executable or endpoint, actions, and any origin or environment
+selections needed by the scenario. Scenario JSON contains secret references and
+environment-variable names, never secret values. See the
 [browser scenario contract](docs/browser-scenario-contract.md).
 
 ### Node and Electron V8 Inspector observation
 
-Attach-only JavaScript runtime observation is separately disabled by default:
+Node and Electron runtime observation attaches to an existing Inspector target named in the request:
 
 ```bash
-export REA_V8_INSPECTOR_OBSERVE_ENABLED=true
-
 rea list-javascript-runtime-targets http://127.0.0.1:9229 --json
 rea observe-javascript-runtime http://127.0.0.1:9229 TARGET_ID \
   --runtime-kind node --json
 ```
 
-REA sends only `Runtime.enable` and `Debugger.enable`. It retains validated
-script locations and execution-context lifecycle events;
-require/import edges, EventEmitter activity, Electron IPC, PID identity, and
-Electron role identity stay explicit unknowns. See
-[passive Node and Electron runtime observation](docs/javascript-runtime-observation.md).
+REA records script locations and execution-context events without evaluating
+code or setting breakpoints. These observations do not establish import
+relationships, event activity, IPC, process identity, or Electron roles. See
+[Node and Electron runtime observation](docs/javascript-runtime-observation.md)
+for the exact coverage.
 
 Exact package, tool-family, provider, setup-client, schema, and CLI facts are generated from source in [`docs/product-catalog.json`](docs/product-catalog.json). PR CI verifies this catalog, narrative documentation, generated schemas, and a clean TypeDoc render.
 
 ## Roadmap
 
-REA is growing into a toolkit for understanding software across static artifacts and observed behavior. The [current status](#current-status) above is the shipped baseline; the items below are planned work.
+The [current status](#current-status) section describes shipped capabilities. These are the next areas of work.
 
 ### Now
 
-1. **Maintain truthful product metadata** — extend the shipped canonical catalog and drift checks whenever versions, tools, providers, schemas, setup clients, or CLI capabilities change.
-2. **Cross-provider conformance growth** — add source-owned architectures and difficult indirect/thunk cases while preserving semantic comparison and provider-specific text boundaries.
+1. **Keep documentation accurate:** update the generated catalog and documentation checks when tools, providers, setup options, or versions change.
+2. **Test more native binaries:** expand architecture and indirect-call coverage across Hopper and Ghidra.
 
 ### Next
 
-1. **Controlled replay conformance growth** — extend the shipped Linux extracted-module sandbox with more source-owned hostile fixtures and cross-kernel conformance; browser and Electron scenarios remain separately permissioned authorities.
-2. **Broader application graph evidence** — extend authenticated cross-layer traces with additional static extractors and additional runtime authorities.
-3. **Professional managed-code analysis** — extend shipped PE/CLI triage, CIL evidence, managed/native declaration inventory, source-owned conformance, and obfuscation-resistant comparisons toward verified native-provider composition under the accepted [managed-code boundary](docs/managed-code-analysis.md).
-4. **Deterministic behavior harnesses** — extend process ownership, protocol fixtures, filesystem observation, reconnects, and cross-version behavioral comparison.
+1. **Connect more application layers:** add static extractors and runtime observations to feature traces.
+2. **Extend .NET analysis:** improve comparisons of obfuscated assemblies and connect managed findings to verified native analysis. See the [managed-code guide](docs/managed-code-analysis.md).
+3. **Compare more runtime behavior:** expand process, protocol, filesystem, reconnect, and version-comparison coverage.
 
 ### Later
 
-1. **Broader controlled application interaction** — extend the separately authorized browser and Electron scenario surfaces beyond the current bounded click/wait actions without widening passive observation or extracted-module replay authority.
-2. **Native runtime observation** — approval-gated LLDB, Frida, system logs, process/filesystem observers, and native API tracing.
-3. **Additional providers and targets** — evaluate IDA/Hex-Rays, Binary Ninja, Rizin, LIEF, Windows-native providers, mobile artifacts, firmware, document formats, and other software-defined systems.
+1. **Expand browser and Electron interaction:** add scenario actions beyond the current click and wait operations.
+2. **Observe native apps at runtime:** explore LLDB, Frida, system logs, and native API tracing.
+3. **Evaluate more tools and targets:** assess IDA/Hex-Rays, Binary Ninja, Rizin, LIEF, Windows-native tools, mobile apps, and firmware.
 
-New providers must produce the same evidence and safety metadata as existing capabilities before they become part of the public workflow. Once REA has multiple optional toolchains, setup can become capability-selective; the consent rules for that future work are recorded in the [installation roadmap](docs/roadmap.md).
+Setup already lets you choose agent integration and Hopper installation. Support for installing additional analysis tools is future work, described in the [installation roadmap](docs/roadmap.md).
 
-See the [static-analysis provider evaluation](docs/provider-evaluation.md) for the shipped Ghidra function-analysis boundary, remaining admission gates, and provider comparison matrix; [ADR-0001](docs/adr/0001-provider-selection-and-analysis-profiles.md) for binding, selection, profile, snapshot, and compatibility decisions; the [controlled replay guide](docs/controlled-javascript-replay.md) plus [ADR-0002](docs/adr/0002-controlled-replay-authority-and-sandbox.md) for the shipped JavaScript replay boundary; and [ADR-0003](docs/adr/0003-managed-code-evidence-and-provider-boundary.md) for the managed-code evidence and provider design.
-
-See the [native UI and dispatch investigation guide](docs/native-investigation.md) for compiled Interface Builder decoding, symbol-derived metadata limits, and the current p-code value-flow boundary.
+See [provider evaluation](docs/provider-evaluation.md) for coverage and remaining requirements, and the [native investigation guide](docs/native-investigation.md) for UI, dispatch, and value-flow analysis.
 
 ## Using REA with other agents
 
-Setup detects Claude Code, Claude Desktop, Codex, Cursor, Gemini CLI, Windsurf, and Devin. It automatically configures the first six when present; detected Devin installations are reported but left unchanged. Any agent that supports local MCP servers can use REA with the configuration below.
+Setup offers supported agent integrations for selection. Existing REA registrations are selected by default; newly detected agents remain unselected until chosen. Any agent that supports local MCP servers can use the configuration below.
 
 ### Manual MCP configuration
 
@@ -517,7 +422,7 @@ Setup detects Claude Code, Claude Desktop, Codex, Cursor, Gemini CLI, Windsurf, 
   "mcpServers": {
     "rea": {
       "command": "npx",
-      "args": ["-y", "rea-agents@3.2.1", "mcp"]
+      "args": ["-y", "rea-agents@4.0.1", "mcp"]
     }
   }
 }
@@ -526,11 +431,11 @@ Setup detects Claude Code, Claude Desktop, Codex, Cursor, Gemini CLI, Windsurf, 
 <!-- x-release-please-end -->
 
 Persistent registrations should use one exact package version. `rea setup`
-maintains that pin, upgrades the bundled skill at the same time, and gives Codex
-a 30-second startup allowance for a cold package-runner start. An interactive
-`rea upgrade` opens the updated setup plan after installing the new executable;
-structured or non-interactive upgrades tell you to run that sync explicitly.
-Restart clients whose approved registration changed.
+maintains that pin, updates the bundled skill at the same time, and gives Codex
+a 30-second startup allowance for a cold package-runner start. `rea update`
+installs an exact release and verifies the new executable. It returns an
+unapplied maintenance plan for existing REA integrations, with a scoped setup
+command to review and approve their changes. Restart affected agents afterward.
 
 MCP clients that support prompts can also discover six ordered investigation
 workflows through `prompts/list`. Their optional identifier arguments use the
@@ -586,7 +491,7 @@ Or install the `rea` command globally:
 ```bash
 npm install --global rea-agents
 rea --help
-rea upgrade
+rea update
 rea mcp
 ```
 
@@ -594,8 +499,7 @@ REA accepts a Mac `.app` folder directly. If an agent cannot find an app by name
 
 ### Choosing a deep-analysis provider
 
-Every deep-analysis open resolves a provider before creating its client. The
-same selector and precedence apply to the CLI, MCP, and startup configuration:
+Choose which analysis tool to use from the CLI:
 
 ```bash
 rea providers --json
@@ -612,47 +516,27 @@ For MCP, pass the optional selector on `open_binary`:
 }
 ```
 
-The request-level `provider_id` or `--provider` wins over
-`REA_ANALYSIS_PROVIDER`; all accept a provider ID or `auto`. Automatic selection
-binds the sole usable deep candidate, reports `ambiguous` when several are
-usable, and can leave an artifact-only target unbound so its disjoint artifact
-operations still work. An explicit unknown, unavailable, or unsupported
-provider fails with candidate IDs, stable rejection codes, and actionable local
-diagnostics. `binary_session`, `rea providers`, and `rea capabilities` expose
-the authoritative `analysis_provider_candidates` and
-`analysis_provider_binding` fields. Each open target also has an
-`analysis_run.run_id` allocated before provider startup. When dynamic providers
-start, `analysis_run.process_lineage` changes from `not_observed` to `snapshots`
-and retains one provider-attributed, token-verified observation per started
-provider. Each observation carries `observed_at` and remains `unavailable` or
-`verified`; a verified empty descendant list is distinct from both. Snapshots
-describe bounded observations, not current live state or historical absence.
-For providers with serial work, `analysis_activity` distinguishes `idle`,
-`busy`, and `timed_out_busy`, and reports the active operation, elapsed time,
-caller state, timeout, and queued-request count. A caller timeout therefore
-does not falsely imply that Hopper's Python thread is available. `close_binary`
-clears the REA session but returns `cleanup_incomplete` when authenticated
-document shutdown, owned process cleanup, or private runtime removal cannot be
-verified.
-Reopening same target without a selector keeps its binding; runtime failure
-never selects another provider silently.
-Ghidra can appear as an available, target-compatible candidate after doctor
-validates its exact installation. Its capability list contains the 19 admitted
-read-only inventory and function-analysis operations; selecting it still does
-not make Hopper-only GUI or mutation operations available and never triggers a
-silent fallback.
+Use `--provider`, or `provider_id` in MCP, to choose Hopper or Ghidra for a target. This choice overrides `REA_ANALYSIS_PROVIDER`.
+
+With `auto`, REA selects the only available tool that supports the target. If both are available, specify one before opening the target. The session keeps that choice until you explicitly switch or close it; a failure never silently switches tools. Artifact-only analysis can work without a native analysis tool.
+
+Run `rea providers` and `rea capabilities` to check availability and supported operations. Ghidra exposes 22 read-only operations on supported Linux and macOS hosts. GUI controls and annotation changes require Hopper. Windows Ghidra operations remain unavailable.
+
+The session also reports active work and cleanup status. If a caller times out, the analysis tool may still be busy; `analysis_activity` reports that state. A `cleanup_incomplete` result identifies resources whose shutdown or removal could not be verified. See [provider selection and analysis profiles](docs/adr/0001-provider-selection-and-analysis-profiles.md) for session, cache, and process-tracking details.
 
 ### CLI exit status
 
-| Status    | Meaning                                                                                                                                                                                                                                                                  |
-| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `0`       | The requested operation completed. Truthful unknowns, warnings, and partial or truncated evidence remain successful results.                                                                                                                                             |
-| `1`       | Arguments, policy, permission, provider analysis, integrity checking, cancellation, timeout, setup, diagnostics, update, uninstall, output encoding, or output writing prevented completion. Structured output identifies the failure category when REA could encode it. |
-| `128 + N` | The process ended from signal `N`, where the shell or runtime preserves the conventional signal-derived status.                                                                                                                                                          |
+| Status    | Meaning                                                                                                                                                                        |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `0`       | The operation completed. Results may still include warnings, partial evidence, or unresolved questions.                                                                        |
+| `1`       | The operation could not complete, for example because of invalid input, host permission denial, cancellation, or timeout. Structured output reports the reason when available. |
+| `128 + N` | The process ended from signal `N`, where the shell or runtime preserves the conventional signal-derived status.                                                                |
 
 `setup` returns `1` for `planned`, `needs_confirmation`, or `needs_human`
 because configuration is not ready; rerun it after approval or remediation.
-`doctor` returns `1` when any check is unhealthy. Output format, full envelopes,
+`doctor` returns `1` when required checks for its readiness scope are unhealthy.
+Unavailable optional provider prerequisites remain visible as informational
+diagnostics and do not block setup or unrelated providers. Output format, full envelopes,
 filters, and token controls never change the operation status.
 
 When REA feeds a shell pipeline, enable `pipefail` so a downstream formatter
@@ -665,28 +549,20 @@ rea inventory-artifact ./app.asar --json | jq . > inventory.json
 
 ## Current Hopper provider
 
-REA starts Hopper when needed; Hopper does not need to be running first. Hopper's launcher internally activates the application, so opening a target may bring Hopper to the foreground. REA asks macOS to start Hopper hidden and in the background when possible, but cannot guarantee that it will remain behind the current application.
+REA starts Hopper when an operation needs it. On macOS, Hopper may bring its window or a dialog to the foreground even though REA requests background startup. Demo or license prompts may need your attention.
 
-REA derives explicit format and architecture arguments to prevent common FAT and ARM selection dialogs. Other Hopper or macOS dialogs may still require a person. REA reports startup failures and remediation through CLI or MCP results instead of attempting to answer UI prompts.
+Hopper handles one analysis request at a time. Cancelling your wait does not stop work already running inside Hopper; the session reports whether it is still busy. Successful decompilation results are cached until a relevant rename or comment change.
 
-Hopper bridge calls pass through a serial FIFO because Hopper's Python API runs on one dedicated thread. Calls wait for a response or caller cancellation. Cancelling an active call settles that caller but keeps its wire slot until Hopper replies, preserving request/response correlation; `binary_session.analysis_activity` exposes active work and MCP progress reports elapsed time. Successful decompilation text is cached per document and procedure, shared by pseudocode and dossier requests, and invalidated after rename or comment mutation.
+Use `rea instructions` when you only need assembly instructions for a function. It avoids decompilation and a whole-program inventory.
 
-Hopper's synchronous public Python calls return when the operation completes; callers may cancel their wait. Use `read_function_instructions` or `rea instructions` when raw instruction orientation answers the question, without requesting a decompilation or whole-program name/string inventory.
+Closing a session shuts down REA's bridge and removes its temporary socket directory while preserving a Hopper application you may be using. If cleanup cannot be verified, `close_binary` reports `cleanup_incomplete` and the affected resources.
 
-Closing a REA session shuts down its bridge and removes its private socket directory. It does not quit a Hopper application the user may be using. If shutdown or cleanup cannot be verified, `close_binary` returns `cleanup_incomplete` with the affected local resources.
+## Process capture
 
-## Advanced process-capture setup
-
-Process capture is disabled by default. Enabling it requires
-`REA_PROCESS_CAPTURE_ENABLED=true`, approved executable and working roots in
-`REA_PROCESS_EXECUTABLE_ROOTS_JSON` and `REA_PROCESS_WORKING_ROOTS_JSON`, and an
-environment allowlist in `REA_PROCESS_ALLOWED_ENV_JSON`. Because the current PTY
-adapter uses host networking, it also requires
-`REA_PROCESS_ALLOW_EXTERNAL_NETWORK=true`.
-
-Set `REA_PROCESS_CAPTURE_AUTO_GRANT=false` to configure those process-capture
-limits as a ceiling without implicitly granting them. This mode remains
-fail-closed until a narrower grant is established.
+Process capture runs the exact executable and scenario declared in the request,
+with the requested working directory and environment. Filesystem observation
+paths select what to snapshot. The process runs with your user permissions;
+Process Capture records behavior and is not a security sandbox.
 
 Capture a scenario or compare two saved Process Capture Evidence records:
 
@@ -697,9 +573,9 @@ rea compare-process-captures authority.json reconstruction.json
 ```
 
 The comparison reports each observed dimension separately and identifies the
-first terminal, interaction, exit, filesystem, protocol, process, or shim
-divergence. See [Process Capture](docs/process-capture.md) for scenario
-fields, command-shim replay, checkpoint triggers, limits, and safety behavior.
+first terminal, interaction, exit, filesystem, or process divergence.
+See [Process Capture](docs/process-capture.md) for scenario fields, limits, and
+evidence boundaries.
 
 REA installs a prebuilt PTY backend for supported macOS, Linux, and Windows
 architectures. If the capability check reports that the backend is unavailable,
@@ -716,7 +592,11 @@ verified or absent.
 
 ## Security model
 
-REA does not provide a hosted analysis service. Hopper and POSIX Ghidra bridge communication uses authenticated private local sockets. Windows Ghidra P0 uses authenticated IPv4 loopback but does not claim named-pipe DACL or hostile-local-user isolation. Dynamic capabilities are disabled by default and require both operator policy and explicit per-call approval. Shipped providers, passive observers, and Process Capture are not security sandboxes: providers and launched targets run with the current user's permissions. Extracted JavaScript replay is a distinct Linux-only capability that fails closed unless Bubblewrap namespaces, architecture-checked seccomp, private runtime mounts, and delegated cgroup limits are available; it never inherits browser, Electron, or Process Capture authority. See [ADR-0002](docs/adr/0002-controlled-replay-authority-and-sandbox.md). Report vulnerabilities through the private process in [SECURITY.md](SECURITY.md).
+Analysis runs locally. REA communicates with Hopper and Ghidra through authenticated private local sockets. Your agent or model provider has its own data policy.
+
+Runtime requests act on the declared target and lifecycle. Analysis tools and launched targets run with your user permissions, and native UI capture still depends on macOS Accessibility and Screen Recording access. Static JavaScript analysis does not execute extracted modules; use direct browser, Electron, or process capture when runtime behavior is needed.
+
+Windows Ghidra operations are blocked until REA implements the required process ownership, private-directory permissions, and safe-path checks. Report vulnerabilities through the private process in [SECURITY.md](SECURITY.md).
 
 ## FAQ
 
@@ -730,7 +610,7 @@ No. REA starts Hopper when an operation needs it. An already-running Hopper appl
 <details>
 <summary><strong>Why did Hopper appear in front of my other windows?</strong></summary>
 
-Hopper's launcher internally activates the application. REA requests background startup, but macOS and Hopper may still bring a window or dialog forward. See [Hopper application behavior](#hopper-application-behavior).
+Hopper's launcher internally activates the application. REA requests background startup, but macOS and Hopper may still bring a window or dialog forward. See [Current Hopper provider](#current-hopper-provider).
 
 </details>
 
@@ -744,7 +624,7 @@ No. Setup can install Hopper for you, but Hopper remains separate software with 
 <details>
 <summary><strong>Does REA install or include Ghidra or Java?</strong></summary>
 
-No. Ghidra support is bring-your-own. REA packages only its Java bridge source, validates the exact supported Ghidra 12.1.4 and 64-bit JDK 21 installation, and loads that bridge through Ghidra's external script path after setup approval records the paths.
+No. REA connects to an existing Ghidra installation. Run setup after providing the Ghidra and Java paths shown in the [Ghidra section](#ghidra-read-only-analysis-provider).
 
 </details>
 
@@ -765,48 +645,17 @@ No decompiler can guarantee the original source. REA gives an agent pseudocode, 
 <details>
 <summary><strong>Which agents can use REA?</strong></summary>
 
-Any agent that can run a local MCP server can use the manual configuration. Setup detects Claude Code, Claude Desktop, Codex, Cursor, Gemini CLI, Windsurf, and Devin; it automatically configures the first six when present and reports Devin without modifying it.
+Any agent that can run a local MCP server can use the manual configuration. Setup offers the supported integrations listed in [Installation and setup](docs/installation.md#supported-agents); existing REA registrations are selected by default, and other detected agents require selection.
 
 </details>
 
 ## Development
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, architecture, and release
-instructions, and [docs/testing.md](docs/testing.md) for the behavioral test
-depths, focused developer commands, coverage floors, and CI evidence. PR CI
-publishes generated API documentation as the `api-docs` workflow artifact.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and contribution checks, and [docs/testing.md](docs/testing.md) for test scopes and real-tool verification. PR CI publishes generated API documentation as the `api-docs` artifact.
 
-`npm run verify:agent` runs brandless native, JavaScript-application, managed,
-and browser prompts through a real local Codex CLI. Its JSON report measures
-natural MCP use, first-tool routing, repeated calls, actual Codex token usage,
-completion quality, and explicit treatment of authority and unknowns.
+`npm run verify:agent` evaluates native, JavaScript, managed, and browser investigation tasks through a real local Codex CLI. Its report covers tool selection, repeated calls, token use, completion quality, and handling of permissions and unknowns.
 
-`npm run evidence:generate` regenerates the managed conformance manifest and
-Evidence completion ledger from live verifier output. `npm run
-evidence:check` reruns the verifier and fails when artifacts, scenarios,
-providers, schemas, claim counts, Evidence IDs, or the bundled skill have
-drifted. Unsupported claims remain explicit and never count as passes.
-Verifier JSON reports include an ephemeral `verifier_run` UUID allocated before
-the verifier performs work and inherited by its child processes through
-`REA_PROCESS_RUN_ID`. The final report includes the verifier and parent PIDs
-plus `process_lineage` and its ISO `observed_at` timestamp: POSIX verifiers
-report a token-verified, point-in-time launcher process group and live
-descendants, while platforms without an owned
-lineage primitive report `status: "unavailable"` and a reason. An empty verified
-descendant list means no child was live during the final observation; it does
-not claim the verifier launched no children earlier. Nested verifier entrypoints
-in the same process reuse its UUID; each new verifier process replaces any
-inherited parent token with a fresh run identity.
-Generated completion commitments deliberately exclude this per-execution
-identity, so check mode remains deterministic while live reports remain
-attributable.
-
-Owned Hopper shutdown logs retain the launcher PID, process-group ID, cleanup
-status, and whether a verified group signal was required. They omit the run
-token and unexpected exception text. The real-Hopper verifier also starts an
-unrelated `Hopper`-named sentinel in a distinct process group and fails unless
-that process survives every session close; the sentinel is removed only by the
-verifier after the survival check.
+`npm run evidence:generate` regenerates the managed conformance manifest and Evidence completion ledger from live verification results. `npm run evidence:check` reruns verification and checks for drift. Unsupported claims remain explicit and do not count as passes. See [testing](docs/testing.md) for verification commands and process-cleanup checks.
 
 ## Project links
 

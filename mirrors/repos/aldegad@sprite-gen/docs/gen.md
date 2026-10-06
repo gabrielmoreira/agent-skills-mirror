@@ -195,6 +195,7 @@ sprite-gen gen \
   [--layout-guide]        # attach a one-slot layout guide (safe box, crown and floor lines); see below
   [--direction side|front|back|front_diagonal|back_diagonal [--facing right|left]] # add the engine's view sentence
   [--handed "the black smartwatch=left wrist" ...]  # with --direction: where an item on one side is in that view
+  [--body-plan quadruped | --body-plan "the horse=quadruped" ...]  # with --direction: the view for that body
   [--report REPORT.json] \
   [--keep-session]        # codex: keep the rollout jsonl instead of deleting it
 ```
@@ -217,6 +218,10 @@ Backward-compatible wrapper: `$SPRITE_GEN_ROOT/.venv/bin/python $SPRITE_GEN_ROOT
 
 - **`--direction`** adds the view sentence a sprite still is drawn with (`still_view_text`; a side or
   diagonal view also takes `--facing`, a front or back view refuses it) and records `extra.view`.
+  **`--body-plan`** (with `--direction`; `quadruped`, `legless`, or `"<figure>=<plan>"` per figure of a
+  scene) says that view without the feet, chest, hips, shoulders and shoes a person's still is drawn
+  with, ending in what the body stands on; see
+  [video-pipeline](video-pipeline.md#a-body-that-is-not-a-person----body-plan).
   **`--handed`** adds, per item, which of the character's own sides it is on and where that side is in
   the view; with it, `--facing-fix mirror` is refused and `regen` never mirrors. See
   [video-pipeline](video-pipeline.md#handedness--an-item-on-one-side).
@@ -388,6 +393,11 @@ recorded per row.
 
 One row by hand is the same call `gen-set` makes: `--provider codex` (or `grok`) with
 `prompts/<state>.txt`, writing `raw/<state>.png`.
+The row prompts are `prepare`'s, and were measured on people: a walk row moves "body, arm, leg", a
+front walk "alternating leg, arm, shoulder", a wave "arm pose only". For a body that is not one biped,
+`prepare --body-plan quadruped` (or `legless`, or `"<figure>=<plan>"` per figure) writes every row
+without a part the body lacks and says what it stands on
+([sheet rows](video-pipeline.md#the-sheet-rows--prepare---body-plan)).
 The row prompts still carry the request chroma key on the background and frame
 extraction removes it downstream — rows are generated **without** `--transparent`, so
 the native strategy does not apply to them yet (moving rows to native alpha is a

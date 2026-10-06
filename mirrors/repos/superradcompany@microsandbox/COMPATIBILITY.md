@@ -380,6 +380,8 @@ Sources: [`crates/metrics/lib/layout.rs`](crates/metrics/lib/layout.rs), [`crate
 
 Do not reorder fields, change widths or alignment, weaken atomic ordering, or redefine slot states under the same ABI. Incompatible changes must bump the registry version or ABI so old and new processes do not map the same object. Prefer checked-in offset and binary-layout fixtures in addition to total-size assertions.
 
+The runtime sampler refreshes `memory_limit_bytes` in place inside the seqlock window so the slot follows live memory resizes, and sets the additive `SAMPLE_FLAG_MEMORY_LIMIT_LIVE` bit on those samples. Layout, offsets, existing flag bits, slot states, and `REGISTRY_VERSION` are unchanged. Existing readers test individual flag bits and ignore bits they do not know. Readers see live values from current runtimes with memory hotplug and the boot allocation when live sizing is unavailable; the Rust SDK prefers the slot value only when the flag is set and otherwise falls back to the catalog config. The OTLP `microsandbox.memory.host_resident` gauge is additive.
+
 Paused runtimes omit the host-residency scan and clear the existing `SAMPLE_FLAG_MEMORY_HOST_RESIDENT` validity bit. The field retains its meaning as a current observation; no cached value is presented as current. Slot layout, registry ABI, timestamps, and other counter sampling remain unchanged. Historical v0.6 readers already interpret this cleared bit as unavailable, and newer readers continue to accept residency values from older runtimes that still scan while paused. This runtime change requires the additive libkrun selective-snapshot API; it does not change SDK launch or control protocols.
 
 ## 16. Heartbeats, Boot Errors, Logs, and Runtime Diagnostics

@@ -54,6 +54,7 @@ page zero polls or refreshes on focus/reconnect. Task switches reset to page zer
 and consumed AbortSignals cancel obsolete reads. Live offsets are not snapshots;
 explicit mutations or navigation may observe newly inserted runs.
 Run status `unmet` identifies a finished occurrence whose scheduled goal was not satisfied; keep it distinct from execution failure.
+`core/scheduled-tasks/goal-outcome.ts` maps goal verdicts and host reason codes for run history; show known codes as localized labels (raw code only in the tooltip), unknown codes verbatim, and leave runs without a goal unchanged. `contracts/scheduled_goal_notes_contract.json` pins the host strings it matches.
 
 ## Architecture
 
@@ -101,6 +102,12 @@ Custom Agent `display_name` is an optional Unicode UI label, edited in
 keep `name` for React identity, URLs, requests, and runtime `agent_name`.
 The 100-code-point budget uses `[...value.trim()].length`, matching Pydantic;
 do not use HTML `maxLength`, which counts UTF-16 code units instead.
+
+Custom Agent portability uses the versioned `deerflow.custom-agent` JSON
+document through `core/agents/api.ts`. Keep file parsing client-side only for
+previewing the proposed local name; the Gateway is authoritative for schema,
+name, model, and conflict validation. Export downloads must never synthesize
+runtime state from browser caches.
 
 - **Imports**: Enforced ordering (builtin → external → internal → parent → sibling), alphabetized, newlines between groups. Use inline type imports: `import { type Foo }`.
 - **Unused variables**: Prefix with `_`.

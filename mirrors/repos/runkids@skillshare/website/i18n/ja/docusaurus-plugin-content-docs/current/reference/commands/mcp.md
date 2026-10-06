@@ -817,10 +817,13 @@ Pi のサーバー名には英数字、`_`、`-` のみを使えます。`-` と
 
 Pi 1.0.1 以降、Pi の `/mcp` は `enabled`、`exposure`、`toolExposure` だけを持つ project エントリを追加でき、同名の global サーバーを上書きします。これはサーバーではないため、インポートでは読み飛ばされます。`disabled` エントリも同じ上書きを書き込むため、ちょうど `{"enabled": false}` である上書きは競合になりません。sync がスイッチを書き込んだ後に Pi で追加した `exposure` などの Pi 設定は、sync が管理する他の Pi エントリと同様に保持されます。Pi でサーバーを再びオンにすると競合になります。project が同名のサーバーを定義している場合、または sync が書き込んでいない上書きが `disabled` エントリと異なる場合、そのエントリを置き換えるか Pi で上書きを削除するまで、sync は競合を報告します。
 
+Pi 1.0.4 の `--no-mcp` はその実行中の MCP を無効にします。`--tools` は項目が `mcp__` で始まる場合のみ MCP ツールを絞り込みます。同期後にサーバーが使えない場合は、これらの起動引数を確認してください。
+
 ### その他の Pi 設定 {#pi-options}
 
 `piOptions` は、Pi の内蔵 MCP のその他のサーバー別フィールドを保持します。受け取るのは Pi だけです。
 
+- `oauth.clientRegistration` は `dcr`（Pi の既定値）または `cimd`（Pi 1.0.1 以降）を受け付けます。`cimd` では `clientId` と `clientName` を指定できません。`callbackUrl` は HTTP、ホストは `localhost` または `127.0.0.1`、パスは `/callback` が必要です。認可サーバーは公開クライアントの CIMD に対応している必要があります。
 - `exposure` は `codemode`（Pi の既定）、`codemode-deferred`（`codemode` の旧名）、`deferred`、`direct`、`hidden` を
   受け付けます。`toolExposure` はツール名またはワイルドカードパターンをこれらの値のいずれかに対応付けます。
   完全一致の名前が優先され、次に最初に一致したパターンが採用されます。Skillshare はインポートと

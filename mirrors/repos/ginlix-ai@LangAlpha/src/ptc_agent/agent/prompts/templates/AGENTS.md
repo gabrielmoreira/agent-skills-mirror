@@ -2,12 +2,23 @@
 
 Jinja2 sources for the PTC, Flash, and subagent system prompts. Rendered by
 `PromptLoader` (`../loader.py`); defaults live in `../config/prompts.yaml`.
+The PTC prompt renders per role: the analyst's is the base prompt, and the
+Chief of Staff's adds `components/chief_of_staff.md.j2` as a `<role>` section,
+so a change there never touches a workspace's prompt or its cached prefix.
+`workspace_context`, `workspace_paths`, `task_workflow` and `memory` also read
+`role`: Home's `agent.md` is the Chief of Staff's notebook of what the user is
+focused on and where that work lives, laid out in `<role>`, not a workspace's
+index of its own work, and Home's workspace memory is how the user wants it to
+work. A shared section that describes the analyst's
+`agent.md` argues with `<role>`, and the model then keeps both layouts. Subagents
+render these sections without `role`, so they read the analyst's wording.
 
 Preview any surface as it renders at runtime:
 
 ```bash
 uv run python scripts/utils/render_prompt.py --mode ptc --crawl --count-tokens
 uv run python scripts/utils/render_prompt.py --subagent equity-analyst
+uv run python scripts/utils/render_prompt.py --mode ptc --role chief_of_staff
 ```
 
 ## Two guidance levels: lean and detailed
@@ -161,7 +172,9 @@ directory:
   history. They emit bare markdown lines: the envelope supplies the
   `<system-reminder>` wrapper, so a fragment that adds one nests it.
 - **Baseline fragments** (`baseline_files`, `baseline_agentmd`,
-  `baseline_memory`, `baseline_identity`) land *inside* the cached per-thread
+  `baseline_memory`, `baseline_identity`, and the harness blocks
+  `baseline_mcp_servers`, `baseline_skills` and the Chief of Staff's
+  `baseline_activity`) land *inside* the cached per-thread
   prefix, so they must be byte-identical for equal inputs: no timestamps, no
   dict iteration, and no guidance fence. A guidance flip must not move them,
   because the model can change mid-thread.

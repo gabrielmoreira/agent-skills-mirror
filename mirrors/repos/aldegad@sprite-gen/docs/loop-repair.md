@@ -203,6 +203,7 @@ loop's report carries `jolt`, measured on the loop as it will play (after sectio
 | `step_max_over_median` | the largest step over the median (what section 2 repairs) |
 | `head.x`, `head.y` | the head's place frame by frame in % of the body's height over the loop: x (sideways) the coverage centroid of the top fifth, y (up and down) the body's top line. Each: `step_max_pct` (largest move in one frame), `step_median_pct`, `max_over_median`, `range_pct`, `worst_into_frame` |
 | `reference`, `warnings` | the reference bounds (jolt index **0.43**, head sideways step **0.75** % of the body height) and what exceeds them, in words |
+| `seam_pop` | the top band's jump into the loop's first frame over the loop's median step ("The seam pop" below); a pop over its bound adds a line to `warnings` |
 | `gate`, `gated`, `over`, `passed` | the bounds the caller passed, whether they were enforced, what exceeded them |
 | `measured` | `after the jump repair` or `as filmed` |
 
@@ -246,11 +247,60 @@ Read:
   reference (0.43) sits at the kept takes' edge and flags nothing in this set. An alternating jolt
   like that side walk's is a known miss of this index.
 - **The top line is reported, not bounded**: a walk seen from behind bobs more (the kept Lite
-  back view reaches 2.42 %), so one bound would flag kept back views or pass the refused one.
+  back view reaches 2.42 %), so one bound would flag kept back views or pass the refused one Only its
+  step into the first frame is weighed, against the loop's own steps (below).
 - **Why no gate by default**: at the reference bounds, 18 of the 46 takes exceed one — 16 of 30
   Lite, 2 of 16 Pro, none of the nine kept. Lite's head sways about three times as far as Pro's,
   so as a default gate it would refilm about every other Lite walk: the opposite of the aim, on
   the strength of two refusals. The bounds stay a reference until more takes are judged.
+
+### The seam pop — a part held above the head, swinging on its own beat
+
+A staff, a flag or a raised spear can sway on a beat of its own, slower than the steps. A cut one
+step long then ends with it somewhere else: the body closes at the wrap and the held part jumps.
+The seam ratio does not see it — it is an area measure, and a thin rod moved many times its usual
+step changes few pixels — and the head's sideways bound above sees it only when the jump is large
+in absolute terms. What sees it is the top band of `head.x`/`head.y`: on a body holding something
+higher than its head, that band is the tip of what it holds.
+
+Every walk and run loop's `jolt` carries `seam_pop` (`repair.seam_pop`), measured on the loop as it
+plays:
+
+| Field | What |
+|---|---|
+| `x`, `y` | per axis of the top band: `wrap_pct` (its step from the last frame into the first, % of the body height), `step_median_pct` (the loop's median step), `wrap_over_median` (the wrap over the median, the median a pixel at least: a step under a pixel is the tracker's rounding) and `wrap_is_largest` |
+| `pop` | the larger `wrap_over_median` of the axes whose largest step is the wrap; 0 when neither's is |
+| `reference`, `pops` | the bound (**10**, `repair.SEAM_POP_REFERENCE`) and whether `pop` exceeds it |
+
+- **Only the wrap, and only when it is the largest step.** The question is whether the cut closes,
+  not whether the top moves: a walk seen from behind bobs, and hair redrawn every frame jumps
+  inside the loop as much as at the wrap — for either the wrap is ordinary, and `pop` stays 0.
+- **`--anchor motion-auto` chooses again.** The search measures the same thing on the frames it
+  chooses from (moved by the analysis translation, `loop.wrap_pop_on`), for its first choice only.
+  If that pops, every candidate is measured, and among those that do not pop it takes the scores
+  within the usual 15 % of the best and the smallest pop (`cycle.seam_pop`: `first_choice`,
+  `applied`, `measured`, `unread`, `chosen`). A first choice that does not pop is kept, and nothing past it
+  is measured, so a loop without such a part is cut exactly as before. If every candidate read pops,
+  the first choice is kept (`why`) and the warning below says so.
+- **A cut whose top cannot be read is not one that closes.** A frame with nothing in the top band
+  (a tip flung far above the rest in one frame) leaves the cut without a jump to read: it is
+  recorded `skipped` (why) in place of `pop` — `first_choice.skipped`, or on a candidate row
+  `seam_pop: null` with `seam_pop_skipped` — and counted under `unread`, apart from `measured`.
+  It is never chosen on; a first choice that cannot be read is kept, nothing past it is measured,
+  and `jolt.warnings` says the head could not be tracked.
+- **A pop that stays is a warning line** — `video-loop: warning: the top of the silhouette jumps
+  into the loop's first frame up or down … (over 10x): a part held above the head swings on its
+  own beat and does not close at this cut`, in `jolt.warnings` like the bounds above. A sideways
+  jump into frame 0 that the head bound already names is not said twice. A fixed or `--cycle
+  periodic` cut is not chosen again; the warning is all it gets. Nothing fails on it.
+- **The bound** sits between walks holding a staff that swings on its own beat and walks without
+  one, both on the cut as it plays and on the source frames the cut is chosen from. The synthetic
+  walker of `tests/video/test_loop_prop_seam.py` — steps every 24 frames, a staff above its head swaying every 61 — reads 12 to 18 at the cuts the area
+  measure alone chose, and 0 at the cuts chosen again.
+- **What it does not see**: a held part that never reaches the top band (a spear held level, a
+  sword at the hip), and the lower end of a staff whose top closes while the shaft still swings
+  about the hand. A clip like that may need a cut two steps long, which the search does not make;
+  `--cycle fixed` cuts one ([loop review](loop-review.md)).
 
 ## 4. One cycle for a direction set — `video-cycle-align`, `video-set --align-cycles auto`
 
@@ -262,7 +312,7 @@ same number of frames, starting on the same step.
 sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-walk/loop \
   --loop-dir set/back-walk/loop [--view front --view side@right --view back] [--start-foot right] \
   [--between auto|rife|nearest] [--length N] [--cycles back-walk=2] [--multi-cycle fail|warn] \
-  [--state walk] [--report set/walk.cycle-align.json]
+  [--foot side-walk=left] [--state walk] [--report set/walk.cycle-align.json]
 ```
 
 - **Two cycles in one loop are stopped, and counted by whoever looks**: one length for the set is
@@ -345,6 +395,56 @@ sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-
   steps as filmed, up to half a frame off its time, and the loop shows fewer distinct drawings a
   second than `rife` — but no melted one. A clip drawn on twos has a long step between drawings
   everywhere, so it is replaced most; the frames that land on a small step stay RIFE's.
+- **Held drawings — a take to film again** (`retake`, reason `held-drawings`): a loop whose
+  clip shows each drawing for two or three frames has a gap between drawings two or three frames
+  wide. Played at its own rate that is limited animation, 12 or 8 drawings a second. Made longer,
+  or merely resampled, the frames in each gap are made across a step two or three times as long
+  as an every-frame clip's, and where the legs swap places inside it — the near leg passing behind
+  — no interpolator draws them: a flow model blends the two drawings into a ghost or a melted
+  shape, which `auto` replaces with the nearer source frame, and that drawing is held a frame
+  longer: the loop halts there. A better interpolator is not the fix; a take drawn every frame is.
+  - **The hold is the cut's**: `video-loop` measures it on the clip's steps as keyed, before any
+    anchor moves a frame, twice, and writes both into `strip.json` ([video
+    pipeline](video-pipeline.md) section 4): over the cut (`cycle_drawings`: `start`, `length`,
+    `steps`, `hold`, `drawings_per_second`, `contrast`, and a `why` where it was not read) and over
+    the whole clip (`drawings`: `hold`, `drawings_per_second`, `contrast`, `frames`). The alignment
+    reads the cut's (`source: "span"`, the cycle's drawings its frames at the cut's rate, the
+    clip's reading beside it under `clip`): a clip held for part of its length and drawn every
+    frame for the rest is held where it was cut, so a cycle cut from its every-frame part is not
+    named because the clip reads as held, and one cut from its held part is not passed because the
+    clip reads as drawn every frame. The cut's steps run from its first frame into the frame after
+    its last, which the cycle returns to, so a cut that starts mid-pair reads as the pairs it holds.
+    A cut of fewer than 12 steps (`held.SPAN_MIN_STEPS`, one window of the clip's reading) is not
+    read on its own: the clip's reading stands (`source: "clip"`), and the row's `span_why` says
+    why — as it does for a loop cut before the cut's record. Both are kept through a rebuild. The
+    cut frames themselves are not read while a record exists: `--anchor motion-auto` shifts each,
+    so a pair's repeat may no longer read as one; only a loop cut before either record is measured
+    on its own cycle, read as a ring (`source: "cycle"`).
+  - **The rule**: a loop is named when its cut is held (`hold` 2 or 3), the set's length leaves
+    it under **13 drawings a second** (`align.RETAKE_DRAWINGS_MIN`), and **one or more** frames
+    between its drawings were not made (`align.RETAKE_UNMADE_MIN`) — taken from the nearer source
+    frame (`auto`'s replacements, every made time under `nearest`) or made with a fault and kept
+    (`rife`). Each loop row carries `drawings` and `retake` (the record, or `null`): `reason`,
+    `hold`, `source`, `drawings` (in the cycle), `drawings_per_second_filmed`,
+    `drawings_per_second` (at the set's length), `frames_per_drawing` (the gap, in frames of the
+    aligned loop), `unmade`, and the `limits`. The report's `retake` lists every such loop (`dir`,
+    `name` and the same numbers), a warning line names it ("film this direction again
+    (held-drawings) — …", by its directory where two loops share a strip name), and `video-set`
+    carries both into its record.
+  - **Not named**: a held loop at its own length (nothing is made — on twos it plays at 12 a
+    second, as filmed), a held loop whose made frames all kept their outline, a held loop squeezed
+    to 13 drawings a second or more (its drawings come closer than on twos), and a loop drawn every
+    frame with a replaced frame (one soft step, not a gap the take cannot fill).
+  - **Exit code and words**: the set is still aligned and written (`applied: true`, exit 0) — the
+    loop is the best this take allows, and the caller decides: a pipeline with a retake budget
+    films that direction again and aligns the set anew; one without delivers it with the warning.
+    Nothing passes quietly: the line is on stderr and in `warnings`, and `retake` is the
+    machine-readable reason.
+  - **Why 13**: a clip on twos shows 12 drawings a second. At that rate or slower each frame not
+    made is a drawing held a frame longer at the moment the legs cross, which reads as a halt; a
+    line a little above 12 keeps a cut that is not all pairs, or a cycle made a frame or two
+    longer, on the same side. The lines are references, not measured optima, and a loop near them
+    is worth a look either way.
 - **Foot strike**: each loop is then turned to start as a heel lands (`align.foot_strike`), read
   off one signal smoothed 1-2-1 — never off the frame's top edge, which a long ear, a hat's
   point or an antenna owns and which flops on its own rhythm:
@@ -383,20 +483,48 @@ sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-
 
   The cue must follow the step — its once-a-cycle swing (first harmonic) at least a quarter of
   its spread over the cycle, or it is the drawing's own flicker — and, averaged over each strike
-  frame and its two neighbours, the two strikes must differ by 0.015 in luma (shade) or 1 % of
-  the body's height (depth); otherwise the foot is not named. A view seen from behind a diagonal
-  can shade its legs too evenly for this, and is then left unnamed rather than guessed. A loop row carries `view`, `start_foot` and `foot` (the cue, the strikes, their values,
-  the margin, the feet); a loop whose foot is not named starts on its larger strike with
+  frame and its two neighbours, the two strikes must differ by 0.025 in luma (shade,
+  `align.SHADE_MARGIN`) or 1 % of the body's height (depth, `align.FOOT_MARGIN`); otherwise the
+  foot is not named and `foot_why` starts **`low-margin`** (with the margin and the bar). A view seen
+  from behind a diagonal can shade its legs too evenly for this, and is then left unnamed rather than
+  guessed. The shade's bar is set from drawn walks whose feet were checked by eye: it lies above the
+  margins at which the shade named a foot wrong and under those at which it named one right. A foot
+  named wrong turns the loop half a cycle off with nobody asked; a foot left unnamed costs one look
+  (a person or a vision call, `unnamed_feet` below), so a margin near the bar is left for the look.
+  A loop row carries `view`, `start_foot` and `foot` (the cue, the strikes, their values, the
+  margin, the feet); a loop whose foot is not named starts on its larger strike with
   `start_foot: null` and `foot_why`, and the report's `warnings` say so — a set whose loops do
   not all name their foot may not start on one foot. Without `--view` no foot is named and the
   report says that once. A character drawn without shading on the far leg leaves its side and
   diagonal views unnamed; mirroring a loop afterwards (a left view made from a right one) swaps
-  its own feet.
+  its own feet. Every loop row says who named its foot: `start_foot_source` `"engine"` (the view's
+  cue), `"given"` (`--foot`, below) or `null` (nobody), and `strikes` — its two strikes as frames of
+  the rebuilt `cycle/`, the larger first.
+- **A foot the engine cannot name is told, one loop at a time**: each loop whose foot is not named
+  — its view's cue does not follow the step, parts the strikes by less than the margin
+  (`low-margin`), or there are no legs to read — is listed in the report's **`unnamed_feet`**:
+  per loop `dir`, `name`, `view`, `foot_why`,
+  `candidates` (the two strikes: `strike` 0 and 1, `frame` in `cycle/`, `path` to that frame; the
+  first is the frame the loop now starts on, the second half a cycle on) and `settle` (the two
+  `--foot` arguments). Whoever looks — a person, the agent, or a vision call shown the two frames —
+  says which own foot lands on the first candidate, and that comes back as
+  **`--foot <loop>=left|right`** (repeatable; `<loop>` is named as for `--cycles`: the `--loop-dir`,
+  its strip's name, its directory's name, or a `video-set` item's name). That loop alone starts as
+  `--start-foot` lands — on the first candidate if it is that foot, half a cycle on if it is the
+  other — and every other loop comes out byte for byte as it would have. The row records
+  `start_foot_source: "given"`, `foot_given` (the feet at the two strikes) and, where the engine had
+  not named it, `foot_unnamed_why`; the report records `feet_given`. A foot given for a loop the
+  view did name is still taken, and where it disagrees the row carries `foot_disagrees` (the cue's
+  reading) and a warning says so. A `--foot` that names no loop, two loops, or something other than
+  `left`/`right` is refused before anything is rewritten. The answer is about the loop as filmed —
+  the strikes are read from `cycle.source/` resampled again — so it holds for every later alignment
+  at the same length, and like `--cycles` it is not remembered: the next alignment needs the same
+  `--foot`. The algorithm that names feet is not changed by it.
 - **Rebuilt in place**: `cycle/`, `<name>.strip.png` / `.strip.json`, `.gif`, `.webp` are
   rewritten at the loop's own cell rules (`cell_height_cap`, body-height target, anchor), at the
   loop's frame rate, so the aligned cycle lasts L*/fps seconds. `strip.json` gains
   `cycle_align` (`from`, `to`, `between`, `taken`, `made_by_rife`, `made_at`, `smear` and/or
-  `nearest_at`, `turned_by`, `turned_on`, `view`, `start_foot`, the seam ratio of the rebuilt
+  `nearest_at`, `drawings`, `retake`, `turned_by`, `turned_on`, `view`, `start_foot`, `start_foot_source`, `strikes`, the seam ratio of the rebuilt
   cells, and the re-verified GIF/WebP).
 - **The cut as filmed is kept** in `cycle.source/` on the first alignment, and every later
   alignment reads from there: running it again, or at another length, never resamples a
@@ -412,6 +540,11 @@ carries `cycle_align` per state and `<state>.cycle-align.json`; a failed alignme
 failed (section 1, "Without RIFE"); install it and run `video-cycle-align` on the set's loops.
 A set stopped on a suspect is skipped the same way (`reason: "cycle-suspects"`, the loops under
 `suspects`, a warning naming them): count their cycles and run `video-cycle-align --cycles`.
+A state whose loops leave a foot unnamed carries them under `cycle_align.<state>.unnamed_feet`; the
+answer goes back as `video-set --align-foot <item>=left|right` (the item's name, e.g. `side-walk`;
+only an item of a walk or run filmed in two or more directions is taken, any other is refused before
+filming), or as `video-cycle-align --foot` on the set's loops. A foot given for an item that failed,
+or whose state was not aligned, is named in that state's `feet_unused` and a warning.
 Cutting a loop again with `video-loop` removes its `cycle.source/`, so the next alignment reads
 the new cut. An alignment also clears a follow-through (`video-follow`, which moved the old
 cells): `follow.source.png` and the strip's `follow` record are removed and the loop's row says

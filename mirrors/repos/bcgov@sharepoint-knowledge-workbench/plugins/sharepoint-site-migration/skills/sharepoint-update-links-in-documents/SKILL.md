@@ -41,6 +41,11 @@ print(plan.outcome, plan.change_count)
 
 ## Workflow
 
+Use the Python bulk CSV exporter in `sharepoint-extract-links` to inventory external Office
+relationship links from local copies before planning rewrites. Its supported extraction surfaces
+are narrower than all rewritable XML parts; PDFs remain unsupported without a parser. Preserve
+originals and re-extract after changes. See [bulk content workflow](references/bulk-content-link-workflow.md).
+
 1. Plan with `plan_document_link_remediation(documents, ruleset)` and review the change count with the user.
 2. Apply only after review: `apply_document_link_remediation(plan, executor=..., dry_run=False, confirm=plan.confirmation_token)`.
 3. For the PowerShell route, write each changed document's rewritten bytes to disk and add `remediated_content_path` to the plan JSON first.

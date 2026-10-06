@@ -7,7 +7,7 @@ Chromium patch tests with `bun run --cwd packages/os test:browser`.
 
 Application and native-runtime sources belong to `packages/app` and its plugins.
 Builders use the enclosing Eliza checkout, or `ELIZAOS_ELIZA_ROOT` when explicitly
-set. Standalone OS checkouts use `.eliza-source` by default.
+set.
 
 Install workspace dependencies with Bun 1.4.2 at the repository root. Use Node
 24.15.0 for scripts. From the repository root:
@@ -17,7 +17,7 @@ bun run --cwd packages/os build                 # installer web frontends only
 bun run --cwd packages/os verify:portable       # checks without native installer qualification
 bun run --cwd packages/os verify                # Linux native and release checks
 bun run --cwd packages/os verify:linux          # Linux configuration checks
-make -C packages/os/linux/elizaos build ARCH=amd64 PROFILE=gui
+make -C packages/os/linux build ARCH=amd64 PROFILE=gui
 make -C packages/os/android bootstrap AOSP_ROOT=/path/to/aosp
 make -C packages/os/android build ARCH=x86_64 AOSP_ROOT=/path/to/aosp
 ```
@@ -26,8 +26,7 @@ OS image builds are separate from the installer frontend build. See
 [Linux](linux/README.md), [Android](android/README.md), and the
 [USB installer](usb-installer/README.md) for their entrypoints.
 
-The Linux tree currently retains both mkosi and older live-build paths; mkosi is
-the persistent workstation image. Release builds require signed desktop artifacts
+mkosi builds the persistent workstation image. Release builds require signed desktop artifacts
 and the control-broker inputs checked by `mkosi.postinst.chroot`. Those inputs are
 not supplied by a frontend build. A successful configuration or planner test does
 not demonstrate boot, persistence, or installation onto an internal disk.
@@ -75,7 +74,7 @@ CAS ports; the core has no default signer or publication destination. Run
 recovery contracts. These tests do not authorize or perform production publication.
 
 Downstream launcher hosts may use `createDevelopmentLauncherDescriptor` from
-`scripts/distro-android/stage-launcher-overlay.ts` only with explicit development
+`scripts/android/stage-launcher-overlay.ts` only with explicit development
 mode. It verifies one signer against a private APK copy and returns a hash-bound
 descriptor; it grants no production signer authority. `stageLauncher` rechecks
 the staged bytes, manifest and signer, and accepts an optional SDK environment.

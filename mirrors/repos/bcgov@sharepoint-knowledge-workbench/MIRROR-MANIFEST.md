@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bcgov/sharepoint-knowledge-workbench` — 26 default patterns, 0 followed patterns, 106 file(s) materialized.
+Mirror of `bcgov/sharepoint-knowledge-workbench` — 26 default patterns, 0 followed patterns, 109 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bcgov/sharepoint-knowledge-workbench` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 106 |
+| Files         | 109 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -113,58 +113,61 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 52 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-create-list/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-create-list/SKILL.md) |
 | 53 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-create-site-column/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-create-site-column/SKILL.md) |
 | 54 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-detach-content-type/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-detach-content-type/SKILL.md) |
-| 55 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-generate-schema-definition-from-export/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-generate-schema-definition-from-export/SKILL.md) |
-| 56 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-plan-column-changes/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-plan-column-changes/SKILL.md) |
-| 57 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-plan-content-type-changes/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-plan-content-type-changes/SKILL.md) |
-| 58 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-plan-page-publication/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-plan-page-publication/SKILL.md) |
-| 59 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-publish-markdown-files/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-publish-markdown-files/SKILL.md) |
-| 60 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-reconcile-calendar-list/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-reconcile-calendar-list/SKILL.md) |
-| 61 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-reconcile-site-schema/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-reconcile-site-schema/SKILL.md) |
-| 62 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-remove-content-type/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-remove-content-type/SKILL.md) |
-| 63 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-remove-list-column/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-remove-list-column/SKILL.md) |
-| 64 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-remove-list/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-remove-list/SKILL.md) |
-| 65 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-remove-publication/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-remove-publication/SKILL.md) |
-| 66 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-remove-site-column/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-remove-site-column/SKILL.md) |
-| 67 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-scaffold-schema-definition/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-scaffold-schema-definition/SKILL.md) |
-| 68 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-update-content-type/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-update-content-type/SKILL.md) |
-| 69 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-update-list-column/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-update-list-column/SKILL.md) |
-| 70 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-update-list-settings/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-update-list-settings/SKILL.md) |
-| 71 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-update-site-column/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-update-site-column/SKILL.md) |
-| 72 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-validate-publication/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-validate-publication/SKILL.md) |
-| 73 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-analyze-classic-pages/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-analyze-classic-pages/SKILL.md) |
-| 74 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-analyze-migration-dependencies/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-analyze-migration-dependencies/SKILL.md) |
-| 75 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-audit-list-migration/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-audit-list-migration/SKILL.md) |
-| 76 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-convert-page-library-to-modern/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-convert-page-library-to-modern/SKILL.md) |
-| 77 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-convert-page-to-modern/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-convert-page-to-modern/SKILL.md) |
-| 78 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-create-page-preview/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-create-page-preview/SKILL.md) |
-| 79 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-extract-links/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-extract-links/SKILL.md) |
-| 80 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-generate-modernization-report/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-generate-modernization-report/SKILL.md) |
-| 81 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-initialize-migration-project/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-initialize-migration-project/SKILL.md) |
-| 82 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-migrate-list-content/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-migrate-list-content/SKILL.md) |
-| 83 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-normalize-migration-inventory/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-normalize-migration-inventory/SKILL.md) |
-| 84 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-plan-migration-waves/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-plan-migration-waves/SKILL.md) |
-| 85 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-plan-page-modernization/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-plan-page-modernization/SKILL.md) |
-| 86 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-scaffold-migration-wave-scripts/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-scaffold-migration-wave-scripts/SKILL.md) |
-| 87 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-update-links-in-documents/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-update-links-in-documents/SKILL.md) |
-| 88 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-update-page-links/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-update-page-links/SKILL.md) |
-| 89 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-update-rich-text-image-links/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-update-rich-text-image-links/SKILL.md) |
-| 90 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-validate-link-integrity/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-validate-link-integrity/SKILL.md) |
-| 91 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-validate-page-modernization/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-validate-page-modernization/SKILL.md) |
-| 92 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-deploy-spfx-solution/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-deploy-spfx-solution/SKILL.md) |
-| 93 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-develop-spfx-form-customizer/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-develop-spfx-form-customizer/SKILL.md) |
-| 94 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-develop-spfx-listview-command-set/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-develop-spfx-listview-command-set/SKILL.md) |
-| 95 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-package-spfx-solution/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-package-spfx-solution/SKILL.md) |
-| 96 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-publish-spfx-package/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-publish-spfx-package/SKILL.md) |
-| 97 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-request-site-collection-app-catalog/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-request-site-collection-app-catalog/SKILL.md) |
-| 98 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-master-detail-webpart/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-master-detail-webpart/SKILL.md) |
-| 99 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-react-webpart/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-react-webpart/SKILL.md) |
-| 100 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-webpart/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-webpart/SKILL.md) |
-| 101 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-setup-spfx-hosted-workbench/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-setup-spfx-hosted-workbench/SKILL.md) |
-| 102 | ✓ | [`plugins/sharepoint-workbench-setup/skills/workbench-initialize-connection-config/SKILL.md`](plugins/sharepoint-workbench-setup/skills/workbench-initialize-connection-config/SKILL.md) |
-| 103 | ✓ | [`plugins/sharepoint-workbench-setup/skills/workbench-initialize-document-workflow/SKILL.md`](plugins/sharepoint-workbench-setup/skills/workbench-initialize-document-workflow/SKILL.md) |
-| 104 | ✓ | [`plugins/sharepoint-workbench-setup/skills/workbench-request-app-registration/SKILL.md`](plugins/sharepoint-workbench-setup/skills/workbench-request-app-registration/SKILL.md) |
-| 105 | ✓ | [`plugins/sharepoint-workbench-setup/skills/workbench-resolve-document-paths/SKILL.md`](plugins/sharepoint-workbench-setup/skills/workbench-resolve-document-paths/SKILL.md) |
-| 106 | ✓ | [`plugins/sharepoint-workbench-setup/skills/workbench-validate-sharepoint-connection/SKILL.md`](plugins/sharepoint-workbench-setup/skills/workbench-validate-sharepoint-connection/SKILL.md) |
+| 55 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-download-file/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-download-file/SKILL.md) |
+| 56 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-generate-schema-definition-from-export/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-generate-schema-definition-from-export/SKILL.md) |
+| 57 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-plan-column-changes/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-plan-column-changes/SKILL.md) |
+| 58 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-plan-content-type-changes/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-plan-content-type-changes/SKILL.md) |
+| 59 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-plan-page-publication/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-plan-page-publication/SKILL.md) |
+| 60 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-publish-html-page/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-publish-html-page/SKILL.md) |
+| 61 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-publish-markdown-files/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-publish-markdown-files/SKILL.md) |
+| 62 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-reconcile-calendar-list/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-reconcile-calendar-list/SKILL.md) |
+| 63 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-reconcile-site-schema/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-reconcile-site-schema/SKILL.md) |
+| 64 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-remove-content-type/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-remove-content-type/SKILL.md) |
+| 65 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-remove-list-column/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-remove-list-column/SKILL.md) |
+| 66 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-remove-list/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-remove-list/SKILL.md) |
+| 67 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-remove-publication/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-remove-publication/SKILL.md) |
+| 68 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-remove-site-column/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-remove-site-column/SKILL.md) |
+| 69 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-scaffold-schema-definition/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-scaffold-schema-definition/SKILL.md) |
+| 70 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-update-content-type/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-update-content-type/SKILL.md) |
+| 71 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-update-list-column/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-update-list-column/SKILL.md) |
+| 72 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-update-list-settings/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-update-list-settings/SKILL.md) |
+| 73 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-update-site-column/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-update-site-column/SKILL.md) |
+| 74 | ✓ | [`plugins/sharepoint-site-build-and-publish/skills/sharepoint-validate-publication/SKILL.md`](plugins/sharepoint-site-build-and-publish/skills/sharepoint-validate-publication/SKILL.md) |
+| 75 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-analyze-classic-pages/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-analyze-classic-pages/SKILL.md) |
+| 76 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-analyze-migration-dependencies/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-analyze-migration-dependencies/SKILL.md) |
+| 77 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-audit-list-migration/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-audit-list-migration/SKILL.md) |
+| 78 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-convert-legacy-aspx-to-html/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-convert-legacy-aspx-to-html/SKILL.md) |
+| 79 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-convert-page-library-to-modern/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-convert-page-library-to-modern/SKILL.md) |
+| 80 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-convert-page-to-modern/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-convert-page-to-modern/SKILL.md) |
+| 81 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-create-page-preview/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-create-page-preview/SKILL.md) |
+| 82 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-extract-links/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-extract-links/SKILL.md) |
+| 83 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-generate-modernization-report/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-generate-modernization-report/SKILL.md) |
+| 84 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-initialize-migration-project/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-initialize-migration-project/SKILL.md) |
+| 85 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-migrate-list-content/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-migrate-list-content/SKILL.md) |
+| 86 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-normalize-migration-inventory/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-normalize-migration-inventory/SKILL.md) |
+| 87 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-plan-migration-waves/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-plan-migration-waves/SKILL.md) |
+| 88 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-plan-page-modernization/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-plan-page-modernization/SKILL.md) |
+| 89 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-scaffold-migration-wave-scripts/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-scaffold-migration-wave-scripts/SKILL.md) |
+| 90 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-update-links-in-documents/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-update-links-in-documents/SKILL.md) |
+| 91 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-update-page-links/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-update-page-links/SKILL.md) |
+| 92 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-update-rich-text-image-links/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-update-rich-text-image-links/SKILL.md) |
+| 93 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-validate-link-integrity/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-validate-link-integrity/SKILL.md) |
+| 94 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-validate-page-modernization/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-validate-page-modernization/SKILL.md) |
+| 95 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-deploy-spfx-solution/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-deploy-spfx-solution/SKILL.md) |
+| 96 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-develop-spfx-form-customizer/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-develop-spfx-form-customizer/SKILL.md) |
+| 97 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-develop-spfx-listview-command-set/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-develop-spfx-listview-command-set/SKILL.md) |
+| 98 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-package-spfx-solution/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-package-spfx-solution/SKILL.md) |
+| 99 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-publish-spfx-package/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-publish-spfx-package/SKILL.md) |
+| 100 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-request-site-collection-app-catalog/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-request-site-collection-app-catalog/SKILL.md) |
+| 101 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-master-detail-webpart/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-master-detail-webpart/SKILL.md) |
+| 102 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-react-webpart/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-react-webpart/SKILL.md) |
+| 103 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-webpart/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-webpart/SKILL.md) |
+| 104 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-setup-spfx-hosted-workbench/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-setup-spfx-hosted-workbench/SKILL.md) |
+| 105 | ✓ | [`plugins/sharepoint-workbench-setup/skills/workbench-initialize-connection-config/SKILL.md`](plugins/sharepoint-workbench-setup/skills/workbench-initialize-connection-config/SKILL.md) |
+| 106 | ✓ | [`plugins/sharepoint-workbench-setup/skills/workbench-initialize-document-workflow/SKILL.md`](plugins/sharepoint-workbench-setup/skills/workbench-initialize-document-workflow/SKILL.md) |
+| 107 | ✓ | [`plugins/sharepoint-workbench-setup/skills/workbench-request-app-registration/SKILL.md`](plugins/sharepoint-workbench-setup/skills/workbench-request-app-registration/SKILL.md) |
+| 108 | ✓ | [`plugins/sharepoint-workbench-setup/skills/workbench-resolve-document-paths/SKILL.md`](plugins/sharepoint-workbench-setup/skills/workbench-resolve-document-paths/SKILL.md) |
+| 109 | ✓ | [`plugins/sharepoint-workbench-setup/skills/workbench-validate-sharepoint-connection/SKILL.md`](plugins/sharepoint-workbench-setup/skills/workbench-validate-sharepoint-connection/SKILL.md) |
 
 ---
 

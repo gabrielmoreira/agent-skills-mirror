@@ -1,25 +1,21 @@
 # Static-analysis provider evaluation
 
-Status: the Ghidra read-only analysis provider is shipped on Linux x64 and macOS x64/arm64 with matching native tools, and has
-an experimental Windows x64 P0 for approved native PE applications. The provider
-validates an exact bring-your-own Ghidra 12.1.4/JDK 21 environment, resolves a
-provider/version/profile commitment, runs one isolated read-only headless
-import, and publishes 22 operation-level capabilities after the authenticated
-post-analysis handshake.
+Ghidra read-only analysis is available on Linux x64 and macOS x64/arm64.
+Install Ghidra 12.1.4 and a full 64-bit JDK 21 separately, then configure REA to
+use them. macOS installations need the matching native decompiler.
 
-The provider-neutral target, provider registry, deterministic target binding,
-analysis-profile commitment, Evidence provenance, snapshot caching, and bounded
-provider-process lifecycle foundations are implemented. The Ghidra launcher,
-packaged Java bridge, doctor/setup projection, bounded client lifecycle, and
-multi-target real Linux verifier, curated Windows CI, and controlled real
-Windows verifier are also implemented. Program identity,
-procedure/string/symbol inventory, memory blocks, address/name and
-containing-procedure resolution, complete inventory search, function metadata,
-decompilation, assembly, resolved calls, typed references, xrefs, CFG, and
-function dossiers are admitted. A provider is not a drop-in replacement for
-Hopper: every capability is mapped explicitly, with truthful `unavailable`,
-unknown, or degraded results where the engine cannot provide equivalent
-semantics.
+REA imports one target into a temporary project and exposes 22 read-only
+operations after analysis completes. They cover inventories, search,
+decompilation, assembly, function metadata, resolved calls, references, control
+flow, instructions, and recovered types. Results identify the provider version,
+analysis settings, target digest, and any unavailable or incomplete facts.
+Ghidra does not expose Hopper's GUI or annotation operations.
+
+Windows Ghidra analysis is unavailable, including on a correctly configured
+Ghidra/JDK host. Job Object process ownership, private runtime DACLs, and
+reparse-safe path checks are not implemented. Package and adapter tests do not
+establish real Windows analysis support. See [Windows Ghidra P0](windows-ghidra-p0.md)
+and [issue #527](https://github.com/morluto/rea/issues/527).
 
 [ADR-0001](adr/0001-provider-selection-and-analysis-profiles.md) fixes the
 provider registry, deterministic selection, target binding, analysis profile,
@@ -31,8 +27,8 @@ follow.
 - Keep the existing provider-neutral CLI and MCP tool names.
 - Bind one deep-analysis provider to a target for the target's lifetime; never
   fail over silently between Hopper and Ghidra.
-- Start with bring-your-own Ghidra and a compatible Java runtime. Setup must not
-  install or upgrade Java.
+- Use an existing Ghidra installation and a compatible Java runtime. Setup must
+  not install or upgrade Ghidra or Java.
 - Run Ghidra headlessly in an owned process with a private temporary project,
   startup and cleanup deadlines, caller cancellation, and complete replies.
 - Prefer a packaged Java bridge loaded through Ghidra's script path. PyGhidra
@@ -53,10 +49,10 @@ follow.
 
 `GHIDRA_INSTALL_DIR` must identify an extracted official 12.1.4 release;
 optional `JAVA_HOME` must identify a 64-bit full JDK 21, otherwise doctor probes
-`java`/`javac` or `java.exe`/`javac.exe` from `PATH`. Linux accepts x86, x86-64,
-ARM, and ARM64 ELF, PE, and Mach-O executable targets. Windows P0 accepts only
-native x86-64 PE applications and rejects DLLs, managed images, unknown roles,
-other formats, and other architectures before launch.
+`java`/`javac` or `java.exe`/`javac.exe` from `PATH`. Supported Linux and macOS
+hosts accept compatible ELF, PE, and Mach-O executable targets. Host admission
+and target compatibility are separate checks. The intended Windows P0 accepts
+only native x86-64 PE applications; it remains blocked before launch.
 
 The launcher creates one ephemeral runtime root with project,
 home/cache/config/data/temp, logs, descriptor, endpoint, target snapshot, and
@@ -65,18 +61,19 @@ It passes `-readOnly` and `-deleteProject`, and uses Ghidra's default analysis
 and resource settings; inherited Java option injection variables are cleared.
 On Linux, the mode-0600 descriptor carries the random token without
 exposing it in argv or environment and the Java bridge binds a mode-restricted
-Unix socket. Windows uses authenticated IPv4 loopback with a strict token-free
-endpoint record. Both transports report actual
-Ghidra/language/compiler/analysis/import-digest metadata, accept only the exact
-authenticated `ping`, `shutdown`, and ten
-inventory plus nine function-analysis methods, and deletes the socket. Close,
-cancellation, timeout,
-malformed protocol, or process exit stops the owned process resources and
-removes the entire runtime root. Windows P0 uses bounded `taskkill` tree
-termination and explicitly does not claim Job Object, private-DACL, or
-reparse-point authority; see [Windows Ghidra P0](windows-ghidra-p0.md).
+Unix socket. macOS uses the same local transport. The bridge reports actual
+Ghidra/language/compiler/analysis/import-digest metadata and accepts only
+authenticated `ping`, `shutdown`, ten inventory methods, and twelve
+function-analysis methods. Close, cancellation, timeout, malformed protocol,
+or process exit stops the owned process resources, closes the socket, and
+removes the runtime root.
 
-The provider catalog lists only the 19 proved Ghidra operations. GUI cursor,
+The experimental Windows transport uses authenticated IPv4 loopback with a
+token-free endpoint record, but cannot start while the native authority is
+unavailable. Its `taskkill` cleanup code does not establish Job Object ownership,
+private DACLs, or reparse-safe paths.
+
+The provider catalog lists the 22 Ghidra operations. GUI cursor,
 navigation, and mutation operations remain absent; the router therefore
 reports them unavailable instead of borrowing Hopper semantics or inferring
 capability from a successful import.
@@ -125,24 +122,24 @@ Mach-O target coverage. It requires `clang`, LLD, and `lld-link`; set
 these tools before compilation. Keeping this matrix separate lets Linux
 host/provider acceptance run with only the host compiler.
 
-`npm run verify:ghidra:windows` generates a deterministic source-owned native
-x86-64 PE application, proves the Windows P0 operations through the production Windows
-launcher and loopback transport, checks target/snapshot/import SHA-256 linkage,
-and requires project, endpoint, process, and runtime cleanup. Passing that lane
-proves only the documented P0 boundary, not the remaining Windows security
-gates.
+`npm run verify:ghidra:windows` remains blocked by the missing Windows native
+authority. After those controls are implemented, the lane must check the
+source-owned native x86-64 PE fixture, all read-only operations,
+target/snapshot/import SHA-256 linkage, and project, endpoint, process, and
+runtime cleanup. The existence of this verifier is not evidence that Windows
+Ghidra analysis works.
 
 ## Shared provider-process foundation
 
 `src/process/` now provides the mechanisms that a long-lived Hopper or Ghidra
-adapter genuinely shares: POSIX run-token-authenticated process-group ownership,
+adapter shares: POSIX run-token-authenticated process-group ownership,
 ephemeral temporary runtime roots, one absolute startup deadline, correlated
 request cancellation and lifecycle-deadline cleanup, bounded stdout and stderr retention with
 exact byte counts, process-exit diagnostics, and bounded TERM-to-KILL shutdown.
 Reusable fixtures exercise exit, timeout, cancellation, graceful termination,
 forced termination, double-close, spawn failure, and resource release. Windows
-P0 adds bounded process-tree termination as an explicitly weaker host backend;
-Job Object ownership remains unimplemented.
+process-tree termination code exists, but the missing Job Object and private
+runtime controls prevent it from establishing an available Ghidra session.
 
 The foundation does not define a bridge schema, socket framing, health payload,
 analysis model, or shutdown acknowledgement. Hopper keeps its authenticated
@@ -152,12 +149,12 @@ only the generic process mechanisms.
 
 ## Shortlist
 
-| Provider                                                                                    | License / automation surface                                                                                                                                           | What it brings                                                                                                                                          | REA fit and blockers                                                                                                                                                                                                                                                           |
-| ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [Ghidra](https://github.com/NationalSecurityAgency/ghidra)                                  | Apache-2.0 source license; `analyzeHeadless`, Java APIs, and PyGhidra                                                                                                  | Broad static analysis, many processors and formats, scripting, and project/database workflows                                                           | Read-only analysis shipped: exact BYO checks, isolated state and provider lifecycle, serial API queue, packaged bridge, 19 inventory/function operations, and real ELF/PE/Mach-O x86-64 plus AArch64 conformance. GUI and mutation semantics remain intentionally unavailable. |
-| [Rizin](https://github.com/rizinorg/rizin) / [rz-pipe](https://github.com/rizinorg/rz-pipe) | Rizin repository contains LGPL-3.0 and GPL-3.0 components; `rizin`, `rz-bin`, and language bridges through `rzpipe`                                                    | Portable CLI analysis, disassembly/debugging, many architectures and file formats, JSON command output                                                  | Good candidate for a process-backed Linux provider and fast metadata fallback. License/component inventory must be preserved; command output needs version-pinned parsers and semantic conformance before evidence is trusted.                                                 |
-| [LIEF](https://github.com/lief-project/LIEF)                                                | Apache-2.0; C++, Python, and other bindings                                                                                                                            | Deterministic parsing and modification of ELF, PE, Mach-O, COFF, and related executable formats; headers, sections, symbols, relocations, and functions | Best near-term complement, not a decompiler replacement. It can cover format metadata and artifact evidence without a long-lived analysis process; function semantics, pseudocode, CFG, and cross-reference parity remain out of scope unless separately demonstrated.         |
-| [Binary Ninja](https://docs.binary.ninja/dev/index.html)                                    | API/documentation components are MIT, while the analysis product is licensed by edition; commercial, Ultimate, or Headless license is required for headless automation | Python/Core/C++/Rust APIs, headless loading, IL layers, function analysis, plugins, and configurable analysis                                           | Strong technical fit for a native provider, especially function dossiers. Commercial licensing, license-secret handling, native runtime packaging, and multithreaded lifecycle rules are material deployment blockers.                                                         |
+| Provider                                                                                    | License / automation surface                                                                                                                                           | What it brings                                                                                                                                          | REA fit and blockers                                                                                                                                                                                                                                                   |
+| ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Ghidra](https://github.com/NationalSecurityAgency/ghidra)                                  | Apache-2.0 source license; `analyzeHeadless`, Java APIs, and PyGhidra                                                                                                  | Static analysis, multiple processors and formats, scripting, and project/database workflows                                                             | 22 read-only operations shipped on Linux/macOS with installation checks, temporary projects, a serial API queue, and real ELF/PE/Mach-O conformance. Windows analysis is blocked; GUI and mutation operations are unavailable.                                         |
+| [Rizin](https://github.com/rizinorg/rizin) / [rz-pipe](https://github.com/rizinorg/rz-pipe) | Rizin repository contains LGPL-3.0 and GPL-3.0 components; `rizin`, `rz-bin`, and language bridges through `rzpipe`                                                    | Portable CLI analysis, disassembly/debugging, many architectures and file formats, JSON command output                                                  | Good candidate for a process-backed Linux provider and fast metadata fallback. License/component inventory must be preserved; command output needs version-pinned parsers and semantic conformance before evidence is trusted.                                         |
+| [LIEF](https://github.com/lief-project/LIEF)                                                | Apache-2.0; C++, Python, and other bindings                                                                                                                            | Deterministic parsing and modification of ELF, PE, Mach-O, COFF, and related executable formats; headers, sections, symbols, relocations, and functions | Best near-term complement, not a decompiler replacement. It can cover format metadata and artifact evidence without a long-lived analysis process; function semantics, pseudocode, CFG, and cross-reference parity remain out of scope unless separately demonstrated. |
+| [Binary Ninja](https://docs.binary.ninja/dev/index.html)                                    | API/documentation components are MIT, while the analysis product is licensed by edition; commercial, Ultimate, or Headless license is required for headless automation | Python/Core/C++/Rust APIs, headless loading, IL layers, function analysis, plugins, and configurable analysis                                           | Strong technical fit for a native provider, especially function dossiers. Commercial licensing, license-secret handling, native runtime packaging, and multithreaded lifecycle rules are material deployment blockers.                                                 |
 
 ## Recommended order
 

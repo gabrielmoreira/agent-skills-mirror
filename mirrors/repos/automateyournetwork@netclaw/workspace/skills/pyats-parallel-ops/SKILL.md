@@ -107,3 +107,7 @@ Record fleet scope, baselines, findings, changes if authorized, and verification
 in GAIT. Finish with one fleet summary and `gait_log`. Related skills:
 `pyats-health-check`, `pyats-security`, `pyats-topology`, `pyats-config-mgmt`, and
 `pyats-dynamic-test`.
+
+## MCP Tasks
+
+For eligible tools, a client declaring the current Tasks extension may receive a task handle. Retain it and poll for the terminal result; do not resubmit pending work. Ordinary clients continue receiving foreground results. A handle is not execution success or approval: preserve required baseline/change-control checks before invocation and verify the completed result afterward. Cancellation cannot undo commands already sent. Investigate unknown outcomes before retrying. pyATS retains completed results in SQLite and lets started work finish; other FastMCP tools default to ephemeral state and cooperative cancellation. See `docs/MCP-TASKS.md`.

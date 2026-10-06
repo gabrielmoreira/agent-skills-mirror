@@ -4,7 +4,7 @@
 
 # REA: 무엇이든 리버스 엔지니어링
 
-### 코딩 에이전트가 무엇이든 리버스 엔지니어링할 수 있게 하는 하나의 CLI 및 MCP 서버
+### 에이전트로 앱의 동작부터 네이티브 바이너리까지 조사하세요.
 
 **마음에 드는 기능을 찾고, 작동 방식을 이해하고, 원하는 방식으로 구현하세요.**
 
@@ -13,35 +13,50 @@
 [![MCP tool catalog](https://img.shields.io/badge/MCP-tool_catalog-5c4ee5?style=flat-square)](#조사-도구-카탈로그)
 [![Node.js 22+](https://img.shields.io/badge/Node.js-22.19%2B-339933?style=flat-square&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![MIT license](https://img.shields.io/badge/license-MIT-f4c430?style=flat-square)](LICENSE)
+[![Discord](https://img.shields.io/discord/1556595354999332884?logo=discord&logoColor=white&label=Discord&color=5865F2)](https://discord.gg/GkcryMnJDM)
 
-[빠른 시작](#빠른-시작) · [바이너리에서 동작까지](#바이너리에서-동작까지) · [도구 카탈로그](#조사-도구-카탈로그) · [작동 방식](#작동-방식) · [FAQ](#faq)
+[빠른 시작](#빠른-시작) · [현재 지원 범위](#현재-지원-범위) · [바이너리에서 동작까지](#바이너리에서-동작까지) · [조사 도구 카탈로그](#조사-도구-카탈로그) · [로드맵](#로드맵) · [작동 방식](#작동-방식)
+
+<table aria-label="REA community">
+<tr>
+<td align="center" width="360">
+  <a href="https://discord.gg/GkcryMnJDM">
+    <img src="docs/assets/discord.svg" height="42" alt="Discord" /><br />
+    <strong>리버스 엔지니어링 커뮤니티에 참여하세요</strong>
+  </a><br />
+  <sub>Discord · 질문과 답변 · 작업 공유</sub>
+</td>
+</tr>
+</table>
 
 <br />
 
-<code>curl -fsSL https://raw.githubusercontent.com/morluto/rea/main/install.sh | bash</code>
+<code>npx rea-agents setup</code>
+
+<br />
+
+<img src="docs/assets/rea-hopper-analysis.png" alt="Hopper에서 분석 브리지를 시작하고 네이티브 바이너리를 조사하는 REA" width="1200" />
 
 </div>
 
 ---
 
-어떤 앱에서 마음에 드는 기능을 자신의 제품에도 넣고 싶나요? 소스 코드가 없어도 앱을 코딩 에이전트에 전달할 수 있습니다. REA를 사용하면 에이전트가 기능을 조사하고 작동 방식을 이해한 뒤, 사용자의 기술 스택, 디자인, 요구 사항에 맞는 버전을 구현할 수 있습니다.
+앱에서 마음에 드는 기능을 찾았다면 에이전트에게 REA로 조사해 달라고 요청하세요. 소스 코드가 없어도 앱을 분석하고, 기능의 동작과 근거를 설명한 뒤, 프로젝트에 맞는 기능을 구현할 수 있습니다.
 
-REA는 이 과정을 하나의 CLI 및 MCP 서버로 제공합니다. 에이전트는 컴파일된 앱을 조사하고 기능의 작동 방식을 추적한 뒤 알아낸 내용을 일반 코딩 작업에 활용할 수 있습니다. 복잡한 리버스 엔지니어링 도구는 REA가 하나의 인터페이스 뒤에서 처리합니다.
+REA는 네이티브 바이너리, JavaScript/Electron 앱, .NET 어셈블리, 웹사이트 분석 도구를 제공합니다. 에이전트와 터미널에서 같은 도구를 사용할 수 있습니다. 분석은 로컬에서 실행되며 결과에는 근거와 제한 사항이 포함됩니다.
+
+Setup은 에이전트를 설정하고 기존 Hopper 또는 Ghidra 설치에 연결합니다. 승인 후 Hopper를 설치할 수도 있습니다.
 
 ## 에이전트에게 바로 요청하기
 
-```bash
-npx rea-agents setup
-```
-
-그런 다음 요청하세요.
+[설정](#빠른-시작)을 마친 뒤 에이전트를 다시 시작하고 요청하세요.
 
 ```text
-REA를 설정하고 메모 앱을 리버스 엔지니어링해 주세요. 검색 기능의 작동 방식과
-그렇게 판단한 이유를 보여 주고, 제 프로젝트에 비슷한 기능을 구현해 주세요.
+메모 앱의 검색 기능이 어떻게 동작하는지 조사하고 근거를 보여 주세요.
+그다음 제 프로젝트에 비슷한 기능을 구현해 주세요.
 ```
 
-메모 앱은 예시일 뿐입니다. 이해하고 싶은 앱을 지정하거나 먼저 개요부터 살펴보라고 요청할 수 있습니다.
+메모 앱 대신 조사할 앱을 지정하거나 먼저 개요를 요청할 수 있습니다.
 
 ## 바이너리에서 동작까지
 
@@ -53,69 +68,95 @@ REA는 분석을 바이너리 증거에 근거하게 합니다. 원본 소스 �
 
 ## REA를 사용하는 이유
 
-|                    |                                                                                    |
-| ------------------ | ---------------------------------------------------------------------------------- |
-| **에이전트용**     | 컴파일된 앱에 관해 질문하고 추측 대신 증거를 수집하게 합니다.                      |
-| **CLI와 MCP**      | 터미널과 코딩 에이전트에서 동일한 리버스 엔지니어링 기능을 사용합니다.             |
-| **복잡성 처리**    | 도구 설정, 앱 열기, 조사 유지, 작업 후 정리를 REA가 처리합니다.                    |
-| **전체 조사 과정** | 첫 개요에서 의사 코드, 호출 관계, 타입, 구현 단서까지 이어서 조사합니다.           |
-| **로컬 분석**      | 분석은 Mac에서 실행되며 REA는 바이너리를 호스팅 분석 서비스에 업로드하지 않습니다. |
-| **컨텍스트 유지**  | 질문마다 분석을 처음부터 시작하지 않고 여러 바이너리를 연속으로 조사합니다.        |
+|                    |                                                                                                     |
+| ------------------ | --------------------------------------------------------------------------------------------------- |
+| **에이전트용**     | 컴파일된 앱에 관해 질문하고 추측 대신 증거를 수집하게 합니다.                                       |
+| **CLI와 MCP**      | 터미널과 코딩 에이전트에서 동일한 리버스 엔지니어링 기능을 사용합니다.                              |
+| **복잡성 처리**    | 도구 설정, 앱 열기, 조사 유지, 작업 후 정리를 REA가 처리합니다.                                     |
+| **전체 조사 과정** | 첫 개요에서 의사 코드, 호출 관계, 타입, 구현 단서까지 이어서 조사합니다.                            |
+| **로컬 분석**      | 분석은 지원되는 로컬 호스트에서 실행되며 REA는 바이너리를 호스팅 분석 서비스에 업로드하지 않습니다. |
+| **컨텍스트 유지**  | 질문마다 분석을 처음부터 시작하지 않고 여러 바이너리를 연속으로 조사합니다.                         |
 
 ## 빠른 시작
 
-### 코딩 에이전트에서 시작하기(권장)
+### 설정 실행하기(권장)
+
+REA를 에이전트에 연결하세요.
 
 ```bash
-npx --yes rea-agents@latest setup
+npx rea-agents setup
 ```
 
-에이전트에게 REA 설정을 요청하세요. Mac을 확인하고 필요한 설치 내용을 설명한 뒤 승인을 요청하며 시스템 프롬프트를 안내합니다. 전체 도구를 불러오기 위해 재시작하라고 하면 설정 후 에이전트를 재시작하세요.
+Setup은 먼저 연결할 에이전트를 여러 개 선택하도록 안내합니다. 기존 REA 등록은 기본 선택되며, 감지만 된 클라이언트는 자동 선택되지 않습니다. 아직 설정되지 않은 클라이언트도 직접 선택할 수 있습니다. 정확한 경로와 변경 사항을 검토한 뒤 승인하세요. 선택한 에이전트에는 기본적으로 REA 워크플로가 설치됩니다. Hopper는 별도의 선택 사항이며 따로 승인해야 합니다. 기존 Ghidra 경로도 등록할 수 있습니다.
 
-### 시작하기 전에
+변경 전에 계획을 표시하고 기존 설정을 백업합니다. 요구 사항과 추가 옵션은 [설치 안내](docs/installation.md)를 참고하세요.
 
-- macOS 12 이상
-- Ubuntu 24.04+, Fedora 41+ 또는 64비트 Arch Linux
-- Node.js 22.19+ 또는 24.11+ 및 Node와 함께 제공되는 npm
+### 에이전트에서 사용하기
 
-`rea setup`은 전체 변경 계획을 표시하고 확인 후 적용합니다. Homebrew, Node.js 또는 npm을 설치하거나 업데이트하지 않습니다. [Hopper](https://www.hopperapp.com/)가 없으면 공식 패키지 설치를 제안합니다. Hopper는 별도 라이선스가 필요한 독립 소프트웨어입니다.
+설정 후 에이전트를 다시 시작하고 조사할 앱이나 기능을 설명하세요. REA는 Claude Code, Claude Desktop, Codex, Cursor, Gemini CLI, Windsurf, Devin, OpenCode, Antigravity, GitHub Copilot CLI, VS Code를 지원합니다. 기존 REA 등록은 기본 선택되고, 그 밖의 감지된 클라이언트는 직접 선택해야 합니다. 다른 에이전트는 아래 MCP 설정을 사용할 수 있습니다.
 
-64비트 Linux에 Ghidra 12.1.4 PUBLIC과 완전한 64비트 JDK 21이 이미 설치되어 있다면 Setup은 승인 후 `GHIDRA_INSTALL_DIR`과 선택 사항인 `JAVA_HOME`도 등록할 수 있습니다. REA는 Ghidra나 Java를 다운로드, 설치 또는 수정하지 않습니다. Ghidra 공급자는 격리된 읽기 전용 headless 세션에서 인벤토리, 디컴파일, 어셈블리, 호출 관계, 형식이 지정된 참조, xref, CFG 및 함수 dossier를 제공합니다. GUI 상태와 변경 작업은 계속 사용할 수 없습니다.
+Hopper는 데모 모드로 사용할 수 있습니다. 첫 실행 안내가 나오면 데모를 선택하거나 기존 라이선스를 입력하세요.
 
-#### Linux 설치 및 문제 해결
+### 터미널에서 실행하기
 
-Ubuntu 24.04+, Fedora 41+, 64비트 Arch Linux에서 REA는 공식 DEB, RPM 또는 Arch 패키지를 내려받아 게시된 크기와 체크섬을 검증한 뒤 `apt-get`, `dnf` 또는 `pacman`으로 의존성을 설치합니다. root가 아니면 `pkexec`가 시스템 승인 창을 표시합니다. REA는 `sudo`를 호출하지 않습니다.
-
-기본 실행 파일은 `/opt/hopper/bin/Hopper`입니다. 다른 위치에 설치했다면 `HOPPER_LAUNCHER_PATH`를 설정하세요. Doctor가 분석 엔진 누락을 보고하면 `ldd /opt/hopper/bin/Hopper | grep 'not found'`를 실행하고 누락된 라이브러리를 설치한 다음 `rea setup`을 다시 실행하세요. REA는 지원되는 Hopper 데모 빌드를 전용 Xvfb 디스플레이에서 실행하고 분석 세션마다 Hopper가 제공하는 데모 모드를 선택합니다. 데스크톱 `DISPLAY`나 유료 라이선스는 필요하지 않지만 데모에는 공급업체가 정한 제한이 있습니다. `~/.local/bin`도 `PATH`에 추가해야 합니다.
-
-```bash
-# 1. REA 설정
-curl -fsSL https://raw.githubusercontent.com/morluto/rea/main/install.sh | bash
-npx --yes rea-agents@latest setup
-```
-
-macOS나 설치 프로그램이 확인을 요청하면 해당 절차를 완료하고 같은 명령을 다시 실행하세요.
-
-### 2. 코딩 에이전트 재시작
-
-Setup은 Claude Code, Claude Desktop, Codex, Cursor, Gemini CLI, Windsurf, Devin을 감지합니다. 감지된 앞의 여섯 클라이언트는 자동으로 구성하지만, Devin은 문서화된 로컬 MCP 구성 경계가 없어 감지만 보고하고 변경하지 않습니다. 구성된 클라이언트를 다시 시작해 REA를 불러오세요.
-
-### 3. 에이전트에게 요청
-
-앱 이름만 말해도 됩니다. 코딩 에이전트가 앱을 찾아 REA에 필요한 프로그램 파일을 전달합니다.
-
-```text
-REA로 메모 앱을 리버스 엔지니어링해 주세요. 검색 기능의 작동 방식과 증거를 보여 주고,
-SQLite를 사용해 제 프로젝트에 비슷한 기능을 구현해 주세요.
-```
-
-문제가 있으면 다음을 실행하세요.
+설정 후 실행하세요.
 
 ```bash
 npx -y rea-agents@latest doctor
-rea uninstall
-rea uninstall --purge-data
+npx -y rea-agents@latest analyze /Applications/Notes.app
 ```
+
+### rea 명령 설치하기
+
+명령줄 도구를 설치하세요.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/morluto/rea/main/install.sh | bash
+```
+
+Node.js와 npm이 먼저 설치되어 있어야 합니다. 터미널에서 실행하면 설치 프로그램이 `rea`를 설치하고 설정을 시작합니다.
+
+npm으로 설치한 뒤 설정을 실행할 수도 있습니다.
+
+```bash
+npm install --global rea-agents
+rea setup
+```
+
+### 요구 사항
+
+- macOS 12 이상
+- Ubuntu 24.04+, Fedora 41+ 또는 64비트 Arch Linux
+- Node.js 22.19+ 또는 24.11+와 npm
+
+네이티브 바이너리 분석에는 Hopper 또는 Ghidra가 필요합니다. Hopper는 별도 소프트웨어입니다. 데모에는 공급업체의 제한이 있지만 유료 라이선스가 필수는 아닙니다.
+
+Ghidra는 Linux x64와 macOS x64/arm64를 지원합니다. Ghidra 12.1.4와 완전한 64비트 JDK 21을 별도로 설치한 뒤 REA가 사용하도록 설정하세요. macOS에서는 호스트 아키텍처에 맞는 네이티브 디컴파일러도 필요합니다.
+
+Setup은 설치를 확인하고 경로를 저장할 수 있습니다. Ghidra, Java, Node.js, npm, Homebrew를 설치하거나 업데이트하지 않습니다.
+
+Windows Ghidra 분석은 사용할 수 없습니다. 프로세스 소유권, 비공개 디렉터리 권한, 안전한 경로 검사가 구현되지 않았으므로 Ghidra와 Java를 올바르게 설치해도 분석을 활성화할 수 없습니다. [Windows Ghidra P0](docs/windows-ghidra-p0.md)를 참고하세요.
+
+### 문제 해결
+
+`npx -y rea-agents@latest doctor`는 호스트, 의존성, 분석 도구, 에이전트 설정을 변경 없이 확인합니다. 구조화된 진단에는 `--json`을 추가하세요.
+
+Linux의 기본 Hopper 실행 파일은 `/opt/hopper/bin/Hopper`입니다. 다른 위치에는 `HOPPER_LAUNCHER_PATH`를 설정하세요. 파일이 있는데도 분석 엔진이 없다고 하면 `ldd /opt/hopper/bin/Hopper | grep 'not found'`로 누락된 라이브러리를 확인하세요. 자세한 내용은 [Hopper 안내](docs/installation.md#hopper)를 참고하세요.
+
+### 업데이트와 제거
+
+- `rea update`는 현재 REA 설치를 업데이트합니다.
+- `rea uninstall`은 REA가 관리하는 에이전트 등록과 워크플로 파일을 제거합니다. Hopper는 유지합니다.
+- `rea uninstall --purge-data`는 REA 캐시와 상태도 삭제합니다. 해당 데이터를 지우려는 경우에만 사용하세요.
+
+## 현재 지원 범위
+
+REA는 CLI와 MCP로 네이티브 바이너리, JavaScript/Electron 앱, .NET 어셈블리, 웹사이트를 분석합니다. 사용할 수 있는 작업은 호스트, 대상, 선택한 분석 도구에 따라 다릅니다.
+
+- Hopper는 네이티브 분석과 주석 작업을 지원합니다. GUI 동작은 플랫폼에 따라 다릅니다.
+- Ghidra는 Linux x64와 macOS x64/arm64에서 목록, 검색, 디컴파일, 어셈블리, 호출, 참조, 명령어, 타입 검사 등 읽기 전용 작업 22개를 제공합니다. GUI나 변경 작업은 제공하지 않습니다.
+- 브라우저, Electron, 프로세스 런타임 워크플로에는 각각 설정, 승인, 종료 처리 요구 사항이 있습니다. 자세한 내용은 [English README](README.md#current-status)를 참고하세요.
+- Windows Ghidra 분석은 아직 사용할 수 없습니다. 진행 상황은 [#527](https://github.com/morluto/rea/issues/527)에서 확인하세요.
 
 ## 하나의 프롬프트로 전체 조사
 
@@ -149,22 +190,26 @@ REA는 1–5단계의 바이너리 분석을 처리합니다. 6단계는 에이�
 
 ## 조사 도구 카탈로그
 
-| 도구 그룹           |  수 | 예시                                                                                                                                                                              |
-| ------------------- | --: | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 바이너리 검사       |  39 | 프로시저, 의사 코드, 어셈블리, 문자열, 이름, 세그먼트, callers, callees, xrefs, 주석                                                                                              |
-| 합성 분석           |  15 | `binary_overview`, `analyze_function`, `inspect_native_api`, `batch_decompile`, `get_call_graph`, `find_xrefs_to_name`, Swift 및 ObjC 탐색                                        |
-| macOS 네이티브 도구 |   7 | Mach-O 메타데이터, 코드 서명, plist, 아키텍처, Swift 디맹글링. Hopper 실행 불필요                                                                                                 |
-| 아티팩트 그래프     |   5 | 디렉터리와 지원 패키지 검사, Interface Builder UI 그래프, Apple 에셋 카탈로그 메타데이터, 명시적으로 선택한 추출                                                                  |
-| Managed PE/CLI      |   8 | PE/CLI ID, 메타데이터 멤버, CIL 해시, P/Invoke/네이티브 경계 선언 및 검증, 애플리케이션 그래프 투영, 디컴파일 재구성 가져오기, 구조적 token 재매핑, 런타임 상관 계획, 버전 비교   |
-| 브라우저 관찰       |   9 | origin 제한 CDP 캡처, bundle/source map 분석, WebMCP 검색, 세션 타임라인, capture diff 및 시각 증거                                                                               |
-| Electron 분석       |   5 | canonical 파일 루트 내 수동 관찰, 제한된 정적 앱 매핑, Evidence 기반 정적/런타임 조정                                                                                             |
-| JavaScript 런타임   |   2 | 승인된 연결 전용 Node/Electron Inspector 대상 탐색과 평가·계측 없는 제한된 스크립트 및 실행 컨텍스트 관찰                                                                         |
-| 애플리케이션        |  10 | 제한된 교차 계층 추적, 고유 일치 버전 비교, 정적 export 반환 형태 비교, 승인된 Linux 격리 extracted-module replay, 관리형 런타임 특성화, 재구성 커버리지 폐쇄, 결정론적 의무 원장 |
-| 바이너리 세션       |  22 | `open_binary`, `binary_session`, 증거 번들, 유한 replay 상태 머신, 프로세스·아티팩트·함수 비교, 잔여 미지수 레지스트리                                                            |
+| 도구 분류         |  수 | 용도                                                                 |
+| ----------------- | --: | -------------------------------------------------------------------- |
+| 바이너리 검사     |  39 | 함수, 의사 코드, 어셈블리, 문자열, 심볼, 참조, 주석                  |
+| 결합 분석         |  14 | 개요, 함수 분석, 일괄 디컴파일, 호출 그래프, Swift와 ObjC 검사       |
+| macOS 네이티브    |   7 | Mach-O 메타데이터, 서명, plist, 아키텍처, Swift 이름 복원            |
+| 파일과 패키지     |   5 | 디렉터리와 패키지 검사, Interface Builder, Apple 리소스, 추출        |
+| .NET PE/CLI       |   7 | 어셈블리 식별, 메타데이터, CIL, 네이티브 호출, 비교, 재구성 가져오기 |
+| 브라우저 관찰     |   9 | 페이지, 스크립트, 소스 맵, WebMCP, 스크린샷, 캡처 비교               |
+| Electron 분석     |   5 | 페이지 관찰, 앱 구조, 정적·런타임 결과 연결                          |
+| JavaScript 런타임 |   2 | 기존 Node/Electron Inspector에 연결해 스크립트와 실행 컨텍스트 관찰  |
+| 앱 워크플로       |   7 | 기능 추적, 버전 비교, 반환 구조 비교, 재구현 검증                    |
+| 바이너리 세션     |  21 | 대상 전환, 근거 저장, 프로세스·함수 비교, 미해결 항목 기록           |
+
+## 로드맵
+
+다음 작업은 네이티브 대상 검증 확대, JavaScript와 .NET의 버전 비교, 런타임 관찰과 재구현 검증입니다. Setup은 에이전트 연결과 Hopper 설치 선택을 이미 지원합니다. 다른 분석 도구 설치는 향후 작업입니다. [설치 로드맵](docs/roadmap.md)과 [분석 도구 평가](docs/provider-evaluation.md)를 참고하세요.
 
 ## 다른 코딩 에이전트에서 사용하기
 
-Setup은 Claude Code, Claude Desktop, Codex, Cursor, Gemini CLI, Windsurf, Devin을 감지하고 앞의 여섯 클라이언트를 자동으로 구성합니다. Devin은 감지만 보고하고 변경하지 않습니다. 로컬 MCP 서버를 지원하는 코딩 에이전트라면 다음 설정으로 REA를 사용할 수 있습니다.
+Setup은 Claude Code, Claude Desktop, Codex, Cursor, Gemini CLI, Windsurf, Devin, OpenCode, Antigravity, GitHub Copilot CLI, VS Code를 지원합니다. 기존 REA 등록은 기본 선택되고, 그 밖의 감지된 클라이언트는 직접 선택해야 합니다. 로컬 MCP 서버를 지원하는 에이전트는 다음 설정으로 연결할 수 있습니다.
 
 <!-- x-release-please-start-version -->
 
@@ -173,7 +218,7 @@ Setup은 Claude Code, Claude Desktop, Codex, Cursor, Gemini CLI, Windsurf, Devin
   "mcpServers": {
     "rea": {
       "command": "npx",
-      "args": ["-y", "rea-agents@3.2.1", "mcp"]
+      "args": ["-y", "rea-agents@4.0.1", "mcp"]
     }
   }
 }
@@ -193,7 +238,7 @@ flowchart LR
     Ghidra --> App
 ```
 
-CLI와 MCP 서버는 같은 분석 엔진을 사용합니다. 터미널 명령은 끝날 때 앱을 닫고, 에이전트 세션은 조사하는 동안 앱을 열어 둡니다.
+CLI와 MCP 서버는 같은 분석 워크플로를 사용합니다. 터미널 명령은 완료 후 자신의 브리지 세션을 해제하고, 에이전트 세션은 조사 중 연결을 유지할 수 있습니다. REA 세션을 닫아도 사용자가 이용 중인 Hopper 앱은 종료하지 않습니다.
 
 ## CLI
 
@@ -229,7 +274,7 @@ REA는 필요할 때 Hopper를 시작합니다. Hopper 런처는 내부적으로
 
 <details><summary><strong>Hopper를 미리 실행해야 하나요?</strong></summary>
 
-아니요. REA가 필요할 때 시작하며 이미 실행 중인 Hopper도 지원합니다.
+아니요. REA가 필요할 때 시작합니다. Hopper가 실행 중이어도 사용할 수 있지만 기존 GUI 문서에 연결하는 대신 새 분석 문서를 엽니다.
 
 </details>
 

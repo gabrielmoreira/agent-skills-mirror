@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `JCodesMore/ai-website-cloner-template` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `JCodesMore/ai-website-cloner-template` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `JCodesMore/ai-website-cloner-template` — 26 default patterns, 0 fol
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,10 +59,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/clone-website/references/inspection-guide.md`](.agents/skills/clone-website/references/inspection-guide.md) |
-| 2 | ✓ | [`.agents/skills/clone-website/SKILL.md`](.agents/skills/clone-website/SKILL.md) |
-| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`.agents/skills/clone-website/references/framer-and-motion.md`](.agents/skills/clone-website/references/framer-and-motion.md) |
+| 2 | ✓ | [`.agents/skills/clone-website/references/inspection-guide.md`](.agents/skills/clone-website/references/inspection-guide.md) |
+| 3 | ✓ | [`.agents/skills/clone-website/SKILL.md`](.agents/skills/clone-website/SKILL.md) |
+| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

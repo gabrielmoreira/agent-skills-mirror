@@ -1,32 +1,67 @@
-# Installation roadmap
+# REA roadmap
+
+## Tool direction
+
+REA provides inspection, capture, and comparison tools that return evidence
+directly. Agents choose commands, paths, browser actions, scripts, and local
+fixture servers, then compose experiments from those results. CLI and MCP must
+expose equivalent behavior and preserve observations, inferences, and unknowns.
+
+[#555](https://github.com/morluto/rea/pull/555) removed REA permission grants,
+scope ceilings, elicitation, and repeated approval fields.
+[#572](https://github.com/morluto/rea/pull/572) removed the replay engines,
+Node characterization prepare/execute flow, and plan-only managed runtime
+correlation tool. Those systems are retired roadmap items. Existing evidence
+authority labels remain readable as provenance; they do not imply a current
+replay executor.
+
+Local operations use the current user's OS permissions. Input and protocol
+validation, provider prerequisites, target identity, cancellation, and owned
+resource cleanup remain part of each tool's contract. Setup still discloses
+installation changes and requires approval before writing or installing.
+
+## Remaining evidence and provider work
+
+The [platform roadmap](https://github.com/morluto/rea/issues/32),
+[process and Hopper fidelity tracker](https://github.com/morluto/rea/issues/48),
+and [browser tracker](https://github.com/morluto/rea/issues/39) track remaining
+capabilities and proof. Their scope follows direct tools and agent-composed
+experiments; custom replay languages and grant systems are not completion gates.
+
+[Inline Evidence composition](https://github.com/morluto/rea/pull/585) now returns
+the complete record accepted by comparison tools. Managed inspection uses an
+explicit PE/CLI target independently of the native provider selection. Comparisons
+preserve unknowns when observation is incomplete, and PTY diagnostics retain the
+actual loader or startup failure. Browser cleanup reports incomplete teardown
+alongside the primary failure; transient documents invalidate only the affected
+frame's WebMCP registrations. Real-provider and platform claims still require
+their corresponding verification lanes.
 
 ## Shipped behavior
 
-REA setup currently configures the capabilities that exist today: its bundled
-skill, detected agent integrations, optional Hopper provider, and validated
-bring-your-own Ghidra paths. It detects
-Claude Code, Claude Desktop, Codex, Cursor, Gemini CLI, Windsurf, and Devin. The
-first six have documented local MCP configuration boundaries and can be updated
-additively; Devin is reported but left unchanged.
+REA setup lets you select agent integration and optional Hopper installation.
+It installs the bundled workflow, configures detected agents, and can save
+verified paths for an existing Ghidra installation. It configures Claude Code,
+Claude Desktop, Codex, Cursor, Gemini CLI, Windsurf, Devin, OpenCode, Antigravity,
+GitHub Copilot CLI, and VS Code using each client's configuration format.
 
-The Ghidra foundation supports Linux x64 with exact Ghidra 12.1.4 and a 64-bit
-full JDK 21. macOS is not an admitted Ghidra host. An experimental
-Windows x64 P0 admits approved native x86-64 PE
-applications through the same 19-operation Java bridge. Doctor validates those coordinates; approved Linux setup propagates them
-to MCP registrations without installing or modifying either dependency. REA's
-packaged Java bridge then proves an isolated read-only headless import,
-post-analysis handshake, complete cleanup, ten admitted read-only inventory
-operations, and nine function-analysis operations. Real source-owned x86-64
-debug/stripped ELF, AArch64 ELF, PE, and Mach-O fixtures cover program,
-procedure, string, symbol, external/thunk, memory, resolution, search,
-decompilation, assembly, calls, typed references, xrefs, and CFG semantics.
-Function dossiers also expose bounded Ghidra high-p-code def-use and memory or
-control-flow effects, mark decompiler-dead operations, and report truncation
-plus known omitted counts. This is intra-function
-decompiler evidence; cross-function state flow remains unimplemented.
-Hosted Windows CI covers build, package, target admission, transport, and
-lifecycle seams; a controlled self-hosted workflow covers the real Ghidra P0
-claim.
+Ghidra analysis supports Linux x64 and macOS x64/arm64 with Ghidra 12.1.4 and a
+64-bit full JDK 21. macOS also requires the matching native decompiler. The
+adapter exposes ten inventory operations and twelve function-analysis
+operations, for 22 read-only operations total. Approved setup saves verified
+installation paths in agent configurations without installing or changing
+Ghidra or Java.
+
+Real-provider verification uses host-native debug and stripped fixtures plus
+a native type-layout object. A separate lane covers AArch64 ELF, PE, and
+Mach-O cross-target fixtures. See [testing](testing.md) for the prerequisites
+and exact commands.
+
+Windows Ghidra operations remain unavailable until REA implements verified
+Job Object process ownership, private runtime DACLs, and reparse-safe path
+admission. Windows package and adapter tests do not establish a usable real
+Ghidra session. The [Windows P0 guide](windows-ghidra-p0.md) describes the
+intended boundary and remaining requirements.
 
 ## Ghidra maintenance boundary
 
@@ -36,16 +71,17 @@ not expected to match; unresolved targetless flow remains unknown. Automatic
 Ghidra acquisition, if ever added, remains a separately planned and approved
 related-tool change; setup must never install Java.
 
-Before Windows advances beyond P0, add current-user-only DACL creation and
+Before enabling Windows Ghidra operations, add current-user-only DACL creation and
 readback, handle-based reparse-point-safe path authority, a DACL-protected IPC
 backend, and Job Object assignment before provider execution. Process capture,
-controlled replay, Hopper, and broad filesystem-sensitive workflows remain
-separate Windows projects rather than implied parity.
+Hopper, and broad filesystem-sensitive workflows remain separate Windows
+projects rather than implied parity.
 
 ## Capability-selective setup
 
-After REA ships at least two real optional toolchains, setup can evolve into a
-capability-oriented wizard. It may ask whether the operator wants to investigate
+Setup already lets users select agent integration and Hopper installation.
+Once REA supports installing additional analysis tools, it can expand these
+choices to match the work a user wants to do. It may ask whether the operator wants to investigate
 native binaries, websites, mobile applications, firmware, or runtime protocols,
 then propose only the tools needed for the selected work.
 

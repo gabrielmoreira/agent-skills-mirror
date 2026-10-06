@@ -120,7 +120,7 @@ graph TB
 | **Discord** | WebSocket Gateway | Bot Token | DM / Group / Forum / Channel | Application Commands 同步、RESUME 重连、原生媒体 multipart |
 | **Slack** | Socket Mode WebSocket | Bot Token + App Token | DM / Group / Channel | 原生 reply stream、dense 任务/计划进度、Slack Connect、一次性 URL 重连 |
 | **飞书 / Lark** | WebSocket 事件订阅 | App ID + App Secret | DM / Group | OAuth Token 自动刷新、多域名、cardkit 卡片流式 |
-| **QQ Bot** | WebSocket Gateway | App ID + Client Secret | DM / Group / Channel | RESUME 重连、`QQBotAccessToken` 认证 |
+| **QQ Bot** | WebSocket Gateway | App ID + Client Secret | DM / Group / Channel | RESUME 重连、`QQBot` 认证 |
 | **微信 / WeChat** | HTTP 长轮询（iLink） | 扫码登录 | DM | AES-128 媒体加密、输入指示、发送业务码 fail-closed |
 | **WhatsApp** | HTTP 轮询（外部桥接） | Bridge URL + Token | DM / Group | Bridge 身份/版本/能力发现、Baileys 安全门禁、媒体支持 |
 | **Signal** | SSE + HTTP RPC（signal-cli） | 手机号 + 链接设备 | DM / Group | 实时推送、撤回/回复/输入指示、需外部 signal-cli |
@@ -939,7 +939,9 @@ ask_user / approval 的**按钮卡片**也走 schema 2.0，但**不**走 cardkit
 
 ### QQ Bot
 
-- **认证**：`appId` + `clientSecret` → `access_token`（2h TTL）；**Auth Header**：`QQBotAccessToken {token}`（非 Bearer）；**传输**：WebSocket Gateway，与 Discord 类似的 opcode 协议；**Intents**：`PUBLIC_GUILD_MESSAGES | DIRECT_MESSAGE | GROUP_AND_C2C`。
+- **域名证据边界**：10-02 雷达已记录官方统一 `api.bot.qq.com` 通知；当前 REST 生产/沙箱与取凭证仍沿既有域名。统一沙箱隔离和新取凭证路由未完整核验，迁移由行动卡 `10-A12` 跟踪，不在发送失败后跨域重放。
+
+- **认证**：`appId` + `clientSecret` → `access_token`（2h TTL）；**Auth Header**：`QQBot {token}`（非 Bearer）；**传输**：WebSocket Gateway，与 Discord 类似的 opcode 协议；**Intents**：`PUBLIC_GUILD_MESSAGES | DIRECT_MESSAGE | GROUP_AND_C2C`。
 - **chat_id 编码**：多端点用前缀区分——`c2c:{openid}` / `group:{group_openid}` / `channel:{channel_id}` / `dms:{guild_id}`。
 - **事件**：`C2C_MESSAGE_CREATE`→Dm、`GROUP_AT_MESSAGE_CREATE`→Group、`AT_MESSAGE_CREATE`→Channel、`DIRECT_MESSAGE_CREATE`→Dm。
 - **限制**：不支持 edit/unsend（API 不提供）。
@@ -957,6 +959,7 @@ WhatsApp 仍通过用户自部署的 HTTP Bridge 接入。`GET /api/health` 的�
 
 - **Signal**：对解析后的 `signal-cli` 二进制执行 3 秒、无凭据参数的 `--version` 探测，输出只提取长度受限的版本 token。未知或低于当前观测基线 `0.14.0` 只告警、不阻断消息；账号健康页展示白名单能力快照。
 - **iMessage**：`imsgProtocolV1` 默认开启。reader 就绪后依次协商 `initialize` / `status`，保存版本与能力；旧版本仅在方法不存在或参数不支持时回退 legacy。`-32001` / `-32004` 与超时后的未知投递均禁止自动重放；`watch.overflow` 通过 `messages.after` 有界补追、GUID/rowid 去重和 cursor 重订阅，任一补追分页或重订阅瞬时失败都保持降级态，并以有上限的指数退避从已确认 cursor 持续恢复；重复 overflow 合并且不得阻塞 RPC reader。子进程退出后受控重启但不重发 mutation。重启后的子进程在 `initialize` / `status` / `watch.subscribe` 全部恢复前保持降级态，并以有上限的指数退避持续重试；每代子进程拥有独立取消令牌，退出或停止时取消旧恢复任务，禁止跨代竞态。
+  启动日志和健康探测仅用经长度/字符限制的 `status.version` 做只读安全下限诊断：明确低于 `0.15.8` 提示手工升级；未知、legacy 或不可解析版本显示未核验，不视作已修复。运行中账户通过已协商的缓存状态进入 `channel_health` / `channel_health_all`，每 10 秒设置页轮询不另启子进程；运行中缓存若在 Stop 竞态中消失，也不回退启动临时进程。停止账户的聚合状态不触发临时探测，单账户手动健康检查保留原探测路径。健康探测仍可成功、旧安装不被版本提示阻断；此判断不读取凭据、不发送消息、不自动安装二进制。macOS 实机版本与投递行为仍需独立验收。
 - **Google Chat**：`googleChatStandardMarkdown` 默认开启，仅消息创建 body 发送 `markupSyntax=MARKUP_SYNTAX_MARKDOWN`；编辑仍走旧语法，因为该字段是 create-only。标准 Markdown mention 只接受结构化 `users/...` 标识并跳过行内代码、缩进代码及围栏代码；围栏与缩进判定会先剥离引用块 / 列表容器前缀，容器内的 `<users/...>` 同样不能被编译。原始 HTML/mention 字符串不能穿透。
 
 Microsoft Teams 当前不属于内建渠道：只有达到至少 3 个有效设计伙伴且连续 4 周周活不低于 20，或存在明确企业合同后，才进入隔离 connector/plugin PoC；不因生态可用性提前引入 Entra、租户同意和公网 webhook 维护面。

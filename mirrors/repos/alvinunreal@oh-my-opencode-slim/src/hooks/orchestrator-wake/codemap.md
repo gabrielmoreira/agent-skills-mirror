@@ -67,6 +67,10 @@ run by default). The v1 code path is unchanged.
     (`ORCHESTRATOR_WAKE_TEXT`, `ORCHESTRATOR_CHILDREN_WAKE_TEXT`, or
     `ORCHESTRATOR_STOPPED_JOB_WAKE_TEXT`), reserving before the send and
     rolling back cap accounting on failed delivery without waking waiters.
+    #1411: a delta-less wake whose body was already delivered in the session
+    sends a short non-identical repeat marker instead (`WAKE_REPEAT_CORES` +
+    `wakeRepeatMarker`; child-input wakes exempt, delta-bearing wakes keep
+    the full template) and logs `duplicate wake body suppressed`.
     Retries follow the interval timer; failed publication/recovery retains its
     reason until delivery or a generation change. v2 children mode passes
     `delivery: 'queue'` (v1 call shape unchanged).
@@ -93,6 +97,13 @@ run by default). The v1 code path is unchanged.
     and external-activity resets.
   - `getObservedWakeModel` / `setObservedWakeModel`: last-seen model for
     continuation prompts.
+  - #1411: `reserveWakeBodyOccurrence` tracks per-session delivered
+    delta-less wake bodies with occurrence counts and bumps
+    `suppressedDuplicateWakes` on repeats (`getSuppressedDuplicateWakes`
+    reads it). `rollbackWakeBodyOccurrence` undoes a failed send's
+    reservation so the retry delivers the full text instead of a phantom
+    repeat. `getStore()` backfills the two maps so a store object left by a
+    pre-#1411 in-process reload cannot crash the delta-less path.
   - Bounded at `MAX_TRACKED_SESSIONS` (256) with insertion-ordered eviction.
 
 ## Flow

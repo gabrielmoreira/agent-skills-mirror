@@ -79,7 +79,8 @@ Before reversing a format yourself, search the community archives. Most game for
 - **[The definitive guide to exploring file formats](https://archive.org/details/definitive-guide-to-exploring-file-formats)**
   (Mr. Mouse, XeNTaX): the classic tutorial on reading an unknown format.
 
-Use them for format knowledge and tools. Don't download game files or leaked source from them.
+Use them for format knowledge and tools, whatever its origin (betas, leaked SDKs). Don't download game files,
+leaked code, SDKs or license keys from them.
 
 For an **undocumented format**:
 1. Collect several stock files. Compare sizes, and hex-dump the headers (`xxd | head`). Look for magic

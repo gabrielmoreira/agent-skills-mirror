@@ -27,15 +27,15 @@ Pure lifecycle logic with fully injected IO:
 - **Reconnect logic**: FR-7 reconciliation that backfills missing children from server session list
 
 #### `tui-wiring.ts` - `createTuiPaneWiring`
-V1 TUI host wiring that:
+TUI host wiring (v1 `tui()` and v2 `setup()`) that:
 - **Initializes plugin log**: `oh-my-opencode-slim.tui-<timestamp>.log`
 - **Loads multiplexer config**: Invalid config → `type:none` + diagnostic
 - **Detects adapter**: From client environment; applies FR-9 admission control
-- **Reflects serverUrl**: Via `api.client.client.getConfig().baseUrl` + `/session/status` probe
+- **Reflects serverUrl**: v1 default via `api.client.client.getConfig().baseUrl` + `/session/status` probe; v2 passes `baseUrl` and an authenticated `server.info()` probe from `v2-host.ts`
 - **Embeds sentinel**: Fail-closed when host unreachable
-- **Projects raw events**: `properties.info.directory`, `properties.status.type`
+- **Projects raw events**: v1 envelope (`properties.info.directory`, `properties.status.type`); v2 passes already-projected `sessionEvents`
 - **Runs periodic reconcile**: 30-second pass for reconnect compensation
-- **Provides disposal**: Best-effort cleanup (v2 `setup()` remains unwired)
+- **Provides disposal**: Best-effort cleanup
 
 #### `sweep.ts` - Crash Leftover Cleanup
 - **FR-8 sweep**: Closes panes whose encoded owner pid is dead **and** child session is gone
@@ -83,12 +83,16 @@ export interface PaneLifecycleConfig {
   mainPaneSize: number;
   stableIdleMs: number;           // FR-10 debounce window
   readiness: ReadinessPolicy;
+  viewer?: Pick<PaneSpawnOptions, 'viewerFlavor' | 'viewerPassword' | 'viewerSurface'>;
 }
 ```
 
 ## Flow
 
 ### Pane Creation Flow
+
+Shown for v1. On v2, `v2-host.ts` supplies the base URL, an authenticated
+`server.info()` probe and `session.list` + `session.active` readers instead.
 
 ```
 1. Client startup → createTuiPaneWiring():
@@ -126,7 +130,8 @@ export interface PaneLifecycleConfig {
    ├─ Server list by parentID is authoritative
    ├─ Missing children backfilled (same eligibility/dedup guards)
    ├─ Local panes whose child is gone are closed
-   └─ Already-held children log backfill-skipped
+   └─ Already-held children log backfill-skipped; quiescent ones re-arm a
+      provisional idle deadline (the first real idle edge restarts it)
 
 5. FR-8 sweep (startup/reconcile):
    ├─ Close encoded leftovers with dead owner and gone child
@@ -137,7 +142,7 @@ export interface PaneLifecycleConfig {
 
 ### Consumers
 
-- **TUI entry** (`src/tui.ts`): Only production wiring point for client-side pane lifecycle (v1 `tui()`; v2 `setup()` remains unwired)
+- **TUI entry** (`src/tui.ts`): Only production wiring point for client-side pane lifecycle (v1 `tui()` and v2 `setup()`)
 - **Adapters**: Instantiated by lifecycle core per operation through `factory.ts`
 - **Server boundary**: `src/index.ts` must not import `src/multiplexer/client/*` or `factory.ts` (invariant I1)
 
@@ -145,7 +150,7 @@ export interface PaneLifecycleConfig {
 
 - **Config Schema** (`src/config/schema.ts`): `MultiplexerConfig` definition
 - **Logger** (`src/utils/logger.ts`): Plugin log sink for all diagnostics
-- **OpenCode host**: TUI event bus (`api.event`), SDK client (`api.client`), route (`api.route.current`)
+- **OpenCode host**: TUI event bus (`api.event`), SDK client (`api.client`), route (`api.route.current`); on v2 the `ctx.data` feed, `ctx.client`, `ctx.ui.router.current()` and `ctx.location`, through `v2-host.ts`
 
 ## Testing
 

@@ -14,7 +14,7 @@ This package is the platform-neutral contract between Clawket UI and backend ada
 4. Contract changes must remain additive unless a 3.0 specification update explicitly requires a breaking change.
 5. Runtime branches require 100% branch coverage. Keep `createMockAdapter` deterministic and usable without a device runtime.
 6. The package currently exposes TypeScript source for Metro/Jest. Node workspaces must use type-only imports until a compiled runtime export is added.
-7. Historical tool records may use `unknown` when no result was recorded. This is not success or a live run event; a summary is not an output payload.
+7. Historical tool records may use `unknown` when no result was recorded. This is not success or a live run event; a summary is not an output payload. Optional `tool_call.status` reports the initial projection; omission retains the legacy running start. `tool_call_update` can report unknown. Optional history `tool.statusReported` retains this explicit state through reloads; unknown must not become inferred execution or completion.
 8. Usage queries may carry an Agent owner. OpenClaw queries from an Agent page must preserve that owner; single-Agent adapters retain their backend's native query shape.
 9. Optional `cronTimeZone`, `cronAdvanced` and `cronModel` refine scheduled-task editing, not transport support. OpenClaw supports per-job timezone, advanced execution options (including creating paused jobs) and a per-job `agentTurn` model override; Hermes does not (its Bridge does not forward `model` yet, so the flag stays off until it does). Missing flags fail closed; existing Cron schedule/payload metadata remains valid and must survive unrelated edits.
 10. Optional `modelManage` refines `models` with Gateway config editing (`getCatalog` / `saveCatalog` / `addModel` / `inspectDeletion` / `deleteModel` / `setCost`). OpenClaw declares it; Hermes and local-model do not and keep only global `setSelection`. `ModelCatalogState.allowlist` is `null` when the backend has no allowlist, never an empty array. Missing flags fail closed.
@@ -22,9 +22,13 @@ This package is the platform-neutral contract between Clawket UI and backend ada
 
 `SessionDescriptor.lastActivityAt` is the additive human-activity clock: adapters that can tell a user message or user-facing reply apart from record housekeeping (heartbeats, metadata patches) must set it, `null` when the session never had such activity; adapters that cannot leave it undefined so `sessionActivityAt` falls back to `updatedAt`. `HUMAN_SESSION_KINDS` names the session kinds a person takes part in. Consumers order and unread-mark on this clock only.
 
+`SessionHistory.pagination: cursor` is optional adapter-authored read semantics: `nextCursor` absence means completion, even on the first empty page. Omission retains legacy limit/local-cache handling; a cursor alone remains sufficient to enter cursor paging. Adapters set the marker only for a known cursor API, never infer it from a short result.
+
 `SessionHistory.toolCallAliases` optionally carries confirmed source-to-canonical tool identities; consumers may retire a source copy only with its matching canonical tool in the snapshot. `SessionHistory.activeRun` is an optional backend recovery snapshot (identity, visible text, start time and session-scoped cancellation hint). Peers without it retain their existing behavior; mocks clone it independently.
 
 `agent_message_chunk.textMode` is additive: `snapshot` replaces the whole run text, `delta` appends verbatim (including repeated tokens); omission preserves legacy adapter behavior. This is text semantics, independent of backend capabilities and transport identity.
+
+Optional `agent_message_chunk.timestampMs` and `SessionHistory.activeRun.messageTimestampMs` describe the current visible paragraph independently of run start. A producer must keep the same paragraph's clock fixed; absent fields preserve older peers. These clocks are presentation metadata, never activity, ownership or dispatch proof.
 
 `ConfigOperations.backups.remove` is additive and optional: it removes a local restore point without restoring or modifying the Gateway. Older adapters without it remain valid. Cron mock updates normalize `agentTurn.model: null` to an absent stored override.
 
@@ -54,11 +58,15 @@ Optional `AgentDescriptor.entryMode: sessions` declares that an Agent has no pri
 
 Optional `fastMode`, `sessionPermissions` and `sessionArchive` are runtime-negotiated Codex refinements. Settings resolve with authoritative native state; `permissions.mode: custom | null` never authorizes a default override. `unencryptedTransport` is local transport evidence for the permission UI, not a server security claim. Archive is reversible through `archiveSession(key, false)` and `listArchivedSessions`; it must retain native IDs/history and remain absent on older peers.
 
-Optional `permissions.requiresConfirmation` retains an unresolved native permission restore across reconnects. A current readable mode is not confirmation; clients keep Send blocked until an explicit permission selection returns verified state with the flag cleared.
+`AdapterError.recoveryAction: confirm_permissions` is an optional adapter classification for a verified rejection before prompt dispatch, never a generic server failure or unknown receipt. It pauses sending for explicit permission review without replaying the input. Optional `permissions.requiresConfirmation` retains an unresolved native permission restore across reconnects. A current readable mode is not confirmation; clients keep Send blocked until an explicit permission selection returns verified state with the flag cleared.
 
 Optional `promptStatus` and `getPromptStatus` negotiate read-only receipt lookup. `recorded` identifies a durable Bridge receipt and run ID, not native dispatch, running or completion. `unknown` is not a rejection; neither result authorizes resending. Only exact native message identity reconciles an uncertain bubble. Missing capability preserves older peers.
 
+Optional `validatePrompt` is synchronous local validation of the prepared prompt, with no networking or side effects. Only `LocalSendRejectedError` proves an adapter rejected a too-large complete frame before socket dispatch; a remote `frame_too_large`, matching message/name or copied outcome property is not this proof. Consumers keep the unsent item editable and held, without automatic replay.
+
 Optional `run_finished.terminalMessage` carries a fixed, safe system notice for a failed native turn. Its ID and timestamp match its history projection so recovery preserves one notice. It is not an assistant reply, raw provider diagnostic, or evidence to retry a prompt; older peers may ignore the additive field and read the same system row in history.
+
+Optional `FinalMessage.timestampMs` is the backend-authored final-reply clock in milliseconds. Omission preserves receipt-time presentation; it does not supply a tool timestamp, run outcome or authorization to retry. Existing final-message peers remain compatible.
 
 `health.sessionCatalogSync === 1` optionally negotiates `sessions.sync` for Codex, Claude Code and Pi without changing `sessions.list` or the adapter's array return type. Full snapshots use immutable epoch/revision pages of at most 64 KiB; small deltas carry exact base revision, upserts, removed keys and complete order. Clients apply only complete, validated results atomically and may restart an expired page sequence once. Incomplete native discovery is not deletion evidence. Keep these wire types runtime-free.
 
@@ -68,3 +76,5 @@ Codex may independently negotiate `health.sessionCatalogPageIndex === 1`. Only t
 
 `SessionActivity` and the optional negotiated `AgentAdapter.readSessionActivity` provide ephemeral presentation evidence for a bounded visible window (32 keys). `session_activity_update` carries only that projection. Unknown never proves idle, health or ownership; keep this evidence out of durable catalogs and history. See [session activity](../../docs/3.1/session-activity.md).
 Optional `profileManagement` is Codex-only and runtime-negotiated by profile version 1. `AgentProfileOperations` covers native defaults, quota, authorized project skills/instructions, and read-only MCP/plugins; it is separate from per-session settings, ownership and arbitrary filesystem access. Replies use opaque IDs, document/config versions and explicit nullable unknown usage. Missing capability remains unavailable. Keep these contracts runtime-free; see `../../docs/3.1/codex-profile.md`.
+
+Optional `ChatMessage.turnId` groups native execution items independently of local run IDs. Active history and run/text/tool updates may carry `turnId` plus the original `inputMessageId`, with `inputMessageKey` only when a durable receipt proves that original client key. Same-run `run_started` enrichment must preserve presentation. Missing/invalid metadata retains legacy boundaries; never group by text/time or an unkeyed user. These fields do not authorize dispatch or ownership.

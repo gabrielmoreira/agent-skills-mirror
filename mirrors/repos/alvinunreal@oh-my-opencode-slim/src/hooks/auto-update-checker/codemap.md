@@ -24,6 +24,7 @@ The folder implements an **OpenCode plugin hook** that observes the `session.cre
 |--------|---------|------------------|
 | `index.ts` | Main hook factory and update orchestrator | `createAutoUpdateCheckerHook()`, `runBackgroundUpdateCheck()` |
 | `checker.ts` | Version checking and compatibility logic | `getLatestCompatibleVersion()`, `extractChannel()`, version parsing and comparison |
+| `cache.ts` | Install-dir resolution, staging/publish, cross-process install lock | `resolveInstallContext()`, `preparePackageUpdate()`, `publishPackageUpdate()`, `acquirePackageUpdateLock()` |
 | `constants.ts` | Configuration constants and paths | `PACKAGE_NAME`, `NPM_REGISTRY_URL`, `CACHE_DIR` |
 | `types.ts` | TypeScript interfaces and types | `AutoUpdateCheckerOptions`, `CompatibleVersionResult`, `PluginEntryInfo` |
 | `skill-sync.ts` | Skill synchronization from package updates | `syncBundledSkillsFromPackage()`, atomic staging with rename |
@@ -97,13 +98,20 @@ Notify: Success/failure via OpenCode TUI toast
 8. If current == latest: Log and exit
 9. If pinned: Show pinned version notification
 10. If auto-update disabled: Show notification only
-11. Prepare package update in cache directory
-12. Run package-manager install (OpenCode's embedded bun, bun, or npm) with 300s timeout
-13. If install succeeds:
+11. Acquire the cross-process install lock for the target install dir
+    (PID-guarded dir lock, async wait up to install timeout + slack);
+    skip quietly on timeout
+12. Under the lock: re-verify the target install dir; if another process
+    already installed the version, redirect installer-managed configs
+    (surfacing redirect errors) and show the restart toast
+13. Prepare package update in cache directory
+14. Run package-manager install (OpenCode's embedded bun, bun, or npm) with 300s timeout
+15. Release the install lock (finally)
+16. If install succeeds:
     - Sync bundled skills from package
     - Update companion if enabled
     - Show success toast with version diff and changes
-14. If install fails: Show error toast
+17. If install fails: Show error toast
 ```
 
 ### Skill Synchronization Flow (skill-sync.ts)

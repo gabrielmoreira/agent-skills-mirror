@@ -1,16 +1,16 @@
 ---
 name: reverse-engineer-anything
-description: Reverse engineer native, managed, Electron/JavaScript, packaged, and browser applications with REA. Use shipped-artifact or approved runtime evidence to explain features, compare versions, decompile code, or guide a reconstruction. Skip REA for ordinary source-repository architecture analysis.
+description: Reverse engineer native, managed, Electron/JavaScript, packaged, and browser applications with REA. Use shipped-artifact or requested runtime evidence to explain features, compare versions, decompile code, or guide a reconstruction. Skip REA for ordinary source-repository architecture analysis.
 metadata:
-  version: "23"
-  tool_count: 122
-  catalog_digest: "39c2c4c55c1197e5a8c05c829bf9ba024d2508ed3a59b672f95c5ed19c016a5c"
+  version: "24"
+  tool_count: 116
+  catalog_digest: "5bb3f994a3c4d0c87a34ff5aab4e28141b5fa6f3a98b5ae7e95686d85d9d983e"
 ---
 
 # REA
 
 Use REA when a claim depends on a shipped binary or package, decompilation,
-passive application runtime evidence, controlled replay, or comparison with
+passive application runtime evidence, or comparison with
 behavior not established by available source. For ordinary analysis of a
 complete source repository, use normal repository tools and do not run REA
 readiness or provider commands.
@@ -50,8 +50,12 @@ returned result leaves a specific question unanswered.
 
 Every conclusion must distinguish observations, inferences, and unknowns. Cite
 Evidence IDs, preserve limitations and incomplete coverage, and never imply
-that static analysis observed execution. Ask for approval only where a tool or
-policy requires it; approval never broadens a different authority boundary.
+that static analysis observed execution. Runtime requests execute the declared
+target and lifecycle; do not broaden the target or action beyond those fields.
+
+Within the user's requested investigation, call available analysis tools
+directly. REA does not require permission grants or per-call approval flags.
+Follow the declared request scope and the host's actual access requirements.
 
 ## Plan broader investigations
 
@@ -71,8 +75,10 @@ For requests that span multiple features or subsystems, use a staged workflow:
    they affect the question. Use format-aware inventory and parsers; do not
    infer behavior from filenames, strings, or layout alone.
 5. Corroborate a conclusion with the evidence type it requires. Use runtime
-   observation or controlled replay only when static evidence cannot answer the
-   question and the required authority is available.
+   observation only when static evidence cannot answer the question and the
+   required host runtime and OS access are available. For JavaScript behavior,
+   run probes against the actual app through the available browser, Electron,
+   or process capture workflow.
 6. Decompose work into independent questions. When parallel workers are
    available and the questions do not depend on one another, assign distinct
    scopes, point workers to existing evidence, and ask them to return sources,
@@ -96,8 +102,6 @@ as complete while required questions remain open.
   [references/runtime-observation.md](references/runtime-observation.md)
 - Evidence paging, comparisons, residual unknowns, and verification:
   [references/evidence-workflows.md](references/evidence-workflows.md)
-- Controlled JavaScript replay:
-  [references/controlled-replay.md](references/controlled-replay.md)
 
 ## Readiness and setup
 

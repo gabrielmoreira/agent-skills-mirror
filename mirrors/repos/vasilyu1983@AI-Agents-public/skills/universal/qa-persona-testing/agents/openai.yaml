@@ -1,0 +1,4 @@
+interface:
+  display_name: "Persona Testing"
+  short_description: "Test apps as an ICP persona and report friction, fixes, and risks"
+  default_prompt: "Use $qa-persona-testing when testing apps as an ICP persona through browser automation, running persona-based or synthetic-user testing, and reporting friction, fixes, and risks."

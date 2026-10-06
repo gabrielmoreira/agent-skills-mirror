@@ -1,7 +1,8 @@
 ---
 name: sharepoint-compare-publication-state
 plugin: sharepoint-site-build-and-publish
-description: Read-only comparison of an expected UploadPackage against the actual observed SharePoint library state (a CSV export), reporting missing, duplicate, mismatched or unexpected items. Use after an upload to check that the library matches the package. Reports differences only: applies no fixes and performs no tenant I/O.
+description: >-
+  Read-only comparison of an expected UploadPackage against the actual observed SharePoint library state (a CSV export), reporting missing, duplicate, mismatched or unexpected items. Use after an upload to check that the library matches the package. Reports differences only: applies no fixes and performs no tenant I/O.
 allowed-tools: Bash, Read
 examples:
   - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); from sharepoint_reconcile import load_actual_state_from_csv, reconcile; print(reconcile(pkg, load_actual_state_from_csv('actual.csv')))\""

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `sleekdotdesign/agent-skills` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `sleekdotdesign/agent-skills` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `sleekdotdesign/agent-skills` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,7 +59,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/design-mobile-apps/SKILL.md`](skills/design-mobile-apps/SKILL.md) |
+| 1 | ✓ | [`skills/design-mobile-apps/designing.md`](skills/design-mobile-apps/designing.md) |
+| 2 | ✓ | [`skills/design-mobile-apps/endpoints.md`](skills/design-mobile-apps/endpoints.md) |
+| 3 | ✓ | [`skills/design-mobile-apps/implementing.md`](skills/design-mobile-apps/implementing.md) |
+| 4 | ✓ | [`skills/design-mobile-apps/SKILL.md`](skills/design-mobile-apps/SKILL.md) |
+| 5 | ✓ | [`skills/design-mobile-apps/styling/nativewind.md`](skills/design-mobile-apps/styling/nativewind.md) |
+| 6 | ✓ | [`skills/design-mobile-apps/styling/stylesheet.md`](skills/design-mobile-apps/styling/stylesheet.md) |
+| 7 | ✓ | [`skills/design-mobile-apps/styling/uniwind.md`](skills/design-mobile-apps/styling/uniwind.md) |
 
 ---
 

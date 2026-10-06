@@ -38,7 +38,7 @@ from `index.ts`) that returns the hook points OpenCode invokes.
 
 | Category | Factories | Hook points |
 |---|---|---|
-| Prompt transforms | `createPhaseReminderHook`, `createChatHeadersHook`, task-session-manager board injection, `processImageAttachments` | `experimental.chat.messages.transform`, `chat.headers` |
+| Prompt transforms | `createPhaseReminderHook`, `createCouncilInjectHook`, `createChatHeadersHook`, task-session-manager board injection, `processImageAttachments` | `experimental.chat.messages.transform`, `chat.headers` |
 | Tool interception | `createApplyPatchHook` (tool), `createSearchPathGuardHook`, task-session-manager | `tool.execute.before` / `tool.execute.after` |
 | Error recovery | `createJsonErrorRecoveryHook`, `createAutoUpdateCheckerHook` | message transform, tool-execute after |
 | Lifecycle/event | task-session-manager, `createCacheMonitorHook`, `createOrchestratorWakeScheduler` | `event` |
@@ -52,10 +52,12 @@ from `index.ts`) that returns the hook points OpenCode invokes.
 ```
 1. OpenCode receives chat messages
 2. Plugin's experimental.chat.messages.transform hook is invoked (src/index.ts
-   composes: apply-patch → phase-reminder → task-session-manager board
-   injection, in that order)
-3. Task-session-manager first stabilizes still-running task tool parts, then
-   rehydrates historical running tasks, then injects the Background Job Board
+   composes: task-session-manager → phase-reminder → council-inject →
+   task-session-manager board injection, in that order)
+3. Task-session-manager first repairs session mappings; phase-reminder then
+   injects the per-turn scheduler reminder (gated); council-inject then
+   appends the Council Mode block on keyword-triggered orchestrator turns
+   (gated); finally task-session-manager injects the Background Job Board
    via cache-safe helpers
 4. Transformed messages are sent to the model
 5. chat.headers is forwarded to OpenCode's header slot (v1 hosts; on v2

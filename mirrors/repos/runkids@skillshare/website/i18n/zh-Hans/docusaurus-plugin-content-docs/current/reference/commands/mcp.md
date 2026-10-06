@@ -917,10 +917,13 @@ Pi 1.0.1 起，Pi 的 `/mcp` 可以在项目中添加只有 `enabled`、`exposur
 同名的 server，或不是同步写入的覆盖与 `disabled` 条目不同，同步会报告冲突，直到你替换该条目，或在 Pi
 中移除这个覆盖。
 
+Pi 1.0.4 的 `--no-mcp` 可停用单次运行的 MCP；`--tools` 只有在选项以 `mcp__` 开头时才筛选 MCP 工具。同步后仍无法使用服务器时，请检查这些启动参数。
+
 ### 其他 Pi 设置 {#pi-options}
 
 `piOptions` 保存 Pi 内置 MCP 的其他单个 server 字段。只有 Pi 会收到它们。
 
+- `oauth.clientRegistration` 接受 `dcr`（Pi 默认）或 `cimd`（Pi 1.0.1+）。使用 `cimd` 时不可设置 `clientId` 或 `clientName`；`callbackUrl` 必须使用 HTTP、主机为 `localhost` 或 `127.0.0.1`，路径为 `/callback`。授权服务器必须支持公开客户端的 CIMD。
 - `exposure` 接受 `codemode`（Pi 默认）、`codemode-deferred`（`codemode` 的旧名称）、
   `deferred`、`direct` 或 `hidden`。`toolExposure` 把工具名称或通配符映射到上述某个值：精确名称优先，
   其次是第一个匹配的通配符。导入和 JSON/YAML 转换会保留通配符的顺序。`exposure` 也决定

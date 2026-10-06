@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `LearnPrompt/awesome-seedance` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
+Mirror of `LearnPrompt/awesome-seedance` — 26 default patterns, 0 followed patterns, 42 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `LearnPrompt/awesome-seedance` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 39 |
+| Files         | 42 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -98,6 +98,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 37 | ✓ | [`agents/skills/seedance-storyboard-grid-to-video/SKILL.md`](agents/skills/seedance-storyboard-grid-to-video/SKILL.md) |
 | 38 | ✓ | [`agents/skills/seedance-travel-city-walk/references/cases.md`](agents/skills/seedance-travel-city-walk/references/cases.md) |
 | 39 | ✓ | [`agents/skills/seedance-travel-city-walk/SKILL.md`](agents/skills/seedance-travel-city-walk/SKILL.md) |
+| 40 | ✓ | [`docs/skills.ja.md`](docs/skills.ja.md) |
+| 41 | ✓ | [`docs/skills.md`](docs/skills.md) |
+| 42 | ✓ | [`docs/skills.zh.md`](docs/skills.zh.md) |
 
 ---
 

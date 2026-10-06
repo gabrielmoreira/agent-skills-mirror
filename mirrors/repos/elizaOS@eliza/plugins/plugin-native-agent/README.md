@@ -58,8 +58,10 @@ test exercises real permissions and fsync, including invalid targets.
 `native-host/android-runtime-inventory.mjs` stages the matching Android bundle
 inventory from an explicit agent asset directory and native library directory.
 Archive blobs preserve gzip bytes through aapt and install beside the immutable
-bundle for PGlite. Hosts supply exact directory exclusions and package the
-returned inventory plus assets. This does not sign or authorize a release.
+bundle for PGlite. Hosts supply exact directory exclusions and an optional
+inventory `format` (default `eliza-runtime-v1`), and package the returned
+`assets/agent-runtime.inventory` plus assets. Hosts using ota-trust declare the same
+format and exclusions in their host policy. This does not sign or authorize a release.
 The native host suite consumes a Node-produced inventory with the actual Java
 extractor and checks restart reuse, archive bytes and tamper rejection.
 
@@ -231,3 +233,28 @@ cleanup and cancellation between startup stages.
 same verified immutable bundle preparation path. Hosts retain asset names,
 required library lists, storage layout and inventory format; presence does not
 establish integrity or readiness.
+
+Source-checkout consumers can use `scripts/updater-contract-fixtures.mjs` to stage
+or run the five portable updater contracts in their adapter namespace. This keeps
+all assertions and subprocess crash cases upstream while exercising the actual
+consumer adapters, including static imports. The caller owns the temporary
+directory when staging, or supplies a compiler/JVM budget to the runner, which
+owns temporary-directory cleanup and propagates compilation/assertion failures.
+Staging rejects unknown fixtures, invalid packages and existing output files; it never rewrites production source.
+
+`RuntimeRequestDispatcher` shares bounded normal/urgent-control queues, serialized-body admission and destruction cleanup. Pause/cancel/abort work uses a separate single-worker lane. Defaults preserve four normal workers, sixteen queued normal requests and eight queued controls; hosts can configure queue bounds. Body limits count UTF-16 serialized JSON units; transport byte limits and route/authentication policy remain mandatory. Rejected work is never retried. `close()` interrupts active work and discards queued work. Portable contracts cover saturation, urgent progress, size boundaries and teardown.
+
+`runtime.EmbeddedRuntimeService` integrates the existing NativeRuntimeSession and
+EmbeddedRuntimeGroup with Android Service lifecycle, foreground dispatch, status,
+endpoint-bound requests and local health snapshots. Subclasses provide the private
+runtime root, notification UI/identity, launch commands and timing/size policy.
+Product wrappers retain asset admission, route allowlists, credentials and provider
+configuration. Static adapters use the concrete service class so replacement and
+shutdown invalidate old requests without retargeting them. No start is triggered by
+status or health reads. Consumer instrumentation should exercise actual failure,
+restart, stop and health wiring separately from real configured-runtime acceptance.
+
+Hosts that capture an endpoint before request admission must use the snapshot-bound
+`NativeRuntimeSession.request(snapshot, ...)` overload. Capture the snapshot before
+selecting the endpoint; a lifecycle change then rejects transport admission instead
+of allowing a stale endpoint to inherit a newer running epoch.

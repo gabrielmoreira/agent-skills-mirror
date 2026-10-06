@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Full-Stack-Skills is the **navigation hub and catalog** for 774 Agent Skills across 50 independently installable packages. Originally a monorepo, all skills were migrated to individual repos in the [full-stack-skills](https://github.com/full-stack-skills) GitHub organization in June 2026. This repo now serves as:
+Full-Stack-Skills is the **navigation hub and catalog** for 788 Agent Skills across 51 independently installable packages. Originally a monorepo, all skills were migrated to individual repos in the [full-stack-skills](https://github.com/full-stack-skills) GitHub organization in June 2026. This repo now serves as:
 
 - **Catalog**: README tables linking to all skill packages with install commands
 - **Documentation**: Agent specs, platform guides, role definitions, ecosystem mappings
@@ -44,17 +44,15 @@ npx skills add full-stack-skills/vue-skills          # Install a full package
 npx skills add full-stack-skills/vue-skills --skill vue3  # Install a single skill
 ```
 
-Or via Claude Code's plugin system:
-```
-/plugin marketplace add partme-ai/full-stack-skills
-```
+For tool integrations, consult the separate plugin marketplace and its host-specific instructions:
+[Full Stack Plugins installation guide](https://github.com/partme-ai/full-stack-plugins#install)
 
 ## Ecosystem Map
 
 | Repo | Role |
 |------|------|
 | **full-stack-skills** (this repo) | Catalog, docs, ecosystem mappings |
-| [full-stack-skills/*](https://github.com/full-stack-skills) | 50 individual skill packages (vue-skills, tauri-skills, etc.) |
+| [full-stack-skills/*](https://github.com/full-stack-skills) | 51 individual skill packages (vue-skills, tauri-skills, etc.) |
 | [t2ui-skills](https://github.com/full-stack-skills/t2ui-skills) | PRD → ASCII UI translation, Stitch/Pencil design languages |
 | [stitch-skills](https://github.com/full-stack-skills/stitch-skills) | Stitch design language → prototypes |
 | [pencil-skills](https://github.com/full-stack-skills/pencil-skills) | Pencil design language → product diagrams (.pen) |
@@ -83,9 +81,9 @@ Skills live in individual package repos now, not here. If you need to work on a 
 3. SKILL.md must be under 500 lines; reference material goes in `references/`
 4. `description` is the trigger mechanism — write it to describe *when* the skill activates, not just what it is
 
-### Stale files
-Several files reference the old monorepo structure and are no longer accurate:
-- `QUICKSTART.md` — references `.claude-plugin/marketplace.json` which was removed during migration
+### Documentation status
+Use the current installation guide; older architecture records describe pre-migration layouts:
+- `QUICKSTART.md` — current skill installation guide; do not restore removed adapters or marketplace files
 - `docs/repository-map.md` — describes pre-migration state (42 groups, 422 skills in-repo)
 
 ## Important Constraints

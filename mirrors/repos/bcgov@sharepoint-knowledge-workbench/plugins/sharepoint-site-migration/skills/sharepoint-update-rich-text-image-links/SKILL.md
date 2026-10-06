@@ -42,6 +42,10 @@ print(generate_gap_report(plan))   # reviewer-facing report, before any write
 
 ## Workflow
 
+The recursive file inventory and Python page/document link CSV can inform this workflow, but
+neither substitutes for the actual rich-text field values or verified destination image files.
+Remain within field-image remediation. See [bulk content workflow](references/bulk-content-link-workflow.md).
+
 1. Get the field values and a destination inventory from the caller.
 2. Plan, then show `generate_gap_report(plan)` to the user; it names every `missing` and `matched` item individually.
 3. After review, apply: `apply_field_image_remediation(plan, executor=..., dry_run=False, confirm=plan.confirmation_token)`.

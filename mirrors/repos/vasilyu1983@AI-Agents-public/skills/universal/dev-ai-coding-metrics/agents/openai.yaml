@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Coding Metrics for Engineering Teams"
+  short_description: "Measures AI coding impact, extension robustness, quality, delivery, and cost"
+  default_prompt: "Use $dev-ai-coding-metrics to measure AI coding impact, extension robustness, delivery, quality trajectories, cost, and developer experience for pilots, ROI scorecards, and leadership reports."

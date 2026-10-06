@@ -20,7 +20,7 @@ Assets are CC0, CC BY or OFL only, each in `demo/CREDITS`. No watermark on any f
 ## Register
 
 1. **Number.** `num` in `style.json` is the next free number after the highest in `styles/*/style.json` (two digits as a string, e.g. `"55"`); it orders the gallery within a category.
-2. `python3 styleboard/build.py` reads every `styles/*/style.json` and rewrites the gallery data, the README grid and counts, `styles/README.md` and the style list in `AGENTS.md`. Never edit those generated parts by hand. Then `python3 styleboard/build.py --frames <slug>` (the README grid frame at `frame_sec`) and `sh styleboard/frames.sh <slug>` (the gallery card from `demo/stills/styleframe.jpg`).
+2. `python3 styleboard/build.py` reads every `styles/*/style.json` and rewrites the gallery data, the grids and counts in `README.md` (English) and `README.zh-CN.md` (Chinese), `styles/README.md` and the style list in `AGENTS.md`. Never edit those generated parts by hand. The rest of the two READMEs is written by hand: change both together (e.g. the **New** line). Then `python3 styleboard/build.py --frames <slug>` (the README grid frame at `frame_sec`) and `sh styleboard/frames.sh <slug>` (the gallery card from `demo/stills/styleframe.jpg`).
 3. `sh tools/web_cuts.sh` makes the 720p web cut in `.release/web/` (only for films that are new or changed).
 
 ## Gates

@@ -9,15 +9,13 @@ invalid, and keeps live-server state `unknown` unless the active connection
 supplies identity.
 
 Canonical tool names remain stable, while `tools/list` advertises only the
-operations callable for the current target, provider, policy, host, and
+operations callable for the current target, provider, host, and
 negotiated client capabilities. `binary_session.tool_availability` remains the
 complete inventory: it explains advertised and hidden operations with stable
 availability reasons and remediation. Each entry also reports required and
-optional negotiated client features plus the currently missing features. Form elicitation is optional for
-`capture_process_scenario`: an existing grant remains usable without it, while
-a missing grant cannot be elicited by a client that does not advertise it.
-Opening or closing a target, reloading policy, or observing a provider health
-transition emits `notifications/tools/list_changed`.
+optional negotiated client features plus the currently missing features.
+Opening or closing a target or observing a provider health transition emits
+`notifications/tools/list_changed`.
 
 `binary_session.analysis_provider_candidates` is authoritative for deep-engine
 discovery. Target-free discovery is sorted by provider ID, reports host
@@ -57,8 +55,13 @@ shutdown rules still apply; REA never kills a process it cannot prove it owns.
 
 ## Tool results
 
-Evidence-producing tools return their result and Evidence context inline. Read
-that result directly. Use `get_evidence_bundle` when the task needs broader
+Evidence-producing tools return `{ result, evidence_id, evidence }` in both
+text and structured content. `evidence` is the complete canonical Evidence
+record, including `normalized_result`, which equals `result`. The same record
+is retained in the session bundle. Read `result` directly, or pass `evidence`
+to a compatible comparison tool: `analyze_function` Evidence can be passed
+directly to `compare_functions`, and `inspect_artifact` Evidence to
+`compare_artifacts`. Use `get_evidence_bundle` when the task needs broader
 retained session history or an explicit bundle for transfer.
 
 ## Aggregate native context
@@ -74,65 +77,47 @@ unsupported facets are local `unavailable` outcomes. Use `current_document`,
 `current_address`, and `current_procedure` for direct single-field lookups; use
 the aggregate tools when you need related context together.
 
-## Permission policy
+## Request scope and local effects
 
-All local side effects use one scope vocabulary: capability, canonical roots,
-executables, environment variable names, network mode, mount permission, exact
-operation identity, and grant lifetime. Environment values and captured content
-are never part of a grant or denial.
+Each tool request names the target and lifecycle it will use. Browser calls
+carry a loopback CDP endpoint and target ID, with optional origin filters;
+process and Electron scenarios carry the executable, arguments, actions, and
+cleanup behavior; artifact tools carry the input path and requested operation.
+REA runs the declared request directly and does not infer a broader target or
+action from it.
 
-Existing environment settings map to administrator ceilings. They remain the
-maximum authority:
+REA does not require permission grants or per-call approval flags. Setup still
+prints its plan and requires confirmation before changing configuration or
+installing Hopper. MCP clients control their own confirmation UI.
 
-- process roots, executables, environment names, and external networking;
-- native mount enablement.
+Tool annotations describe effects and are hints, not authorization controls
+([MCP ToolAnnotations](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations)).
+`readOnlyHint` includes session state: an analysis call that records additive
+Evidence is marked non-read-only even when it leaves the target unchanged.
+`destructiveHint` describes possible data loss, not ordinary Evidence recording.
+Effect metadata covers possible behavior across supported inputs: DMG inventory
+can launch `hdiutil` and create an owned temporary mount directory; extraction
+creates a fresh output directory on every call. Comparing supplied web captures
+or PNG artifacts uses local data without contacting the browser.
 
-Evidence bundles and analysis snapshots use the path supplied to the CLI or MCP
-tool; they do not require configured roots or separate read/write grants.
+Host requirements remain in force. macOS may deny Accessibility,
+Screen Recording, or native mounting; provider tools require their selected
+analysis runtime. These failures are reported at the operation that needs
+them. A configured provider or an endpoint alone does not establish that a
+target is supported.
 
-Artifact extraction takes no path or occurrence selectors. It materializes all
-regular files into a fresh REA-chosen temporary directory. The write still
-passes through the active permission evaluator; the tool caller does not choose
-an output path.
+Evidence bundles, snapshots, and extraction use the paths and output behavior
+declared by their tools. Artifact extraction materializes the selected regular
+files into a fresh REA-chosen temporary directory and reports its path.
 
-`rea policy status`, `list`, `explain`, and `revoke` inspect the same evaluator
-used by MCP. Optional project grants require both
-`REA_PERMISSION_PROJECT_ROOT` and `REA_PERMISSION_PROJECT_STORE`. The store is
-atomically written with mode `0600`, bound to the canonical project root, and is
-never enabled by default. Send `SIGHUP` to the REA MCP process after a trusted
-project-store change; project grants reload without restarting. Environment
-settings belong to the process environment, so changing an administrator
-ceiling in an MCP registration requires restarting that registered server or
-its owning client.
-Revocation affects future operations; an already-running operation retains the
-decision made at its preflight boundary.
-Once and session grants are connection-local overlays. They cannot authorize a
-second MCP connection, be consumed by another connection, or be cleared when a
-different connection closes. Live connections evaluate those overlays against
-the current process-wide ceilings and persisted grants, including successful
-SIGHUP reloads.
-`rea policy revoke <grant-id>` displays the exact grant and requires interactive
-confirmation; automation must pass `--yes` (or `-y`) explicitly.
-
-Denials use the shared `permission_required` schema with requested scope, missing
-scope, administrator ceiling, elicitation support, and exact restart status.
-Client-provided roots are context only and never grants.
-
-Elicitation can add a once or session grant only inside an existing
-administrator ceiling. A request outside that ceiling reports
-`elicitation_supported: false` and `restart_required: true`; interactive consent
-cannot silently widen administrator policy.
-
-`analyze_javascript_application` reads the supplied local directory or ASAR path directly and returns its result and Evidence inline; no approval flag or root configuration is needed.
+`analyze_javascript_application` reads the supplied local directory or ASAR path
+and returns its result and Evidence inline.
 
 ## Integrity record-and-continue
 
-Artifact integrity remains fail-closed by default. Record-and-continue requires
-all three conditions:
-
-1. operator policy `REA_ARTIFACT_INTEGRITY_CONTINUE_ENABLED=true`;
-2. `integrity_policy=record-and-continue`;
-3. explicit per-call `integrity_continue_approved=true`.
+Artifact integrity fails closed by default. A request can explicitly select
+`integrity_policy=record-and-continue` when the investigation needs verified
+siblings to continue after a mismatch.
 
 Contradictory bytes are quarantined from nested expansion and recorded with
 declared and observed hashes, trust, provenance, path, and unpacked state.

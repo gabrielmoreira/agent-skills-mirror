@@ -190,7 +190,7 @@ and say so.
 `runtime/` is the embeddable composition API: `CoreBuilder` builds a
 `CoreRuntime` in two phases (initialization, then serve); see
 [runtime/README.md](runtime/README.md) for the full builder reference.
-`AGENT_WORKER_STACK_BYTES` (16 MiB) and `MAX_BLOCKING_THREADS` (64) live in
+`AGENT_WORKER_STACK_BYTES` (20 MiB) and `MAX_BLOCKING_THREADS` (64) live in
 `runtime/mod.rs`: a single agent turn is a very large async state machine,
 and delegating to a sub-agent nests another one, which overflows tokio's
 default 2 MiB worker stack; every multi-thread runtime that can host a turn

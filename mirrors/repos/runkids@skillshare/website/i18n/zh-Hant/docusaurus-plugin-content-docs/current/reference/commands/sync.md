@@ -135,6 +135,7 @@ skillshare sync --json
   "ignored_skills": ["_team/vendor/lib", "test-draft"],
   "dry_run": false,
   "duration": "0.234s",
+  "warnings": ["source link _dev-skills not followed: target is missing; kept existing target entries, nothing pruned this run"],
   "details": [
     {
       "name": "claude",
@@ -166,6 +167,8 @@ skillshare sync --json
 ```
 
 `ignored_count` 與 `ignored_skills` 欄位顯示被 `.skillignore`（若存在 `.skillignore.local` 也包含在內）排除的 skills。這些是在 discovery 階段就被篩掉的，永遠不會到達任何 target。當 `.skillignore.local` 生效時，文字輸出會包含 `.local` 來源提示。pattern 語法見 [.skillignore](/docs/reference/appendix/file-structure#skillignore-optional)。
+
+`warnings` 只在第一層的 source 連結未被跟進時出現（見 [`follow_source_links`](../targets/configuration.md#follow_source_links)）。若某次執行因連結目標無法使用而保留了 target 項目，會在這裡說明；這種情況下 `pruned` 刻意保持為 `0`。
 
 ### 發生了什麼
 
