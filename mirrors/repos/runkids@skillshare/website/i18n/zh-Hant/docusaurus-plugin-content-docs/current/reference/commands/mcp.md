@@ -25,6 +25,9 @@ skillshare mcp check --live --timeout 30s
 skillshare mcp remove docs --sync
 skillshare mcp remove docs --keep-files
 skillshare mcp restore BACKUP_ID --dry-run
+skillshare mcp serve
+skillshare mcp serve --target claude --http 127.0.0.1:8765
+skillshare mcp serve --check
 skillshare sync mcp --dry-run --json
 skillshare sync mcp
 skillshare sync --all
@@ -32,7 +35,7 @@ skillshare sync --all
 
 | Option | 意義 |
 |---|---|
-| `--target CLIENT` | 接收端 client；重複指定可選擇多個 clients。`--target none` 會把 server 保留在 Skillshare 中，不寫入任何 client。參見[下方說明](#keep-a-server-without-syncing-it) |
+| `--target CLIENT` | 接收端 client；重複指定可選擇多個 clients。`--target none` 會把 server 保留在 Skillshare 中，不寫入任何 client。參見[下方說明](#keep-a-server-without-syncing-it)。搭配 `serve` 時，`--target NAME` 改為指定一個 skills target；參見[下方說明](#serve-skills-over-mcp) |
 | `--url URL` | `add` 用的 Streamable HTTP 端點 |
 | `-- command args...` | `add` 用的本機執行檔與字面參數 |
 | `--disabled` | Project mode，搭配 `add`：關閉一個由 Agent 的 global config 定義的 server。參見[下方說明](#turn-off-a-global-server-in-one-project) |
@@ -49,6 +52,9 @@ skillshare sync --all
 | `--no-dns` | 搭配 `check` 使用：略過遠端 server 的主機名稱解析。參見[下方說明](#check-servers-before-an-agent-starts-them) |
 | `--live` | 搭配 `check` 使用：另外啟動每個本機 server，並呼叫每個遠端 server。參見[下方說明](#probe-servers-live) |
 | `--timeout DURATION` | 搭配 `check --live` 使用：每個 server 探測的時間上限，例如 `30s`；預設為 `10s` |
+| `--http ADDR` | 搭配 `serve` 使用：在 `ADDR` 上以 Streamable HTTP 監聽，而不使用 stdio。參見[下方說明](#serve-skills-over-mcp) |
+| `--tls-cert FILE`, `--tls-key FILE` | 搭配 `serve --http` 使用：以這組 PEM 憑證與金鑰提供 HTTPS；非 loopback 位址必須設定 |
+| `--check` | 搭配 `serve` 使用：列出會被跳過的 skills 及原因，然後結束，不啟動服務 |
 | `--no-tui` | 停用互動選單；`tui: false`、`--json` 或非終端機輸入/輸出時也會停用 |
 | `--revision ID` | 要求 add、import、remove 或 `sync mcp` 使用相符的 preview |
 | `--global`, `-g` | 使用 global Skillshare 設定 |
@@ -92,7 +98,7 @@ Add、edit、remove 與 import 在 **Save and sync** 或 **Save only** 之前會
 
 Client ID 有 `claude`、`codex`、`cursor`、`vscode`、`opencode`、`kilocode`、
 `grok`、`antigravity`、`amp`、`claude-desktop`、`cline`、`copilot`、`factory`、`gemini`、
-`goose`、`junie`、`kiro`、`lmstudio`、`warp`、`windsurf` 與 `pi`。
+`goose`、`junie`、`kiro`、`lmstudio`、`warp`、`windsurf`、`pi` 與 `omp`。
 `grok` 指的是官方的 xAI Grok CLI。Server 名稱使用字母、
 數字、點、底線與連字號。一個 server 必須直接或透過 `mcp.targets`
 選擇至少一個 client 才能同步，除非它自己的 `targets` 是空清單。
@@ -156,6 +162,7 @@ skillshare mcp edit docs --target claude   # 恢復同步
 | [LM Studio](https://lmstudio.ai/docs/app/mcp) | `~/.lmstudio/mcp.json` | 僅限 Global | `mcpServers` |
 | [Warp](https://docs.warp.dev/agents/capabilities/mcp/) | `~/.warp/.mcp.json` | `.warp/.mcp.json` | `mcpServers` |
 | [Windsurf (Cascade)](https://docs.devin.ai/desktop/cascade/mcp) | `~/.codeium/windsurf/mcp_config.json` | 僅限 Global | `mcpServers` |
+| [Oh My Pi (OMP)](https://github.com/can1357/oh-my-pi/blob/v18.6.1/docs/mcp-config.md) | `~/.omp/agent/mcp.json` | `.omp/mcp.json` | `mcpServers` |
 
 Dashboard 的 server 表單編輯 HTTP headers 的方式與環境變數相同，
 包括 `fromEnv` 參照。Server 選單中的 **View what each Agent gets**，以及其表單中檔案數量旁的同名選項，
@@ -288,7 +295,7 @@ server 核准與驗證仍屬於接收端 Agent 的責任。
 
 ### 某個 Agent 的另一個帳號 {#accounts}
 
-宣告為[某個 Agent 的另一個帳號](/docs/reference/targets/configuration#agent-config-dir)的 target 同時也是 MCP target，適用於 `claude`（`CLAUDE_CONFIG_DIR`）、`codex`（`CODEX_HOME`）與 `pi`（`PI_CODING_AGENT_DIR`）。它的 servers 會以該 Agent 的格式寫入該帳號自己的檔案：Claude 是 `<config_dir>/.claude.json`，Codex 是 `<config_dir>/config.toml`，Pi 是 `<config_dir>/mcp.json`。
+宣告為[某個 Agent 的另一個帳號](/docs/reference/targets/configuration#agent-config-dir)的 target 同時也是 MCP target，適用於 `claude`（`CLAUDE_CONFIG_DIR`）、`codex`（`CODEX_HOME`）、`pi` 與 `omp`（兩者都使用 `PI_CODING_AGENT_DIR`）。它的 servers 會以該 Agent 的格式寫入該帳號自己的檔案：Claude 是 `<config_dir>/.claude.json`，Codex 是 `<config_dir>/config.toml`，Pi 與 OMP 是 `<config_dir>/mcp.json`。
 
 ```yaml
 targets:
@@ -317,7 +324,7 @@ global 檔案中的 server 會在每個 project 中載入。若要讓它在某�
 project 中不要載入，請新增一個**使用該 Agent 的 global 檔案中相同名稱**的項目，
 並標記為 `disabled`。
 
-這只適用於四種 clients：
+這只適用於五種 clients：
 
 | Client | 是否支援 | Skillshare 會寫入什麼 |
 |---|---|---|
@@ -325,10 +332,12 @@ project 中不要載入，請新增一個**使用該 Agent 的 global 檔案中�
 | OpenCode | 是 | `opencode.json`：`"NAME": {"enabled": false}` |
 | Kilo Code | 是 | `kilo.jsonc`：`"NAME": {"enabled": false}` |
 | Pi | 是，Pi 1.0.1 起 | `.pi/mcp.json`: `"NAME": {"enabled": false}`，見下方 |
+| Oh My Pi | 是 | `.omp/mcp.json`：`"NAME": {"enabled": false}` 會遮蔽同名的 user 項目 |
 | Codex | 否 | 見下方說明 |
 | 其他所有 client | 否 | 選擇它會是錯誤；不會寫入任何內容 |
 
-只有開關會被寫入。Agent 仍會沿用其 global 項目中的 command 或 URL。
+只有開關會被寫入。OpenCode、Kilo Code 與 Pi 會沿用 global 項目中的 command 或 URL；
+OMP 會在名稱去重之前先排除已停用的 project 項目，因此同名的 user 項目無法連線。
 其他 clients 之所以被拒絕，是因為它們會用 project 項目整個取代 global
 項目，或是沒有 project 檔案，因此單獨寫入一個開關反而會弄壞
 server，而不是把它關閉。
@@ -689,6 +698,91 @@ dashboard 會讀取目前範圍的 Agent 設定檔，以及 `mcp.projects` 底�
 - 以 source 定義取代它：dashboard 中的 **Replace with source**，或匯入時加上
   `--replace`。
 
+## 透過 MCP 提供 skills {#serve-skills-over-mcp}
+
+```bash
+skillshare mcp serve                                  # stdio，所有啟用的 skills
+skillshare mcp serve --target claude                  # 只提供 claude target 選取的 skills
+SKILLSHARE_MCP_TOKEN=change-me skillshare mcp serve --http 0.0.0.0:8765 \
+  --tls-cert cert.pem --tls-key key.pem               # 以 HTTPS 提供給其他機器
+```
+
+`mcp serve` 是一個唯讀的 MCP server，給無法存取 skills 同步資料夾的 Agent 使用，
+例如在拋棄式 VM 上或位於 MCP gateway 後方的 Agent。它實作
+[Skills extension](https://modelcontextprotocol.io/seps/2640-skills-extension)
+（`io.modelcontextprotocol/skills`，SEP-2640）：`skills/list`、`skills/get` 與
+`resources/read`。每個 skill 是一個項目，其 URI 依照它的 source 路徑，例如
+`skill://_team/tools/pdf/SKILL.md`，並帶有完整的 frontmatter，以及每個檔案的
+`sha256` 摘要與大小。你自己機器上的 Agents 已經透過 `sync` 取得 skills；
+若也把它們連到 `mcp serve`，每個 skill 會出現兩次。
+
+大多數 Agent 還不支援 Skills extension（見下方），所以 server 也提供兩個工具：
+`list_skills` 列出名稱、描述與 URI（`query` 可縮小範圍；一次回應最多列出 200 個），
+`read_skill` 讀取某個 skill 的 `SKILL.md` 或其他檔案，讀取 `SKILL.md` 時也會列出該
+skill 的其他檔案。任何會使用 MCP 工具的 Agent 都能這樣讀取 skills，包括透過會轉送工具的
+gateway。宣告支援 Skills extension 的 client 會原生載入 skills，不會收到這些工具，因此
+不會看到每個 skill 兩次。透過工具讀到的內容對 Agent 而言只是一般文字：Agent 本身的
+skill 核准機制不適用。
+
+- **選取。** 不帶 `--target` 時，會提供所有啟用的 skills。`--target NAME`
+  會套用該 target 的 `include`/`exclude` 篩選與 frontmatter `targets`，不論它的
+  sync mode；skills 一律來自 source。若該 target 關閉了 skills，會是錯誤。
+- **跳過的 skills。** 以下情況的 skill 會被跳過，並在 stderr 顯示警告：它的 `SKILL.md`
+  是連結或不是以 frontmatter 開頭；它的 `name` 違反 Agent Skills 命名規則，或與目錄名稱
+  不同（例如使用 `install --name` 之後）；它的描述缺少或超過 1,024 個字元，或
+  `compatibility` 為空或超過 500 個字元；它有超過 512 個檔案或超過 16 MiB；或它包含一個
+  不會被提供的巢狀 skill。
+  `skillshare mcp serve --check` 會列出這些 skills 及原因，使用相同的選取 flags，
+  然後結束，不啟動服務。
+- **變更。** Source 最多每 5 秒重新讀取一次，所以 `install`、`update`、`enable`
+  與 `disable` 不需重新啟動就會生效。結果帶有 `ttlMs: 5000`。
+- **範圍。** 預設為 global，不論 server 在哪裡啟動。`-p` 會提供目前目錄中的
+  project。
+- **傳輸方式。** 預設為 stdio，供會自行啟動指令的 gateway 或 Agent 使用。
+  `--http ADDR` 提供 Streamable HTTP。非 loopback 位址需要
+  `SKILLSHARE_MCP_TOKEN`，以及透過 `--tls-cert` 與 `--tls-key` 提供的 HTTPS，讓 token
+  永遠不會以明文經過網路；設定 token 後，每個請求都必須送出
+  `Authorization: Bearer <token>`。若要改用 TLS proxy，請綁定 loopback 位址，
+  例如 `127.0.0.1:8765`，並由 proxy 終止 TLS。
+- **安全性。** 只有 skill manifest 中的檔案可以讀取，且讀取範圍限於 skill 目錄內。
+  連結與 `.git` 既不會列出也不會提供。不會執行或寫入任何東西。使用 `--http` 時，
+  跨來源的瀏覽器請求會被拒絕。
+
+要連接 Agent，請像其他 server 一樣新增並同步它。在執行該 Agent 的機器上：
+
+```bash
+skillshare mcp add skillshare --target codex --sync -- skillshare mcp serve --target codex
+```
+
+在 dashboard 中，**新增伺服器** → **Skillshare** 會從你選擇的 skills 組出相同的指令
+（project mode 下會加上 `-p`）；勾選 Agent、儲存並同步即可。編輯該 server 時會開啟同一個分頁。
+
+若 Agent 在另一台機器上，請在 skills 所在的機器上搭配憑證執行 `mcp serve --http`，
+並把一個遠端 server 指向它。請把 token 放在環境變數中：
+
+```yaml
+mcp:
+  servers:
+    skillshare:
+      url: https://skills-host:8765/
+      bearerToken: { fromEnv: SKILLSHARE_MCP_TOKEN }
+      targets: [codex]
+```
+
+原生載入 skills 需要 Skills extension。截至 2026 年 10 月，常見的 coding Agent 都還沒有
+支援，所以它們會使用工具：Codex、Cursor、VS Code、Goose 與 Pi 不支援，Claude Code
+內含的支援預設未開啟。只有少數 client，例如 mcpc、fast-agent 與 MCP Inspector 支援，
+有些只支援一部分。SEP 列出的原型 host（例如某個 Codex fork）並不代表已發布的 Agent
+支援它。[extension 支援矩陣](https://modelcontextprotocol.io/extensions/client-matrix)
+列出目前的 clients。
+
+要檢查 server 本身，MCP Inspector 2.6.0 或更新版本會讀取每個 skill、比對它的
+frontmatter，並檢查每個檔案的摘要：
+
+```bash
+npx @modelcontextprotocol/inspector --cli skillshare mcp serve --method skills/list --verify
+```
+
 ## Safety and limitations
 
 - JSONC 註解與不相關的設定會被保留。已變更的、由 Skillshare 擁有的
@@ -698,7 +792,7 @@ dashboard 會讀取目前範圍的 Agent 設定檔，以及 `mcp.projects` 底�
   Agent 自行填入的預設值，例如 `"type": "stdio"`、空的 `env` 或
   header 名稱大小寫，不算變更。用 `enabled: false` 或 `disabled: true`
   關閉一個受管理的 server，會回報為衝突。
-  Pi 是例外：只修改 `enabled` 不會造成所有權衝突；同步時仍以 source 的 `piOptions.enabled` 為準。
+  Pi 與 OMP 是例外：在連線項目上只修改 `enabled` 不會造成所有權衝突；同步時仍以 source 的 `piOptions.enabled` 為準。
 - 當 Agent 重寫同一份檔案中不相關的設定時（如 Claude Code 對
   `~/.claude.json` 所做的那樣），預覽仍然有效。只有該檔案的
   MCP 項目發生變更時才需要重新預覽。
@@ -707,7 +801,7 @@ dashboard 會讀取目前範圍的 Agent 設定檔，以及 `mcp.projects` 底�
   內嵌／點記法的 MCP 定義必須先轉換為表格才能寫入；
   否則會被拒絕，且不會修改檔案。
 - 原生檔案的 symlinks、格式錯誤的檔案與重複的 JSON 屬性都會擋下
-  寫入。被 symlink 的 Skillshare `config.yaml` 會直接寫入其目標檔案。檔案權限會被保留；新的原生
+  寫入。被 symlink 的 Skillshare `config.yaml` 會直接寫入其目標檔案；但指向專案外部的專案設定 link 會被拒絕寫入。檔案權限會被保留；新的原生
   檔案、擁有權紀錄與備份都使用私有權限。
 - 若某項目已經與 source 相符，會回報為未變更且不會寫入，例如在
   拉取隊友的變更之後。如果這份設定先前並未管理它，例如從某個 Agent
@@ -725,7 +819,8 @@ dashboard 會讀取目前範圍的 Agent 設定檔，以及 `mcp.projects` 底�
   網域名稱。
 - 憑證使用環境參照；沒有機密儲存庫、OAuth session 同步、
   持續性健康監控、套件安裝、gateway、registry 或 plugin 同步功能。
-  `mcp check --live` 是唯一會啟動或呼叫 server 的指令。
+  `mcp check --live` 是唯一會啟動或呼叫已設定 server 的指令；
+  `mcp serve` 執行的是 Skillshare 自己的唯讀 skills server。
 - 此版本不支援 VS Code Insiders、自訂 profiles、遠端 workspaces 與舊版 SSE。
 - VS Code 目前不會在 `headers` 內代換 `${env:VARIABLE}`
   （[microsoft/vscode#336232](https://github.com/microsoft/vscode/issues/336232)），
@@ -830,6 +925,45 @@ Server 對話框在 targets 之後有一個 **工具** 區塊，除了 `disabled
 
 Server 列會以白話顯示政策標籤（例如 `工具：已排除 2 個工具`），而 **檢視各 Agent 會寫入的設定** 會針對每個 Agent
 警告它不套用的部分。
+
+## Oh My Pi (OMP) {#omp}
+
+`omp` 是與 Pi 分開的 client。Skillshare 會寫入 OMP 原生的 `mcpServers`
+map，明確標示 `type: stdio` 或 `type: http`，並使用 `${VARIABLE}` 環境變數參照。
+它絕不會代替 OMP 寫入 `.pi/`、Claude 或 Codex 的設定。
+Server 名稱最多 100 個字元。
+
+```bash
+skillshare mcp add docs --url https://example.com/mcp --target omp -g --sync --no-tui
+skillshare mcp import docs --from omp --target omp -g --replace --dry-run --json
+```
+
+同步會保留 `$schema`、`disabledServers`、`enabledServers` 與不相關的 servers。
+更新既有連線時，也會保留原生的單一 server 欄位，例如 `enabled`、`timeout`、`instructions`、
+`requestIdFormat`、`cwd`、`auth` 與 `oauth`。這些欄位不是 `piOptions`：Pi 專屬設定
+永遠不會送給 OMP。匯入時，可攜式模型無法表示的原生欄位會顯示警告；請把它們保留在
+OMP 的檔案中。可攜式模型支援 stdio 與 Streamable HTTP，不支援 OMP 的舊版 SSE
+傳輸方式；不支援的匯入會被拒絕，而不會被轉換。
+
+`disabledServers` 優先於 `enabledServers` 以及項目的 `enabled` 值。
+同步不會為了啟用某個 server 而移除使用者的 denylist 項目。被 `disabledServers` 或
+`enabled: false` 隱藏的 servers 會被拒絕匯入，除非後者被 `enabledServers` 強制啟用。
+貼到匯入工具中、帶有 OMP schema 或啟用／停用清單的 JSON，會被辨識為 OMP。
+
+OMP 會把以 `!` 開頭的 env/header 值當作 shell 指令執行。Skillshare 會拒絕匯出這類
+字面值，也拒絕匯入這類憑證，且絕不執行它們。建議在 source 中使用 `{fromEnv: VARIABLE}`，
+在原生 JSON 中使用 `${VARIABLE}`。同名的純環境變數參照，例如 `"TOKEN": "TOKEN"`，
+會匯入為 `fromEnv`；連線前請先設定該變數，因為可攜式參照沒有字面值備援。
+其他 client 專屬的插值方式需要先轉換才能匯入。
+
+Global MCP 會遵循 `PI_CODING_AGENT_DIR`；project MCP 仍為 `.omp/mcp.json`。
+由於 Pi 使用相同的環境變數，把兩者同步到同一個檔案會被拒絕。請使用不同的目錄或
+明確的帳號 targets。具名 profile 與 `PI_CONFIG_DIR` 的自動路徑選擇不受管理：
+請為該 profile 宣告一個帶有 `agent: omp` 與 `config_dir: ~/.omp/profiles/work/agent`
+的 target。帳號 targets 僅限 global；project 定義請使用 `omp`。
+
+編輯或同步後，在 OMP 中執行 `/mcp reload`，再用 `/mcp list` 檢查來源與連線狀態。
+核准與 OAuth 登入仍屬於 OMP 的責任。
 
 ## Pi {#pi}
 

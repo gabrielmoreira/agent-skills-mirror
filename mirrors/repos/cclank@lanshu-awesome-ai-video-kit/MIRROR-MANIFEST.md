@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cclank/lanshu-awesome-ai-video-kit` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
+Mirror of `cclank/lanshu-awesome-ai-video-kit` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cclank/lanshu-awesome-ai-video-kit` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 20 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,20 +65,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`prompts/gemini-omni/README.md`](prompts/gemini-omni/README.md) |
 | 5 | ✓ | [`prompts/happyhorse/README.md`](prompts/happyhorse/README.md) |
 | 6 | ✓ | [`prompts/index.html`](prompts/index.html) |
-| 7 | ✓ | [`prompts/kling/README.md`](prompts/kling/README.md) |
-| 8 | ✓ | [`prompts/README.md`](prompts/README.md) |
-| 9 | ✓ | [`prompts/seedance/README.md`](prompts/seedance/README.md) |
-| 10 | ✓ | [`prompts/sora/README.md`](prompts/sora/README.md) |
-| 11 | ✓ | [`prompts/veo/README.md`](prompts/veo/README.md) |
-| 12 | ✓ | [`skills/happyhorse-prompter/SKILL.md`](skills/happyhorse-prompter/SKILL.md) |
-| 13 | ✓ | [`skills/index.html`](skills/index.html) |
-| 14 | ✓ | [`skills/kling-prompter/SKILL.md`](skills/kling-prompter/SKILL.md) |
-| 15 | ✓ | [`skills/model-selector/SKILL.md`](skills/model-selector/SKILL.md) |
-| 16 | ✓ | [`skills/prompt-translator/SKILL.md`](skills/prompt-translator/SKILL.md) |
-| 17 | ✓ | [`skills/README.md`](skills/README.md) |
-| 18 | ✓ | [`skills/seedance-debugger/SKILL.md`](skills/seedance-debugger/SKILL.md) |
-| 19 | ✓ | [`skills/seedance-prompter/SKILL.md`](skills/seedance-prompter/SKILL.md) |
-| 20 | ✓ | [`skills/seedance-storyboard/SKILL.md`](skills/seedance-storyboard/SKILL.md) |
+| 7 | ✓ | [`prompts/kling-4.0/README.md`](prompts/kling-4.0/README.md) |
+| 8 | ✓ | [`prompts/kling/README.md`](prompts/kling/README.md) |
+| 9 | ✓ | [`prompts/luma-ray-3.2/README.md`](prompts/luma-ray-3.2/README.md) |
+| 10 | ✓ | [`prompts/minimax-h3/README.md`](prompts/minimax-h3/README.md) |
+| 11 | ✓ | [`prompts/README.md`](prompts/README.md) |
+| 12 | ✓ | [`prompts/runway-aleph-2.0/README.md`](prompts/runway-aleph-2.0/README.md) |
+| 13 | ✓ | [`prompts/seedance-2.5/README.md`](prompts/seedance-2.5/README.md) |
+| 14 | ✓ | [`prompts/seedance/README.md`](prompts/seedance/README.md) |
+| 15 | ✓ | [`prompts/sora/README.md`](prompts/sora/README.md) |
+| 16 | ✓ | [`prompts/veo/README.md`](prompts/veo/README.md) |
+| 17 | ✓ | [`prompts/wan-2.6/README.md`](prompts/wan-2.6/README.md) |
+| 18 | ✓ | [`prompts/wan-3.0/README.md`](prompts/wan-3.0/README.md) |
+| 19 | ✓ | [`skills/happyhorse-prompter/SKILL.md`](skills/happyhorse-prompter/SKILL.md) |
+| 20 | ✓ | [`skills/index.html`](skills/index.html) |
+| 21 | ✓ | [`skills/kling-prompter/SKILL.md`](skills/kling-prompter/SKILL.md) |
+| 22 | ✓ | [`skills/model-selector/SKILL.md`](skills/model-selector/SKILL.md) |
+| 23 | ✓ | [`skills/prompt-translator/SKILL.md`](skills/prompt-translator/SKILL.md) |
+| 24 | ✓ | [`skills/README.md`](skills/README.md) |
+| 25 | ✓ | [`skills/seedance-debugger/SKILL.md`](skills/seedance-debugger/SKILL.md) |
+| 26 | ✓ | [`skills/seedance-prompter/SKILL.md`](skills/seedance-prompter/SKILL.md) |
+| 27 | ✓ | [`skills/seedance-storyboard/SKILL.md`](skills/seedance-storyboard/SKILL.md) |
 
 ---
 

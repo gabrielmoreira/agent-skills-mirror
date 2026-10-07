@@ -233,6 +233,155 @@ A deputy is one peer the lead named ahead of time. It binds a standby door with 
 that door is never published. The lead's silence arms it, and your own pairing credential spends it,
 so the phone can reach the deputy while the lead is gone.
 
+## Machines
+
+Every Collie measures its own machine, the lead keeps a day of it for each machine in the crew, and
+the Machines pages show it and hold the alert rules.
+
+**Open the list from Settings, Machines.** It is there on a collie that runs on its own too, as one
+machine. On a lead with a crew, Settings, System has a second row for the same page, and a member's
+sheet on the Crew page links to that machine's own page with **Load and alerts**.
+
+Only a lead, or a collie on its own, keeps the list. A crew member opened directly says there is no
+machine list on it; open the page on the lead.
+
+Each Collie reads its CPU, memory, disks and network on the same tick that already watches your panes, so
+nothing new runs in the background. It reads them about every 15 to 25 seconds. The lead reads its own
+every 5 seconds while a phone has the Machines pages or the Crew tab open. Either way, every minute
+gets at least one reading. A member sends its last reading with the answer it already gives the lead. The lead keeps one point per minute for
+each machine, for 24 hours. A Collie with no crew keeps the same day for its own machine.
+
+| what | Linux | macOS | Windows |
+| --- | --- | --- | --- |
+| CPU | yes | yes | yes |
+| Memory | yes, without the page cache | yes | yes |
+| Load average | yes | yes | no |
+| Network | yes, physical interfaces only | no | no |
+| Disks | yes | yes | yes |
+
+**Disks are the ones that hold your files.** Collie reads the filesystem that holds your home folder,
+the one that holds the root (on Windows, the system drive), and the one that holds Collie's state
+folder. Two of them on one device count once, and Collie shows at most four. It leaves out a
+filesystem under 1 GiB, and one that is read-only with no free space at all. The root of an image-based
+system, such as Fedora Atomic, is such a filesystem: it is always 100% full, and it is not a disk that
+filled up. Each disk shows the same numbers as `df`: "used" is df's Used, and the percent is df's Use%.
+The total is what you can still fill as a normal user, so it can be a few percent under df's Size,
+which also counts the space reserved for root. Collie reads the disks once a minute, in the background.
+A disk that does not answer, such as a network mount that hangs, never holds up the rest, and Collie
+stops showing it after three and a half minutes without an answer. No program is started for it.
+
+**Network counts each byte once.** On Linux, Collie adds up the physical interfaces, such as `eth0`,
+`enp3s0` and `wlan0`. It leaves out every interface whose bytes also cross a physical one:
+
+- Loopback: `lo`.
+- Bridges: `br*` (also Docker's `br-*`), `docker*`, `virbr*`, `lxcbr*`, `lxdbr*`, `incusbr*`,
+  `podman*`, `cni*`, `flannel*`, `cali*`, `cilium*`, `weave*`, `vxlan*`.
+- Container and VM ends: `veth*`, `vnet*`, `tap*`.
+- Tunnels: `tailscale*`, `wg*`, `tun*`, `zt*`. Tunnel traffic also leaves through the physical
+  interface, so the crew link is counted there.
+- Bonds and VLANs: `bond*`, `team*`, and any name with a dot, such as `eth0.100`.
+
+The day of points lives in `machine-history.json` in the lead's state folder. The lead writes it at
+most once every five minutes, only when a minute changed, and once more when it stops. A day of one
+machine takes about 46 KB on disk (54 KB when it reports disks) and about 68 KB of the lead's memory. The
+history keeps the fullest disk of each minute, which is the disk an alert watches. A member keeps no history of its own, so
+the lead is the only place to look. When the lead is down, nobody records, and the chart shows a gap.
+
+A machine that stops answering keeps its last reading, with the time it was taken, and records no
+new minutes. Collie never shows a zero it did not measure. A member that sends the same reading
+again, equal in every number, has not measured again. The lead does not record it, and the reading
+keeps its old time. A member whose sampler hangs therefore shows a gap, not a flat line.
+
+**The day of points and the rules stay on one lead.**
+
+- **A deputy that takes over starts with no alert rules and no history.** Both files live on the old
+  lead. Set the rules again on the new lead.
+- **A collie on its own that becomes a lead drops its own history.** On its own it names its machine
+  `local`. As a lead it uses its member id, and the `local` points and rules go.
+- **A machine removed from the crew takes its history and its alert rules with it.**
+
+A member older than this feature sends no reading at all, and it stays in the crew as before.
+
+### Alerts for a machine
+
+You can set one rule each for CPU, memory and disk on each machine. A rule has a line, from 50% to
+99%, and a time, from 5 to 120 minutes. The disk rule watches the fullest disk, and the push names that
+disk. The rules live in `machine-alerts.json` on the lead.
+
+The lead sends one push when every minute in that time is at or above the line. It needs a reading
+for at least 80% of those minutes. It sends nothing more while the value stays high. The alert ends
+after five minutes in a row at least five points under the line, and the next climb sends a new
+push. An open alert is saved with the rules, so a restart does not send it twice.
+
+**An alert reports sustained high load only.** It does not report a machine that goes offline. A
+machine that is not answering neither starts nor ends an alert. A snooze holds every alert, and
+the **Machine load stays high** switch in Settings turns them all off
+([which alerts Collie sends](voice-and-push.md#which-alerts-collie-sends)).
+
+Nothing leaves the crew. The readings travel on the crew link and stay on the lead.
+
+### On the phone
+
+| Page | What it shows |
+| --- | --- |
+| Machines | One card per machine, the lead first: its name, its health, CPU and memory now with a small chart of their last 30 minutes, and in one row the fullest disk ("Disk 66%"), the load, and network down and up, where the machine reports them |
+| Dashboard, Crew tab | The same cards, on the dashboard of a lead with a crew. A tap opens the machine, and back returns to the Crew tab |
+| One machine, Status | The same numbers large, a bar for each disk with its used and total space and its percent, then a chart each for CPU, memory, the fullest disk and network, over the last hour or the last 24 hours |
+| One machine, Alerts | The machine's alert rules for CPU, memory and disk |
+
+**A machine's page has two views, Status and Alerts.** The switch is under the header. Status opens
+first, and a push about a machine opens Status too. The "Alert firing" line on Status and on a card
+opens Alerts, where the rule is. While a rule fires, the Alerts switch shows a dot. The view is part of
+the address (`?tab=alerts`), and switching does not add a step: Back leaves the machine and goes where
+you opened it from. Only Status reads the history; Alerts reads nothing.
+
+**A card names what is wrong in words.** A machine that is not answering shows its health and the age
+of its last reading, and no numbers, because a stale 12% next to the word "unreachable" reads as a calm
+machine. A machine that answers but has sent no new reading for two minutes shows its numbers greyed,
+with a clock and the age of its last reading. A member that still runs a Collie from before it reported
+load says "Update this machine to see its load", and its page shows no charts. Its Alerts view says the
+machine needs an update. A metric whose alert is
+firing turns its number and its small chart red, and the card says "Alert firing: CPU". The disk figure
+has no small chart, because a disk fills over days, not half hours. The small chart
+has a fixed scale from 0 to 100%, a dashed line where a rule is set, a dot for the reading now, and a
+gap for a missing minute.
+
+**The pages read only while you look.** The Machines list reads with the dashboard's own refresh. A
+machine's page reads the day once when it opens, and then only the newest minutes, once a minute. The
+Crew tab reads when you open it and every 15 seconds while it is on screen. Nothing is read for a page
+or a tab that is not on screen, or while the phone is locked.
+
+**The charts leave a missing minute empty.** The history has one point per minute. When the lead was
+restarted, or a machine went quiet, the line stops and starts again after the hole, and it does not run
+across it. CPU draws its average as a line and its peak as a lighter band. The alert threshold is a
+dashed line while a rule is set. The network axis has no fixed top: it follows the largest value and
+prints its unit. A machine on a platform with no network counters, or with no disk, says so instead of
+drawing an empty chart.
+
+**Each chart has one sentence for a screen reader.** It gives the metric, the range, the value now, the
+average and the peak. The legend under the chart names every mark, so no chart relies on colour alone.
+
+### Set an alert on the phone
+
+Set a rule on the Alerts view of that machine's page. The rules and their limits are under *Alerts for a
+machine* above. The disk rule shows only for a machine that reports its disks.
+
+| Choice | Values |
+| --- | --- |
+| Switch | On or off, for CPU, memory and disk separately |
+| Threshold | 80%, 90% or 95% |
+| Duration | 5, 10, 30 or 60 minutes |
+
+A rule set another way, with a line or a time outside these choices, keeps its value and shows it
+beside them.
+
+A new rule starts at 90% for 10 minutes. Every change posts the whole set of rules for that machine, so
+changing the CPU threshold never drops the memory or disk rule. The card shows Saving, Saved or Could not save
+in its own status line, and after a failure it shows the rules the bridge last reported.
+
+The push goes to every device subscribed to this Collie. The card links to Settings, Alerts, where you
+choose which alerts you get.
+
 ## Members that were not installed by install.sh
 
 A crew updates every member from the phone, except the members whose files somebody else owns.

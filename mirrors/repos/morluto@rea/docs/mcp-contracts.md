@@ -8,14 +8,18 @@ registrations, reports their command vectors as aligned, stale, missing, or
 invalid, and keeps live-server state `unknown` unless the active connection
 supplies identity.
 
-Canonical tool names remain stable, while `tools/list` advertises only the
-operations callable for the current target, provider, host, and
-negotiated client capabilities. `binary_session.tool_availability` remains the
-complete inventory: it explains advertised and hidden operations with stable
-availability reasons and remediation. Each entry also reports required and
-optional negotiated client features plus the currently missing features.
-Opening or closing a target or observing a provider health transition emits
+`tools/list` returns the complete canonical tool inventory, including tools that
+are currently unavailable. Opening or closing a target or observing a provider
+health transition leaves that catalog unchanged and does not emit
 `notifications/tools/list_changed`.
+
+Call `binary_session` with `{}` and read `result.tool_availability` to choose a
+callable operation for the current target, provider, host, and negotiated client
+capabilities. The default result includes the complete inventory with each
+tool's availability, reason, and remediation. Each entry also reports required
+and optional negotiated client features plus the currently missing features.
+The optional inputs `expected_package_version`, `expected_catalog_digest`, and
+`expected_server_path` compare the live session with the caller's expectations.
 
 `binary_session.analysis_provider_candidates` is authoritative for deep-engine
 discovery. Target-free discovery is sorted by provider ID, reports host
@@ -53,6 +57,74 @@ CLI calls work without a progress token and translate SIGINT into the same
 AbortSignal used by providers. Existing controlled-process cleanup and provider
 shutdown rules still apply; REA never kills a process it cannot prove it owns.
 
+## Ghidra first-query deadlines and recovery
+
+A successful MCP initialize handshake establishes the REA connection.
+`open_binary` then selects a target and provider binding; it does not establish
+that Ghidra has finished importing the target. The first Ghidra-backed query,
+such as `binary_overview`, starts the engine and waits for import, default
+auto-analysis, bridge connection, and health readiness before returning analysis.
+
+These deadlines have different owners:
+
+| Deadline             | Owner and effect                                                                                                                                                 |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| MCP initialize       | The client bounds transport/REA connection startup, before any target query.                                                                                     |
+| Ghidra startup       | REA allows 330,000 ms for engine readiness from the first provider query; startup failure is reported by that query.                                             |
+| Individual tool call | The client bounds its wait, including cold engine startup. The pinned client SDK 2.3.1 defaults to 60,000 ms and can cancel earlier than REA's startup deadline. |
+
+For an already connected client using the pinned SDK, request options are the
+**second** argument of `callTool`:
+
+```js
+const overview = await client.callTool(
+  { name: "binary_overview", arguments: {} },
+  {
+    timeout: 240000,
+    onprogress: ({ progress, total, message }) => {
+      console.error({ progress, total, message });
+    },
+  },
+);
+```
+
+The SDK's `onprogress` option supplies a progress token and handles matching
+notifications. A raw MCP client can instead send `_meta.progressToken` in the
+request and handle `notifications/progress`. Progress reports do not establish
+engine readiness or a percentage of Ghidra auto-analysis. A longer server
+startup allowance does not extend the client's deadline; progress also does not
+extend it unless the client explicitly implements that policy.
+
+The 240-second setting is a measured example, not a universal timeout: a
+controlled Linux x64/WSL2 fixture took about 64 seconds for its first overview
+with Ghidra 12.1.4 on a mounted NTFS installation, native JDK 21, two CPUs, and a
+512 MiB Java heap. Target size, storage, and analysis work can change that time.
+Configure the deadline in the caller's existing request settings; it is not a
+tool argument, setup grant, or server-side automatic extension. CLI analysis has
+no MCP client request deadline, but keeps the provider startup deadline and
+SIGINT cancellation.
+
+If the client timed out or cancelled during startup, the pending query may have
+been interrupted. Reissuing `open_binary` for the same active target can reuse
+the current client, so it is not a fresh-start recovery. On the same connection:
+
+1. Keep any useful inline Evidence, or export a bundle before closing if retained
+   records are needed. `binary_session` can show the selected binding and its
+   recorded state; target selection alone does not prove engine readiness.
+2. Call `close_binary` and check its result. It drains owned work, closes the
+   provider, and clears retained session records. A `cleanup_incomplete` result
+   must be addressed according to its reported owned resources before retrying.
+3. Call `open_binary` with the same caller-selected path and
+   `provider_id: "ghidra"`, then retry the first query with an appropriate client
+   deadline. The connection and selected provider do not need to change.
+
+This close/reopen flow was exercised on one real Linux stdio connection after a
+controlled startup timeout, followed by a successful overview and function
+analysis. It is not a Windows/macOS coverage claim. REA cleans only resources it
+owns and never switches to another provider automatically. A provider timeout,
+installation failure, or host permission denial needs its own reported recovery;
+increasing a client deadline alone does not fix those failures.
+
 ## Tool results
 
 Evidence-producing tools return `{ result, evidence_id, evidence }` in both
@@ -63,6 +135,47 @@ to a compatible comparison tool: `analyze_function` Evidence can be passed
 directly to `compare_functions`, and `inspect_artifact` Evidence to
 `compare_artifacts`. Use `get_evidence_bundle` when the task needs broader
 retained session history or an explicit bundle for transfer.
+
+## Retained application Evidence inputs
+
+`trace_application_feature`, `trace_javascript_semantics`,
+`compare_application_versions`, `compare_source_to_bundle`, and
+`compare_javascript_export_shapes` accept complete inline application Evidence
+or an exact reference to a record already retained by the current connection:
+
+```json
+{
+  "name": "trace_application_feature",
+  "arguments": {
+    "application": {
+      "kind": "retained-evidence",
+      "evidence_id": "ev_<64 lowercase hex characters>"
+    },
+    "seed": { "kind": "module", "value": "search.js", "match": "exact" }
+  }
+}
+```
+
+Use the `evidence_id` returned by `analyze_javascript_application` (or another
+compatible application-graph producer). Comparisons accept this form in `left`
+and `right`; each side can independently be inline or retained. Native
+observation arrays continue to take complete inline Evidence. Results and their
+Evidence remain complete inline, and both input forms pass the same semantic,
+identity, authority, and provenance checks without running the producer again.
+
+References belong to the current connection's Evidence ledger. Opening another
+target preserves retained records; `close_binary` clears them, even when no
+binary is active. A fresh connection has its own ledger. A missing reference
+reports its exact ID and `details.reason: "missing"`; the server cannot infer
+whether it was never recorded, cleared, or retained by another connection.
+Supply complete inline Evidence, repeat its producer, or import an exported
+Evidence bundle before referencing that imported record. Export a bundle before
+closing if the investigation needs it later.
+
+CLI application workflows continue to read portable inline Evidence from files
+and run the same analysis workflows; a standalone CLI invocation cannot resolve
+another MCP connection's retained records. No additional lookup call, provider
+selection, or approval step is required for a same-session follow-up.
 
 ## Aggregate native context
 

@@ -193,6 +193,18 @@ h_act = Θ(κ^α)  [as κ→0, uniform in π on compact subsets of Π_K, for fix
 ```
 Flag any statement where limit order is ambiguous or uniformity is unclear.
 
+### Optional Lean verification
+
+When the user requests Lean or a specific obligation warrants formal checking,
+delegate that obligation and its original hypotheses to
+[`/lean-formalize`](../lean-formalize/SKILL.md). Record the checked scope, exported
+declaration, statement-alignment evidence, build output and transitive-axiom
+audit, then resume this audit. A proved sublemma closes only the corresponding
+obligation. Keep the complete proof audit, acceptance decision and canonical wiki
+artifacts here; the nested Lean task returns evidence without starting another
+`proof-checker` run. Routine proof checks do not require Lean. Reviewer agreement
+and unsuccessful counterexample searches do not discharge a proof obligation.
+
 ### Phase 1: First Review (Codex GPT-6-Astra ultra)
 
 Submit the **complete proof content** with the following **mandatory reviewer checklist** in the prompt:

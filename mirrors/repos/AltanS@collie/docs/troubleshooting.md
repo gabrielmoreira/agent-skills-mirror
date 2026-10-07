@@ -8,7 +8,7 @@ reboot** · **a pane is stuck narrow** · **Collie refuses to open a tmux window
 **`tmux list: output did not parse`** · **`herdr plugin list` shows the old version** ·
 **stale UI after a rebuild** · **I saved a machine in Herdr and the phone does not show it** ·
 **an update started from the phone stays at staging** · **a phone update on macOS leaves Collie
-unloaded** · **a pane shows no prompt-cache chip** · **a pane has no Chat or History** · **a new Codex pane says it has no history
+unloaded** · **on macOS, `collie status` says "loaded, not running"** · **a pane shows no prompt-cache chip** · **a pane has no Chat or History** · **a new Codex pane says it has no history
 yet** · **the phone says Collie cannot read a screen the agent is not showing**.
 
 **`herdr plugin …` fails with `Error: Os { code: 2, kind: NotFound, message: "No such file or
@@ -122,8 +122,11 @@ affected: every other action on those panes keeps working
 tmux versions (3.4, not 3.6b) escape the separator this adapter reads on their way out of a `-F`
 listing. Collie reads both shapes now, so a listing that parses to zero rows is reported as a mux
 error instead of being stored as an empty herd — the error line names the tmux version and how many
-lines it saw. If you still hit this, note the `tmux -V` version and open an issue; the fix belongs in
-the adapter, not in your `.env`.
+lines it saw. A second cause was the locale: started with no UTF-8 locale (a minimal container, a
+systemd unit), tmux replaces that separator with `_` instead of escaping it. Collie now runs
+every tmux command with `-u`, so the listing no longer depends on `LANG` or `LC_ALL`. If you still
+hit this, note the `tmux -V` version and open an issue; the fix belongs in the adapter, not in your
+`.env`.
 
 **`herdr plugin list` shows the old version after an `update`.** Expected — Herdr caches the manifest
 it read at install or link time. The authority on what's running is the footer build stamp, or
@@ -152,6 +155,13 @@ not taken a turn yet, which is not a fault: nothing is shown before it is measur
 on the agent's first reply. A harness whose vendor publishes no cache lifetime shows nothing either,
 and `cache-claims` lists every rule this build does ship.
 
+**A pane shows the terminal where you expected Chat.** Chat is the default for an agent pane, so one
+of two things holds. This device chose the terminal earlier: open the pane's **⋮** menu and tap
+**Chat view**. Or the pane has no session or no log to read. A new pane shows Chat with "Send a
+message to start" and falls back to the terminal when its first turn ends with nothing to read, or
+when it asks a question first; the menu row says which part is missing, and the next entry has the
+steps.
+
 **A pane has no Chat or History, and the ⋮ menu says the pane named no session.** Chat and History read
 the agent's session log, and Collie finds the log only when the agent reports its session through the
 multiplexer. On Herdr that report comes from the agent's own integration, so a missing or old one hides
@@ -166,7 +176,7 @@ both with no other symptom. `collie doctor` names the pane under `agent-sessions
    started from a shell that another agent opened. Oh My Pi's hook stays silent when `OMPCODE=1` is
    inherited from the parent agent. Start it from a fresh terminal.
 
-On tmux and zellij only Claude Code reports a session, through Collie's beacon hooks. Run
+On tmux, zellij and tern only Claude Code reports a session, through Collie's beacon hooks. Run
 `collie hooks install claude` ([Collie writes hooks into Claude's own
 settings](multiplexers.md#collie-writes-hooks-into-claudes-own-settings)). The other agents have no
 Chat or History there.
@@ -231,9 +241,22 @@ collie restart
 On Collie up to 1.8.x, an update tapped on the phone could stop the launchd agent and never load it
 again, so the phone lost the service and `launchctl print gui/$(id -u)/herdr.collie` found nothing.
 The runner shared the agent's process group, and restarting the agent killed it half way.
-`collie restart` writes the agent's plist again and loads it. From the next release on, the bridge
+`collie restart` writes the agent's plist again and loads it. From 1.9.0 on, the bridge
 starts the runner in a session of its own. If a phone update still unloads the agent after that, run
 the same command and add a note to [#213](https://github.com/AltanS/collie/issues/213).
+
+**On macOS, `collie start` finishes but `collie status` says "loaded, not running".** The launchd job is
+loaded and no process runs, so the log is empty. Start the job by hand:
+
+```
+launchctl kickstart gui/$(id -u)/herdr.collie
+collie status
+```
+
+A suffixed instance has its own label, for example `herdr.collie-next`. From 1.17.0 on, `collie start`
+and `collie restart` do this step for you and print a warning with this command when no process
+shows up. If the job stays "loaded, not running" after that, read the log with `collie logs`, then
+add a note to [#213](https://github.com/AltanS/collie/issues/213).
 
 ---
 

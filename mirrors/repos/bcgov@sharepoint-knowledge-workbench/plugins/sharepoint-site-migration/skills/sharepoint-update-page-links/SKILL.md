@@ -52,6 +52,15 @@ does not write changes. Re-extract after applying. See [bulk content workflow](r
    confirm=plan.confirmation_token)`; or use the PowerShell executor with an augmented plan JSON.
 3. Undo with `rollback_remediation` under the same gates if needed.
 
+## Build a destination map and review links
+
+Use `map_file_destinations.py` and `generate_link_rewrite_plan.py` for offline planning. Supply
+source and destination parameters for every run; no same-library mapping is inferred. The mapper
+does not connect to SharePoint or modify source content.
+
+See [the end-to-end mapping and rewrite workflow](references/link-extraction-and-mapping-pipeline.md)
+for command examples, workbook validation, scope/count guards, and iterative review guidance.
+
 ## Verification
 
 Check the outcome (`OBSERVED`, `EMPTY`, `PARTIAL`, `FORBIDDEN`, `FAILED`), then run `sharepoint-validate-link-integrity` to confirm the rewritten
@@ -62,3 +71,5 @@ links resolve.
 - [Remediation details](references/remediate-links-details.md): read for rulesets, apply and rollback, and the real executor.
 - [Pipeline, outcomes and write safety](references/link-pipeline-and-write-safety.md): read for the gates, the outcome table and the plan
   JSON augmentation the executor needs.
+- [Extraction, destination mapping and rewrite planning](references/link-extraction-and-mapping-pipeline.md): read for offline map generation,
+  optional workbook validation and iterative link review.

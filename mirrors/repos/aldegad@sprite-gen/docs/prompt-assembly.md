@@ -16,7 +16,12 @@ and the mid-step redraw. `tests/gen/test_prompt_freeze.py` compares every prompt
 with `tests/fixtures/prompts-v2.22.0.json.gz`, drawn from the 2.22.0 tag's source by
 `tests/gen/prompt_freeze_table.py`. The notes and warnings printed beside a prompt are not part of
 that comparison. A change to these prompts is made only after a before-and-after comparison on the
-app's default clip model shows it is better.
+app's default clip model shows it is better. Such a change is listed in the test (`MEASURED`) with the
+words 2.22.0 sent and the words measured in their place, and every frozen prompt that holds the old
+words is compared with the measured ones: nothing else in it may move, and the measured words cannot
+change again without a new comparison. So far: the two diagonal stills' view sentences
+(`STILL_VIEW_TEXT["front_diagonal"]`, `["back_diagonal"]`), compared on the still model
+([video-pipeline](video-pipeline.md#2-clip--sprite-gen-video)).
 
 `--handed` adds its piece and changes nothing else: the prompt is the one without it, with the handed
 sentences put in (`tests/gen/test_prompt_assembly.py`).
@@ -57,7 +62,8 @@ the head, a tail, the body, a leg, a shoulder — gets only where it is, and no 
 biped, nothing changes. A quadruped, a body without legs or a scene of several figures has the idle,
 the attack and its hold (`HOLD_TEXT`, after a caller's `--motion` too), the Lite walk sentences, the
 mid-step redraw and the still's view sentence (`gen --direction --body-plan`) said without the parts it
-lacks, and what it stands on said after the motion paragraph or at the end of the view sentence
+lacks, and what it stands on said after the motion paragraph or at the end of the view sentence;
+a walk or run seen from behind then says the body stays square and does not sway (`BACK_GAIT_TEXT_ANY_BODY`)
 ([body plan](video-pipeline.md#a-body-that-is-not-a-person----body-plan)). The sheet rows `prepare
 --body-plan` writes take the same plan
 ([sheet rows](video-pipeline.md#the-sheet-rows--prepare---body-plan)).

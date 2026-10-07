@@ -35,12 +35,14 @@ These objects are argument fragments for tools advertising `target`, not standal
 
 ## Observe
 
-`get_window_state({pid, window_id})` requests the accessibility tree and a grounding screenshot by default. Check what actually came back: permission, backing-store, or surface-identity failures can leave usable tree data without an image. `screenshot_error` and `screenshot_frame_valid:false` are not empty-tree signals.
+`get_window_state({pid, window_id})` requests the accessibility tree and a grounding screenshot by default. Start with `query` (or `max_elements`) instead of a full read, and verify at checkpoints rather than after every action. Check what actually came back: permission, backing-store, or surface-identity failures can leave usable tree data without an image. `screenshot_error` and `screenshot_frame_valid:false` are not empty-tree signals.
 
-Prefer `structuredContent.elements` in MCP (the CLI prints structured fields directly) over parsing `tree_markdown`. Rows may contain `element_token`, role, label, value, actions, parent, depth, enabled/selected state, `frame` (screen coordinates, the space of `scope:"desktop"` actions), and `screenshot_frame` (pixels of the screenshot in the same response, the space of window-local pointer `x`/`y`). Missing fields are unknown.
+By default the tree comes back **once**, as compact `tree_markdown` (`tree_format:"markdown"`). A row `[N]` is addressed with `element_token` `<snapshot_id>:N`; the `snapshot_id` is in the response header and in `structuredContent`. Use `tree_format:"elements"` for the structured `elements` array when you need explicit tokens, frames, parents, or values, or `"both"` for the old double payload (about twice the size). `full_output:true` restores the previous full response, including the platform's walk limits. In `elements`, rows may contain `element_token`, role, label, value, actions, parent, depth, enabled/selected state, `frame` (screen coordinates, the space of `scope:"desktop"` actions), and `screenshot_frame` (pixels of the screenshot in the same response, the space of window-local pointer `x`/`y`). Missing fields are unknown.
 
 - Use `query` to project matching rows plus ancestors without renumbering their indices.
-- Use `max_elements` / `max_depth` to bound the walk, and compare returned/total counts. Truncation does not prove absence.
+- A read walks at most 250 nodes by default. When it stops there the response says `Tree truncated at max_elements=…` (`truncated:true`, `truncation_hint`). Pass a larger `max_elements`, or narrow with `query` / `max_depth`. Truncation does not prove absence.
+- After the first read, pass `since:<snapshot_id>` to get only what changed: `+` added, `~` changed, `-` removed rows (removed ids are the old snapshot's), or `no change since …; focused element is …` (focus is reported on macOS only). The response carries a new `snapshot_id`: use it in tokens (`<new id>:N`). Rows not listed keep their `[N]` unless a `reindexed:` line says otherwise. An unknown, expired, other-window, or differently-scoped `since` returns a full read, and `since_status` says why. A diff reads the rendered tree rows only; it does not prove the screenshot is unchanged.
+- `_note`, `background_input`, and (Linux) `frame_note` are omitted unless `verbose:true`; a degraded snapshot keeps `background_input`.
 - Use `include_screenshot:false` only when tree-only observation is enough; it cannot ground a pixel action.
 - Where advertised, `include_accessibility_tree:false` requests capture without a tree walk. Check the installed schema first.
 - `capture_mode` is deprecated and ignored. Do not change configuration to repair a sparse tree.
@@ -73,6 +75,25 @@ Text insertion and value replacement are different intents. Setting a field does
 If a text action returns `unverifiable`, take a fresh snapshot before retrying. A deferred provider can publish after the call unwinds, so retrying immediately may duplicate text. If renderer focus is missing, the advertised `type_text` pixel form focuses then types in one call. For minimized windows, prefer an exposed semantic commit control; do not assume Return or a value write commits, and do not silently restore the window.
 
 Keep `delivery_mode:"background"` as the default for window input. The route may use accessibility hit-testing even when addressed by pixels: pixel coordinates do not promise physical pointer delivery. Read the returned `route` instead of inferring it from the tool name.
+
+## Batch known actions
+
+When the next several actions are already decided and nothing between them needs a look, send them as one `run_actions` call instead of one call per action. The batch runs the same tools in order, stops at the first failure, and returns per-step status plus at most one bounded observation. Typical fit: fill several fields, then press a button, then read the result. Do not batch across a point where the answer decides the next step, or when a step reshuffles the window and invalidates element tokens used by later steps (use pixel targets after it, or split the batch there).
+
+```bash
+cua-driver run_actions '{"session":"run-1","steps":[
+  {"tool":"set_value","args":{"pid":844,"element_token":"s0000002a:14","value":"Ada"}},
+  {"tool":"set_value","args":{"pid":844,"element_token":"s0000002a:15","value":"Lovelace"}},
+  {"tool":"click","args":{"target":{"kind":"window","pid":844,"window_id":10725},"element_token":"s0000002a:21"}},
+  {"tool":"press_key","args":{"pid":844,"key":"return"}}
+ ],"delay_ms":100,"observe":{"max_elements":120}}'
+```
+
+- `tool` is one of `click`, `double_click`, `right_click`, `set_value`, `type_text`, `press_key`, `hotkey`, `scroll`, `drag`; `args` are exactly that tool's arguments. Run `describe run_actions` and `describe <tool>` for schemas. Up to 32 steps.
+- Every step is validated before the first runs, so a malformed step changes nothing. Each step then passes the same session, permission, capability-manifest and approval checks as a direct call; a batch grants nothing a single call lacks, and a refused step ends the batch like any other failure.
+- A batch has one session. Set `session` on `run_actions`; a step may repeat it but not name another.
+- `observe` is optional and reads once, after the last executed step (also after a failure): `get_window_state` arguments, `pid`/`window_id` taken from the last step that names both, `include_screenshot:false` and `max_elements:200` unless you override. Omit `observe` to read nothing.
+- Read `steps[].ok` and `failed_step`. Steps before a failure did run and are not rolled back; steps after it did not. Observe before repairing, as for a single `unverifiable` action.
 
 ## Pixel coordinates
 

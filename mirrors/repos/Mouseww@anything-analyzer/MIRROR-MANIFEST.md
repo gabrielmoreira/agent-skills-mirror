@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Mouseww/anything-analyzer` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `Mouseww/anything-analyzer` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Mouseww/anything-analyzer` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,6 +60,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.codeartsdoer/AGENTS.md`](.codeartsdoer/AGENTS.md) |
+| 2 | ✓ | [`resources/skills/reverse-skill/api-security/SKILL.md`](resources/skills/reverse-skill/api-security/SKILL.md) |
+| 3 | ✓ | [`resources/skills/reverse-skill/browser-extension-reverse/SKILL.md`](resources/skills/reverse-skill/browser-extension-reverse/SKILL.md) |
+| 4 | ✓ | [`resources/skills/reverse-skill/code-audit/SKILL.md`](resources/skills/reverse-skill/code-audit/SKILL.md) |
+| 5 | ✓ | [`resources/skills/reverse-skill/docs-generator/SKILL.md`](resources/skills/reverse-skill/docs-generator/SKILL.md) |
+| 6 | ✓ | [`resources/skills/reverse-skill/js-reverse/SKILL.md`](resources/skills/reverse-skill/js-reverse/SKILL.md) |
+| 7 | ✓ | [`resources/skills/reverse-skill/protocol-reverse/SKILL.md`](resources/skills/reverse-skill/protocol-reverse/SKILL.md) |
+| 8 | ✓ | [`resources/skills/reverse-skill/reverse-engineering/anti-analysis.md`](resources/skills/reverse-skill/reverse-engineering/anti-analysis.md) |
+| 9 | ✓ | [`resources/skills/reverse-skill/reverse-engineering/dsl-vm-reverse/SKILL.md`](resources/skills/reverse-skill/reverse-engineering/dsl-vm-reverse/SKILL.md) |
+| 10 | ✓ | [`resources/skills/reverse-skill/reverse-engineering/field-notes.md`](resources/skills/reverse-skill/reverse-engineering/field-notes.md) |
+| 11 | ✓ | [`resources/skills/reverse-skill/reverse-engineering/languages-compiled.md`](resources/skills/reverse-skill/reverse-engineering/languages-compiled.md) |
+| 12 | ✓ | [`resources/skills/reverse-skill/reverse-engineering/languages-platforms.md`](resources/skills/reverse-skill/reverse-engineering/languages-platforms.md) |
+| 13 | ✓ | [`resources/skills/reverse-skill/reverse-engineering/languages.md`](resources/skills/reverse-skill/reverse-engineering/languages.md) |
+| 14 | ✓ | [`resources/skills/reverse-skill/reverse-engineering/patterns-ctf-2.md`](resources/skills/reverse-skill/reverse-engineering/patterns-ctf-2.md) |
+| 15 | ✓ | [`resources/skills/reverse-skill/reverse-engineering/patterns-ctf-3.md`](resources/skills/reverse-skill/reverse-engineering/patterns-ctf-3.md) |
+| 16 | ✓ | [`resources/skills/reverse-skill/reverse-engineering/patterns-ctf.md`](resources/skills/reverse-skill/reverse-engineering/patterns-ctf.md) |
+| 17 | ✓ | [`resources/skills/reverse-skill/reverse-engineering/patterns.md`](resources/skills/reverse-skill/reverse-engineering/patterns.md) |
+| 18 | ✓ | [`resources/skills/reverse-skill/reverse-engineering/platforms-hardware.md`](resources/skills/reverse-skill/reverse-engineering/platforms-hardware.md) |
+| 19 | ✓ | [`resources/skills/reverse-skill/reverse-engineering/platforms.md`](resources/skills/reverse-skill/reverse-engineering/platforms.md) |
+| 20 | ✓ | [`resources/skills/reverse-skill/reverse-engineering/SKILL.md`](resources/skills/reverse-skill/reverse-engineering/SKILL.md) |
+| 21 | ✓ | [`resources/skills/reverse-skill/reverse-engineering/tools-advanced.md`](resources/skills/reverse-skill/reverse-engineering/tools-advanced.md) |
+| 22 | ✓ | [`resources/skills/reverse-skill/reverse-engineering/tools-dynamic.md`](resources/skills/reverse-skill/reverse-engineering/tools-dynamic.md) |
+| 23 | ✓ | [`resources/skills/reverse-skill/reverse-engineering/tools.md`](resources/skills/reverse-skill/reverse-engineering/tools.md) |
+| 24 | ✓ | [`resources/skills/reverse-skill/SKILL.md`](resources/skills/reverse-skill/SKILL.md) |
 
 ---
 

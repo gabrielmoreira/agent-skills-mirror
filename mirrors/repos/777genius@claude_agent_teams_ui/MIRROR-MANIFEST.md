@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 13 followed patterns, 39 file(s) materialized.
+Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 14 followed patterns, 43 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 13 followed
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 13 |
-| Files         | 39 |
+| Followed pats | 14 |
+| Files         | 43 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -58,6 +58,7 @@ Mirror of `777genius/claude_agent_teams_ui` — 26 default patterns, 13 followed
 - `docs/team-management/team-provisioning-target-architecture.md`
 - `docs/team-management/debugging-agent-teams.md`
 - `src/features/organizations/README.md`
+- `docs/research/openrig-comparison-2026-10-06.md`
 - `docs/research/gastown-paperclip-comparison-2026-06-25.md`
 - `src/features/README.md`
 - `.github/CONTRIBUTING.md`
@@ -85,31 +86,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`scripts/announcements/README.md`](scripts/announcements/README.md) |
 | 13 | ✓ | [`scripts/e2e/comment-notification/README.md`](scripts/e2e/comment-notification/README.md) |
 | 14 | ✓ | [`scripts/e2e/opencode-diagnostics/README.md`](scripts/e2e/opencode-diagnostics/README.md) |
-| 15 | ✓ | [`src/features/agent-graph/README.md`](src/features/agent-graph/README.md) |
-| 16 | ✓ | [`src/features/announcements/README.md`](src/features/announcements/README.md) |
-| 17 | ✓ | [`src/features/CLAUDE.md`](src/features/CLAUDE.md) |
-| 18 | ✓ | [`src/features/opencode-compatibility/README.md`](src/features/opencode-compatibility/README.md) |
-| 19 | ✓ | [`src/features/project-folder/README.md`](src/features/project-folder/README.md) |
-| 20 | ✓ | [`src/features/recent-projects/README.md`](src/features/recent-projects/README.md) |
-| 21 | ✓ | [`src/features/team-direct-chats/README.md`](src/features/team-direct-chats/README.md) |
-| 22 | ✓ | [`src/features/team-import/README.md`](src/features/team-import/README.md) |
-| 23 | ✓ | [`src/features/team-provisioning/README.md`](src/features/team-provisioning/README.md) |
-| 24 | ✓ | [`src/features/workspace-trust/README.md`](src/features/workspace-trust/README.md) |
-| 25 | ✓ | [`src/renderer/features/CLAUDE.md`](src/renderer/features/CLAUDE.md) |
-| 26 | ✓ | [`tools/opencode-console-wrapper/README.md`](tools/opencode-console-wrapper/README.md) |
-| 27 | → | [`.github/CLA.md`](.github/CLA.md) |
-| 28 | → | [`.github/CODE_OF_CONDUCT.md`](.github/CODE_OF_CONDUCT.md) |
-| 29 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
-| 30 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
-| 31 | → | [`AGENT_CRITICAL_GUARDRAILS.md`](AGENT_CRITICAL_GUARDRAILS.md) |
-| 32 | → | [`docs/FEATURE_ARCHITECTURE_STANDARD.md`](docs/FEATURE_ARCHITECTURE_STANDARD.md) |
-| 33 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
-| 34 | → | [`docs/research/gastown-paperclip-comparison-2026-06-25.md`](docs/research/gastown-paperclip-comparison-2026-06-25.md) |
-| 35 | → | [`docs/team-management/debugging-agent-teams.md`](docs/team-management/debugging-agent-teams.md) |
-| 36 | → | [`docs/team-management/team-provisioning-target-architecture.md`](docs/team-management/team-provisioning-target-architecture.md) |
-| 37 | → | [`README.md`](README.md) |
-| 38 | → | [`src/features/organizations/README.md`](src/features/organizations/README.md) |
-| 39 | → | [`src/features/README.md`](src/features/README.md) |
+| 15 | ✓ | [`scripts/e2e/opencode-status-recovery/README.md`](scripts/e2e/opencode-status-recovery/README.md) |
+| 16 | ✓ | [`src/features/agent-graph/README.md`](src/features/agent-graph/README.md) |
+| 17 | ✓ | [`src/features/announcements/README.md`](src/features/announcements/README.md) |
+| 18 | ✓ | [`src/features/CLAUDE.md`](src/features/CLAUDE.md) |
+| 19 | ✓ | [`src/features/member-log-reads/README.md`](src/features/member-log-reads/README.md) |
+| 20 | ✓ | [`src/features/opencode-compatibility/README.md`](src/features/opencode-compatibility/README.md) |
+| 21 | ✓ | [`src/features/project-folder/README.md`](src/features/project-folder/README.md) |
+| 22 | ✓ | [`src/features/recent-projects/README.md`](src/features/recent-projects/README.md) |
+| 23 | ✓ | [`src/features/team-direct-chats/README.md`](src/features/team-direct-chats/README.md) |
+| 24 | ✓ | [`src/features/team-import/README.md`](src/features/team-import/README.md) |
+| 25 | ✓ | [`src/features/team-provisioning/README.md`](src/features/team-provisioning/README.md) |
+| 26 | ✓ | [`src/features/team-read-recovery/README.md`](src/features/team-read-recovery/README.md) |
+| 27 | ✓ | [`src/features/workspace-trust/README.md`](src/features/workspace-trust/README.md) |
+| 28 | ✓ | [`src/renderer/features/CLAUDE.md`](src/renderer/features/CLAUDE.md) |
+| 29 | ✓ | [`tools/opencode-console-wrapper/README.md`](tools/opencode-console-wrapper/README.md) |
+| 30 | → | [`.github/CLA.md`](.github/CLA.md) |
+| 31 | → | [`.github/CODE_OF_CONDUCT.md`](.github/CODE_OF_CONDUCT.md) |
+| 32 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
+| 33 | → | [`.github/SECURITY.md`](.github/SECURITY.md) |
+| 34 | → | [`AGENT_CRITICAL_GUARDRAILS.md`](AGENT_CRITICAL_GUARDRAILS.md) |
+| 35 | → | [`docs/FEATURE_ARCHITECTURE_STANDARD.md`](docs/FEATURE_ARCHITECTURE_STANDARD.md) |
+| 36 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
+| 37 | → | [`docs/research/gastown-paperclip-comparison-2026-06-25.md`](docs/research/gastown-paperclip-comparison-2026-06-25.md) |
+| 38 | → | [`docs/research/openrig-comparison-2026-10-06.md`](docs/research/openrig-comparison-2026-10-06.md) |
+| 39 | → | [`docs/team-management/debugging-agent-teams.md`](docs/team-management/debugging-agent-teams.md) |
+| 40 | → | [`docs/team-management/team-provisioning-target-architecture.md`](docs/team-management/team-provisioning-target-architecture.md) |
+| 41 | → | [`README.md`](README.md) |
+| 42 | → | [`src/features/organizations/README.md`](src/features/organizations/README.md) |
+| 43 | → | [`src/features/README.md`](src/features/README.md) |
 
 ---
 

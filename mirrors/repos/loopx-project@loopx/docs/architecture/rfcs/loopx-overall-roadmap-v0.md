@@ -108,7 +108,7 @@ These directly determine whether a long-running team is usable. A directory or R
 
 [Lark personal follow-through](../../product/use-cases/office-operations/personal-follow-through.md) applies the [manager RFC](capable-manager-semantic-handoff-v0.md) to S1/S5/S6/S8/S9. Common grants, continuation and return use manager acceptance; the profile retains source interpretation and evaluation. The independent proposal is consolidated; the installed private desktop journey remains unqualified and closes no existing gate.
 
-The bounded S6/S8 source-reading slice provides a [read-only MCP adapter for an existing Ego Page](../../integrations/ego-source-reader.md): rendered text, image indices and one indexed rendered image region within configured origins and an exact URL fence. It creates no Session, material authority or browser service. Native Bot single-image consumption has been observed; original-channel delivery needs independent qualification. One image proves neither all images, a complete article nor its referenced primary post. Source capture, verification walls, truncation, unloaded images and optional provider setup keep their separate acceptance boundaries; this slice does not close the materials journey.
+The bounded S6/S8 source-reading slice provides a [read-only MCP adapter for an existing Ego Page](../../integrations/ego-source-reader.md): rendered text, image indices and one indexed rendered image region within configured origins and an exact URL fence. It creates no Session, material authority or browser service. Text/image navigation now has a bounded semantic-content readiness check scoped to primary semantic content rather than an ancillary sidebar article; navigation text alone cannot satisfy it, busy content ancestors still delay extraction, and image reads accept loaded visible pixels without requiring a caption. One native Bot text round read the observed article through its final paragraph and returned streamed progress and the answer in the original conversation; its first-answer latency remains unqualified. Native Bot single-image consumption has also been observed, but neither proves all images or the referenced primary post. Source capture, verification walls, truncation, unloaded images and optional provider setup keep their separate acceptance boundaries; this slice does not close the materials journey.
 
 ## 3. Portfolio Milestones, Resource Ordering and Completion
 
@@ -416,6 +416,13 @@ returns to that same frontend or Lark audience. The [presentation RFC §8.8](int
 Chat, session, collaboration and presentation owners as R2/R3 integration work.
 Do not call a candidate catalog, spinner or queued inbox receipt a completed
 worker handoff. This checkpoint does not lower R1–R3 or G1 gates.
+
+CLI and MCP receiver inbox guidance now composes the existing shared conversation answer
+instruction, making the verbatim requester-facing use of report text explicit.
+It preserves requested depth, evidence and material failures; it adds no
+summarizer, result schema or transport rewrite. R3/S5 still require actual
+original-audience qualification: guidance alone does not establish readable
+receiver results or a completed handoff.
 
 The [ordinary workspace write checkpoint](app-conversation-and-async-inbox-v0.md#ordinary-workspace-writes-default-and-revocation-checkpoint)
 adds default project writes under the host grant, explicit read-only launch/App
@@ -901,6 +908,13 @@ outer Turn and native Goal driver on one binding.
 - **Exit:** at each size record registered/active counts, passed/failed/untested cases, p50/p95 queue/recovery latency, time to first useful action, duplicate effects, rejected stale writes, cost per accepted artifact, human interventions and queue/history growth. Freeze budget, load and SLO before experiments; do not tune thresholds after seeing results.
 - **Final acceptance:** users submit and revise a macro-goal through both entries; heterogeneous local/cloud workers deliver dependent artifacts continuously. The manager detects blockers, replans within grants, reports and closes the Goal through independent acceptance. No duplicate protected effects or stale/unauthorized commits; performance claims need real measurements. Run synthetic pressure before an explicitly authorized live cohort. This plan starts no hundred-Agent paid run.
 - **Rollback:** reduce concurrency/admission while retaining registrations, history and reconciliation; never weaken correctness gates.
+
+Heartbeat command guidance preserves the selected registry through guard, action
+selection, recovery and settlement, independently of the caller's working
+directory and runtime root, including contract rebuilds for retained selections
+and required capability reads. File/SQLite fixtures execute generated settlement
+commands from a conflicting-registry directory and verify one-spend replay.
+This qualifies bounded routing; it does not qualify host latency or fleet scale.
 
 ## 7. Execution and Review Contract
 

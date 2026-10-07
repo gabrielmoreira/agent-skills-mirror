@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/crabbox` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
+Mirror of `openclaw/crabbox` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/crabbox` — 26 default patterns, 0 followed patterns, 17 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 17 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,23 +59,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/autoreview/AGENTS.md`](.agents/skills/autoreview/AGENTS.md) |
-| 2 | ✓ | [`.agents/skills/autoreview/scripts/autoreview`](.agents/skills/autoreview/scripts/autoreview) |
-| 3 | ✓ | [`.agents/skills/autoreview/scripts/autoreview_test.py`](.agents/skills/autoreview/scripts/autoreview_test.py) |
-| 4 | ✓ | [`.agents/skills/autoreview/scripts/test-review-harness`](.agents/skills/autoreview/scripts/test-review-harness) |
-| 5 | ✓ | [`.agents/skills/autoreview/scripts/test-review-harness.ps1`](.agents/skills/autoreview/scripts/test-review-harness.ps1) |
-| 6 | ✓ | [`.agents/skills/autoreview/scripts/test-review-harness.py`](.agents/skills/autoreview/scripts/test-review-harness.py) |
-| 7 | ✓ | [`.agents/skills/autoreview/SKILL.md`](.agents/skills/autoreview/SKILL.md) |
-| 8 | ✓ | [`.agents/skills/autoreview/tests/fixtures/swift-benign-status-literals.swift`](.agents/skills/autoreview/tests/fixtures/swift-benign-status-literals.swift) |
-| 9 | ✓ | [`.agents/skills/autoreview/tests/fixtures/typescript-benign-config-path-references.ts`](.agents/skills/autoreview/tests/fixtures/typescript-benign-config-path-references.ts) |
-| 10 | ✓ | [`.agents/skills/autoreview/tests/fixtures/typescript-benign-references.ts`](.agents/skills/autoreview/tests/fixtures/typescript-benign-references.ts) |
-| 11 | ✓ | [`.agents/skills/autoreview/tests/fixtures/typescript-sensitive-literals.ts`](.agents/skills/autoreview/tests/fixtures/typescript-sensitive-literals.ts) |
-| 12 | ✓ | [`.agents/skills/autoreview/tests/test_autoreview_hardening.py`](.agents/skills/autoreview/tests/test_autoreview_hardening.py) |
-| 13 | ✓ | [`.agents/skills/crabbox-quickstart/SKILL.md`](.agents/skills/crabbox-quickstart/SKILL.md) |
-| 14 | ✓ | [`.agents/skills/crabbox/SKILL.md`](.agents/skills/crabbox/SKILL.md) |
-| 15 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 16 | ✓ | [`skills/crabbox-quickstart/SKILL.md`](skills/crabbox-quickstart/SKILL.md) |
-| 17 | ✓ | [`skills/crabbox/SKILL.md`](skills/crabbox/SKILL.md) |
+| 1 | ✓ | [`.agents/skills/autoreview/SKILL.md`](.agents/skills/autoreview/SKILL.md) |
+| 2 | ✓ | [`.agents/skills/crabbox-quickstart/SKILL.md`](.agents/skills/crabbox-quickstart/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/crabbox/SKILL.md`](.agents/skills/crabbox/SKILL.md) |
+| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 5 | ✓ | [`skills/crabbox-quickstart/SKILL.md`](skills/crabbox-quickstart/SKILL.md) |
+| 6 | ✓ | [`skills/crabbox/SKILL.md`](skills/crabbox/SKILL.md) |
 
 ---
 

@@ -436,9 +436,53 @@ lanes; real CLI tests cover full/envelope parity, rejection before writeback and
 one debit across replay. It is a transport correction, not closure of R5 model
 context-efficiency acceptance or a change to the typed settlement rules.
 
-The existing R5 CLI now supports opt-in capture of the full decided payload before display projection (`quota should-run --decision-output-dir`, with an explicit Turn id). Each invocation uses a new private directory. When capture and TurnEnvelope are combined, the typed detail link points to that saved observation with expected identity and source-hash reference; reading it does not rerun the guard. Required selection/lease revalidation remains fresh. This is transport-only Python filesystem adaptation over the shared decision and TypeScript envelope owners. It closes tool-truncation recovery for an explicit caller, not worker adoption, automatic normal/replan context selection, or model-efficiency acceptance. See the [TurnEnvelope capture contract](../../reference/protocols/turn-envelope-v0.md).
+The existing R5 CLI captures full decisions before projection, with a private directory per invocation and readback that does not rerun admission. Default-off heartbeat renderer/shared-worker adoption now covers explicit host-owned Turns: selection retains the capture route, and real CLI tests exercise reentry and exactly-once settlement. Python adapts filesystem/command transport over the TypeScript decision owner. Native Goal begin-Turn, installed App/Lark/UI adoption, model token/IO cost and decision quality remain unqualified; existing trials are not changed. See the [TurnEnvelope capture contract](../../reference/protocols/turn-envelope-v0.md).
 
 ### What Is Missing
+
+#### Heartbeat and Turn Envelope convergence
+
+Under existing M7.4 and roadmap S2/S3/S6/S8, converge the **execution facts**
+used by heartbeat and Turn hosts, while keeping host effect ownership separate.
+Neither today's large quota packet nor the smaller TurnEnvelope is a target
+shape merely because of its size. Optional memory participation now has one
+compact, signed envelope projection; the Codex CLI adapter preserves default-off
+isolation. This does not qualify installed heartbeat/App adoption or model value.
+
+Current source-path audit for the first convergence slice:
+
+| Execution fact | Existing owner / projection | Remaining boundary |
+|---|---|---|
+| Goal/Agent/Todo identity | Quota selection and receipt; envelope actor, selected Todo and signed settlement identity | Capture identity and mutation-time validation remain necessary; display identity is not an execution grant |
+| Full requirements | Interaction required reads; compact commands retained verbatim | Shared full Goal/Todo reads are proposed in #5794; neither a summary nor a source hash proves that a host read them |
+| Capability refusal | Existing quota `capability_gate_v0`; compact boundary now retains exact `required`/`missing` arrays and historical source names | This repairs omitted facts, not readiness policy or capability activation |
+| Selection / claim / lease | Selected Todo, action portfolio and current owning transactions | Compact selected ownership is not a fresh lease; retain the captured source and revalidate at the owning mutation |
+| Replan / Goal closure | Replan action packet, contract capsule and vision audit | Full evidence remains on authorized detail paths; Todo completion is not Goal completion |
+| Settlement / scheduler | Intact typed settlement plan and explicit host-owned scheduler projection | Scheduler detail, actual host readback and exactly-once recovery still need host adoption qualification |
+| Optional memory | Verified boundary participation plus fresh host binding | Off/recall/ingest/stale/provider-failure isolation remains mandatory; transport parity is not model value |
+
+The capability-fact correction is a read-model change in the established
+TypeScript owner. Real captured File/SQLite decisions cover refusal and admission
+with memory off, recall-only, ingest-only and invalidated configuration. New
+projections sign those retained facts without rewriting saved signatures; no
+new coverage version, admission rule or Python policy is introduced. Host
+provider-failure and settlement cases remain covered separately, and do not
+qualify installed App convergence or model costs. Keep all three Todos below
+open until their own acceptance is met; this inventory is not blanket permission
+to delete the remaining Python IO adapters.
+
+Remaining implementation Todos, in dependency order:
+
+| Todo | Observable outcome and decisive acceptance |
+|---|---|
+| Reconcile execution/context requirements across heartbeat and TurnEnvelope | Same captured authoritative decision preserves actor/Goal/Todo, required full reads, claim/lease, action selection, replan/closure, conditional settlement and scheduler ownership. Inventory omitted/duplicated facts before deleting render branches. Include optional capabilities off, recall-only, ingest-only, stale binding and provider failure; private detail is accessed only through authorized references. |
+| Adopt one typed projection in real host renderers | Heartbeat full/thin and Turn host consume the same execution facts and per-Turn capture/detail route. Keep host-specific notification and scheduler transport explicit. Real File/SQLite CLI plus packaged Codex App tests cover reentry, source loss, refusal before required reads, late results, backoff and exactly-once settlement; no second admission from a detail read. Retire the replaced projection only after its last caller moves. |
+| Qualify the context shape and migration default | Compare the same normal, replan, wait/recovery and optional-capability workloads against both current full and compact paths. Measure payload/model tokens, detail IO, latency, resource growth, omissions and decision/outcome quality. Keep data loss, duplicate effects, identity and settlement errors as hard constraints. Preserve supported saved prompts/receipts and reversible rollout; change budgets or defaults only with that evidence. |
+
+Do not add a generic executor or lower an acceptance threshold to make a short
+packet pass. Preserve unsatisfied requirements and distinguish transport parity,
+installed host adoption and useful model outcomes. See the
+[current envelope contract](../../reference/protocols/turn-envelope-v0.md#optional-memory-participation).
 
 - A generic shared executor is deliberately absent. The current adapters share
   plan/receipt algebra but have different execution ownership, so M7.3

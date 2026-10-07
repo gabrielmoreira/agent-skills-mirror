@@ -245,6 +245,8 @@ the same handlers. There is no second handler set, no second semantic, and no He
 | `GET` | `/crew/v1/pane/:id/chat` | `GET …/chat` | proxied byte-for-byte — additive-optional (§7.1), added 2026-09-30 (M41/08). The live half of `history`: the same session log on the member that owns the pane, asked "anything after this?" rather than "show me this". The query (`after`, `before`, `limit`) rides through untouched, and `if-none-match` is already forwarded (§6), so the peer answers its own 304 and the lead re-emits it. A read, so it is attempted against a stale member rather than refused (§10.3). A lead that predates it never calls it, and a peer that predates it answers **404** to a lead that does — which the phone must read as "update this member", never as an empty session |
 | `GET` | `/crew/v1/pane/:id/changes` | `GET …/changes` | proxied byte-for-byte — additive-optional (§7.1). Read-only git over the folder of the pane's WORKSPACE on the machine that owns it (ADR 0065); the query (`depth`, `nested`, `repo`, `path`, and `view=commit` for the repo's last commit) rides through untouched. A lead that predates it never calls it, and a peer that predates it answers 404 to a lead that does |
 | `GET` | `/crew/v1/workspace/:id/changes` | `GET …/workspace/:id/changes` | proxied byte-for-byte — additive-optional (§7.1). The same list asked by workspace rather than by pane (ADR 0065), with the same query. A lead that predates it never calls it, and a peer that predates it answers 404 to a lead that does |
+| `GET` | `/crew/v1/pane/:id/files` | `GET …/files` | proxied byte-for-byte — additive-optional (§7.1), added 2026-10-05 (M45/03). One folder (`?dir=`) or one text file (`?path=`) under the same root the pane's Changes list reads, off **the member's own disk** (ADR 0083); the query rides through untouched. A READ for forwarding (attempted against a stale member, read budget, audited on neither side), but the member answers it only for a device its **own** device policy authorises, exactly as for a write (§12): `crewGate` takes its write branch for it. A lead that predates it never calls it, and a peer that predates it answers **404** to a lead that does, which the phone must read as "update this member", never as a missing file. A refused path is the member's own `404 { "error": "unknown-path" }`, told apart by its body. A listing row may carry `ignored: true` (additive-optional, added 2026-10-05): git says the entry is ignored in the repository that holds the folder, asked once per listing by the member over its own disk. A member that predates it, one with no repository there, and one whose git did not answer in time all send no field, and the phone then hides nothing for it. The phone hides flagged rows by default; it is a view filter, and an ignored file still reads |
+| `GET` | `/crew/v1/workspace/:id/files` | `GET …/workspace/:id/files` | proxied byte-for-byte — additive-optional (§7.1), added 2026-10-05 (M45/03). The same Files view asked by workspace, with the same query, gate and 404 reading as the pane row above |
 | `POST` | `/crew/v1/pane/:id/reply` | `POST …/reply` (`:279`) | forwarded |
 | `POST` | `/crew/v1/pane/:id/keys` | `POST …/keys` (`:280`) | forwarded |
 | `POST` | `/crew/v1/pane/:id/upload` | `POST …/upload` (`:281`) | forwarded (§13) |
@@ -324,6 +326,11 @@ answering build:
   `crew-ops.json`, which is the pre-amendment behaviour unchanged. **It rides `/crew/v1/snapshot`'s
   response too**, beside the body rather than inside it, for the warrant pair's reason. It names no
   secret: one integer, and one the caller itself issued.
+
+- `machineStats` is **OPTIONAL**, added 2026-10-05 (ADR 0084, §19 "The member's own load"): the
+  answering machine's last host sample, `{ cpu, cores, memUsed, memTotal, load1?, rxBps?, txBps?,
+  disks? }` (`disks` added later the same day: `[{ mount, used, total }]`, at most four, §19). It rides **`/crew/v1/snapshot`'s response only**, beside the body for the warrant pair's reason, and
+  never `hello`. **Absent or malformed means "this member reported no load"**, never "idle" (§7.1).
 
 - `pairingDigest` is **OPTIONAL**, added 2026-08-20 (§18.14): a digest of the synced paired-device
   registry this member holds, and `null`/absent on every member that holds none — which is every peer
@@ -589,6 +596,23 @@ updated machines, so build skew is the steady state (§7), and this section is t
   `expiring` pane, stays quiet on it on either side of the link. The label rides whole because the
   rule catalog is not forwarded (the bullet above). `CREW_PROTOCOL_VERSION` stays `1`, no new route,
   no new verb and no new header.
+
+- **A member's snapshot answer gained an optional `machineStats`** (added 2026-10-05, ADR 0084). It is
+  that machine's own load, read from the sample its sampler already holds, as a sibling of the body.
+  Additive-optional with the closed reading this section requires: **absent or malformed means no
+  load was reported**, which the lead shows as "no sample" and never as zero. An older peer omits it,
+  and an older lead passes it over untouched, so neither side refuses the other over it. The lead
+  drops the whole sample on any field out of range rather than keeping half of one. Nothing in
+  `bridge/crew/merge.ts` reads it, so it never reaches a browser's snapshot. `CREW_PROTOCOL_VERSION`
+  stays `2`, no new route, no new verb and no new header.
+
+- **`machineStats` gained an optional `disks`** (added 2026-10-05, ADR 0084 point 9), the same
+  additive-optional shape one level down: an array of `{ mount, used, total }` in bytes. **Absent or
+  empty means no disk was reported**, never an empty disk; an older member omits it, and an older lead
+  never reads it. A malformed entry (a non-string or empty mount, a control character in it, a
+  `total` that is not positive, a `used` outside `0..total`) drops the whole sample, like any other
+  field out of range. Past four entries the lead keeps the first four rather than refuse a later build
+  that sends more. Unknown keys inside an entry are ignored.
 
 - **An addition a lead has no reader for is INERT, not merely tolerated — measured, not assumed**
   (2026-09-08, §16's version-skew leg). This section's promise used to rest on a unit test with a
@@ -1199,6 +1223,11 @@ never crosses a crew link.
   is decided by a probe on its own budget, never by this one.
 - The peer sweep is a *part of* the existing poll, not a second timer. A solo lead runs no sweep at
   all (§11).
+- **An input makes the poll hot on both machines.** *(added 2026-10-05)* A `/reply` or `/keys` that
+  lands tightens the owning engine to `COLLIE_POLL_MS` for `HOT_POLLS` polls (`ARCHITECTURE.md` §5).
+  Forwarded to a member, it lands through the member's own dispatch, so the member goes hot there;
+  and the lead tightens its own primary engine too, because the sweep that brings the member's
+  answer back rides that tick. Still one interval per engine, re-armed, never a second one.
 - **A forwarded WRITE is not a poll, and gets its own budget.** *(added 2026-09-08)* The budget above
   bounds the **sweep**, where a slow peer stalls the lead's own snapshot for every phone watching.
   A write forwarded to a member (§5, §10.3) is one operator's one request, awaited on that request's
@@ -1418,7 +1447,7 @@ federation code exists to break it.
 
 | Surface | Solo behaviour | Decided at |
 |---|---|---|
-| Routes served to a browser | unchanged; **zero** routes added, zero status codes changed | `bridge/server.ts:165-390` |
+| Routes served to a browser | unchanged; **zero** routes added, zero status codes changed. Amended on purpose 2026-10-05 (ADR 0084): `GET /api/machines`, `GET /api/machines/:id/history` and `POST /api/machines/:id/alerts` answer on a solo collie for its one machine, id `local`; they name no crew state and are pinned in `bridge/solo-baseline.test.ts` | `bridge/server.ts:165-390` |
 | `/crew/v1/*` | **not routed at all** — no crew prefix is registered with zero peers | §5 |
 | Snapshot bytes | unchanged — `servers` is **omitted**, and no `host` field is added to sessions or panes | `bridge/types.ts:164-186` |
 | Snapshot ETag | **unchanged.** Follows from the row above: no added field, no shifted hash | `bridge/http-cache.ts:16-19` |
@@ -1426,9 +1455,9 @@ federation code exists to break it.
 | `?h=` | never emitted by the client, never present in a URL | `web/src/lib/session.ts:28-31` |
 | Notification tags | unchanged — the primary keeps the bare `collie:herd` | `bridge/sessions.ts:33-35` |
 | Push payload | unchanged — no `host` field, mirroring how `session` is stamped only for non-primary | `bridge/push.ts:124-131` |
-| Poll cadence | unchanged — **no second timer, no peer sweep**, same idle relaxation | `bridge/event-poker.ts`, `bridge/config.ts:212-213` |
+| Poll cadence | unchanged — **no second timer, no peer sweep**, same idle relaxation. Amended on purpose 2026-10-05: the one interval runs at the fast cadence for `HOT_POLLS` polls after an input or a new agent pane with no session (`ARCHITECTURE.md` §5), solo or not, and names no crew state | `bridge/event-poker.ts`, `bridge/config.ts:212-213` |
 | Audit line bytes | unchanged — `host` is omitted, not null, exactly as `session`/`device` are today | `bridge/audit.ts:55-61` |
-| Files written | **exactly today's set**: `uploads/`, `audit.log`, `push-subscriptions.json`, `snooze.json`, `notify-prefs.json`, `activity.json`, `update-state.json`. **No key, no certificate, no trust store, no roster.** Amended on purpose 2026-09-27 (M40/02, #289): `folders.json` joins the set as a file written **only after the first space created with a folder or the first star** — an instance that never does either writes nothing new, and it names no crew state | `bridge/server.ts:1075`, `bridge/audit.ts:65`, `bridge/push.ts:86`, `bridge/snooze.ts:19`, `bridge/notify-prefs.ts:45`, `bridge/activity.ts:100`, `bridge/update.ts:147`, `bridge/folders.ts` |
+| Files written | **exactly today's set**: `uploads/`, `audit.log`, `push-subscriptions.json`, `snooze.json`, `notify-prefs.json`, `activity.json`, `update-state.json`. **No key, no certificate, no trust store, no roster.** Amended on purpose 2026-09-27 (M40/02, #289): `folders.json` joins the set as a file written **only after the first space created with a folder or the first star** — an instance that never does either writes nothing new, and it names no crew state. Amended on purpose 2026-10-05 (ADR 0084): `machine-history.json` is written from the tick at most once every five minutes once a minute is recorded, and `machine-alerts.json` only after the operator sets the first rule | `bridge/server.ts:1075`, `bridge/audit.ts:65`, `bridge/push.ts:86`, `bridge/snooze.ts:19`, `bridge/notify-prefs.ts:45`, `bridge/activity.ts:100`, `bridge/update.ts:147`, `bridge/folders.ts`, `bridge/machine-history.ts`, `bridge/machine-alerts.ts` |
 | Ports opened | exactly one, loopback, as today. The standby door's second listener (§18.15) is bound only when `COLLIE_STANDBY_PORT` is set **and** a trust store exists, which a solo instance has neither of | `bridge/config.ts:210-211`, `bridge/crew/standby.ts` |
 
 **Why `servers` is optional-and-absent rather than always-present.** An always-present field — even a
@@ -1504,6 +1533,11 @@ happened on the peer's terminals.
   depends on the other's disk to answer "what happened here".
 - **A peer is never asked to trust the lead's authorisation decision in place of its own.** The peer
   applies its own write-level checks to a crew request; the lead's gate does not stand in for them.
+- **One read borrows the write's device check** (added 2026-10-05, ADR 0083): `files` on the pane and
+  workspace routes. It is still a read on the link (forwarded on the read budget, audited on neither
+  side), but the peer answers it only when `X-Crew-Device` names a device its own allowlist holds,
+  the same branch of `crewGate` a write takes. Additive inside protocol version 2: the route is new,
+  so no request that crossed the link before is gated differently.
 
 ---
 
@@ -2831,6 +2865,47 @@ never marked done.
   §20's business, on the lead's side, from the string the member sent.
 - No new route, no new dial, no new budget. The field rides an answer §10.1 already collects, so a
   crew of any size pays nothing for it.
+
+### The member's own load, in the same seat *(added 2026-10-05, ADR 0084)*
+
+`GET /crew/v1/snapshot`'s response also carries an optional **`machineStats`**: the answering
+machine's last host sample. Same seat as `version`, `updatePreflight` and `updateRun`, same reason,
+same protocol integer: `X-Crew-Protocol` stays `2`.
+
+```json
+{ "machineStats": { "cpu": 0.42, "cores": 8, "memUsed": 6000000000, "memTotal": 16000000000, "load1": 2.5, "rxBps": 100000, "txBps": 20000,
+  "disks": [{ "mount": "/var/home", "used": 635751247872, "total": 966259671040 }] } }
+```
+
+- `cpu` is the busy share of all cores, `0..1`, since the sample before. `memUsed` and `memTotal` are
+  bytes. `load1` is absent where the OS has none (Windows). `rxBps` and `txBps` are bytes per second
+  over the physical interfaces (loopback, bridges, veth and tap ends, tunnels and bonds are left out,
+  because their bytes cross a physical interface too), absent where they cannot be read (every OS
+  but Linux today).
+- `disks` (optional) is the filesystems holding the member's home folder, its root (the system drive
+  on Windows) and its Collie state folder: one entry per device, at most four. `used` is `df`'s Used
+  and `total` is `used` plus the space an unprivileged process can still write, so `used / total` is
+  `df`'s Use%. `mount` is the label to show (`/var/home`, `/`, `C:`). A filesystem under 1 GiB, or one
+  that is read-only with no free block (a composefs or squashfs root image), is left out. The member
+  reads them with `statfs`, async, at most once a minute, started from its tick and never awaited, so
+  a hung network mount cannot hold the tick or the answer; a path whose last answer is over three
+  minutes old is left out rather than served stale. No child process.
+- The member **reads what its sampler already holds**. The answer does no disk read and no system
+  call, and the sampler itself rides the member's own `StateEngine.onTick` at most once every 15
+  seconds (§10.1: no second timer; on the 12 s idle tick that is every 24 s, never less than once a
+  minute). Only the lead samples faster, every 5 s, while a phone reads its machine list. Before
+  its second reading there is no sample, and the field is omitted.
+- The lead **stamps it on receipt**, on its own clock (§10.2), and folds it into that machine's
+  minute history. A malformed field drops the whole sample. An unknown key inside it is ignored. A
+  sample equal in every field to the last one the lead took from that member is the same reading
+  served again (the lead swept faster than the member samples, or the member's sampler stopped), so
+  the lead neither records it nor stamps it: the minutes stay empty and the reading ages. `disks` is
+  part of that comparison: a healthy member repeats its disks for a minute by design, but its CPU and
+  memory still move, so only a sampler that stopped repeats every field.
+- **What the lead keeps is the lead's.** The day of minutes (`machine-history.json`) and the alert
+  rules (`machine-alerts.json`) live on the lead only. A peer writes neither, and none of the three
+  `/api/machines*` routes is forwarded with `?host=` (§9.1): a peer answers them `404 crew.not_lead`.
+- No new route, no new dial, no new budget. The field rides an answer §10.1 already collects.
 
 ### The header
 

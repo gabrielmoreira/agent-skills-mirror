@@ -83,6 +83,8 @@ skillshare install user/repo --skip-audit             # Skip security scan
 
 **Fuzzy subdirectory resolution:** When a monorepo has nested skill directories, you can specify just the skill name — e.g., `user/repo/vue-best-practices` finds `skills/vue-best-practices/` automatically. Fails with an error if multiple matches exist.
 
+**Git submodules:** skillshare does not fetch submodules. A path that is, or lies inside, a submodule fails with an error naming its upstream URL; install from that upstream instead. Whole-repo browsing, `--track` and `update` warn about each submodule they skip.
+
 **Tracked repos:** Prefixed with `_`, nested with `__` (e.g., `_team__frontend__ui`).
 Tracked custom names must not contain path separators (`/`, `\`) or `..`.
 

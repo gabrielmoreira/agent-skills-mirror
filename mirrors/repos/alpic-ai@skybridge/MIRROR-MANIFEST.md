@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `alpic-ai/skybridge` — 26 default patterns, 0 followed patterns, 40 file(s) materialized.
+Mirror of `alpic-ai/skybridge` — 26 default patterns, 0 followed patterns, 41 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `alpic-ai/skybridge` — 26 default patterns, 0 followed patterns, 40 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 40 |
+| Files         | 41 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -86,19 +86,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | ✓ | [`skills/chatgpt-app-builder/references/download-file.md`](skills/chatgpt-app-builder/references/download-file.md) |
 | 26 | ✓ | [`skills/chatgpt-app-builder/references/ecommerce.md`](skills/chatgpt-app-builder/references/ecommerce.md) |
 | 27 | ✓ | [`skills/chatgpt-app-builder/references/evals.md`](skills/chatgpt-app-builder/references/evals.md) |
-| 28 | ✓ | [`skills/chatgpt-app-builder/references/fetch-and-render-data.md`](skills/chatgpt-app-builder/references/fetch-and-render-data.md) |
-| 29 | ✓ | [`skills/chatgpt-app-builder/references/migrate-to-v1.md`](skills/chatgpt-app-builder/references/migrate-to-v1.md) |
-| 30 | ✓ | [`skills/chatgpt-app-builder/references/oauth.md`](skills/chatgpt-app-builder/references/oauth.md) |
-| 31 | ✓ | [`skills/chatgpt-app-builder/references/open-external-links.md`](skills/chatgpt-app-builder/references/open-external-links.md) |
-| 32 | ✓ | [`skills/chatgpt-app-builder/references/openai-extensions.md`](skills/chatgpt-app-builder/references/openai-extensions.md) |
-| 33 | ✓ | [`skills/chatgpt-app-builder/references/prompt-llm.md`](skills/chatgpt-app-builder/references/prompt-llm.md) |
-| 34 | ✓ | [`skills/chatgpt-app-builder/references/publish.md`](skills/chatgpt-app-builder/references/publish.md) |
-| 35 | ✓ | [`skills/chatgpt-app-builder/references/run-locally.md`](skills/chatgpt-app-builder/references/run-locally.md) |
-| 36 | ✓ | [`skills/chatgpt-app-builder/references/state-and-context.md`](skills/chatgpt-app-builder/references/state-and-context.md) |
-| 37 | ✓ | [`skills/chatgpt-app-builder/references/ui-guidelines.md`](skills/chatgpt-app-builder/references/ui-guidelines.md) |
-| 38 | ✓ | [`skills/chatgpt-app-builder/SKILL.md`](skills/chatgpt-app-builder/SKILL.md) |
-| 39 | ✓ | [`skills/mcp-app-builder/SKILL.md`](skills/mcp-app-builder/SKILL.md) |
-| 40 | ✓ | [`skills/skybridge/SKILL.md`](skills/skybridge/SKILL.md) |
+| 28 | ✓ | [`skills/chatgpt-app-builder/references/events.md`](skills/chatgpt-app-builder/references/events.md) |
+| 29 | ✓ | [`skills/chatgpt-app-builder/references/fetch-and-render-data.md`](skills/chatgpt-app-builder/references/fetch-and-render-data.md) |
+| 30 | ✓ | [`skills/chatgpt-app-builder/references/migrate-to-v1.md`](skills/chatgpt-app-builder/references/migrate-to-v1.md) |
+| 31 | ✓ | [`skills/chatgpt-app-builder/references/oauth.md`](skills/chatgpt-app-builder/references/oauth.md) |
+| 32 | ✓ | [`skills/chatgpt-app-builder/references/open-external-links.md`](skills/chatgpt-app-builder/references/open-external-links.md) |
+| 33 | ✓ | [`skills/chatgpt-app-builder/references/openai-extensions.md`](skills/chatgpt-app-builder/references/openai-extensions.md) |
+| 34 | ✓ | [`skills/chatgpt-app-builder/references/prompt-llm.md`](skills/chatgpt-app-builder/references/prompt-llm.md) |
+| 35 | ✓ | [`skills/chatgpt-app-builder/references/publish.md`](skills/chatgpt-app-builder/references/publish.md) |
+| 36 | ✓ | [`skills/chatgpt-app-builder/references/run-locally.md`](skills/chatgpt-app-builder/references/run-locally.md) |
+| 37 | ✓ | [`skills/chatgpt-app-builder/references/state-and-context.md`](skills/chatgpt-app-builder/references/state-and-context.md) |
+| 38 | ✓ | [`skills/chatgpt-app-builder/references/ui-guidelines.md`](skills/chatgpt-app-builder/references/ui-guidelines.md) |
+| 39 | ✓ | [`skills/chatgpt-app-builder/SKILL.md`](skills/chatgpt-app-builder/SKILL.md) |
+| 40 | ✓ | [`skills/mcp-app-builder/SKILL.md`](skills/mcp-app-builder/SKILL.md) |
+| 41 | ✓ | [`skills/skybridge/SKILL.md`](skills/skybridge/SKILL.md) |
 
 ---
 

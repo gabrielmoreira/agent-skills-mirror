@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Kiln-AI/Kiln` — 26 default patterns, 0 followed patterns, 145 file(s) materialized.
+Mirror of `Kiln-AI/Kiln` — 26 default patterns, 0 followed patterns, 146 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Kiln-AI/Kiln` — 26 default patterns, 0 followed patterns, 145 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 145 |
+| Files         | 146 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -187,23 +187,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 126 | ✓ | [`.agents/skills/kiln-conventions/scripts/gate_config.json`](.agents/skills/kiln-conventions/scripts/gate_config.json) |
 | 127 | ✓ | [`.agents/skills/kiln-conventions/scripts/test_conventions_gate.py`](.agents/skills/kiln-conventions/scripts/test_conventions_gate.py) |
 | 128 | ✓ | [`.agents/skills/kiln-conventions/SKILL.md`](.agents/skills/kiln-conventions/SKILL.md) |
-| 129 | ✓ | [`.agents/skills/kiln-prerelease-check/SKILL.md`](.agents/skills/kiln-prerelease-check/SKILL.md) |
-| 130 | ✓ | [`.agents/skills/kiln-ui/SKILL.md`](.agents/skills/kiln-ui/SKILL.md) |
-| 131 | ✓ | [`.agents/skills/kiln-ui/ui_gate_allow.txt`](.agents/skills/kiln-ui/ui_gate_allow.txt) |
-| 132 | ✓ | [`.agents/skills/kiln-ui/ui_gate.sh`](.agents/skills/kiln-ui/ui_gate.sh) |
-| 133 | ✓ | [`.agents/skills/open-pr/references/repair_pr.md`](.agents/skills/open-pr/references/repair_pr.md) |
-| 134 | ✓ | [`.agents/skills/open-pr/SKILL.md`](.agents/skills/open-pr/SKILL.md) |
-| 135 | ✓ | [`.agents/skills/playwright/references/driving_the_ui.md`](.agents/skills/playwright/references/driving_the_ui.md) |
-| 136 | ✓ | [`.agents/skills/playwright/references/e2e_suite.md`](.agents/skills/playwright/references/e2e_suite.md) |
-| 137 | ✓ | [`.agents/skills/playwright/references/extending_the_fixture.md`](.agents/skills/playwright/references/extending_the_fixture.md) |
-| 138 | ✓ | [`.agents/skills/playwright/references/search_tool.md`](.agents/skills/playwright/references/search_tool.md) |
-| 139 | ✓ | [`.agents/skills/playwright/references/seeded_project.md`](.agents/skills/playwright/references/seeded_project.md) |
-| 140 | ✓ | [`.agents/skills/playwright/SKILL.md`](.agents/skills/playwright/SKILL.md) |
-| 141 | ✓ | [`.agents/skills/qa/SKILL.md`](.agents/skills/qa/SKILL.md) |
-| 142 | ✓ | [`.agents/skills/release-digest/scripts/gather_changes.py`](.agents/skills/release-digest/scripts/gather_changes.py) |
-| 143 | ✓ | [`.agents/skills/release-digest/SKILL.md`](.agents/skills/release-digest/SKILL.md) |
-| 144 | ✓ | [`.agents/tables_style.md`](.agents/tables_style.md) |
-| 145 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 129 | ✓ | [`.agents/skills/kiln-model-sweep/SKILL.md`](.agents/skills/kiln-model-sweep/SKILL.md) |
+| 130 | ✓ | [`.agents/skills/kiln-prerelease-check/SKILL.md`](.agents/skills/kiln-prerelease-check/SKILL.md) |
+| 131 | ✓ | [`.agents/skills/kiln-ui/SKILL.md`](.agents/skills/kiln-ui/SKILL.md) |
+| 132 | ✓ | [`.agents/skills/kiln-ui/ui_gate_allow.txt`](.agents/skills/kiln-ui/ui_gate_allow.txt) |
+| 133 | ✓ | [`.agents/skills/kiln-ui/ui_gate.sh`](.agents/skills/kiln-ui/ui_gate.sh) |
+| 134 | ✓ | [`.agents/skills/open-pr/references/repair_pr.md`](.agents/skills/open-pr/references/repair_pr.md) |
+| 135 | ✓ | [`.agents/skills/open-pr/SKILL.md`](.agents/skills/open-pr/SKILL.md) |
+| 136 | ✓ | [`.agents/skills/playwright/references/driving_the_ui.md`](.agents/skills/playwright/references/driving_the_ui.md) |
+| 137 | ✓ | [`.agents/skills/playwright/references/e2e_suite.md`](.agents/skills/playwright/references/e2e_suite.md) |
+| 138 | ✓ | [`.agents/skills/playwright/references/extending_the_fixture.md`](.agents/skills/playwright/references/extending_the_fixture.md) |
+| 139 | ✓ | [`.agents/skills/playwright/references/search_tool.md`](.agents/skills/playwright/references/search_tool.md) |
+| 140 | ✓ | [`.agents/skills/playwright/references/seeded_project.md`](.agents/skills/playwright/references/seeded_project.md) |
+| 141 | ✓ | [`.agents/skills/playwright/SKILL.md`](.agents/skills/playwright/SKILL.md) |
+| 142 | ✓ | [`.agents/skills/qa/SKILL.md`](.agents/skills/qa/SKILL.md) |
+| 143 | ✓ | [`.agents/skills/release-digest/scripts/gather_changes.py`](.agents/skills/release-digest/scripts/gather_changes.py) |
+| 144 | ✓ | [`.agents/skills/release-digest/SKILL.md`](.agents/skills/release-digest/SKILL.md) |
+| 145 | ✓ | [`.agents/tables_style.md`](.agents/tables_style.md) |
+| 146 | ✓ | [`AGENTS.md`](AGENTS.md) |
 
 ---
 

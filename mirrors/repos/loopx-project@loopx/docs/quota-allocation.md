@@ -217,6 +217,15 @@ eligible frontier changes. Reentering the same Turn returns
 new work or replan obligations. Missing, rejected or mismatched checkpoints and
 receipts remain incomplete; this replay rule grants no Todo or Goal completion.
 
+An interrupted Todo-bound Turn retains the same identity before closeout too.
+Its replayed receipt, selected Todo and settlement commands must agree even if
+a higher-priority dated successor becomes ready after admission. Frontier
+discovery cannot rebind the old Turn; recover its verified effects first, then
+select the due successor under a fresh Turn. A stopped local trial does not
+become progress through recovery. Promoted authority's existing typed blocked
+closeout can use a Turn-owned retry for an open Todo without a resume condition,
+without inventing an external dependency or restarting the trial's budget.
+
 A Todo-bound path replan can be qualified during execution even when the
 initial guard selected no replan obligation. Its exact durable writeback must
 carry a recorded `autonomous_replan_ack_v0` with an accepted semantic delta or
@@ -713,6 +722,12 @@ must reopen, supersede, or record a public-safe no-follow-up rationale before
 ordinary delivery work. Only when no ready current-agent/unclaimed deferred
 resume exists should agent-scoped quota fall through to `agent_scope_wait`,
 `reassignment_required`, or `scope_exhausted`.
+
+The generated reopen command uses `--status open --clear-resume-when --reason`
+to consume the existing narrow lifecycle transition. Under canonical hard
+leases this resumes unchanged work without granting execution authority; the
+worker must then acquire a fresh lease. Bundling `--note`, evidence or other
+execution edits into that command remains subject to the normal lease fence.
 
 Priority remains authoritative across the resume boundary. When a ready
 current-agent or unclaimed deferred successor has strictly higher priority than

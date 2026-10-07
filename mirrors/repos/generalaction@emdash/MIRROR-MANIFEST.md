@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `generalaction/emdash` — 26 default patterns, 4 followed patterns, 62 file(s) materialized.
+Mirror of `generalaction/emdash` — 26 default patterns, 4 followed patterns, 63 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `generalaction/emdash` — 26 default patterns, 4 followed patterns, 6
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 62 |
+| Files         | 63 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -116,14 +116,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 52 | ✓ | [`packages/core/docs/README.md`](packages/core/docs/README.md) |
 | 53 | ✓ | [`packages/core/README.md`](packages/core/README.md) |
 | 54 | ✓ | [`packages/core/src/primitives/sqlite-store/README.md`](packages/core/src/primitives/sqlite-store/README.md) |
-| 55 | ✓ | [`packages/shared/README.md`](packages/shared/README.md) |
-| 56 | ✓ | [`packages/wire/docs/README.md`](packages/wire/docs/README.md) |
-| 57 | ✓ | [`packages/wire/examples/README.md`](packages/wire/examples/README.md) |
-| 58 | ✓ | [`packages/wire/src/state/README.md`](packages/wire/src/state/README.md) |
-| 59 | → | [`apps/workspace-server/docs/packaging.md`](apps/workspace-server/docs/packaging.md) |
-| 60 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 61 | → | [`LICENSE.md`](LICENSE.md) |
-| 62 | → | [`README.md`](README.md) |
+| 55 | ✓ | [`packages/core/src/runtimes/lsp/README.md`](packages/core/src/runtimes/lsp/README.md) |
+| 56 | ✓ | [`packages/shared/README.md`](packages/shared/README.md) |
+| 57 | ✓ | [`packages/wire/docs/README.md`](packages/wire/docs/README.md) |
+| 58 | ✓ | [`packages/wire/examples/README.md`](packages/wire/examples/README.md) |
+| 59 | ✓ | [`packages/wire/src/state/README.md`](packages/wire/src/state/README.md) |
+| 60 | → | [`apps/workspace-server/docs/packaging.md`](apps/workspace-server/docs/packaging.md) |
+| 61 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 62 | → | [`LICENSE.md`](LICENSE.md) |
+| 63 | → | [`README.md`](README.md) |
 
 ---
 

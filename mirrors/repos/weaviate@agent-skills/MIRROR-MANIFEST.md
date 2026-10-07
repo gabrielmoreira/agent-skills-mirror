@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `weaviate/agent-skills` — 26 default patterns, 1 followed patterns, 42 file(s) materialized.
+Mirror of `weaviate/agent-skills` — 26 default patterns, 1 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `weaviate/agent-skills` — 26 default patterns, 1 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 42 |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,46 +61,48 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`skills/weaviate-cookbooks/references/advanced_rag.md`](skills/weaviate-cookbooks/references/advanced_rag.md) |
-| 4 | ✓ | [`skills/weaviate-cookbooks/references/agentic_rag.md`](skills/weaviate-cookbooks/references/agentic_rag.md) |
-| 5 | ✓ | [`skills/weaviate-cookbooks/references/async_client.md`](skills/weaviate-cookbooks/references/async_client.md) |
-| 6 | ✓ | [`skills/weaviate-cookbooks/references/basic_agent.md`](skills/weaviate-cookbooks/references/basic_agent.md) |
-| 7 | ✓ | [`skills/weaviate-cookbooks/references/basic_rag.md`](skills/weaviate-cookbooks/references/basic_rag.md) |
-| 8 | ✓ | [`skills/weaviate-cookbooks/references/data_explorer.md`](skills/weaviate-cookbooks/references/data_explorer.md) |
-| 9 | ✓ | [`skills/weaviate-cookbooks/references/environment_requirements.md`](skills/weaviate-cookbooks/references/environment_requirements.md) |
-| 10 | ✓ | [`skills/weaviate-cookbooks/references/frontend_interface.md`](skills/weaviate-cookbooks/references/frontend_interface.md) |
-| 11 | ✓ | [`skills/weaviate-cookbooks/references/pdf_multimodal_rag.md`](skills/weaviate-cookbooks/references/pdf_multimodal_rag.md) |
-| 12 | ✓ | [`skills/weaviate-cookbooks/references/project_setup.md`](skills/weaviate-cookbooks/references/project_setup.md) |
-| 13 | ✓ | [`skills/weaviate-cookbooks/references/query_agent_chatbot.md`](skills/weaviate-cookbooks/references/query_agent_chatbot.md) |
-| 14 | ✓ | [`skills/weaviate-cookbooks/SKILL.md`](skills/weaviate-cookbooks/SKILL.md) |
-| 15 | ✓ | [`skills/weaviate/references/ask.md`](skills/weaviate/references/ask.md) |
-| 16 | ✓ | [`skills/weaviate/references/create_collection.md`](skills/weaviate/references/create_collection.md) |
-| 17 | ✓ | [`skills/weaviate/references/environment_requirements.md`](skills/weaviate/references/environment_requirements.md) |
-| 18 | ✓ | [`skills/weaviate/references/example_data.md`](skills/weaviate/references/example_data.md) |
-| 19 | ✓ | [`skills/weaviate/references/explore_collection.md`](skills/weaviate/references/explore_collection.md) |
-| 20 | ✓ | [`skills/weaviate/references/fetch_filter.md`](skills/weaviate/references/fetch_filter.md) |
-| 21 | ✓ | [`skills/weaviate/references/get_collection.md`](skills/weaviate/references/get_collection.md) |
-| 22 | ✓ | [`skills/weaviate/references/hybrid_search.md`](skills/weaviate/references/hybrid_search.md) |
-| 23 | ✓ | [`skills/weaviate/references/import_data.md`](skills/weaviate/references/import_data.md) |
-| 24 | ✓ | [`skills/weaviate/references/keyword_search.md`](skills/weaviate/references/keyword_search.md) |
-| 25 | ✓ | [`skills/weaviate/references/list_collections.md`](skills/weaviate/references/list_collections.md) |
-| 26 | ✓ | [`skills/weaviate/references/query_search.md`](skills/weaviate/references/query_search.md) |
-| 27 | ✓ | [`skills/weaviate/references/semantic_search.md`](skills/weaviate/references/semantic_search.md) |
-| 28 | ✓ | [`skills/weaviate/scripts/ask.py`](skills/weaviate/scripts/ask.py) |
-| 29 | ✓ | [`skills/weaviate/scripts/create_collection.py`](skills/weaviate/scripts/create_collection.py) |
-| 30 | ✓ | [`skills/weaviate/scripts/example_data.py`](skills/weaviate/scripts/example_data.py) |
-| 31 | ✓ | [`skills/weaviate/scripts/explore_collection.py`](skills/weaviate/scripts/explore_collection.py) |
-| 32 | ✓ | [`skills/weaviate/scripts/fetch_filter.py`](skills/weaviate/scripts/fetch_filter.py) |
-| 33 | ✓ | [`skills/weaviate/scripts/get_collection.py`](skills/weaviate/scripts/get_collection.py) |
-| 34 | ✓ | [`skills/weaviate/scripts/hybrid_search.py`](skills/weaviate/scripts/hybrid_search.py) |
-| 35 | ✓ | [`skills/weaviate/scripts/import.py`](skills/weaviate/scripts/import.py) |
-| 36 | ✓ | [`skills/weaviate/scripts/keyword_search.py`](skills/weaviate/scripts/keyword_search.py) |
-| 37 | ✓ | [`skills/weaviate/scripts/list_collections.py`](skills/weaviate/scripts/list_collections.py) |
-| 38 | ✓ | [`skills/weaviate/scripts/query_search.py`](skills/weaviate/scripts/query_search.py) |
-| 39 | ✓ | [`skills/weaviate/scripts/semantic_search.py`](skills/weaviate/scripts/semantic_search.py) |
-| 40 | ✓ | [`skills/weaviate/scripts/weaviate_conn.py`](skills/weaviate/scripts/weaviate_conn.py) |
-| 41 | ✓ | [`skills/weaviate/SKILL.md`](skills/weaviate/SKILL.md) |
-| 42 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 3 | ✓ | [`skills/engram_memory/reference/engram_memory.md`](skills/engram_memory/reference/engram_memory.md) |
+| 4 | ✓ | [`skills/engram_memory/SKILL.md`](skills/engram_memory/SKILL.md) |
+| 5 | ✓ | [`skills/weaviate-cookbooks/references/advanced_rag.md`](skills/weaviate-cookbooks/references/advanced_rag.md) |
+| 6 | ✓ | [`skills/weaviate-cookbooks/references/agentic_rag.md`](skills/weaviate-cookbooks/references/agentic_rag.md) |
+| 7 | ✓ | [`skills/weaviate-cookbooks/references/async_client.md`](skills/weaviate-cookbooks/references/async_client.md) |
+| 8 | ✓ | [`skills/weaviate-cookbooks/references/basic_agent.md`](skills/weaviate-cookbooks/references/basic_agent.md) |
+| 9 | ✓ | [`skills/weaviate-cookbooks/references/basic_rag.md`](skills/weaviate-cookbooks/references/basic_rag.md) |
+| 10 | ✓ | [`skills/weaviate-cookbooks/references/data_explorer.md`](skills/weaviate-cookbooks/references/data_explorer.md) |
+| 11 | ✓ | [`skills/weaviate-cookbooks/references/environment_requirements.md`](skills/weaviate-cookbooks/references/environment_requirements.md) |
+| 12 | ✓ | [`skills/weaviate-cookbooks/references/frontend_interface.md`](skills/weaviate-cookbooks/references/frontend_interface.md) |
+| 13 | ✓ | [`skills/weaviate-cookbooks/references/pdf_multimodal_rag.md`](skills/weaviate-cookbooks/references/pdf_multimodal_rag.md) |
+| 14 | ✓ | [`skills/weaviate-cookbooks/references/project_setup.md`](skills/weaviate-cookbooks/references/project_setup.md) |
+| 15 | ✓ | [`skills/weaviate-cookbooks/references/query_agent_chatbot.md`](skills/weaviate-cookbooks/references/query_agent_chatbot.md) |
+| 16 | ✓ | [`skills/weaviate-cookbooks/SKILL.md`](skills/weaviate-cookbooks/SKILL.md) |
+| 17 | ✓ | [`skills/weaviate/references/ask.md`](skills/weaviate/references/ask.md) |
+| 18 | ✓ | [`skills/weaviate/references/create_collection.md`](skills/weaviate/references/create_collection.md) |
+| 19 | ✓ | [`skills/weaviate/references/environment_requirements.md`](skills/weaviate/references/environment_requirements.md) |
+| 20 | ✓ | [`skills/weaviate/references/example_data.md`](skills/weaviate/references/example_data.md) |
+| 21 | ✓ | [`skills/weaviate/references/explore_collection.md`](skills/weaviate/references/explore_collection.md) |
+| 22 | ✓ | [`skills/weaviate/references/fetch_filter.md`](skills/weaviate/references/fetch_filter.md) |
+| 23 | ✓ | [`skills/weaviate/references/get_collection.md`](skills/weaviate/references/get_collection.md) |
+| 24 | ✓ | [`skills/weaviate/references/hybrid_search.md`](skills/weaviate/references/hybrid_search.md) |
+| 25 | ✓ | [`skills/weaviate/references/import_data.md`](skills/weaviate/references/import_data.md) |
+| 26 | ✓ | [`skills/weaviate/references/keyword_search.md`](skills/weaviate/references/keyword_search.md) |
+| 27 | ✓ | [`skills/weaviate/references/list_collections.md`](skills/weaviate/references/list_collections.md) |
+| 28 | ✓ | [`skills/weaviate/references/query_search.md`](skills/weaviate/references/query_search.md) |
+| 29 | ✓ | [`skills/weaviate/references/semantic_search.md`](skills/weaviate/references/semantic_search.md) |
+| 30 | ✓ | [`skills/weaviate/scripts/ask.py`](skills/weaviate/scripts/ask.py) |
+| 31 | ✓ | [`skills/weaviate/scripts/create_collection.py`](skills/weaviate/scripts/create_collection.py) |
+| 32 | ✓ | [`skills/weaviate/scripts/example_data.py`](skills/weaviate/scripts/example_data.py) |
+| 33 | ✓ | [`skills/weaviate/scripts/explore_collection.py`](skills/weaviate/scripts/explore_collection.py) |
+| 34 | ✓ | [`skills/weaviate/scripts/fetch_filter.py`](skills/weaviate/scripts/fetch_filter.py) |
+| 35 | ✓ | [`skills/weaviate/scripts/get_collection.py`](skills/weaviate/scripts/get_collection.py) |
+| 36 | ✓ | [`skills/weaviate/scripts/hybrid_search.py`](skills/weaviate/scripts/hybrid_search.py) |
+| 37 | ✓ | [`skills/weaviate/scripts/import.py`](skills/weaviate/scripts/import.py) |
+| 38 | ✓ | [`skills/weaviate/scripts/keyword_search.py`](skills/weaviate/scripts/keyword_search.py) |
+| 39 | ✓ | [`skills/weaviate/scripts/list_collections.py`](skills/weaviate/scripts/list_collections.py) |
+| 40 | ✓ | [`skills/weaviate/scripts/query_search.py`](skills/weaviate/scripts/query_search.py) |
+| 41 | ✓ | [`skills/weaviate/scripts/semantic_search.py`](skills/weaviate/scripts/semantic_search.py) |
+| 42 | ✓ | [`skills/weaviate/scripts/weaviate_conn.py`](skills/weaviate/scripts/weaviate_conn.py) |
+| 43 | ✓ | [`skills/weaviate/SKILL.md`](skills/weaviate/SKILL.md) |
+| 44 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

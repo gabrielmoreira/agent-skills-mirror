@@ -71,7 +71,10 @@ Mental models, analogies, the guide's own advice, and how-to steps whose command
 ### How to cite
 
 - Link the Tier 1 page inline at the first mention of each volatile claim on a page, not at every repeat.
-- Give each page a one-line `Sources:` footer that lists the pages it relies on. It ends the page, except on a lesson, where the navigation links follow it.
+- Each page that carries a [stamp](#the-stamp), and this file, has a one-line `Sources:` footer after its content. Only the navigation line follows it: on a lesson, the one [Lessons](#lessons) describes; on other pages, the `Up:` link. The footer lists every page the page's statements rely on: each page linked as the source of a fact it states.
+  - Links that back no statement need not be listed: further reading (Go further, Official companions, Related pages), download and install pages, this repo's issue forms and the practice template, and pointers that say where to look, such as the sites in the Tier 1 table.
+  - A page made of links to its sources may name them in summary, as Further learning ("the pages linked above") and the Feature map ("each feature's linked page") do. A page that relies on no outside page needs no footer.
+  - README, the other community files, stubs and pages from the previous edition need no footer.
 - Anchor date-sensitive claims to a version (`v2.1.x`) or a full date.
 - Do not add access dates inline.
 
@@ -287,7 +290,7 @@ Callouts are GitHub alerts, at most two per lesson, each with one meaning:
 - A screen capture is allowed only when recognizing the real interface is the point and text cannot show it: at most three across the Beginner level. Each is taken in the practice template, cropped to the relevant interface (no startup banner, no Anthropic logo), scrubbed of personal paths, usernames, account emails, org names and tokens, given a 1px border, and captioned `Claude Code vX.Y.Z (stable), YYYY-MM-DD`.
 - Every image has alt text that says what the reader should learn from it, not "screenshot" and not a repeat of the caption.
 - Text in a diagram or image reaches 4.5:1 contrast in GitHub's light and dark themes; other marks reach 3:1.
-- No third-party images (logos, icons, slides, product screenshots), no animation and no embedded video.
+- No third-party images (logos, icons, slides, product screenshots), no animation and no embedded video. The one exception is the Claude mascot, [`assets/brand/claude-jumping.svg`](assets/brand/claude-jumping.svg) (MIT, credited in README), which jumps beside README's title and appears on the social card in its own colors.
 - The `images` check enforces the alt text, the Mermaid lines, and the names, references and budget below.
 - New images go under `assets/`: `assets/brand/` for the guide's identity and `assets/lessons/<lesson-id>/` for captures. Names are kebab-case, and paths are explicit and relative. Budget: an SVG up to 50 KB, a capture up to 200 KB. Every image that is not a capture ships its editable source beside it. Hand-drawn SVG is for the guide's identity pieces only.
 
@@ -318,6 +321,8 @@ Callouts are GitHub alerts, at most two per lesson, each with one meaning:
 ## File layout
 
 The folder layout changes while the guide is reworked into three levels, so this file does not list it yet. For examples, see [Adding a skill](#adding-a-skill).
+
+A pull request that adds a page under `docs/` also adds it to the "Everything in the guide" index in [README.md](README.md), so every page stays reachable from the front door.
 
 ## Anchor compatibility
 
@@ -358,4 +363,4 @@ The root `.claude/` is reserved for maintainer tooling. Do not add skills or oth
 
 By contributing, you agree your contributions are licensed under the MIT license (see [`LICENSE`](LICENSE)).
 
-Sources: [Extend Claude with skills](https://code.claude.com/docs/en/skills), [Advanced setup](https://code.claude.com/docs/en/setup), [Environment variables](https://code.claude.com/docs/en/env-vars), [Settings](https://code.claude.com/docs/en/settings), [Output styles](https://code.claude.com/docs/en/output-styles), [Your first day in Claude Code](https://support.claude.com/en/articles/14552382-your-first-day-in-claude-code), [The MCP Registry](https://modelcontextprotocol.io/registry/about), [official plugin `marketplace.json`](https://github.com/anthropics/claude-plugins-official/blob/main/.claude-plugin/marketplace.json), [Basic writing and formatting syntax](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)
+Sources: [Extend Claude with skills](https://code.claude.com/docs/en/skills), [Advanced setup](https://code.claude.com/docs/en/setup), [Environment variables](https://code.claude.com/docs/en/env-vars), [Settings](https://code.claude.com/docs/en/settings), [Output styles](https://code.claude.com/docs/en/output-styles), [Your first day in Claude Code](https://support.claude.com/en/articles/14552382-your-first-day-in-claude-code), [The MCP Registry](https://modelcontextprotocol.io/registry/about), [official plugin `marketplace.json`](https://github.com/anthropics/claude-plugins-official/blob/main/.claude-plugin/marketplace.json), [Basic writing and formatting syntax](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax), [Disabling and enabling a workflow](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/disable-and-enable-workflows), [REST API endpoints for repository traffic](https://docs.github.com/en/rest/metrics/traffic)

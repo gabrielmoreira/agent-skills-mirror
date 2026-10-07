@@ -2,6 +2,12 @@
 
 All notable changes to the PrestaShop Module Development skill.
 
+## [2026-10-06] - CategoryChoiceTreeType Self-Contained Documentation
+
+### Changed
+  - Updated grid references and grid bundle script
+
+
 ## [2026-08-10] - CategoryChoiceTreeType Self-Contained Documentation
 
 ### Changed

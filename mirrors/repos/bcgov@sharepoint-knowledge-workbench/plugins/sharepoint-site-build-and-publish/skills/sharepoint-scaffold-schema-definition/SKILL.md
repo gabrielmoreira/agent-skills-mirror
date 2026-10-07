@@ -18,6 +18,7 @@ function builds one from dictionaries.
 - [Quick start](#quick-start)
 - [Workflow](#workflow)
 - [Verification](#verification)
+- [References](#references)
 
 ## Constraints
 
@@ -44,3 +45,7 @@ python3 scripts/schema_scaffold.py --label pilot-site --output schema.json
 ## Verification
 
 Confirm the file exists, loads with `SiteSchemaDefinition.load`, and its section counts match the input.
+
+## References
+
+- [acceptance-criteria.md](references/acceptance-criteria.md) - Acceptance criteria and validation gates.

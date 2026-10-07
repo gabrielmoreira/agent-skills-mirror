@@ -43,7 +43,7 @@ a recursive inventory CSV. Use the bulk route for local Python page/document lin
 
 ```powershell
 pwsh -File scripts/spo-download-file.ps1 `
-  -ServerRelativeUrl "/sites/AG-CSB-INTRANET-DEV/Shared Documents/test2.html" `
+  -ServerRelativeUrl "/sites/Target-DEV/Shared Documents/test2.html" `
   -DestinationDir ".\temp"
 ```
 
@@ -51,7 +51,7 @@ pwsh -File scripts/spo-download-file.ps1 `
 
 ```powershell
 pwsh -File scripts/spo-download-file.ps1 `
-  -ServerRelativeUrl "/sites/AG-CSB-INTRANET-DEV/Shared Documents/test2.html" `
+  -ServerRelativeUrl "/sites/Target-DEV/Shared Documents/test2.html" `
   -DestinationDir ".\temp" `
   -Execute `
   -ConfirmToken DOWNLOAD-SPO-FILE

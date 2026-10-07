@@ -93,6 +93,44 @@ code-symbol and negative-walkthrough applicability. Inventory-only rows expose
 no executable review artifacts. Host skills route and publish this packet; they
 must not maintain a second explanation checklist.
 
+Architecture judgment is part of `change_proportionality.architecture_assessment`,
+not a second review checklist. Policy revision 19 asks the reviewer to separate
+the PR's behavior-bearing mechanisms into invariants, optional policies,
+provider IO, projections or local helpers. For each, identify the current and
+recommended owner, activation/default scope, failure/recovery consequence and
+the accepted contract, current maintainer direction or demonstrated risk behind
+that placement. Feature-off compatibility does not establish whether a core
+guarantee belongs behind an opt-in or an expensive strategy should be default.
+Judge both choices without inventing a requirement to widen defaults.
+
+Declare `retain`, `simplify_now`, `follow_up`, `not_yet_proven`, or a scoped
+`not_applicable`. Required simplification and material unknowns block APPROVE
+even when the surrounding proportionality label says `proportionate`, all tests
+pass and the latest bug is fixed. An unaccepted preference or future extension
+stays non-blocking. Publish the decisive `reason` and `current_pr_boundary` in
+the architecture or overall-evaluation section: name the useful current outcome,
+smallest repair and safely deferred owner/acceptance. A cohesive prerequisite can
+be approved without delivering its parent roadmap; an empty registry/schema
+cannot claim that outcome. Tightly coupled stages should be combined.
+Both published fields must contain visible text after ordinary Markdown
+normalization; empty link labels and formatting alone do not count. Formatted
+visible wording remains accepted without imposing a new prose style.
+
+架构判断进入既有比例评估：逐项说明核心保证、可选策略、provider IO 和投影的
+owner、默认范围及失败恢复，再决定当前 PR 交付边界。关闭态兼容通过不代表
+默认策略合理，最新 bug 修好也不消除已声明的必要架构收敛。必须现在修复或仍有
+关键未知时不能批准；未经接受的偏好保留为非阻塞建议。公开正文须带出决定性理由
+和本阶段结果，允许可独立验证的前置阶段，不要求补完全部父级 roadmap。
+两个公开字段归一化后须有可见文字；空链接或格式符号不能代替说明，正常格式文字仍可通过。
+
+The checker validates typed declarations, verdict consistency and publication;
+it cannot discover architectural insight or prove the review's truth. Paired
+architecture probes in `test_pr_review_behavior.py` exercise a coupled bundle,
+separate base/optional strategy, a legitimate opt-in, duplicate authority and
+distinct observer/required phases. They require explicit live qualification;
+offline consistency tests and skipped probes do not establish model improvement
+or justify a target rejection rate.
+
 Request intake precedes generic queue selection. The capability's
 `decision_procedure.establish_goal` receives current-session requests from other
 agents within an already authorized review assignment. Agent/thread provenance

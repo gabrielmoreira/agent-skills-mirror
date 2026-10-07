@@ -112,6 +112,114 @@ Events are sanitized at record time: compact text limits, credential-like
 markers rejected, and evidence refs must be public relative refs or opaque ids
 (for example `ov:doc:lustre-survey`), never local absolute paths.
 
+## Results From Ordinary Work Writeback
+
+An enabled evidence or planning mode accepts an explicit
+`explore_result_attachment_v0` on a Todo/Turn-bound `refresh-state`:
+
+```json
+{
+  "schema_version": "explore_result_attachment_v0",
+  "node_id": "bounded-prefix-question",
+  "question": "Does the tested prefix establish the tail bound?",
+  "applicability": "Finite prefix only; no uniform tail estimate.",
+  "input_revision": "fixture-v1",
+  "observation": "A divergent tail shares the tested prefix.",
+  "interpretation": "Require a uniform bound before transferring the result.",
+  "status": "refuted",
+  "evidence_refs": ["validation:counterexample-1"]
+}
+```
+
+In evidence or planning mode, the Todo-bound settlement plan exposes this
+optional attachment next to its agent-owned CLI `durable_writeback` step.
+Quota/heartbeat, compact envelopes and Todo terminal-recovery plans share the
+same capability-owned guidance. Driver-owned callback plans do not advertise
+an attachment command they cannot consume. The ordinary command stays executable without
+an attachment; off mode adds no attachment metadata or evidence requirement.
+This point-of-use hint complements the turn-start read hook; it does not inspect
+local logs, generate findings, or require a no-evidence acknowledgement.
+
+The hint includes an `attachment_template`, also returned as
+`graph.result_attachment_template` by `turn-context`. Fill its blank fields
+after validating a reusable constraint, counterexample, or a result that changes
+or justifies the next route. Local notes and validation files are not ingested
+automatically. The incomplete template is rejected; it is not a finding.
+Goal, Agent, Todo and Turn already come from the ordinary writeback. Supply the
+actual tested input revision yourself, since a code revision alone need not
+identify the tested data. Keep raw logs local and reference bounded evidence.
+These prompts guide optional capture, not a finding-per-turn requirement;
+successful ingestion and later use must be measured separately.
+
+Place the filled template in the top-level `explore_result` field of the vision
+JSON already passed to `--agent-vision-json`. This explicit field saves a separate
+result file; ordinary vision or `path_delta` text is never interpreted as a finding.
+The CLI separates the attachment from the generic vision packet and sends it
+through the same Explore validator and post-writeback hook.
+
+Alternatively, add `--explore-result-json result.json` to the ordinary admitted work
+writeback, retaining its Goal, Agent, Todo, Turn and delivery fields. When both
+sources are supplied, their normalized contents must agree; equivalent sources
+produce one result and conflicting or malformed sources fail before primary commit.
+Omit both sources for ordinary work without new evidence. Off mode rejects an
+explicit attachment before committing, while attachment-free work is unchanged.
+Removing the field or file option disables capture for that writeback; it does
+not erase existing evidence or change the Goal's Explore configuration. The
+attachment is validated before primary commit and stored with that writeback.
+The effect-free capability hook emits an ingestion intent; the consumer creates
+the question only if absent, appends a finding, and adds the reference through
+the existing Todo owner. This opt-in append may attach evidence to a completed
+Todo while retaining its terminal status and completion metadata; claim and
+lease checks still apply. A completed owner may use the retained released lease
+key and current version solely for this additive evidence association; it grants
+no renewed execution or other edit authority. Other completed-Todo edits remain rejected. It never acquires a claim, renews a lease, changes a
+question's existing status, or launches another worker. An existing question id
+must keep the same question and applicability; use a distinct id for a changed
+scope. `input_revision` is the caller's recorded revision, not a claim that the
+runtime independently verified the underlying artifact.
+
+Read back with `loopx explore turn-context --goal-id <id> --agent-id <agent>`
+and `loopx explore summary --goal-id <id>`. The bounded next-turn view retains
+up to three attached result summaries, including their applicability and input
+revision. In planning mode, results linked to the selected work take precedence
+over unrelated recent results within that same detail budget. One slot retains
+the latest linked refutation; remaining slots retain recent linked results, so
+new positive observations do not silently erase a counterexample’s scope. An
+explicit revision of the same finding replaces its earlier status. This does not
+change candidate scores or eligibility; read the full summary for additional
+evidence beyond the budget. Evidence-only mode retains recency order. Relevant
+Todo links continue through the existing branch planner.
+Reading evidence does not prove adoption: the next work decision should explain
+which result supports a changed route, continued work, or a justified replication.
+
+Decision reads (`turn-context`, summary, branch planners and graph export) validate
+the complete evidence log. Malformed, foreign-Goal or invalid-state records return
+an error instead of silently presenting partial evidence as an empty or clean
+route. A missing log still means no recorded evidence; disabled turn hooks do not
+read it. Repair the source log before retrying. A failed graph export leaves any
+previous output file intact.
+
+A graph/link delivery failure leaves the primary writeback committed and returns
+`explore_result_delivery.retryable=true`. Replay the **same** refresh command to
+complete delivery; conflicting attachment changes cannot rewrite the original
+Turn. Graph events are idempotent and Todo references merge against the owner's
+locked snapshot. Capacity remains eight references per Todo; it is never silently
+truncated. Successful replay needs no second graph event or Todo mutation.
+
+Use `tentative` for inconclusive observations or prerequisite failures. Neither
+compilation failure nor a score alone supplies a scientific interpretation.
+Routine work without reusable evidence needs no attachment. Omitting the option
+preserves ordinary writeback behavior; disabled Explore rejects an attachment
+before committing it. Disable further ingestion through the existing
+`configure-goal --explore-mode off --execute`; existing evidence remains readable.
+No attachment authorizes external publication or changes quota/settlement rules.
+
+This is a worker writeback integration slice. CLI result ingestion and existing
+graph projections are covered; a packaged frontend attachment authoring/retry
+journey is not delivered by this slice. Existing capability configuration remains
+the mode owner, and Lark publication remains separately authorized. Full research
+adoption and score benefit require a subsequent matched worker experiment.
+
 ## Projection And Topology
 
 `loopx explore summary` folds the log into
@@ -392,6 +500,25 @@ recording. The read folds existing history but bounds the returned context;
 it does not claim to reduce history IO. The agent chooses evidence-backed work;
 planner suggestions do not require branching on every turn or recording empty
 ceremonial nodes. Use the detail command when the short view is insufficient.
+
+Explicit writeback results default to three full scoped details, not a hard
+visibility limit. `graph.result_page` reports total/remaining counts and an
+executable `next_command`. Follow that command to read further pages; its
+revision binding rejects changed evidence instead of silently skipping results.
+Restart the first page if the evidence changes. To expand a page or narrow it
+to one question:
+
+```sh
+loopx explore turn-context --goal-id <id> --agent-id <agent> --result-limit 10
+loopx explore turn-context --goal-id <id> --agent-id <agent> --result-node <node-id> --result-limit 10
+```
+
+Page size accepts 1–20; every detail retains applicability and interpretation.
+Planning mode prioritizes one recent refutation per linked question before
+repeated findings on the same question. Evidence-only mode retains recency
+ordering. These reads do not alter planner scores, graph state, claims or quota.
+The dashboard's saved-evidence reader also pages through history; the CLI
+options above control the agent context, not dashboard page size.
 
 Planning context also keeps a bounded `typed_evidence_audit` on suggested
 branches with explicit Todo/node links, and up to three existing exploring

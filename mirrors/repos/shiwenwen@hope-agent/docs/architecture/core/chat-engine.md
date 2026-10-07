@@ -643,7 +643,7 @@ server-owned UI turn 运行期间注册 session-scoped `ReattachableUiSessionGua
 
 - **Anthropic**：`{role:assistant, content:[thinking, text, tool_use…]}`，thinking 不需要 signature；tool_use 必须有匹配 tool_result（自动补一条 `{role:user, content:[tool_result blocks]}`）。
 - **OpenAI Chat**：`{role:assistant, content, reasoning_content, tool_calls}`，缺失字段直接省略；tool_result 用独立 `{role:tool, tool_call_id, content}` 消息。
-- **OpenAI Responses / Codex**：`{type:message, role:assistant, content:[output_text]}` + 顶层 `{type:function_call …}` items。reasoning items 因缺 `encrypted_content`（runtime partial 拿不到），thinking 折叠进 `output_text` 文本；tool_result 用 `{type:function_call_output, call_id, output}` 顶层 item。
+- **OpenAI Responses / Codex**：`{type:message, role:assistant, content:[output_text]}` + 顶层 `{type:function_call …}` items。重建调用保留执行 `call_id`，缺少原始服务端条目标识时省略可选 `id`，不能用 `call_id` 代填；tool_result 用相同 `call_id` 配对的 `{type:function_call_output, call_id, output}` 顶层 item。reasoning items 因缺 `encrypted_content`（runtime partial 拿不到），thinking 折叠进 `output_text` 文本。
 
 partial blocks 在 `[系统事件]` marker 之前 push，所以模型读 history 时先看到结构化 partial，再看到"上面那段被中断了"的解释。
 

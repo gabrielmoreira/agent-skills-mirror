@@ -12,13 +12,18 @@ go test ./...               # run all tests
 go test ./object/... -run TestFoo  # run a single test
 ```
 
-**Frontend (React)**
+**Frontend (React + shadcn/ui, built with Vite)**
 ```bash
 cd web && yarn install
-yarn start                  # dev server on port 13001
-yarn build                  # production build (output goes to web/build, then copied to static/)
-yarn lint:js                # lint JS
+yarn start                  # dev server on port 13001, proxies /api to localhost:14000
+yarn build                  # production build (vite writes build-temp, mv.js swaps it into web/build)
+yarn typecheck              # tsc --noEmit
+yarn lint                   # eslint
 ```
+
+`web-old/` holds the previous Ant Design frontend. It is kept for reference only
+while bugs are chased down against it — it is not built, served or linted, and it
+does not get new work.
 
 **Full production build** uses `build.sh` which cross-compiles for linux/amd64, linux/arm64, linux/riscv64.
 
@@ -42,16 +47,19 @@ The backend is a standard [Beego](https://beego.vip/) MVC app. Every entity foll
 
 **i18n (backend):** `i18n/locales/{en,zh}/data.json` — keys are namespaced by category (e.g. `"comment:..."`, `"general:..."`). Use `c.T("namespace:key")` in controllers.
 
-### Frontend (React)
+### Frontend (React + shadcn/ui on Tailwind, TypeScript, Vite)
 
-**Routing** is all in `web/src/ManagementPage.js` — both the left sidebar menu and `<Route>` declarations live there. To add a new admin page:
-1. Add a `<Route>` in `renderRouter()`.
-2. Add a menu entry in the `getMenuItems()` function (within the correct group — Basic / Connectors / Admin etc.).
-3. Add the nav key to `NavItemTree.js` (`web/src/component/nav-item-tree/NavItemTree.js`) so it appears in the site Navbar Items config.
+**Routing** lives in `web/src/App.tsx`; every file in `web/src/pages` is its own lazy chunk, loaded by name. To add a new admin page:
+1. Create `web/src/pages/<Name>Page.tsx` (default export).
+2. Add a `<Route>` in `App.tsx` pointing at `page("<Name>Page")`.
+3. Add a menu entry in `getNavGroups()` (`web/src/lib/nav.ts`), in the correct group — Basic / Connectors / Admin etc.
+4. Add the nav key to `web/src/components/common/NavItemTree.tsx` so it appears in the site Navbar Items config.
 
-**Page pattern:** List pages extend `BaseListPage` (class component). They implement `fetch()` which calls a backend function and calls `this.setState({data, pagination})`. Edit pages are plain class components with `UNSAFE_componentWillMount` for initial data load. Both patterns are illustrated by `MessageListPage.js` / `MessageEditPage.js`.
+**Page pattern:** list pages render `CrudListPage` (`web/src/components/crud/`) with a `ColumnDef[]`; edit pages render `SimpleEditPage` with an `EditField[]`, or compose `EditPageShell` directly when the layout is custom. Both patterns are illustrated by `MessageListPage.tsx` / `MessageEditPage.tsx`.
 
-**Backend API layer:** `web/src/backend/<Entity>Backend.js` — thin `fetch()` wrappers, one file per entity. Standard exports: `getGlobal<Entities>`, `get<Entity>`, `update<Entity>`, `add<Entity>`, `delete<Entity>`.
+**Backend API layer:** `web/src/backend/<Entity>Backend.ts` — thin `fetch()` wrappers, one file per entity. Standard exports: `getGlobal<Entities>`, `get<Entity>`, `update<Entity>`, `add<Entity>`, `delete<Entity>`.
+
+**Per-instance config:** the backend sends the Casdoor issuer, client ID and branding in the `jsonWebConfig` cookie (set with index.html and with every `/api/get-account` response) and `web/src/Conf.ts` reads it at boot, so one build serves every instance.
 
 **i18n (frontend):** `web/src/locales/{en,zh}/data.json` namespaced by page/domain. Use `i18next.t("namespace:key")`.
 

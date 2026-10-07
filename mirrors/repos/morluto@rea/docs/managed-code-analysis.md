@@ -1,4 +1,4 @@
-# Managed-code analysis plan
+# Managed-code analysis and planned extensions
 
 REA inspects .NET PE/CLI artifacts without loading or executing their code.
 It can identify an assembly, inspect metadata and CIL, compare members across
@@ -27,6 +27,20 @@ This guide describes the implementation and verification of
 [ADR-0003](adr/0003-managed-code-evidence-and-provider-boundary.md). The canonical
 tool inventory is [`product-catalog.json`](product-catalog.json).
 
+## Shipped scope
+
+The canonical parser admits PE/CLI bytes and their metadata/CIL without loading
+an assembly. It reports observed implementation markers and unavailable facts;
+it does not unpack .NET single-file hosts, decode IL2CPP metadata, or infer a
+NativeAOT identity from an ordinary native PE. Inputs without admitted CLI
+metadata do not become managed assemblies through naming or routing guesses.
+Inspect separately obtained components explicitly and preserve their identities.
+
+The broader deployment classification and native-body mapping below are design
+goals from ADR-0003, not claims that every row has an implemented parser. A
+valid marker can establish a candidate native boundary, not recovered native
+semantics or runtime behavior.
+
 ## Analysis objective
 
 REA's managed-code track is intended to answer five different questions without
@@ -43,9 +57,9 @@ collapsing them:
 The ordinary workflow ends at question four. Static analysis never loads or
 executes the target.
 
-## Classification workflow
+## Planned deployment classification
 
-Classification proceeds from the outermost authenticated bytes inward:
+The intended extended classifier proceeds from outermost authenticated bytes inward:
 
 ```text
 source path
@@ -58,7 +72,7 @@ source path
   -> managed-only, native-only, composed, degraded, or unsupported route
 ```
 
-The result is a vector rather than one label. For example, a single-file modern
+The planned result is a vector rather than one label. For example, a single-file modern
 .NET deployment can contain a native host, ordinary CIL assemblies, and
 ReadyToRun components. Each component receives its own digest, classification,
 coverage, and route while retaining the outer bundle commitment.
@@ -75,6 +89,51 @@ coverage, and route while retaining the outer bundle commitment.
 | NativeAOT             | Native image plus bounded NativeAOT evidence                                 | Ordinary CLI metadata/CIL unless independently present                                    |
 | Obfuscated assembly   | Same positive byte observations as its underlying deployment form            | Meaning inferred only from names                                                          |
 | Malformed/unsupported | Exact admitted regions and failure locations                                 | Completeness, successfully skipped rows, or semantics beyond the admitted parser boundary |
+
+### NativeAOT metadata recovery
+
+NativeAOT removes the ordinary CIL method bodies, so a CIL decompiler cannot
+reconstruct those bodies as C# source. The executable remains a native target
+for Hopper or Ghidra, where decompilation produces pseudocode and analyst
+inference. This is a different route from ordinary managed member inspection.
+
+NativeAOT is not limited to Windows `.exe` files. The native image can be PE,
+ELF, or Mach-O, and NativeAOT can also publish shared libraries (PE DLL, ELF
+`.so`, or Mach-O `.dylib`) with explicitly exported entry points. Identify the
+image from its bytes and loader metadata, not its filename extension. When the
+image is inside an application bundle, inventory or extract the bundle first
+and carry the component identity into native analysis. Matching PDB, ELF debug,
+or dSYM sidecars can add symbol evidence when the selected provider supports
+them; verify their identity and keep them separate from observations made from
+the executable itself. [Microsoft's NativeAOT overview](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/)
+lists supported OS/architecture targets and deployment limitations, while its
+[native library guide](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/libraries)
+describes exported shared-library entry points.
+
+The [Ghidra NativeAOT analyzer](https://github.com/Washi1337/ghidra-nativeaot)
+is a useful optional companion for recovering ReadyToRun metadata. It
+rehydrates the `DEHYDRATED_DATA` section and annotates method tables, type
+relationships, vtable slots, frozen objects, and strings. It does not recover
+original C# method bodies. It is a separate Ghidra extension and interactive
+metadata browser; REA does not currently install or invoke it through its
+headless bridge. Its README describes ReadyToRun header discovery, including
+symbol-based and heuristic paths, so a missed header or unsupported binary
+should remain an explicit limitation rather than a failed claim about the
+binary's contents.
+
+The upstream analyzer currently gates its own analysis to x86-64. NativeAOT's
+broader platform matrix does not establish REA coverage: PE/COFF, ELF, Mach-O,
+shared libraries, target architectures, and runtime metadata versions each need
+their own provider verification. REA's experimental Windows Ghidra boundary is
+limited to admitted native x86-64 PE applications, so it does not currently
+establish coverage for PE DLLs. Mobile NativeAOT targets should remain
+experimental until REA has a matching provider and package-level verification.
+
+For REA's native analysis, preserve the same artifact path and digest used by
+`inspect_managed_artifact`, and report recovered type data as provider
+observations. Linking those types to native function addresses requires verified
+provider evidence; names or vtable similarity alone do not prove that a native
+function implements a specific managed method.
 
 ## Evidence record shape
 
@@ -257,17 +316,20 @@ or server-side behavior.
 ## Tool and packaging boundary
 
 The production parser is REA-owned TypeScript and ships with the existing Node
-application. It is verified against the ECMA-335 format and independent pinned
-oracles but has no runtime dependency on them.
+application. Deterministic conformance uses source-owned byte-built PE/CLI
+fixtures and expected semantic facts. An optional real ILSpy lane runs only when
+its executable is explicitly supplied; the default lane does not establish
+independent pinned-oracle parity. Production inspection needs none of those tools.
 
-- `System.Reflection.Metadata` is the primary independent metadata/CIL oracle.
-- `ICSharpCode.Decompiler` and `ilspycmd` are reconstruction and differential
-  oracles. An admitted BYO reconstruction operation records its exact version
+- A pinned `System.Reflection.Metadata` differential oracle is planned; it is
+  not part of the current verifier.
+- `ICSharpCode.Decompiler`/`ilspycmd` can supply reconstruction inference.
+  A BYO reconstruction import records the supplied version
   and remains non-canonical. When `REA_ILSPY_CMD_PATH` points to an absolute
   runnable `ilspycmd`, `verify:managed` runs a source-owned real ILSpy oracle
   and imports its C# output as reconstruction inference against exact static
   member Evidence.
-- dnlib and Mono.Cecil may increase differential coverage. Their mutation APIs
+- dnlib and Mono.Cecil are potential future differential oracles. Their mutation APIs
   are not exposed or included in the production parsing boundary.
 - The package contains no .NET runtime, SDK, ILSpy installation, proprietary
   assembly, or compiled conformance fixture.
@@ -287,6 +349,11 @@ ReadyToRun, C++/CLI, NativeAOT, or IL2CPP coverage is additionally constrained
 by the selected Hopper/Ghidra host and format matrix.
 
 ## Source-built conformance corpus
+
+The current lane uses source-owned byte-built fixtures and malformed-input
+regressions, with optional operator-supplied applications and ILSpy verification.
+The table below describes the desired expanded corpus; it is not a report that
+all compiler-generated forms have been independently verified.
 
 Fixture sources are intentionally small and behavior-focused. Build outputs
 are generated outside tracked fixture directories and must not remain after
@@ -437,3 +504,11 @@ The managed-code track advances as reviewable pull requests:
 
 Each implementation PR updates generated product facts only for behavior it
 actually ships and states which real-tool checks were performed.
+
+### Method metadata during build comparison
+
+Managed member comparisons report a `metadata` dimension when an observed
+MethodDef flags or implementation flags value differs, including accessibility
+or synchronization changes. This is separate from the CIL/signature matching
+tiers: identical instructions do not establish unchanged method metadata. The
+reported difference is static metadata evidence, not proof of runtime behavior.

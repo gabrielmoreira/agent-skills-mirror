@@ -1,7 +1,7 @@
 /**
  * @file skills/rig/rig.ts @last-analyzed 716ca95 @edit-time 2026-08-28T04:01:24Z
  * @purpose Minimal TypeScript multi-agent harness: typed input/output schemas, prompt intents, sub-agent delegation, workflow orchestration, Copilot SDK runtime
- * @deps @github/copilot-sdk (CopilotClient,RuntimeConnection,approveAll); node:path,url,os,fs,fs/promises,child_process,util,async_hooks
+ * @deps @github/copilot-sdk (CopilotClient,RuntimeConnection,approveAll); node:path,url,os,module,fs,fs/promises,child_process,util,async_hooks
  * T:Json type null|bool|num|str|Json[]|{[k]:Json}
  * T:Schema type StringSchema|NumberSchema|IntegerSchema|BooleanSchema|NullSchema|UnknownSchema|ArraySchema|ObjectSchema|RecordSchema|EnumSchema|OptionalSchema|NullableSchema
  * T:NullableSchema<Inner> type {nullable:true;inner:Inner;description?} accepts inner|null
@@ -106,14 +106,15 @@
  */
 import { basename, dirname, isAbsolute, resolve } from "node:path";
 import { availableParallelism } from "node:os";
+import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { writeSync } from "node:fs";
+import { createReadStream, writeSync } from "node:fs";
 import { access, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { AsyncLocalStorage } from "node:async_hooks";
 import { CopilotClient, RuntimeConnection, approveAll } from "@github/copilot-sdk";
-import type { CopilotClientOptions } from "@github/copilot-sdk";
+import type { CopilotClientOptions, NamedProviderConfig, ProviderModelConfig, SystemMessageConfig } from "@github/copilot-sdk";
 
 export type Json = null | boolean | number | string | Json[] | { [key: string]: Json };
 export type ValidationResult = { ok: true } | { ok: false; error: string };
@@ -499,7 +500,11 @@ function resolveDefaultCopilotUri(): string {
   return process.env["COPILOT_SDK_URI"] ?? "localhost:7777";
 }
 
+const launcherCopilotConnection = new AsyncLocalStorage<NonNullable<CopilotClientOptions["connection"]>>();
+
 function resolveDefaultCopilotConnection(): NonNullable<CopilotClientOptions["connection"]> {
+  const suppliedConnection = launcherCopilotConnection.getStore();
+  if (suppliedConnection) return suppliedConnection;
   const connectionToken = process.env["COPILOT_CONNECTION_TOKEN"];
   return connectionToken
     ? RuntimeConnection.forUri(resolveDefaultCopilotUri(), { connectionToken })
@@ -508,8 +513,8 @@ function resolveDefaultCopilotConnection(): NonNullable<CopilotClientOptions["co
 
 type CopilotMultiProvider = {
   model: string;
-  providers: unknown[];
-  models: unknown[];
+  providers: NamedProviderConfig[];
+  models: ProviderModelConfig[];
 };
 
 function resolveCopilotMultiProvider(): CopilotMultiProvider | undefined {
@@ -517,14 +522,41 @@ function resolveCopilotMultiProvider(): CopilotMultiProvider | undefined {
   if (!raw) {
     return undefined;
   }
-  try {
-    const value = JSON.parse(raw) as Partial<CopilotMultiProvider>;
-    return typeof value.model === "string" && Array.isArray(value.providers) && Array.isArray(value.models)
-      ? { model: value.model, providers: value.providers, models: value.models }
-      : undefined;
-  } catch {
-    return undefined;
+  const value = JSON.parse(raw) as Partial<CopilotMultiProvider> | null;
+  if (!value || typeof value.model !== "string"
+    || !Array.isArray(value.providers) || !Array.isArray(value.models)
+    || !value.providers.every((provider) => provider && typeof provider.name === "string" && typeof provider.baseUrl === "string")
+    || !value.models.every((model) => model && typeof model.id === "string" && typeof model.provider === "string")) {
+    throw new TypeError("GH_AW_COPILOT_SDK_MULTI_PROVIDER_JSON requires a model, providers with name/baseUrl, and models with id/provider");
   }
+  return { model: value.model, providers: value.providers, models: value.models };
+}
+
+function copilotSystemMessage(value: unknown): SystemMessageConfig | undefined {
+  if (value === undefined) return undefined;
+  if (typeof value === "string") return { content: value };
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new TypeError("copilotEngine requires a string or system message configuration");
+  }
+  const config = value as SystemMessageConfig;
+  if (config.mode !== undefined && config.mode !== "append" && config.mode !== "replace" && config.mode !== "customize") {
+    throw new TypeError("copilotEngine system message mode must be append, replace, or customize");
+  }
+  if ((config.content !== undefined && typeof config.content !== "string")
+    || (config.mode === "replace" && typeof config.content !== "string")) {
+    throw new TypeError("copilotEngine system message content must be a string");
+  }
+  if (config.mode === "customize" && config.sections !== undefined) {
+    if (!config.sections || typeof config.sections !== "object" || Array.isArray(config.sections)
+      || !Object.values(config.sections).every((section) =>
+        section && typeof section === "object"
+        && (typeof section.action === "function"
+          || ["replace", "remove", "append", "prepend", "preserve"].includes(section.action))
+        && (section.content === undefined || typeof section.content === "string"))) {
+      throw new TypeError("copilotEngine system message sections must contain valid overrides");
+    }
+  }
+  return config;
 }
 
 function copilotSendTimeout(): number {
@@ -545,6 +577,9 @@ function hasNonEmptyEnv(name: string): boolean {
 }
 
 function resolveDefaultEngineKind(options: DefaultEngineOptions = {}): DefaultEngineKind {
+  if (launcherCopilotConnection.getStore()) {
+    return "copilot";
+  }
   if (options.startServer) {
     return "copilot";
   }
@@ -606,6 +641,7 @@ export function copilotEngine(options: CopilotEngineOptions = {}): AgentFactory 
   const { server, connection, ...clientOptions } = options;
   const multiProvider = resolveCopilotMultiProvider();
   return async (agentOptions) => {
+    const systemMessage = copilotSystemMessage(agentOptions.systemMessage);
     debugCopilotCreate({ model: agentOptions.model, transport: connection ? "custom" : server ? "stdio" : "uri" });
     const client = new CopilotClient({
       ...clientOptions,
@@ -615,9 +651,16 @@ export function copilotEngine(options: CopilotEngineOptions = {}): AgentFactory 
       model: multiProvider?.model ?? agentOptions.model,
       streaming: false,
       onPermissionRequest: approveAll,
-      ...(multiProvider ? { providers: multiProvider.providers, models: multiProvider.models } as any : {}),
-      ...(agentOptions.systemMessage !== undefined && { systemMessage: agentOptions.systemMessage as any }),
-      ...(agentOptions.tools !== undefined && { tools: agentOptions.tools as any }),
+      ...(multiProvider ? { providers: multiProvider.providers, models: multiProvider.models } : {}),
+      ...(systemMessage !== undefined && { systemMessage }),
+      ...(agentOptions.tools !== undefined && { tools: agentOptions.tools }),
+    }).catch(async (error: unknown) => {
+      try {
+        await stopCopilotClient(client);
+      } catch (cleanupError) {
+        throw new AggregateError([asError(error), asError(cleanupError)], "Failed to create Copilot agent and stop its client");
+      }
+      throw error;
     });
     session.on?.((event: unknown) => {
       debugCopilotEvent(() => event);
@@ -628,17 +671,17 @@ export function copilotEngine(options: CopilotEngineOptions = {}): AgentFactory 
         debugCopilotAsk({ prompt, structured: askOptions.outputSchema !== undefined });
         throwIfAborted(askOptions.signal);
         const response = await abortable(
-          (session.sendAndWait as any)(
+          session.sendAndWait(
             {
               prompt,
-              ...(askOptions.signal ? { signal: askOptions.signal } : {}),
-              ...(askOptions.outputSchema !== undefined ? { outputSchema: askOptions.outputSchema } : {}),
+              ...(askOptions.outputSchema !== undefined ? { responseSchema: normalizeResponseSchema(askOptions.outputSchema) } : {}),
             },
             copilotSendTimeout(),
           ),
           askOptions.signal,
-          () => (session as any).abort?.(),
+          () => session.abort(),
         );
+        throwIfAborted(askOptions.signal);
         const text = responseText(response);
         debugCopilotResponse({ response: text });
         return text;
@@ -662,6 +705,33 @@ export function copilotEngine(options: CopilotEngineOptions = {}): AgentFactory 
       },
     };
   };
+}
+
+export function normalizeResponseSchema(schema: JsonSchemaObject): JsonSchemaObject {
+  const result = { ...schema };
+  const properties = schema["properties"];
+  if (isJsonSchemaObject(properties)) {
+    result["properties"] = Object.fromEntries(Object.entries(properties).map(([key, value]) =>
+      [key, isJsonSchemaObject(value) ? normalizeResponseSchema(value) : value]));
+    if (schema["type"] === "object" && schema["additionalProperties"] === undefined) {
+      result["additionalProperties"] = false;
+    }
+  }
+  for (const key of ["items", "additionalProperties"]) {
+    const value = schema[key];
+    if (isJsonSchemaObject(value)) {
+      result[key] = normalizeResponseSchema(value);
+    }
+  }
+  for (const key of ["anyOf", "oneOf", "allOf"]) {
+    const value = schema[key];
+    if (Array.isArray(value)) result[key] = value.map((item: unknown) => isJsonSchemaObject(item) ? normalizeResponseSchema(item) : item);
+  }
+  return result;
+}
+
+function isJsonSchemaObject(value: unknown): value is JsonSchemaObject {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 function jsonl(value: unknown): string {
@@ -1740,6 +1810,18 @@ async function typecheckProgram(programPath: string, cwd: string, displayPath = 
       `Typecheck mode requires tsconfig.json at one of: ${candidateTsconfigPaths.join(", ")}`,
     );
   }
+  let compilerPath: string | undefined;
+  for (const context of [resolve(cwd, "package.json"), import.meta.url]) {
+    try {
+      compilerPath = createRequire(context).resolve("typescript/bin/tsc");
+      break;
+    } catch (error) {
+      if (!(error instanceof Error && "code" in error && error.code === "MODULE_NOT_FOUND")) throw error;
+    }
+  }
+  if (!compilerPath) {
+    throw new Error("Typecheck mode requires a preinstalled TypeScript compiler in the workspace or skill dependencies.");
+  }
   const tempRoot = resolve(cwd, ".tmp");
   await mkdir(tempRoot, { recursive: true });
   const tempDir = await mkdtemp(resolve(tempRoot, "rig-typecheck-"));
@@ -1761,18 +1843,15 @@ async function typecheckProgram(programPath: string, cwd: string, displayPath = 
       include: [checkPath],
     }), "utf8");
     await execFileAsync(
-      "npx",
-      ["--yes", "--package", "typescript@5.9.3", "--", "tsc", "--project", projectPath, "--pretty", "false"],
-      {
-        cwd,
-        env: { ...process.env, npm_config_ignore_scripts: "true" },
-      },
+      process.execPath,
+      [compilerPath, "--project", projectPath, "--pretty", "false"],
+      { cwd },
     );
     debugLauncherTypecheck({ phase: "passed", program: displayPath });
   } catch (error) {
     const execError = error as NodeJS.ErrnoException & { stdout?: string; stderr?: string };
     if (execError.code === "ENOENT") {
-      throw new Error("Typecheck mode requires `npx tsc` to be available in PATH.");
+      throw new Error("Unable to start Node.js for typecheck mode.");
     }
     const rawDiagnostics = [execError.stdout, execError.stderr]
       .filter((entry) => typeof entry === "string" && entry.trim())
@@ -1889,19 +1968,25 @@ function isLauncherHelpArg(arg: string): boolean {
 
 function renderLauncherUsage(scriptName: string): string {
   return [
-    `Usage: ${scriptName} [<program-file>] [--server] [--typecheck]`,
+    `Usage: ${scriptName} [<program-file>] [--server] [--typecheck] [--connection-fd=<fd>]`,
     "",
     "Modes:",
     "  <no program-file>  Read a rig program from stdin and run its default root export.",
     "  <program-file>     Read stdin input and run the program file root export.",
+    "  --connection-fd=<fd>  Read SDK connection JSON from a harness-owned descriptor (3+).",
     "",
     "Help aliases:",
     "  --help, -h, help, /help, /?",
     "",
     "Examples:",
-    `  cat ./program.ts | ${scriptName}`,
-    `  cat ./program.ts | ${scriptName} --typecheck`,
-    `  echo "Summarize this repository" | ${scriptName} src/program.ts`,
+    `  node ${scriptName} < ./program.ts`,
+    `  node ${scriptName} --typecheck < ./program.ts`,
+    `  node ${scriptName} src/program.ts <<'RIG_<generated-hex>'`,
+    "  Summarize this repository",
+    "RIG_<generated-hex>",
+    "",
+    "Replace RIG_<generated-hex> with a fresh RIG_ + node:crypto randomBytes(16).toString(\"hex\").",
+    "Ensure it is not a complete input line; quote the opener and close with the same literal alone.",
   ].join("\n");
 }
 
@@ -1917,6 +2002,7 @@ function renderLauncherUsage(scriptName: string): string {
  * Recognized flags:
  * - `--server`     — use stdio transport instead of the default URI connection.
  * - `--typecheck`  — run `tsc --noEmit` before executing the program.
+ * - `--connection-fd=<fd>` — read harness-provided SDK credentials from a pipe.
  * - `--help` / `-h` / `help` / `/help` / `/?` — print usage and return.
  *
  * Structured JSONL events (prefixed `rig.*`) are written to stderr; the final
@@ -1945,7 +2031,8 @@ export async function runLauncherCli(
   const flags = argv.filter((arg) => arg.startsWith("--"));
   const serverFlag = flags.includes("--server");
   const typecheckFlag = flags.includes("--typecheck");
-  const unknownFlags = flags.filter((f) => f !== "--server" && f !== "--typecheck");
+  const connectionFlags = flags.filter((flag) => flag.startsWith("--connection-fd="));
+  const unknownFlags = flags.filter((f) => f !== "--server" && f !== "--typecheck" && !connectionFlags.includes(f));
   if (positionalArgs.length > 1 || unknownFlags.length > 0) {
     throw new Error(`Usage: ${scriptName} <program-file> [--server] [--typecheck]`);
   }
@@ -1954,11 +2041,54 @@ export async function runLauncherCli(
     ...(serverFlag ? { startServer: true } : {}),
     ...(typecheckFlag ? { typecheck: true } : {}),
   };
-  if (positionalArgs.length === 1) {
-    await runRootAgentFromStdin(positionalArgs[0]!, mergedOptions, io, scriptName);
-    return;
+  const run = async () => {
+    if (positionalArgs.length === 1) {
+      await runRootAgentFromStdin(positionalArgs[0]!, mergedOptions, io, scriptName);
+      return;
+    }
+    await runProgramCodeFromStdin(mergedOptions, io, scriptName);
+  };
+  if (connectionFlags.length) {
+    if (connectionFlags.length !== 1 || mergedOptions.startServer || mergedOptions.typecheck) {
+      throw new Error("--connection-fd requires a single descriptor and cannot be combined with --server or --typecheck");
+    }
+    const rawFd = connectionFlags[0]!.slice("--connection-fd=".length);
+    const fd = Number(rawFd);
+    if (!/^\d+$/.test(rawFd) || !Number.isSafeInteger(fd) || fd < 3) {
+      throw new Error("--connection-fd requires an integer descriptor of 3 or greater");
+    }
+    const connection = await readLauncherConnection(fd);
+    await launcherCopilotConnection.run(connection, run);
+  } else {
+    await run();
   }
-  await runProgramCodeFromStdin(mergedOptions, io, scriptName);
+}
+
+async function readLauncherConnection(fd: number): Promise<NonNullable<CopilotClientOptions["connection"]>> {
+  const stream = createReadStream("", { fd, autoClose: true });
+  const chunks: Buffer[] = [];
+  let bytes = 0;
+  for await (const chunk of stream) {
+    const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+    bytes += buffer.length;
+    if (bytes > 16 * 1024) {
+      stream.destroy();
+      throw new Error("SDK connection payload exceeds 16 KiB");
+    }
+    chunks.push(buffer);
+  }
+  let payload: unknown;
+  try {
+    payload = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+  } catch {
+    throw new Error("SDK connection descriptor must contain valid JSON");
+  }
+  if (!payload || typeof payload !== "object"
+    || !("uri" in payload) || typeof payload.uri !== "string" || !payload.uri.trim()
+    || !("connectionToken" in payload) || typeof payload.connectionToken !== "string" || !payload.connectionToken.trim()) {
+    throw new Error("SDK connection descriptor requires nonempty uri and connectionToken strings");
+  }
+  return RuntimeConnection.forUri(payload.uri, { connectionToken: payload.connectionToken });
 }
 
 /**
@@ -3325,18 +3455,21 @@ function throwIfAborted(signal?: AbortSignal): void {
   }
 }
 
-function abortable<T>(promise: Promise<T>, signal?: AbortSignal, onAbort?: () => void): Promise<T> {
+function abortable<T>(promise: Promise<T>, signal?: AbortSignal, onAbort?: () => void | Promise<void>): Promise<T> {
   throwIfAborted(signal);
   if (!signal) {
     return promise;
   }
   return new Promise<T>((resolve, reject) => {
-    const abort = () => {
+    const abort = async () => {
+      const reason = signal.reason ?? new DOMException("Aborted", "AbortError");
       try {
-        onAbort?.();
-      } finally {
-        reject(signal.reason ?? new DOMException("Aborted", "AbortError"));
+        await onAbort?.();
+      } catch (error) {
+        reject(new AggregateError([reason, error], "Failed to abort agent request"));
+        return;
       }
+      reject(reason);
     };
     signal.addEventListener("abort", abort, { once: true });
     promise.then(resolve, reject).finally(() => signal.removeEventListener("abort", abort));

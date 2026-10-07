@@ -50,7 +50,7 @@ pwsh -File scripts/spo-publish-html-page.ps1 `
 ## Workflow
 
 1. **Prepare HTML Asset**: Ensure the local `.html` file is self-contained with modern CSS and relative links to sibling files.
-2. **Plan Destination**: Choose target library (`SitePages` for intranet pages, or a document library like `Documents`).
+2. **Plan Destination**: Choose target library (`SitePages` for site pages, or a document library like `Documents`).
 3. **Run Dry Run**: Validate configuration and resolve the server-relative destination URL.
 4. **Publish**: Execute with `-Execute -ConfirmToken PUBLISH-SPO-HTML`.
 5. **Verify in Browser**: Open the returned direct URL to verify native in-browser rendering.

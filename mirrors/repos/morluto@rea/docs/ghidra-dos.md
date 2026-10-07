@@ -1,6 +1,6 @@
-# DOS MZ analysis with Ghidra
+# DOS MZ and COM analysis with Ghidra
 
-REA can analyze DOS MZ executables through the bring-your-own Ghidra adapter.
+REA can analyze DOS MZ executables and explicitly selected COM images through the bring-your-own Ghidra adapter.
 The Linux x64 verification lane exercises actual 16-bit disassembly and
 decompilation through the CLI and stdio MCP. It requires the same Ghidra
 12.1.4 and 64-bit JDK 21 installation as other Ghidra sessions; no DOS emulator
@@ -13,6 +13,9 @@ rea inspect /absolute/path/to/legacy.exe --provider ghidra --json
 rea search /absolute/path/to/legacy.exe entry --kind procedures --provider ghidra --json
 rea instructions /absolute/path/to/legacy.exe entry --provider ghidra --json
 rea function /absolute/path/to/legacy.exe entry --provider ghidra --json
+rea inspect-native-load-image /absolute/path/to/legacy.exe --provider ghidra --json
+rea read-bytes /absolute/path/to/legacy.exe 0x10000 --length 16 --provider ghidra --json
+rea address-to-file-offset /absolute/path/to/legacy.exe 0x10000 --provider ghidra --json
 ```
 
 Use an observed procedure name or address from discovery when the target does
@@ -37,6 +40,43 @@ drift. Closing the session deletes the temporary project and snapshot.
 The profile also commits `function_body_evidence: complete-inclusive-ranges-v1`,
 so snapshots from older length-only Ghidra results do not satisfy the current
 profile.
+
+## Headerless COM images
+
+COM has no identifying header. Select its interpretation explicitly; neither the
+`.com` suffix nor arbitrary unrecognized bytes are enough to admit it.
+
+```bash
+rea inspect /absolute/path/to/legacy.com --target-format dos-com --provider ghidra --json
+rea function /absolute/path/to/legacy.com 0x10100 --target-format dos-com --provider ghidra --json
+rea inspect-native-load-image /absolute/path/to/legacy.com --target-format dos-com --provider ghidra --json
+```
+
+```json
+{
+  "name": "open_binary",
+  "arguments": {
+    "path": "/absolute/path/to/legacy.com",
+    "format": "dos-com",
+    "provider_id": "ghidra"
+  }
+}
+```
+
+The caller's interpretation applies to the complete file, even if its filename
+suggests another format. Files must contain 1..65280 bytes: the 64 KiB COM segment
+minus the 256-byte PSP prefix. Ghidra uses `BinaryLoader` with real-mode language
+and maps file offset zero at `1000:0100` (linear `0x10100`). A packaged pre-analysis
+script seeds the entry function and CS/DS/ES/SS context `0x1000`. These settings
+and the preparation policy are committed in the analysis profile; a failed
+preparation prevents the resident bridge from serving results.
+
+Load-image verification checks all original and modified file bytes, complete
+source mapping/memory digests, absence of relocations, entry and measured register
+context. The context is imposed for analysis, not observed from execution. PSP
+memory, initial stack contents/SP, DOS interrupts and PC-98 devices are not
+modeled. COM has no MZ header, relocation table or appended-overlay model; all
+selected bytes belong to its analysis module. The original file stays unchanged.
 
 ## Addresses and function extent
 
@@ -71,6 +111,30 @@ Ghidra's database observation, not a proof of original source ownership or
 exhaustive code discovery. Providers that do not report complete ranges return
 `available: false` and an explicit reason.
 
+## Loaded-image evidence
+
+`inspect_native_load_image` independently checks the immutable session snapshot
+against the loaded Ghidra Program. It measures complete original and modified
+FileBytes digests, every source mapping and its memory digest, relocation records
+(including multiplicity), and external entry points. It verifies MZ header and
+module partitions, relocation fixups and linear coordinates rather than relying
+on the imported executable SHA alone.
+
+The result is `verified`, `mismatch`, or `unsupported`. Every check retains its
+expected and observed values. A memory-digest mismatch identifies the source
+range's file offset and analysis address; it does not locate the first differing
+byte inside that range. Mapping ends are **inclusive**, unlike the exclusive ends
+from `list_segments`. Appended overlays remain in source-file identity and are
+excluded from initialized module coverage. Uninitialized allocations are reported;
+their contents and DOS runtime semantics are not verified. Formats other than MZ and explicit COM return
+`unsupported` with measured observations, not a successful MZ verification.
+
+`read_bytes` returns initialized provider memory, including loader fixups; an
+unmapped or uninitialized byte ends the read with an explicit returned length and
+`complete: false`. `address_to_file_offset` uses the provider's source mapping;
+unmapped, uninitialized and ambiguous mappings fail explicitly. A relocated word
+can differ from the original file word even when its source offset is known.
+
 ## Coverage boundaries
 
 Static decompilation does not execute the target or emulate BIOS, DOS
@@ -103,3 +167,22 @@ executable fixtures, an emulator, or an existing analysis database.
 Provider p-code representations can contain process-specific address-space selector
 tokens. The lane preserves those reported values and compares stable dossier
 observations rather than asserting cross-process identity of raw p-code.
+
+## Function annotations
+
+`annotate_native_function` changes the name and/or comments at one exact local function entry, verifies readback, and returns a refreshed dossier. This is useful when recording recovered DOS function roles; it does not claim original-source names. Name writes preserve the existing namespace; readback returns the fully qualified name used by function inventories. Regular comments map to Ghidra PRE comments and inline comments to EOL comments. Empty text clears a comment; omitted fields preserve it. The whole edit rolls back if a setter, readback or analysis fails.
+
+```json
+{
+  "procedure": "0x10100",
+  "name": "entry",
+  "comment": "Recovered startup role",
+  "inline_comment": "Inspect segment setup"
+}
+```
+
+```bash
+rea annotate-native-function /local/program.com 0x10100 --target-format dos-com --provider ghidra --name entry --comment 'Recovered startup role' --json
+```
+
+The CLI returns the updated analysis before closing its isolated session. MCP edits remain visible to later reads until `close_binary`. Original bytes remain unchanged, database edits are discarded on close, and immutable analysis snapshots are invalidated after edits. This operation does not save a Ghidra project, change ABI/types/body ranges, patch instructions, or emulate a DOS runtime. Windows P0 does not admit it.

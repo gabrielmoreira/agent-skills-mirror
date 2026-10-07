@@ -2,11 +2,15 @@
 
 REA welcomes focused bug fixes, documentation improvements, tests, and reverse-engineering workflow enhancements. Open an issue before a large contract or architecture change so its scope can be agreed before implementation.
 
+For capability organization and provider composition, follow the incremental
+[migration guide](docs/capability-migration.md). Run `npm run verify:test-discovery`
+after adding or moving tests.
+
 When adding or changing an MCP tool, follow the [tool design guide](docs/tool-design.md) and preserve the canonical contracts and generated catalog.
 
 ## Development setup
 
-REA development requires Node.js 24.18.x and npm 11.16.x. Real-Hopper verification additionally requires either macOS 12+ or an officially supported Linux host (Ubuntu 24.04+, Fedora 41+, or 64-bit Arch) and an installed Hopper application. Linux demo verification uses its own private Xvfb display and does not require a desktop session. Run `nvm use` before installing dependencies.
+REA development requires Node.js 24.18.x and npm 11.16.x (pinned toolchain via `nvm use`; the supported runtime range is Node.js ^22.19 || ^24.11 || >=26, as the README badge states). Real-Hopper verification additionally requires either macOS 12+ or an officially supported Linux host (Ubuntu 24.04+, Fedora 41+, or 64-bit Arch) and an installed Hopper application. Linux demo verification uses its own private Xvfb display and does not require a desktop session. Run `nvm use` before installing dependencies.
 
 ```bash
 npm ci
@@ -20,7 +24,7 @@ Turbo. Turbo caches deterministic builds and static checks across Git
 worktrees. After a package, lockfile, or managed-skill version change, run
 `npm run metadata:generate` before building.
 
-Keep dependencies flowing inward through the existing domain, contracts, provider, application, server, and adapter layers. Parse unknown values at process and protocol boundaries, model expected failures with `Result`, and preserve the canonical tool inventory defined by `TOOL_CONTRACTS` unless a deliberate contract change updates every verifier, generated catalog artifact, and snapshot. Prefer capability- and session-scoped tool advertisement over schema truncation.
+Keep dependencies flowing inward through the existing domain, contracts, provider, application, server, and adapter layers. Parse unknown values at process and protocol boundaries, model expected failures with `Result`, and preserve the canonical tool inventory defined by `TOOL_CONTRACTS` unless a deliberate contract change updates every verifier, generated catalog artifact, and snapshot. Keep tool discovery complete and report capability- and session-scoped availability through `binary_session`.
 
 ## Development feedback and PR verification
 

@@ -39,6 +39,7 @@
   <img alt="platforms" src="https://img.shields.io/badge/macOS%20%7C%20Windows%20%7C%20Linux-black">
   <img alt="hosts" src="https://img.shields.io/badge/Claude%20Code%20%7C%20Codex%20%7C%20Gemini%20%7C%20Cursor%20%7C%20Antigravity%20%7C%20Local-black">
   <img alt="ranking" src="https://img.shields.io/badge/ranking-none%20by%20design-blue">
+  <a href="https://discord.gg/wbWfdGZ6S"><img alt="Join the Agentlas Discord" src="https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white"></a>
 </p>
 <p align="center"><a href="https://www.producthunt.com/products/agentlas-science?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-agentlas-science"><picture><source media="(prefers-color-scheme: dark)" srcset="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1250298&theme=dark"><img alt="Agentlas Science on Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1250298&theme=light"></picture></a></p>
 
@@ -760,7 +761,7 @@ forcing your work into one model provider:
 
 Agents generated from vague, single-sentence prompts fail under real-world edge cases. Hephaestus v1.1.0 positions task specification as a first-class OS service through the **Briefing Interview Engine**:
 
-The current v1.2.55 release carries the resolved Work Brief through host-owned Network 2.0 selection, exact release pinning, and server-first tool discovery.
+The current v1.2.57 release carries the resolved Work Brief through host-owned Network 2.0 selection, exact release pinning, and server-first tool discovery.
 
 *   **Quantitative Ambiguity Gates:** The compilation scheduler evaluates prompt clarity across four key vectors (Goal, Constraints, Scope, Context). The build process is strictly gated until the ambiguity score passes a numeric threshold (ambiguity score $\le 0.2$, with per-dimension safety floors). Clear prompts bypass the interview loop entirely via a budget system that caps questions for trivial tasks.
 *   **Lens-Driven System Analysis:** Clarifying questions are dynamically sourced from a structured lens table (Scope, Intent, Challenge, System Architecture) focusing on critical routing indicators: *anti-scope bounds* (what the agent must NOT do), *verifiable acceptance criteria*, and *exit conditions*.
@@ -865,7 +866,7 @@ above; it also writes `~/.claude/commands/agentlas.md` and `hep-*.md`. Claude Co
 
 From your OS terminal:
 ```bash
-codex plugin marketplace add agentlas-ai/Agentlas-OS --ref v1.2.55
+codex plugin marketplace add agentlas-ai/Agentlas-OS --ref v1.2.57
 codex plugin add hephaestus@agentlas-core-engine
 ```
 *Note: Codex does not accept `/plugin marketplace add` inside the app — run the two commands above in your OS terminal. The OS-terminal CLI command is singular (`codex plugin`); inside the Codex app, the plugin browser slash command is plural (`/plugins`). Codex 0.117+ removed custom `/prompts:*` commands; after install, invoke the supported plugin skill as `$hephaestus-network <request>`.*

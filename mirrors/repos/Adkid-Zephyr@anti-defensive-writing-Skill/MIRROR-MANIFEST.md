@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Adkid-Zephyr/anti-defensive-writing-Skill` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `Adkid-Zephyr/anti-defensive-writing-Skill` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Adkid-Zephyr/anti-defensive-writing-Skill` — 26 default patterns, 0
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,9 +59,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`prompts/quick-prompt-en.txt`](prompts/quick-prompt-en.txt) |
-| 2 | ✓ | [`skills/anti-defensive-writing-en/SKILL.md`](skills/anti-defensive-writing-en/SKILL.md) |
-| 3 | ✓ | [`skills/anti-defensive-writing/SKILL.md`](skills/anti-defensive-writing/SKILL.md) |
+| 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
+| 2 | ✓ | [`prompts/quick-prompt-en.txt`](prompts/quick-prompt-en.txt) |
+| 3 | ✓ | [`skills/anti-defensive-writing-en/SKILL.md`](skills/anti-defensive-writing-en/SKILL.md) |
+| 4 | ✓ | [`skills/anti-defensive-writing/SKILL.md`](skills/anti-defensive-writing/SKILL.md) |
 
 ---
 

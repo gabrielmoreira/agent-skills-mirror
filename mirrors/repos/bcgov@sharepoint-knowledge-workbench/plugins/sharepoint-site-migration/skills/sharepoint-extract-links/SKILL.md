@@ -68,3 +68,5 @@ PDFs and failed reads make a run PARTIAL/FAILED and exit nonzero. Extraction is 
 
 - [Extraction details](references/extract-links-details.md): read for the API, link kinds, outcome semantics and provenance.
 - [Pipeline, outcomes and write safety](references/link-pipeline-and-write-safety.md): read for the shared outcome vocabulary.
+- [Extraction, destination mapping and rewrite planning](references/link-extraction-and-mapping-pipeline.md): read for the end-to-end
+  offline migration workflow and the distinction between extracted links and mapped destinations.

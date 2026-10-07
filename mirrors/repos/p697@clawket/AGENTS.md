@@ -150,7 +150,7 @@ When implementation, architecture, or release behavior changes, update the close
 
 ## Quality Gate Rule
 
-1. `npm run check:required` is the repository-wide, CI-safe required gate for typechecks, self-contained tests, mobile design-system checks, and documentation checks. CI runs its parts (`typecheck`, `test:required:mobile` as three in-band shards, `test:required:rest`, `check:static`) and the v1 replay as parallel jobs behind the `Typecheck, tests, design system, and docs` gate job; keep that job list and the `check:required` composition in sync. The Windows and macOS Bridge jobs run for desktop-affecting pull requests (`scripts/ci/desktop-changes.mjs`) and on every push to `main`.
+1. `npm run check:required` is the repository-wide, CI-safe required gate for typechecks, self-contained tests, mobile design-system checks, and documentation checks. CI runs its parts (`typecheck`, `test:required:mobile` as three in-band shards, `test:required:rest`, `check:static`) and the v1 replay as parallel jobs behind the `Typecheck, tests, design system, and docs` gate job; keep that job list and the `check:required` composition in sync. The Windows and macOS Bridge jobs run for desktop-affecting pull requests (`scripts/ci/desktop-changes.mjs`) and on every push to `main`. Desktop jobs share one OS matrix while preserving both required check names. A no-desktop decision skips suite steps on lightweight runners, not the matrix job; failed selectors still run both desktop suites. Build/typecheck wrappers delegate to the CLI's dependency builds once; CI replay and runtime-source tests prebuild only Bridge Core. See `docs/ci.md` for CI scope and failure evidence.
 2. Check scripts must fail with a non-zero exit code when their inputs are missing, malformed, or empty; they must not silently skip verification.
 3. Checks must print the number or scope of verified items so an accidental coverage reduction is visible.
 4. New check logic should expose testable validation functions and include a corrupted-input regression test.
@@ -159,6 +159,8 @@ When implementation, architecture, or release behavior changes, update the close
 7. `scripts/ci/dependency-audit.mjs` (CI job `Typecheck and dependency audit`) fails on any high or critical npm advisory in the root or Mobile lockfile. An exception needs owner approval and names one advisory in one package, with a reason and an expiry; expired or unused exceptions fail. Current: GHSA-86w9-cpqp-85rv (node-forge via Expo CLI code signing, no patched release) and GHSA-vfj7-8cjw-p6xm (braces via micromatch in the Expo/Metro bundler and Jest, no patched release), both until 2026-11-01.
 
 `relay:test:integration` runs self-contained local Relay/model servers and recorded mobile adapters. Real local-model inference uses `test:local-model:recovery` (`CLAWKET_RECOVERY_CONFIG`) or `test:local-model:preview` (`CLAWKET_LOCAL_MODEL_PREVIEW_SMOKE=1`, optional model endpoint configuration); these commands fail when prerequisites are absent, never silently skip.
+
+Local-model supervisor start retries a rejected control response only after a proven credential-generation change, within its existing 15-second budget and without launching another owner for that retry. Publish control credentials atomically; unchanged invalid responses still fail. Keep process-test socket paths within the macOS Unix socket limit.
 
 Windows ACL assertions must fail on command/module errors or missing paths. When invoking Windows PowerShell from PowerShell 7, resolve its security module from the invoked shell's `$PSHOME`; inherited module paths must not produce a false zero-access result.
 
@@ -247,3 +249,7 @@ Owner-authorized Codex work is specified in `docs/3.1/codex.md`. New device pair
 ## Claude Code 3.1 extension
 
 Owner-authorized Claude Code work is specified in `docs/3.1/claude-code.md`. Use the official Agent SDK and the installed unmodified CLI; authentication stays in Claude's native flow. Discover Desktop/CLI projects and histories read-only. An idle owner is still an owner; discovery and resume do not constitute live attach. Never take over an unknown or active owner, harvest Desktop credentials, or advertise unverified native control. Preserve existing backends and isolate any Claude Preview resources.
+
+## Official Connection Domain Rule
+
+Official Registry/Relay URLs and saved-alias normalization use the pure `packages/bridge-core/src/official-relay.ts` map. New traffic uses `clawket.ai`; custom/self-hosted URLs remain supported. Keep old Workers routes during the compatibility stage and preserve backend/environment resource isolation. Domain retirement and distribution remain separate owner-authorized operations; see `docs/3.1/connection-domains.md`.

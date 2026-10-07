@@ -289,7 +289,7 @@ Before each decision brief (AskUserQuestion or Conductor/fallback prose), choose
 
 After answer, log best-effort (PostToolUse hook also captures deterministically when installed; dedup on (source, tool_use_id) handles double-writes). Substitute `SESSION_ID` with the value the preamble's skill-start output echoed — shell variables do not survive between Bash calls:
 ```bash
-~/.claude/skills/gstack/bin/gstack-question-log '{"skill":"qa","question_id":"<id>","question_summary":"<short>","category":"<approval|clarification|routing|cherry-pick|feedback-loop>","door_type":"<one-way|two-way>","options_count":N,"user_choice":"<key>","recommended":"<key>","session_id":"SESSION_ID"}' 2>/dev/null || true
+~/.claude/skills/gstack/bin/gstack-question-log '{"skill":"qa","question_id":"<id>","question_summary":"<summary-slug>","category":"<approval|clarification|routing|cherry-pick|feedback-loop>","door_type":"<one-way|two-way>","options_count":N,"user_choice":"<key>","recommended":"<key>","session_id":"SESSION_ID"}' 2>/dev/null || true
 ```
 
 For two-way questions, offer: "Tune this question? Reply `tune: never-ask`, `tune: always-ask`, or free-form."
@@ -298,7 +298,7 @@ User-origin gate (profile-poisoning defense): write tune events ONLY when `tune:
 
 Write (only after confirmation for free-form):
 ```bash
-~/.claude/skills/gstack/bin/gstack-question-preference --write '{"question_id":"<id>","preference":"<pref>","source":"inline-user","free_text":"<optional original words>"}'
+~/.claude/skills/gstack/bin/gstack-question-preference --write '{"question_id":"<id>","preference":"<pref>","source":"inline-user"}'
 ```
 
 Exit code 2 = rejected as not user-originated; do not retry. On success: "Set `<id>` → `<preference>`. Active immediately."
@@ -629,7 +629,7 @@ and unclear contracts never authorize repair.
 1. Why does existing coverage not already catch that? Prefer adding a row to an existing table-driven test or shared fixture over a near-duplicate.
 2. Does it need a production seam (export, flag, wrapper, injection hook) that no production caller needs? If yes, test at the real boundary instead.
 
-Value card: `Value: protects=<...>; fails_when=<...>; why_new=<...>; seam=none` (seam: `none` or its name); each field at most 160 UTF-8 bytes here (clamp to 157 plus `...`; JSON keeps full values). Put it in the 8e.5 record. A missing upstream card never blocks: derive it; ignore unknown fields.
+Value card: `Value: protects=<...>; fails_when=<...>; why_new=<...>; seam=none` (seam: `none` or its name); each field at most 160 UTF-8 bytes here (clamp to 157 plus `...`; written JSON keeps full values). Put it in the 8e.5 record. A missing upstream card never blocks: derive it; ignore unknown fields.
 
 Example: Value: protects=refundPayment rejects an empty reason; fails_when=the reason guard is removed or inverted; why_new=billing.test.ts covers processPayment only; seam=none
 Rejected (covered_elsewhere): "checkout renders"; checkout.e2e.ts:15 covers it, so extend that test.
@@ -662,7 +662,8 @@ Read the surrounding source and make the **minimal fix**. No unrelated refactors
 ### 8c. Re-test
 
 Re-run the regression, original failing probe and adjacent happy path. Inspect each
-final state; acceptance alone cannot verify a worker repair. Failed/unavailable rechecks stay unresolved.
+final state; acceptance alone cannot verify a worker repair. Failed/unavailable rechecks stay unresolved:
+try one revised minimal fix, else classify it reverted.
 
 For browser defects only:
 
@@ -684,7 +685,7 @@ repairs and valid red regressions/evidence uncommitted; tell the user what remai
 
 - **verified**: passed 8c (native regression when available); disclose missing test coverage
 - **best-effort**: fix applied but couldn't fully verify (e.g., needs auth state, external service)
-- **reverted**: regression detected → undo only this run's repair (revert its commit if already committed), retain the valid regression/evidence, and mark the issue "deferred". Never discard user changes.
+- **reverted**: regression detected or finding unresolved → undo only this run's repair (revert its commit if already committed), retain the valid regression/evidence, and mark the issue "deferred". Never discard user changes.
 
 ### 8e.5. Regression Test record
 

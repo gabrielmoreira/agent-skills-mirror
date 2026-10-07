@@ -7,13 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+**omo runs on senpi 2026.10.10-4.** The input box no longer gets pushed off-screen when something writes to the terminal behind the TUI ([senpi#2815](https://github.com/code-yeongyu/senpi/issues/2815)). A default extension shim left behind by an earlier install (for example after switching from npm to bun or to the standalone binary) no longer stops every start with `Cannot find module` ([senpi#2765](https://github.com/code-yeongyu/senpi/issues/2765)). Two processes rebinding the same session no longer fail with `ENOENT` ([senpi#2828](https://github.com/code-yeongyu/senpi/issues/2828)). In code mode, a stopped detached cell shows its output instead of reading as still running, and an isolated cell names QuickJS as its runtime ([senpi#2811](https://github.com/code-yeongyu/senpi/issues/2811)). Full list: [senpi 2026.10.10-4](https://github.com/code-yeongyu/senpi/releases/tag/v2026.10.10-4).
+
+## [5.1.21] - 2026-10-06
+
+**5.1.20 was never published.** Its run stopped on a Windows smoke-test failure after the platform packages reached npm but before `omo-ai` did, so 5.1.21 is the first release carrying the changes below. The orphaned `oh-my-opencode-<platform>@5.1.20` packages are not installed by any `omo-ai` or `oh-my-opencode` release, and this release moves their `latest` tag on. ([#9618](https://github.com/code-yeongyu/oh-my-openagent/issues/9618))
+
 **Queued goals resume after stale or failed compaction feedback.** A goal message accepted while compaction was running could remain queued after the summary was rejected. The engine now attempts that continuation through its normal admission checks. Cancelling compaction does not restart work, and required-compaction limits still apply. ([senpi#2778](https://github.com/code-yeongyu/senpi/issues/2778), [senpi#2780](https://github.com/code-yeongyu/senpi/pull/2780))
 
 ### Added
 
+**`hideFreeModels: true` keeps a provider's free models out of the picker, so its paid models are quick to find.** Set it on the provider block in `models.json`; without it, nothing changes. Thanks to @Bearmancer. ([senpi#2720](https://github.com/code-yeongyu/senpi/issues/2720), [senpi#2773](https://github.com/code-yeongyu/senpi/pull/2773))
+
+**Keenable can serve web search.** `websearch.json` accepts `keenable`, using its keyed API when an `apiKey` is set and its shared public tier otherwise. It is used only when listed; the default search chain is unchanged. Thanks to @audreyt. ([senpi#2775](https://github.com/code-yeongyu/senpi/pull/2775))
+
+**Code mode can run each JavaScript kernel in its own process.** With `isolation.js: "process"`, a kernel crash (a segfault, out-of-memory, `process.exit`) no longer takes the session down; the next cell starts on a fresh kernel and a notice names the crash. It is off by default and guards against crashes, not hostile code. ([senpi#2752](https://github.com/code-yeongyu/senpi/issues/2752))
+
+**The frontend skill routes tone and situation to more component catalogs.** A new reference tells the agent which catalog to read for AI-agent UI, charts, landing sections, brutalist or Tailwind-only builds and other tones, how to explore a catalog's registry, and which licences and site terms allow what. ([#9644](https://github.com/code-yeongyu/oh-my-openagent/issues/9644))
+
 **`/mcp` opens an interactive server manager in the terminal.** Server rows offer the actions available for their current state: enable or disable, change exposure, test, reconnect, and sign in or out. Tool, detail, and log views are available alongside them. Only trusted global and project servers can be edited, and edits preserve the rest of the config. Imported, extension, skill, and untrusted project servers remain read-only. Non-TUI clients receive status text. Thanks to @wuhaoyujerry. ([senpi#2716](https://github.com/code-yeongyu/senpi/issues/2716), [senpi#2747](https://github.com/code-yeongyu/senpi/pull/2747))
 
 ### Fixed
+
+**A long retried request is no longer cut off after 11 minutes.** Once a retried request starts streaming, the retry watchdog stops timing it, so a long answer, tool calls or further turns are no longer aborted at 660 seconds. A retry that never starts still ends, with a message saying so. ([senpi#2804](https://github.com/code-yeongyu/senpi/issues/2804), [senpi#2805](https://github.com/code-yeongyu/senpi/pull/2805))
+
+**The Windows release smoke test tolerates a briefly held checkout.** Moving the checkout's `.omo` aside could fail with `EPERM` while a file scanner still held a handle, which stopped the 5.1.20 release. The smoke now retries that rename for up to about 12 seconds and, if it still fails, names the processes it can see holding the directory. ([#9618](https://github.com/code-yeongyu/oh-my-openagent/issues/9618), [#9657](https://github.com/code-yeongyu/oh-my-openagent/pull/9657))
+
+**A session's first turn no longer stalls when a gateway refuses a forced tool choice.** When an OpenAI-compatible gateway refuses a forced `tool_choice` inside a successful stream, the request is retried once without it, as it already was for the same refusal returned as an error, so you no longer have to type `continue`. ([senpi#2801](https://github.com/code-yeongyu/senpi/issues/2801), [senpi#2806](https://github.com/code-yeongyu/senpi/pull/2806))
+
+**A reload during session startup waits instead of breaking extensions.** A reload requested while startup handlers are still running is deferred, so later handlers no longer fail with `stale extension generation after reload`. Thanks to @Bearmancer. ([senpi#2719](https://github.com/code-yeongyu/senpi/issues/2719), [senpi#2771](https://github.com/code-yeongyu/senpi/pull/2771))
 
 **Codex plugin updates stop selecting stale cached hooks.** Successful installs remove obsolete selectable cache versions, so restarting Codex picks up the requested version and its hook trust. Actual hook changes still require review. ([#9631](https://github.com/code-yeongyu/oh-my-openagent/issues/9631), [#9632](https://github.com/code-yeongyu/oh-my-openagent/pull/9632))
 
@@ -31,7 +55,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-**OmO runs on senpi 2026.10.10-2.** Full engine notes: [senpi 2026.10.10-2](https://github.com/code-yeongyu/senpi/releases/tag/v2026.10.10-2).
+**OmO runs on senpi 2026.10.10-3.** Full engine notes: [senpi 2026.10.10-2](https://github.com/code-yeongyu/senpi/releases/tag/v2026.10.10-2) and [senpi 2026.10.10-3](https://github.com/code-yeongyu/senpi/releases/tag/v2026.10.10-3).
+
+**GPT-6 Astra gets a shorter goal-continuation prompt.** It now carries only the goal contract (objective, allowed turn endings, the blocked floor); other models keep the full prompt. ([senpi#2796](https://github.com/code-yeongyu/senpi/issues/2796))
 
 ## [5.1.19] - 2026-10-05
 

@@ -1,11 +1,11 @@
-<!-- registry-sync: version=18.15.0; skills=2652; stars=47251; updated_at=2026-10-04T23:13:54+00:00 -->
+<!-- registry-sync: version=19.0.1; skills=2658; stars=47293; updated_at=2026-10-06T12:45:21+00:00 -->
 # AAS Core — Agentic Awesome Skills
 
 > **Find reusable instructions for your project, inspect their complete files, and keep an exact skill set you can review and reuse.**
 
-Agentic Awesome Skills is a library of 2,652+ installable `SKILL.md` playbooks. AAS Core helps Codex or Claude search the complete local catalog, record the skills the agent chooses, and preview a plan you can inspect before changing a target. Core does not rank or recommend skills.
+Agentic Awesome Skills is a library of 2,658+ installable `SKILL.md` playbooks. AAS Core helps Codex or Claude search the complete local catalog, record the skills the agent chooses, and preview a plan you can inspect before changing a target. Core does not rank or recommend skills.
 
-**Current release: V18.15.0.** AAS Core supports local catalog inspection, agent-owned selection, stack validation, and plan preview. Apply and recovery remain experimental. [Read the AAS Core preview guide](https://github.com/sickn33/agentic-awesome-skills/blob/v18.15.0/docs/users/aas-core.md) for setup and exact trust boundaries.
+**Current release: V19.0.1.** AAS Core supports local catalog inspection, agent-owned selection, stack validation, and plan preview. Apply and recovery remain experimental. [Read the AAS Core preview guide](https://github.com/sickn33/agentic-awesome-skills/blob/v19.0.1/docs/users/aas-core.md) for setup and exact trust boundaries.
 
 This README tracks `main`. Features listed under [Unreleased](CHANGELOG.md#unreleased) require a later release; the versioned guide describes the published package.
 
@@ -35,7 +35,7 @@ This is an independent community project, not affiliated with or endorsed by Goo
 - [Choose Your Tool](#choose-your-tool)
 - [Recommended Specialized Plugins](#recommended-specialized-plugins)
 - [Bundles & Workflows](#bundles--workflows)
-- [Browse 2,652+ Skills](#browse-2652-skills)
+- [Browse 2,658+ Skills](#browse-2658-skills)
 - [Troubleshooting](#troubleshooting)
 - [Stable Skills Manifest v1](#stable-skills-manifest-v1)
 - [Contributing](#contributing)
@@ -86,7 +86,7 @@ Codex or Claude inspects your project and chooses exact skills. Every current ca
 > [!IMPORTANT]
 > Structural and identity validity does not certify semantic fit, compatibility, setup correctness, operational safety, or safety to apply. Apply and recovery require experimental opt-in and remain outside the supported preview.
 
-The [Workbench](https://aaskills.tech/workbench) reviews stack and plan artifacts in browser memory without accessing your filesystem. See the [Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v18.15.0/docs/users/aas-core.md) for tool contracts, capability coverage, and limits.
+The [Workbench](https://aaskills.tech/workbench) reviews stack and plan artifacts in browser memory without accessing your filesystem. See the [Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v19.0.1/docs/users/aas-core.md) for tool contracts, capability coverage, and limits.
 
 ## Installation
 
@@ -95,22 +95,22 @@ The [Workbench](https://aaskills.tech/workbench) reviews stack and plan artifact
 Start with AAS Core in Codex or Claude. Configure the local MCP using the [Codex](docs/users/codex-cli-skills.md) or [Claude](docs/users/claude-code-skills.md) guide. With the MCP available, ask the agent to inspect your project, compare relevant skills, and save the exact selection. Then validate its manifest and review the resulting plan before any installation. The first configuration command previews a change and returns an approval digest:
 
 ```bash
-npm exec --yes --ignore-scripts --package=agentic-awesome-skills@18.15.0 -- aas mcp configure \
+npm exec --yes --ignore-scripts --package=agentic-awesome-skills@19.0.1 -- aas mcp configure \
   --host codex \
   --scope user \
   --config /absolute/path/to/codex/config.toml \
   --cache-root /absolute/path/to/aas-cache
 ```
 
-Use `--host claude` and its configuration path for Claude. The [Core setup guide](https://github.com/sickn33/agentic-awesome-skills/blob/v18.15.0/docs/users/aas-core.md#configure-the-local-mcp) explains approval, reconnection, validation, and planning. To hand the reviewed IDs to the direct installer, use `aas stack install-preview` as described in the [manifest handoff](docs/users/aas-core.md#use-the-reviewed-selection); that command only prepares a `--dry-run` preview and does not apply a Core plan.
+Use `--host claude` and its configuration path for Claude. The [Core setup guide](https://github.com/sickn33/agentic-awesome-skills/blob/v19.0.1/docs/users/aas-core.md#configure-the-local-mcp) explains approval, reconnection, validation, and planning. To hand the reviewed IDs to the direct installer, use `aas stack install-preview` as described in the [manifest handoff](docs/users/aas-core.md#use-the-reviewed-selection); that command only prepares a `--dry-run` preview and does not apply a Core plan.
 
 ### Install selected skills directly
 
 If you already know the IDs, preview a focused install into your host's skill directory:
 
 ```bash
-npm exec --yes --ignore-scripts --package=agentic-awesome-skills@18.15.0 -- \
-  agentic-awesome-skills --release 18.15.0 --path .agents/skills \
+npm exec --yes --ignore-scripts --package=agentic-awesome-skills@19.0.1 -- \
+  agentic-awesome-skills --release 19.0.1 --path .agents/skills \
   --skills brainstorming,systematic-debugging --dry-run
 ```
 
@@ -168,7 +168,7 @@ Bundles suggest related skills; workflows describe the order to use them. They a
 - [Workflows](docs/users/workflows.md) give ordered playbooks for planning, shipping, testing, and auditing; [workflow metadata](data/workflows.json) is available for integrations.
 - If too many installed skills overload Antigravity, follow the [selective activation guide](docs/users/agent-overload-recovery.md). For other hosts, preview a smaller exact install or use the installer's `--risk`, `--category`, and `--tags` filters.
 
-## Browse 2,652+ Skills
+## Browse 2,658+ Skills
 
 Explore the complete library in the [hosted catalog](https://aaskills.tech/) or [`CATALOG.md`](CATALOG.md). The canonical playbooks live in [`skills/`](skills/); [`skills_index.json`](skills_index.json) provides machine-readable discovery. Use [Getting Started](docs/users/getting-started.md) and [Usage](docs/users/usage.md) for first steps, or the [Workbench](https://aaskills.tech/workbench) to inspect a saved Core stack and plan in your browser.
 
@@ -176,7 +176,7 @@ For narrower comparisons, see [Claude Code skills](docs/users/best-claude-code-s
 
 ## Troubleshooting
 
-- [Core setup and trust boundaries](https://github.com/sickn33/agentic-awesome-skills/blob/v18.15.0/docs/users/aas-core.md)
+- [Core setup and trust boundaries](https://github.com/sickn33/agentic-awesome-skills/blob/v19.0.1/docs/users/aas-core.md)
 - [Installation and everyday use](docs/users/usage.md)
 - [Windows context and truncation recovery](docs/users/windows-truncation-recovery.md)
 - [Linux/macOS overload and selective activation](docs/users/agent-overload-recovery.md)
@@ -219,6 +219,8 @@ Key source families include:
 
 ### Official Sources
 
+- **[lognorm/lognorm-mcp](https://github.com/lognorm/lognorm-mcp)**: MIT official source for the `lognorm` skill — work a site's SEO and AI-visibility (GEO) backlog through the hosted LogNorm MCP server: audits, fixes, content and AI-answer tracking.
+- **[NygenAnalytics/scarf](https://github.com/NygenAnalytics/scarf)**: Official Scarf source for the `scarf-single-cell` skill - out-of-core single-cell RNA-seq analysis with Scarf's Zarr DataStore on local disk or object storage, immutable provenance-tracked artifacts, audited QC, clustering, markers and comparisons (BSD-3-Clause).
 - **[anup-a/agent-artifacts](https://github.com/anup-a/agent-artifacts)**: Official byagent source for the `byagent` skill - publish agent-written Markdown or HTML as a shareable link with the `byagent` CLI, read readers' line comments back, edit, republish to the same link and resolve; pages are public unless `--private` and comment text is treated as untrusted data (MIT).
 - **[prateeks367/voicemoat-skills](https://github.com/prateeks367/voicemoat-skills)**: Official VoiceMoat source for eight Twitter/X and LinkedIn skills (`write-in-my-voice`, `turn-this-into-a-thread`, `same-idea-both-platforms`, `repurpose-into-a-post`, `define-my-content-pillars`, `why-did-this-post-flop`, `get-seen-in-replies`, `draft-my-comments`). They draft in your own voice, write threads, cross-post, repurpose long content, pick content pillars, diagnose a post that underperformed, and write replies and comments worth reading; each works from pasted text alone, and an optional paid VoiceMoat connector adds voice scoring and preview-gated publishing (MIT).
 - **[cloudishai/skills](https://github.com/cloudishai/skills)**: Official Cloudish source for the `cloudish` skill - deploy a Dockerfile, source folder, or existing image as a running container at a live URL, built server-side, with confirmation before the first deploy and before spending credits; uploads the build context and spends prepaid credits (MIT).
@@ -317,6 +319,9 @@ Key source families include:
 
 ### Community Contributors
 
+- **[alexyc9381/shark-skill](https://github.com/alexyc9381/shark-skill)** and **[alexyc9381/court-skill](https://github.com/alexyc9381/court-skill)**: MIT sources for the `shark` and `court` skills by Alex Chen (@nocodealex). Each is a panel of Claude sub-agents (investors, or a jury) that stress-tests an idea.
+- **[ASCIT31/darkmoon-mcp-server](https://github.com/ASCIT31/darkmoon-mcp-server)**: GPL-3.0 source for the `darkmoon-pentest` skill — authorized autonomous pentest runs, status polling and findings triage on a self-hosted Darkmoon Pro instance through its MCP server.
+- **[alapha888/session-handoff-kit](https://github.com/alapha888/session-handoff-kit)**: MIT source for the `session-handoff` skill — structured handoff artifact for the next session, for use when context approaches capacity, before /clear or /compact, when switching tasks, or when ending a coding session.
 - **[FlowLLM-AI/AxonX](https://github.com/FlowLLM-AI/AxonX)**: Apache-2.0 source for `axonx` — quantitative research plugin development, task execution, and artifact/lineage inspection through CLI and MCP.
 - **[supercorp-ai/supercov](https://github.com/supercorp-ai/supercov)**: MIT source for the `supercov` skill — line, branch and MC/DC coverage of a project's existing tests, used to write focused tests for the untested code.
 - **[alapha888/agent-skills-en](https://github.com/alapha888/agent-skills-en)**: MIT source for `deep-research-framework`, `five-axis-code-review`, `git-commit-message`, `meeting-notes`, and `tech-writing-proofread` — concise English workflows for research reports, code review, commit messages, meeting minutes, and technical proofreading.

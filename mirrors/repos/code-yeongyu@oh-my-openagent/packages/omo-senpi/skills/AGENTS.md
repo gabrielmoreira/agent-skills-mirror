@@ -7,7 +7,7 @@ Native Senpi skills authored directly against the Senpi tool surface (not ported
 | Skill | Role |
 |-------|------|
 | `mass-ulw/` | Chained-dag orchestration at repo scale (multi-run composition, size formula, node categories). `references/planning.md` is REQUIRED reading before building any dag: wave doctrine, node prompt contract, failure playbook. |
-| `ultrawork/` | Senpi-native ultrawork directive source; its body is embedded into `src/components/ultrawork/generated-directive.ts` by `plugin/scripts/embed-directive.mjs` (build fails on non-senpi harness tokens). |
+| `ultrawork/` | Senpi-native ultrawork directive source; its body is embedded into `src/components/ultrawork/generated-directive.ts` by `plugin/scripts/embed-directive.mjs` (build fails on non-senpi harness tokens). Blocks wrapped in `<!-- omo-ultrawork-astra:<name>:start/end -->` are swapped for the matching `## <name>` section of `references/astra-variant.md` in the GPT-6 Astra variant the ultrawork component selects by receiving model; the baseline strips only the marker lines, so every other model reads the skill body verbatim. |
 | `ulw-plan/` | Read-only planning lifecycle: draft -> plan with explicit approval; `scripts/scaffold-plan.mjs` scaffolds guarded `.omo` artifacts. |
 | `ulw-loop/` | Goal/QA lifecycle loop; component-owned native source, shipped verbatim. |
 | `ulw-research/` | Claim-graph research orchestration: claims enter `claim-graph.md` as `verified-claims`; unsupported claims stay unresolved/refuted. |

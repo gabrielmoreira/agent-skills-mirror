@@ -4,6 +4,44 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.292](https://github.com/Piebald-AI/claude-code-system-prompts/commit/faf4b43)
+
+_+7,031 tokens_
+
+- **NEW:** Data: SDK result safety_stops field — Reports a running per-session total of model calls stopped by a safety system, including refusals and content-filter stops; resets on resume or `/clear`.
+- **NEW:** Data: SDK MCP server disableAutoBackground field — When true, the CLI never auto-backgrounds calls to that server's tools, intended for servers whose calls wait on a person.
+- **NEW:** Data: SDK api_error_params field — Documents `api_error` parameters: refused effort level, removed-media kind and reason, credential-failure provider and remedy, and usage-limit `rate_limit_info`.
+- **NEW:** Data: SDK message_stop abandoned_blocks field — Marks a CLI-generated `message_stop` after a failed or stalled stream, so consumers can drop blocks from that index up that never got assistant messages.
+- **NEW:** Data: SDK task notification handback field — Completed-subagent notifications say how a `SubagentHandback` report reached its caller; omitted when the subagent failed, was stopped, or is still waiting.
+- **NEW:** Data: SDK permission_check_status event schema — Signals a tool call waiting unusually long on the auto-mode classifier, as a "checking"/"done" pair hosts can display; display-only and best-effort.
+- **NEW:** Data: Interrupt worker_epoch parameter — Ties a service-sent interrupt to one worker life, refusing stale or invalid values with errors; a person's Stop never carries it.
+- **NEW:** Data: SDK read_file anchor field — Resolves a read path against a fixed workspace, diff root, or repo checkout instead of the live cwd, refusing `~` and paths that escape it.
+- **NEW:** Data: SDK safeguard_results field and Data: SDK safeguard_tool_use field — Carry the Messages API verdict for one call so the worker can decide its permission; ignored if malformed or mismatched.
+- **NEW:** Data: SDK ui_prompt_autocomplete request schema — A remote composer asks plugins for autocomplete rows for the token at the caret; newer asks supersede older ones, and failed chains return no rows.
+- **NEW:** Tool Description: PublishPlugin file listing and consent flow — Lists the plugin's files, shows folder, organization, count and size, and asks the user first, in any permission mode; writes a manifest if none exists.
+- **NEW:** Tool Description: Artifact preview action (in-session viewer) — Opens the page in the real artifact viewer, returning a first-view picture, console errors, and a clickable outline; the viewer's own instructions win on when to check.
+- **NEW:** Data: Network-path settings file unread recovery guidance — When plugin uninstall couldn't read a settings file through a link to another machine, says to replace the link or use the real location, then retry.
+- **NEW:** System Reminder: Queued notifications read-time clock note — States when the read happened by this machine's clock and explains the queued-at, reached-session, and whole-wait headers, including clock skew.
+- **NEW:** Agent Prompt: Background agent state classifier ask-opens-message rule and Agent Prompt: Project thread status card classifier ask-opens-message rule — Classify a message that opens with the agent's need as blocked or needs-reply unless the tail resolves it; offers still don't gate.
+- **NEW:** Tool Description: Computer use unlinked chat guidance — Says computer tools cannot be linked from this chat, so the model tells the user briefly, uses other tools, and suggests opening the chat in the desktop app.
+- Agent Prompt: Web fetch agent usage guidance — Clarifies that without a built-in fetch tool this agent stands in for it, so calling it to read a page is ordinary tool use.
+- Tool Description: Agent explicit-spawn restriction — Adds an exception: where the web fetch agent type stands in for a missing fetch tool, calling it to read a page is ordinary tool use.
+- Data: Artifact capability verification pass — The pre-publish preview step is now offered only when the artifact check tool is the local Chrome viewer.
+- Data: Background tasks changed event schema — The event also fires when an entry's `parent_task_id` changes, and now spells out the ordering between level changes and task start, update, and notification events.
+- Data: SDK API error kind field — Adds the `usage_limit_reached` kind for an account plan limit or usage-credit spend cap, distinguished from policy, throttle, capacity, and API-key 429s.
+- Data: Turn handoff file names field — Adds that if a person later sends another file under a placed name, the copy is replaced or removed while still unchanged.
+- Data: Turn handoff memory context field — The memory line is now also used on history requests when the session holds none of its messages yet; wording "runs without" becomes "goes on without".
+- Skill: Artifact diagramming — Artifacts made from an Artifact type draw diagrams as that type's instructions and referenced pages say; these mechanics apply only where they are silent.
+- System Reminder: Queued notifications delivery — The formatted notification list now appears directly after the "listed oldest first" sentence.
+- Tool Description: Artifact action reference and Artifact action reference (concise app wording) — The `list` action now returns artifacts most recently opened or updated first, instead of newest first.
+- Tool Description: Computer use enable stub guidance — Adds that the Claude app on the computer may show why under Settings → This computer → Computer use.
+- Tool Description: GetTask — Drops "when your turn ends or" from the note that a task's status message says it is terminated at your final response.
+- Tool Description: SuggestConnectors — Accepts installed connectors' `server_id` values listed in the system prompt, as well as ids from a `SearchMcpRegistry` result.
+
+#### [2.1.291](https://github.com/Piebald-AI/claude-code-system-prompts/commit/930d886)
+
+<sub>_No changes to the system prompts in v2.1.291._</sub>
+
 # [2.1.290](https://github.com/Piebald-AI/claude-code-system-prompts/commit/066d7db)
 
 _+12,809 tokens_

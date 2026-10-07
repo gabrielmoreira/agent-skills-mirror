@@ -118,7 +118,7 @@
     "omh-materials-package/SKILL.md": "bcc3cd63e2f664bd83a607482670cf2b2fd8f2994833c7c7f749fa4da396f09e",
     "omh-media-input/SKILL.md": "807f2da5a49760d143bbd85914df1ff9bd3b620eb2ec96a61e58537256b7d51f",
     "omh-meeting-brief/SKILL.md": "2570eb07ac26b1ed4987795f59ace5349677d5cfc3cfceb9c9305e52d7c4ff2a",
-    "omh-memory-new/SKILL.md": "7bc49d6904cb9d09342f8332831e67c4aa1d213080e05f6cfcabfb33750fc590",
+    "omh-memory-new/SKILL.md": "78d31e1336e91efe91a97486cc228a9c15ec7d77009df17ddef99e952ffd765b",
     "omh-mobile-release/SKILL.md": "279ecc6a617b687257bc1b1ab4f78609bbb64bfa902596a73f16dc3605e78177",
     "omh-mobile-release/references/mobile-release-method.md": "c28b6bec1569b8971c42b412e054daa8d9efa23a4fad698cd72ce2acc349de82",
     "omh-model-finetuning/SKILL.md": "b1cf221ee30bc07307ab873e7ec6b8ef16164854abacc82706697bcdf2848782",
@@ -314,7 +314,7 @@
     "ulw-work"
   ],
   "source": "agent-skills",
-  "source_digest": "1841e4452765bbc24ff72a4028fc37f3c407123124c87fd0e435aa606d4871d2",
+  "source_digest": "b96cc6cf10191b41d5f99bfa63fb16fc9e309bca26af4a838ffa813d4c1837ea",
   "targets": {
     "repo": ".agents/skills",
     "user": ".agents/skills"

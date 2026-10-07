@@ -1,0 +1,1 @@
+cache/repos/github.com/netdata@netdata/src/crates/AGENTS.md

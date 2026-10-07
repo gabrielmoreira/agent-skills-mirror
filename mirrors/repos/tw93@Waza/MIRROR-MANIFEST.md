@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tw93/Waza` — 26 default patterns, 0 followed patterns, 86 file(s) materialized.
+Mirror of `tw93/Waza` — 26 default patterns, 0 followed patterns, 87 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tw93/Waza` — 26 default patterns, 0 followed patterns, 86 file(s) m
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 86 |
+| Files         | 87 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -139,12 +139,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 78 | ✓ | [`skills/write/references/mode-release-notes.md`](skills/write/references/mode-release-notes.md) |
 | 79 | ✓ | [`skills/write/references/write-en.md`](skills/write/references/write-en.md) |
 | 80 | ✓ | [`skills/write/references/write-product-localization.md`](skills/write/references/write-product-localization.md) |
-| 81 | ✓ | [`skills/write/references/write-zh-bilingual.md`](skills/write/references/write-zh-bilingual.md) |
-| 82 | ✓ | [`skills/write/references/write-zh-release-notes.md`](skills/write/references/write-zh-release-notes.md) |
-| 83 | ✓ | [`skills/write/references/write-zh.md`](skills/write/references/write-zh.md) |
-| 84 | ✓ | [`skills/write/scripts/check_punctuation.py`](skills/write/scripts/check_punctuation.py) |
-| 85 | ✓ | [`skills/write/scripts/check-punctuation.sh`](skills/write/scripts/check-punctuation.sh) |
-| 86 | ✓ | [`skills/write/SKILL.md`](skills/write/SKILL.md) |
+| 81 | ✓ | [`skills/write/references/write-technical.md`](skills/write/references/write-technical.md) |
+| 82 | ✓ | [`skills/write/references/write-zh-bilingual.md`](skills/write/references/write-zh-bilingual.md) |
+| 83 | ✓ | [`skills/write/references/write-zh-release-notes.md`](skills/write/references/write-zh-release-notes.md) |
+| 84 | ✓ | [`skills/write/references/write-zh.md`](skills/write/references/write-zh.md) |
+| 85 | ✓ | [`skills/write/scripts/check_punctuation.py`](skills/write/scripts/check_punctuation.py) |
+| 86 | ✓ | [`skills/write/scripts/check-punctuation.sh`](skills/write/scripts/check-punctuation.sh) |
+| 87 | ✓ | [`skills/write/SKILL.md`](skills/write/SKILL.md) |
 
 ---
 

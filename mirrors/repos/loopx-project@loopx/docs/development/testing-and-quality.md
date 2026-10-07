@@ -782,6 +782,17 @@ TS RFC 管语义 owner 与跨语言成本，shared-authority RFC 管后端容量
 
 ### Budget Failure Decisions
 
+Complete registry routes exposed an existing brief heartbeat regression on the
+unchanged 128-character-root fixture. Commit
+`fb20c153ba2c2a7376efe68091a76ca470effbde` added those routes: its immediate parent
+emitted 10,417 JSON / 8,846 Markdown characters; the same workload then emitted
+12,107 / 10,198 against 10,500 / 9,000 ceilings. The additional JSON cost is 1,690
+characters across eight command fields and two task-body commands. Keep the
+original failure, full paths, fixture, consumer fields and thresholds while
+qualifying a separate compaction or justified budget change. This history is
+not a waived regression or a frozen SLO pass. An unchanged base failure must be
+attributed before it is distinguished from a new candidate regression.
+
 Classify the limit by its owning contract before deciding how to repair a
 failure. This applies to output size/structure and latency regression budgets;
 it does not grant execution quota, spending, or provider authority.

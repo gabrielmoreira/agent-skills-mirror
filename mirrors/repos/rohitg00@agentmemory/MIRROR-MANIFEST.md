@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rohitg00/agentmemory` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `rohitg00/agentmemory` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rohitg00/agentmemory` — 26 default patterns, 0 followed patterns, 1
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -77,6 +77,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`plugin/skills/remember/SKILL.md`](plugin/skills/remember/SKILL.md) |
 | 17 | ✓ | [`plugin/skills/session-history/SKILL.md`](plugin/skills/session-history/SKILL.md) |
 | 18 | ✓ | [`plugin/skills/write-agentmemory-skill/SKILL.md`](plugin/skills/write-agentmemory-skill/SKILL.md) |
+| 19 | ✓ | [`website/app/llms.txt/route.ts`](website/app/llms.txt/route.ts) |
 
 ---
 

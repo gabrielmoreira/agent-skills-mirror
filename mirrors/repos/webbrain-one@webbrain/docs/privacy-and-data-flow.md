@@ -99,37 +99,65 @@ on login, layout, or timeout failures. Turning Research escalation off removes
 both the delegation tool and the Ask-mode consent schema from later model
 requests.
 
-### Optional Jev (TypeSafe) scheduled-task verification
+### Decision models and completion verification
 
-Settings → Assistive Models → Jev (TypeSafe) contains the Jev controls, disabled by default,
-with separate watch and completion switches. Turning the master switch off
-preserves those preferences. Removing the key disables all uses and resets
-probability thresholds to 70%. Settings import/export preserves the original
-`systemOne*` keys and `typesafeApiKey` (plaintext local storage).
+Settings → Assistive Models → Decision models selects OpenRouter, TypeSafe or a
+local/custom System One endpoint. Completion verification, watch checks,
+scheduled completion checks, classifications and browser decisions share that
+selection and have separate switches. Existing TypeSafe credentials, opted-in
+features and scheduler thresholds are retained. New configurations default to
+OpenRouter Decider with completion verification enabled once outsourcing is
+configured. Compass completion uses its managed Cloud decision route automatically.
 
-The scheduler sends at most 16,000 serialized characters to
-`https://api.typesafe.ai/v1/systemone`, pinned to `jev-1.13.0`. State contains
-the bounded task, allowlisted textual tool observations from this run, and a
-bounded real previous observation for watches. It excludes agent success
-summaries, conversation history, screenshots, audio, attachments, raw request
-bodies and credential fields. Text is redacted and wrapped as untrusted data.
-An action invalidates earlier observations. Missing eligible evidence skips
-verification. Redaction is best effort: ordinary page text can contain personal
-data, so enabling Jev authorizes sending that limited evidence to TypeSafe.
+Successful action-mode `done` and `done_json` attempts send bounded original task,
+requirements, recent action/read evidence, document identity and fresh redacted
+pixels (when supported) or AX to the selected judge. Page content and pixels are
+untrusted data; an agent success summary is not proof. Text is bounded by
+serialized UTF-8 bytes; screenshots use the configured capture/redaction budgets.
+Local Kev uses `/v1/systemone`, requires no key by default and works offline.
+Keys stay in local storage; config exports include them in plaintext.
 
-Jev never upgrades a result. A low judgment on a read-only watch permits another
-poll. If an action was dispatched or its outcome is uncertain, a downgrade
-preserves its record and requests reconciliation instead of repeating it;
-this also applies to recurring tasks. Cancellation or replaced execution
-invalidates late responses. Invalid responses, unavailable service, Strict
-Secret Mode, offline operation or cost restrictions retain the existing result.
+Decision requests have a five-second deadline and no transport retries; dedicated
+tool-free LLM checks have ten seconds. Visual uncertainty or unsupported images
+tries AX. Authentication/transport failures fall through to the active LLM, then
+existing checks. Confident pending/failed verdicts require recovery. Quota,
+cancellation and cost limits stop the run. Verdicts are bound to task, run, latest
+action, document, evidence digest and model configuration. A matching fresh verdict
+can be reused for scheduled completion without another model call. Generic
+publication can be verified despite an unrelated comment form; recipient, payment,
+download, authorization and workflow contracts remain required. Future votes and
+moderation outcomes are not certified.
 
-Requests have one total five-second deadline, including up to two retries for
-429/529. Connection testing occurs only on a button press and sends one fixed
-synthetic example with no retries. Input usage is estimated at $0.042 per million
-tokens; output tokens are free under the documented model price. Usage, duration,
-model and decision reasons enter cost/trace accounting without raw evidence.
-TypeSafe may charge your account; no SDK is installed.
+The Cloud decision endpoint logs route, model, modality, latency, outcome, usage
+and fallback reasons without raw screenshots or page evidence. Consent and
+privacy-key selection follow the existing Compass policy. Reported decision cost
+is accounted separately, with configured rates as fallback.
+
+### Scheduled decision checks
+
+The watch and scheduled-completion switches remain separate opt-ins. The master
+switch preserves feature preferences when disabled; deleting keys resets those
+scheduler thresholds to 70%. Config import/export retains the original
+`systemOne*` and `typesafeApiKey` keys together with new decision settings.
+
+The scheduler sends bounded textual task and allowlisted tool observations to the
+selected endpoint, plus a bounded real previous observation for watches. Legacy
+TypeSafe uses `https://api.typesafe.ai/v1/systemone`, model `jev-1.13.0`. Scheduler
+sidecar state excludes agent success summaries, full history, screenshots, audio,
+attachments, raw request bodies and credential fields. Text is redacted and wrapped
+as untrusted data. Actions invalidate earlier observations. Missing evidence skips
+the check. Ordinary page text may contain personal data, so enabling outsourcing
+authorizes sending that limited evidence to the selected endpoint.
+
+The scheduled sidecar only downgrades an existing success. A low read-only watch
+judgment permits another poll. Dispatched actions or uncertain outcomes retain
+their record and require reconciliation instead of automatic repetition. Existing
+scheduled-check deadlines and 429/529 retries remain unchanged. Connection tests
+run only on button press and never retry; image-enabled tests additionally check
+two synthetic images. Reported cost takes precedence over configured model rates.
+Legacy TypeSafe input is estimated at $0.042 per million tokens with free output.
+Usage/model/reason metadata enters accounting and traces without raw evidence.
+Strict Secret Mode disables judging; offline loopback decisions remain available.
 
 ### WebBrain Compass improvement data
 
@@ -239,6 +267,14 @@ conversation content is sent to the configured provider as request context;
 the stored copies are not separately synced to WebBrain.
 
 ### Trace Recorder
+
+**Local feedback diagnostics** is enabled by default under Settings → Display.
+When ordinary trace recording is off, it retains metadata-only diagnostics for
+up to ten completed runs, seven days, and 2 MiB (with a 128 KiB per-run cap).
+These automatic records never inherit lossless tracing and contain no raw
+conversation/tool text or screenshot bytes. Turning the setting off stops this
+recording and removes its automatic history; explicitly recorded traces remain.
+Retention and event-budget omissions are identified in feedback exports.
 
 When enabled (Settings → Display → "Record traces"), every agent run is written
 to the local `webbrain_traces` IndexedDB database in one of two privacy tiers.
@@ -452,6 +488,19 @@ The only outbound HTTP requests are:
 7. **Encrypted Cloud Sync calls** to `https://api.webbrain.one/v1/sync` (only after a subscriber explicitly enables sync; vault content is encrypted before upload)
 8. **Slash-driven tab/screen recording** creates no outbound traffic (the .webm is saved to the Downloads folder via `chrome.downloads.download`)
 9. **Voluntary research shares** to `https://api.webbrain.one/v1/improvement/generations` and `/v1/improvement/diagnostic-traces` (only for a local or bring-your-own provider with its separate sharing switch enabled)
+10. **Feedback trace attachments** uploaded by GitHub's native issue editor,
+    only after the user chooses **Upload trace and open GitHub** in the extension.
+    Preparing, viewing, and downloading the trace are local operations. The
+    confirmation identifies the conversation, recorded content tier, run and
+    screenshot counts, size, and any fallback or omissions. GitHub makes the
+    attachment publicly accessible immediately, before the issue is submitted.
+    **Continue without trace** uploads no trace. Export scrubs credential-shaped
+    values, but conversation/page text and screenshots can still be sensitive.
+    Temporary exports expire after one hour and are removed after completion,
+    cancellation, or closing the destination tab. Failed handoffs can retry the
+    same authorized bytes. Full traces that exceed the attachment limit use an
+    explicitly disclosed diagnostic fallback; the original stays available as
+    a local download.
 
 The `webRequest` API shortcut observer is on by default and does not
 create outbound requests; it observes replay metadata for requests
@@ -690,6 +739,7 @@ CDP capture → JPEG/PNG data URL
 | Provider prompt/tool tier | Choose Compact, Mid, or Full tool exposure for non-cloud providers |
 | Ask / Act / Dev mode | Choose read-only, normal action, or developer/page-inspection mode |
 | Tracing toggle | Controls ordinary local trace recording; a separately opted-in provider research share records a run for metadata-only diagnostic upload even when this toggle is off |
+| Local feedback diagnostics | Keeps bounded metadata locally when ordinary tracing is off; disabling it clears automatic history. Uploading a feedback attachment requires separate confirmation. |
 | Screenshot fallback | Controls whether page images are sent to the LLM |
 | Auto-screenshot mode | Controls how frequently viewport captures are sent |
 | Strict secret handling | Keeps credentials out of assistant text and completion summaries: an instruction to the model, plus exact-match redaction in cloud runs of anything it typed, sent, or read from a labelled field |
@@ -715,9 +765,9 @@ data-flow patterns are otherwise the same, except:
 - Conversation, rendered chat, and detached-run UI journals use
   `browser.storage.session`, matching Chrome's session-scoped persistence.
 
-### Experimental Jev decisions
+### Experimental browser decisions and classifications
 
-The two additional Jev switches are independent opt-ins. Existing enabled keys
+The two additional decision switches are independent opt-ins. Existing enabled keys
 or scheduler settings do not enable them. Fast classification sends bounded
 request context; fast browser decisions send the task, up to 24 structured AX
 controls, observed options and bounded prepared field values. These may include
@@ -725,11 +775,11 @@ ordinary personal text explicitly supplied for a form. Credential-related tasks
 and pages containing credential, payment, OTP or file controls are excluded from
 the fast path as a whole. Redaction remains best effort. Initial and automatic
 browser screenshots do not disable the AX-only path, but their pixels are never
-sent to Jev. A current user attachment, explicit screenshot-tool result or unknown
+sent to the fast decision model. A current user attachment, explicit screenshot-tool result or unknown
 non-text input keeps that decision on the active chat provider. That provider also
-prepares free text and gives the final answer; Jev receives neither screenshots nor
+prepares free text and gives the final answer; the fast decision path receives neither screenshots nor
 full conversation history for browser decisions. Separate requests use the same
-pinned model, cost accounting and untrusted-data boundaries, with a one-second
+selected model, cost accounting and untrusted-data boundaries, with a one-second
 deadline and zero retries. Unsupported operations and their target questions are
 omitted rather than sending a one-option placeholder Choice. A malformed model,
 usage or answer response stops further Jev requests for that run; exported traces

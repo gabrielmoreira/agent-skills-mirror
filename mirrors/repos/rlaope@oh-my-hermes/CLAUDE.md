@@ -67,7 +67,7 @@ Source of truth → generated file → regen command → drift gate:
 
 | Source | Generated | Regenerate | Gate |
 | --- | --- | --- | --- |
-| `src/skills/catalog.py` + `src/skills/render.py` via `builtin_skill_templates()` / `builtin_skill_reference_templates()` | `skills/*/SKILL.md`, `skills/*/references/*.md` | write template `.content` back to `skills/` (short Python loop; no dedicated CLI writer) | tap-skills staleness inside `docs workflows --check` (missing/stale/extra); `tests/test_router_content.py` |
+| `src/skills/skill_record.py` (`SkillRecord` over `catalog.py`, `catalog_feature_surfaces.py`, `catalog_harnesses.py`, `catalog_portable.py`, `render.py`; `project(skill, target)`) via `builtin_skill_templates()` / `builtin_skill_reference_templates()` | `skills/*/SKILL.md`, `skills/*/references/*.md` | write template `.content` back to `skills/` (short Python loop; no dedicated CLI writer) | tap-skills staleness inside `docs workflows --check` (missing/stale/extra); `tests/test_router_content.py` |
 | Same catalog data | `docs/WORKFLOWS.md` | `uv run python -m omh.cli docs workflows --output docs/WORKFLOWS.md` | `uv run python -m omh.cli docs workflows --check` |
 | Same catalog data | `docs/ROLES.md` | `uv run python -m omh.cli docs roles --output docs/ROLES.md` | `uv run python -m omh.cli docs roles --check` |
 | Demo case engine | `examples/use-cases/g1-g10-demo-cards.json` | `uv run python -m omh.cli cases demo --all --json` output | parse-equality in `tests/test_application_cases.py` |
@@ -81,6 +81,7 @@ Source of truth → generated file → regen command → drift gate:
 Rules:
 
 - Never hand-edit `agent-skills/*/SKILL.md` or its references; regenerate the portable target without changing the Hermes projection.
+- A skill's read path is `skill_record(name)`; new per-skill metadata is a field on the record, not a new module.
 - Never hand-edit `skills/*/SKILL.md`, `docs/WORKFLOWS.md`, `docs/ROLES.md`, the
   demo-cards JSON, or a marked region (ULW in `README.md` / `site/index.html`,
   the shipped chain table in `docs/INSTALLATION.md`). Edit the catalog/render
@@ -117,13 +118,16 @@ Rules:
   `ROUTING_INTERVENTION_CASES` is the positive-intervention corpus and its
   failure metric is `missed_intervention_count`. Grepping for "underroute"
   finds nothing — the guard exists under the intervention name.
-- Tests are contracts. Many fixtures assert exact counts. When you add a
-  routing case, skill, or demo card, update the exact-count assertions in the
-  same commit — they are the point, not noise. To find them, grep the current
-  value read off `tests/test_routing_precision.py` (or the drift registry in
-  `src/maintenance/drift.py`), not a number quoted here; per the rule above,
-  counts written into prose drift and then send you looking for a string that
-  no longer exists.
+- Tests are contracts. The routing corpus totals have reviewed pins in two
+  places only: the two `expected=` values in `src/maintenance/drift.py` (each
+  with its reason history) and the `case_count` / `intervention_case_count`
+  literals at the top of `tests/test_routing_precision.py`. Update both in the
+  commit that adds a routing case — they are the point, not noise. Every other
+  test compares its payload, and its rendered `NNN/NNN` string, against
+  `build_routing_precision_demo()`, so it needs no edit. The counts that
+  `count_metrics()` in `src/maintenance/drift.py` registers are still literal,
+  and it lists every site that hardcodes each one. Never quote a count in
+  prose: it drifts and sends you looking for a string that no longer exists.
 - English for code, docs, commits, and PR text — and for all user-facing CLI
   output by default. Localized output (ko/ja/zh) is explicit opt-in via
   `--language` or `OMH_LANG` only; never auto-detect the OS locale. Korean-only
@@ -169,14 +173,14 @@ Rules:
   `test_hermes_projection_byte_stable`, and its failure names the bodies that
   moved. Re-derive that fixture in the same commit as the edit, sorted-key,
   and check the named list is the set you meant to change.
-- Adding a routing fixture or skill without updating exact-count assertions —
-  breaks `tests/test_routing_precision.py`, `tests/test_cli.py`,
-  `tests/test_hermes_ux_quality.py`, and `tests/test_release_smoke.py`, plus
-  the expected values in `src/maintenance/drift.py`. Grep those five for the
-  old count when totals change, and remember each test file pins the totals
-  twice: once in the payload assertions and once in the rendered CLI strings
-  (`NNN/NNN negative-control cases`, `Interventions: NNN/NNN ...`).
-- Resolving a routing-count rebase conflict by picking a side. Those same five
+- Adding a routing fixture without moving the reviewed pins — breaks
+  `tests/test_routing_precision.py` and `tests/test_drift_registry.py`. A new
+  case moves one `expected=` value in `src/maintenance/drift.py` (the
+  negative-control or the intervention one) and the matching literal in
+  `tests/test_routing_precision.py`;
+  `omh release drift` names the ones that moved. A new skill still moves the
+  literal counts the drift registry lists for it.
+- Resolving a routing-count rebase conflict by picking a side. Those two
   files conflict whenever main added a case while your branch was open, and
   neither side is right: upstream's baseline moved and your delta still has to
   land on top of it. Keep whichever side carries your reason comments, then

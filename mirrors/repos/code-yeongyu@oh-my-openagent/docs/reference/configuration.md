@@ -563,6 +563,50 @@ Configured under `memory` in `omo.json`, with per-agent overrides under `memory.
 | `compile_warn_tokens`| `30000`    | Warn when the compiled memory block exceeds this many tokens                     |
 | `agents`             | `{}`       | Per-agent overrides; any block below may be overridden field by field            |
 
+#### Memory file list in the prompt
+
+Every turn the compiled memory block ends with `<external_projection>`, one line per directory
+naming the memory files outside `system/`. Two limits keep it small on a large corpus. Each
+directory lists its most recently committed files first (ties by name). Names that do not fit are
+counted as `(+N more; read $MEMORY_DIR/<dir>/ to list)`, and every directory keeps its line.
+
+| Option                                 | Default | Description                                                                   |
+| -------------------------------------- | ------- | ----------------------------------------------------------------------------- |
+| `projection.max_entries_per_directory` | `40`    | Names listed per directory, newest first                                       |
+| `projection.max_bytes`                 | `24576` | Byte budget for the whole list; the largest directory gives up names first     |
+
+`0` disables a limit; both at `0` list every name in name order, as before. A budget smaller
+than one line per directory cannot be met: the list then shows only the directory lines with
+their counts, and `/doctor` reports the overflow. Both keys can be set per harness, per profile
+and per agent under `agents.<name>.projection`. `/doctor` prints a `projection` line with the
+names shown and omitted and the byte size. The line is a warning when names are omitted or the
+budget is overflowed. `/doctor --json` carries the same line in `checks`.
+
+#### Secret screening
+
+Memory never stores or shows secret-like text. One scanner covers seven pattern classes: AWS
+access keys, credential assignments (`token=`, `api_key:`, `password=` and similar), HTTP
+`Authorization: Bearer` headers, OpenAI-style `sk-` keys, vendor tokens (GitHub, GitLab and Slack
+prefixes), PEM private-key blocks, and credential keys split by whitespace. Before matching it
+strips zero-width and other invisible format characters and folds non-breaking spaces, so an
+obfuscated credential is still caught.
+
+- **Refused:** every commit path screens the staged file names and the full staged content. That
+  covers the `memory` tools, background facts extraction, and reflection and dream runs, whose whole
+  branch history is checked before it merges, including merge resolutions, renames and symlink
+  targets. A refused write leaves the repository as it was, and the error names the file and the
+  pattern class. A facts run refused this way parks its conversation after one failure; a refused
+  reflection or dream run counts as a non-retryable failure, so it reaches the park threshold
+  without the transient-failure backoff. The memory repository's pre-commit hook applies the same
+  classes to hand commits; it
+  cannot catch the invisible-character evasions, which the commit paths above do.
+- **Masked:** anything memory injects into a session, such as the compiled memory block, file
+  paths and names, recall hints and memory command output, has every match replaced with
+  `***`. That includes content committed before screening existed.
+
+The matched text itself never appears in an error, a log line or a notice; only the pattern class
+does.
+
 #### Reflection
 
 Reflection reviews the conversation and writes durable notes back into memory. An automatic run
@@ -687,6 +731,44 @@ It runs opportunistically when the session goes idle, and optionally at shutdown
 | `dream.shutdown_launch`       | `true`   | Allow a dream to be launched at shutdown                      |
 | `dream.auto_select_max`       | `5`      | Conversations `--auto` may select (1-10)                      |
 | `dream.auto_select_max_chars` | `150000` | Byte budget for auto-selected conversations                   |
+
+#### Memory doctor
+
+In Senpi, `/doctor` checks the working memory corpus and reports `ok`, `warn`, or
+`fail`. Existing checks are `repository`, `frontmatter`, `persona`, `soul-seed`,
+`locks`, `worktrees`, `abandoned-runs`, `reservation`, `reflection-health`,
+`tokens`, `projection` (see "Memory file list in the prompt"), and the conditional
+`facts` advisory. The `skills` lines report the
+existing missing-name frontmatter repair.
+
+The structural audit uses these stable codes:
+
+| Code | Meaning |
+| --- | --- |
+| `link_dangling` | A root-relative wiki link or file-relative Markdown link has no confined target. |
+| `frontmatter_invalid` | A memory file violates the description frontmatter contract. |
+| `content_duplicate` | Multiple Markdown files have identical bodies. |
+| `path_orphan` | A Markdown file is outside the five memory homes and allowed root files. |
+| `file_unreadable` | A Markdown file cannot be read or decoded as UTF-8. |
+| `system_pressure` | The system estimate has reached 80% of `compile_warn_tokens`. |
+
+Frontmatter failures retain the existing `frontmatter` check; other findings
+appear as `audit:<code>`. A clean corpus produces one `audit` success line.
+Unreadable files and invalid frontmatter fail; other structural findings warn.
+The audit is read-only. `/doctor` has no `--fix` flag and rejects unknown flags;
+the existing skill-name repair is its only automatic repair.
+
+`/doctor --json` returns `{ identity, level, checks: [{ name, level, detail }],
+audit: { version: 1, generatedAt, issues: [{ code, path, detail, related? }],
+counts: { <code>: <number> } }, skills: { scanned, repaired } }`. `audit` is
+`null` when the repository is missing. Every string value is secret-screened
+before JSON serialization; numeric counts stay intact.
+
+Dream runs receive the same redacted audit computed over their own worktree at
+`AUDIT_PATH`. They repair moved links, consolidate duplicate bodies with a
+pointer, and move orphaned files into the appropriate home. They leave evidence
+and `system/boundaries.md` untouched and report fixed and unresolved codes.
+Reflection runs do not receive this input.
 
 #### People
 

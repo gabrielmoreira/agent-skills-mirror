@@ -390,6 +390,13 @@ override. Scoped MCP workers use `link_work` to reuse their current Todo or opaq
 evidence IDs. An unrelated busy worker establishes no request progress, and a
 short answer needs no manufactured Todo. See the [shared collaboration boundary](../../control_plane/collaboration/README.md).
 
+CLI and MCP inbox reads reuse the shared conversation answer guidance: report text can return
+verbatim to the requester's conversation, so answer the original request at a
+proportionate depth. Routine execution bookkeeping belongs in the existing
+evidence records; requested detail and material gaps remain in the answer.
+This is authoring guidance, not a summary service or a delivery-time rewrite,
+and does not certify the quality of a receiver's result.
+
 For longer work, `--phase decision` optionally returns a meaningful intermediate
 update. A ready conclusion supersedes an unsent intermediate update. Do not send
 one notification per poll, quote private deliberation, or claim an implementation

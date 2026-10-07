@@ -36,7 +36,7 @@ Setup continues to pin persistent MCP registrations to the exact version that
 performed setup. Running current setup later migrates unversioned or older
 managed registrations through the normal reviewed setup transaction.
 
-REA supports Node.js 22.19+ and 24.11+ (including newer releases). It uses the npm already paired with that runtime and never upgrades Node.js, npm, or Homebrew.
+REA supports Node.js 22.x (>=22.19), 24.x (>=24.11), and 26+. Node.js 23, 25, and prereleases are unsupported. It uses the npm already paired with that runtime and never upgrades Node.js, npm, or Homebrew.
 
 Running `npm install rea-agents` without `--global` installs the executable only
 in the current project's `node_modules/.bin`; it does not make `rea` available
@@ -61,6 +61,55 @@ curl -fsSL https://raw.githubusercontent.com/morluto/rea/main/install.sh |
 
 Supported options are `--version <semver>`, `--dry-run`, `--no-setup`, `--no-prompt`, and `--verbose`. Neither `--no-prompt` nor a non-interactive shell grants permission to install external dependencies.
 
+## Released package and main
+
+Repository main documents its current code and generated catalog. `@latest`
+selects the npm release, and persistent MCP registrations are pinned to the
+version that performed setup. Installing newer instructions does not update a
+running server or its registration.
+
+The release checked on **2026-10-06** was **4.1.0** (125 MCP tools). That artifact
+includes main's Windows native control bundle, Android/JADX and firmware
+tools, Ghidra function annotation workflow, and retained application-Evidence
+references.
+Main's catalog describes the current code; a source build or a subsequent
+release containing later changes is required for anything newer. Package startup alone does not verify a
+provider's real platform workflow.
+
+To check the published version, run `npm view rea-agents dist-tags.latest`.
+Use the connected server's actual tool list and advertised input schemas for
+feature selection. The same package version string in a development checkout
+does not establish that its bytes match the npm tarball. Update a registration
+through a reviewed, scoped setup plan, then restart/reconnect the agent.
+
+## Skill-only installation
+
+```bash
+npx skills add morluto/rea --skill reverse-engineer-anything
+```
+
+This installs agent instructions and bundled references, not REA MCP
+registration or analysis engines. Follow the skill's
+[conditional connection guide](../skills/reverse-engineer-anything/SKILL.md#connect-only-when-needed).
+Working tools can be used immediately. If tools are missing, inspect the current
+client's registration with `doctor --client codex --json` (substitute its client
+ID), then plan repairs with `setup --client codex --dry-run --json`. Show and
+approve the exact changes before applying that scope. An aligned registration
+with tools absent from the active session needs a restart/reconnection;
+`doctor` checks files and prerequisites, not the live agent connection.
+
+Guided setup installs the package's matching skill by default. The skills.sh
+route can select newer repository instructions, so follow actual server schemas
+and the release boundary above. Static JavaScript CLI inspection can proceed
+while MCP is unavailable:
+
+```bash
+npx -y rea-agents@latest analyze-javascript-application /absolute/path/to/app --json
+```
+
+It returns the complete Evidence record directly and requires no native engine.
+Provider failures in doctor do not prevent unrelated target-free tools.
+
 ## Supported agents
 
 Setup can configure these clients for REA's local MCP server:
@@ -77,6 +126,7 @@ Setup can configure these clients for REA's local MCP server:
 | OpenCode           | `opencode`       |
 | Antigravity        | `antigravity`    |
 | GitHub Copilot CLI | `copilot_cli`    |
+| Command Code       | `commandcode`    |
 | VS Code            | `vscode`         |
 
 ## Review setup changes
@@ -212,22 +262,28 @@ copying license secrets into logs, or killing unrelated Hopper processes.
 
 ## Ghidra
 
-REA connects to an existing Ghidra installation on Linux x64 or macOS x64/arm64.
+REA connects to an existing Ghidra installation on Linux x64, macOS x64/arm64,
+or experimental Windows x64 P0.
 It requires Ghidra 12.1.4 and a 64-bit full JDK 21. On macOS, the installation
 must include the native decompiler for the host architecture; REA does not
 build it or change Gatekeeper quarantine settings.
 
-The adapter exposes 22 read-only operations: ten inventory/name/search
+The adapter exposes 25 read-only operations: thirteen inventory/name/search
 operations and twelve function-analysis operations. These cover metadata,
 decompilation, assembly, resolved calls, typed references, xrefs, function
-dossiers, instructions, and recovered data types. GUI controls and annotation
-changes require Hopper.
+dossiers, instructions, recovered data types, measured load mappings, loaded
+memory bytes, and observed file offsets. Independent load-image attestation
+supports DOS MZ and explicitly selected COM; PE returns its measurements with that limitation.
+On Linux and macOS, `annotate_native_function` also edits a function name and/or
+entry comments atomically and returns refreshed analysis. These session metadata
+edits leave executable bytes unchanged and are discarded on close. GUI controls
+require Hopper; Windows P0 remains read-only.
 
-Windows Ghidra operations are currently unavailable. The adapter reports
-`unsupported_host` until verified Job Object process ownership, private runtime
-DACLs, and reparse-safe path admission are implemented. The
-[Windows Ghidra P0 guide](windows-ghidra-p0.md) describes the intended boundary
-and remaining controls.
+Windows P0 admits native x86-64 PE applications on fixed local NTFS volumes.
+The npm package bundles native Job Object ownership, protected private runtime
+DACLs, and handle-based path admission; no separate addon installation is needed.
+See the [Windows Ghidra P0 guide](windows-ghidra-p0.md) for verified scope and
+limitations.
 
 Extract Ghidra and install the JDK outside REA, then export absolute paths:
 
@@ -238,7 +294,7 @@ rea doctor --json
 rea setup
 ```
 
-For Windows diagnostics, use the same installation paths in PowerShell. These settings do not enable the blocked analysis operations:
+On Windows, configure the existing installation in PowerShell:
 
 ```powershell
 $env:GHIDRA_INSTALL_DIR = "C:\tools\ghidra_12.1.4_PUBLIC"
@@ -251,8 +307,8 @@ rea providers --json
 REA skill after approval. Direct registrations use Node to launch REA's entry
 script; package-runner registrations use the pinned `npx` command. Hopper
 installation remains unavailable on Windows. Setup never installs Ghidra,
-Java, or Python, and agent registration does not enable blocked Ghidra
-operations. See [Windows Ghidra P0](windows-ghidra-p0.md) for provider diagnostics.
+Java, or Python. It preserves valid detected Ghidra/JDK settings in agent
+registrations. See [Windows Ghidra P0](windows-ghidra-p0.md) for provider diagnostics.
 
 Doctor validates the platform, architecture, application version,
 `support/analyzeHeadless` or `support/analyzeHeadless.bat`, Java
@@ -267,12 +323,21 @@ home/cache/config/temp paths. REA passes `-readOnly`, `-deleteProject`, uses
 Ghidra's default analysis and resource settings, and loads its packaged Java
 bridge via `-scriptPath`; it never opens an existing user project. Linux and
 macOS use a current-user-only local bridge socket and descriptor. The
-experimental Windows transport uses authenticated IPv4 loopback, but missing
-native ownership and path controls keep Windows operations unavailable.
+experimental Windows transport uses authenticated IPv4 loopback with a
+private native-owned bearer descriptor and Job Object process ownership.
 
-Operations begin only after default auto-analysis completes. The provider
-startup deadline fails the open rather than exposing partial analysis. One
-session contains exactly one imported Program; use `provider_id: "ghidra"`, `--provider ghidra`, or
+Operations begin only after default auto-analysis completes. `open_binary`
+selects and validates the target/provider binding; it does not wait for Ghidra
+import and auto-analysis. The first Ghidra-backed query starts that work lazily.
+The provider startup deadline is 330,000 ms for import, analysis, bridge, and
+health readiness; a startup failure is returned by the query that triggered it,
+without exposing partial analysis. This deadline is separate from MCP transport
+initialization and the client's deadline for that individual tool call. A client
+can time out earlier even when Ghidra would complete within its startup deadline.
+See [Ghidra first-query deadlines and recovery](mcp-contracts.md#ghidra-first-query-deadlines-and-recovery)
+for client options and the close/reopen recovery flow.
+
+One session contains exactly one imported Program; use `provider_id: "ghidra"`, `--provider ghidra`, or
 `REA_ANALYSIS_PROVIDER=ghidra` when both Hopper and Ghidra support the target.
 One persistent decompiler is owned by the Program, and a serial queue keeps
 Ghidra API calls on the owning Program thread without a fixed queue length.
@@ -280,6 +345,14 @@ Operations run until a result, caller cancellation, or provider shutdown; there
 is no fixed per-operation or response-size ceiling. Unresolved computed calls
 remain unknown, reference-kind provenance is preserved, and provider-specific
 pseudocode is never treated as original source or Hopper-equivalent text.
+
+Unexpected request failures retain their original internal cause. CLI and MCP
+errors expose Error names, messages, and available codes under
+`details.diagnostics.failure_cause`; other rejection values retain their
+primitive value or an explicit type. Shutdown warnings include the failure
+kind, message, and diagnostics, while process and temporary-project cleanup
+continues. These messages redact known bridge authentication tokens and
+preserve local paths and other analysis context.
 
 Run `GHIDRA_INSTALL_DIR=... npm run verify:ghidra` from a source checkout to
 compile and analyze debug and stripped host-native fixtures (ELF on Linux x64
@@ -295,9 +368,12 @@ host-native Ghidra acceptance lane.
 On a controlled Windows x64 runner, use
 `npm run verify:ghidra:windows`. The verifier generates a deterministic native
 PE fixture from source bytes and requires the Windows native authority before
-opening the provider. This lane remains blocked until those controls are
-implemented; its intended checks include operation coverage, digest identity,
-and complete runtime cleanup.
+opening the provider. The controls are implemented on main; see the
+[release boundary](#released-package-and-main). The lane verifies all 25 admitted
+read-only operations, digest identity, and runtime cleanup. The separate
+`verify:ghidra:windows:package` lane checks the packed CLI/MCP boundary with an
+ordinary user. It requires the built Windows native bundle and an existing
+Ghidra/JDK installation; neither is inferred from startup alone.
 
 ## Diagnose, update, and remove
 
@@ -315,17 +391,22 @@ server through `npx` with the `mcp` command.
 
 For a client that requires manual configuration, use:
 
+<!-- x-release-please-start-version -->
+
 ```json
 {
   "mcpServers": {
     "rea": {
       "command": "npx",
-      "args": ["-y", "rea-agents@latest", "mcp"]
+      "args": ["-y", "rea-agents@4.1.0", "mcp"]
     }
   }
 }
 ```
 
-Use an exact `rea-agents@VERSION` in the arguments when a reproducible client
-configuration is required. `rea setup` writes the same package-runner shape and
-pins it to the exact version that performed setup.
+<!-- x-release-please-end -->
+
+Persistent registrations should use one exact package version. `rea setup`
+writes the same package-runner shape and pins it to the exact version that
+performed setup. Run current setup to refresh an older registration, then
+restart the client.

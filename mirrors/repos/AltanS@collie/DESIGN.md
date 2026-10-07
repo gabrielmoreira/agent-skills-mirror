@@ -40,11 +40,13 @@ afterwards. A copy-paste gives you six places to remember instead.
 | `ui/labelled-strip.tsx` | The structure of a named, horizontally scrolling pill row: non-scrolling label, `aria-labelledby`, edge-to-edge scroller. Also exports `STRIP_TAP_TARGET`. |
 | `ui/one-of.tsx` | One box, several alternatives, exactly one shown — all of them stacked in a single grid cell, so the box is sized by the widest and a swap is paint, not layout. The §2 technique for a run of text whose WORD changes with the state. |
 | `ui/notice.tsx` | The app's ONE notice look: five tones × two placements (`strip`, `box`), each on its own height floor, and the single table the tint recipe may appear in. Owns shape, tone and live-region semantics; owns no words and no visibility. |
+| `ui/segmented.tsx` | Two or three labelled segments in one row, exactly one selected: Diff \| Source \| Preview, the Files screen's All files \| Changes, the 1 h / 24 h chart switch, the alert threshold and duration choices. Values are strings or numbers. Every segment reserves its 1px border and the selected one only recolours it, so a switch moves nothing (§2), and a tap on the selected segment does nothing. `semantics` picks a tab list (a switch between screens) or a radio group (one setting); `disabled` makes the row inert. A segment may carry a count (`badge`, with `badgeLabel` for the screen reader), floated on its top-right corner like the toggle button's, as the Files screen's Changes segment does. Theme and Belt size predate it and still carry their own copy. |
 | `ui/section-label.tsx` | The small uppercase word that names a section. Type only — it renders a `<span>` and owns no structure. |
 | `ui/sheet.tsx` | `BottomSheet`. The app's only floating layer; there is no popover, no dialog, no tooltip. |
 | `ui/strip-host.tsx` | The top band above the header. Renders ONE `StripSlot` at a time, the highest priority, and keeps the two permanent `sr-only` live regions. Domain-blind: a bigger number wins, and it does not know what a connection is. |
 | `ui/switch.tsx` | A boolean toggle, `role="switch"`. No Radix. |
-| `ui/tab-bar.tsx` | A bottom tab bar: equal icon-over-word tabs on the page colour, a rule above, the safe area below. The active mark is a reserved 2px top edge, and a count badge floats on the icon, so a switch or a count never moves a word. The dashboard footer (ADR 0066). |
+| `ui/tab-bar.tsx` | A bottom tab bar: equal icon-over-word tabs on the page colour, a rule above, the safe area below. The active mark is a reserved 2px top edge, and a count badge floats on the icon, so a switch or a count never moves a word. The dashboard footer (ADR 0066, ADR 0085): with a crew, Crew, Dashboard, Changes, so the default tab sits in the middle under the thumb and the two side tabs are the side trips. |
+| `ui/toggle-button.tsx` | An icon toggle button: a setting that is on or off, with `aria-pressed`, drawn as a 44px square (icon only) or 44px tall with a word. Owns the one pressed look, the primary tint plus the hairline `ring-primary/40`, so a pressed toggle never reads like a selected `bg-muted` segment beside it. An optional `badge` count sits on the square's corner, absolute, so a count that comes or goes moves nothing (§2). The dashboard's needs-you switch, the Changes tree's Ignored toggle, the Changes list's Tree toggle, and the Changes only toggle with its badge. Not for a multi-select filter chip, and not for the `role="switch"` track of `ui/switch.tsx`. |
 | `ui/toast-viewport.tsx` | Where a transient event floats: `dock="bottom"` fixed to the viewport, `dock="top"` absolute inside a route's content region. Owns position and nothing else. |
 | `ui/chat/chat-input.tsx` | The composer's text box shell. |
 | `ui/chat/chat-message-list.tsx` | The transcript's scrolling list. |
@@ -403,6 +405,20 @@ pill still measures 34px. Three strips stack above the fold on a phone, so ten d
 each is thirty pixels of list the operator stops seeing — and a target does not have to be
 visible to be hit. Two measured numbers hold it together, both documented at the constant;
 change the scroller's padding or the pill's border and you must re-measure.
+
+**The one exception: the pane header's two lines (1.17.0).** The name line opens Pane
+settings and the workspace line opens the space, so the 60px row holds two targets, each
+30px tall and as wide as the identity block. Two 44px targets do not fit in one 60px row.
+The two buttons are not drawn over their lines and use no pseudo-element. They are empty
+siblings that together fill a layer laid over the identity block (`pane-identity-taps` in
+`agent-chat.tsx`), split at the line boundary, each as wide as the block. The layer reaches
+8px past the block top and bottom (`-inset-y-2`), which is air the row already owns, so the
+two targets are 30px tall each, half the 60px row, and a thumb a little above or below its
+line still lands on one. The lines paint above the layer with `pointer-events-none` and pass
+their taps through. The one pseudo-element in the header is the cache reading's: it reaches
+16px down from its 12px line (`pane-meta.tsx`), a `STRIP_TAP_TARGET`-style reach, and takes
+its own taps back. Do not copy any of this for a new control: a single target in a row still
+owes the full 44px.
 
 **A row states its own floor with `min-h`, never `h`.** `app-header.tsx:212` is
 `min-h-15` — 60px. It is a floor, not a sum: the row's own padding is `py-1`, and the

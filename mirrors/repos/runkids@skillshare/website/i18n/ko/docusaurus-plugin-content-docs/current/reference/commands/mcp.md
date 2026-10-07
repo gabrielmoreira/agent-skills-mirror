@@ -25,6 +25,9 @@ skillshare mcp check --live --timeout 30s
 skillshare mcp remove docs --sync
 skillshare mcp remove docs --keep-files
 skillshare mcp restore BACKUP_ID --dry-run
+skillshare mcp serve
+skillshare mcp serve --target claude --http 127.0.0.1:8765
+skillshare mcp serve --check
 skillshare sync mcp --dry-run --json
 skillshare sync mcp
 skillshare sync --all
@@ -32,7 +35,7 @@ skillshare sync --all
 
 | Option | Meaning |
 |---|---|
-| `--target CLIENT` | 수신 client; 여러 client를 선택하려면 반복 지정. `--target none`은 서버를 어떤 client에도 쓰지 않고 Skillshare에만 유지합니다. [아래](#keep-a-server-without-syncing-it) 참고 |
+| `--target CLIENT` | 수신 client; 여러 client를 선택하려면 반복 지정. `--target none`은 서버를 어떤 client에도 쓰지 않고 Skillshare에만 유지합니다. [아래](#keep-a-server-without-syncing-it) 참고. `serve`에서는 `--target NAME`이 대신 skills target을 지정합니다. [아래](#serve-skills-over-mcp) 참고 |
 | `--url URL` | `add`용 Streamable HTTP 엔드포인트 |
 | `-- command args...` | `add`용 로컬 실행 파일과 리터럴 인자 |
 | `--disabled` | project mode에서 `add`와 함께 사용: Agent의 global 설정이 정의한 서버를 끕니다. [아래](#turn-off-a-global-server-in-one-project) 참고 |
@@ -49,6 +52,9 @@ skillshare sync --all
 | `--no-dns` | `check`와 함께 사용: 원격 서버의 호스트 조회를 건너뜀. [아래](#check-servers-before-an-agent-starts-them) 참고 |
 | `--live` | `check`와 함께 사용: 각 로컬 서버를 시작하고 각 원격 서버를 호출하는 검사도 수행. [아래](#probe-servers-live) 참고 |
 | `--timeout DURATION` | `check --live`와 함께 사용: 서버별 프로브 제한 시간 (예: `30s`); 기본값 `10s` |
+| `--http ADDR` | `serve`와 함께 사용: stdio 대신 `ADDR`에서 Streamable HTTP를 수신. [아래](#serve-skills-over-mcp) 참고 |
+| `--tls-cert FILE`, `--tls-key FILE` | `serve --http`와 함께 사용: 이 PEM 인증서와 키로 HTTPS를 제공; loopback이 아니면 필수 |
+| `--check` | `serve`와 함께 사용: 건너뛸 skill과 그 이유를 나열하고 서버를 시작하지 않고 종료 |
 | `--no-tui` | 대화형 메뉴 비활성화; `tui: false`, `--json`, 또는 비터미널 입출력에서도 비활성화됨 |
 | `--revision ID` | add/import/remove 또는 `sync mcp`에 일치하는 미리보기 요구 |
 | `--global`, `-g` | global Skillshare 구성 사용 |
@@ -120,7 +126,7 @@ source가 한 번 저장되기 전에 검증되며, 이후의 네이티브 파�
 
 Client ID는 `claude`, `codex`, `cursor`, `vscode`, `opencode`, `kilocode`,
 `grok`, `antigravity`, `amp`, `claude-desktop`, `cline`, `copilot`, `factory`, `gemini`,
-`goose`, `junie`, `kiro`, `lmstudio`, `warp`, `windsurf`, `pi`입니다.
+`goose`, `junie`, `kiro`, `lmstudio`, `warp`, `windsurf`, `pi`, `omp`입니다.
 `grok`은 공식 xAI Grok CLI를 의미합니다. 서버 이름은 문자, 숫자, 점, 밑줄, 하이픈을
 사용합니다. 서버는 동기화 전에 직접 또는 `mcp.targets`를 통해 최소 하나의 client를
 선택해야 합니다. 단, 서버 자체의 `targets`가 빈 목록인 경우는 예외입니다.
@@ -184,6 +190,7 @@ client에서 동작합니다.
 | [LM Studio](https://lmstudio.ai/docs/app/mcp) | `~/.lmstudio/mcp.json` | Global only | `mcpServers` |
 | [Warp](https://docs.warp.dev/agents/capabilities/mcp/) | `~/.warp/.mcp.json` | `.warp/.mcp.json` | `mcpServers` |
 | [Windsurf (Cascade)](https://docs.devin.ai/desktop/cascade/mcp) | `~/.codeium/windsurf/mcp_config.json` | Global only | `mcpServers` |
+| [Oh My Pi (OMP)](https://github.com/can1357/oh-my-pi/blob/v18.6.1/docs/mcp-config.md) | `~/.omp/agent/mcp.json` | `.omp/mcp.json` | `mcpServers` |
 
 대시보드의 서버 폼은 `fromEnv` 참조를 포함해 HTTP 헤더를 환경 변수와 동일한 방식으로
 편집합니다. 서버 메뉴와 폼의 파일 개수 옆에 있는 **View what each Agent gets**는,
@@ -319,7 +326,7 @@ Project 대상은 선택한 프로젝트 루트를 기준으로 합니다. 프�
 
 ### Another account of an Agent {#accounts}
 
-[Agent의 다른 계정](/docs/reference/targets/configuration#agent-config-dir)으로 선언된 target은 `claude`(`CLAUDE_CONFIG_DIR`), `codex`(`CODEX_HOME`), `pi`(`PI_CODING_AGENT_DIR`)에 대해 MCP target이기도 합니다. 그 서버는 해당 Agent의 형식으로, 계정 자체의 파일에 작성됩니다. Claude는 `<config_dir>/.claude.json`, Codex는 `<config_dir>/config.toml`, Pi는 `<config_dir>/mcp.json`입니다.
+[Agent의 다른 계정](/docs/reference/targets/configuration#agent-config-dir)으로 선언된 target은 `claude`(`CLAUDE_CONFIG_DIR`), `codex`(`CODEX_HOME`), `pi`와 `omp`(둘 다 `PI_CODING_AGENT_DIR` 사용)에 대해 MCP target이기도 합니다. 그 서버는 해당 Agent의 형식으로, 계정 자체의 파일에 작성됩니다. Claude는 `<config_dir>/.claude.json`, Codex는 `<config_dir>/config.toml`, Pi와 OMP는 `<config_dir>/mcp.json`입니다.
 
 ```yaml
 targets:
@@ -348,7 +355,7 @@ Agent는 자체 global MCP 파일과 프로젝트 파일을 함께 읽습니다.
 막으려면, **Agent의 global 파일이 사용하는 것과 동일한 이름**으로 항목을 추가하고
 `disabled`로 표시하세요.
 
-이는 다음 네 client에서만 동작합니다.
+이는 다음 다섯 client에서만 동작합니다.
 
 | Client | Supported | What Skillshare writes |
 |---|---|---|
@@ -356,10 +363,13 @@ Agent는 자체 global MCP 파일과 프로젝트 파일을 함께 읽습니다.
 | OpenCode | 예 | `opencode.json`: `"NAME": {"enabled": false}` |
 | Kilo Code | 예 | `kilo.jsonc`: `"NAME": {"enabled": false}` |
 | Pi | 예, Pi 1.0.1부터 | `.pi/mcp.json`: `"NAME": {"enabled": false}`, 아래 참조 |
+| Oh My Pi | 예 | `.omp/mcp.json`: `"NAME": {"enabled": false}`가 같은 이름의 사용자 항목을 가림 |
 | Codex | 아니요 | 아래 참고 |
 | Every other client | 아니요 | 하나를 선택하면 오류가 발생하며 아무것도 작성되지 않음 |
 
-스위치만 작성됩니다. Agent는 global 항목의 command나 URL을 그대로 유지합니다. 다른
+스위치만 작성됩니다. OpenCode, Kilo Code, Pi는 global 항목의 command나 URL을 그대로 유지합니다.
+OMP는 이름 중복 제거 전에 비활성화된 project 항목을 억제하므로 같은 이름의 사용자 항목이
+연결되지 않습니다. 다른
 client는 전체 global 항목을 프로젝트 항목으로 대체하거나 프로젝트 파일이 없기
 때문에 거부됩니다. 그런 경우 단독 스위치만으로는 서버를 끄는 대신 오히려 서버를
 망가뜨리게 됩니다.
@@ -736,6 +746,85 @@ plan은 `existing entry is not managed` 충돌을 보고하고, 그 항목에 �
   해당 project로 가져옵니다.
 - source 정의로 교체: 대시보드의 **Replace with source**, 또는 import의 `--replace`.
 
+## Serve skills over MCP {#serve-skills-over-mcp}
+
+```bash
+skillshare mcp serve                                  # stdio, every enabled skill
+skillshare mcp serve --target claude                  # only the skills the claude target selects
+SKILLSHARE_MCP_TOKEN=change-me skillshare mcp serve --http 0.0.0.0:8765 \
+  --tls-cert cert.pem --tls-key key.pem               # HTTPS for other machines
+```
+
+`mcp serve`는 skill이 동기화되는 폴더에 접근할 수 없는 Agent(일회용 VM에 있거나 MCP 게이트웨이 뒤에 있는 Agent 등)를 위한 읽기 전용 MCP 서버입니다.
+[Skills extension](https://modelcontextprotocol.io/seps/2640-skills-extension)
+(`io.modelcontextprotocol/skills`, SEP-2640)의 `skills/list`, `skills/get`, `resources/read`를 구현합니다.
+각 skill은 하나의 항목이며, URI는 `skill://_team/tools/pdf/SKILL.md`처럼 source 경로를 따릅니다.
+전체 frontmatter와 함께 모든 파일이 `sha256` digest 및 크기와 함께 제공됩니다.
+내 컴퓨터의 Agent는 이미 `sync`로 skill을 받으므로, 여기에 `mcp serve`까지 연결하면 각 skill이 두 번 보입니다.
+
+대부분의 Agent는 아직 Skills extension을 지원하지 않으므로(아래 참고), 서버는 도구 두 개도 제공합니다.
+`list_skills`는 이름, 설명, URI를 나열하며(`query`로 좁힐 수 있고, 한 번의 응답에 최대 200개),
+`read_skill`은 skill의 `SKILL.md`나 다른 파일을 읽고, `SKILL.md`를 읽을 때는 그 skill의 다른 파일 목록도 보여 줍니다.
+MCP 도구를 사용하는 Agent라면 도구를 그대로 전달하는 게이트웨이를 거쳐도 이 방식으로 skill을 읽을 수 있습니다.
+Skills extension을 선언한 client는 skill을 네이티브로 로드하며 도구를 제공받지 않으므로 각 skill이 두 번 보이지 않습니다.
+도구로 읽은 내용은 Agent에게 일반 텍스트이며, Agent 자체의 skill 승인은 적용되지 않습니다.
+
+- **선택.** `--target` 없이 실행하면 활성화된 모든 skill을 제공합니다. `--target NAME`은
+  sync mode와 관계없이 해당 target의 `include`/`exclude` 필터와 frontmatter `targets`를 적용합니다.
+  skill은 항상 source에서 가져옵니다. skills가 꺼진 target을 지정하면 오류입니다.
+- **건너뛰는 skill.** 다음 경우 skill은 stderr에 경고를 출력하고 건너뜁니다: `SKILL.md`가 링크이거나
+  frontmatter로 시작하지 않을 때, `name`이 Agent Skills 명명 규칙을 어기거나 디렉터리 이름과 다를 때
+  (예: `install --name` 이후), description이 없거나 1,024자를 넘을 때, `compatibility`가 비어 있거나 500자를 넘을 때,
+  파일이 512개 또는 16 MiB를 넘을 때, 제공되지 않는 중첩 skill을 포함할 때.
+  `skillshare mcp serve --check`는 같은 선택 플래그로 그런 skill과 사유를 나열하고, 서버를 시작하지 않고 종료합니다.
+- **변경 사항.** source는 최대 5초마다 다시 읽으므로 `install`, `update`, `enable`, `disable`이
+  재시작 없이 반영됩니다. 결과에는 `ttlMs: 5000`이 포함됩니다.
+- **범위.** 서버를 어디서 시작하든 기본값은 global입니다. `-p`는 현재 디렉터리의 project를 제공합니다.
+- **전송.** 기본값은 stdio이며, 명령을 시작하는 게이트웨이나 Agent에 사용합니다.
+  `--http ADDR`은 Streamable HTTP를 제공합니다. loopback이 아닌 주소에는
+  `SKILLSHARE_MCP_TOKEN`과 `--tls-cert`, `--tls-key`를 통한 HTTPS가 필요하므로 token이
+  네트워크를 평문으로 오가지 않습니다. token이 설정되면 모든 요청은
+  `Authorization: Bearer <token>`을 보내야 합니다. TLS 프록시를 대신 쓰려면 `127.0.0.1:8765` 같은
+  loopback 주소에 바인딩하고 프록시가 TLS를 종료하게 하세요.
+- **안전.** skill manifest에 있는 파일만 읽을 수 있으며, 읽기는 skill 디렉터리 안으로 제한됩니다.
+  링크와 `.git`은 나열되지도 제공되지도 않습니다. 아무것도 실행하거나 쓰지 않습니다.
+  `--http`에서는 cross-origin 브라우저 요청을 거부합니다.
+
+Agent를 연결하려면 다른 서버와 똑같이 추가하고 sync하세요. Agent를 실행하는 컴퓨터에서:
+
+```bash
+skillshare mcp add skillshare --target codex --sync -- skillshare mcp serve --target codex
+```
+
+대시보드에서는 **Add server** → **Skillshare**가 선택한 skill로 같은 명령을 만듭니다(project mode에서는 `-p` 포함).
+Agent를 체크하고 저장한 뒤 sync하세요. 그 서버를 편집하면 같은 탭이 열립니다.
+
+다른 컴퓨터의 Agent라면 skill이 있는 곳에서 인증서와 함께 `mcp serve --http`를 실행하고,
+원격 서버가 그곳을 가리키게 하세요. token은 환경 변수에 두세요:
+
+```yaml
+mcp:
+  servers:
+    skillshare:
+      url: https://skills-host:8765/
+      bearerToken: { fromEnv: SKILLSHARE_MCP_TOKEN }
+      targets: [codex]
+```
+
+skill을 네이티브로 로드하려면 Skills extension이 필요합니다. 2026년 10월 기준 일반적인 코딩 Agent는
+아직 이를 지원하지 않으므로 도구를 사용합니다. Codex, Cursor, VS Code, Goose, Pi는 지원하지 않으며, Claude Code는
+기본적으로 켜져 있지 않은 지원을 포함합니다. mcpc, fast-agent, MCP Inspector 같은 소수의 client만 지원하며,
+일부는 부분적으로만 지원합니다. SEP의 프로토타입 host 목록(예: Codex fork)이 출시된 Agent의 지원을 의미하지는 않습니다.
+현재 client는 [extension support matrix](https://modelcontextprotocol.io/extensions/client-matrix)에서 확인하세요.
+
+서버 자체를 확인하려면 MCP Inspector 2.6.0 이상이 모든 skill을 읽고, frontmatter를 비교하며,
+각 파일의 digest를 확인합니다:
+
+```bash
+npx @modelcontextprotocol/inspector --cli skillshare mcp serve --method skills/list --verify
+```
+
+
 ## Safety and limitations
 
 - JSONC 주석과 관련 없는 설정은 보존됩니다. 변경된 소유 항목은 하나의 단위로
@@ -744,7 +833,7 @@ plan은 `existing entry is not managed` 충돌을 보고하고, 그 항목에 �
   `"type": "stdio"`, 빈 `env`, 헤더 이름 대소문자처럼 Agent가 채우는 기본값은
   변경으로 간주되지 않습니다. `enabled: false`나 `disabled: true`로 관리되는 서버를
   끄는 것은 충돌로 보고됩니다.
-  Pi는 예외입니다. `enabled`만 변경하면 소유권 충돌이 발생하지 않습니다. 동기화 시 source의 `piOptions.enabled`가 우선합니다.
+  Pi와 OMP는 예외입니다. 연결 항목에서 `enabled`만 변경하면 소유권 충돌이 발생하지 않습니다. 동기화 시 source의 `piOptions.enabled`가 우선합니다.
 - Claude Code가 `~/.claude.json`에서 하는 것처럼 Agent가 같은 파일의 관련 없는
   설정을 다시 쓰는 동안에도 미리보기는 유효하게 유지됩니다. 해당 파일의 MCP 항목이
   변경된 경우에만 새 미리보기가 필요합니다.
@@ -753,7 +842,7 @@ plan은 `existing entry is not managed` 충돌을 보고하고, 그 항목에 �
   인라인/점 표기 MCP 정의는 작성하기 전에 테이블로 변환해야 하며, 그렇지 않으면
   파일을 수정하지 않고 거부됩니다.
 - 네이티브 파일 symlink, 손상된 파일, 중복 JSON 속성은 쓰기를 차단합니다.
-  symlink된 Skillshare `config.yaml`은 그 대상으로 전달되어 작성됩니다. 파일
+  symlink된 Skillshare `config.yaml`은 그 대상으로 전달되어 작성됩니다. 단, 프로젝트 밖을 가리키는 프로젝트 설정 link는 쓰기를 거부합니다. 파일
   권한은 보존되며, 새 네이티브 파일, 소유권 기록, 백업은 private 권한을 사용합니다.
 - source와 이미 일치하는 항목은, 예를 들어 팀원의 변경 사항을 pull한 후처럼, 쓰기
   없이 unchanged로 보고됩니다. 어떤 Agent에서 import한 뒤 그 Agent를 선택한 경우처럼
@@ -772,7 +861,8 @@ plan은 `existing entry is not managed` 충돌을 보고하고, 그 항목에 �
   반환합니다. DNS rebinding 공격은 항상 도메인 이름을 사용하기 때문입니다.
 - 자격 증명은 환경 참조를 사용합니다. 시크릿 저장소, OAuth 세션 동기화, 지속적인
   상태 모니터링, 패키지 설치, 게이트웨이, 레지스트리, 플러그인 동기화는 없습니다.
-  서버를 시작하거나 호출하는 명령은 `mcp check --live`뿐입니다.
+  구성된 서버를 시작하거나 호출하는 명령은 `mcp check --live`뿐입니다.
+  `mcp serve`는 Skillshare 자체의 읽기 전용 skills 서버를 실행합니다.
 - VS Code Insiders, 사용자 지정 프로필, 원격 워크스페이스, 레거시 SSE는 이 버전에서
   지원되지 않습니다.
 - VS Code는 현재 `headers` 안에서 `${env:VARIABLE}`을 치환하지 않으므로
@@ -887,6 +977,49 @@ Pi의 `toolExposure`는 서버의 `exposure`와 함께 그 정책을 작성했�
 
 서버 행에는 정책을 쉬운 말로 나타내는 태그(예: `도구: 도구 2개 제외`)가 표시되며, **각 Agent에 기록될 설정 보기**는 Agent마다
 적용하지 않는 부분을 경고합니다.
+
+## Oh My Pi (OMP) {#omp}
+
+`omp`는 Pi와 별개의 client입니다. Skillshare는 명시적인 `type: stdio` 또는 `type: http`와
+`${VARIABLE}` 환경 참조를 사용해 OMP의 네이티브 `mcpServers` 맵을 작성합니다.
+OMP를 대신해 `.pi/`, Claude, Codex 구성에 쓰지 않습니다.
+서버 이름은 최대 100자여야 합니다.
+
+```bash
+skillshare mcp add docs --url https://example.com/mcp --target omp -g --sync --no-tui
+skillshare mcp import docs --from omp --target omp -g --replace --dry-run --json
+```
+
+sync는 `$schema`, `disabledServers`, `enabledServers`와 관련 없는 서버를 보존합니다.
+기존 연결을 업데이트할 때 `enabled`, `timeout`, `instructions`, `requestIdFormat`, `cwd`,
+`auth`, `oauth` 같은 서버별 네이티브 필드도 유지합니다. 이 필드는 `piOptions`가 아니며,
+Pi 전용 설정은 OMP로 전달되지 않습니다. import는 이식 가능한 모델로 표현할 수 없는
+네이티브 필드에 대해 경고합니다. 그런 필드는 OMP의 파일에 유지하세요. 이식 가능한 모델은
+stdio와 Streamable HTTP를 지원하지만 OMP의 레거시 SSE 전송은 지원하지 않습니다.
+지원되지 않는 import는 변환하지 않고 거부합니다.
+
+`disabledServers`는 `enabledServers`와 항목의 `enabled` 값보다 우선합니다.
+sync는 서버를 활성화하기 위해 사용자의 denylist 항목을 제거하지 않습니다. import는
+`disabledServers`나 `enabled: false`로 숨겨진 서버를 거부합니다. 단, 후자가
+`enabledServers`로 강제 활성화된 경우는 예외입니다. OMP의 schema나 enable/disable 목록이 있는
+JSON은 importer에 붙여 넣으면 OMP로 인식됩니다.
+
+OMP는 `!`로 시작하는 env/header 값을 shell 명령으로 실행할 수 있습니다. Skillshare는
+그런 리터럴을 내보내거나 해당 자격 증명을 import하는 것을 거부하며, 이를 실행하지 않습니다.
+source에서는 `{fromEnv: VARIABLE}`, 네이티브 JSON에서는 `${VARIABLE}`을 사용하세요.
+`"TOKEN": "TOKEN"`처럼 같은 이름의 bare env 참조는 `fromEnv`로 import됩니다.
+이식 가능한 참조에는 리터럴 fallback이 없으므로 연결하기 전에 변수를 설정하세요.
+그 밖의 client 고유 보간은 import하기 전에 변환해야 합니다.
+
+global MCP는 `PI_CODING_AGENT_DIR`을 따르며, project MCP는 `.omp/mcp.json`으로 유지됩니다.
+Pi도 같은 환경 변수를 사용하므로 둘을 같은 파일로 동기화하는 것은 거부됩니다.
+별도의 디렉터리나 명시적인 계정 target을 사용하세요. named profile과 `PI_CONFIG_DIR`의
+자동 경로 선택은 관리하지 않습니다. 그 profile에는 `agent: omp`와
+`config_dir: ~/.omp/profiles/work/agent`로 target을 선언하세요.
+계정 target은 global 전용이며, project 정의에는 `omp`를 사용합니다.
+
+편집하거나 sync한 뒤 OMP에서 `/mcp reload`를 실행하고 `/mcp list`로 source와
+연결 상태를 확인하세요. 승인과 OAuth 로그인은 계속 OMP가 담당합니다.
 
 ## Pi {#pi}
 

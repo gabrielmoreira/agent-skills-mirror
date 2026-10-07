@@ -1,8 +1,8 @@
 ---
 name: write
-description: "Rewrites and polishes Chinese or English prose and product copy. Use when drafting, editing, localizing, or cutting AI tone. Not for code comments or commit messages."
-when_to_use: "改稿, 润色, 去AI味, 帮我写文案, 审稿, 文档review, 本地化文案, 多语言文案, i18n copy, localization copy, check this document, 推特, twitter, X推文, tweet, social post, draft, edit text, proofread, sound natural, polish, rewrite"
-dispatch_intent: "Writing, editing prose, polish, release notes, launch/social copy, remove AI tone"
+description: "Rewrites and polishes Chinese or English prose, technical instructions, and product copy. Use when drafting, editing, localizing, or cutting AI tone. Not for code comments or commit messages."
+when_to_use: "改稿, 润色, 去AI味, 帮我写文案, 审稿, 文档review, 技术说明改写, 指令消歧, clarify instructions, technical writing, 本地化文案, 多语言文案, i18n copy, localization copy, check this document, 推特, twitter, X推文, tweet, social post, draft, edit text, proofread, sound natural, polish, rewrite"
+dispatch_intent: "Writing, editing prose, clarify technical instructions, polish, release notes, launch/social copy, remove AI tone"
 ---
 
 # Write: Cut the AI Taste
@@ -52,6 +52,7 @@ Default is a line-level rewrite of the supplied text. Take a mode only when its 
 |---|---|
 | Release note, changelog entry, update-feed copy | load `references/mode-release-notes.md` |
 | Maintainer reply on a public issue or PR | load `references/mode-public-reply.md` |
+| Installation steps, operating instructions, error text, or tool descriptions to clarify; wording-only edits to agent instructions | load `references/write-technical.md` for those passages, alongside the language reference; prompt design and code behavior stay outside this mode |
 | Long draft with several sections, tables, or images that needs structural work | load `references/mode-long-form.md` |
 | EN/CN pair or mixed Chinese/English copy to check for drift | load `references/write-zh-bilingual.md`, which owns the judgment the Punctuation Gate does not check |
 | Product, site, or app copy across locales ("本地化文案", "多语言文案", "localization copy", "i18n copy", runtime catalog, release feed copy) | load `references/write-product-localization.md` and follow its review procedure; add `references/write-zh-bilingual.md` when Chinese is a locale |

@@ -156,7 +156,7 @@ Fireworks 新建模板移除公告精确命中的 `accounts/fireworks/models/kim
 #### 2026-09-07 模型与会话兼容边界
 
 - 新建 OpenAI Responses 模板提供 `gpt-6-astra`（1,050,000 上下文、128,000 最大输出）；仅 `https://api.openai.com` 的精确模型 ID 采用 `low / medium / high / xhigh / max`，`none`、`minimal` 及未设置值映射为 `low`，省略温度等不支持的采样字段。直连 Chat 仅允许无工具请求；工具循环提示改用 Responses。中转端点沿其原有策略，不自动改用户模型、协议、报价。[官方请求规则](https://developers.openai.com/api/docs/guides/latest-model)
-- Cerebras 的四项公共退役型号从新建列表移除；Together 曾用 `deepseek-ai/DeepSeek-V4-Pro-0813` 替换更早的 V4 Pro，但 2026-09-28 的新建目录已按[官方弃用公告](https://docs.together.ai/docs/deprecations)移除已下线的 `moonshotai/Kimi-K2.6` 和将在 09-29 退役的 `deepseek-ai/DeepSeek-V4-Pro-0813`。用户已存配置与专属部署不迁移、不全局禁用同名 ID。Astra 与 Fable 5.1 的模板基础价均为每百万令牌输入 10 / 输出 50 美元；Astra 超过 272,000 输入令牌的阶梯及缓存、地区费用不由这两个字段表达，不能据大盘估算做完整账单核对。
+- Cerebras 的四项公共退役型号从新建列表移除；Together 新建目录已移除 `moonshotai/Kimi-K2.6` 和 `deepseek-ai/DeepSeek-V4-Pro-0813`。当前[官方弃用公告](https://docs.together.ai/docs/deprecations)列出 Kimi K2.6 于 2026-08-19 退役及不同精确 ID `deepseek-ai/DeepSeek-V4-Pro` 于 2026-08-27 退役；未核实 `DeepSeek-V4-Pro-0813` 的精确退役日期，目录清理不代表对该路由可用性的运行验证。用户已存配置与专属部署不迁移、不全局禁用同名 ID。Astra 与 Fable 5.1 的模板基础价均为每百万令牌输入 10 / 输出 50 美元；Astra 超过 272,000 输入令牌的阶梯及缓存、地区费用不由这两个字段表达，不能据大盘估算做完整账单核对。
 - Anthropic 流式解析完整保存原始 `thinking`、`signature_delta` 拼接结果、`redacted_thinking.data`、文本和工具块顺序，包括最终轮。禁止用界面思考文本重建无签名块；其他协议的 `reasoning_content` 不转换成 Claude 思考。原始块进入会话历史，界面提示独立投影。
 - 官方端点启用 `thinking-binding-controls-2026-08-01`，思考配置加 `block_binding.prefix_mismatch_behavior=drop_block`；Fable 5.1 即使未选档位也显式用自适应思考。动态系统前缀、工具表、压缩后缀或切旧模型仍可能使已有块失效，由服务端裁决；`input_transformations` 的前缀或模型失配会显示提示并记录稳定诊断原因，重复流事件去重，本地原块保留。无法验证的签名拒绝属于请求契约终态，不自动删块重试。这是一条明确可观察的兼容路径，不保证跨模型完整思考连续性。[官方绑定控制](https://platform.claude.com/docs/en/build-with-claude/preserved-thinking)
 
@@ -447,10 +447,12 @@ SSE 事件处理：
 [
   { "role": "user", "content": "问题" },
   { "type": "message", "role": "assistant", "content": [{ "type": "output_text", "text": "回复" }], "status": "completed" },
-  { "type": "function_call", "id": "fc_xxx", "call_id": "fc_xxx", "name": "read", "arguments": "{}" },
-  { "type": "function_call_output", "call_id": "fc_xxx", "output": "文件内容" }
+  { "type": "function_call", "id": "fc_xxx", "call_id": "call_xxx", "name": "read", "arguments": "{}" },
+  { "type": "function_call_output", "call_id": "call_xxx", "output": "文件内容" }
 ]
 ```
+
+`function_call.id` 是服务端条目标识，`call_id` 是工具执行及结果配对标识，二者不可混用。[官方函数调用示例](https://developers.openai.com/api/docs/guides/function-calling) 分别使用 `fc_*` 与 `call_*`；[创建接口](https://developers.openai.com/api/reference/resources/responses/methods/create) 的输入条目 `id` 为可选。原始条目可用时保留其 `id`、`namespace` 等服务端字段；缺少原始条目的合成调用及中断恢复只写 `call_id`，省略 `id`。历史标准化对旧 `id == call_id` 且不以 `fc` 开头的错误条目移除 `id`，保留其余字段与上下文标注，不改写工具结果的配对标识。
 
 ### 4.4 Codex OAuth API
 
@@ -585,7 +587,7 @@ flowchart LR
 
 | 输入形态 | 转换 |
 |---------|------|
-| 原生 Responses 项 | 直通 |
+| 原生 Responses 项 | 保留原始字段；旧合成 `function_call` 的错误重复 `id` 按 §4.3 移除 |
 | Anthropic tool_use / tool_result 数组 | 跳过（Responses 用 function_call） |
 | Anthropic content 数组 | 提取 text → `{ role, content: text }` |
 | `reasoning_content` 字段 | 移除 |

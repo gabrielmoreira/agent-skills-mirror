@@ -219,6 +219,12 @@ be treated as implemented:
 
 ## API ownership
 
+`PUT /api/codex-auth/accounts/pause` manually pauses or resumes all existing entries whose account
+and workspace identity is confirmed to match, including native main and a pool duplicate. Its
+`affectedAccountIds` response contains only the existing opaque entry handles; emails and physical
+account ids are not serialized. Absent homes and API-key-only main logins allow Pool-only grouping;
+busy/unreadable main identity returns 503. See [OpenAI account operations](providers/openai-accounts.md#manual-account-pause-and-resume).
+
 Model rows keep stored custom overrides separate from their effective `exportMetadata` projection.
 `src/server/management/model-row-export-metadata.ts` resolves inherited limits and capabilities;
 the [client export contract](clients/integrations.md#owned-catalog-convergence) prevents picker-only
@@ -562,7 +568,7 @@ retry, last trusted device details, and the existing poll cadence. Outside same-
 ownership, a GET HTTP failure stops polling without starting a second login POST.
 
 Pairing-grant source limiting applies only to invalid guesses from an allowed browser origin; disallowed
-origins record no limiter state, and a valid grant redeems even from a throttled source.
+origins record no limiter state, and a valid grant redeems even from a throttled source. Standalone grant delivery also requires a one-use configuration-write intent; see [Standalone pairing delivery](remote-link.md#standalone-pairing-delivery).
 
 ## Durable provider PATCH
 

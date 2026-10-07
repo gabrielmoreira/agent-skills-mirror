@@ -6,7 +6,7 @@ description: Use when extracting text from scanned PDFs, photographed pages, or 
 <!--
 AI-RULEZ :: GENERATED FILE — DO NOT EDIT
 Content-Hash: blake3:3ec8b7cf60f56cbe5cc15a5a0b29d0c2f8e3cf4c3823503eb1128fb7f9ee11db
-Source-Hash: blake3:866993511d509cc0a787abb0e6ced186c958cf8983890c7e749c84271413c0a1
+Source-Hash: blake3:0a63e6793dfbd7671ca2cfec5688efa8523d2e4087553f9f6503f2d74cef8b78
 Schema-Version: v1
 -->
 

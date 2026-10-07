@@ -9,7 +9,7 @@ decision is reversed, add a new one that says which record it supersedes.
 2. Add one line to the right section of this index.
 3. Do **not** paste the record body into `AGENTS.md`.
 
-377 records, 2026-05-19 → 2026-10-05.
+383 records, 2026-05-19 → 2026-10-05.
 
 ---
 
@@ -214,8 +214,9 @@ decision is reversed, add a new one that says which record it supersedes.
 - **2026-05-22** — [Ship `janhq/llama.cpp` cudart DLLs with every Windows CUDA backend](2026-05-22-ship-janhq-llama-cpp-cudart-dlls-with-every-windows-cuda-backend.md)
 - **2026-05-19** — [Windows uses upstream `ggml-org/llama.cpp`, not the TurboQuant fork](2026-05-19-windows-uses-upstream-ggml-org-llama-cpp-not-the-turboquant-fork.md)
 
-## Models, Hub & downloads (34)
+## Models, Hub & downloads (35)
 
+- **2026-10-03** — [Choose TensorRT-LLM models in the Model Hub, as its third format](2026-10-03-choose-tensorrt-llm-models-in-the-model-hub.md)
 - **2026-10-01** — [Download decision models in the Hub, run them on the TurboQuant page](2026-10-01-download-decision-models-in-the-hub-and-run-them-on-the-turboquant-page.md)
 - **2026-09-29** — [List image and video models in the Hub, from the curated catalog only](2026-09-29-list-image-and-video-models-in-the-hub.md)
 - **2026-09-29** — [Fetch large files over several connections, and give up on quiet ones](2026-09-29-fetch-large-files-over-several-connections-and-give-up-on-quiet-ones.md)
@@ -276,8 +277,9 @@ decision is reversed, add a new one that says which record it supersedes.
 - **2026-06-10** — [Throttle crashloop `model_load` failure spam client-side; confirm `model_load.status` / api 404-noise are already-fixed-pending-rollout, not code bugs (ATO-130: ATO-133 + ATO-131 + ATO-132)](2026-06-10-throttle-crashloop-model-load-failure-spam-client-side-confirm.md)
 - **2026-06-09** — [Add zero-PII Sentry crash/error tracking to both the React frontend and the Rust/Tauri desktop, gated behind `productAnalytic` (ATO-113)](2026-06-09-add-zero-pii-sentry-crash-error-tracking-to-both-the-react.md)
 
-## Packaging, installers, autostart & platform policy (19)
+## Packaging, installers, autostart & platform policy (20)
 
+- **2026-10-02** — [Publish releases with make release-prod and feed the landing page from conf](2026-10-02-publish-releases-with-make-release-prod-and-feed-the-landing-from-conf.md)
 - **2026-09-30** — [Stop a leftover app core before the Windows installer overwrites it](2026-09-30-stop-a-leftover-app-core-before-the-windows-installer-overwrites-it.md) — an update exits without `RunEvent::Exit`, so the core outlives the app.
 - **2026-09-23** — [Add a Video page that shares the image runtime](2026-09-23-add-a-video-page-that-shares-the-image-runtime.md)
 - **2026-09-23** — [Capture video posters in the webview](2026-09-23-capture-video-posters-in-the-webview.md)
@@ -414,6 +416,16 @@ decision is reversed, add a new one that says which record it supersedes.
 - **2026-09-15** — [jan-cli keeps its file name and becomes a copy of the core](2026-09-15-jan-cli-keeps-its-name-and-becomes-the-core.md)
 - **2026-09-15** — [Sign the core with JIT entitlements and verify the universal artifact](2026-09-15-sign-the-core-with-jit-entitlements.md)
 - **2026-09-15** — [Pin the core version in the app and reject protocol mismatches](2026-09-15-pin-the-core-version-and-reject-mismatches.md)
+
+## TensorRT-LLM on Windows (1)
+
+- **2026-10-01** — [Ship TensorRT-LLM on Linux and Windows and let the core hide it](2026-10-01-ship-tensorrt-llm-on-linux-and-windows-and-let-the-core-hide-it.md) (supersedes the Linux-only extension record below)
+
+## TensorRT-LLM on Linux (3)
+
+- **2026-09-30** — [Run the privileged host step through pkexec on a copy of the core](2026-09-30-run-the-privileged-host-step-through-pkexec-on-a-copy-of-the-core.md)
+- **2026-09-30** — [TensorRT-LLM is a Linux-only extension that decides its own visibility](2026-09-30-tensorrt-llm-is-a-linux-only-extension-that-decides-its-own-visibility.md)
+- **2026-09-30** — [Run Agent turns on TensorRT-LLM through its session gateway](2026-09-30-run-agent-turns-on-tensorrt-llm-through-its-session-gateway.md)
 
 ## Other (19)
 

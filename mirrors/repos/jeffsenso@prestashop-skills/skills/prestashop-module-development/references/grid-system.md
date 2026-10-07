@@ -463,14 +463,71 @@ cp vendor/websenso/prestashop-module-devtools/skills/.agents/skills/prestashop-m
 sed -i 's/new o\.a("GRID_ID_PLACEHOLDER")/new o.a("{mymodule_myentity}")/g' views/js/{modulename}.bundle.js
 # Replace the $(document).ready grid ID (bottom of file)
 sed -i "s/prestashop\.component\.Grid('GRID_ID_PLACEHOLDER')/prestashop.component.Grid('{mymodule_myentity}')/g" views/js/{modulename}.bundle.js
-```
 
+# VERIFY — grep must show 0 for GRID_ID_PLACEHOLDER and 2+ for your real GRID_ID.
+# If sed matched nothing (0 replacements) the ID inside the minified section is
+# NOT the literal string "GRID_ID_PLACEHOLDER" — it's a leftover real ID from
+# whatever module the template/bundle was last copied from (e.g. "wsblocksinhooks_block").
+# In that case sed silently does nothing and the bug below happens.
+grep -c 'GRID_ID_PLACEHOLDER' views/js/{modulename}.bundle.js   # expect: 0
+grep -c '"{mymodule_myentity}"' views/js/{modulename}.bundle.js  # expect: >=1 (inside minified bootstrap)
+```
 
 **CRITICAL — Grid ID must match `GRID_ID` constant exactly:**
 - Replace both `GRID_ID_PLACEHOLDER` occurrences with the exact value of `YourGridDefinitionFactory::GRID_ID` (e.g. `'wsfaq_question'`).
-- Mismatch causes all extensions (toggles, position drag-and-drop, bulk actions) to silently fail.
+- Mismatch causes all extensions (toggles, position drag-and-drop, bulk actions, **column sort, search reset**) to silently fail — no JS error is thrown, clicks just do nothing.
+
+> **The #1 real-world cause of "sort doesn't work" / "reset doesn't work": a bundle copied from another module still has that OTHER module's ID hardcoded inside the minified webpack bootstrap** (the `new o.a("...")` call), and it is NOT the literal text `GRID_ID_PLACEHOLDER` — it's a real ID like `"wsblocksinhooks_block"` or `"wsimageslider"`. Because it doesn't match the `GRID_ID_PLACEHOLDER` pattern, the `sed` replacement above finds nothing and silently changes 0 occurrences. Always run the verification `grep -c` commands above, and if `GRID_ID_PLACEHOLDER` count isn't 0, manually find and fix the literal ID:
+> ```bash
+> # Find the literal ID actually baked into the minified bootstrap
+> grep -o '(0, window\.\$)([^;]*;' views/js/{modulename}.bundle.js
+> # Fix it directly once you spot it (replace the wrong-but-real old ID)
+> sed -i 's/new o\.a("OLD_WRONG_ID")/new o.a("{mymodule_myentity}")/' views/js/{modulename}.bundle.js
+> ```
 
 > **Do NOT** use `addJqueryUI('ui.sortable')` + custom admin.js for position management. Use the PS Grid PositionColumn + the bundle — it is fully handled by the framework.
+
+---
+
+## How sort, search and reset actually work (and how they silently break)
+
+Every compiled `{modulename}.bundle.js` contains **two independent init blocks** that both need the correct Grid ID:
+
+1. **The minified webpack bootstrap** (the huge single-line section near the top, ending in `e(e.s = 13)` and a giant module array). Buried inside it is a line like:
+   ```js
+   (0, window.$)(function () { var n = new o.a("GRID_ID"); n.addExtension(new a.a), n.addExtension(new c.a), /* ...9 total */ })
+   ```
+   This runs **immediately when the script loads** (it does not wait for `window.prestashop.component` to exist — it uses the bundle's own private, bundled copies of the `Grid` class and all 9 standard extension classes). These 9 extensions cover:
+   - `SubmitRowActionExtension` — row delete/submit buttons (`.js-submit-row-action`)
+   - `BulkActionExtension` — enable/disable the bulk action button based on checkbox state
+   - `CommonGridActionExtension` — "show SQL query" modal
+   - `ResetSearchExtension` — **the reset button** (`.js-reset-search`): POSTs to `data-url`, then `window.location.assign(data-redirect)` on success
+   - `LinkRowActionExtension` — clickable rows + confirm dialogs
+   - `CommonRefreshListExtension` — "Refresh list" grid action button
+   - `SortableColumnExtension` — **column header click-to-sort** (`.ps-sortable-column`): reads `data-sort-col-name` / `data-sort-prefix` / current `data-sort-direction`, builds a new URL with `{prefix}[orderBy]` and `{prefix}[sortOrder]` query params, and does a full `window.location =` navigation (sort is a page reload, not AJAX)
+   - `GridActionExtension` — grid-level action submit buttons
+   - `BulkActionSubmitButtonExtension` — bulk action form submit
+
+   **This single hardcoded ID is what makes sort and reset work.** `Grid.getContainer()` resolves to `$("#" + id + "_grid")`; if this ID doesn't match the real DOM container (`{GRID_ID}_grid`, rendered by `grid.html.twig`), **every one of these 9 `.on('click', ...)` handlers binds to an empty jQuery selection and silently does nothing.** No console error — this is why the bug is so easy to miss.
+
+2. **The custom `$(document).ready(...)` script at the bottom of the file** (hand-written, not minified). This uses the **globally exposed** `window.prestashop.component.Grid` / `window.prestashop.component.GridExtensions.*` — a separate library from the one bundled privately above — to create a **second** Grid wrapper on the same container and add **only the extras that are NOT already in the private bootstrap**, typically:
+   - `AsyncToggleColumnExtension` (for `ToggleColumn` AJAX toggling)
+   - `PositionExtension` (for `PositionColumn` drag-and-drop)
+
+   **Do NOT re-add `SortableColumnExtension`/`SortingExtension` or `ResetSearchExtension`/`FiltersResetExtension` here just to "make sort/reset work"** — the private bootstrap in block 1 already binds those; if sort/reset don't work, fix the ID in block 1 instead of duplicating extensions in block 2. The one documented exception is `PositionExtension` + `ReorderPositionsButtonType`: the "Rearrange" button simulates a `.click()` on `.ps-sortable-column`, so a `SortingExtension`/`SortableColumnExtension` click handler must exist for that simulated click to do anything — see the gotcha below.
+
+### Search (the search button, not sort)
+
+Search is a **plain HTML form POST**, not AJAX — clicking "Search" submits `grid.filter_form` to whatever route the browser is currently on (the index route, since `form_start` doesn't override `action`). This means:
+- The **search route MUST share the same path as the index route**, only `methods: [POST]` differs (see routes.yml section above) — otherwise 405.
+- `searchAction()`'s **third argument to `buildSearchResponse()` must be the literal `GRID_ID` string** (e.g. `'featuredcategoryproducts'` or `YourFactory::GRID_ID`), **never** a `Filters::class` name. Passing the wrong type doesn't throw immediately but the search silently fails to persist filters / just reloads the page with no results applied.
+
+### Quick diagnosis checklist when sort/reset/search "does nothing"
+
+1. `grep -o '"YOUR_GRID_ID"' views/js/{modulename}.bundle.js` — must find the ID **inside the minified bootstrap**, not just in the bottom custom script. If it's missing there, that's the bug.
+2. Confirm the DOM container id: view page source, search for `id="..._grid"` — it must equal `{GRID_ID}_grid`.
+3. `searchAction()` third param must be the `GRID_ID` string, not a class reference.
+4. Column `sortable` option — **defaults to `true`** in `AbstractColumn::configureOptions()`. You almost never need to set it explicitly; if sort still fails after fixing the ID, this is NOT the cause.
 
 ---
 
@@ -488,7 +545,9 @@ sed -i "s/prestashop\.component\.Grid('GRID_ID_PLACEHOLDER')/prestashop.componen
 - `index.php` guards must exist in **all** Grid subdirectories — lotr adds them automatically.
 - **NEVER start module route paths with `/modules/`** — `YamlModuleLoader` always prepends `/modules` automatically. Path `/modules/mymodule/...` becomes `/modules/modules/mymodule/...`, causing 404/405 on every action. Use `/mymodule/...` instead.
 - **Index (GET) and search (POST) MUST share the same path** — the Grid search form POSTs to the current page URL (the index URL). If the search route has a different path (e.g. `/entities/search`), the POST hits the index route which only accepts GET → 405 Method Not Allowed.
-- **Bundle webpack Grid ID must match `GRID_ID` constant** — if you copy a bundle from another module, the minified section still contains the old grid ID. Replace every occurrence with the actual grid ID. Mismatch means row links, bulk actions, search reset, and column sort silently fail.
+- **Bundle webpack Grid ID must match `GRID_ID` constant** — if you copy a bundle from another module, the minified section still contains the old grid ID **as a real literal string, not `GRID_ID_PLACEHOLDER`**, so a naive sed replace of the placeholder finds nothing. Replace every occurrence with the actual grid ID and verify with `grep -c`. Mismatch means row links, bulk actions, search reset, and column sort silently fail. See "How sort, search and reset actually work" above for the full mechanism.
+- **`searchAction()`'s 3rd arg to `buildSearchResponse()` must be the `GRID_ID` string, not `YourFilters::class`** — passing the Filters class name instead of the grid ID string makes search silently do nothing (page just reloads, no filters applied).
+- **Column `sortable` option already defaults to `true`** (`AbstractColumn::configureOptions()`) — do not waste time explicitly setting `'sortable' => true` on `DataColumn`s when debugging broken sort; the real cause is almost always the bundle ID mismatch above, not the column definition.
 - **`ImageColumn` always renders `<img src="...">` unconditionally** — if the `src_field` value is empty/null the browser shows a broken image icon. Fix: (1) make the SQL return `NULL` (not empty string) when there is no image using `IF(photo IS NOT NULL AND photo != '', CONCAT(base_url, photo), NULL)`; (2) create a custom Twig template that guards with `{% if record[...] is not empty %}`; (3) register the module views dir under the `@PrestaShop` Twig namespace in `services.yml` and name the template `{gridId}_{columnId}_{columnType}.html.twig` — `GridExtension::getTemplatePath` checks that path first. See the "ImageColumn custom template" section below.
 - **`ToggleColumn` for boolean grid columns** — always pair with a `YesAndNoChoiceType` filter. Use `ToggleColumn` (not `DataColumn`) for any `active`/boolean field. Add `YesAndNoChoiceType` filter with `setTypeOptions(['required' => false])`. The controller toggle action returns JSON `{status: bool, message: string}`. The `primary_field` option must point to the PK field name in the SELECT result. See the "ToggleColumn and boolean filters" section below.
 

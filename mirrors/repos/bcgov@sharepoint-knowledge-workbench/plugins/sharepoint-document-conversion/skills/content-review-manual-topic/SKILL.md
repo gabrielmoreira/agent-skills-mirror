@@ -13,6 +13,7 @@ Semantic, read-only editorial review of **exactly one** topic page. Two runtimes
 - [Quick start](#quick-start)
 - [Workflow](#workflow)
 - [Verification](#verification)
+- [References](#references)
 
 ## Constraints
 
@@ -56,3 +57,7 @@ Classify cross-reference findings with: `REFERENCE_RETRIEVED`, `REFERENCE_NOT_RE
 ## Verification
 
 Output these sections: Topic reviewed; Related evidence consulted (up to 2, or None); Summary assessment; Completeness findings; Cross-reference findings; Ambiguities or conflicts; Unable to evaluate items; Recommended human follow-up; Source citations.
+
+## References
+
+- [acceptance-criteria.md](references/acceptance-criteria.md) - Acceptance criteria and validation gates.

@@ -25,6 +25,9 @@ skillshare mcp check --live --timeout 30s
 skillshare mcp remove docs --sync
 skillshare mcp remove docs --keep-files
 skillshare mcp restore BACKUP_ID --dry-run
+skillshare mcp serve
+skillshare mcp serve --target claude --http 127.0.0.1:8765
+skillshare mcp serve --check
 skillshare sync mcp --dry-run --json
 skillshare sync mcp
 skillshare sync --all
@@ -32,7 +35,7 @@ skillshare sync --all
 
 | オプション | 意味 |
 |---|---|
-| `--target CLIENT` | 受け取り側クライアント。複数のクライアントを選択するには繰り返し指定。`--target none` はサーバーをどのクライアントにも書き込まずに Skillshare 内に保持する。[下記](#keep-a-server-without-syncing-it)を参照 |
+| `--target CLIENT` | 受け取り側クライアント。複数のクライアントを選択するには繰り返し指定。`--target none` はサーバーをどのクライアントにも書き込まずに Skillshare 内に保持する。[下記](#keep-a-server-without-syncing-it)を参照。`serve` では、`--target NAME` は代わりに Skill の target を指定する。[下記](#serve-skills-over-mcp)を参照 |
 | `--url URL` | `add` 用の Streamable HTTP エンドポイント |
 | `-- command args...` | `add` 用のローカル実行ファイルとリテラルな引数 |
 | `--disabled` | project mode で `add` と併用: Agent の global config が定義するサーバーをオフにする。[下記](#turn-off-a-global-server-in-one-project)を参照 |
@@ -49,6 +52,9 @@ skillshare sync --all
 | `--no-dns` | `check` で使用。リモートサーバーのホスト名の名前解決をスキップする。[下記](#check-servers-before-an-agent-starts-them)を参照 |
 | `--live` | `check` で使用。各ローカルサーバーの起動と各リモートサーバーの呼び出しも行う。[下記](#probe-servers-live)を参照 |
 | `--timeout DURATION` | `check --live` で使用。各サーバーのプローブの制限時間(`30s` など)。デフォルトは `10s` |
+| `--http ADDR` | `serve` で使用。stdio の代わりに `ADDR` で Streamable HTTP を待ち受ける。[下記](#serve-skills-over-mcp)を参照 |
+| `--tls-cert FILE`, `--tls-key FILE` | `serve --http` で使用。この PEM 証明書と鍵で HTTPS を提供する。ループバック以外では必須 |
+| `--check` | `serve` で使用。スキップされる Skill とその理由を一覧表示し、提供せずに終了する |
 | `--no-tui` | インタラクティブメニューを無効化。`tui: false`、`--json`、または非ターミナルの入出力でも無効になる |
 | `--revision ID` | add/import/remove または `sync mcp` に一致するプレビューを要求する |
 | `--global`, `-g` | global の Skillshare 設定を使う |
@@ -93,7 +99,7 @@ Add、edit、remove、import では、**Save and sync** または **Save only** 
 
 クライアント ID は `claude`、`codex`、`cursor`、`vscode`、`opencode`、`kilocode`、
 `grok`、`antigravity`、`amp`、`claude-desktop`、`cline`、`copilot`、`factory`、`gemini`、
-`goose`、`junie`、`kiro`、`lmstudio`、`warp`、`windsurf`、`pi` です。
+`goose`、`junie`、`kiro`、`lmstudio`、`warp`、`windsurf`、`pi`、`omp` です。
 `grok` は公式の xAI Grok CLI を意味します。サーバー名には文字、
 数字、ドット、アンダースコア、ハイフンを使用します。サーバーは同期前に、直接または
 `mcp.targets` 経由で少なくとも 1 つのクライアントを選択する必要があります。ただし、サーバー自身の
@@ -157,6 +163,7 @@ Grok の場合、名前は文字またはアンダースコアで始まり、文
 | [LM Studio](https://lmstudio.ai/docs/app/mcp) | `~/.lmstudio/mcp.json` | Global のみ | `mcpServers` |
 | [Warp](https://docs.warp.dev/agents/capabilities/mcp/) | `~/.warp/.mcp.json` | `.warp/.mcp.json` | `mcpServers` |
 | [Windsurf (Cascade)](https://docs.devin.ai/desktop/cascade/mcp) | `~/.codeium/windsurf/mcp_config.json` | Global のみ | `mcpServers` |
+| [Oh My Pi (OMP)](https://github.com/can1357/oh-my-pi/blob/v18.6.1/docs/mcp-config.md) | `~/.omp/agent/mcp.json` | `.omp/mcp.json` | `mcpServers` |
 
 ダッシュボードのサーバーフォームは、HTTP ヘッダーを環境変数と同じ方法で編集し、`fromEnv` 参照にも対応します。サーバーのメニューとフォーム内のファイル数の横にある **View what each Agent gets** は、選択したクライアントに対して Sync が書き込む予定のネイティブテキストを読み取り専用で表示します。フォーム内では、まだ保存されていない編集内容が反映されます。secret は参照のままです。
 
@@ -235,7 +242,7 @@ project の送信先は、選択された project ルートからの相対パス
 
 ### Agent の別のアカウント {#accounts}
 
-[Agent の別のアカウント](/docs/reference/targets/configuration#agent-config-dir)として宣言された Target は、`claude`（`CLAUDE_CONFIG_DIR`）、`codex`（`CODEX_HOME`）、`pi`（`PI_CODING_AGENT_DIR`）については MCP の Target でもあります。そのサーバーは、その Agent のフォーマットで、アカウント自身のファイル（Claude は `<config_dir>/.claude.json`、Codex は `<config_dir>/config.toml`、Pi は `<config_dir>/mcp.json`）に書き込まれます。
+[Agent の別のアカウント](/docs/reference/targets/configuration#agent-config-dir)として宣言された Target は、`claude`（`CLAUDE_CONFIG_DIR`）、`codex`（`CODEX_HOME`）、`pi` と `omp`（どちらも `PI_CODING_AGENT_DIR`）については MCP の Target でもあります。そのサーバーは、その Agent のフォーマットで、アカウント自身のファイル（Claude は `<config_dir>/.claude.json`、Codex は `<config_dir>/config.toml`、Pi と OMP は `<config_dir>/mcp.json`）に書き込まれます。
 
 ```yaml
 targets:
@@ -263,7 +270,7 @@ Agent は自身の global MCP ファイルと project のファイルを合わ�
 ファイルで定義されたサーバーはすべての project で読み込まれます。1 つの project だけでそれを読み込まれないようにするには、**Agent の global ファイルが使っているのと同じ名前**のエントリを追加し、
 `disabled` を指定します。
 
-これは以下の 4 つのクライアントでのみ機能します。
+これは以下の 5 つのクライアントでのみ機能します。
 
 | クライアント | 対応 | Skillshare が書き込む内容 |
 |---|---|---|
@@ -271,10 +278,11 @@ Agent は自身の global MCP ファイルと project のファイルを合わ�
 | OpenCode | Yes | `opencode.json`: `"NAME": {"enabled": false}` |
 | Kilo Code | Yes | `kilo.jsonc`: `"NAME": {"enabled": false}` |
 | Pi | Yes（Pi 1.0.1 以降） | `.pi/mcp.json`: `"NAME": {"enabled": false}`、下記参照 |
+| Oh My Pi | Yes | `.omp/mcp.json`: `"NAME": {"enabled": false}` が同名のユーザーエントリを隠す |
 | Codex | No | 下記参照 |
 | その他すべてのクライアント | No | 選択するとエラー。何も書き込まれない |
 
-書き込まれるのはスイッチのみです。Agent は global エントリのコマンドまたは URL をそのまま保持します。他のクライアントが拒否されるのは、global エントリ全体を project 側のものに置き換えてしまうか、project ファイルを持たないため、スイッチだけを書き込むとオフにするどころかサーバーを壊してしまうからです。
+書き込まれるのはスイッチのみです。OpenCode、Kilo Code、Pi は global エントリのコマンドまたは URL をそのまま保持します。OMP は名前の重複排除の前に無効化された project エントリを除外するため、同名のユーザーエントリは接続できません。他のクライアントが拒否されるのは、global エントリ全体を project 側のものに置き換えてしまうか、project ファイルを持たないため、スイッチだけを書き込むとオフにするどころかサーバーを壊してしまうからです。
 
 Codex が拒否されるのは別の理由によります。Codex は `.codex/config.toml` を global ファイルの上にフィールド単位でマージするため、
 global config がそのサーバーを定義しているマシンでは `enabled = false` 単体でも機能します。しかしそれを定義していないマシンでは、マージされたエントリに
@@ -629,6 +637,67 @@ Agent ファイルがすでに使っている名前でサーバーを追加し�
   その project にインポートします。
 - source の定義で置き換える: ダッシュボードの **Replace with source**、またはインポート時の `--replace`。
 
+## MCP で Skill を提供する {#serve-skills-over-mcp}
+
+```bash
+skillshare mcp serve                                  # stdio, every enabled skill
+skillshare mcp serve --target claude                  # only the skills the claude target selects
+SKILLSHARE_MCP_TOKEN=change-me skillshare mcp serve --http 0.0.0.0:8765 \
+  --tls-cert cert.pem --tls-key key.pem               # HTTPS for other machines
+```
+
+`mcp serve` は、Skill の同期先フォルダーにアクセスできない Agent（使い捨ての VM 上の Agent や MCP gateway の背後にある Agent など）向けの読み取り専用 MCP サーバーです。[Skills extension](https://modelcontextprotocol.io/seps/2640-skills-extension)
+（`io.modelcontextprotocol/skills`、SEP-2640）の `skills/list`、`skills/get`、`resources/read` を実装しています。各 Skill は 1 つのエントリで、その URI は `skill://_team/tools/pdf/SKILL.md` のように source 内のパスに従います。エントリには frontmatter 全体と、`sha256` ダイジェストとサイズ付きのすべてのファイルが含まれます。自分のマシン上の Agent はすでに `sync` で Skill を受け取っているため、それらを `mcp serve` にも接続すると各 Skill が二重に表示されます。
+
+ほとんどの Agent はまだ Skills extension に対応していないため（下記参照）、サーバーは 2 つのツールも提供します。`list_skills` は名前、説明、URI を一覧表示し（`query` で絞り込み可能。1 回の応答は最大 200 件）、`read_skill` は Skill の `SKILL.md` または他のファイルを読み、`SKILL.md` の場合はその Skill の他のファイルも一覧表示します。MCP ツールを使える Agent なら、ツールを中継する gateway 経由でも、この方法で Skill を読めます。Skills extension を宣言したクライアントは Skill をネイティブに読み込み、ツールは提供されないため、各 Skill が二重に表示されることはありません。ツール経由で読んだ内容は Agent にとって通常のテキストであり、Agent 自身の Skill 承認は適用されません。
+
+- **選択。** `--target` を指定しない場合、有効なすべての Skill が提供されます。`--target NAME`
+  は、sync mode にかかわらず、その target の `include`/`exclude` フィルターと frontmatter の `targets` を適用します。Skill は常に source から取得されます。Skill がオフになっている target を指定するとエラーになります。
+- **スキップされる Skill。** 次の場合、Skill は stderr に警告を出してスキップされます。`SKILL.md`
+  がリンクである、または frontmatter で始まっていない場合。`name` が Agent Skills の命名規則に違反している、
+  またはディレクトリ名と異なる場合（`install --name` の後など）。説明がない、または 1,024 文字を超える場合、
+  あるいは `compatibility` が空または 500 文字を超える場合。ファイルが 512 個を超える、または 16 MiB を超える場合。
+  提供されないネストした Skill を含む場合。
+  `skillshare mcp serve --check` は、同じ選択フラグでそれらの Skill と理由を一覧表示し、提供せずに終了します。
+- **変更。** source は最大 5 秒ごとに読み直されるため、`install`、
+  `update`、`enable`、`disable` は再起動なしで反映されます。結果には
+  `ttlMs: 5000` が付きます。
+- **スコープ。** サーバーをどこで起動しても、デフォルトは global です。`-p` は現在のディレクトリの project を提供します。
+- **トランスポート。** デフォルトは stdio で、コマンドを起動する gateway または Agent 向けです。
+  `--http ADDR` は Streamable HTTP で提供します。ループバック以外のアドレスでは
+  `SKILLSHARE_MCP_TOKEN` と、`--tls-cert` および `--tls-key` による HTTPS が必要です。これによりトークンが平文でネットワークを流れることはありません。トークンが設定されている場合、すべてのリクエストは
+  `Authorization: Bearer <token>` を送る必要があります。代わりに TLS プロキシを使う場合は、`127.0.0.1:8765` のようなループバックアドレスにバインドし、プロキシで TLS を終端してください。
+- **安全性。** 読み取れるのは Skill のマニフェストにあるファイルだけで、読み取りは Skill ディレクトリ内に限られます。リンクと `.git` は一覧にも表示されず、提供もされません。何も実行・書き込みされません。`--http` では、クロスオリジンのブラウザーリクエストは拒否されます。
+
+Agent を接続するには、他のサーバーと同様にサーバーを追加して同期します。Agent を実行するマシンで:
+
+```bash
+skillshare mcp add skillshare --target codex --sync -- skillshare mcp serve --target codex
+```
+
+ダッシュボードでは、**Add server** → **Skillshare** が、選択した Skill から同じコマンド（project mode では `-p` 付き）を組み立てます。Agent にチェックを入れ、保存して同期してください。そのサーバーを編集すると同じタブが開きます。
+
+別のマシン上の Agent には、Skill があるマシンで証明書付きの `mcp serve --http` を実行し、リモートサーバーでそれを指定します。トークンは環境変数に保持してください。
+
+```yaml
+mcp:
+  servers:
+    skillshare:
+      url: https://skills-host:8765/
+      bearerToken: { fromEnv: SKILLSHARE_MCP_TOKEN }
+      targets: [codex]
+```
+
+Skill をネイティブに読み込むには Skills extension が必要です。2026 年 10 月時点で、一般的なコーディング Agent はまだ対応していないため、ツールを使います。Codex、Cursor、VS Code、Goose、Pi は未対応で、Claude Code は対応を含んでいますがデフォルトでは有効になっていません。対応しているのは mcpc、fast-agent、MCP Inspector など一部のクライアントだけで、その一部は部分的な対応です。SEP のプロトタイプホスト一覧（Codex のフォークなど）は、リリース済みの Agent が対応していることを意味しません。
+[extension support matrix](https://modelcontextprotocol.io/extensions/client-matrix) に現在のクライアントが一覧されています。
+
+サーバー自体を確認するには、MCP Inspector 2.6.0 以降ですべての Skill を読み、frontmatter を比較し、各ファイルのダイジェストを検証できます。
+
+```bash
+npx @modelcontextprotocol/inspector --cli skillshare mcp serve --method skills/list --verify
+```
+
+
 ## 安全性と制限事項
 
 - JSONC のコメントと無関係な設定は保持されます。変更された所有エントリは
@@ -637,7 +706,7 @@ Agent ファイルがすでに使っている名前でサーバーを追加し�
   `"type": "stdio"`、空の `env`、ヘッダー名の大文字小文字などの Agent が補完するデフォルト値は
   変更とはみなされません。管理下のサーバーを `enabled: false` や `disabled: true` でオフにすることは
   競合として報告されます。
-  Pi は例外です。`enabled` だけの変更は所有権の競合になりません。同期時には source の `piOptions.enabled` が優先されます。
+  Pi と OMP は例外です。接続エントリの `enabled` だけの変更は所有権の競合になりません。同期時には source の `piOptions.enabled` が優先されます。
 - Claude Code が `~/.claude.json` で行うように、Agent が同じファイル内の無関係な設定を書き換えている間も、プレビューは有効なままです。その
   ファイルの MCP エントリへの変更のみが新しいプレビューを必要とします。
 - Codex と Grok の編集は、通常の `[mcp_servers.NAME]` テーブルとそのサブテーブルに対応しています。
@@ -645,7 +714,7 @@ Agent ファイルがすでに使っている名前でサーバーを追加し�
   インライン/ドット記法の MCP 定義はテーブルに変換してから書き込む必要があり、
   変換されていない場合はファイルを変更せずに拒否されます。
 - ネイティブファイルの symlink、不正な形式のファイル、重複した JSON プロパティは
-  書き込みをブロックします。Symlink された Skillshare の `config.yaml` は、そのターゲットへ書き込まれます。ファイルパーミッションは保持されます。新規のネイティブ
+  書き込みをブロックします。Symlink された Skillshare の `config.yaml` は、そのターゲットへ書き込まれます。ただし、プロジェクト外を指すプロジェクト設定の link は書き込みを拒否します。ファイルパーミッションは保持されます。新規のネイティブ
   ファイル、所有権の記録、バックアップにはプライベートなパーミッションが使われます。
 - すでに source と一致しているエントリは、例えばチームメンバーの変更を pull した後などに、
   書き込みなしで unchanged として報告されます。この config がそれ以前にそのエントリを管理していなかった場合、
@@ -662,7 +731,8 @@ Agent ファイルがすでに使っている名前でサーバーを追加し�
   なぜなら DNS rebinding 攻撃は常にドメイン名を使うからです。
 - 認証情報は環境変数参照を使用します。secret ストア、OAuth セッション同期、
   継続的なヘルスモニタリング、package のインストール、gateway、レジストリ、plugin の同期はありません。
-  サーバーを起動したり呼び出したりするコマンドは `mcp check --live` だけです。
+  設定済みのサーバーを起動したり呼び出したりするコマンドは `mcp check --live` だけです。
+  `mcp serve` は Skillshare 自身の読み取り専用の Skill サーバーを実行します。
 - VS Code Insiders、カスタムプロファイル、リモート workspace、レガシー SSE は、このバージョンでは
   対応していません。
 - VS Code は現在、`headers` 内で `${env:VARIABLE}` を置換しません
@@ -772,6 +842,44 @@ Skillshare が所有するエントリでこれらを手で編集すると競合
 
 サーバーの行にはポリシーを言葉で示すタグ（`ツール: 2 個のツールを除外` など）が表示され、**各 Agent に書き込まれる設定を表示** は、適用されない部分に
 ついて Agent ごとに警告します。
+
+## Oh My Pi (OMP) {#omp}
+
+`omp` は Pi とは別のクライアントです。Skillshare は OMP ネイティブの `mcpServers`
+マップを、明示的な `type: stdio` または `type: http` と `${VARIABLE}` の環境変数参照で書き込みます。
+OMP の代わりに `.pi/`、Claude、Codex の設定に書き込むことはありません。
+サーバー名は 100 文字以内でなければなりません。
+
+```bash
+skillshare mcp add docs --url https://example.com/mcp --target omp -g --sync --no-tui
+skillshare mcp import docs --from omp --target omp -g --replace --dry-run --json
+```
+
+sync は `$schema`、`disabledServers`、`enabledServers`、無関係なサーバーを保持します。
+既存の接続を更新する際は、`enabled`、`timeout`、`instructions`、
+`requestIdFormat`、`cwd`、`auth`、`oauth` などのネイティブなサーバー別フィールドも保持します。
+これらのフィールドは `piOptions` ではなく、Pi 専用の設定が OMP に送られることはありません。インポートは
+ポータブルなモデルで表現できないネイティブフィールドについて警告します。それらは OMP のファイルに残してください。ポータブルなモデルは stdio と Streamable HTTP に対応し、
+OMP のレガシー SSE トランスポートには対応しません。非対応のインポートは変換されずに拒否されます。
+
+`disabledServers` は `enabledServers` やエントリの `enabled` の値より優先されます。
+sync はサーバーを有効にするためにユーザーの拒否リストのエントリを削除しません。インポートは
+`disabledServers` または `enabled: false` で隠されたサーバーを拒否します。ただし後者が
+`enabledServers` で強制的に有効化されている場合は除きます。OMP のスキーマまたは有効化/無効化リストを持つ JSON は、
+インポーターに貼り付けると OMP として認識されます。
+
+OMP は `!` で始まる env/header の値をシェルコマンドとして実行できます。Skillshare は
+そのようなリテラルのエクスポートや、そうした認証情報のインポートを拒否し、それらを実行することはありません。
+source では `{fromEnv: VARIABLE}`、ネイティブ JSON では `${VARIABLE}` を使ってください。
+`"TOKEN": "TOKEN"` のような同名の素の env 参照は `fromEnv` としてインポートされます。
+ポータブルな参照にはリテラルのフォールバックがないため、接続前に変数を設定してください。その他のクライアント固有の補間は、インポート前に変換が必要です。
+
+global MCP は `PI_CODING_AGENT_DIR` に従い、project MCP は `.omp/mcp.json` のままです。
+Pi も同じ環境変数を使うため、両方を同じファイルに同期することは拒否されます。別々のディレクトリか明示的なアカウント target を使ってください。名前付きプロファイル
+と `PI_CONFIG_DIR` による自動パス選択は管理されません。そのプロファイルには `agent: omp` と `config_dir: ~/.omp/profiles/work/agent` を持つ target を宣言してください。
+アカウント target は global のみで、project の定義では `omp` を使います。
+
+編集または同期の後、OMP で `/mcp reload` を実行し、続いて `/mcp list` でソースと接続状態を確認してください。承認と OAuth ログインは引き続き OMP の責任です。
 
 ## Pi {#pi}
 

@@ -73,6 +73,12 @@ Model tiering is separate from mode: `compact | mid | full` controls how many no
 
 The user types a message, the panel sends a detached `{action: 'chat_start', text, mode, tabId, requestId}` request, then reconnects to the background-owned run journal for `agent_update` events. The acknowledged start becomes the existing `chat` handler and `agent.processMessage()` lifecycle; closing or reloading the panel does not transfer ownership or start the run again. The panel renders tool calls, results, plan-review cards, clarification prompts, and the final answer incrementally.
 
+While a run is active, Send / Enter queues follow-up messages per tab. **Steer** / **Alt+Enter** sends a text correction to that same run; queued messages also have a Steer action. The background accepts corrections only from the extension chat panel and only for the matching run request ID. Both agent loops consume corrections as user messages before the next model request. An already running tool finishes; the remaining tool calls in its batch receive skipped results before the correction enters the conversation. Steering preserves the current mode and permission checks. If the run ends before consuming a correction, a journal event puts it at the front of that tab's queue for the next turn. A transport error retains the draft without automatically resending it.
+
+In Act and Dev, steering links the initiating request and ordered corrections into one task authority with internal run, message, and revision metadata. At the next safe boundary, both execution paths revalidate that authority through the configured intent or planning gate and refresh execution, recipient, workflow, progress, and tool policy. A newer correction supersedes an in-flight result and invalidates any pending plan-review card. Planner failure stops further dispatch with its concrete error. Ask stays read-only, and ordinary later chat messages remain new tasks. Task-authority messages survive compaction and session recovery; prior submission receipts survive separately from reset completion evidence. After a submission or publication attempt, revised work can inspect the existing effect but cannot submit it again in that run.
+
+LinkedIn message inspection recognizes image-preview controls in history and native conversation-list rows in the separate rail. A preview requires its image descendant, visible enabled control, matching hit target, and active modal scope outside the composer or form; its label alone is insufficient. Nested row actions and actual Send controls retain recipient verification. The adapter directs the agent to locate the named sender, scroll the history pane to earlier messages, and inspect each attachment in sender context before asking for any missing event details.
+
 Each new user/assistant pair starts in a reading-first scroll state: the question
 stays visible while a long response grows instead of being pushed immediately
 to the live edge. A floating control changes between **Follow response**,
@@ -852,7 +858,7 @@ OS file pickers. Firefox WebExtensions provide no equivalent native-dialog API;
 those dialogs still require manual handling in Firefox.
 
 WebMCP is an experimental Chrome-only fast path that is on by default. The
-user can disable **Experimental WebMCP** under Settings → General → Advanced;
+user can disable **Experimental WebMCP** under Settings → Bridge;
 when disabled, neither WebMCP tool schemas nor WebMCP prompt guidance enter model
 requests. When enabled, `list_webmcp_tools` is
 available in Ask, Act, and Dev; `execute_webmcp_tool` is restricted to Act/Dev

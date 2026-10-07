@@ -25,6 +25,9 @@ skillshare mcp check --live --timeout 30s
 skillshare mcp remove docs --sync
 skillshare mcp remove docs --keep-files
 skillshare mcp restore BACKUP_ID --dry-run
+skillshare mcp serve
+skillshare mcp serve --target claude --http 127.0.0.1:8765
+skillshare mcp serve --check
 skillshare sync mcp --dry-run --json
 skillshare sync mcp
 skillshare sync --all
@@ -32,7 +35,7 @@ skillshare sync --all
 
 | Option | Meaning |
 |---|---|
-| `--target CLIENT` | Receiving client; repeat to select multiple clients. `--target none` keeps the server in Skillshare without writing it to any client. See [below](#keep-a-server-without-syncing-it) |
+| `--target CLIENT` | Receiving client; repeat to select multiple clients. `--target none` keeps the server in Skillshare without writing it to any client. See [below](#keep-a-server-without-syncing-it). With `serve`, `--target NAME` names a skills target instead; see [below](#serve-skills-over-mcp) |
 | `--url URL` | Streamable HTTP endpoint for `add` |
 | `-- command args...` | Local executable and literal arguments for `add` |
 | `--disabled` | Project mode, with `add`: turn off a server the Agent's global config defines. See [below](#turn-off-a-global-server-in-one-project) |
@@ -49,6 +52,9 @@ skillshare sync --all
 | `--no-dns` | With `check`: skip the host lookup of remote servers. See [below](#check-servers-before-an-agent-starts-them) |
 | `--live` | With `check`: also start each local server and call each remote one. See [below](#probe-servers-live) |
 | `--timeout DURATION` | With `check --live`: time limit for each server's probe, such as `30s`; default `10s` |
+| `--http ADDR` | With `serve`: listen for Streamable HTTP on `ADDR` instead of using stdio. See [below](#serve-skills-over-mcp) |
+| `--tls-cert FILE`, `--tls-key FILE` | With `serve --http`: serve HTTPS with this PEM certificate and key; required off loopback |
+| `--check` | With `serve`: list the skills it would skip and why, then exit without serving |
 | `--no-tui` | Disable interactive menus; also disabled by `tui: false`, `--json`, or non-terminal input/output |
 | `--revision ID` | Require a matching preview for add/import/remove or `sync mcp` |
 | `--global`, `-g` | Use global Skillshare configuration |
@@ -765,6 +771,99 @@ and writes no files until you choose for that entry:
 - Replace it with the source definition: **Replace with source** in the dashboard, or
   `--replace` on import.
 
+## Serve skills over MCP {#serve-skills-over-mcp}
+
+```bash
+skillshare mcp serve                                  # stdio, every enabled skill
+skillshare mcp serve --target claude                  # only the skills the claude target selects
+SKILLSHARE_MCP_TOKEN=change-me skillshare mcp serve --http 0.0.0.0:8765 \
+  --tls-cert cert.pem --tls-key key.pem               # HTTPS for other machines
+```
+
+`mcp serve` is a read-only MCP server for an Agent that cannot reach the folder
+your skills sync to, such as one on a disposable VM or behind an MCP gateway. It
+implements the [Skills extension](https://modelcontextprotocol.io/seps/2640-skills-extension)
+(`io.modelcontextprotocol/skills`, SEP-2640): `skills/list`, `skills/get` and
+`resources/read`. Each skill is one entry whose URI follows its source path, such as
+`skill://_team/tools/pdf/SKILL.md`, with its full frontmatter and every file with a
+`sha256` digest and size. Agents on your own machine already receive skills through
+`sync`; connecting them to `mcp serve` as well shows each skill twice.
+
+Most Agents do not support the Skills extension yet (see below), so the server also offers
+two tools: `list_skills` lists names, descriptions and URIs (`query` narrows them; one
+answer lists at most 200), and `read_skill` reads a `SKILL.md` or another file of a skill,
+and for a `SKILL.md` lists the skill's other files. Any Agent that uses MCP tools can read
+skills this way, including through a gateway that passes tools on. A client that declares
+the Skills extension loads skills natively and is not offered the tools, so it does not
+see each skill twice. Content read through a tool is ordinary text to the Agent: its own
+skill approval does not apply.
+
+- **Selection.** Without `--target`, every enabled skill is served. `--target NAME`
+  applies that target's `include`/`exclude` filters and frontmatter `targets`, whatever
+  its sync mode; skills always come from the source. A target with skills turned off is
+  an error.
+- **Skipped skills.** A skill is skipped, with a warning on stderr, when its `SKILL.md`
+  is a link or does not begin with its frontmatter, when its `name` breaks the Agent Skills naming
+  rules or differs from its directory name (for example after `install --name`), when
+  its description is missing or over 1,024 characters or its `compatibility` is empty or over 500,
+  when it has more than 512 files
+  or 16 MiB, or when it contains a nested skill that is not served.
+  `skillshare mcp serve --check` lists those skills and their reasons, with the same
+  selection flags, and exits without serving.
+- **Changes.** The source is read again at most every 5 seconds, so `install`,
+  `update`, `enable` and `disable` show up without a restart. Results carry
+  `ttlMs: 5000`.
+- **Scope.** Global by default, wherever the server is started. `-p` serves the project
+  in the current directory.
+- **Transport.** stdio by default, for a gateway or Agent that starts the command.
+  `--http ADDR` serves Streamable HTTP. A non-loopback address requires
+  `SKILLSHARE_MCP_TOKEN` and HTTPS through `--tls-cert` and `--tls-key`, so the token
+  never crosses the network in plain text; when the token is set, every request must
+  send `Authorization: Bearer <token>`. To use a TLS proxy instead, bind a loopback
+  address such as `127.0.0.1:8765` and let the proxy terminate TLS.
+- **Safety.** Only files in a skill's manifest can be read, and reads stay inside the
+  skill directory. Links and `.git` are neither listed nor served. Nothing is executed or
+  written. With `--http`, cross-origin browser requests are refused.
+
+To connect an Agent, add the server like any other and sync it. On the machine that
+runs the Agent:
+
+```bash
+skillshare mcp add skillshare --target codex --sync -- skillshare mcp serve --target codex
+```
+
+In the dashboard, **Add server** → **Skillshare** builds the same command (with `-p` in
+project mode) from a choice of skills; tick the Agent, save and sync. Editing that server
+opens the same tab.
+
+For an Agent on another machine, run `mcp serve --http` with a certificate where the
+skills are and point a remote server at it. Keep the token in an environment variable:
+
+```yaml
+mcp:
+  servers:
+    skillshare:
+      url: https://skills-host:8765/
+      bearerToken: { fromEnv: SKILLSHARE_MCP_TOKEN }
+      targets: [codex]
+```
+
+Loading skills natively needs the Skills extension. As of October 2026 the common coding
+Agents do not have it yet, so they use the tools: Codex, Cursor, VS Code, Goose and Pi have no support, and Claude Code includes
+support that is not switched on by default. Only a few clients such as mcpc, fast-agent and
+MCP Inspector do, some in part. The SEP's list of prototype hosts, such as a Codex fork,
+does not mean the released Agents support it. The
+[extension support matrix](https://modelcontextprotocol.io/extensions/client-matrix) lists
+the current clients.
+
+To check the server itself, MCP Inspector 2.6.0 or later reads every skill, compares its
+frontmatter and checks each file's digest:
+
+```bash
+npx @modelcontextprotocol/inspector --cli skillshare mcp serve --method skills/list --verify
+```
+
+
 ## Safety and limitations
 
 - JSONC comments and unrelated settings are preserved. Changed owned entries
@@ -783,7 +882,7 @@ and writes no files until you choose for that entry:
   Inline/dotted MCP definitions must be converted to tables before writing;
   they are rejected without modifying the file.
 - Native file symlinks, malformed files and duplicate JSON properties block
-  writes. A symlinked Skillshare `config.yaml` is written through to its target. File permissions are preserved; new native
+  writes. A symlinked Skillshare `config.yaml` is written through to its target. A project config whose link points outside the project is refused instead. File permissions are preserved; new native
   files, ownership records and backups use private permissions.
 - An entry that already matches the source is reported as unchanged without a
   write, for example after pulling a teammate's change. If this configuration
@@ -804,7 +903,8 @@ and writes no files until you choose for that entry:
   domain name.
 - Credentials use environment references; no secret store, OAuth session sync,
   continuous health monitoring, package installation, gateway, registry or plugin sync.
-  `mcp check --live` is the only command that starts a server or calls one.
+  `mcp check --live` is the only command that starts or calls a configured server;
+  `mcp serve` runs Skillshare's own read-only skills server.
 - VS Code Insiders, custom profiles, remote workspaces and legacy SSE are not
   supported in this version.
 - VS Code does not currently substitute `${env:VARIABLE}` inside `headers`

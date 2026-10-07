@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `github/spec-kit` — 26 default patterns, 6 followed patterns, 10 file(s) materialized.
+Mirror of `github/spec-kit` — 26 default patterns, 8 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `github/spec-kit` — 26 default patterns, 6 followed patterns, 10 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 6 |
-| Files         | 10 |
+| Followed pats | 8 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,9 @@ Mirror of `github/spec-kit` — 26 default patterns, 6 followed patterns, 10 fil
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `design/shared.md`
 - `design/cli.md`
+- `design/mcp.md`
 - `design/integration.md`
 - `design/workflow-step.md`
 - `CONTRIBUTING.md`
@@ -67,13 +69,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.github/skills/add-community-extension/SKILL.md`](.github/skills/add-community-extension/SKILL.md) |
 | 2 | ✓ | [`.github/skills/code-review/SKILL.md`](.github/skills/code-review/SKILL.md) |
 | 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 4 | ✓ | [`integrations/CONTRIBUTING.md`](integrations/CONTRIBUTING.md) |
-| 5 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 6 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 7 | → | [`design/cli.md`](design/cli.md) |
-| 8 | → | [`design/integration.md`](design/integration.md) |
-| 9 | → | [`design/workflow-step.md`](design/workflow-step.md) |
-| 10 | → | [`spec-driven.md`](spec-driven.md) |
+| 4 | ✓ | [`docs/reference/mcp.md`](docs/reference/mcp.md) |
+| 5 | ✓ | [`integrations/CONTRIBUTING.md`](integrations/CONTRIBUTING.md) |
+| 6 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 7 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 8 | → | [`design/cli.md`](design/cli.md) |
+| 9 | → | [`design/integration.md`](design/integration.md) |
+| 10 | → | [`design/mcp.md`](design/mcp.md) |
+| 11 | → | [`design/shared.md`](design/shared.md) |
+| 12 | → | [`design/workflow-step.md`](design/workflow-step.md) |
+| 13 | → | [`spec-driven.md`](spec-driven.md) |
 
 ---
 

@@ -57,11 +57,11 @@ Mirror of `seaworld008/Commonly-used-high-value-skills` — 26 default patterns,
 - `docs/client-install-guides.md`
 - `README.md`
 - `README.en.md`
-- `docs/maintenance-audit-2026-09-30.md`
 - `docs/nlpm-audit-usage.md`
 - `CONTRIBUTING.md`
 - `docs/sources/reports/skill-curation-2026-04-25.md`
 - `docs/maintenance-2026-08-31.md`
+- `docs/maintenance-audit-2026-09-30.md`
 - `docs/maintenance-audit-2026-09-28.md`
 
 ## File Index

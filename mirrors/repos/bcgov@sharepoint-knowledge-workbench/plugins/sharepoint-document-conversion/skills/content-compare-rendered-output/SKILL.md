@@ -17,6 +17,7 @@ Prove a rendered-output tree is byte-identical to a recorded golden-master basel
 - [Quick start](#quick-start)
 - [Workflow](#workflow)
 - [Verification](#verification)
+- [References](#references)
 
 ## Constraints
 
@@ -46,3 +47,7 @@ report = compare_rendered_trees("fresh/rendered-output", "golden/rendered-output
 
 `status` must be `MATCH` with no issues for byte-identical fidelity. Any `MISMATCH` is a real difference; do
 not widen `excluded_filenames` to make it pass.
+
+## References
+
+- [acceptance-criteria.md](references/acceptance-criteria.md) - Acceptance criteria and validation gates.

@@ -55,6 +55,16 @@ registrations/removals and dispatch, Node timers and cancellation handles, async
 defaults, request construction and response consumers, parse/coercion/
 validation boundaries, and built-in resource acquisition/release.
 
+Mutation tracking covers explicit member assignments, updates, deletion, and
+loop assignment targets, including the supported local aliases and shared
+nested references. Calls such as `Object.assign`, `Reflect.set`, and
+`Reflect.deleteProperty`, and writes reaching a caller's object through another
+function's parameter, are not tracked by this mutation pass. These channels
+can leave an initializer-derived literal in the graph even after the runtime
+value changes. Treat such a result as an uncovered mutation channel, not as
+proof of the current runtime value; a follow-up needs to model that channel
+and verify its caller/alias behavior.
+
 Function fingerprints commit normalized syntax, control-flow shape, relation
 shape, literal sets, arity, and detected effects without using local names or
 source offsets. Equal duplicate fingerprints remain ambiguous. Dynamic
@@ -139,9 +149,34 @@ available browser, Electron, or process workflows.
 
 ## CLI and verification
 
-All five CLI commands accept inline JSON or a path to a JSON file. Put the full
-Evidence records in the workflow input, as in the corresponding MCP tool; the
-CLI does not resolve Evidence IDs from a separate bundle.
+All five CLI commands accept inline JSON or a path to a JSON file. The CLI
+returns an Evidence record directly. Put the full records in a later CLI input;
+a separate CLI process has no retained MCP connection state.
+
+For a literal string trace, analyze your supplied tree once, then build the
+input from the saved Evidence (replace the target and seed):
+
+```bash
+rea analyze-javascript-application /absolute/path/to/app --json > application-evidence.json
+node --input-type=module -e '
+import { readFileSync, writeFileSync } from "node:fs";
+const application = JSON.parse(readFileSync("application-evidence.json", "utf8"));
+writeFileSync("trace-input.json", JSON.stringify({
+  application, seed: { kind: "string", value: "search-result" }, direction: "both"
+}));'
+rea trace-application-feature ./trace-input.json --json
+```
+
+MCP analysis returns an envelope containing `result`, `evidence_id`, and full
+`evidence`. If the connected server advertises retained references, reuse its
+exact returned ID as `{"kind":"retained-evidence","evidence_id":"RETURNED_ID"}`
+in `application`, or `left`/`right` for comparisons. `RETURNED_ID` is a template,
+not a literal valid ID. Native Evidence arrays still use complete records.
+References are scoped to one connection; `close_binary` clears them. Export a
+bundle before closing and import it on another connection, or supply the full
+inline Evidence there. Versions before 4.1.0 accept full inline Evidence only; installing
+newer skill instructions does not change that schema. See
+[MCP Evidence inputs](mcp-contracts.md#retained-application-evidence-inputs).
 
 For two operator-provided directories or ASARs, run:
 

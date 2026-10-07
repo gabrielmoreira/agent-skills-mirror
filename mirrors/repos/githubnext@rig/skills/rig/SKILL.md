@@ -1,7 +1,8 @@
 ---
 name: rig
-description: Minimal agent cli harness for defining harnesses in prompts as rig markdown fences.
+description: Create, review, and run typed TypeScript agents and workflows with Rig. Use when writing Rig programs, generating runnable rig markdown fences, defining agent schemas and prompt intents, or configuring Rig engines and addons.
 license: MIT
+compatibility: Requires Node.js 24 or later and preinstalled skill dependencies. Typechecking also requires a preinstalled TypeScript compiler. Live agent calls require a configured Copilot SDK endpoint or another supported engine.
 ---
 
 # rig
@@ -44,6 +45,12 @@ export default reviewDiff;
 7. Export exactly one root value — an `agent` or a `workflow`. Do not invoke it or print its result in generated programs.
 
 Defaults: `name: "agent"`, `model: "small"`, `maxTurns: 4`, string input/output, and no addons.
+
+For GitHub Agentic Workflows, tell the user to import the
+[shared Rig template](../../.github/workflows/shared/rig.md) or explicitly allow
+`node` in `tools.bash` and provision Node.js 24+ with the skill's dependencies.
+See [Agentic Workflows](./agentic-workflows.md) for
+the import syntax and Copilot SDK configuration.
 
 ## High-frequency decisions
 
@@ -88,8 +95,30 @@ Before running generated TypeScript:
 
 ```bash
 node skills/rig/eslint/lint.js program.ts
-cat program.ts | node skills/rig/rig.ts --typecheck
+node skills/rig/run.ts --typecheck < program.ts
 ```
+
+For an installed skill, replace `skills/rig` with its installed directory. Use
+`run.ts` to launch without installing packages. For Copilot SDK workflows, pipe
+literal source with `printf '%s\n' '<source line>' ... | node <skill-dir>/run.ts`.
+Use one single-quoted argument per source line, escaping each literal apostrophe
+as `'"'"'`. Keep `%s\n` as the fixed format; never use source as a format string,
+double-quote source, or expand shell variables. Do not use heredocs with the
+SDK driver; see [Running programs](./runtime.md) for launch essentials and
+[Launcher details](./launcher-details.md) for quoting alternatives.
+Install the skill with `gh skill install githubnext/rig rig`.
+Assume SDKs are already installed in the agent container; do not install them.
+Import the shared Rig workflow template or explicitly allow `printf` and `node`
+with `bash: ["printf", "node"]`. Grant other commands only when the program needs
+them. The launch pipeline must begin with `printf`: no `mkdir`, `cd`, `env`,
+package manager, or other preparation, and no `&&` prefix. Use existing output
+directories. When launching against an existing Copilot SDK endpoint, pass both
+`COPILOT_SDK_URI` and `COPILOT_CONNECTION_TOKEN` through to the Node process
+unchanged; do not drop the token when configuring a subprocess environment.
+`copilotEngine()` forwards that token to the SDK connection automatically.
+Never print or embed the token in source or shell commands. See
+[Agentic Workflows](./agentic-workflows.md) for detailed credential handoff requirements.
+Report denied commands accurately.
 
 ## Final check
 
@@ -104,10 +133,15 @@ cat program.ts | node skills/rig/rig.ts --typecheck
 
 Read only when the task needs the listed detail:
 
-- [Agent API and schemas](references/agent-api.md) — spec fields, schema overloads, tools, and invocation options.
-- [Prompt intents](references/prompt-intents.md) — complete helper semantics, dynamic inputs, writes, and failure behavior.
-- [Composition and addons](references/composition.md) — delegation patterns, dynamic sets, repair, steering, and addon lifecycle.
-- [Dynamic workflows](references/dynamic-workflows.md) — bounded fan-out, failure semantics, limits, budget, events, and convergence loops.
-- [Claude workflow conversion](references/claude-workflow-conversion.md) — mapping Claude Code dynamic-workflow scripts onto rig primitives, including model selection and the Anthropic engine.
-- [Running and engines](references/runtime.md) — markdown/file launch modes, typechecking, Agentic Workflows, and SDK adapters.
-- [Linting](references/linting.md) — linter usage, autofixes, rules, and rule development.
+- [Agent API and schemas](./agent-api.md) — spec fields, schema overloads, tools, and invocation options.
+- [Prompt intents](./prompt-intents.md) — complete helper semantics, dynamic inputs, writes, and failure behavior.
+- [Composition and addons](./composition.md) — delegation patterns, dynamic sets, repair, steering, and addon lifecycle.
+- [Dynamic workflows](./dynamic-workflows.md) — bounded fan-out, failure semantics, limits, budget, events, and convergence loops.
+- [Claude workflow conversion](./claude-workflow-conversion.md) — mapping Claude Code dynamic-workflow scripts onto rig primitives, including model selection and the Anthropic engine.
+- [Running programs](./runtime.md) — launch essentials, stdin, typechecking, and SDK credential forwarding.
+- [Launcher details](./launcher-details.md) — inline input defaults, heredocs outside the SDK driver, and ESM edge cases.
+- [Harness tools](./harness-tools.md) — registering `run_rig` in a trusted SDK driver with pipe-based credential handoff.
+- [Agentic Workflows](./agentic-workflows.md) — workflow imports, permissions, prerequisites, SDK handoff, and integration testing.
+- [Engines](./engines.md) — adapter selection, provider configuration, tools, output enforcement, and lifecycle.
+- [Debug logging](./debugging.md) — `RIG_DEBUG` categories for launch, agent, workflow, and engine diagnosis.
+- [Linting](./linting.md) — linter usage, autofixes, rules, and rule development.

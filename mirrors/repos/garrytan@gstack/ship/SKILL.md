@@ -287,7 +287,7 @@ Before each decision brief (AskUserQuestion or Conductor/fallback prose), choose
 
 After answer, log best-effort (PostToolUse hook also captures deterministically when installed; dedup on (source, tool_use_id) handles double-writes). Substitute `SESSION_ID` with the value the preamble's skill-start output echoed — shell variables do not survive between Bash calls:
 ```bash
-~/.claude/skills/gstack/bin/gstack-question-log '{"skill":"ship","question_id":"<id>","question_summary":"<short>","category":"<approval|clarification|routing|cherry-pick|feedback-loop>","door_type":"<one-way|two-way>","options_count":N,"user_choice":"<key>","recommended":"<key>","session_id":"SESSION_ID"}' 2>/dev/null || true
+~/.claude/skills/gstack/bin/gstack-question-log '{"skill":"ship","question_id":"<id>","question_summary":"<summary-slug>","category":"<approval|clarification|routing|cherry-pick|feedback-loop>","door_type":"<one-way|two-way>","options_count":N,"user_choice":"<key>","recommended":"<key>","session_id":"SESSION_ID"}' 2>/dev/null || true
 ```
 
 For two-way questions, offer: "Tune this question? Reply `tune: never-ask`, `tune: always-ask`, or free-form."
@@ -296,7 +296,7 @@ User-origin gate (profile-poisoning defense): write tune events ONLY when `tune:
 
 Write (only after confirmation for free-form):
 ```bash
-~/.claude/skills/gstack/bin/gstack-question-preference --write '{"question_id":"<id>","preference":"<pref>","source":"inline-user","free_text":"<optional original words>"}'
+~/.claude/skills/gstack/bin/gstack-question-preference --write '{"question_id":"<id>","preference":"<pref>","source":"inline-user"}'
 ```
 
 Exit code 2 = rejected as not user-originated; do not retry. On success: "Set `<id>` → `<preference>`. Active immediately."
@@ -486,6 +486,7 @@ sections. Read a section in full before doing its step; do not work from memory.
 |------|-------------------|
 | App Store/TestFlight distribution is requested for an Apple app (.xcodeproj, .xcworkspace, or an app-product Swift package) — read at Step 0.9 before the branch gate; an Apple repository-landing request follows the normal pipeline | `sections/apple-release.md` |
 | running the test suites and (if prompt files changed) the eval suites (Steps 4-6) | `sections/tests.md` |
+| a paid eval case is red or a free-suite shard failed (Steps 5-6) — read from the tests section; diagnostic reruns, then the gate once | `sections/measure.md` |
 | auditing test coverage of the diff (Step 7) | `sections/test-coverage.md` |
 | auditing plan completion, verification, and scope drift (Step 8) | `sections/plan-completion.md` |
 | the pre-landing review and specialist dispatch (Step 9) | `sections/review-army.md` |

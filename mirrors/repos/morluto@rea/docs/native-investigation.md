@@ -6,6 +6,12 @@ coverage and unknowns. The CLI and MCP use the same application workflows.
 
 ## Static inspection
 
+`inspect_macho` retains otool segment `file_offset` values relative to the
+selected Mach-O slice. Its evidence file-offset ranges address the original
+input file and include the observed lipo slice offset for universal binaries.
+If that offset is unavailable, segment evidence locations are omitted with an
+explicit limitation; architecture inventory locations remain available.
+
 - `inspect_asset_catalog` / `rea inspect-asset-catalog <app>` reads compiled
   `Assets.car` metadata through macOS `assetutil --info`. Catalog digests, raw
   rendition fields, pagination and exact UI resource-name matches are returned.
@@ -146,12 +152,14 @@ actions may change application data or trigger network activity.
 
 Install Ghidra 12.1.4 and a full 64-bit JDK 21 separately, then configure REA to
 use them. Ghidra analysis supports Linux x64 and macOS x64/arm64; macOS requires
-the matching native decompiler. Windows Ghidra analysis is unavailable until
-Job Object process ownership, private runtime DACLs, and reparse-safe path checks
-are implemented and verified. See [Windows Ghidra P0](windows-ghidra-p0.md) and
+the matching native decompiler. Experimental Windows x64 P0 admits native
+x86-64 PE applications on local NTFS using bundled Job Object ownership,
+protected runtime DACLs, and handle-based path admission. See [Windows Ghidra P0](windows-ghidra-p0.md) and
 [issue #527](https://github.com/morluto/rea/issues/527).
-Ghidra has no GUI or mutation authority, and REA never falls back automatically
-to Hopper.
+On Linux and macOS, `annotate_native_function` atomically edits a function name
+and entry comments in the ephemeral database, returning refreshed analysis
+without changing executable bytes. Windows P0 remains read-only. Ghidra has no
+GUI authority, and REA never falls back automatically to Hopper.
 
 - `npm run verify:ghidra`: host-native debug/stripped targets, native type layout,
   instruction/call facts, value dependencies and process/project cleanup.

@@ -49,7 +49,9 @@ Returns record of McpConfig objects to main plugin
 
 1. **Configuration phase** (at plugin initialization):
    - `createBuiltinMcps()` is called from `src/index.ts`
-   - User configuration is merged with defaults
+   - User configuration is merged with defaults, **user wins on key collisions**
+     (a user-defined `mcp.<name>` entry is never replaced by a built-in; see
+     `getOverriddenBuiltinMcpKeys()` and issue #1290)
    - Disabled MCPs are filtered out
 
 2. **Integration phase** (during agent execution):
@@ -83,7 +85,10 @@ Returns record of McpConfig objects to main plugin
 ### API Surface
 
 - **Exported types**: `RemoteMcpConfig`, `LocalMcpConfig`, `McpConfig` from `types.ts`
-- **Exported functions**: `createBuiltinMcps()` from `index.ts`
+- **Exported functions**: `createBuiltinMcps()` from `index.ts`, plus
+  `getOverriddenBuiltinMcpKeys(builtin, user)` which returns the built-in
+  names the user already defines so callers can suppress injection for those
+  keys
 - **Pre-configured servers**: `context7`, `gh_grep` constants
 
 ### Configuration Overrides

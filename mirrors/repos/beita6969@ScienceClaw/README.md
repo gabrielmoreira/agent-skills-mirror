@@ -1,12 +1,16 @@
 <div align="center">
 
-<img src="assets/banner.svg" alt="ScienceClaw" width="760">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
+  <img src="assets/banner.svg" alt="ScienceClaw" width="640">
+</picture>
 
-<p><b>Skills and Operators that grow from replay-verified executions. The model is never updated.</b></p>
+<p><b>Skills and Operators that grow from replay-verified executions.</b></p>
 
 <p>
+  <a href="https://scienceclaw.science/ScienceClaw.pdf"><img src="https://img.shields.io/badge/paper-PDF-dc2626?style=flat-square&logo=googlescholar&logoColor=white" alt="Paper (PDF)"></a>
   <a href="https://scienceclaw.science"><img src="https://img.shields.io/badge/website-scienceclaw.science-0891b2?style=flat-square&logo=googlechrome&logoColor=white" alt="Website"></a>
-  <a href="https://huggingface.co/datasets/beita6969/scienceclaw-64-samples"><img src="https://img.shields.io/badge/benchmark%20data-Hugging%20Face-f59e0b?style=flat-square&logo=huggingface&logoColor=white" alt="Benchmark data on Hugging Face"></a>
+  <a href="https://huggingface.co/datasets/beita6969/scienceclaw-eval"><img src="https://img.shields.io/badge/benchmark%20data-Hugging%20Face-f59e0b?style=flat-square&logo=huggingface&logoColor=white" alt="Benchmark data on Hugging Face"></a>
   <a href="https://github.com/beita6969/ScienceClaw/stargazers"><img src="https://img.shields.io/github/stars/beita6969/ScienceClaw?style=flat-square&logo=github&color=4f46e5" alt="GitHub stars"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/beita6969/ScienceClaw?style=flat-square&color=64748b" alt="License"></a>
 </p>
@@ -17,6 +21,7 @@
   <a href="#results">Results</a> &nbsp;·&nbsp;
   <a href="#use-it-from-the-gateway">Gateway</a> &nbsp;·&nbsp;
   <a href="#scienceclaw-eval">Benchmark</a> &nbsp;·&nbsp;
+  <a href="https://scienceclaw.science/ScienceClaw.pdf">Paper</a> &nbsp;·&nbsp;
   <a href="packages/scienceclaw/docs/DESIGN.md">Design</a>
 </p>
 
@@ -28,22 +33,22 @@
     <td align="center" width="25%"><h3>23</h3><sub>disciplines across the<br>natural and social sciences</sub></td>
     <td align="center" width="25%"><h3>+16.45 %</h3><sub>mean out-of-distribution gain<br>over the frozen agent</sub></td>
     <td align="center" width="25%"><h3>98.23 %</h3><sub>of instances pass every<br>scientific hard constraint</sub></td>
-    <td align="center" width="25%"><h3>0</h3><sub>model parameters updated<br>at any round</sub></td>
+    <td align="center" width="25%"><h3>91.30</h3><sub>OOD macro success rate<br>after seven rounds (from 77.72)</sub></td>
   </tr>
 </table>
 
 </div>
 
-ScienceClaw is an agent system for scientific work that **gets better the more it is used, without training the model**. It solves each task as a typed, executable workflow. When a repair is reproduced under a clean replay, it becomes a linked **Skill** (strategy) and **Operator** (a typed, executable capability), and it is kept only if it still solves its source task and improves independent validation tasks.
+ScienceClaw is an agent system for scientific work that **gets better the more it is used**. It solves each task as a typed, executable workflow. When a repair is reproduced under a clean replay, it becomes a linked **Skill** (strategy) and **Operator** (a typed, executable capability), and it is kept only if it still solves its source task and improves independent validation tasks.
 
 > [!NOTE]
-> This repository is the **agent system**, built on the [OpenClaw](https://github.com/openclaw/openclaw) gateway. The companion benchmark, **ScienceClaw-Eval**, is released separately and its evaluation data lives on [Hugging Face](https://huggingface.co/datasets/beita6969/scienceclaw-64-samples).
+> This repository is the **agent system**, built on the [OpenClaw](https://github.com/openclaw/openclaw) gateway. Its companion benchmark, **ScienceClaw-Eval**, keeps its evaluation data on [Hugging Face](https://huggingface.co/datasets/beita6969/scienceclaw-eval).
 
 ## ✨ Highlights
 
 | Idea | In practice |
 | --- | --- |
-| **A fixed model and an evolving program** | The model is never updated. What evolves is a versioned program of **Skills** (decomposition, workflow construction, recovery) and typed **Operators** with explicit input, output and domain contracts. |
+| **An evolving program** | What evolves is a versioned program of **Skills** (decomposition, workflow construction, recovery) and typed **Operators** with explicit input, output and domain contracts. |
 | **Typed, executable workflows** | Ports carry a schema of type, shape, unit and provenance. Nodes are fingerprinted, so an edit reruns only what it affects. |
 | **Evidence you can replay** | Every result is regenerated from a reset environment and checked against the task's hard scientific constraints. |
 | **Linked Skill–Operator updates** | A reproduced repair becomes a strategy patch and a typed capability, committed together. No LLM judge is needed to form, rank or select candidates. |
@@ -122,16 +127,16 @@ LLM agents increasingly solve scientific tasks by connecting reasoning to data, 
 Seven evolution rounds over a common stream of 23 disciplines, with 64 IID and 64 OOD instances per discipline, one fixed foundation model, and the same tools, source stream, validation data and update budget throughout. OOD means an independently sourced dataset of the same discipline; OOD results never generate or select updates.
 
 - **Consistent gains.** ScienceClaw improves on the frozen agent in every discipline: **+16.45 %** on average out-of-distribution (+11.57 % to +23.34 %) and +12.25 % in-distribution. Its OOD score falls 11.73 % below its IID score on average, against 16.06 % for the frozen agent.
-- **It keeps improving.** The OOD macro success rate rises from **77.83 to 91.30** over seven rounds (+13.47 pp). 70 of 161 submitted candidates are promoted (43.48 %), so the gate is selective without stalling.
-- **It transfers and retains.** 18 of 20 cross-family pairs transfer positively (mean +1.57 pp, against +14.68 pp within a family). Average forgetting is 0.13 pp (maximum 0.51 pp), with 11.89 % negative transfer.
+- **It keeps improving.** The OOD macro success rate rises from **77.72 to 91.30** over seven rounds (+13.59 pp). 70 of 161 submitted candidates are promoted (43.48 %), so the gate is selective without stalling.
+- **It transfers and retains.** 18 of 20 cross-family pairs transfer positively (mean +1.58 pp, against +14.69 pp within a family). Average forgetting is 0.13 pp (maximum 0.51 pp), with 11.89 % negative transfer.
 - **It is reliable.** Hard constraints pass on **98.23 %** of instances and only 1.23 % of promotions are erroneous.
-- **The linkage and the gate are what matter.** Committing Skills and Operators separately keeps only 60 % of the gain; Skill-only and Operator-only evolution keep 40 % and 57 %. Without independent IID selection only 15 % remains; without scientific constraints, source replay or the independent validator, 46 %, 55 % and 59 %.
+- **The linkage and the gate are what matter.** Committing Skills and Operators separately keeps only 60 % of the gain; removing Operator evolution keeps 59 %. Without independent IID selection only 15 % remains; without scientific constraints, source replay or the independent validator, 46 %, 55 % and 59 %.
 - **Execution structure is the base.** The full system runs 4.84 planner rounds and 4.24 distinct Operators per task, repairs 71 % of failures from feedback, recovers 89 % after interruption and replays 96 % cleanly (a single-turn agent: 0 %, 31 %, 78 %).
 
-<p align="center"><img src="assets/paper/ablation_heatmap.png" alt="Ablation heatmap across 23 disciplines"></p>
+<p align="center"><img src="assets/paper/ablation_heatmap.svg" alt="Ablation heatmap across 23 disciplines"></p>
 <p align="center"><sub><i>Mean of IID and OOD task-native scores of the ablation variants across 23 disciplines. Colours are normalised within each discipline (darker is better); the two groups follow higher-is-better and lower-is-better metrics.</i></sub></p>
 
-<p align="center"><img src="assets/paper/mechanisms.png" alt="Linked mechanism, workflow mechanics, reliability and cost, and promoted candidates" width="100%"></p>
+<p align="center"><img src="assets/paper/mechanisms.svg" alt="Linked mechanism, workflow mechanics, reliability and cost, and promoted candidates" width="100%"></p>
 <p align="center"><sub><i>(f) Gain over the frozen agent (%) of the linked-mechanism variants on Commerce (MASE) and Law (mAP). (g) Workflow mechanics: planner rounds, distinct Operators, Operator diversity, feedback repair, checkpoint recovery and clean replay. (h) Hard-constraint pass rate against cost per OOD gain (ScienceClaw = 1), coloured by planner wall-time share. (i) Promoted candidates and promotion rate.</i></sub></p>
 
 <details>
@@ -173,9 +178,9 @@ OOD macro success rate (%) of each snapshot after round *r*, with the gain over 
 
 | Method | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | Gain (pp) | Promoted | Rejected | Rate (%) |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| Frozen | 77.83 | 77.83 | 77.83 | 77.83 | 77.83 | 77.83 | 77.83 | 77.83 | 0.00 | 0 | 0 | – |
-| RuleEvo | 77.83 | 78.42 | 79.18 | 78.89 | 79.59 | 80.28 | 79.99 | 81.22 | 3.39 | 37 | 124 | 22.98 |
-| **ScienceClaw** | **77.83** | **80.47** | **82.74** | **82.51** | **86.15** | **87.58** | **89.76** | **91.30** | **13.47** | **70** | **91** | **43.48** |
+| Frozen | 77.72 | 77.72 | 77.72 | 77.72 | 77.72 | 77.72 | 77.72 | 77.72 | 0.00 | 0 | 0 | – |
+| RuleEvo | 77.72 | 78.40 | 79.21 | 78.87 | 79.62 | 80.37 | 80.03 | 81.32 | 3.60 | 37 | 124 | 22.98 |
+| **ScienceClaw** | **77.72** | **80.43** | **82.68** | **82.47** | **86.14** | **87.57** | **89.81** | **91.30** | **13.59** | **70** | **91** | **43.48** |
 </details>
 
 Reported trajectories are final snapshots, not uncertainty estimates over source orders or model configurations, and cost comparisons are relative to the protocol, not absolute. The paper has the full tables, ablations and the limitations discussion.
@@ -224,7 +229,6 @@ The same engine speaks line-delimited JSON on `python -m scienceclaw.rpc` if you
 > [!WARNING]
 > Persistent executable updates can reuse errors and widen the attack surface. Code nodes run in a sandbox (separate process, scrubbed environment, static scan, runtime audit guard, and user/network/pid namespaces where the host supports them), but run untrusted workloads in a container as well.
 
-- **The model is never updated.** `Θ_{r+1} = Θ_r = Θ₀`.
 - **Nothing persists without evidence.** Source replay, validation, budget and strict improvement all have to hold, and the gate fails closed when the model is unavailable.
 - **Updates are your decision, and reversible.** Candidates wait as `ready` until promoted; every version is a snapshot with a receipt and can be rolled back.
 - **Provenance everywhere.** Ports record units and upstream transformations; operators record their source episode, steps and parent version.
@@ -247,36 +251,38 @@ An instance counts as solved only if execution completes within budget, the task
 <p align="center"><img src="assets/paper/benchmark_construction.png" alt="Construction of ScienceClaw-Eval"></p>
 <p align="center"><sub><i>Construction of ScienceClaw-Eval: scientific-task collection, executable instantiation, validation and reproduction, and lineage-aware evaluation splits.</i></sub></p>
 
-The evaluation data (64 IID and 64 OOD records for each discipline) is on Hugging Face: **[`beita6969/scienceclaw-64-samples`](https://huggingface.co/datasets/beita6969/scienceclaw-64-samples)**. This repository does not contain the data, an evaluation harness, or its tests.
+The evaluation data (64 IID and 64 OOD records for each discipline) is on Hugging Face: **[`beita6969/scienceclaw-eval`](https://huggingface.co/datasets/beita6969/scienceclaw-eval)**.
 
 <details open>
 <summary>The 23 disciplines, their tasks and metrics</summary>
 
-| Code | Discipline (ANZSRC division) | Task | Metric |
-| --- | --- | --- | --- |
-| FoR30 | Agricultural, veterinary and food sciences | plant and leaf panoptic segmentation | PQ+ ↑ |
-| FoR31 | Biological sciences | protein variant fitness ranking | Spearman ↑ |
-| FoR32 | Biomedical and clinical sciences | hippocampus segmentation in MRI | DSC ↑ |
-| FoR33 | Built environment and design | building load forecasting | NRMSE (%) ↓ |
-| FoR34 | Chemical sciences | molecular activity classification | ROC-AUC ↑ |
-| FoR35 | Commerce, management, tourism and services | tourism series forecasting | MASE ↓ |
-| FoR36 | Creative arts and writing | music source separation | SDR (dB) ↑ |
-| FoR37 | Earth sciences | 2 m temperature forecasting | RMSE (K) ↓ |
-| FoR38 | Economics | macroeconomic forecasting | sMAPE (%) ↓ |
-| FoR39 | Education | adaptive educational testing | 10-mask accuracy ↑ |
-| FoR40 | Engineering | anomalous sound detection | DCASE score ↑ |
-| FoR41 | Environmental sciences | probabilistic aquatic forecasting | CRPS ↓ |
-| FoR42 | Health sciences | sepsis early warning | clinical utility ↑ |
-| FoR43 | History, heritage and archaeology | OCR post-correction | cMER-micro ↓ |
-| FoR44 | Human society | causal treatment-effect estimation | nRMSE ↓ |
-| FoR45 | Indigenous studies | Indigenous-language captioning | chrF++ ↑ |
-| FoR46 | Information and computing sciences | code generation | pass@1 ↑ |
-| FoR47 | Language, communication and culture | dependency parsing | LAS ↑ |
-| FoR48 | Law and legal studies | contract evidence retrieval | mAP ↑ |
-| FoR49 | Mathematical sciences | SMT satisfiability prediction | oracle-agreement accuracy ↑ |
-| FoR50 | Philosophy and religious studies | human-value detection | F1 ↑ |
-| FoR51 | Physical sciences | phonon property prediction | MAE ↓ |
-| FoR52 | Psychology | human choice prediction | micro accuracy ↑ |
+| Code | Discipline (ANZSRC division) | Task | Metric | IID source | OOD source |
+| --- | --- | --- | --- | --- | --- |
+| FoR30 | Agricultural, veterinary and food sciences | plant and leaf panoptic segmentation | PQ+ ↑ | PhenoBench | CropAndWeedAndLeaf |
+| FoR31 | Biological sciences | protein variant fitness ranking | Spearman ↑ | ProteinGym | TAPE fluorescence |
+| FoR32 | Biomedical and clinical sciences | hippocampus segmentation in MRI | DSC ↑ | MSD Task04 | UCL/Dryad hippocampus |
+| FoR33 | Built environment and design | building load forecasting | NRMSE (%) ↓ | BuildingsBench | EULP |
+| FoR34 | Chemical sciences | molecular activity classification | ROC-AUC ↑ | OGB ogbg-molhiv | BACE |
+| FoR35 | Commerce, management, tourism and services | tourism series forecasting | MASE ↓ | Monash Tourism Monthly | Monash Tourism Quarterly |
+| FoR36 | Creative arts and writing | music source separation | SDR (dB) ↑ | MUSDB18 | MoisesDB |
+| FoR37 | Earth sciences | 2 m temperature forecasting | RMSE (K) ↓ | WeatherBench 2 (ERA5, 2019) | WeatherBench 2 (ERA5, 2020) |
+| FoR38 | Economics | macroeconomic forecasting | sMAPE (%) ↓ | World Bank WDI | World Bank WDI |
+| FoR39 | Education | adaptive educational testing | 10-mask accuracy ↑ | Eedi Task 4 | EdNet-KT1 |
+| FoR40 | Engineering | anomalous sound detection | DCASE score ↑ | DCASE 2024 Task 2 | DCASE 2023 Task 2 ToyNscale |
+| FoR41 | Environmental sciences | probabilistic aquatic forecasting | CRPS ↓ | NEON aquatics | USGS river metabolism |
+| FoR42 | Health sciences | sepsis early warning | clinical utility ↑ | PhysioNet/CinC 2019 | SepsisExp |
+| FoR43 | History, heritage and archaeology | OCR post-correction | cMER-micro ↓ | HIPE-OCRepair-2026 | ICDAR 2019 POCR |
+| FoR44 | Human society | causal treatment-effect estimation | nRMSE ↓ | ACIC 2016 | IHDP |
+| FoR45 | Indigenous studies | Indigenous-language captioning | chrF++ ↑ | AmericasNLP 2026 | Bloom Captioning (Mam) |
+| FoR46 | Information and computing sciences | code generation | pass@1 ↑ | HumanEval | SWE-bench Verified |
+| FoR47 | Language, communication and culture | dependency parsing | LAS ↑ | UD: Marathi, Italian, Arabic, Croatian | UD: Indonesian, Swedish Sign Language, French, Hindi |
+| FoR48 | Law and legal studies | contract evidence retrieval | mAP ↑ | ContractNLI | ACORD |
+| FoR49 | Mathematical sciences | SMT satisfiability prediction | oracle-agreement accuracy ↑ | SMT-LIB 2025 | SMT-LIB 2024 |
+| FoR50 | Philosophy and religious studies | human-value detection | F1 ↑ | Touché23-ValueEval | ETHICS |
+| FoR51 | Physical sciences | phonon property prediction | MAE ↓ | Matbench phonons | Kyoto PhononDB |
+| FoR52 | Psychology | human choice prediction | micro accuracy ↑ | Psych-201 | Psych-101 |
+
+Every row of the dataset records its own source, license and URL; the dataset card on Hugging Face has the details.
 </details>
 
 ## 🗂️ Repository

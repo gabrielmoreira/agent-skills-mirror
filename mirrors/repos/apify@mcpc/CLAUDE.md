@@ -1,0 +1,879 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+`mcpc` is a universal command-line client for the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/),
+which maps MCP to intuitive CLI commands for shell access, scripts, and AI coding agents.
+
+`mcpc` can connect to any MCP server over Streamable HTTP or stdio transports,
+securely login via OAuth credentials and store credentials,
+and keep long-term sessions to multiple servers in parallel.
+It supports all major MCP features, including tools, resources, prompts, asynchronous tasks, and notifications.
+
+`mcpc` is handy for manual testing of MCP servers, scripting,
+and AI coding agents to use MCP in ["code mode"](https://www.anthropic.com/engineering/code-execution-with-mcp),
+for better accuracy and lower tokens compared to traditional tool function calling.
+After all, UNIX-compatible shell script is THE most universal coding language, for both people and LLMs.
+
+**Key capabilities:**
+
+- Universal MCP client - Works with any MCP server over Streamable HTTP or stdio
+- Persistent sessions - Keep multiple server connections alive simultaneously
+- Zero setup - Connect to remote servers instantly with just a URL
+- Full protocol support - Tools, resources, prompts, dynamic discovery, and async notifications
+- `--json` output - Easy integration with `jq`, scripts, and other CLI tools
+- AI-friendly - Designed for code generation and automated workflows
+- Secure - OS keychain integration for credentials, encrypted auth storage
+
+## Build and Development Commands
+
+```bash
+# Install dependencies
+pnpm install
+
+# Build the project
+pnpm run build
+
+# Run tests
+pnpm test
+
+# Test locally after building
+pnpm link --global
+mcpc --help
+
+# Run linter/formatter (if configured)
+pnpm run lint
+pnpm run format
+```
+
+## Quick Start Examples
+
+```bash
+# List all active sessions and saved authentication profiles
+mcpc
+
+# Login to OAuth-enabled MCP server and save authentication for future use
+mcpc login mcp.apify.com
+
+# Create a persistent session
+mcpc connect mcp.apify.com @test
+mcpc @test                               # show session info
+mcpc @test tools-list                    # list available tools
+mcpc @test tools-call search-actors query:="web crawler"
+
+# Use JSON mode for scripting
+mcpc --json @test tools-list
+
+# Use a local server package referenced by MCP config file
+mcpc connect ~/.vscode/mcp.json:filesystem @fs
+mcpc @fs tools-list
+```
+
+## Design Principles
+
+- Delightful for humans and AI agents alike (interactive + scripting)
+- Avoid unnecessary interaction loops, provide sufficient context, yet be concise (save tokens)
+- One clear way to do things (orthogonal commands, no surprises)
+- Do not ask for user input (except `login`, no unexpected OAuth flows)
+- AI agents must be able to use mcpc without any external agent skills, prompts, or documentation: `--help` output and error messages must provide all the context an agent needs to discover commands, understand arguments, and recover from mistakes
+- Be forgiving, always help users make progress (great errors + guidance)
+- Be consistent with the [MCP specification](https://modelcontextprotocol.io/specification/latest), with `--json` strictly
+- Minimal and portable (few deps, cross-platform)
+- No slop!
+
+## Architecture
+
+### High-Level Structure
+
+The project is organized as a single TypeScript package with internal modules:
+
+```
+mcpc/
+├── src/
+│   ├── core/           # Core MCP protocol implementation (runtime-agnostic)
+│   ├── bridge/         # Bridge process logic for persistent sessions
+│   ├── cli/            # CLI interface and command parsing
+│   └── lib/            # Shared utilities
+│       ├── auth/       # Authentication management (OAuth, bearer tokens, profiles)
+│       └── ...         # Other utilities
+├── bin/
+│   └── mcpc            # Main CLI executable
+└── test/
+    └── e2e/
+        └── server/     # Test MCP servers for E2E tests (2025-11-25 + 2026-07-28)
+```
+
+### Core Components
+
+**1. Core Module (`src/core/`)**
+
+- Thin, runtime-agnostic wrapper around the official TypeScript SDK v2 client (`@modelcontextprotocol/client`, works with Node.js ≥22.12 and Bun ≥1)
+- Protocol version negotiation is automatic: the client probes servers with `server/discover` and speaks `2026-07-28` (stateless era) when supported, falling back to the legacy `initialize` handshake on the same connection (which negotiates `2025-11-25` down to `2024-10-07`)
+- `mcpc connect --protocol-version <version>` (or a `protocolVersion` field in a config entry) pins one exact protocol version instead — strict, no fallback; the supported list lives in `src/core/protocol.ts` (kept dependency-free so the CLI never loads the SDK at startup; a unit test guards drift against the SDK's list)
+- Transport abstraction: Streamable HTTP and stdio (both created via the SDK's transports)
+- Captures negotiated protocol version and MCP session ID after connect
+- Streamable HTTP connection management with reconnection delegated to the SDK (exponential backoff: 1s → 30s max, up to 10 retries)
+- Event emitter for async notifications (tools/resources/prompts list changes, progress, logging)
+- Uses native `fetch` API (no external HTTP libraries needed)
+- **Note**: Only supports Streamable HTTP transport (current standard). The deprecated HTTP with SSE transport is not supported.
+
+**2. Bridge Process (`src/bridge/`)**
+
+- Separate process (`dist/bridge/index.js`, spawned by the CLI with the same Node.js binary) that maintains persistent MCP connections
+- Session persistence via `~/.mcpc/sessions.json` with file locking (`proper-lockfile` package)
+- Process lifecycle management for local package servers (stdio transport)
+- Unix domain socket server for CLI-to-bridge IPC (named pipes on Windows)
+- Socket location: `~/.mcpc/bridges/<session-name>.<pid>.sock` (falls back to a short hashed path under the system temp dir when the path would exceed the OS socket limit)
+- Keepalive ping every 30 seconds, `lastSeenAt` recorded in `sessions.json`
+- Orphaned log and socket file cleanup; a bridge that finds a *different* PID registered for its session in `sessions.json` (checked on every keepalive tick) exits on its own without ending the server-side MCP session, so a replacement spawned by mistake never leaves the original running (#427)
+- Atomic writes for session file (write to temp, then rename)
+- File lock acquisition: up to 10 retries with randomized backoff (5s max per retry)
+
+**3. CLI Executable (`src/cli/`)**
+
+- Main `mcpc` command providing user interface
+- Argument parsing using Commander.js
+- Output formatting: human-readable (default, with colors/tables) vs `--json` mode
+- Bridge lifecycle: start/connect/stop, auto-restart on crash
+- Configuration file loading (standard MCP JSON format, compatible with Claude Desktop)
+- Credential management via OS keychain (`@napi-rs/keyring` package)
+
+**CLI Command Structure:**
+
+- All MCP commands use hyphenated format: `tools-list`, `tools-call`, `resources-read`, etc.
+- `mcpc` - List all sessions and authentication profiles
+- `mcpc @<session>` - Show session info, server capabilities, and authentication details
+- `mcpc @<session> <command>` - Execute MCP command (e.g., `mcpc @apify tools-list`)
+  - Tools: `tools-list`, `tools-get`, `tools-call` (with `--task`/`--detach` for async tasks, `--schema`/`--schema-mode` for schema validation)
+  - Resources: `resources-list`, `resources-read`, `resources-subscribe`, `resources-unsubscribe`, `resources-templates-list`, `resources-directory-read`
+  - Prompts: `prompts-list`, `prompts-get`
+  - Completions: `completion-complete` (argument suggestions for prompts and resource templates)
+  - Tasks: `tasks-list`, `tasks-get`, `tasks-result`, `tasks-cancel`
+  - Skills: `skills-list`, `skills-get` (io.modelcontextprotocol/skills extension, 2026-07-28+)
+  - Other: `grep`, `logs`, `ping`, `logging-set-level`, `restart`, `close`, `help`
+- `mcpc connect <server> @<name>` - Create a named persistent session (also bulk: `mcpc connect <file>` for all config entries, `mcpc connect` for auto-discovered configs; `--proxy` exposes the session as a local MCP HTTP server)
+- `mcpc login <server> [--profile <name>]` - Login via OAuth and save auth profile (`--grant client-credentials` for non-interactive M2M auth, `--grant id-jag` for enterprise-managed authorization via the corporate IdP)
+- `mcpc logout <server> [--profile <name>]` - Delete an authentication profile
+- `mcpc grep <pattern>` - Search tools/instructions (and optionally resources/prompts) across all sessions
+- `mcpc x402 <subcommand>` - Configure an x402 payment wallet (experimental)
+- `mcpc clean [sessions|profiles|logs|all ...]` - Clean up mcpc data
+- `mcpc help [command]` - Show help for a specific command (`--skill` prints the agent guide)
+
+Run `mcpc --help` and `mcpc help <command>` for the authoritative, always-current inventory — the usage block in README.md and the whole of docs/REFERENCE.md are generated from it.
+
+**Server formats for `connect`, `login`, `logout`:**
+
+- `<url>` - Remote HTTP server (e.g., `mcp.apify.com` or `https://mcp.apify.com`) - scheme optional, defaults to `https://`
+- `<file>:<entry>` - Config file entry (e.g., `~/.vscode/mcp.json:filesystem`)
+
+**Output Utilities** (`src/cli/output.ts`):
+
+- `logTarget(target, outputMode)` - Shows `[Using session: @name]` prefix (human mode only)
+- `formatOutput(data, mode)` - Auto-detects data type and formats appropriately
+- `formatJson(data)` - Clean JSON output without wrappers
+- `formatTools/Resources/Prompts()` - Specialized table formatting
+- `formatSuccess/Error/Warning/Info()` - Styled status messages
+
+### Session Lifecycle
+
+1. User creates session: `mcpc connect mcp.apify.com @apify`
+2. CLI creates entry in `sessions.json`, spawns bridge process
+3. Bridge creates Unix socket at `~/.mcpc/bridges/@apify.<pid>.sock`
+4. Bridge performs MCP initialization:
+   - Sends `initialize` request with protocol version and capabilities
+   - Receives server info, version, and capabilities
+   - Sends `initialized` notification to activate session
+5. Bridge updates `sessions.json` with PID, socket path, protocol version
+6. For subsequent commands (`mcpc @apify tools-list`):
+   - CLI reads `sessions.json`, connects to bridge socket
+   - Sends JSON-RPC request via socket
+   - Bridge forwards to MCP server, returns response
+   - CLI formats and displays output
+
+**Session States:**
+
+- 🟢 **live** - Bridge process running and server responding (lastSeenAt within ~65 seconds — two missed 30s keepalive pings plus a 5s buffer)
+- 🟡 **connecting** - Initial bridge connection in progress (first `connect`)
+- 🟡 **reconnecting** - Bridge crashed and is being automatically reconnected
+- 🟡 **disconnected** - Bridge process running but server unreachable (lastSeenAt stale >~65s); auto-recovers when server responds
+- 🟡 **crashed** - Bridge process crashed or killed; auto-reconnects in the background
+- 🔴 **unauthorized** - Server rejected authentication (401/403) or token refresh failed; requires `login` then `restart`
+- 🔴 **expired** - Server rejected session ID (404); requires `restart`
+
+### Transport Implementation
+
+**Streamable HTTP:**
+
+- Persistent HTTP connection with bidirectional streaming (protocol version 2026-07-28, with automatic fallback to 2025-11-25)
+- Server and client can send messages in both directions over the same connection
+- Automatic reconnection with exponential backoff (1s → 30s max, up to 10 retries, handled by the SDK)
+- CLI-to-bridge IPC requests time out after 3 minutes (or `--timeout` + a 10s margin); an IPC timeout is never retried, since the request may still be executing on the server
+- **Important**: Only the Streamable HTTP transport is supported (current MCP standard). The deprecated HTTP with SSE transport (2024-11-05) is not implemented.
+
+**Required HTTP Headers:**
+
+- `MCP-Protocol-Version: <version>` - MUST be included on ALL HTTP requests after initialization (e.g., `MCP-Protocol-Version: 2025-11-25`)
+- `MCP-Session-Id: <session-id>` - MUST be included if server provides session ID in InitializeResponse
+- `Accept: application/json, text/event-stream` - Required on POST requests to support both response types
+
+**Security Requirements:**
+
+- **Origin validation** - Server MUST validate Origin header to prevent DNS rebinding attacks. If Origin is invalid, respond with 403 Forbidden.
+- **Local binding** - Servers SHOULD bind to localhost (127.0.0.1) only, not 0.0.0.0
+- **Session ID security** - Session IDs must be cryptographically secure (UUIDs, JWTs, cryptographic hashes)
+
+**SSE Stream Management:**
+
+- Event IDs and `Last-Event-ID` header for resumability after disconnection
+- `retry` field for client reconnection timing (server sends before closing connection)
+- Per-stream message delivery (no broadcasting across multiple streams)
+- Client resumes via HTTP GET with `Last-Event-ID` header
+
+**Session Management:**
+
+- Server MAY assign session ID in `MCP-Session-Id` header on InitializeResponse
+- Client MUST include session ID on all subsequent requests
+- HTTP DELETE to MCP endpoint terminates session (server MAY respond with 405 if not supported)
+- Server responds with 404 Not Found for expired sessions (client must re-initialize)
+
+**Stdio:**
+
+- Direct bidirectional JSON-RPC communication over stdin/stdout
+- Messages delimited by newlines, MUST NOT contain embedded newlines
+- Server MAY write logs to stderr, client MAY ignore stderr output
+- Server MUST NOT write anything to stdout except valid MCP messages
+- **Clean shutdown sequence:**
+  1. Client closes stdin to server process
+  2. Wait for server to exit (reasonable timeout)
+  3. Send SIGTERM if server hasn't exited
+  4. Send SIGKILL if server doesn't respond to SIGTERM
+- Server MAY initiate shutdown by closing stdout and exiting
+
+### Error Recovery
+
+**Bridge crashes:**
+
+- CLI detects socket connection failure
+- Reads `sessions.json` for last known config
+- Spawns new bridge, re-initializes MCP connection
+- Retries the request once — but only for idempotent operations. Tool calls are
+  NOT re-executed (the server may already have run them); the session is
+  reconnected and the error tells the user to verify the outcome.
+
+**Network failures:**
+
+- The SDK's Streamable HTTP transport reconnects with exponential backoff (1s → 30s max)
+- CLI-to-bridge IPC requests fail with a network error after the IPC timeout
+  (3 minutes by default); IPC timeouts are never retried
+
+### Security Considerations
+
+Implements [MCP security best practices](https://modelcontextprotocol.io/specification/2026-07-28/basic/security_best_practices):
+
+**Credential protection:**
+
+- Credentials stored in OS keychain (encrypted by system), with `0600` fallback file
+- No credentials logged even in verbose mode — only log presence/absence (e.g., `refreshToken: present`)
+- Headers and stdio `env` values sent to bridge via IPC after socket connect, never as command-line arguments (visible in `ps`)
+- `sessions.json` and `profiles.json` file permissions: `0600` (user-only)
+
+**Transport security:**
+
+- HTTPS enforced (HTTP auto-upgraded when no scheme provided, except localhost)
+- OAuth 2.1 with PKCE via MCP SDK
+- OAuth callback server binds to `127.0.0.1` only, validates Host header to prevent DNS rebinding
+- Session IDs generated with `crypto.randomUUID()` (cryptographically secure)
+
+**Input validation & output safety:**
+
+- Input validation for session names, profile names, and URLs (strict regex, no path traversal)
+- URL normalization strips username, password, and hash
+- HTML output in OAuth callback is escaped to prevent XSS
+- Browser opening uses `execFile()` with a non-shell launcher on every platform (`open`, `rundll32 url.dll,FileProtocolHandler`, `xdg-open` — never `cmd.exe /c start`, which interprets `&`/`|`/`^`/`%VAR%` inside the server-supplied URL), and only `http:`/`https:` authorization URLs are opened
+
+**Filesystem security:**
+
+- `~/.mcpc/` and subdirectories created with mode `0700` (owner-only) via `ensureDir()`
+- File locking (`proper-lockfile`) for concurrent access safety
+- Atomic file writes (temp file + rename) to prevent corruption
+- IPC buffer size capped at 10 MB to prevent memory exhaustion
+
+**Security development guidelines:**
+When making changes, follow these rules to maintain the security posture:
+
+- Never log, print, or include credentials/tokens in error messages — log `present`/`MISSING` instead
+- Always use `ensureDir()` for creating directories (defaults to `0700`); use `mode: 0o600` for files containing secrets
+- Use `execFile()` (array args) instead of `exec()` (shell string) when spawning processes
+- Escape any user-controlled or server-controlled data before embedding in HTML responses
+- Send sensitive data (headers, tokens) via IPC socket, never via CLI arguments or environment variables
+- Read all keychain values needed to start a bridge in the CLI **before** `spawn()`. After spawn the bridge arms a short IPC-credential timeout; on macOS a Keychain password dialog can block longer than that timeout, so a post-spawn keychain read races the bridge timer and causes ENOENT (#55). The CLI is the only process attached to a TTY and can show the dialog without the user wondering why a background process is asking. Bridge-side keychain access is permitted only on the OAuth token refresh paths (the `oauth-token-manager` callbacks and the id-jag provider callbacks in `src/bridge/index.ts`), where it is needed to persist rotated refresh tokens for long-running sessions
+- Validate and sanitize all external input (URLs, session names, profile names) before use
+- Default to HTTPS; only allow HTTP for localhost/127.0.0.1
+- When adding HTTP servers (even localhost-only), validate the Host header against expected values
+
+## MCP Protocol Implementation
+
+**Protocol version:** Current latest is `2026-07-28` (stateless era); `2025-11-25` and older versions (down to `2024-10-07`) remain fully supported via automatic fallback
+
+**Initialization sequence (2026-07-28, "modern" era):**
+
+1. Client probes with `server/discover`; server advertises supported protocol versions, capabilities, and identity
+2. No handshake or session ID — every request carries protocol version, client info, and capabilities in `_meta`
+3. Change notifications are opt-in via a `subscriptions/listen` stream
+
+**Initialization sequence (2025-11-25, "legacy" era fallback):**
+
+1. Client sends `initialize` request with protocol version and client capabilities
+2. Server responds with agreed version and server capabilities
+3. Client sends `initialized` notification to activate session
+
+**Era-dependent behavior in mcpc:** `ping` maps to `server/discover` on modern connections; `logging-set-level` and the task commands are 2025-11-25-only (tasks moved to the `io.modelcontextprotocol/tasks` extension, which the SDK does not implement yet); `resources-subscribe` uses `subscriptions/listen` on modern connections and `resources/subscribe` on legacy ones.
+
+**One server-details shape for both eras:** `ServerDetails` (`src/lib/types.ts`) reconciles `InitializeResult` and `DiscoverResult` — the fields both carry (`protocolVersion`, `capabilities`, `serverInfo`, `instructions`) plus the discover-only `supportedVersions` and `_meta`, which are absent on legacy connections. It is what `mcpc connect --json`, `mcpc @session --json` and `restart --json` print, and what the bridge persists in `sessions.json` (so a resumed session, which skips the handshake, can still report all of it). Never fabricate an era's missing field — a legacy connection has no `supportedVersions` because the server never advertised one.
+
+**MCP Primitives:**
+
+- **Instructions**: Server-provided instructions fetched and stored
+- **Tools**: Executable functions with JSON Schema-validated arguments
+- **Resources**: Data sources with URIs (e.g., `file:///`, `https://`), optional subscriptions for change notifications
+- **Prompts**: Reusable message templates with customizable arguments
+- **Logging**: Server-side logging level control via `logging/setLevel` request
+
+**Notifications:**
+
+- `notifications/tools/list_changed`
+- `notifications/resources/list_changed`
+- `notifications/prompts/list_changed`
+- Progress tracking and logging
+
+**Pagination:**
+
+- List operations automatically fetch all pages when the server returns paginated results
+- The CLI transparently handles `nextCursor` and fetches all pages in sequence
+
+**Other Protocol Features:**
+
+- **Pings**: Client periodically issues MCP `ping` request to keep connection alive
+- **Sampling**: Not supported (mcpc has no access to an LLM)
+
+**Argument Passing:**
+
+Tools and prompts accept arguments as positional parameters after the tool/prompt name:
+
+1. **Key:=value pairs** (auto-parsed: tries JSON, falls back to string):
+
+   ```bash
+   mcpc @apify tools-call search query:=hello limit:=10 enabled:=true
+   mcpc @apify tools-call search config:='{"key":"value"}' items:='[1,2,3]'
+   ```
+
+2. **Inline JSON** (if first arg starts with `{` or `[`):
+
+   ```bash
+   mcpc @apify tools-call search '{"query":"hello","limit":10}'
+   ```
+
+3. **Stdin** (when no positional args and input is piped):
+   ```bash
+   echo '{"query":"hello"}' | mcpc @apify tools-call search
+   ```
+
+Auto-parsing rules: Values are parsed as JSON if valid, otherwise treated as string.
+
+- `count:=10` → number `10`
+- `enabled:=true` → boolean `true`
+- `query:=hello` → string `"hello"` (not valid JSON)
+- `id:='"123"'` → string `"123"` (JSON string literal)
+
+## Configuration Format
+
+Uses standard MCP config format (compatible with Claude Desktop):
+
+```json
+{
+  "mcpServers": {
+    "http-server": {
+      "url": "https://mcp.apify.com",
+      "headers": {
+        "Authorization": "Bearer ${APIFY_TOKEN}"
+      },
+      "timeout": 300
+    },
+    "stdio-server": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/tmp"],
+      "env": {
+        "DEBUG": "mcp:*"
+      }
+    }
+  }
+}
+```
+
+Environment variable substitution supported: `${VAR_NAME}`
+
+## Testing Strategy
+
+**Unit tests:**
+
+- Core protocol implementation with mocked transports
+- Argument parsing and validation
+- Output formatting (human and JSON modes)
+
+**Integration tests:**
+
+- Test MCP server (`test/e2e/server/`)
+- Bridge lifecycle (start, connect, restart, cleanup)
+- Session management with file locking
+- Stream reconnection logic
+
+**E2E tests:**
+
+- Real MCP server implementations
+- Cross-runtime testing (Node.js and Bun)
+- Protocol-version matrix: the suites run against two test servers — `test/e2e/server/index.ts` (MCP SDK v1, protocol 2025-11-25) and `test/e2e/server/index-v2.ts` (MCP SDK v2, pure 2026-07-28, legacy requests rejected) — selected via `./test/e2e/run.sh --server-protocol legacy|modern` (default: legacy). Both serve the same surface from shared `fixtures.ts`; era-specific suites skip themselves with `require_server_protocol <era>`. Each future MCP revision adds a matrix column instead of a rewrite.
+- Skips must never look like passes: a suite that bails out early does so via `skip_suite <reason>` (which `require_server_protocol` uses), writing a `.skipped` marker that makes `run.sh` report it as `⊘` and count it in the `Skipped:` summary line. Any new whole-suite bail-out must use `skip_suite` too — a silent `exit 0` would render a green `✓` and hide a whole missing matrix column.
+
+**Test utilities:**
+
+- `test/e2e/server/` - Test MCP servers (one per protocol era) + shared fixtures
+- `test/e2e/lib/framework.sh` - Shell test framework for E2E suites
+
+## Runtime Requirements
+
+- **Node.js:** ≥22.12.0
+- **Bun:** ≥1.0.0 (alternative runtime)
+- **OS support:** macOS, Linux, Windows
+- **Linux keychain:** a Secret Service provider (e.g. GNOME Keyring, KWallet) on the session D-Bus; `@napi-rs/keyring` talks D-Bus directly and does not need `libsecret`. Without one, credentials fall back to `~/.mcpc/credentials.json`
+
+## Authentication Architecture
+
+`mcpc` implements the full MCP OAuth 2.1 specification with authentication profiles that separate credentials from sessions.
+
+**Authentication Profiles:**
+
+- Named sets of OAuth credentials for a specific server URL
+- Reusable across multiple sessions (authenticate once, use many times)
+- Support multiple accounts per server (e.g., `personal`, `work` profiles for same server)
+- Default profile name is `default` when `--profile` is not specified
+
+**Storage:**
+
+- `~/.mcpc/profiles.json` - Auth profile metadata (serverUrl, authType, scopes, expiry, the authorization server and RFC 8707 resource indicator the login used — token refresh repeats both)
+- OS keychain - Sensitive credentials (OAuth tokens, refresh tokens, client secrets, bearer tokens)
+
+**Bearer Token Handling:**
+
+- Bearer tokens passed via `--header "Authorization: Bearer ${TOKEN}"` are NOT stored as profiles
+- All session headers are stored in the OS keychain as one JSON blob per session (keychain account: `session:<name>:headers`)
+- The `env` of a stdio config entry is stored the same way (keychain account: `session:<name>:env`) and delivered over IPC; `sessions.json`, `mcpc --json` and the bridge's argv only ever see the variable names with `<redacted>` values. `command` and `args` are deliberately not treated as secrets: they are the child process's own argv, visible in `ps` whatever mcpc does
+- Bridge loads them automatically when making requests (delivered over IPC after spawn, never via argv)
+
+**CLI Commands:**
+
+```bash
+# Login and save authentication profile
+mcpc login <server> [--profile <name>]
+
+# Logout and delete authentication profile
+mcpc logout <server> [--profile <name>]
+
+# Create session with specific profile
+mcpc connect <server> @<name> --profile <profile>
+```
+
+**Authentication Behavior:**
+
+When `--header "Authorization: ..."` is provided (without `--profile`):
+
+- Explicit header is used, OAuth profile auto-detection is skipped entirely
+
+When `--profile <name>` is specified:
+
+1. Profile exists for server → Use its stored credentials; fail with error if expired/invalid
+2. Profile doesn't exist → Fail with error
+3. Cannot be combined with `--header "Authorization: ..."` (returns error)
+
+When `--no-profile` is specified:
+
+- Skip all OAuth profile detection and connect anonymously (or with explicit `--header`)
+
+When no flags are specified (default):
+
+1. `default` profile exists for server → Use its credentials; fail with error if expired/invalid
+2. `default` profile doesn't exist → Attempt unauthenticated connection; fail with error if server requires auth
+
+On failure, the error message includes instructions on how to login. This ensures:
+
+- Explicit CLI flags always take precedence over stored profiles
+- Authentication only happens when user explicitly calls `login`
+- Credentials are never silently downgraded
+- You can mix authenticated sessions and public access on the same server
+
+**OAuth Flow:**
+
+1. User runs `mcpc login <server> --profile personal`
+2. CLI discovers OAuth metadata via `WWW-Authenticate` header or well-known URIs
+3. CLI creates local HTTP callback server on `http://127.0.0.1:<port>/callback` (ports tried in order: 13316, 31613, 16133; host configurable via `--callback-host`)
+4. CLI opens browser to authorization URL with PKCE challenge
+5. User authenticates, browser redirects to callback with authorization code
+6. CLI exchanges code for tokens using PKCE verifier
+7. Tokens saved to OS keychain, metadata saved to `profiles.json`
+8. Profile can now be used by multiple sessions
+
+**Implementation Modules:**
+
+- `src/lib/auth/profiles.ts` - Manage profiles.json (CRUD operations)
+- `src/lib/auth/keychain.ts` - OS keychain wrapper (save/load/delete tokens)
+- `src/lib/auth/oauth-provider.ts` - Implements `OAuthClientProvider` from MCP SDK for the interactive `login` flow; records the authorization server and RFC 8707 resource indicator the login used in the profile
+- `src/lib/auth/runtime-auth-provider.ts` - Bearer-token `AuthProvider` for the bridge: wraps `OAuthTokenManager`, refreshes on HTTP 401 so the SDK transport retries once (never starts an interactive flow)
+- `src/lib/auth/oauth-flow.ts` - Orchestrates interactive OAuth flow
+- `src/lib/auth/oauth-utils.ts` - OAuth metadata discovery, callback ports, CIMD URL validation
+- `src/lib/auth/oauth-token-manager.ts` - Token validation and refresh
+- `src/lib/auth/token-refresh.ts` - Token refresh logic with keychain persistence
+- `src/lib/auth/client-credentials.ts` - Non-interactive client-credentials grant (`login --grant client-credentials`)
+- `src/lib/auth/id-jag.ts` - Enterprise-managed authorization (SEP-990, ID-JAG) runtime: token exchange at the IdP, ID token refresh, SDK provider (bridge-safe, no interactive code)
+- `src/lib/auth/id-jag-login.ts` - Interactive IdP SSO login for the id_jag grant (`login --grant id-jag`)
+- `src/lib/auth/auth-page.ts` - HTML for the OAuth callback result page (escaped)
+
+**Session-to-Profile Relationship:**
+
+```jsonc
+// sessions.json
+{
+  "sessions": {
+    "@apify-personal": {
+      "name": "@apify-personal",
+      "server": { "url": "https://mcp.apify.com" },
+      "profileName": "personal", // References profile
+      "pid": 12345,
+      "protocolVersion": "2025-11-25",
+      "status": "active",
+      "createdAt": "2025-12-14T10:00:00Z",
+      "lastSeenAt": "2025-12-14T10:05:00Z"
+    }
+  }
+}
+
+// profiles.json (profiles are keyed by normalized server HOST, not full URL)
+{
+  "profiles": {
+    "mcp.apify.com": {
+      "personal": {
+        "name": "personal",
+        "serverUrl": "https://mcp.apify.com",
+        "authType": "oauth",
+        "oauthIssuer": "https://auth.apify.com",
+        "oauthResource": "https://mcp.apify.com/",
+        "scopes": ["tools:read", "tools:write"],
+        "authenticatedAt": "2025-12-14T10:00:00Z",
+        "expiresAt": "2025-12-15T10:00:00Z"
+      }
+    }
+  }
+}
+
+// OS Keychain (service "mcpc")
+// Account: auth-profile:mcp.apify.com:personal:tokens
+// Value: {"access_token": "...", "refresh_token": "...", "expires_at": ...}
+// Other accounts: auth-profile:<host>:<profile>:client (registered OAuth client),
+// session:<name>:headers (per-session headers), session:<name>:env (stdio env),
+// session:<name>:proxy-bearer-token
+```
+
+Windows Credential Manager refuses a credential over 1280 characters (2560 bytes of
+UTF-16), which most OAuth token blobs exceed (#409). A value the platform refuses is
+stored in parts — the account holds a `mcpc:chunked:v1:<count>` header, the parts live
+in `<account>#0`, `<account>#1`, … — and the write is attempted plain first, so a
+credential that fits still costs one keychain write and one read. Credentials over
+50 K characters are refused outright so a server's absurd token cannot fill the keychain.
+
+## State and Data Storage
+
+All state files are stored in `~/.mcpc/` directory (unless overridden by `MCPC_HOME_DIR` environment variable):
+
+- `~/.mcpc/sessions.json` - Active sessions with references to auth profiles, active async tasks, and resource subscriptions (file-locked for concurrent access)
+- `~/.mcpc/profiles.json` - Authentication profiles (OAuth metadata, scopes, expiry)
+- `~/.mcpc/bridges/` - Unix domain socket files for bridge processes
+- `~/.mcpc/logs/bridge-<session>.log` - Bridge process logs (rotated at 10MB, up to 5 rotated files kept)
+- OS keychain - Sensitive credentials (OAuth tokens, bearer tokens, client secrets)
+
+## Key Dependencies
+
+- `@modelcontextprotocol/client` + `@modelcontextprotocol/core` - Official MCP TypeScript SDK v2 (client side; supports protocols 2026-07-28 and 2025-11-25)
+- `@modelcontextprotocol/sdk` - Official MCP SDK v1, used only by the `--proxy` MCP server and the e2e test server (migration to the v2 server packages is a planned follow-up)
+- `commander` - Command-line argument parsing and CLI framework
+- `chalk` - Terminal string styling and colors
+- `@napi-rs/keyring` - OS keychain integration for secure credential storage
+- `proper-lockfile` - File locking for concurrent session access
+- `ora` - Spinner animations for progress indication
+
+**Minimal dependencies approach:** Core module uses native APIs (`fetch`, process APIs) to support both Node.js and Bun.
+
+## Exit Codes
+
+- `0` - Success
+- `1` - Client error (invalid arguments, command not found)
+- `2` - Server error (tool execution failed, resource not found)
+- `3` - Network error (connection failed, timeout)
+- `4` - Authentication error (invalid credentials, forbidden)
+
+## MCP Logging Levels
+
+The `logging/setLevel` request supports these standard syslog severity levels (RFC 5424):
+
+- `debug` - Detailed debugging information (most verbose)
+- `info` - General informational messages
+- `notice` - Normal but significant events
+- `warning` - Warning messages
+- `error` - Error messages
+- `critical` - Critical conditions
+- `alert` - Action must be taken immediately
+- `emergency` - System is unusable (least verbose)
+
+Example: `mcpc @apify logging-set-level debug`
+
+**Note:** This sets the server-side logging level. For client-side verbose logging, use the `--verbose` flag.
+
+## Common Implementation Patterns
+
+After making any code changes, always run `pnpm run lint` and fix **all** errors before committing. Do not skip or ignore lint failures. The lint command checks both ESLint rules and Prettier formatting. To auto-fix issues, run `pnpm run lint:fix`. If auto-fix doesn't resolve everything, manually fix the remaining errors. Never commit code that fails `pnpm run lint`. **As the very last step of every task**, run `pnpm run lint` once more and fix any remaining issues before considering the work done.
+
+After lint passes, run `pnpm run build` and fix any TypeScript compilation errors before committing. The CI runs `tsc` with strict settings (including `noUnusedLocals`) that may catch errors not reported by ESLint alone, such as unused imports or type errors. Never commit code that fails `pnpm run build`.
+
+After build passes, run `pnpm run test:unit` and fix any failures before committing. If a test fails due to your changes, update the test or fix the code so all tests pass. Never commit code that fails unit tests.
+
+For any non-trivial change (new feature, bug fix, behaviour change, or notable refactor), add an entry to the `[Unreleased]` section of `CHANGELOG.md` before finishing. Use the appropriate category (`Added`, `Changed`, `Fixed`, `Removed`). Skip purely internal changes such as test-only edits, code style fixes, or minor cosmetic/styling tweaks (e.g. changing colors, adjusting whitespace, renaming labels). The changelog is for **users reading release notes** — only include entries that a user would care about. Do not add entries for: new warnings or deprecation notices on existing commands, minor help text changes, test infrastructure, CI/CD changes, or internal refactors. When in doubt, leave it out.
+
+Whenever a change touches the user-facing CLI surface — adding, renaming, or removing commands or flags, changing argument syntax, defaults, session states, or workflows — check the agent skill at `skills/mcpc/SKILL.md` (printed by `mcpc help --skill`) and update it so it keeps matching the actual CLI behaviour and README. The skill is a curated guide, not an exhaustive reference: it must never contradict the CLI, but it doesn't need to enumerate every flag — keep it concise and only add features that matter to agents. Purely internal changes don't need a skill update; as a rule of thumb, any change that warrants a `CHANGELOG.md` entry also warrants a quick skill check.
+
+Any change to help text — a description, an option, an `addHelpText` section, a new command — also changes `docs/REFERENCE.md`, which is captured verbatim from `mcpc --help` and `mcpc help <command>`. Never edit it by hand: run `pnpm run build:reference` and commit the result. The unit tests (`test/unit/generated-docs.test.ts`, run in CI) fail when the committed file has drifted from the CLI, so this is not optional; `pnpm run check:reference` runs the same check on its own.
+
+The same applies to the comparison image `docs/images/related-work.svg`, which is rendered from the "MCP CLI clients" table in the "Related work" section of README.md by `scripts/generate-related-work-image.mjs`. Never edit the SVG by hand: after changing the table (rows, columns, or their order), run `node scripts/generate-related-work-image.mjs` (also part of `pnpm run build:readme`) and commit the result — the same unit test fails when the image has drifted from the table. Keep `docs/` out of the npm package: it holds multi-MB README media that nothing reads at runtime (`.npmignore` excludes it, and `test/unit/packaging.test.ts` fails if it ever ships).
+
+**Refreshing the related-work table** ("update the related work table with latest data"): use the same source for every row so the numbers stay comparable between refreshes.
+
+- **Commits** and **Active**: full (not `--depth`) `git clone` of each repo into the scratchpad (public git reads work in cloud sessions), then `git rev-list --count HEAD` on the default branch and `git log -1 --format=%cs`. ⚠️ means the last commit is 3+ months old.
+- **Stars**: the GitHub repo page ("N stars" in the sidebar), written as-is below 1000 and as one-decimal `k` above (`2,405` → `2.4k`).
+- **Contrib**: the number GitHub itself shows, from `https://github.com/<owner>/<repo>/contributors_list?deferred=true` ("Contributors N"). Not the REST `/contributors` API: it counts differently (off by one or two, more with `anon=1`).
+- **MCP**: only re-check repos whose dependency files changed since the last refresh (`git log --since=<last refresh> -- package.json go.mod pyproject.toml uv.lock ...`), then read the pinned SDK version from the lockfile.
+- **Tooling**: in cloud sessions `api.github.com` and `github.com` are blocked for `curl`, so fetch the two GitHub pages with the built-in WebFetch tool. Do not use the `apify/web-fetch` MCP tool: every call and every result read needs a fresh approval. Locally, `gh api` works for stars.
+- Follow renamed repos (a clone or page redirect means the repo moved) and update the link, keep rows ordered by stars after mcpc, update the `as of <date>` comment above the table, and keep the column alignment Prettier would produce (README.md is outside the Prettier lint scope, so don't run `prettier --write` on it; that reformats every other table). Then regenerate the SVG as described above.
+
+Keep the MCP conformance tests up to date the same way you keep the e2e tests up to date. Whenever a change touches protocol behaviour, the OAuth/authentication flows, or transport handling, check `test/conformance/` in the same PR: update the adapter (`test/conformance/client.mjs`) if the change alters what a scenario observes, and wire up a matching upstream scenario when a new feature has one. Run the affected scenario locally before finishing — see `test/conformance/README.md` for the command, the current coverage table, and the list of scenarios that are not covered yet. A deliberate behaviour change that breaks the adapter must be fixed in the PR that makes the change, not discovered later when a release is gated on it.
+
+Keep each changelog entry to one or two short sentences focused on the user-visible behaviour. Do not enumerate implementation details, internal class names, or step-by-step breakdowns — readers want to know what changed for them, not how it was built. If an entry needs subheadings or its own bulleted breakdown, it's too long.
+
+When opening a pull request, always reference the originating issue or PR in the description (e.g. `Fixes #55`, `Refs #223`, `Supersedes #222`). This anchors the change to its motivation and lets reviewers see prior discussion, alternative fixes that were considered, and the failure mode being addressed. If the change is motivated by a Slack/email/internal thread with no GitHub artifact, open or link an issue first so future readers have a single source of truth. The same applies to commit messages for non-trivial changes: include `Fixes #N` / `Refs #N` in the body.
+
+**Keep the PR description short — this is a hard rule (aim for ~12 lines max):** a 1–3 sentence summary of the user-visible change (the *why* and the gist), an optional short bullet list (≈5 bullets max) of what was done, and the issue ref — nothing more. Never use `## Summary` / `## Key Changes` / `## Implementation Details` (or similar) section headers, and never write an exhaustive walkthrough — reviewers read the diff for implementation. Shorter is always better; when in doubt, cut. This applies however the PR was opened: if an existing PR body (e.g. one auto-generated when the PR was created) is longer than this or out of date, rewrite it to fit before finishing.
+
+Always end the PR description with the Claude Code session link (the same `https://claude.ai/code/session_<id>` URL appended to commit messages from this session), on its own line, so reviewers can trace the conversation that produced the change.
+
+When implementing features:
+
+1. **Self-documenting CLI** - All features, options, and usage patterns must be documented in command `--help` output (Commander.js `.description()` and `.addHelpText()`), not just in the README. AI agents discover how to use mcpc purely by running `mcpc --help` and `mcpc <command> --help`, so help text is the primary documentation surface. Include examples in help text for non-obvious commands. The README can provide additional context but must not be the only place a feature is documented. Three hard rules:
+   - **One line per description** - Every `.description()` and `.option()` description must fit on a single line of help output. Help width is 100 columns and the term column eats 30–40 of them, so keep descriptions under ~55 characters; anything longer wraps and makes the command list unreadable. Caveats, deprecations, protocol-era limits, defaults, and examples belong in a titled `.addHelpText('after', ...)` section (`Notes:`, `Deprecated:`, `Examples:`), or point at one with `(see below)`. Never restate a default Commander already prints: `.option('--scheme <x>', 'desc', 'auto')` appends `(default: "auto")` on its own. Enforced — together with the JSON-output rule below — by `test/e2e/suites/basic/help.test.sh`, which walks the whole help surface; run it after touching help text.
+   - **Document the JSON output** - Every command that prints JSON must describe its `--json` shape with `jsonHelp()` in its help text, including the session program itself (`mcpc @session --help`, which documents the no-command server-info output). A command whose help has no `JSON output (--json):` section is a bug.
+   - **Set the help width** - Any new Commander program must `configureOutput({ getOutHelpWidth: () => 100, getErrHelpWidth: () => 100 })` like the existing ones, otherwise it wraps at the default 80 columns.
+2. **Next-step hints** - Every command's human-mode output should make it clear what the user or agent might want to do next. After listing items or finishing an action, print a dim hint suggesting the next likely command, so that any user or agent can chain commands without consulting `--help`. Two shapes, picked by what the hint hangs off:
+   - **`↳` arrow, for one-line situations only** - when the hint belongs to a single line right above it: a session line in a list, a one-line status, an empty state. Indent it under that line when the line is itself an item in a list (`chalk.dim('    ↳ run: mcpc @sessionname restart')` under a session in `mcpc`), otherwise keep it at the same column as the line it follows (`chalk.dim('↳ save to a file: ...')` under `(binary content not shown)`). The arrow means "this points at the line above" — never use it as a footer for a whole screen, where there is no single line to point at.
+   - **Plain sentence, for everything else** - a hint closing a multi-line block or a whole screen reads as part of that block when arrowed and indented. Use an unindented dim sentence instead: `chalk.dim('For session logs, run: mcpc @sessionname logs')`, `chalk.dim('To stop syncing (keeps the file), run: ...')`.
+
+   Do not emit hints in `--json` mode — JSON output stays strictly machine-readable.
+3. **Keep core runtime-agnostic** - Use native APIs, avoid runtime-specific dependencies
+4. **Error handling** - Provide clear, actionable error messages; use appropriate exit codes
+5. **Retry logic** - Use exponential backoff for network operations (3 attempts for requests, 1s→30s for streams)
+6. **Concurrent safety** - Use file locking for shared state (`sessions.json`)
+7. **Security** - Never log credentials (log `present`/`MISSING` instead); use OS keychain; enforce HTTPS; use `execFile()` not `exec()`; escape HTML output; validate Host headers on local servers; send secrets via IPC not CLI args; see "Security Considerations" section for full guidelines
+8. **Output formatting** - Support both human-readable (default) and JSON (`--json`) modes
+9. **Protocol compliance** - Follow MCP specification strictly; handle all notification types
+10. **Session management** - Always clean up resources; handle orphaned processes; provide reconnection
+11. **Hyphenated commands** - All MCP commands use hyphens: `tools-list`, `resources-read`, `prompts-list`
+12. **Command-first syntax** - Top-level commands come first (`connect`, `login`, `clean`); MCP operations always go through a named session (`mcpc @session <command>`)
+13. **JSON field naming** - Use consistent field names in JSON output:
+    - `sessionName` for session identifiers in command results (e.g. `connect`, `close`); the `mcpc --json` session list spreads the stored `SessionData`, whose field is `name`
+    - `server` (not `target`) for server URLs/addresses
+    - No `success` wrapper - indicate errors via exit codes
+    - Errors printed in JSON mode use the shape `{ error: <message>, code: <exit code> }` on stderr
+    - No debug prefixes like `[Using target: ...]` in JSON mode
+14. **Lazy-load large or special-purpose dependencies** - Command startup time matters: `mcpc` is invoked once per shell command, so everything statically imported by `src/cli/index.ts` or `src/bridge/index.ts` is paid on _every_ invocation. Any dependency that is large, or only needed by a specific command or feature, must be loaded lazily with a dynamic `await import(...)` at the point of use (type-only imports are free and stay static). Never re-export such a module from a barrel file (`index.ts`) — that silently makes it eager again. Example: the x402 feature's viem crypto code is loaded only when x402 is actually used, and viem itself is tree-shaken into a self-contained bundle at build time (`scripts/bundle-viem.mjs`, boundary module `src/lib/x402/viem.ts`) so it stays a devDependency instead of adding ~35 MB to every user's install. Before adding a heavy dependency, prefer this bundle-behind-a-boundary pattern over adding it to `dependencies`.
+15. **Protocol-era awareness** - Never advertise something that cannot work on the negotiated protocol version. Servers advertise capabilities on their own terms (a 2026-07-28 server may still send `logging`), so any capability list, "Available commands" block, or next-step hint must be filtered through the era: use `isModernProtocolVersion()` from `src/core/protocol.ts` (dependency-free, safe to import in the CLI) to hide or annotate the parts that would only error out, and keep the wording consistent with the error the command itself would print. The `--json` output stays untouched — it mirrors the server response verbatim.
+16. **Unit-suffixed duration names** - Every internal variable, parameter, field, or constant holding a duration must carry its unit in the name: `timeoutSecs`/`timeoutMillis` for camelCase, `_SECS`/`_MILLIS` for constants (e.g. `KEEPALIVE_INTERVAL_MILLIS`). Never introduce a bare `timeout`, `interval`, `delay`, etc. Exceptions are externally-defined names that must keep their spelling: the `--timeout` CLI flag, the `timeout` field in mcp.json/sessions.json (`ServerConfig`), MCP SDK options (`RequestOptions.timeout`), Node/library options (`execFileSync` `timeout`, proper-lockfile `maxTimeout`), and wire-format fields (x402 `maxTimeoutSeconds`, OAuth `expires_in`). Convert units at the boundary where the external value enters internal code.
+
+## Debugging
+
+Enable verbose mode: `--verbose` flag shows:
+
+- Protocol negotiation details
+- JSON-RPC request/response messages
+- Streaming events and reconnection attempts
+- Bridge communication (socket messages)
+- File locking operations
+
+Bridge logs location: `~/.mcpc/logs/bridge-<session>.log`
+
+## Environment Variables
+
+- `MCPC_HOME_DIR` - Directory for session and auth profiles data (default: `~/.mcpc`)
+- `MCPC_VERBOSE` - Enable verbose logging (set to `1`, `true`, or `yes`, case-insensitive)
+- `MCPC_JSON` - Enable JSON output (set to `1`, `true`, or `yes`, case-insensitive)
+- `HTTPS_PROXY` / `HTTP_PROXY` / `NO_PROXY` (and lowercase variants) - Route outbound HTTP(S) requests through a proxy
+
+## Current Implementation Status
+
+### ✅ Completed
+
+- **CLI Structure**: Complete command parsing and routing with Commander.js
+- **Output Formatting**: Human-readable (tables, colors) and JSON modes
+- **Argument Parsing**: Positional args with key:=value (auto-parsed), inline JSON, and stdin support
+- **Core MCP Client**: Wrapper around official SDK with error handling
+- **Transport Layer**: HTTP and stdio transport creation and management
+- **Error Handling**: Typed errors with appropriate exit codes
+- **Logging**: Structured logging with verbose mode support, per-session bridge logs with rotation
+- **Environment Variables**: MCPC_HOME_DIR, MCPC_VERBOSE, MCPC_JSON support
+- **Command Handlers**: All MCP commands fully functional
+  - `tools-list`, `tools-get`, `tools-call` (incl. `--task`/`--detach` async execution and `--schema` validation)
+  - `resources-list`, `resources-read`, `resources-subscribe`, `resources-unsubscribe`, `resources-templates-list`, `resources-directory-read`
+  - `prompts-list`, `prompts-get`
+  - `completion-complete` (prompt argument and resource template variable suggestions)
+  - `tasks-list`, `tasks-get`, `tasks-result`, `tasks-cancel`
+  - `skills-list`, `skills-get` (skills extension: manifest-verified reads)
+  - `grep` (per-session and global), `logs` (with `--follow`)
+  - `logging-set-level`
+  - `ping` (with roundtrip timing)
+  - `connect` (single, config-file bulk, auto-discovery), `restart`, `close`, `help` (session management)
+  - `login` (authorization-code and client-credentials grants), `logout` (authentication management)
+  - `x402` wallet management and automatic x402 payments on tool calls (experimental)
+- **MCP proxy**: `connect --proxy [host:]port` exposes a session as a local Streamable HTTP MCP server (Host/Origin-validated, optional `--proxy-bearer-token`)
+- **Bridge Process**: Persistent MCP connections with Unix domain socket IPC
+- **Session Management**: Complete `sessions.json` persistence with file locking
+- **IPC Layer**: Unix socket communication between CLI and bridge (BridgeClient, SessionClient)
+- **Target Resolution**: URL/session/config resolution logic (sessions and HTTP servers working)
+- **CLI-to-MCP Integration**: Full integration via direct connection and session bridge
+- **Caching**: In-memory tools cache in the bridge, invalidated by `tools/list_changed` notifications (a server-sent `ttlMs` cache hint wins when present; otherwise no TTL on stateful connections and a 60s TTL fallback for stateless connections that can't push notifications)
+- **Notification Handling**: Full notification support in the bridge process
+  - `tools/list_changed`, `resources/list_changed`, `prompts/list_changed` notifications
+  - Automatic cache invalidation on list changes, timestamps tracked in `sessions.json`
+  - `resources/updated` notifications drive resource→file sync for `resources-subscribe`
+- **Resource Subscriptions**: `resources-subscribe <uri> <file>` keeps a local file in sync
+  - Bridge downloads the resource on subscribe and rewrites the file on each `notifications/resources/updated` (re-reads the resource; the notification carries no content)
+  - Subscriptions persisted in `sessions.json` (`resourceSubscriptions`), re-established and re-synced on bridge restart
+  - `resources-unsubscribe <uri>` stops the sync and keeps the file; sync state shown in `mcpc @session`
+- **Error Recovery**: Automatic recovery from failures
+  - Bridge crash detection and automatic restart
+  - Socket reconnection with preserved session state
+  - Automatic retry of idempotent operations on socket failures (with bridge restart); tool calls are never silently re-executed
+  - Orphaned socket and log file cleanup
+- **Config File Loading**: Complete stdio transport support for local packages
+- **OAuth Implementation**: Full OAuth 2.1 flow with PKCE
+  - Interactive OAuth flow (browser-based)
+  - Authentication profiles (reusable credentials)
+  - Token refresh with automatic persistence
+  - Integration with session management
+- **Keychain Integration**: OS keychain via `@napi-rs/keyring` for secure credential storage
+
+### 🚧 Deferred / Nice-to-have
+
+- **Package Resolution**: Find and run local MCP packages automatically
+- **Tab Completion**: Shell completions for commands, tool names, and resource URIs
+
+### 📋 Implementation Approach
+
+All MCP operations go through named sessions. Sessions are persistent bridge processes that maintain the MCP connection.
+
+**Bridge Process Architecture:**
+
+- Persistent bridge maintains MCP connection and state
+- CLI communicates via Unix socket IPC
+- Supports sessions, notifications, caching, and better performance
+- Used when target is a session name (e.g., `@apify`)
+- Bridge handles automatic reconnection and error recovery
+
+**Session workflow:**
+
+1. `mcpc connect <server> @name` — creates session and starts bridge
+2. `mcpc @name <command>` — all MCP operations routed through the bridge
+3. `mcpc @name close` — tears down session and bridge
+
+## References
+
+- [Official MCP documentation](https://modelcontextprotocol.io/llms.txt)
+- [Official TypeScript SDK for MCP servers and clients](https://www.npmjs.com/package/@modelcontextprotocol/sdk)
+- [MCP Inspector](https://github.com/modelcontextprotocol/inspector) - CLI client implementation for reference
+
+## Releasing
+
+The release process is automated via GitHub Actions (`release.yml`). The local `pnpm run release` command is a thin wrapper that validates preconditions and triggers the workflow.
+
+Before releasing:
+
+1. **Update CHANGELOG.md** with all changes since the last release
+2. Ensure your branch is clean, up-to-date with `origin/main`, and all CI checks pass
+3. Run `pnpm run release` (or `pnpm run release:minor` / `pnpm run release:major`)
+
+The script validates preconditions locally (including `pnpm run check:deps-age`, see below), then triggers the `release.yml` GitHub Actions workflow which handles: dependency-age gate, lint, build, test, version bump, changelog update, README and REFERENCE update, git commit/tag/push, npm publish (with provenance), and GitHub release creation.
+
+### Dependency-age gate
+
+`pnpm-workspace.yaml` sets `minimumReleaseAge` to keep freshly-published (potentially compromised) packages out of the tree, but pnpm applies it only when *resolving* new versions — pnpm 10 does not re-check an existing lockfile on a `--frozen-lockfile` install (that landed in pnpm 11). `scripts/check-dependency-age.mjs` closes that gap: it reads the publish time of every version pinned in `pnpm-lock.yaml` and fails the release if anything is too young. Packages listed in `minimumReleaseAgeExclude` get a shorter 48-hour floor instead of a free pass. The check fails closed — a registry error is a failure, never a skip. Remove the script once the repo moves to pnpm ≥ 11 and native lockfile age verification covers it.
+
+Homebrew formulae live outside this repo, in [Homebrew/homebrew-core](https://github.com/Homebrew/homebrew-core/blob/main/Formula/m/mcpc.rb) (`brew install mcpc`) and [apify/homebrew-tap](https://github.com/apify/homebrew-tap) (`brew install apify/tap/mcpc`). The homebrew-core formula is bumped by Homebrew's own autobump, which waits out a one-day cooldown on new npm releases (a supply-chain safeguard), so nothing here pushes to it. After a release, the `homebrew` job in `release.yml` dispatches the tap's `update_formula.yaml`; it runs as a separate job, so a failure there never affects the npm release. To retry by hand:
+
+```bash
+gh workflow run update_formula.yaml --repo apify/homebrew-tap \
+  --field package=mcpc --field npm_package=@apify/mcpc --field version=<version>
+```
+
+Skipping it only leaves Homebrew users on the previous version; npm and Bun installs are unaffected.
+
+For pre-releases: `pnpm run release:pre` (or `pnpm run release:pre -- minor`)
+
+Monitor the release progress at the GitHub Actions URL that opens automatically.
+
+### Changelog maintenance
+
+The `CHANGELOG.md` file follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format. When making changes to the codebase, update the `[Unreleased]` section with your changes.
+
+**Categories to use:**
+
+- `Added` - New features
+- `Changed` - Changes in existing functionality
+- `Deprecated` - Soon-to-be removed features
+- `Removed` - Removed features
+- `Fixed` - Bug fixes
+- `Security` - Vulnerability fixes
+
+**Release summary line:** keep one plain-text sentence (~120 characters, user-facing) right under `## [Unreleased]`, above the first `###` heading, and update it as entries are added. The release workflow puts it at the top of the GitHub release body, which is what the release URL's social preview card shows.
+
+**Example entry:**
+
+```markdown
+## [Unreleased]
+
+Faster tool calls and a fix for empty server responses.
+
+### Added
+
+- New `--foo` option for the `bar` command
+
+### Fixed
+
+- Fixed crash when server returns empty response
+```
+
+**Before each release**, Claude should:
+
+1. Review all commits since the last release: `git log $(git describe --tags --abbrev=0)..HEAD --oneline`
+2. Ensure all significant changes are documented in `[Unreleased]`, and that it opens with an up-to-date one-line summary
+3. The release script will automatically move `[Unreleased]` entries to the new version section
+
+**Important:** The changelog is for **users reading release notes**. Only include entries that a user would care about. Do not add entries for: new warnings or deprecation notices on existing commands, minor help text or `--help` output changes, test infrastructure (new tests, test refactors), CI/CD workflow changes, internal refactors, or cosmetic tweaks. When in doubt, leave it out.
+
+# Misc
+
+When writing titles of sections in README and code, do not capitalize first letters (e.g. "Session management" instead of "Session Management")
+
+Never add files to git or commit yourself during local development — i.e. interactive Claude Code sessions running on the user's own machine. This does not apply to Claude Code on the web (the managed remote execution environment), where committing and pushing your changes to the designated branch is part of the expected workflow.

@@ -6,7 +6,7 @@ description: Use when extracting tabular data from PDFs, spreadsheets, or images
 <!--
 AI-RULEZ :: GENERATED FILE — DO NOT EDIT
 Content-Hash: blake3:7667a52a8674605a45cc61b67e7879a0104d5e86c0d82b4bde5ced9e6e3463a8
-Source-Hash: blake3:866993511d509cc0a787abb0e6ced186c958cf8983890c7e749c84271413c0a1
+Source-Hash: blake3:0a63e6793dfbd7671ca2cfec5688efa8523d2e4087553f9f6503f2d74cef8b78
 Schema-Version: v1
 -->
 

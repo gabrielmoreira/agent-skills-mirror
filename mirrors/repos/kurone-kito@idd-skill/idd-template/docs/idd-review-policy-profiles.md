@@ -564,6 +564,112 @@ shape.
 | 18 | The fourth distinct follow-up on one pull request                                    | Holds                                                                                        | Cap                                                |
 | 19 | A claimless pull request                                                             | Holds                                                                                        | Claimless                                          |
 
+## Wave-gradient urgency defer
+
+This section is the full rule for the optional wave gradient of
+`critiqueLoop.deferByUrgency: "severity-tiered"`. Before the gradient, the
+matrix there was the same at every review wave. Only the separate
+round-count trigger, `critiqueLoop.deferAfterRounds`, depended on the
+wave, and it covered Low-severity items only, so Medium and High findings
+got no relief however many waves a pull request drew. The gradient
+relaxes the matrix in at most two steps as the pull request's review
+count grows. The
+review-triage file carries only a short pointer, so a session that does
+not read this section, and any configuration that leaves the field unset
+or invalid, behaves as it did before the gradient existed. The decision
+record is in the
+[design rationale](idd-design-rationale.md#wave-gradient-urgency-defer-kurone-kitoidd-skill3796).
+
+**Switch.** The gradient applies only while `critiqueLoop.deferByUrgency`
+is `"severity-tiered"` and `critiqueLoop.deferRelaxAtRounds` holds one or
+two strictly ascending positive integers, recommended `[4, 7]`. An unset
+key means off, and so does any other value: more than two entries,
+entries that are not strictly ascending integers of at least 1, or a
+different type. Off means step 0 for every pull request. The
+[customization guide](customization.md) states the rule, and the lite
+profile does not apply the gradient.
+
+**Count and step.** The count is the pull request's total, paginated
+`copilot-pull-request-reviewer[bot]` review count, PR-wide and not scoped
+to one claim: the same count `critiqueLoop.deferAfterRounds` uses. A pull
+request's relax step is the number of configured thresholds that are less
+than or equal to that count. With `[4, 7]`, counts 1 to 3 give step 0,
+counts 4 to 6 give step 1, and counts 7 and above give step 2. With
+`[3]`, counts 1 and 2 give step 0 and every count from 3 gives step 1.
+
+**Ceilings.** Each step raises the highest urgency at which an
+eligibility tier may still defer. Urgency is ordered `very-low` < `low`
+< `medium` < `high`, and `high` in a cell means every scored urgency. The
+eligibility tier is the higher of the E4 severity and Copilot's label,
+and an unknown E4 severity counts as Medium, as in the E5 Defer rule.
+
+| Eligibility tier | Step 0 (the rule without the gradient) | Step 1 | Step 2   |
+| ---------------- | -------------------------------------- | ------ | -------- |
+| Low              | `high`                                 | `high` | `high`   |
+| Medium           | `medium`                               | `high` | `high`   |
+| High             | `very-low`                             | `low`  | `medium` |
+
+An unscored urgency never defers at any step. Every existing exclusion
+stays in force at every step: PATH B, a scope-fenced item, a CODEOWNER or
+required-reviewer item, an item in the maintainer-decision hold, and an
+Accepted item mid-fix. Validity and the E4 severity are still judged
+first, and a false claim is Rejected, not deferred.
+
+**Never deferred from step 1.** From step 1 on, a High-tier finding of
+`high` urgency never defers, and neither does a finding of the safety
+class. The ceilings already exclude the first at every step, and it is
+named here because the final step must never defer it. The safety class
+is a finding that, assuming it is correct and merging the pull request as
+it stands, would hit item 1, 2 or 4 of the numbered stop test in
+[Needs-decision deferral](#needs-decision-deferral): the CI-or-unmergeable
+item, the claim, lock, merge-gate, security, secret-handling or
+data-destroying item, and the irreversible-by-follow-up item. Item 3, the
+instruction or helper contradiction, is deliberately not part of this
+class, because most findings in an instruction repository would match it
+and the gradient would never act. The safety class applies whatever
+`critiqueLoop.deferNeedsDecision` is set to. These rules govern the
+`deferByUrgency` trigger only; the separate trigger
+`critiqueLoop.deferAfterRounds` is unchanged.
+
+**Step 0 is unchanged.** The exclusion above starts at step 1, not at step
+0: at step 0 the rule is exactly the rule without the gradient, so a
+safety-class Low-tier finding still defers at step 0 as it does today,
+and a pull request whose field is absent changes nothing. The consequence
+to keep in mind is that from step 1 on, a Medium-tier finding of `high`
+urgency that rests on adopt-now condition (a), (b) or (c) but is not
+safety class defers to the bundled follow-up.
+
+**Reply and follow-up.** The reply keeps its form:
+`**Rejected** — deferred to follow-up issue #<n> ({clause}): {reason}`.
+Above step 0 the urgency clause gains a suffix, so a search of merged
+pull requests can find gradient deferrals:
+`urgency <level>; severity <tier>[, Copilot <label>]; step <k>`. The
+follow-up uses the existing `review-fix-loop-cutoff` marker and the
+bundling rule of the E5 Defer block.
+
+**Converged extra step.** When the thresholds are set and valid, and
+the advisory policy is `reviewPolicy` absent or `copilot-advisory`, E5
+reads the profile-selected advisory-convergence command once per pass,
+before disposing any item and before any E6 reply. The source
+repository and the vendored-node profile run
+`node scripts/advisory-convergence.mjs`. The package-manager profile
+runs the `idd-advisory-convergence` bin, and the ephemeral-npx profile
+runs an `npx` wrapper.
+Pass `--pr` for the pull request and `--claim-issue` for the claimed
+issue, and pass no `--assert`. Reuse that read on any later return to
+E4-E6 in the same pass. The value is never carried across a push. Add
+one step, capped at 2, only when `converged` equal to `true` and the
+verdict's `prHeadSha` matches the `{head-SHA}` stored at E1 Step 1.
+Every other result adds nothing, including an unavailable helper, a
+non-zero exit, output that does not parse, a `converged` value that is
+absent or not exactly `true`, a `prHeadSha` that differs from the
+stored head, and a `reviewPolicy` other than absent or
+`copilot-advisory`. With a one-threshold array such as `[4]`,
+convergence reaches step 2, which is above that array's own final
+step. The reply keeps `step <k>`, and only when convergence raised the
+step it also carries `converged <short-sha>` (the first 7 hex digits
+of `prHeadSha`).
+
 ## Selection Checklist
 
 Before considering onboarding complete, record the selected profile in

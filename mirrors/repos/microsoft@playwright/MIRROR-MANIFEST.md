@@ -73,7 +73,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`.claude/skills/playwright-test-results/SKILL.md`](.claude/skills/playwright-test-results/SKILL.md) |
 | 10 | ✓ | [`.claude/skills/playwright-triage/SKILL.md`](.claude/skills/playwright-triage/SKILL.md) |
 | 11 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 12 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 13 | ✓ | [`packages/playwright-core/src/tools/skills/playwright-cli/SKILL.md`](packages/playwright-core/src/tools/skills/playwright-cli/SKILL.md) |
 | 14 | ✓ | [`packages/playwright-core/src/tools/skills/playwright-component-testing/SKILL.md`](packages/playwright-core/src/tools/skills/playwright-component-testing/SKILL.md) |
 | 15 | ✓ | [`packages/playwright-core/src/tools/skills/playwright-trace/SKILL.md`](packages/playwright-core/src/tools/skills/playwright-trace/SKILL.md) |

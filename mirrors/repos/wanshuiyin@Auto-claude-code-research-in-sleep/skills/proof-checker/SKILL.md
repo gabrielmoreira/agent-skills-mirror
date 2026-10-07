@@ -2,7 +2,7 @@
 name: proof-checker
 description: Rigorous mathematical proof verification and fixing workflow. Reads a LaTeX proof, identifies gaps via cross-model review (external reviewer backend, ultra reasoning), fixes each gap with full derivations, re-reviews, and generates an audit report. Use when user says "检查证明", "verify proof", "proof check", "审证明", "check this proof", or wants rigorous mathematical verification of a theory paper.
 argument-hint: "[path-to-tex-file or proof-description] [--deep-fix] [--restatement-check]"
-allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit, Agent, mcp__codex__codex, mcp__codex__codex-reply, mcp__manual_review__review, mcp__manual_review__review_reply
+allowed-tools: Bash(*), Read, Grep, Glob, Write, Edit, Agent, mcp__codex__codex, mcp__codex__codex-reply, mcp__manual_review__review, mcp__manual_review__review_reply, Skill(lean-formalize)
 ---
 
 # Proof Checker: Rigorous Mathematical Verification & Fixing
@@ -248,6 +248,18 @@ h_act = Θ(κ^α)  [as κ→0, uniform in π on compact subsets of Π_K, for fix
 τ_act ~ (b/a)n   [as n→∞, for fixed κ,K,π with x_K ≪ 1]
 ```
 Flag any statement where limit order is ambiguous or uniformity is unclear.
+
+### Optional Lean verification
+
+When the user requests Lean or a specific obligation warrants formal checking,
+delegate that obligation and its original hypotheses to
+[`/lean-formalize`](../lean-formalize/SKILL.md). Record the checked scope, exported
+declaration, statement-alignment evidence, build output and transitive-axiom
+audit, then resume this audit. A proved sublemma closes only the corresponding
+obligation. Keep the complete proof audit, acceptance decision and canonical wiki
+artifacts here; the nested Lean task returns evidence without starting another
+`proof-checker` run. Routine proof checks do not require Lean. Reviewer agreement
+and unsuccessful counterexample searches do not discharge a proof obligation.
 
 ### Phase 1: First Review (reviewer backend, ultra reasoning)
 

@@ -154,6 +154,7 @@ claude --plugin-dir ./apps/hook
 | `PLANNOTATOR_HOST_RESULT_FILE` | Set by a host that starts the CLI detached (the Claude Code mod): when a review, annotate, annotate-last or `claude-mod-plan` session settles, the CLI writes one JSON decision record there atomically (mode 0600), with the agent message composed from the configured prompts. Only a path named `result.json` inside `<data dir>/claude-code-mod/` is accepted (`isAllowedHostResultPath`); anything else is ignored with a stderr warning, so the variable cannot make the CLI create or replace an arbitrary file. Taken at startup and removed from the environment. Stdout is unchanged. See "Claude Code mod". |
 | `PLANNOTATOR_HOST_MESSAGES_FILE` | Set by the Claude Code mod for `annotate-last --stdin` (ignored without `--stdin`): a `messages.json` inside `<data dir>/claude-code-mod/` (`isAllowedHostMessagesPath`; anything else is ignored with a stderr warning) holding `{ v: 1, messages: [{ messageId, text, timestamp? }] }`, newest first, which the CLI shows as the message picker instead of the single stdin message. Validated fail-closed (1..25 entries, string fields, unique ids, 2 MiB per message, 8 MiB file); a malformed file exits 1 with the reason. Taken at startup and removed from the environment. A CLI that predates it ignores it and opens the stdin text. See "Claude Code mod". |
 | `PLANNOTATOR_SESSION_TAG` | Set by the Claude Code mod in its session's environment (`claude-code:<session id>`), so processes the session starts can be matched to it; recorded as `hostSession` in the `sessions/` registry. Not meant to be set by hand. |
+| `PLANNOTATOR_HOST_REVIEW_ID` | Set per launch by the Claude Code mod and the OpenCode plugin to the review's `pn-` id; the CLI takes it at startup (validated `pn-` + 6 hex, scrubbed from the environment) and records it as `reviewId` in the `sessions/` registry, which `plannotator sessions` (and `--json`) prints beside each session's full `target`. Not meant to be set by hand. |
 | `PLANNOTATOR_MOD_DEBUG` | Set to `1` before starting Claude Code to have the Claude Code mod write `claude-code-mod/debug.log` in the data dir (launches, results, turns, bridge commands). Default: off. |
 | `PLANNOTATOR_ORIGIN` | Explicit agent-origin override at the top of the detection chain. Valid values: `claude-code`, `amp`, `droid`, `opencode`, `codex`, `copilot-cli`, `gemini-cli`, `kiro-cli`, `mistral-vibe`, `pi`, `oh-my-pi`. Invalid values silently fall through to env-based detection. Unset by default. |
 | `PLANNOTATOR_JINA` | Set to `0` / `false` to disable Jina Reader for URL annotation, or `1` / `true` to enable. Default: enabled. Can also be set via `~/.plannotator/config.json` (`{ "jina": false }`) or per-invocation via `--no-jina`. |
@@ -437,7 +438,8 @@ launch directory is `${PLANNOTATOR_DATA_DIR or ~/.plannotator}/claude-code-mod/<
 `stdin`, `ready` (`PLANNOTATOR_READY_FILE`), `result.json`
 (`PLANNOTATOR_HOST_RESULT_FILE`), `stdout`, `stderr`, `pid`, `exit` (written
 after the CLI exits), `revision.json` + `.ack` (plan revisions),
-`messages.json` (`PLANNOTATOR_HOST_MESSAGES_FILE`, `last`'s picker list) and
+`messages.json` (`PLANNOTATOR_HOST_MESSAGES_FILE`, `last`'s picker list),
+`watcher.json` and `settled/by` (see "Two processes on one session" below) and
 `feedback.md` (oversized feedback). Waiting inside a hook (for the ready file, a
 revision ack) happens in a `$.process.run` shell loop (`waitForAny`), never a
 `$.clock` wait, which would spend the hook's budget and let the engine run the
@@ -446,7 +448,11 @@ call on without the mod. Once a review is open, a 1 s `$.clock.every` timer
 ("the review server stopped … your draft is saved"), and every 15 s checks the
 pid with `kill -0`. Open launches and a pending plan approval persist in
 `$.store` and reattach on `session.start` for the same session id
-(`--resume`, `--continue`, a restart). `session.start` does not fire for
+(`--resume`, `--continue`, a restart; on 2.1.290 `--continue` keeps the session
+id). The fork paths do NOT reattach: `--fork-session` and `/clear` start a new
+session id, so the reviews stay with the old id and come back only when that
+session is resumed (re-adopting them across a fork is a follow-up).
+`session.start` does not fire for
 `/clear` or an in-process resume (the process goes on under another session
 id), so `session.end` disposes the instance (timer and bridges stop; nothing is
 delivered into the next session) and the next hook that needs the mod makes a
@@ -459,14 +465,106 @@ the wrapper ignores SIGHUP and starts the CLI under `nohup` (a closing terminal
 otherwise took the server with it), so closing the terminal does not lose a
 review; verified live, `claude --continue` reattached and delivered it.
 
+*Two processes on one session.* `claude --continue` while the first process
+still runs gives two Claude Code processes the same session id, and both
+reattach the same launches. One of them watches each launch: `watcher.json` in
+the launch directory is a lease (`{ owner, at, touchedAt }`, the owner a random
+id per mod instance) renewed every 5 s. The process the person works in wins
+it: restoring a launch, a prompt typed in that process (origin `composer`), a
+slash command, Claude's `plannotator` tool and ExitPlanMode all touch that
+process's launches and take the lease at once; a live holder keeps it against
+an older or equal touch, and anyone takes it once it is 20 s old
+(`LEASE_STALE_MS`: the holder exited, slept or hung). A disposed instance
+(`session.end`) releases it at once. Only the watcher runs the bridge (so the
+two never supersede each other) and delivers, re-reading the lease right
+before it settles, so a decision follows the person within a tick. Plan
+approvals live in `$.store` and every ExitPlanMode re-reads them, so an
+approval received (or already used) by the other process is honored once;
+ExitPlanMode and the tool also adopt this session's launches the other process
+started, so a revision goes into the open review instead of opening a new one.
+Delivery is claimed once per launch, whichever file settles it (`result.json`,
+`exit` with an older CLI's stdout, or a dead `pid`): `claimArgv` makes the
+launch's `settled/` directory (mkdir has exactly one winner) and writes the
+claimant's id to `settled/by`, so a claimant whose process call timed out wins
+again on the next tick, while every other process loses. A process that loses,
+or finds a `settled/` claim naming someone else or the launch's `stdin` gone
+(cleaned up after the other delivered), forgets the launch quietly, so its
+status line no longer says "waiting for you". A per-launch in-flight flag keeps
+the 1 s timer, which never waits for a slow check, from checking one launch
+twice at once. Residual window: `$.prompt.submit` resolves only once Claude
+is idle, so a claimed decision can wait for the whole of Claude's current turn,
+and a process that quits or dies in that time takes the delivery with it
+(nobody else delivers a claimed launch: the claimant may still be waiting to
+deliver it, so a second delivery could never be ruled out). It is not lost
+silently: the claimant keeps the launch's record in the store and renews its
+lease while it waits, writes `settled/delivered` once `$.prompt.submit`
+returns, and releases the lease at `session.end`. A restore of the session
+(and any process that watched the launch and saw the claim) checks a claimed,
+undelivered launch whose decision is still on disk: while its claimant's lease
+is fresh it waits; once the lease is released or 60 s stale
+(`UNDELIVERED_AFTER_MS`) it logs once, with a toast, "A decision for <subject>
+arrived but wasn't delivered — it's saved in <dir>/result.json" (`stdout` for an
+older CLI) and writes `settled/reported`, so it is said once.
+`cleanupArgv` removes `stdin` first and keeps `settled/` while `feedback.md`
+keeps the directory, so a claim made after cleanup started loses.
+`persist` keeps this session's records it does not know (the other process
+launched them) unless it settled them. After restore, off the session-start
+path (5 s cap), the stored launch records older than a minute are pruned
+(`pruneArgv`): any cleaned up (no `stdin`) or settled for good (`settled/`
+marked delivered or reported, or with no decision on disk; a claimed,
+undelivered decision stays for its session to report); for other
+sessions, any whose server died without a decision (`kill -0` fails, no
+`result.json`, no `exit`); and for other sessions older than 14 days
+(`LAUNCH_EXPIRED_MS`, a session nobody resumed), any whose server is gone, decision
+or not. A live server always keeps its record; this session's dead servers are
+left to the timer, which reports them. The store is read again before the
+write, so a record another process added meanwhile is kept.
+The debug log (`PLANNOTATOR_MOD_DEBUG=1`) is appended (`debugAppendArgv`,
+O_APPEND) with a per-process tag on every line, because rewriting the whole
+file from each process's own buffer clobbered the other's lines and left NUL
+bytes. Past 1 MiB it is rotated to `debug.log.1` under a lock
+(`debug.log.rotating`, mkdir; one older than a minute is a dead writer's) with
+the size checked again inside it, so two writers never rotate twice and move a
+fresh log over the old one.
+
 **Host result file (`PLANNOTATOR_HOST_RESULT_FILE`).** New CLI side channel
 (`apps/hook/server/host-result.ts`), taken from the env at startup and scrubbed
 like the bridge token: when a review, annotate, annotate-last or
 `claude-mod-plan` session settles, the CLI writes ONE JSON record there
 atomically (temp + rename): `{ v: 1, surface, decision, message, noop,
 annotationCount?, platform?, withNotes?, approvedPlan?, permissionMode?,
-documents? }` (`documents`: a review of several files names each file with its
+documents?, target? }` (`documents`: a review of several files names each file with its
 comment count, in review order).
+
+**Decision targets.** Every decision a host delivers names its FULL target, as
+the server that took the decision resolved it, never the words the agent typed
+(a real report: a bare approval headed only `QUESTIONS.md` was acted on as an
+earlier decision about a different `QUESTIONS.md`). The CLI writes `target`
+(absolute file or folder path, URL, a bundle's files in order, the reviewed
+directory, patch file or PR URL, the plan file; none for annotate-last) into
+the host result record, the ready line (`ServerReadyMetadata.target`, set once
+per process by `setServerReadyTarget`), the `--json` annotate record and the
+`opencode-review` record (additive), and the `sessions/` registry
+(`apps/hook/server/decision-target.ts`). Hosts put it on the line after the
+heading (`plannotatorDecisionHeading(subject, id, outcome, target)` →
+`Target: <path>` / `Targets:` + `- <path>` lines; `plannotatorTargetLines`), and
+the tool's opened text carries the same line. The mod stores the target on its
+`LaunchRecord` (from the ready line, else its own resolution of the words
+against the session directory, for a CLI older than the field), names the
+record's target when there is one, and logs a line when the two differ. Pi sets
+it from its in-process resolution; the OpenCode bridge reads the ready line and
+the JSON records, and uses the CLI's resolved path in its `File:` line too.
+Same-named open reviews are told apart in headings, status and toasts by
+`plannotatorDistinctSubjects` (shortest distinct path tail:
+`releases-2026-10-04/QUESTIONS.md`). Plain CLI stdout ("The user approved.")
+and the strict-gate record are unchanged. A code review's target is taken at DECISION time,
+not at launch: both review servers put `target` on the decision (the active PR's URL after an
+in-place `/api/pr-switch`, the workspace root, or the working tree the active diff reads), and the
+CLI record, the `opencode-review` record and Pi use it (a static patch keeps the patch file the CLI
+named); a decision about a different PR than the launch opened is headed with that PR
+(`plannotatorDecisionSubject`). The mod's own fallback for an older CLI never guesses: only a URL or
+PR URL, an absolute path, or a review with no words (the session directory) counts; a bare or
+relative name, or review prose, gets no Target line rather than a confidently wrong one.
 `message` is composed from the configured prompts exactly as other hosts do
 (review: the CLI's own output; annotate: the file/message feedback and
 approved-with-notes prompts OpenCode and Pi use; plan: `composePlanDeniedMessage`
@@ -869,8 +967,17 @@ otherwise. From the take-over on, a cancel closes only the question and an
 interrupt answers `ok: false`; Plannotator never aborts that turn. Plan review does not block the session
 under the mod, so the status is never `blocked` and plan review gets real turns
 too (verified live). Polls ask for 15 s (750 ms while our question streams, so
-deltas flush), and stop on 401/403/404/405/503 (`404` = an older CLI without
-the bridge), `closing`, or once the review settles.
+deltas flush), and stop for good on 401/403/404/405/503 (`404` = an older CLI
+without the bridge), `closing`, or once the review settles. A loop that stops
+because the server stopped answering (six failures in a row; `$.http.fetch`
+gives up after 30 s, so a sleeping laptop or a paused server gets there in
+about three minutes) is not the end: `run()` reports why it ended
+(`BridgeEnd`), the controller clears the handle, and the timer starts a new
+loop with the same token after 5 s, doubling to 60 s while the server stays
+silent (`BRIDGE_RETRY_MS`), so Ask AI comes back once the server answers again.
+A poll answered `superseded: true` (another client polled the server after us)
+waits 10-15 s before polling again, instead of taking the server back at once
+and starting a busy loop with the other client.
 
 **Tests.** Bun: `apps/hook/hooks/mod/*.test.ts` (controller flows over an
 in-memory `Host`, delivery, shell words, and `bridge.test.ts` against the REAL
@@ -940,12 +1047,22 @@ review, gets its decision and lists or closes it; only `last` is refused from a
 subagent (`PLANNOTATOR_TOOL_SUBAGENT_LAST_TEXT`, the mod's wording), since it
 reads the main session's messages. Ask this session for such a review asks the
 root session. Not verified live: delivery to the root while it still waits on
-the subagent relies on `queue` delivery. Tool launches always queue their
-decision (`createV2BridgeClient`'s `alwaysQueue`), even while their session-URL
-notice is still a pending steer: the session is mid-turn when a tool launch
-posts that notice (the tool call itself, or the root waiting on a subagent), so
-the notice is promoted inside that turn, and the slash commands' co-promoting
-steer (#1515) would instead push a late decision into a running turn. No
+the subagent relies on `queue` delivery. A tool launch posts its session-URL
+notice into the CALLING session (a subagent's own session, never the root that
+receives the decision) and only while the tool call is still open
+(`createV2BridgeClient`'s `notice: { sessionID, open }`, closed the moment
+`runPlannotatorTool` answers), so the notice is always promoted inside the
+caller's running turn; the tool's answer already carries the URL, and a server
+that comes up after a "starting" answer posts no notice (the URL is in `list`
+and the log). Posting it into the root was a leak (0.28.5 smoke, live on
+2.0.22): a background subagent's root, or the parent of an API-created child
+session, is idle, so the pending steer sat there and was promoted ALONE as a
+model turn when the root next woke (the queued decision promotes one row at a
+time), and the model answered "Plannotator session ready: <url>". With the
+notice always inside a running turn, tool launches always queue their decision
+(`alwaysQueue`; co-promotion is also only attempted for a notice in the
+decision's own session), since the slash commands' co-promoting steer (#1515)
+would push a late decision into a running turn. No
 shell take-over: nothing in the OpenCode 2 plugin API can answer a shell call.
 
 **Session ids, list and close.** `OpenCodeLaunchRegistry` (one per plugin
@@ -1544,6 +1661,16 @@ positive decision exists in every state; composer rows open `DecisionNoteDialog`
 predicate is `hasFeedbackToSend`, so feedback already delivered through the agent terminal shows
 the positive primary rather than a stale Send Feedback.
 
+The approve-carrying gate items (`Approve with a note…`, `Approve with notes`) follow the
+`approvalNotesSupported` advert on `/api/plan`, the same on markdown, raw-HTML and live-app
+surfaces. The Bun CLI sets it with `supportsAnnotateApprovalNotes` = `--gate` and not `--hook`
+(`apps/hook/server/annotate-output.ts`): `--json` carries the note as `feedback`, plaintext prints
+the configured `approvedWithNotes` prompt instead of `The user approved.` (a bare approval keeps
+that line byte for byte), and the Claude Code mod's plaintext `--gate` launches deliver it from the
+result file as an approved-with-notes turn. `--hook` has no message on approval, so the items stay
+hidden there. Pi and OpenCode advertise it from their own servers. Non-gated annotate has no
+approve channel: its only composer is "Send a note…" (feedback).
+
 ### Annotate Options menu and Settings parity
 
 Annotate renders the same document app as plan review, so its Options menu and
@@ -1612,6 +1739,8 @@ Tests: the selection table in `packages/shared/annotate-target.test.ts`; `packag
 
 The bang prefix in the Claude Code skill is deliberate: #872 (commit `aac5aacb`, "restore `/plannotator-*` bash execution on Claude Code") put it back so the slash command never depends on the model choosing to run the binary. Argument-shape problems belong here in the CLI's resolution, not in the skill templates.
 
+Hosts that run the CLI as a child must hand it the words as SEPARATE arguments, or none of this runs: one argument is one path to the CLI (`annotate ". notes.md"` is "File not found"). The OpenCode CLI bridge (OpenCode 2 native commands and the OpenCode 1 CLI runtime) does this with `annotateCliTargets` (`apps/opencode-plugin/cli-bridge.ts`) over the shared `annotateTargetWords` (`packages/shared/annotate-args.ts`: quotes group a path with spaces only when they open and close a word, so prose apostrophes stay in their words; an unterminated quote is prose, backslashes are kept, known flags are dropped). It keeps ONE argument, exactly as before, when the whole input names an existing target (an unquoted path with spaces), for a single word, and when a word starts with `-` (a typo'd or prose flag must never reach the CLI as a real one). The `plannotator` tool's single target is never re-split. `apps/opencode-plugin/annotate-words-cli.test.ts` runs the REAL CLI for this. An OpenCode 2 slash command that fails (a refused argument or the CLI's startup error) posts a transcript notice, `Plannotator /plannotator-annotate failed: <reason>` (`createCommandFailureNotifier` in `v2-client.ts`: `session.synthetic` with a description and `resume: false`, so no model turn; the context hook drops it from model requests like the session-URL notice, matching only a `text` that ends with the marker `commandFailureNoticeText` adds and the visible `description` lacks, so a copy of the line the person types or pastes is never dropped); the OpenCode 1 CLI runtime shows an error toast. Before this the failure only reached the log, which OpenCode 2 discards. Tool launches report failures as the tool result instead.
+
 ### Annotate drafts follow the file
 
 Annotate drafts used to be keyed only by a hash of the document text, so an agent edit plus a reopen lost the reviewer's unsent comments. `packages/shared/annotate-draft.ts` (vendored to Pi; both servers route `/api/draft` and `/api/draft/document` through `createAnnotateDraftSession`) applies the #1590 pattern:
@@ -1625,7 +1754,7 @@ Tests: `packages/server/annotate-draft.scenarios.ts` (run against both runtimes 
 
 ### Strict direct annotate results
 
-Direct `plannotator annotate` invocations may add `--require-approval` and/or `--result-file <path>` only with `--gate --json`; both reject `--hook` and are not shared with OpenCode/Pi slash-command parsing. When neither strict option is present, single-target invocations keep the legacy plaintext, JSON, hook, and exit behavior unchanged, with two additive JSON fields. First, a non-gated Done with nothing to send prints `{"decision":"annotated","feedback":"User reviewed the document and has no feedback.","nothingToSend":true,"annotationCount":0}` (`nothingToSend` appears only in that case and only on the non-strict `--json` record and the `opencode-annotate-last` record; decision values, the feedback text, plaintext, `--hook` output, the strict-gate record and every exit code are unchanged; the OpenCode CLI bridge, Amp and Droid read it; #1701). Second, `annotationCount` (the number of annotations the decision carried) rides every approved and annotated record of the non-strict `--json` output, `opencode-annotate-last`, and `opencode-review`; the OpenCode bridge names it in its decision heading, and the strict-gate record does not carry it. Multi-token invocations go through the tolerant tiers described under "Tolerant argument resolution" above; several existing file paths open one review of all of them (strict gates included).
+Direct `plannotator annotate` invocations may add `--require-approval` and/or `--result-file <path>` only with `--gate --json`; both reject `--hook` and are not shared with OpenCode/Pi slash-command parsing. When neither strict option is present, single-target invocations keep the legacy plaintext, JSON, hook, and exit behavior unchanged, with one plaintext exception and three additive JSON fields. The plaintext exception: a gated approval that carries a note (**Approve with a note…** / **Approve with notes**, offered by every `--gate` session except `--hook`) prints the configured `approvedWithNotes` prompt, with its `File:` / `Folder:` / `URL:` / `Files:` context line (`annotateContextLine`), instead of `The user approved.`; a bare approval still prints that line byte for byte. First, a non-gated Done with nothing to send prints `{"decision":"annotated","feedback":"User reviewed the document and has no feedback.","nothingToSend":true,"annotationCount":0}` (`nothingToSend` appears only in that case and only on the non-strict `--json` record and the `opencode-annotate-last` record; decision values, the feedback text, plaintext, `--hook` output, the strict-gate record and every exit code are unchanged; the OpenCode CLI bridge, Amp and Droid read it; #1701). Second, `annotationCount` (the number of annotations the decision carried) rides every approved and annotated record of the non-strict `--json` output, `opencode-annotate-last`, and `opencode-review`; the OpenCode bridge names it in its decision heading, and the strict-gate record does not carry it. Third, `target` (the absolute file or folder path, URL, or a bundle's files, as the CLI resolved them) rides every non-strict `--json` record and `opencode-review` (the PR URL, patch file or directory), so the OpenCode bridge names the file the CLI actually opened (see "Decision targets"); plaintext, `--hook` and the strict-gate record do not carry it. Note for exact-string matchers: the non-strict `--json` DISMISSED record, which used to be exactly `{"decision":"dismissed"}`, now also carries `target` (`{"decision":"dismissed","target":"/abs/notes.md"}`); parse the JSON and read `decision` instead of comparing the line. Multi-token invocations go through the tolerant tiers described under "Tolerant argument resolution" above; several existing file paths open one review of all of them (strict gates included).
 
 Strict decisions use one newline-terminated JSON record on stdout and, when requested, identical bytes in the result file. Exit codes follow the grep convention: approval exits `0`; with `--require-approval`, annotated and dismissed decisions are published before exiting `1` (negative human outcome); usage/startup/validation failures — bad flag combinations, strict flags outside `annotate --gate --json`, a missing `--result-file` parent, a pre-existing or dangling-symlink destination, and every annotate startup failure (missing path, unreachable URL, empty folder, ambiguous name, missing file, oversized file) — exit `2` (the gate itself was misconfigured or could not start). Those startup sites exit `1` as before for non-strict invocations, with one deliberate exception: the multi-token zero-resolve handoff is not a startup failure, so in plain non-strict mode it prints on stdout and exits `0` (under `--json`/`--hook` it stays stderr + exit `1`). Under a strict flag `1` is reserved for "the reviewer did not approve", so a typo'd path must never masquerade as a rejection. Post-decision publication failures (destination appears between validation and publish, hard links unavailable) also exit `2`: the result *file* was not published, so they present as environment errors — "the gate could not publish its result" — never as a reviewer outcome, and never as approval (still fail-closed, since only `0` means approved). The stdout decision record is written **before** result-file publication and is still emitted whenever the decision itself completed; only a stdout write failure leaves no record anywhere. Signal deaths keep `128+n`. Result paths resolve from the invocation working directory, require an existing parent and absent destination, and publish via a flushed/closed `0600` same-directory temporary file plus an atomic no-clobber hard link—never copy or overwrite fallback (the `0600` mode is a no-op on Windows, and the atomic link/rename is not followed by a parent-directory fsync, so publication is atomic but not crash-durable). Keep reviewed sources at stable project paths; unique result and diagnostic log files may use a narrow temporary directory. Explicit Close emits `dismissed`; missing results or process/browser failures are recovery cases, never approval.
 
@@ -1678,8 +1807,8 @@ During normal plan review, an Archive sidebar tab provides the same browsing via
 | `/api/archive/plans`  | GET    | List archived plan decisions (`?customPath=`) |
 | `/api/archive/plan`   | GET    | Fetch archived plan content (`?filename=&customPath=`) |
 | `/api/done`           | POST   | Close archive browser (archive mode only)  |
-| `/api/approve`        | POST   | Approve plan (body: planSave, agentSwitch, obsidian, bear, feedback) |
-| `/api/deny`           | POST   | Deny plan (body: feedback, planSave, answersOnly?). `answersOnly: true` (a boolean, nothing else) rides the decision so the consumer sends `plan.answered` instead of the denied prompt; see "Question blocks" |
+| `/api/approve`        | POST   | Approve plan (body: planSave, agentSwitch, obsidian, bear, feedback, serverSession?; see "Stale-tab guard") |
+| `/api/deny`           | POST   | Deny plan (body: feedback, planSave, answersOnly?, serverSession?). `answersOnly: true` (a boolean, nothing else) rides the decision so the consumer sends `plan.answered` instead of the denied prompt; see "Question blocks" |
 | `/api/save-notes`     | POST   | Save to external note apps (Obsidian, Bear, Octarine) |
 | `/api/image`          | GET    | Serve image by path query param            |
 | `/api/upload`         | POST   | Upload image, returns `{ path, originalName }` |
@@ -1725,7 +1854,7 @@ During normal plan review, an Archive sidebar tab provides the same browsing via
 | `/api/review-image`   | GET    | One side of a changed image as raw bytes for the Before/After preview (`?path=&side=old\|new&snapshot=`; #1598). Serves only a file in the current patch whose chunk has no hunks and whose path is `png jpg jpeg gif webp svg avif bmp ico apng`; the old path is taken from the chunk, never the client. `Content-Type` is sniffed from magic bytes; every image response carries `nosniff`, `Content-Security-Policy: sandbox; …` and `Cross-Origin-Resource-Policy: same-origin`, plus `ETag` (304 on `If-None-Match`) and `X-Image-Width`/`X-Image-Height` when the header parses. Errors are JSON `{ reason, error }`: `400 unavailable\|bad-request`, `404 not-in-diff\|absent\|missing`, `409 stale`, `413 too-large` (10 MB per side or 50 megapixels), `415 not-image\|lfs-pointer`, `502 fetch-failed`. Advertised by `imagePreviewSupported` on every diff payload (false for static-patch and P4 sessions). |
 | `/api/git-add`        | POST   | Stage/unstage a file (body: `{ filePath, undo? }`) |
 | `/api/review-progress?snapshot=<snapshotId>` | GET/POST | Load or save durable viewed-file progress. GET returns `{ available, key?, fingerprints?, viewedFiles?, suppressedFiles? }`; POST takes `{ key, changes: [{ path, fingerprint, viewed }] }`. Stale snapshots return 409. |
-| `/api/feedback`       | POST   | Submit review (body: feedback, annotations, agentSwitch, platform?). `platform: true` (boolean only) marks the status post the PR-platform path sends after `/api/pr-action`; it rides onto the decision, where the Claude Code mod logs it instead of starting a turn and OpenCode, Pi, CLI stdout and Amp deliver the status line verbatim without the request-changes suffix. Never infer it from empty `annotations` (see "Host result file") |
+| `/api/feedback`       | POST   | Submit review (body: feedback, annotations, agentSwitch, platform?, serverSession?). `platform: true` (boolean only) marks the status post the PR-platform path sends after `/api/pr-action`; it rides onto the decision, where the Claude Code mod logs it instead of starting a turn and OpenCode, Pi, CLI stdout and Amp deliver the status line verbatim without the request-changes suffix. Never infer it from empty `annotations` (see "Host result file") |
 | `/api/image`          | GET    | Serve image by path query param            |
 | `/api/upload`         | POST   | Upload image, returns `{ path, originalName }` |
 | `/api/draft`          | GET/POST/DELETE | Auto-save annotation drafts to survive server crashes |
@@ -1780,9 +1909,9 @@ During normal plan review, an Archive sidebar tab provides the same browsing via
 | `/api/plan`           | GET    | Returns `{ plan, origin, mode: "annotate", filePath, sourceInfo?, gate, renderAs?, rawHtml?, previousPlan?, versionInfo?, diffCurrent?, diffHtml? }`. `renderAs` is `"markdown"`, `"html"`, or — for a whole-file diagram source (`.mmd`/`.mermaid`/`.dot`/`.gv`) — `"mermaid"` / `"graphviz"`, in which case `plan` is the file's RAW text and the editor renders it as one diagram block (see "Diagram files"). The decision is the pure, shared `annotateDiagramRenderKind` (`packages/core/annotatable.ts`), so a raw-HTML, converted, URL, folder, message or live-app session is never a diagram session in either runtime. The last four power the per-file version diff: `previousPlan`/`versionInfo`/`diffCurrent` for the markdown diff, `diffHtml` (the previous→current page rendered with inline `<ins>`/`<del>`) for `--render-html` files. A local rendered-HTML root is served from its CURRENT bytes on every read (`readRootHtml`), with the startup snapshot as the fallback when the file is missing, unreadable, or over the 2MB cap; when the served bytes differ from the snapshot, `previousPlan`/`versionInfo` still name the saved baseline and `diffCurrent`/`diffHtml` are recomputed against the served bytes (`htmlDiff` is pure; a GET never writes history), so a reload after an agent edit keeps the version diff. `/api/doc` carries the same recomputed `previousPlan`/`versionInfo`/`diffHtml` when it serves that root document (the in-app Refresh path, `rootHtmlVersionDiff`), and nothing extra for any other document. Live app sessions return `{ mode: "annotate-app", appUrl, targetUrl, liveToken, sharingEnabled: false, ... }` instead: no rawHtml, no version fields (see "Live app annotation"). A review of several files answers `{ mode: "annotate-bundle", plan: "", bundle: [{ path, renderAs }], projectRoot: <bundle root>, documentDrafts: true, ... }` (see "Several files in one review"). |
 | `/api/plan/version`   | GET    | Fetch a specific stored version of the annotated file (`?v=N`) |
 | `/api/plan/versions`  | GET    | List all stored versions of the annotated file |
-| `/api/feedback`       | POST   | Submit annotations (body: feedback, annotations) |
+| `/api/feedback`       | POST   | Submit annotations (body: feedback, annotations, serverSession?) |
 | `/api/approve`        | POST   | Approve without feedback (review-gate UX, `--gate`) |
-| `/api/exit`           | POST   | Close session without feedback |
+| `/api/exit`           | POST   | Close session without feedback (`?serverSession=` in the query; the body is empty) |
 | `/api/save-notes`     | POST   | Save to external note apps (Obsidian, Bear, Octarine) |
 | `/api/html-assets/<token>/<path>` | GET | Serve relative support assets for raw HTML annotation sessions, and the sibling `.html`/`.htm` documents an annotated page EMBEDS (`<iframe>`/`<embed>`/`<object>`/`<frame>`). The served page carries a `<base href>` pointing here, which is what makes relative URLs — including ones a script assigns at runtime — resolve against the document's own directory. HTML responses carry `Content-Security-Policy: sandbox allow-scripts` (no `allow-same-origin`, so an embed can never call this session's API) plus `nosniff`, and honour the 2MB annotate cap; a framed or `.html` failure renders a small 404 document naming the file rather than JSON or the app. See "Embedded local documents" under Annotation System. |
 | `/api/share-html`     | GET    | Lazily prepare portable raw HTML for sharing (`?path=<html-file>` optional) |
@@ -1811,6 +1940,8 @@ During normal plan review, an Archive sidebar tab provides the same browsing via
 | `/api/host/close` | POST | Host-only: the reviewer's Close marked `closedBy: "agent"`, KEEPING the draft; tells open tabs over the external-annotation SSE (`session-closed`) and answers `{ unsentAnnotations }`; `409 { code: "already_decided" }` once decided |
 
 All servers use random ports locally or fixed port (`19432`) in remote mode.
+
+**Stale-tab guard (`serverSession`).** Because a port can be reused (a fixed `PLANNOTATOR_PORT`, remote mode's `19432`, a rare random-port collision), a tab left open on an old session could post its decision to a NEW server on the same address and approve a document it never showed. Every plan, annotate and review server (Bun and Pi) therefore issues one random `serverSession` nonce per process (`packages/core/server-session.ts`, vendored to Pi) and advertises it on `/api/plan` and on every diff payload (`/api/diff` and the switch/PR endpoints, beside `approvalNotesSupported`). The client (`packages/ui/utils/serverSession.ts`) echoes it on every decision: `serverSession` in the body of plan `/api/approve` + `/api/deny`, annotate `/api/approve` + `/api/feedback`, review `/api/feedback` (the platform status post included), and as `?serverSession=` on `/api/exit` (whose body is empty). A server holding a DIFFERENT nonce answers `409 { code: "session_mismatch", error }` before it claims or settles anything, and the tab shows `ServerSessionReplacedBanner` ("This review was replaced — reload"). A decision WITHOUT the field is accepted, so an older client (and any host posting decisions by hand) keeps working; only a present, different nonce is refused. `/api/pr-action` (which posts the review to GitHub, GitLab or Bitbucket) carries the nonce in its body too and is guarded the same way in both runtimes: a mismatch posts nothing and the tab shows the same banner.
 
 ### Host session control
 
