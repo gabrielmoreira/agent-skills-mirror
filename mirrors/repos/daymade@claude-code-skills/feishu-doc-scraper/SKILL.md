@@ -30,6 +30,15 @@ snapshot commands, interpretation and coverage checks.
 
 Before filing an archive, declare this split in an artifact manifest and run the bundled storage validator. The complete schema and examples are in **[references/archive-storage-contract.md](references/archive-storage-contract.md)**.
 
+For local original media, failed media exports, or an Obsidian handoff, load
+[original media and reader handoff](references/original-media-and-reader.md).
+Use its verified-preview downloader and API-capture renderer before expanding
+the batch. Its Delivery completion gate (`check_reader_delivery.py finalize`)
+is the local-archive completion entry; conversion, byte and search success do
+not replace a current actual-reader evidence record.
+For a user-selected personal favorites destination, its source catalog producer
+hands off to favorites-search without changing this Skill's filing ownership.
+
 ## Choose the path
 
 ```
@@ -94,7 +103,7 @@ fi
 - **image** — whose real raw tag is a standard `<img src="<drive-token>" alt="…" …>`, not `<image token="…">` — does *not* vanish: pandoc passes the raw `<img>` element through mostly intact (`src`/`id`/`href`/`width`/`height`/`alt` survive; `name=` is dropped; `mime=`/`scale=` are renamed `data-mime=`/`data-scale=`).
 - **lark-table** turns out not to be a real tag for ordinary docx tables at all — they use plain `<table>` HTML, and pandoc generally converts them intact (clean GFM pipe-table syntax for single-paragraph cells, or a raw `<table>` HTML block for multi-paragraph cells) — not part of this silent-loss class.
 
-Because the loss is real and type-dependent, **extraction (step 4) and the residual-tag check (step 5) must operate on `source.html`, never on `source.md`, whenever this pandoc branch was taken.** On the `.data.markdown` branch (≤1.0.32), if it is still reachable at all, the tags already survive as literal text directly in `source.md`, and checking `source.md` there remains correct — this caveat is specific to the pandoc fallback, which is the **current default**: `.data.markdown` was `null` in every real document checked (11/11 — 3/3 fresh fetches on the currently-installed lark-cli 1.0.80, plus 8/8 archived 2026-07-25 fetches), so whether the old branch is still reachable on any current lark-cli build was not confirmed.
+Because the loss is real and type-dependent, **extraction (step 4) and the residual-tag check (step 5) must operate on `source.html`, never on `source.md`, whenever this pandoc branch was taken.** If the actual response provides `.data.markdown`, check that saved Markdown instead. Select the branch from the current response, not a remembered CLI version; the 1.0.80 HTML tests establish the pandoc loss mechanism, not which field every later release returns.
 
 `--format markdown` is **not** a valid value (lark-cli warns and falls back to json). Keep stdout and stderr separate — a harmless `[deprecated]` line goes to stderr, and piping `2>/dev/null` *and* `jq` together produced a false `Exit code 5` in practice. The body must reach disk via `jq`/`pandoc`, never retyped or summarized by the model — paraphrasing silently corrupts source text, the single most important fidelity rule. (pandoc only re-renders HTML structure to Markdown; it does not rewrite prose — the tag-stripping above is a structural loss, not a prose-fidelity one, which is why source.html must stay on disk and stay authoritative for rich-media references.)
 
@@ -145,7 +154,7 @@ These are the rules whose violation silently ruins the output. Each has a reason
 - **`export LARK_CLI_NO_PROXY=1` for `*.feishu.cn`.** Otherwise credentials transit a local proxy and DNS is hijacked.
 - **Transcripts come from the platform's native transcription, never re-ASR.** Downloading media and transcribing again loses speaker labels, timestamps, and accuracy.
 - **A generated docx Markdown is not done until it has been *visually* verified** against the source (render to image, read it). Feishu-exported docx uses font-size+bold for headings rather than Word heading styles, so a "no errors, word count matches" check passes while the entire heading hierarchy is silently flat. Text-level checks cannot catch this.
-- **Do not 死磕 (grind) on docx embedded-image download.** lark-cli (through 1.0.32) cannot download `<image>` tokens from a docx — exhaustively verified. Register the image tokens and note "needs document owner to right-click → save"; the text is the value, images are a tracked gap.
+- **Do not grind on the legacy docx image CLI methods.** Their failures through 1.0.32 do not decide a current browser original-preview permission. When body capture works but export/preview fails, use the operation-specific branch in [original media and reader handoff](references/original-media-and-reader.md); otherwise register the source tokens and report the unresolved image gap.
 - **Rich-media tag verification must run on each document's own `.html`, never its `.md`, on the pandoc fallback path — and each document needs its own filename, not a shared literal `source.html`.** `pandoc -f html -t gfm` silently strips Feishu's custom embedded tags — verified on a real document: 3 raw `whiteboard token="…"` tags in `.data.document.content` left zero trace in the converted `.md` (2026-08-16). Checking only the `.md` for residual tags on this path always reports "clean," even when content was silently discarded; reusing one hardcoded filename across a hub's multiple fetches (step 3) would additionally let a later document silently overwrite an earlier one's raw capture before it was ever checked.
 - **Never equate "downloaded" with "belongs in Git/LFS."** Raw video, Office files, PDFs, and images default to the Feishu original plus a stable locator; the local file is a cache. Git stores structured/searchable derivatives and provenance. OSS is an explicit durability route when source-only retention is insufficient. Run `python3 scripts/check_archive_storage.py <artifact-manifest.json>` before a package is committed.
 - **HTTP 200 from anonymous curl ≠ accessible.** A Feishu login wall returns 200 with a body containing `accounts.feishu.cn` / `login` / `passport` / an empty `<title>`. Check the body, never infer "public" from the status code.
@@ -160,6 +169,7 @@ Stop only when all that apply are true:
 - Apply the discussion acceptance rules in [comments and feedback](references/comments-and-feedback.md).
 - **Every fetched document — a lone doc as much as a collection**: every hit from the residual rich-media-tag check (Path A step 5, run recursively over the whole working directory) maps to a handled artifact — every `mention-doc`/`cite doc-id=`/`sheet`/cross-tenant reference was **followed** to a fetched leaf file, and every `whiteboard` reference was **exported and read** (not followed — a whiteboard is inline visual content, never a link to recurse into). Raw binaries then map to a stable platform/OSS locator plus optional verified local cache; structured/searchable derivatives map to versioned files. This is not a collections-only check: a standalone document can contain an unresolved `whiteboard` with zero other documents involved. Each document's own `.html` legitimately keeps showing its tags forever (it's an immutable raw capture, never rewritten — as long as each document got its own filename per step 3) — don't chase the grep itself to a literal zero.
 - The artifact manifest passes `python3 scripts/check_archive_storage.py <manifest>`: no raw binary is declared as Git storage, every external artifact has a stable locator, and every local cache is clearly marked as non-authoritative.
+- Local reader-facing delivery follows the [completion gate](references/original-media-and-reader.md#delivery-completion-gate). A conversion or storage check is not reader acceptance. User-excluded checks remain excluded and unverified; do not expand the task or fabricate a receipt to force a ready state.
 - `LC_ALL=C grep -rl $'\xef\xbf\xbd' .` is empty.
 - docx path: rendered to an image and visually compared to the source; heading hierarchy and highlights match (see docx reference's checklist).
 - Browser fallback only: TOC coverage + scale check (see browser-failure-rules.md).
@@ -171,7 +181,7 @@ Stop only when all that apply are true:
 Verified dead-ends — retrying them only wastes the session. Full table with failure modes and root causes: **[references/permission-and-failure-boundaries.md](references/permission-and-failure-boundaries.md)**. The top ones:
 
 - Bypassing `131006` permission-denied by any means (lark-cli / curl / anonymous browser) — it is a server-side boundary.
-- Downloading docx embedded images via `docs +media-download`, `api …/drive/v1/medias/<t>/download` (with or without `extra`), or `schema drive.medias.download` — none work; lark-cli even mis-reports the real HTTP 400 as "empty JSON".
+- Retrying the docx image CLI methods tested through 1.0.32: `docs +media-download`, `api …/drive/v1/medias/<t>/download` (with or without `extra`), or `schema drive.medias.download` — those methods failed; this does not rule out an authorized current original-preview request.
 - `WebFetch` against `open.feishu.cn/document/server-docs/...` for API specs — backend is flaky; use `open.feishu.cn/llms-docs/zh-CN/llms-<module>.txt` instead (LLM-friendly, stable).
 - AppleScript/JXA `executeJavaScript`, Chrome CDP on port 9222 — disabled/empty in this environment (browser path only).
 - Using `minimax-docx` to convert docx→md — it is a docx *authoring* tool; use the doc-to-markdown skill instead.
@@ -196,13 +206,9 @@ Verified dead-ends — retrying them only wastes the session. Full table with fa
 
 ## Next step
 
-After extraction completes, the clean Markdown typically feeds the user's own knowledge-base ingestion (filing, indexing, dedup) — which is deliberately out of this skill's scope. If the source went through Path B (a docx), the doc-to-markdown skill is already part of that flow. Offer the handoff; do not auto-organize:
-
-```
-Extraction complete: [N] sources → faithful Markdown ([M] permission/image gaps listed).
-
-Options:
-A) Hand off to your PKM/organizing workflow — file & index these (Recommended if part of a vault)
-B) Run /daymade-docs:docs-cleaner — consolidate redundant content across the extracted files
-C) Stop here — the faithful Markdown is the deliverable
-```
+Use the destination already selected by the user. For personal favorites, follow
+the [source-catalog handoff](references/original-media-and-reader.md#declare-a-selected-personal-collection)
+to favorites-search. Do not reopen that choice as a PKM recommendation or promote
+private material to a team collection. When no destination was selected, deliver
+the faithful capture and its explicit gaps; filing and deduplication belong to
+the recipient's chosen archive workflow.

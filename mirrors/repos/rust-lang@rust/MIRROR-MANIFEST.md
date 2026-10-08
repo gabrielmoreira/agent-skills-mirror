@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rust-lang/rust` — 26 default patterns, 1 followed patterns, 12 file(s) materialized.
+Mirror of `rust-lang/rust` — 26 default patterns, 1 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rust-lang/rust` — 26 default patterns, 1 followed patterns, 12 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 12 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,17 +60,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`compiler/rustc_codegen_gcc/CONTRIBUTING.md`](compiler/rustc_codegen_gcc/CONTRIBUTING.md) |
-| 4 | ✓ | [`library/compiler-builtins/CONTRIBUTING.md`](library/compiler-builtins/CONTRIBUTING.md) |
-| 5 | ✓ | [`library/portable-simd/CONTRIBUTING.md`](library/portable-simd/CONTRIBUTING.md) |
-| 6 | ✓ | [`library/stdarch/CONTRIBUTING.md`](library/stdarch/CONTRIBUTING.md) |
-| 7 | ✓ | [`src/tools/clippy/CONTRIBUTING.md`](src/tools/clippy/CONTRIBUTING.md) |
-| 8 | ✓ | [`src/tools/miri/CONTRIBUTING.md`](src/tools/miri/CONTRIBUTING.md) |
-| 9 | ✓ | [`src/tools/rust-analyzer/AGENTS.md`](src/tools/rust-analyzer/AGENTS.md) |
-| 10 | ✓ | [`src/tools/rust-analyzer/CLAUDE.md`](src/tools/rust-analyzer/CLAUDE.md) |
-| 11 | ✓ | [`src/tools/rust-analyzer/CONTRIBUTING.md`](src/tools/rust-analyzer/CONTRIBUTING.md) |
-| 12 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 2 | ✓ | [`compiler/rustc_codegen_gcc/CONTRIBUTING.md`](compiler/rustc_codegen_gcc/CONTRIBUTING.md) |
+| 3 | ✓ | [`library/compiler-builtins/CONTRIBUTING.md`](library/compiler-builtins/CONTRIBUTING.md) |
+| 4 | ✓ | [`library/portable-simd/CONTRIBUTING.md`](library/portable-simd/CONTRIBUTING.md) |
+| 5 | ✓ | [`library/stdarch/CONTRIBUTING.md`](library/stdarch/CONTRIBUTING.md) |
+| 6 | ✓ | [`src/tools/clippy/CONTRIBUTING.md`](src/tools/clippy/CONTRIBUTING.md) |
+| 7 | ✓ | [`src/tools/miri/CONTRIBUTING.md`](src/tools/miri/CONTRIBUTING.md) |
+| 8 | ✓ | [`src/tools/rust-analyzer/AGENTS.md`](src/tools/rust-analyzer/AGENTS.md) |
+| 9 | ✓ | [`src/tools/rust-analyzer/CLAUDE.md`](src/tools/rust-analyzer/CLAUDE.md) |
+| 10 | ✓ | [`src/tools/rust-analyzer/CONTRIBUTING.md`](src/tools/rust-analyzer/CONTRIBUTING.md) |
+| 11 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

@@ -1,3 +1,10 @@
+---
+description: >-
+  Measured footprint: agent density in one process, cold start, binary size,
+  and the dependency-floor ratchet that keeps it there.
+icon: gauge
+---
+
 # Performance and footprint
 
 OpenHuman's Rust core runs in-process as a library, not as one OS process per
@@ -56,6 +63,8 @@ memory budget.
 | `agent-turn` (cold, one turn, no delegation) | 47.6 MiB | 102 ms |
 | `cold-phases` (nine bootstrap phases: config load, registry init, agent build, memory construction, first turn) | 51.2 MiB | 476 ms |
 
+The `cold-phases` row is a historical measurement: that scenario was removed from the profile binary, so the number stands but cannot be re-run from this tree. Everything else on this page reproduces with the commands below.
+
 A cold agent turn answers in about 102 ms. The full nine-phase bootstrap, the
 thing a process pays exactly once, takes 476 ms. After that, a warmed turn in
 the same process costs 0.5-1.9 MiB rather than the 26-31 MiB a first turn
@@ -84,9 +93,9 @@ what the desktop app ships).
 | Pure slim | none | 68.4 MiB | 51.0 MiB |
 
 The `skills,flows` recipe in
-[`docs/library-minimal-recipe.md`](../../docs/library-minimal-recipe.md) is
+[`docs/library-minimal-recipe.md`](https://github.com/tinyhumansai/openhuman/blob/main/docs/library-minimal-recipe.md) is
 the supported embed target for a headless host: it keeps SKILL.md execution
-and saved-workflow runs, drops voice, web3, media, meet, MCP and the desktop
+and saved-workflow runs, drops voice, web3, media, MCP and the desktop
 automation stack, and lands about 30% smaller than the default build. Most of
 that gain is binary size and code-paging surface; it only moves settled RSS by
 about 3-5 MiB per scenario, since most of the RSS story is initialization and
@@ -102,12 +111,14 @@ Everything above compiles in at build time through Cargo features (`media`,
 `skills`, `flows`, `mcp`, `channels`, `http-server`, `scheduler-gate`,
 `file-logging`, `modules`, and more). Beyond that, several domains ship as
 loadable native `cdylib` modules rather than being linked into the core
-binary at all: `tinydocs`, `tinyvoice`, `tinyjuice`, `tinyruntime`,
-`tinywallet`, `tinymcp`, `tinychannels`, and `tinyconnectors`, each behind a
+binary at all. The compiled registry pins fourteen records across twelve module names, because `tinyruntime` ships as a router plus two language providers: `tinycomputer`,
+`tinysearch`, `tinydocs`, `tinywallet`, `tinyjuice`, `tinyvoice`,
+`tinyruntime` with its Node and Python providers, `tinymcp`,
+`tinyconnectors`, `tinybox`, `tinychannels` and `tinyhosts`, each behind a
 small `*-bus` contract crate. A module loads into the same process and shares
 its privileges, so the admission checks (ABI, manifest, dependency, digest)
-matter more than for an ordinary dependency; see `AGENTS.md`'s "Loadable
-modules and bus contracts" section for the rules.
+matter more than for an ordinary dependency. See
+[Loadable modules](loadable-modules.md) for the whole model.
 
 ## The kernel-floor ratchet
 
@@ -115,9 +126,11 @@ modules and bus contracts" section for the rules.
 profile (`--no-default-features --features flows`, the surface a second host
 would embed) along three numbers: package count, unique crate names, and
 native (C/C++) build count. `scripts/kernel-floor.limits` holds the ceiling
-for each, currently `flows:306:285:2`, and the ratchet only moves down: a
-change that grows the graph has to lower this number in the same PR, and
-raising it requires a written justification a reviewer actually reads. This
+for each, and the ratchet only moves down: a change that grows the graph has
+to lower those numbers in the same PR, and raising one requires a written
+justification a reviewer actually reads. Read the current ceiling out of the
+file rather than from here; it moves, and the file keeps a dated history of
+every move inline. This
 is what stops the dependency floor silently growing back after each gating
 effort sheds crates from it.
 
@@ -148,8 +161,8 @@ scripts/kernel-floor.sh flows
 `scripts/profile/README.md` documents the remaining scripts (`library-cpu.sh`
 for CPU profiling via samply, `library-heap.sh` for live-heap attribution via
 dhat). Full methodology, caveats, and the per-scenario breakdown live in
-[`docs/library-benchmarking.md`](../../docs/library-benchmarking.md) and
-[`docs/library-minimal-recipe.md`](../../docs/library-minimal-recipe.md).
+[`docs/library-benchmarking.md`](https://github.com/tinyhumansai/openhuman/blob/main/docs/library-benchmarking.md) and
+[`docs/library-minimal-recipe.md`](https://github.com/tinyhumansai/openhuman/blob/main/docs/library-minimal-recipe.md).
 
 ## Measurement conditions, stated plainly
 

@@ -247,6 +247,8 @@ the same handlers. There is no second handler set, no second semantic, and no He
 | `GET` | `/crew/v1/workspace/:id/changes` | `GET …/workspace/:id/changes` | proxied byte-for-byte — additive-optional (§7.1). The same list asked by workspace rather than by pane (ADR 0065), with the same query. A lead that predates it never calls it, and a peer that predates it answers 404 to a lead that does |
 | `GET` | `/crew/v1/pane/:id/files` | `GET …/files` | proxied byte-for-byte — additive-optional (§7.1), added 2026-10-05 (M45/03). One folder (`?dir=`) or one text file (`?path=`) under the same root the pane's Changes list reads, off **the member's own disk** (ADR 0083); the query rides through untouched. A READ for forwarding (attempted against a stale member, read budget, audited on neither side), but the member answers it only for a device its **own** device policy authorises, exactly as for a write (§12): `crewGate` takes its write branch for it. A lead that predates it never calls it, and a peer that predates it answers **404** to a lead that does, which the phone must read as "update this member", never as a missing file. A refused path is the member's own `404 { "error": "unknown-path" }`, told apart by its body. A listing row may carry `ignored: true` (additive-optional, added 2026-10-05): git says the entry is ignored in the repository that holds the folder, asked once per listing by the member over its own disk. A member that predates it, one with no repository there, and one whose git did not answer in time all send no field, and the phone then hides nothing for it. The phone hides flagged rows by default; it is a view filter, and an ignored file still reads |
 | `GET` | `/crew/v1/workspace/:id/files` | `GET …/workspace/:id/files` | proxied byte-for-byte — additive-optional (§7.1), added 2026-10-05 (M45/03). The same Files view asked by workspace, with the same query, gate and 404 reading as the pane row above |
+| `GET` | `/crew/v1/pane/:id/files/image` | `GET …/files/image` | proxied byte-for-byte — additive-optional (§7.1), added 2026-10-07 (ADR 0090). One picture (`?path=`) under the same root as the pane's Files read, as its own bytes, off **the member's own disk**; the member reads the type off the bytes (PNG, JPEG, GIF, WebP, AVIF) and answers `413` past 16 MiB and `415` for anything else. The same gate as the Files read (§12, `crewGate`'s write branch), a READ for forwarding, audited on neither side. The lead does not relay the member's cache or security headers: it sets `no-store`, `default-src 'none'; sandbox` and `inline` itself on whatever comes back. It does relay the plain-data `X-Collie-File-Size` and `X-Collie-File-Mtime` the member sends, the picture's version, so the phone can hold the picture in memory; a member that sends neither gets neither. A peer that predates it answers **404**, which the phone reads as "no picture" and shows the file's size instead |
+| `GET` | `/crew/v1/workspace/:id/files/image` | `GET …/workspace/:id/files/image` | proxied byte-for-byte — additive-optional (§7.1), added 2026-10-07 (ADR 0090). The same picture asked by workspace, with the same query, gate, statuses and headers as the pane row above |
 | `POST` | `/crew/v1/pane/:id/reply` | `POST …/reply` (`:279`) | forwarded |
 | `POST` | `/crew/v1/pane/:id/keys` | `POST …/keys` (`:280`) | forwarded |
 | `POST` | `/crew/v1/pane/:id/upload` | `POST …/upload` (`:281`) | forwarded (§13) |
@@ -1534,10 +1536,11 @@ happened on the peer's terminals.
 - **A peer is never asked to trust the lead's authorisation decision in place of its own.** The peer
   applies its own write-level checks to a crew request; the lead's gate does not stand in for them.
 - **One read borrows the write's device check** (added 2026-10-05, ADR 0083): `files` on the pane and
-  workspace routes. It is still a read on the link (forwarded on the read budget, audited on neither
-  side), but the peer answers it only when `X-Crew-Device` names a device its own allowlist holds,
-  the same branch of `crewGate` a write takes. Additive inside protocol version 2: the route is new,
-  so no request that crossed the link before is gated differently.
+  workspace routes, and `files/image` beside them (added 2026-10-07, ADR 0090). It is still a read
+  on the link (forwarded on the read budget, audited on neither side), but the peer answers it only
+  when `X-Crew-Device` names a device its own allowlist holds, the same branch of `crewGate` a write
+  takes. Additive inside protocol version 2: the routes are new, so no request that crossed the link
+  before is gated differently.
 
 ---
 
@@ -2510,8 +2513,8 @@ token the *lead* minted, so the lead pushes its registry.
 |---|---|
 | **Route** | `POST /crew/v1/pairing`, lead → **deputy only** |
 | **Gate** | the crew's two factors (§8.1), plus a role check: the caller must be *this collie's own lead*, **and this collie must hold a verified warrant naming itself**. Every other peer that ever receives one refuses it. |
-| **Body** | `{ crewId, leadMemberId, devices: [{ label, tokenHash, createdAt }] }` — every field required, because the route is new and a new route may require its own fields (§7.1). |
-| **Sent** | at designation and on every change — a `pair`, a `devices revoke`, nothing else. |
+| **Body** | `{ crewId, leadMemberId, devices: [{ label, tokenHash, createdAt, expiresAt? }] }`. Every field is required except `expiresAt`, because the route is new and a new route may require its own fields (§7.1). `expiresAt` *(added 2026-10-06, M46)* is additive-optional: sent only for a device paired with `collie pair --expires` or given one by `devices set-expiry`, and folded into `pairingDigest` only then, so a registry without expiries digests exactly as before. A non-numeric value refuses the body. The standby door refuses a token past its `expiresAt`, and a takeover adopts the field with the device. A deputy one release behind ignores it and honours the token until it updates. |
+| **Sent** | at designation and on every change: a `pair`, a `devices revoke`, a `devices set-expiry` or `clear-expiry`, nothing else. |
 | **Absent (404)** | no credential to verify ⇒ **the standby door refuses to arm.** Closed. |
 
 - **Only hashes cross.** The token was shown once, at claim time, and is not recoverable
@@ -2536,10 +2539,11 @@ token the *lead* minted, so the lead pushes its registry.
   *remove* a device on the deputy.
 - **It lands in `standby-devices.json`** — its own file, its own version integer, 0600 in a 0700
   directory, temp-then-rename — and is **NEVER merged into the deputy's own `paired-devices.json`.**
-  This is not tidiness. `PairingStore.enforced()` is *the registry is non-empty*, so a merge would
-  silently switch on the deputy's **own** write gate for its **own** operator, on a machine where
-  nobody ran `collie pair`. A gate the operator did not arm is a lockout waiting for the day they use
-  that machine directly. The synced entries are adopted into the deputy's own registry **at takeover
+  This is not tidiness. The deputy's own registry decides who may use the deputy's **own** front
+  door, and pairing is always on (ADR 0086, amended 2026-10-07: before it, *the registry is
+  non-empty* armed the gate, so a merge would have armed it). A merge would silently let every phone
+  paired with the lead read and drive the deputy directly, on a machine where its operator never ran
+  `collie pair` for them. The synced entries are adopted into the deputy's own registry **at takeover
   commit and only then** (§18.16), because after the commit that machine *is* the lead and the phone
   must keep working against the credential it already holds.
 - **A label collision is a FINDING, and it never refuses the sync** *(amended 2026-08-20, after a

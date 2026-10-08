@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `modelcontextprotocol/inspector` — 26 default patterns, 4 followed patterns, 18 file(s) materialized.
+Mirror of `modelcontextprotocol/inspector` — 26 default patterns, 4 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `modelcontextprotocol/inspector` — 26 default patterns, 4 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,10 +76,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 13 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 14 | ✓ | [`docs/publishing.md`](docs/publishing.md) |
-| 15 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 16 | → | [`docs/quality-gate.md`](docs/quality-gate.md) |
-| 17 | → | [`docs/skill-authoring.md`](docs/skill-authoring.md) |
-| 18 | → | [`SECURITY.md`](SECURITY.md) |
+| 15 | ✓ | [`skills/mcpdo/SKILL.md`](skills/mcpdo/SKILL.md) |
+| 16 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 17 | → | [`docs/quality-gate.md`](docs/quality-gate.md) |
+| 18 | → | [`docs/skill-authoring.md`](docs/skill-authoring.md) |
+| 19 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

@@ -314,6 +314,26 @@ File/SQLite CLI and real stdio tests qualify this context/tool slice. Receiver
 adoption, actual effects and original-route return remain separate acceptance;
 keep G0/G1 open until the installed ordinary journey proves them.
 
+**Explicit result-file checkpoint (2026-10-08).** The existing CLI `report` and
+scoped MCP `return_result` now accept bounded workspace-relative attachment refs
+for verified bound-owner App requests. The shared typed publication owner binds
+their immutable content identity; the POSIX host snapshots bytes, and Lark returns
+one Markdown post with files to the original conversation. Regressions cover
+workspace edits after publication, revoked return authority, exact Goal-instance
+replacement, lost resource records and download mismatch without a resend. An
+installed private-App journey returned one file post, verified downloaded bytes
+and retained that message across restart. Automatic return recovery remains open.
+The Lark candidate resolves message-scoped resource keys only from the exact post
+and ordered filenames, downloads to fixed local names with explicit suffixes, and
+finishes processing feedback only after byte verification. Read-only validation
+against the original App message passes. A route refusal also preserves the saved
+provider attempt and result identity, without reopening terminal work or resending.
+This does not certify installed automatic recovery or M3 completion. The existing
+manager delivery owner retains that next
+gate. Local-Web file presentation, inline video playback, groups and cross-host
+transfer remain with their surface owners. Explicit refs keep this boundary
+verifiable and reversible without another delivery ledger.
+
 Migrate current inbox/tracking/roundtrip records into the single collaboration owner; preserve their valid effect semantics and receipts, but retire duplicate manager-specific transition logic after cutover. Persist intent before dispatch; use request revision plus effect identity for idempotency. A changed payload cannot reuse an immutable identity; a correction appends a linked revision and the receiver rechecks relevant state before effectful execution. Multiple messages about one job may be explicitly related by the manager, preserving each original obligation and correction. Do not merge independent same-text requests by a content hash alone.
 
 At-least-once delivery with idempotent Core effects is the target. Do not promise exactly-once external effects: uncertain sends are reconciled using provider receipts before retry. Concurrent workers use existing claims/leases; delegation does not claim the worker's Todo. Cross-host operation uses configured transport and authority, not a bare local path copied to another machine.

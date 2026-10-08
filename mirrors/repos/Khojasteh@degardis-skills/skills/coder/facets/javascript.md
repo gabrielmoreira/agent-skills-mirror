@@ -1,6 +1,7 @@
 ---
 title: JavaScript
 category: Language
+description: Code written in JavaScript, or in TypeScript, which runs as JavaScript once its types are erased.
 guides:
 - javascript-typescript-documentation
 x-claim-provenance:

@@ -38,7 +38,7 @@
 </p>
 
 <p align="center">
-  🇺🇸 <a href="./README.md">English</a> | 🇸🇦 <a href="./docs/README.ar.md">العربية</a> | 🇨🇳 <a href="./docs/README.zh-CN.md">简体中文</a> | 🇯🇵 <a href="./docs/README.ja-JP.md">日本語</a> | 🇰🇷 <a href="./docs/README.ko.md">한국어</a> | 🇩🇪 <a href="./docs/README.de.md">Deutsch</a> | 🇵🇰 <a href="./docs/README.ur-pk.md">اردو</a>
+  🇺🇸 <a href="./README.md">English</a> | 🇸🇦 <a href="./docs/README.ar.md">العربية</a> | 🇨🇳 <a href="./docs/README.zh-CN.md">简体中文</a> | 🇯🇵 <a href="./docs/README.ja-JP.md">日本語</a> | 🇰🇷 <a href="./docs/README.ko.md">한국어</a> | 🇩🇪 <a href="./docs/README.de.md">Deutsch</a> | 🇹🇷 <a href="./docs/README.tr.md">Türkçe</a> | 🇵🇰 <a href="./docs/README.ur-pk.md">اردو</a>
 </p>
 
 <p align="center">
@@ -68,13 +68,13 @@ The core runs in-process, not as a separate daemon the UI talks to over a socket
 
 A cold agent turn takes 102 ms; the full nine-phase bootstrap (config load, registry init, agent build, memory construction, first turn) takes 476 ms. A slim build settles at about 42 MiB RSS, of which roughly 15.2 MiB is private heap and the rest is paged-in executable text and allocator overhead. [Token compression](./gitbooks/features/token-compression.md) (tinyjuice) also cuts what actually reaches the model, so a large context costs less than its raw size suggests.
 
-Full methodology and numbers: [`docs/library-benchmarking.md`](./docs/library-benchmarking.md), [`docs/harness-comparison-2026-07-22.md`](./docs/harness-comparison-2026-07-22.md), and [performance](./gitbooks/developing/performance.md).
+Full methodology and numbers: [`docs/library-benchmarking.md`](./docs/library-benchmarking.md), [`docs/harness-comparison-2026-07-22.md`](./docs/harness-comparison-2026-07-22.md), and [performance](./gitbooks/developing/performance.md). Task-level results against other harnesses live in their own repository, [tinyhumansai/openhuman-benchmarks](https://github.com/tinyhumansai/openhuman-benchmarks), published at [tinyhumansai.github.io/openhuman-benchmarks](https://tinyhumansai.github.io/openhuman-benchmarks/).
 
 ## Modular
 
-Cargo feature gates control what compiles in. The contributor default is nine gates (`media`, `skills`, `flows`, `mcp`, `channels`, `http-server`, `scheduler-gate`, `file-logging`, `modules`); the shipped desktop product turns on a wider set listed in `scripts/ci/product-features.txt`. Dropping everything gets a pure-slim build at 51 MiB stripped; adding back `skills` and `flows`, the recommended recipe for embedding, lands at about 60 MiB stripped; turning on every gate produces a 116 MiB unstripped binary. `scripts/kernel-floor.sh` keeps a down-only ratchet on the dependency count so the floor doesn't creep back up.
+Cargo feature gates control what compiles in. The contributor default is nine gates (`media`, `skills`, `flows`, `mcp`, `channels`, `http-server`, `scheduler-gate`, `file-logging`, `modules`); the shipped desktop product turns on sixteen, listed in `scripts/ci/product-features.txt`. Dropping everything gets a pure-slim build at 51 MiB stripped; adding back `skills` and `flows`, the recommended recipe for embedding, lands at about 60 MiB stripped; turning on every gate produces a 116 MiB unstripped binary. `scripts/kernel-floor.sh` keeps a down-only ratchet on the dependency count so the floor doesn't creep back up.
 
-Past compile time, capability comes from loadable native modules: `tinydocs`, `tinyvoice`, `tinyjuice`, `tinyruntime`, `tinywallet`, `tinymcp`, `tinychannels`, and `tinyconnectors`, each with a small `*-bus` contract crate that defines its interface and wire types. See [`docs/library-minimal-recipe.md`](./docs/library-minimal-recipe.md) for the measured trade-offs of each gate.
+Past compile time, capability comes from loadable native modules. The compiled registry (`crates/openhuman-core/src/modules/registry/`) pins fourteen of them: `tinycomputer`, `tinysearch`, `tinydocs`, `tinywallet`, `tinyjuice`, `tinyvoice`, `tinyruntime` and its Node and Python providers, `tinymcp`, `tinyconnectors`, `tinybox`, `tinychannels` and `tinyhosts`. Each has a small `*-bus` contract crate that defines its interface and wire types, and each is pinned to a published release by SHA-256 across eleven platform builds. Loading is lazy, so a user who never asks for a document never pays for the download, the `dlopen` or the resident cost of the document writer. See [`docs/library-minimal-recipe.md`](./docs/library-minimal-recipe.md) for the measured trade-offs of each gate.
 
 ## Pluggable engines
 
@@ -83,7 +83,7 @@ Every engine OpenHuman calls out to is chosen by config, not hardcoded:
 - LLM: the managed TinyHumans route, Ollama, LM Studio, MLX, any local OpenAI-compatible server, Claude Code or the Claude Agent SDK, and 26 bring-your-own-key providers including OpenRouter, OpenAI, Anthropic, Google, Groq, Mistral, DeepSeek, Together, and Fireworks. See [local models and BYOK](https://tinyhumans.gitbook.io/openhuman/features/model-routing/local-and-byok-models).
 - Embeddings: the managed Voyage-backed route, or your own Voyage, OpenAI, Cohere, Ollama, or OpenAI-compatible endpoint.
 - Memory: [Memory v2](https://tinyhumans.gitbook.io/openhuman/features/memory) is Recall, Fetch and Store over a pluggable engine: TinyHumans (hosted CortexDB, signed in with your account) or your own CortexDB (endpoint and key). It keeps a shared brain of documents (folders, files, links, GitHub, RSS, connected apps), each agent's conversations and shared learnings, recalls what matters before every turn, and answers questions with citations. With neither engine, memory is off. Everything is switched under Connections > Memory.
-- Web search: managed search included with a subscription, or your own key for Parallel, Brave, Querit, Exa, Tavily, or a self-hosted SearXNG instance.
+- Web search: ten providers behind three capability roles (search, answer, page contents). Exa and Gemini have a managed route included with a subscription; Brave, Querit, Tavily, Seltz, Parallel, TinyFish and Gemini Deep Research are bring-your-own-key; SearXNG needs no key but needs your own instance URL.
 
 Engine details: [engines](./gitbooks/developing/engines.md).
 
@@ -91,13 +91,13 @@ Engine details: [engines](./gitbooks/developing/engines.md).
 
 Not every decision needs the model to generate text. [Jev](./gitbooks/developing/jev.md) is a small decision model, run through the TinyHumans System One proxy, that takes a question and a fixed set of options and returns a calibrated probability for each: pick one of these (Choice), score this (Score), or yes/no (Noul). It never writes prose.
 
-The clearest use is [tool search](./docs/plans/jev-tool-search-baseline.md): with 215 core tools plus 1,000 Composio actions on the table and 160 test requests, plain BM25 retrieval got the right tool in its top pick 22.5% of the time and made 26 needless tool calls out of 31 tool-less requests. Retrieving the top 20 candidates by embedding and letting Jev choose among them got the right tool 62.0% of the time (66.7% in its top 3) and made 1 needless call, at a p50 of 1.5 seconds against BM25's 28 milliseconds. Letting Jev pick the Composio app family first and then the action within it pushes Composio-only accuracy to 80.3% top-1. It falls back to BM25 automatically when no TinyHumans credential is present.
+The clearest use is [tool search](./docs/plans/jev-tool-search-baseline.md). Measured on 2026-09-22, with the 215 tools one orchestrator session registers plus 1,000 Composio actions on the table and 160 test requests, plain BM25 retrieval got the right tool in its top pick 22.5% of the time and made 26 needless tool calls out of 31 tool-less requests. Retrieving the top 20 candidates by embedding and letting Jev choose among them got the right tool 62.0% of the time (66.7% in its top 3) and made 1 needless call, at a p50 of 1.5 seconds against BM25's 28 milliseconds. Letting Jev pick the Composio app family first and then the action within it pushes Composio-only accuracy to 80.3% top-1. It falls back to BM25 automatically when no TinyHumans credential is present. The static catalogue is smaller than that corpus: 198 tool names, machine-checked on every test run against `app/src/features/conversations/tools/__fixtures__/coreToolNames.json`. An orchestrator session adds the synthesized delegation tools and the signed-in connector dispatchers on top of it.
 
 Jev also drives step-by-step decisions inside the [browser tool](./crates/openhuman-core/src/modules/browser_task.rs), where a consequential action (a purchase, a send, a delete) returns `NeedsConfirmation` instead of executing.
 
 ## Workflows
 
-[Workflows](./gitbooks/features/workflows.md) are saved, typed automation graphs, built on the open-source [tinyflows](https://github.com/tinyhumansai/tinyflows) engine. The catalog has 22 node kinds (agent calls, HTTP requests, code, conditions, loops, sub-workflows, approvals, and more), and a graph can trigger on a schedule, an app event, or manually, and can resume mid-run after a pause.
+[Workflows](./gitbooks/features/workflows.md) are saved, typed automation graphs, built on the open-source [tinyflows](https://github.com/tinyhumansai/tinyflows) engine. The engine's catalog has 22 node kinds (agent calls, HTTP requests, code, conditions, loops, sub-workflows, approvals, and more) and the canvas palette offers fifteen of them. A graph triggers on a schedule, an app event, or manually, and resumes mid-run after a pause.
 
 <p align="center">
  <img src="./gitbooks/.gitbook/assets/workflows.png" alt="OpenHuman workflow canvas">
@@ -113,12 +113,15 @@ The same core ships three ways: a Tauri v2 and Wry desktop app for Windows, macO
 
 ## A Rust library
 
-`openhuman-embed` is the typed facade for embedding the core directly in another Rust process: one `Runtime` per process, then any number of independent `Agent`s on it, each with its own provider, access tier, working directory, MCP servers, skills, prompt, and sandbox. This is the exact code from [`crates/openhuman-embed/README.md`](./crates/openhuman-embed/README.md):
+`openhuman-embed` is the typed facade for embedding the core directly in another Rust process: one `Runtime` per process, then any number of independent `Agent`s on it, each with its own provider, access tier, working directory, MCP servers, skills, prompt, and sandbox. A host that wants hosted TinyHumans inference builds the runtime through `openhuman-tinyhumans`, which installs the backend transport during startup; the plain embed builder suits a host bringing its own providers. This is the exact code from [`crates/openhuman-embed/README.md`](./crates/openhuman-embed/README.md):
 
 ```rust
-use openhuman_embed::{Access, AgentSpec, McpServer, Provider, Runtime, Workspace};
+use openhuman_tinyhumans::{
+    embed::{Access, AgentSpec, McpServer, Provider, Workspace},
+    RuntimeBuilder,
+};
 
-let runtime = Runtime::builder()
+let runtime = RuntimeBuilder::new()
     .workspace(Workspace::dir("/var/lib/my-product/openhuman"))
     .api_key("th_live_…")                     // the only credential in library mode
     .build()
@@ -158,6 +161,10 @@ Details, feature-flag pass-through, and the minimal-footprint recipe: [embedding
 
 A single TinyHumans API key covers managed LLM inference (including access to the OpenRouter model catalogue), web search, embeddings, media generation, integrations, voice, and the Jev ranker. Pass it once, in code (`.api_key("th_...")`) or as `OPENHUMAN_BACKEND_API_KEY` for a headless host, and every one of those services is live. Details: [the TinyHumans API key](./gitbooks/developing/tinyhumans-api-key.md).
 
+## Where this is heading
+
+The badge at the top says early beta, and the checklist for taking it off is a public issue: [#6047](https://github.com/tinyhumansai/openhuman/issues/6047). Memory end-to-end and reply persistence are checked off. What is left is clean-install sign-in ([#6020](https://github.com/tinyhumansai/openhuman/issues/6020)) and a Windows native-module permission case ([#6008](https://github.com/tinyhumansai/openhuman/issues/6008)); the release-pipeline and Windows path-length blockers have since been closed, though the checklist still shows them open. Beyond that, the work tracked in the open is an agent-to-agent protocol ([#3463](https://github.com/tinyhumansai/openhuman/issues/3463)), pluggable memory adapters alongside the two engines that ship today ([#5390](https://github.com/tinyhumansai/openhuman/issues/5390)), external agent runtimes over a shared ACP transport ([#4731](https://github.com/tinyhumansai/openhuman/issues/4731)), and a managed local model runtime ([#6130](https://github.com/tinyhumansai/openhuman/issues/6130)). None of that is a commitment; it is where the issues are.
+
 ## Open source
 
 OpenHuman is licensed under [GPL-3.0](./LICENSE).
@@ -172,12 +179,11 @@ High-level comparison (products evolve, so verify against each vendor). OpenHuma
 | **Simple to start**    | ✅ Desktop + CLI  | ⚠️ Terminal-first | ⚠️ Terminal-first | ✅ Clean UI, minutes                                                                                     |
 | **Cost**               | ⚠️ Sub + add-ons  | ⚠️ BYO models     | ⚠️ BYO models     | ✅ One sub + TokenJuice                                                                                  |
 | **Memory**             | ✅ Chat-scoped    | ⚠️ Plugin-reliant | ✅ Self-learning  | 🚀 Pluggable engine (hosted TinyHumans or your CortexDB), recall before every turn, citations |
-| **Integrations**       | ⚠️ Few connectors | ⚠️ BYO            | ⚠️ BYO            | 🚀 100+ OAuth · 5k+ MCP · 90k+ Skills                                                                    |
+| **Integrations**       | ⚠️ Few connectors | ⚠️ BYO            | ⚠️ BYO            | 🚀 119 managed-auth OAuth toolkits · MCP registries · public skill catalogues                            |
 | **Source sync**        | 🚫 None           | 🚫 None           | 🚫 None           | ✅ Scheduled sync of folders, repos, feeds and apps into memory                         |
 | **Orchestration**      | ⚠️ Sub-tasks      | ⚠️ Single loop    | ⚠️ Single loop    | 🚀 Agent graphs + checkpoints + E2E-encrypted A2A                                                        |
 | **Workflows**          | 🚫 None           | ⚠️ Scripts        | ⚠️ Scripts        | 🚀 Visual, durable, agent-proposed, approval-gated                                                       |
-| **Meetings**           | 🚫 None           | 🚫 None           | 🚫 None           | 🚀 Joins Meet/Zoom/Teams/Webex, speaks, live transcript                                                  |
-| **Messaging channels** | 🚫 None           | ⚠️ A few          | ⚠️ A few          | ✅ 15 incl. native email (IMAP/SMTP)                                                                     |
+| **Messaging channels** | 🚫 None           | ⚠️ A few          | ⚠️ A few          | ✅ 14 in the shipped build, incl. native email (IMAP/SMTP)                                               |
 | **Local-only mode**    | 🚫 Cloud-only     | ⚠️ BYO local      | ⚠️ BYO local      | ✅ One-switch enforced Privacy Mode                                                                      |
 | **Observability**      | 🚫 Opaque         | ⚠️ Logs           | ⚠️ Logs           | ✅ Replayable run journals + per-call cost accounting                                                    |
 | **API sprawl**         | 🚫 Extra keys     | 🚫 BYOK           | 🚫 Multi-vendor   | ✅ One account                                                                                           |
@@ -189,14 +195,22 @@ High-level comparison (products evolve, so verify against each vendor). OpenHuma
 New contributor? Start with [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the fork/PR workflow and local validation commands, or use the copy-paste AI-agent prompt in [`CONTRIBUTING-BEGINNERS.md`](./docs/CONTRIBUTING-BEGINNERS.md#optional--let-an-ai-coding-agent-guide-you). The short path is:
 
 1. Install Git, Node.js 24+, pnpm 10.10.0, Rust 1.96.1 (`rustfmt` + `clippy`), CMake, Ninja, ripgrep, and the platform desktop build prerequisites.
-2. Fork and clone the repo, then run `git submodule update --init --recursive` before `pnpm install` so the vendored Rust dependencies under `vendor/` (tinyagents, tinyflows, tinychannels, tinymemory, motosan-ai-oauth, ...) resolve.
+2. Fork and clone the repo, then run `git submodule update --init --recursive` before `pnpm install` so the vendored Rust dependencies under `vendor/` (tinyagents, tinyflows, tinychannels, tinymemory, tinycomputer, ...) resolve.
 3. Use `pnpm dev` for web-only UI work, `pnpm --filter openhuman-app dev:app` (macOS) or `pnpm dev:app:win` (Windows) for the desktop shell, and focused checks such as `pnpm typecheck`, `pnpm format:check`, and `cargo check -p openhuman --lib` before opening a PR.
 
-The Rust workspace under `crates/` splits into `crates/openhuman-core` (package
-`openhuman`: the core plus the `openhuman-core` CLI), `crates/openhuman-app`
-(the Tauri desktop shell, built as a separate Cargo world), `crates/openhuman-embed`
-(the library facade for embedding the core), `crates/openhuman-rpc` (shared RPC
-contracts and client), and `crates/openhuman-tui` (the terminal client). See
+The Rust workspace under `crates/` has six members:
+
+| Crate | What it is |
+| --- | --- |
+| `crates/openhuman-core` | Package `openhuman`: the core library. Business domains under `src/<domain>/`, the controller contract and in-process dispatch under `src/core/`. No binary, no JSON-RPC server, no TinyHumans SDK. |
+| `crates/openhuman-rpc` | JSON-RPC 2.0 over the core: envelopes, HTTP client, and the server (router, Socket.IO, listener). |
+| `crates/openhuman-embed` | The typed library facade for embedding the core in another Rust process. |
+| `crates/openhuman-tinyhumans` | The only crate allowed to depend on `tinyhumans-sdk`: the backend transport, the hosted RPC proxies, and the host-side login/session owner. Every host installs it first. |
+| `crates/openhuman-cli` | The `openhuman-core` binary, the developer and benchmark bins, and every root `tests/` and `examples/` target. |
+| `crates/openhuman-tui` | The standalone `ratatui` terminal client. |
+
+`crates/openhuman-app` is the Tauri desktop shell and is excluded from the root
+workspace, so it builds as a separate Cargo world. See
 [Building the Rust core](./gitbooks/developing/building-rust-core.md) and
 [AGENTS.md](./AGENTS.md#repository-map) for the full layout.
 

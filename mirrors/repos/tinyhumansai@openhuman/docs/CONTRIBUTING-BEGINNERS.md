@@ -285,10 +285,11 @@ git remote -v
 
 ### 3a. Initialize submodules
 
-The project vendors several supporting crates as git submodules under `vendor/`
-(tinyagents, tinyflows, tinychannels, tinyhumans-sdk, tinybus, tinymemory,
-tinywallet, tinyhosts, tinymcp, tinybox, tinyruntime, tinydocs, tinyvoice,
-tinyjuice, tinyconnectors — see `.gitmodules`). The desktop shell itself uses
+The project vendors eighteen supporting crates as git submodules under
+`vendor/` (tinyagents, tinyflows, tinychannels, tinyhumans-sdk, tinybus,
+tinymemory, tinywallet, tinyhosts, tinymcp, tinybox, tinyruntime, tinydocs,
+tinyvoice, tinyjuice, tinyconnectors, tinyskills, tinycomputer, tinysearch —
+`.gitmodules` is the list). The desktop shell itself uses
 Tauri with the Wry webview, not CEF. You must initialize the submodules before
 installing dependencies or desktop builds will fail:
 
@@ -339,7 +340,7 @@ For your first contribution, `pnpm dev` is all you need.
 | Area                 | Where it lives                       | Skills needed     |
 | -------------------- | ------------------------------------ | ----------------- |
 | UI components        | `app/src/`                           | React, TypeScript |
-| Styles / design      | `app/src/`, `app/tailwind.config.js` | CSS, Tailwind     |
+| Styles / design      | `app/src/styles/`, `app/src/index.css` | CSS, Tailwind v4  |
 | Documentation        | `*.md` files, `gitbooks/`            | Writing           |
 | Bug fixes (frontend) | `app/src/`                           | React, TypeScript |
 

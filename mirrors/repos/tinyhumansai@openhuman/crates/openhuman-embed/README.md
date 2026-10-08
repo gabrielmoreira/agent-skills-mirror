@@ -249,6 +249,32 @@ agents, items, learnings and brain. Every call stays inside the root's subtree.
 `RuntimeBuilder::memory_engine` installs a host-supplied engine in place of the
 configured one. See `docs/specs/memory-v2.md`.
 
+### Conversations in a host store
+
+By default an agent's transcripts, turn journal, run status, goals and todos
+are files under the runtime's workspace. A host serving many users from one
+process keeps them in its own database instead:
+
+```rust,ignore
+let runtime = Runtime::builder()
+    .workspace(Workspace::stateless())          // nothing durable on disk
+    .session_store(Arc::new(MyMongoStores::new(db)))
+    .build()
+    .await?;
+```
+
+The runtime asks the provider (`session_store::SessionStoreProvider`) for
+each agent's stores by agent id, so a provider over a shared database scopes
+every query by agent and one agent can never reach another's conversation. A
+reopened agent resumes its thread from the store, in any process.
+`InMemorySessionStores` keeps everything in memory; the conformance suites in
+`session_store` are what a host's provider is held to.
+`Workspace::stateless()` refuses to build without a store, and a private
+scratch directory, removed with the runtime, still holds process-local
+caches (cost log, prompt templates, migration markers). The desktop app, CLI
+and TUI install `openhuman_rpc::session_store`, the classic on-disk layout behind
+the same port. See `tests/session_store.rs`.
+
 ### Still runtime-wide
 
 These are read from the runtime's boot config by every agent today. They
@@ -264,8 +290,12 @@ are documented rather than hidden; each is a candidate follow-up in the core.
   `<workspace>/agents/*.toml`). Embedded agents cannot be `delegate_*`
   targets of one another. Do not reuse built-in ids (`orchestrator`,
   `summarizer`, …) for your agents.
-- Sub-agents an agent spawns, the tinyagents journal and the experience store
-  re-read the runtime's on-disk config rather than the agent's overlay.
+- Sub-agents an agent spawns and the experience store re-read the runtime's
+  on-disk config rather than the agent's overlay. (The turn journal goes to
+  the agent's own stores under a host session store; without one it uses the
+  process-default workspace.)
+- Sub-agent run-ledger rows, cron jobs and the cost log stay in the
+  workspace even with a host session store.
 - Agents sharing a workspace share the dynamic (`mcp_registry_*`) MCP
   registry; `[[mcp_client.servers]]` declared through `AgentSpec::mcp` are
   per agent. The host-seeded documentation server is visible to every agent.

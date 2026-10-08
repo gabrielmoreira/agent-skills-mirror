@@ -24,7 +24,26 @@ not a decision.
 2. **Color** — the full palette as tokens: background layers, text
    hierarchy, accent budget, semantic states, borders. Name the proportion
    discipline (for example 60/30/10) and the contrast floor (WCAG AA at
-   minimum).
+   minimum). Write colors as semantic tokens, not raw palette steps:
+   - **Surface and on-surface pairs.** Every surface token has the text
+     token that sits on it - shadcn/ui names them `X` and `X-foreground`
+     (`primary` / `primary-foreground`, `card` / `card-foreground`), daisyUI
+     names them `X` and `X-content`. A component picks the pair, never a
+     surface with an unrelated text color, so contrast is checked once per
+     pair instead of once per component.
+   - **The focus ring is its own token** (`ring` in shadcn/ui), not the
+     accent reused, so focus stays visible on every surface the accent sits
+     on.
+   - **Themes redefine variables; components never branch.** Light, dark,
+     and any brand theme redefine the same variable names under `:root`,
+     `.dark`, or `[data-theme="..."]`; OKLCH values are a sound choice
+     because lightness steps stay perceptually even. Do not write `dark:`
+     variants on semantic colors - a `dark:` override beside a semantic
+     token means the token is not doing its job, and the two will disagree
+     at the next theme change.
+   - **One radius knob.** A single `--radius` drives the radius scale (small,
+     medium, large derived from it), so the shape language changes in one
+     place.
 3. **Typography** — the pairing (at most two families), a modular scale with
    named steps, weights in use, and line-height rules for body versus
    display. When the audience reads CJK: the fallback stacks, CJK

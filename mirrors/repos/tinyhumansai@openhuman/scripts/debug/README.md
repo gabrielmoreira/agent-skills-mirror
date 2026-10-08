@@ -33,6 +33,29 @@ pnpm debug logs last --tail 100
 Logs land in `target/debug-logs/<kind>-<suffix>-<timestamp>.log`. The directory
 is created on demand and is safe to delete — nothing else writes there.
 
+## Browser scenarios (`pnpm debug web`)
+
+```sh
+pnpm debug web                                   # stack + signed-in page, up until Ctrl-C
+pnpm debug web --script scripts/debug/web-scripts/stop-mid-turn.mjs
+pnpm debug web --script my-scenario.mjs --keep   # leave the stack up afterwards
+```
+
+`web-ui.mjs` starts the shared mock backend in-process, a fresh
+`openhuman-core serve` (built if missing) on a scratch workspace, and Vite with
+`OPENHUMAN_VITE_NO_WATCH=1` (no file watcher or HMR, so it survives a host whose
+inotify watch limit is used up). It opens the SPA in Playwright Chromium through
+`/__dev-connect` and signs in through the real GitHub button: the mock answers
+`/auth/<provider>/login?redirectUri=<vite>/__dev-auth` like the backend.
+
+A scenario is an ES module whose default export receives
+`{ page, context, browser, mock, rpc, urls, logDir, screenshot, log }`.
+`mock.set(key, value)` sets a mock behavior (`llmStreamScript` scripts the LLM
+stream, see `scripts/mock-api/routes/llm.mjs`), `rpc(method, params)` calls the
+core, and `screenshot(name)` saves into the run's artifact directory
+(`target/debug-logs/web-<ts>/`: `core.log`, `vite.log`, `browser.log`,
+screenshots, the scratch workspace). A thrown error saves `failure.png`.
+
 ## Why
 
 - **Filtering** — positional pattern + `-t "<name>"` for Vitest, single spec

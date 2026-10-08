@@ -1,4 +1,4 @@
 interface:
   display_name: "dbs-hook"
-  short_description: "诊断并改写短视频前几秒的开头表达，提供多套可用改法"
-  default_prompt: "使用 $dbs-hook，只聚焦短视频开头，指出前几秒的问题并给出多套可直接使用的改写方案。"
+  short_description: "【deprecated】旧版兼容，诊断短视频前 5 秒的问题，优化抓手、可信度、信息密度与表达"
+  default_prompt: "使用 $dbs-hook，诊断并优化当前短视频文稿的前 5 秒。"

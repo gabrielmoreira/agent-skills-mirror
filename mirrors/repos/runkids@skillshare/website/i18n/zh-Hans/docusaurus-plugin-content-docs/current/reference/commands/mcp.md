@@ -829,7 +829,7 @@ npx @modelcontextprotocol/inspector --cli skillshare mcp serve --method skills/l
   内联/点号形式的 MCP 定义必须先转换为表格形式才能写入；
   否则会被拒绝，且不会修改文件。
 - 原生文件的 symlink、格式错误的文件以及重复的 JSON 属性会阻止
-  写入。被 symlink 的 Skillshare `config.yaml` 会被写入其目标文件；但指向项目外部的项目配置 link 会被拒绝写入。文件权限会被保留；新的原生
+  写入。被 symlink 的 Skillshare `config.yaml` 会被写入其目标文件；但在项目中，实际位置落在项目外部的项目配置或 `sources.mcp` 文件会被拒绝写入。文件权限会被保留；新的原生
   文件、所有权记录和备份使用私有权限。
 - 已经与 source 匹配的条目会被报告为未变更且不会写入，例如在
   拉取队友的更改之后。如果该配置以前从未管理过它，例如从某个 Agent

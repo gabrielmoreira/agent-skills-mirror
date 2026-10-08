@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed patterns, 112 file(s) materialized.
+Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed patterns, 132 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dontbesilent2025/dbskill` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 112 |
+| Files         | 132 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -145,32 +145,52 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 84 | ✓ | [`skills/dbs-standard-answer/SKILL.md`](skills/dbs-standard-answer/SKILL.md) |
 | 85 | ✓ | [`skills/dbs-theory-grounding/agents/openai.yaml`](skills/dbs-theory-grounding/agents/openai.yaml) |
 | 86 | ✓ | [`skills/dbs-theory-grounding/SKILL.md`](skills/dbs-theory-grounding/SKILL.md) |
-| 87 | ✓ | [`skills/dbs-update/agents/openai.yaml`](skills/dbs-update/agents/openai.yaml) |
-| 88 | ✓ | [`skills/dbs-update/SKILL.md`](skills/dbs-update/SKILL.md) |
-| 89 | ✓ | [`skills/dbs-video-extract/agents/openai.yaml`](skills/dbs-video-extract/agents/openai.yaml) |
-| 90 | ✓ | [`skills/dbs-video-extract/references/api-setup.md`](skills/dbs-video-extract/references/api-setup.md) |
-| 91 | ✓ | [`skills/dbs-video-extract/references/qingdou-api.md`](skills/dbs-video-extract/references/qingdou-api.md) |
-| 92 | ✓ | [`skills/dbs-video-extract/references/tikhub-api.md`](skills/dbs-video-extract/references/tikhub-api.md) |
-| 93 | ✓ | [`skills/dbs-video-extract/scripts/configure_api_key.py`](skills/dbs-video-extract/scripts/configure_api_key.py) |
-| 94 | ✓ | [`skills/dbs-video-extract/scripts/extract_video_transcript.py`](skills/dbs-video-extract/scripts/extract_video_transcript.py) |
-| 95 | ✓ | [`skills/dbs-video-extract/scripts/extract_video.py`](skills/dbs-video-extract/scripts/extract_video.py) |
-| 96 | ✓ | [`skills/dbs-video-extract/scripts/tikhub_api.py`](skills/dbs-video-extract/scripts/tikhub_api.py) |
-| 97 | ✓ | [`skills/dbs-video-extract/SKILL.md`](skills/dbs-video-extract/SKILL.md) |
-| 98 | ✓ | [`skills/dbs-wechat-html/agents/openai.yaml`](skills/dbs-wechat-html/agents/openai.yaml) |
-| 99 | ✓ | [`skills/dbs-wechat-html/SKILL.md`](skills/dbs-wechat-html/SKILL.md) |
-| 100 | ✓ | [`skills/dbs-wechat-html/templates/styles.md`](skills/dbs-wechat-html/templates/styles.md) |
-| 101 | ✓ | [`skills/dbs-xhs-title/agents/openai.yaml`](skills/dbs-xhs-title/agents/openai.yaml) |
-| 102 | ✓ | [`skills/dbs-xhs-title/SKILL.md`](skills/dbs-xhs-title/SKILL.md) |
-| 103 | ✓ | [`skills/dbs/agents/openai.yaml`](skills/dbs/agents/openai.yaml) |
-| 104 | ✓ | [`skills/dbs/numbered-prompts/825/PROMPT.md`](skills/dbs/numbered-prompts/825/PROMPT.md) |
-| 105 | ✓ | [`skills/dbs/numbered-prompts/allocation.json`](skills/dbs/numbered-prompts/allocation.json) |
-| 106 | ✓ | [`skills/dbs/numbered-prompts/catalog.json`](skills/dbs/numbered-prompts/catalog.json) |
-| 107 | ✓ | [`skills/dbs/references/composition-contract.md`](skills/dbs/references/composition-contract.md) |
-| 108 | ✓ | [`skills/dbs/references/official-skill-names.txt`](skills/dbs/references/official-skill-names.txt) |
-| 109 | ✓ | [`skills/dbs/scripts/check-update.sh`](skills/dbs/scripts/check-update.sh) |
-| 110 | ✓ | [`skills/dbs/scripts/list-official-skills.py`](skills/dbs/scripts/list-official-skills.py) |
-| 111 | ✓ | [`skills/dbs/scripts/numbered-prompts.py`](skills/dbs/scripts/numbered-prompts.py) |
-| 112 | ✓ | [`skills/dbs/SKILL.md`](skills/dbs/SKILL.md) |
+| 87 | ✓ | [`skills/dbs-title-cover-intro/agents/openai.yaml`](skills/dbs-title-cover-intro/agents/openai.yaml) |
+| 88 | ✓ | [`skills/dbs-title-cover-intro/references/angle-development.md`](skills/dbs-title-cover-intro/references/angle-development.md) |
+| 89 | ✓ | [`skills/dbs-title-cover-intro/references/angle-theory-sources.md`](skills/dbs-title-cover-intro/references/angle-theory-sources.md) |
+| 90 | ✓ | [`skills/dbs-title-cover-intro/references/cover-title.md`](skills/dbs-title-cover-intro/references/cover-title.md) |
+| 91 | ✓ | [`skills/dbs-title-cover-intro/references/material-selection.md`](skills/dbs-title-cover-intro/references/material-selection.md) |
+| 92 | ✓ | [`skills/dbs-title-cover-intro/references/module-handoff.md`](skills/dbs-title-cover-intro/references/module-handoff.md) |
+| 93 | ✓ | [`skills/dbs-title-cover-intro/references/opening-continuity.md`](skills/dbs-title-cover-intro/references/opening-continuity.md) |
+| 94 | ✓ | [`skills/dbs-title-cover-intro/references/production-state.md`](skills/dbs-title-cover-intro/references/production-state.md) |
+| 95 | ✓ | [`skills/dbs-title-cover-intro/references/promise-check.md`](skills/dbs-title-cover-intro/references/promise-check.md) |
+| 96 | ✓ | [`skills/dbs-title-cover-intro/references/title-surfaces.md`](skills/dbs-title-cover-intro/references/title-surfaces.md) |
+| 97 | ✓ | [`skills/dbs-title-cover-intro/SKILL.md`](skills/dbs-title-cover-intro/SKILL.md) |
+| 98 | ✓ | [`skills/dbs-update/agents/openai.yaml`](skills/dbs-update/agents/openai.yaml) |
+| 99 | ✓ | [`skills/dbs-update/SKILL.md`](skills/dbs-update/SKILL.md) |
+| 100 | ✓ | [`skills/dbs-video-extract/agents/openai.yaml`](skills/dbs-video-extract/agents/openai.yaml) |
+| 101 | ✓ | [`skills/dbs-video-extract/references/api-setup.md`](skills/dbs-video-extract/references/api-setup.md) |
+| 102 | ✓ | [`skills/dbs-video-extract/references/qingdou-api.md`](skills/dbs-video-extract/references/qingdou-api.md) |
+| 103 | ✓ | [`skills/dbs-video-extract/references/tikhub-api.md`](skills/dbs-video-extract/references/tikhub-api.md) |
+| 104 | ✓ | [`skills/dbs-video-extract/scripts/configure_api_key.py`](skills/dbs-video-extract/scripts/configure_api_key.py) |
+| 105 | ✓ | [`skills/dbs-video-extract/scripts/extract_video_transcript.py`](skills/dbs-video-extract/scripts/extract_video_transcript.py) |
+| 106 | ✓ | [`skills/dbs-video-extract/scripts/extract_video.py`](skills/dbs-video-extract/scripts/extract_video.py) |
+| 107 | ✓ | [`skills/dbs-video-extract/scripts/tikhub_api.py`](skills/dbs-video-extract/scripts/tikhub_api.py) |
+| 108 | ✓ | [`skills/dbs-video-extract/SKILL.md`](skills/dbs-video-extract/SKILL.md) |
+| 109 | ✓ | [`skills/dbs-video-navigation/agents/openai.yaml`](skills/dbs-video-navigation/agents/openai.yaml) |
+| 110 | ✓ | [`skills/dbs-video-navigation/assets/blue.json`](skills/dbs-video-navigation/assets/blue.json) |
+| 111 | ✓ | [`skills/dbs-video-navigation/references/runtime.md`](skills/dbs-video-navigation/references/runtime.md) |
+| 112 | ✓ | [`skills/dbs-video-navigation/references/standards.md`](skills/dbs-video-navigation/references/standards.md) |
+| 113 | ✓ | [`skills/dbs-video-navigation/references/transcription.md`](skills/dbs-video-navigation/references/transcription.md) |
+| 114 | ✓ | [`skills/dbs-video-navigation/scripts/navigation.py`](skills/dbs-video-navigation/scripts/navigation.py) |
+| 115 | ✓ | [`skills/dbs-video-navigation/scripts/test_navigation.py`](skills/dbs-video-navigation/scripts/test_navigation.py) |
+| 116 | ✓ | [`skills/dbs-video-navigation/scripts/text.swift`](skills/dbs-video-navigation/scripts/text.swift) |
+| 117 | ✓ | [`skills/dbs-video-navigation/SKILL.md`](skills/dbs-video-navigation/SKILL.md) |
+| 118 | ✓ | [`skills/dbs-wechat-html/agents/openai.yaml`](skills/dbs-wechat-html/agents/openai.yaml) |
+| 119 | ✓ | [`skills/dbs-wechat-html/SKILL.md`](skills/dbs-wechat-html/SKILL.md) |
+| 120 | ✓ | [`skills/dbs-wechat-html/templates/styles.md`](skills/dbs-wechat-html/templates/styles.md) |
+| 121 | ✓ | [`skills/dbs-xhs-title/agents/openai.yaml`](skills/dbs-xhs-title/agents/openai.yaml) |
+| 122 | ✓ | [`skills/dbs-xhs-title/SKILL.md`](skills/dbs-xhs-title/SKILL.md) |
+| 123 | ✓ | [`skills/dbs/agents/openai.yaml`](skills/dbs/agents/openai.yaml) |
+| 124 | ✓ | [`skills/dbs/numbered-prompts/825/PROMPT.md`](skills/dbs/numbered-prompts/825/PROMPT.md) |
+| 125 | ✓ | [`skills/dbs/numbered-prompts/allocation.json`](skills/dbs/numbered-prompts/allocation.json) |
+| 126 | ✓ | [`skills/dbs/numbered-prompts/catalog.json`](skills/dbs/numbered-prompts/catalog.json) |
+| 127 | ✓ | [`skills/dbs/references/composition-contract.md`](skills/dbs/references/composition-contract.md) |
+| 128 | ✓ | [`skills/dbs/references/official-skill-names.txt`](skills/dbs/references/official-skill-names.txt) |
+| 129 | ✓ | [`skills/dbs/scripts/check-update.sh`](skills/dbs/scripts/check-update.sh) |
+| 130 | ✓ | [`skills/dbs/scripts/list-official-skills.py`](skills/dbs/scripts/list-official-skills.py) |
+| 131 | ✓ | [`skills/dbs/scripts/numbered-prompts.py`](skills/dbs/scripts/numbered-prompts.py) |
+| 132 | ✓ | [`skills/dbs/SKILL.md`](skills/dbs/SKILL.md) |
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: dbs
-description: dontbesilent 商业工具箱主入口，提供新手教程、单任务编排、联网编号执行与隐藏款目录查询。用户第一次使用 dbskill、不知道该用哪个正式 Skill、输入视频编号、查询所有隐藏款，或在任务完成后询问下一步时使用。
+description: dontbesilent 商业工具箱主入口，提供新手教程、单任务编排、联网编号执行与隐藏款目录查询。用户第一次使用 dbskill、不知道该用哪个正式 Skill、输入方法视频的三位编号、查询所有隐藏款，或在任务完成后询问下一步时使用。
 ---
 
 # dbs：商业工具箱
@@ -23,7 +23,7 @@ description: dontbesilent 商业工具箱主入口，提供新手教程、单任
 每次进入本 Skill，在判断模式和编排之前，必须先定位本 `SKILL.md` 所在目录，并执行该目录中的版本检查脚本：
 
 ```bash
-DBS_LOCAL_VERSION="2.18.45"; bash "<本 SKILL.md 所在目录>/scripts/check-update.sh" "$DBS_LOCAL_VERSION"
+DBS_LOCAL_VERSION="2.18.46"; bash "<本 SKILL.md 所在目录>/scripts/check-update.sh" "$DBS_LOCAL_VERSION"
 ```
 
 执行规则：
@@ -132,7 +132,7 @@ DBS_LOCAL_VERSION="2.18.45"; bash "<本 SKILL.md 所在目录>/scripts/check-upd
 python3 "<本 Skill 目录>/scripts/list-official-skills.py"
 ```
 
-脚本在完整项目中以当前版本的 `.claude-plugin/marketplace.json` 为公开候选权威源；独立 Skill 安装包缺少 Marketplace 文件时，使用随版本构建并经过一致性检查的正式名称快照。脚本只返回已经安装的正式 Skill 名称、description 和真源路径。
+脚本在完整项目中以当前版本的 `.claude-plugin/marketplace.json` 为公开候选权威源；独立 Skill 安装包缺少 Marketplace 文件时，使用随版本构建并经过一致性检查的正式名称快照。脚本返回已经安装的正式 Skill 名称、实际安装版本的 description 和真源路径；缺定义或定义冲突的候选跳过并说明。
 
 候选范围规则：
 
@@ -162,7 +162,11 @@ python3 "<本 Skill 目录>/scripts/list-official-skills.py"
 - 判断整条内容可能吸引谁、带来什么流量或商业价值：选择整体内容表现评估。
 - 定位已写稿件的共鸣断点并修改具体原句：选择稿件共鸣诊断。
 - 解释已有内容为何引发共鸣、情绪或分享：选择传播机制解读。
-- 只改短视频前几秒的表达：选择短视频开头优化。
+- 生成或修改标题、封面文字和短视频前几秒：选择标题封面开头制作；目录中 deprecated 入口仅供用户明确调用。
+- 从平台链接取得作品数据或文字稿：选择视频提取。
+- 根据本地成片或带时间戳字幕生成章节、话题、步骤和进度 MP4：选择视频导航。
+- 检查平台风险或写语境声明贴片：选择内容风险检查；声明与章节导航按交付区分。
+- 用户只说「视频上加文字」时，先确认要标题、字幕、风险声明还是章节导航，不按输入文件格式猜测。
 
 这些判断用于当前任务的候选筛选，不建立固定调用顺序；用户目标同时包含多个独立交付时，再按组合规则判断是否需要多个 Skill。
 
@@ -315,3 +319,7 @@ python3 "<本 Skill 目录>/scripts/list-official-skills.py"
 
 - 用户用中文就用中文回复，用户用英文就用英文回复。
 - 中文回复遵循《中文文案排版指北》。
+
+## 旧版兼容入口
+
+目录中标有 `deprecated` 的 Skill 仅供用户明确调用或版本对照。标题、封面和短视频开头任务优先选择 `dbs-title-cover-intro`；新入口未安装时说明当前可用版本，不假装已经执行新版本。

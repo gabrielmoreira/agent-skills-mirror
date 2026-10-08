@@ -1,9 +1,12 @@
 ---
-description: How to build OpenHuman from source - toolchain, submodules, Tauri CLI, and local desktop builds.
+description: >-
+  Building OpenHuman from source: the pinned toolchain, the vendored
+  submodules, the Tauri CLI wrapper, and local desktop builds, plus the
+  release installers for each platform.
 icon: wrench
 ---
 
-# Building and installing OpenHuman
+# Getting Set Up
 
 This guide covers the full desktop/source install path plus the release installers, so pick whichever path matches what you're doing:
 
@@ -19,7 +22,7 @@ If you only need the Rust workspace under `crates/` on a fresh machine (no Node,
 - `pnpm@10.10.0` (see the root `package.json` `packageManager` field)
 - Rust 1.96.1 through `rustup` with `rustfmt` and `clippy` (see `rust-toolchain.toml`)
 - CMake, required by native Rust dependencies
-- Git submodules under `vendor/` (`git submodule update --init --recursive`), required by both the core and the desktop shell
+- Every `vendor/` submodule listed in `.gitmodules`, initialized recursively (`git submodule update --init --recursive`). The root `Cargo.toml` `[patch]` tables point into that tree, so cargo reads each manifest whether the crate is optional or not; a subset is always a build break
 - Platform desktop build tools: Xcode Command Line Tools on macOS, or the Tauri GTK/WebKit/AppIndicator package set on Linux
 
 macOS Homebrew quick start:
@@ -94,7 +97,7 @@ Installer behavior:
 ### Arch Linux package recipe
 
 The repository includes an `openhuman-bin` AUR recipe at
-[`packages/arch/openhuman-bin`](../../packages/arch/openhuman-bin/). It uses the
+[`packages/arch/openhuman-bin`](https://github.com/tinyhumansai/openhuman/tree/main/packages/arch/openhuman-bin). It uses the
 official x86_64 AppImage as the binary source, extracts the bundled application
 tree during `makepkg`, installs a desktop entry, and exposes `/usr/bin/openhuman`.
 
@@ -137,7 +140,7 @@ Windows installer behavior:
 
 CI builds the `aarch64-unknown-linux-gnu` target on an `ubuntu-24.04-arm` runner
 with the same Tauri command as x64 (see
-[`.github/workflows/build-desktop.yml`](../../.github/workflows/build-desktop.yml)).
+[`.github/workflows/build-desktop.yml`](https://github.com/tinyhumansai/openhuman/blob/main/.github/workflows/build-desktop.yml)).
 Locally, with the Linux desktop package set installed:
 
 ```bash
@@ -149,7 +152,7 @@ library path. Install the `.deb` bundle with `dpkg -i`.
 
 Manual download links (all platforms):
 
-- Website: https://tinyhuman.ai/openhuman
+- Website: https://tinyhumans.ai/openhuman
 - Latest release: https://github.com/tinyhumansai/openhuman/releases/latest
 
 ## Troubleshooting
@@ -174,3 +177,12 @@ A previous Tauri build or `openhuman-core run` harness left a process listening 
 pkill -f "OpenHuman.app/Contents"
 pkill -f "openhuman-core"
 ```
+
+---
+
+## See also
+
+- [Building the Rust Core](building-rust-core.md): the cargo-only path, without Node or Tauri.
+- [E2E Testing Guide](e2e-testing.md): the harness a local desktop build feeds.
+- [Architecture](architecture.md): what the shell, the core and the frontend each own.
+- [Cloud deployment](../features/cloud-deploy.md): running the same core headless on a server.

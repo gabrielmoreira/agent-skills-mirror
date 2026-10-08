@@ -1,6 +1,6 @@
 name: coder
 format_version: 2
-version: 1.0.0
+version: 1.1.0
 license: MIT
 copyright: Copyright (c) 2026 Kambiz Khojasteh
 description: Software engineering on a codebase or software product, whether a request asks to build, change, or remove software or to diagnose, explain, judge, verify, or plan it, working through the project's code, tests, configuration, and documentation.
@@ -15,6 +15,7 @@ principles:
 - finding-evidence
 - instruction-authority
 - reader-first-reporting
+- self-standing-artifacts
 - decision-relevant-questions
 - decision-provenance
 - bounded-delegation

@@ -101,6 +101,24 @@ Only what the reviewer can directly observe:
 
 Never *"confirm that X is fine."*
 
+### Where the reviewer delivers its verdict
+
+Pin the delivery artifact in the prompt, or the pass can end with nothing you can read. A
+reviewer teammate reports "idle" when it stops — idle only means it stopped, not that it
+produced anything or that a message reached you; reviewers have repeatedly gone idle with no
+delivered report. So name the single delivery target in the prompt itself:
+
+- The reviewer's only deliverable is **a file written to an immutable path you name** (the
+  review file from *The review file* below), plus a one-line receipt pointing at that path.
+  Tell it not to carry the conclusion in a chat message and not to treat the idle
+  notification as the delivery.
+- If a reviewer goes unresponsive, **read whether it already wrote a partial artifact before
+  re-dispatching** — stopping and re-spawning on the assumption of zero output can discard a
+  finished report that was merely delivered late. Interrupting a reviewer teammate pauses
+  its turn; it does not withdraw what it already wrote.
+- The stop rule from *The convergence protocol* still governs how many passes are
+  authorized; this field governs what a single authorized pass must leave behind.
+
 ### Changed operating defaults and thresholds
 
 Within an already-required review, examine a changed operating default or threshold
@@ -234,6 +252,8 @@ load-bearing operational mechanism the skill kept referencing but never showed h
 ## The review file
 
 Write `independent-review.md` under `skill-reviews/<skill-name>/` in your private, git-tracked knowledge repo, **and commit it there in the same turn** — a file sitting uncommitted in a git working directory carries none of the "git-tracked" guarantee this rule exists for; `ls`/`test -f` confirms it's on disk, not that it survives to the next session. If you don't know which repo that is (or don't have one), say so and ask the user — do not guess a location that lands in either forbidden zone. That repo's own commit hook may also restrict where such files may live (a structure guard may reject the path and name the directory it allows); read the hook's message and move the file there rather than bypassing the hook. Two forbidden locations: **NOT** in `<skill-name>-workspace/` (gitignored scratch dirs that get wiped — this file is cross-session review evidence and must survive them) and **NOT** in any repo that is or may become public or distributed — which normally rules out the reviewed skill's own repo (review content inherently quotes private paths, real names, and project details):
+
+**When the reviewed change ships in the public `claude-code-skills` repo, the archive carries one more receipt.** That repo's pre-push gate (its `scripts/ci/check_skill_release.py`, outside this skill) only lets the push through when the review archive contains exactly one `<!-- skill-release-review` block holding a passed JSON receipt for the exact published head (40-char `candidate`) and skill scope — write it as `{"schema": 1, "result": "passed", "candidate": "<head>", "skill_paths": ["<skill-dir>"]}` and keep the authoritative field list with `release_readiness.py`'s validation, not this example. Amend or rebase the release commit and the block's `candidate` must be refreshed before `release_readiness.py attest` will bind it. Learning this from the gate's error at push time costs two extra round-trips (2026-10-06: attest refused, gate source read, block added, archive re-committed, attest re-run); write the block when the archive is drafted and update the candidate at attest time.
 
 ```markdown
 # Independent review — <artifact>, <date>

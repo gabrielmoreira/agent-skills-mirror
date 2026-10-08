@@ -19,16 +19,11 @@ knowledge:
 - child-discipline
 guides:
 - effective-compiler
-- construct-ownership
-- obligation-ledger
-- construct-agreements
 - path-rehearsal
 - names-and-headings
 - wording-and-references
-- guide-design
 - task-cues
 - handoff-conditions
-- facet-design
 - version-selection
 - supplied-artifact
 handoffs:

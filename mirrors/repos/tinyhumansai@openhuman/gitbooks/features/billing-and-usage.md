@@ -1,7 +1,7 @@
 ---
 description: >-
   Plans, credits and saved cards over Stripe and Coinbase, plus a local
-  local dashboard for token usage and cost estimates.
+  dashboard for token usage and cost estimates.
 icon: credit-card
 ---
 
@@ -54,7 +54,17 @@ The **Billing** button on the desktop Accounts page opens the hosted web billing
 
 ### RPC surface
 
-Namespace `billing`, exposed as `openhuman.billing_*` (16 methods), e.g. `billing_get_summary`, `billing_get_current_plan`, `billing_get_balance`, `billing_get_transactions`, `billing_purchase_plan`, `billing_top_up`, `billing_create_coinbase_charge`, `billing_get_cards`, `billing_create_setup_intent`, `billing_update_auto_recharge`, `billing_redeem_coupon`.
+Namespace `billing`, exposed as `openhuman.billing_*`. The registered set is
+`all_billing_registered_controllers` in
+`crates/openhuman-tinyhumans/src/hosted/billing/schemas.rs`:
+
+| Area | Methods |
+| --- | --- |
+| Plan and summary | `billing_get_summary`, `billing_get_current_plan`, `billing_purchase_plan`, `billing_create_portal_session` |
+| Credits | `billing_get_balance`, `billing_top_up`, `billing_create_coinbase_charge`, `billing_get_transactions` |
+| Auto-recharge | `billing_get_auto_recharge`, `billing_update_auto_recharge` |
+| Saved cards | `billing_get_cards`, `billing_create_setup_intent`, `billing_update_card`, `billing_delete_card` |
+| Coupons | `billing_redeem_coupon`, `billing_get_coupons` |
 
 ---
 
@@ -97,5 +107,6 @@ Because cost tracks **real token counts**, anything that shrinks the prompt dire
 
 ## See also
 
-- [Token compression (TokenJuice)](token-compression.md)
-- [Model routing](model-routing/README.md)
+- [Smart Token Compression](token-compression.md): fewer tokens on each call, so a lower recorded cost.
+- [Automatic Model Routing](model-routing/README.md): sends work to the cheapest model that can handle it.
+- [Privacy & Security](privacy-and-security.md): what is logged, and what never is.

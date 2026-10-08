@@ -105,9 +105,11 @@ gap.
   requests answer 404 `LocationNotFoundError`. `STATUS_BY_TAG` does not map it
   to 404 on purpose: `fetchPermission` reads 404 as "settled", which would let
   auto-accept fail open. `POST /api/session/:id/move` works on such a session.
-- **A background shell has no clean cancel.** `shell.remove` kills the process
-  but hands the agent a `Shell.NotFoundError`, and agents relaunch the command,
-  so `stopBackgroundShell` posts a cancellation note to the agent first.
+- **A background shell or a subagent has no clean cancel.** `shell.remove`
+  kills the process but hands the agent a `Shell.NotFoundError`; interrupting a
+  subagent's child session (no job-cancel route) reports "Subagent cancelled".
+  Agents relaunch either, so `stopBackgroundShell` and `stopSubagent` post a
+  cancellation note to the agent first.
 - **`opencode run --agent X` uses the default model**, not the agent's: pass
   `-m provider/model#variant` in batch runs.
 - **A scratch `opencode serve` started from the app's shell answers 401**:

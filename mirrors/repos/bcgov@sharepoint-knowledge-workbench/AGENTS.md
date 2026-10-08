@@ -118,7 +118,7 @@ Consumer documents, intake files, run outputs, and project-specific tests are ma
   - **Publish SPFx Directly**: `pwsh -File plugins/sharepoint-spfx-development/skills/sharepoint-publish-spfx-package/scripts/publish-spfx-package.ps1 -PackagePath <path>`
   - **List Provisioning**: `pwsh -File plugins/sharepoint-site-build-and-publish/skills/sharepoint-create-list/scripts/spo-provision-list.ps1 -PlanPath <plan.json> -Execute -ConfirmToken PROVISION-SPO-LIST`
   - **View Configuration**: `pwsh -File plugins/sharepoint-site-build-and-publish/skills/sharepoint-create-list-view/scripts/spo-provision-list-view.ps1 -PlanPath <plan.json> -Execute -ConfirmToken PROVISION-SPO-LIST-VIEW`
-  - **Markdown Publishing**: `pwsh -File plugins/sharepoint-site-build-and-publish/skills/sharepoint-publish-markdown-files/scripts/spo-publish-markdown-plan.ps1 -PlanPath <plan.json> -Execute -ConfirmToken PUBLISH-SPO-MARKDOWN`
+  - **Markdown Publishing**: `pwsh -File plugins/sharepoint-site-build-and-publish/skills/sharepoint-publish-markdown-files/scripts/spo-upload-file.ps1 -PlanPath <plan.json> -Execute -ConfirmToken PUBLISH-SPO-MARKDOWN`
 - All canonical scripts feature multi-tier `config.psd1` discovery and support direct CLI overrides (`-SiteUrl`, `-ClientId`, `-TenantId`, `-ConfigPath`).
 
 ### Sub-agent usage

@@ -491,7 +491,9 @@ The only outbound HTTP requests are:
 10. **Feedback trace attachments** uploaded by GitHub's native issue editor,
     only after the user chooses **Upload trace and open GitHub** in the extension.
     Preparing, viewing, and downloading the trace are local operations. The
-    confirmation identifies the conversation, recorded content tier, run and
+    attachment includes only recordings preceding the opening of the rating
+    prompt; later turns and screenshots in the same conversation are excluded.
+    The confirmation identifies the conversation, recorded content tier, run and
     screenshot counts, size, and any fallback or omissions. GitHub makes the
     attachment publicly accessible immediately, before the issue is submitted.
     **Continue without trace** uploads no trace. Export scrubs credential-shaped

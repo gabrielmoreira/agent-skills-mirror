@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `slopus/happy` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `slopus/happy` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `slopus/happy` — 26 default patterns, 0 followed patterns, 29 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -74,20 +74,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`.agents/skills/sessions/scripts/extract-skeleton.py`](.agents/skills/sessions/scripts/extract-skeleton.py) |
 | 14 | ✓ | [`.agents/skills/sessions/SKILL.md`](.agents/skills/sessions/SKILL.md) |
 | 15 | ✓ | [`.agents/skills/terminal-emulator/SKILL.md`](.agents/skills/terminal-emulator/SKILL.md) |
-| 16 | ✓ | [`.claude/skills/agent-browser/SKILL.md`](.claude/skills/agent-browser/SKILL.md) |
-| 17 | ✓ | [`.claude/skills/terminal-emulator/SKILL.md`](.claude/skills/terminal-emulator/SKILL.md) |
-| 18 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 19 | ✓ | [`docs/competition/AGENTS.md`](docs/competition/AGENTS.md) |
-| 20 | ✓ | [`environments/lab-rat-todo-project/CLAUDE.md`](environments/lab-rat-todo-project/CLAUDE.md) |
-| 21 | ✓ | [`packages/expo-tailcat/AGENTS.md`](packages/expo-tailcat/AGENTS.md) |
-| 22 | ✓ | [`packages/happy-app/CLAUDE.md`](packages/happy-app/CLAUDE.md) |
-| 23 | ✓ | [`packages/happy-cli/.cursorrules`](packages/happy-cli/.cursorrules) |
-| 24 | ✓ | [`packages/happy-cli/CLAUDE.md`](packages/happy-cli/CLAUDE.md) |
-| 25 | ✓ | [`packages/happy-cli/src/daemon/CLAUDE.md`](packages/happy-cli/src/daemon/CLAUDE.md) |
-| 26 | ✓ | [`packages/happy-server/.cursorrules`](packages/happy-server/.cursorrules) |
-| 27 | ✓ | [`packages/happy-server/CLAUDE.md`](packages/happy-server/CLAUDE.md) |
-| 28 | ✓ | [`packages/happy-server/deploy/integration-tests/AGENTS.md`](packages/happy-server/deploy/integration-tests/AGENTS.md) |
-| 29 | ✓ | [`packages/happy-server/deploy/integration-tests/CLAUDE.md`](packages/happy-server/deploy/integration-tests/CLAUDE.md) |
+| 16 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 17 | ✓ | [`docs/competition/AGENTS.md`](docs/competition/AGENTS.md) |
+| 18 | ✓ | [`packages/dev-environments/lab-rat-todo-project/CLAUDE.md`](packages/dev-environments/lab-rat-todo-project/CLAUDE.md) |
+| 19 | ✓ | [`packages/expo-tailcat/AGENTS.md`](packages/expo-tailcat/AGENTS.md) |
+| 20 | ✓ | [`packages/happy-app/CLAUDE.md`](packages/happy-app/CLAUDE.md) |
+| 21 | ✓ | [`packages/happy-cli/.cursorrules`](packages/happy-cli/.cursorrules) |
+| 22 | ✓ | [`packages/happy-cli/CLAUDE.md`](packages/happy-cli/CLAUDE.md) |
+| 23 | ✓ | [`packages/happy-cli/src/daemon/CLAUDE.md`](packages/happy-cli/src/daemon/CLAUDE.md) |
+| 24 | ✓ | [`packages/happy-server/.cursorrules`](packages/happy-server/.cursorrules) |
+| 25 | ✓ | [`packages/happy-server/CLAUDE.md`](packages/happy-server/CLAUDE.md) |
+| 26 | ✓ | [`packages/happy-server/deploy/integration-tests/AGENTS.md`](packages/happy-server/deploy/integration-tests/AGENTS.md) |
+| 27 | ✓ | [`packages/happy-server/deploy/integration-tests/CLAUDE.md`](packages/happy-server/deploy/integration-tests/CLAUDE.md) |
 
 ---
 

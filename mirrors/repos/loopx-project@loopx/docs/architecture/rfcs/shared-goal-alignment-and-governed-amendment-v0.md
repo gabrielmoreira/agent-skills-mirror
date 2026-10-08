@@ -278,6 +278,60 @@ steward, and they are what make it reusable instead of host-specific:
   now" view may order and annotate rows from typed state. It creates no claim, no
   lease and no priority, and it is not an input to automatic assignment.
 
+### 3.7 Current work and Goal requirements
+
+Separate the work an Agent currently focuses on from the requirements the whole
+Goal must still satisfy. A feedback view may organize existing facts as `work`,
+`obligations`, `reflection`, and `continuation`. These are conceptual projection
+sections, not a new persisted schema or a model-writable source of authority:
+
+| Section | Meaning and existing owner |
+| --- | --- |
+| `work` | Selected Todo/frontier, its local acceptance, and exact source detail. |
+| `obligations` | Goal acceptance criteria and retained commitments, independent of the selected Todo and current Agent. |
+| `reflection` | Evidence-based interpretation and unresolved questions; advisory until an owning validator accepts evidence. |
+| `continuation` | Next eligible work, wait/stop reasons and their scope; reuse frontier and settlement owners. |
+
+The intended requirement contract must retain stable IDs, source criterion IDs,
+Goal revision/digest, status and evidence bindings. Every declared structured
+criterion must have explicit coverage; changing focus cannot delete or rewrite a
+registered requirement. This is coverage of the declared contract, not proof that
+arbitrary natural-language intent was completely extracted. Reuse the existing
+`acceptance_contract.ts` and `acceptance_authority.ts` owners; lane replan
+obligations retain their different lifecycle and must not become a second Goal
+acceptance ledger.
+
+Commitments remain stable within a revision. An authorized amendment may
+supersede them with retained history and explicit lease/frontier consequences;
+do not make legitimate Goal changes impossible. Evidence may become stale after
+code, scope or contract changes, so satisfaction is not monotonic. A nonempty
+reference is only structural validity. Acceptance additionally needs resolvable
+evidence, relevant scope, freshness and the owning validation result; preserve
+failed and untested outcomes. Existing selected-work acceptance is not global
+Goal acceptance.
+
+Global closeout must reconcile all applicable requirements at the current
+revision, remaining work across Agents and pending amendments. One Agent's
+`no_followup` or completed Todo cannot establish `achieved`. A compact projection
+must retain identity and a lossless detail route rather than substituting a
+display prefix for the source commitment.
+
+**Delivery boundary:** the existing typed interaction owner generates full Goal
+source reads, enabled canonical acceptance inspection and exact current-Todo
+reads after admission. Ordinary product heartbeat and TurnEnvelope consume the
+same list; the envelope signs it rather than inventing another read policy.
+Goal documents recover intent and stops, while canonical acceptance and exact
+Todo readers retain their existing authority and scope. A selected-work
+acceptance document cannot replace whole-Goal intent. Shared host adapters
+preserve selected context. Default heartbeat generation → guard → source
+readback must be tested alongside envelope transport; one route cannot qualify
+the other. This does not
+implement the full requirement ledger, a global closeout gate, automatic proof
+of required-read execution, or model adherence. Those remain with R1/R4/R5 and
+S11; this RFC does not silently enable a new acceptance policy. The next complete
+slice should map existing structured criteria through a work switch and restart,
+reject dropped coverage, and invalidate stale evidence under the same owner.
+
 ## 4. Authority matrix
 
 ### 4.1 What `GoalAmendmentAuthority` means
@@ -648,6 +702,10 @@ auto-committed unless Goal creation explicitly delegated that exact class.
 
 At minimum, tests must prove:
 
+- a work switch, compaction, restart or handoff preserves declared requirement identities and coverage;
+- a late acceptance clause remains available through exact detail, without substituting another Todo or a stale display;
+- dropped or rewritten criteria require an authorized amendment; a missing, irrelevant or stale evidence reference cannot satisfy acceptance;
+- local completion with another Agent's outstanding requirement cannot settle the whole Goal;
 - own-lane replan cannot change canonical intent;
 - unclaimed work is visible but cannot execute before claim/lease;
 - a pending proposal does not affect unrelated peers;

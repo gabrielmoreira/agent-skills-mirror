@@ -13,22 +13,12 @@ Different parts of an agent want different models. Long reasoning wants a fronti
 
 The model parameter on any chat call can take one of two shapes:
 
-- **Concrete model name**. e.g. `anthropic/claude-sonnet-4`. Routes to the default provider with that exact model.
-- **Hint prefix**. e.g. `hint:reasoning`. Looks the hint up in the route table and resolves to a `(provider, model)` pair.
+- **Concrete model name**: for example `anthropic/claude-sonnet-4`. Routes to the default provider with that exact model.
+- **Hint prefix**: for example `hint:reasoning`. Looks the hint up in the route table and resolves to a `(provider, model)` pair.
 
-```rust
-// crates/openhuman-core/src/providers/router.rs
-fn resolve(&self, model: &str) -> (usize, String) {
-    if let Some(hint) = model.strip_prefix("hint:") {
-        if let Some((idx, resolved_model)) = self.routes.get(hint) {
-            return (*idx, resolved_model.clone());
-        }
-    }
-    (self.default_index, model.to_string())
-}
-```
+The rule is the whole of it: strip a `hint:` prefix, look the remainder up in the route table, and fall through to the default provider with the name unchanged if there is no entry. A name without the prefix is never rewritten.
 
-The router wraps several pre-created providers (Anthropic, OpenAI, Google, Groq, etc.) and picks the right one per request. Hints can be remapped at runtime without restarting the core.
+The route table is `[[model_routes]]` in `config.toml`, one entry per hint (`ModelRouteConfig` in `crates/openhuman-core/src/config/schema/routes.rs`), with `[[embedding_routes]]` doing the same for embeddings. Resolution and provider construction live in `crates/openhuman-core/src/inference/`. Hints can be remapped at runtime without restarting the core.
 
 ## Common hints
 
@@ -51,9 +41,10 @@ The subscription is the default, not a requirement. The same router works agains
 
 ## Overriding routes
 
-- **Globally**. config TOML (`Config` struct in `crates/openhuman-core/src/config/schema/types.rs`) can supply a custom route table at startup.
-- **Per call**. pass a concrete model name (no `hint:` prefix) and the router falls through to the default provider with that exact model.
-- **For a skill**. skills can pin a hint or a model in their manifest.
+- **Globally**: `[[model_routes]]` in `config.toml` supplies the route table at startup.
+- **Per call**: pass a concrete model name with no `hint:` prefix and the router falls through to the default provider with that exact model.
+- **For a skill**: a skill can pin a hint or a model in its manifest.
+- **Per agent**: an agent definition can pin its own provider and model, which wins over the table.
 
 ## Default model
 

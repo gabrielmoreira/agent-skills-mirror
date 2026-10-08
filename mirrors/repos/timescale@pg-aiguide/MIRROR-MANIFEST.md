@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `timescale/pg-aiguide` — 26 default patterns, 0 followed patterns, 38 file(s) materialized.
+Mirror of `timescale/pg-aiguide` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `timescale/pg-aiguide` — 26 default patterns, 0 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 38 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -97,6 +97,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 36 | ✓ | [`skills/schema-exploration/references/views.md`](skills/schema-exploration/references/views.md) |
 | 37 | ✓ | [`skills/schema-exploration/SKILL.md`](skills/schema-exploration/SKILL.md) |
 | 38 | ✓ | [`skills/setup-timescaledb-hypertables/SKILL.md`](skills/setup-timescaledb-hypertables/SKILL.md) |
+| 39 | ✓ | [`skills/timescaledb-hyperfunctions/SKILL.md`](skills/timescaledb-hyperfunctions/SKILL.md) |
 
 ---
 

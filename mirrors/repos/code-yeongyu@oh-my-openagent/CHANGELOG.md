@@ -7,9 +7,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [5.1.24] - 2026-10-07
+
+**A task child that fails to start now says why.** Instead of only "Child prompt failed to start.", the task record, the event log and the tool result name the cause in one line: the host took too long to answer, the host refused the prompt (with its error code), the connection was lost, or the child exited first (with its exit code or signal). Raw error text still never reaches any of them. ([#9703](https://github.com/code-yeongyu/oh-my-openagent/issues/9703), [#9704](https://github.com/code-yeongyu/oh-my-openagent/pull/9704))
+
+### Fixed
+
+**Memory catches more disguised forms of secret-like text.** The memory secret scanner, which refuses secret-like values in memory commits and masks them wherever memory text is shown, now recognizes more obfuscated forms of those values, and `/doctor` and the maintenance receipts say when a scan had to fall back. ([#9653](https://github.com/code-yeongyu/oh-my-openagent/issues/9653), [#9689](https://github.com/code-yeongyu/oh-my-openagent/issues/9689), [#9707](https://github.com/code-yeongyu/oh-my-openagent/pull/9707), [#9717](https://github.com/code-yeongyu/oh-my-openagent/issues/9717), [#9718](https://github.com/code-yeongyu/oh-my-openagent/pull/9718))
+
+**A long session no longer runs out of background task graphs.** `task.dag.max_runs_per_session` (default 16) now counts only graphs that are still running, as the bundled `mass-ulw` guidance describes it; finished, failed and cancelled ones used to count until they were pruned a week later, so a busy session could be refused with nothing running. The refusal now says how many are active. ([#9712](https://github.com/code-yeongyu/oh-my-openagent/issues/9712), [#9713](https://github.com/code-yeongyu/oh-my-openagent/pull/9713))
+
+## [5.1.23] - 2026-10-07
+
 ### Changed
 
+**omo runs on senpi 2026.10.10-6, so a background task no longer fails to start on a busy machine with "Provider scope is closed".** The engine host now acknowledges a child's first prompt as soon as it arrives instead of timing it out after 30 seconds ([senpi#2871](https://github.com/code-yeongyu/senpi/issues/2871)). On the Claude subscription lane, senpi now summarizes a long conversation itself by default, the same way it does on every other provider, and Claude Code's own auto-compact stays off so the two never both rewrite it; `compactionOwner: "sdk"` hands the job back to Claude Code ([senpi#2746](https://github.com/code-yeongyu/senpi/issues/2746), [senpi#2749](https://github.com/code-yeongyu/senpi/pull/2749), thanks @trac3r00). Anthropic sessions no longer fail on every request after a tool change ([senpi#2864](https://github.com/code-yeongyu/senpi/issues/2864)), a first message no longer waits for MCP servers to connect ([senpi#2843](https://github.com/code-yeongyu/senpi/issues/2843)), and a restored subscription session whose last reply was never recorded is rebuilt instead of resumed unchecked ([senpi#2858](https://github.com/code-yeongyu/senpi/issues/2858)). Full list: [senpi 2026.10.10-6](https://github.com/code-yeongyu/senpi/releases/tag/v2026.10.10-6).
+
+## [5.1.22] - 2026-10-07
+
+**An agent or the command line can now steer a terminal session you have open.** Thread tools switch a terminal session's model and thinking level and interrupt its turn, applied exactly as the pane's own `/model`, level selector or Esc would; a terminal on an older engine keeps refusing them. A message delivered by another session or the command line shows up in the receiving terminal under one line naming its sender, with the message as written. ([#9660](https://github.com/code-yeongyu/oh-my-openagent/issues/9660), [#9662](https://github.com/code-yeongyu/oh-my-openagent/pull/9662), [#9664](https://github.com/code-yeongyu/oh-my-openagent/pull/9664))
+
+### Added
+
+**`/doctor` now checks the memory files themselves.** It reports broken links, invalid frontmatter, duplicated notes, files outside the memory folders, unreadable files and an oversized system section, and `/doctor --json` returns the same findings with secret-like text masked. The background memory cleanup now fixes what it finds. ([#9652](https://github.com/code-yeongyu/oh-my-openagent/issues/9652), [#9654](https://github.com/code-yeongyu/oh-my-openagent/pull/9654))
+
+**Secret-like text stays out of memory.** A memory commit that contains a token, API key or PEM block is refused, and memory text injected into a turn is masked. ([#9653](https://github.com/code-yeongyu/oh-my-openagent/issues/9653), [#9655](https://github.com/code-yeongyu/oh-my-openagent/pull/9655))
+
+### Fixed
+
+**A memory maintenance run that dies mid-way no longer blocks the runs after it.** Reflection, dream and facts runs now keep a receipt of each outcome, which `/doctor` shows. A run whose process died is quarantined with its files kept and the reason written down, so later runs proceed. A result the run had already committed before its supervisor died is kept instead of lost. ([#9689](https://github.com/code-yeongyu/oh-my-openagent/issues/9689), [#9691](https://github.com/code-yeongyu/oh-my-openagent/pull/9691))
+
+**Memory no longer slows down every prompt.** The check for whether this session saved memory read the identity's whole history and could take seconds, or time out with a raw error under memory pressure; it is now bounded, its failures stay quiet, and the memory repository is packed in the background. ([#9667](https://github.com/code-yeongyu/oh-my-openagent/issues/9667), [#9671](https://github.com/code-yeongyu/oh-my-openagent/pull/9671))
+
+**The memory file list in every turn stays small.** The list of non-system memory names was measured at about 158 KB (roughly 39K tokens) on a long-lived corpus; it now shows the newest names per directory within a byte budget and says how many it left out. ([#9687](https://github.com/code-yeongyu/oh-my-openagent/issues/9687), [#9688](https://github.com/code-yeongyu/oh-my-openagent/pull/9688))
+
+**The browser skill works in the release binary.** Since 5.1.11 the binary installed the skill without its bundled omowright runtime, so loading it always failed for binary installs. ([#9661](https://github.com/code-yeongyu/oh-my-openagent/issues/9661), [#9665](https://github.com/code-yeongyu/oh-my-openagent/pull/9665))
+
+**GPT-6 Astra stops repeating checks that already passed.** When a child's run already proved a command passes, Astra reuses that result instead of running it again, and its ultrawork instructions are shorter. Thanks to @ashmoonori-afk. ([#9642](https://github.com/code-yeongyu/oh-my-openagent/pull/9642), [#9649](https://github.com/code-yeongyu/oh-my-openagent/pull/9649))
+
+**omo.dev keeps rendering styled pages across deployments.** A page served from a previous build could load without its stylesheet; deploys now carry the previous build's static assets forward. ([#9617](https://github.com/code-yeongyu/oh-my-openagent/issues/9617), [#9623](https://github.com/code-yeongyu/oh-my-openagent/pull/9623))
+
+**Code mode replies always reach the right run.** Replying to or cancelling a running code-mode task through its handle can no longer land on a different, newer run. ([#9562](https://github.com/code-yeongyu/oh-my-openagent/issues/9562), [#9695](https://github.com/code-yeongyu/oh-my-openagent/pull/9695))
+
+### Changed
+
+**omo runs on senpi 2026.10.10-5.** You can scroll back through a long conversation while a reply is still streaming: the terminal no longer jumps back to the top on every update ([senpi#2836](https://github.com/code-yeongyu/senpi/issues/2836)). When an app reopens a thread whose session is still open elsewhere, the thread's current permission mode now applies, so a thread switched from full access to ask starts asking for approval again ([senpi#2823](https://github.com/code-yeongyu/senpi/issues/2823)). In code mode, stopping a JavaScript cell that waits on something that never settles keeps the worker and its globals ([senpi#2788](https://github.com/code-yeongyu/senpi/issues/2788)), live eval rows lead with the cell's summary on one line ([senpi#2802](https://github.com/code-yeongyu/senpi/issues/2802)), cells can call `require` and shadow names the kernel defines ([senpi#2792](https://github.com/code-yeongyu/senpi/issues/2792), [senpi#2793](https://github.com/code-yeongyu/senpi/issues/2793)), and a standalone agent gets a `show_html_page` tool that writes an offline page. Full list: [senpi 2026.10.10-5](https://github.com/code-yeongyu/senpi/releases/tag/v2026.10.10-5).
+
 **omo runs on senpi 2026.10.10-4.** The input box no longer gets pushed off-screen when something writes to the terminal behind the TUI ([senpi#2815](https://github.com/code-yeongyu/senpi/issues/2815)). A default extension shim left behind by an earlier install (for example after switching from npm to bun or to the standalone binary) no longer stops every start with `Cannot find module` ([senpi#2765](https://github.com/code-yeongyu/senpi/issues/2765)). Two processes rebinding the same session no longer fail with `ENOENT` ([senpi#2828](https://github.com/code-yeongyu/senpi/issues/2828)). In code mode, a stopped detached cell shows its output instead of reading as still running, and an isolated cell names QuickJS as its runtime ([senpi#2811](https://github.com/code-yeongyu/senpi/issues/2811)). Full list: [senpi 2026.10.10-4](https://github.com/code-yeongyu/senpi/releases/tag/v2026.10.10-4).
+
+**OmO's test suites got smaller and stricter.** A cleanup across seven repositories (47 merged PRs) removed 61 test files and 393 test cases that couldn't catch a real regression, about 8,100 net lines, plus 380 lines of dead product code. It also repaired 47 tests so they now fail when the code they guard breaks, each one proven by breaking that code on purpose, and nothing that was guarded before is unguarded now. Suites that never ran in CI now do, including the Codex plugin component suites and 146 web end-to-end tests. ([#9285](https://github.com/code-yeongyu/oh-my-openagent/issues/9285), [#9336](https://github.com/code-yeongyu/oh-my-openagent/pull/9336))
 
 ## [5.1.21] - 2026-10-06
 

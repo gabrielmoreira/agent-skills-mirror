@@ -56,9 +56,10 @@ python -m benchmark.edgebench.run \
 
 Trial timeouts use **explicit `--timeout` → [task defaults](task-defaults.json)
 → 64,800 seconds (18 hours)**. Portfolio Risk Calibration defaults to
-**43,200 seconds (12 hours)** for all worker and feedback profiles; other tasks
-retain the 18-hour fallback. These are total trial budgets, including planning,
-not per-turn limits.
+**43,200 seconds (12 hours)**; Lean Analysis Proofs defaults to
+**86,400 seconds (24 hours)**. Both task defaults apply to every worker and
+feedback profile; other tasks retain the 18-hour fallback. These are total trial
+budgets, including planning, not per-turn limits.
 
 Auto-evaluation uses **explicit `--eval-interval` → task defaults → 300 seconds**.
 Portfolio defaults to **300 seconds (5 minutes)**; Lean Analysis Proofs defaults
@@ -114,6 +115,20 @@ Configuration receipts prove requested startup settings; actual session model,
 resume continuity, capability use, evaluator completion and integrity need
 runtime/post-run qualification before any score is countable. Raw trial outputs
 and credentials belong outside the public repository.
+
+## Default replan cadence
+
+New `heartbeat-resume` and `heartbeat-explore` trials replan after **3 settled
+effective work Turns** by default. Use `--replan-after-turns N` to set a different
+count (1–5), or `--replan-after-todos 3` for the previous completed-Todo cadence
+as an explicit ablation. The two options are mutually exclusive and require a
+heartbeat profile. This default is independent of `--task-entry`, feedback mode,
+and `--turn-envelope`. Official, single and native-goal profiles are unchanged.
+
+The shared control plane counts settled work Turns, not tool calls or idle wakes;
+other replan reasons may trigger sooner. Both runtime and worker-profile receipts
+record the resolved cadence. Only newly launched attempts use the new default;
+keep existing runs and archived settings pinned.
 
 ## Optional short-context treatment
 

@@ -452,6 +452,27 @@ RUN apt-get update \
     && chmod +x /opt/phpggc/phpggc \
     && ln -s /opt/phpggc/phpggc /usr/local/bin/phpggc
 
+# ruby: interpreter for the Ruby Marshal / Rails (secret_key_base cookie)
+# deserialization track of the Insecure Deserialization and RCE built-in skills.
+# The universal Ruby deserialization gadget is pure-Ruby, so the interpreter
+# alone forges Marshal payloads -- no extra gem needed.
+# License: Ruby License / BSD-2-Clause (permissive). https://www.ruby-lang.org
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ruby \
+    && rm -rf /var/lib/apt/lists/*
+
+# viewgen: ASP.NET ViewState generator/decoder for the .NET track of the
+# Insecure Deserialization skill. Forges a signed/encrypted __VIEWSTATE when the
+# machineKey is leaked / default / known (ObjectStateFormatter deserialization).
+# Not on PyPI; cloned from upstream. Source: https://github.com/0xacb/viewgen (MIT).
+# Deps (colored, viewstate, pycryptodome) install into the shared venv; the
+# `viewgen` script's python3 shebang resolves to that venv (first on PATH).
+RUN retry git clone https://github.com/0xacb/viewgen.git /opt/viewgen \
+    && git -C /opt/viewgen -c advice.detachedHead=false checkout 06e26dea866fda5e62e9abedff326977c099b6bc \
+    && pip install --no-cache-dir -r /opt/viewgen/requirements.txt \
+    && chmod +x /opt/viewgen/viewgen \
+    && ln -s /opt/viewgen/viewgen /usr/local/bin/viewgen
+
 # Ensure ProjectDiscovery Go httpx wins over Python httpx CLI wrapper in PATH
 RUN ln -sf /root/go/bin/httpx /opt/venv/bin/httpx
 

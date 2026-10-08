@@ -29,6 +29,51 @@ at all.
   type and hard contrast, breaking one grid rule at a time on purpose.
   Typical failure: every element shouting, so nothing leads.
 
+## Style presets are rule sets, not adjectives
+
+When a brief names a style - "neobrutalism", "glassy", "Swiss" - write it
+into `DESIGN.md` as concrete rules a reviewer can check against a screenshot.
+A style name with no rules is the same unactionable negation as "make it
+modern".
+
+**Neobrutalism**, as a worked example:
+
+- Thick, solid borders on every element, usually in one dark ink color.
+- Hard shadows: a flat offset with zero blur, in the same ink. The offset
+  value is NOT published by the reference library; pick one (a few pixels on
+  both axes) and record it as the project's own token.
+- Flat, saturated fills. No gradients, no glass, no blur anywhere.
+- Square or near-square corners, heavy display type.
+- The active state presses into its shadow: the element translates by the
+  shadow offset and the shadow shrinks to nothing.
+- Contrast check every saturated fill against the ink text on it; loud
+  yellows and pinks pass, mid-tone blues and greens often do not.
+- A dark-mode border strategy, decided up front: a dark ink border vanishes
+  on a dark ground, so the dark theme needs a light ink or a lighter surface
+  layer, not the light theme's border inverted by accident.
+
+**Mood-named directions.** A direction can also be recorded the way Refero's
+style library records real sites: a mood name ("midnight command center",
+"white with one accent") over a `DESIGN.md` that carries the palette, type,
+spacing, and component rules extracted from a reference. The name is a
+handle; the rules underneath are the decision.
+
+## Footer anatomy
+
+A footer is the last section a visitor who read everything reaches, and the
+one templates fill with filler. Its usual parts:
+
+- the wordmark with a one-line positioning statement;
+- link columns grouped by what a visitor is looking for;
+- a closing call to action;
+- social links;
+- legal and credits.
+
+Pick the footer's style deliberately rather than inheriting a template: a
+large typographic wordmark, a dense link grid, or cards. On mobile the link
+columns collapse - into stacked groups or disclosure sections - instead of
+shrinking to unreadable type.
+
 ## The default aesthetic you already carry
 
 A coding model does not start neutral. Left to its own judgment it converges

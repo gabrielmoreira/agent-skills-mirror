@@ -18,10 +18,10 @@ guides:
 handoffs:
 - task: revise
   applicability:
-  - When the evidence establishes a defect in a supplied Degardis source that the requester authorized correcting, the host permits changing that source, and that defect has neither an unfinished revision responsible for it nor a revision outcome on this route
+  - When the evidence establishes a defect in supplied Degardis source, the requester asked to fix it, changing the source is authorized and permitted by the host, and no unfinished revision or revision outcome on this route covers the defect
 - task: plan
   applicability:
-  - When the evidence establishes a defect in a supplied Degardis source that the requester authorized correcting, host instructions prohibit changing that source, and that defect has neither an unfinished plan responsible for it nor a planning outcome on this route
+  - When the evidence establishes a defect in supplied Degardis source, the requester asked to fix it, host instructions prohibit changing the source, and no unfinished plan or planning outcome on this route covers the defect
 ---
 
 Close every started case as supported, failed, blocked, or inconclusive rather than smoothing a gap into a general judgment.

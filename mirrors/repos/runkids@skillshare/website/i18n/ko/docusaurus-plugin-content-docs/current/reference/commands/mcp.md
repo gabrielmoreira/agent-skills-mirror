@@ -842,7 +842,7 @@ npx @modelcontextprotocol/inspector --cli skillshare mcp serve --method skills/l
   인라인/점 표기 MCP 정의는 작성하기 전에 테이블로 변환해야 하며, 그렇지 않으면
   파일을 수정하지 않고 거부됩니다.
 - 네이티브 파일 symlink, 손상된 파일, 중복 JSON 속성은 쓰기를 차단합니다.
-  symlink된 Skillshare `config.yaml`은 그 대상으로 전달되어 작성됩니다. 단, 프로젝트 밖을 가리키는 프로젝트 설정 link는 쓰기를 거부합니다. 파일
+  symlink된 Skillshare `config.yaml`은 그 대상으로 전달되어 작성됩니다. 단, 프로젝트에서는 실제 위치가 프로젝트 밖인 프로젝트 설정이나 `sources.mcp` 파일에 쓰기를 거부합니다. 파일
   권한은 보존되며, 새 네이티브 파일, 소유권 기록, 백업은 private 권한을 사용합니다.
 - source와 이미 일치하는 항목은, 예를 들어 팀원의 변경 사항을 pull한 후처럼, 쓰기
   없이 unchanged로 보고됩니다. 어떤 Agent에서 import한 뒤 그 Agent를 선택한 경우처럼

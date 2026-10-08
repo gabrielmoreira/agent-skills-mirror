@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `stablyai/orca` — 26 default patterns, 19 followed patterns, 32 file(s) materialized.
+Mirror of `stablyai/orca` — 26 default patterns, 2 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `stablyai/orca` — 26 default patterns, 19 followed patterns, 32 file
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 19 |
-| Files         | 32 |
+| Followed pats | 2 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,23 +53,6 @@ Mirror of `stablyai/orca` — 26 default patterns, 19 followed patterns, 32 file
 
 - `docs/STYLEGUIDE.md`
 - `.github/pull_request_template.md`
-- `docs/reference/windows-terminal-shell-selection.md`
-- `docs/reference/windows-setup-shell.md`
-- `docs/reference/windows-cmd-shim-resolution.md`
-- `docs/reference/windows-process-enumeration.md`
-- `docs/reference/windows-msys-job-breakaway.md`
-- `docs/reference/windows-daemon-host-relocation.md`
-- `docs/reference/windows-edr-posture.md`
-- `docs/reference/antivirus-prerelease-clearance.md`
-- `docs/reference/wsl-command-execution.md`
-- `docs/reference/linux-glibc-compatibility.md`
-- `docs/reference/pnpm-install-policy.md`
-- `docs/reference/ssh-execution-boundary.md`
-- `docs/reference/agent-status-store.md`
-- `docs/reference/agent-pty-transcript-capture.md`
-- `docs/reference/antigravity-readiness-evidence.md`
-- `docs/reference/remote-wire-compatibility.md`
-- `docs/reference/git-compatibility.md`
 
 ## File Index
 
@@ -79,36 +62,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`skills/computer-use/SKILL.md`](skills/computer-use/SKILL.md) |
-| 4 | ✓ | [`skills/linear-tickets/SKILL.md`](skills/linear-tickets/SKILL.md) |
-| 5 | ✓ | [`skills/orca-cli/SKILL.md`](skills/orca-cli/SKILL.md) |
-| 6 | ✓ | [`skills/orca-emulator-android/SKILL.md`](skills/orca-emulator-android/SKILL.md) |
-| 7 | ✓ | [`skills/orca-emulator/SKILL.md`](skills/orca-emulator/SKILL.md) |
-| 8 | ✓ | [`skills/orca-linear/SKILL.md`](skills/orca-linear/SKILL.md) |
-| 9 | ✓ | [`skills/orca-per-workspace-env/SKILL.md`](skills/orca-per-workspace-env/SKILL.md) |
-| 10 | ✓ | [`skills/orchestration/SKILL.md`](skills/orchestration/SKILL.md) |
-| 11 | ✓ | [`src/main/daemon/AGENTS.md`](src/main/daemon/AGENTS.md) |
-| 12 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
-| 13 | ✓ | [`tests/e2e/AGENTS.md`](tests/e2e/AGENTS.md) |
-| 14 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 15 | → | [`docs/reference/agent-pty-transcript-capture.md`](docs/reference/agent-pty-transcript-capture.md) |
-| 16 | → | [`docs/reference/agent-status-store.md`](docs/reference/agent-status-store.md) |
-| 17 | → | [`docs/reference/antigravity-readiness-evidence.md`](docs/reference/antigravity-readiness-evidence.md) |
-| 18 | → | [`docs/reference/antivirus-prerelease-clearance.md`](docs/reference/antivirus-prerelease-clearance.md) |
-| 19 | → | [`docs/reference/git-compatibility.md`](docs/reference/git-compatibility.md) |
-| 20 | → | [`docs/reference/linux-glibc-compatibility.md`](docs/reference/linux-glibc-compatibility.md) |
-| 21 | → | [`docs/reference/pnpm-install-policy.md`](docs/reference/pnpm-install-policy.md) |
-| 22 | → | [`docs/reference/remote-wire-compatibility.md`](docs/reference/remote-wire-compatibility.md) |
-| 23 | → | [`docs/reference/ssh-execution-boundary.md`](docs/reference/ssh-execution-boundary.md) |
-| 24 | → | [`docs/reference/windows-cmd-shim-resolution.md`](docs/reference/windows-cmd-shim-resolution.md) |
-| 25 | → | [`docs/reference/windows-daemon-host-relocation.md`](docs/reference/windows-daemon-host-relocation.md) |
-| 26 | → | [`docs/reference/windows-edr-posture.md`](docs/reference/windows-edr-posture.md) |
-| 27 | → | [`docs/reference/windows-msys-job-breakaway.md`](docs/reference/windows-msys-job-breakaway.md) |
-| 28 | → | [`docs/reference/windows-process-enumeration.md`](docs/reference/windows-process-enumeration.md) |
-| 29 | → | [`docs/reference/windows-setup-shell.md`](docs/reference/windows-setup-shell.md) |
-| 30 | → | [`docs/reference/windows-terminal-shell-selection.md`](docs/reference/windows-terminal-shell-selection.md) |
-| 31 | → | [`docs/reference/wsl-command-execution.md`](docs/reference/wsl-command-execution.md) |
-| 32 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
+| 3 | ✓ | [`resources/native-chat-visuals/skills/orca-chat-visuals/SKILL.md`](resources/native-chat-visuals/skills/orca-chat-visuals/SKILL.md) |
+| 4 | ✓ | [`skills/computer-use/SKILL.md`](skills/computer-use/SKILL.md) |
+| 5 | ✓ | [`skills/linear-tickets/SKILL.md`](skills/linear-tickets/SKILL.md) |
+| 6 | ✓ | [`skills/orca-cli/SKILL.md`](skills/orca-cli/SKILL.md) |
+| 7 | ✓ | [`skills/orca-emulator-android/SKILL.md`](skills/orca-emulator-android/SKILL.md) |
+| 8 | ✓ | [`skills/orca-emulator/SKILL.md`](skills/orca-emulator/SKILL.md) |
+| 9 | ✓ | [`skills/orca-linear/SKILL.md`](skills/orca-linear/SKILL.md) |
+| 10 | ✓ | [`skills/orca-per-workspace-env/SKILL.md`](skills/orca-per-workspace-env/SKILL.md) |
+| 11 | ✓ | [`skills/orchestration/SKILL.md`](skills/orchestration/SKILL.md) |
+| 12 | ✓ | [`src/main/daemon/AGENTS.md`](src/main/daemon/AGENTS.md) |
+| 13 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
+| 14 | ✓ | [`tests/e2e/AGENTS.md`](tests/e2e/AGENTS.md) |
+| 15 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 16 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
 
 ---
 

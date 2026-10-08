@@ -27,7 +27,8 @@ runner behind both surfaces.
    `APPROVAL_CHAT_CONTEXT` task-local scope all wrap the same future.
 4. `run_chat_task` checks the session `Agent` out of the per-thread cache
    (`session.rs::checkout_session_agent`), reusing the `THREAD_SESSIONS` entry
-   when its `SessionCacheFingerprint` still matches and otherwise building one
+   when its `SessionCacheFingerprint` (including the resolved effective model,
+   even without a picker override) still matches and otherwise building one
    and cold-boot resuming it from the thread's `session_raw` transcript (or
    the conversation log). A `Parallel` fork always builds a fresh agent and
    never touches the cache. It then spawns [`spawn_progress_bridge`]
@@ -113,7 +114,7 @@ re-cached its own agent wins.
 | `mod.rs` | Module wiring and re-exports; no business logic |
 | `ops.rs` (thin shell over `ops/`: `start_chat.rs`, `channel_ops.rs`, `parallel_turn.rs`, `turn_guards.rs`, `state.rs`, `budget_correlation.rs`, `test_hooks.rs`) | `start_chat`/`cancel_*`/`channel_web_*` operations, session cache, in-flight tracking, budget-signal correlation, `run_turn_under_cancel_and_deadline` |
 | `run_task.rs` | `run_chat_task`: resolves/builds the session agent, spawns the progress bridge, runs the turn, applies the budget correlation to its error |
-| `session.rs` | Builds/fingerprints the cached session `Agent`, resolves target agent id, locale directive, provider role for a model override |
+| `session.rs` | Builds/fingerprints the cached session `Agent`, resolves target agent id, locale directive, provider role, and turn-local provider/model routing for a model selection |
 | `progress_bridge.rs` | Forwards `AgentProgress` into `WebChannelEvent`s and `TurnStateMirror`, emits the `inference_heartbeat` liveness beat |
 | `presentation.rs` | `deliver_response` (one unsegmented `chat_done`, persisted first) and `deliver_response_single_bubble` (core-initiated turns); local-model emoji-reaction decision; legacy segmentation helpers |
 | `reply_persistence.rs` | Durable write of the reply about to be announced, under a deterministic id shared with the client's own append |
@@ -159,7 +160,11 @@ Namespace `channel`, registered via
   progress bridge mirrors turn state here for cross-surface visibility.
 - `crate::inference::provider::provider_for_role`: resolves the provider
   binding for `provider_role_for_model_override`, which feeds the session
-  fingerprint.
+  fingerprint. `effective_session_config` applies a concrete picker provider
+  and model to the per-turn clone; managed `openrouter/...` defaults restore
+  the managed route after restart without saving changes or altering sibling
+  role routes. Hints and unqualified legacy model IDs retain their configured
+  provider route.
 - `crate::security::approval::APPROVAL_CHAT_CONTEXT`: scoped by
   `run_turn_under_cancel_and_deadline` around the `run_chat_task` future.
   `crate::web3::wallet::execution::current_owner()` relies on this task-local
@@ -203,4 +208,5 @@ Namespace `channel`, registered via
   `mod.rs` for debug/test builds.
 - Per-file unit tests: `event_bus_tests.rs`, `ops_budget_correlation_tests_tests.rs`,
   `presentation_tests.rs` + `presentation_test_support_tests.rs`,
-  `progress_bridge_tests.rs`, `reply_persistence_tests.rs`, `run_task_tests.rs`.
+  `progress_bridge_tests.rs`, `reply_persistence_tests.rs`, `run_task_tests.rs`,
+  `session_checkout_tests.rs`, `session_routing_tests.rs`.

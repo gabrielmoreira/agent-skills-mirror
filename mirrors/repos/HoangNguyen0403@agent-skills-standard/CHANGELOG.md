@@ -9,13 +9,74 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-**Category**: CLI Tool, Quality Engineering, Common, Cybersecurity, Testing Skills
+## [cli-v2.6.6] / [mcp-v0.6.1] - 2026-10-07
+
+**Category**: CLI Tool, MCP Server, Dependency Security
+
+### Changed
+
+- **CLI**: Bumped to `2.6.6`, updated dependencies (`vite` to `8.3.2`, `dotenv` to `18.0.5`, `@vitest/coverage-v8` to `5.0.3`, `vitest` to `5.0.3`, `eslint` to `10.12.0`, `globals` to `17.13.0`), set `MCP_COMPATIBLE_VERSION` to `0.6.1`.
+- **MCP Server**: Bumped to `0.6.1`, updated `@modelcontextprotocol/sdk` to `^1.32.1`.
 
 ### Fixed
 
-- Managed skill package files and ownership-writer operations refuse pre-existing symlinks below the project root before payload writes, reads, backups, or pruning; package resources across selected agents are checked before the first package write. This does not cover unrelated direct root-document writes or concurrent filesystem swaps.
-- Removed a cross-project environment and credential-handling reference from the reusable Playwright CLI skill and four tracked agent install mirrors.
-- SkillSpector static scan: reworded phrasing that matched Excessive-Agency and Memory-Poisoning heuristics without changing intended behavior. `common-decision-discipline` and `cyber-framework-mapping` no longer read as unconfirmed autonomous action; the 13 testing skills' `Permanent Rule Anchor IDs` heading (which the scanner's persistent-context-injection pattern flagged on the word "Permanent") is renamed `Core Rule Anchors` across `android`, `angular`, `flutter`, `golang`, `java`, `laravel`, `nestjs`, `php`, `python`, `react`, `react-native`, `spring-boot`, and `swift` testing skills. Risk score reduced from 27 to within the 25 threshold; 0 critical findings before and after.
+- **MCP Streamable HTTP**: Forward Express-parsed `req.body` to the SDK transport (`transport.handleRequest(req, res, req.body)`), matching the SDK contract and preventing duplicate body consumption.
+- **MCP Routing & Telemetry**: Qualified high-collision React/Swift triggers; separated catalog discovery from loaded bodies in consultation audit and cost output.
+- **Dependencies & Security**: Resolved critical `proxy-addr` (<2.0.8, GHSA-jqcg-44mw-7w3h), moderate `fast-copy` (<4.1.0, GHSA-jggr-w7fw-pc2j), and high `source-map-js` (<1.2.2, GHSA-68fv-2mgg-jv7q) advisories via `pnpm.overrides`. Consolidated dependency updates across the workspace (#219, #220, #221, #222, #225).
+
+### Versions
+
+- **CLI**: `2.6.5` → `2.6.6`
+- **MCP**: `0.6.0` → `0.6.1`
+
+## [common-v2.8.6] - 2026-10-07
+
+**Category**: Context Optimization & Decision Discipline
+
+### Changed
+
+- `common-context-optimization`: Replaced unsupported history rewriting and fixed compaction rules with host-capability-aware output projection, stable artifact references, and cache/replay/actor cost measurement guidance.
+- `common-decision-discipline`: Distinguished repository publication from runtime activation, bound verification receipts to settled revisions, and kept skill length strictly within limits.
+
+### Versions
+
+- **Common Skills**: `2.8.5` → `2.8.6`
+
+## [golang-v1.3.9] - 2026-10-07
+
+**Category**: Routing Precision
+
+### Changed
+
+- `golang-concurrency`: Qualified `context` trigger to avoid collision with orchestration context management while preserving Go concurrency routing.
+
+### Versions
+
+- **Golang Skills**: `1.3.8` → `1.3.9`
+
+## [react-v1.4.2] - 2026-10-07
+
+**Category**: Routing Precision
+
+### Changed
+
+- `react-state-management`: Qualified `context` trigger to avoid collision with orchestration context management while preserving React state management routing.
+
+### Versions
+
+- **React Skills**: `1.4.1` → `1.4.2`
+
+## [workflows-v1.1.4] - 2026-10-07
+
+**Category**: Execution & Delivery Governance
+
+### Changed
+
+- `implement-feature`: Bound implementation slices to owner, exact files, authority, and revision-bound receipts; restored machine-readable outcome report fields (`started_at`, `completed_at`, `requirement_trace`, `cost`, `agent`) and cost reporting call.
+
+### Versions
+
+- **Workflows**: `1.1.3` → `1.1.4`
 
 ## [android-v1.5.1]
 

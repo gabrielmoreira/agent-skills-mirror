@@ -1,3 +1,17 @@
+### MindIE XML tool arguments (`packages/harness/deerflow/models/mindie_provider.py`)
+
+Parse XML tool calls from the original model response before applying escaped-newline
+compatibility fixes to the remaining prose. Parse JSON and Python-literal arguments
+from their original escapes. For non-JSON raw-string parameters, decode literal
+`\n` outside fenced code and trim surrounding whitespace, retaining the gateway's
+existing multiline-file/command behavior. Raw strings cannot distinguish intended
+literal escapes from over-escaped newlines. Numeric conversion failures and unsafe
+Python-literal containers still retain the entire original argument. Keep the
+existing content path when no tool calls can be parsed and preserve native tool
+calls. This contract is shared by sync/async generation and tool-enabled simulated
+streaming; no-tool native streaming has its own chunk handling. Coverage:
+`tests/test_mindie_provider.py`.
+
 ### MindIE XML numeric arguments (`mindie_provider.py`)
 
 The XML parser recognizes JSON numeric syntax, including signed, fractional,
@@ -121,6 +135,13 @@ Offline HTTP-stream coverage: `tests/test_codex_stream_terminal_events.py`.
 - Every request goes through `_strip_cache_control`, with caching on or off, so markers stored by older checkpoints never reach the API. It copies a marked block without its marker and replaces the system, message, content and tool lists and every message dict with copies; langchain-anthropic already builds fresh message dicts and content lists, so that part is defensive
 - `_apply_prompt_caching` must call `_strip_cache_control` first: it then replaces slots in those payload-owned lists with marked copies and writes `msg["content"]` on copied message dicts, placing at most four breakpoints. Pinned by `tests/test_claude_provider_prompt_caching.py`
 - Exclude `thinking` and `redacted_thinking` blocks before selecting the last four cache candidates: Anthropic forbids direct `cache_control` on these blocks. Keep their content, signatures/data and order intact so they remain part of the prefix covered by a later eligible breakpoint. Stripping stale markers must not add them back to thinking blocks or mutate caller-owned history. The same suite exercises real sync/async SDK tool-followup requests through offline transports.
+
+### Claude Thinking Budget (`packages/harness/deerflow/models/claude_provider.py`)
+
+- With `auto_thinking_budget=True`, manual `thinking.type=enabled` requests validate integer budgets of at least 1024. Ordinary thinking also requires `budget_tokens < max_tokens` and integer `max_tokens > 1024`; an absent/null budget uses `max(1024, int(max_tokens * 0.8))`, defaulting to an 8192 output limit.
+- Manual interleaving permits a budget equal to or above a positive integer output limit, but only with tools, the effective `interleaved-thinking-2025-05-14` beta, and a supported Sonnet 4/4.5/4.6 or Opus 4/4.1/4.5 model (aliases and dated IDs). Haiku 4.5 and Opus 4.6 do not interleave in manual mode even with that header. Follow [Anthropic's model-specific rules](https://platform.claude.com/docs/en/build-with-claude/extended-thinking#interleaved-thinking-in-manual-mode) when updating this capability gate.
+- Resolve the beta header as the SDK does: client defaults, then request `betas` (including an empty list), then `extra_headers`. Match comma-separated beta names exactly; a removed or replaced beta must not relax the budget bound.
+- Automatic allocation replaces the payload's thinking mapping with a copy: LangChain aliases it to `self.thinking`, so in-place writes leak across requests and make smaller per-call output limits fail. `auto_thinking_budget=False` bypasses normalization/validation; absent, disabled and adaptive thinking remain untouched. Coverage: `tests/test_claude_provider_thinking.py`, including native request construction and offline SDK serialization.
 
 ### vLLM Provider (`packages/harness/deerflow/models/vllm_provider.py`)
 

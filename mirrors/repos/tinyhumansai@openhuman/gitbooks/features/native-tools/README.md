@@ -1,8 +1,8 @@
 ---
 description: >-
   The full toolset OpenHuman's agent has out of the box - research, code,
-  control your machine, schedule jobs, talk back to you, and call into 118+
-  third-party services.
+  control your machine, schedule jobs, talk back to you, and call into your
+  connected services.
 icon: toolbox
 ---
 
@@ -14,7 +14,7 @@ This page is the index. Each subpage covers one family of tools.
 
 ## Why ship them natively
 
-A plugin-only model means tools live in different processes, behind RPC, with their own auth and packaging stories. That's fine for open-ended extensibility, but for the **core** tools every agent needs (read a file, search the web, edit code, set a reminder, join a meeting), shipping them in-process means:
+A plugin-only model means tools live in different processes, behind RPC, with their own auth and packaging stories. That's fine for open-ended extensibility, but for the **core** tools every agent needs (read a file, search the web, edit code, set a reminder, drive a browser), shipping them in-process means:
 
 - Consistent error handling.
 - Zero install friction.
@@ -28,16 +28,17 @@ A plugin-only model means tools live in different processes, behind RPC, with th
 | [Web Search](web-search.md)                           | Search the live web via the managed proxy (powered by Exa), backend-proxied Parallel, your own Exa/Brave/Querit/Tavily key, or self-hosted SearXNG. |
 | [Web Scraper](web-scraper.md)                         | Pull clean text out of any URL - articles, docs, READMEs.                                                                                    |
 | [Coder](coder.md)                                     | Read/write/edit/patch files, glob, grep, git, lint, test.                                                                                    |
+| [Documents](documents.md)                             | Write `.docx` and `.pptx`, and read PDF, Word, PowerPoint and Excel back in.                                                                 |
 | [Browser & Computer Control](browser-and-computer.md) | Open URLs, inspect DOM snapshots, click, type, move the mouse.                                                                               |
 | [Cron & Scheduling](cron.md)                          | Recurring jobs, one-off reminders, scheduled agent runs.                                                                                     |
-| [Voice](voice.md)                                     | Speech-to-text in, text-to-speech out, live Google Meet agent.                                                                               |
+| [Voice](voice.md)                                     | Speech-to-text in, text-to-speech out, and a live voice agent you can interrupt.                                                             |
 | [Memory Tools](memory-tools.md)                       | Recall, fetch, learn and forget through the single `memory` tool, over [memory](../memory.md).                                                        |
-| [Third-party Integrations](../integrations/README.md) | The agent's view of the [118+ connected services](../integrations/README.md).                                                                |
+| [Third-party Integrations](../integrations/README.md) | The agent's view of the [connected services](../integrations/README.md).                                                                     |
 | [Agent Coordination](agent-coordination.md)           | Spawn subagents, delegate to skills, plan, ask the user.                                                                                     |
 | [System & Utilities](system-and-utilities.md)         | Shell, node, SQL, current time, push notifications, LSP.                                                                                     |
 
 ## See also
 
 - [Smart Token Compression](../token-compression.md) - what keeps tool output costs bounded.
-- [Third-party Integrations](../integrations/README.md) - the user-facing pitch and OAuth flow for the 118+ catalog.
+- [Third-party Integrations](../integrations/README.md) - the user-facing pitch and OAuth flow for the managed catalog.
 - [Privacy & Security](../privacy-and-security.md) - the boundary every tool runs inside.

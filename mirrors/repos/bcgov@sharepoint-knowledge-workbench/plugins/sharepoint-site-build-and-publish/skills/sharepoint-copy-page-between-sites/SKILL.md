@@ -4,7 +4,7 @@ plugin: sharepoint-site-build-and-publish
 description: Builds a safe, human-reviewed plan for copying or promoting an existing SharePoint Online Site Page, such as an .aspx page in Site Pages, from one SPO site to another. Use for TEST-to-PROD page promotion requests. Performs no tenant writes by default, runs a reviewed copy only with -Execute and a confirmation token, and avoids raw .aspx file upload.
 allowed-tools: Bash, Read, Write
 examples:
-  - "pwsh -File scripts/spo-page-copy-plan.ps1 -SourcePageUrl \"https://tenant.sharepoint.com/sites/Test/SitePages/Page.aspx\" -TargetPageUrl \"https://tenant.sharepoint.com/sites/Prod/SitePages/Page-copy.aspx\""
+  - "pwsh -File scripts/spo-copy-page.ps1 -SourcePageUrl \"https://tenant.sharepoint.com/sites/Test/SitePages/Page.aspx\" -TargetPageUrl \"https://tenant.sharepoint.com/sites/Prod/SitePages/Page-copy.aspx\""
 ---
 
 # Copy Page Between Sites
@@ -30,7 +30,7 @@ Plan promotion of an existing SPO Site Page from a source site to a target site.
 ## Quick start
 
 ```bash
-pwsh -File scripts/spo-page-copy-plan.ps1 -SourcePageUrl "https://tenant.sharepoint.com/sites/Test/SitePages/Page.aspx" -TargetPageUrl "https://tenant.sharepoint.com/sites/Prod/SitePages/Page-copy.aspx"
+pwsh -File scripts/spo-copy-page.ps1 -SourcePageUrl "https://tenant.sharepoint.com/sites/Test/SitePages/Page.aspx" -TargetPageUrl "https://tenant.sharepoint.com/sites/Prod/SitePages/Page-copy.aspx"
 ```
 
 ## Workflow

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `smartcontractkit/chainlink-agent-skills` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `smartcontractkit/chainlink-agent-skills` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `smartcontractkit/chainlink-agent-skills` — 26 default patterns, 0 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,8 +67,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`chainlink-cre-skill/SKILL.md`](chainlink-cre-skill/SKILL.md) |
 | 7 | ✓ | [`chainlink-data-feeds-skill/SKILL.md`](chainlink-data-feeds-skill/SKILL.md) |
 | 8 | ✓ | [`chainlink-data-streams-skill/SKILL.md`](chainlink-data-streams-skill/SKILL.md) |
-| 9 | ✓ | [`chainlink-vrf-skill/SKILL.md`](chainlink-vrf-skill/SKILL.md) |
-| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 9 | ✓ | [`chainlink-nop-skill/SKILL.md`](chainlink-nop-skill/SKILL.md) |
+| 10 | ✓ | [`chainlink-vrf-skill/SKILL.md`](chainlink-vrf-skill/SKILL.md) |
+| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

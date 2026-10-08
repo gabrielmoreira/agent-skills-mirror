@@ -1,5 +1,5 @@
 /**
- * @file skills/rig/rig.ts @last-analyzed 716ca95 @edit-time 2026-08-28T04:01:24Z
+ * @file skills/rig/rig.ts @last-analyzed 8d9e978 @edit-time 2026-10-06T17:10:40-07:00
  * @purpose Minimal TypeScript multi-agent harness: typed input/output schemas, prompt intents, sub-agent delegation, workflow orchestration, Copilot SDK runtime
  * @deps @github/copilot-sdk (CopilotClient,RuntimeConnection,approveAll); node:path,url,os,module,fs,fs/promises,child_process,util,async_hooks
  * T:Json type null|bool|num|str|Json[]|{[k]:Json}
@@ -78,6 +78,7 @@
  * F:analyzeResponse(resp,schema,name,turn) ResponseAnalysisResult; tries direct parse, fenced ```json, balanced-brace extraction
  * F:defaultRepairPrompt(spec,err) string re-prompt on parse/validation failure
  * F:toJsonSchema(schema) JsonSchemaObject converts Schema to plain JSON Schema
+ * F:normalizeResponseSchema(schema) JsonSchemaObject recursively strips unsupported keywords from outputSchema before sending to model [NEW]
  * F:debug(category) creates a lazy category-filtered JSONL logger
  * F:steering(opts?) AgentAddon appends last-turn warning to prompt when model must correct output
  * F:timeout(opts) AgentAddon applies AbortSignal timeout to each turn
@@ -90,7 +91,7 @@
  * F:parallel(tasks) runs array of async tasks concurrently
  * F:pipeline(items,...stages) runs pipeline stages over items concurrently
  * F:until(options,step) loops step until done or max rounds
- * F:repair() AgentAddon re-prompts on JSON/schema failure up to maxTurns [NEW]
+ * F:repair() AgentAddon re-prompts on JSON/schema failure up to maxTurns
  * addon:repair re-prompts on JSON/schema failure up to maxTurns (built-in via defaultRepairPrompt)
  * addon:steering appends warning on last turn so model knows it must correct output now
  * addon:timeout wraps each turn with AbortSignal from TimeoutOptions.timeout ms
@@ -564,7 +565,7 @@ function copilotSendTimeout(): number {
   return Number.isFinite(timeout) && timeout > 0 ? timeout : 24 * 60 * 60 * 1000;
 }
 
-type DefaultEngineKind = "copilot" | "anthropic" | "codex" | "gemini";
+type DefaultEngineKind = "copilot" | "anthropic" | "codex" | "deepseek" | "gemini";
 
 type DefaultEngineOptions = {
   cwd?: string;
@@ -587,7 +588,7 @@ function resolveDefaultEngineKind(options: DefaultEngineOptions = {}): DefaultEn
     return "copilot";
   }
   const configuredEngine = process.env["RIG_ENGINE"]?.trim().toLowerCase();
-  if (configuredEngine === "copilot" || configuredEngine === "anthropic" || configuredEngine === "codex" || configuredEngine === "gemini") {
+  if (configuredEngine === "copilot" || configuredEngine === "anthropic" || configuredEngine === "codex" || configuredEngine === "deepseek" || configuredEngine === "gemini") {
     return configuredEngine;
   }
   if (hasNonEmptyEnv("ANTHROPIC_API_KEY")) {
@@ -598,6 +599,9 @@ function resolveDefaultEngineKind(options: DefaultEngineOptions = {}): DefaultEn
   }
   if (hasNonEmptyEnv("GEMINI_API_KEY") || hasNonEmptyEnv("GOOGLE_API_KEY")) {
     return "gemini";
+  }
+  if (hasNonEmptyEnv("DEEPSEEK_API_KEY")) {
+    return "deepseek";
   }
   return "copilot";
 }
@@ -629,6 +633,10 @@ function defaultAgentFactory(options: DefaultEngineOptions = {}): AgentFactory {
     if (kind === "gemini") {
       const { geminiEngine } = await importOptionalEngine("./engines/gemini.ts");
       return geminiEngine(options.cwd ? { cwd: options.cwd } : {})(agentOptions);
+    }
+    if (kind === "deepseek") {
+      const { deepseekEngine } = await importOptionalEngine("./engines/deepseek.ts");
+      return deepseekEngine(options.cwd ? { cwd: options.cwd, processCwd: options.cwd } : {})(agentOptions);
     }
     const copilotOptions = options.cwd
       ? resolveCopilotOptions(options.cwd, options.startServer ? { startServer: true } : {})

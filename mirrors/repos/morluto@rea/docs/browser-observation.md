@@ -3,6 +3,8 @@
 Captured Debugger sources can be exported for REA's existing static JavaScript
 analysis with `export_web_scripts`. See [captured website scripts](website-script-export.md)
 for the capture options, source mappings, and browser/local resolution limits.
+Use [captured module relationships](website-module-trace.md) to resolve one
+exported script's native imports under an explicit URL/import-map context.
 
 REA can attach to a user-owned Chrome-family browser through the Chrome DevTools Protocol (CDP) and produce bounded Evidence about an existing page. This is a passive reverse-engineering capability, not a general browser automation or remote-control surface.
 
@@ -22,6 +24,17 @@ REA can attach to a user-owned Chrome-family browser through the Chrome DevTools
 Target discovery returns the complete in-scope target array in one result.
 
 Electron `file://` pages use a separate provider and target boundary; see [electron-observation.md](electron-observation.md).
+
+## Provider authorities
+
+CDP page capture, V8 Inspector observation, and Playwright scenarios stay
+separate providers because their authorities differ: CDP and V8 attach to an
+already-running target and never launch, drive, evaluate, or mutate it, while
+Playwright providers own and drive the runtime (launch browsers, run actions,
+capture step snapshots). Merging them would mix attach-only and owned-process
+lifecycles in one contract. What they share instead is one exclusion
+vocabulary (`BrowserExclusionReason`): every denial reason in every stack maps
+onto it, even where a wire schema keeps a narrower historical bucket.
 Existing static application Evidence and passive web/Electron captures can be
 combined later through
 [JavaScript static/runtime reconciliation](javascript-runtime-reconciliation.md).
@@ -120,7 +133,7 @@ REA retains local observation data and removes only URL userinfo credentials, ex
 - URL observations preserve the complete local URL, including query values, fragments, duplicate parameters, and their order. Only username/password userinfo is removed; malformed original URL strings remain available with `origin: null`.
 - DOM snapshots retain node types, node names, value lengths, and attribute names, but not text or attribute values.
 - Accessibility structure and roles are retained by default, while names and descriptions require `include_accessibility_text: true`.
-- Network observations retain method, status, MIME type, size, type, initiator stack location, and complete URLs with userinfo credentials removed. Headers are discarded after an allowlisted projection of length/encoding, structured CSP/Link/policy fields, and untrusted agent hints. Cookies and authorization headers are never retained.
+- Network observations retain method, status, MIME type, size, type, initiator stack location, and complete URLs with userinfo credentials removed. Redirects reported by CDP are attached as ordered `redirects` on the one request ID, with the prior request URL, CDP response URL, method/type, response status/MIME/encoded length, request timestamp, and the next `requestWillBeSent` event timestamp. CDP delivers `redirectResponse` with that next request event, so the latter is an event boundary rather than an exact response timestamp. Redirect response headers and bodies are discarded; hops outside the selected origins are discarded with the request chain. Headers are discarded after an allowlisted projection of length/encoding, structured CSP/Link/policy fields, and untrusted agent hints. Cookies and authorization headers are never retained.
 - Request/response bodies are not requested or parsed by default. When selected, only allowed-origin JSON media types are read, converted immediately to complete value-free property paths/types, and discarded. `Network.getResponseBody` is never sent unless JSON body shape capture is selected.
 - Console observations with a stack source retain call type, argument types, timestamp, and source location. When console text capture is selected, already-delivered primitive values are retained verbatim; objects, getters, and remote properties are never expanded.
 - WebSocket observations retain direction, opcode, and payload byte length. When shape capture is selected, text frames are classified as text or complete value-free JSON shape; binary bytes, hashes, prefixes, and raw frames are never retained.

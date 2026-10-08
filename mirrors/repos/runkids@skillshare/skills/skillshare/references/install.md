@@ -198,6 +198,8 @@ skillshare uninstall --group frontend --dry-run
 skillshare uninstall my-skill --json
 ```
 
+**Tracked repo names:** `uninstall org/team` accepts the shorthand for `org/_team` installed with `--into org`. An existing skill or folder at the typed path wins; use `org/_team` to explicitly remove the repo. Ambiguous short names require the full path.
+
 **Safety:** Tracked repos with uncommitted changes are skipped, and repos whose git status cannot be read fail. Use `--force` to override both.
 
 **Group auto-detection:** When uninstalling a directory that contains sub-skills, the confirmation prompt shows `Uninstalling group (N skills)` with a list of contained skills.

@@ -135,6 +135,8 @@ it also knows which entries git ignores, and hides them for you.
 Tap a folder to open it and a file to read it. The path above the rows is a breadcrumb, and each
 folder in it is a link. The back arrow goes up one level: from a file to its folder, from a folder
 to the one above, and from the top to wherever Files was opened from.
+On a phone the same Back also stands at the foot of the screen, on the side of your thumb, so you
+reach it with one hand: the right end, or the left end with the left-hand layout.
 
 ### The All files | Changes control
 
@@ -154,17 +156,18 @@ A changed file opens on its **Diff**, with **Source** and, for some types, **Pre
 A file that did not change opens on its source or its preview. A deleted file has only its diff, and
 a new file shows as all added.
 
-Source is numbered and coloured up to 2000 lines and plain above that. A binary file shows its size
-and nothing else. A file over the size limit shows its first part and says so. A symlink shows as a
+Source is numbered and coloured up to 2000 lines and plain above that. A picture is drawn (below). Any
+other binary file shows its size and nothing else. A file over the size limit shows its first part and says so. A symlink shows as a
 link row and opens like a file.
 
-Markdown, JSON and HTML files open on a **Preview** when they did not change.
+Markdown, JSON, HTML and SVG files open on a **Preview** when they did not change.
 
 | File | Preview |
 | --- | --- |
 | `.md`, `.markdown` | Formatted text. Raw HTML in the file stays as text. |
 | `.json` | A tree. The first two levels are open and a folded node shows its count. |
 | `.html`, `.htm` | The page in a sandboxed frame on a white ground. |
+| `.svg` | The picture, drawn so it runs no script and loads nothing. |
 
 > **Note.** An HTML preview runs no scripts, sends no forms and loads no remote files. A link in the
 > page does not open. Pictures stored inside the file as `data:` addresses still draw.
@@ -172,11 +175,34 @@ Markdown, JSON and HTML files open on a **Preview** when they did not change.
 Links in a Markdown preview work. A relative link opens that file or folder, a `#heading` link scrolls
 to the heading, and a web link opens in a new tab. A link that leaves the folder reads as plain text.
 
+A PNG, JPEG, GIF, WebP or AVIF file opens as the picture. It fits the screen, sits on a checkerboard
+that shows transparency, and has its size and type under it. A picture has no Source.
+
+Collie reads the type from the file's bytes, not its name. A file that is not really a picture, or
+one over 16 MiB, shows its size and the reason instead.
+
+A Markdown preview draws the pictures the file names by a relative path, the first 20 of them. A
+picture on the web, or outside the folder, shows its description text.
+
 A JSON file that does not parse shows the error and its source. A tree is not drawn above 5000 values,
 and the source shows instead.
 
 In **Changes**, a changed file whose type has a preview, and that is not deleted, shows a
 **Preview** button in the header of its diff. It opens the same file screen on Preview.
+
+### Paths the agent prints
+
+A file path the agent prints in Chat or in the terminal mirror is a link to that file in Files.
+`src/app.ts:42` opens the file on its Source at line 42, with that line marked. Chat draws the path
+as an underlined code chip, and the path on an Edit or a Read card works the same way.
+
+A path is a link only when it leads inside the workspace's folder, the folder Files reads, and a
+file or a folder is there. A path outside it, a web address, and a path the terminal broke across
+two lines stay plain text.
+
+Collie asks the bridge which printed paths exist, many in one request, and the bridge reads no file
+to answer. A path stays plain text until the answer comes, and for as long as the view is open when
+the answer is no. Offline, and on a crew member's pane, no path is a link.
 
 A folder or a file is read when you open it, and again when you tap refresh. It never updates on a
 timer. The change marks follow the list of changes, which updates every 5 seconds while you look.
@@ -203,13 +229,12 @@ open like any other row.
 
 ### Who may use it
 
-- **Files needs an authorised device**, the same check as typing into a pane. The check is on only
-  when a device is paired ([Security](security.md#pair-a-device--the-write-credential)) or
-  `COLLIE_DEVICE_HEADER` is set. Then a device that is not paired, or not on
-  `COLLIE_DEVICE_ALLOWLIST`, cannot open Files.
-- **Until then, every device that can read panes can use Files.** It can browse the workspace's
-  folder and read any file in it, `.env` files included. Pair your phone to close it.
-- Changes stays open to any device that can read, because it shows only what changed.
+- **Files needs an authorised device**, the same check as typing into a pane. A device must be
+  paired ([Security](security.md#pair-a-device--the-write-credential)), and with
+  `COLLIE_DEVICE_HEADER` set it must also be on `COLLIE_DEVICE_ALLOWLIST`.
+- **Every paired device can use Files.** It can browse the workspace's folder and read any file in
+  it, `.env` files included.
+- Changes is open to any paired device, because it shows only what changed.
 
 ### What it shows, and what it never shows
 
@@ -231,6 +256,7 @@ open like any other row.
 
 - **2000 entries per folder.** A larger folder shows its first 2000 and says it was cut.
 - **1 MiB per file.** A larger file shows its first 1 MiB and says it was cut.
+- **16 MiB per picture.** A larger picture shows its size and says it is too large.
 - **Binary files show no text.** A file with a NUL byte in its first 8000 bytes counts as binary, git's
   own rule.
 - **No folder, no files.** A workspace whose folder is your home folder, a folder above it, or `/`

@@ -736,10 +736,51 @@ It runs opportunistically when the session goes idle, and optionally at shutdown
 
 In Senpi, `/doctor` checks the working memory corpus and reports `ok`, `warn`, or
 `fail`. Existing checks are `repository`, `frontmatter`, `persona`, `soul-seed`,
-`locks`, `worktrees`, `abandoned-runs`, `reservation`, `reflection-health`,
-`tokens`, `projection` (see "Memory file list in the prompt"), and the conditional
-`facts` advisory. The `skills` lines report the
-existing missing-name frontmatter repair.
+`locks`, `worktrees`, `abandoned-runs`, `quarantined-runs`, `receipts`,
+`reservation`, `reflection-health`, `tokens`, `projection` (see "Memory file list
+in the prompt"), and the conditional `facts` advisory. The `skills` lines report
+the existing missing-name frontmatter repair.
+
+`receipts` shows the newest outcome of each kind of memory maintenance, for
+example `dream merged 2d ago (run 1a2b3c4d); reflection failed 1h ago
+(validation_failed); facts never`. It reads `receipts.jsonl` in the identity's
+runtime directory, an append-only record outside the memory repository. Each
+line is one lifecycle event: `launched`, `recovered`, `merged`, `no_changes`,
+`failed`, `abandoned` and `quarantined` for reflection and dream runs, and
+`committed`, `no_facts`, `failed` and `parked` for facts batches. A receipt is
+written after the run's own terminal file, and a lost reflection or dream
+receipt is rebuilt from that file at the next startup, so each run outcome is
+recorded exactly once. A lost facts receipt is rebuilt from the batch's
+`final.json` or `abandoned.json` with its event and sha only; a lost `parked`
+receipt is not rebuilt. The check warns when the file ends in a partial line.
+
+`quarantined-runs` lists unfinished runs that startup reconciliation could
+neither finish nor release: an unreadable ledger, a run directory that never
+got a prelaunch record, or a terminal claim that cannot be read. The first two
+are quarantined only after the launcher is proven dead on this machine and, for
+an unreadable ledger, its recorded supervisor and child too. An unreadable
+terminal claim is quarantined where reconciliation would otherwise have
+abandoned or failed the run. A finished run is never quarantined: when its
+timestamps cannot be attributed, its terminal file stays its one recorded
+outcome and the reservation is released. Quarantine writes `quarantined.json`
+with the reason and keeps every file in the run directory. It saves the held reservation as
+`reservation.quarantined.json` and releases it, so later runs proceed.
+Inspect and remove a quarantined directory by hand; `/doctor` never deletes it.
+
+When a run's supervisor dies after the model child already exited cleanly
+before its deadline (recorded in the run's `child-exit.json`), with a complete
+committed result, startup recovers that result: it is validated and merged like a normal
+run, and the receipts show `recovered` before `merged`. `recovered` marks any run
+that startup reconciliation settled after the process that ran it died, so it
+precedes whatever outcome that run reaches, including `failed`. A launch interrupted
+before its run started is recorded as `abandoned` with reason
+`launch_interrupted`; its worktree is already removed, so `abandoned-runs` does
+not list it.
+
+`OMO_MEMORY_KILL_POINT` is a test-only seam: when it names a recovery point
+(`after-reserve`, `after-prelaunch`, `after-worktree`, `after-child-exit`,
+`after-validate`, `after-merge`, `before-receipt`), the process that reaches
+it kills itself. Never set it outside a crash test.
 
 The structural audit uses these stable codes:
 
@@ -760,8 +801,11 @@ the existing skill-name repair is its only automatic repair.
 
 `/doctor --json` returns `{ identity, level, checks: [{ name, level, detail }],
 audit: { version: 1, generatedAt, issues: [{ code, path, detail, related? }],
-counts: { <code>: <number> } }, skills: { scanned, repaired } }`. `audit` is
-`null` when the repository is missing. Every string value is secret-screened
+counts: { <code>: <number> } }, skills: { scanned, repaired }, receipts:
+{ dream, reflection, facts }, quarantinedRuns: [{ runId, reason, at, dir,
+evidence }] }`. Each `receipts` entry is `null` or `{ event, at, trigger, runId |
+batchId, reason?, sha?, detail? }`. `audit` and `receipts` are `null` when the
+repository is missing. Every string value is secret-screened
 before JSON serialization; numeric counts stay intact.
 
 Dream runs receive the same redacted audit computed over their own worktree at

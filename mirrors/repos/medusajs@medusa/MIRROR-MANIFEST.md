@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `medusajs/medusa` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `medusajs/medusa` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `medusajs/medusa` — 26 default patterns, 0 followed patterns, 13 fil
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,18 +60,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/diagnosing-dependabot-alerts/SKILL.md`](.claude/skills/diagnosing-dependabot-alerts/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/reviewing-prs/SKILL.md`](.claude/skills/reviewing-prs/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/triaging-issues/SKILL.md`](.claude/skills/triaging-issues/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/writing-docs/SKILL.md`](.claude/skills/writing-docs/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/writing-releases/SKILL.md`](.claude/skills/writing-releases/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/writing-tsdocs/SKILL.md`](.claude/skills/writing-tsdocs/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/writing-tutorials/SKILL.md`](.claude/skills/writing-tutorials/SKILL.md) |
-| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 9 | ✓ | [`www/apps/api-reference/CLAUDE.md`](www/apps/api-reference/CLAUDE.md) |
-| 10 | ✓ | [`www/apps/book/CLAUDE.md`](www/apps/book/CLAUDE.md) |
-| 11 | ✓ | [`www/apps/book/public/llms.txt`](www/apps/book/public/llms.txt) |
-| 12 | ✓ | [`www/apps/resources/.cursorrules`](www/apps/resources/.cursorrules) |
-| 13 | ✓ | [`www/apps/resources/CLAUDE.md`](www/apps/resources/CLAUDE.md) |
+| 2 | ✓ | [`.claude/skills/fixing-bugs/SKILL.md`](.claude/skills/fixing-bugs/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/reviewing-prs/SKILL.md`](.claude/skills/reviewing-prs/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/triaging-issues/SKILL.md`](.claude/skills/triaging-issues/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/writing-docs/SKILL.md`](.claude/skills/writing-docs/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/writing-releases/SKILL.md`](.claude/skills/writing-releases/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/writing-tsdocs/SKILL.md`](.claude/skills/writing-tsdocs/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/writing-tutorials/SKILL.md`](.claude/skills/writing-tutorials/SKILL.md) |
+| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 10 | ✓ | [`www/apps/api-reference/CLAUDE.md`](www/apps/api-reference/CLAUDE.md) |
+| 11 | ✓ | [`www/apps/book/CLAUDE.md`](www/apps/book/CLAUDE.md) |
+| 12 | ✓ | [`www/apps/book/public/llms.txt`](www/apps/book/public/llms.txt) |
+| 13 | ✓ | [`www/apps/resources/.cursorrules`](www/apps/resources/.cursorrules) |
+| 14 | ✓ | [`www/apps/resources/CLAUDE.md`](www/apps/resources/CLAUDE.md) |
 
 ---
 

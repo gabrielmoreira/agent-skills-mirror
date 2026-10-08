@@ -5,13 +5,15 @@ description: >-
 icon: diagram-project
 ---
 
-# Memory (`crates/openhuman-core/src/memory/`)
+# Memory
 
-OpenHuman drives TinyMemory's agent memory lifecycle around every turn: a
-memory pack recalled before the model runs, the turn logged on both sides,
-memory recalled into compaction checkpoints, and belief builds run in the
-background. The behaviour is specified in `docs/specs/memory-v2.md`; the
-user-facing feature is [Memory](../../features/memory.md).
+`crates/openhuman-core/src/memory/` is the host layer over TinyMemory: it drives
+the agent memory lifecycle around every turn, with a memory pack recalled before
+the model runs, the turn logged on both sides, memory recalled into compaction
+checkpoints, and belief builds run in the background.
+
+The behaviour is specified in `docs/specs/memory-v2.md`; the user-facing feature
+is [Memory](../../features/memory.md).
 
 ## TinyMemory crates (`vendor/tinymemory/crates/`)
 

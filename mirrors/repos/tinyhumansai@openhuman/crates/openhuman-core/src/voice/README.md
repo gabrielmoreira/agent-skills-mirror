@@ -49,7 +49,8 @@ Keeping the two surfaces in lockstep is enforced by the disabled-build check
 | `audio_toolkit/` | Podcast generation + email delivery (`audio_toolkit` RPC namespace), gated by the same `voice` feature. See its own [README](audio_toolkit/README.md). |
 | `dictation_listener.rs` | Core-side dictation broadcast bus: `DictationEvent`, `publish_dictation_event` / `subscribe_dictation_events`, `publish_transcription` / `subscribe_transcription_results`, rdev listener lifecycle (`start_if_enabled` / `stop`), `normalize_hotkey_for_rdev`. |
 | `reply_speech.rs` | Agent reply synthesis via backend `/openai/v1/audio/speech`; `ReplySpeechOptions`, `synthesize_reply`; the response types (`ReplySpeech`, `VisemeFrame`, `AlignmentFrame`) and tolerant response normalization live in `tinyinference_voice::reply`. |
-| `realtime.rs` | Mints a short-lived signed WebSocket URL from the backend's `/voice-agent/get-signed-url` so the desktop client can open an ElevenLabs Agents session directly (#5399); the provider API key never leaves the server. |
+| `live/` | **Live voice agents** (Tiny's realtime mode). `providers.rs` (the four providers: `gemini-hosted` via the backend Gemini Live relay ticket, `elevenlabs-hosted` via the backend-signed agent URL, `gemini` with `provider:google`, `sarvam` with `provider:sarvam`; ticket / signed-URL minting), `session.rs` (builds the orchestrator's session host for the thread, assembles `agent::tinyagents::live_harness` — the session's tools behind approval, tool-policy, CLI/RPC-only and credential-scrubbing middleware — and starts a `tinyagents_live::LiveAgent` inside a `voice` external-channel origin + approval chat scope), `ws.rs` (the `/ws/live-voice` WebSocket: JSON control/events, binary PCM16 audio), `persist.rs` (final transcripts → thread messages), `ops.rs` / `schemas.rs` (`voice.live_*` RPCs), `prompt.md` (voice guidance). Provider wire protocols live in `tinyliveagents`; tool execution in `tinyagents-live`. |
+| `realtime.rs` | Mints a short-lived signed WebSocket URL from the backend's `/voice-agent/get-signed-url` for the TinyHumans-hosted ElevenLabs agent (#5399); used by `live/providers.rs` (`elevenlabs-hosted`) — the provider API key never leaves the server. |
 | `realtime_harness.rs` (+ `realtime_harness/turn_handler.rs`, `realtime_harness/chat_delivery.rs`, `realtime_harness/agent.rs`, `realtime_harness/prompt.rs`) | `voice:harness` socket turn handler for realtime sessions: runs the local orchestrator agent (same brain as chat/meet) on each turn the backend relays from the ElevenLabs Custom-LLM proxy, streaming `voice:harness:delta` / `:done` / `:error` back. |
 | `stub.rs` | Disabled-voice facade compiled when `voice` is OFF; mirrors the real public surface with no-op / error bodies. |
 | `cli.rs` | `openhuman voice` / `openhuman dictate` subcommand adapter: runs a blocking standalone dictation server (domain-owned, since it blocks forever and doesn't fit the controller registry). |
@@ -73,7 +74,10 @@ Namespace `voice` (registered in `all_voice_registered_controllers`):
 | RPC method | Purpose |
 | --- | --- |
 | `voice.status` | Availability without executing anything: STT = the effective provider constructs and (for non-hosted slugs) has a credential; TTS = Piper binary + voice model resolve. |
-| `voice.agent_signed_url` | Mint a short-lived signed WebSocket URL for a realtime ElevenLabs Agents session. |
+| `voice.agent_signed_url` | Mint a short-lived signed WebSocket URL for the hosted ElevenLabs agent (the live `elevenlabs-hosted` provider mints it in-core; the frontend no longer calls this). |
+| `voice.live_providers` | Live voice providers with readiness (`configured`), kind (hosted/BYOK), key slug, voices and languages, plus the default provider. |
+| `voice.live_settings_get` / `voice.live_settings_set` | Read / patch `[voice_live]`: default provider and per-provider model, voice/speaker and language. |
+| `voice.live_test_provider` | Open a live session on a provider, wait for `Ready`, close; returns `{ ok, latency_ms, error }`. |
 | `voice.transcribe` | Transcribe a file path, optional LLM cleanup. |
 | `voice.transcribe_bytes` | Transcribe raw audio bytes (writes temp file), with hallucination filter + cleanup. |
 | `voice.tts` | Synthesize speech to a file via Piper. |
@@ -170,3 +174,24 @@ transcription count, rolling recent-transcript buffer for context) behind a
 - Dictation pipeline gates (in `server/pipeline.rs` and `server/runtime.rs`): minimum duration, then peak-RMS silence threshold, then hallucination filter (`tinyvoice::is_hallucinated`), then empty-text; each drops the recording before delivery. A `session_generation` counter discards stale state transitions from superseded recordings.
 - Kokoro TTS is intentionally not implemented in this cut; the doc in `factory/entry.rs` describes how to add it as a new branch and sibling module.
 - No local STT branch: `"whisper"`/`"local"` provider strings are legacy and error rather than silently falling back, since a real misconfiguration should surface, not degrade quietly (see `factory/entry.rs::create_stt_provider`).
+
+## Live voice WebSocket (`/ws/live-voice`)
+
+Mounted by `openhuman-rpc` (same origin + bearer guard as `/ws/dictation`,
+`?token=` allowed). One socket is one session:
+
+- client → core JSON: `{"type":"start","provider"?,"thread_id"?,"client_id"?,"input_sample_rate":16000}`
+  (first frame), `{"type":"text","text"}`, `{"type":"interrupt"}`, `{"type":"stop"}`;
+  binary frames are microphone PCM16LE mono at `input_sample_rate`.
+- core → client JSON: `ready` (`session_id`, `provider`, `output_sample_rate`, `thread_id`),
+  `transcript` (`role`, `text` — the utterance so far — and `final`), `tool_started`,
+  `tool_finished` (`ok`, `cancelled`), `interrupted`, `turn_complete`,
+  `error` (`code`, `message`, `fatal`), `closed`; binary frames are agent speech PCM16LE
+  at `output_sample_rate`.
+- Final transcripts (and typed `text`) are appended to the thread as messages with
+  ids `voice-<session>-<n>-<role>` and `extra_metadata.source = "voice"`; the UI
+  reloads the thread instead of appending. A session without a thread gets a new
+  "Voice conversation" thread.
+- Known gap: spoken turns are saved to the thread for the user, but are not yet
+  written to the agent's session transcript, so a later *typed* turn's model does
+  not see them (the live model does see recent typed messages via its prompt).

@@ -26,7 +26,7 @@ Use only the main Agent and the built-in `general-purpose` SubAgent. Do not assu
 
 ## Tool requirements
 
-- Before writing, use `read` for the necessary context: `CREATOR.md`, `setting/outline.md`, `setting/progress.md`, `setting/character-states.md`, the relevant chapter-group plan, and recent chapters. For lore, use `list_lore_items` to identify relevant entries and `read_lore_items` to load their complete bodies.
+- Before writing, use `read` for the necessary context: `CREATOR.md`, `setting/outline.md`, `setting/progress.md`, `setting/character-states.md`, the relevant chapter-group plan, and recent chapters. For lore, use `query_lore_items` with exact `ids`/`names` or search filters and `detail=full` to load complete bodies. Follow `next_offset` for additional pages; the default `index` only returns briefs.
 - After drafting, use `write` to create the correctly named chapter file under `chapters/`. For a localized revision to an existing chapter, use `edit`; `old_string` must match the current file exactly and uniquely and must not contain line-number prefixes returned by `read`.
 - When available, delegate review to `general-purpose` through `task`. Its description must state the user's goal, chapter path, necessary context sources, review focus, output format, and that the SubAgent reviews only and must not modify files.
 - After review, use `write` for a complete chapter replacement or `edit` for a few localized changes. Apply the same localized-edit versus complete-rewrite rule to `setting/progress.md` and `setting/character-states.md`.

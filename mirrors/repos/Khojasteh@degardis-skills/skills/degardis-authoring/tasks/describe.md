@@ -1,7 +1,8 @@
 ---
 title: Describe supplied skill material and its prescribed guidance
 cues:
-- the requester asks what supplied skill material says about its contents or what its instructions direct an agent to do
+- the requester asks what supplied skill material says about its contents
+- the requester asks what the instructions in supplied skill material direct an agent to do
 goal: An account of the requested aspect of the supplied material, including prescribed guidance for a scenario, taken from the material itself and no broader than the request, leaving it unchanged and reporting what the material does not settle as unestablished rather than judging it.
 knowledge:
 - working-accounts

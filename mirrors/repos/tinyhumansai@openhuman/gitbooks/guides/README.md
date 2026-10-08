@@ -1,8 +1,8 @@
 ---
 description: >-
   Outcome-driven, step-by-step guides for getting a real result out of
-  OpenHuman: set up an assistant, run a local model, protect sensitive data,
-  recover a broken install, or move to a new machine.
+  OpenHuman: set up an assistant, run one or several local models, protect
+  sensitive data, recover a broken install, or move to a new machine.
 icon: list-check
 ---
 
@@ -20,6 +20,7 @@ You do not need to read these in order, and you do not need to be technical. Pic
 | --------------------------------------------------- | -------------------------------------------------------------------- |
 | Set up a personal assistant from scratch            | [Create my personal AI assistant](personal-assistant.md)             |
 | Keep model inference on my own machine              | [Use OpenHuman with a local model](local-model.md)                   |
+| Share work across several model servers I run        | [Use multiple local LLM servers](multiple-local-llm-servers.md)      |
 | Understand what leaves my computer and what doesn't | [Keep sensitive data private](privacy-sensitive-data.md)             |
 | Fix an install that won't start or finish           | [Recover from a failed installation](recover-failed-installation.md) |
 | Move everything to a new computer                   | [Move OpenHuman to a new PC](move-to-new-pc.md)                      |
@@ -56,3 +57,11 @@ Where your data physically lives on disk:
 | Windows       | `%USERPROFILE%\.openhuman\` |
 
 Almost everything in this section (backups, recovery, migration) comes back to that one folder.
+
+---
+
+## See also
+
+- [Privacy & Security](../features/privacy-and-security.md): the trust model every guide here assumes.
+- [Local AI (optional)](../features/model-routing/local-ai.md): the config reference behind the local-model guides.
+- [Memory](../features/memory.md): what the data folder actually holds.

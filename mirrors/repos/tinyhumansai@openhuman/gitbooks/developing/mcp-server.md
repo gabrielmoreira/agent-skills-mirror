@@ -34,8 +34,10 @@ clients can write as `mcp:<client>`.
 ## Tools
 
 The MCP surface routes through the existing controller registry plus the core
-security policy: read tools pass the read gate, and the two write tools
-(`memory.learn`, `memory.forget`) pass the act gate and are audited:
+security policy: read tools pass the read gate, and three tools pass the act
+gate. Two of them, `memory.learn` and `memory.forget`, are also recorded on the
+MCP write-audit path; `agent.run_subagent` is not, because the sub-agent's own
+side-effecting calls are audited through the approval gate instead:
 
 | MCP tool            | Backing RPC                          | Purpose                                                                 |
 | ------------------- | ------------------------------------ | ----------------------------------------------------------------------- |
@@ -47,6 +49,10 @@ security policy: read tools pass the read gate, and the two write tools
 | `memory.list`       | `openhuman.memory_items_list`        | Page through stored items, newest first (read-only).                    |
 | `memory.learn`      | `openhuman.memory_learn`             | Store one learning (adds an item; non-destructive).                     |
 | `memory.forget`     | `openhuman.memory_forget`            | Permanently remove items by id (destructive; act-gated).                |
+| `core.list_tools`   | served in-layer                      | The live core agent tool catalog OpenHuman exposes to its orchestrator.  |
+| `core.tool_instructions` | served in-layer                 | The Markdown tool-use instruction block injected into prompt-guided agents. |
+| `agent.list_subagents` | served in-layer                   | The registered sub-agent definitions the core can dispatch.              |
+| `agent.run_subagent` | served in-layer                     | Run a registered sub-agent and return its final response (act-gated).   |
 
 - Tools marked \* are listed only when a provider can serve them: `web_search`
   and `web_answer` when their search role has a usable provider (a signed-in
@@ -69,7 +75,7 @@ unless you know otherwise. `memory.list` accepts optional `filter`, `limit` and
 `memory.learn` accepts `text` plus optional `kind` (`preference`, `fact`,
 `procedure`, `correction`, `other`) and `confidence` (0 to 1). `memory.forget`
 accepts `ids` (1 to 100). Memory tools answer `MEMORY_OFF` when no memory engine
-is usable. See [Memory v2](../../docs/specs/memory-v2.md) for the model.
+is usable. See [Memory v2](https://github.com/tinyhumansai/openhuman/blob/main/docs/specs/memory-v2.md) for the model.
 
 Enable SearXNG under Connections → Search, in `config.toml`, or via environment:
 
@@ -120,7 +126,7 @@ The `initialize` response includes:
 | `openhuman://prompts/identity`    | `IDENTITY.md` (core agent identity)                    |
 | `openhuman://prompts/soul`        | `SOUL.md` (core agent personality and values)          |
 | `openhuman://prompts/user`        | `USER.md` (user-profile context)                       |
-| `openhuman://prompts/agents/<id>` | `<id>/prompt.md` for each of the 33 built-in subagents |
+| `openhuman://prompts/agents/<id>` | `<id>/prompt.md` for each of the 15 built-in subagents |
 
 All resources have `mimeType: "text/markdown"`.
 

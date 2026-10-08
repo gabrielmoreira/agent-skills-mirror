@@ -6,10 +6,27 @@ from real captured inputs. Keep focused module tests for distinct failure or
 semantic cases that these workflows cannot reliably reproduce. A test's path
 or suite name does not establish its behavioral depth.
 
+Avoid tests that mirror getters, enum mappings, fixture helpers, or prescribed
+call sequences. Prefer one representative workflow over a Cartesian matrix
+when every row crosses the same boundary. Keep distinct command handlers,
+producer representations, failure reasons, and lifecycle states covered.
+Consolidate their shared setup without hiding the inputs or expected evidence.
+
 Tests are grouped into Vitest projects so ownership, allowed dependencies and
-runtime cost are visible from their paths. Before pruning a test, identify the
-replacement scenario and its assertions; passing success journeys do not
-replace malformed input, cancellation, permission or cleanup coverage.
+runtime cost are visible from their paths. Before pruning a distinct boundary
+regression, identify the replacement scenario and its assertions; passing
+success journeys do not replace malformed input, cancellation, permission or
+cleanup coverage. Trivial helper checks do not need a replacement. If only
+tests consume a production module, trace CLI/MCP and verifier imports,
+including imports of compiled files, and remove abandoned scaffolding with its
+tests when it has no runtime consumer.
+
+Measure slow files before removing capacity regressions. Optimize repeated
+process startup, fixture construction, and production algorithms when they
+dominate runtime. Keep at least one input beyond each formerly failing size or
+depth; smaller fixtures do not establish that truncation or stack exhaustion
+has been fixed. Record the toolchain, coverage mode, and cache conditions when
+comparing durations.
 
 ## Behavioral depths
 
@@ -31,6 +48,12 @@ entrypoint. Composition tests may assemble provider-neutral sessions and
 registries but do not cross production filesystem, process, socket, or browser boundaries.
 Boundary tests cross one production boundary. Only acceptance tests assemble
 the complete runtime or invoke the compiled product surface.
+
+Binary session, registry, lazy-client and snapshot module cases live under
+`src/application/binary/`. Their composition cases stay in
+`tests/composition/analysis-sessions/`; snapshot persistence and actual SDK calls
+stay in the filesystem and MCP boundary lanes. The shared injected session fixture
+serves several capabilities and remains under `tests/fixtures/`.
 
 Focused immutable builders and recording ports shared by one test family live
 beside their production owner as `src/**/*.fixture.ts`. They are typechecked
@@ -55,6 +78,16 @@ needed, exercise the actual target through browser, Electron, or process
 capture. Real model trials are manual; Vitest covers deterministic evaluator
 logic.
 
+`verify:managed` runs the portable PE byte-fixture conformance entrypoint under
+`scripts/verify/managed/`, with its byte builder under
+`scripts/fixtures/managed/`. It checks static classification, members,
+reconstruction, native-boundary relationships and application graphs without
+executing fixture PE files. Operator-local manifests and actual ILSpy oracles
+remain optional, separately reported checks; the real Ghidra NativeAOT lane has
+its own toolchain prerequisites. See [the managed guide](managed-code-analysis.md)
+for those configurations. Generated completion-ledger checks use the same owning
+entrypoint and include its verifier/fixture files in their cache inputs.
+
 ## End-to-end, integration and golden evidence
 
 Full E2E tests invoke the production command dispatcher and real providers,
@@ -65,6 +98,36 @@ an XML graph golden. `verify:asset-catalog` compiles source-owned colors with
 `actool`, invokes real `assetutil`, then checks CLI/MCP results, exact catalog
 digest, every raw metadata field, pagination and malformed input rejection.
 Neither artifact workflow requires Hopper or launches it. Both run in macOS CI.
+`verify:macos-bundle` needs only macOS with Command Line Tools. It compiles a
+source-owned app with `clang`: a versioned framework, XPC services, an app
+extension, a login item, a privileged helper, launchd plists, and a helper tool,
+signed ad hoc. It packs the app as a directory, a `ditto` ZIP, and an APFS DMG,
+then checks that `inspect-artifact` plus `project-apple-application-graph`
+report the same bundle anatomy for all three through the CLI, with stdio MCP
+parity. It also checks that the DMG is detached afterwards. It runs in macOS CI.
+
+Apple artifact verifiers live in `scripts/verify/apple/`, with the macOS bundle
+builder under `scripts/fixtures/apple/` and NIB byte fixtures beside the decoder
+in `src/artifacts/apple/`. The npm entrypoints are unchanged. Format-specific
+Swift/XIB/asset sources and goldens retain their locations; real Apple workflows
+resolve them from the verifier file URL and run in the macOS CI lane.
+
+Portable native semantics and their tests live in `src/domain/native/`; shared
+analyst workflows and service-lane tests live in `src/application/native/`.
+Named native contracts live in `src/contracts/native/`. Provider protocol and
+host UI tests retain their adapter/boundary lanes, and real verifier command
+names remain unchanged.
+The existing Apple CI job also runs the host Swift-demangling CLI/MCP regression
+suites, including option-like symbols, carriage returns and multiline rejection.
+
+Process semantics/tests live in `src/domain/process/`; PTY capture implementation
+and forked helper tests live in `src/process/capture/`. Evidence projection and
+file workflows live in `src/application/process/`; producer-backed Evidence/host
+cases run in the serial `tests/boundary/process/` lane. Installed-package probes
+load the compiled capture capability owner, including the missing-optional-module
+case. Real capture tests preserve actual descendant and cleanup checks.
+The existing Apple job also exercises the relocated filesystem snapshot identity,
+cancellation and descriptor cleanup regressions on macOS.
 
 MCP SDK transport tests with recording providers remain integration tests.
 They are useful for schema drift and failure projection but do not prove that
@@ -106,8 +169,13 @@ It uses an installed browser and accepts an optional installed REA entrypoint.
 The complete `verify:browser` lane also exercises passive script export through
 both public adapters. See [website script export](website-script-export.md).
 
-The [test suite audit](test-suite-audit.md) records the pruning decisions,
-replacement evidence and remaining priorities.
+`verify:browser:modules` compares CLI and stdio MCP traces against an independent
+real Chromium module-loading fixture: import-map scopes, package prefixes,
+null/backtracking rejection, query/fragment identities, repeated module instances,
+lazy and computed unknowns, exact source/map identities and no implicit refetch.
+Set `REA_BROWSER_EXECUTABLE`; the optional script argument selects an installed
+package entrypoint. The complete `verify:browser` lane and existing conditional
+Chrome CI include this verifier. See [module relationships](website-module-trace.md).
 
 ## Real-toolchain verification lanes
 
@@ -118,13 +186,18 @@ commands. Check prerequisites before starting expensive work and name the
 missing command, target, and lane in any failure message. A lane must not imply
 that a host or target is covered when it was skipped.
 
+Provider admission accepts Ghidra 12.1.x and the JDK range declared by that
+installation (`application.java.min` through `application.java.max`). Current
+12.1 releases require JDK 21 or newer and set no maximum. The lanes below still
+prove behavior on the verified Ghidra 12.1.4 and JDK 21 build.
+
 | Ghidra lane                                | Supported runner/target                                                            | Additional local tools                                              |
 | ------------------------------------------ | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | `npm run verify:ghidra`                    | Linux x64 ELF or macOS x64/arm64 Mach-O                                            | Host C compiler, Ghidra 12.1.4, and full JDK 21                     |
 | `npm run verify:ghidra:switch`             | Linux x64 ELF; GCC/Clang optimized and stripped switch fixtures                    | GCC, Clang, GNU nm/objdump/strip, Ghidra 12.1.4, and full JDK 21    |
 | `npm run verify:ghidra:aarch64-jump-table` | Any supported Ghidra host; AArch64 ELF; byte/halfword tables; host ARM64 Mach-O    | Clang with AArch64 target support, Ghidra 12.1.4, and full JDK 21   |
 | `npm run verify:ghidra:cross-format`       | Any supported Ghidra host; also analyzes AArch64 ELF, x86-64 PE, and x86-64 Mach-O | `clang`, LLD, and `lld-link` in addition to host-lane prerequisites |
-| `npm run verify:ghidra:windows`            | Controlled Windows x64 with native x86-64 PE                                       | Ghidra 12.1.4, full JDK 21, and the matching native artifact        |
+| `npm run verify:ghidra:windows`            | Controlled Windows x64 with native x86-64 PE; `-- --x86` selects native x86 PE     | Ghidra 12.1.4, full JDK 21, and the matching native artifact        |
 
 Windows native conformance runs with `npm run verify:windows-native` and does
 not require Ghidra or Java. An optional independently compiled Windows fixture
@@ -163,11 +236,20 @@ requires unresolved table bounds or case mappings to remain visible as
 residual unknowns.
 
 `npm run verify:inspector` requires the supported Node.js runtime and installed
-REA dependencies. CI runs it on Linux and Windows. It starts owned loopback
+REA dependencies. CI runs it on Linux and macOS x64/arm64 and Windows x64. It starts owned loopback
 Node Inspector fixtures and verifies discovery and passive observation through
 the CLI and stdio MCP, including special filenames, unresolved discovery
 locations, and independently resolved loaded scripts. Double-quote filenames
 are tested on POSIX only because Windows does not support them.
+
+Inspector adapters live in `src/inspector/`, with loopback fixtures under
+`tests/fixtures/inspector/` and forked producer boundaries under
+`tests/boundary/inspector/`. The real lane is owned by
+`scripts/verify/inspector/runtime-observation.mjs` and
+`tests/conformance/inspector/`. Browser and Inspector deliberately share the
+existing browser CDP transport/value and file-location helpers. Node fixture
+success proves this Inspector workflow on the tested host; it does not prove
+Electron GUI behavior or another engine.
 
 ## Android APK analysis
 
@@ -179,6 +261,16 @@ kept under ignored `_reference/`. No Gradle build, Android SDK, emulator or
 application execution is required. The lane compares real CLI/MCP package,
 class search, class inventory, method decompilation and incoming references.
 See [Android analysis](android-analysis.md) for boundaries and resource budgets.
+Authenticated IPA and macOS application inventory projection is documented in
+[Apple application analysis](apple-application-analysis.md).
+
+The lane and owned-process cancellation helper live in `scripts/verify/android/`.
+The explicit downloader and fixed manifest live in `scripts/fixtures/android/`;
+their default remains repository-root `_reference/apk-integration/`. Producer
+fixtures live in `tests/fixtures/android/`, boundary cases in
+`tests/boundary/android/`, and inventory projection composition cases in
+`tests/composition/android/`. Real engine success and synthetic protocol success
+are separate proof levels.
 
 Synthetic producer regressions run independently:
 
@@ -276,6 +368,35 @@ status. Storyboard compilation additionally requires an installed iOS platform.
 Keep the provider-specific acceptance path independent from optional
 cross-compilers. Cross-format failures belong to the cross-format lane and must
 not make native host acceptance unavailable.
+
+## Native platform baseline in CI
+
+CI exercises the pinned Node.js runtime on native hosted runners:
+
+| Host                  | Runner             | Baseline checks                                                                          |
+| --------------------- | ------------------ | ---------------------------------------------------------------------------------------- |
+| Linux x64             | `ubuntu-latest`    | Installed package and real Node Inspector CLI/MCP                                        |
+| Linux arm64 (aarch64) | `ubuntu-24.04-arm` | Installed package and real Node Inspector CLI/MCP                                        |
+| macOS 15 arm64        | `macos-15`         | Installed package and real Node Inspector CLI/MCP                                        |
+| macOS 15 x64          | `macos-15-intel`   | Installed package and real Node Inspector CLI/MCP                                        |
+| Windows x64           | `windows-latest`   | Curated capabilities, native controls, installed package and real Node Inspector CLI/MCP |
+
+Package and Inspector matrices assert the actual Node platform/architecture
+before verification and record those values with the Node version. Each matrix
+runs at most two jobs concurrently with explicit timeouts and Node heap/thread
+limits. Package checks cover installation, CLI/MCP discovery, target-free
+analysis, configuration backups/recovery, Evidence and owned lifecycle; Inspector
+checks execute source-owned loopback targets and special filename cases.
+
+macOS uses one OS version with one native baseline job per architecture. Each job
+runs package and Inspector checks after a single dependency installation. The
+separate Inspector matrix covers Linux and Windows; Apple artifact checks retain
+their own macOS 15 arm64 job for Xcode-dependent workflows.
+
+These native baseline checks complement the Linux source-test shards and the
+separate Apple-artifact and real-provider lanes. Actual Hopper, Ghidra, IDA,
+browser and managed-tool claims require their corresponding verification lanes.
+Runner labels follow the [GitHub hosted-runner reference](https://docs.github.com/en/actions/reference/runners/github-hosted-runners).
 
 ## Developer commands
 
@@ -382,26 +503,105 @@ that explicit lane, not the routine iteration requirement.
 
 ## Apple native metadata and UI
 
-`npm run verify:apple-dispatch` compiles Objective-C class/protocol and Swift
-conformance/vtable fixtures, inspects their bytes and repeats after stripping
-local symbols. It requires macOS and the host Xcode toolchain; targets are not
-executed. `npm run verify:native-ui` launches exactly one source-owned fixture
-window and requires successful selected-window capture and selected actions.
-An OS permission denial fails the positive lane. `npm run verify:native-ui:permissions`
-allows a host-permission-boundary-only result and explicitly reports
-`positive_e2e: false`; it must not be reported as capture/action proof.
-Both commands reject a changed executable digest and clean up the fixture
-process and helper. These lanes require an interactive macOS desktop. See [native investigation](native-investigation.md)
-for the exact ABI, authority, graph and observation boundaries.
+`npm run verify:apple-dispatch` compiles the Objective-C fixture (classes,
+protocols, a property and an `NSString` category) and the Swift
+conformance/vtable fixture.
+
+- Each fixture is linked with legacy `LC_DYLD_INFO` binds and with chained
+  fixups; on Apple silicon the ObjC fixture is also built as arm64e, which uses
+  authenticated pointers.
+- The lane inspects the bytes and repeats after stripping local symbols.
+- It requires the bound `NSObject` superclass, the external category, and the
+  matching `pointer_fixups` coverage. It requires macOS and the host Xcode toolchain; targets are not
+  executed. `npm run verify:native-ui` launches exactly one source-owned fixture
+  window and requires successful selected-window capture and selected actions.
+  An OS permission denial fails the positive lane. `npm run verify:native-ui:permissions`
+  allows a host-permission-boundary-only result and explicitly reports
+  `positive_e2e: false`; it must not be reported as capture/action proof.
+  Both commands reject a changed executable digest and clean up the fixture
+  process and helper. These lanes require an interactive macOS desktop. See [native investigation](native-investigation.md)
+  for the exact ABI, authority, graph and observation boundaries.
 
 ### Firmware adapters
 
 `npm run fixtures:firmware` uses existing Python 3 and a host C compiler to make
 an ignored gzip/USTAR firmware fixture and independent offset/hash oracle.
 `npm run verify:firmware` requires caller-supplied Binwalk 3.1.0, Unblob 26.6.4
-and util-linux prlimit on Linux. It verifies CLI/MCP parity, selected ranges,
+and util-linux prlimit on Linux. The provider also accepts other 3.1.x and
+26.6.x builds and reports them as unverified; this lane proves the audited
+releases. It verifies CLI/MCP parity, selected ranges,
 unknown chunks, depth limits and extracted child digests. The optional
 `REA_FIRMWARE_VERIFY_EXT4=1` lane requires existing mke2fs/debugfs; the separate
 `REA_FIRMWARE_VERIFY_GHIDRA=1` lane checks a selected host ELF through real Ghidra.
 Neither optional toolchain is a base-lane prerequisite. See
 [firmware analysis](firmware-analysis.md) for limits and unverified formats.
+
+The real entrypoint is `scripts/verify/firmware/analysis.mjs`; the fixture runner
+and unchanged Python producer belong together in `scripts/fixtures/firmware/`.
+Producer fixtures and boundaries remain in `tests/fixtures/firmware/` and
+`tests/boundary/firmware/`. Source-fixture generation proves the runner and
+independent oracle; actual Binwalk/Unblob CLI/MCP proof requires selected tools.
+
+### JavaScript source recovery
+
+Build once with `npm run build:cached`, then run `npm run verify:javascript:recovery`.
+This focused lane requires Linux x64, util-linux `prlimit`,
+`REA_WAKARU_COMMAND` pointing to the official Wakaru 1.13.0 Linux x64 binary,
+and `REA_JAVASCRIPT_FIXTURE_TOOLS` pointing to an isolated npm prefix containing
+esbuild 0.25.10 and webpack 5.101.3. No global installation is required.
+The lane compiles source-owned fixtures, exercises CLI and stdio MCP, verifies
+published bytes and provenance, feeds recovered modules into existing analysis,
+and compares a finite set of known fixture results. It does not establish
+arbitrary recovered-application equivalence. CI installs these prerequisites only
+in `.github/workflows/real-javascript-recovery.yml`; the existing `real-browser`
+lane uses real Chrome for browser capture and website workflows.
+
+### Captured website source-map lane
+
+`npm run verify:browser:source-maps` checks actual Chromium capture/export and
+source-map point tracing through CLI and stdio MCP. It requires absolute
+`REA_BROWSER_EXECUTABLE` and `REA_WEB_SOURCE_MAP_COMPILER` pointing to esbuild
+0.25.10's `lib/main.js` in a caller-owned isolated installation. Preflight reports
+missing prerequisites for this lane. The compiler is used only to generate the
+source-owned fixture. No Hopper, Ghidra or application dependency installation
+is required.
+
+```bash
+REA_BROWSER_EXECUTABLE=/absolute/path/to/chromium \
+REA_WEB_SOURCE_MAP_COMPILER=/absolute/path/to/fixture-tools/node_modules/esbuild/lib/main.js \
+npm run verify:browser:source-maps
+```
+
+`scripts/verify-browser-source-maps.mjs /absolute/path/to/installed/rea.mjs`
+checks an installed package after building the verifier dependencies. The separate
+conditional `real-web-source-map` CI job supplies Chrome and an isolated pinned
+fixture compiler; static/unit checks do not acquire a browser. See
+[the source location guide](web-source-location.md) for the verified decoder profile.
+
+### JavaScript large-output lane
+
+`npm run verify:javascript:output` exercises the CLI JSON result surface beyond
+the running Node engine's single-string limit. Shared input leaves keep the
+fixture's graph small; the verifier writes one temporary output file, checks its
+complete byte count and an independent digest, then removes it. It requires only
+Node and the built REA runtime, with space for the output plus a 1 GiB reserve.
+Run `npm run verify:javascript:output -- jsonl` for compact JSONL coverage. This
+opt-in lane is separate from routine tests and the canonical hash check
+`npm run verify:javascript:digests`. It verifies serialization rather than an
+arbitrary third-party application's parsing cost or MCP client capacity.
+
+### Website runtime attribution lane
+
+`npm run verify:browser:runtime` uses caller-supplied
+`REA_BROWSER_EXECUTABLE` and an owned synthetic site/profile. It exercises public
+CLI and stdio MCP for precise execution and native listener source locations,
+including actual armed progress, Unicode/CRLF digests, repeated source URLs with
+distinct script IDs, zero branches and function-only unknowns on repeated
+coverage, request initiators and an externally owned page that remains open.
+
+An optional entrypoint argument to `scripts/verify-browser-runtime.mjs` runs the
+same checks through an isolated installed package. The conditional
+`real-web-runtime` CI job runs only for relevant changes and needs no fixture
+compiler. Ordinary unit/static gates acquire no browser. See
+[website runtime attribution](web-runtime.md) for effects, resource bounds and
+coverage limits.

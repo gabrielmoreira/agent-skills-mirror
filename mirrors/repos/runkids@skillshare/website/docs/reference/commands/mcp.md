@@ -882,7 +882,7 @@ npx @modelcontextprotocol/inspector --cli skillshare mcp serve --method skills/l
   Inline/dotted MCP definitions must be converted to tables before writing;
   they are rejected without modifying the file.
 - Native file symlinks, malformed files and duplicate JSON properties block
-  writes. A symlinked Skillshare `config.yaml` is written through to its target. A project config whose link points outside the project is refused instead. File permissions are preserved; new native
+  writes. A symlinked Skillshare `config.yaml` is written through to its target. In a project, a project config or `sources.mcp` file that resolves outside the project is refused instead. File permissions are preserved; new native
   files, ownership records and backups use private permissions.
 - An entry that already matches the source is reported as unchanged without a
   write, for example after pulling a teammate's change. If this configuration

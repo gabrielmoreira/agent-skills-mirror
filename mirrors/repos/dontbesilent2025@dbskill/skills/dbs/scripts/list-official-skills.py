@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import json
+import hashlib
+import sys
 from pathlib import Path
 
 
@@ -44,11 +46,23 @@ def read_frontmatter_description(skill_path: Path) -> str:
 
 
 def locate_installed_skill(name: str, search_roots: list[Path]) -> Path | None:
+    candidates = []
     for root in search_roots:
         candidate = root / name
-        if (candidate / "SKILL.md").is_file():
-            return candidate.resolve()
-    return None
+        path = candidate / "SKILL.md"
+        if path.is_file():
+            content = path.read_text(encoding="utf-8")
+            if f"name: {name}\n" not in content:
+                print(f"跳过定义名称冲突的候选：{name}", file=sys.stderr)
+                return None
+            candidates.append(candidate.resolve())
+    if not candidates:
+        return None
+    digests = {hashlib.sha256((x / "SKILL.md").read_bytes()).hexdigest() for x in candidates}
+    if len(digests) != 1:
+        print(f"跳过多份定义不一致的候选：{name}", file=sys.stderr)
+        return None
+    return candidates[0]
 
 
 def load_catalog(skill_dir: Path, project_root: Path | None) -> list[dict[str, str]]:
@@ -96,7 +110,7 @@ def main() -> int:
         if not name or name == "dbs" or "beta" in name or "private" in name:
             continue
 
-        skill_dir_path = locate_installed_skill(name, search_roots)
+        skill_dir_path = locate_installed_skill(name, [project_root / "skills"] if project_root is not None else search_roots)
         if skill_dir_path is None:
             continue
         skill_path = skill_dir_path / "SKILL.md"
@@ -104,8 +118,8 @@ def main() -> int:
         results.append(
             {
                 "name": name,
-                "description": entry.get("description", "")
-                or read_frontmatter_description(skill_path),
+                "description": read_frontmatter_description(skill_path)
+                or entry.get("description", ""),
                 "source": str(skill_dir_path),
             }
         )

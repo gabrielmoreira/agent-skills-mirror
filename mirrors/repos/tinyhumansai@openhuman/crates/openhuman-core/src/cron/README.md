@@ -4,13 +4,14 @@ Scheduled-job runtime. Owns cron-expression and human-delay parsing, the persist
 
 ## Public surface
 
-- `pub struct CronJob` / `pub struct CronJobPatch` / `pub struct CronRun` / `pub struct ActiveHours` / `pub enum JobType` / `pub enum Schedule` (`Cron` / `At` / `Every`) / `pub enum SessionTarget` / `pub struct DeliveryConfig`: `types.rs`: durable job + run model.
+- `pub struct CronJob` / `pub struct CronJobPatch` / `pub struct CronRun` / `pub struct ActiveHours` / `pub enum JobType` / `pub enum Schedule` (`Cron` / `At` / `Every`) / `pub enum SessionTarget` (`Isolated` / `Current` / `Main`) / `pub enum JobOrigin` (`Web` / `Channel`) / `pub enum DeliveryStatus` / `pub struct DeliveryConfig`: `types.rs`: durable job + run model.
 - `pub fn add_once` / `pub fn add_once_at` / `pub fn parse_human_delay` / `pub fn pause_job` / `pub fn resume_job` / `pub fn update_cron_job`: `ops.rs` (also re-exported as `pub use ops as rpc`).
 - `pub fn schedule_cron_expression` / `pub fn next_run_for_schedule` / `pub fn normalize_expression` / `pub fn validate_schedule` / `pub fn validate_agent_schedule` / `pub fn runs_closer_than` / `pub struct TooFrequent` / `pub const MIN_AGENT_JOB_INTERVAL`: `schedule.rs`.
 - `pub fn add_job` / `pub fn add_agent_job` / `pub fn add_agent_job_with_definition` / `pub fn add_shell_job` / `pub fn add_flow_schedule_job` / `pub fn find_flow_schedule_job` / `pub fn due_jobs` / `pub fn get_job` / `pub fn list_jobs` / `pub fn list_runs` / `pub fn record_last_run` / `pub fn record_run` / `pub fn remove_job` / `pub fn reschedule_after_run` / `pub fn update_job`: `store.rs`, a thin `Config` -> `CronStoreOptions` wrapper over `tinyflows_sqlite::schedule` (schema, job CRUD and run history live upstream).
-- `pub mod scheduler` (`pub async fn run(config: Config)`, `pub async fn execute_job_now` for the `cron.run` "Run Now" path): `scheduler.rs`, split into submodules `scheduler/failure_classification.rs` (failure classifiers), `scheduler/retry.rs` (`execute_job_now`, `execute_job_with_retry`), `scheduler/agent_run.rs` (`run_agent_job`, `build_agent_for_cron_job`, `run_flow_schedule_job`), `scheduler/delivery.rs` (`deliver_if_configured`), `scheduler/shell_job.rs` (`run_job_command_with_timeout`), and `scheduler/run_record.rs`; the poll loop and `run` stay in `scheduler.rs` itself.
+- `pub mod scheduler` (`pub async fn run(config: Config)`, `pub async fn execute_job_now` for the `cron.run` "Run Now" path): `scheduler.rs`, split into submodules `scheduler/failure_classification.rs` (failure classifiers), `scheduler/retry.rs` (`execute_job_now`, `execute_job_with_retry`), `scheduler/agent_run.rs` (`run_agent_job`, `build_agent_for_cron_job`, `run_flow_schedule_job`), `scheduler/delivery.rs` (`deliver_run`, `deliver_job`), `scheduler/origin_context.rs` (the prompt of a `current` run), `scheduler/origin_delivery.rs` (`delivery.mode = "origin"`), `scheduler/shell_job.rs` (`run_job_command_with_timeout`), and `scheduler/run_record.rs`; the poll loop and `run` stay in `scheduler.rs` itself.
 - `pub mod scheduler_gate`: throttles *background* LLM work (memory digests, embeddings, summarisation) on host power / CPU signals via `current_policy()` / `wait_for_capacity()`. It lives here for historical reasons; the cron poll loop does not consult it, and its consumers are `modules/memory_host.rs` and `security/credentials/`. See its own [README](scheduler_gate/README.md).
 - `pub mod seed`: `seed.rs`: `seed_proactive_agents` installs the built-in proactive jobs when onboarding flips to completed (`config/ops/ui.rs`); `prune_retired_jobs` removes rows for removed features on boot and workspace activation.
+- `pub mod origin` / `pub mod job_builder` / `pub mod channel_bridge`: the conversation a job was created from. `origin.rs` captures a `JobOrigin` from the live `AgentTurnOrigin`, decides whether a creation call may skip the approval gate, and picks the turn origin a run executes under; `job_builder.rs` is the one path (`create_agent_job`) the `cron` and `schedule` tools both use to build agent jobs with origin-aware defaults and delivery validation; `channel_bridge.rs` is cron's handle on the channel runtime (per-chat history and live channels, registered by `start_channels`).
 - `pub mod bus`: `bus.rs`: `CronDeliverySubscriber` (`cron::delivery`) consumes `CronDeliveryRequested` and sends through the named `tinychannels_bus::Channel`.
 - `pub mod tools`: `tools.rs` + `tools/`: agent-facing tools: `CronAddTool`, `CronListTool`, `CronUpdateTool`, `CronRemoveTool`, `CronRunTool`, `CronRunsTool`, and the collapsed `CronTool` / `CRON_TOOL_NAME`. `tools/collapsed.rs` explains why the six stay registered as hidden schemas behind the one advertised tool; see also [tools/README.md](tools/README.md).
 - RPC namespace `cron`: `add`, `list`, `update`, `remove`, `run`, `runs`: `schemas.rs` (aggregated as `all_cron_controller_schemas` / `all_cron_registered_controllers`).
@@ -51,7 +52,7 @@ Cron publishes through `core/bus.rs` using variants declared in `core/events.rs`
 
 ## Delivery modes
 
-A cron job's `DeliveryConfig.mode` decides where its output ends up. `DeliveryConfig::default()` is `none`; the `cron_add` tool substitutes `proactive` when an agent job is created without a `delivery` block.
+A cron job's `DeliveryConfig.mode` decides where its output ends up. `DeliveryConfig::default()` is `none`; the `cron` / `schedule` tools substitute `origin` when an agent job is created inside a conversation and `proactive` otherwise.
 
 - `proactive`: `deliver_if_configured` publishes
   `DomainEvent::ProactiveMessageRequested`. The proactive subscriber
@@ -64,12 +65,54 @@ A cron job's `DeliveryConfig.mode` decides where its output ends up. `DeliveryCo
   non-web channel (Telegram, Discord, Slack, …) so the reminder ends up where
   the user asked for it. The `cron_add` tool validates `to` against the
   channel's `allowed_users` to reject cross-tenant targets.
+- `origin`: commit the run's reply into the conversation that created the job
+  and send it there once (`scheduler/origin_delivery.rs`). Requires
+  `CronJob.origin`. Output that is blank or exactly `NO_REPLY` is
+  `Suppressed`: nothing is sent and no alert is raised. A web origin stores the
+  reply in the origin thread under `run_reply_message_id("cron:<job>:<run>")`,
+  then emits the web-channel `proactive_message` event with `thread_id` set to
+  that thread and `request_id = "cron:<job>:<run>"`, then appends it to the
+  thread's agent transcript (`append_to_origin_transcript`, idempotent on the
+  same key, waits out a live turn of the session). A channel origin sends to
+  the origin's `reply_target` through `cron::channel_bridge` and appends the
+  reply to that chat's `conversation_histories` entry. Each run records a
+  `DeliveryStatus` (`delivered` / `suppressed` / `failed` / `not_requested`)
+  on its `CronRun`.
 - `none`: silent; output is stored in `last_output` only.
 
-The `[Channel context]` block built in `channels/runtime/dispatch/helpers.rs`
-for non-web inbound turns instructs the model to default to `announce` with the
-current channel + reply target: that is the routing path for the Telegram
-"remind me to drink water" use case in #928.
+## Origin and session targets
+
+A job created by an agent inside a conversation records that conversation
+(`JobOrigin::Web { thread_id }` from a `WebChat` turn, `JobOrigin::Channel {
+channel, reply_target, history_key, sender }` from the channel processor's
+`ExternalChannel` turn; other origins record none). With an origin, an agent job
+defaults to `session_target: current` and `delivery: origin`; without one it
+keeps `isolated` + `proactive`. An explicit `delivery` or `session_target`
+always wins, and an `announce` whose `to` is the origin's reply target on the
+same channel skips the `allowed_users` check.
+
+- `isolated`: a fresh run, prompt `[cron:<id> <name>] <prompt>`.
+- `current`: a fresh run whose prompt carries an unattended-run preamble
+  (final reply is delivered as-is; `NO_REPLY` skips delivery) and a bounded
+  tail of the origin conversation (last 10 messages, 1400 characters, newest
+  kept; web from the thread store, channel from the chat history).
+- `main`: runs like `current` for now (not yet a distinct main session).
+
+**Trust.** A job with a channel origin runs under
+`AgentTurnOrigin::ExternalChannel { message_id: "cron:<job>:<run>" }`, not
+`TrustedAutomation`, so its external-effect tools stay gated like its creator's.
+Creating such a job needs no approval only when the turn is a channel
+conversation, the job is an agent job with no shell `command`, and its delivery
+resolves to that same conversation (no `delivery`, `origin`, or a matching
+`announce`); `CronAddTool` / `ScheduleTool` express that through
+`external_effect_with_args`. Everything else (shell jobs, other recipients,
+`proactive`/`none`, non-channel turns) is gated as before (GHSA-f46p-6vf9-64mm).
+Web-origin and origin-less jobs keep `TrustedAutomation { Cron }`.
+
+The scheduler loop skips a job already in `ACTIVE_RUNS` (and holds the claim
+for scheduled runs), so Run Now and a tick never overlap. The `[Channel context]`
+block in `channels/runtime/dispatch/helpers.rs` only tells the model that
+reminders created in the chat come back to it automatically.
 
 ## Agent-job minimum interval
 

@@ -124,6 +124,14 @@ so a separate Chat store cannot split it from the recipient policy and inbox.
 The exact execution catalog and handoff dispatch use that same resolved root;
 private Session/Turn files remain in the existing Chat store.
 Controllers predating that root retain the existing Chat-parent layout.
+External on-demand context retries one invalidated local inventory snapshot when
+the exact Goal instances and current audience scope remain unchanged. This is
+a fresh read in the same Turn, without another model thread or request replay.
+Revocation, Goal replacement, missing authority and continued inventory churn
+remain unavailable; an accepted inbox request does not bypass these checks.
+Prompt-only contexts that collect remote evidence inline retain the original
+single collection and rejection behavior, including after a failed SSH read;
+recovery cannot reset their one-dial, total-time budget in the same Turn.
 Messages outside the shared inbox's source-context bounds remain intact in
 ordinary Chat, but cannot be handed off as inline context; use a scoped artifact
 for larger material. Image content is not transferred by this text ingress record.
@@ -250,6 +258,20 @@ online or capable executor. A missing delivery grant is a configuration gap,
 not a missing Agent; delivery still rechecks the existing authority. Stopped
 identities are available with `include_stopped=true` for historical questions.
 Unreadable/ambiguous inventory remains unknown, not an empty successful search.
+
+Each included row also exposes `registered_host_binding`: the existing binding
+owner's `outcome`, `candidate_count`, `address_shared` and `scope` for that Goal.
+The page does not expose host addresses or read host stores; `view=agent_route`
+remains the exact-identity, current-observation path. A registration or binding
+does not prove presence, execution readiness or delivery authority.
+
+Repeated role names alone do not require an owner question. The conversation's
+explicit identity corrections, established assignment, project and declared
+responsibilities guide recipient selection; binding metadata can support that
+context but cannot override an explicit identity or grant. Preserve both Goal
+and Agent identity. Forwarded requests retain their original speaker/addressee
+in the existing collaboration brief rather than redefining every “you” as the
+receiver. Clarify only competing interpretations that still change the action.
 
 The same query is available through the CLI and registered SSH evidence sources:
 
@@ -382,6 +404,39 @@ loopx manager-inbox link --goal-id research --agent-id worker \
 loopx manager-inbox report --goal-id research --agent-id worker \
   --request-id <id> --phase conclusion --reply-text 'What was assessed or changed, what was validated, and what remains.'
 ```
+
+For a verified bound-owner App request, explicitly attach a file from the
+registered Goal workspace with the same result publication:
+
+```sh
+loopx manager-inbox report --goal-id research --agent-id worker \
+  --request-id <id> --reply-text 'The report is attached.' \
+  --attachment-ref reports/result.pdf
+```
+
+Scoped MCP workers use `return_result(..., attachment_refs=["reports/result.pdf"])`.
+Repeat the CLI flag for additional files: at most four, each nonempty and at most
+30 MiB, at most 60 MiB together. Paths must be relative, without symlink components;
+the host requires POSIX no-follow directory opens. An explicitly registered
+canonical project alias may supply the working copy; arbitrary working directories
+cannot replace the Goal workspace. Publication snapshots the bytes and binds name,
+relative ref, size and SHA-256 into the immutable result identity. Editing the
+workspace later does not change a queued file. Use a new stable update id for a
+changed artifact, rather than replacing an already committed result.
+
+The Lark return includes the authored Markdown and an attachment zone in one reply
+to the original private conversation. Upload, message delivery and downloaded-byte
+verification are separate facts. A failed verification preserves the sent-message
+locator; restart reads that message and never resends it or reconstructs missing
+resource records with a new upload. Missing upload scope, changed authority or
+unsupported transport remains an explicit delivery gap. A path mentioned only in
+text is not an attachment. This slice does not qualify local-Web file presentation,
+group disclosure, cross-host transfer or inline video playback. Installed live
+provider qualification remains separate from the synthetic transport regressions.
+Before downgrading to an older runtime that does not understand result files,
+pause the reply pump while any file-bearing result remains pending; an old
+text-only reader cannot certify attachment delivery. Retain the result snapshots
+and resource records for recovery by a compatible runtime.
 
 Each CLI/MCP read includes the recorded receiver decision and fresh Core work
 from explicit request links. `receiver_followthrough` separates assessment,

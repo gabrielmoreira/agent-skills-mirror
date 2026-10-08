@@ -18,10 +18,11 @@ attribution (removed from the tree; see git history at `0017c58d86~1` for the
 original write-up). This document is about running repeatable benchmarks, not
 re-deriving those findings.
 
-## The seven scenarios
+## The scenarios
 
-The default `library-bench.sh` sweep runs the six scenarios currently linked
-into the binary. `memory-ingest` and `cold-phases` remain documented workload
+The binary dispatches six scenarios: `agent-turn`, `long-agent`, `workflow`,
+`fleet`, `skill-run` and `subagent-storm` (`crates/openhuman-cli/src/bin/library_profile/main.rs`).
+The default `library-bench.sh` sweep runs them. `memory-ingest` and `cold-phases` remain documented workload
 designs, but are excluded because the binary no longer links the in-process
 memory engine they measured (superseded by Memory v2, whose engine is remote). All runnable scenarios run in
 `target/release/library-profile <scenario>`, replace
@@ -31,17 +32,16 @@ stderr). Each models a distinct embedding use case:
 
 | Scenario | Models |
 | --- | --- |
-| `memory-ingest` | Canonicalizing and ingesting a batch of chat messages through the real extraction/admission/tree-queue pipeline. |
-| `subagents` | A delegation turn: an orchestrator session spawns real subagents via `spawn_parallel_agents` and merges their findings. |
+| `subagent-storm` | A delegation turn: an orchestrator session spawns real subagents via `spawn_parallel_agents` and merges their findings. |
+| `skill-run` | One skill run end to end, the path a host takes when it ships bundles rather than ad hoc chat. |
 | `agent-turn` | The minimal embed case: one agent, one turn, no delegation, no workflow. The smallest useful "hello world" for a host that just wants a single reply. |
 | `long-agent` | A long-running agent loop (`OPENHUMAN_PROFILE_TURNS`, default 25) in one process, to see whether RSS plateaus or grows per turn. |
 | `workflow` | A saved automation run (`flows_create` + `flows_run`), representing the flows/automation embedding path rather than ad hoc chat. |
-| `cold-phases` | Bootstrap attribution: per-phase checkpoints (config load, registry init, agent build, memory construction, first turn) so cold-start cost can be attributed to a phase instead of one lump sum. |
 | `fleet` | N concurrent live agents with latency-realistic mock inference — the "100-1000 agents in a 2 GB / 2 vCPU server" question. See [below](#the-2-gb--2-vcpu-server-budget). |
 
 ## How to run
 
-Six scripts under `scripts/profile/` (each has `-h`/`--help`):
+Seven scripts under `scripts/profile/` (each has `-h`/`--help`):
 
 - **`library-bench.sh`** — the primary RSS/duration benchmark. Builds the
   binaries, runs each scenario N fresh-process repeats (default 5), and
@@ -67,8 +67,8 @@ Six scripts under `scripts/profile/` (each has `-h`/`--help`):
   `library-bench.sh` output.
 
   ```bash
-  ./scripts/profile/library-heap.sh memory-ingest
-  # load target/profile/rust-library/dhat-memory-ingest.json at
+  ./scripts/profile/library-heap.sh agent-turn
+  # load target/profile/rust-library/dhat-agent-turn.json at
   # https://nnethercote.github.io/dh_view/dh_view.html
   ```
 
@@ -280,7 +280,12 @@ Start cheap, escalate only as needed:
 ## Current baseline numbers
 
 From the 2026-07-21 profiling session (medians over five fresh processes
-unless noted; see that document for methodology and caveats):
+unless noted; see that document for methodology and caveats).
+
+The scenario names in the two tables below are the names that session used.
+`subagents` is now `subagent-storm`; `memory-ingest` and `cold-phases` no
+longer dispatch, so their rows cannot be reproduced from this tree and are
+kept only as the record of what was measured.
 
 | Scenario | Build | Median settled RSS | Median retained Δ |
 | --- | --- | ---: | ---: |

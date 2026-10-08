@@ -397,6 +397,7 @@ P2 增加 GQ16 的认证跨主机恢复。先做 packaged App 与独立 CLI 回�
 
 ### R1：可靠的团队计划提交
 
+- **要求的连续性：** selected work 只是当前焦点，不能替代整个 Goal 的未完成要求。共享 interaction contract 先投影 Goal 原文、已启用的结构化验收和精确 Todo 详情读取，普通 heartbeat 与 TurnEnvelope 在 plan→selection→Turn→host 消费同一清单；再由 R4 将结构化验收条件关联到持久、版本化的要求。摘要、局部工作成功或非空证据引用均不能证明完整目标交付。
 - **真实入口与 owner：** `ChatActionService`、受治理 proposal、canonical Todo writer，以及前端的确认/回读；Lark 有对应入口时使用同一服务。
 - **先复现：** F1–F4；另外覆盖相同 text 的不同 lane、已有 Todo 在 retry 前完成/修改、两个确认并发、receipt 写入后响应丢失。
 - **最小完整修改：** 对计划字段逐个明确是执行约束、持久验收引用还是 advisory。priority 通过现有 Todo 合同保留；quota/stop 只能消费已有 policy owner，未支持的强制项须在确认前报不支持，不能只存一份 JSON。保留 lane→Todo→acceptance 的关系。
@@ -589,6 +590,7 @@ Lark 传输 owner，本切片不再重复修改它。
 
 ### R4：共享目标对齐与演化
 
+- **当前工作与完整义务：** 遵循 [alignment RFC §3.7](shared-goal-alignment-and-governed-amendment-v0.zh-CN.md#37-当前工作与-goal-要求)。跨重规划、压缩、重启和 Agent 交接保留 criterion 身份与覆盖关系；只有授权且留痕的 amendment 可改变承诺。经 R5 复用既有 Goal acceptance 与 Todo owner。全局收口前验证证据内容、范围和时效，局部 `no_followup` 不足以结清目标。共享 Goal/当前任务读取前置之外的部分仍未完成；模型实际采用的资格归 S11。
 - **Owner：** alignment RFC Stage 3–5；TS Goal/work-graph owner。
 - **先收口：** `intent_basis` 仅是现有 source-facts digest；保留兼容 reader，真正引入 intent revision 时单独版本化并盘点 producer/reader。不得改名后假装历史回执拥有新语义。
 - **交付次序：** 明确 root intent/permissions/acceptance/stop 的 authority；先做保持 intent 的一个 work-graph commit class。普通 Todo 编辑仍走现有 owner，不能给每次 add 强加 amendment 流程。跨共享承诺修改才消费有范围 policy、必要的 verifier、精确 CAS 与 lease-impact disposition。
@@ -693,7 +695,7 @@ lifecycle。
 
 **R1 事务检查点。** 团队计划准入与整批规划现在归 `work_items/team_plan.ts`。确认后，全部已准入 lane 与持久操作回执一次提交；身份由 proposal + lane 决定，不再由 Todo 文本决定。File/SQLite 权威复用现有 CAS 与回执 owner；legacy Markdown 在原有 fence 和锁内同时写入任务和不可变回执。同一操作重试只读历史结果，接收者后来修改、完成或删除任务也不会触发重建。提交前失败不会留下部分 lane；canonical 展示投递仍 pending 时，Chat 必须恢复后才能报告验证成功。卡片列出部分分配及缺口；quota/stop 是参考，显式强制声明会被拒绝。Agent 发起的结算在 journal 首次写入时绑定同一状态基线并在结算时重读；基线缺失或已变动、或全部 lane 均为缺口的计划，记录为类型化的失败回执，不创建 Todo，重放结果不变。
 
-这完成 F4 的本地分配/重试部分，不等于 R1 协同验收。注册接收者可以被分配任务，但不会被冒充为作者；Agent 发起的结算未经业主确认不能给另一 peer 分配任务。分配不证明接收者采纳、lease、执行、依赖消费或独立验收。普通已授权工作不应普遍增加第二次确认。解决缺口需要明确的新意图；重放不能静默扩展原确认子集。fingerprint 绑定当前本地状态与 canonical revision，不是完整共享 Goal 意图事务。R2/R3/R4 仍负责执行器资格、接收者采纳/结果返回及共享意图/授权；跨主机 Turn lease 不是计划屏障。
+这完成 F4 的本地分配/重试部分，不等于 R1 协同验收。注册接收者可以被分配任务，但不会被冒充为作者；Agent 发起的结算未经业主确认不能给另一 peer 分配任务。分配不证明接收者采纳、lease、执行、依赖消费或独立验收。普通已授权工作不应普遍增加第二次确认。解决缺口需要明确的新意图；重放不能静默扩展原确认子集。fingerprint 绑定当前本地状态与 canonical revision，不是完整共享 Goal 意图事务。本地 registry 与活动状态锁现在持续保护到类型化提交结束：native token claim 在调用进程退出后仍有效；源字节变化拒绝新分配；失效交接只能重放精确匹配的已提交回执。registry 竞争返回可重试失败，不创建任务；canonical 展示恢复在源锁释放后执行。允许安全重试的失败 Team Plan 提案在 Goal 或管家工作区刷新后仍保留原评审身份；重试重新核验当前源事实，并恢复已有分配，不生成新提案。stale、gated 和不允许安全重试的失败仍不提供此恢复入口，已打开的抽屉也遵循同一判定。Chat 恢复在查找回执前解析当前注册 Goal 与源绑定；Goal 被移除或绑定源不可读时可能阻断恢复。canonical 展示恢复使用当前注册源，本次修复不恢复已删除的源绑定。R2/R3/R4 仍负责执行器资格、接收者采纳/结果返回及共享意图/授权；跨主机 Turn lease 不是计划屏障。
 
 验证覆盖真实 Chat apply、文件权威投递恢复、打包确认卡片，以及 FileAuthorityStore 和隔离 PostgreSQL 上的同文不同身份、并发提交、末条 lane 非法、响应丢失和接收者变更。这些 fixture 不验收 Lark 传输或跨主机 worker 执行。
 

@@ -17,16 +17,19 @@ Chat is great for one-off asks. **Workflows** are for the things you want done _
 
 You don't drag boxes to get started. Describe the automation in chat, for example _"whenever a new email arrives from a customer, summarize it and post to my Slack"_, and the agent uses its `propose_workflow` tool to draft a complete workflow graph. The proposal shows up in chat as a **Workflow Proposal Card** with a plain-English summary of every step.
 
-Two design guarantees make this safe:
+Three design guarantees make this safe:
 
-- The `propose_workflow` tool **only validates and describes** a candidate graph. It can never create or enable a flow by itself.
-- The **only** path from a proposal to a _new_ saved workflow is you clicking **Save & enable** on the card. That calls the `flows_create` RPC directly from the app, not from the agent.
+- The `propose_workflow` tool **only validates and describes** a candidate graph. It can never persist or enable a flow by itself.
+- Every authoring turn is propose-only by default. The usual path from a proposal to a saved workflow is you clicking **Save & enable** on the card, which calls the `flows_create` RPC directly from the app, not from the agent.
+- Nothing the agent can do turns a flow **on**. `flows_set_enabled` is off its belt entirely.
 
-One deliberate carve-out: when _you_ start the build (the Workflows page prompt bar creates the flow first and opens the copilot on it), the builder agent may finish the job with its `save_workflow` tool — it writes the built graph onto that **already-existing** flow after a sandbox dry run. It still cannot create a flow of its own, enable or disable one, or change the approval gate, and a real test run always requires your explicit confirmation first.
+Persisting is scoped to two explicit asks. `save_workflow` writes the built graph onto an **already-existing** flow, the case when _you_ started the build: the Workflows page prompt bar creates the flow first and opens the copilot on it. When there is no flow yet and you explicitly ask for one ("create this and save it"), the agent may also use `create_workflow`, or `duplicate_flow` to clone a saved flow for clone-then-edit. Both are on the `workflow_builder` agent's named tool list (`crates/openhuman-core/src/flows/agents/workflow_builder/agent.toml`), and both are force-disabled at creation: `CreateWorkflowTool` calls `flows_set_enabled(.., false)` on anything `flows_create` left enabled, and reports the flow's real state rather than the intended one if that second write fails. So a flow the agent creates is born off and stays off until you enable it, and a real test run of a saved flow always needs your confirmation first.
 
 ## What a workflow is made of
 
-A workflow graph is built from **22 node kinds**: exactly one `trigger`, plus any mix of `agent` (a full agent turn with tools), `tool_call`, `http_request`, `code` (JavaScript or Python), `shell`, `condition`, `switch`, `transform`, `split_out`, `merge`, `output_parser`, `sub_workflow`, `memory`, `dedup`, `loop`, `spawn`, `gate`, `scatter`, `gather`, `approval`, and `void`.
+A workflow graph is built from the engine's **22 node kinds**: exactly one `trigger`, plus any mix of `agent` (a full agent turn with tools), `tool_call`, `http_request`, `code` (JavaScript or Python), `shell`, `condition`, `switch`, `transform`, `split_out`, `merge`, `output_parser`, `sub_workflow`, `memory`, `dedup`, `loop`, `spawn`, `gate`, `scatter`, `gather`, `approval`, and `void`.
+
+The canvas palette offers fifteen of them today: `trigger`, `agent`, `tool_call`, `http_request`, `code`, `condition`, `switch`, `merge`, `split_out`, `transform`, `output_parser`, `sub_workflow`, `memory`, `dedup` and `loop`. The other seven are reachable by importing a graph. Two also have no host adapter wired yet: a `shell` node has no runner, and an `approval` node falls back to pausing the run for `flows_resume` rather than raising its own card.
 
 A graph is usually a straight line or a fan-out, but it may also contain a **bounded loop**: a `loop` node emits on its `body` port until its `max_iterations` cap (or an optional `condition`) says stop, then emits on `done`. You close the loop by wiring the body's last node back to the `loop` node. The cap is always finite, and `on_exceeded` decides what reaching it means: `error` fails the run and names the loop, `continue` stops looping and carries the last pass's items out through `done`.
 
@@ -56,7 +59,7 @@ When a run pauses, you get a **Flow Approval Card** in your notifications naming
 
 ## RPC surface (for developers)
 
-The `flows` domain (`crates/openhuman-core/src/flows/`) exposes ten controllers under `openhuman.flows_*`: `create`, `get`, `list`, `update`, `delete`, `set_enabled`, `run`, `resume`, `list_runs`, `get_run`. See the [Agent Harness](../developing/architecture/agent-harness.md) page for how flow runs share the tinyagents execution stack.
+The `flows` domain (`crates/openhuman-core/src/flows/`) exposes 36 controllers under `openhuman.flows_*`, covering definitions (`create`, `get`, `list`, `update`, `delete`, `set_enabled`, `duplicate`, `validate`, `import`), runs (`run`, `resume`, `cancel`, `list_runs`, `get_run`, history), drafts and the authoring copilot. See the [Agent Harness](../developing/architecture/agent-harness.md) page for how flow runs share the tinyagents execution stack.
 
 ## See also
 

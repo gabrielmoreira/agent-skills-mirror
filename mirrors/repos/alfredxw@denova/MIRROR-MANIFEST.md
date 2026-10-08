@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `alfredxw/denova` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `alfredxw/denova` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `alfredxw/denova` — 26 default patterns, 0 followed patterns, 19 fil
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 19 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,17 +67,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`skills/configuration/references/event-package.md`](skills/configuration/references/event-package.md) |
 | 7 | ✓ | [`skills/configuration/references/game-planning.md`](skills/configuration/references/game-planning.md) |
 | 8 | ✓ | [`skills/configuration/references/image-preset.md`](skills/configuration/references/image-preset.md) |
-| 9 | ✓ | [`skills/configuration/references/narrative-style.md`](skills/configuration/references/narrative-style.md) |
-| 10 | ✓ | [`skills/configuration/references/rule-system.md`](skills/configuration/references/rule-system.md) |
-| 11 | ✓ | [`skills/configuration/references/skill.md`](skills/configuration/references/skill.md) |
-| 12 | ✓ | [`skills/configuration/references/state-system.md`](skills/configuration/references/state-system.md) |
-| 13 | ✓ | [`skills/configuration/references/style-reference.md`](skills/configuration/references/style-reference.md) |
-| 14 | ✓ | [`skills/configuration/SKILL.md`](skills/configuration/SKILL.md) |
-| 15 | ✓ | [`skills/interactive-image/SKILL.md`](skills/interactive-image/SKILL.md) |
-| 16 | ✓ | [`skills/novel-lite/SKILL.md`](skills/novel-lite/SKILL.md) |
-| 17 | ✓ | [`skills/novel-standard/SKILL.md`](skills/novel-standard/SKILL.md) |
-| 18 | ✓ | [`skills/web-research/agents/openai.yaml`](skills/web-research/agents/openai.yaml) |
-| 19 | ✓ | [`skills/web-research/SKILL.md`](skills/web-research/SKILL.md) |
+| 9 | ✓ | [`skills/configuration/references/lore-index.md`](skills/configuration/references/lore-index.md) |
+| 10 | ✓ | [`skills/configuration/references/narrative-style.md`](skills/configuration/references/narrative-style.md) |
+| 11 | ✓ | [`skills/configuration/references/rule-system.md`](skills/configuration/references/rule-system.md) |
+| 12 | ✓ | [`skills/configuration/references/skill.md`](skills/configuration/references/skill.md) |
+| 13 | ✓ | [`skills/configuration/references/state-system.md`](skills/configuration/references/state-system.md) |
+| 14 | ✓ | [`skills/configuration/references/style-reference.md`](skills/configuration/references/style-reference.md) |
+| 15 | ✓ | [`skills/configuration/SKILL.md`](skills/configuration/SKILL.md) |
+| 16 | ✓ | [`skills/extension-development/references/api.md`](skills/extension-development/references/api.md) |
+| 17 | ✓ | [`skills/extension-development/SKILL.md`](skills/extension-development/SKILL.md) |
+| 18 | ✓ | [`skills/interactive-image/SKILL.md`](skills/interactive-image/SKILL.md) |
+| 19 | ✓ | [`skills/novel-lite/SKILL.md`](skills/novel-lite/SKILL.md) |
+| 20 | ✓ | [`skills/novel-standard/SKILL.md`](skills/novel-standard/SKILL.md) |
+| 21 | ✓ | [`skills/web-research/agents/openai.yaml`](skills/web-research/agents/openai.yaml) |
+| 22 | ✓ | [`skills/web-research/SKILL.md`](skills/web-research/SKILL.md) |
 
 ---
 

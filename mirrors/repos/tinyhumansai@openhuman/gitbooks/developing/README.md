@@ -22,7 +22,7 @@ Everything above that floor is modular: cargo feature gates decide what compiles
 | Path        | What's there                                                                                                      |
 | ----------- | ----------------------------------------------------------------------------------------------------------------- |
 | `app/`      | pnpm workspace `openhuman-app`. Vite + React frontend (`app/src/`) and the Tauri desktop host (`crates/openhuman-app/`). |
-| `crates/`   | Rust crates: `openhuman-core` (lib `openhuman_core` + the `openhuman-core` CLI binary; domains under `src/<domain>/`, JSON-RPC, MCP routing), `openhuman-app` (Tauri host), `openhuman-embed` (library facade), `openhuman-rpc` (shared RPC contracts + HTTP client), `openhuman-tui` (terminal frontend). |
+| `crates/`   | Rust crates. Six workspace members: `openhuman-core` (package `openhuman`: the core library, domains under `src/<domain>/`, the controller contract and in-process dispatch under `src/core/`; **no binary and no JSON-RPC server**), `openhuman-rpc` (JSON-RPC 2.0 over the core: envelopes, HTTP client, and the server), `openhuman-embed` (the typed library facade), `openhuman-tinyhumans` (the only crate that may depend on `tinyhumans-sdk`: backend transport, hosted RPC proxies, host-side session owner; every host installs it first), `openhuman-cli` (the `openhuman-core` binary and every root `tests/` and `examples/` target), `openhuman-tui` (terminal frontend). Plus `openhuman-app` (the Tauri host), which is excluded from the root workspace and builds from its own manifest. |
 | `gitbooks/` | This site (the public-facing docs).                                                                               |
 | `docs/`     | Internal maintainer docs: test-coverage matrix, release smoke checklist, library benchmarking and minimal-recipe notes, translated READMEs, `community/`. |
 
@@ -85,7 +85,7 @@ PRs must clear the **≥ 80% coverage on changed lines** gate. Add tests for new
 
 - Open issues and PRs at [tinyhumansai/openhuman](https://github.com/tinyhumansai/openhuman).
 - PRs target `main`. Push to your fork, not upstream.
-- Follow [`CONTRIBUTING.md`](../../CONTRIBUTING.md) and the issue/PR templates.
+- Follow [`CONTRIBUTING.md`](https://github.com/tinyhumansai/openhuman/blob/main/CONTRIBUTING.md) and the issue/PR templates.
 - Keep changes focused. A bug fix doesn't need surrounding cleanup; a one-shot operation doesn't need a helper.
 
 Help building toward AGI doesn't have to mean shipping a kernel, bugfixes, docs, integrations, and tests all move the bar.

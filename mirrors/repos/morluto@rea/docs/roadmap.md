@@ -45,8 +45,10 @@ verified paths for an existing Ghidra installation. It configures Claude Code,
 Claude Desktop, Codex, Cursor, Gemini CLI, Windsurf, Devin, OpenCode, Antigravity,
 GitHub Copilot CLI, Command Code, and VS Code using each client's configuration format.
 
-Ghidra analysis supports Linux x64 and macOS x64/arm64 with Ghidra 12.1.4 and a
-64-bit full JDK 21. macOS also requires the matching native decompiler. The
+Ghidra analysis supports Linux x64 and macOS x64/arm64 with Ghidra 12.1.x and the
+64-bit full JDK that installation declares. Current 12.1 releases require JDK 21
+or newer and set no maximum; the bridge is verified with Ghidra 12.1.4 and JDK 21.
+macOS also requires the matching native decompiler. The
 adapter exposes thirteen inventory operations and twelve function-analysis
 operations, for 25 read-only operations total. Linux and macOS additionally support
 atomic function-name and entry-comment edits with refreshed analysis; metadata
@@ -60,7 +62,7 @@ Mach-O cross-target fixtures. See [testing](testing.md) for the prerequisites
 and exact commands.
 
 Experimental Windows x64 P0 now supplies bundled Job Object ownership,
-protected runtime DACLs, and handle-based admission for native x86-64 PE
+protected runtime DACLs, and handle-based admission for native x86 and x86-64 PE
 applications on local NTFS. Real ordinary-user CLI/MCP verification covers
 all 25 read-only operations and cleanup. The [Windows P0 guide](windows-ghidra-p0.md)
 describes this boundary and unverified broader coverage.

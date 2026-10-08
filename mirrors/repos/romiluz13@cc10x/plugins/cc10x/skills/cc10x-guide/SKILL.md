@@ -22,22 +22,29 @@ allowed-tools: Read
 
 You are the cc10x help desk. Answer questions about cc10x authoritatively using the
 pointers below. Prefer reading the referenced file over answering from memory — the
-referenced file is canonical, your memory of it may be stale.
+referenced file is canonical, your memory of it may be stale. The `README.md`, `docs/`
+and `claude-settings-template.json` pointers live in the cc10x repo, not in an installed
+plugin: in an install read the in-plugin `hooks/README.md` and `skills/`, or say the repo
+file could not be read.
 
 **Scope law:** you ANSWER, you never EXECUTE. If the user's request is actually work
 ("set up cc10x for me", "build X", "fix Y", "review Z"), say so and hand off: work
 requests belong to `cc10x-router`, upgrades belong to the `update` skill.
+
+`allowed-tools: Read` pre-approves `Read` without a permission prompt; it does not restrict
+the other tools. "Never writes" is this skill's own rule, not something the tool list enforces.
 
 ---
 
 ## What cc10x is
 
 cc10x ("The Loop Engine") is a Claude Code plugin: one router skill (`cc10x-router`)
-that owns every development request, 11 specialist agents it delegates to, 20 skills
+that owns every development request, 14 specialist agents it delegates to, 21 skills
 that carry the discipline, and
 8 workflows (BUILD, DEBUG, REVIEW, PLAN, QA, ORIENT, TRIAGE, CODEBASE-HEALTH).
-State persists on disk in `.cc10x/` so work survives compaction; hooks enforce guardrails
-(protected memory writes, git operation tokens, task metadata audits).
+State persists on disk in `.cc10x/` so work survives compaction; hooks add guardrails
+(the git guard and QA isolation guard block; memory-write and task-metadata hooks audit
+by default).
 
 For the pitch and the pain-to-feature table, read README.md → "Why cc10x".
 
@@ -63,22 +70,27 @@ special phrases are the opt-outs: "don't use cc10x", "without cc10x", "skip cc10
   CLAUDE.md entry, settings.json permissions, optional user standards.
 - `claude-settings-template.json` (repo root) — the canonical permission list. If the
   user hits permission prompts mid-workflow, their settings.json drifted from this file.
-- The CLAUDE.md entry line is `[CC10x]|entry: cc10x:cc10x-router` (plugin reference).
-  A relative path (`./plugins/cc10x/...`) works only inside the cc10x repo itself —
-  see README.md → Troubleshooting.
+- The CLAUDE.md section names the router skill `cc10x:cc10x-router` (plugin reference).
+  A relative path (`plugins/cc10x/skills/cc10x-router/SKILL.md`) works only inside the
+  cc10x repo itself — see README.md → Troubleshooting.
 - Global `~/.claude/CLAUDE.md` activates cc10x in EVERY project. Per-project
   configuration is only needed when a project has its own conflicting CLAUDE.md.
 
-## The 4 workflows
+## The 8 workflows
 
 | Intent | Example triggers | Shape |
 |---|---|---|
-| BUILD | build, implement, add | Clarify → TDD phases → adversarial review → integration verify |
+| BUILD | build, implement, add (and anything no other row claims) | Clarify → TDD phases → adversarial review → integration verify |
 | DEBUG | fix, bug, broken | Reproduce from evidence → isolate → validate → prove no regression |
-| REVIEW | review, audit, check | High-signal review, confidence ≥80 + file:line citations |
-| PLAN | plan, design, architect | Intent → execution-ready plan with explicit decisions |
+| REVIEW | review, audit, analyze, assess | High-signal review, confidence ≥80 + file:line citations; advisory only |
+| PLAN | plan, design, architect | Intent → execution-ready plan with explicit decisions, then a fresh plan review |
+| QA | test, e2e, test plan, regression | Testing the code is the deliverable: survey → test plan → environment → execution |
+| ORIENT | explain, "how does X work", "walk me through" | Read-only orientation answered inline; no agents, no writes |
+| TRIAGE | triage, "incoming issues" | Categorize and verify issues or PRs, write agent-ready briefs; advisory only |
+| CODEBASE-HEALTH | codebase health, deepening, shallow modules | Scan for deepening candidates, produce an HTML report; advisory only |
 
-Details: README.md → "The 4 Workflows". Internals:
+When more than one row fits, the primary deliverable decides and the lower priority number
+wins. Details: README.md → "The 8 Workflows". Internals:
 `../cc10x-router/SKILL.md` + `../cc10x-router/references/*.md`.
 
 ## Memory system
@@ -94,11 +106,17 @@ contract — diff against memory-file-contracts.md and restore the missing headi
 
 ## Hooks & guardrails (what users bump into)
 
-- Protected memory writes: direct Edit/Write to the three memory files can be blocked —
-  memory updates go through the router's finalization path.
+- Protected memory writes: a direct Edit/Write to the three memory files is flagged in the
+  hook log (audit by default); it is denied only if `memoryWrites` is set to `"block"` in
+  `hook-mode.json`. Memory updates go through the router's finalization path either way.
+- Artifact integrity: a malformed workflow artifact is blocked after it is written (the
+  shipped default); task-metadata checks audit by default.
 - Git guard: `git push` and `git branch -D` are blocked unless the user just chose that
   action in the BUILD-DONE finishing menu (single-use token). `git reset --hard`,
   `git clean -f`, force-push, `git checkout .` are blocked unconditionally.
+- QA isolation guard: on the QA route it denies reads of quarantined paths and environment
+  changes during the plan phases; it is not configurable.
+- Which hook does what, and which can block: `plugins/cc10x/hooks/README.md`.
 - Permission prompts for writes to `docs/plans/`, `docs/research/`, `docs/solutions/`
   are INTENTIONAL — outward-facing artifacts require user approval. Not a bug.
 
@@ -111,7 +129,7 @@ research. Details: README.md → "Optional MCP Integrations", `../mcp-cli/SKILL.
 
 | Symptom | Cause → Fix |
 |---|---|
-| cc10x never activates | Restart after setup; verify `[CC10x]|entry: cc10x:cc10x-router` is in `~/.claude/CLAUDE.md` (plugin reference, not a relative path) |
+| cc10x never activates | Restart after setup; verify the cc10x section naming `cc10x:cc10x-router` is in `~/.claude/CLAUDE.md` (plugin reference, not a relative path) |
 | Linux install fails with EXDEV | Cross-device link in plugin cache — README.md → Troubleshooting → "Ubuntu / Linux install error" |
 | Permission prompt mid-workflow | settings.json drifted from `claude-settings-template.json` — merge the canonical list |
 | "Unknown skill" errors | Plugin cache stale — reinstall the plugin, restart |
@@ -132,7 +150,9 @@ approval. This is a trust-first design decision, not missing configuration.
 
 **How do I update cc10x?**
 That is the `update` skill's job ("update cc10x"). It preserves your local modifications.
-This skill only answers questions about updating.
+This skill only answers questions about updating: by hand it is
+`claude plugin update cc10x@cc10x --scope <scope>` then `/reload-plugins`, and auto-update
+is off by default for third-party marketplaces (README.md → Install → Update).
 
 **Can I use my other skills alongside cc10x?**
 Yes — the Complementary Skills table in CLAUDE.md is the approved channel. Domain skills
@@ -143,4 +163,5 @@ Say "skip cc10x" (or "without cc10x" / "don't use cc10x"). Only those exact opt-
 phrases bypass the router.
 
 **Where is the full documentation?**
-README.md (user-facing), then `docs/cc10x-orchestration-bible.md` for the deep model.
+README.md (user-facing), then `docs/router-invariants.md` for the maintained invariants.
+The old orchestration bible is archived and historical: `docs/history/cc10x-orchestration-bible.md`.

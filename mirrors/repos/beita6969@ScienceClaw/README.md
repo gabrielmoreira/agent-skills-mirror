@@ -8,7 +8,7 @@
 <p><b>Skills and Operators that grow from replay-verified executions.</b></p>
 
 <p>
-  <a href="https://scienceclaw.science/ScienceClaw.pdf"><img src="https://img.shields.io/badge/paper-PDF-dc2626?style=flat-square&logo=googlescholar&logoColor=white" alt="Paper (PDF)"></a>
+  <a href="https://arxiv.org/abs/2610.08691"><img src="https://img.shields.io/badge/arXiv-2610.08691-b31b1b?style=flat-square&logo=arxiv&logoColor=white" alt="arXiv:2610.08691"></a>
   <a href="https://scienceclaw.science"><img src="https://img.shields.io/badge/website-scienceclaw.science-0891b2?style=flat-square&logo=googlechrome&logoColor=white" alt="Website"></a>
   <a href="https://huggingface.co/datasets/beita6969/scienceclaw-eval"><img src="https://img.shields.io/badge/benchmark%20data-Hugging%20Face-f59e0b?style=flat-square&logo=huggingface&logoColor=white" alt="Benchmark data on Hugging Face"></a>
   <a href="https://github.com/beita6969/ScienceClaw/stargazers"><img src="https://img.shields.io/github/stars/beita6969/ScienceClaw?style=flat-square&logo=github&color=4f46e5" alt="GitHub stars"></a>
@@ -21,7 +21,7 @@
   <a href="#results">Results</a> &nbsp;·&nbsp;
   <a href="#use-it-from-the-gateway">Gateway</a> &nbsp;·&nbsp;
   <a href="#scienceclaw-eval">Benchmark</a> &nbsp;·&nbsp;
-  <a href="https://scienceclaw.science/ScienceClaw.pdf">Paper</a> &nbsp;·&nbsp;
+  <a href="https://arxiv.org/abs/2610.08691">Paper</a> &nbsp;·&nbsp;
   <a href="packages/scienceclaw/docs/DESIGN.md">Design</a>
 </p>
 
@@ -326,6 +326,22 @@ ScienceClaw/
 ```
 
 **Documentation:** [`DESIGN.md`](packages/scienceclaw/docs/DESIGN.md) (the full contract, including the decisions the paper leaves open) · [`INTEGRATION.md`](packages/scienceclaw/docs/INTEGRATION.md) (gateway, plugin, skill and evolution map) · [plugin guide](extensions/scienceclaw/README.md) · [`SCIENCE.md`](SCIENCE.md)
+
+## 📖 Citation
+
+If you use ScienceClaw or ScienceClaw-Eval, please cite the paper ([arXiv:2610.08691](https://arxiv.org/abs/2610.08691)):
+
+```bibtex
+@misc{zhang2026scienceclaw,
+  title         = {ScienceClaw: Benchmarking Continual Self-Evolution of AI-for-Science Agents Across the Natural and Social Sciences},
+  author        = {Zhang, Mingda and Liu, Wenjin and Shen, Tiesunlong and Xiao, Zikai and Lin, Zhenghong and Xu, Qing and Cambria, Erik and Tang, Xiaoying and Luo, Haoran},
+  year          = {2026},
+  eprint        = {2610.08691},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.AI},
+  url           = {https://arxiv.org/abs/2610.08691}
+}
+```
 
 ## 📬 Contact and license
 

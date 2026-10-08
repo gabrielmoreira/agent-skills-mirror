@@ -5,41 +5,44 @@ description: >-
 icon: browsers
 ---
 
-# Frontend (app/src/)
+# Frontend
 
-The OpenHuman desktop UI: a Vite + React 19 tree under `app/src/` (pnpm workspace `openhuman-app`). It uses Redux Toolkit with persistence for session state, talks to the in-process Rust core over JSON-RPC (`coreRpcClient` → local HTTP, with the Tauri `relay_http_rpc` command as a fallback relay) and socket.io (`socketService`), and reaches the cloud backend via REST (`apiClient`). Heavy logic lives in the core, not here.
+`app/src/` is the OpenHuman desktop UI: a Vite and React 19 tree in the pnpm workspace `openhuman-app`. It uses Redux Toolkit with persistence for session state, talks to the in-process Rust core over JSON-RPC (`coreRpcClient` → local HTTP, with the Tauri `relay_http_rpc` command as a fallback relay) and socket.io (`socketService`), and reaches the cloud backend via REST (`apiClient`). Heavy logic lives in the core, not here.
 
 This is one consolidated reference. Use the table of contents above (or your reader's outline) to jump between sections.
 
+The tree also carries a **mobile shell**: `AppRoutesIOS.tsx`, `pages/ios/`, the `services/transport/` connection profiles and the `app/src-tauri-mobile/` host. That client is **experimental and not part of the shipped desktop host**, which targets Windows, macOS and Linux only. It appears on this page because those files sit in the same tree and share the `App.tsx` provider chain, not because the client ships. See [iOS Companion](../../features/ios-companion.md) for what it is and what still has no desktop surface.
+
 ## Quick reference
 
-| Section                                           | Covers                                                          |
-| ------------------------------------------------- | --------------------------------------------------------------- |
-| [Architecture](frontend.md#architecture-overview) | Provider chain, build, layout, conventions                      |
-| [State Management](frontend.md#state-management)  | Redux Toolkit slices, selectors, persistence                    |
-| [Services Layer](frontend.md#services-layer)      | `apiClient`, `socketService`, `coreRpcClient`                   |
-| [Providers](frontend.md#providers)                | `ThemeProvider`, `CoreState`, `Socket`, `ChatRuntime` providers |
-| [Pages & Routing](frontend.md#pages-routing)      | `HashRouter`, route guards, main routes                         |
-| [Components](frontend.md#components)              | UI / settings component patterns                                |
-| [Hooks & Utilities](frontend.md#hooks-utilities)  | Shared hooks, helpers, config                                   |
+| Section                                      | Covers                                                          |
+| -------------------------------------------- | --------------------------------------------------------------- |
+| [Architecture](#architecture-overview)       | Provider chain, build, layout, conventions                      |
+| [State Management](#state-management)        | Redux Toolkit slices, selectors, persistence                    |
+| [Services Layer](#services-layer)            | `apiClient`, `socketService`, `coreRpcClient`                   |
+| [Providers](#providers)                      | `ThemeProvider`, `CoreState`, `Socket`, `ChatRuntime` providers |
+| [Pages & Routing](#pages--routing)           | `HashRouter`, route guards, main routes                         |
+| [Components](#components)                    | UI / settings component patterns                                |
+| [Hooks & Utilities](#hooks--utilities)       | Shared hooks, helpers, config                                   |
 
 ## Scale
 
-| Metric                                  | Value                                                                     |
-| --------------------------------------- | ------------------------------------------------------------------------- |
-| TypeScript / TSX files under `app/src/` | \~1900 (`find app/src -name '*.ts' -o -name '*.tsx' \| wc -l` to refresh) |
-| Test runner                             | Vitest (`app/test/vitest.config.ts`)                                      |
+| Metric                                  | How to read it                                                 |
+| --------------------------------------- | -------------------------------------------------------------- |
+| TypeScript / TSX files under `app/src/` | `find app/src -name '*.ts' -o -name '*.tsx' \| wc -l`           |
+| App-level hooks                         | `ls app/src/hooks/*.ts app/src/hooks/*.tsx \| wc -l`            |
+| Test runner                             | Vitest (`app/test/vitest.config.ts`)                           |
 
 ## Directory layout
 
-```
+```text
 app/src/
 ├── App.tsx                 # Provider chain + HashRouter shell (desktop + mobile shells)
 ├── AppRoutes.tsx           # Desktop route table (AppRoutesIOS.tsx for mobile)
 ├── main.tsx                # Entry (polyfills, Sentry, store, styles)
 ├── store/                  # Redux slices, selectors, userScopedStorage persistence
 ├── providers/              # ThemeProvider, CoreStateProvider, SocketProvider, ChatRuntimeProvider
-├── services/               # apiClient, socketService, coreRpcClient, transport/, api/* (~50 modules)
+├── services/               # apiClient, socketService, coreRpcClient, transport/, api/*
 ├── lib/                    # AI prompt loaders, i18n, MCP helpers, platform, tunnel crypto
 ├── pages/                  # Route-level screens (incl. onboarding/, ios/, dev/)
 ├── features/               # Feature verticals (human/, conversations/, voice/, wallet/, skills/)
@@ -102,7 +105,7 @@ _Generated from `app/src/App.tsx` by `scripts/generate-architecture-docs.mjs`. D
 
 ### Module relationships (simplified)
 
-```
+```text
 App.tsx
   ├─ Redux store + persistor
   ├─ ThemeProvider / I18nProvider - theme tokens, useT() localization
@@ -117,7 +120,7 @@ App.tsx
 
 ### Services layer (conceptual)
 
-```
+```text
 services/
   ├─ apiClient        → REST to a URL resolved at runtime via `services/backendUrl#getBackendUrl`
   ├─ backendUrl       → Calls `openhuman.config_resolve_api_url`; falls back to VITE_BACKEND_URL only outside Tauri
@@ -211,7 +214,7 @@ The application uses singleton services for external communication. This prevent
 
 ### Service architecture
 
-```
+```text
 app/src/services/
   ├─ apiClient (HTTP REST)
   │   └─ backend URL resolved at runtime (services/backendUrl)
@@ -279,7 +282,7 @@ const result = await callCoreRpc<MyType>({
 
 How a call flows:
 
-1. **URL + token resolution**: the RPC URL follows the precedence in [Runtime config precedence](frontend.md#runtime-config-precedence); the per-launch bearer token comes from the Tauri `core_rpc_token` command (or the stored token for self-hosted cores).
+1. **URL + token resolution**: the RPC URL follows the precedence in [Runtime config precedence](#runtime-config-precedence); the per-launch bearer token comes from the Tauri `core_rpc_token` command (or the stored token for self-hosted cores).
 2. **Direct fetch**: the webview `fetch()`es the JSON-RPC envelope straight to the core (loopback http or any https URL).
 3. **Shell relay fallback**: plain `http://` to a **non-loopback** host is active mixed content and Chromium blocks it (#3865). `rpcUrlNeedsShellRelay()` detects this and routes the call through `invoke('relay_http_rpc', { url, token, body })`, implemented in **`crates/openhuman-app/src/core_rpc.rs`** (a thin wrapper over `openhuman_rpc::post_json_rpc` from `crates/openhuman-rpc/`), which returns `{ status, body }` re-wrapped as a `Response`.
 4. **Transport override**: iOS/remote connection profiles install a `CoreTransport` (`setActiveCoreTransport`) so the same `callCoreRpc` surface rides LAN/tunnel/cloud transports.
@@ -297,7 +300,7 @@ Errors are classified into a stable `CoreRpcError.kind` (`auth_expired`, `transp
 
 ## Providers
 
-React context providers (`app/src/providers/`) manage service lifecycle and expose core-owned state. The full nesting (including gates that live in `components/`) is the generated [provider chain](frontend.md#provider-chain) above. There is **no** `UserProvider`, `AIProvider`, or `SkillProvider`: auth/user state lives in `CoreStateProvider`, AI configuration lives in the Rust core, and skills execute in the core (the frontend QuickJS skills engine was removed).
+React context providers (`app/src/providers/`) manage service lifecycle and expose core-owned state. The full nesting (including gates that live in `components/`) is the generated [provider chain](#provider-chain) above. There is **no** `UserProvider`, `AIProvider`, or `SkillProvider`: auth/user state lives in `CoreStateProvider`, AI configuration lives in the Rust core, and skills execute in the core (the frontend QuickJS skills engine was removed).
 
 ### ThemeProvider (`providers/ThemeProvider.tsx`)
 
@@ -410,7 +413,7 @@ registry cannot describe.
 Rendering uses assistant-ui's elements, vendored under
 `app/src/components/assistant-ui/elements/` (tool-call, tool-timeline,
 web-search, terminal-block, code-diff, web-preview) with the `tw-shimmer`
-utility. `ChatToolGroup` wraps a run of calls in the tool timeline;
+utility. `ToolGroupRoot` / `ToolGroupTrigger` / `ToolGroupContent` wrap a run of calls in the tool timeline;
 `AssistantUiToolCallCard` renders each call. The adapters in
 `tools/ToolBodies.tsx` only map tool data onto those elements.
 
@@ -436,37 +439,52 @@ The application uses HashRouter with protected and public route guards. Desktop 
 
 ### Route map
 
-Current desktop routes (read `AppRoutes.tsx` for the authoritative table: the file is heavily commented with the rationale for each redirect):
+`app/src/AppRoutes.tsx` is the authoritative table and is heavily commented with the rationale for each entry. The desktop routes it declares:
 
-```
-/                      → Welcome (PublicRoute; redirects to /home if logged in)
-/auth                  → WebCallbackPage (auth callback)
-/callback/:kind[/:status] → WebCallbackPage (generic OAuth/provider callbacks)
-/onboarding/*          → Onboarding stepper (ProtectedRoute)
-/human                 → HumanPage (dedicated mascot stage)
-/brain                 → redirect to /connections?tab=brain (Memory)
-/flows                 → FlowsPage · /flows/draft → draft canvas · /flows/:id → FlowCanvasPage
-/workflows/run         → WorkflowsRun (single-purpose Skill runner)
-/connections           → Skills page (connections hub); `?tab=brain&brain=<engine|ask|learnings|conversations|documents|context>` is Memory (`pages/Memory.tsx`, `components/memory/`); `/settings/memory-engine` redirects to the `engine` chip
-/chat/:threadId?       → Accounts (unified chat: agent + connected web apps)
-/invites               → Invites
-/feedback              → Feedback
-/notifications         → Notifications
-/ptt-overlay           → PttOverlayPage (push-to-talk overlay window)
-/dev/agent-insights    → dev-only preview
-*                      → DefaultRedirect
-```
+| Route | Renders | Guard |
+| --- | --- | --- |
+| `/` | `Welcome` | `PublicRoute` (signed in: forwards to `/home`) |
+| `/auth` | `WebCallbackPage`, the auth callback | none |
+| `/callback/:kind`, `/callback/:kind/:status` | `WebCallbackPage`, generic OAuth and provider callbacks | none |
+| `/onboarding/*` | `Onboarding` stepper | `ProtectedRoute` |
+| `/human` | `HumanPage`, the dedicated mascot stage | `ProtectedRoute` |
+| `/chat/:threadId?` | `Accounts`, the unified chat (agent plus connected web apps) | `ProtectedRoute` |
+| `/flows` | `FlowsPage` | `ProtectedRoute` |
+| `/flows/draft` | `FlowCanvasDraftPage`, an unsaved proposed graph passed in `location.state` | `ProtectedRoute` |
+| `/flows/:id` | `FlowCanvasPage` | `ProtectedRoute` |
+| `/workflows` | `Activity`, the legacy `SKILL.md` workflow hub | `ProtectedRoute` |
+| `/workflows/run` | `WorkflowsRun`, the single-purpose Skill runner | `ProtectedRoute` |
+| `/connections` | `Skills`, the connections hub | `ProtectedRoute` |
+| `/invites` | `Invites` | `ProtectedRoute` |
+| `/notifications` | `Notifications` | `ProtectedRoute` |
+| `/settings/*` | `Settings` | `ProtectedRoute` |
+| `/ptt-overlay` | `PttOverlayPage`, the push-to-talk overlay window | none |
+| `/dev/agent-insights` | `AgentInsightsPreview` | dev only |
+| `/dev/ui` | `UiGallery`, every shared UI primitive in the active theme | dev only |
+| `/dev/tools` | `ToolCallGallery`, every tool-call state and the whole core catalog | dev only |
+| `/dev/assistant-ui` | The upstream assistant-ui demo on a mock runtime | dev only |
+| `*` | `DefaultRedirect` | none |
 
-Back-compat redirects (all `Navigate replace`, query params preserved):
+The four `/dev/*` routes are registered inside an `IS_DEV` branch (`utils/config`), so `import.meta.env.DEV` is substituted at build time, the branch folds away, and their component trees leave a production bundle entirely. They are previews, never part of the shipped product.
 
-```
-/home        → /chat                     /skills      → /connections
-/activity    → /settings/account         /channels    → /connections?tab=messaging
-/intelligence→ /settings/account         /routines    → /settings/automations
-/workflows   → /settings/automations     /webhooks    → /settings/integrations#webhooks
-```
+Memory is a surface of `/connections`, not a route of its own: `?tab=brain&brain=<chip>` selects one of its eight chips, `engine`, `ask`, `explorer`, `learnings`, `conversations`, `brain`, `background` and `settings`. The list is `app/src/components/memory/memoryChips.ts` and the page is `app/src/pages/Memory.tsx`. `memoryChips.ts` also remaps the retired names (`graph`, `goals` and `context` to `ask`; `documents`, `sources`, `sync` and `history` to `brain`), and `/settings/memory-engine` redirects to the `engine` chip.
 
-There is **no** `/login` route: authentication flows through the Welcome page, the `/auth` callback, and deep links. Desktop **Settings is not an inline route**: when the URL is `/settings/*`, `AppShellDesktop` keeps rendering the _background_ location and mounts `SettingsModal` on top (see [Settings](frontend.md#settings)). Note that `/agents` does not exist.
+Back-compat redirects, all `Navigate replace`. The `ForwardSearch` ones copy the query string to the destination so old deep links still land on the right sub-tab:
+
+| From | To |
+| --- | --- |
+| `/home` | `/chat` |
+| `/accounts` | `/chat` |
+| `/brain` | `/connections?tab=brain` (`BrainRedirect` remaps the old `?tab=` to `?brain=`) |
+| `/skills` | `/connections` (`ForwardSearch`) |
+| `/channels` | `/connections?tab=messaging` |
+| `/activity` | `/settings/account` |
+| `/intelligence` | `/settings/account` |
+| `/feedback` | `/settings/feedback` |
+| `/routines` | `/flows` |
+| `/webhooks` | `/settings/integrations` (`ForwardSearch`) |
+
+There is **no** `/login` route: authentication flows through the Welcome page, the `/auth` callback, and deep links. `/agents` does not exist either, and Settings is an ordinary route rather than an overlay (see [Settings](#settings)).
 
 ### Route guards
 
@@ -480,7 +498,7 @@ All three guards read `useCoreState()` (not Redux auth state) and render `RouteL
 
 A routed stepper (`Onboarding.tsx` mounts nested routes inside `OnboardingLayout`):
 
-```
+```text
 /onboarding/welcome         → WelcomePage
 /onboarding/runtime-choice  → RuntimeChoicePage
   ├── cloud  → /chat
@@ -492,14 +510,13 @@ Each custom step offers **Default** (let OpenHuman manage it) vs **Configure** (
 
 ### Settings
 
-Settings is a full `/settings/*` URL surface, presented on desktop as a **modal overlay** and on iOS as a full page. The old `SettingsPanelLayout` / `useSettingsAnimation` / `ProfilePanel` modal system is gone.
+Settings is a routed `/settings/*` page like every other surface, on desktop and on iOS alike. It was a desktop modal overlay that kept the page behind it rendered; that system is gone, and so are the older `SettingsPanelLayout` / `useSettingsAnimation` / `ProfilePanel` modals and the registry-derived settings search field (see [Removed](#removed) below).
 
-- **`components/settings/settingsRouteRegistry.ts`** — single declarative source of truth for every settings destination (id/route slug, i18n keys, section, sidebar `navGroup`, `devOnly`, search keywords). Navigation menus, breadcrumbs, and settings search all derive from it.
-- **`components/settings/settingsRouteElements.tsx`** — maps registry entries to panel `<Route>` elements.
-- **`components/settings/modal/`** — `SettingsModal` (mounted by `AppShellDesktop` whenever the path is a settings path; `settingsOverlay.ts` computes `{ settingsOpen, baseLocation }` so the page behind stays rendered), `SettingsModalFrame` (backdrop / Esc / focus / close), `SettingsModalLayout` (routed two-column layout).
-- **`components/settings/layout/`** — two-pane chrome: `SettingsLayout`, `SettingsSidebar` (grouped by `SettingsNavGroup`: general, assistant, data, connections, knowledge & memory, agents & autonomy, models & inference, automation & integrations, diagnostics & logs), `SettingsSubNav`, `SettingsIndexRedirect`.
-- **`components/settings/panels/`** — leaf panels such as `AccountPanel`, `AppearancePanel`, `ThemeStudioPanel`, `AgentAccessPanel`, `AutonomyPanel`, `McpServerPanel`, `PrivacyPanel`, and `DeveloperOptionsPanel`. Adding a panel means adding the component and a registry entry; navigation, breadcrumbs, and search pick it up automatically.
-- **`components/settings/search/`** — settings search bar + registry-derived index.
+- **`components/settings/settingsRouteRegistry.ts`**: single declarative source of truth for every settings destination (id and route slug, i18n keys, section, sidebar `navGroup`, `devOnly`, `searchKeywords`). Navigation menus and breadcrumbs derive from it.
+- **`components/settings/settingsRouteElements.tsx`**: maps registry entries to panel `<Route>` elements, including the redirects (`/settings/memory-engine` to the Memory `engine` chip).
+- **`components/settings/layout/`**: the two-pane chrome. `SettingsLayout` projects the settings nav into the app sidebar's dynamic region; `SettingsSidebar` groups entries by `SettingsNavGroup` (`general`, `appearance`, `agentsAutonomy`, `security`, `data`, `knowledgeMemory`, `automationIntegrations`, `diagnosticsLogs`, in `NAV_GROUP_ORDER`); `SettingsSubNav`, `SettingsIndexRedirect`, `SettingsTabbedPage` and `SettingsPanel`, the one panel template, sit beside them.
+- **`components/settings/panels/`**: leaf panels such as `AccountPanel`, `AppearancePanel`, `ThemeStudioPanel`, `AgentAccessPanel`, `AutonomyPanel`, `McpServerPanel`, `PrivacyPanel` and `DeveloperOptionsPanel`. Adding a panel means adding the component and a registry entry; navigation and breadcrumbs pick it up automatically.
+- **`components/settings/controls/`**: the shared form primitives every panel composes (`SettingsSwitch`, `SettingsRow`, `SettingsSection`, `SettingsSelect`, and the rest), so a boolean is a switch everywhere.
 
 ### HashRouter vs BrowserRouter
 
@@ -539,15 +556,15 @@ The listener intercepts `openhuman://` URLs (e.g. auth handoff), exchanges token
 
 Shared UI lives in `app/src/components/`; feature-specific UI lives in `app/src/features/<vertical>/`. Highlights:
 
-```
+```text
 components/
 ├── ProtectedRoute / PublicRoute / DefaultRedirect   # Route guards
 ├── layout/shell/            # RootShellLayout, AppSidebar, SidebarSlot (two-pane app chrome)
-├── settings/                # Settings registry, modal, layout, panels, search (see above)
+├── settings/                # Settings registry, layout, panels, controls (see above)
 ├── accounts/                # Connected-app provider icons (the live WebviewHost overlay was removed with the CEF provider webviews)
 ├── BootCheckGate/, daemon/  # Boot + service gates in the provider chain
 ├── commands/                # CommandProvider (command palette)
-├── Announcement/, upsell/, userErrors/, walkthrough/  # Shell-level overlays
+├── Announcement/, upsell/, notices/, walkthrough/    # Shell-level overlays
 ├── keyring/, InitProgressScreen/                     # Consent + init overlays
 ├── memory/                  # Memory v2 tabs (Engine, Ask, Explorer, Learnings, Conversations, Brain, Background, Settings) and import banner
 └── intelligence/            # Shared intelligence UI (WorkflowsTab, Toast, ConfirmationModal)
@@ -555,7 +572,7 @@ components/
 
 Conventions:
 
-- Modals render through a portal: shell modals (Settings, link modal) render above routed content, and the Settings modal uses the backgroundLocation pattern rather than unmounting the page underneath.
+- Modals render through a portal, above routed content. Settings is not one of them any more: it is a route.
 - Modals are controlled: parents own `isOpen` state and pass `onClose`.
 - All user-facing text goes through `useT()` (`lib/i18n/I18nContext`); CI enforces locale parity.
 - Production `app/src` code uses only static `import` / `import type`, never dynamic imports.
@@ -566,10 +583,10 @@ Conventions:
 
 ### Custom Hooks (`hooks/`)
 
-\~45 app-level hooks. Representative examples:
+`app/src/hooks/` holds the app-level hooks (the [Scale](#scale) table names the command that counts them). Representative examples:
 
 - `useUser` is a thin wrapper over `useCoreState()`; it returns `{ user: snapshot.currentUser, isLoading, error, refetch }`. There is no standalone user store.
-- `useBackendUrl` resolves the backend URL at runtime (see [Runtime config precedence](frontend.md#runtime-config-precedence)).
+- `useBackendUrl` resolves the backend URL at runtime (see [Runtime config precedence](#runtime-config-precedence)).
 - `useThreadQueries` fetches chat threads.
 - `useDaemonHealth` / `useDaemonLifecycle` track core service health.
 - `useDictationHotkey` / `usePttHotkey` manage global hotkeys.
@@ -662,4 +679,25 @@ const result = await callCoreRpc<Snapshot>({
 });
 ```
 
----
+## Removed
+
+Stated rather than deleted, because each of these still turns up in older code and in older notes:
+
+| Removed | Replaced by |
+| --- | --- |
+| `SettingsModal`, `SettingsModalFrame`, `SettingsModalLayout`, `settingsOverlay.ts` | `/settings/*` as an ordinary route rendered by `Settings` |
+| `SettingsPanelLayout`, `useSettingsAnimation`, `ProfilePanel` | The `settingsRouteRegistry` plus `components/settings/layout/` |
+| `components/settings/search/` and `settingsSearchRegistry` | Nothing: the sidebar search field was removed. `searchKeywords` stays on the registry entries. |
+| `WebviewHost` overlay in `components/accounts/` | Nothing: it went with the CEF provider webviews |
+| The frontend QuickJS skills engine | Skill execution in the Rust core |
+| `UserProvider`, `AIProvider`, `SkillProvider` | `CoreStateProvider` for auth and user state; AI configuration and skills in the core |
+| `/conversations`, `/accounts` as standalone pages | `/chat/:threadId?` (`Accounts`), the unified chat surface |
+
+## See also
+
+- [Architecture overview](../architecture.md): the Rust side this UI presents.
+- [Tauri Shell](tauri-shell.md): the host that serves this bundle and owns the IPC surface.
+- [Agent Harness](agent-harness.md): what the chat surface's tool timeline is rendering.
+- [Memory](../../features/memory.md): the user-facing shape of the `/connections?tab=brain` chips.
+- [Theming](../theming.md): the token layer behind `ThemeProvider` and Theme Studio.
+- [iOS Companion](../../features/ios-companion.md): the experimental mobile client the `AppRoutesIOS` shell and the `transport/` profiles belong to.

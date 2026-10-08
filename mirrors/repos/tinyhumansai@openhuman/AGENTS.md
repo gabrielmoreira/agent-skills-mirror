@@ -19,7 +19,7 @@ Architecture: [overview](gitbooks/developing/architecture.md),
 | `crates/openhuman-core/src/core/` | CLI, controller contract (`Outcome`, schemas) and in-process dispatch, controller registry, event bus, runtime composition; no business logic and no JSON-RPC server |
 | `crates/openhuman-cli/` | The `openhuman-core` binary (`src/main.rs`), the developer/benchmark bins (`src/bin/`), and every root `tests/*.rs` / `examples/*.rs` target; depends on `openhuman-tinyhumans` for the backend transport the core does not carry |
 | `crates/openhuman-embed/` | Typed library facade for embedding the core in another product |
-| `crates/openhuman-rpc/` | JSON-RPC 2.0 over the core: envelopes, HTTP client, and the server (router, Socket.IO, listener, `run_server*`) used by app, CLI and TUI |
+| `crates/openhuman-rpc/` | JSON-RPC 2.0 over the core: envelopes, HTTP client, and the server (router, Socket.IO, listener, `run_server*`) used by app, CLI and TUI; plus `session_store` (`session-store` feature), the on-disk session store (`session_raw/`, `session_db/`, `tinyagents_store/`, turn states) behind TinyAgents' session store port, which the app, CLI and TUI install. Core and embed reach session state through the port (`agent::session_store`); a few legacy paths still fall back to workspace files when no store is installed |
 | `crates/openhuman-tinyhumans/` | The TinyHumans layer above embed: SDK-backed backend transport, a `RuntimeBuilder` that boots connected, and the host-side login/session owner (login-token exchange, `/auth/me`, current-user cache, credential handoff) used by app and TUI |
 | `crates/openhuman-tui/` | Standalone terminal frontend |
 | `tests/` | Rust integration and JSON-RPC tests |
@@ -112,6 +112,19 @@ DevTools client can attach to it. Run the same SPA in Chrome instead:
   desktop core's port; the default scans 7788-7808), `OPENHUMAN_CORE_TOKEN`, and
   `OPENHUMAN_WORKSPACE` (point it at a scratch dir for a clean profile).
 
+Scripted browser runs (Playwright, headless): `pnpm debug web` boots a
+throwaway stack (the mock backend, a fresh `openhuman-core serve` on a scratch
+workspace, Vite with `OPENHUMAN_VITE_NO_WATCH=1`) and signs in through the real
+GitHub button, which the mock answers like the backend. `--script <file.mjs>`
+runs a scenario against the signed-in page (default export receives `page`,
+`mock.set(key, value)` for mock behaviors such as `llmStreamScript`, `rpc`,
+`screenshot` and `log`); without it the stack stays up until Ctrl-C. Logs and
+screenshots go to `target/debug-logs/web-<ts>/`. Example:
+`scripts/debug/web-scripts/stop-mid-turn.mjs`. Set `OPENHUMAN_VITE_NO_WATCH=1`
+on any Vite run that dies with `ENOSPC: System limit for number of file
+watchers reached`. `--headed` needs the full Chromium build
+(`pnpm --filter openhuman-app exec playwright install chromium`).
+
 Long CI build or test commands must run through
 `scripts/ci-cancel-aware.sh`. Do not export `CARGO_TARGET_DIR`; the repository
 already configures shared build output where appropriate.
@@ -120,7 +133,8 @@ Keep matching profile settings synchronized between `Cargo.toml` and
 `crates/openhuman-app/Cargo.toml`:
 
 - Development dependencies use `debug = false`.
-- Release builds use thin LTO, one codegen unit, symbol stripping, and
+- Release builds use thin LTO, 16 codegen units (one unit pushed the desktop
+  release matrix from ~46 to ~84 min, 6941b18c85), symbol stripping, and
   `debug = "line-tables-only"`.
 
 ## Testing and CI
@@ -287,6 +301,14 @@ UI rules:
 - Use `isTauri()` or catch `invoke` failures. Do not inspect
   `window.__TAURI__` directly.
 - Canonical visual tokens live in `app/src/styles/tokens.css`.
+- Always build UI from the shadcn primitives in `app/src/components/ui/`
+  (`Button`, `Badge`, `Alert`, `Card`, `ModalShell`/`Dialog`, `Popover`,
+  `Tooltip`, `Tabs`/`ChipTabs`, `TextField`, `NativeSelect`, `Toast`, ...).
+  Do not hand-roll a surface a primitive already covers (a banner is an
+  `Alert`, a dismiss control is a `Button`, a notification is `toast.add`).
+  When a primitive is missing, add it to `components/ui/` from the shadcn
+  registry (`components.json`, `base-nova` style), adapted to the app's
+  tokens, `Button` and lucide icons, then use it.
 
 ## Tauri shell
 

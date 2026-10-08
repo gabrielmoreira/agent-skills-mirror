@@ -1,40 +1,20 @@
-# Observation Masking Patterns
+# Output Projection and Artifact References
 
-## Strategy: Extract & Collapse
+## Project After Consumption
 
-Avoid leaving 500 lines of JSON in context.
+1. Read the output needed to make the current decision.
+2. Retain concrete findings, errors, decisions, and values required downstream.
+3. Replace repeated raw output in the working packet with a concise summary and stable artifact reference.
+4. Preserve the original artifact and its revision; do not claim the agent rewrote history or erased prior context.
 
-### 1. The "Read-Then-Refer" Pattern
+## Failure Records
 
-**Context State A (Raw)**:
+Keep each distinct failure and its cause. Group repeated identical failures only when count, timing, and diagnostic details remain recoverable.
 
+## Example
+
+**Unfiltered Command (Avoid)**:
 ```text
-TOOL_OUTPUT: [ ... 200 lines of file listing ... ]
-AGENT: I see the file is in /src/utils.
+Finding: 3 matching users; oldest created 2024-01-15.
+Source: artifact://run-42/users.json (unchanged)
 ```
-
-**Context State B (Masked)**:
-
-```text
-TOOL_OUTPUT: [Artifact: 200 files listed. Found: /src/utils]
-AGENT: I see the file is in /src/utils.
-```
-
-### 2. Failure Masking
-
-If a tool fails 3 times, collapse the failures into one distinct error block.
-
-**Raw**:
-
-- Fail (Timeout)
-- Fail (Timeout)
-- Fail (Timeout)
-
-**Masked**:
-
-- System: Tool failed 3x (Timeout). Agent gave up.
-
-## Automation
-
-- Agents should auto-mask outputs > 1000 tokens after the "Turn" is complete.
-- Never mask _during_ the reasoning step (you need to see it to understand it).

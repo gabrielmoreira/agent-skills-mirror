@@ -1,3 +1,10 @@
+---
+description: >-
+  Embedding the core in another Rust process: one Runtime, any number of
+  independently configured Agents on it.
+icon: code
+---
+
 # Embedding OpenHuman
 
 `openhuman-embed` is a typed Rust library for running the OpenHuman core
@@ -24,10 +31,10 @@ openhuman-embed = { git = "https://github.com/tinyhumansai/openhuman", package =
 
 Every feature on this crate forwards to the same-named feature on
 `openhuman-core`: `default`, `http-server`, `inference`, `documents`,
-`hosting`, `modules`, `voice`, `web3`, `runtime-node`, `contacts`, `media`,
+`hosting`, `modules`, `voice`, `web3`, `runtime-node`, `media`,
 `flows`, `skills`, `mcp`, `crash-reporting`, `channels`,
-`sandbox-bubblewrap`,
-`whatsapp-web`, `file-logging`, `scheduler-gate`. Two of them also gate
+`whatsapp-web`, `file-logging`, `scheduler-gate` (eighteen entries including
+`default`). Two of them also gate
 items on this crate's own surface: `mcp` gates `HttpHeader`,
 `McpAuthConfig`, `McpServer`, `AgentSpec::mcp` and `HarnessBuilder::mcp`;
 `skills` gates `AgentSpec::skills_dir` and `HarnessBuilder::skills_dir`.
@@ -149,8 +156,12 @@ silently refuse, which reads as a weak model rather than a missing scope.
 - `Access::readonly()`: observe only, no writes, no shell, no network side
   effects. Safe default for an untrusted prompt.
 - `Access::supervised()`: act, but park risky operations for a human
-  decision. The approval gate stays on, so an unattended harness stalls here
-  until an approval answers or the ten-minute TTL denies it.
+  decision. Unlike the desktop default, this **turns the autonomy policy on**
+  for that agent (`Access` sets the policy flag as well as the tier), so the
+  approval gate really is live and an unattended harness stalls here until an
+  approval answers or the ten-minute TTL denies it. The user-facing default is
+  the opposite: `[autonomy] enabled = false`, where the gate is inert. See
+  [Approval Gate](../features/approval-gate.md).
 - `Access::full()`: act autonomously, no approval pauses. Grants real shell
   and file access under `action_dir`; point it at a directory you are
   willing to have changed. Hard blocks still apply regardless of tier:
@@ -187,6 +198,13 @@ reuses the machine's configured OpenHuman workspace, the same one the
 desktop app and CLI use, resolved the usual way
 (`OPENHUMAN_WORKSPACE`, `active_user.toml`, `~/.openhuman/...`); an inherited
 workspace is the operator's, so the harness will not copy skills into it.
+
+`Workspace::stateless()` keeps nothing durable on disk: every agent's
+transcripts, turn journal, run status, goals and todos go through the
+runtime's session store (`RuntimeBuilder::session_store`, required), a
+`SessionStoreProvider` the host implements over its own database and scopes
+by agent id. It is the shape for a cloud host serving many users from one
+process; see the embed crate's README, "Conversations in a host store".
 
 ## Tool scopes and sandbox modes
 
@@ -323,8 +341,9 @@ the first backend-touching dispatch:
 openhuman_tinyhumans::install(openhuman_tinyhumans::InstallOptions::default())?;
 ```
 
-That call also registers the hosted RPC proxies (billing, team, referral,
-announcements) into the core's controller registry. See
+That call also registers the seven hosted RPC proxy domains (billing, team,
+referral, announcements, webhooks, channel linking and backend-brokered OAuth)
+into the core's controller registry. See
 [One API key for everything](tinyhumans-api-key.md) for what a TinyHumans
 API key unlocks once it is installed this way.
 
@@ -413,11 +432,12 @@ bundles. The repository-root `examples/embed_headless.rs` and
 directly, without this crate; run them with `cargo run --example
 embed_headless`.
 
-Tests worth reading alongside the examples: `tests/harness_embed.rs` proves
+Tests worth reading alongside the examples, all under
+`crates/openhuman-embed/tests/`: `harness_embed.rs` proves
 `Harness` runs a real turn against a mocked provider with nothing else
-bound; `tests/runtime_agents.rs` runs three agents with different
+bound; `runtime_agents.rs` runs three agents with different
 providers, access tiers, skills, MCP servers and working directories on one
-runtime; `tests/public_api.rs` pins the host-facing embedding contract at
+runtime; `public_api.rs` pins the host-facing embedding contract at
 compile time. Run them with:
 
 ```bash

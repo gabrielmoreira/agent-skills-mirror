@@ -1,22 +1,23 @@
 name: degardis-authoring
 format_version: 2
-version: 2.0.0
+version: 2.1.0
 license: MIT
 copyright: Copyright (c) 2026 Kambiz Khojasteh
-description: Author Degardis skills by carrying out requests about the Degardis format and compiler or about a skill's Degardis source, bundle, or behavior, grounded in the effective compiler and supplied evidence. Installing, replacing, publishing, or releasing bundles is outside this skill.
+description: "Write, review, plan, revise, and build Degardis skill source, and explain the format, compiler, and authoring choices. Describe or test any skill, with or without its source. Installing, replacing, publishing, or releasing bundles is outside this skill."
 principles:
+- authority-before-effect
+- claim-status
+- completion-evidence
+- proportionate-effort
+- source-authority
 - resumable-stopping
 - decision-provenance
 - bounded-delegation
 - coordinating-delegated-work
 - durable-state
 - complete-enumeration
-- authority-before-effect
-- claim-status
-- completion-evidence
-- proportionate-effort
-- source-authority
 - reader-first-reporting
+- self-standing-artifacts
 - decision-relevant-questions
 - sensitive-material
 - instruction-authority
@@ -41,5 +42,5 @@ content:
   - guides/*.md
 interface:
   display_name: Degardis Authoring
-  short_description: Author Degardis skills, from format questions to built bundles
+  short_description: Author and build Degardis skills; describe or test any skill
   default_prompt: Use degardis-authoring to review this Degardis skill source for defects.

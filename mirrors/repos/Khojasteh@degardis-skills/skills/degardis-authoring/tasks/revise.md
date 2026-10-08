@@ -1,7 +1,7 @@
 ---
 title: Revise existing Degardis source
 cues:
-- the requester authorizes changing a Degardis source that already exists, and the host permits it
+- the requester asks for and authorizes a change to existing Degardis source, and the host permits it
 goal: Implement the authorized behavior in the effective compiler's accepted format, account for every affected starting contribution, and support the completion claim against the exact final state.
 knowledge:
 - working-accounts
@@ -19,10 +19,8 @@ knowledge:
 - source-repair
 guides:
 - effective-compiler
-- construct-ownership
 - obligation-ledger
 - construct-agreements
-- path-rehearsal
 - behavioral-preservation
 - names-and-headings
 - wording-and-references
@@ -31,7 +29,6 @@ guides:
 - handoff-conditions
 - facet-design
 - restructuring-on-evidence
-- whole-construct-rewrite
 - version-selection
 - supplied-artifact
 handoffs:
@@ -43,6 +40,7 @@ handoffs:
   applicability:
   - When the defect's evidence is completed interactions whose attribution to the source has neither an unfinished evaluation responsible for it nor an evaluation outcome on this route
   - When a repaired defect was established by evaluation and its exact final state has neither an unfinished evaluation responsible for re-evaluating it nor a re-evaluation outcome on this route
+  - When a required runtime-only acceptance question has neither an unfinished evaluation responsible for it nor an evaluation outcome against the revision's exact final state on this route, and authority and host capability permit that evaluation
 ---
 
 Frame the change before editing: what the request authorizes, which behavior is meant to change, the independently derived obligations affected, and what already owns them. When only a built bundle or installed skill is supplied, there is no source to revise: report that part as unsupported without the source that produced it, and leave the artifact as it is.

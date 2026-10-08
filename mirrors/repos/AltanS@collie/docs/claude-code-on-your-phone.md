@@ -66,6 +66,16 @@ On Herdr, give each agent its own workspace while Herdr runs:
 herdr workspace create --label review --cwd ~/src/app-review
 ```
 
+On Herdr you can also do both steps from the phone. Open a pane's **⋯** menu and tap **New agent
+on a branch**. Collie creates a worktree of that pane's repo on a new branch, opens it as its own
+workspace, and starts the agent you pick in it. The branch is named `worktree/<word>-<word>-<hex>`,
+and you can change the name before you tap Create.
+
+The agent list is your [launchers](configure.md#your-own-launchers), plus a plain shell. Collie
+remembers the last one you picked. A create can take up to a minute on a large repo. If the phone
+loses the reply, tap Create again: Collie answers with the worktree it already made, and does not
+make a second one. The row shows only on Herdr, and only for a pane on the lead machine.
+
 Running multiple sessions creates multiple waiting prompts. Collie groups panes by workspace and
 marks the ones that need input: a red wash on the row, a dot on the workspace heading, and a count
 on the line at the top, which jumps to the first of them. Hold a row to pin that pane to the top. The
@@ -141,8 +151,8 @@ settings](multiplexers.md#collie-writes-hooks-into-claudes-own-settings).
 Run `collie qr` on the host to scan the code, or open the link from `collie url`. Keep the phone on
 the same tailnet.
 
-1. **Pair the phone.** Run `collie pair` on the host and scan the QR code. Pairing grants the phone
-   write access to your panes ([Pair a device](security.md#pair-a-device--the-write-credential)).
+1. **Pair the phone.** Run `collie pair` on the host and scan the QR code. Collie answers no device
+   until it is paired ([Pair a device](security.md#pair-a-device--the-write-credential)).
 2. **Put it on your home screen.** On Android, tap **Install** at the top of Settings. On an iPhone,
    tap Safari's share sheet.
 

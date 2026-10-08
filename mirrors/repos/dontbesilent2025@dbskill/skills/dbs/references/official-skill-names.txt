@@ -1,4 +1,3 @@
-# 由 .claude-plugin/marketplace.json 中除 dbs 外的正式条目生成并校验。
 dbs-update
 dbs-diagnosis
 dbs-benchmark
@@ -10,7 +9,9 @@ dbs-content-value
 dbs-content-risk-check
 dbs-content-system
 dbs-video-extract
+dbs-video-navigation
 dbs-knowledge
+dbs-title-cover-intro
 dbs-hook
 dbs-xhs-title
 dbs-deconstruct

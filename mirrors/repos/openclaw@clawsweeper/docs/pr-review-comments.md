@@ -149,7 +149,7 @@ For a PR that needs work, the visible comment starts with:
 Codex review: needs changes before merge.
 ```
 
-The visible `Summary` also includes `Reviewed head: <full-sha>`. This makes the
+The visible `Merge readiness` also includes `Reviewed head: <full-sha>`. This makes the
 human-facing verdict self-identifying without requiring maintainers to inspect
 hidden markers. Publication still verifies the durable tuple against live state;
 the visible SHA is evidence of the captured review revision, not a substitute
@@ -162,33 +162,44 @@ starts with:
 Codex review: needs real behavior proof before merge.
 ```
 
-PR comments use a human-first shape:
+PR comments use a verdict-first shape. The visible part answers "should this
+merge, and why not yet" in this order:
 
-1. `## What this changes` is first. It comes from the typed `changeSummary`
-   field and should define unfamiliar subsystem terms briefly and explain the
-   effect in plain language.
-2. `## Merge readiness` comes directly after the change summary. It leads with
-   one dynamic plain-language outcome, the number of real items remaining, a
-   short bottom line, priority, and an owner-decision pointer only when a
-   decision packet exists.
+1. The verdict line (`Codex review: ...`).
+2. `## What this changes` comes from the typed `changeSummary` field and
+   should define unfamiliar subsystem terms briefly and explain the effect in
+   plain language. When the typed `changeExample` has a scenario, before,
+   and after, an `Example:` block shows that concrete case under the summary.
 3. `## Review scores` separates the three ratings into a scannable
-   `Measure | Result | What it means` table. Crab ranks stay visible, but every
+   `Measure | Result | What it means` table. Crab ranks stay visible, and every
    ranked value also shows its six-point score: S is `6/6`, A is `5/6`, B is
-   `4/6`, C is `3/6`, D is `2/6`, and F is `1/6`.
-4. `## Verification` folds proof, concrete evidence/checks, findings, and
-   security into one compact `Check | Result | Evidence` table. Uneventful
-   findings and security rows say `None.`
-5. `## How this fits together` appears when the review can establish concrete
-   system context. It uses one or two plain-language sentences plus a compact
-   Mermaid flowchart showing the changed subsystem's inputs, decisions, and
-   outputs.
-6. `## Decision needed` appears only when a maintainer decision packet exists.
-   It shows the concrete question and recommended option in a table.
-7. `## Before merge` uses native Markdown task checkboxes for real remaining
+   `4/6`, C is `3/6`, D is `2/6`, and F is `1/6`. The `Proof confidence` row
+   carries the real behavior proof statement. Evidence entries that only repeat
+   it are dropped, and proof labels show only their meaning; a status label
+   repeats the proof statement only when missing proof is the reason for that
+   status. The rating scale and workflow notes in the details are one line each.
+4. `## Product` shows the typed `productReview` in one compact block: kind,
+   worth it, fix scope (omitted when not applicable), user problem, and reason.
+   Reports written before `productReview` existed omit the section.
+5. `## Regression provenance` appears only when a verified or suspected
+   regression source exists.
+6. `## Merge readiness` leads with one dynamic plain-language outcome, the
+   number of real items remaining, a short bottom line, priority, the reviewed
+   head, and an owner-decision pointer only when a decision packet exists.
+7. `## Decision needed` appears only when a maintainer decision packet exists.
+   It lists the concrete question, the recommended option (or every option when
+   none is recommended), and why, as bullet points.
+8. `## Before merge` uses native Markdown task checkboxes for real remaining
    actions or risks. Routine CI, ordinary maintainer review, and no-op guidance
    collapse to `None.`
-8. `## Findings` appears only when actionable review or security findings need
-   a little more visible detail.
+9. `## Findings` always renders for completed reviews. Its leading block lists
+   up to three review findings and three security concerns as
+   `- [P1] title — \`file:line\``, or `None.`; review history and the comment
+   router parse only this block. A `### Provenance` subsection lists
+   `overrides_without_reason` and `unknown` provenance entries, and a
+   `### Tests` subsection lists low-value tests (file and reason) and the
+   missing end-to-end scenario. Neither subsection uses P-severity labels, so
+   neither starts repair routing.
 
 Maintainer decision packets are reserved for unresolved choices between at least
 two distinct viable options that evidence cannot settle and a maintainer has not
@@ -200,6 +211,39 @@ Stored-data changes require compatibility evidence, not human acknowledgement:
 clears that gate; insufficient evidence remains a PR-owner proof item. Defects,
 security concerns, missing proof, and undecided product or plugin API direction
 still block. Readiness does not itself grant merge authority.
+
+PR reviews load `instructions/pr-review-rules.md` as the prompt's
+`Review Rules` section and record three typed assessments: `productReview`
+(kind, user problem, fix scope, `worthIt`), `provenance` (the introducing commit
+or PR and stated reason for each changed behavior), and `testingReview` (proof
+path, low-value tests, missing end-to-end scenario). `worthIt: no` and
+`worthIt: needs_maintainer` add blocked Before-merge items; each
+`overrides_without_reason` provenance entry adds a needs-changes item asking the
+author to explain or restore the original intent. Low-value tests never block.
+The rating is the reviewer's judgement: the rules rubric tells the model how
+weak proof, low-value tests, product calls, partial fixes, and unexplained
+overrides should weigh, and code applies no tier caps from these fields. Reports
+written before these fields existed parse as `not_applicable` and keep their
+stored rating and readiness.
+
+The review sandbox runs on a partial clone without network, so `git blame` and
+`gh api` usually fail there. Before the model runs, the host therefore computes
+the PR prompt's `## Provenance Evidence`: from the merge-base to head diff it
+takes up to 12 files that existed on the merge base (most modified or deleted
+base lines first, at most 4 hunks each; a pure insertion contributes the up to
+three unchanged base lines around it as `insertion_context`). It lists those
+files' history blobs from the last 300 commits with `git log --raw`, keeps the
+locally missing ones, and fetches them in one noop-negotiation request per 400
+blobs, so blame does not lazily fetch one blob per round trip; a path whose
+estimated history exceeds 64 MiB (such as a lockfile) and any failed prefetch
+fall back to lazy fetch. It then runs `git blame --porcelain` on those base
+lines at the merge base, all within one 45-second deadline, and resolves up to
+15 distinct introducing commits through
+`GET /repos/{owner}/{repo}/commits/{sha}/pulls` with the same `gh` reader that
+collects item context (title, URL, merge time, 1,200-character body excerpt,
+cached per run). Deadlines, Git errors, and API errors degrade the evidence to
+`partial` or `unavailable` with a reason; the review still runs. The evidence
+supplies facts only: the model still decides each provenance verdict.
 
 The parser rejects required packets with fewer than two options or duplicate
 options; malformed reports remain fail-closed and need a fresh review, rather
@@ -268,11 +312,16 @@ The [next-step intent proof recipe](proof/review-next-step-intent/README.md)
 compares identical synthetic reports against pinned baseline and candidate
 renderers and exercises producer-to-report persistence without live publication.
 
-Everything primarily useful to agents or deep reviewers lives under one
-collapsed `Agent review details` section: security evidence, PR surface,
-review metrics, stored-data warnings, root-cause clusters, proof suggestions,
-merge-risk options, full review comments, labels, evidence, optional rank-up
-moves, the rank legend, workflow notes, and review history.
+Everything else lives under one collapsed `Agent review details` section, in
+this order: how this fits together (system context and Mermaid flowchart), live
+verification, technical review (best solution, reproduction and solution
+questions, full review comments, AGENTS.md status, remaining risk), merge-risk
+options, provenance entries that respect or explain the original intent, the
+testing proof path, security, evidence (security concern detail, acceptance
+criteria, what was checked, likely related people), PR surface, review metrics
+(only when present), stored-data warnings, root-cause clusters, proof
+suggestions, labels, optional rank-up moves, a one-line rating scale, a
+one-line workflow note, and review history.
 
 The label section explicitly says `No label changes.` when the publisher supplies
 confirmed previous labels, the review is not failed, and owned-label

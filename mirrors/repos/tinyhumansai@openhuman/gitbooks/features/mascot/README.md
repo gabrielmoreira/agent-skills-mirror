@@ -1,8 +1,7 @@
 ---
 description: >-
-  The on-screen face of OpenHuman, a desktop mascot that speaks, reacts, joins
-  your meetings, and thinks in the background even when you aren't looking at
-  it.
+  The on-screen face of OpenHuman: a desktop mascot that speaks, reacts, and
+  keeps working in the background even when you aren't looking at it.
 icon: face-smile
 ---
 
@@ -10,7 +9,7 @@ icon: face-smile
 
 OpenHuman has a face. The mascot is an animated character that lives on your desktop and acts as the visible surface of the agent, what it's saying, what it's thinking about, when it's idle, when it's busy, when it has something to tell you.
 
-It is not a chrome ornament. The mascot is wired into the same pieces as the rest of the agent: voice, memory, [scheduled runs](../native-tools/cron.md), and the [Google Meet integration](../native-tools/voice.md). When the agent talks, the mascot is the one talking; when the agent is thinking, the mascot is the one thinking.
+It is not a chrome ornament. The mascot is wired into the same pieces as the rest of the agent: [voice](../native-tools/voice.md), [memory](../memory.md) and [scheduled runs](../native-tools/cron.md). When the agent talks, the mascot is the one talking; when the agent is thinking, the mascot is the one thinking.
 
 ## What it does
 
@@ -18,9 +17,7 @@ It is not a chrome ornament. The mascot is wired into the same pieces as the res
 
 When the agent replies, the audio is generated through a hosted TTS model and streamed to your speakers. At the same time, the mascot drives a viseme map against the audio so its mouth shapes match the words coming out. There's no separate "talking head" video, the same audio stream that you hear is the one driving the animation.
 
-See [Native Voice](../native-tools/voice.md) for the speech-to-text, text-to-speech, and meeting plumbing the mascot rides on top of.
-
-### It joins your meetings, as a real participant
+See [Native Voice](../native-tools/voice.md) for the speech-to-text and text-to-speech plumbing the mascot rides on top of.
 
 ### It moves and reacts to its surroundings
 
@@ -47,11 +44,11 @@ Most assistants are a blinking text input. That's fine for a tool. It's not fine
 The mascot exists because:
 
 - **Presence beats panels.** A face you can glance at tells you, in one frame, whether the agent is busy, idle, or trying to get your attention.
-- **It makes voice calls feel like a conversation.** A camera feed of an animated character lip-syncing to its own speech is a different experience than a robotic voice with a black tile.
+- **It makes talking feel like a conversation.** An animated character lip-syncing to its own speech is a different experience from a robotic voice and a blank panel.
 - **Personality is a UX surface.** A consistent character on screen is easier to trust, talk to, and forgive when it makes a mistake than a faceless API.
 
 ## See also
 
 - [Native Voice](../native-tools/voice.md), the STT / TTS plumbing the mascot rides on.
 - [Memory](../memory.md), what the mascot remembers, and how.
-- [Chromium Embedded Framework](../../developing/cef.md), the camera-into-Meet pipeline (developer reference).
+- [Themes & Theme Studio](../theming.md), where the mascot's colour, shape and voice are set.

@@ -46,6 +46,7 @@
  *   --resume-last           Continue the most recent OpenCode session; send only the delta brief.
  *   --session <id>          Continue a specific session id (ses_...); send only the delta brief.
  *   --pure                  Run OpenCode without external plugins (cleaner event stream).
+ *                           1.x only; rejected on 2.x, which dropped the flag.
  *   --timeout <dur>         Relay-side watchdog (default: off). Durations use h/m/s
  *                           strings like 30m or 2h. On expiry the opencode child is
  *                           killed and result.json gets status "timeout".
@@ -70,7 +71,7 @@
  * file must therefore also treat a non-zero exit with no file as a usage error.
  */
 
-import {spawn, execFileSync, spawnSync } from "node:child_process";
+import {spawn, execSync, execFileSync, spawnSync } from "node:child_process";
 import { mkdirSync, writeFileSync, renameSync, readFileSync, existsSync, appendFileSync } from "node:fs";
 import {join, resolve, basename, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -81,11 +82,13 @@ const MAX_BUFFERED_CHARS = 1_048_576;
 const VERSION_PROBE_TIMEOUT_MS = 10_000;
 const MAX_TIMER_MS = 2_147_483_647;
 // model/variant reach cmd.exe on win32 (shell:true for the opencode.cmd shim). The
-// model token may carry a variant suffix (provider/model#variant on opencode 2.x);
-// '#' is not a cmd.exe metacharacter. Keep SAFE_TOKEN in lockstep with delegate-setup
-// MODEL_TOKEN.shellSafe, and MODEL_TOKEN with MODEL_TOKEN.opencode.
+// model token may carry a variant suffix (provider/model#variant on opencode 2.x), and
+// catalog ids carry '@' (Workers AI @cf/..., Vertex model@default, region@eu) and '~'
+// (OpenRouter/Kilo ~vendor/model-latest aliases). None of '#', '@' or '~' is a cmd.exe
+// metacharacter, and no shell runs off win32. Keep SAFE_TOKEN in lockstep with
+// delegate-setup MODEL_TOKEN.shellSafe, and MODEL_TOKEN with MODEL_TOKEN.opencode.
 const SAFE_TOKEN = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/;
-const MODEL_TOKEN = /^[A-Za-z0-9][A-Za-z0-9._:/#-]*$/;
+const MODEL_TOKEN = /^[A-Za-z0-9][A-Za-z0-9._:@~/#-]*$/;
 
 const IMPLEMENTER_KEY = "opencode";
 
@@ -243,7 +246,7 @@ function parseArgs(argv) {
   }
   applyFleetLane(opts, flagged);
   if (opts.model !== null && !MODEL_TOKEN.test(opts.model)) {
-    fail("--model contains unsupported characters (allowed: letters, digits, . _ : / # -)");
+    fail("--model contains unsupported characters (allowed: letters, digits, . _ : @ ~ / # -)");
   }
   if (opts.variant !== null && !SAFE_TOKEN.test(opts.variant)) {
     fail("--variant contains unsupported characters (allowed: letters, digits, . _ : / -)");
@@ -339,12 +342,15 @@ function opencodeVersion(probeTimeoutMs) {
     // auto-appends .exe, never .cmd, so launching it needs shell:true there or it
     // ENOENTs on a working install. POSIX is unaffected. (git installs a real
     // git.exe and must NOT get this flag — see gitTouchedFiles.)
-    const version = execFileSync("opencode", ["--version"], {
+    const options = {
       encoding: "utf8",
       shell: process.platform === "win32",
       timeout: probeTimeoutMs,
       killSignal: "SIGKILL",
-    }).trim();
+    };
+    const version = (process.platform === "win32"
+      ? execSync("opencode --version", options)
+      : execFileSync("opencode", ["--version"], options)).trim();
     return { version: version || "unknown", error: null };
   } catch (error) {
     if (error?.code === "ENOENT") return { version: null, error: null };
@@ -504,6 +510,13 @@ function reportVersionFailure(opts, writeResult, run, error, probeTimeoutMs) {
   process.exit(result.exitCode);
 }
 
+function spawnShellLaunch(binary, argv, options, useShell) {
+  if (!useShell) return spawn(binary, argv, options);
+  // Node 24 warns when shell:true is paired with an args array. The args here
+  // are already token-validated or quoted for cmd.exe, so serialize them once.
+  return spawn([binary, ...argv].join(" "), { ...options, shell: true });
+}
+
 function dispatchToOpenCode(opts, brief, run, writeResult, version) {
   const argv = buildArgv(opts, version);
   // Pin the working root two ways: `cwd` sets the child's real directory, and PWD
@@ -516,13 +529,12 @@ function dispatchToOpenCode(opts, brief, run, writeResult, version) {
   // Safe: the brief is fed via child.stdin below — never argv — and argv holds only
   // flag names, an agent enum, a model string, and a session id, with no shell
   // metacharacters or spaceable paths.
-  const child = spawn("opencode", argv, {
+  const child = spawnShellLaunch("opencode", argv, {
     cwd: opts.cd,
     env: { ...process.env, PWD: opts.cd },
     stdio: ["pipe", "pipe", "pipe"],
-    shell: process.platform === "win32",
     detached: process.platform !== "win32", // POSIX: lead a new process group so killChild can fell the whole tree
-  });
+  }, process.platform === "win32");
 
   let sessionId = opts.session || null;
   let totalCost = 0;
@@ -726,6 +738,10 @@ function main() {
   // value — on 2.x there is no --variant flag to fall back to.
   if (opts.variant && !opts.model && opencodeJoinsVariant(probe.version)) {
     fail("--variant needs --model on opencode 2.x: the variant joins the model value as provider/model#variant");
+  }
+  // 2.x dropped --pure from `opencode run` (same version gate as the variant dial).
+  if (opts.pure && opencodeJoinsVariant(probe.version)) {
+    fail("--pure is not supported on opencode 2.x: `opencode run` dropped the flag and has no replacement; drop --pure");
   }
 
   dispatchToOpenCode(opts, brief, run, writeResult, probe.version);

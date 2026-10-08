@@ -32,18 +32,21 @@ afterwards. A copy-paste gives you six places to remember instead.
 | `ui/button.tsx` | Every clickable control with a label. Six variants, one box. Exports `buttonVariants` so a real `<a>` can wear the clothes. |
 | `ui/badge.tsx` | A small static label pill. Not a status chip — it carries no dot and no tap floor. |
 | `ui/card.tsx` | A filled panel on `--card` with its own edge. The Settings surface. |
+| `ui/bottom-bar.tsx` | The band at the foot of a screen that holds its own controls: a rule above, the page colour, the safe area under the buttons. It owns the band and nothing in it. The Changes screen's Previous / Next pair, and the Back it repeats on a phone (§12). |
 | `ui/chip.tsx` | The pill in a strip: label, optional leading glyph and status dot, 44px hit box, and an optional name that says its act (the status words then become its description). Space and tab strips. |
 | `ui/collapse.tsx` | The only sanctioned way an in-flow surface appears or disappears: an eased 240ms height+opacity slide that holds its last child through the exit. Styles nothing. |
 | `ui/collapse.tsx` → `CollapseSwap` | Two surfaces taking turns in ONE band, as one motion: a single-cell grid, one height animation (the tall one's), and the short stand-in pinned in the cell fading over it. The fix for two sibling collapses on opposite gates, where the leaving surface is pushed the height of the band by the arriving one. The stand-in must be the shorter of the two. |
 | `ui/image-card.tsx` | One journal picture, framed, as an anchor to its bytes, with a caption saying where it came from. The mirror's placeholder clusters, and the newest turn's picture right after the mirror. Every element is a `<span>`, so it may sit inside the mirror's `<pre>`. `surface` picks the frame: dark-space inside the mirror, the app's tokens on the page. |
+| `ui/image-frame.tsx` | One picture shown whole in the content column: at most the column's width and 70% of the screen's height, centred, on a checkerboard of `--card` and `--muted` that shows transparency in both themes, with one caption line under it that is always there, so filling it moves nothing. The Files view's picture and SVG previews (ADR 0090). Not for a journal picture, which is `ImageCard`. |
 | `ui/list-group.tsx` | A run of flat rows drawn as ONE bordered region. Gives a `divide-y` list a first and last edge. |
 | `ui/labelled-strip.tsx` | The structure of a named, horizontally scrolling pill row: non-scrolling label, `aria-labelledby`, edge-to-edge scroller. Also exports `STRIP_TAP_TARGET`. |
 | `ui/one-of.tsx` | One box, several alternatives, exactly one shown — all of them stacked in a single grid cell, so the box is sized by the widest and a swap is paint, not layout. The §2 technique for a run of text whose WORD changes with the state. |
 | `ui/notice.tsx` | The app's ONE notice look: five tones × two placements (`strip`, `box`), each on its own height floor, and the single table the tint recipe may appear in. Owns shape, tone and live-region semantics; owns no words and no visibility. |
 | `ui/segmented.tsx` | Two or three labelled segments in one row, exactly one selected: Diff \| Source \| Preview, the Files screen's All files \| Changes, the 1 h / 24 h chart switch, the alert threshold and duration choices. Values are strings or numbers. Every segment reserves its 1px border and the selected one only recolours it, so a switch moves nothing (§2), and a tap on the selected segment does nothing. `semantics` picks a tab list (a switch between screens) or a radio group (one setting); `disabled` makes the row inert. A segment may carry a count (`badge`, with `badgeLabel` for the screen reader), floated on its top-right corner like the toggle button's, as the Files screen's Changes segment does. Theme and Belt size predate it and still carry their own copy. |
 | `ui/section-label.tsx` | The small uppercase word that names a section. Type only — it renders a `<span>` and owns no structure. |
+| `ui/select.tsx` | A form select: a NATIVE `<select>` in a 44px box with our own chevron (`appearance-none`), a full `--border` edge and the house corner, so a phone draws its own picker and no sheet is needed. `lead` puts an inert glyph before the text; the caller's `className` sizes the box (`flex-1 min-w-0` for the flexible one, `shrink-0` for the compact one). The "New agent on a branch" sheet's Repository and Agent fields, and the dashboard's workspace and order selects (`dash-selects.tsx`). The three Settings selects (language, typeface, terminal font) carry the same construction by hand and have not been moved onto it. |
 | `ui/sheet.tsx` | `BottomSheet`. The app's only floating layer; there is no popover, no dialog, no tooltip. |
-| `ui/strip-host.tsx` | The top band above the header. Renders ONE `StripSlot` at a time, the highest priority, and keeps the two permanent `sr-only` live regions. Domain-blind: a bigger number wins, and it does not know what a connection is. |
+| `ui/strip-host.tsx` | The ribbon band, an overlay hung from the header bar's bottom edge. Renders ONE `StripSlot` at a time, the highest priority, and keeps the two permanent `sr-only` live regions. It reserves no space: a zero-height anchor sits right after the header, and the band floats from it at `z-30` over the top of the route, on the page colour with a `shadow-md`. Domain-blind: a bigger number wins, and it does not know what a connection is. `flow` paints it in flow instead, for a playground stage with no route under it; the app never sets it. |
 | `ui/switch.tsx` | A boolean toggle, `role="switch"`. No Radix. |
 | `ui/tab-bar.tsx` | A bottom tab bar: equal icon-over-word tabs on the page colour, a rule above, the safe area below. The active mark is a reserved 2px top edge, and a count badge floats on the icon, so a switch or a count never moves a word. The dashboard footer (ADR 0066, ADR 0085): with a crew, Crew, Dashboard, Changes, so the default tab sits in the middle under the thumb and the two side tabs are the side trips. |
 | `ui/toggle-button.tsx` | An icon toggle button: a setting that is on or off, with `aria-pressed`, drawn as a 44px square (icon only) or 44px tall with a word. Owns the one pressed look, the primary tint plus the hairline `ring-primary/40`, so a pressed toggle never reads like a selected `bg-muted` segment beside it. An optional `badge` count sits on the square's corner, absolute, so a count that comes or goes moves nothing (§2). The dashboard's needs-you switch, the Changes tree's Ignored toggle, the Changes list's Tree toggle, and the Changes only toggle with its badge. Not for a multi-select filter chip, and not for the `role="switch"` track of `ui/switch.tsx`. |
@@ -69,9 +72,9 @@ are still hand-rolled, and §10 gap 1 lists each with what it owns; until they l
 two alert systems at once.
 
 **So: no seventh one.** A new notice is a `Notice`. If it appears or disappears, it does so through
-`Collapse`. If it competes for the band above the header, it registers a `StripSlot`. The two
-placements (§4) are now the `variant` prop and there is no third: `strip` is viewport chrome above
-the header, full-bleed with a `border-b`; `box` is content in the column, inset on the page gutter
+`Collapse`. If it competes for the band under the header, it registers a `StripSlot`. The two
+placements (§4) are now the `variant` prop and there is no third: `strip` is viewport chrome hung under
+the header, full-bleed with a `border-b`, floating over the top of the route; `box` is content in the column, inset on the page gutter
 with a full border and the house radius.
 
 ---
@@ -141,7 +144,7 @@ locale or wastes another's space.
 alternative in one grid cell and shows one; the layout engine measures the real glyphs of the real
 dictionary, so a new translation is correct on arrival. Call sites:
 `status-badge.tsx`'s `StatusWordSlot` (the composer's status band) and `ui/strip-host.tsx` (the
-band above the header, where the same idiom was first written). A state with nothing to say —
+band under the header, where the same idiom was first written). A state with nothing to say —
 a gone pane, showing no word at all — keeps the slot rather than collapsing it, because
 "shows nothing" is a state too.
 
@@ -330,7 +333,7 @@ problem; ask first whether the surface can stand on the page.
 
 Every top-level block on a route — section label, group frame, notice, footer — begins and
 ends on the same x. The page gutter is **16px** (`px-4`). Nothing in the content column is
-full-bleed; only viewport chrome above the header is — the two-placement rule in §1.
+full-bleed; only viewport chrome under the header bar is — the two-placement rule in §1.
 
 ---
 
@@ -547,7 +550,7 @@ scope by `data-slot`. Two workers lost time to this before it was written down.
 Stated so nobody reads this document as a description of a clean tree.
 
 1. **The alert family is most of the way converted.** `ui/notice.tsx`, `ui/collapse.tsx`,
-   `ui/strip-host.tsx` and `ui/toast-viewport.tsx` exist (§1, §11), and the band above the header
+   `ui/strip-host.tsx` and `ui/toast-viewport.tsx` exist (§1, §11), and the band under the header
    and `read-only-banner.tsx` are built from them. Four surfaces still hand-roll their own box, so
    the app runs two alert systems at once. Each line below was re-read against the source, not
    inherited:
@@ -572,8 +575,8 @@ Stated so nobody reads this document as a description of a clean tree.
    and not only a tidiness: each of the three set `env(safe-area-inset-top)` for itself, on the
    assumption that each might be the first thing on screen, so the everyday ribbon + header case on
    an iPhone paid for the notch twice and showed a dead band above the notice. The inset has one
-   owner now — the band while it is open, `app-header.tsx`'s `<header>` (via `useStripBandOpen()`)
-   while it is not. Gone with it: two tint tables, two hand-rolled collapse machines, and both
+   owner now, `app-header.tsx`'s `<header>`, in every state: since 2026-10-07 the band hangs as an
+   overlay UNDER the header bar, so nothing ever sits above it and nothing below it moves. Gone with it: two tint tables, two hand-rolled collapse machines, and both
    `role="alert"` + `aria-live="polite"` pairs.
 2. **`space-overview.tsx:136`** — an `outline-none` on the filter `<input>` with no
    replacement focus mark on it or its `<label>`. Trap 2 in its plain form: keyboard focus
@@ -605,7 +608,7 @@ five of them and any category may wear any one.
 
 | Category | Outlives the next interaction? | Scope | Where it lives |
 | --- | --- | --- | --- |
-| **System strip** | yes | the app / this session | the band above the header, full-bleed |
+| **System strip** | yes | the app / this session | the band hung under the header, full-bleed, floating over the route |
 | **Scope notice** | yes | this route or view | an inset box in the content column |
 | **Event** | no | wherever it fires | the floating layer — never holds space |
 | **Contextual notice** | while its control is relevant | one control | that control's own chrome |
@@ -670,13 +673,26 @@ the composer inexplicably dead, which is a lie by omission. Hence the ruling: **
 outlive the operator's next interaction holds space; anything shorter floats.** A standing condition
 costs space because it costs capability, and those pixels buy a fact the operator must not lose.
 
+**The one exception is the system strip, which floats although it stands** (2026-10-07). It covers
+the top of the route, whatever sits directly under the header: the tab and pane strips on a pane, the
+filter row on the dashboard. It sat in flow under the bar for one day, and an outage then shoved the
+pane strip down under the operator's thumb, which §2 grades as a fault. The two things the ruling
+protects still hold. The strip occludes no capability it does not also explain: a lost connection is
+exactly when the rows beneath it are stale. And it never fades on its own: it stays until its
+condition clears or the operator dismisses it, and the header's mark keeps the badge after a dismiss.
+
+**The z ladder the band sits on.** `z-20` is the top of everything in flow: the sticky header, the
+composer dock, the Changes file bar, the chat docks. The band is `z-30`, so it covers all of them.
+`z-40` is the toasts and the anchored menu's dismiss surface, `z-50` the sheets, the update screen and
+the idle lock, so all of those cover the band. A new in-flow surface stays at `z-20` or below.
+
 ### Where the priority table lives
 
 `web/src/lib/strip-priority.ts` — `AUTH 40 > OUTAGE 30 > DEGRADED 20 > UPDATE 10`, in steps of ten
 so a future level slots into a gap without renumbering anything. It is on the **feature** side
 because `ui/strip-host.tsx` is domain-blind: it knows only that a bigger number wins, never what a
-connection or an update *is*. The band shows one strip at a time: two cost ~66px of a 390×844
-phone and double the number of times the page moves, and every pair has a strict answer anyway. The
+connection or an update *is*. The band shows one strip at a time: two would cover ~66px of a
+390×844 phone and double the number of times the band changes, and every pair has a strict answer anyway. The
 losing fact is not lost — the update offer keeps its footer line and its settings control.
 
 ### Two hard rules
@@ -731,6 +747,11 @@ On a phone the edge swipe is history back, so the history stack must be the leve
 - **A new route** gets its place in `ancestorsOf` and `parentChain` (`web/src/lib/nav.ts`) in the
   same change.
 - **A sheet owns no history entry.** It opens and closes without navigating.
+- **On phones, a screen below a pane repeats its Back at the bottom on the thumb side.** The header
+  arrow is out of reach of a thumb on a large phone. The bottom Back (`ui/bottom-bar.tsx`) takes the
+  same handler and the same name as the arrow, from one object, so the two cannot drift; it sits at
+  the right end, or the left with the `hand` pref on `left`, and it hides while the keyboard is up.
+  The arrow stays at every width.
 
 **A glide is reserved for the one case where a row IS the next screen's header** — one element
 carries its identity forward, not merely its position ([ADR 0069](./.adr/0069-a-row-glides-into-its-header.md),

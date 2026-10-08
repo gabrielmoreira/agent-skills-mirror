@@ -1,3 +1,10 @@
+---
+description: >-
+  The four swappable engine families (models, embeddings, memory, search) and
+  how each one is selected by config rather than code.
+icon: gears
+---
+
 # Pluggable engines
 
 OpenHuman routes four kinds of work, chat and reasoning, embeddings, memory,
@@ -72,7 +79,7 @@ pluggable engine. The contract is `tinymemory-api` (vendored at
 the engine is hosted, needs an endpoint or key, and which fetch modes it
 supports. `tinymemory::list_engines` and `build_engine` are the registry.
 
-Two engines ship, both from the `tinymemory-cortex` crate:
+Two engines ship, both served by `tinymemory-integrations` (the three TinyMemory crates are `tinymemory-api`, `tinymemory-tools` and `tinymemory-integrations`):
 
 | id | what | endpoint | key |
 | --- | --- | --- | --- |
@@ -115,10 +122,12 @@ than leaving the agent with no search tool at all.
 
 SearXNG is a separate toggle (`[searxng] enabled`, `base_url`) rather than a
 `search.engine` value, since it points at a self-hosted instance instead of a
-vendor API. Engine definitions live under
-`crates/openhuman-core/src/search/engines/`, one file per provider; the
-selector and provider resolution are in `crates/openhuman-core/src/search/mod.rs`
-and `crates/openhuman-core/src/config/schema/tools/search.rs`.
+vendor API. The providers themselves live in the `tinysearch` module
+(`vendor/tinysearch`), which owns the per-provider transports and the role
+dispatch; the host keeps provider resolution and credential policy in
+`crates/openhuman-core/src/search/` and
+`crates/openhuman-core/src/config/schema/tools/search.rs`, and the host's
+provider list is taken from the contract rather than maintained separately.
 
 See [Web Search](../features/native-tools/web-search.md) for the tool surface
 each engine exposes.

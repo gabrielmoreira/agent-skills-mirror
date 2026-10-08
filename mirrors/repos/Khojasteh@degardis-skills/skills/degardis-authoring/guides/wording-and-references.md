@@ -8,7 +8,7 @@ Where a change is free to choose a form the source leaves open, take the one tha
 
 ## Length
 
-Completeness and clarity come first; length is a constraint to honor only where it costs neither. A provision carries its decision and everything that changes how a case is decided: the reason or discriminator that settles an unlisted case, and every condition, exception, and evidence bar. Cut what decides nothing, such as what the reader can already infer, a second reason where one decides, a premise the page already states, hedges, and emphasis. Test a clause by removing it: if any case would then be decided differently, by guessing, or on a misreading, keep it, however long the provision grows. Name the concrete action, object, or threshold rather than a category the reader must translate back into it.
+Before accepting prose, test each clause in scope by removing it from the final page. Keep it only for a concrete case that would then be decided wrongly or left unclear, and record in re-readable working state why the rest of the reader's path cannot resolve that case. Recheck after each deletion so removing duplicates does not erase a needed point. Preserve conditions, exceptions, evidence bars, and reasoning that decides unlisted cases, however much length they need. Name concrete actions, objects, and thresholds rather than categories the reader must translate.
 
 ## Terms
 

@@ -149,16 +149,18 @@ resolve_candidate() {
 list_skill_sources() {
   local candidate="$1"
   local found=0
+  local skill_dir
 
   if [[ -f "$candidate/SKILL.md" ]]; then
     printf '%s\n' "$candidate"
     return 0
   fi
 
-  while IFS= read -r skill_file; do
+  for skill_dir in "$candidate"/*; do
+    [[ -f "$skill_dir/SKILL.md" ]] || continue
     found=1
-    dirname "$skill_file"
-  done < <(find "$candidate" -mindepth 2 -maxdepth 2 -name SKILL.md -type f | sort)
+    (cd "$skill_dir" && pwd -P)
+  done
 
   [[ "$found" -eq 1 ]] || die "$candidate 里没有 SKILL.md，也没有包含 SKILL.md 的一级子目录"
 }
@@ -188,6 +190,31 @@ skill_name() {
     .|..|*/*) die "Skill name 不合法：$name（$skill_file）" ;;
   esac
   printf '%s\n' "$name"
+}
+
+interface_gate_required() {
+  local current="$1"
+  local parent
+
+  while true; do
+    if [[ -f "$current/AGENTS.md" ]] && grep -Fq '<!-- skill-interface-gate: required -->' "$current/AGENTS.md"; then
+      return 0
+    fi
+    parent="$(dirname "$current")"
+    [[ "$parent" != "$current" ]] || return 1
+    current="$parent"
+  done
+}
+
+validate_interface_gate() {
+  local candidate="$1"
+  local validator
+
+  interface_gate_required "$candidate" || return 0
+  validator="$(repo_root)/tools/check-skill-interface-metadata.py"
+  [[ -f "$validator" ]] || die "已启用 Skill 界面元数据闸门，但找不到校验器：$validator"
+  echo "== Skill 界面元数据闸门 =="
+  python3 "$validator" "$candidate" || die "Skill 界面元数据校验失败，已停止安装"
 }
 
 INSTALL_HOME="${DBS_INSTALL_HOME:-$HOME}"
@@ -755,6 +782,10 @@ main() {
 
   root="$(repo_root)"
   candidate="$(resolve_candidate "$input" "$root")"
+
+  if [[ "$action" == "link" || "$action" == "status" ]]; then
+    validate_interface_gate "$candidate"
+  fi
 
   while IFS= read -r src; do
     name="$(skill_name "$src")"

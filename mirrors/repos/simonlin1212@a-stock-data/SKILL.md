@@ -2,16 +2,26 @@
 name: a-stock-data
 description: 当任务需要写代码实际获取A股及相关市场数据时使用——行情/K线/逐笔(腾讯日周月前后复权+分钟线+当日逐笔、通达信官网全市场盘后包、百度)、研报(东财+新浪+同花顺+iwencai)、信号(热点/北向/龙虎榜/解禁/行业/板块资金流)、资金面(融资融券/大宗/股东户数/分红/资金流/ETF份额)、新闻(财联社/东财/华尔街见闻/新闻联播)、财务三表/F10/估值历史/ST名单、公告(巨潮)、打板(涨停池/连板/炸板率/监控池/异动)、ETF期权、舆情互动(互动易/上证e互动/热榜)、筹码分布、复权因子、申万行业变迁、宏观与利率(社融/PMI/中债收益率曲线/回购定盘利率/LPR/全球宏观日历)、指数成分/权重/估值/交易日历、期货与大宗商品(五家期货交易所日行情/商品与股指期权/持仓排名/期货日K含大商所/实时期货/A50/上海金)、事件驱动(业绩预告/机构调研/增减持/回购/股权质押/新股申购)、可转债等真实数据。十五层·87端点(含5备胎)·34个来源·内嵌全部可运行代码，自包含零外部文件；优先用腾讯/交易所官方等不封IP源，东财接口已内置限流防封，主源被封可查「备用源速查」降级。仅在需要调用数据接口取数时使用：A股概念解释、投资观点讨论、策略问答等无需取数的话题不要加载本skill。
 origin: custom
-version: 3.10.0
+version: 3.10.1
 ---
 
 > 📦 项目主页：https://github.com/simonlin1212/a-stock-data — 更新、反馈、支持作者
 > 
 > 作者：Simon 林 · X [@linsizhen](https://x.com/linsizhen) · 邮箱：simonlin0423@gmail.com
 
-# A股全栈数据工具包 V3.10.0
+# A股全栈数据工具包 V3.10.1
 
 十五层数据架构，87 个能力端点（82 主端点 + 5 备胎）、34 个来源。V3.10 新增的 2 个入口于 2026-09-22 实测，V3.9 新增的 25 个入口于 2026-09-20 实测；旧端点的验证日期见各章节。覆盖主板/创业板/科创板/ST，北交所覆盖依端点而异；已有备胎的数据可按「备用源速查」降级。
+
+> **V3.10.1（成交量单位与对账口径更正 · 逐笔提速与盘后核对，2026-10-07 · #57）：** 入口数、来源数不变，返回的数据不变。
+> - §1.2 `tencent_kline()` 的 `volume`：**科创板（688 / 689）是股**，其余是手；此前文档全写成「手」，按此换算科创板会大 100 倍。
+>   备用源速查里「成交额 = 量(手) × 100 × 均价」同样更正。
+> - §1.2 补成交量对账口径：科创板以外日线是整手、最近一个交易日的分钟量也是整手（下一个交易日才回填成精确股数）；
+>   1 分钟线 09:30 那根只有集合竞价、13:01 开盘价是上午收盘价；深市整分时刻的成交腾讯与 Baostock 分在相邻两根；无成交分钟：第一笔成交以前沪深都没有行，之后深市会缺行。
+> - §1.4 `tencent_ticks()` 改走复用连接、自动重试的 `V39_RETRY_SESSION`：一次约 70 秒 → 约 25 秒；连接失败、等响应超时、
+>   429 / 5xx 自动重试，不再一次抖动就整次失败（读响应体中途卡住不重试）。
+>   新增 `frame.attrs["complete"]`，15:31 以后用快照的盘后成交额核对盘后定价各笔（此前末尾缺笔完全看不出；低价 ETF 一两手的小额缺笔仍看不出）。
+> - §13.7 `futures_kline()` 同样自动重试，单次超时收短到 (5, 20) 秒；补上中金所主力连续只从 2017-01-17 起。
 
 > **V3.10.0（逐笔替代 / 期货日 K / 行情层重排，2026-09-22）：** 85→87 个能力入口（82 主 + 5 备胎），来源数不变（34）。
 > - **§1.4 腾讯逐笔 `tencent_ticks()`**：替代 #52 后返回空的 mootdx `transaction()`。最近一个交易日的全部分笔（沪深个股 + ETF），
@@ -356,7 +366,7 @@ ETF期权层 (V3.3 新增)
 | 被封端点 | 替代方案 | 差异 |
 |---|---|---|
 | `push2/clist/get`（股票列表） | `datacenter-web` + 腾讯行情批量 | 行业字段来自 datacenter 的 `BOARD_NAME` |
-| `push2his/kline/get`（K线） | 腾讯 `fqkline/get`（前复权）→ 新浪 `getKLineData`（不复权） | 腾讯有前复权，新浪没有 |
+| `push2his/kline/get`（K线） | 腾讯 `fqkline/get`（前复权）→ 新浪 `getKLineData`（不复权） | 腾讯有前复权，新浪没有；量的单位新浪是股，腾讯科创板是股、其余是手（见 §1.2） |
 | `push2/stock/get`（个股） | 腾讯 `qt.gtimg.cn` | 腾讯无行业/概念字段 |
 
 ### 防封铁律（调用东财时必须遵守）
@@ -809,16 +819,33 @@ import requests
 V39_UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
           "(KHTML, like Gecko) Chrome/126.0 Safari/537.36")
 
+# 一次要翻几十页（§1.4 腾讯逐笔）或偶尔握手卡住（§13.7 新浪期货日 K）的请求走这个会话：复用连接，
+# 连接失败、握手或等响应头超时、429 / 5xx 指数退避重试（写法同 EM_SESSION）；读响应体中途超时不重试，
+# 也不按服务端给的 Retry-After 等待。
+V39_RETRY_SESSION = requests.Session()
+try:
+    from requests.adapters import HTTPAdapter
+    from urllib3.util.retry import Retry
+    _v39_retry_adapter = HTTPAdapter(max_retries=Retry(
+        total=3, connect=3, backoff_factor=0.6, respect_retry_after_header=False,
+        status_forcelist=[429, 500, 502, 503, 504], allowed_methods=["GET"]))
+    V39_RETRY_SESSION.mount("https://", _v39_retry_adapter)
+    V39_RETRY_SESSION.mount("http://", _v39_retry_adapter)
+except Exception:
+    # 老版本 urllib3（< 1.26）缺 allowed_methods：不重试，也不复用连接（复用的连接被服务端断开时没有重试兜底），同 v3.10.0
+    V39_RETRY_SESSION = None
+
 
 def _v39_http(url, params=None, data=None, headers=None, method="GET", timeout=(10, 40),
-              allow_status=(), allow_redirects=True):
+              allow_status=(), allow_redirects=True, session=None):
     """非东财的 HTTP 请求：带浏览器 UA。网络错误、非 2xx 一律抛 RuntimeError（不把错误页当数据）；
-    allow_status 里的状态码（源用 404 表示「当天没发布」时）原样返回，由调用方判断。"""
+    allow_status 里的状态码（源用 404 表示「当天没发布」时）原样返回，由调用方判断。
+    session：传 V39_RETRY_SESSION 复用连接并自动重试（哪些情况重试见它的定义）；不传每次新建连接、不重试。"""
     merged = {"User-Agent": V39_UA}
     merged.update(headers or {})
     try:
-        response = requests.request(method, url, params=params, data=data, headers=merged,
-                                    timeout=timeout, allow_redirects=allow_redirects)
+        response = (session or requests).request(method, url, params=params, data=data, headers=merged,
+                                                 timeout=timeout, allow_redirects=allow_redirects)
         if response.status_code not in allow_status:
             response.raise_for_status()
     except requests.RequestException as exc:
@@ -1164,11 +1191,25 @@ etf_quotes = tencent_quote(["510050", "510300"])
 |---|---|
 | `period` | `day` / `week` / `month`：默认前复权，可 `adjust='hfq'` 或 `adjust=''`（不复权）；`m1` / `m5` / `m15` / `m30` / `m60`：只有不复权、只能取最近 ≤320 根 |
 | `start` / `end` | 仅日周月可用，自动按段翻页（单段 <640 根）；不给 `start` 时取最近 `count` 根（≤640） |
-| 返回列 | `code` / `adjust` / `date` / `open` / `high` / `low` / `close` / `volume`（手）；分钟线另有 `turnover_rate_pct`，日期列名为 `datetime` |
+| 返回列 | `code` / `adjust`（仅日周月）/ `date` / `open` / `high` / `low` / `close` / `volume`；分钟线另有 `turnover_rate_pct`，日期列名为 `datetime` |
+| `volume` 单位 | **科创板（688 / 689）是股**，其余是手：沪深主板、创业板、B 股、ETF（含科创板 ETF 588）、LOF、REITs 1 手 = 100 股 / 份，可转债 1 手 = 10 张，指数也是手；日周月线、分钟线、复权与否都是这个规则 |
 
 > ⚠️ **腾讯前复权是等差口径**（逐次减去每股分红）：茅台 2020-01-02 原始价 1130.00、腾讯 qfq 870.741，差额正是此后累计分红；
 > 高分红老股早年会被减成负数（茅台 2015 年约 -117.6）。本函数遇到 ≤0 价格直接抛错。**长区间回测请取 `adjust=''`，
 > 再用 §1.6 的比例因子复权**。本接口**没有成交额**，需要成交额用 §1.3。
+
+> ⚠️ **成交量按股对账前先看这几条**（#57，2026-10-05 对照通达信盘后包与 Baostock 实测）：
+> - **整手取整**：科创板以外，日线的量是当日总股数取整到手——2020-03-11 起基本是四舍五入（实测差 −52～+50 股），更早是舍去零头（差 −99～0 股），
+>   日线不会回填，周 / 月线是日线相加。分钟线**最近一个交易日**也是逐根整手，要到下一个交易日才回填成精确股数（会出现 34967.59 这样的小数手），
+>   回填后当日各根合计与盘后包逐股一致；确切的回填时点没测出来。科创板的分钟量当天就是精确股数。
+>   ⇒ **最近一个交易日的分钟量别拿来按股精确对账**。本函数 m1 最多 320 根（约 1.3 天），要拿整天已回填的数据用 m5 / m60（320 根约 6 / 80 个交易日）。
+> - **1 分钟线**每天 241 根：09:30 那根只有开盘集合竞价（竞价没成交就没有这根），m5 及以上把竞价并进第一根。
+>   13:01 那根的开盘价是上午收盘价、不是午后第一笔，用 m1 自己合成 5 分钟线时 13:05 的开盘价会和腾讯原生 m5 / Baostock 对不上。
+> - **深市分钟边界**：整分那一刻（hh:mm:00）的成交，腾讯算进下一根（m1、原生 m5 都是；11:30:00 那一刻例外，留在 11:30 那根），Baostock 算进上一根，所以深市逐根量价对不上
+>   （改按开始时刻分桶也拼不回来）、全天合计一致；沪市已回填的日子腾讯原生 m5 与 Baostock 5 分钟逐根一致。
+> - **没有成交的分钟**：当天第一笔成交以前沪深都没有行（集合竞价没成交时连 09:30 那根也没有；09-30 抽 54 只沪深 B 股，第一笔晚于 09:30 的 43 只都从第一笔那分钟才有行）。
+>   第一笔以后，沪市没有成交的分钟给一根量为 0、四个价基本都等于上一根收盘的行，不缺行；深市大多也这样，但会整根缺失
+>   （09-30 抽 51 只低成交深市股，25 只共缺 64 分钟，抽查的缺失分钟逐笔里都没有成交）。按分钟格点对齐时要自己处理缺行。
 
 <!-- v39-tencent-kline:start -->
 ```python
@@ -1220,7 +1261,8 @@ def tencent_kline(code, period="day", adjust=None, start=None, end=None, count=3
     adjust: None=日周月默认 qfq、分钟默认不复权；可显式传 'qfq' / 'hfq' / ''（不复权）
     start/end: 仅日周月可用，'YYYY-MM-DD'；给了 start 会自动按段分页（单次最多 640 根）
     count: 不给 start 时取最近 count 根；日周月 ≤ 640，分钟 ≤ 320
-    成交量单位是「手」；本接口**没有成交额**，需要成交额用 §1.3 通达信盘后包。
+    成交量单位：科创板（688/689）是股，其余是手；科创板以外，最近一个交易日的分钟量是整手、下一个交易日才回填成精确股数（见 §1.2 说明）。
+    本接口**没有成交额**，需要成交额用 §1.3 通达信盘后包。
     不支持北交所：腾讯对北交所只返回最新 1 根日线，区间与分钟线为空（2026-09-20 实测），直接抛 ValueError。
     """
     period = str(period).lower()
@@ -1467,19 +1509,25 @@ print(len(snap), snap[snap.code == "600519"][["close", "volume", "amount"]])
 ### 1.4 腾讯逐笔成交 — 当日分笔明细（V3.10.0 新增 · 替代 §1.7 mootdx `transaction`）
 
 §1.7 mootdx `transaction()` 2026-09 起返回空（#52）后的逐笔来源：腾讯行情页「成交明细」接口，一页 70 笔，逐页翻到空页为止，
-全天 60–70 页、约 10–20 秒。先执行 Prerequisites 的 V3.9.0 共用 helper。
+全天 60–70 页、约 20–30 秒（复用连接；连接失败、等响应超时、429 / 5xx 自动重试）。先执行 Prerequisites 的 V3.9.0 共用 helper。
 
 - **只有最近一个交易日**，没有历史；覆盖沪深个股（含创业板、科创板）与 ETF。北交所、指数没有，直接抛 `ValueError`。
 - 是约 3 秒一笔的**分笔**（同一时刻撮合的多笔合并成一笔），不是交易所 Level-2 逐笔委托 / 逐笔成交。
   09:25 那一笔就是开盘集合竞价的撮合结果。
-- `volume` 单位「手」（科创板也是手）、`amount` 单位元；`side`：B = 主动买、S = 主动卖、M = 中性（集合竞价、盘后定价多为 M）。
+- `volume` 单位「手」（科创板也是手，和 §1.2 K 线不同：科创板按股成交、这里每笔取整成手，全天累加与真实股数有误差，成交越清淡越大：09-30 实测 688981 +0.013%、688001 −0.052%，成交清淡的 688184 +0.20%、688459 −0.16%）、`amount` 单位元；`side`：B = 主动买、S = 主动卖、M = 中性（集合竞价、盘后定价多为 M）。
 - 收盘后 15:05–15:30 的盘后定价（固定价格）成交也在结果里（`time` 晚于 15:00:59 的行）；实测沪深主板、创业板、科创板、ETF 都有，
   不计入腾讯行情的当日成交额。
-- **完整性核对：** 收盘后调用时，连续竞价段（≤ 15:00:59）的成交额合计要与腾讯行情快照的当日成交额相符，差超过 0.1% 抛 `RuntimeError`
+- **完整性核对：** 收盘后调用时，连续竞价段（≤ 15:00:59）的成交额合计要与腾讯行情快照的当日成交额相符，差超过 0.1% + 1000 元抛 `RuntimeError`
   （2026-09-22 实测 000001 / 600519 / 300750 / 688981 / 159915 / 000002 / 603286 相差 0–285 元）。
-  盘中调用拿到的是截至取数时刻的逐笔，成交额还在变，不做这项核对。
-- 腾讯偶尔缓存了盘后某一页的旧版本，会缺几笔盘后成交（实测 300750 缺 6 笔、159915 缺 7 笔，都在 15:14 以后），
-  缺的序号记在 `frame.attrs["missing_seq"]`；连续竞价段缺号直接抛 `RuntimeError`，稍后重试。
+  盘中调用拿到的是截至取数时刻的逐笔，成交额还在变，不做这项核对，也不保证完整（翻页途中遇到空页就当作结束）。
+- 腾讯偶尔缓存了盘后某一页的旧版本，会缺几笔盘后成交（实测 300750 缺 6 笔、159915 缺 7 笔，都在 15:14 以后）。
+  连续竞价段缺号直接抛 `RuntimeError`，稍后重试；盘后段中间缺的序号记在 `frame.attrs["missing_seq"]`，末尾缺的从序号上看不出来。
+- **`frame.attrs["complete"]`**：15:31 以后调用（看取数前那次快照的时刻），再用快照的盘后成交额（下标 58 的字段，万元）核对 15:00:59 以后的各笔，
+  差不超过「笔数 + 1」元算对上（每笔金额取整到元）。
+  `True` = 序号连续，连续竞价段和盘后定价的金额都对上；`False` = 盘后定价有缺笔（中间缺号，或末尾缺的金额超出容差），稍后重试；
+  `None` = 没有缺号，但还在盘中、不到 15:31，或快照没有这个字段，没法核对。
+  末尾缺的笔金额小时看不出来：低价 ETF 一笔 1–2 手只有几十元，落在容差里仍是 `True`（09-30 的 512170 盘后 46 笔、容差 47 元，缺一笔 1 手 35 元判不出）。
+  2026-10-05 实测 10 只（沪深主板、创业板、科创板、ETF）09-30 的盘后各笔合计与该字段差 0–3 元。
 - 开盘前（9:25 撮合前）调用可能拿不到上一交易日的逐笔。
 
 <!-- v310-tencent-ticks:start -->
@@ -1494,8 +1542,9 @@ _TICK_SESSION_END = "15:00:59"   # 连续竞价 + 收盘集合竞价到此为止
 
 
 def _tencent_qt_snapshot(symbol):
-    """腾讯行情快照 → (交易日 'YYYY-MM-DD', 时刻 'HHMMSS', 当日成交额 元)。代码不存在抛 ValueError。"""
-    response = _v39_http(TENCENT_QT_URL + symbol)
+    """腾讯行情快照 → (交易日 'YYYY-MM-DD', 时刻 'HHMMSS', 当日成交额 元, 盘后定价成交额 元)。代码不存在抛 ValueError。
+    盘后定价成交额是下标 58 的字段（万元、4 位小数）；字段没有或认不出时为 None，只是不做盘后核对。"""
+    response = _v39_http(TENCENT_QT_URL + symbol, timeout=(5, 15), session=V39_RETRY_SESSION)
     text = response.content.decode("gbk", "replace")
     if "v_pv_none_match" in text:
         raise ValueError(f"腾讯没有 {symbol} 这个代码")
@@ -1508,12 +1557,15 @@ def _tencent_qt_snapshot(symbol):
     parts = fields[35].split("/")          # 「最新价/成交量/成交额(元)」；科创板的成交量是股、其余是手，所以只用成交额
     if len(parts) != 3:
         raise RuntimeError(f"腾讯行情快照 {symbol} 的价/量/额字段是 {fields[35]!r}，格式可能已变")
-    return _v39_src_date(fields[30][:8]), fields[30][8:], _v39_req_num(parts[2], "成交额")
+    after_hours = fields[58] if len(fields) > 58 else ""
+    after_hours = round(float(after_hours) * 1e4, 2) if re.fullmatch(r"\d+(\.\d+)?", after_hours) else None
+    return _v39_src_date(fields[30][:8]), fields[30][8:], _v39_req_num(parts[2], "成交额"), after_hours
 
 
 def _tencent_tick_page(symbol, page):
     """第 page 页逐笔（0 起）→ 记录列表；翻过最后一页时腾讯返回空内容，返回 None。"""
-    response = _v39_http(TENCENT_TICK_URL, params={"appn": "detail", "action": "data", "c": symbol, "p": page})
+    response = _v39_http(TENCENT_TICK_URL, params={"appn": "detail", "action": "data", "c": symbol, "p": page},
+                         timeout=(5, 15), session=V39_RETRY_SESSION)
     text = response.content.decode("gbk", "replace").strip()
     if not text:
         return None
@@ -1543,7 +1595,9 @@ def tencent_ticks(code):
     一行一笔：date / code / time / seq（腾讯序号）/ price / change（较上一笔）/ volume（手）/ amount（元）/
     side（B 主动买 · S 主动卖 · M 中性）。约 3 秒一笔的分笔，不是 Level-2 逐笔。
     北交所、指数、代码不存在、当日没有成交抛 ValueError。收盘后调用会用行情快照的当日成交额核对连续竞价段，
-    对不上抛 RuntimeError；盘后定价段腾讯偶尔缺几笔，缺的序号在 frame.attrs["missing_seq"]。
+    对不上抛 RuntimeError；盘后定价段腾讯偶尔缺几笔：中间缺的序号在 frame.attrs["missing_seq"]，
+    15:31 以后再用快照的盘后成交额核对，结果在 frame.attrs["complete"]（True 对上 / False 有缺 / None 没法核对；
+    低价 ETF 一两手的小额缺笔可能看不出）。
     """
     prefix, ticker = get_prefix(code), norm_ticker(code)
     if prefix == "bj":
@@ -1551,7 +1605,7 @@ def tencent_ticks(code):
     if (prefix, ticker[:3]) in (("sh", "000"), ("sz", "399")):
         raise ValueError(f"{prefix}{ticker} 是指数，没有逐笔成交")
     symbol = prefix + ticker
-    day, clock, amount_before = _tencent_qt_snapshot(symbol)
+    day, clock, amount_before, after_hours_before = _tencent_qt_snapshot(symbol)
     if amount_before == 0:
         raise ValueError(f"{symbol} 在 {day} 没有成交（停牌、尚未开盘或集合竞价未撮合）")
     rows, missing = [], []
@@ -1577,7 +1631,7 @@ def tencent_ticks(code):
             raise ValueError(f"{symbol} 集合竞价尚未撮合（{clock}），还没有逐笔")
         raise RuntimeError(f"{symbol} 在 {day} 成交 {amount_before:.0f} 元，腾讯逐笔却为空："
                            "开盘前腾讯可能已清空上一交易日的明细，否则是接口变了")
-    day_after, _, amount_after = _tencent_qt_snapshot(symbol)
+    day_after, clock_after, amount_after, after_hours_after = _tencent_qt_snapshot(symbol)
     if day_after != day:
         raise RuntimeError(f"取数期间交易日从 {day} 变成 {day_after}，请重试")
     session = sum(r["amount"] for r in rows if r["time"] <= _TICK_SESSION_END)
@@ -1585,17 +1639,29 @@ def tencent_ticks(code):
     if amount_after == amount_before and abs(session - amount_before) > amount_before * 0.001 + 1000:
         raise RuntimeError(f"腾讯逐笔 {symbol} 连续竞价段成交额 {session:.0f} 元，与行情快照 {amount_before:.0f} 元对不上，"
                            "逐笔可能不全")
+    # 盘后定价 15:30 结束（深市最后一笔可能正好在 15:30:00）。取数前的快照已在 15:31 以后、两次快照一致时，
+    # 15:00:59 以后各笔成交额合计应等于快照的盘后成交额（每笔取整到元，差不超过笔数 + 1 元）；
+    # 中间缺号、末尾缺笔都会对不上，但末尾缺的金额小于容差（低价 ETF 一两手）时看不出。盘中 / 15:31 前没法核对，记 None。
+    after_hours = [r["amount"] for r in rows if r["time"] > _TICK_SESSION_END]
+    complete = None
+    if missing:
+        complete = False
+    elif (amount_after == amount_before and after_hours_before is not None
+          and after_hours_after == after_hours_before and clock >= "153100"):
+        complete = abs(sum(after_hours) - after_hours_before) <= len(after_hours) + 1
     frame = _v39_frame(rows, "tencent", f"{TENCENT_TICK_URL}?appn=detail&action=data&c={symbol}",
                        ["time", "seq", "price", "change", "volume", "amount", "side"])
     frame.insert(0, "date", day)
     frame.insert(1, "code", symbol)
     frame.attrs["missing_seq"] = missing
+    frame.attrs["complete"] = complete
     return frame
 ```
 <!-- v310-tencent-ticks:end -->
 
 ```python
 ticks = tencent_ticks("000001")                     # 平安银行最近一个交易日全部分笔
+ticks.attrs["complete"]                             # 15:31 以后：True 对上 / False 盘后有缺笔；盘中为 None
 auction = ticks[ticks.time < "09:30:00"]            # 开盘集合竞价撮合那一笔（科创板在 09:25:0x）
 buy = ticks.loc[ticks.side == "B", "amount"].sum()  # 主动买入额
 etf = tencent_ticks("510300")                       # ETF 同样可用
@@ -6321,7 +6387,9 @@ def futures_kline(symbol, start=None, end=None):
     start/end: 'YYYY-MM-DD'，可只给一端。主力连续换月当天会跳空，未做复权。
     实测（2026-09-22）价格与交易所官方 futures_daily 逐日一致，成交量 / 持仓偶有 ≤0.1% 的出入，精确值以 futures_daily 为准。
     结算价新浪给得不全（给 0 的统一成 None）：中金所品种基本没有；主力连续早年缺得多（CU0 5285 根缺 1364 根，
-    最晚缺到 2024-09-25），需要结算价用 futures_daily。具体合约只能取到约 2022 年起到期的，更早的新浪返回空。
+    最晚缺到 2024-09-25），需要结算价用 futures_daily。具体合约只能取到约 2022 年起到期的，更早的新浪返回空；
+    中金所主力连续（IF0 / IC0 / IH0 / T0 / TF0）只从 2017-01-17 起，更早的用 futures_daily。
+    新浪每次都返回该代码的全部历史（RB0 约 0.5 MB），start / end 是取回后本地筛选。
     代码不存在 / 太老、区间内没有 K 线抛 ValueError；返回格式改变抛 RuntimeError。
     """
     code = str(symbol).strip()
@@ -6333,8 +6401,8 @@ def futures_kline(symbol, start=None, end=None):
     hi = _v39_date(end) if end else None
     if lo and hi and lo > hi:
         raise ValueError(f"start {lo} 晚于 end {hi}")
-    response = _v39_http(SINA_FUT_KLINE_URL.format(code=code), params={"symbol": code},
-                         headers={"Referer": "https://finance.sina.com.cn/"})
+    response = _v39_http(SINA_FUT_KLINE_URL.format(code=code), params={"symbol": code}, timeout=(5, 20),
+                         headers={"Referer": "https://finance.sina.com.cn/"}, session=V39_RETRY_SESSION)
     text = response.content.decode("gbk", "replace")
     match = re.search(rf"var _{re.escape(code)}=\((.*)\);?\s*$", text, re.S)
     if not match:
@@ -7332,7 +7400,7 @@ bj_quote = bse_quote_backup("2026-09-04", code="920021")
 
 > ⛔ **已死透别用**（2026-07 实测）：网易财经(126.net 整站下线)、和讯、凤凰行情、腾讯资金流(ff_ 已死)、雪球免登录深度数据(需 token)。mootdx **库**已烂尾(2024 停更)；**2026-09 起通达信公开服务器的 K 线 / 盘口 / 逐笔命令返回空（#52）**，财务与 F10 照常——行情改走 §1.1–§1.4（腾讯实时 / 腾讯 K 线 / 盘后包 / 腾讯逐笔），财务用 `tdx_client(check='finance')`。
 >
-> ⚠️ **腾讯分钟 K 线字段坑**（§1.2 `tencent_kline()` 已按此解析，不返回成交额）：返回数组 `[时间, 开, 收, 高, 低, 量(手), {}, 换手率基点]`——第 7 个字段**不是成交额，是换手率基点**（当日各根累加 ÷100 = 当日换手率%）。当成交额读会小三个数量级；成交额需自算 `量(手) × 100 × 均价`。
+> ⚠️ **腾讯分钟 K 线字段坑**（§1.2 `tencent_kline()` 已按此解析，不返回成交额）：返回数组 `[时间, 开, 收, 高, 低, 量, {}, 换手率基点]`，量的单位科创板是股、其余是手（见 §1.2）——第 8 个字段（下标 7）**不是成交额，是换手率基点**（当日各根累加 ÷100 = 当日换手率%）。当成交额读会小三个数量级；成交额需自算 `成交数量 × 均价`（成交数量：科创板就是量（股）；可转债是量 × 10（张）；沪深主板、创业板、B 股、ETF、LOF、REITs 是量 × 100；指数不适用）。
 
 ```python
 import json, urllib.request, ssl

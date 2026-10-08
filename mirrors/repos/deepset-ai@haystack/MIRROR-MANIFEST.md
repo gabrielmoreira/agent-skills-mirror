@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `deepset-ai/haystack` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `deepset-ai/haystack` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `deepset-ai/haystack` — 26 default patterns, 0 followed patterns, 16
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,16 +65,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`docs-website/CLAUDE.md`](docs-website/CLAUDE.md) |
 | 5 | ✓ | [`docs-website/docs/AGENTS.md`](docs-website/docs/AGENTS.md) |
 | 6 | ✓ | [`docs-website/docs/CLAUDE.md`](docs-website/docs/CLAUDE.md) |
-| 7 | ✓ | [`docs-website/versioned_docs/version-3.2/AGENTS.md`](docs-website/versioned_docs/version-3.2/AGENTS.md) |
-| 8 | ✓ | [`docs-website/versioned_docs/version-3.2/CLAUDE.md`](docs-website/versioned_docs/version-3.2/CLAUDE.md) |
-| 9 | ✓ | [`docs-website/versioned_docs/version-3.3/AGENTS.md`](docs-website/versioned_docs/version-3.3/AGENTS.md) |
-| 10 | ✓ | [`docs-website/versioned_docs/version-3.3/CLAUDE.md`](docs-website/versioned_docs/version-3.3/CLAUDE.md) |
-| 11 | ✓ | [`haystack/hooks/compaction/AGENTS.md`](haystack/hooks/compaction/AGENTS.md) |
-| 12 | ✓ | [`haystack/hooks/compaction/CLAUDE.md`](haystack/hooks/compaction/CLAUDE.md) |
-| 13 | ✓ | [`releasenotes/notes/AGENTS.md`](releasenotes/notes/AGENTS.md) |
-| 14 | ✓ | [`releasenotes/notes/CLAUDE.md`](releasenotes/notes/CLAUDE.md) |
-| 15 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
-| 16 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
+| 7 | ✓ | [`docs-website/versioned_docs/version-3.2/CLAUDE.md`](docs-website/versioned_docs/version-3.2/CLAUDE.md) |
+| 8 | ✓ | [`docs-website/versioned_docs/version-3.3/CLAUDE.md`](docs-website/versioned_docs/version-3.3/CLAUDE.md) |
+| 9 | ✓ | [`haystack/hooks/compaction/AGENTS.md`](haystack/hooks/compaction/AGENTS.md) |
+| 10 | ✓ | [`haystack/hooks/compaction/CLAUDE.md`](haystack/hooks/compaction/CLAUDE.md) |
+| 11 | ✓ | [`releasenotes/notes/AGENTS.md`](releasenotes/notes/AGENTS.md) |
+| 12 | ✓ | [`releasenotes/notes/CLAUDE.md`](releasenotes/notes/CLAUDE.md) |
+| 13 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
+| 14 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
 
 ---
 

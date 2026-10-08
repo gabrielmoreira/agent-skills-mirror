@@ -1,76 +1,64 @@
 ---
-description: Implement an approved feature plan with fresh-context slices, TDD, evidence, and PR-ready output.
+description: Implement an approved feature plan with fresh-context slices, TDD, revision-bound evidence, and PR-ready output.
 ---
 
 # Implement Feature Workflow
 
-Goal: Build an approved feature through TDD slices and route completed work to verification.
+Goal: Build an approved feature through bounded TDD slices and route settled work to verification.
 
 ## Steps
 
-1. Load plan:
-   - Search `docs/prd/` and `docs/srs/` for a matching `[slug]`; if absent, use the newest matching artifact.
-   - If multiple candidates exist, ask the user to choose or input the target slug.
-   - PRD or ticket
-   - SRS/FRS technical design if present
-   - Implementation plan
-   - Matched framework and common skills
-   - If stable `REQ-*`, `AC-*`, trace, or required SRS/test lanes are missing, stop and route to `plan-feature`, `design-solution`, or `implementation-readiness`.
-   - `snc_tier`/`model_tier` from handoff (score per `common-task-complexity-routing` if absent); `high` adds `specialist-architecture-guard` and `specialist-security-reviewer` before `verify-work`.
-2. Prepare workspace:
-   - Confirm clean or intentionally dirty git state.
-   - Create branch or worktree only when project workflow expects it.
-   - Provision dependencies BEFORE tests (`npm ci`/`pnpm i`/`yarn`, `flutter pub get`, `./gradlew dependencies`, or `pip install -e .` from the lockfile); isolated worktrees lack ignored toolchains.
-   - If install fails from network, auth, or time budget, report `verification_infra_failed` with the exact command/error; never claim tests passed or silently skip verification.
-   - Initialize or update `docs/srs/srs-task-list-[slug].md` with small vertical slices.
-3. Implement slices:
-   - For each slice, write or update the failing test first.
-   - Before the test, record its observable contract, distinct fault, smallest layer, minimal cases, and exact focused command (the Test Intent Record).
-   - Consume the named `REQ-*` and `AC-*` for each slice; do not invent scope from code inspection.
-   - For new behavior, do not keep pre-test implementation code as a reference: observe the expected RED first.
-   - For legacy or bug-fix slices, characterize only when needed, then make the intended change RED while preserving unrelated existing code.
-   - Implement the smallest passing code.
-   - Refactor without expanding scope.
-   - Run the focused target in foreground, single-run, sequential mode; classify invalid RED, unexpected GREEN, timeout, and cleanup instead of retrying blindly.
-   - Keep slice evidence near the task item.
-   - Use sub-agents only when the runtime supports them and ownership is disjoint.
-   - If a fix path is unclear, stop and apply root-cause debugging before more code changes.
-4. Maintain context hygiene:
-   - Start fresh context for large independent slices when possible.
-   - Preserve decisions in `docs/srs/srs-task-list-[slug].md` or `docs/prd/prd-plan-[slug].md`.
-   - If behavior or scope changes, update `docs/prd/prd-[slug].md` and `docs/srs/srs-[slug].md` before closing the slice.
-   - Avoid carrying raw logs; summarize failures and fixes.
-5. Prepare handoff:
-   - Run fresh local automated checks before claiming success.
-   - Update requirement trace notes for changed AC coverage.
-   - Capture evidence in `docs/srs/srs-walkthrough-[slug].md`.
-   - For autonomous/channel mode, delegate only with disjoint files, owner, AC IDs, expected artifact, and verification command.
-   - Route next step to `verify-work`.
+1. **Load plan**: Find matching PRD/ticket, SRS/FRS, implementation plan, REQ/AC trace, and skills. Ask if target is ambiguous; route missing trace/test lanes to `plan-feature`, `design-solution`, or `implementation-readiness`. Carry `snc_tier`/`model_tier`; high tier adds `specialist-architecture-guard` and `specialist-security-reviewer` before `verify-work`.
+2. **Prepare workspace**: Confirm clean or intentional dirty state; create a branch/worktree only when expected. Provision lockfile dependencies before tests. Report install failures exactly; never claim skipped checks passed.
+3. **Bound ownership**: Assign each slice an owner, exact files, goal/deliverable, in/out scope, authority, REQ/AC IDs, and verification receipt.
+4. **Implement slices**:
+   - Record observable contract, distinct fault, smallest honest layer, minimal cases, and exact focused command before testing.
+   - Write/update the failing test first; observe expected RED before implementation. Characterize legacy behavior only when needed.
+   - Implement the smallest passing change; refactor without scope expansion.
+   - Run focused checks foreground, single-run, sequentially, with no peer mutation; classify invalid RED, unexpected GREEN, timeout, or infrastructure failure.
+   - Keep concise revision-bound receipts: changed contract, RED/GREEN evidence, behavior smoke, command/result, and limitations.
+5. **Preserve context**: Carry decisions, owner, active slice, and evidence links in the task/plan artifact. Summarize logs; keep source artifacts retrievable.
+6. **Settle before shared checks**: Every owner pauses edits and reports a settled revision. Run one final covering gate, including behavior smoke, foreground/sequentially with no peer mutation. Later edits invalidate affected evidence; rerun those gates and never weaken checks.
+7. **Handoff**: Report final gate/smoke receipts and update REQ/AC trace and walkthrough evidence. Continue only within recorded authority; route to `verify-work`.
 
 ## Runtime Contract
-- Use for approved plans ready to build; failing test first, no pre-test implementation kept as reference.
-- Required inputs: PRD/ticket with stable `REQ-*`/`AC-*` trace and required SRS/test lanes.
+
+- Use for approved plans ready to build; TDD, bounded ownership, revision-bound evidence.
+- Required inputs: PRD/ticket with stable REQ/AC trace, owner, and required SRS/test lanes.
 - Return BLOCKED only when required trace, owner, or test lanes are missing.
+
 ## Handoff Payload
-- `slug`, `operator_profile` (carried, not re-inferred), `snc_tier`, `model_tier`, completed slices, tests run, changed contracts, delegation packets, outcome report, next workflow.
+
+- `slug`, carried `operator_profile`, `snc_tier`, `model_tier`, completed slices, tests run, changed contracts, requirement trace, delegation packets, risks, outcome report, next workflow.
+- Carry `repository_status` and `activation_status` separately; include authorized next action, settled revision, and evidence links. Publication approval does not grant deployment authority.
+
 ## Blocking Questions
-- Ask max 3 at a time with a recommended default and 2-3 options.
 
+- Ask max 3 only when an answer changes the result or safety boundary; include a recommended default and 2-3 options.
 ## Output Template
-
 ```md
 # Implementation Handoff: [Name]
 ## Completed Slices
+
 ## Tests Run
+
 ## Changed Contracts
+
 ## Requirement Trace Updates
 ## Evidence
+
 ## Known Risks
+
 ## Delegation Packets
+
 ## Outcome Report
+
 {schema_version: 1, run_id: "[run-id]", slug: "[slug]", workflow: implement-feature, feature_status: implemented, started_at: "[timestamp]", completed_at: "[timestamp]", requirement_trace: {brd_objectives: [], requirements: [], acceptance_criteria: [], srs: []}, completed_evidence: [], missing_evidence: [], decision_needed: [], recommended_next_workflow: verify-work, cost: {source: unavailable}, agent: {identity: "[agent-identity]", model: "[model]"}}
 ## Next Workflow
+
 verify-work
+
 ## Cost Report
+
 Call `get_session_cost(workflow="implement-feature")` before final handoff.
 ```

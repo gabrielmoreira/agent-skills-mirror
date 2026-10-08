@@ -1,6 +1,6 @@
 ---
 name: dbs-good-question
-description: 把模糊问题改写成 Agent 可推理、可批评、可验证的问题说明书，并判断自动化解决程度。用户要求把问题说清、生成好问题或评估 Agent 可解性时使用。
+description: 把模糊提问改写成 Agent 可推理、可批评、可验证的问题说明书，并判断自动化可解程度。用户要改进问题表述、研究问题或评估 Agent 可解性时使用；任务交付目标已明确时不重复澄清目标。
 ---
 
 # dbs-good-question：好问题生成器

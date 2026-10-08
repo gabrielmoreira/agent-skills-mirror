@@ -1,6 +1,6 @@
 ---
 name: chapter-illustration
-description: Generate one spoiler-free illustration for the current or specified chapter and save it under workspace assets/illustrations.
+description: Generate one spoiler-free illustration for the current or specified chapter and save it under workspace assets/writing.
 category: image
 agent: ide
 ---

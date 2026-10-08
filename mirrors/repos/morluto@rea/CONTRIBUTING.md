@@ -10,7 +10,7 @@ When adding or changing an MCP tool, follow the [tool design guide](docs/tool-de
 
 ## Development setup
 
-REA development requires Node.js 24.18.x and npm 11.16.x (pinned toolchain via `nvm use`; the supported runtime range is Node.js ^22.19 || ^24.11 || >=26, as the README badge states). Real-Hopper verification additionally requires either macOS 12+ or an officially supported Linux host (Ubuntu 24.04+, Fedora 41+, or 64-bit Arch) and an installed Hopper application. Linux demo verification uses its own private Xvfb display and does not require a desktop session. Run `nvm use` before installing dependencies.
+REA development requires Node.js 24.18.x and npm 11.16.x (pinned toolchain via `nvm use`; the supported runtime range is Node.js ^22.19 || ^24.11 || >=26, as the README badge states). Real-Hopper verification additionally requires either macOS 12+ or an officially supported Linux host (Ubuntu 24.04+, Fedora 41+, 64-bit Arch, or CachyOS) and an installed Hopper application. Linux demo verification uses its own private Xvfb display and does not require a desktop session. Run `nvm use` before installing dependencies.
 
 ```bash
 npm ci
@@ -25,6 +25,24 @@ worktrees. After a package, lockfile, or managed-skill version change, run
 `npm run metadata:generate` before building.
 
 Keep dependencies flowing inward through the existing domain, contracts, provider, application, server, and adapter layers. Parse unknown values at process and protocol boundaries, model expected failures with `Result`, and preserve the canonical tool inventory defined by `TOOL_CONTRACTS` unless a deliberate contract change updates every verifier, generated catalog artifact, and snapshot. Keep tool discovery complete and report capability- and session-scoped availability through `binary_session`.
+
+## Documentation website
+
+The VitePress site uses the Markdown files in `docs/`. Run `npm run docs:dev`
+for live editing, `npm run docs:build` to check the production build and
+links, and `npm run docs:preview` to preview that build at `/rea/`.
+
+Site navigation lives in `docs/.vitepress/config.ts`. Keep links to guides
+relative so they work on GitHub and the website; link to repository files
+outside `docs/` using their full GitHub URLs. Generated reference documents
+still use `npm run docs:generate`; `docs:build` only builds the website.
+
+Pull requests run `npm run docs:check`. `.github/workflows/pages.yml` is a
+manual VitePress build and does not publish. The public site at
+<https://morluto.github.io/rea/> is published only by the manual website
+workflow on `main`. The repository's **Settings → Pages → Build and
+deployment → Source** must be set to **GitHub Actions** before the first
+deployment.
 
 ## Development feedback and PR verification
 
@@ -104,32 +122,14 @@ Describe the behavior change and verification performed in the pull request. Nev
 
 ## Maintainer release checklist
 
-Run `npm run check:pr`, the isolated package verifier, package dry run, and two-target real-Hopper verifier described above. Build a local tarball and exercise the executable through the package boundary:
+Use the [checkpoint release guide](docs/releasing.md). Releases start from an
+explicit `release/VERSION` branch cut at a recorded commit. Manually prepare
+the bot PR, wait for its exact-head CI and review, merge into that frozen
+branch, and manually publish through the official Release workflow. Main
+pushes do not update release PRs or publish packages. Both publishers build
+the exact SHA tagged by Release Please.
 
-```bash
-npm pack
-```
-
-Use the exact filename printed by `npm pack` to run the packaged executable:
-
-```bash
-npm exec --yes --package ./rea-agents-VERSION.tgz -- rea --help
-```
-
-Replace `VERSION` with the packed version; do not use a tarball from an earlier
-build.
-
-Publish the public package:
-
-```bash
-npm publish --access public
-```
-
-After npm registry propagation, verify the published CLI and connect the client SDK version pinned in `package.json` to the published server to confirm the canonical tool catalog:
-
-```bash
-npx -y rea-agents@latest --help
-npx -y rea-agents@latest doctor
-npx -y rea-agents@latest setup --yes --all-detected
-npx -y rea-agents@latest mcp
-```
+Keep new implementation commits on main for the next release. The workflow
+owns packaged-artifact verification, npm publication, the published CLI/MCP
+canary, and MCP Registry publication. Sync release metadata back to main after
+publication; see the guide for partial-publication recovery and verification.

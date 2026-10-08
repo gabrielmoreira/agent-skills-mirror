@@ -243,6 +243,45 @@ per-Agent frontier 告诉一个 Agent 自己的路线。peer 之间也需要彼�
 - **attention rollup 是 typed 的，且不分配任何东西。** "现在谁需要决策"的视图可以按
   typed state 排序和标注行；它不创造 claim、lease 或优先级，也不是自动分配的输入。
 
+### 3.7 当前工作与 Goal 要求
+
+当前 Agent 集中处理的工作，与整个 Goal 仍须满足的要求必须分开。反馈视图可以
+将既有事实组织成 `work`、`obligations`、`reflection`、`continuation`；这四项是
+投影分区，不是新的持久 schema，也不是模型可直接改写的权威源：
+
+| 分区 | 含义与既有 owner |
+| --- | --- |
+| `work` | 当前 Todo/frontier、局部验收及精确原文入口。 |
+| `obligations` | Goal 验收条件及保留承诺，独立于当前 Todo 和 Agent。 |
+| `reflection` | 有证据的解释与未决问题；owner 接受证据前只作 advisory。 |
+| `continuation` | 后续可执行工作、等待/停止原因及其范围；复用 frontier 与 settlement owner。 |
+
+目标合同须保留稳定 ID、来源 criterion ID、Goal revision/digest、状态与证据绑定。
+每项已声明的结构化 criterion 都要有明确覆盖关系；切换焦点不能删除或改写已登记
+要求。这只能证明已声明合同的覆盖，不能证明任意自然语言意图已被完整提取。
+复用 `acceptance_contract.ts` 与 `acceptance_authority.ts`；lane replan obligation
+保留自己的生命周期，不能成为第二套 Goal 验收账本。
+
+承诺在同一 revision 内保持稳定；授权 amendment 可以保留历史并显式处理
+lease/frontier 影响后替代旧要求，不能禁止合法目标变更。代码、范围或合同变化后
+证据可能过期，因此 satisfied 不单调。引用非空只是结构有效；验收还须检查证据
+可解析、范围相关、时效有效及 owning validator 的结果，保留失败和未测试的区别。
+现有 selected-work acceptance 不等于全局 Goal acceptance。
+
+全局收口须对账当前 revision 的全部适用要求、跨 Agent 剩余工作和待处理 amendment。
+一个 Agent 的 `no_followup` 或一个 Todo 完成，不能推出 `achieved`。压缩投影须保留
+身份及无损详情入口，不能用展示前缀替代源承诺。
+
+**交付边界：** 既有 typed interaction owner 在准入后生成 Goal 原文、已启用的
+canonical acceptance 与当前 Todo 精确详情读取。普通产品 heartbeat 与 TurnEnvelope
+消费同一清单；短包只传输并签名，不另行制定读取规则。Goal 文档恢复完整意图和停止
+条件，canonical acceptance 与 Todo reader 保留各自权威和范围；selected-work 验收
+文档不能替代完整目标。共享 host adapter 保留选中任务。须一起验证默认 heartbeat
+生成→guard→来源回读与短包传输，不能用一条路径替另一条验收。尚未
+实现完整义务账本、全局收口门禁、读取执行的自动证明或模型遵循资格。这些继续归
+R1/R4/R5 与 S11，本 RFC 不隐式开启新的 acceptance policy。下一完整切片应让既有
+结构化 criterion 穿过任务切换和重启，在同一 owner 拒绝覆盖丢失并使过期证据失效。
+
 ## 4. Authority matrix
 
 ### 4.1 `GoalAmendmentAuthority` 到底是什么
@@ -559,6 +598,10 @@ root intent 不能自动 commit，除非 Goal 创建时已经精确委托该 cla
 
 测试至少必须证明：
 
+- 工作切换、压缩、重启与交接保留已声明要求的身份和覆盖关系；
+- 末尾验收条件可通过精确详情取回，不能替换为别的 Todo 或旧展示；
+- 删除或改写 criterion 须经过授权 amendment；缺失、无关或过期引用不能满足验收；
+- 另一 Agent 仍有未完成要求时，局部完成不能结清整个 Goal；
 - own-lane replan 不能改变 canonical intent；
 - unclaimed work 可见，但 claim/lease 前不能执行；
 - pending proposal 不影响无关 peer；

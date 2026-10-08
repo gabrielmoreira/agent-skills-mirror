@@ -10,7 +10,7 @@ Identify the consumer and infer their knowledge only from what they said or supp
 
 Match form to consumer: people need readable, manageable prose and clear referents; parsers need stable structure and the full field set. Lay the report out so a reader finds the part they need without reading the rest; which part that is, and where they look first, depends on the reader, the kind of report, and the medium. Present each result before the evidence, pending decision, or requested artifact needed to trust or act on it. For multiple outcomes, write one answer and state each fact once where it changes understanding or action.
 
-Omit process unless it constrains the result, must be repeated, or is evidence. Never omit a material limit or detach it from the claim it qualifies. When omission would create a false picture, state work not done and why, assumptions, unknowns with the check that would settle them, and anything else that could change the conclusion.
+Omit process unless it constrains the result, must be repeated, or is evidence. Never omit a material limit or detach it from the claim it qualifies. When omission would create a false picture, state required work left undone and why, assumptions, unknowns with the check that would settle them, and anything else that could change the conclusion.
 
 Put required actions first and in execution order, phrased in the reader's terms. Make statements checkable with explicit referents. If a finding needs no action, say so.
 

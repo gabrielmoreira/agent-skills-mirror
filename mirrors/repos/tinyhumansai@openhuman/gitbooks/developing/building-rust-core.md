@@ -23,7 +23,7 @@ If you want the full desktop app (`pnpm dev`, Tauri, frontend tooling), use [Get
 
 ## 1. Install the pinned Rust toolchain
 
-The repository pins Rust in [`rust-toolchain.toml`](../../rust-toolchain.toml):
+The repository pins Rust in [`rust-toolchain.toml`](https://github.com/tinyhumansai/openhuman/blob/main/rust-toolchain.toml):
 
 - Channel: `1.96.1`
 - Components: `rustfmt`, `clippy`
@@ -115,7 +115,7 @@ Notes:
 The `openhuman` core crate links a large single rlib, so the edit → `cargo
 check`/`cargo test` inner loop is frequently link-bound. A faster linker (mold
 on Linux, lld on macOS) can cut a large slice off every incremental relink.
-[`.cargo/config.toml`](../../.cargo/config.toml) documents the manual
+[`.cargo/config.toml`](https://github.com/tinyhumansai/openhuman/blob/main/.cargo/config.toml) documents the manual
 opt-in, but the easiest path is:
 
 ```bash
@@ -196,7 +196,7 @@ Why these matter:
 
 If you are building the desktop shell instead of the core-only crate, install the broader dependency set.
 
-**Ubuntu / Debian** (mirrored from [`.github/workflows/build-desktop.yml`](../../.github/workflows/build-desktop.yml)):
+**Ubuntu / Debian** (mirrored from [`.github/workflows/build-desktop.yml`](https://github.com/tinyhumansai/openhuman/blob/main/.github/workflows/build-desktop.yml)):
 
 ```bash
 sudo apt-get update

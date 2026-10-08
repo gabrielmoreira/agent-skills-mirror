@@ -40,6 +40,14 @@ pwsh -File scripts/spo-provision-list.ps1 -PlanPath path/to/plan.json
 3. After the user confirms, rerun with `-Execute -ConfirmToken PROVISION-SPO-LIST`.
 4. Report the result and check it as described below.
 
+## Create a folder inside a library
+
+Use `scripts/spo-create-folder.ps1` to create a nested folder path in an existing library. It verifies the library, then creates and confirms each missing segment parent first. Dry run by default; a real write needs `-Execute -ConfirmToken CREATE-SPO-FOLDER`.
+
+```bash
+pwsh -File scripts/spo-create-folder.ps1 -LibraryName sheriff -FolderPath "administrative documents/awards"
+```
+
 ## Verification
 
 The dry-run summary lists the library; afterwards a Get-PnPList re-check finds it.

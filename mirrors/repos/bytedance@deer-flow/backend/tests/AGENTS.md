@@ -2,6 +2,10 @@
 
 Backend tests must preserve the runtime invariants they exercise without changing production execution topology.
 
+Upload case-collision coverage uses separate HTTP requests and preserves both
+reported payloads. Observe real filename-claim inputs to pin the disk seed;
+case-insensitive hosts can otherwise mask a missing seed through link retries.
+
 Channel reload cancellation regressions must assert the worker returned the
 stale snapshot before checking that newer runtime config survived. Completion
 alone cannot prove the race: loader exceptions are caught and return `None`.
@@ -32,6 +36,22 @@ The local sandbox's UTF-8 subprocess guard inspects each text-mode call with
 `ast`, checking both `encoding` and `errors`; module-wide literal counts can
 hide unpinned calls behind unrelated settings.
 
+## PostgreSQL batch fixtures
+
+Batch fixtures use `support.postgres.asyncpg_test_url` to map libpq `sslmode`
+to asyncpg `ssl` and remove unsupported `channel_binding` before constructing
+database config. Preserve TLS modes, credentials and other query options;
+reject conflicting `ssl`/`sslmode` values. CI uses `?sslmode=disable`; validate
+that URI shape against a real test database, not only a parameter-free local
+URI. Reuse the normalized config for reopening and teardown, and drop only the
+fixture's UUID schema. This is test-only handling; production connection and
+TLS policy are unchanged.
+
+The 0033 batch-evidence migration fixture uses the same adapter. Its connection
+contract probes execute the actual migration test setup through SQLAlchemy's
+dialect argument conversion, stopping before database acquisition; the real
+SQLite/PostgreSQL cases still exercise upgrade, downgrade and re-upgrade.
+
 ## Real Compose tests
 
 `support/compose.py` probes `docker compose version --short` and requires Compose
@@ -46,6 +66,13 @@ Never start or stop a stack from these tests.
 through offline HTTP transports. Keep its directly imported `anthropic` SDK in
 the backend `dev` dependency group rather than relying on `langchain-anthropic`
 to supply it transitively.
+
+## User repository ordering
+
+`test_auth.py` pins `list_user_ids()` ordering with fixed UTC timestamps and UUIDs.
+Cover both creation-time precedence and the lexical stored-ID tie-break for
+equal timestamps through the real SQLite repository; do not assume wall-clock
+calls are distinct or weaken the result to an unordered comparison.
 
 ## Router auth fixtures
 

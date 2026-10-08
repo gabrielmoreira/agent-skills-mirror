@@ -1,3 +1,10 @@
+---
+description: >-
+  The small decision model: what it answers, where it is called, what it
+  costs, and how it is configured.
+icon: scale-balanced
+---
+
 # Jev
 
 Jev is a decision model, not a text generator. Give it a request and a
@@ -87,9 +94,9 @@ would only add a network round trip for no gain.
 `crates/openhuman-core/src/modules/browser_task.rs` hands browser tasks to
 TinyComputer's task members (`StartTask`, then `AwaitTask` until the task
 pauses or finishes), confined to the browser surface and the allowed websites.
-The decision model is chosen in `[computer] decision_model` — Jev (through
+The decision model is chosen in `[computer] decision_model`: Jev (through
 the hosted proxy when signed in, or the user's OpenRouter key), OpenJev, or
-Sage — and a failed step goes to the rescue model (`[computer] rescue_model`,
+Sage. A failed step goes to the rescue model (`[computer] rescue_model`,
 up to `max_rescues` times) before the task fails. An irreversible step pauses
 as `needs_approval`; the browser tool holds it behind a one-use token and only
 `confirm_pending`, through the host approval gate, answers `ContinueTask`.

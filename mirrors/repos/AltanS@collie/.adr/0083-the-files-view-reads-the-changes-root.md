@@ -1,6 +1,6 @@
 # 0083 — The Files view reads the Changes root
 
-- **Status:** Accepted
+- **Status:** Accepted. Amended by [ADR 0086](./0086-reads-need-the-pairing-token.md): reads need the pairing token, so the context's "reads were open" is no longer true.
 - **Date:** 2026-10-05
 - **Shipped in:** pending (1.17.0)
 - **Relates to:** [ADR 0065](./0065-the-changes-view-reads-git-read-only.md), whose last bullet named a
@@ -244,3 +244,26 @@ list's head line names the root at the left and the `+added −removed` totals a
 left the header's second line. The header keeps Filter, the Tree toggle (Changes only) and Refresh.
 The "{count} ignored hidden" footer is the only switch for ignored rows: once they are shown it
 reads "{count} ignored shown" and offers **Hide**. Read "Changes only" above as the Changes segment.
+
+## Amended 2026-10-07: Files opens at the pane's folder
+
+The web side only; the root and the bridge are unchanged. A pane that had `cd`-ed into a subfolder
+opened Files at the workspace folder, above where it works. The belt's Files button now opens the
+tree on the pane's folder when that lies strictly below the root the phone derives (`paneFilesDir`,
+`web/src/lib/file-paths.ts`, from `paneFilesRoot` and the pane's cwd), as `?dir=<relative path>`, a
+step down from the pane. When the cwd is the root, outside it, under `.git`, unknown or not a POSIX
+path, or when the operator chose Changes only (the root then opens as the list), it opens the root
+as before. The path sent is relative; the bridge still looks the root up itself. The arrow from that
+folder steps back to the pane, and the breadcrumb reaches the root (ADR 0067, amended the same day).
+
+## Amended 2026-10-08: the opened file is checked too
+
+The race above is now closed on the handle, before any byte is read, for the text read and the image
+read alike (`openedFileAllowed` and `kernelPathOf`, `bridge/files-view.ts`). On Linux the kernel's
+own name for the open file, read from `/proc/self/fd/<fd>`, must lie inside the root's real path and
+pass the deny rules. Where there is no `/proc`, the path is resolved and checked again, and its
+`lstat` must be the handle's own file (device and inode). A folder swapped for a link out between the
+check and the open now answers `unknown-path`. `openat2(RESOLVE_BENEATH)` would still be the cleaner
+tool. The hard-link consequence above stands: a hard link is the same inode under a name inside the
+root, so both checks pass it, and a file with more than one link is not refused, because package
+managers such as pnpm hard-link ordinary files.

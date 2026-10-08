@@ -7,6 +7,9 @@ x-claim-provenance:
 - claim: "The Degardis compiler is distributed as the degardis package on the Python Package Index, whose project page is the authority on obtaining it, and its command is degardis."
   source: "https://pypi.org/project/degardis/"
   scope: "degardis package"
+- claim: "Pip installs the latest version satisfying its constraints, prefers stable releases by default, and retains an already satisfied installation unless --upgrade is specified."
+  source: "https://pip.pypa.io/en/stable/cli/pip_install/"
+  scope: "pip install requirement selection and upgrade behavior; verified 2026-10-06"
 ---
 
 An authoring run needs one **effective compiler**: the exact compiler invocation whose own help and manual govern this work. Prefer a compiler the requester supplied or explicitly designated; otherwise use an already available installed compiler. Never silently substitute another copy or release because it is easier to invoke.
@@ -27,7 +30,9 @@ If several candidates are available and none was supplied or designated, do not 
 
 Accessing a package source, installing prerequisites, installing Degardis, upgrading it, or replacing the effective compiler are separate actions. Take one only when that exact reach/effect is authorized and the active task permits it. Authorization for one action authorizes none of the others.
 
-When acquisition from the public package is the authorized fallback, use only the current package's own authoritative installation information to establish runtime requirements, supported installation methods, and prerequisite tooling. Establish that the target environment satisfies the selected method before changing it. If no authoritative compatible method is reachable, stop before source work and report what is missing rather than guessing an install command.
+For public-package installation, use the latest stable release unless the requester or standing instructions specify a version or source. Before changing the environment, check its runtime and tooling against the package's current installation instructions; if no compatible method is available, report the blocker rather than install an older release.
+
+With pip, invoke it through the target environment's own interpreter, as `<interpreter> -m pip install degardis`, adding `--upgrade` when upgrading: a bare `pip` or `python` command can resolve to a different environment.
 
 ## Format compatibility
 
@@ -36,6 +41,6 @@ When acquisition from the public package is the authorized fallback, use only th
 - **A different compiler is authorized and established to accept the source:** select it explicitly as the new effective compiler, then re-establish help, manual, and format acceptance before source work.
 - **Migration is authorized and an authoritative contract establishes how to preserve the older source's meaning:** migration belongs to revision and must preserve behavior separately from compiler acceptance.
 
-Compiler releases before 2.0.0 shipped no manual, so an older compiler cannot supply the contract for its own format. For source format 1 that contract is the reference published with release 1.0.1 of the compiler, https://github.com/Khojasteh/degardis/blob/v1.0.1/docs/reference.md, which describes format 1 as entries, workflows, and profiles. Reaching it is a read outside the supplied material and needs the authority such a read requires; while it is unreachable or unauthorized, a format-1 source has no authoritative contract in hand and its incompatibility is reported as it stands.
+If the compiler supplies no manual for the source format, obtain an authoritative format reference within the authorized read boundary or leave the format contract unresolved.
 
-After any authorized prerequisite action, inspect the resulting exact state and establish the capability it was meant to supply. A failed or unchanged prerequisite is reported once with the next evidence or authority needed; do not repeat an equivalent attempt.
+After any authorized prerequisite action, verify its result; for installation, record the version and invocation and compare the installed version with the intended release. A failed or unchanged prerequisite is reported once with the next evidence or authority needed; do not repeat an equivalent attempt.

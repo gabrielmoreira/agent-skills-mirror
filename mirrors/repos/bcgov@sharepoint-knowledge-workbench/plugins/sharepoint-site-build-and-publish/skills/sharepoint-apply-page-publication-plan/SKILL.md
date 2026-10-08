@@ -4,7 +4,7 @@ plugin: sharepoint-site-build-and-publish
 description: Executes a PublishPlan (built by sharepoint-plan-page-publication or sharepoint-publish-markdown-files) either through an explicitly injected Python uploader or through a real PnP executor that creates and publishes modern pages. Use to carry out a page-publication plan. Zero tenant I/O by default.
 allowed-tools: Bash, Read
 examples:
-  - "pwsh -File scripts/spo-upload-plan.ps1 -PlanPath plan.json -SiteUrl \"https://tenant.sharepoint.com/sites/Test\""
+  - "pwsh -File scripts/spo-publish-modern-page.ps1 -PlanPath plan.json -SiteUrl \"https://tenant.sharepoint.com/sites/Test\""
   - "python3 -c \"import sys; sys.path.insert(0, 'scripts'); from sharepoint_upload import upload_pages; upload_pages(plan, uploader)\""
 ---
 
@@ -24,7 +24,7 @@ Execute a `PublishPlan`'s actions: create a modern page (or upload a site asset)
 
 - Zero tenant I/O unless the caller explicitly injects a real `uploader`. `upload_pages` raises `NotImplementedError` without one,
   and stops on the first failed action rather than reporting partial success.
-- The real executor `scripts/spo-upload-plan.ps1` is dry-run by default and writes nothing without
+- The real executor `scripts/spo-publish-modern-page.ps1` is dry-run by default and writes nothing without
   `-Execute -ConfirmToken UPLOAD-SPO-PLAN`. A real run is a live tenant write that the user runs.
 - Never attempt raw `.aspx` upload (blocked). Create pages with `Add-PnPPage` / `Add-PnPPageTextPart` / `Publish-PnPPage`.
 - Page creation from pre-rendered HTML fragments only (the `content-render-sharepoint-pages` skill's output, planned by `sharepoint-plan-page-publication`). The executor refuses a plan tagged `source_format: markdown`; a plan with no tag is accepted as before. File and asset upload
@@ -34,7 +34,7 @@ Execute a `PublishPlan`'s actions: create a modern page (or upload a site asset)
 ## Quick start
 
 ```bash
-pwsh -File scripts/spo-upload-plan.ps1 -PlanPath plan.json -SiteUrl "https://tenant.sharepoint.com/sites/Test"
+pwsh -File scripts/spo-publish-modern-page.ps1 -PlanPath plan.json -SiteUrl "https://tenant.sharepoint.com/sites/Test"
 ```
 
 ## Workflow

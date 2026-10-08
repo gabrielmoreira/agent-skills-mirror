@@ -1,13 +1,15 @@
 ---
 description: >-
-  118+ third-party integrations - Gmail, Notion, GitHub, Slack, Stripe, Calendar
+  Managed OAuth into Gmail, Notion, GitHub, Slack, Stripe, Calendar
   and more - with one-click OAuth and zero API keys.
 icon: plug
 ---
 
-# Third-party Integrations (118+)
+# Third-party Integrations
 
-OpenHuman ships with backend-proxied access to **118+ third-party services**. Connecting any of them through the managed path is a one-click OAuth flow inside the app, there are no API keys to wire by hand, and no plugin marketplace to navigate.
+OpenHuman ships with backend-proxied access to the connector platform's managed-auth catalog, **119 toolkits** as the app knows them. Connecting one through the managed path is a one-click OAuth flow inside the app: no API keys to wire by hand, and no plugin marketplace to navigate.
+
+That figure is the catalog the app ships (`KNOWN_COMPOSIO_TOOLKITS` in `app/src/components/composio/toolkitMeta.tsx`, pinned at 119 by `toolkitMeta.test.tsx`). What you can actually connect is whatever the backend's allowlist returns when the page loads, and the per-toolkit action schemas are fetched live, so no number in this repository bounds the total actions reachable.
 
 Under the hood, the connector layer is powered by [Composio](https://composio.dev). In the default managed mode, OpenHuman's backend owns the Composio API key, OAuth token brokering, rate limits, and trigger webhook fan-out. If you switch to direct mode, the core talks to Composio with your own Composio API key; synchronous tool calls work, but real-time trigger webhooks must be configured on your own webhook infrastructure.
 
@@ -43,28 +45,28 @@ Click **Connect** on any integration. A browser window opens for OAuth. Once you
 
 Each integration shows its current status:
 
-- **Not connected**. integration has not been set up.
-- **Connected**. integration is active and being synced.
-- **Manage**. active integration with options to reconfigure or disconnect.
+- **Not connected**: the integration has not been set up.
+- **Connected**: the integration is active and being synced.
+- **Manage**: an active integration, with options to reconfigure or disconnect.
 
 You can revoke any connection at any time from the **Connections** page.
 
 ## Messaging channels
 
-Three integrations are special. OpenHuman uses them to _talk back_ to you, not just read from them:
+Some integrations are not just something to read from: OpenHuman uses them to _talk back_ to you. Eight channels have a setup flow in the app, and more are available by hand in `config.toml`. The three you are most likely to start with:
 
-- **Telegram**. the primary messaging channel. Two-way: send and receive messages, manage chats, search history, create groups, 80+ actions on your behalf. All actions run through your own encrypted credentials.
-- **Discord**. send and receive messages via Discord. Connect your account to receive OpenHuman messages there.
-- **Web**. a browser-based chat interface within the desktop app. Messages stay entirely local.
+- **Telegram**: the usual first choice. Two-way, with a managed one-click connection or your own bot token.
+- **Discord**: two-way, by OAuth or your own bot token, with a server and channel picker.
+- **Web**: the chat inside the desktop app itself. Messages stay entirely local.
 
-Set your default under **Connections → Channels**. The active route status shows which channel is currently in use. Telegram offers two credential modes: connect via OpenHuman (one-click, encrypted) or provide your own credentials for maximum control.
+Set your default under **Connections → Channels**. [Messaging Channels](../channels.md) has the full list and what each one can do.
 
 ## Beyond the curated catalog: MCP & Skills
 
-The 118+ OAuth connectors are the curated path. Beyond them, OpenHuman opens up the wider open-tooling ecosystem:
+The managed OAuth connectors are the curated path. Beyond them, OpenHuman opens up the wider open-tooling ecosystem:
 
 - **MCP servers**: a built-in registry browses thousands of [Model Context Protocol](https://modelcontextprotocol.io) servers (Smithery + the official registry) that install locally as new agent tools.
-- **Skills**: a browsable, ~90,000-entry catalog of `SKILL.md` capability bundles aggregated from HermesHub, ClawHub, LobeHub and more. (Note: the old in-app skills runtime has been removed; Skills are now a metadata catalog you install from the **Connections → Skills** tab.)
+- **Skills**: a browsable catalog of `SKILL.md` capability bundles aggregated from several public registries, installed from the **Connections → Skills** tab. The old in-app JavaScript sandbox is gone; a skill runs as its own agent session with the interpreters it declares, not as code inside the app.
 
 See [MCP Servers & Skills](mcp-and-skills.md) for the full picture.
 
@@ -72,8 +74,8 @@ See [MCP Servers & Skills](mcp-and-skills.md) for the full picture.
 
 Two capabilities ship native rather than as integrations because they're load-bearing for the desktop experience:
 
-- [**Voice**](../native-tools/voice.md). STT in, TTS out, plus a live Google Meet agent that joins meetings, stores them as conversations in memory, and can speak back into the call.
-- [**Native tools**](../native-tools/README.md). built-in web search, web-fetch scraper, and a full filesystem/git/lint/test/grep coder toolset that the agent uses out of the box.
+- [**Voice**](../native-tools/voice.md): STT in, TTS out, and a live voice agent you can interrupt mid-sentence.
+- [**Native tools**](../native-tools/README.md): built-in web search, a web-fetch scraper, and a full filesystem, git, lint, test and grep coder toolset the agent has out of the box.
 
 ## Privacy boundary
 

@@ -1,16 +1,18 @@
 ---
-description: The desktop host (`crates/openhuman-app/`) - Tauri v2 + WebView, IPC, embedded core lifecycle, core bridge.
+description: >-
+  The desktop host in crates/openhuman-app/: Tauri v2 and WebView, the IPC
+  command surface, the embedded core's lifecycle, and the core JSON-RPC bridge.
 icon: desktop
 ---
 
-# Tauri shell (`crates/openhuman-app/`)
+# Tauri Shell
 
-The desktop host for OpenHuman: Tauri v2 + WebView, IPC commands, window management, and bridging to the embedded `openhuman-core` Rust runtime (core JSON-RPC). It does **not** duplicate the full domain stack; that lives in `crates/openhuman-core` (library `openhuman_core`; the `openhuman-core` binary is `crates/openhuman-cli/src/main.rs`).
+`crates/openhuman-app/` is the desktop host for OpenHuman: Tauri v2 and WebView, IPC commands, window management, and the bridge to the embedded `openhuman-core` Rust runtime over core JSON-RPC. It does **not** duplicate the full domain stack; that lives in `crates/openhuman-core` (library `openhuman_core`; the `openhuman-core` binary is `crates/openhuman-cli/src/main.rs`).
 
 ## Responsibilities
 
 1. **Web UI**. Load the Vite build from `app/dist` (or dev server on port 1420).
-2. **IPC**. Expose an explicit set of Tauri commands (see [Commands](#tauri-ipc-commands-app-src-tauri)).
+2. **IPC**. Expose an explicit set of Tauri commands (see [Commands](#tauri-ipc-commands-cratesopenhuman-app)).
 3. **Core lifecycle**. Run the core JSON-RPC server as an in-process tokio task (`core_process.rs`) and hand the renderer its URL/bearer via `core_rpc_url` / `core_rpc_token`.
 4. **Window + tray**. Desktop window behavior (main, mascot, notch, overlay windows) and system tray (see `lib.rs`).
 5. **Session ownership**. Log the user in and keep the current user fresh (`session/`, backed by `openhuman_tinyhumans::session`): exchange the login token, validate the JWT against `GET /auth/me`, cache `/auth/me`, and hand the resulting credential to the core with `auth.set_credential`. The core never talks to the backend's auth endpoints itself.
@@ -39,7 +41,7 @@ Non-desktop targets fail at compile time (`compile_error!` in `lib.rs`).
 
 `crates/openhuman-app/src/` is a flat set of modules (no `commands/` or `utils/` subtree). Key modules:
 
-```
+```text
 crates/openhuman-app/src/
 ├── lib.rs                  # `run()`, tray/menu, plugins, `generate_handler!`, most window/update/lifecycle commands
 ├── main.rs                 # Binary entry
@@ -79,7 +81,7 @@ There is **no** `src-tauri/src/services/session_service.rs` in this tree; sessio
 
 ### Data flow: UI → core
 
-```
+```text
 React (fetch)
     → POST http://127.0.0.1:<port>/rpc   (URL from `core_rpc_url`,
                                           bearer from `core_rpc_token`)
@@ -102,8 +104,8 @@ The renderer talks to the local core **directly over HTTP**: `app/src/services/c
 
 ### Related
 
-- IPC surface: see the [Commands](#tauri-ipc-commands-app-src-tauri) section below
-- HTTP bridge: see the [Core bridge & helpers](#core-bridge-helpers-app-src-tauri) section below
+- IPC surface: see the [Commands](#tauri-ipc-commands-cratesopenhuman-app) section below
+- HTTP bridge: see the [Core bridge & helpers](#core-bridge--helpers-cratesopenhuman-app) section below
 - Rust domains and runtime: `crates/openhuman-core/src/`, `crates/openhuman-core/src/core/`
 - Shared RPC contracts + HTTP client: `crates/openhuman-rpc/` (also used by `crates/openhuman-tui` for envelope decoding)
 

@@ -1,60 +1,41 @@
 ---
 name: common-context-optimization
-description: Maximize context window efficiency, reduce latency, and prevent lost-in-middle issues through strategic masking and compaction. Use when token budgets are tight, tool outputs overflow the context, conversations drift from intent, or latency spikes from cache misses.
+description: Manage context and prompt-cache costs without losing task state. Use for context management, orchestration cost, token budgets, large tool outputs, cache misses, or long-running conversations.
 metadata:
   triggers:
     files:
-    - '*.log'
-    - 'chat-history.json'
+      - "*.log"
+      - "chat-history.json"
     keywords:
-    - reduce tokens
-    - optimize context
-    - summarize history
-    - clear output
+      - reduce tokens
+      - optimize context
+      - summarize history
+      - clear output
+      - context management
+      - prompt-cache
+      - prompt caching
+      - orchestration cost
 ---
+
 ## **Priority: P1 (HIGH)**
 
+## Workflow
 
-## 1. Observation Masking (Noise Reduction)
-
-**Problem**: Large tool outputs (logs, JSON lists) overwhelm context and degrade reasoning.
-**Solution**: Replace raw output with semantic summaries _after_ consumption.
-
-1. **Identify** outputs exceeding 50 lines or 1 KB.
-2. **Extract** critical data points immediately.
-3. **Mask** by rewriting history to replace raw data with summary placeholder.
-4. **See** `references/masking.md` for patterns.
-
-See [implementation examples](references/implementation.md) for masking patterns.
-
-## 2. Context Compaction (State Preservation)
-
-**Problem**: Long conversations drift from original intent.
-**Solution**: Recursive summarization that preserves _State_ over _Dialogue_.
-
-1. **Trigger** compaction every 10 turns or 8k tokens.
-2. **Compact**:
- - **Keep**: User Goal, Active Task, Current Errors, Key Decisions.
- - **Drop**: Chat chit-chat, intermediate tool calls, corrected assumptions.
-3. **Format**: Update System Prompt or Memory File with compacted state.
-4. **See** `references/compaction.md` for algorithms.
-
-See [implementation examples](references/implementation.md) for compacted state format.
-
-## 3. KV-Cache Awareness (Latency)
-
-**Goal**: Maximize pre-fill cache hits.
-
-- **Static Prefix**: Enforce strict ordering — System -> Tools -> RAG -> User.
-- **Append-Only**: Never insert into middle of history; append new turns only.
-
-## References
-
-- [Observation Masking Patterns](references/masking.md)
-- [Compaction Algorithms](references/compaction.md)
+1. **Inspect** host capabilities; do not assume agents can rewrite history, prompts, or memory.
+2. **Project outputs** after consuming them: retain decisions, evidence, errors, and required values; point to complete logs/artifacts by stable reference.
+3. **Bound context** at host-supported boundaries. Carry goal, active slice, authority, decisions, blockers, evidence links, and next action; preserve a stable append-only prefix where supported.
+4. **Compact** only when useful and supported. Keep required details retrievable; never discard source evidence or rely on a fixed turn/token threshold.
+5. **Measure** cache reads, replayed input, and total actor cost across the whole task. Separate observed usage from estimates; no invoice, savings, or efficacy claims without evidence.
 
 ## Anti-Patterns
 
-- **No raw tool dumps**: Mask large outputs immediately after extracting data.
-- **No unbounded growth**: Compact every 10 turns to preserve intent over dialogue.
-- **No middle insertions**: Append-only history maximizes KV cache hits.
+- **No history rewrite assumption**: Project outputs or create artifact references; use only host-supported controls.
+- **No fixed threshold**: Compact from observed context pressure and task needs, not a universal turn/token count.
+- **No evidence deletion**: Keep stable references to source outputs, decisions, and verification.
+- **No partial cost claim**: Include cache reads, replay, and total actor cost; label estimates.
+
+## References
+
+- [Compaction](references/compaction.md)
+- [Masking and output projection](references/masking.md)
+- [Implementation and cost measurement](references/implementation.md)

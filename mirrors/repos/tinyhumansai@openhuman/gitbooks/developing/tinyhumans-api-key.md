@@ -1,3 +1,10 @@
+---
+description: >-
+  What a single TinyHumans API key unlocks, how it is resolved, and which
+  seams read it.
+icon: key
+---
+
 # One TinyHumans API key
 
 One TinyHumans credential unlocks every managed backend surface: chat
@@ -52,7 +59,7 @@ Two wire forms, chosen by endpoint:
 - **Managed inference** (`{api_url}/openai/v1`): `Authorization: Bearer
   <key>`. `OpenHumanBackendModel::resolve_bearer` prefers the stored API key
   over an app session when both exist.
-- **Backend REST** (`BackendOAuthClient`, `IntegrationClient`):
+- **Backend REST** (`BackendClient`, `IntegrationClient`):
   `x-api-key: <key>`.
 
 `crates/openhuman-core/src/security/credentials/api_key.rs` owns storage and

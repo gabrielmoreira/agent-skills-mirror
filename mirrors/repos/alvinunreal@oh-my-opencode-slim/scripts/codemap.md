@@ -16,6 +16,11 @@ Maintain repository-level build, packaging, and release validation automation. G
     src/skills/codemap/SKILL.md, src/skills/simplify/SKILL.md, etc.).
   - Performs clean install smoke by importing the installed server entry with Node and the optional OpenTUI-backed
     ./tui entry with Bun in a temp project.
+- `verify-companion-manifest.ts`
+  - Verifies the packaged Companion manifest matches `companion/Cargo.toml` and the
+    TypeScript fallback manifest.
+  - Requires the complete supported release-asset set and valid SHA-256 digests.
+  - Runs from `prepublishOnly` so npm publish fails closed on stale Companion metadata.
 - `verify-opencode-host-smoke.ts`
   - Builds temporary OpenCode environment (bin from bun add opencode-ai), mounts the plugin tarball,
     launches opencode serve, and probes http://127.0.0.1:<port>/global/health.
@@ -56,6 +61,8 @@ Maintain repository-level build, packaging, and release validation automation. G
 - `bun run gen:build-info` runs gen-build-info.ts: version + timestamp stamp into src/generated/build-info.ts.
 - `bun run verify:release` runs verify-release-artifact.ts: sanitize dist -> pack artifact -> validate files ->
   install/import both server and TUI entrypoints.
+- `bun run verify:companion-manifest` runs verify-companion-manifest.ts before npm publish to keep
+  the Rust crate, packaged manifest, fallback manifest, asset names, and checksums synchronized.
 - `bun run verify:host-smoke` runs verify-opencode-host-smoke.ts: pack tarball -> boot isolated host -> wait for health ->
   verify no plugin-load errors.
 - `bun run cache:smoke` runs cache-smoke.ts: start server -> run scenarios -> collect request logs ->

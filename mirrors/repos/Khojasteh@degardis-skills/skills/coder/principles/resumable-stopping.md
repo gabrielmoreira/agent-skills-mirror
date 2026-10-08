@@ -1,13 +1,14 @@
 ---
 title: Resumable stopping
 applicability:
-- When the work may end before its requested outcome is complete
+- When the work may end before an outcome it was asked for is complete
+- When another session or agent is to take over this work
 - Before starting a sequence that would leave damage if it stopped partway
 ---
 
 When the requester's done signal is reached, stop without starting another unit or asking whether to continue. For other stops, use the remedy for the observed cause rather than forcing it into a convenient label:
 
-- **Requester redirection:** authority to stop or redirect, not a limit. Stop at the next safe checkpoint and hand over without asking for confirmation already given.
+- **Requester redirection:** an instruction to stop or change course; it is authority, not a limit. Stop at the next safe checkpoint and hand over without asking for confirmation already given. A question about whether, where, or how the work continues is not one: it leaves the choice with the requester, and naming a course neither chooses nor permits it. Answer it from the observed state, saying that this run can continue or naming the cause that stops it and what would carry the work on, such as a handoff for a fresh session or another agent once the requester permits one, and start nothing the question names until the requester chooses it.
 - **Volume limit:** more work remains than one run can close. Partition it into independently closable units and report only closed units as complete.
 - **State limit:** the state no longer supports a verifiable next action. Stop at the next safe checkpoint before new consequential work, write the handoff, and recommend that the requester continue from it in a fresh session.
 - **Decision limit:** state is verifiable but the next action needs missing input or authority. Ask only when decision-relevant; if unavailable or refused, close independent units, report exactly what is missing and what it unlocks, and stop the dependent work. A fresh session does not supply the decision.

@@ -105,9 +105,12 @@ Opt out of the whole feature with `context.compaction_enabled = false` or `OPENH
 Beyond the deterministic compressors, TokenJuice can route plain text through a **ModernBERT** token-salience model that scores and drops low-information spans. The TinyJuice compressor exposes the optional ML slot, and OpenHuman bridges it to Kompress in `crates/openhuman-core/src/inference/tokenjuice/ml/`.
 
 - **Off by default.** Enable with `ml_compression_enabled = true` in `[tokenjuice]`.
-- **Runs locally** as the `kompress` backend of the shared Python runtime sidecar. No data leaves your machine.
+- **Runs locally** as the `kompress` backend of the long-running Python host
+  process OpenHuman keeps warm for Python-backed models
+  (`crates/openhuman-core/src/runtime/python_server/`), reached over a private
+  stdio protocol. No data leaves your machine.
 - **Tunable:** `ml_model_id` (default `answerdotai/ModernBERT-base`), `ml_target_ratio` (default `0.5`), `ml_max_input_chars` (default `200000`), `ml_device` (`cpu`/`auto`), `ml_sidecar_idle_timeout_secs`.
-- **Graceful:** if the sidecar is unavailable or an input exceeds the char cap, it degrades to the native compressors without ever failing the agent loop.
+- **Graceful:** if that process is unavailable or an input exceeds the char cap, it degrades to the native compressors without ever failing the agent loop.
 
 ---
 

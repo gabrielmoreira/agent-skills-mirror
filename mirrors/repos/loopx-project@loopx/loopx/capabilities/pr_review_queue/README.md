@@ -220,6 +220,18 @@ opening event is outside its window; neither metadata nor this marker proves
 backend weights, review independence, host delivery, liveness or merge authority.
 
 The same body validator is used for published review readback and merge readiness.
+Behavior-bearing reviews also fill the existing
+`observable_semantics.decision_text_assessment`: inspect agent-consumed prose
+even when fields, commands and enums are unchanged. Changed instructions need
+clause comparisons and passed real-caller counterfactuals covering ordering,
+evidence, modality, scope, continuation and stop conditions. Missing evidence or
+semantic drift blocks approval; an intentional change needs its authorization
+basis. Unchanged text may use a reasoned `not_applicable`. This is part of the
+existing evidence judgment, not a new receipt or automatic meaning detector.
+Character budgets are cost guards: a justified increase is preferable to
+discarding useful control-plane meaning. Model comprehension remains unverified
+unless separately tested.
+
 For behavior-bearing changes, the five sections require respectively 40, 80,
 180, 120 and 60 explanatory letters/numbers; reviews without executable or
 policy changes use 20, 30, 50, 30 and 20. Headings, code blocks, URL targets,

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Panniantong/Agent-Reach` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `Panniantong/Agent-Reach` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Panniantong/Agent-Reach` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 2 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,8 +60,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`agent_reach/skill/SKILL.md`](agent_reach/skill/SKILL.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`llms.txt`](llms.txt) |
+| 2 | ✓ | [`llms.txt`](llms.txt) |
 
 ---
 
