@@ -221,6 +221,23 @@ the cookie import.
   (`default_claude_max_5x` / `default_claude_max_20x`), it is surfaced in the label as "Max 5x" / "Max 20x".
 
 ## Web API (cookies)
+- Optional subscription dates come from `GET /api/organizations/{org_id}/subscription_details` on `claude.ai`,
+  using an existing manual or cached session cookie. They do not come from the quota response or OAuth expiry.
+  `next_charge_at` / `next_charge_date` supply renewal; `plan_ending_at` / `plan_ending_before` supply paid-access
+  expiration and take precedence over renewal. Calendar-only dates stay calendar-only when displayed.
+- The menu and Settings preview reuse the shared subscription row. Missing, unavailable, or unrecognized billing
+  data does not invent a date or fail usage. CLI JSON exposes `subscriptionRenewsAt` / `subscriptionExpiresAt`
+  and a corresponding `...IsDateOnly: true` when the server only supplies a calendar date.
+- OAuth enrichment additionally verifies the OAuth profile's account and organization against the cookie session
+  before and after billing. OAuth credentials alone cannot fetch these dates. No cookie discovery, credential
+  repair, sign-in, or new Keychain access is performed for billing; cookie source Off disables it.
+- App and CLI use the same provider fetch and normal account-scoped publication. Billing has a separate two-second
+  total budget after quota succeeds; expiry, errors, or a changed verified owner leave successful quota intact.
+  No delayed billing task writes back into an already published snapshot, and dates are not carried across refreshes.
+- Availability is determined by the authenticated billing response, not the Pro/Max/Team/Enterprise plan label.
+  The fixtures cover the reported subscription schema, including cancellation and absent dates; they do not
+  establish that every plan or organization role can access this endpoint. Team/Enterprise billing access and
+  live cancelled subscriptions remain unverified. Quota resets and Extra usage balances are independent.
 - Session quota warnings ignore a weekly quota promoted into the primary field when the five-hour payload is missing. Existing session warning history stays tied to its account, and weekly warnings continue independently.
 - Preferences → Providers → Claude → Cookie source (Automatic or Manual).
 - Manual mode accepts a `Cookie:` header from a claude.ai request.

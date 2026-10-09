@@ -307,7 +307,7 @@ The `.ralphrc` file at your project root is read at startup. Environment variabl
 
 > **Security (Issue #346):** `.ralphrc` lives in the repository, so Ralph parses it as data — it is **never executed**. Only `KEY=VALUE` lines for known configuration keys are applied (optional `export` prefix, `"double"`/`'single'` quotes and trailing `# comments` are fine). Values are literal: `$`, backticks, backslashes and control characters are rejected in **any** value (even single-quoted), unquoted values may not contain other shell syntax, numeric keys (call limits, timeouts, thresholds, costs, `CLAUDE_MIN_VERSION`) must be numbers, unknown keys are ignored with a warning, and `~` is not expanded (write the full path).
 >
-> Keys that decide what Ralph runs — `CLAUDE_CODE_CMD`, `RALPH_SHELL_INIT_FILE`, `SANDBOX_DOCKER_IMAGE`, `SANDBOX_E2B_TEMPLATE` — accept only their stock values from `.ralphrc` (`claude` / `npx @anthropic-ai/claude-code`, the official sandbox image, the `base` template; `RALPH_SHELL_INIT_FILE` none at all), and `SANDBOX_DOCKER_NETWORK` accepts only `bridge` or `none`. Set custom values in your environment (or with `--sandbox-image` / `--sandbox-template` / `--sandbox-network`), so a repository can't choose what runs on your machine. The same rules apply to `ralph-import` and `tools/inspect-allowed-tools.sh`.
+> Keys that decide what Ralph runs — `CLAUDE_CODE_CMD`, `RALPH_SHELL_INIT_FILE`, `SANDBOX_DOCKER_IMAGE`, `SANDBOX_E2B_TEMPLATE` — accept only their stock values from `.ralphrc` (`claude` / `npx @anthropic-ai/claude-code`, the official sandbox image, the `base` template; `RALPH_SHELL_INIT_FILE` none at all), and `SANDBOX_DOCKER_NETWORK` accepts only `bridge` or `none`. `RALPH_DIR` (where Ralph keeps its state and logs and reads `PROMPT.md`) is environment-only: `RALPH_DIR=.my-ralph ralph` relocates everything, including the integrity check. Set custom values in your environment (or with `--sandbox-image` / `--sandbox-template` / `--sandbox-network`), so a repository can't choose what runs on your machine. The same rules apply to `ralph-import` and `tools/inspect-allowed-tools.sh`.
 >
 > `ALLOWED_TOOLS` is still read from `.ralphrc`, so it is **not** a permission boundary against an untrusted repository (and `PROMPT.md` is repository-controlled too). Likewise `GITHUB_ISSUE` (with `AUTO_CLOSE`, `CREATE_PR`, …) can name any repository your `gh` login can write to. Run repositories you don't trust with `--sandbox docker` or `--sandbox e2b`, and review their `.ralphrc` before enabling GitHub lifecycle flags.
 
@@ -458,6 +458,10 @@ These keys have no CLI flag equivalent — they can only be set in `.ralphrc` or
 | `CB_NO_PROGRESS_THRESHOLD` | `3` | Open circuit breaker after N consecutive loops with no file changes. |
 | `CB_SAME_ERROR_THRESHOLD` | `5` | Open circuit breaker after N consecutive loops with the same error. |
 | `CB_OUTPUT_DECLINE_THRESHOLD` | `70` | Open circuit breaker if output size declines by more than N%. |
+| `CB_PERMISSION_DENIAL_THRESHOLD` | `2` | Open circuit breaker after N consecutive loops with permission denials. |
+| `MAX_CONSECUTIVE_TEST_LOOPS` | `3` | Exit after N consecutive test-only loops. |
+| `MAX_CONSECUTIVE_DONE_SIGNALS` | `2` | Exit after N consecutive "done" signals. |
+| `TEST_PERCENTAGE_THRESHOLD` | `30` | Flag when more than N% of recent loops are test-only. |
 | `CB_COOLDOWN_MINUTES` | `30` | Minutes in OPEN state before transitioning to HALF_OPEN for recovery attempt. |
 | `CB_AUTO_RESET` | `false` | Skip cooldown on startup and reset directly to CLOSED. Reduces safety; prefer for fully unattended CI runs. |
 | `PROJECT_NAME` | `"my-project"` | Used in prompts and log output for identification. |

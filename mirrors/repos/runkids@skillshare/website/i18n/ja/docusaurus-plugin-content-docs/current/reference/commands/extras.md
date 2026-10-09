@@ -77,6 +77,8 @@ skillshare extras init <name> --file <filename> [--as <filename>] --target <path
 | `--as <filename>` | すべての Target で書き出すファイル名（デフォルト: `--file` の名前）。`--file` が必要 |
 | `--mode <mode>` | sync モード: `merge`（デフォルト）、`copy`、または `symlink`。`import` は `--file` 指定時のみ |
 | `--flatten` | サブディレクトリ内のファイルを Target のルート直下に sync する（`symlink` モードや `--file` とは併用不可） |
+| `--include <pattern>` | 一致するファイルだけを sync する（[ファイルフィルター](#choosing-files)）。複数指定可。`symlink` モードや `--file` とは併用不可 |
+| `--exclude <pattern>` | 一致するファイルをスキップする（[ファイルフィルター](#choosing-files)）。複数指定可。`symlink` モードや `--file` とは併用不可 |
 | `--source <path>` | この Extras 用のカスタム Source ディレクトリ（`extras_source` とデフォルトを上書き。Project モードではプロジェクトルートからの相対パス） |
 | `--force` | すでに存在する Extras を上書き |
 | `--no-tui` | インタラクティブウィザードをスキップし、CLI フラグのみを使用 |
@@ -194,11 +196,13 @@ skillshare extras source ~/company-shared/extras
 
 ### 既存の Extras を操作する
 
-`extras <name>` で Target の sync モードや flatten 設定を変更し、Target を追加・削除できます。モード、flatten、追加した Target の変更は `skillshare sync extras` で適用します。`--remove-target --prune` は管理対象ファイルの復元や削除もすぐに行います。
+`extras <name>` で Target の sync モード、flatten 設定、[ファイルフィルター](#choosing-files)を変更し、Target を追加・削除できます。モード、flatten、フィルター、追加した Target の変更は `skillshare sync extras` で適用します。`--remove-target --prune` は管理対象ファイルの復元や削除もすぐに行います。
 
 ```bash
 skillshare extras <name> --mode <mode> [--target <path>] [-p|-g]
 skillshare extras <name> --flatten | --no-flatten [--target <path>]
+skillshare extras <name> --add-include <pattern> | --add-exclude <pattern> [--target <path>]
+skillshare extras <name> --remove-include <pattern> | --remove-exclude <pattern> [--target <path>]
 skillshare extras <name> --add-target <path> [--as <filename>] [--mode <mode>] [--flatten] [-p|-g]
 skillshare extras <name> --remove-target <path> [--prune] [-p|-g]
 skillshare extras <name> --help
@@ -211,11 +215,15 @@ skillshare extras <name> --help
 | `--mode <mode>` | 新しい sync モード: `merge`、`copy`、または `symlink`。`import` は[単一ファイルの Extras](#single-file-extras) でのみ使用可 |
 | `--flatten` | flatten を有効化（サブディレクトリのファイルを Target ルートに sync） |
 | `--no-flatten` | flatten を無効化 |
+| `--add-include <pattern>` | Target に include パターンを追加（複数指定可） |
+| `--add-exclude <pattern>` | Target に exclude パターンを追加（複数指定可） |
+| `--remove-include <pattern>` | include パターンを削除 |
+| `--remove-exclude <pattern>` | exclude パターンを削除 |
 | `--add-target <path>` | Extras に新しい Target を追加 |
 | `--as <filename>` | `--add-target` の Target ファイル名（単一ファイルの Extras のみ。既定値は `file`） |
 | `--remove-target <path>` | Extras から Target を削除（デフォルトでは設定のみ） |
-| `--prune` | `--remove-target` と併用: その Target 配下の skillshare 管理ファイルも削除。単一ファイルの Extras では、代わりに Target のファイルを元に戻す |
-| `--target <path>` | Target ディレクトリのパス（複数 Target を持つ Extras で `--mode` を使う場合は必須。省略時、`--flatten`/`--no-flatten` はすべての Target に適用される） |
+| `--prune` | `--remove-target` と併用: その Target 配下の skillshare 管理ファイルも削除。単一ファイルの Extras では、代わりに Target のファイルを元に戻す。`symlink` の Target は Extras のソースへのリンクのときだけ削除 |
+| `--target <path>` | Target ディレクトリのパス（複数 Target を持つ Extras で `--mode` やフィルターのフラグを使う場合は必須。省略時、`--flatten`/`--no-flatten` はすべての Target に適用される） |
 | `--project, -p` | Project モードの Extras（`.skillshare/`）を使用 |
 | `--global, -g` | グローバルの Extras（`~/.config/skillshare/`）を使用 |
 
@@ -232,6 +240,10 @@ skillshare extras rules --mode copy --target ~/.claude/rules
 skillshare extras agents --flatten
 skillshare extras agents --no-flatten
 
+# Claude には 2 ファイルだけ、それ以外では下書きをスキップ
+skillshare extras docs --target ~/.claude/docs --add-include index.md --add-include learning.md
+skillshare extras docs --target ~/.cursor/docs --add-exclude "draft*"
+
 # 既存の Extras に新しい Target を追加する（その後 sync）
 skillshare extras rules --add-target ~/.cursor/rules
 skillshare extras commands --add-target ~/.config/opencode/commands --mode copy
@@ -244,7 +256,7 @@ skillshare extras rules --remove-target ~/.cursor/rules
 skillshare extras rules --remove-target ~/.cursor/rules --prune
 ```
 
-TUI（`e` キー）と Web UI（各 Target のモードのドロップダウンと flatten チェックボックス）からも操作できます。
+TUI（`e` キー）と Web UI の Target メニューからも操作できます。Web UI の **Edit target…** では Target のフォルダ、ファイル名、ファイルフィルターも変更でき、**Edit extra…** では Extras の名前変更や別の Source フォルダへの切り替えができます。Target フォルダや Source フォルダの変更はすぐに反映されます。skillshare は古い場所に作ったリンクを削除し（コピーしたファイルは残ります）、sync します。名前を変更しても Source フォルダは移動せず、その Extras の `source` として記録されます。`agents` と `memory` という名前の Extras は名前を変更できません。
 
 ### `extras remove`
 
@@ -329,6 +341,33 @@ extras:
 **制約:**
 - `merge` モードと `copy` モードでのみ動作します — `symlink` モードとは併用できません
 - `collect` は新しく collect したファイルを Source のルートに配置します（新規ファイルにはサブディレクトリへのマッピングはありません）
+
+---
+
+## ファイルを選ぶ {#choosing-files}
+
+フォルダの Extras では、Target ごとに `include` と `exclude` で Source の一部のファイルだけを sync できます。
+
+```yaml
+extras:
+  - name: docs
+    targets:
+      - path: ~/.claude/docs
+        include: [index.md, learning.md]
+      - path: ~/.cursor/docs
+        mode: copy
+        exclude: ["draft*", images/]
+```
+
+パターンは `.gitignore` の構文で、`flatten` や拡張子変換で名前が変わる前の、Source 内でのファイルのパスに対して照合されます。
+
+- `/` を含まないパターンはどの階層にも一致します。`draft*` は `notes/draft.md` もスキップします。
+- `/` で終わるパターンはフォルダ全体を対象にします（例: `images/`）。`**` は任意の数のフォルダに一致します。
+- `include` があると、一致するファイルだけが sync されます。`exclude` はその後に適用されます。
+
+`include` のパターンがどのファイルにも一致しないとき、`sync` は警告を出します。多くはタイプミスです。
+
+フィルターに一致しなくなったファイルは、次の sync で `merge` モードならリンクが削除されます。`copy` モードは以前コピーしたファイルを削除しないので、自分で削除してください。フィルターはフォルダ全体をリンクする `symlink` モードや[単一ファイルの Extras](#single-file-extras) では使えません。`extras collect` は Target のフィルターで除外されるファイルをスキップします。
 
 ---
 

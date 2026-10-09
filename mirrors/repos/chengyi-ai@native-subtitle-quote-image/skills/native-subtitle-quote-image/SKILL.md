@@ -186,7 +186,7 @@ python3 "<SKILL_DIR>/scripts/native_subtitle_stitch.py" render-script VIDEO \
   --aspect 3:4 --width 1440
 ```
 
-脚本会尝试 macOS、Windows 和 Linux 常见 CJK 字体。无法自动找到时，用 `--font /path/to/font.ttc` 指定已获授权的字体。需要调整字幕条在原帧中的垂直采样位置时，使用 `--band-center`；不要把它当作行距参数。
+脚本会尝试 macOS、Windows 和 Linux 常见 CJK 字体；台词含谚文时优先尝试韩文字体（macOS AppleSDGothicNeo、Windows Malgun Gothic），`--font` 始终最优先。无法自动找到时，用 `--font /path/to/font.ttc` 指定已获授权的字体。需要调整字幕条在原帧中的垂直采样位置时，使用 `--band-center`；不要把它当作行距参数。
 
 ## 逐张质检与有界返工
 

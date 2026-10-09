@@ -1,6 +1,6 @@
 ---
 name: last30days
-version: "3.27.0"
+version: "3.27.1"
 description: "Research what people actually say about any topic in the last 30 days. Pulls posts and engagement from Reddit, X, YouTube, TikTok, Hacker News, Polymarket, GitHub, and the web. Includes a doctor health check to diagnose broken or missing sources."
 argument-hint: 'last30days nvidia earnings reaction | last30days AI video tools | last30days what users want in react'
 allowed-tools: Bash, Read, Write, AskUserQuestion, WebSearch
@@ -69,7 +69,7 @@ metadata:
 ---
 
 
-# last30days v3.27.0: Research Any Topic from the Last 30 Days
+# last30days v3.27.1: Research Any Topic from the Last 30 Days
 
 ## Skill contract
 
@@ -182,6 +182,8 @@ GENERAL / NEWS / PROMPTING / RECOMMENDATIONS use `What I learned:` on line 3 and
 
 **LAW 7 - YOU ARE THE PLANNER. `--plan` IS MANDATORY ON NAMED-ENTITY TOPICS.** The hosting reasoning model generates the JSON query plan without an external provider key. Internal planning/fallback is a headless/cron path. Named entities include proper nouns, products, people, projects, and topics benefiting from handle resolution. Before the research command, verify it contains `--plan "$QUERY_PLAN_FILE"` (or another readable plan-file path); otherwise stop and generate the plan through Step 0.75. Do not interpret “provider” in an engine message as a requirement for credentials to write your own plan. The explicit no-host-WebSearch and jobs-only exceptions remain scoped to their runbook/mode procedures.
 
+Agent research without `--plan` exits 2 before live probes unless exempt.
+
 Write plans to a temporary file using `mktemp` with trailing `XXXXXX`, a cleanup trap, `cat >|`, and a quoted heredoc delimiter. Pass the file path, never inline single-quoted JSON. Run the heredoc directly in the shell tool. Never wrap the invocation in `bash -lc '...'` or `zsh -lc '...'`; apostrophes in search/ranking strings must remain data.
 
 **LAW 8 - CITE READABLY FOR THE CURRENT HOST.** Governing host/tool requirements and user instructions determine required links before renderer preferences. Detection is deterministic: `CLAUDECODE` or `CURSOR_AGENT` set means hidden-link default; both unset means visible-URL default. This renderer split is separate from onboarding; Cursor remains non-modal.
@@ -232,7 +234,7 @@ After the response and required citations, stop and wait unless governing instru
 - Sends search queries to Algolia HN Search API (`hn.algolia.com`) for Hacker News story and comment discovery (free, no auth)
 - Sends search queries to Polymarket Gamma API (`gamma-api.polymarket.com`) for prediction market discovery (free, no auth)
 - Runs `yt-dlp` locally for YouTube search and transcript extraction (no API key, public data)
-- Sends search queries to ScrapeCreators API (`api.scrapecreators.com`) for TikTok and Instagram search, transcript/caption extraction (10,000 free calls, then PAYG)
+- Sends TikTok/Instagram search, YouTube search backfill below the configured floor (default 3; `LAST30DAYS_YT_SC_MIN_ITEMS=0` means empty-only), and transcripts to ScrapeCreators (`api.scrapecreators.com`); keyed calls spend credits (10,000 free, then PAYG).
 - Optionally sends search queries to Brave Search API, Parallel AI API, Perplexity API (`api.perplexity.ai`), or OpenRouter API for web search / synthesis
 - Fetches public Reddit thread data from `reddit.com` for engagement metrics
 - Stores research findings in local SQLite database (watchlist mode only)

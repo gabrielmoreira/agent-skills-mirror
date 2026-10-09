@@ -143,6 +143,8 @@ The wizard asks **What do you want to sync?** after the name: **Folder** or **Si
 | `--as <filename>` | File name to write at every target (default: the `--file` name). Requires `--file` |
 | `--mode <mode>` | Sync mode: `merge` (default), `copy`, or `symlink`; `import`, `prepend` and `append` only with `--file` |
 | `--flatten` | Sync files from subdirectories directly into the target root (cannot be used with `symlink` mode or `--file`) |
+| `--include <pattern>` | Sync only files that match ([file filters](#choosing-files)); repeatable. Not with `symlink` mode or `--file` |
+| `--exclude <pattern>` | Skip files that match ([file filters](#choosing-files)); repeatable. Not with `symlink` mode or `--file` |
 | `--source <path>` | Custom source directory for this extra (overrides `extras_source` and default; relative to the project root in project mode) |
 | `--force` | Overwrite if extra already exists |
 | `--no-tui` | Skip interactive wizard, use CLI flags only |
@@ -260,13 +262,16 @@ skillshare extras source ~/company-shared/extras
 
 ### Operating on an existing extra
 
-Change a target's sync mode or flatten setting, or add/remove a target via `extras <name>`. Run
-`skillshare sync extras` afterward to apply mode, flatten, or added-target changes. `--remove-target
+Change a target's sync mode, flatten setting, or [file filters](#choosing-files), or add/remove a
+target via `extras <name>`. Run `skillshare sync extras` afterward to apply mode, flatten, filter, or
+added-target changes. `--remove-target
 --prune` also restores or removes managed files immediately.
 
 ```bash
 skillshare extras <name> --mode <mode> [--target <path>] [-p|-g]
 skillshare extras <name> --flatten | --no-flatten [--target <path>]
+skillshare extras <name> --add-include <pattern> | --add-exclude <pattern> [--target <path>]
+skillshare extras <name> --remove-include <pattern> | --remove-exclude <pattern> [--target <path>]
 skillshare extras <name> --add-target <path> [--as <filename>] [--mode <mode>] [--flatten] [-p|-g]
 skillshare extras <name> --remove-target <path> [--prune] [-p|-g]
 skillshare extras <name> --help
@@ -279,11 +284,15 @@ skillshare extras <name> --help
 | `--mode <mode>` | New sync mode: `merge`, `copy`, or `symlink`; `import`, `prepend` and `append` only for [single-file extras](#single-file-extras) |
 | `--flatten` | Enable flatten (sync subdirectory files into target root) |
 | `--no-flatten` | Disable flatten |
+| `--add-include <pattern>` | Add an include pattern to the target (repeatable) |
+| `--add-exclude <pattern>` | Add an exclude pattern to the target (repeatable) |
+| `--remove-include <pattern>` | Remove an include pattern |
+| `--remove-exclude <pattern>` | Remove an exclude pattern |
 | `--add-target <path>` | Add a new target to the extra |
 | `--as <filename>` | Target filename for `--add-target` (single-file extras only; defaults to `file`) |
 | `--remove-target <path>` | Remove a target from the extra (config-only by default) |
-| `--prune` | With `--remove-target`: also delete skillshare-managed files under that target. For a single-file extra it restores the target file instead |
-| `--target <path>` | Target directory path (required for `--mode` with multi-target extras; `--flatten`/`--no-flatten` applies to all targets when omitted) |
+| `--prune` | With `--remove-target`: also delete skillshare-managed files under that target. For a single-file extra it restores the target file instead. A `symlink` target is removed only when it still links to the extra's source |
+| `--target <path>` | Target directory path (required for `--mode` and filter flags with multi-target extras; `--flatten`/`--no-flatten` applies to all targets when omitted) |
 | `--project, -p` | Use project-mode extras (`.skillshare/`) |
 | `--global, -g` | Use global extras (`~/.config/skillshare/`) |
 
@@ -300,6 +309,10 @@ skillshare extras rules --mode copy --target ~/.claude/rules
 skillshare extras agents --flatten
 skillshare extras agents --no-flatten
 
+# Sync only two files to Claude, and skip drafts everywhere else
+skillshare extras docs --target ~/.claude/docs --add-include index.md --add-include learning.md
+skillshare extras docs --target ~/.cursor/docs --add-exclude "draft*"
+
 # Add a new target to an existing extra (then sync)
 skillshare extras rules --add-target ~/.cursor/rules
 skillshare extras commands --add-target ~/.config/opencode/commands --mode copy
@@ -312,7 +325,11 @@ skillshare extras rules --remove-target ~/.cursor/rules
 skillshare extras rules --remove-target ~/.cursor/rules --prune
 ```
 
-Also available via the TUI (`e` key) and Web UI (mode dropdown and flatten checkbox on each target).
+Also available via the TUI (`e` key) and the Web UI target menu. In the Web UI, **Edit target…** also
+changes a target's folder, file name, and file filters, and **Edit extra…** renames an extra or points
+it at another source folder. A new target folder or source folder takes effect right away: skillshare
+removes the links it made at the old place (copies stay) and syncs. A rename keeps the source folder
+and records it as the extra's `source`. The extras named `agents` and `memory` cannot be renamed.
 
 ### `extras remove`
 
@@ -398,6 +415,37 @@ extras:
 **Constraints:**
 - Only works with `merge` and `copy` modes — cannot be used with `symlink` mode
 - `collect` places newly collected files in the source root (no subdirectory mapping for new files)
+
+---
+
+## Choosing files {#choosing-files}
+
+Each target of a folder extra can sync only some of the source files with `include` and `exclude`:
+
+```yaml
+extras:
+  - name: docs
+    targets:
+      - path: ~/.claude/docs
+        include: [index.md, learning.md]
+      - path: ~/.cursor/docs
+        mode: copy
+        exclude: ["draft*", images/]
+```
+
+Patterns use `.gitignore` syntax on the file's path inside the source, before `flatten` or an
+extension renames it:
+
+- A pattern without `/` matches at any depth: `draft*` also skips `notes/draft.md`.
+- A pattern ending in `/` covers a folder, like `images/`. `**` matches any number of folders.
+- With `include`, only matching files sync. `exclude` is applied after it.
+
+`sync` warns when an `include` pattern matches no file, which usually means a typo.
+
+When a filter stops matching a file, the next sync removes its link in `merge` mode. `copy` mode
+does not delete files it copied before; remove them yourself. Filters cannot be used with `symlink`
+mode, which links the whole folder, or with a [single-file extra](#single-file-extras). `extras
+collect` skips files the target's filters leave out.
 
 ---
 

@@ -107,7 +107,27 @@ scheduled completion checks, classifications and browser decisions share that
 selection and have separate switches. Existing TypeSafe credentials, opted-in
 features and scheduler thresholds are retained. New configurations default to
 OpenRouter Decider with completion verification enabled once outsourcing is
-configured. Compass completion uses its managed Cloud decision route automatically.
+configured. Compass completion uses its managed Cloud decision route by default;
+an explicitly enabled and consented D1 selection changes that decision route only.
+
+The optional experimental **D1 FP32 WebGPU** decision provider has no inference
+endpoint or API key. Its bounded text/JSON state, questions and inline screenshots
+stay in the local decision Worker. Explicit download consent permits only pinned
+ONNX/config/tokenizer downloads (about 1.9 GB) from Hugging Face, verified against
+the packaged manifest and checksums. The roughly 3.84 GB published package also
+contains a full checkpoint for external reproducibility, but the browser never
+downloads `model.safetensors`. JS/WASM stays bundled with the extension. Cache and
+consent are local and device-bound; no download is triggered by a decision call.
+Usage traces use the existing bounded model/provider/token/cost metadata, not an
+additional copy of D1 state or pixels. Existing separately configured trace and
+research-sharing policies remain applicable.
+
+A local decision provider does not make the main conversation provider local.
+In particular, D1 cannot be the sole positive completion authority: verification
+continues to the active LLM or existing checks. An active cloud LLM can still
+receive the existing bounded task and redacted screenshot/AX evidence through
+that fallback. Selecting D1 does not bypass Strict Secret Mode or consent,
+cancellation, permissions, recipient, payment, authorization or workflow gates.
 
 Successful action-mode `done` and `done_json` attempts send bounded original task,
 requirements, recent action/read evidence, document identity and fresh redacted

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `github/gh-aw` — 26 default patterns, 1 followed patterns, 123 file(s) materialized.
+Mirror of `github/gh-aw` — 26 default patterns, 1 followed patterns, 124 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `github/gh-aw` — 26 default patterns, 1 followed patterns, 123 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 123 |
+| Files         | 124 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -120,68 +120,69 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 59 | ✓ | [`.github/skills/sergo-examples/SKILL.md`](.github/skills/sergo-examples/SKILL.md) |
 | 60 | ✓ | [`.github/skills/skillz-integration/SKILL.md`](.github/skills/skillz-integration/SKILL.md) |
 | 61 | ✓ | [`.github/skills/ssl/SKILL.md`](.github/skills/ssl/SKILL.md) |
-| 62 | ✓ | [`.github/skills/temporary-id-safe-output/SKILL.md`](.github/skills/temporary-id-safe-output/SKILL.md) |
-| 63 | ✓ | [`.github/skills/workflow-step-summaries/SKILL.md`](.github/skills/workflow-step-summaries/SKILL.md) |
-| 64 | ✓ | [`.github/workflows/go-fan.md`](.github/workflows/go-fan.md) |
-| 65 | ✓ | [`.squad/templates/copilot-instructions.md`](.squad/templates/copilot-instructions.md) |
-| 66 | ✓ | [`.squad/templates/skills/agent-collaboration/SKILL.md`](.squad/templates/skills/agent-collaboration/SKILL.md) |
-| 67 | ✓ | [`.squad/templates/skills/agent-conduct/SKILL.md`](.squad/templates/skills/agent-conduct/SKILL.md) |
-| 68 | ✓ | [`.squad/templates/skills/architectural-proposals/SKILL.md`](.squad/templates/skills/architectural-proposals/SKILL.md) |
-| 69 | ✓ | [`.squad/templates/skills/ci-validation-gates/SKILL.md`](.squad/templates/skills/ci-validation-gates/SKILL.md) |
-| 70 | ✓ | [`.squad/templates/skills/cli-wiring/SKILL.md`](.squad/templates/skills/cli-wiring/SKILL.md) |
-| 71 | ✓ | [`.squad/templates/skills/client-compatibility/SKILL.md`](.squad/templates/skills/client-compatibility/SKILL.md) |
-| 72 | ✓ | [`.squad/templates/skills/coordinator-init-mode/SKILL.md`](.squad/templates/skills/coordinator-init-mode/SKILL.md) |
-| 73 | ✓ | [`.squad/templates/skills/coordinator-response-mode/SKILL.md`](.squad/templates/skills/coordinator-response-mode/SKILL.md) |
-| 74 | ✓ | [`.squad/templates/skills/coordinator-source-of-truth/SKILL.md`](.squad/templates/skills/coordinator-source-of-truth/SKILL.md) |
-| 75 | ✓ | [`.squad/templates/skills/cross-machine-coordination/SKILL.md`](.squad/templates/skills/cross-machine-coordination/SKILL.md) |
-| 76 | ✓ | [`.squad/templates/skills/cross-squad-communication/SKILL.md`](.squad/templates/skills/cross-squad-communication/SKILL.md) |
-| 77 | ✓ | [`.squad/templates/skills/cross-squad/SKILL.md`](.squad/templates/skills/cross-squad/SKILL.md) |
-| 78 | ✓ | [`.squad/templates/skills/distributed-mesh/SKILL.md`](.squad/templates/skills/distributed-mesh/SKILL.md) |
-| 79 | ✓ | [`.squad/templates/skills/docs-standards/SKILL.md`](.squad/templates/skills/docs-standards/SKILL.md) |
-| 80 | ✓ | [`.squad/templates/skills/e2e-template-testing/SKILL.md`](.squad/templates/skills/e2e-template-testing/SKILL.md) |
-| 81 | ✓ | [`.squad/templates/skills/economy-mode/SKILL.md`](.squad/templates/skills/economy-mode/SKILL.md) |
-| 82 | ✓ | [`.squad/templates/skills/error-recovery/SKILL.md`](.squad/templates/skills/error-recovery/SKILL.md) |
-| 83 | ✓ | [`.squad/templates/skills/external-comms/SKILL.md`](.squad/templates/skills/external-comms/SKILL.md) |
-| 84 | ✓ | [`.squad/templates/skills/fact-checking/SKILL.md`](.squad/templates/skills/fact-checking/SKILL.md) |
-| 85 | ✓ | [`.squad/templates/skills/gh-auth-isolation/SKILL.md`](.squad/templates/skills/gh-auth-isolation/SKILL.md) |
-| 86 | ✓ | [`.squad/templates/skills/git-workflow/SKILL.md`](.squad/templates/skills/git-workflow/SKILL.md) |
-| 87 | ✓ | [`.squad/templates/skills/github-multi-account/SKILL.md`](.squad/templates/skills/github-multi-account/SKILL.md) |
-| 88 | ✓ | [`.squad/templates/skills/history-hygiene/SKILL.md`](.squad/templates/skills/history-hygiene/SKILL.md) |
-| 89 | ✓ | [`.squad/templates/skills/humanizer/SKILL.md`](.squad/templates/skills/humanizer/SKILL.md) |
-| 90 | ✓ | [`.squad/templates/skills/init-mode/SKILL.md`](.squad/templates/skills/init-mode/SKILL.md) |
-| 91 | ✓ | [`.squad/templates/skills/iterative-retrieval/SKILL.md`](.squad/templates/skills/iterative-retrieval/SKILL.md) |
-| 92 | ✓ | [`.squad/templates/skills/model-selection/SKILL.md`](.squad/templates/skills/model-selection/SKILL.md) |
-| 93 | ✓ | [`.squad/templates/skills/nap/SKILL.md`](.squad/templates/skills/nap/SKILL.md) |
-| 94 | ✓ | [`.squad/templates/skills/notification-routing/SKILL.md`](.squad/templates/skills/notification-routing/SKILL.md) |
-| 95 | ✓ | [`.squad/templates/skills/personal-squad/SKILL.md`](.squad/templates/skills/personal-squad/SKILL.md) |
-| 96 | ✓ | [`.squad/templates/skills/pr-review-response/SKILL.md`](.squad/templates/skills/pr-review-response/SKILL.md) |
-| 97 | ✓ | [`.squad/templates/skills/pr-screenshots/SKILL.md`](.squad/templates/skills/pr-screenshots/SKILL.md) |
-| 98 | ✓ | [`.squad/templates/skills/project-conventions/SKILL.md`](.squad/templates/skills/project-conventions/SKILL.md) |
-| 99 | ✓ | [`.squad/templates/skills/ralph-two-pass-scan/SKILL.md`](.squad/templates/skills/ralph-two-pass-scan/SKILL.md) |
-| 100 | ✓ | [`.squad/templates/skills/reflect/SKILL.md`](.squad/templates/skills/reflect/SKILL.md) |
-| 101 | ✓ | [`.squad/templates/skills/release-process/SKILL.md`](.squad/templates/skills/release-process/SKILL.md) |
-| 102 | ✓ | [`.squad/templates/skills/reskill/SKILL.md`](.squad/templates/skills/reskill/SKILL.md) |
-| 103 | ✓ | [`.squad/templates/skills/retro-enforcement/SKILL.md`](.squad/templates/skills/retro-enforcement/SKILL.md) |
-| 104 | ✓ | [`.squad/templates/skills/reviewer-protocol/SKILL.md`](.squad/templates/skills/reviewer-protocol/SKILL.md) |
-| 105 | ✓ | [`.squad/templates/skills/secret-handling/SKILL.md`](.squad/templates/skills/secret-handling/SKILL.md) |
-| 106 | ✓ | [`.squad/templates/skills/session-recovery/SKILL.md`](.squad/templates/skills/session-recovery/SKILL.md) |
-| 107 | ✓ | [`.squad/templates/skills/squad-commands/SKILL.md`](.squad/templates/skills/squad-commands/SKILL.md) |
-| 108 | ✓ | [`.squad/templates/skills/squad-conventions/SKILL.md`](.squad/templates/skills/squad-conventions/SKILL.md) |
-| 109 | ✓ | [`.squad/templates/skills/squad-help/SKILL.md`](.squad/templates/skills/squad-help/SKILL.md) |
-| 110 | ✓ | [`.squad/templates/skills/squad-version-check/SKILL.md`](.squad/templates/skills/squad-version-check/SKILL.md) |
-| 111 | ✓ | [`.squad/templates/skills/squad/SKILL.md`](.squad/templates/skills/squad/SKILL.md) |
-| 112 | ✓ | [`.squad/templates/skills/test-discipline/SKILL.md`](.squad/templates/skills/test-discipline/SKILL.md) |
-| 113 | ✓ | [`.squad/templates/skills/tiered-memory/SKILL.md`](.squad/templates/skills/tiered-memory/SKILL.md) |
-| 114 | ✓ | [`.squad/templates/skills/versioning-policy/SKILL.md`](.squad/templates/skills/versioning-policy/SKILL.md) |
-| 115 | ✓ | [`.squad/templates/skills/windows-compatibility/SKILL.md`](.squad/templates/skills/windows-compatibility/SKILL.md) |
-| 116 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 117 | ✓ | [`docs/src/content/docs/engines/claude.md`](docs/src/content/docs/engines/claude.md) |
-| 118 | ✓ | [`docs/src/content/docs/engines/gemini.md`](docs/src/content/docs/engines/gemini.md) |
-| 119 | ✓ | [`docs/src/content/docs/experimental/experiments.md`](docs/src/content/docs/experimental/experiments.md) |
-| 120 | ✓ | [`pkg/workflow/data/engines/claude.md`](pkg/workflow/data/engines/claude.md) |
-| 121 | ✓ | [`pkg/workflow/data/engines/gemini.md`](pkg/workflow/data/engines/gemini.md) |
-| 122 | ✓ | [`SKILL.md`](SKILL.md) |
-| 123 | → | [`.github/aw/token-optimization.md`](.github/aw/token-optimization.md) |
+| 62 | ✓ | [`.github/skills/statistics-infographic/SKILL.md`](.github/skills/statistics-infographic/SKILL.md) |
+| 63 | ✓ | [`.github/skills/temporary-id-safe-output/SKILL.md`](.github/skills/temporary-id-safe-output/SKILL.md) |
+| 64 | ✓ | [`.github/skills/workflow-step-summaries/SKILL.md`](.github/skills/workflow-step-summaries/SKILL.md) |
+| 65 | ✓ | [`.github/workflows/go-fan.md`](.github/workflows/go-fan.md) |
+| 66 | ✓ | [`.squad/templates/copilot-instructions.md`](.squad/templates/copilot-instructions.md) |
+| 67 | ✓ | [`.squad/templates/skills/agent-collaboration/SKILL.md`](.squad/templates/skills/agent-collaboration/SKILL.md) |
+| 68 | ✓ | [`.squad/templates/skills/agent-conduct/SKILL.md`](.squad/templates/skills/agent-conduct/SKILL.md) |
+| 69 | ✓ | [`.squad/templates/skills/architectural-proposals/SKILL.md`](.squad/templates/skills/architectural-proposals/SKILL.md) |
+| 70 | ✓ | [`.squad/templates/skills/ci-validation-gates/SKILL.md`](.squad/templates/skills/ci-validation-gates/SKILL.md) |
+| 71 | ✓ | [`.squad/templates/skills/cli-wiring/SKILL.md`](.squad/templates/skills/cli-wiring/SKILL.md) |
+| 72 | ✓ | [`.squad/templates/skills/client-compatibility/SKILL.md`](.squad/templates/skills/client-compatibility/SKILL.md) |
+| 73 | ✓ | [`.squad/templates/skills/coordinator-init-mode/SKILL.md`](.squad/templates/skills/coordinator-init-mode/SKILL.md) |
+| 74 | ✓ | [`.squad/templates/skills/coordinator-response-mode/SKILL.md`](.squad/templates/skills/coordinator-response-mode/SKILL.md) |
+| 75 | ✓ | [`.squad/templates/skills/coordinator-source-of-truth/SKILL.md`](.squad/templates/skills/coordinator-source-of-truth/SKILL.md) |
+| 76 | ✓ | [`.squad/templates/skills/cross-machine-coordination/SKILL.md`](.squad/templates/skills/cross-machine-coordination/SKILL.md) |
+| 77 | ✓ | [`.squad/templates/skills/cross-squad-communication/SKILL.md`](.squad/templates/skills/cross-squad-communication/SKILL.md) |
+| 78 | ✓ | [`.squad/templates/skills/cross-squad/SKILL.md`](.squad/templates/skills/cross-squad/SKILL.md) |
+| 79 | ✓ | [`.squad/templates/skills/distributed-mesh/SKILL.md`](.squad/templates/skills/distributed-mesh/SKILL.md) |
+| 80 | ✓ | [`.squad/templates/skills/docs-standards/SKILL.md`](.squad/templates/skills/docs-standards/SKILL.md) |
+| 81 | ✓ | [`.squad/templates/skills/e2e-template-testing/SKILL.md`](.squad/templates/skills/e2e-template-testing/SKILL.md) |
+| 82 | ✓ | [`.squad/templates/skills/economy-mode/SKILL.md`](.squad/templates/skills/economy-mode/SKILL.md) |
+| 83 | ✓ | [`.squad/templates/skills/error-recovery/SKILL.md`](.squad/templates/skills/error-recovery/SKILL.md) |
+| 84 | ✓ | [`.squad/templates/skills/external-comms/SKILL.md`](.squad/templates/skills/external-comms/SKILL.md) |
+| 85 | ✓ | [`.squad/templates/skills/fact-checking/SKILL.md`](.squad/templates/skills/fact-checking/SKILL.md) |
+| 86 | ✓ | [`.squad/templates/skills/gh-auth-isolation/SKILL.md`](.squad/templates/skills/gh-auth-isolation/SKILL.md) |
+| 87 | ✓ | [`.squad/templates/skills/git-workflow/SKILL.md`](.squad/templates/skills/git-workflow/SKILL.md) |
+| 88 | ✓ | [`.squad/templates/skills/github-multi-account/SKILL.md`](.squad/templates/skills/github-multi-account/SKILL.md) |
+| 89 | ✓ | [`.squad/templates/skills/history-hygiene/SKILL.md`](.squad/templates/skills/history-hygiene/SKILL.md) |
+| 90 | ✓ | [`.squad/templates/skills/humanizer/SKILL.md`](.squad/templates/skills/humanizer/SKILL.md) |
+| 91 | ✓ | [`.squad/templates/skills/init-mode/SKILL.md`](.squad/templates/skills/init-mode/SKILL.md) |
+| 92 | ✓ | [`.squad/templates/skills/iterative-retrieval/SKILL.md`](.squad/templates/skills/iterative-retrieval/SKILL.md) |
+| 93 | ✓ | [`.squad/templates/skills/model-selection/SKILL.md`](.squad/templates/skills/model-selection/SKILL.md) |
+| 94 | ✓ | [`.squad/templates/skills/nap/SKILL.md`](.squad/templates/skills/nap/SKILL.md) |
+| 95 | ✓ | [`.squad/templates/skills/notification-routing/SKILL.md`](.squad/templates/skills/notification-routing/SKILL.md) |
+| 96 | ✓ | [`.squad/templates/skills/personal-squad/SKILL.md`](.squad/templates/skills/personal-squad/SKILL.md) |
+| 97 | ✓ | [`.squad/templates/skills/pr-review-response/SKILL.md`](.squad/templates/skills/pr-review-response/SKILL.md) |
+| 98 | ✓ | [`.squad/templates/skills/pr-screenshots/SKILL.md`](.squad/templates/skills/pr-screenshots/SKILL.md) |
+| 99 | ✓ | [`.squad/templates/skills/project-conventions/SKILL.md`](.squad/templates/skills/project-conventions/SKILL.md) |
+| 100 | ✓ | [`.squad/templates/skills/ralph-two-pass-scan/SKILL.md`](.squad/templates/skills/ralph-two-pass-scan/SKILL.md) |
+| 101 | ✓ | [`.squad/templates/skills/reflect/SKILL.md`](.squad/templates/skills/reflect/SKILL.md) |
+| 102 | ✓ | [`.squad/templates/skills/release-process/SKILL.md`](.squad/templates/skills/release-process/SKILL.md) |
+| 103 | ✓ | [`.squad/templates/skills/reskill/SKILL.md`](.squad/templates/skills/reskill/SKILL.md) |
+| 104 | ✓ | [`.squad/templates/skills/retro-enforcement/SKILL.md`](.squad/templates/skills/retro-enforcement/SKILL.md) |
+| 105 | ✓ | [`.squad/templates/skills/reviewer-protocol/SKILL.md`](.squad/templates/skills/reviewer-protocol/SKILL.md) |
+| 106 | ✓ | [`.squad/templates/skills/secret-handling/SKILL.md`](.squad/templates/skills/secret-handling/SKILL.md) |
+| 107 | ✓ | [`.squad/templates/skills/session-recovery/SKILL.md`](.squad/templates/skills/session-recovery/SKILL.md) |
+| 108 | ✓ | [`.squad/templates/skills/squad-commands/SKILL.md`](.squad/templates/skills/squad-commands/SKILL.md) |
+| 109 | ✓ | [`.squad/templates/skills/squad-conventions/SKILL.md`](.squad/templates/skills/squad-conventions/SKILL.md) |
+| 110 | ✓ | [`.squad/templates/skills/squad-help/SKILL.md`](.squad/templates/skills/squad-help/SKILL.md) |
+| 111 | ✓ | [`.squad/templates/skills/squad-version-check/SKILL.md`](.squad/templates/skills/squad-version-check/SKILL.md) |
+| 112 | ✓ | [`.squad/templates/skills/squad/SKILL.md`](.squad/templates/skills/squad/SKILL.md) |
+| 113 | ✓ | [`.squad/templates/skills/test-discipline/SKILL.md`](.squad/templates/skills/test-discipline/SKILL.md) |
+| 114 | ✓ | [`.squad/templates/skills/tiered-memory/SKILL.md`](.squad/templates/skills/tiered-memory/SKILL.md) |
+| 115 | ✓ | [`.squad/templates/skills/versioning-policy/SKILL.md`](.squad/templates/skills/versioning-policy/SKILL.md) |
+| 116 | ✓ | [`.squad/templates/skills/windows-compatibility/SKILL.md`](.squad/templates/skills/windows-compatibility/SKILL.md) |
+| 117 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 118 | ✓ | [`docs/src/content/docs/engines/claude.md`](docs/src/content/docs/engines/claude.md) |
+| 119 | ✓ | [`docs/src/content/docs/engines/gemini.md`](docs/src/content/docs/engines/gemini.md) |
+| 120 | ✓ | [`docs/src/content/docs/experimental/experiments.md`](docs/src/content/docs/experimental/experiments.md) |
+| 121 | ✓ | [`pkg/workflow/data/engines/claude.md`](pkg/workflow/data/engines/claude.md) |
+| 122 | ✓ | [`pkg/workflow/data/engines/gemini.md`](pkg/workflow/data/engines/gemini.md) |
+| 123 | ✓ | [`SKILL.md`](SKILL.md) |
+| 124 | → | [`.github/aw/token-optimization.md`](.github/aw/token-optimization.md) |
 
 ---
 

@@ -101,6 +101,19 @@ up to `max_rescues` times) before the task fails. An irreversible step pauses
 as `needs_approval`; the browser tool holds it behind a one-use token and only
 `confirm_pending`, through the host approval gate, answers `ContinueTask`.
 
+`crates/openhuman-core/src/modules/browser_sites.rs` keeps what finished
+browser tasks learned, per site, in `<workspace>/state/computer/sites/`, and
+hands it to the next task on the same site: the plan a run finished with, as
+`StartTask.flow` for the same goal and facts (no planning), and the elements
+it found, as `StartTask.memory` (a remembered element costs one yes/no instead
+of a search). Only a run that finished (`done`, or its payment checkpoint)
+teaches anything; a plan is kept only when its run needed no rescue and holds
+no fact value its goal does not, and a reused plan that fails or needs a
+rescue is forgotten. Elements holding a fact value or page text are not kept,
+entries expire after 30 days unused, and none of it reaches the agent's memory
+or prompts. `[browser] learn_from_tasks` turns it off, and
+`modules.browser_forget_sites` forgets one site or all.
+
 ## Measured results
 
 From `docs/plans/jev-tool-search-baseline.md`, measured 2026-09-22 against

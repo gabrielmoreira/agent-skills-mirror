@@ -74,7 +74,8 @@ especially `specs/2026-09-25-router-design-notes.md`. Open work is tracked in
   - A watch runs through `serveWatch`: it ends when its group's backend is replaced or removed, and
     when the service stops (`closeWatches`), so clients re-watch and shutdown never waits on it.
   - Watches are long-running requests, identified with the apiserver's `RequestInfoFactory`: they
-    count in `grafana_router_longrunning_requests`, not in the duration histogram or in-flight gauge.
+    count in `grafana_router_http_requests_total` and `grafana_router_longrunning_requests`, not in
+    the duration histogram or in-flight gauge.
   - Upgrades are rejected with a 400 (`rejectUpgrade`): watch over WebSocket is not supported. The
     deprecated `/watch/` path form is not supported either.
 
@@ -167,6 +168,10 @@ Each `Backend.Key()` encodes its source: the CR resource versions, `aggregate:<t
   - In middleware mode, only requests the router owns (`owns`) are instrumented.
   - New backends must name their source (`Backend.Source`), and new sources should report through
     `loaderStatus`, or their loads don't appear in the metrics.
+  - Managed plugin connections (`pluginManifestsTarget.pluginClients`) use dskit's gRPC client
+    instrumentation interceptors and `otelgrpc`, which propagates the caller's trace to the plugin.
+    Connections are keyed by host and plugin ID, because each records its calls under one
+    `plugin_id`. Local plugins are measured by `grafana_plugin_request_*` instead.
 
 ## Lifecycle
 

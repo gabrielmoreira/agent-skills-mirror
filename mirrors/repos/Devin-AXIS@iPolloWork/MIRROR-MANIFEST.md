@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Devin-AXIS/iPolloWork` — 26 default patterns, 0 followed patterns, 144 file(s) materialized.
+Mirror of `Devin-AXIS/iPolloWork` — 26 default patterns, 0 followed patterns, 146 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Devin-AXIS/iPolloWork` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 144 |
+| Files         | 146 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -189,20 +189,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 128 | ✓ | [`examples/plugin-packages/video-agent/skills/ipollowork-video-studio/references/video-voiceover.md`](examples/plugin-packages/video-agent/skills/ipollowork-video-studio/references/video-voiceover.md) |
 | 129 | ✓ | [`examples/plugin-packages/video-agent/skills/ipollowork-video-studio/references/video.md`](examples/plugin-packages/video-agent/skills/ipollowork-video-studio/references/video.md) |
 | 130 | ✓ | [`examples/plugin-packages/video-agent/skills/ipollowork-video-studio/SKILL.md`](examples/plugin-packages/video-agent/skills/ipollowork-video-studio/SKILL.md) |
-| 131 | ✓ | [`examples/plugin-packages/video-agent/skills/ipollowork-video-voiceover/SKILL.md`](examples/plugin-packages/video-agent/skills/ipollowork-video-voiceover/SKILL.md) |
-| 132 | ✓ | [`examples/plugin-packages/wechat-channels-ops/AGENTS.md`](examples/plugin-packages/wechat-channels-ops/AGENTS.md) |
-| 133 | ✓ | [`examples/plugin-packages/wechat-channels-ops/skills/wechat-channels-ops-dispatcher/SKILL.md`](examples/plugin-packages/wechat-channels-ops/skills/wechat-channels-ops-dispatcher/SKILL.md) |
-| 134 | ✓ | [`examples/plugin-packages/wechat-channels-ops/skills/wechat-channels-ops-worker/SKILL.md`](examples/plugin-packages/wechat-channels-ops/skills/wechat-channels-ops-worker/SKILL.md) |
-| 135 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-assets/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-assets/SKILL.md) |
-| 136 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-comments/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-comments/SKILL.md) |
-| 137 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-community/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-community/SKILL.md) |
-| 138 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-content/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-content/SKILL.md) |
-| 139 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-messages/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-messages/SKILL.md) |
-| 140 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-publishing/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-publishing/SKILL.md) |
-| 141 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-review/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-review/SKILL.md) |
-| 142 | ✓ | [`examples/plugin-packages/xiaohongshu-ops/AGENTS.md`](examples/plugin-packages/xiaohongshu-ops/AGENTS.md) |
-| 143 | ✓ | [`examples/plugin-packages/xiaohongshu-ops/skills/xhs-ops-dispatcher/SKILL.md`](examples/plugin-packages/xiaohongshu-ops/skills/xhs-ops-dispatcher/SKILL.md) |
-| 144 | ✓ | [`examples/plugin-packages/xiaohongshu-ops/skills/xhs-ops-worker/SKILL.md`](examples/plugin-packages/xiaohongshu-ops/skills/xhs-ops-worker/SKILL.md) |
+| 131 | ✓ | [`examples/plugin-packages/video-agent/skills/ipollowork-video-template-authoring/SKILL.md`](examples/plugin-packages/video-agent/skills/ipollowork-video-template-authoring/SKILL.md) |
+| 132 | ✓ | [`examples/plugin-packages/video-agent/skills/ipollowork-video-voiceover/SKILL.md`](examples/plugin-packages/video-agent/skills/ipollowork-video-voiceover/SKILL.md) |
+| 133 | ✓ | [`examples/plugin-packages/wechat-channels-ops/AGENTS.md`](examples/plugin-packages/wechat-channels-ops/AGENTS.md) |
+| 134 | ✓ | [`examples/plugin-packages/wechat-channels-ops/skills/wechat-channels-ops-dispatcher/SKILL.md`](examples/plugin-packages/wechat-channels-ops/skills/wechat-channels-ops-dispatcher/SKILL.md) |
+| 135 | ✓ | [`examples/plugin-packages/wechat-channels-ops/skills/wechat-channels-ops-worker/SKILL.md`](examples/plugin-packages/wechat-channels-ops/skills/wechat-channels-ops-worker/SKILL.md) |
+| 136 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-assets/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-assets/SKILL.md) |
+| 137 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-comments/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-comments/SKILL.md) |
+| 138 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-community/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-community/SKILL.md) |
+| 139 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-content/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-content/SKILL.md) |
+| 140 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-messages/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-messages/SKILL.md) |
+| 141 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-publishing/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-publishing/SKILL.md) |
+| 142 | ✓ | [`examples/plugin-packages/wechat-official/skills/wechat-official-review/SKILL.md`](examples/plugin-packages/wechat-official/skills/wechat-official-review/SKILL.md) |
+| 143 | ✓ | [`examples/plugin-packages/xiaohongshu-ops/AGENTS.md`](examples/plugin-packages/xiaohongshu-ops/AGENTS.md) |
+| 144 | ✓ | [`examples/plugin-packages/xiaohongshu-ops/skills/xhs-ops-dispatcher/SKILL.md`](examples/plugin-packages/xiaohongshu-ops/skills/xhs-ops-dispatcher/SKILL.md) |
+| 145 | ✓ | [`examples/plugin-packages/xiaohongshu-ops/skills/xhs-ops-worker/SKILL.md`](examples/plugin-packages/xiaohongshu-ops/skills/xhs-ops-worker/SKILL.md) |
+| 146 | ✓ | [`examples/stage-diagrams/skill/SKILL.md`](examples/stage-diagrams/skill/SKILL.md) |
 
 ---
 

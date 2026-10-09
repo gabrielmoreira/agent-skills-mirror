@@ -345,7 +345,7 @@ targets:
 - symlink mode では、フィルターは無視されます
 - copy mode では、フィルターは merge mode と同じように動作します
 - `sync` は、除外されるようになった既存の source-linked または管理対象のエントリを削除します
-- 同じフォルダを共有する target には同じフィルターが必要です。そうでないと、各 sync が互いの結果を打ち消し合い、`sync` が警告を表示します（[`sync` が同じ変更を表示し続ける](/docs/troubleshooting/common-errors#sync-keeps-showing-the-same-changes) を参照）
+- 同じフォルダを共有する target には同じフィルター、mode、target naming が必要です（両方が `symlink` モードの場合、フィルターと命名は影響しません）。そうでないと、各 sync が互いの結果を打ち消し合い、`sync` が警告を表示します（[`sync` が同じ変更を表示し続ける](/docs/troubleshooting/common-errors#sync-keeps-showing-the-same-changes) を参照）
 
 詳細は [Configuration](/docs/reference/targets/configuration#include--exclude-target-filters) を参照してください。
 

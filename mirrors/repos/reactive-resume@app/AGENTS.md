@@ -88,6 +88,7 @@ pnpm db:studio
 - Server startup applies migrations before initializing auth and serving traffic. `pnpm db:migrate` applies them without starting the app; `pnpm db:studio` opens the database UI.
 - After adding user-facing strings, use Lingui macros and run `pnpm lingui:extract`. Catalogs live in `apps/web/locales/*.po`; `pnpm pdf:translations` regenerates PDF translations. Root build/check scripts run PDF translation generation automatically.
 - `pnpm docs:gen` regenerates the OpenAPI spec and semantic CSS reference. Use it when changing those public surfaces.
+- Career/workspace changes: update the mapped user guides and fictional screenshots in the same change. Use `docs/contributing/career-platform.mdx` → **Keep product guides current**; verify UI labels, opt-ins, context, timezone and voice fallback against current code.
 
 ## Ownership map
 

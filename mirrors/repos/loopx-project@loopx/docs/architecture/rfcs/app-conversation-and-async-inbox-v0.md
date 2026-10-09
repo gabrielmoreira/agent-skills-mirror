@@ -73,6 +73,46 @@ Synthetic product previews: [desktop](../../assets/personal-workspace/private-pr
 [narrow](../../assets/personal-workspace/private-project-conversations-narrow.png),
 [revoked workspace](../../assets/personal-workspace/private-project-workspace-revoked.png).
 
+## Selected group topics: isolated ordinary project Chat
+
+Settings → Lark also connects a project App to explicitly selected groups. The
+list comes from that App's provider-observed group membership; Core validates
+the allowlist at configuration time. This is an audience option on the existing
+binding, not a new Goal Channel, listener, queue or model runner. One App retains
+one binding owner. Existing private bindings keep their audience and host grants.
+
+New group bindings verify the selected Bot's App identity; they do not require
+a personal user login in that App profile. The group principal is App-scoped and
+never supplies private-owner authority. Private project/steward connections still
+require both the verified App and its independently verified user. Existing group
+bindings that used a user principal retain that exact identity and native home;
+an explicit disconnect/reconnect selects the new App principal and requires a new
+isolated home/login. Polling or a user's login/logout never migrates a binding.
+
+A human starts a topic by mentioning the Bot. Admission reads the exact provider
+message and, for a continuation, its original root; event text cannot substitute
+the root or mention. Members in that topic share its Session and FIFO; different
+topics, groups and Apps have independent Session identities. Status, stop and new
+target that topic. Admission feedback, streamed posts, terminal edits and receipt
+recovery use the existing delivery path with `source_thread` placement. A revoked
+binding or unreadable source prevents later result delivery.
+
+Group contexts always use `workspace_only` filesystem isolation, even when the
+owner's private project uses `host_default`. Only the selected read/write workspace
+grant is available. Personal portfolio, attached Agent selection, global skills,
+MCP, shell profiles and inherited account environment are unavailable. The native
+host must verify the exact permissions profile and workspace root; its independent
+store needs separate login and is never seeded from personal credentials/history.
+`/status` exposes the project title, not the host's absolute workspace path.
+
+Core, HTTP, provider-readback and native-protocol fixtures exercise these boundaries.
+They are synthetic transport/model evidence, not a live community rollout. The
+[community golden queries](../../product/use-cases/community/golden-queries.md)
+still require an independently authenticated public workspace and actual pilot
+group journeys before either developer group is enabled. Public-source reading
+needs its separately qualified scoped tool; this change does not enable unrestricted
+network or personal browser access.
+
 ## Ordinary workspace writes: default and revocation checkpoint
 
 Ordinary project Chat defaults to `workspace_write` for host-declared roots. The
@@ -112,9 +152,19 @@ inherited variables. Windows execution remains unqualified by the live probes.
 The narrowed profile also disables automatic skill catalog injection and project
 instruction discovery. The agent can read workspace-owned `AGENTS.md` and skills
 through its bounded file tools. Ordinary project Sessions keep native instruction
-and skill discovery. This does not disable explicit host skill resolution, clear
-old conversation context or suppress account-level instructions supplied by the
-host; those remain separate privacy checks.
+and skill discovery. Workspace-only native Sessions now also launch with a private
+`HOME`/`CODEX_HOME`, a minimal process environment and file-based native credential
+storage. Effective MCP servers, including managed and project configuration layers,
+are disabled before the thread opens. Core derives the store identity from the
+authorized workspace and App/owner binding; topics retain independent threads
+without requiring a new login for every message. Default `host_default` Sessions
+keep the account's existing native configuration and authentication.
+
+No authentication or conversation history is copied into the new store. Log in
+through the native Codex flow with `CODEX_HOME` set to the Session's recorded home.
+Existing workspace-only Sessions created with a shared home cannot silently
+resume or migrate: choose a new Session explicitly after configuring its login.
+Ordinary legacy Sessions keep their existing home and exact-thread resume behavior.
 
 The adapter sends the Core-owned named permissions profile, never a simultaneous
 legacy sandbox override, on start and exact-thread resume. It verifies the returned
@@ -124,10 +174,12 @@ permissions. Other executors are rejected for this scope. The native helper uses
 the canonical Codex executable so a home-directory symlink needs no read grant.
 
 This is a filesystem-tool boundary, not complete community Bot isolation. It does
-not authorize group audiences or isolate host-loaded instructions, skills, MCP
-credentials, dynamic tools or a private registry. Those boundaries need their own
-qualification before a public group is enabled; a successful file probe is not
-public Bot acceptance.
+not authorize group audiences, erase historical context, isolate arbitrary host
+dynamic tools or make a checkout containing private files safe to publish. Group
+admission, a clean public workspace, supported independent authentication and live
+privacy/interaction qualification remain required before public enablement; native
+context isolation and a successful file probe are prerequisites, not public Bot
+acceptance.
 
 Typed Core/HTTP/native-host regressions qualify default writes, explicit read-only,
 workspace identity, independent App grants, old-Session rejection and exact-thread

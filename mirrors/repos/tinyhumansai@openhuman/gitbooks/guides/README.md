@@ -47,7 +47,7 @@ Every guide in this section follows the same shape, so you always know where to 
 
 ## The one thing worth knowing first
 
-OpenHuman keeps **the memory of your life on your machine**. The managed backend still brokers sign-in, model routing, integration access, web-search proxying, and some real-time integration triggers. That single fact is behind most of the privacy and recovery advice in this section. If you read only one background page, read [Privacy & Security](../features/privacy-and-security.md).
+OpenHuman keeps your settings, workspace files and secrets on your machine, but **your memory is stored in CortexDB**: the hosted CortexDB that TinyHumans runs (behind your account) or your own CortexDB. The managed backend also brokers sign-in, model routing, integration access, web-search proxying, and some real-time integration triggers. That split is behind most of the privacy and recovery advice in this section. If you read only one background page, read [Privacy & Security](../features/privacy-and-security.md).
 
 Where your data physically lives on disk:
 
@@ -56,7 +56,7 @@ Where your data physically lives on disk:
 | macOS / Linux | `~/.openhuman/`             |
 | Windows       | `%USERPROFILE%\.openhuman\` |
 
-Almost everything in this section (backups, recovery, migration) comes back to that one folder.
+Almost everything in this section (backups, recovery, migration) comes back to that one folder. Memory items are not in it: backing up or deleting the folder neither copies nor erases them.
 
 ---
 
@@ -64,4 +64,4 @@ Almost everything in this section (backups, recovery, migration) comes back to t
 
 - [Privacy & Security](../features/privacy-and-security.md): the trust model every guide here assumes.
 - [Local AI (optional)](../features/model-routing/local-ai.md): the config reference behind the local-model guides.
-- [Memory](../features/memory.md): what the data folder actually holds.
+- [Memory](../features/memory.md): what memory stores and where.

@@ -80,7 +80,7 @@ allow_download = true   # false suits an air-gapped or reproducible deployment
 
 Nothing is downloaded silently either way: the digest comes from the compiled-in registry rather than from the release being fetched.
 
-The `modules` RPC namespace exposes `list`, `status` and `load` (by id, never by path), plus `computer_status` and `browser_check_readiness` for the computer module's own readiness.
+The `modules` RPC namespace exposes `list`, `status` and `load` (by id, never by path), plus `computer_status` and `browser_check_readiness` for the computer module's own readiness, and `browser_forget_sites`, which forgets what browser tasks learned about one site or every site (see [jev.md](jev.md)).
 
 ## Adding or moving one
 

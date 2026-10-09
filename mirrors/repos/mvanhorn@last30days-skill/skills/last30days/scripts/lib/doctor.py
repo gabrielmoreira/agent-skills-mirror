@@ -490,8 +490,8 @@ def _x_record(config):
     # Policy-gated: on an official-only host no run-time cookie source
     # exists unless bird is pinned, and then the note names only the pin.
     #
-    # This check MUST come before grok normalization: a pending bird path takes
-    # precedence over marking X as unconfigured due to an unused grok store.
+    # This check MUST come before grok normalization: a pending bird path or
+    # a recorded setup denial takes precedence over an unused grok store.
     # Handle both "unconfigured" (all backends missing) and "error" (grok present
     # but opt-in, no auto-chain backend usable) when pending bird applies.
     #
@@ -502,7 +502,24 @@ def _x_record(config):
     pending_bird = policy.cookie_discovery and env.x_pending_browser_auth(
         config, local_only=True
     )
-    if pending_bird and record["status"] in ("unconfigured", health.ERROR):
+    reported_denials = set((config.get("LAST30DAYS_X_COOKIE_ACCESS_DENIED") or "").split(","))
+    known_browsers = set(env.COOKIE_BROWSER_NAMES)
+    if (
+        policy.cookie_discovery
+        and str(config.get("BROWSER_CONSENT") or "").lower() in {"1", "true", "yes", "on"}
+        and str(config.get("FROM_BROWSER") or "").strip().lower() != "off"
+    ):
+        denied_browsers = sorted(reported_denials & known_browsers)
+    else:
+        denied_browsers = []
+    if denied_browsers and record.get("pinned") and env.x_backend_pin(config) != "bird":
+        observation = (
+            "Last setup: permission denied reading X cookies from "
+            f"{', '.join(denied_browsers)}; current access not checked"
+        )
+        record["note"] = f"{record['note']}; {observation}" if record["note"] else observation
+        return record
+    if (pending_bird or denied_browsers) and record["status"] in ("unconfigured", health.ERROR):
         backends_list = record.get("backends", [])
         auto_backends = [b for b in backends_list if b.get("name") in auto_chain_names]
         # Only apply pending-bird upgrade if ALL auto-chain backends are MISSING.
@@ -511,6 +528,15 @@ def _x_record(config):
             b.get("status") == health.MISSING for b in auto_backends
         )
         if all_auto_missing:
+            if denied_browsers:
+                record["status"] = health.ERROR
+                record["tier"] = TIER_BY_STATUS[health.ERROR]
+                record["note"] = (
+                    "Last setup: permission denied reading X cookies from "
+                    f"{', '.join(denied_browsers)}; current access not checked"
+                )
+                record["fix"] = env.X_COOKIE_ACCESS_FIX
+                return record
             record["status"] = health.OK
             record["tier"] = TIER_BY_STATUS[health.OK]
             if policy.official_only:
@@ -1690,6 +1716,9 @@ def _config_fingerprint(config: Dict[str, Any]) -> str:
         "keys_present": _setup_block(config)["keys_present"],
         "pins": {var: str(config.get(var) or "") for var in _FINGERPRINT_PIN_VARS},
         "include_sources": str(config.get("INCLUDE_SOURCES") or ""),
+        "x_cookie_access_denied": str(config.get("LAST30DAYS_X_COOKIE_ACCESS_DENIED") or ""),
+        "browser_consent": str(config.get("BROWSER_CONSENT") or ""),
+        "from_browser": str(config.get("FROM_BROWSER") or ""),
     }
     canonical = json.dumps(signals, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `matlab/matlab-agentic-toolkit` — 26 default patterns, 0 followed patterns, 157 file(s) materialized.
+Mirror of `matlab/matlab-agentic-toolkit` — 26 default patterns, 0 followed patterns, 158 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `matlab/matlab-agentic-toolkit` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 157 |
+| Files         | 158 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -127,95 +127,96 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 66 | ✓ | [`skills-catalog/matlab-data-import-and-analysis/matlab-choose-big-data-solution/SKILL.md`](skills-catalog/matlab-data-import-and-analysis/matlab-choose-big-data-solution/SKILL.md) |
 | 67 | ✓ | [`skills-catalog/matlab-data-import-and-analysis/matlab-import-export-data/SKILL.md`](skills-catalog/matlab-data-import-and-analysis/matlab-import-export-data/SKILL.md) |
 | 68 | ✓ | [`skills-catalog/matlab-data-import-and-analysis/matlab-secure-credentials/SKILL.md`](skills-catalog/matlab-data-import-and-analysis/matlab-secure-credentials/SKILL.md) |
-| 69 | ✓ | [`skills-catalog/matlab-environment-and-settings/matlab-migrate-settings/SKILL.md`](skills-catalog/matlab-environment-and-settings/matlab-migrate-settings/SKILL.md) |
-| 70 | ✓ | [`skills-catalog/matlab-external-language-interfaces/matlab-call-python/SKILL.md`](skills-catalog/matlab-external-language-interfaces/matlab-call-python/SKILL.md) |
-| 71 | ✓ | [`skills-catalog/matlab-external-language-interfaces/matlab-upgrade-mex-ic/SKILL.md`](skills-catalog/matlab-external-language-interfaces/matlab-upgrade-mex-ic/SKILL.md) |
-| 72 | ✓ | [`skills-catalog/matlab-programming/matlab-validate-function-arguments/SKILL.md`](skills-catalog/matlab-programming/matlab-validate-function-arguments/SKILL.md) |
+| 69 | ✓ | [`skills-catalog/matlab-external-language-interfaces/matlab-call-python/SKILL.md`](skills-catalog/matlab-external-language-interfaces/matlab-call-python/SKILL.md) |
+| 70 | ✓ | [`skills-catalog/matlab-external-language-interfaces/matlab-upgrade-mex-ic/SKILL.md`](skills-catalog/matlab-external-language-interfaces/matlab-upgrade-mex-ic/SKILL.md) |
+| 71 | ✓ | [`skills-catalog/matlab-programming/matlab-validate-function-arguments/SKILL.md`](skills-catalog/matlab-programming/matlab-validate-function-arguments/SKILL.md) |
+| 72 | ✓ | [`skills-catalog/matlab-software-development/matlab-configure-toml-project/SKILL.md`](skills-catalog/matlab-software-development/matlab-configure-toml-project/SKILL.md) |
 | 73 | ✓ | [`skills-catalog/matlab-software-development/matlab-instrument-opentelemetry-tracing/SKILL.md`](skills-catalog/matlab-software-development/matlab-instrument-opentelemetry-tracing/SKILL.md) |
 | 74 | ✓ | [`skills-catalog/matlab-software-development/matlab-modernize-code/SKILL.md`](skills-catalog/matlab-software-development/matlab-modernize-code/SKILL.md) |
 | 75 | ✓ | [`skills-catalog/matlab-software-development/matlab-optimize-memory/SKILL.md`](skills-catalog/matlab-software-development/matlab-optimize-memory/SKILL.md) |
 | 76 | ✓ | [`skills-catalog/matlab-software-development/matlab-optimize-performance/SKILL.md`](skills-catalog/matlab-software-development/matlab-optimize-performance/SKILL.md) |
 | 77 | ✓ | [`skills-catalog/matlab-software-development/matlab-package-toolbox/SKILL.md`](skills-catalog/matlab-software-development/matlab-package-toolbox/SKILL.md) |
 | 78 | ✓ | [`skills-catalog/matlab-software-development/matlab-run-tests/SKILL.md`](skills-catalog/matlab-software-development/matlab-run-tests/SKILL.md) |
-| 79 | ✓ | [`skills-catalog/matlab-software-development/matlab-write-help/SKILL.md`](skills-catalog/matlab-software-development/matlab-write-help/SKILL.md) |
-| 80 | ✓ | [`skills-catalog/matlab-software-development/matlab-write-performance-tests/SKILL.md`](skills-catalog/matlab-software-development/matlab-write-performance-tests/SKILL.md) |
-| 81 | ✓ | [`skills-catalog/matlab-software-development/matlab-write-tests/SKILL.md`](skills-catalog/matlab-software-development/matlab-write-tests/SKILL.md) |
-| 82 | ✓ | [`skills-catalog/parallel-computing/matlab-diagnose-parfor/SKILL.md`](skills-catalog/parallel-computing/matlab-diagnose-parfor/SKILL.md) |
-| 83 | ✓ | [`skills-catalog/parallel-computing/matlab-discover-clusters/SKILL.md`](skills-catalog/parallel-computing/matlab-discover-clusters/SKILL.md) |
-| 84 | ✓ | [`skills-catalog/parallel-computing/matlab-set-up-worker-state/SKILL.md`](skills-catalog/parallel-computing/matlab-set-up-worker-state/SKILL.md) |
-| 85 | ✓ | [`skills-catalog/parallel-computing/matlab-setup-gpu/SKILL.md`](skills-catalog/parallel-computing/matlab-setup-gpu/SKILL.md) |
-| 86 | ✓ | [`skills-catalog/parallel-computing/matlab-use-thread-pool/SKILL.md`](skills-catalog/parallel-computing/matlab-use-thread-pool/SKILL.md) |
-| 87 | ✓ | [`skills-catalog/radar/matlab-design-radar-waveform/SKILL.md`](skills-catalog/radar/matlab-design-radar-waveform/SKILL.md) |
-| 88 | ✓ | [`skills-catalog/radar/matlab-design-radar/SKILL.md`](skills-catalog/radar/matlab-design-radar/SKILL.md) |
-| 89 | ✓ | [`skills-catalog/radar/matlab-import-tracking-data/SKILL.md`](skills-catalog/radar/matlab-import-tracking-data/SKILL.md) |
-| 90 | ✓ | [`skills-catalog/radar/matlab-simulate-radar-detections/SKILL.md`](skills-catalog/radar/matlab-simulate-radar-detections/SKILL.md) |
-| 91 | ✓ | [`skills-catalog/reporting-and-database-access/matlab-connect-databricks/SKILL.md`](skills-catalog/reporting-and-database-access/matlab-connect-databricks/SKILL.md) |
-| 92 | ✓ | [`skills-catalog/reporting-and-database-access/matlab-generate-report/SKILL.md`](skills-catalog/reporting-and-database-access/matlab-generate-report/SKILL.md) |
-| 93 | ✓ | [`skills-catalog/reporting-and-database-access/matlab-use-database/SKILL.md`](skills-catalog/reporting-and-database-access/matlab-use-database/SKILL.md) |
-| 94 | ✓ | [`skills-catalog/reporting-and-database-access/matlab-use-duckdb/SKILL.md`](skills-catalog/reporting-and-database-access/matlab-use-duckdb/SKILL.md) |
-| 95 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-analyze-ams-waveform/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-analyze-ams-waveform/SKILL.md) |
-| 96 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-analyze-antenna-structures/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-analyze-antenna-structures/SKILL.md) |
-| 97 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-analyze-em/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-analyze-em/SKILL.md) |
-| 98 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-analyze-pcb-pdn/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-analyze-pcb-pdn/SKILL.md) |
-| 99 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-assemble-pcb-layout/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-assemble-pcb-layout/SKILL.md) |
-| 100 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-design-antenna/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-design-antenna/SKILL.md) |
-| 101 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-design-pcb-coupler/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-design-pcb-coupler/SKILL.md) |
-| 102 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-design-pcb-filter/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-design-pcb-filter/SKILL.md) |
-| 103 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-design-pcb-passive/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-design-pcb-passive/SKILL.md) |
-| 104 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-design-pcb-transmission-line/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-design-pcb-transmission-line/SKILL.md) |
-| 105 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-export-session-script/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-export-session-script/SKILL.md) |
-| 106 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-integrate-antenna/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-integrate-antenna/SKILL.md) |
-| 107 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-integrate-pcb-circuit/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-integrate-pcb-circuit/SKILL.md) |
-| 108 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-manage-pcb-material/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-manage-pcb-material/SKILL.md) |
-| 109 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-model-ams-systems/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-model-ams-systems/SKILL.md) |
-| 110 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-model-rf/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-model-rf/SKILL.md) |
-| 111 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-model-serdes-systems/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-model-serdes-systems/SKILL.md) |
-| 112 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-model-via/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-model-via/SKILL.md) |
-| 113 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-optimize-pcb-design/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-optimize-pcb-design/SKILL.md) |
-| 114 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-read-pcb-layout/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-read-pcb-layout/SKILL.md) |
-| 115 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-write-pcb-layout/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-write-pcb-layout/SKILL.md) |
-| 116 | ✓ | [`skills-catalog/robotics-and-autonomous-systems/matlab-compute-gnss-position/SKILL.md`](skills-catalog/robotics-and-autonomous-systems/matlab-compute-gnss-position/SKILL.md) |
-| 117 | ✓ | [`skills-catalog/robotics-and-autonomous-systems/matlab-connect-mavlink/SKILL.md`](skills-catalog/robotics-and-autonomous-systems/matlab-connect-mavlink/SKILL.md) |
-| 118 | ✓ | [`skills-catalog/robotics-and-autonomous-systems/matlab-create-uav-scenario/SKILL.md`](skills-catalog/robotics-and-autonomous-systems/matlab-create-uav-scenario/SKILL.md) |
-| 119 | ✓ | [`skills-catalog/robotics-and-autonomous-systems/matlab-fuse-inertial-sensors/SKILL.md`](skills-catalog/robotics-and-autonomous-systems/matlab-fuse-inertial-sensors/SKILL.md) |
-| 120 | ✓ | [`skills-catalog/robotics-and-autonomous-systems/matlab-model-robot-kinematics/SKILL.md`](skills-catalog/robotics-and-autonomous-systems/matlab-model-robot-kinematics/SKILL.md) |
-| 121 | ✓ | [`skills-catalog/robotics-and-autonomous-systems/matlab-plan-robot-motion/SKILL.md`](skills-catalog/robotics-and-autonomous-systems/matlab-plan-robot-motion/SKILL.md) |
-| 122 | ✓ | [`skills-catalog/signal-processing/matlab-analyze-spectrum/SKILL.md`](skills-catalog/signal-processing/matlab-analyze-spectrum/SKILL.md) |
-| 123 | ✓ | [`skills-catalog/signal-processing/matlab-analyze-time-frequency-content/SKILL.md`](skills-catalog/signal-processing/matlab-analyze-time-frequency-content/SKILL.md) |
-| 124 | ✓ | [`skills-catalog/signal-processing/matlab-configure-scope-object/SKILL.md`](skills-catalog/signal-processing/matlab-configure-scope-object/SKILL.md) |
-| 125 | ✓ | [`skills-catalog/signal-processing/matlab-design-adaptive-filter/SKILL.md`](skills-catalog/signal-processing/matlab-design-adaptive-filter/SKILL.md) |
-| 126 | ✓ | [`skills-catalog/signal-processing/matlab-design-digital-filter/SKILL.md`](skills-catalog/signal-processing/matlab-design-digital-filter/SKILL.md) |
-| 127 | ✓ | [`skills-catalog/signal-processing/matlab-design-dsphdl-ddc/SKILL.md`](skills-catalog/signal-processing/matlab-design-dsphdl-ddc/SKILL.md) |
-| 128 | ✓ | [`skills-catalog/signal-processing/matlab-evaluate-acoustic-metrics/SKILL.md`](skills-catalog/signal-processing/matlab-evaluate-acoustic-metrics/SKILL.md) |
-| 129 | ✓ | [`skills-catalog/signal-processing/matlab-extract-signal-features/SKILL.md`](skills-catalog/signal-processing/matlab-extract-signal-features/SKILL.md) |
-| 130 | ✓ | [`skills-catalog/signal-processing/matlab-play-record-audio/SKILL.md`](skills-catalog/signal-processing/matlab-play-record-audio/SKILL.md) |
-| 131 | ✓ | [`skills-catalog/signal-processing/matlab-prepare-signal-data/SKILL.md`](skills-catalog/signal-processing/matlab-prepare-signal-data/SKILL.md) |
-| 132 | ✓ | [`skills-catalog/signal-processing/matlab-process-streaming-audio/SKILL.md`](skills-catalog/signal-processing/matlab-process-streaming-audio/SKILL.md) |
-| 133 | ✓ | [`skills-catalog/signal-processing/matlab-write-audio-plugin/SKILL.md`](skills-catalog/signal-processing/matlab-write-audio-plugin/SKILL.md) |
-| 134 | ✓ | [`skills-catalog/test-and-measurement/matlab-build-industrial-hmi/SKILL.md`](skills-catalog/test-and-measurement/matlab-build-industrial-hmi/SKILL.md) |
-| 135 | ✓ | [`skills-catalog/test-and-measurement/matlab-call-nidaqmx/SKILL.md`](skills-catalog/test-and-measurement/matlab-call-nidaqmx/SKILL.md) |
-| 136 | ✓ | [`skills-catalog/test-and-measurement/matlab-connect-arduino/SKILL.md`](skills-catalog/test-and-measurement/matlab-connect-arduino/SKILL.md) |
-| 137 | ✓ | [`skills-catalog/test-and-measurement/matlab-connect-bluetooth-low-energy-device/SKILL.md`](skills-catalog/test-and-measurement/matlab-connect-bluetooth-low-energy-device/SKILL.md) |
-| 138 | ✓ | [`skills-catalog/test-and-measurement/matlab-create-custom-arduino-library/SKILL.md`](skills-catalog/test-and-measurement/matlab-create-custom-arduino-library/SKILL.md) |
-| 139 | ✓ | [`skills-catalog/test-and-measurement/matlab-discover-hardware/SKILL.md`](skills-catalog/test-and-measurement/matlab-discover-hardware/SKILL.md) |
-| 140 | ✓ | [`skills-catalog/test-and-measurement/matlab-enhance-camera-image/SKILL.md`](skills-catalog/test-and-measurement/matlab-enhance-camera-image/SKILL.md) |
-| 141 | ✓ | [`skills-catalog/test-and-measurement/matlab-find-pi-assets/SKILL.md`](skills-catalog/test-and-measurement/matlab-find-pi-assets/SKILL.md) |
-| 142 | ✓ | [`skills-catalog/test-and-measurement/matlab-import-export-vehicle-data/SKILL.md`](skills-catalog/test-and-measurement/matlab-import-export-vehicle-data/SKILL.md) |
-| 143 | ✓ | [`skills-catalog/test-and-measurement/matlab-modernize-daq/SKILL.md`](skills-catalog/test-and-measurement/matlab-modernize-daq/SKILL.md) |
-| 144 | ✓ | [`skills-catalog/test-and-measurement/matlab-use-cameras/SKILL.md`](skills-catalog/test-and-measurement/matlab-use-cameras/SKILL.md) |
-| 145 | ✓ | [`skills-catalog/test-and-measurement/matlab-use-opcua-client/SKILL.md`](skills-catalog/test-and-measurement/matlab-use-opcua-client/SKILL.md) |
-| 146 | ✓ | [`skills-catalog/test-and-measurement/matlab-use-vehicle-network/SKILL.md`](skills-catalog/test-and-measurement/matlab-use-vehicle-network/SKILL.md) |
-| 147 | ✓ | [`skills-catalog/wireless-communications/matlab-add-awgn/SKILL.md`](skills-catalog/wireless-communications/matlab-add-awgn/SKILL.md) |
-| 148 | ✓ | [`skills-catalog/wireless-communications/matlab-design-ofdm-system/SKILL.md`](skills-catalog/wireless-communications/matlab-design-ofdm-system/SKILL.md) |
-| 149 | ✓ | [`skills-catalog/wireless-communications/matlab-detect-capture-usrp/SKILL.md`](skills-catalog/wireless-communications/matlab-detect-capture-usrp/SKILL.md) |
-| 150 | ✓ | [`skills-catalog/wireless-communications/matlab-generate-5g-waveform/SKILL.md`](skills-catalog/wireless-communications/matlab-generate-5g-waveform/SKILL.md) |
-| 151 | ✓ | [`skills-catalog/wireless-communications/matlab-generate-ble-waveform/SKILL.md`](skills-catalog/wireless-communications/matlab-generate-ble-waveform/SKILL.md) |
-| 152 | ✓ | [`skills-catalog/wireless-communications/matlab-generate-gnss-waveform/SKILL.md`](skills-catalog/wireless-communications/matlab-generate-gnss-waveform/SKILL.md) |
-| 153 | ✓ | [`skills-catalog/wireless-communications/matlab-generate-wlan-waveform/SKILL.md`](skills-catalog/wireless-communications/matlab-generate-wlan-waveform/SKILL.md) |
-| 154 | ✓ | [`skills-catalog/wireless-communications/matlab-set-up-usrp-radio/SKILL.md`](skills-catalog/wireless-communications/matlab-set-up-usrp-radio/SKILL.md) |
-| 155 | ✓ | [`skills-catalog/wireless-communications/matlab-simulate-bluetooth-network/SKILL.md`](skills-catalog/wireless-communications/matlab-simulate-bluetooth-network/SKILL.md) |
-| 156 | ✓ | [`skills-catalog/wireless-communications/matlab-simulate-wireless-network/SKILL.md`](skills-catalog/wireless-communications/matlab-simulate-wireless-network/SKILL.md) |
-| 157 | ✓ | [`skills-catalog/wireless-communications/matlab-transmit-capture-usrp/SKILL.md`](skills-catalog/wireless-communications/matlab-transmit-capture-usrp/SKILL.md) |
+| 79 | ✓ | [`skills-catalog/matlab-software-development/matlab-use-package-manager/SKILL.md`](skills-catalog/matlab-software-development/matlab-use-package-manager/SKILL.md) |
+| 80 | ✓ | [`skills-catalog/matlab-software-development/matlab-write-help/SKILL.md`](skills-catalog/matlab-software-development/matlab-write-help/SKILL.md) |
+| 81 | ✓ | [`skills-catalog/matlab-software-development/matlab-write-performance-tests/SKILL.md`](skills-catalog/matlab-software-development/matlab-write-performance-tests/SKILL.md) |
+| 82 | ✓ | [`skills-catalog/matlab-software-development/matlab-write-tests/SKILL.md`](skills-catalog/matlab-software-development/matlab-write-tests/SKILL.md) |
+| 83 | ✓ | [`skills-catalog/parallel-computing/matlab-diagnose-parfor/SKILL.md`](skills-catalog/parallel-computing/matlab-diagnose-parfor/SKILL.md) |
+| 84 | ✓ | [`skills-catalog/parallel-computing/matlab-discover-clusters/SKILL.md`](skills-catalog/parallel-computing/matlab-discover-clusters/SKILL.md) |
+| 85 | ✓ | [`skills-catalog/parallel-computing/matlab-set-up-worker-state/SKILL.md`](skills-catalog/parallel-computing/matlab-set-up-worker-state/SKILL.md) |
+| 86 | ✓ | [`skills-catalog/parallel-computing/matlab-setup-gpu/SKILL.md`](skills-catalog/parallel-computing/matlab-setup-gpu/SKILL.md) |
+| 87 | ✓ | [`skills-catalog/parallel-computing/matlab-use-thread-pool/SKILL.md`](skills-catalog/parallel-computing/matlab-use-thread-pool/SKILL.md) |
+| 88 | ✓ | [`skills-catalog/radar/matlab-design-radar-waveform/SKILL.md`](skills-catalog/radar/matlab-design-radar-waveform/SKILL.md) |
+| 89 | ✓ | [`skills-catalog/radar/matlab-design-radar/SKILL.md`](skills-catalog/radar/matlab-design-radar/SKILL.md) |
+| 90 | ✓ | [`skills-catalog/radar/matlab-import-tracking-data/SKILL.md`](skills-catalog/radar/matlab-import-tracking-data/SKILL.md) |
+| 91 | ✓ | [`skills-catalog/radar/matlab-simulate-radar-detections/SKILL.md`](skills-catalog/radar/matlab-simulate-radar-detections/SKILL.md) |
+| 92 | ✓ | [`skills-catalog/reporting-and-database-access/matlab-connect-databricks/SKILL.md`](skills-catalog/reporting-and-database-access/matlab-connect-databricks/SKILL.md) |
+| 93 | ✓ | [`skills-catalog/reporting-and-database-access/matlab-generate-report/SKILL.md`](skills-catalog/reporting-and-database-access/matlab-generate-report/SKILL.md) |
+| 94 | ✓ | [`skills-catalog/reporting-and-database-access/matlab-use-database/SKILL.md`](skills-catalog/reporting-and-database-access/matlab-use-database/SKILL.md) |
+| 95 | ✓ | [`skills-catalog/reporting-and-database-access/matlab-use-duckdb/SKILL.md`](skills-catalog/reporting-and-database-access/matlab-use-duckdb/SKILL.md) |
+| 96 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-analyze-ams-waveform/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-analyze-ams-waveform/SKILL.md) |
+| 97 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-analyze-antenna-structures/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-analyze-antenna-structures/SKILL.md) |
+| 98 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-analyze-em/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-analyze-em/SKILL.md) |
+| 99 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-analyze-pcb-pdn/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-analyze-pcb-pdn/SKILL.md) |
+| 100 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-assemble-pcb-layout/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-assemble-pcb-layout/SKILL.md) |
+| 101 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-design-antenna/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-design-antenna/SKILL.md) |
+| 102 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-design-pcb-coupler/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-design-pcb-coupler/SKILL.md) |
+| 103 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-design-pcb-filter/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-design-pcb-filter/SKILL.md) |
+| 104 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-design-pcb-passive/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-design-pcb-passive/SKILL.md) |
+| 105 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-design-pcb-transmission-line/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-design-pcb-transmission-line/SKILL.md) |
+| 106 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-export-session-script/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-export-session-script/SKILL.md) |
+| 107 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-integrate-antenna/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-integrate-antenna/SKILL.md) |
+| 108 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-integrate-pcb-circuit/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-integrate-pcb-circuit/SKILL.md) |
+| 109 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-manage-pcb-material/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-manage-pcb-material/SKILL.md) |
+| 110 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-model-ams-systems/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-model-ams-systems/SKILL.md) |
+| 111 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-model-rf/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-model-rf/SKILL.md) |
+| 112 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-model-serdes-systems/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-model-serdes-systems/SKILL.md) |
+| 113 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-model-via/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-model-via/SKILL.md) |
+| 114 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-optimize-pcb-design/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-optimize-pcb-design/SKILL.md) |
+| 115 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-read-pcb-layout/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-read-pcb-layout/SKILL.md) |
+| 116 | ✓ | [`skills-catalog/rf-and-mixed-signal/matlab-write-pcb-layout/SKILL.md`](skills-catalog/rf-and-mixed-signal/matlab-write-pcb-layout/SKILL.md) |
+| 117 | ✓ | [`skills-catalog/robotics-and-autonomous-systems/matlab-compute-gnss-position/SKILL.md`](skills-catalog/robotics-and-autonomous-systems/matlab-compute-gnss-position/SKILL.md) |
+| 118 | ✓ | [`skills-catalog/robotics-and-autonomous-systems/matlab-connect-mavlink/SKILL.md`](skills-catalog/robotics-and-autonomous-systems/matlab-connect-mavlink/SKILL.md) |
+| 119 | ✓ | [`skills-catalog/robotics-and-autonomous-systems/matlab-create-uav-scenario/SKILL.md`](skills-catalog/robotics-and-autonomous-systems/matlab-create-uav-scenario/SKILL.md) |
+| 120 | ✓ | [`skills-catalog/robotics-and-autonomous-systems/matlab-fuse-inertial-sensors/SKILL.md`](skills-catalog/robotics-and-autonomous-systems/matlab-fuse-inertial-sensors/SKILL.md) |
+| 121 | ✓ | [`skills-catalog/robotics-and-autonomous-systems/matlab-model-robot-kinematics/SKILL.md`](skills-catalog/robotics-and-autonomous-systems/matlab-model-robot-kinematics/SKILL.md) |
+| 122 | ✓ | [`skills-catalog/robotics-and-autonomous-systems/matlab-plan-robot-motion/SKILL.md`](skills-catalog/robotics-and-autonomous-systems/matlab-plan-robot-motion/SKILL.md) |
+| 123 | ✓ | [`skills-catalog/signal-processing/matlab-analyze-spectrum/SKILL.md`](skills-catalog/signal-processing/matlab-analyze-spectrum/SKILL.md) |
+| 124 | ✓ | [`skills-catalog/signal-processing/matlab-analyze-time-frequency-content/SKILL.md`](skills-catalog/signal-processing/matlab-analyze-time-frequency-content/SKILL.md) |
+| 125 | ✓ | [`skills-catalog/signal-processing/matlab-configure-scope-object/SKILL.md`](skills-catalog/signal-processing/matlab-configure-scope-object/SKILL.md) |
+| 126 | ✓ | [`skills-catalog/signal-processing/matlab-design-adaptive-filter/SKILL.md`](skills-catalog/signal-processing/matlab-design-adaptive-filter/SKILL.md) |
+| 127 | ✓ | [`skills-catalog/signal-processing/matlab-design-digital-filter/SKILL.md`](skills-catalog/signal-processing/matlab-design-digital-filter/SKILL.md) |
+| 128 | ✓ | [`skills-catalog/signal-processing/matlab-design-dsphdl-ddc/SKILL.md`](skills-catalog/signal-processing/matlab-design-dsphdl-ddc/SKILL.md) |
+| 129 | ✓ | [`skills-catalog/signal-processing/matlab-evaluate-acoustic-metrics/SKILL.md`](skills-catalog/signal-processing/matlab-evaluate-acoustic-metrics/SKILL.md) |
+| 130 | ✓ | [`skills-catalog/signal-processing/matlab-extract-signal-features/SKILL.md`](skills-catalog/signal-processing/matlab-extract-signal-features/SKILL.md) |
+| 131 | ✓ | [`skills-catalog/signal-processing/matlab-play-record-audio/SKILL.md`](skills-catalog/signal-processing/matlab-play-record-audio/SKILL.md) |
+| 132 | ✓ | [`skills-catalog/signal-processing/matlab-prepare-signal-data/SKILL.md`](skills-catalog/signal-processing/matlab-prepare-signal-data/SKILL.md) |
+| 133 | ✓ | [`skills-catalog/signal-processing/matlab-process-streaming-audio/SKILL.md`](skills-catalog/signal-processing/matlab-process-streaming-audio/SKILL.md) |
+| 134 | ✓ | [`skills-catalog/signal-processing/matlab-write-audio-plugin/SKILL.md`](skills-catalog/signal-processing/matlab-write-audio-plugin/SKILL.md) |
+| 135 | ✓ | [`skills-catalog/test-and-measurement/matlab-build-industrial-hmi/SKILL.md`](skills-catalog/test-and-measurement/matlab-build-industrial-hmi/SKILL.md) |
+| 136 | ✓ | [`skills-catalog/test-and-measurement/matlab-call-nidaqmx/SKILL.md`](skills-catalog/test-and-measurement/matlab-call-nidaqmx/SKILL.md) |
+| 137 | ✓ | [`skills-catalog/test-and-measurement/matlab-connect-arduino/SKILL.md`](skills-catalog/test-and-measurement/matlab-connect-arduino/SKILL.md) |
+| 138 | ✓ | [`skills-catalog/test-and-measurement/matlab-connect-bluetooth-low-energy-device/SKILL.md`](skills-catalog/test-and-measurement/matlab-connect-bluetooth-low-energy-device/SKILL.md) |
+| 139 | ✓ | [`skills-catalog/test-and-measurement/matlab-create-custom-arduino-library/SKILL.md`](skills-catalog/test-and-measurement/matlab-create-custom-arduino-library/SKILL.md) |
+| 140 | ✓ | [`skills-catalog/test-and-measurement/matlab-discover-hardware/SKILL.md`](skills-catalog/test-and-measurement/matlab-discover-hardware/SKILL.md) |
+| 141 | ✓ | [`skills-catalog/test-and-measurement/matlab-enhance-camera-image/SKILL.md`](skills-catalog/test-and-measurement/matlab-enhance-camera-image/SKILL.md) |
+| 142 | ✓ | [`skills-catalog/test-and-measurement/matlab-find-pi-assets/SKILL.md`](skills-catalog/test-and-measurement/matlab-find-pi-assets/SKILL.md) |
+| 143 | ✓ | [`skills-catalog/test-and-measurement/matlab-import-export-vehicle-data/SKILL.md`](skills-catalog/test-and-measurement/matlab-import-export-vehicle-data/SKILL.md) |
+| 144 | ✓ | [`skills-catalog/test-and-measurement/matlab-modernize-daq/SKILL.md`](skills-catalog/test-and-measurement/matlab-modernize-daq/SKILL.md) |
+| 145 | ✓ | [`skills-catalog/test-and-measurement/matlab-use-cameras/SKILL.md`](skills-catalog/test-and-measurement/matlab-use-cameras/SKILL.md) |
+| 146 | ✓ | [`skills-catalog/test-and-measurement/matlab-use-opcua-client/SKILL.md`](skills-catalog/test-and-measurement/matlab-use-opcua-client/SKILL.md) |
+| 147 | ✓ | [`skills-catalog/test-and-measurement/matlab-use-vehicle-network/SKILL.md`](skills-catalog/test-and-measurement/matlab-use-vehicle-network/SKILL.md) |
+| 148 | ✓ | [`skills-catalog/wireless-communications/matlab-add-awgn/SKILL.md`](skills-catalog/wireless-communications/matlab-add-awgn/SKILL.md) |
+| 149 | ✓ | [`skills-catalog/wireless-communications/matlab-design-ofdm-system/SKILL.md`](skills-catalog/wireless-communications/matlab-design-ofdm-system/SKILL.md) |
+| 150 | ✓ | [`skills-catalog/wireless-communications/matlab-detect-capture-usrp/SKILL.md`](skills-catalog/wireless-communications/matlab-detect-capture-usrp/SKILL.md) |
+| 151 | ✓ | [`skills-catalog/wireless-communications/matlab-generate-5g-waveform/SKILL.md`](skills-catalog/wireless-communications/matlab-generate-5g-waveform/SKILL.md) |
+| 152 | ✓ | [`skills-catalog/wireless-communications/matlab-generate-ble-waveform/SKILL.md`](skills-catalog/wireless-communications/matlab-generate-ble-waveform/SKILL.md) |
+| 153 | ✓ | [`skills-catalog/wireless-communications/matlab-generate-gnss-waveform/SKILL.md`](skills-catalog/wireless-communications/matlab-generate-gnss-waveform/SKILL.md) |
+| 154 | ✓ | [`skills-catalog/wireless-communications/matlab-generate-wlan-waveform/SKILL.md`](skills-catalog/wireless-communications/matlab-generate-wlan-waveform/SKILL.md) |
+| 155 | ✓ | [`skills-catalog/wireless-communications/matlab-set-up-usrp-radio/SKILL.md`](skills-catalog/wireless-communications/matlab-set-up-usrp-radio/SKILL.md) |
+| 156 | ✓ | [`skills-catalog/wireless-communications/matlab-simulate-bluetooth-network/SKILL.md`](skills-catalog/wireless-communications/matlab-simulate-bluetooth-network/SKILL.md) |
+| 157 | ✓ | [`skills-catalog/wireless-communications/matlab-simulate-wireless-network/SKILL.md`](skills-catalog/wireless-communications/matlab-simulate-wireless-network/SKILL.md) |
+| 158 | ✓ | [`skills-catalog/wireless-communications/matlab-transmit-capture-usrp/SKILL.md`](skills-catalog/wireless-communications/matlab-transmit-capture-usrp/SKILL.md) |
 
 ---
 

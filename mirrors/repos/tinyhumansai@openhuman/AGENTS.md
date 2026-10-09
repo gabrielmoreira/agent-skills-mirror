@@ -349,8 +349,13 @@ Additional rules:
 - Domain tools live with their domain and are re-exported through
   `crates/openhuman-core/src/tools/mod.rs`. Keep only cross-cutting tools in
   `tools/impl/`.
-- Stable memory collection scope belongs in `metadata.path_scope`; item IDs
-  are deduplication keys.
+- Memory scope comes from the namespace, never from metadata or model
+  arguments: `memory::scope` resolves the acting identity to a layout root
+  and memory agent id, and under layout v3 the engine is bound with
+  `EngineSettings::scope_root` = `user:<id>` (`memory::scope::user_root`),
+  below which TinyMemory places `ws:`/`source:`/`agent:` nodes and
+  `app:<kind>` leaves (`vendor/tinymemory/docs/architecture/cortex-layout.md`).
+  Item ids are deduplication keys.
 - Update `crates/openhuman-core/src/platform/about_app/` when user-visible capabilities
   change.
 - The controller contract lives in core: every domain operation returns
@@ -599,7 +604,22 @@ sits above `openhuman-embed` and is installed once per process
 `CoreBuilder::backend_transport`). A core with no transport installed runs
 agents, memory, tools and RPC without any TinyHumans connection and answers
 backend-touching calls with `BackendApiError::BackendUnavailable` /
-`BACKEND_UNAVAILABLE:`. Never add `tinyhumans-sdk` back to the core; the only
+`BACKEND_UNAVAILABLE:`.
+
+**Exception: hosted memory.** The `tinyhumans` memory engine does not go
+through `BackendTransport`. `memory/engine.rs` builds TinyMemory's CortexDB
+engine with `EngineSettings { endpoint, headers, scope_root, .. }` and
+`EngineCredential::Dynamic(HostBearer)`, and TinyMemory's own `reqwest`
+client (`tinymemory-integrations/src/cortex/transport`) calls the backend's
+`/memory/*` routes. The core supplies only the pieces: the endpoint from
+`backend::base_url` (or `[memory.engines.tinyhumans] endpoint`), the
+attribution headers (`x-sdk-name`, …) from `backend::attribution_headers`, and a `BearerSource`
+that calls `resolve_backend_credential` on every request. So memory needs a
+transport installed for the URL (unless an endpoint is configured), but none
+of its requests pass through it,
+and transport-level policy (route registry, `map_sdk_error`) does not apply
+to them. The `cortexdb` engine likewise calls CortexDB directly with the
+user's key. Never add `tinyhumans-sdk` back to the core; the only
 crate allowed to depend on it is `openhuman-tinyhumans` (`cargo tree -p
 openhuman -i tinyhumans-sdk` must stay empty). Every host that boots a core
 (`crates/openhuman-app/src/main.rs` and `lib.rs::run`,

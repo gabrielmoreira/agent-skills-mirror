@@ -17,6 +17,8 @@ CJK_FONT_CANDIDATES = [
     "/System/Library/Fonts/Hiragino Sans GB.ttc",
     "C:/Windows/Fonts/msyh.ttc",
     "C:/Windows/Fonts/simhei.ttf",
+    "/System/Library/Fonts/AppleSDGothicNeo.ttc",
+    "C:/Windows/Fonts/malgun.ttf",
     "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
     "/usr/share/fonts/opentype/noto/NotoSansCJKsc-Regular.otf",
     "/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc",

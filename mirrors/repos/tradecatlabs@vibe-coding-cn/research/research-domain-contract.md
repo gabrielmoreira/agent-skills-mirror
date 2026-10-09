@@ -7,7 +7,7 @@
 - 这个对象是什么。
 - 它为什么值得研究。
 - 哪些事实已经核验，哪些只是判断或假设。
-- 它最终应该沉淀到 concepts、references、workflow、skills 还是 archive。
+- 哪些可复用正文归 `docs/gongfa/`，哪些实例归 `docs/getting-started/`，哪些执行能力归 `skills/`；具体事实和证据仍留研究域，失效观察按状态归档。
 
 `research/` 的长期形态是“研究对象网络”，不是“外部链接清单”。每个持续研究对象都必须有自己的目录、raw 原始事实层、事实摘要层、判断层和维护边界。
 
@@ -249,7 +249,7 @@ P1/P2 研究域的 `analysis.md` 必须包含：
 | L0 | 登记 | `README.md`、`AGENTS.md`、`domain.yml`、`raw/` | 对象身份清楚，原始材料已拉取到本地且来源可复查 |
 | L1 | 理解 | `analysis.md` | 能解释架构、工作流、适用场景、风险和初步迁移方向 |
 | L2 | 验证 | `deep-dive.md`、`experiments/` 或可复现验证记录 | 关键判断经过源码阅读、本地实验或一手资料核验，并能产出对标拆解、迁移边界和验证动作 |
-| L3 | 沉淀 | 下游 concepts / references / workflow / skills 文档 | 研究结论已经变成稳定方法、模板、流程或技能 |
+| L3 | 沉淀 | `docs/gongfa/` 正文、`docs/getting-started/` 实例或 `skills/` 执行契约 | 可复用结论形成方法、模板、流程或能力；具体对象事实与证据仍留研究域 |
 | L4 | 归档 | `archive/` 或归档说明 | 对象失效、被替代、已归档或不再值得跟踪 |
 
 优先级决定维护频率：
@@ -276,7 +276,7 @@ P1/P2 研究域的 `analysis.md` 必须包含：
 - `research/README.md` 的索引判断中。
 - 新增的独立对比文档中。
 - `research-transfer-synthesis.md` 这样的迁移综合文档中。
-- 成熟后迁入 `docs/references/` 或 `docs/concepts/`。
+- 可复用解释、准则与方法正文迁入 `docs/gongfa/`；保留来源及未验证状态，迁移不等于效果验证。
 
 禁止为了比较方便把多个研究对象塞回同一个目录。
 
@@ -284,9 +284,8 @@ P1/P2 研究域的 `analysis.md` 必须包含：
 
 研究结论稳定后必须下沉，而不是长期停在 research：
 
-- 概念和方法论进入 `docs/concepts/`。
-- 工程模板、清单和技术栈判断进入 `docs/references/`。
-- 开发流程和门禁进入 `docs/workflow/`。
+- 概念、哲学、模型、方法论、工程准则、模板、清单与流程正文统一进入 `docs/gongfa/`。
+- 研究域保留具体对象、原始事实、观察和验证记录，不再独立维护通用方法正文。
 - 可复用 Agent 能力进入 `skills/`。
 - 只剩历史价值的观察进入本研究域 `archive/`，或在 `domain.yml.maintenance` 中说明归档原因。
 

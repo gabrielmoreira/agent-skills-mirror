@@ -1,7 +1,7 @@
 ---
 name: frontend-visual-qa
 description: >-
-  Audits already-rendered UI — web app, deck/slide, dashboard, design-system, or Electron/native app
+  Audits already-rendered UI and Markdown/Obsidian image layout — web app, deck/slide, dashboard, design-system, or Electron/native app
   — via real-browser/native-app journeys and a Playwright sweep. Use after UI implementation to find
   typography, overflow, responsive, routing, data-viz, browser-output, or native-shell defects, or
   to compare a render against a reference. Not for greenfield UI design (use ui-designer) or
@@ -33,11 +33,13 @@ profile that covers the request:
 - **reference parity** — comparison with a named screenshot, product, or tier;
 - **data visualization** — chart hierarchy, tokens, semantics, and accessibility.
 
-For a website/document converted to Markdown and consumed in Obsidian or another
-named reader, load
+For a website/document converted to Markdown, or an illustrated transcript/note
+consumed in Obsidian or another named reader, load
 [references/markdown-reader-handoff.md](references/markdown-reader-handoff.md)
 before judging figure readability. Compare the complete source figure with its
 actual document reading canvas, including HTML captions and SVG/CSS dependencies.
+For oversized embedded images, use its display-size recipe and test a representative
+long image with the adjacent text before applying the same layout to the document.
 
 Combine profiles only when the changed surface or the user requests a broad
 release review. Do not force a local line-break review through unrelated auth,
@@ -60,6 +62,14 @@ Use adjacent skills by stage:
   subject-matter review; a rendering pass cannot certify those claims.
 
 ## Required Outcome
+
+### Prepare before taking over the target
+
+The executing auditor resolves the latest user contract and stage-specific Skills before driving a shared browser or device. Load the Skills explicitly requested for this task from their actual entries. For numerical breakdowns or charts, also use data-visualization-discipline; for Android control, use android-automation alongside this visual audit. Add a design Skill only when the user requests it or the task changes design. Device control alone supplies no visual or business acceptance criterion.
+
+Read the selected current Skill text and affected references, then freeze the actor's question, canonical target, affected states and observable answer. A catalog entry, remembered section label or compaction summary is a locator, not the loaded instructions. Reuse unchanged text still present in context; after compaction, reload only the needed instructions rather than rerunning completed tests.
+
+Record this preparation in the existing scope contract: required capability, resolved owner/entry, and the acceptance evidence it supplies. Missing instructions leave the dependent judgement unverified; continue authorized independent read-only work. Finish tool/dependency preparation before a short shared-resource window, and follow the target-control owner's restoration contract when that window ends. These are auditor actions, not claims of an automatic Skill-loading guard.
 
 Produce all of the following:
 
@@ -394,7 +404,7 @@ Also verify, when applicable:
 Load
 [references/journey-and-page-contracts.md](references/journey-and-page-contracts.md)
 when the audit includes state transitions, authorization, modes,
-provider/model/runtime truth, routes, transient states, overlays, browser
+summary-to-detail disclosure, provider/model/runtime truth, routes, transient states, overlays, browser
 outputs, native shells, landing/deck/browser tool/game artifacts, dashboards,
 design-system artifacts, GIS/maps, or review tools.
 

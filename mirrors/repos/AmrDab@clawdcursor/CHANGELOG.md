@@ -2,6 +2,93 @@
 
 All notable changes to Clawd Cursor will be documented in this file.
 
+## [Unreleased]
+
+## [1.5.15] - 2026-10-08 — multiple monitors in any layout; clicks hit the window you see
+
+### Added
+
+- **Multiple monitors, any layout.** clawdcursor no longer assumes one
+  screen. It reads the real layout from the OS — every monitor's position
+  (left of / above the primary means negative coordinates), size and its own
+  scaling — and adapts:
+  - Windows: the pointer reaches every monitor. nut-js can only address the
+    primary display, so clicks, moves, drags and scrolls are placed through
+    the PowerShell bridge under per-monitor DPI awareness, in physical
+    desktop pixels (the same space accessibility reports).
+  - `computer screenshot` shows the monitor clawdcursor last worked on (a
+    click, a focused or launched window — however it was named), else the
+    primary; `display:N` picks one. On a
+    multi-monitor desktop the reply names the other monitors. Coordinates
+    read off a screenshot of any monitor map back onto that monitor.
+  - `window list_displays` reports each monitor's physical bounds and scale.
+  - Accessibility positions are exact on every monitor, including one whose
+    scaling differs from the primary's (a 225% laptop beside a 100% monitor
+    reported an 820×620 window as 364×276, so `space:"screen"` clicks
+    missed).
+  - OCR reads the monitor clawdcursor is working on (it always read the
+    primary). `ocr_read_screen` returns screen coordinates on every OS
+    (logical points on macOS) and says to click them with `space:"screen"`
+    instead of dividing by a scale factor.
+  - Linux: `display:0` crops to that monitor when it is not the primary;
+    macOS: `display:N` for a non-main display says it is not supported yet
+    instead of labelling the main display's image as display N.
+  - `focus` treats a window as on-screen when it overlaps any monitor (it
+    used to minimize / snap windows on a monitor left of or above the
+    primary).
+  Linux X11 already spans all monitors (one root window) and gains
+  `display:N`; on macOS the pointer already spans displays, screenshots stay
+  on the main display for now.
+
+- **Session log: see what an agent actually did.** Each MCP session writes a
+  small local log (`~/.clawdcursor/sessions/`, last 50 kept): tool, action,
+  whether it was a blind read (accessibility / text), a screenshot, an action
+  by name or by coordinates, the outcome (`empty` / `timeout` / `partial` /
+  `ok`), timing and the host's name. Never typed text, clipboard, element
+  names, window titles, URLs or coordinates. Off with
+  `CLAWDCURSOR_SESSION_LOG=0`.
+- **One-step reports.** `clawdcursor report` now reports on the latest MCP
+  session (it only knew agent task logs, which MCP users never have), and an
+  agent can call `system report` with a note. The report server is
+  unreachable, so both save the full report locally and open (or print) a
+  prefilled GitHub issue — the user reviews it and submits; nothing is sent
+  automatically.
+- **Blind-first nudge.** After 3 screenshots in a row with no text or
+  accessibility read in between (and every 5th after), the screenshot result
+  adds one line naming the exact, cheaper path (`compile_ui` / `smart_read`,
+  `copy_all_text`, act by name).
+
+### Fixed
+
+- **Windows: clicks could raise the window BEHIND the one you see** — on any
+  setup, one monitor included. Before a click clawdcursor brings the window
+  under the pointer forward, asking `WindowFromPoint`. It was declared with
+  two ints instead of a `POINT`, which on 64-bit Windows drops the y
+  coordinate, so every hit-test looked at the TOP ROW of the screen: with a
+  maximized window behind the target (a browser, Settings), that window was
+  raised and took the click. Declared correctly now; when the hit is a
+  DWM-cloaked window it falls back to the top visible window at the point.
+- **Windows clipboard reads mangled non-ASCII text** (`café — ✓ 日本` came
+  back as `caf? - ? ??`): PowerShell's stdout codepage. `clipboard_read` and
+  `copy_all_text` now read UTF-8 exactly.
+- **`copy_all_text` refused GUI windows owned by PowerShell / cmd** (e.g. a
+  WinForms tool): the terminal guard now checks the window class on Windows
+  — a real console window is refused, a GUI window is not.
+
+- **Tests no longer write to the user's real `~/.clawdcursor/logs`**
+  (`CLAWDCURSOR_LOG_DIR`; the suite points it and the session log at a temp
+  folder), and never start the real PowerShell bridge (which moves the real
+  pointer and captures the real screen) unless a test mocks it.
+
+### Security
+
+- OCR temporary screenshots are created owner-only and exclusively
+  (CodeQL `js/insecure-temporary-file`).
+- Dependencies: `qs` 6.16.0, `body-parser` 2.3.0 and `@hono/node-server`
+  1.19.17 (bundled into the CLI); dev tooling `vitest` 4.1.11
+  (GHSA-82fw-gwwq-j7x9), `eslint` 10.12, `typescript-eslint` 8.71, `tsx`
+  4.23; the release workflow uses `actions/setup-node` v7.
+
 ## [1.5.14] - 2026-10-07 — scrolling that moves; consistent window units; exact page text
 
 ### Added

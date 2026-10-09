@@ -60,6 +60,7 @@ Files:
 - `skills/orchestration/references/native-codex.md`
 - `skills/orchestration/references/claude-to-codex.md`
 - `skills/orchestration/references/codex-to-claude.md`
+- `skills/orchestration/references/jev-routing.md`
 
 `SKILL.md` owns the shared contract. Adapters contain only runtime-specific mechanics. Review them against the shared
 contract instead of maintaining duplicate entrypoints.
@@ -79,6 +80,8 @@ Keep these decisions aligned:
    prove completion. Attribute failures before gating dependents. Apply only the selected route's retry mechanism.
 6. Preserve the shared companion-skill, proportional-verification, hurry, skill-maintenance, and completion contracts.
    Runtime differences cannot weaken them.
+7. Keep Jev candidates consistent with each adapter's supported model and effort pairs. Preserve explicit user choices,
+   native Claude effort limits, and local selection on routing failure, uncertainty, or parent rejection.
 
 Model tiers, permissions, research toolsets, progress transport, session identity, and continuation mechanics differ by
 route. Preserve those differences. Native Claude Explore is one-shot. Native Codex uses native thread tools. The two CLI
@@ -109,6 +112,33 @@ workspace version in `toolkit/Cargo.toml` are the producer whose contract the `1
 of `writing-great-skills.md` a faithful summary of its field union and cross-field rules. Exit codes, the `--fix-safe`
 boundary, and map's default exclusions live in `ai-skillet <command> --help`. Consumers rely on that output instead of
 restating it. No catalog skill wraps ai-skillet by itself.
+
+### Model Identifiers
+
+Files:
+
+- `skills/agents-brain/SKILL.md`
+- `skills/agents-brain/scripts/fetch-guidance.sh`
+- `skills/agents-docs/SKILL.md`
+- `skills/node-deps-bumper/SKILL.md`
+- `skills/orchestration/SKILL.md`
+- `skills/orchestration/references/claude-to-codex.md`
+- `skills/orchestration/references/codex-to-claude.md`
+- `skills/orchestration/references/jev-routing.md`
+- `skills/orchestration/references/native-claude.md`
+- `skills/orchestration/references/native-codex.md`
+- `skills/orchestration/scripts/run-codex-agent.sh`
+- `skills/orchestration/scripts/select-model.py`
+- `skills/release-bumper/SKILL.md`
+- `skills/skill-writing/SKILL.md`
+- `skills/todo-archive/SKILL.md`
+- `skills/yeet/references/posting.md`
+
+When a model is released, renamed, or retired, run `just model-refs` and update every listed file in one change. Keep a
+mention unchanged when the change does not affect its model. The script output is authoritative for current mentions.
+When the script reports a file that this list omits, add the file to this list in the same change. When a listed file no
+longer has a mention, remove it from this list. Model aliases in skill frontmatter, such as `model: sonnet`, are in
+scope.
 
 ## Workflow
 

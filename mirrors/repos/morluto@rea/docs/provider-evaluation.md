@@ -2,11 +2,11 @@
 
 This guide describes repository main. Check the [released package boundary](installation.md#released-package-and-main) when using npm.
 
-Ghidra read-only analysis is available on Linux x64 and macOS x64/arm64.
+Ghidra read-only analysis is available on Linux x64/arm64 and macOS x64/arm64.
 Install a Ghidra 12.1.x release and the 64-bit full JDK that release declares,
 then configure REA to use them. Current 12.1 releases require JDK 21 or newer
 and set no maximum. The bridge is verified with Ghidra 12.1.4 and JDK 21.
-macOS installations need the matching native decompiler.
+Each installation needs the matching native decompiler.
 
 REA imports one target into a temporary project and exposes 25 read-only
 operations after analysis completes. They cover inventories, search,
@@ -121,7 +121,7 @@ capability from a successful import.
 | Result extent           | Function instruction scans and native API boundary observations remain complete. P-code flow is the explicit bounded exception; its count fields distinguish exact retained counts from lower-bound or known-omitted counts. Caller cancellation and provider failures remain distinct.                                                                                                                                                                                                                                                                                                                                    |
 
 `npm run verify:ghidra` compiles the versioned C oracle into debug and stripped
-host-native targets (x86-64 ELF on Linux x64 or Mach-O on macOS), plus a native
+host-native targets (x86-64/AArch64 ELF on Linux or Mach-O on macOS), plus a native
 DWARF 4 type-layout object. It proves the admitted operations, external functions, resolved thunks, exports, stripped-name
 behavior, direct and targetless indirect calls, typed references, strings/xrefs,
 multi-block CFG, bounded p-code def-use/effect links, semantic enhanced workflows, cancellation, startup deadlines,

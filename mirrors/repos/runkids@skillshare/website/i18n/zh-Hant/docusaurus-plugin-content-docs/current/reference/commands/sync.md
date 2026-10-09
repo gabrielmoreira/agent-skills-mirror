@@ -345,7 +345,7 @@ targets:
 - 在 symlink mode 中，filters 會被忽略
 - 在 copy mode 中，filters 的運作方式與 merge mode 相同
 - `sync` 會移除現在已被排除、但先前是 source-linked 或受管理的條目
-- 共用同一個資料夾的 targets 需要相同的 filters；否則每次同步都會抵銷另一個 target 的結果，`sync` 會發出警告（見 [`sync` 一直顯示相同的變更](/docs/troubleshooting/common-errors#sync-keeps-showing-the-same-changes)）
+- 共用同一個資料夾的 targets 需要相同的 filters、mode 與 target naming（兩者都用 `symlink` 模式時，篩選與命名都不影響）；否則每次同步都會抵銷另一個 target 的結果，`sync` 會發出警告（見 [`sync` 一直顯示相同的變更](/docs/troubleshooting/common-errors#sync-keeps-showing-the-same-changes)）
 
 完整細節見 [Configuration](/docs/reference/targets/configuration#include--exclude-target-filters)。
 

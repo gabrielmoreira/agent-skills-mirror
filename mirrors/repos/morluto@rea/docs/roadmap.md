@@ -20,6 +20,30 @@ validation, provider prerequisites, target identity, cancellation, and owned
 resource cleanup remain part of each tool's contract. Setup still discloses
 installation changes and requires approval before writing or installing.
 
+## Planned work
+
+The [website guides](https://rea.tools/guides/) and
+[generated catalog](product-catalog.json) describe available workflows.
+Current development priorities are:
+
+- Keep generated metadata and narrative documentation aligned with tools,
+  providers, setup options and releases.
+- Expand native architecture, type and indirect-call verification across
+  Hopper and Ghidra.
+- Connect additional static extractors and runtime observations to
+  cross-layer feature traces.
+- Improve obfuscated .NET comparisons and links between managed findings
+  and verified native analysis.
+- Extend process, protocol, filesystem, reconnect and build-comparison
+  coverage, plus browser and Electron scenario actions.
+- Evaluate native runtime observation through LLDB, Frida, system logs and
+  API tracing, and additional tools and targets such as Binary Ninja, Rizin,
+  LIEF, Windows-native workflows, mobile applications and firmware.
+
+Provider additions and platform support require the corresponding real
+verification lanes; see [testing](testing.md) and
+[provider evaluation](provider-evaluation.md).
+
 ## Remaining evidence and provider work
 
 The [platform roadmap](https://github.com/morluto/rea/issues/32),
@@ -43,12 +67,12 @@ REA setup lets you select agent integration and optional Hopper installation.
 It installs the bundled workflow, configures detected agents, and can save
 verified paths for an existing Ghidra installation. It configures Claude Code,
 Claude Desktop, Codex, Cursor, Gemini CLI, Windsurf, Devin, OpenCode, Antigravity,
-GitHub Copilot CLI, Command Code, and VS Code using each client's configuration format.
+GitHub Copilot CLI, Command Code, VS Code, and Grok Build using each client's configuration format. Grok Bot is detected locally, but its connector is added from the Grok Bot chat because the signed-in account store is not a data-directory file.
 
-Ghidra analysis supports Linux x64 and macOS x64/arm64 with Ghidra 12.1.x and the
+Ghidra analysis supports Linux x64/arm64 and macOS x64/arm64 with Ghidra 12.1.x and the
 64-bit full JDK that installation declares. Current 12.1 releases require JDK 21
 or newer and set no maximum; the bridge is verified with Ghidra 12.1.4 and JDK 21.
-macOS also requires the matching native decompiler. The
+Each installation requires the matching native decompiler. The
 adapter exposes thirteen inventory operations and twelve function-analysis
 operations, for 25 read-only operations total. Linux and macOS additionally support
 atomic function-name and entry-comment edits with refreshed analysis; metadata

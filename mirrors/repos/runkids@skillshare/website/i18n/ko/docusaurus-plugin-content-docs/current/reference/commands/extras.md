@@ -77,6 +77,8 @@ wizard는 이름 다음에 **What do you want to sync?**를 묻습니다: **Fold
 | `--as <filename>` | 모든 target에 쓸 파일 이름 (기본값: `--file` 이름). `--file` 필요 |
 | `--mode <mode>` | 동기화 mode: `merge` (기본값), `copy`, 또는 `symlink`. `import`는 `--file`과 함께만 사용 가능 |
 | `--flatten` | 하위 디렉터리의 파일을 target 루트에 바로 동기화 (`symlink` mode 또는 `--file`과 함께 사용 불가) |
+| `--include <pattern>` | 일치하는 파일만 동기화 ([파일 필터](#choosing-files)), 반복 가능. `symlink` mode 또는 `--file`과 함께 사용 불가 |
+| `--exclude <pattern>` | 일치하는 파일 건너뛰기 ([파일 필터](#choosing-files)), 반복 가능. `symlink` mode 또는 `--file`과 함께 사용 불가 |
 | `--source <path>` | 이 extra에 대한 사용자 지정 source 디렉터리 (`extras_source` 및 기본값을 재정의; 프로젝트 모드에서는 프로젝트 루트 기준 상대 경로) |
 | `--force` | extra가 이미 존재하면 덮어쓰기 |
 | `--no-tui` | interactive wizard 생략, CLI 플래그만 사용 |
@@ -194,11 +196,13 @@ skillshare extras source ~/company-shared/extras
 
 ### Operating on an existing extra
 
-`extras <name>`으로 target의 sync mode와 flatten 설정을 변경하거나 target을 추가·제거합니다. mode, flatten, target 추가 후 `skillshare sync extras`로 적용하세요. `--remove-target --prune`은 관리 파일을 즉시 복원하거나 제거합니다.
+`extras <name>`으로 target의 sync mode, flatten 설정, [파일 필터](#choosing-files)를 변경하거나 target을 추가·제거합니다. mode, flatten, 필터, target 추가 후 `skillshare sync extras`로 적용하세요. `--remove-target --prune`은 관리 파일을 즉시 복원하거나 제거합니다.
 
 ```bash
 skillshare extras <name> --mode <mode> [--target <path>] [-p|-g]
 skillshare extras <name> --flatten | --no-flatten [--target <path>]
+skillshare extras <name> --add-include <pattern> | --add-exclude <pattern> [--target <path>]
+skillshare extras <name> --remove-include <pattern> | --remove-exclude <pattern> [--target <path>]
 skillshare extras <name> --add-target <path> [--as <filename>] [--mode <mode>] [--flatten] [-p|-g]
 skillshare extras <name> --remove-target <path> [--prune] [-p|-g]
 skillshare extras <name> --help
@@ -211,11 +215,15 @@ skillshare extras <name> --help
 | `--mode <mode>` | 새 동기화 mode: `merge`, `copy`, 또는 `symlink`. `import`는 [single-file extra](#single-file-extras) 전용 |
 | `--flatten` | flatten 활성화 (하위 디렉터리 파일을 target 루트에 동기화) |
 | `--no-flatten` | flatten 비활성화 |
+| `--add-include <pattern>` | target에 include pattern 추가 (반복 가능) |
+| `--add-exclude <pattern>` | target에 exclude pattern 추가 (반복 가능) |
+| `--remove-include <pattern>` | include pattern 제거 |
+| `--remove-exclude <pattern>` | exclude pattern 제거 |
 | `--add-target <path>` | extra에 새 target 추가 |
 | `--as <filename>` | `--add-target`의 target 파일 이름 (single-file extra 전용, 기본값은 `file`) |
 | `--remove-target <path>` | extra에서 target 제거 (기본적으로 config 전용) |
-| `--prune` | `--remove-target`과 함께: 해당 target 아래의 skillshare 관리 파일도 삭제. single-file extra에서는 대신 target 파일을 복원 |
-| `--target <path>` | target 디렉터리 경로 (multi-target extra에서 `--mode`에 필요; 생략 시 `--flatten`/`--no-flatten`은 모든 target에 적용) |
+| `--prune` | `--remove-target`과 함께: 해당 target 아래의 skillshare 관리 파일도 삭제. single-file extra에서는 대신 target 파일을 복원. `symlink` target은 extra의 소스를 가리키는 링크일 때만 삭제 |
+| `--target <path>` | target 디렉터리 경로 (multi-target extra에서 `--mode`나 필터 플래그에 필요; 생략 시 `--flatten`/`--no-flatten`은 모든 target에 적용) |
 | `--project, -p` | 프로젝트 모드 extras 사용 (`.skillshare/`) |
 | `--global, -g` | 전역 extras 사용 (`~/.config/skillshare/`) |
 
@@ -232,6 +240,10 @@ skillshare extras rules --mode copy --target ~/.claude/rules
 skillshare extras agents --flatten
 skillshare extras agents --no-flatten
 
+# Claude에는 파일 두 개만, 다른 곳에서는 초안 건너뛰기
+skillshare extras docs --target ~/.claude/docs --add-include index.md --add-include learning.md
+skillshare extras docs --target ~/.cursor/docs --add-exclude "draft*"
+
 # Add a new target to an existing extra (then sync)
 skillshare extras rules --add-target ~/.cursor/rules
 skillshare extras commands --add-target ~/.config/opencode/commands --mode copy
@@ -244,7 +256,7 @@ skillshare extras rules --remove-target ~/.cursor/rules
 skillshare extras rules --remove-target ~/.cursor/rules --prune
 ```
 
-Web UI(각 target의 mode 드롭다운과 flatten 체크박스)와 TUI(`e` 키)에서도 사용할 수 있습니다.
+TUI(`e` 키)와 Web UI의 target 메뉴에서도 사용할 수 있습니다. Web UI의 **Edit target…**에서는 target의 폴더, 파일 이름, 파일 필터도 바꿀 수 있고, **Edit extra…**에서는 extra 이름을 바꾸거나 다른 source 폴더를 지정할 수 있습니다. target 폴더나 source 폴더 변경은 바로 적용됩니다. skillshare가 이전 위치에 만든 링크를 제거하고(복사된 파일은 남음) 동기화합니다. 이름을 바꿔도 source 폴더는 그대로이며, extra의 `source`로 기록됩니다. 이름이 `agents`와 `memory`인 extra는 이름을 바꿀 수 없습니다.
 
 ### `extras remove`
 
@@ -329,6 +341,33 @@ extras:
 **Constraints:**
 - `merge`와 `copy` mode에서만 작동합니다 — `symlink` mode와는 함께 사용할 수 없습니다
 - `collect`는 새로 수집된 파일을 source 루트에 배치합니다 (신규 파일에 대한 하위 디렉터리 매핑 없음)
+
+---
+
+## 파일 고르기 {#choosing-files}
+
+폴더 extra의 각 target은 `include`와 `exclude`로 source 파일 일부만 동기화할 수 있습니다:
+
+```yaml
+extras:
+  - name: docs
+    targets:
+      - path: ~/.claude/docs
+        include: [index.md, learning.md]
+      - path: ~/.cursor/docs
+        mode: copy
+        exclude: ["draft*", images/]
+```
+
+pattern은 `.gitignore` 문법을 따르며, `flatten`이나 extension으로 이름이 바뀌기 전의 source 안 파일 경로와 비교합니다:
+
+- `/`가 없는 pattern은 모든 깊이에서 일치합니다. `draft*`는 `notes/draft.md`도 건너뜁니다.
+- `/`로 끝나는 pattern은 폴더 전체를 가리킵니다(예: `images/`). `**`는 여러 단계의 폴더와 일치합니다.
+- `include`가 있으면 일치하는 파일만 동기화됩니다. `exclude`는 그다음에 적용됩니다.
+
+`include` pattern이 어떤 파일과도 일치하지 않으면 `sync`가 경고합니다. 대개 오타입니다.
+
+필터가 더 이상 어떤 파일과 일치하지 않으면 `merge` mode에서는 다음 sync 때 그 링크를 제거합니다. `copy` mode는 이전에 복사한 파일을 삭제하지 않으므로 직접 지워야 합니다. 필터는 폴더 전체를 링크하는 `symlink` mode나 [단일 파일 extra](#single-file-extras)에는 사용할 수 없습니다. `extras collect`는 target 필터에서 빠진 파일을 건너뜁니다.
 
 ---
 

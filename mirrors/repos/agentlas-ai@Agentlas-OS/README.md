@@ -53,7 +53,7 @@
 
 **Agentlas Hub is a free agent community.** Publishing and calling public agents requires no agent price, lease, or Agentlas credit purchase. The caller supplies their own model and API access; subscription plans cover Agentlas software and hosted features. Creator settlement for new Hub activity is closed. Existing account balances and historical claims remain subject to the applicable account terms.
 
-In the [Web Hub](https://agentlas.cloud/hub), each public agent has a space for browsing its release files when the author permits source access, discussing the agent, and exploring compatible Experience Chips.
+In the [Web Hub](https://agentlas.cloud/hub), each public agent has a space for browsing its release files when the author permits source access, discussing the agent, and reviewing its agent files and versions.
 
 ### Install Agentlas Desktop
 
@@ -761,7 +761,7 @@ forcing your work into one model provider:
 
 Agents generated from vague, single-sentence prompts fail under real-world edge cases. Hephaestus v1.1.0 positions task specification as a first-class OS service through the **Briefing Interview Engine**:
 
-The current v1.2.57 release carries the resolved Work Brief through host-owned Network 2.0 selection, exact release pinning, and server-first tool discovery.
+The current v1.2.59 release carries the resolved Work Brief through host-owned Network 2.0 selection, exact release pinning, and server-first tool discovery.
 
 *   **Quantitative Ambiguity Gates:** The compilation scheduler evaluates prompt clarity across four key vectors (Goal, Constraints, Scope, Context). The build process is strictly gated until the ambiguity score passes a numeric threshold (ambiguity score $\le 0.2$, with per-dimension safety floors). Clear prompts bypass the interview loop entirely via a budget system that caps questions for trivial tasks.
 *   **Lens-Driven System Analysis:** Clarifying questions are dynamically sourced from a structured lens table (Scope, Intent, Challenge, System Architecture) focusing on critical routing indicators: *anti-scope bounds* (what the agent must NOT do), *verifiable acceptance criteria*, and *exit conditions*.
@@ -866,7 +866,7 @@ above; it also writes `~/.claude/commands/agentlas.md` and `hep-*.md`. Claude Co
 
 From your OS terminal:
 ```bash
-codex plugin marketplace add agentlas-ai/Agentlas-OS --ref v1.2.57
+codex plugin marketplace add agentlas-ai/Agentlas-OS --ref v1.2.59
 codex plugin add hephaestus@agentlas-core-engine
 ```
 *Note: Codex does not accept `/plugin marketplace add` inside the app — run the two commands above in your OS terminal. The OS-terminal CLI command is singular (`codex plugin`); inside the Codex app, the plugin browser slash command is plural (`/plugins`). Codex 0.117+ removed custom `/prompts:*` commands; after install, invoke the supported plugin skill as `$hephaestus-network <request>`.*
@@ -1077,7 +1077,7 @@ than copying it.
 *   **Local Project Memory:** Project documents remain in the local `.agentlas/ontology-runtime.sqlite`; experience from selected agents remains in its exact per-agent projection. The two stores share one query engine without collapsing their scope or ownership boundaries.
 *   **Governance Before Ranking:** Exact agent, allowed privacy scope, active status, expiry, and structural supersession are enforced before lexical/cosine ranking. Secret redaction and capsule bounds are applied again before host delivery.
 *   **Workspace Personalization:** Manages summaries, playbooks, plugin locks, and receipts for selected Cloud/Hub agents without storing raw prompts, credential values, or private files.
-*   **Curator Gating:** Skills and durable memory modifications remain candidates until a local curator confirms evidence, rollback coverage, and security policy approval. Automatic experience relations are limited to `similar_to`.
+*   **Curator Gating:** Private memory remains subject to curator evidence, privacy, and ownership checks. Executable agent and skill changes require an exact staged file diff and trusted owner approval before activation. Automatic memory relations are limited to `similar_to`.
 
 ---
 

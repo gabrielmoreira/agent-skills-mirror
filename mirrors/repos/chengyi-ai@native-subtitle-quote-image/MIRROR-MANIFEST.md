@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `chengyi-ai/native-subtitle-quote-image` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `chengyi-ai/native-subtitle-quote-image` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `chengyi-ai/native-subtitle-quote-image` — 26 default patterns, 0 fo
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,16 +59,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/native-subtitle-quote-image/agents/openai.yaml`](skills/native-subtitle-quote-image/agents/openai.yaml) |
-| 2 | ✓ | [`skills/native-subtitle-quote-image/references/end-to-end-workflow.md`](skills/native-subtitle-quote-image/references/end-to-end-workflow.md) |
-| 3 | ✓ | [`skills/native-subtitle-quote-image/references/visual-style.md`](skills/native-subtitle-quote-image/references/visual-style.md) |
-| 4 | ✓ | [`skills/native-subtitle-quote-image/references/yt-dlp-and-transcripts.md`](skills/native-subtitle-quote-image/references/yt-dlp-and-transcripts.md) |
-| 5 | ✓ | [`skills/native-subtitle-quote-image/requirements.txt`](skills/native-subtitle-quote-image/requirements.txt) |
-| 6 | ✓ | [`skills/native-subtitle-quote-image/scripts/check_environment.py`](skills/native-subtitle-quote-image/scripts/check_environment.py) |
-| 7 | ✓ | [`skills/native-subtitle-quote-image/scripts/check_update.py`](skills/native-subtitle-quote-image/scripts/check_update.py) |
-| 8 | ✓ | [`skills/native-subtitle-quote-image/scripts/native_subtitle_stitch.py`](skills/native-subtitle-quote-image/scripts/native_subtitle_stitch.py) |
-| 9 | ✓ | [`skills/native-subtitle-quote-image/SKILL.md`](skills/native-subtitle-quote-image/SKILL.md) |
-| 10 | ✓ | [`skills/native-subtitle-quote-image/VERSION`](skills/native-subtitle-quote-image/VERSION) |
+| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`skills/native-subtitle-quote-image/agents/openai.yaml`](skills/native-subtitle-quote-image/agents/openai.yaml) |
+| 3 | ✓ | [`skills/native-subtitle-quote-image/references/end-to-end-workflow.md`](skills/native-subtitle-quote-image/references/end-to-end-workflow.md) |
+| 4 | ✓ | [`skills/native-subtitle-quote-image/references/visual-style.md`](skills/native-subtitle-quote-image/references/visual-style.md) |
+| 5 | ✓ | [`skills/native-subtitle-quote-image/references/yt-dlp-and-transcripts.md`](skills/native-subtitle-quote-image/references/yt-dlp-and-transcripts.md) |
+| 6 | ✓ | [`skills/native-subtitle-quote-image/requirements.txt`](skills/native-subtitle-quote-image/requirements.txt) |
+| 7 | ✓ | [`skills/native-subtitle-quote-image/scripts/check_environment.py`](skills/native-subtitle-quote-image/scripts/check_environment.py) |
+| 8 | ✓ | [`skills/native-subtitle-quote-image/scripts/check_update.py`](skills/native-subtitle-quote-image/scripts/check_update.py) |
+| 9 | ✓ | [`skills/native-subtitle-quote-image/scripts/native_subtitle_stitch.py`](skills/native-subtitle-quote-image/scripts/native_subtitle_stitch.py) |
+| 10 | ✓ | [`skills/native-subtitle-quote-image/SKILL.md`](skills/native-subtitle-quote-image/SKILL.md) |
+| 11 | ✓ | [`skills/native-subtitle-quote-image/VERSION`](skills/native-subtitle-quote-image/VERSION) |
 
 ---
 

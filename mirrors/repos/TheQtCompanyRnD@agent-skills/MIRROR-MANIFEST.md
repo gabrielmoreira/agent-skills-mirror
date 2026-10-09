@@ -223,7 +223,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 162 | ✓ | [`skills/qt-qml-test/SKILL.md`](skills/qt-qml-test/SKILL.md) |
 | 163 | ✓ | [`skills/qt-qml/LICENSE.txt`](skills/qt-qml/LICENSE.txt) |
 | 164 | ✓ | [`skills/qt-qml/platforms/windsurf.md`](skills/qt-qml/platforms/windsurf.md) |
-| 165 | ✓ | [`skills/qt-qml/README.md`](skills/qt-qml/README.md) |
+| 165 | ✓ | [`skills/qt-qml/references/qmlpreview.md`](skills/qt-qml/references/qmlpreview.md) |
 | 166 | ✓ | [`skills/qt-qml/SKILL.md`](skills/qt-qml/SKILL.md) |
 | 167 | ✓ | [`skills/qt-ui-design/LICENSE.txt`](skills/qt-ui-design/LICENSE.txt) |
 | 168 | ✓ | [`skills/qt-ui-design/SKILL.md`](skills/qt-ui-design/SKILL.md) |

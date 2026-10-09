@@ -1,7 +1,7 @@
 ---
 description: >-
   Personal AI super intelligence for your desktop: a brain that builds a
-  local-first memory of your life, an orchestrator of agent fleets and
+  persistent memory of your life, an orchestrator of agent fleets and
   workflows, and a deep researcher across the services you connect, running on
   a Rust core light enough to embed anywhere.
 icon: diamond

@@ -548,6 +548,9 @@ In the config file this is `[access] redact`. The mask keeps the width of what i
 mirror's layout holds. It catches high-confidence shapes only; the limits are in
 [Security](security.md#what-leaves-the-machine-is-masked).
 
+In a crew, the lead also masks the text its members send, by its own setting. A member's text
+reaches your phone unmasked only when the lead and that member both set `COLLIE_REDACT=off`.
+
 ## Multi-session
 
 By default, one Collie instance serves every Herdr session it finds.
@@ -684,6 +687,10 @@ While the app is open, the bar and the saved copy appear on the first poll that 
 poll waits at most 6 seconds, one second longer than the bridge waits for the multiplexer. A server
 error (5xx) counts on the second one in a row. What is on screen stays there, and the first live
 answer brings back the live view.
+
+Right after you return to the app, the first poll that gets no answer does not count alone. A
+Tailscale link can need a moment to come back, so the phone asks again half a second later, and
+shows the bar only when that poll gets no answer too.
 
 **Keep chat on this phone**, in **Settings → Device**, sets how long the Chat turns stay on the phone:
 

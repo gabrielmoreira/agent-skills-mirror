@@ -1,12 +1,16 @@
 # Security — read before you run it
 
 **Collie provides remote shell access to your machine by design.** A single Collie API call sends
-arbitrary keystrokes directly to a live terminal pane. Anyone with network access to the URL can
-read every pane (source code, secrets, environment variables, agent output) and execute commands as
-your user.
+arbitrary keystrokes directly to a live terminal pane. Any device you paired can read every pane
+(source code, secrets, environment variables, agent output) and execute commands as your user.
+Since 1.18.0 every API request needs a paired device's token, reads included, so the door is
+pairing itself: anyone who can reach the URL and holds a valid pairing code gets the same access.
+Before 1.18.0, anyone who could reach the URL could read every pane.
 
 There is no sandbox and no command allow-list, as filtering commands would defeat the purpose of
-the tool. Treat the URL as a root login.
+the tool. Treat every paired device as a root login, and a pairing code as a password. Revoke a
+lost device at once with `collie devices revoke <label>`. Pairing lowers the risk but does not
+remove it, so keep the URL on a private network such as a tailnet, never on the public internet.
 
 ## Pair a device — the write credential
 
@@ -141,6 +145,12 @@ raw terminal screen. "Keep chat on this phone" set to Off keeps none and deletes
 When a pane asks for a password, the phone drops that pane's entries. Nothing in the store can send a key or a reply. The deletions at unpair are the ones in
 [What unpair clears on the phone](#what-unpair-clears-on-the-phone).
 
+The phone's app switcher can also show a pane. When you leave Collie, the phone keeps a picture of
+the screen for its list of recent apps, and that picture can show pane text. A web app cannot stop
+this: Android took its picture before the page heard that it went to the background (tested on a
+Pixel, 2026-10-08), and iOS gives no promise either. If that matters to you, lock the phone or close
+Collie before you hand it to someone.
+
 ## Risk model
 
 Key security boundaries and risks:
@@ -247,10 +257,23 @@ Some ordinary text is masked too, for example a line of prose or YAML that reads
 What you type and send is never masked, and the audit trail keeps its own rules
 (`COLLIE_AUDIT_CONTENT`).
 
-In a crew, the mask runs on the machine that reads the text. A lead passes a member's pane text,
-Chat and diffs on as the member sent them, and does not mask them a second time. So a member that
-still runs 1.17.x sends its text unmasked until it updates. Crew members update to the lead's
-version on their own ([Updating the rest of the crew](upgrading.md#updating-the-rest-of-the-crew)).
+The switch lives on the bridge only, as `COLLIE_REDACT`. Settings → System shows it read-only, as
+"Secret masking". The phone has no switch on purpose: a switch on the phone would let any paired
+phone, or a stolen one, turn the mask off. To read a masked value, read it on the machine. The first
+time a pane shows masked text, a short line on the phone says so, once per device. If you paste
+masked text into a reply, a caution under the box says the pane gets the dots, not the secret.
+
+In a crew, each member masks its own text, and the lead masks it again before your phone gets it.
+The lead masks a member's mirror, Chat, History, diffs, file text and pane titles with the same mask
+it uses for its own, so a member that still runs 1.17.x cannot send a key to your phone in clear.
+Masked text stays as it is when it is masked again. Text reaches the phone unmasked only when
+`COLLIE_REDACT=off` is set on both the lead and the member. One edge: a member on 1.17.x masks
+nothing itself, so when a secret sits in the lines a reply is checked against, the phone may refuse
+that reply with "The screen changed before that could be sent". The reply then waits until the
+member runs 1.18.0.
+
+If the lead cannot read a member's answer to mask it, it does not pass the answer on. The phone then
+shows that read as failed, as it does for a member it cannot reach.
 
 A push notification also names a pane only by the name you gave it: the pane's label, Claude's
 `/rename` name, or a one-pane tab's name. It never uses the title a program in the pane set, because

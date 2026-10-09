@@ -48,7 +48,6 @@ The adapter seam between OpenHuman and the vendored [`tinyagents`](../../../../.
 | `stop_hooks.rs` | `StopHookMiddleware`: evaluates OpenHuman `StopHook`s after each model call and pauses the run via steering on the first `Stop` decision. |
 | `summarize.rs` | `ModelSummarizer` / `FaultTolerantCachingSummarizer` plus a context-window-aware `SummarizationPolicy` driving the crate's `ContextCompressionMiddleware`. |
 | `embeddings.rs` | `ProviderEmbeddingModel`: adapts `crate::inference::embedding_host::EmbeddingProvider` onto the crate's `EmbeddingModel` trait. |
-| `retriever.rs` | `recall_through_facade` / `build_retriever`: wraps `Memory::recall`, projects onto the crate's `ScoredDoc`, applies the `path_scope` dedupe rule, emits `MemoryLoaded`. |
 | `todos.rs` | `todos_store` / `scratch_todos_store` (the crate `Store` behind per-thread agent todos, `tinyagents_graph::todos`). |
 | `config.rs` | Maps OpenHuman's `Config` (including model pins) onto `tinyagents_harness::config` structs. |
 | `*_tests.rs` | Sibling test suites for each file/part group above. |

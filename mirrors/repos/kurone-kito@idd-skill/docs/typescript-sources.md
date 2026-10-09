@@ -194,13 +194,43 @@ distributed and are never emitted — `tsconfig.build.json` excludes
 `tests`, and both lanes run them directly via Node's native type
 stripping (`node --test` with the `tests/isolate-state.mts` preload;
 `pnpm run test:scripts` runs the same command). The preload gives each
-test file's process a throwaway per-user state root and fails the file
-when it writes below an `idd-*` entry there (observed 2026-10-01 while
-working on issue kurone-kito/idd-skill#3702: four test files wrote into
-the shared per-user state directory while passing every assertion; fixed
-per test in kurone-kito/idd-skill#3711, guarded by
-kurone-kito/idd-skill#3725). Running one file with plain `node --test`
-bypasses that guard. Unit tests import the typed `src/scripts/*.mts`
+test file a throwaway per-user state root and a real-`gh` attempt ledger.
+The state guard fails the file when it writes below an `idd-*` entry in
+that root (observed 2026-10-01 while working on issue
+kurone-kito/idd-skill#3702: four test files wrote into the shared
+per-user state directory while passing every assertion; fixed per test
+in kurone-kito/idd-skill#3711, guarded by
+kurone-kito/idd-skill#3725). Its ESM `NODE_OPTIONS --import` guard blocks
+real `gh` launches through `node:child_process` before dispatch and records
+the command arguments, process, and thread for the owning test process. A
+Worker wrapper passes a CommonJS bridge and the same ledger into workers
+whose `execArgv` is empty. `stubExecutable` registers the exact fixture
+path, so another executable with the same basename does not bypass the
+guard. The `lint` workflow's direct test commands
+also use the preload. This guard addresses the observed 2026-10-04 probe
+leak in issue kurone-kito/idd-skill#3755, where unexpected real `gh`
+commands were caught but the parent probe still passed. Running one file
+with plain `node --test` bypasses both guards (preventive; no observed
+incident yet).
+
+The guard also puts a PATH shim first on `PATH`, so a shell launch the
+in-process parser misses (for example `g""h`, `$(printf gh)`, or `gh${IFS}`)
+still never reaches the real CLI (kurone-kito/idd-skill#3841). The owner
+process writes two launchers into `<guard root>/bin`: a POSIX `gh` (mode
+`0o755`) or, on Windows, `gh.cmd`. Each runs `tests/isolate-gh-shim.cjs`
+under the same Node binary, with `NODE_OPTIONS` cleared. The shim records
+one ledger entry with `api` `path-shim`, prints `IDD_UNEXPECTED_REAL_GH`,
+and exits 1. It never starts a real `gh`. The launchers are generated per
+guard root, so nothing executable is committed. A `stubExecutable` fixture
+is prepended later and stays ahead of the shim. Its path is registered, so
+a fixture still runs as before. Residuals the shim cannot see: an absolute
+path to the real `gh` inside a script a payload runs, a script that rewrites
+`PATH` first, and a launch whose explicit environment drops the guard
+directory or leaves `PATH` unset (preventive; no observed incident yet).
+The `Windows platform tests` job runs the two `path shim: windows` cases by
+name pattern.
+
+Unit tests import the typed `src/scripts/*.mts`
 sources so assertions are checked against the real signatures;
 CLI/integration tests keep spawning the emitted `scripts/*.mjs` /
 `bin/*.mjs` artifacts, which is exactly what adopters execute.

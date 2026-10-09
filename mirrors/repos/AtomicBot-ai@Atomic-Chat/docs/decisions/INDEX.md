@@ -9,7 +9,7 @@ decision is reversed, add a new one that says which record it supersedes.
 2. Add one line to the right section of this index.
 3. Do **not** paste the record body into `AGENTS.md`.
 
-394 records, 2026-05-19 → 2026-10-07.
+398 records, 2026-05-19 → 2026-10-08.
 
 ---
 
@@ -219,12 +219,13 @@ decision is reversed, add a new one that says which record it supersedes.
 - **2026-05-22** — [Ship `janhq/llama.cpp` cudart DLLs with every Windows CUDA backend](2026-05-22-ship-janhq-llama-cpp-cudart-dlls-with-every-windows-cuda-backend.md)
 - **2026-05-19** — [Windows uses upstream `ggml-org/llama.cpp`, not the TurboQuant fork](2026-05-19-windows-uses-upstream-ggml-org-llama-cpp-not-the-turboquant-fork.md)
 
-## Models, Hub & downloads (39)
+## Models, Hub & downloads (40)
 
 - **2026-10-06** — [List Bonsai models under a PrismML format in the Hub, and install the engine from its row](2026-10-06-list-bonsai-models-under-a-prismml-format-in-the-hub.md)
 - **2026-10-06** — [List PrismML model setups in the download panel, and set a deleted Bonsai up again](2026-10-06-list-prismml-model-setups-in-the-download-panel.md)
 - **2026-10-03** — [Choose TensorRT-LLM models in the Model Hub, as its third format](2026-10-03-choose-tensorrt-llm-models-in-the-model-hub.md)
 - **2026-10-07** — [Download embedding models in the Hub and serve them over the API](2026-10-07-download-embedding-models-in-the-hub-and-serve-them-over-the-api.md)
+- **2026-10-08** — [Say how embedding models load, list llama.cpp ones in the Hub, and copy runnable examples](2026-10-08-say-how-embedding-models-load-and-copy-runnable-examples.md)
 - **2026-10-06** — [Offer stock llama.cpp decision models, each on the page of the engine that runs it](2026-10-06-offer-stock-llamacpp-decision-models-on-the-llamacpp-page.md)
 - **2026-10-01** — [Download decision models in the Hub, run them on the TurboQuant page](2026-10-01-download-decision-models-in-the-hub-and-run-them-on-the-turboquant-page.md)
 - **2026-09-29** — [List image and video models in the Hub, from the curated catalog only](2026-09-29-list-image-and-video-models-in-the-hub.md)
@@ -261,8 +262,9 @@ decision is reversed, add a new one that says which record it supersedes.
 - **2026-06-04** — [Recover from unsupported multimodal projector (`gemma4a`) by falling back to text-only instead of crashing the load (issue #44)](2026-06-04-recover-from-unsupported-multimodal-projector-gemma4a-by.md)
 - **2026-05-27** — [Replace `janhq/model-catalog` + Fuse.js with curated `AtomicBot-ai/atomic-chat-model-catalog` and a pre-built MiniSearch index](2026-05-27-replace-janhq-model-catalog-fuse-js-with-curated-atomicbot-ai.md)
 
-## Local API server & OpenAI compatibility (8)
+## Local API server & OpenAI compatibility (9)
 
+- **2026-10-08** — [Stop closes the local stream's connection in Rust](2026-10-08-stop-closes-the-local-stream-connection-in-rust.md)
 - **2026-09-25** — [Raise the Local API Server for a resident image or video model](2026-09-25-raise-the-local-api-server-for-a-resident-image-or-video-model.md)
 - **2026-09-19** — [Reload the served model when the API listener is recovered](2026-09-19-reload-the-served-model-when-the-api-listener-is-recovered.md)
 - **2026-09-18** — [Bind the API inspector's emitter on the core event path](2026-09-18-bind-the-api-inspector-emitter-on-the-core-event-path.md)
@@ -309,8 +311,10 @@ decision is reversed, add a new one that says which record it supersedes.
 - **2026-05-22** — [Windows ships `atomic-chat-cli.exe` as a copy of `jan.exe`](2026-05-22-windows-ships-atomic-chat-cli-exe-as-a-copy-of-jan-exe.md)
 - **2026-05-22** — [Windows auto-updater uses NSIS as sole relauncher](2026-05-22-windows-auto-updater-uses-nsis-as-sole-relauncher.md)
 
-## UI / UX (84)
+## UI / UX (86)
 
+- **2026-10-08** — [Cite documents by name, and retrieve one query per fact (ATO-551, ATO-552)](2026-10-08-cite-documents-by-name-and-retrieve-one-query-per-fact.md)
+- **2026-10-08** — [A thread's Chat calls back into the page mounted now](2026-10-08-a-threads-chat-calls-back-into-the-page-mounted-now.md)
 - **2026-10-05** — [Keep desktop internal links in the app router](2026-10-05-keep-desktop-internal-links-in-the-app-router.md)
 - **2026-09-29** — [Notify the desktop when a download or a generation finishes](2026-09-29-notify-the-desktop-when-a-download-or-generation-finishes.md)
 - **2026-09-25** — [Clear the composer selection after a failed model load](2026-09-25-clear-the-composer-selection-after-a-failed-load.md)

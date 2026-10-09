@@ -77,6 +77,8 @@ skillshare extras init <name> --file <filename> [--as <filename>] --target <path
 | `--as <filename>` | 寫入每個 target 時使用的檔名（預設為 `--file` 的名稱）。需要搭配 `--file` |
 | `--mode <mode>` | Sync 模式：`merge`（預設）、`copy`，或 `symlink`；`import` 僅限搭配 `--file` |
 | `--flatten` | 將子目錄中的檔案直接同步到 target 根目錄（無法與 `symlink` 模式或 `--file` 一起使用） |
+| `--include <pattern>` | 只同步符合的檔案（[檔案篩選](#choosing-files)），可重複指定。不能與 `symlink` 模式或 `--file` 一起使用 |
+| `--exclude <pattern>` | 略過符合的檔案（[檔案篩選](#choosing-files)），可重複指定。不能與 `symlink` 模式或 `--file` 一起使用 |
 | `--source <path>` | 此 extra 的自訂 source 目錄（會覆寫 `extras_source` 與預設值；project mode 中為相對於專案根目錄的路徑） |
 | `--force` | 若 extra 已存在則覆寫 |
 | `--no-tui` | 略過互動式精靈，只使用 CLI 旗標 |
@@ -194,11 +196,13 @@ skillshare extras source ~/company-shared/extras
 
 ### Operating on an existing extra
 
-透過 `extras <name>` 變更 target 的 sync 模式、flatten 設定，或新增／移除 target。變更模式、flatten 或新增 target 後，請執行 `skillshare sync extras` 套用。`--remove-target --prune` 也會立即還原或移除受管理的檔案。
+透過 `extras <name>` 變更 target 的 sync 模式、flatten 設定或[檔案篩選](#choosing-files)，或新增／移除 target。變更模式、flatten、篩選或新增 target 後，請執行 `skillshare sync extras` 套用。`--remove-target --prune` 也會立即還原或移除受管理的檔案。
 
 ```bash
 skillshare extras <name> --mode <mode> [--target <path>] [-p|-g]
 skillshare extras <name> --flatten | --no-flatten [--target <path>]
+skillshare extras <name> --add-include <pattern> | --add-exclude <pattern> [--target <path>]
+skillshare extras <name> --remove-include <pattern> | --remove-exclude <pattern> [--target <path>]
 skillshare extras <name> --add-target <path> [--as <filename>] [--mode <mode>] [--flatten] [-p|-g]
 skillshare extras <name> --remove-target <path> [--prune] [-p|-g]
 skillshare extras <name> --help
@@ -211,11 +215,15 @@ skillshare extras <name> --help
 | `--mode <mode>` | 新的 sync 模式：`merge`、`copy`，或 `symlink`；`import` 僅限[單一檔案 extra](#single-file-extras) |
 | `--flatten` | 啟用 flatten（將子目錄檔案同步到 target 根目錄） |
 | `--no-flatten` | 停用 flatten |
+| `--add-include <pattern>` | 為 target 加上 include pattern（可重複指定） |
+| `--add-exclude <pattern>` | 為 target 加上 exclude pattern（可重複指定） |
+| `--remove-include <pattern>` | 移除一個 include pattern |
+| `--remove-exclude <pattern>` | 移除一個 exclude pattern |
 | `--add-target <path>` | 為此 extra 新增一個 target |
 | `--as <filename>` | `--add-target` 的 target 檔名（僅限單一檔案 extra；預設為 `file`） |
 | `--remove-target <path>` | 從此 extra 移除一個 target（預設僅變更設定） |
-| `--prune` | 搭配 `--remove-target` 使用：同時刪除該 target 底下由 skillshare 管理的檔案。若是單一檔案 extra，則會改為還原 target 檔案 |
-| `--target <path>` | Target 目錄路徑（多 target 的 extra 使用 `--mode` 時為必填；省略時 `--flatten`/`--no-flatten` 會套用到所有 target） |
+| `--prune` | 搭配 `--remove-target` 使用：同時刪除該 target 底下由 skillshare 管理的檔案。若是單一檔案 extra，則會改為還原 target 檔案。`symlink` target 只有仍連結到該 extra 的來源時才會刪除 |
+| `--target <path>` | Target 目錄路徑（多 target 的 extra 使用 `--mode` 或篩選旗標時為必填；省略時 `--flatten`/`--no-flatten` 會套用到所有 target） |
 | `--project, -p` | 使用 project mode 的 extras（`.skillshare/`） |
 | `--global, -g` | 使用 global 的 extras（`~/.config/skillshare/`） |
 
@@ -232,6 +240,10 @@ skillshare extras rules --mode copy --target ~/.claude/rules
 skillshare extras agents --flatten
 skillshare extras agents --no-flatten
 
+# 只同步兩個檔案到 Claude，其他地方略過草稿
+skillshare extras docs --target ~/.claude/docs --add-include index.md --add-include learning.md
+skillshare extras docs --target ~/.cursor/docs --add-exclude "draft*"
+
 # 為既有的 extra 新增一個 target（之後再 sync）
 skillshare extras rules --add-target ~/.cursor/rules
 skillshare extras commands --add-target ~/.config/opencode/commands --mode copy
@@ -244,7 +256,7 @@ skillshare extras rules --remove-target ~/.cursor/rules
 skillshare extras rules --remove-target ~/.cursor/rules --prune
 ```
 
-也可以透過 TUI（`e` 鍵）以及 Web UI（每個 target 上的模式下拉選單與 flatten 核取方塊）操作。
+也可以透過 TUI（`e` 鍵）以及 Web UI 的 target 選單操作。在 Web UI 中，**Edit target…** 還能改 target 的資料夾、檔名與檔案篩選，**Edit extra…** 可以重新命名 extra 或改用另一個 source 資料夾。改 target 資料夾或 source 資料夾會立即生效：skillshare 會移除它在舊位置建立的連結（複製的檔案會留著），然後同步。重新命名不會搬動 source 資料夾，而是把它記成這個 extra 的 `source`。名為 `agents` 與 `memory` 的 extra 不能重新命名。
 
 ### `extras remove`
 
@@ -329,6 +341,33 @@ extras:
 **限制：**
 - 只適用於 `merge` 與 `copy` 模式——無法與 `symlink` 模式一起使用
 - `collect` 會把新收集到的檔案放在 source 根目錄（新檔案沒有子目錄對應）
+
+---
+
+## 挑選檔案 {#choosing-files}
+
+資料夾 extra 的每個 target 都能用 `include` 與 `exclude` 只同步部分 source 檔案：
+
+```yaml
+extras:
+  - name: docs
+    targets:
+      - path: ~/.claude/docs
+        include: [index.md, learning.md]
+      - path: ~/.cursor/docs
+        mode: copy
+        exclude: ["draft*", images/]
+```
+
+Pattern 使用 `.gitignore` 語法，比對的是檔案在 source 裡的路徑，在 `flatten` 或 extension 改名之前：
+
+- 不含 `/` 的 pattern 會比對任何層級：`draft*` 也會略過 `notes/draft.md`。
+- 以 `/` 結尾的 pattern 涵蓋整個資料夾，例如 `images/`。`**` 可比對任意層資料夾。
+- 有 `include` 時只同步符合的檔案。`exclude` 在它之後套用。
+
+某個 `include` pattern 沒有對到任何檔案時，`sync` 會發出警告，通常代表打錯字。
+
+篩選不再符合某個檔案時，下次 sync 會在 `merge` 模式移除它的連結。`copy` 模式不會刪除之前複製過去的檔案，需要自行刪除。篩選不能與連結整個資料夾的 `symlink` 模式一起使用，也不能用在[單一檔案 extra](#single-file-extras)。`extras collect` 會略過被 target 篩選排除的檔案。
 
 ---
 

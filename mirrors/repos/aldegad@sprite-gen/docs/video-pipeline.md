@@ -1,6 +1,6 @@
 # Video → sprite pipeline (engine SSoT)
 
-> Owns: Pipeline B engine contract: state canvas, keyed frames, true-period and one-shot cycles, strip/GIF/WebP, the batch · Index: [docs/README.md](README.md)
+> Owns: Pipeline B engine contract: state canvas, keyed frames, true-period and one-shot cycles, strip/GIF/WebP, the batch, a set's sheet · Index: [docs/README.md](README.md)
 
 One still becomes a whole motion set: the still is padded into the canvas a state
 needs, Grok Imagine animates it in place, the clip is keyed frame by frame, and one
@@ -26,6 +26,7 @@ still ──video-canvas──▶ canvas.png ──video──▶ clip.mp4 ─�
 | `sprite-gen video-cycle-align` | `sprite_gen/video/align.py` | the loop directories of one walk or run, one per direction → one cycle length, each loop turned to start on a foot strike, + report ([loop repair](loop-repair.md) section 4) |
 | `sprite-gen video-follow` | `sprite_gen/video/follow.py` | a loop directory + an ellipse → the strip, GIF and WebP with that region following the body ([section 6](#6-follow-through--video-follow)) |
 | `sprite-gen video-follow-inspect` | `sprite_gen/video/follow_inspect.py` | a loop directory + the ellipses `video-follow` takes → a record of where each is carried in every cell and what the move changes there, and two boards of every cell; the loop directory is only read ([section 6](#inspecting-a-follow-through--video-follow-inspect)) |
+| `sprite-gen video-set-sheet` | `sprite_gen/video/set_sheet.py` | the loop directories of one set, each with its `--view` → one sheet: a row per direction in compass order, one cell size, one ground line, every row as cut, + a record and an optional centre picture; the loop directories are only read ([section 7](#7-one-sheet-for-a-set--video-set-sheet)) |
 
 Wrappers: `scripts/video_canvas.py`, `scripts/video_frames.py`, `scripts/video_loop.py`,
 `scripts/video_set.py`. Binaries: `ffmpeg`/`ffprobe` (frames), `img2webp` from libwebp
@@ -1101,7 +1102,8 @@ bounce. `video-follow` puts that follow-through back on a cut loop:
 
 ```bash
 sprite-gen video-follow --loop-dir set/front-walk/loop --region 136,164,60,50 [--region …] \
-  [--gain 2.5] [--on-fold refuse|lower] [--freq 2.4] [--zeta 0.6] [--board follow.png]
+  [--gain 2.5] [--on-fold refuse|lower] [--freq 2.4] [--zeta 0.6] [--board follow.png] \
+  [--read-on <sha256>] [--stretch-floor D]
 ```
 
 - **The region** is an ellipse over the part in the strip's first cell, in cell pixels
@@ -1180,8 +1182,72 @@ sprite-gen video-follow --loop-dir set/front-walk/loop --region 136,164,60,50 [-
   sits lowest and highest, on white.
 - **Order**: after `video-cycle-align`. An alignment rebuilds the strip from the cut, removes
   `follow.source.png` and the `follow` record, and says so (`follow_cleared` in its loop row); a
-  new cut with `video-loop` removes them too. Run `video-follow` again after either.
+  new cut with `video-loop` removes them too. Run `video-follow` again after either — with
+  `--read-on` where the regions were read on the cut (below).
 - A one-shot (`kind: one-shot`) is refused: the follow-through is a loop's steady state.
+
+#### Regions read on the cut, followed on the aligned loop — `--read-on`
+
+The regions are where somebody looked: in the first cell of the strip they were read on. An
+alignment turns a loop to start on a foot strike, so its first cell is another; given the same
+regions, `video-follow` reads the motion again from that cell 0 and the regions land on another
+place of the body, and a stretched loop moves them by a motion read anew. `--read-on <sha256>`
+names the strip they were read on — its file's sha256, as cut, before any follow-through (64
+lowercase hexadecimal digits; anything else is refused before anything is read):
+
+- **`same`**: it is this loop's strip as cut (`follow.source.png` once a follow-through moved it).
+  The follow-through is the one without `--read-on`, byte for byte, and the record says so.
+- **`transported`**: it is the cut this loop was aligned from. `video-cycle-align` records that cut
+  the first time it aligns the loop (`cycle_align.origin`: its sha256, cell size, scale and crop
+  origin, each cell's pixels by sha256, and the body's motion as `video-follow` reads it there),
+  keeps it on every later alignment, and records where each cell of the new strip is from
+  (`cycle_align.cells_from`: `{"source": i}`, a frame of `cycle.source/`, or `{"between": [i, j],
+  "t": t}`, a frame made between two). Each cell is carried by the cut's reading of the cut's cell it
+  is, the regions stay where they were read (the cut's cell 0), and the damped mass is solved on
+  this loop's order, length and frame time: a turned loop gives the cut's follow-through cell for
+  cell, a stretched one gives the new cycle's offsets on the cut's motion, duplicates and all.
+- **`uncertain`**, refused: the cut is the one, but a cell was made between two of its frames
+  (RIFE, or any `between`), or a cell is not the cut's cell pixel for pixel — a crop or a scale
+  changed and nothing records how, or a cell was drawn again since. A made cell has no reading of
+  its own, and none is taken from the nearer frame by rounding. A cut made before its strip
+  recorded its crop (`source_rect`) says nothing of where it was cropped; there the cells' pixels
+  decide alone, as they do for every cell anyway.
+- **`no-match`**, refused: neither — another clip, another cut, a strip nothing here was cut or
+  aligned from. Locate the regions again on this strip.
+
+A refusal writes nothing but the strip as cut kept beside the loop, as on any refusal. Without
+`--read-on` nothing of this is read or written, and the record holds no new key. With it the record
+carries `read_on` (`sha256`, `relation`; for `transported` also `policy` and `cut_cells`, the cut's
+cell each cell is) and `carry_basis`. The printed summary carries `read_on` (the relation).
+
+#### A least area each move leaves — `--stretch-floor D`
+
+The fold rule keeps a region from folding, and so lets the region's steepest pixel take nearly
+nothing of the source: a line there is drawn across many pixels. `--stretch-floor D` (0 to under
+1) asks every region's move to leave each pixel at least D of its area. The weight's steepest
+slope is π/2 over each radius, so a move (ox, oy) leaves 1 − (π/2)·hypot(ox/rx, oy/ry) of a
+pixel's area, read by the way the region moves (the fold rule reads the smaller radius whichever
+way it moves). Each region takes the largest gain, in steps of 0.01, that keeps D in every cell
+— **and never one above the fold rule's**: where the direction would allow more (a region moving
+along its long axis) the fold rule's gain stands, so a floor only ever lowers. Under it the fold
+rule's handling stands: a region the floor takes under 1 is held and named, the strip is refused
+when every region is, and `--on-fold refuse` refuses a move under the floor. There is no default:
+without `--stretch-floor` the fold rule alone decides, byte for byte. A floor the move already
+keeps draws the same strip, GIF and WebP. The record carries `stretch` (`policy`, `floor`, and per
+region `per_gain` — the area a unit of gain takes at its worst cell, `least_cell` —, `rule_gain`,
+`floor_gain`, `gain`, `held`, `least_area`, `under_measured`) and `carry_basis`; a lowered or held
+region is named on stderr with what lowered it, the fold or the floor. On a loop aligned from the
+cut, give `--read-on` too: the floor is then read on the cut's motion, so a turned loop is lowered,
+held or refused as the cut is.
+
+The floor holds the stretch, and only the stretch: what a move also does to a line — it tilts it,
+and where two regions overlap it bends it at their seam — lowers only as the gain lowers.
+`video-follow-inspect` writes all three (below).
+
+What carries a region into a cell is the lay of the body's outline (`carry_basis: {"reading":
+"outline-lay", "region": "unverified"}`). Two strips whose alpha is the same in every cell are
+carried alike, whatever moved inside the outline; whose pixels are inside a carried ellipse is not
+read, and nothing here moves a region on a guess of it.
 
 ### Inspecting a follow-through — `video-follow-inspect`
 
@@ -1193,7 +1259,7 @@ which no count of colours finds. The engine does not read what a pixel belongs t
 
 ```bash
 sprite-gen video-follow-inspect --loop-dir set/front-run/loop --region 136,164,60,50 [--region …] \
-  [--gain 2.5] [--on-fold refuse|lower] [--freq 2.4] [--zeta 0.6] \
+  [--gain 2.5] [--on-fold refuse|lower] [--freq 2.4] [--zeta 0.6] [--read-on <sha256>] [--stretch-floor D] \
   --out-dir inspect/front-run [--scale 2] [--columns 8]
 ```
 
@@ -1212,20 +1278,22 @@ sprite-gen video-follow-inspect --loop-dir set/front-run/loop --region 136,164,6
   pixels they are. Saying which cells hold the part alone is for a person or a model that looks
   at the board of the cells as cut, and for a second reader apart from the first.
   `video-follow` takes no such list: it moves every cell.
-- **`follow-inspect.json`** (`kind: video-follow-inspection`, `schema_version: 1`):
+- **`follow-inspect.json`** (`kind: video-follow-inspection`, `schema_version: 2`):
 
   | key | what it holds |
   |---|---|
-  | `input_id` | one sha256 over what the answer is read from: the strip's sha256, the meta's `cut_sha256`, the regions, the settings, the policy and the engine's version |
+  | `input_id` | one sha256 over what the answer is read from: the schema version, the strip's sha256, the meta's `cut_sha256`, the regions, the settings, the policy and the engine's version |
   | `inputs.strip` | `file`, `sha256`, `bytes`: the strip as cut that was read |
   | `inputs.meta` | `file`, `sha256`, `bytes`: `<name>.strip.json` as read; `cut_sha256`: its sha256 without the `follow` record `video-follow` adds (keys sorted, no spaces); `follow_recorded` |
   | `inputs.cut` | `frames`, `w`, `h`, `delay_ms`, as read from the meta |
-  | `inputs.regions`, `inputs.settings` | the ellipses in the order given; `gain`, `on_fold`, `freq_hz`, `zeta` |
-  | `inputs.policy`, `inputs.engine` | the way the motion is read and a region moved, by name (`follow.POLICY`) with the constants it is fixed by; the engine's `name` and `version` |
+  | `inputs.regions`, `inputs.settings` | the ellipses in the order given; `gain`, `on_fold`, `freq_hz`, `zeta`, `read_on` and `stretch_floor` (null where not asked) |
+  | `inputs.policy`, `inputs.engine` | the way the motion is read and a region moved, by name (`follow.POLICY`) with the constants it is fixed by, and the ways a reading is carried (`transport`) and a floor kept (`stretch_floor`), by name; the engine's `name` and `version` |
   | `follow` | the follow-through as `video-follow` records it in the strip's meta, without `gif` and `webp` |
-  | `regions[i]` | `index`, `ellipse` as given, `radius_px`, `gain` (0 when held), `held`, `gain_limit`; over all cells the largest `reach_px` and `fold_ratio`, the least `jacobian_min`, the sum of `changed_px`; `ring`, its colour on the boards |
-  | `cells[k]` | `index`, `carry_px` (across, down), `changed_px`, `jacobian_min`, `box` (x0, y0, x1, y1: the cell's picture on both boards) and `regions[i]` |
-  | `cells[k].regions[i]` | `ellipse`: the region carried (centre plus `carry_px`, the radii as given); `offset_px` (across, down) and `reach_px`: the region's own move in that cell, 0 when held; `fold_ratio`; `jacobian_min` and `jacobian_min_at` (x, y); `ellipse_px`, `solid_px`; `changed_px`; `ownership` |
+  | `carry_basis` | `{"reading": "outline-lay", "region": "unverified"}`: what carries a region, and that whose pixels it holds is not read |
+  | `regions[i]` | `index`, `ellipse` as given, `radius_px`, `gain` (0 when held), `held`, `gain_limit`; over all cells the largest `reach_px`, `fold_ratio`, `bend` and `bend_deg`, the least `jacobian_min`, the sum of `changed_px`; `ring`, its colour on the boards |
+  | `seams` | per pair of moving regions that meet in some cell (`regions`: [i, j]), the largest seam: `jump`, `deg`, the `cell` and the point `at` (x, y) |
+  | `cells[k]` | `index`, `carry_px` (across, down), `changed_px`, `jacobian_min`, `seams` (as above, per pair that meets in that cell), `box` (x0, y0, x1, y1: the cell's picture on both boards) and `regions[i]` |
+  | `cells[k].regions[i]` | `ellipse`: the region carried (centre plus `carry_px`, the radii as given); `offset_px` (across, down) and `reach_px`: the region's own move in that cell, 0 when held; `fold_ratio`; `jacobian_min` and `jacobian_min_at` (x, y); `bend` and `bend_deg`; `ellipse_px`, `solid_px`; `changed_px`; `ownership` |
   | `boards` | `scale`, `columns`, `size`, `ground`; `source` and `moved`, each `file`, `sha256` (the PNG file) and `pixels_sha256` (its pixels) |
 
 - **`carry_px`** is how far the cell's body lies from the first cell's, in whole pixels: what
@@ -1243,10 +1311,25 @@ sprite-gen video-follow-inspect --loop-dir set/front-run/loop --region 136,164,6
   Where regions overlap the move is the larger one's, so a region's numbers there are what is
   drawn in its ellipse, not its own move alone. `changed_px` counts the pixels whose RGBA the
   move changes; outside every carried ellipse it changes none.
+- **A move does three things to the picture, and each is written apart.** It stretches it — the
+  least area, `jacobian_min` (D), the one `--stretch-floor` holds. It tilts a line: the move's
+  steepest slope, |offset|·π/(2·smaller radius), `bend` (G), with `bend_deg` = atan G — the same
+  number as `fold_ratio`, named for what it does: at 1 a line tilts 45°, and a region `--on-fold
+  lower` lowered moves just under it. A round region moving along a radius has G = 1 − D, but a
+  region moving along its long axis keeps D high while G stays near 1, so neither stands for the
+  other. And where two regions overlap, `video-follow` moves each pixel by the larger of their
+  weighted moves (by the larger weight where they move by one gain), so across the curve where the
+  two are equal the move's gradient jumps from one region's to the other's and a straight line
+  bends there: `seams`, the largest jump on that curve — the norm of the difference of the two
+  gradients, each the offset times the weight's gradient — and its angle `deg`. It is looked for
+  along rows a quarter pixel apart, between points inside both ellipses where the larger move
+  changes hands, and found there by halving. A held region has no seam. Quality is read from these
+  three, not from `fold.ratio`; a floor lowers the bend and the seam only as it lowers the gain.
 - **The record names what it was read from.** It holds no path, no time and nothing of the
   machine: the same loop asked the same way writes the same record, byte for byte, anywhere.
   `input_id` is the same before and after `video-follow` is run on the loop, and another after a
-  new cut, an alignment, a changed region or setting, or another engine version — what somebody
+  new cut, an alignment, a changed region or setting (`read_on` and `stretch_floor` among them), or
+  another engine version — what somebody
   saw on one cut's boards is not evidence for another cut. `--scale` and `--columns` change the
   boards and their sha256, not `input_id` and not a number of the record but the `box`es.
   `pixels_sha256` is over a board's pixels (RGB, row by row), so another PNG writer gives the same
@@ -1260,6 +1343,57 @@ sprite-gen video-follow-inspect --loop-dir set/front-run/loop --region 136,164,6
   `follow-inspect.moved.png` has them as `video-follow` would write them, laid and ringed alike.
   They are two files so that whoever says what is inside an ellipse can be given the cells as cut
   alone, without the answer beside them.
+
+## 7. One sheet for a set — `video-set-sheet`
+
+Each direction of a set is cut on its own, and a strip is the union of its own cycle's bodies: a side
+walk's cell is wider than a front one's, a direction with a long ear taller. Laid side by side as they
+are — a 3×3 board, a sheet for a game engine — the directions stand at different heights and the board
+shows it as it plays. `video-set-sheet` lays them on one sheet that a board or an engine can place as it
+is:
+
+```bash
+sprite-gen video-set-sheet --loop-dir S/loop --view front --loop-dir W/loop --view side@left \
+  --loop-dir N/loop --view back --loop-dir E/loop --view side@right --center base.png --out-dir walk-set --name walk
+```
+
+- **Rows.** One per direction given, in the compass order **S, SW, W, NW, N, NE, E, SE** — clockwise from
+  the viewer, the order a character turns in — whatever order the loops are given in. `--view` names the
+  row, as `video-cycle-align` takes it: `front` S, `back` N, `side@right` E, `side@left` W,
+  `front_diagonal@right` SE, `front_diagonal@left` SW, `back_diagonal@right` NE, `back_diagonal@left` NW
+  (`@left` faces the screen's left). A strip turned over to face the other way is a direction like any
+  other. A direction given twice, a front or back view with a side (its picture turned over is not a
+  compass direction) and a count of `--view` other than the loops' are refused before anything is written.
+- **One cell.** Each strip is laid on its pivot — the one its sidecar declares (`anchor`: the foot line
+  under `video-loop --anchor feet`), else its bottom centre, where `video-loop` stands the feet — and the
+  cell is the union of every pixel of every cell of every direction (and of the centre picture), centred
+  on that pivot: every cell's pivot is its bottom centre (`anchor` in the record), and no pixel is dropped.
+- **One ground line.** `baseline_y` is the lowest body pixel of any cell of any direction — body as
+  `video-loop` reads one, alpha 8 and over: that pixel is row `baseline_y − 1` of its cell. A fainter
+  pixel (a soft shadow under the feet) is no body: it is kept, and the cell reaches below the line to hold
+  it, so `cell_h` is `baseline_y` or more. A direction whose strip leaves room under its feet stands that
+  much above the line, as cut: each row's `body_bottom_y` says where its lowest body pixel ends.
+- **No row scaled.** Every cell of the sheet is the strip's own cell, pixel for pixel. One size across
+  the set is `video-loop --body-height`'s; the sheet never sizes a direction on its own. A board that
+  shows the sheet smaller scales it as one, and stands each cell's `baseline_y` on its ground.
+- **The centre picture** (`--center`): a transparent still — the set's base, the picture a board shows in
+  its middle. It is scaled to the rows' standing height (the median of their `body_h`, against the
+  still's own standing height read as `video-loop` reads one: its box at alpha 8 and over), its body
+  stood on the ground line and centred on the pivot, alone in a cell of the sheet's size
+  (`<name>.center.png`); a fainter shadow under it is kept below the line. A
+  still with no transparent background is refused (cut it off first: `sprite-gen cutout`), and so are
+  rows without `body_h` beside one.
+- **Lengths.** Loops of different lengths, in frames or in frame time, are laid all the same, one frame
+  a column and the shorter rows' last cells empty; the record says `same_length: false` and a warning line
+  names each direction's length. `video-cycle-align` gives a set one cycle length.
+
+The record, `<name>.sheet.json` (kind `sprite-gen-video-set-sheet`, schema 1): `sheet`, `order` (the
+rows' codes), `columns`, `cell_w`, `cell_h`, `baseline_y`, `anchor` (`[cell_w / 2, baseline_y]`),
+`same_length`; `rows`, one per row with its `row`, `code`, `view`, `frames`, `delay_ms`, the strip's
+`name`, the loop directory as `input`, the strip's `strip_sha256`, `body_h` and `body_bottom_y`; and
+`center` — null, or the picture's `png`, `input`, `sha256`, its own `standing_h`, the rows' `body_h` it
+was scaled to, the `scale` and its `box` in the cell. The loop directories are only read: no strip,
+frame or frame time is changed.
 
 ## What the rules were measured on
 

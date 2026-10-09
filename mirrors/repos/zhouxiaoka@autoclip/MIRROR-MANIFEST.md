@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zhouxiaoka/autoclip` — 26 default patterns, 2 followed patterns, 11 file(s) materialized.
+Mirror of `zhouxiaoka/autoclip` — 26 default patterns, 3 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `zhouxiaoka/autoclip` — 26 default patterns, 2 followed patterns, 11
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 11 |
+| Followed pats | 3 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `zhouxiaoka/autoclip` — 26 default patterns, 2 followed patterns, 11
 
 - `docs/TESTING_ACCEPTANCE.md`
 - `RELEASE_CHECKLIST.md`
+- `scripts/winqa/README.md`
 
 ## File Index
 
@@ -71,6 +72,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`skills/product-board/SKILL.md`](skills/product-board/SKILL.md) |
 | 10 | → | [`docs/TESTING_ACCEPTANCE.md`](docs/TESTING_ACCEPTANCE.md) |
 | 11 | → | [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) |
+| 12 | → | [`scripts/winqa/README.md`](scripts/winqa/README.md) |
 
 ---
 

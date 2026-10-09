@@ -353,7 +353,7 @@ targets:
 - In symlink mode, filters are ignored
 - In copy mode, filters work the same way as merge mode
 - `sync` removes existing source-linked or managed entries that are now excluded
-- Targets that share one folder need the same filters; otherwise each sync undoes the other and `sync` warns (see [`sync` keeps showing the same changes](/docs/troubleshooting/common-errors#sync-keeps-showing-the-same-changes))
+- Targets that share one folder need the same filters, mode and target naming (filters and naming don't matter when both use `symlink` mode); otherwise each sync undoes the other and `sync` warns (see [`sync` keeps showing the same changes](/docs/troubleshooting/common-errors#sync-keeps-showing-the-same-changes))
 
 See [Configuration](/docs/reference/targets/configuration#include--exclude-target-filters) for full details.
 

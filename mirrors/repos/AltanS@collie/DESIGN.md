@@ -29,6 +29,7 @@ afterwards. A copy-paste gives you six places to remember instead.
 | Primitive | What it is FOR |
 | --- | --- |
 | `ui/add-button.tsx` | The dashed "+" at the end of a row that makes one more of what the row holds: a space, a tab. Two faces, 28px and 32px, a circle each; the busy spinner swaps in place. The caller passes the tap reach, because only the call site can measure what sits around it. |
+| `ui/branch-label.tsx` | The branch a pane's folder is on, on one line: a branch glyph and the name in 11px mono, or a commit glyph and `detached @abc1234`. A long name gives way in the middle and keeps its last eight characters. The screen reader hears the whole name in words. Owns no tap and no height of its own; the caller's line box holds it. The dashboard row's line 2, the pane header's workspace line, and the Files header. |
 | `ui/button.tsx` | Every clickable control with a label. Six variants, one box. Exports `buttonVariants` so a real `<a>` can wear the clothes. |
 | `ui/badge.tsx` | A small static label pill. Not a status chip — it carries no dot and no tap floor. |
 | `ui/card.tsx` | A filled panel on `--card` with its own edge. The Settings surface. |
@@ -297,6 +298,26 @@ NAME is always drawn beside the tint (WCAG 1.4.1), and health still speaks in th
 **The tint lands on the GLYPH ONLY**, never as a wash across a tag or a pill: `ui/address-tag.tsx`
 and `host-chip.tsx`'s name text and border stay the literal untinted classes on every surface, and
 only the leading Server icon carries `text-host-N`. A whole-tag wash was tried and read as too much.
+
+### Red marks harm, never emphasis
+
+Red comes from two tokens, and each has one job.
+
+- **`--destructive` marks an act that can hurt.** That is either an act that destroys or cannot be
+  taken back (Close, Kill, a danger key in the key queue, the `destructive` button), or a control
+  that is ARMED: the next tap or key goes to a live terminal with no review. The harness bar's
+  second-tap confirm is the reference for armed. An armed state wears the tint recipe
+  `border-destructive/40 bg-destructive/10 text-destructive`, never a solid fill, whatever its
+  size: a full-width strip keeps the same tint as a pill. A solid `bg-destructive` belongs only on
+  the button that carries out the act.
+- **`--status-blocked`, through `ui/notice.tsx`'s `danger` tone, marks a notice:** something went
+  wrong, or the operator must act. The tint recipe for it lives in that file's table, not here.
+
+When both meet, for example an error inside an armed strip, the control keeps `--destructive`
+and the message beside it takes the notice's `danger` tone.
+
+Red is never emphasis, a brand accent, or "new". A screen with red on it says that something can
+hurt or has gone wrong. Every other use spends that signal.
 
 ### A raised panel is `--card`, not `--background`
 

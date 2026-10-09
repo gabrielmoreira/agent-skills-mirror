@@ -27,7 +27,7 @@ The project-context tools are free and shared with the app and other agents.
 - `get_ai_visibility_trend`: whether visibility is moving, when the tracker has comparable history. Never compute a trend yourself from separate result calls.
 - `research_ai_visibility_prompts`: the questions around a prompt group and the sources ChatGPT cites for them (US English only).
 - `explore_prompt`: asks ChatGPT one prompt through its API and returns the answer, citations and `fanOutQueries`, the web searches the model ran before answering. Charged at actual usage per uncached answer; cached answers are free for seven days. Requires a paid plan in hosted mode.
-- `estimate_ai_visibility_cost`, `save_ai_visibility_tracker`, `run_ai_visibility_check`, `get_ai_visibility_run`: only for the first-run path below.
+- `estimate_ai_visibility_cost`, `save_ai_visibility_tracker`, `set_ai_visibility_schedule`, `run_ai_visibility_check`, `get_ai_visibility_run`: only for the first-run path below.
 - `get_ranked_keywords`, `get_serp_results`, `get_backlinks_overview`: optional context when an owned page's search performance or authority could change a recommendation.
 - Web reading (fetch, scrape or search): `robots.txt`, the owned pages that should be cited, and the pages AI answers cite instead.
 
@@ -37,9 +37,9 @@ The project-context tools are free and shared with the app and other agents.
 
 - **Tracker with a completed run**: use the latest completed baseline or scheduled run, or the latest completed manual check when `recentRuns` has no other. Do not buy new answers.
 - **Run in progress**: when `recentRuns` shows a pending or partially finished run, follow it with `get_ai_visibility_run`, respecting `pollAfterSeconds`. Do not start another. A failed or partial run still supplies whatever answers it completed; report its coverage.
-- **Tracker with active prompts but no runs**: saved prompts that were never collected, for example because the schedule was never enabled. Estimate one check of the saved active prompts with `estimate_ai_visibility_cost`, get approval once, then call `run_ai_visibility_check` with the approved cost as `maxCostUsd`. Follow the returned run. Do not change the schedule.
+- **Tracker with active prompts but no runs**: saved prompts that were never collected, for example because the schedule was never enabled. Estimate one check of the saved active prompts with `estimate_ai_visibility_cost`, get approval once, then call `run_ai_visibility_check` with the approved `runNowCostUsd` as `maxCostUsd`. Follow the returned run. Do not change the schedule.
 - **Tracker with no active prompts** (every topic or prompt paused or archived): ask whether to resume the existing prompts or add new ones, then take the matching path. Do not unpause anything without the user's direction.
-- **No tracker**: propose 10–15 neutral prompts across two or three topics the business sells into, preferring real prompts from `research_ai_visibility_prompts`. Show one plan with the cost from `estimate_ai_visibility_cost`, get approval once, save through `save_ai_visibility_tracker` with each prompt's `topic`, and run one check with the approved cost as `maxCostUsd`. Do not enable a schedule. If the user declines the spend, run the audit on prompt research alone and say the report has no observed answers.
+- **No tracker**: propose 10–15 neutral prompts across two or three topics the business sells into, preferring real prompts from `research_ai_visibility_prompts`. Show one plan with the check cost and the monthly cost from `estimate_ai_visibility_cost`, and say that a new tracker runs weekly, with its first scheduled check a week later. Get approval once, save through `save_ai_visibility_tracker` with each prompt's `topic`, and run one check with the approved `runNowCostUsd` as `maxCostUsd`. If the user wants this audit only, pause the schedule with `set_ai_visibility_schedule` and `enabled: false`. If the user declines the spend, run the audit on prompt research alone and say the report has no observed answers.
 
 ### 2. Read where the brand stands
 

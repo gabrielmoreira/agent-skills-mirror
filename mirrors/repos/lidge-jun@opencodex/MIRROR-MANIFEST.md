@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 59 file(s) materialized.
+Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 60 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 59
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 59 |
+| Files         | 60 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -111,17 +111,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 46 | ✓ | [`structure/design-methodology.md`](structure/design-methodology.md) |
 | 47 | ✓ | [`structure/desktop-shell.md`](structure/desktop-shell.md) |
 | 48 | ✓ | [`structure/gui-and-management-api.md`](structure/gui-and-management-api.md) |
-| 49 | ✓ | [`structure/overview.md`](structure/overview.md) |
-| 50 | ✓ | [`structure/providers-and-adapters.md`](structure/providers-and-adapters.md) |
-| 51 | ✓ | [`structure/remote-link.md`](structure/remote-link.md) |
-| 52 | ✓ | [`structure/remote-workspace.md`](structure/remote-workspace.md) |
-| 53 | ✓ | [`structure/runtime.md`](structure/runtime.md) |
-| 54 | ✓ | [`structure/subagents.md`](structure/subagents.md) |
-| 55 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
-| 56 | → | [`CREDITS.md`](CREDITS.md) |
-| 57 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
-| 58 | → | [`SECURITY.md`](SECURITY.md) |
-| 59 | → | [`structure/INDEX.md`](structure/INDEX.md) |
+| 49 | ✓ | [`structure/local-messaging.md`](structure/local-messaging.md) |
+| 50 | ✓ | [`structure/overview.md`](structure/overview.md) |
+| 51 | ✓ | [`structure/providers-and-adapters.md`](structure/providers-and-adapters.md) |
+| 52 | ✓ | [`structure/remote-link.md`](structure/remote-link.md) |
+| 53 | ✓ | [`structure/remote-workspace.md`](structure/remote-workspace.md) |
+| 54 | ✓ | [`structure/runtime.md`](structure/runtime.md) |
+| 55 | ✓ | [`structure/subagents.md`](structure/subagents.md) |
+| 56 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
+| 57 | → | [`CREDITS.md`](CREDITS.md) |
+| 58 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
+| 59 | → | [`SECURITY.md`](SECURITY.md) |
+| 60 | → | [`structure/INDEX.md`](structure/INDEX.md) |
 
 ---
 

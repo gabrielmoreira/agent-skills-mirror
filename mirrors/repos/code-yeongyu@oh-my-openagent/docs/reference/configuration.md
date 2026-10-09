@@ -30,6 +30,7 @@ Complete reference for Oh My OpenCode plugin configuration. Every omo harness re
   - [LSP](#lsp)
 - [Advanced](#advanced)
   - [Runtime Fallback](#runtime-fallback)
+  - [Anthropic Prompt Cache Lifetime](#anthropic-prompt-cache-lifetime)
   - [Model Capabilities](#model-capabilities)
   - [Hashline Edit](#hashline-edit)
   - [Experimental](#experimental)
@@ -1246,6 +1247,54 @@ In this example the explicit `"reasoning": "high"` is canonical; deprecated fiel
 
 This final example is a **complete canonical shape reference** for `[opencode]` fallback objects. Prefer unified `reasoning` for model tuning, and use provider-specific `[opencode]` fields only when the target model requires them.
 
+### Anthropic Prompt Cache Lifetime
+
+OmO Native caches the prompt prefix on Anthropic models. The cached prefix lives for 5 minutes by default. If your turns are usually more than 5 minutes apart (long reviews, waiting on builds, stepping away), every turn after a gap rewrites the whole prefix into the cache, and cache-write tokens dominate the bill. Anthropic also offers a 1-hour cache lifetime, and OmO Native can use it.
+
+**Turn it on for every Anthropic model** by setting the environment variable before you start `omo`:
+
+```sh
+export PI_CACHE_RETENTION=long
+```
+
+**Or turn it on per model** in `~/.omo/agent/models.json`, one entry per model id. This applies to every session that reads that agent directory, regardless of the shell it was started from:
+
+```jsonc
+{
+  "providers": {
+    "anthropic": {
+      "modelOverrides": {
+        "claude-opus-5-5": { "cacheRetention": "long" },
+        "claude-sonnet-5-5": { "cacheRetention": "long" }
+      }
+    }
+  }
+}
+```
+
+`cacheRetention` accepts `"short"` (5 minutes, the default), `"long"` (1 hour) and `"none"` (no caching). A per-model value wins over the environment variable. Put it under `modelOverrides`: a `cacheRetention` set directly on a built-in provider such as `anthropic` is rejected, because provider-level values only apply to the custom models you define under that provider's `models`.
+
+The 1-hour lifetime is sent only to the Anthropic API itself (`https://api.anthropic.com`). A model served through a proxy or another base URL keeps the 5-minute lifetime even when `cacheRetention` is `"long"`, because those endpoints don't all accept it.
+
+**Cost trade-off.** On Anthropic, a 5-minute cache write costs 1.25x the base input price, a 1-hour cache write costs 2x, and a cache read costs 0.1x either way. The longer lifetime makes each write more expensive, so it pays off when your turns are often more than 5 minutes apart. If you usually answer within a few minutes, keep the default.
+
+**Keeping the cache warm instead.** `promptCache.keepAlive` in `~/.omo/agent/settings.json` sends a small warm-up request shortly before the cache would expire while the session is idle, so the next turn reads the cache instead of rewriting it. It is off by default and capped per session:
+
+```jsonc
+{
+  "promptCache": {
+    "keepAlive": {
+      "enabled": true,
+      "maxRequestsPerSession": 3,   // warm-up requests per session (default 3)
+      "maxCostUsdPerSession": 0.05, // estimated spend cap per session (default 0.05)
+      "marginSeconds": 60           // send this many seconds before expiry (default 60)
+    }
+  }
+}
+```
+
+The keep-alive also runs only for Anthropic Messages models on the Anthropic API base URL. Use it for short pauses. For gaps that are regularly longer than a few warm-ups would cover, the 1-hour lifetime is the simpler option.
+
 ### Model Capabilities
 
 OmO can refresh a local models.dev capability snapshot on startup. This cache is controlled by `model_capabilities`.
@@ -1369,6 +1418,7 @@ The shared base and Senpi use an object:
 | --------------------- | ----------------------------------------------------------------- |
 | `OPENCODE_CONFIG_DIR` | Override OpenCode config directory (useful for profile isolation) |
 | `OPENGATEWAY_API_KEY` | API key for the OpenGateway provider; without this or an `opengateway` auth entry, the plugin does not inject the provider |
+| `PI_CACHE_RETENTION` | Set to `long` to use Anthropic's 1-hour prompt cache lifetime instead of 5 minutes. A per-model `cacheRetention` in `models.json` takes precedence. See [Anthropic Prompt Cache Lifetime](#anthropic-prompt-cache-lifetime). |
 | `OMO_DEBUG` | Set to `1` (any non-empty value) to print omo-senpi component `info` diagnostics on stderr. Unset, those lines are silent. `warn` and `error` still print. Component logs never go to stdout. |
 | `OMO_SEND_ANONYMOUS_TELEMETRY` | Set to `0`, `false`, or `no` to disable anonymous telemetry |
 | `OMO_DISABLE_POSTHOG` | Legacy telemetry opt-out flag. Set to `1`, `true`, or `yes` to disable PostHog |

@@ -2,6 +2,29 @@
 
 REA welcomes focused bug fixes, documentation improvements, tests, and reverse-engineering workflow enhancements. Open an issue before a large contract or architecture change so its scope can be agreed before implementation.
 
+## Choosing a contribution
+
+Small contributions are welcome when they solve a concrete problem, including
+broken commands, misleading documentation, and missing regression coverage.
+Explain the problem, keep the diff focused, and share how you checked the change.
+
+Please avoid standalone cosmetic changes without a clear benefit, such as fixing
+a typo in an internal comment, changing capitalization or punctuation in
+already-clear prose, or reformatting unchanged code. Include related polish in a
+useful fix when practical. For cosmetic-only suggestions, please open an issue
+instead of a standalone PR so they can be collected and addressed together.
+Corrections to confusing explanations or incorrect instructions are welcome.
+
+Avoid speculative cleanup without a concrete problem to solve. Keep related
+corrections in one PR.
+
+Before requesting review, read the final diff and run the relevant checks. Be clear
+about anything you couldn't test. You should be able to explain the changes you
+submit.
+
+We may decline changes when the benefit doesn't justify the review or maintenance
+work.
+
 For capability organization and provider composition, follow the incremental
 [migration guide](docs/capability-migration.md). Run `npm run verify:test-discovery`
 after adding or moving tests.
@@ -35,14 +58,18 @@ links, and `npm run docs:preview` to preview that build at `/rea/`.
 Site navigation lives in `docs/.vitepress/config.ts`. Keep links to guides
 relative so they work on GitHub and the website; link to repository files
 outside `docs/` using their full GitHub URLs. Generated reference documents
-still use `npm run docs:generate`; `docs:build` only builds the website.
+use `npm run docs:generate`; `docs:build` generates them before building the website.
 
 Pull requests run `npm run docs:check`. `.github/workflows/pages.yml` is a
 manual VitePress build and does not publish. The public site at
-<https://morluto.github.io/rea/> is published only by the manual website
-workflow on `main`. The repository's **Settings → Pages → Build and
-deployment → Source** must be set to **GitHub Actions** before the first
-deployment.
+<https://rea.tools/> serves `website/public/` through Cloudflare Workers. See
+the [website README](website/README.md#cloudflare-workers) for previews and
+manual deployments.
+
+The separate GitHub Pages host uses only the manual
+`.github/workflows/website-pages.yml` workflow on `main`. The repository's
+**Settings → Pages → Build and deployment → Source** must be set to
+**GitHub Actions** before deploying there.
 
 ## Development feedback and PR verification
 
@@ -74,8 +101,24 @@ require the matching real-provider `verify:*` lane.
 Formatting uses Oxfmt and the committed `.oxfmtrc.json`; generated sources use
 the same configuration. Pre-commit formats and lints staged files; pre-push runs
 `check:fast`.
-`docs:check` checks committed generated metadata. `docs:generate` regenerates
-those files, and the docs CI lane checks them.
+`docs:check` builds and validates generated metadata for the current checkout.
+The product catalog (`docs/public/product-catalog.json`), portable managed
+conformance projections (`docs/verification/managed-conformance-*.json`), and
+packaged skill (`skills/`) are ignored build outputs. Edit skill instructions
+and references in `skill-src/`; the build adds catalog-dependent metadata to
+the packaged copy without rewriting authored files. The generated manifest
+commits to that exact packaged skill bundle. It is a portable projection of
+the deterministic managed verifier, not a record of optional real-provider runs.
+CI validates these outputs and retains them as artifacts instead of pushing
+generated-only commits onto feature branches. Reviewed source metadata such as
+`src/generatedPackageMetadata.ts` and `docs/error-contract.schema.json` remains
+tracked and checked for freshness. Do not commit ignored generated outputs.
+The build-generated product catalog contains documented facts and their provider
+identity, rather than full runtime schema hashes. The managed skill contains
+instructions and inventory metadata; doctor compares its installed files with
+the canonical bundle. Schema-only fixes should not change these outputs or the
+skill commitment in the conformance manifest. Runtime schema identity remains
+available through doctor and `binary_session`.
 Real-provider execution remains uncached; deterministic builds use Turbo.
 
 Local `npm test` runs every deterministic Vitest project without coverage or
@@ -122,14 +165,14 @@ Describe the behavior change and verification performed in the pull request. Nev
 
 ## Maintainer release checklist
 
-Use the [checkpoint release guide](docs/releasing.md). Releases start from an
-explicit `release/VERSION` branch cut at a recorded commit. Manually prepare
-the bot PR, wait for its exact-head CI and review, merge into that frozen
-branch, and manually publish through the official Release workflow. Main
-pushes do not update release PRs or publish packages. Both publishers build
-the exact SHA tagged by Release Please.
+Use the [release guide](docs/releasing.md). Main pushes automatically refresh a
+Release Please PR with the next version and changelog. Review its migration
+notes, wait for the current CI checks to pass, and merge it into main to publish.
+The Release workflow validates and tags that merge; both publishers build its
+exact SHA. Ordinary main pushes cannot publish packages. An optional manual
+`release/VERSION` checkpoint retains explicit preparation and publication.
 
 Keep new implementation commits on main for the next release. The workflow
 owns packaged-artifact verification, npm publication, the published CLI/MCP
-canary, and MCP Registry publication. Sync release metadata back to main after
-publication; see the guide for partial-publication recovery and verification.
+canary, and MCP Registry publication. Sync manual checkpoint metadata back to
+main after publication; see the guide for recovery and verification.

@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `rtk-ai/rtk` — 26 default patterns, 14 followed patterns, 57 file(s) materialized.
+Mirror of `rtk-ai/rtk` — 26 default patterns, 15 followed patterns, 58 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `rtk-ai/rtk` — 26 default patterns, 14 followed patterns, 57 file(s)
 | Ref Type      | `branch` |
 | Ref           | `develop` |
 | Default pats  | 26 |
-| Followed pats | 14 |
-| Files         | 57 |
+| Followed pats | 15 |
+| Files         | 58 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,6 +65,7 @@ Mirror of `rtk-ai/rtk` — 26 default patterns, 14 followed patterns, 57 file(s)
 - `INSTALL.md`
 - `docs/TELEMETRY.md`
 - `DISCLAIMER.md`
+- `docs/guide/resources/troubleshooting.md`
 
 ## File Index
 
@@ -120,15 +121,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 46 | → | [`docs/contributing/ARCHITECTURE.md`](docs/contributing/ARCHITECTURE.md) |
 | 47 | → | [`docs/contributing/TECHNICAL.md`](docs/contributing/TECHNICAL.md) |
 | 48 | → | [`docs/guide/resources/savings-explained.md`](docs/guide/resources/savings-explained.md) |
-| 49 | → | [`docs/TELEMETRY.md`](docs/TELEMETRY.md) |
-| 50 | → | [`hooks/README.md`](hooks/README.md) |
-| 51 | → | [`INSTALL.md`](INSTALL.md) |
-| 52 | → | [`README.md`](README.md) |
-| 53 | → | [`SECURITY.md`](SECURITY.md) |
-| 54 | → | [`src/cmds/README.md`](src/cmds/README.md) |
-| 55 | → | [`src/core/README.md`](src/core/README.md) |
-| 56 | → | [`src/filters/README.md`](src/filters/README.md) |
-| 57 | → | [`src/hooks/README.md`](src/hooks/README.md) |
+| 49 | → | [`docs/guide/resources/troubleshooting.md`](docs/guide/resources/troubleshooting.md) |
+| 50 | → | [`docs/TELEMETRY.md`](docs/TELEMETRY.md) |
+| 51 | → | [`hooks/README.md`](hooks/README.md) |
+| 52 | → | [`INSTALL.md`](INSTALL.md) |
+| 53 | → | [`README.md`](README.md) |
+| 54 | → | [`SECURITY.md`](SECURITY.md) |
+| 55 | → | [`src/cmds/README.md`](src/cmds/README.md) |
+| 56 | → | [`src/core/README.md`](src/core/README.md) |
+| 57 | → | [`src/filters/README.md`](src/filters/README.md) |
+| 58 | → | [`src/hooks/README.md`](src/hooks/README.md) |
 
 ---
 

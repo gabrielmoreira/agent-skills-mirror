@@ -14,7 +14,9 @@ module.exports = {
     PreToolUse: "working",
     PermissionRequest: "notification",
     PostToolUse: "working",
+    PreCompact: "sweeping",
     Stop: "codex-turn-end",
+    SessionEnd: "sleeping",
   },
   // JSONL record type:subtype → pet state mapping. The remote monitor keeps
   // a zero-dep subset of this table; update both paths when adding shared
@@ -40,7 +42,7 @@ module.exports = {
     permissionApproval: true,
     // Official PermissionRequest is the real approval path.
     interactiveBubble: true,
-    sessionEnd: false, // no SessionEnd event; task_complete marks the turn done, process exit clears the session
+    sessionEnd: true, // official SessionEnd fires on thread teardown; task_complete still marks individual turns done
     subagent: false,
   },
   logConfig: {

@@ -41,6 +41,19 @@ MAX_WORKERS = 4
 LISTING_TIMEOUT = 15
 
 _POST_CARD = re.compile(r"<shreddit-post(?=[\s>])[^>]*>")
+_BLOCK_MARKERS = (
+    "verify you are human",
+    "confirm you are a human",
+    "just a moment",
+    "attention required",
+    "cf-browser-verification",
+    "challenge-platform",
+    "/svc/shreddit/js-challenge",
+    "please wait for verification",
+    "enable javascript and reload",
+    "you've been blocked",
+    "whoa there",
+)
 
 
 def _log(msg: str) -> None:
@@ -172,6 +185,19 @@ def _listing_url(subreddit: str, sort: str, timeframe: str = TIMEFRAME) -> str:
     return url
 
 
+def _listing_body_problem(subreddit: str, body: str) -> Optional[str]:
+    lower = body.lower()
+    is_blocked = any(marker in lower for marker in _BLOCK_MARKERS)
+    is_all = subreddit.removeprefix("r/").strip().lower() == "all"
+    if not is_all and not is_blocked:
+        return None
+    if parse_cards(body):
+        return None
+    if is_blocked:
+        return "Reddit listing interstitial: HTTP 2xx with no post cards"
+    return "Reddit r/all listing schema drift: HTTP 2xx with no post cards"
+
+
 def _fetch_one(
     subreddit: str,
     sort: str,
@@ -190,12 +216,13 @@ def _fetch_one_with_status(
 ) -> tuple[List[Dict[str, Any]], Optional[str]]:
     try:
         # retry_429 records a terminal miss into the pipeline sink (issue #899)
-        # and retries a 429 once through the limiter (issue #985). An empty
-        # body ("") is a real empty listing; None never is.
+        # and retries a 429 once through the limiter (issue #985). Empty
+        # dedicated-subreddit fragments can be valid; r/all cannot be empty.
         text, error = http.reddit_keyless_get_text_retry_429(
             _listing_url(subreddit, sort, timeframe),
             timeout=LISTING_TIMEOUT,
             accept="text/html",
+            validate=lambda body: _listing_body_problem(subreddit, body),
         )
         if text is None:
             return [], (error or "no response")

@@ -171,7 +171,7 @@ OpenHuman is licensed under [GPL-3.0](./LICENSE).
 
 ## OpenHuman vs Other Agent Harnesses
 
-High-level comparison (products evolve, so verify against each vendor). OpenHuman is built to **minimize vendor sprawl**, keep **workflow knowledge on-device**, and give the agent a **persistent memory** of your data, not only chat.
+High-level comparison (products evolve, so verify against each vendor). OpenHuman is built to **minimize vendor sprawl**, keep **your files and settings on-device**, and give the agent a **persistent memory** of your data, not only chat.
 
 |                        | Claude Cowork     | OpenClaw          | Hermes Agent      | OpenHuman                                                                                                |
 | ---------------------- | ----------------- | ----------------- | ----------------- | -------------------------------------------------------------------------------------------------------- |

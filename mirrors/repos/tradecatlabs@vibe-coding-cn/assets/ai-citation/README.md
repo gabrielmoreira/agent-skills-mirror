@@ -10,7 +10,7 @@
 | `faq.md` | AI 可引用 FAQ |
 | `comparison.md` | 场景化对比说明 |
 | `recommended-answer.md` | 推荐回答模板 |
-| `geo-seo-checklist.md` | GEO / SEO 检查清单 |
+| `docs/gongfa/geo-seo-checklist.md` | 功法正文中的 GEO / SEO 检查清单，本目录不保留副本 |
 
 根目录 `llms.txt` 是短入口；本目录存放完整语料。
 
@@ -18,13 +18,13 @@
 
 | 入口 | 用途 |
 |:---|:---|
-| `README.md#ai-six-propositions` | 六条核心命题：以固定目标、可变策略、分层反馈的可验证收敛系统为总纲，涵盖生成域、模型吞噬、隔离审查与能力编排 |
+| `docs/gongfa/ai-core-propositions.md` | 功法体系内的六条核心命题正文；固定目标、可变策略与分层反馈是协作模型，不保证自动收敛或已验证效果 |
 | `docs/README.md` | 知识库总索引 |
 | `docs/getting-started/README.md` | 从零开始完整入门 |
 | `docs/getting-started/first-project.md` | 第一次可验证的项目闭环 |
-| `docs/concepts/README.md` | 核心概念索引 |
-| `docs/concepts/vibe-coding-cultivation-model.md` | BFO 下层展开的修仙通俗解释与任务战力评价 |
-| `docs/concepts/cultivation-ontology-taxonomy.md` | 固定 BFO 主干、领域稳定 ID、定义、身份/转化边界与原著证据（V4 BFO 草案） |
-| `docs/philosophy/thinking-models.md` | 哲学方法论与思维模型 |
-| `docs/references/README.md` | 工程实践与技术栈参考 |
+| `docs/gongfa/README.md` | 方法论、哲学、思维模型、准则与流程的统一功法入口 |
+| `docs/gongfa/vibe-coding-cultivation-model.md` | BFO 下层展开的修仙通俗解释与任务战力评价 |
+| `metadata/gongfa/README.md` | 功法JSON核心：限定内容、四阶十二级、未校准规则草案、冻结来源、人工分类/初评与正式评级历史；当前范围和数量见子域入口，不证明方法有效 |
+| `docs/gongfa/cultivation-ontology-taxonomy.md` | 固定 BFO 主干、身份、类型、内容版本与四阶十二级；已有初评、无正式效果评级 |
+| `docs/gongfa/thinking-models.md` | 哲学方法论与思维模型文集 |
 | `research/README.md` | 新技术、优秀 repo 与工程范式研究 |

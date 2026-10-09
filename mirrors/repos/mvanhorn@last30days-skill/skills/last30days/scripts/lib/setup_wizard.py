@@ -80,7 +80,9 @@ def run_auto_setup(config: Dict[str, Any], *, allow_browser_cookies: bool = Fals
         Dict with keys:
           cookies_found: {source_name: browser_name} for each source where cookies were found
           browser_cookie_scan_attempted: bool (True only after explicit consent
-              AND on a host whose X policy permits cookie discovery)
+              and at least one browser is eligible for extraction)
+          x_cookie_access_denied: browser names denied during an attempted X
+              cookie read when no other browser supplied a complete X pair
           cookie_note: present only on an official-only host, where the scan
               is skipped for every domain (neutral, relayable text)
           ytdlp_installed: bool
@@ -95,7 +97,9 @@ def run_auto_setup(config: Dict[str, Any], *, allow_browser_cookies: bool = Fals
     from .env import COOKIE_DOMAINS, cookie_extraction_browsers, x_policy
 
     cookies_found: Dict[str, str] = {}
+    access_denied: dict[str, set[str]] = {}
     cookie_note: Optional[str] = None
+    browsers: list[str] = []
 
     # Official-only host (LAST30DAYS_HOST=grok-bot): the consented
     # cookie scan is skipped for EVERY domain (X and Truth Social alike) and
@@ -112,9 +116,9 @@ def run_auto_setup(config: Dict[str, Any], *, allow_browser_cookies: bool = Fals
         cookie_config = dict(config)
         cookie_config["BROWSER_CONSENT"] = "true"
         if not (cookie_config.get("FROM_BROWSER") or "").strip():
-            # Chromium-first: Chrome/Brave/etc. read cookies via the Keychain
-            # with no Full Disk Access, so try them before Safari, whose
-            # binarycookies read requires FDA (the dead-end most users hit).
+            # Chromium-first avoids Safari's usual Full Disk Access prompt.
+            # Browser-data permissions can still deny Chromium DB reads before
+            # the Keychain step, so a failed scan must report that separately.
             # firefox/safari stay as the silent fallbacks. Note: an explicit
             # comma list preserves this order (cookie_extraction_browsers);
             # "auto" would put the silent browsers first, so do not use it here.
@@ -128,6 +132,9 @@ def run_auto_setup(config: Dict[str, Any], *, allow_browser_cookies: bool = Fals
             for browser in browsers:
                 try:
                     result = cookie_extract.extract_cookies_with_source(browser, domain, cookie_names)
+                except PermissionError:
+                    access_denied.setdefault(source_name, set()).add(browser)
+                    continue
                 except Exception as exc:
                     logger.debug("Cookie extraction failed for %s via %s: %s", source_name, browser, exc)
                     continue
@@ -173,9 +180,14 @@ def run_auto_setup(config: Dict[str, Any], *, allow_browser_cookies: bool = Fals
     digg_installed, digg_action, digg_stderr, digg_path = _install_digg_cli()
     pp_sources = install_default_pp_sources()
 
+    scan_attempted = allow_browser_cookies and bool(browsers)
     results: Dict[str, Any] = {
         "cookies_found": cookies_found,
-        "browser_cookie_scan_attempted": allow_browser_cookies,
+        "x_cookie_access_denied": (
+            [browser for browser in browsers if browser in access_denied.get("x", set())]
+            if scan_attempted and "x" not in cookies_found else []
+        ),
+        "browser_cookie_scan_attempted": scan_attempted,
         "ytdlp_installed": ytdlp_installed,
         "ytdlp_action": ytdlp_action,
         "digg_installed": digg_installed,
@@ -607,6 +619,7 @@ def write_setup_config(
     from_browser: str | None = None,
     *,
     browser_consent: bool | None = None,
+    x_cookie_access_denied: str | None = None,
 ) -> bool:
     """Write setup completion, browser selection, and consent to the .env file.
 
@@ -623,6 +636,8 @@ def write_setup_config(
             browsers that did not supply cookies during setup.
         browser_consent: Record the user's current cookie-access decision.
             None preserves any previous decision.
+        x_cookie_access_denied: Setup's non-secret last X denial observation.
+            Pass "none" to clear a prior denial after a new setup run.
 
     Returns:
         True if config was written successfully, False on error.
@@ -634,6 +649,12 @@ def write_setup_config(
             if not write_api_key(
                 env_path, "true" if browser_consent else "false",
                 key_name="BROWSER_CONSENT", replace=True,
+            ):
+                return False
+        if x_cookie_access_denied is not None:
+            if not write_api_key(
+                env_path, x_cookie_access_denied,
+                key_name="LAST30DAYS_X_COOKIE_ACCESS_DENIED", replace=True,
             ):
                 return False
 
@@ -748,6 +769,8 @@ def get_setup_status_text(results: Dict[str, Any]) -> str:
     Returns:
         Multi-line status text.
     """
+    from .env import X_COOKIE_ACCESS_FIX
+
     lines = []
     lines.append("Setup complete! Here's what I found:")
     lines.append("")
@@ -756,6 +779,15 @@ def get_setup_status_text(results: Dict[str, Any]) -> str:
     if results.get("browser_cookie_scan_attempted") and cookies_found:
         for source, browser in cookies_found.items():
             lines.append(f"  - {source.upper()} cookies found in {browser}")
+    denied_browsers = (
+        results.get("x_cookie_access_denied") or []
+        if results.get("browser_cookie_scan_attempted") else []
+    )
+    if denied_browsers:
+        lines.append(
+            "  - X cookie access was permission denied in "
+            f"{', '.join(denied_browsers)}. {X_COOKIE_ACCESS_FIX}"
+        )
 
     ytdlp_action = results.get("ytdlp_action", "")
     if ytdlp_action == "installed":
@@ -876,6 +908,8 @@ def get_setup_status_text(results: Dict[str, Any]) -> str:
         lines.append("")
         if cookie_note:
             lines.append("Configuration saved.")
+        elif denied_browsers:
+            lines.append("Configuration saved. X browser cookie access remains unverified.")
         else:
             lines.append("Configuration saved. Future runs will auto-detect your browsers.")
 

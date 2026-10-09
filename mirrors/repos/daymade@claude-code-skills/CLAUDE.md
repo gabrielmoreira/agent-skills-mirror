@@ -138,6 +138,20 @@ being copied here. An owning installer may support an already authorized
 launcher; that does not make a package-manager dispatcher the default for
 Python hooks.
 
+### Rendered UI delivery acceptance
+
+For rendered UI freshness, delayed editor/batch responses or deployment acceptance, enter
+[frontend-visual-qa](frontend-visual-qa/SKILL.md). Keep its manifest, launcher,
+result semantics and rendered-journey procedure in that owner.
+Before designing or judging monitoring, availability or certificate matrices, enter
+[data-visualization-discipline](data-visualization-discipline/SKILL.md).
+Keep observation and risk semantics in its data-validation route, not a second checklist here.
+
+For oversized images or figure readability in a Markdown note or transcript, use
+[frontend-visual-qa's actual-reader handoff](frontend-visual-qa/references/markdown-reader-handoff.md).
+It owns reader-specific sizing and the representative pilot; keep display values
+and verification details there.
+
 ### Background Full Disk Access repair
 
 When a LaunchAgent cannot read protected data, enter
@@ -186,6 +200,10 @@ keep the detailed procedure there.
 
 Before choosing or changing any periodic observer's cadence, follow
 [macos-watchdog's observation contract](daymade-macos/macos-watchdog/references/probe-cost.md).
+For named macOS load/runaway alerts, follow
+[macos-load-doctor's intervention and diagnosis-completion contract](daymade-macos/macos-load-doctor/SKILL.md#5-act-within-the-boundary).
+The observation contract above owns delayed-sampling acceptance; keep its tests
+and the diagnostic stop conditions in those Skills.
 For changed operating defaults or thresholds in an already-required review, use
 [skill-creator's independent-review protocol](daymade-skill/skill-creator/references/independent-review-protocol.md).
 Keep decision criteria and verification details in those owners.
@@ -201,12 +219,19 @@ validation behavior in
 [native_review.py](daymade-audio/transcript-fixer/scripts/native_review.py), and
 queue anchor behavior in
 [review_queue.py](daymade-audio/transcript-fixer/scripts/core/review_queue.py).
+For a received user answer or an existing correction-ledger update, follow
+[cited answers and ledger writes](daymade-audio/transcript-fixer/references/review_queue_dashboard.md#cited-answers-and-ledger-writes).
+That guide owns source binding, supported answer syntax and interrupted-write recovery;
+keep its schema and commands there.
 For batch audio checks, use [verify_queue_audio.py](daymade-audio/transcript-fixer/scripts/verify_queue_audio.py)
 and its [adjudication guide](daymade-audio/transcript-fixer/references/advanced_correction_evidence.md):
 audio verification may add evidence but never resolves a review row or proves
 whole-transcript completion.
 When changing these paths, update their owning instructions together; keep
 review coverage, unresolved verdicts, and repository publication distinct.
+For local correction tests and repository CI ownership, follow the
+[testing strategy](daymade-audio/transcript-fixer/references/architecture.md#testing-strategy);
+keep maintainer-only repository resources distinct from installed Skill paths.
 
 ### Feishu Document Capture
 
@@ -609,7 +634,7 @@ branch point. Recovery:
    result byte-for-byte, then `git merge --ff-only <merge-sha>` — a
    fast-forward accepts staged content that equals the target; ort never does.
 3. Commit as a standalone command — `git add … && git commit` in one line trips
-   the scope guard's unknown-domain branch (150-second dialog) regardless of
+   the scope guard's unknown-domain branch regardless of
    content.
 
 **CHANGELOG.md merges as a union** (`.gitattributes`). Merging `origin/main`

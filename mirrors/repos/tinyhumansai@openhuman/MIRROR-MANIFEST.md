@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tinyhumansai/openhuman` — 26 default patterns, 28 followed patterns, 218 file(s) materialized.
+Mirror of `tinyhumansai/openhuman` — 26 default patterns, 28 followed patterns, 219 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tinyhumansai/openhuman` — 26 default patterns, 28 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 28 |
-| Files         | 218 |
+| Files         | 219 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -266,44 +266,45 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 178 | ✓ | [`scripts/debug/README.md`](scripts/debug/README.md) |
 | 179 | ✓ | [`scripts/dep-audit/README.md`](scripts/dep-audit/README.md) |
 | 180 | ✓ | [`scripts/life-scenarios/README.md`](scripts/life-scenarios/README.md) |
-| 181 | ✓ | [`scripts/profile/README.md`](scripts/profile/README.md) |
-| 182 | ✓ | [`scripts/rabbit/README.md`](scripts/rabbit/README.md) |
-| 183 | ✓ | [`scripts/README.md`](scripts/README.md) |
-| 184 | ✓ | [`scripts/shortcuts/README.md`](scripts/shortcuts/README.md) |
-| 185 | ✓ | [`scripts/shortcuts/review/README.md`](scripts/shortcuts/review/README.md) |
-| 186 | ✓ | [`scripts/shortcuts/work/README.md`](scripts/shortcuts/work/README.md) |
-| 187 | ✓ | [`scripts/test-planning/README.md`](scripts/test-planning/README.md) |
-| 188 | ✓ | [`tests/fixtures/memory_golden/README.md`](tests/fixtures/memory_golden/README.md) |
-| 189 | ✓ | [`tests/README.md`](tests/README.md) |
-| 190 | ✓ | [`vendor/motosan-ai-oauth/CLAUDE.md`](vendor/motosan-ai-oauth/CLAUDE.md) |
-| 191 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 192 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 193 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 194 | → | [`crates/openhuman-embed/README.md`](crates/openhuman-embed/README.md) |
-| 195 | → | [`docs/community/discussions.md`](docs/community/discussions.md) |
-| 196 | → | [`docs/CONTRIBUTING-BEGINNERS.md`](docs/CONTRIBUTING-BEGINNERS.md) |
-| 197 | → | [`docs/harness-comparison-2026-07-22.md`](docs/harness-comparison-2026-07-22.md) |
-| 198 | → | [`docs/library-benchmarking.md`](docs/library-benchmarking.md) |
-| 199 | → | [`docs/library-minimal-recipe.md`](docs/library-minimal-recipe.md) |
-| 200 | → | [`docs/plans/jev-tool-search-baseline.md`](docs/plans/jev-tool-search-baseline.md) |
-| 201 | → | [`docs/SUPPORT.md`](docs/SUPPORT.md) |
-| 202 | → | [`gitbooks/developing/architecture.md`](gitbooks/developing/architecture.md) |
-| 203 | → | [`gitbooks/developing/architecture/agent-harness.md`](gitbooks/developing/architecture/agent-harness.md) |
-| 204 | → | [`gitbooks/developing/architecture/frontend.md`](gitbooks/developing/architecture/frontend.md) |
-| 205 | → | [`gitbooks/developing/architecture/tauri-shell.md`](gitbooks/developing/architecture/tauri-shell.md) |
-| 206 | → | [`gitbooks/developing/building-rust-core.md`](gitbooks/developing/building-rust-core.md) |
-| 207 | → | [`gitbooks/developing/embedding.md`](gitbooks/developing/embedding.md) |
-| 208 | → | [`gitbooks/developing/engines.md`](gitbooks/developing/engines.md) |
-| 209 | → | [`gitbooks/developing/getting-set-up.md`](gitbooks/developing/getting-set-up.md) |
-| 210 | → | [`gitbooks/developing/jev.md`](gitbooks/developing/jev.md) |
-| 211 | → | [`gitbooks/developing/performance.md`](gitbooks/developing/performance.md) |
-| 212 | → | [`gitbooks/developing/tinyhumans-api-key.md`](gitbooks/developing/tinyhumans-api-key.md) |
-| 213 | → | [`gitbooks/features/cloud-deploy.md`](gitbooks/features/cloud-deploy.md) |
-| 214 | → | [`gitbooks/features/token-compression.md`](gitbooks/features/token-compression.md) |
-| 215 | → | [`gitbooks/features/workflows.md`](gitbooks/features/workflows.md) |
-| 216 | → | [`INSTALL.md`](INSTALL.md) |
-| 217 | → | [`README.md`](README.md) |
-| 218 | → | [`SECURITY.md`](SECURITY.md) |
+| 181 | ✓ | [`scripts/memory-scenarios/README.md`](scripts/memory-scenarios/README.md) |
+| 182 | ✓ | [`scripts/profile/README.md`](scripts/profile/README.md) |
+| 183 | ✓ | [`scripts/rabbit/README.md`](scripts/rabbit/README.md) |
+| 184 | ✓ | [`scripts/README.md`](scripts/README.md) |
+| 185 | ✓ | [`scripts/shortcuts/README.md`](scripts/shortcuts/README.md) |
+| 186 | ✓ | [`scripts/shortcuts/review/README.md`](scripts/shortcuts/review/README.md) |
+| 187 | ✓ | [`scripts/shortcuts/work/README.md`](scripts/shortcuts/work/README.md) |
+| 188 | ✓ | [`scripts/test-planning/README.md`](scripts/test-planning/README.md) |
+| 189 | ✓ | [`tests/fixtures/memory_golden/README.md`](tests/fixtures/memory_golden/README.md) |
+| 190 | ✓ | [`tests/README.md`](tests/README.md) |
+| 191 | ✓ | [`vendor/motosan-ai-oauth/CLAUDE.md`](vendor/motosan-ai-oauth/CLAUDE.md) |
+| 192 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 193 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 194 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 195 | → | [`crates/openhuman-embed/README.md`](crates/openhuman-embed/README.md) |
+| 196 | → | [`docs/community/discussions.md`](docs/community/discussions.md) |
+| 197 | → | [`docs/CONTRIBUTING-BEGINNERS.md`](docs/CONTRIBUTING-BEGINNERS.md) |
+| 198 | → | [`docs/harness-comparison-2026-07-22.md`](docs/harness-comparison-2026-07-22.md) |
+| 199 | → | [`docs/library-benchmarking.md`](docs/library-benchmarking.md) |
+| 200 | → | [`docs/library-minimal-recipe.md`](docs/library-minimal-recipe.md) |
+| 201 | → | [`docs/plans/jev-tool-search-baseline.md`](docs/plans/jev-tool-search-baseline.md) |
+| 202 | → | [`docs/SUPPORT.md`](docs/SUPPORT.md) |
+| 203 | → | [`gitbooks/developing/architecture.md`](gitbooks/developing/architecture.md) |
+| 204 | → | [`gitbooks/developing/architecture/agent-harness.md`](gitbooks/developing/architecture/agent-harness.md) |
+| 205 | → | [`gitbooks/developing/architecture/frontend.md`](gitbooks/developing/architecture/frontend.md) |
+| 206 | → | [`gitbooks/developing/architecture/tauri-shell.md`](gitbooks/developing/architecture/tauri-shell.md) |
+| 207 | → | [`gitbooks/developing/building-rust-core.md`](gitbooks/developing/building-rust-core.md) |
+| 208 | → | [`gitbooks/developing/embedding.md`](gitbooks/developing/embedding.md) |
+| 209 | → | [`gitbooks/developing/engines.md`](gitbooks/developing/engines.md) |
+| 210 | → | [`gitbooks/developing/getting-set-up.md`](gitbooks/developing/getting-set-up.md) |
+| 211 | → | [`gitbooks/developing/jev.md`](gitbooks/developing/jev.md) |
+| 212 | → | [`gitbooks/developing/performance.md`](gitbooks/developing/performance.md) |
+| 213 | → | [`gitbooks/developing/tinyhumans-api-key.md`](gitbooks/developing/tinyhumans-api-key.md) |
+| 214 | → | [`gitbooks/features/cloud-deploy.md`](gitbooks/features/cloud-deploy.md) |
+| 215 | → | [`gitbooks/features/token-compression.md`](gitbooks/features/token-compression.md) |
+| 216 | → | [`gitbooks/features/workflows.md`](gitbooks/features/workflows.md) |
+| 217 | → | [`INSTALL.md`](INSTALL.md) |
+| 218 | → | [`README.md`](README.md) |
+| 219 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

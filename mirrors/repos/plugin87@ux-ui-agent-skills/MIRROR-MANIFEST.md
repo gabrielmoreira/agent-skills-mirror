@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `plugin87/ux-ui-agent-skills` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `plugin87/ux-ui-agent-skills` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `plugin87/ux-ui-agent-skills` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -86,10 +86,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | ✓ | [`.claude/skills/ux-writing/SKILL.md`](.claude/skills/ux-writing/SKILL.md) |
 | 26 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 27 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 28 | ✓ | [`templates/product-design/CLAUDE.md`](templates/product-design/CLAUDE.md) |
-| 29 | ✓ | [`tests/fixtures/bad/bare-paths/.claude/skills/leaky/SKILL.md`](tests/fixtures/bad/bare-paths/.claude/skills/leaky/SKILL.md) |
-| 30 | ✓ | [`tests/fixtures/bad/drifted-agents/AGENTS.md`](tests/fixtures/bad/drifted-agents/AGENTS.md) |
-| 31 | ✓ | [`tests/fixtures/bad/drifted-agents/CLAUDE.md`](tests/fixtures/bad/drifted-agents/CLAUDE.md) |
+| 28 | ✓ | [`mcp/gates.mjs`](mcp/gates.mjs) |
+| 29 | ✓ | [`mcp/selftest.mjs`](mcp/selftest.mjs) |
+| 30 | ✓ | [`mcp/server.mjs`](mcp/server.mjs) |
+| 31 | ✓ | [`templates/product-design/CLAUDE.md`](templates/product-design/CLAUDE.md) |
+| 32 | ✓ | [`tests/fixtures/bad/bare-paths/.claude/skills/leaky/SKILL.md`](tests/fixtures/bad/bare-paths/.claude/skills/leaky/SKILL.md) |
+| 33 | ✓ | [`tests/fixtures/bad/drifted-agents/AGENTS.md`](tests/fixtures/bad/drifted-agents/AGENTS.md) |
+| 34 | ✓ | [`tests/fixtures/bad/drifted-agents/CLAUDE.md`](tests/fixtures/bad/drifted-agents/CLAUDE.md) |
 
 ---
 

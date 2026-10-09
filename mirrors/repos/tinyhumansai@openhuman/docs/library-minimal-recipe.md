@@ -81,7 +81,7 @@ transport before startup, as shown in its [compiled quick-start
 example](../crates/openhuman-tinyhumans/src/lib.rs).
 
 Use `openhuman_embed::Runtime::builder()` for a standalone host with its own
-inference provider and local tools. Agent turns, local memory operations and
+inference provider and local tools. Agent turns, memory operations (on a CortexDB engine or an installed host engine) and
 enabled skills and flows remain available through their configured providers.
 An API key on that builder stores a credential; the host must also supply a
 backend transport to reach TinyHumans. Backend requests otherwise return

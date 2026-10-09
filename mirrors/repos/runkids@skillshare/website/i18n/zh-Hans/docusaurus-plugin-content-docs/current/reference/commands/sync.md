@@ -367,7 +367,7 @@ targets:
 - 在 symlink 模式下，filters 会被忽略
 - 在 copy 模式下，filters 的行为方式与 merge 模式相同
 - `sync` 会移除已被排除、但之前是 source-linked 或受管理的条目
-- 共用同一个文件夹的多个 target 需要相同的 filters；否则每次 sync 都会撤销另一个 target 的结果，`sync` 会发出警告（参见 [`sync` keeps showing the same changes](/docs/troubleshooting/common-errors#sync-keeps-showing-the-same-changes)）
+- 共用同一个文件夹的多个 target 需要相同的 filters、mode 和 target naming（两者都用 `symlink` 模式时，筛选与命名都不影响）；否则每次 sync 都会撤销另一个 target 的结果，`sync` 会发出警告（参见 [`sync` keeps showing the same changes](/docs/troubleshooting/common-errors#sync-keeps-showing-the-same-changes)）
 
 完整细节参见 [Configuration](/docs/reference/targets/configuration#include--exclude-target-filters)。
 

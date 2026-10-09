@@ -819,6 +819,19 @@ matches; a changed head, base, review conclusion, CI policy/result, review
 thread, draft flag, merge state, mergeability, or PR state fails open to a fresh
 qualification.
 
+Live queue details request `headRefOid` and `baseRefOid` together with the
+computed merge fields, matching the versioned readiness read. An unversioned
+GitHub detail request can return `UNKNOWN` despite a known exact-head merge
+state, repeatedly reopening an unchanged observation. Head/base drift between
+the list and detail reads makes the source incomplete; rerun discovery before
+selecting work. A genuinely unknown state still requires fresh qualification,
+and the immediately-before-merge gate remains mandatory.
+
+完整队列的详情请求同时读取 head/base OID 和合并状态；缺少版本的 GitHub
+详情读取可能返回 `UNKNOWN`，误使已核验项目反复排入队首。列表与详情之间的
+版本漂移会使来源不完整，须重新发现后再选择工作。真实未知状态仍需核验，
+合并前的精确版本检查和独立授权要求保持。
+
 They must not include raw logs, private connector payloads, credentials, local
 absolute paths, private source bodies, or hidden CI artifacts.
 
@@ -1262,3 +1275,21 @@ its existing values, and a new namespace uses capability defaults.
 审阅优先级），部分修改保留既有目标值，新覆盖使用 capability 默认值。关闭时不
 查询、轮询或等待 CI；本地必需验证、当前提交评审、评论及权限检查仍然适用。
 GitHub `BLOCKED` 只提示另需管理员授权，不授予合并权限。
+
+## Repository experience for opted-in review Agents
+
+The existing Reward Memory experiment can deliver Git-versioned procedural
+advice in actionable review packets. Enable the registered Agent, automatic
+recall and the explicit `pull_request_review.review` surface in its existing
+configuration. See [operation, readback and disable](experiences/README.md).
+The [#5944 comparison](experiences/pr-5944-review-frame.md) is the first stored
+case. Historical verdicts are outside retrieval; packet delivery proves neither
+adoption nor utility. Base/off paths, queue selection and review authority retain
+their existing contracts; the native file reader writes no provider.
+
+已开启的 review Agent 可通过现有 Reward Memory 实验，在可执行 review packet 中
+收到 Git 版本化的过程经验。须启用已注册 Agent、自动 recall，并在原配置中明确指定
+`pull_request_review.review` surface，参见[操作、回读与关闭](experiences/README.zh-CN.md)。
+[#5944 判断对照](experiences/pr-5944-review-frame.md)是第一条案例。
+历史 verdict 不进入检索，packet 投递不证明采用或效用。关闭路径、选工和评审权限
+仍遵循现有合同；内置文件 reader 不写 provider。

@@ -29,10 +29,12 @@ An engine stores your memory and answers questions about it. There are two:
 
 | Engine | What it is | Needs |
 | --- | --- | --- |
-| **TinyHumans** | Hosted CortexDB run by TinyHumans | You are signed in |
-| **CortexDB** | Your own CortexDB | An endpoint and an API key (kept in the OS keychain) |
+| **TinyHumans** | Hosted CortexDB run by TinyHumans, reached through the TinyHumans backend | You are signed in, or the host supplies a TinyHumans API key (headless and library hosts) |
+| **CortexDB** | Your own CortexDB, called directly (managed `api-v1.cortexdb.ai` or self-hosted) | A CortexDB API key (kept in the OS keychain), and an endpoint if not the managed one |
 
-Pick one on the **Engine** tab. If you are signed out and have no CortexDB key, memory is **off**: the agent has no memory tool, nothing is stored, and the Memory page tells you why.
+Either way your memory items are stored in CortexDB, not on your computer; OpenHuman keeps only bookkeeping (queued jobs, sync and import progress) locally. See [Where your memory is stored](privacy-and-security.md#where-your-memory-is-stored).
+
+Pick one on the **Engine** tab. If you are signed out and have neither a CortexDB key nor a host-supplied TinyHumans API key, memory is **off**: the agent has no memory tool, nothing is stored, and the Memory page tells you why.
 
 ## What the engine does
 
@@ -55,7 +57,6 @@ Below that, **Synced sources** keep the brain up to date. A source is one of:
 | `link` | A web page | `web` |
 | `github` | A repository (`owner/repo`) | `github` |
 | `rss` | A feed URL | `web` |
-| `composio` | A connected integration (Composio toolkit) | the toolkit (`notion`, `gmail`, …) |
 
 Sources sync when you press sync and on a schedule you set per source. An unchanged file that syncs again is not stored twice. Removing a source can also forget the items it produced.
 

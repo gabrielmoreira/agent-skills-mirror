@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `callstackincubator/agent-skills` — 26 default patterns, 2 followed patterns, 127 file(s) materialized.
+Mirror of `callstackincubator/agent-skills` — 26 default patterns, 2 followed patterns, 129 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `callstackincubator/agent-skills` — 26 default patterns, 2 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 127 |
+| Files         | 129 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -130,63 +130,65 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 68 | ✓ | [`skills/react-native-brownfield-migration/references/bare-ios-native-integration.md`](skills/react-native-brownfield-migration/references/bare-ios-native-integration.md) |
 | 69 | ✓ | [`skills/react-native-brownfield-migration/references/bare-ios-xcframework-generation.md`](skills/react-native-brownfield-migration/references/bare-ios-xcframework-generation.md) |
 | 70 | ✓ | [`skills/react-native-brownfield-migration/references/bare-quick-start.md`](skills/react-native-brownfield-migration/references/bare-quick-start.md) |
-| 71 | ✓ | [`skills/react-native-brownfield-migration/references/expo-android-integration.md`](skills/react-native-brownfield-migration/references/expo-android-integration.md) |
-| 72 | ✓ | [`skills/react-native-brownfield-migration/references/expo-create-app.md`](skills/react-native-brownfield-migration/references/expo-create-app.md) |
-| 73 | ✓ | [`skills/react-native-brownfield-migration/references/expo-ios-integration.md`](skills/react-native-brownfield-migration/references/expo-ios-integration.md) |
-| 74 | ✓ | [`skills/react-native-brownfield-migration/references/expo-quick-start.md`](skills/react-native-brownfield-migration/references/expo-quick-start.md) |
-| 75 | ✓ | [`skills/react-native-brownfield-migration/references/quick-start.md`](skills/react-native-brownfield-migration/references/quick-start.md) |
-| 76 | ✓ | [`skills/react-native-brownfield-migration/SKILL.md`](skills/react-native-brownfield-migration/SKILL.md) |
-| 77 | ✓ | [`skills/react-native-tv-best-practices/agents/openai.yaml`](skills/react-native-tv-best-practices/agents/openai.yaml) |
-| 78 | ✓ | [`skills/react-native-tv-best-practices/references/a11y-checklist.md`](skills/react-native-tv-best-practices/references/a11y-checklist.md) |
-| 79 | ✓ | [`skills/react-native-tv-best-practices/references/a11y-implementation.md`](skills/react-native-tv-best-practices/references/a11y-implementation.md) |
-| 80 | ✓ | [`skills/react-native-tv-best-practices/references/a11y-overview.md`](skills/react-native-tv-best-practices/references/a11y-overview.md) |
-| 81 | ✓ | [`skills/react-native-tv-best-practices/references/design-10foot.md`](skills/react-native-tv-best-practices/references/design-10foot.md) |
-| 82 | ✓ | [`skills/react-native-tv-best-practices/references/design-color.md`](skills/react-native-tv-best-practices/references/design-color.md) |
-| 83 | ✓ | [`skills/react-native-tv-best-practices/references/design-layout.md`](skills/react-native-tv-best-practices/references/design-layout.md) |
-| 84 | ✓ | [`skills/react-native-tv-best-practices/references/design-typography.md`](skills/react-native-tv-best-practices/references/design-typography.md) |
-| 85 | ✓ | [`skills/react-native-tv-best-practices/references/focus-management.md`](skills/react-native-tv-best-practices/references/focus-management.md) |
-| 86 | ✓ | [`skills/react-native-tv-best-practices/references/focus-performance.md`](skills/react-native-tv-best-practices/references/focus-performance.md) |
-| 87 | ✓ | [`skills/react-native-tv-best-practices/references/nav-directional.md`](skills/react-native-tv-best-practices/references/nav-directional.md) |
-| 88 | ✓ | [`skills/react-native-tv-best-practices/references/nav-keyboard.md`](skills/react-native-tv-best-practices/references/nav-keyboard.md) |
-| 89 | ✓ | [`skills/react-native-tv-best-practices/references/nav-patterns.md`](skills/react-native-tv-best-practices/references/nav-patterns.md) |
-| 90 | ✓ | [`skills/react-native-tv-best-practices/references/perf-animations.md`](skills/react-native-tv-best-practices/references/perf-animations.md) |
-| 91 | ✓ | [`skills/react-native-tv-best-practices/references/perf-lists.md`](skills/react-native-tv-best-practices/references/perf-lists.md) |
-| 92 | ✓ | [`skills/react-native-tv-best-practices/references/perf-memory.md`](skills/react-native-tv-best-practices/references/perf-memory.md) |
-| 93 | ✓ | [`skills/react-native-tv-best-practices/references/perf-network.md`](skills/react-native-tv-best-practices/references/perf-network.md) |
-| 94 | ✓ | [`skills/react-native-tv-best-practices/references/perf-overview.md`](skills/react-native-tv-best-practices/references/perf-overview.md) |
-| 95 | ✓ | [`skills/react-native-tv-best-practices/references/release-cicd.md`](skills/react-native-tv-best-practices/references/release-cicd.md) |
-| 96 | ✓ | [`skills/react-native-tv-best-practices/references/setup-architecture.md`](skills/react-native-tv-best-practices/references/setup-architecture.md) |
-| 97 | ✓ | [`skills/react-native-tv-best-practices/references/setup-cross-platform.md`](skills/react-native-tv-best-practices/references/setup-cross-platform.md) |
-| 98 | ✓ | [`skills/react-native-tv-best-practices/references/setup-getting-started.md`](skills/react-native-tv-best-practices/references/setup-getting-started.md) |
-| 99 | ✓ | [`skills/react-native-tv-best-practices/references/test-e2e.md`](skills/react-native-tv-best-practices/references/test-e2e.md) |
-| 100 | ✓ | [`skills/react-native-tv-best-practices/references/test-javascript.md`](skills/react-native-tv-best-practices/references/test-javascript.md) |
-| 101 | ✓ | [`skills/react-native-tv-best-practices/references/test-strategy.md`](skills/react-native-tv-best-practices/references/test-strategy.md) |
-| 102 | ✓ | [`skills/react-native-tv-best-practices/references/video-debugging.md`](skills/react-native-tv-best-practices/references/video-debugging.md) |
-| 103 | ✓ | [`skills/react-native-tv-best-practices/references/video-players.md`](skills/react-native-tv-best-practices/references/video-players.md) |
-| 104 | ✓ | [`skills/react-native-tv-best-practices/references/video-streaming.md`](skills/react-native-tv-best-practices/references/video-streaming.md) |
-| 105 | ✓ | [`skills/react-native-tv-best-practices/SKILL.md`](skills/react-native-tv-best-practices/SKILL.md) |
-| 106 | ✓ | [`skills/react-navigation/agents/openai.yaml`](skills/react-navigation/agents/openai.yaml) |
-| 107 | ✓ | [`skills/react-navigation/references/bottom-tabs.md`](skills/react-navigation/references/bottom-tabs.md) |
-| 108 | ✓ | [`skills/react-navigation/references/drawers.md`](skills/react-navigation/references/drawers.md) |
-| 109 | ✓ | [`skills/react-navigation/references/form-sheet.md`](skills/react-navigation/references/form-sheet.md) |
-| 110 | ✓ | [`skills/react-navigation/references/header.md`](skills/react-navigation/references/header.md) |
-| 111 | ✓ | [`skills/react-navigation/references/material-top-tabs.md`](skills/react-navigation/references/material-top-tabs.md) |
-| 112 | ✓ | [`skills/react-navigation/references/native-bottom-tabs.md`](skills/react-navigation/references/native-bottom-tabs.md) |
-| 113 | ✓ | [`skills/react-navigation/references/safe-areas.md`](skills/react-navigation/references/safe-areas.md) |
-| 114 | ✓ | [`skills/react-navigation/references/stacks.md`](skills/react-navigation/references/stacks.md) |
-| 115 | ✓ | [`skills/react-navigation/SKILL.md`](skills/react-navigation/SKILL.md) |
-| 116 | ✓ | [`skills/upgrading-react-native/agents/openai.yaml`](skills/upgrading-react-native/agents/openai.yaml) |
-| 117 | ✓ | [`skills/upgrading-react-native/references/expo-sdk-upgrade.md`](skills/upgrading-react-native/references/expo-sdk-upgrade.md) |
-| 118 | ✓ | [`skills/upgrading-react-native/references/monorepo-singlerepo-targeting.md`](skills/upgrading-react-native/references/monorepo-singlerepo-targeting.md) |
-| 119 | ✓ | [`skills/upgrading-react-native/references/react.md`](skills/upgrading-react-native/references/react.md) |
-| 120 | ✓ | [`skills/upgrading-react-native/references/upgrade-helper-core.md`](skills/upgrading-react-native/references/upgrade-helper-core.md) |
-| 121 | ✓ | [`skills/upgrading-react-native/references/upgrade-verification.md`](skills/upgrading-react-native/references/upgrade-verification.md) |
-| 122 | ✓ | [`skills/upgrading-react-native/references/upgrading-dependencies.md`](skills/upgrading-react-native/references/upgrading-dependencies.md) |
-| 123 | ✓ | [`skills/upgrading-react-native/references/upgrading-react-native.md`](skills/upgrading-react-native/references/upgrading-react-native.md) |
-| 124 | ✓ | [`skills/upgrading-react-native/SKILL.md`](skills/upgrading-react-native/SKILL.md) |
-| 125 | ✓ | [`skills/writing-user-docs/SKILL.md`](skills/writing-user-docs/SKILL.md) |
-| 126 | → | [`docs/ai-assistant-integration.md`](docs/ai-assistant-integration.md) |
-| 127 | → | [`docs/skill-conventions.md`](docs/skill-conventions.md) |
+| 71 | ✓ | [`skills/react-native-brownfield-migration/references/cli-and-config.md`](skills/react-native-brownfield-migration/references/cli-and-config.md) |
+| 72 | ✓ | [`skills/react-native-brownfield-migration/references/expo-android-integration.md`](skills/react-native-brownfield-migration/references/expo-android-integration.md) |
+| 73 | ✓ | [`skills/react-native-brownfield-migration/references/expo-create-app.md`](skills/react-native-brownfield-migration/references/expo-create-app.md) |
+| 74 | ✓ | [`skills/react-native-brownfield-migration/references/expo-ios-integration.md`](skills/react-native-brownfield-migration/references/expo-ios-integration.md) |
+| 75 | ✓ | [`skills/react-native-brownfield-migration/references/expo-quick-start.md`](skills/react-native-brownfield-migration/references/expo-quick-start.md) |
+| 76 | ✓ | [`skills/react-native-brownfield-migration/references/quick-start.md`](skills/react-native-brownfield-migration/references/quick-start.md) |
+| 77 | ✓ | [`skills/react-native-brownfield-migration/references/runtime-api.md`](skills/react-native-brownfield-migration/references/runtime-api.md) |
+| 78 | ✓ | [`skills/react-native-brownfield-migration/SKILL.md`](skills/react-native-brownfield-migration/SKILL.md) |
+| 79 | ✓ | [`skills/react-native-tv-best-practices/agents/openai.yaml`](skills/react-native-tv-best-practices/agents/openai.yaml) |
+| 80 | ✓ | [`skills/react-native-tv-best-practices/references/a11y-checklist.md`](skills/react-native-tv-best-practices/references/a11y-checklist.md) |
+| 81 | ✓ | [`skills/react-native-tv-best-practices/references/a11y-implementation.md`](skills/react-native-tv-best-practices/references/a11y-implementation.md) |
+| 82 | ✓ | [`skills/react-native-tv-best-practices/references/a11y-overview.md`](skills/react-native-tv-best-practices/references/a11y-overview.md) |
+| 83 | ✓ | [`skills/react-native-tv-best-practices/references/design-10foot.md`](skills/react-native-tv-best-practices/references/design-10foot.md) |
+| 84 | ✓ | [`skills/react-native-tv-best-practices/references/design-color.md`](skills/react-native-tv-best-practices/references/design-color.md) |
+| 85 | ✓ | [`skills/react-native-tv-best-practices/references/design-layout.md`](skills/react-native-tv-best-practices/references/design-layout.md) |
+| 86 | ✓ | [`skills/react-native-tv-best-practices/references/design-typography.md`](skills/react-native-tv-best-practices/references/design-typography.md) |
+| 87 | ✓ | [`skills/react-native-tv-best-practices/references/focus-management.md`](skills/react-native-tv-best-practices/references/focus-management.md) |
+| 88 | ✓ | [`skills/react-native-tv-best-practices/references/focus-performance.md`](skills/react-native-tv-best-practices/references/focus-performance.md) |
+| 89 | ✓ | [`skills/react-native-tv-best-practices/references/nav-directional.md`](skills/react-native-tv-best-practices/references/nav-directional.md) |
+| 90 | ✓ | [`skills/react-native-tv-best-practices/references/nav-keyboard.md`](skills/react-native-tv-best-practices/references/nav-keyboard.md) |
+| 91 | ✓ | [`skills/react-native-tv-best-practices/references/nav-patterns.md`](skills/react-native-tv-best-practices/references/nav-patterns.md) |
+| 92 | ✓ | [`skills/react-native-tv-best-practices/references/perf-animations.md`](skills/react-native-tv-best-practices/references/perf-animations.md) |
+| 93 | ✓ | [`skills/react-native-tv-best-practices/references/perf-lists.md`](skills/react-native-tv-best-practices/references/perf-lists.md) |
+| 94 | ✓ | [`skills/react-native-tv-best-practices/references/perf-memory.md`](skills/react-native-tv-best-practices/references/perf-memory.md) |
+| 95 | ✓ | [`skills/react-native-tv-best-practices/references/perf-network.md`](skills/react-native-tv-best-practices/references/perf-network.md) |
+| 96 | ✓ | [`skills/react-native-tv-best-practices/references/perf-overview.md`](skills/react-native-tv-best-practices/references/perf-overview.md) |
+| 97 | ✓ | [`skills/react-native-tv-best-practices/references/release-cicd.md`](skills/react-native-tv-best-practices/references/release-cicd.md) |
+| 98 | ✓ | [`skills/react-native-tv-best-practices/references/setup-architecture.md`](skills/react-native-tv-best-practices/references/setup-architecture.md) |
+| 99 | ✓ | [`skills/react-native-tv-best-practices/references/setup-cross-platform.md`](skills/react-native-tv-best-practices/references/setup-cross-platform.md) |
+| 100 | ✓ | [`skills/react-native-tv-best-practices/references/setup-getting-started.md`](skills/react-native-tv-best-practices/references/setup-getting-started.md) |
+| 101 | ✓ | [`skills/react-native-tv-best-practices/references/test-e2e.md`](skills/react-native-tv-best-practices/references/test-e2e.md) |
+| 102 | ✓ | [`skills/react-native-tv-best-practices/references/test-javascript.md`](skills/react-native-tv-best-practices/references/test-javascript.md) |
+| 103 | ✓ | [`skills/react-native-tv-best-practices/references/test-strategy.md`](skills/react-native-tv-best-practices/references/test-strategy.md) |
+| 104 | ✓ | [`skills/react-native-tv-best-practices/references/video-debugging.md`](skills/react-native-tv-best-practices/references/video-debugging.md) |
+| 105 | ✓ | [`skills/react-native-tv-best-practices/references/video-players.md`](skills/react-native-tv-best-practices/references/video-players.md) |
+| 106 | ✓ | [`skills/react-native-tv-best-practices/references/video-streaming.md`](skills/react-native-tv-best-practices/references/video-streaming.md) |
+| 107 | ✓ | [`skills/react-native-tv-best-practices/SKILL.md`](skills/react-native-tv-best-practices/SKILL.md) |
+| 108 | ✓ | [`skills/react-navigation/agents/openai.yaml`](skills/react-navigation/agents/openai.yaml) |
+| 109 | ✓ | [`skills/react-navigation/references/bottom-tabs.md`](skills/react-navigation/references/bottom-tabs.md) |
+| 110 | ✓ | [`skills/react-navigation/references/drawers.md`](skills/react-navigation/references/drawers.md) |
+| 111 | ✓ | [`skills/react-navigation/references/form-sheet.md`](skills/react-navigation/references/form-sheet.md) |
+| 112 | ✓ | [`skills/react-navigation/references/header.md`](skills/react-navigation/references/header.md) |
+| 113 | ✓ | [`skills/react-navigation/references/material-top-tabs.md`](skills/react-navigation/references/material-top-tabs.md) |
+| 114 | ✓ | [`skills/react-navigation/references/native-bottom-tabs.md`](skills/react-navigation/references/native-bottom-tabs.md) |
+| 115 | ✓ | [`skills/react-navigation/references/safe-areas.md`](skills/react-navigation/references/safe-areas.md) |
+| 116 | ✓ | [`skills/react-navigation/references/stacks.md`](skills/react-navigation/references/stacks.md) |
+| 117 | ✓ | [`skills/react-navigation/SKILL.md`](skills/react-navigation/SKILL.md) |
+| 118 | ✓ | [`skills/upgrading-react-native/agents/openai.yaml`](skills/upgrading-react-native/agents/openai.yaml) |
+| 119 | ✓ | [`skills/upgrading-react-native/references/expo-sdk-upgrade.md`](skills/upgrading-react-native/references/expo-sdk-upgrade.md) |
+| 120 | ✓ | [`skills/upgrading-react-native/references/monorepo-singlerepo-targeting.md`](skills/upgrading-react-native/references/monorepo-singlerepo-targeting.md) |
+| 121 | ✓ | [`skills/upgrading-react-native/references/react.md`](skills/upgrading-react-native/references/react.md) |
+| 122 | ✓ | [`skills/upgrading-react-native/references/upgrade-helper-core.md`](skills/upgrading-react-native/references/upgrade-helper-core.md) |
+| 123 | ✓ | [`skills/upgrading-react-native/references/upgrade-verification.md`](skills/upgrading-react-native/references/upgrade-verification.md) |
+| 124 | ✓ | [`skills/upgrading-react-native/references/upgrading-dependencies.md`](skills/upgrading-react-native/references/upgrading-dependencies.md) |
+| 125 | ✓ | [`skills/upgrading-react-native/references/upgrading-react-native.md`](skills/upgrading-react-native/references/upgrading-react-native.md) |
+| 126 | ✓ | [`skills/upgrading-react-native/SKILL.md`](skills/upgrading-react-native/SKILL.md) |
+| 127 | ✓ | [`skills/writing-user-docs/SKILL.md`](skills/writing-user-docs/SKILL.md) |
+| 128 | → | [`docs/ai-assistant-integration.md`](docs/ai-assistant-integration.md) |
+| 129 | → | [`docs/skill-conventions.md`](docs/skill-conventions.md) |
 
 ---
 

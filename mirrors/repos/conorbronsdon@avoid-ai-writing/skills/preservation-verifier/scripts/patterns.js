@@ -74,7 +74,10 @@ const AIDetector = (() => {
   const HOMOGLYPH_RE = /[Ѐ-ӿͰ-Ͽ]/u;
   const HOMOGLYPH_GLOBAL_RE = /[Ѐ-ӿͰ-Ͽ]/gu;
   const LATIN_LETTER_RE = /\p{Script=Latin}/u;
-  const LATIN_LETTER_GLOBAL_RE = /\p{Script=Latin}/gu;
+  // Dates, versions and ASCII filenames keep internal dots; prose may hard-wrap.
+  // Other sentence punctuation and Markdown/HTML block starts separate units, even
+  // without a space, so unrelated Russian text cannot hide an English word.
+  const SENTENCE_UNIT_GLOBAL_RE = /(?:[^.!?\r\n]|(?<=[A-Za-z0-9_])\.(?=[A-Za-z0-9_])|\r?\n(?![ \t]*(?:\r?\n|(?:[-*+]|#{1,6}|\d+[.)])\s|[><|]|`{3}|~{3}|(?:(?:-[ \t]*){3,}|(?:\*[ \t]*){3,}|(?:_[ \t]*){3,}|=+)[ \t]*(?:\r?\n|$)|:?-+:?[ \t]*(?:\|[ \t]*:?-+:?[ \t]*)+\|?[ \t]*(?:\r?\n|$))))+/g;
   // Words are letter runs; a hyphen splits them, so "API-сервис" stays two
   // words and its Russian half is not swapped.
   const LETTER_RUN_GLOBAL_RE = /[\p{L}\p{M}]+/gu;
@@ -137,18 +140,23 @@ const AIDetector = (() => {
     //    text, so only two word shapes are swapped:
     //    - mixed-script words ("pаypal", "dеlve"), anywhere;
     //    - words of two or more letters spelled entirely in lookalike
-    //      letters ("аст" for "act"), when the sentence or line around them
-    //      is not Russian or Greek prose: either Latin letters dominate and
-    //      neither neighbouring word uses Cyrillic or Greek, or every
-    //      Cyrillic and Greek letter in the unit is a lookalike. Deciding
-    //      per unit, not per document, keeps Russian padding from hiding
-    //      such a word in an English sentence.
-    //    Ordinary Russian words contain non-lookalike letters (з, п, и, н);
-    //    short words such as "со" next to other Russian words stay put, and
-    //    one-letter prepositions (с, о, у) are too short.
+    //      letters ("аст" for "act"), when the sentence around them has no
+    //      Russian or Greek in it: every Cyrillic and Greek letter in the
+    //      sentence is a lookalike. Deciding per sentence, not per document,
+    //      keeps Russian padding from hiding such a word in an English
+    //      sentence.
+    //    Sentence punctuation, blank lines and Markdown block starts separate units.
+    //    Internal ASCII-token dots ("07.10", "v1.2", "report.pdf") and a prose
+    //    hard wrap do not end it: cutting there left pieces such as "поста в
+    //    r/StableDiffusion от 07" that looked like Latin text.
+    //    Ordinary Russian words contain non-lookalike letters (з, п, и, л),
+    //    so short Russian words in Russian technical prose ("на Enum",
+    //    "от 07.10") stay put, and one-letter prepositions (с, о, у) are too
+    //    short.
     //    Known limits, because no letter-level rule separates these from
     //    real Russian: a fully substituted word inside or next to Russian
-    //    words ("МЕТА поможет", "пароль: аст") is left alone; a one-letter
+    //    words ("МЕТА поможет", "пароль: аст"), including across prose hard wraps,
+    //    is left alone; a one-letter
     //    lookalike split off by a hyphen ("а-ct") is left alone; and a short
     //    Russian sentence spelled only in lookalike letters ("Он сам.") is
     //    swapped.
@@ -161,21 +169,17 @@ const AIDetector = (() => {
     const letterCount = (word) => (word.match(/\p{L}/gu) || []).length;
     const allLookalike = (word) => letterCount(word) >= 2
       && [...word].every((ch) => lookalikeFor(ch) || !/\p{L}/u.test(ch));
-    out = out.replace(/[^.!?\r\n]+/g, (unit) => {
+    out = out.replace(SENTENCE_UNIT_GLOBAL_RE, (unit) => {
       const scriptLetters = unit.match(HOMOGLYPH_GLOBAL_RE) || [];
-      const latinLetters = (unit.match(LATIN_LETTER_GLOBAL_RE) || []).length;
-      const latinDominant = scriptLetters.length < latinLetters;
       const onlyLookalikes = scriptLetters.length > 0 && scriptLetters.every((ch) => lookalikeFor(ch));
       const words = [...unit.matchAll(LETTER_RUN_GLOBAL_RE)];
       let result = '';
       let last = 0;
-      words.forEach((match, i) => {
+      words.forEach((match) => {
         const word = match[0];
         let next = word;
         if (HOMOGLYPH_RE.test(word)) {
-          const isolated = ![words[i - 1], words[i + 1]].some((w) => w && HOMOGLYPH_RE.test(w[0]));
-          if (LATIN_LETTER_RE.test(word)
-              || (allLookalike(word) && ((latinDominant && isolated) || onlyLookalikes))) {
+          if (LATIN_LETTER_RE.test(word) || (allLookalike(word) && onlyLookalikes)) {
             next = word.replace(HOMOGLYPH_GLOBAL_RE, swapLookalike);
           }
         }
@@ -290,13 +294,27 @@ const AIDetector = (() => {
   // or a verb.
   // Singular "this", "that" and "each" cannot determine the plural noun:
   // here they are subjects ("each features a...") or a relative pronoun.
-  const FEATURES_NOUN_BEFORE_RE = /(?:^|[.!?:;(]\s*|(?:^|\n)[ \t]*(?:[-*+>#]+[ \t]*)?|\b(?:the|a|an|these|those|its|their|our|your|my|his|her|of|or|new|key|main|core|top|other|more|most|many|several|some|all|any|few|no|both|only|about|over|just|free|similar|common|specific|distinct|additional|extra|premium|advanced|basic|best|unique|missing|upcoming|existing|latest|major|minor|useful|important|various|different|certain|such|\d+|two|three|four|five|six|seven|eight|nine|ten)\s+|\w['’]s\s+|\w[-/]\w+\s+)$/i;
+  const FEATURES_NOUN_BEFORE_RE = /(?:^|[.!?:;(]\s*|(?:^|\n)[ \t]*(?:[-*+>#]+[ \t]*)?|\b(?:the|a|an|these|those|its|their|our|your|my|his|her|of|or|new|key|main|core|top|other|more|most|many|several|some|all|any|few|no|both|only|about|over|just|free|similar|common|specific|distinct|additional|extra|premium|advanced|basic|best|unique|missing|upcoming|existing|latest|major|minor|useful|important|various|different|certain|such|\d+|two|three|four|five|six|seven|eight|nine|ten|whose)\s+|\w['’]s\s+|\w[-/]\w+\s+)$/i;
   // "on-device" is an object modifier, not the preposition "on".
   const FEATURES_NOUN_AFTER_RE = /^(?:[ \t]*(?:[.,;:!?()[\]"'’”\n]|$)|\s+(?:of|for|in|on|at|into|and|or|but|nor|are|were|is|was|be|been|being|that|which|who|whose|like|such|to|from|with|without|than|help|helps|helped|let|allow|make|keep|give|provide|enable|offer|save|protect|ensure|improve|reduce|support|remain|vary|need|unlock|bring|include|includes|included|work|works|worked|will|can|could|should|would|may|might|must|do|did|does|have|has|had|we|you|they|i|it)(?![\w-]))/i;
   // Bare product objects: "we ship features", "teams build features".
   // A subject is required so noun subjects such as "the ship"/"the build"
   // still flag. One optional modifier preserves "we ship GPT-5 features".
   const FEATURES_NOUN_OBJECT_RE = /\b(?:i|we|you|they|teams?|developers?|engineers?|users?|companies|vendors|the\s+(?:release|update))\s+(?:(?:can|could|will|would|should|must)\s+)?(?:ship|ships|shipped|shipping|build|builds|built|building|add|adds|added|adding)\s+(?:[\w./-]+\s+)?$/i;
+  // Leads that make "which/what features" an indirect question (#384): a question
+  // verb that opens its clause ("Decide which...", "we should check which..."),
+  // or which/what at the start of a sentence or list item. A lead word inside a
+  // noun phrase ("a security check which features...") does not count.
+  const FEATURES_QUESTION_LEAD_RE = /(?:^|[.!?:;]\s*|(?:^|\n)[ \t]*(?:[-*+>#]+[ \t]*)?|(?:^|[.!?:;,]\s*|(?:^|\n)[ \t]*(?:[-*+>#]+[ \t]*)?|\b(?:i|we|you|they|he|she|let['’]?s|to|can|could|should|must|will|would|please|just|then|first|now|and|or|but|so)\s+)(?:decide|decides|deciding|choose|choosing|pick|check|checking|see|know|knowing|learn|find\s+out|figure\s+out|work\s+out|identify|determine|ask|asking|asked|tell\s+(?:me|us|them|you)|show\s+(?:me|us|them|you)|understand|explain|wonder|discover|confirm|consider|evaluate|prioritize|about)\s+)(?:which|what)\s+$/i;
+
+  // A lead word after a determiner is a noun ("a track which features...",
+  // "the review which features..."), not a question verb.
+  const FEATURES_LEAD_AS_NOUN_RE = /\b(?:a|an|the|this|that|these|those|my|our|your|their|its|his|her|each|every)\s+[\w-]+\s+(?:which|what)\s+$/i;
+
+  // Subjects that definitively make "features" a verb, avoiding ambiguity with
+  // plural-noun subjects like "The experimental features" or "Security features".
+  const FEATURES_VERB_SUBJECTS = /\b(?:library|tool|app|application|platform|system|language|service|product|update|release|version|site|website|game|device|model|framework|package|plugin|extension|which|what|that|who|it|he|she)\s+$/i;
+
   function featuresIsNoun(text, index) {
     const end = index + 'features'.length;
     const before = text.slice(Math.max(0, index - 40), index);
@@ -314,6 +332,61 @@ const AIDetector = (() => {
     // object. Strong noun contexts still take priority over punctuation.
     if (!FEATURES_NOUN_BEFORE_RE.test(before)
         && /^[ \t]*,[^,\n]{1,80},\s*(?:a|an|the)(?![\w-])/i.test(text.slice(end, end + 110))) return false;
+
+    // "which/what features" is a noun in an indirect question: right after a
+    // question verb ("Decide which features matter") or at the start of a
+    // sentence ("Which features matter most..."). Every other context falls
+    // through to the checks below unchanged, so relative clauses ("a library
+    // which features dashboards") keep their verb finding (#384).
+    if (FEATURES_QUESTION_LEAD_RE.test(before) && !FEATURES_LEAD_AS_NOUN_RE.test(before)) {
+      // If there is no trailing verb (e.g. end of clause), it's the verb case ("Check what features a dashboard and export tools.").
+      // Look past a compound subject and optional appositive for a trailing verb before returning the verb classification.
+      const match = /^\s+(?:a|an|the)\s+[\w-]+\s*(?:(?:and\b|or\b)\s+(?:a\s+|an\s+|the\s+)?(?:[\w-]+\s+){0,2}[\w-]+\s*)?(?:([,.!?;])|$)/i.exec(after);
+      if (match) {
+        const predicateRe = /\b(?:can|could|should|will|would|may|might|must|is|are|was|were|has|have|had|do|does|did|include|includes|disable|disables|reject|accept|allow|deny|provide|require|use|make|work|help|give|take|need|become|seem|look|show|offer|support|supports|fail|pass|lack|prefer|choose|prevent|stop)\b/i;
+        
+        // If the matched subject ends with a predicate right before the punctuation, 
+        // the predicate was consumed as part of the compound subject.
+        const subjectText = match[0].slice(0, match[1] ? -match[1].length : undefined).trim();
+        const lastWord = subjectText.split(/\s+/).pop();
+        if (predicateRe.test(lastWord)) {
+          return true;
+        }
+
+        if (match[1] === ',') {
+          // If the comma leads into a phrase, limit noun classification to a predicate 
+          // belonging to the article-led subject (after the next comma), excluding predicates inside subordinate clauses.
+          const remainder = text.slice(end + match[0].length, end + 120);
+          // An adverb can sit between the closing comma and the predicate.
+          const remainderPredicateRe = new RegExp(`^[^,]+,\\s*(?:(?:[\\w-]+ly|also|not|never)\\s+){0,2}${predicateRe.source}`, 'i');
+          if (remainderPredicateRe.test(remainder)) {
+            return true;
+          }
+        }
+        return false;
+      }
+      return true;
+    }
+
+    // "A library features support for..." is a verb.
+    // "System features support for..." is a plural noun subject + verb.
+    if (FEATURES_VERB_SUBJECTS.test(before) && /^\s+support\s+for\b/i.test(after)) {
+      const hasPluralDeterminer = /\b(?:these|those|all|some|many|few|various|multiple|several|both)\s+[\w-]+\s+$/i.test(before);
+      const extendedAfter = text.slice(end, end + 100);
+      const hasPluralPredicate = /^\s+support\s+for(?:[^.?!;]{0,80})?\b(?:and|but|or|nor)\s+(?:are|were|have|do|reject|accept|allow|deny|provide|require|use|make|work|help|give|take|need|become|seem|look|show|include|offer|support|fail|pass|lack|prefer|choose|prevent|stop)\b/i.test(extendedAfter);
+      // Do not borrow a determiner across a preposition or conjunction:
+      // "a suite of system features" still has plural noun "features".
+      // "that" can introduce a clause and "which" can determine plural nouns.
+      // A relative pronoun needs its own determiner-led subject evidence.
+      const hasSingularEvidence = /\b(?:a|an|this|that|every|each|one)\s+(?:(?!(?:of|for|in|with|and|or|which|what|that|who)\b)[\w-]+\s+){1,3}$/i.test(before)
+        || /\b(?:it|he|she)\s+$/i.test(before)
+        || /\b(?:a|an|the|this|that|my|our|your|their|its|his|her|each|every)\s+[\w-]+\s+(?:which|that|who)\s+$/i.test(before);
+      
+      if (!hasPluralDeterminer && !hasPluralPredicate && hasSingularEvidence) {
+        return false;
+      }
+    }
+
     return FEATURES_NOUN_BEFORE_RE.test(before) || FEATURES_NOUN_AFTER_RE.test(after);
   }
 
