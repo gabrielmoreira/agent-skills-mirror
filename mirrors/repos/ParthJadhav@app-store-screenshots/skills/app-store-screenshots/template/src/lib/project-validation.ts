@@ -14,7 +14,7 @@ const transform = (value: unknown) => record(value) &&
 /** Reject malformed generated/edited JSON before it can crash or overwrite a deck. */
 export function projectValidationError(value: unknown): string | null {
   if (!record(value) || !record(value.slidesByDevice)) return "Project must contain a slidesByDevice object";
-  if (value.schemaVersion !== undefined && value.schemaVersion !== 1 && value.schemaVersion !== 2) return "Unsupported project schema version";
+  if (value.schemaVersion !== undefined && ![1, 2, 3].includes(value.schemaVersion as number)) return "Unsupported project schema version";
   if (value.connectedCanvas !== undefined && typeof value.connectedCanvas !== "boolean") return "connectedCanvas must be a boolean";
   for (const key of ["appName", "themeId", "locale", "appIcon"]) {
     if (value[key] !== undefined && typeof value[key] !== "string") return `${key} must be a string`;

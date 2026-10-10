@@ -1,55 +1,130 @@
 # transport
 
-The SDK-backed `BackendTransport` implementation: every hosted-backend
-request the core makes rides the vendored `tinyhumans-sdk`'s HTTP primitive,
-which owns route policy (its unexposed-route registry) and the credential
-header shapes the backend expects.
+`SdkBackendTransport` is the implementation of the core's `BackendTransport`
+port. Every hosted-backend request the core makes, from `BackendClient`,
+`IntegrationClient` and the other backend callers, passes through it and rides
+the vendored `tinyhumans-sdk`'s raw HTTP primitive. The SDK owns route policy
+(its unexposed-route registry) and the credential header shapes the backend
+expects; this module wires the SDK to the core's request type and translates
+the SDK's errors back into the core's.
 
-## Contents
+## How it works
 
-- `mod.rs`: `SdkBackendTransport`. It holds one `reqwest::Client` per
-  `TransportProfile` (`Api`, `Integrations`), each built from the core's
-  `api::headers::build_backend_client` so TLS, timeouts and the attribution
-  headers (`x-core-version`, `x-tauri-version`, `x-sdk-name`) match exactly
-  what the core specifies. `send_json` and `send_multipart` build a
-  `TinyHumansClient` per request, attach the resolved credential
-  (`BackendCredential::Session` as a bearer token, `BackendCredential::ApiKey`
-  as `x-api-key`), and forward to the SDK's `raw()` client. `name()` returns
-  `"tinyhumans-sdk"`.
-- `error.rs`: `map_sdk_error`, translating `tinyhumans_sdk::Error` for a
-  given method and path into the core's `BackendTransportError` variants. A
-  `404` on `…/channels/<p>/messages/<id>` becomes `ChannelMessageRouteMissing`
-  (a `PATCH` with no matching route: the backend has no edit route, #5230) or
-  `ChannelMessageNotFound` (the message is gone), using
-  `tinyhumans_sdk::classify`. The core maps them onto its typed
-  `BackendApiError` recovery states and never reads the body itself.
-  `channel_404_tests.rs` pins this against a mock backend.
+`SdkBackendTransport::new()` builds two `reqwest::Client`s, one per
+`TransportProfile` (`Api` and `Integrations`), with
+`crate::backend::headers::build_backend_client`. That gives every request the
+platform TLS backend, the profile's timeout (120 s or 60 s), disabled
+redirects and the attribution headers (`x-core-version`, `x-tauri-version`,
+`x-sdk-name`) as defaults.
 
-## Installing it
+For each request the core hands over a `BackendRequest` (method, path, base
+URL, optional query and body, the resolved credential, the profile and whether
+to unwrap the `{success, data}` envelope). `send_json` then:
 
-`SdkBackendTransport::shared()` returns an `Arc<dyn BackendTransport>` ready
-for `openhuman_core::backend::install_backend_transport`.
-`openhuman_tinyhumans::install()` does this for every host that boots a core
-connected to TinyHumans (the Tauri shell, the TUI, the CLI); a core with no
-transport installed still runs agents, memory, tools and RPC, and answers
-any backend-touching call with `BackendApiError::BackendUnavailable` /
-`BACKEND_UNAVAILABLE:` instead.
+1. builds a `TinyHumansClient` for `req.base_url`, giving it the profile's
+   `reqwest::Client` and the product-identity headers as SDK default headers
+   (so `x-sdk-name` holds even for a client this crate did not build);
+2. attaches the credential: `BackendCredential::Session` as a bearer token
+   (`with_token`), `BackendCredential::ApiKey` as `x-api-key`
+   (`with_api_key`), or nothing;
+3. calls `sdk.raw().send(method, path, query, body, unwrap_envelope)`;
+4. maps an error through `map_sdk_error(error, &method, path)`.
 
-## Why this lives outside the core
+`send_multipart` does the same through `raw().post_multipart` for uploads
+such as speech-to-text.
 
-The core does not depend on `tinyhumans-sdk`; the port it programs against
-(`BackendTransport`, `BackendRequest`, `BackendTransportError`) lives in
-`crates/openhuman-core/src/api/transport/`. This crate is the only one
-allowed to depend on the SDK (`cargo tree -p openhuman -i tinyhumans-sdk`
-must stay empty). A missing backend route belongs in the vendored SDK's
-route registry, named from the core; this transport should never grow a
-route implementation of its own.
+The transport also answers the core's configuration questions, so the core
+keeps no hosted URL or header policy of its own:
 
-## Where to look next
+| Trait method | Answer |
+| --- | --- |
+| `base_url(configured, ControlPlane)` | `backend::url::effective_backend_api_url` |
+| `base_url(configured, Inference)` | `backend::url::effective_api_url` |
+| `product_identity()` | `backend::product::product_identity()` |
+| `attribution_headers()` | `backend::headers::attribution_headers()`, built fresh each call; on a malformed header value it degrades to the identity header alone |
+| `http_client(profile)` | a clone of the profile's `reqwest::Client`, for callers that drive `reqwest` themselves |
+| `name()` | `"tinyhumans-sdk"` |
 
-- `AGENTS.md`, "Backend API": the full port/adapter boundary and the header
-  rules every authenticated request must follow.
-- [`../session/README.md`](../session/README.md): where the credential this
-  transport attaches comes from.
-- [`../hosted/README.md`](../hosted/README.md): the RPC proxy domains built
-  on top of this transport.
+### Error mapping
+
+`map_sdk_error` in [`error.rs`](error.rs) maps each `tinyhumans_sdk::Error` variant onto a
+`BackendTransportError` variant one for one (`Url`, `Http`, `Status`,
+`Header`, `Decode`, `RouteNotExposed`, `Envelope`, with `Other` as a
+catch-all), so the core's classifiers in `backend/client.rs` and the
+integrations client see the same shapes they would see calling the SDK
+directly.
+
+One case gets a typed variant here because only this backend's wire behavior
+says what it means: a 404 on a channel-message path
+(`.../channels/<provider>/messages/<id>`).
+
+```text
+ 404 on .../channels/<p>/messages/<id>
+   |
+   +-- method is PATCH and body contains "Cannot PATCH "
+   |     (Express unmatched-route page: the backend has no edit route)
+   |       -> ChannelMessageRouteMissing { provider, message_id }
+   |
+   +-- otherwise (handler's JSON 404: the message is gone)
+           -> ChannelMessageNotFound { provider, message_id }
+```
+
+The core recovers from the two differently (`BackendApiError` variants in
+`backend/client.rs`) and never reads the response body itself.
+
+## Layout
+
+| Path | What it does |
+| --- | --- |
+| [`mod.rs`](mod.rs) | `SdkBackendTransport` and its `BackendTransport` impl. |
+| [`error.rs`](error.rs) | `map_sdk_error`, plus the channel-message path parser and the unmatched-route check. |
+
+## Key types and entry points
+
+- `SdkBackendTransport::new()` builds the transport; it fails only when a
+  `reqwest::Client` cannot be built.
+- `SdkBackendTransport::shared()` returns it as `Arc<dyn BackendTransport>`,
+  ready for `openhuman_embed::__host::backend::install_backend_transport`.
+- `map_sdk_error` is public (re-exported at the crate root) for code that
+  calls the SDK and needs the same translation.
+
+Most hosts never construct the transport by hand: `crate::install()` builds
+one and installs it, and `RuntimeBuilder::build()` also binds it to the
+runtime. A core with no transport installed still runs agents, memory, tools
+and RPC, and answers backend-touching calls with
+`BackendApiError::BackendUnavailable` / `BACKEND_UNAVAILABLE:`.
+
+## Boundaries
+
+- The port (`BackendTransport`, `BackendRequest`, `BackendTransportError`,
+  `BaseUrlPurpose`, `TransportProfile`) lives in
+  [`crates/openhuman-core/src/backend/transport/`](../../../openhuman-core/src/backend/transport/). Credential resolution is the
+  core's (`security::credentials::session_support`).
+- Routes live in the vendored SDK ([`vendor/tinyhumans-sdk`](../../../../vendor/tinyhumans-sdk/),
+  `tinyhumansai/tinyhumans-sdk`). A missing backend route goes into the SDK's
+  route registry and is named from the core; this transport never grows a
+  route implementation of its own. A route the SDK does not expose fails with
+  `RouteNotExposed`.
+- The hosted RPC proxies in [`../hosted/`](../hosted/README.md) do not call
+  this trait. They build their own typed `TinyHumansClient` through
+  `hosted::client::HostedClient`, reusing this transport's `http_client`.
+- The SDK's Socket.IO client is compiled out (`default-features = false`);
+  realtime stays on the core's `platform::socket`.
+
+## Tests
+
+[`transport_tests.rs`](transport_tests.rs) pins the wire shape against a wiremock backend: bearer
+versus `x-api-key`, attribution headers, `Status` and `Envelope` mapping, and
+SDK route refusal. [`channel_404_tests.rs`](channel_404_tests.rs) pins the two channel-message 404
+cases.
+
+```bash
+cargo test -p openhuman-tinyhumans transport::
+```
+
+## Further reading
+
+- [`gitbooks/developing/tinyhumans-api-key.md`](../../../../gitbooks/developing/tinyhumans-api-key.md): running on a TinyHumans API key.
+- [`gitbooks/developing/architecture.md`](../../../../gitbooks/developing/architecture.md): architecture overview.
+- [`crates/openhuman-tinyhumans/README.md`](../../README.md): the openhuman-tinyhumans crate README.
+- [`vendor/tinyhumans-sdk/README.md`](../../../../vendor/tinyhumans-sdk/README.md): tinyhumans-sdk.

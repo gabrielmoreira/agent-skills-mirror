@@ -18,13 +18,13 @@ Text-to-speech "podcast" toolkit. Synthesizes text into a workspace audio file v
 | `crates/openhuman-core/src/voice/audio_toolkit/mod.rs` | Export-only module surface: re-exports ops fns, schema registries, and types. |
 | `crates/openhuman-core/src/voice/audio_toolkit/types.rs` | Serde domain types: `AudioFormat`, request/result structs. |
 | `crates/openhuman-core/src/voice/audio_toolkit/ops.rs` | Business logic: `generate_podcast`, `email_podcast`, `generate_and_email_podcast`, `resolve_email_capture_dir`, plus private helpers (path/format/voice resolution, base64 decode, MIME enforcement, slugify, email build/capture). Contains the unit-test suite. |
-| `crates/openhuman-core/src/voice/audio_toolkit/schemas.rs` | RPC controller schemas + `handle_*` handlers delegating to `ops.rs`; loads `Config` via `config::rpc`. |
-| `crates/openhuman-core/src/voice/audio_toolkit/tools.rs` | Re-exports the three agent tool structs from `tools/podcast.rs`. |
+| `crates/openhuman-core/src/voice/audio_toolkit/schemas.rs` | RPC controller schemas + `handle_*` handlers delegating to [`ops.rs`](./ops.rs); loads `Config` via `config::rpc`. |
+| `crates/openhuman-core/src/voice/audio_toolkit/tools.rs` | Re-exports the three agent tool structs from [`tools/podcast.rs`](./tools/podcast.rs). |
 | `crates/openhuman-core/src/voice/audio_toolkit/tools/podcast.rs` | `Tool` impls: `AudioGeneratePodcastTool`, `AudioEmailPodcastTool`, `AudioGenerateAndEmailPodcastTool`; security gating + arg parsing. |
 
 ## Public surface
 
-From `mod.rs`:
+From [`mod.rs`](./mod.rs):
 
 - ops: `generate_podcast`, `email_podcast`, `generate_and_email_podcast`, `resolve_email_capture_dir`. All take `&Config` and return `Result<Outcome<T>, String>` (except `resolve_email_capture_dir`, which returns `Option<PathBuf>`).
 - schemas: `all_audio_toolkit_registered_controllers`.
@@ -45,7 +45,7 @@ Registered into the global controller registry via `crates/openhuman-core/src/co
 
 ## Agent tools
 
-From `tools/podcast.rs`. All are `PermissionLevel::Execute`, and each calls `SecurityPolicy::enforce_tool_operation(ToolOperation::Act, ...)` before running:
+From [`tools/podcast.rs`](./tools/podcast.rs). All are `PermissionLevel::Execute`, and each calls `SecurityPolicy::enforce_tool_operation(ToolOperation::Act, ...)` before running:
 
 | Tool name | Backing op |
 | --- | --- |
@@ -85,3 +85,10 @@ No durable domain store. Side effects are filesystem writes within the workspace
 - `email_podcast` re-validates `audio_path` (workspace-relative, no `..`) independently of `generate_podcast`; the combined flow overwrites the email request's `audio_path` with the freshly generated file's path.
 - Email capture mode is feature/env-gated: enabled under `feature = "e2e-test-support"` or when `OPENHUMAN_EMAIL_CAPTURE_DIR` is non-empty; otherwise SMTP send requires `channels_config.email` to be configured (`from_address` falls back to `openhuman@localhost.test`).
 - `AudioEmailDeliveryResult.mode` is `"capture"` or `"smtp"` to indicate which path ran.
+
+## Further reading
+
+- [Parent module (`voice`)](../README.md)
+- [Voice tools](../../../../../gitbooks/features/native-tools/voice.md)
+- [tinyvoice submodule](../../../../../vendor/tinyvoice/README.md)
+- [Chat](../../../../../gitbooks/features/chat.md)

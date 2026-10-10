@@ -1,7 +1,9 @@
 "use client";
 import * as React from "react";
 import { MAC_RATIO, MAC_TITLE_BAR, PHONE_SCREEN } from "@/lib/constants";
-import { img } from "@/lib/image-cache";
+import { bezelGeometry, isDuoDevice, type DuoDevice } from "@/lib/frame-assets";
+import type { Device } from "@/lib/types";
+import { img, imgSize } from "@/lib/image-cache";
 
 type FrameProps = {
   src: string;
@@ -342,6 +344,156 @@ export function IPad({ src, alt = "", style, hideEmpty }: FrameProps) {
       </div>
     </div>
   );
+}
+
+// ---------- iPhone Duo ----------
+// Geometry comes from Apple's bezel in public/frames/ (measured by
+// /api/frames) or, without one, a drawn frame whose screen has the capture's
+// exact aspect. The frame fits itself inside whatever box it is given, so a
+// placement saved with a different bezel never stretches it.
+
+// A capture whose aspect is off by more than this is letterboxed rather than
+// cropped: cropping would cut real UI, which is worse than a visible bar.
+// Loose enough for every size a device accepts: Apple Watch slots differ from
+// the Ultra's 422 × 514 screen by up to 2.6 %.
+const FIT_TOLERANCE = 0.03;
+// The two iPhone Duo displays differ by only 2.35 % (1398 × 2034 against
+// 2007 × 2853), so Duo captures must match far more closely to tell an outer
+// capture from an inner one. Scaled-down captures of the right display pass.
+export const DUO_FIT_TOLERANCE = 0.005;
+
+export function captureFits(src: string, screenAspect: number, tolerance = FIT_TOLERANCE) {
+  const size = imgSize(src);
+  return !size || Math.abs(size.w / size.h / screenAspect - 1) <= tolerance;
+}
+
+// A device drawn under Apple's bezel (or, for iPhone Duo without one, a drawn
+// stand-in). Mac captures are 16:10 but MacBook screens are a little taller, so
+// a Mac capture fills the screen from the top and loses a sliver at the bottom,
+// like the built-in Mac window; everything else is letterboxed if it doesn't fit.
+function BezelFrame({ device, src, alt = "", style, hideEmpty }: FrameProps & { device: Device }) {
+  const g = bezelGeometry(device);
+  if (!g) return null;
+  const resolved = img(src);
+  const frameRadius = `${(g.radius.x * g.screen.W) / 100 + g.screen.L}% / ${(g.radius.y * g.screen.H) / 100 + g.screen.T}%`;
+  return (
+    <div
+      style={{
+        position: "relative",
+        aspectRatio: `${g.aspect}`,
+        ...style,
+        containerType: "size",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <div style={{ position: "relative", width: `min(100cqw, calc(100cqh * ${g.aspect}))`, aspectRatio: `${g.aspect}` }}>
+        {!g.image && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              borderRadius: frameRadius,
+              background: "linear-gradient(160deg, #3a3a3e 0%, #1b1b1e 45%, #2a2a2e 100%)",
+              boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.14), inset 0 0 0 3px rgba(0,0,0,0.5), 0 10px 44px rgba(0,0,0,0.45)",
+            }}
+          />
+        )}
+        <div
+          style={{
+            position: "absolute",
+            left: `${g.screen.L}%`,
+            top: `${g.screen.T}%`,
+            width: `${g.screen.W}%`,
+            height: `${g.screen.H}%`,
+            borderRadius: g.clip ?? `${g.radius.x}% / ${g.radius.y}%`,
+            overflow: "hidden",
+            background: "#000",
+            containerType: "size",
+          }}
+        >
+          {resolved ? (
+            <img
+              src={resolved}
+              alt={alt}
+              style={{
+                display: "block",
+                width: "100%",
+                height: "100%",
+                objectFit: device === "mac" || captureFits(src, g.screenAspect, isDuoDevice(device) ? DUO_FIT_TOLERANCE : undefined) ? "cover" : "contain",
+                objectPosition: device === "mac" ? "top" : "center",
+              }}
+              draggable={false}
+            />
+          ) : hideEmpty ? null : (
+            <EmptySlot />
+          )}
+          {!g.image && g.camera === "corner" && (
+            // The outer display's front camera, where Apple's bezels put it: top
+            // right in portrait, top left once the closed phone is turned.
+            <div
+              aria-hidden
+              style={{
+                position: "absolute",
+                top: "3.4cqmin",
+                ...(g.screenAspect > 1 ? { left: "3.4cqmin" } : { right: "3.4cqmin" }),
+                width: "5.6cqmin",
+                height: "5.6cqmin",
+                background: "#050506",
+                borderRadius: 999,
+                pointerEvents: "none",
+              }}
+            />
+          )}
+        </div>
+        {g.image && (
+          // The real bezel sits over the screen; its transparent cutout shows it.
+          <img
+            src={img(g.image.src)}
+            alt=""
+            data-export-check="full"
+            draggable={false}
+            style={
+              g.image.rotate
+                ? {
+                    position: "absolute",
+                    left: "50%",
+                    top: "50%",
+                    width: `${100 / g.aspect}%`,
+                    height: `${100 * g.aspect}%`,
+                    transform: "translate(-50%, -50%) rotate(-90deg)",
+                    pointerEvents: "none",
+                  }
+                : { position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }
+            }
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+// One stable component per target, so switching decks doesn't remount frames.
+export const DUO_FRAMES: Record<DuoDevice, React.ComponentType<FrameProps>> = {
+  "duo-outer": (props) => <BezelFrame device="duo-outer" {...props} />,
+  "duo-outer-landscape": (props) => <BezelFrame device="duo-outer-landscape" {...props} />,
+  "duo-inner": (props) => <BezelFrame device="duo-inner" {...props} />,
+  "duo-inner-landscape": (props) => <BezelFrame device="duo-inner-landscape" {...props} />,
+};
+
+const bezelFrames = new Map<Device, React.ComponentType<FrameProps>>();
+
+/** The stable bezel frame component for a device (used once its bezel is measured). */
+export function bezelFrameFor(device: Device): React.ComponentType<FrameProps> {
+  let frame = bezelFrames.get(device);
+  if (!frame) {
+    const Component = (props: FrameProps) => <BezelFrame device={device} {...props} />;
+    Component.displayName = `BezelFrame(${device})`;
+    frame = Component;
+    bezelFrames.set(device, frame);
+  }
+  return frame;
 }
 
 function EmptySlot() {

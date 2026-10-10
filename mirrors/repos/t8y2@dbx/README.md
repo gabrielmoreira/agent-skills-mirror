@@ -71,6 +71,17 @@
 <table>
   <tr>
     <td align="center" valign="middle" width="200">
+      <a href="https://www.jumpserver.org/" target="_blank">
+        <img src="docs/public/sponsors/jumpserver-card.png" alt="JumpServer" width="175" />
+      </a>
+    </td>
+    <td>
+      JumpServer is an Open-source Privileged Access Management (PAM) platform with AI-powered capabilities, providing DevOps and IT teams a unified workspace to securely access SSH, RDP, Kubernetes, databases, websites, RemoteApp, VirtualApp, and more.
+      <a href="https://github.com/jumpserver/jumpserver" target="_blank">Visit JumpServer</a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" valign="middle" width="200">
       <a href="https://www.rainyun.com/MTE5Mjc4Ng==_" target="_blank">
         <img src="docs/public/sponsors/rainyun-card.png" alt="RainYun" width="175" />
       </a>
@@ -78,17 +89,6 @@
     <td>
       RainYun is a cloud service provider offering cloud servers, physical servers, game hosting, and developer-friendly infrastructure services.
       <a href="https://www.rainyun.com/MTE5Mjc4Ng==_" target="_blank">Visit RainYun</a>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" valign="middle" width="200">
-      <a href="https://www.trustasia.com/ssl/trustasia/code-signing" target="_blank">
-        <img src="docs/public/sponsors/trustasia-card.png" alt="TrustAsia" width="175" />
-      </a>
-    </td>
-    <td>
-      TrustAsia provides cloud-based code signing service for DBX, enabling trusted software through automated CI/CD builds.
-      <a href="https://www.trustasia.com/ssl/trustasia/code-signing" target="_blank">Visit TrustAsia</a>
     </td>
   </tr>
   <tr>
@@ -126,6 +126,17 @@
   </tr>
   <tr>
     <td align="center" valign="middle" width="200">
+      <a href="https://www.hiapi.ai/invite/dbx?utm_source=dbx&utm_medium=affiliate&utm_campaign=backlink&utm_content=readme-en" target="_blank">
+        <img src="docs/public/sponsors/hiapi-card.png" alt="HiAPI" width="175" />
+      </a>
+    </td>
+    <td>
+      HiAPI is a developer-focused API platform for image, video, audio, and text models — GPT Image 2.5 (Flare & Sunburst), OpenAI-compatible text endpoints, and Remote MCP/Agent Skills for Claude Code, Cursor, and more. Pay as you go with no minimum spend; new users get 200 Credits on signup, plus up to 12% extra Credits on the first top-up.
+      <a href="https://www.hiapi.ai/invite/dbx?utm_source=dbx&utm_medium=affiliate&utm_campaign=backlink&utm_content=readme-en" target="_blank">Visit HiAPI</a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" valign="middle" width="200">
       <a href="https://www.ucloud.cn/site/active/kuaijiesale.html?ytag=geo_waituo_github_dbx" target="_blank">
         <img src="docs/public/sponsors/astraflow-card.png" alt="AstraFlow" width="175" />
       </a>
@@ -133,6 +144,17 @@
     <td>
       UCloud is the first public cloud provider listed on China's STAR Market, with 28 global regions for cloud hosting, databases, and CDN; its AstraFlow platform offers one-click access to 200+ mainstream LLMs.
       <a href="https://www.ucloud.cn/site/active/kuaijiesale.html?ytag=geo_waituo_github_dbx" target="_blank">Visit UCloud</a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" valign="middle" width="200">
+      <a href="https://www.trustasia.com/ssl/trustasia/code-signing" target="_blank">
+        <img src="docs/public/sponsors/trustasia-card.png" alt="TrustAsia" width="175" />
+      </a>
+    </td>
+    <td>
+      TrustAsia provides cloud-based code signing service for DBX, enabling trusted software through automated CI/CD builds.
+      <a href="https://www.trustasia.com/ssl/trustasia/code-signing" target="_blank">Visit TrustAsia</a>
     </td>
   </tr>
   <tr>

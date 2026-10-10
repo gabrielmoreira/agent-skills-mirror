@@ -8,8 +8,8 @@ Unified, read-only tool registry for OpenHuman. It builds a single discovery vie
 - Normalize controller `ControllerSchema` inputs/outputs into JSON Schema; attach transport (`json_rpc` / `mcp_stdio`), route metadata, tags, `allowed_agents` (`*` in this MVP), `enabled`, and `health`.
 - Serve `list` / `get` (by `tool_id`) RPC lookups over the registry.
 - Produce redacted `diagnostics`: tool counts by transport, heuristic write-capable surfaces, policy surfaces, autonomy posture, MCP allowlist summaries, MCP write-audit row counts (last 24h), the 25 most recent denials, and capability-provider counts.
-- Maintain a bounded, secret-redacting in-memory log of recent policy denials (`denials.rs`).
-- Normalize and validate configured external capability providers (id slugging, dedupe, trust/enabled state) for policy and diagnostics callers (`providers.rs`).
+- Maintain a bounded, secret-redacting in-memory log of recent policy denials ([`denials.rs`](./denials.rs)).
+- Normalize and validate configured external capability providers (id slugging, dedupe, trust/enabled state) for policy and diagnostics callers ([`providers.rs`](./providers.rs)).
 
 ## Key files
 
@@ -18,7 +18,7 @@ Unified, read-only tool registry for OpenHuman. It builds a single discovery vie
 | `crates/openhuman-core/src/tools/registry/mod.rs` | Export-focused. `pub mod denials` and `pub mod ops`; re-exports ops entry points, providers, schemas (as `all_tool_registry_*`), and types. |
 | `crates/openhuman-core/src/tools/registry/ops.rs` | Core logic: `registry_entries()` / `registry_entries_for_config()`, `list_tools()`, `get_tool()`, `diagnostics()` / `diagnostics_for_config()`, plus schema→JSON-Schema conversion, tagging, write-capability heuristics, MCP write-audit health query. |
 | `crates/openhuman-core/src/tools/registry/types.rs` | Serde response types: `ToolRegistryEntry`, `ToolRegistryList`, `ToolRegistryTransport`, `ToolRegistryHealth`, `ToolPolicyDiagnostics` + sub-structs, `RecentPolicyDenial`, `CapabilityProviderDiagnostics`. |
-| `crates/openhuman-core/src/tools/registry/schemas.rs` | Controller schemas + `handle_list` / `handle_get` / `handle_diagnostics` handlers delegating to `ops.rs`. |
+| `crates/openhuman-core/src/tools/registry/schemas.rs` | Controller schemas + `handle_list` / `handle_get` / `handle_diagnostics` handlers delegating to [`ops.rs`](./ops.rs). |
 | `crates/openhuman-core/src/tools/registry/providers.rs` | `CapabilityProviderRegistry` over config: id normalization, dedupe, trust checks, redacted diagnostics. |
 | `crates/openhuman-core/src/tools/registry/denials.rs` | Static `Mutex<VecDeque>` ring buffer (max 50) of recent policy denials; `record()` / `list()`; redacts secret markers, truncates reasons. |
 | `crates/openhuman-core/src/tools/registry/{ops,schemas,providers,denials}_tests.rs` | Sibling `#[path]`-included test modules for each file above. |
@@ -45,7 +45,7 @@ All handlers return `Outcome<T>` serialized via `into_cli_compatible_json()`.
 
 ## Persistence
 
-No owned persistence. `diagnostics()` reads the MCP write-audit log through `crate::mcp::audit::list_writes` (with a `McpWriteListQuery` whose `since_ms` is now minus 24h, capped at `tinymcp_bus::MAX_LIST_LIMIT` rows) to fill `McpWriteAuditHealth`; a query error lands in `last_error` rather than failing diagnostics. Recent denials live in a process-global, in-memory `Mutex<VecDeque>` in `denials.rs` (not durable; max 50 entries).
+No owned persistence. `diagnostics()` reads the MCP write-audit log through `crate::mcp::audit::list_writes` (with a `McpWriteListQuery` whose `since_ms` is now minus 24h, capped at `tinymcp_bus::MAX_LIST_LIMIT` rows) to fill `McpWriteAuditHealth`; a query error lands in `last_error` rather than failing diagnostics. Recent denials live in a process-global, in-memory `Mutex<VecDeque>` in [`denials.rs`](./denials.rs) (not durable; max 50 entries).
 
 ## Dependencies
 
@@ -75,3 +75,11 @@ No owned persistence. `diagnostics()` reads the MCP write-audit log through `cra
 - Denial reasons containing any of `Bearer `, `sk-`, `ghp_`, `-----BEGIN` are replaced wholesale with `[redacted: sensitive content]`, then truncated to 240 chars; entries are bounded to 50, and blank tool names are dropped.
 - Capability-provider ids are slugged to lowercase alphanumerics with `-`/`_`/`.` separators (max 96 chars); invalid or post-normalization-duplicate ids return `CapabilityProviderRegistryError`.
 - `version` on every entry is the core crate version (`CARGO_PKG_VERSION`), used as the registry schema/version marker.
+
+## Further reading
+
+- [Parent module (`tools`)](../README.md)
+- [Native tools overview](../../../../../gitbooks/features/native-tools/README.md)
+- [Agent harness architecture](../../../../../gitbooks/developing/architecture/agent-harness.md)
+- [Approval gate](../../../../../gitbooks/features/approval-gate.md)
+- [tinyagents submodule](../../../../../vendor/tinyagents/README.md)

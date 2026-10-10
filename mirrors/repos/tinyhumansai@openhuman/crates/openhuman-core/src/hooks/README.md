@@ -1,143 +1,260 @@
-# Hooks
+# hooks
 
-Configurable, file-based hooks: user-authored scripts (or model-evaluated
-prompts) that observe or gate the agent at specific moments, discovered from
-`hooks.json` files rather than compiled against the core. The contract is
-Cursor's `hooks.json` (<https://cursor.com/docs/hooks>), same event names,
-stdin envelope, stdout decision object, and exit-code semantics, so a script
-written for either host runs on the other unchanged.
+User-authored hooks: small scripts (or English-language prompts judged by a
+model) that observe or gate the agent at specific moments. They are discovered
+from `hooks.json` files at runtime, so nobody has to compile against the core
+to add one. The file format is Cursor's `hooks.json`
+(<https://cursor.com/docs/hooks>): same event names, same stdin envelope, same
+stdout decision object, same exit-code semantics. A script written for Cursor
+runs here unchanged, and the reverse holds too.
 
-This is a different "hook" from two other things in the codebase: the
-in-process Rust traits an *embedding host* installs by compiling against the
-core (`ToolHook` and `PostTurnHook` in `agent/hooks.rs`, `agent/stop_hooks.rs`),
-and inbound webhook ingestion (`skills/webhooks/`, RPC namespace `webhooks`).
-This module bridges onto the first via `bridge.rs`; it is unrelated to the
-second.
+This folder is the OpenHuman host side only. The engine, the `hooks.json`
+contract, config loading, matching and the process runner live upstream in
+`tinyagents_runtime::command_hooks` ([`vendor/tinyagents`](../../../../vendor/tinyagents/), crate
+`tinyagents-runtime`). What stays here is the glue: one process-global engine
+built with OpenHuman's product name, shell and model, a bridge that mounts it
+on the harness's tool and turn seams, direct entry points for the moments that
+have no seam, and the `hooks` RPC namespace.
 
-## Submodule map
+"Hook" means two other things elsewhere in the codebase. The in-process Rust
+traits an embedding host installs (`ToolHook` and `PostTurnHook` in
+[`agent/hooks.rs`](../agent/hooks.rs), plus [`agent/stop_hooks.rs`](../agent/stop_hooks.rs)) are the seams this module rides
+on. Inbound webhook ingestion ([`skills/webhooks/`](../skills/webhooks/), RPC namespace `webhooks`)
+is unrelated.
 
-| Module | Owns |
-| --- | --- |
-| `types.rs` | Wire contract: events, the stdin envelope, the decision object (`HookOutput`, `HookPermission`) |
-| `config.rs` | `hooks.json` parsing and the four-layer merge |
-| `matcher.rs` | Which occurrences of an event reach a given hook |
-| `exec.rs` | Running one hook: stdin, timeout, exit codes, fail-open/closed |
-| `engine.rs` | Selection, ordering, aggregation, session state |
-| `context.rs` | Assembling the envelope from ambient host facts |
-| `bridge.rs` | Mounting the engine on the harness's existing tool/turn seams |
-| `ops.rs` | `init` plus the lifecycle moments that have no tool seam (`prompt_submitted`, `subagent_starting`, and the not-yet-called session/compact/thought/subagent-stop entry points) |
-| `prompt_eval.rs` | Model evaluation for `prompt`-kind hooks |
-| `followup.rs` | Queueing what a `stop` hook asks for next |
-| `schemas.rs` | RPC namespace `hooks`: `list`, `reload`, `test` |
+## How it works
 
-## Two rules worth knowing before changing anything here
+### Boot
 
-**The strictest verdict wins.** Layers concatenate rather than override, and
-`types::HookOutput::merge` folds denial over ask over allow. Adding a hook can
-therefore never loosen a policy another one set: an operator-managed
-system-wide deny hook cannot be overridden by a repository shipping its own
-`hooks.json`.
+[`core/runtime/bootstrap.rs`](../core/runtime/bootstrap.rs) calls `crate::hooks::init(&cfg)` during core boot.
+`ops::init` does the following, in order:
 
-**Gating costs a turn's latency; observing does not.** `types::HookEvent::is_gating`
-is the single place that split is encoded, and `engine.rs` reads it to decide
-between running hooks sequentially in the turn's path and spawning them onto a
-background task. Do not weaken this: an audit hook that hangs must not hang
-the agent, and a gating hook must not be demoted to fire-and-forget.
+1. Calls `set_host_context` with the workspace roots (the configured
+   `action_dir`, plus the current turn workspace if one is set) and the crate
+   version. These end up in every hook's stdin envelope.
+2. If `[hooks] enabled = false`, uninstalls the bridge, installs an empty
+   `HookConfig` and returns.
+3. Otherwise sets the engine's default timeout from
+   `[hooks] default_timeout_secs` (30 seconds by default) and calls
+   `host::reload`, which reads every `hooks.json` layer on a blocking task and
+   installs the result.
+4. If nothing is configured, uninstalls the bridge so an unconfigured host
+   pays nothing per tool call. Otherwise installs it.
 
-`exec.rs` reads a command hook's exit code: `0` parses stdout as a
-`HookOutput` (the last complete JSON object on stdout, so progress lines are
-fine), `2` denies regardless of stdout with stderr as the reason, and anything
-else, including a timeout, a missing interpreter, or unparseable stdout, is a
-failure that fails open unless the definition sets `fail_closed`, in which case
-it denies. Do not change this default without reading the configuration and
-security section of `AGENTS.md`. A hook that answers `allow` only lets the call
-continue to the autonomy policy and approval gate underneath it; both still
-apply. A hook that answers `ask` reaches the harness as
-`ToolHookDecision::Ask`, and `agent/tinyagents/middleware/embedder_hooks.rs` has no
-approval channel, so today it denies rather than quietly allowing.
+`init` is safe to call again. `hooks.reload` does exactly that.
 
-Not every event in `types::HookEvent::ALL` fires yet. `HookEvent::is_wired`
-lists the ones without a call site (`sessionStart`, `sessionEnd`,
-`preCompact`, `afterAgentThought`, `subagentStop`); the loader warns when a
-`hooks.json` registers one. Move an event out of that list only when its call
-site lands.
+### Where the files come from
 
-## Layering (`config.rs`)
+The upstream loader (`command_hooks::config::layer_paths`) reads four layers
+and concatenates them, broadest first:
 
-Four `hooks.json` layers are read by `layer_paths` and concatenated, lowest
-trust last:
-
-| `HookLayer` | Path |
+| Layer | Path |
 | --- | --- |
 | `System` | `/etc/openhuman/hooks.json` (Linux), `/Library/Application Support/OpenHuman/hooks.json` (macOS), `%ProgramData%\OpenHuman\hooks.json` (Windows) |
 | `User` | `~/.openhuman/hooks.json` |
 | `Workspace` | `<workspace_dir>/hooks.json` |
 | `Project` | `<action_dir>/.openhuman/hooks.json` |
 
-This is the opposite of how `config.toml` merges (override, not concatenate),
-deliberately, since concatenation combined with `HookOutput::merge`'s
-strictest-wins rule is the only composition that can't be used to loosen
-policy. `HookDefinition::layer` and `source_dir` are `skip_deserializing` and
-stamped from the file's own location, so a `hooks.json` cannot claim a more
-trusted layer. Only `version: 1` is accepted; a missing file is silent, an
-unreadable or malformed one becomes a `HookConfig::warnings` entry surfaced by
-`hooks.list`.
+All of these paths derive from `host::PRODUCT_NAME` (`"OpenHuman"`), which is
+also the prefix of the `OPENHUMAN_*` environment variables a hook process
+receives. Concatenation is the opposite of how `config.toml` merges, on
+purpose: combined with the strictest-verdict-wins rule below, it means a more
+specific layer can add policy but never remove it. Each definition's `layer`
+and `source_dir` are stamped from the file's location (they are
+`skip_deserializing` upstream), so a repository's `hooks.json` cannot claim to
+be a system layer. Only `version: 1` is accepted. A missing file is silent; an
+unreadable or malformed one becomes a warning that `host::reload` logs and
+`hooks.list` returns.
 
-## `prompt`-kind hooks
+`host::reload` exists because the upstream `HookEngine::reload` reuses the
+environment it was built with, which froze the home directory at first use.
+The host version builds a fresh `HookEnvironment` each time, so a reload after
+`HOME` changes reads the right user file.
 
-Most hooks are `command`: spawn a program, hand it the event JSON on stdin,
-read a decision from stdout. A `prompt` hook is a policy written in English
-instead. `prompt_eval.rs` asks the configured model to judge a condition,
-via a one-shot `inference::ops::inference_prompt` call capped at 200 output
-tokens. A hook definition may override the model; the override is applied to
-the `Config` copy returned by `load_config_with_timeout` for that one call
-(`default_model`), so nothing persists and a concurrent turn on the real
-config is unaffected. Reserve `prompt` hooks for rare, high-stakes moments.
-They cost a model call per event.
+### Firing a hook on a tool call
 
-## Bridge (`bridge.rs`)
+The harness already calls every registered `ToolHook` around every tool and
+every `PostTurnHook` after every turn. `bridge::ConfiguredHookBridge`
+implements both and registers itself through
+`agent::hooks::replace_embedder_tool_hook` and
+`replace_embedder_post_turn_hook` under the name `BRIDGE_HOOK_NAME`
+(`"configured_hooks"`). Registering by name means a rebuilt core replaces the
+bridge instead of firing every hook twice.
 
-The harness already carries in-process hook seams (`ToolHook`, `PostTurnHook`
-in `agent/hooks.rs`). Rather than adding a second set of call sites, the
-engine registers itself through those seams once at bootstrap
-(`ConfiguredHookBridge::install`/`uninstall`, registered under
-`BRIDGE_HOOK_NAME` so a rebuilt core replaces rather than duplicates it).
-Cursor's `beforeShellExecution`, `beforeReadFile`, and `afterFileEdit` are not
-separate call sites here: `derived_event` maps tool names onto them
-(`SHELL_TOOLS`: `shell`/`run_command`/`bash`/...; `READ_TOOLS`:
-`file_read`/`read_diff`; `WRITE_TOOLS`: `file_write`/`edit`/...; MCP tools
-get `beforeMCPExecution`/`afterMCPExecution`). On the pre side the bridge fires
-`preToolUse` and then the derived `before*` event with a Cursor-shaped
-payload, merging both verdicts; on the post side it fires `postToolUse` (or
-`postToolUseFailure`) and then `afterShellExecution`/`afterFileEdit`. A write
-therefore has no derived pre-event: denying it belongs to `preToolUse`. The
-`PostTurnHook` impl fires `afterAgentResponse` and `stop`.
+```text
+ tool call
+    |
+    v
+ ConfiguredHookBridge::before_tool_decision
+    |
+    +--> preToolUse            (generic, raw tool_input)
+    |       deny? -> stop here
+    +--> derived before* event (Cursor-shaped payload), if the tool has one
+    |
+    v
+ merged HookOutput --> ToolHookDecision
+                       Deny | Ask | ProceedWith(new args) | Proceed
+    |
+    v
+ autonomy policy + approval gate (still apply after "allow")
+    |
+    v
+ tool runs
+    |
+    v
+ after_tool_context
+    +--> postToolUse or postToolUseFailure
+    +--> derived after* event, if any
+    |
+    v
+ additional_context returned to the harness
+```
 
-## Wiring
+Cursor has first-class events for shell commands, file reads and file edits.
+In OpenHuman those are ordinary tools, so `derived_event` maps tool names onto
+them:
 
-- `crate::hooks::init(&cfg)` is called from `core/runtime/bootstrap.rs` during core
-  boot: it sets host context, reads config, and installs or uninstalls the
-  bridge. Disabled (`config::schema::hooks::HooksConfig::enabled = false`)
-  or empty config uninstalls the bridge entirely so an unconfigured host pays
-  no per-tool-call cost.
-- `[hooks]` in `config/schema/hooks.rs` carries only host-level switches
-  (`enabled`, `default_timeout_secs`); the hooks themselves live in
-  `hooks.json`, not in `config.toml`.
-- RPC namespace `hooks` (`schemas.rs`) is registered via
-  `all_hooks_registered_controllers` in `core/all.rs`.
-- `web_chat/ops/start_chat.rs` calls `hooks::ops::prompt_submitted` before a
-  submitted prompt reaches the agent.
-- `agent/subagent_host/` calls
-  `hooks::ops::subagent_starting` before spawning a sub-agent.
+| Tool family | Names | Pre event | Post event |
+| --- | --- | --- | --- |
+| `SHELL_TOOLS` | `shell`, `run_command`, `bash`, `node_exec`, `npm_exec` | `beforeShellExecution` | `afterShellExecution` |
+| `READ_TOOLS` | `file_read`, `read_diff` | `beforeReadFile` | none |
+| `WRITE_TOOLS` | `file_write`, `edit`, `apply_patch`, `update_memory_md` | none | `afterFileEdit` |
+| MCP | names starting `mcp_`, `mcp:` or `mcp__` | `beforeMCPExecution` | `afterMCPExecution` |
+
+`derived_payload` builds the shape a Cursor script expects (a command string
+and sandbox flag, a file path, a list of `old_string`/`new_string` edits)
+instead of raw tool arguments. `file_path_argument` accepts `path`,
+`file_path`, `filename` or `file`, because the file tools disagree on the name.
+A write has no derived pre-event: denying a write belongs to `preToolUse`,
+which already fired with the same arguments. Failures are classified into
+Cursor's `timeout`, `permission_denied` or `error` by `classify_failure`.
+
+After the turn, the bridge's `PostTurnHook::on_turn_complete` fires
+`afterAgentResponse` with the assistant text, then `stop`. A `stop` hook's
+`followup_message` cannot re-enter the turn that already returned, so it is
+handed to `command_hooks::followup::publish`, and the entry point that owns
+the conversation decides whether to start another turn.
+
+### Moments without a tool seam
+
+[`ops.rs`](./ops.rs) has one function per lifecycle moment that is not a tool call. Each
+checks `engine.has_hooks(event)` first and returns immediately when nothing is
+registered, so call sites can invoke them unconditionally.
+
+| Function | Event | Caller |
+| --- | --- | --- |
+| `prompt_submitted` | `beforeSubmitPrompt` | [`web_chat/ops/start_chat.rs`](../web_chat/ops/start_chat.rs), before a prompt reaches the agent |
+| `subagent_starting` | `subagentStart` | [`agent/subagent_host/ops/runner.rs`](../agent/subagent_host/ops/runner.rs), before a sub-agent spawns |
+| `session_started` | `sessionStart` | not called yet |
+| `session_ended` | `sessionEnd` | not called yet |
+| `pre_compact` | `preCompact` | not called yet |
+| `subagent_stopped` | `subagentStop` | not called yet |
+| `agent_thought` | `afterAgentThought` | not called yet |
+
+`prompt_submitted` returns a `PromptVerdict`: `Submit` with optional extra
+context, or `Block` with a message for the user. It treats both
+`continue: false` and `permission: "deny"` as a block, since Cursor documents
+both. `subagent_starting` returns `Err(reason)` when the child must not run.
+`session_ended` also releases per-session engine state and queued follow-ups.
+
+### Prompt hooks
+
+Most hooks are `command`: spawn a program, write the event JSON to its stdin,
+read a decision from its stdout. A `prompt` hook is a policy written in
+English. The engine calls back into the host through `PromptEvaluator`, which
+[`host.rs`](./host.rs) implements with `prompt_eval::evaluate`. That function loads the
+config with `load_config_with_timeout`, applies the hook's optional model
+override to that copy's `default_model`, and makes a one-shot
+`inference::ops::inference_prompt` call capped at 200 output tokens. The
+override never persists and does not affect a concurrent turn. Each prompt
+hook costs a model call per event, so they belong on rare, high-stakes moments.
+
+## Layout
+
+| Path | What it does |
+| --- | --- |
+| [`mod.rs`](./mod.rs) | Module declarations; re-exports `init`, `PromptVerdict` and the controller aggregators. |
+| `host.rs` | The process-global `HookEngine` (`engine()`), the `HookEnvironment` built from `PRODUCT_NAME`, the home dir, `agent::platform_shell::build_tokio_command` and the prompt evaluator, and `reload`. |
+| [`bridge.rs`](./bridge.rs) | `ConfiguredHookBridge`: the `ToolHook` and `PostTurnHook` impls, derived-event mapping and payload shaping, and the translation from `HookOutput` to `ToolHookDecision`. |
+| `ops.rs` | `init` and the direct entry points for non-tool lifecycle moments. |
+| [`prompt_eval.rs`](./prompt_eval.rs) | Model evaluation for `prompt`-kind hooks. |
+| [`schemas.rs`](./schemas.rs) | The `hooks` RPC namespace. |
+
+## Key types and entry points
+
+- `hooks::init(&Config)` (`ops.rs`): bring the system up or tear it down from config. Called at boot and by `hooks.reload`.
+- `host::engine()` (`host.rs`): the single `HookEngine` for the process. Everything dispatches through it.
+- `host::reload(project_dir, workspace_dir)` (`host.rs`): re-read every layer with a fresh environment and install the result.
+- `ConfiguredHookBridge::install` / `uninstall` (`bridge.rs`): add or remove the bridge from the harness seams.
+- `ops::prompt_submitted`, `ops::subagent_starting` (`ops.rs`): the two wired direct entry points.
+- `PromptVerdict` (`ops.rs`): the answer `prompt_submitted` gives `start_chat`.
+- `config::schema::hooks::HooksConfig`: the `[hooks]` table in `config.toml`. It holds only host switches (`enabled`, default `true`; `default_timeout_secs`, default 30). The hooks themselves live in `hooks.json`.
+
+## RPC surface
+
+Namespace `hooks`, registered through `all_hooks_registered_controllers` in
+[`core/all.rs`](../core/all.rs):
+
+| Method | What it does |
+| --- | --- |
+| `hooks.list` | Configured hooks grouped by event, each with its command, type, matcher, timeout, `fail_closed`, layer and source dir; whether each event is wired; source files; load warnings. |
+| `hooks.reload` | Reload `config.toml`, call `init` again, and return the fresh configuration in the same shape as `list`. |
+| `hooks.test` | Fire one synthetic event (`event`, optional `payload`) and return the merged decision plus every hook run with its duration, error and output. |
+
+`hooks.test` exists so an author can see what a hook decides without
+provoking the real moment (asking the agent to run `rm -rf` to see whether a
+deny rule fires). It uses `dispatch_for_test`, which runs in the foreground
+even for observing events, since a detached dispatch would report nothing.
+
+## Boundaries
+
+- The `hooks.json` contract, event and payload types, `HookOutput` and its
+  merge rule, layer loading, matchers, the command runner, the engine and
+  follow-up queueing belong to `tinyagents_runtime::command_hooks` in the
+  `tinyagents` repo. Fix or extend those there, then move the gitlink. See its
+  own `README.md` under
+  [`vendor/tinyagents/crates/tinyagents-runtime/src/command_hooks/`](../../../../vendor/tinyagents/crates/tinyagents-runtime/src/command_hooks/).
+- The `ToolHook` / `PostTurnHook` seams and how the harness runs them belong
+  to `agent/hooks.rs` and [`agent/tinyagents/middleware/embedder_hooks.rs`](../agent/tinyagents/middleware/embedder_hooks.rs).
+- Approval and the autonomy policy belong to `security/`. A hook's `allow`
+  only lets a call continue to them.
+- Product-facing docs for hook authors live in [`gitbooks/developing/hooks.md`](../../../../gitbooks/developing/hooks.md).
+
+## Gotchas
+
+- The strictest verdict wins. `HookOutput::merge` folds deny over ask over
+  allow, and layers concatenate. Adding a hook can never loosen a policy
+  another hook set, so an operator's system-wide deny cannot be overridden by
+  a repository's own `hooks.json`.
+- Gating costs latency; observing does not. `HookEvent::is_gating` upstream
+  decides whether the engine runs an event's hooks in the turn's path or on a
+  background task. An audit hook that hangs must not hang the agent, and a
+  gating hook must not become fire-and-forget.
+- Exit codes: `0` parses stdout as a `HookOutput` (the last complete JSON
+  object, so progress lines are fine), `2` denies with stderr as the reason,
+  and anything else, including a timeout, a missing interpreter or unparseable
+  stdout, fails open unless the definition sets `fail_closed`. Read the
+  configuration and security section of `AGENTS.md` before changing that
+  default.
+- `Ask` currently denies. The bridge returns `ToolHookDecision::Ask`, but the
+  `embedder_hooks` middleware has no approval channel, so it refuses the call
+  instead of quietly allowing it.
+- Not every event fires. `HookEvent::is_wired` lists `sessionStart`,
+  `sessionEnd`, `preCompact`, `afterAgentThought` and `subagentStop` as
+  having no call site, and the loader warns when a `hooks.json` registers one.
+  Remove an event from that list only when its call site lands.
 
 ## Tests
 
-`bridge_tests.rs`, `exec_tests.rs`, `followup_tests.rs`, and
-`matcher_tests.rs` are attached with `#[path]` from their own module files;
-`hooks_tests.rs` (config loading, engine, verdict merge) is attached from
-`mod.rs`.
+[`bridge_tests.rs`](./bridge_tests.rs) sits beside `bridge.rs` (derived events, payload shaping,
+decision translation). The engine, config, matcher and exec tests live with
+the engine in `tinyagents-runtime`. Run the host tests with
+`cargo test -p openhuman hooks::` or `pnpm debug rust hooks::`.
 
 ## Related docs
 
-- [gitbooks/developing/hooks.md](../../../../gitbooks/developing/hooks.md): user-facing `hooks.json` guide
-- [gitbooks/developing/architecture/security.md](../../../../gitbooks/developing/architecture/security.md): approval gate and autonomy policy that still applies after a hook allows
+- [gitbooks/developing/hooks.md](../../../../gitbooks/developing/hooks.md): the `hooks.json` guide for hook authors.
+- [gitbooks/developing/architecture/security.md](../../../../gitbooks/developing/architecture/security.md): the approval gate and autonomy policy that still apply after a hook allows.
+- [Parent module README](../../README.md)
+- [Agent harness architecture](../../../../gitbooks/developing/architecture/agent-harness.md)
+- [tinyagents](../../../../vendor/tinyagents/README.md)

@@ -96,8 +96,18 @@ complete observation.
 
   So an external superclass resolves from its `_OBJC_CLASS_$_` bind (for
   example `NSObject`). The `pointer_fixups` coverage facet names the mechanism.
-  Class properties, with parsed attributes, and `__objc_catlist` categories are
-  also decoded. Categories record the extended class, local or external, plus
+  Class properties preserve each encoded attribute as a raw `{name, value}`
+  pair, for example `{ name: "N", value: "" }`, and report atomicity on the
+  property: `N` means `nonatomic`; a complete typed attribute string without
+  `N` means the Objective-C default `atomic`;
+  missing or incomplete attribute metadata leaves `atomicity` and any
+  unestablished read-only value null. `is_meta_class`, `is_root_class`, and
+  `ivar_count` are also nullable when the selected provider exposes only symbol
+  names. Class implementation methods have null `is_required` and `is_optional`
+  fields because those facts apply to protocol declarations; decoded protocol
+  method lists retain their observed required/optional values. Class properties
+  and `__objc_catlist` categories are also decoded. Categories record the
+  extended class, local or external, plus
   their methods, protocols and properties; category methods appear as
   implementations with a `category`. Swift field-offset globals that are only
   initialized at runtime stay unresolved. Generic, resilient, async and
@@ -128,6 +138,9 @@ an explicit `0x` or address-space prefix selects an address; otherwise an exact
 database symbol name takes precedence over a bare hexadecimal address. Thus a
 function renamed to `dead` remains selectable by name. Use the names returned
 by the inventory, including their namespaces and any platform symbol prefix.
+Ghidra also accepts secondary symbols at a function entry, such as an imported
+`_main` label. A label inside a function is not a procedure-name selector; use
+its address when selecting the containing function.
 Overloads can share a fully qualified name; ambiguity errors return every
 matching entry address so the caller can select the intended function directly.
 
@@ -182,9 +195,34 @@ outside-memory and undecodable addresses have separate outcomes. Effective
 memory base/index/displacement roles and per-instruction context mode remain
 unavailable; `mode` is the program language variant.
 
+Ghidra distinguishes a return using decoded instruction p-code's `RETURN`
+operation. `flow.classification_evidence` preserves the Listing flow type and
+the observed return evidence; mnemonic spelling alone is not the classifier.
+Other terminal or trap flows retain the provider's classification, and this
+inspection does not change function extents or prove a calling convention.
+The analysis profile commits this decoder behavior. Snapshots from the earlier
+profile produce a profile mismatch rather than replaying the former generic
+terminal result. The old snapshot's `evidence_bundle` remains valid retained
+Evidence: copy that object to a separate JSON file and use `rea evidence-import`
+to validate it. Run analysis without the old snapshot and save a fresh one
+under the current profile. Other providers and older captures may omit the
+classification evidence field.
+
 Call resolution reports direct, resolved indirect, ambiguous, unresolved and
 non-call outcomes from static call references. It does not establish runtime
 execution or classify Objective-C/Swift/vtable/closure mechanisms from names.
+
+`batch_decompile` keeps each caller-selected symbol or address in `items[].address`.
+The separate `procedure` field reports the canonical entry and the provider's
+observed entry label. An interior address therefore remains visible without
+being mistaken for the function entry. Identity failures are reported as
+`procedure.status: "unknown"`; label failures leave a null name and `name_error`.
+Neither failure discards usable pseudocode, and names are not parsed from it.
+Resolved entries also appear in the composed Evidence locations. New batch
+Evidence commits the revised workflow profile; retained historical Evidence
+remains valid. This tool
+has no dedicated CLI command; the existing `decompile` command remains the
+single-procedure CLI operation.
 
 Type inspection selects one exact database pathname or typed data address.
 Struct/union fields, enums, pointers, arrays, typedefs, size, alignment, packing

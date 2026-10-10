@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 63 file(s) materialized.
+Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 65 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 63 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 63 |
+| Files         | 65 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -119,9 +119,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 58 | ✓ | [`server/src/modules/git-sync/AGENTS.md`](server/src/modules/git-sync/AGENTS.md) |
 | 59 | ✓ | [`server/src/modules/group-permissions/AGENTS.md`](server/src/modules/group-permissions/AGENTS.md) |
 | 60 | ✓ | [`server/src/modules/licensing/AGENTS.md`](server/src/modules/licensing/AGENTS.md) |
-| 61 | ✓ | [`server/src/modules/personal-access-tokens/AGENTS.md`](server/src/modules/personal-access-tokens/AGENTS.md) |
-| 62 | ✓ | [`server/src/modules/versions/AGENTS.md`](server/src/modules/versions/AGENTS.md) |
-| 63 | ✓ | [`server/src/modules/workflows/AGENTS.md`](server/src/modules/workflows/AGENTS.md) |
+| 61 | ✓ | [`server/src/modules/organization-payments/AGENTS.md`](server/src/modules/organization-payments/AGENTS.md) |
+| 62 | ✓ | [`server/src/modules/personal-access-tokens/AGENTS.md`](server/src/modules/personal-access-tokens/AGENTS.md) |
+| 63 | ✓ | [`server/src/modules/templates/AGENTS.md`](server/src/modules/templates/AGENTS.md) |
+| 64 | ✓ | [`server/src/modules/versions/AGENTS.md`](server/src/modules/versions/AGENTS.md) |
+| 65 | ✓ | [`server/src/modules/workflows/AGENTS.md`](server/src/modules/workflows/AGENTS.md) |
 
 ---
 

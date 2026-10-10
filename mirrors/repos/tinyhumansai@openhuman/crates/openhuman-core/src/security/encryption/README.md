@@ -7,10 +7,9 @@ AES-256-GCM at-rest crypto for AI memory storage and the encrypt/decrypt RPC sur
 - `pub struct EncryptedPayload` (`core.rs:18-26`): `{ ciphertext, nonce, salt }` triple persisted to disk.
 - `pub struct EncryptionKey` (`core.rs:29-32`): `[u8; 32]` AES-256 key wrapper.
 - `impl EncryptionKey::derive(password: &str, salt: &[u8]) -> Result<Self, String>` (`core.rs:35`): Argon2id with parameters `m=65536, t=3, p=1`.
-- `pub fn get_data_dir() -> Result<PathBuf, String>` (`core.rs`): resolve the encrypted-data directory under the openhuman workspace.
 - `pub async fn encrypt_secret(config: &Config, plaintext: &str) -> Result<Outcome<String>, String>` (`ops.rs:6`): RPC handler, delegates to `credentials::rpc::encrypt_secret`.
 - `pub async fn decrypt_secret(config: &Config, ciphertext: &str) -> Result<Outcome<String>, String>` (`ops.rs:13`): RPC handler, delegates to `credentials::rpc::decrypt_secret`.
-- RPC `encryption.{encrypt_secret, decrypt_secret}`, defined in `schemas.rs` (re-exported via `all_encryption_controller_schemas` / `all_encryption_registered_controllers`).
+- RPC `encryption.{encrypt_secret, decrypt_secret}`, defined in [`schemas.rs`](./schemas.rs) (re-exported via `all_encryption_controller_schemas` / `all_encryption_registered_controllers`).
 - Constants: `SALT_LENGTH = 16`, `NONCE_LENGTH = 12`, `KEY_LENGTH = 32` (private but stable parameters).
 
 ## Calls into
@@ -29,3 +28,11 @@ AES-256-GCM at-rest crypto for AI memory storage and the encrypt/decrypt RPC sur
 ## Tests
 
 - This domain has no `*_tests.rs` siblings; the underlying crypto round-trips are exercised by `crates/openhuman-core/src/security/keyring/encrypted_store_tests.rs` and the credentials tests, which both cover encrypt/decrypt happy paths and tampered-ciphertext rejection.
+
+## Further reading
+
+- [Parent module (`security`)](../README.md)
+- [Security architecture](../../../../../gitbooks/developing/architecture/security.md)
+- [Privacy and security](../../../../../gitbooks/features/privacy-and-security.md)
+- [Approval gate](../../../../../gitbooks/features/approval-gate.md)
+- [OS keyring and secret storage](../../../../../gitbooks/features/os-keyring-and-secret-storage.md)

@@ -131,16 +131,16 @@ Shared policies: `_common/BOUNDARIES.md`, `_common/OPERATIONAL.md`, `_common/PAR
 
 Run `ASSESS -> DESIGN -> SPAWN -> ASSIGN -> MONITOR -> SYNTHESIZE -> CLEANUP`. Run `HARMONIZE` after the team session.
 
-| Phase | Required actions  Read |
-|-------|------------------------|
-| `ASSESS` | Confirm Rally is appropriate, identify independent units, and reject false parallelism  `reference/` |
-| `DESIGN` | Choose a team pattern, teammate roles, models, modes, and `ownership_map`  `reference/` |
-| `SPAWN` | `TeamCreate`, then spawn teammates with complete context  `reference/` |
-| `ASSIGN` | `TaskCreate`, assign owners, and wire dependencies through `addBlockedBy`  `reference/` |
-| `MONITOR` | Poll `TaskList`, respond to `idle`, resolve blockers, and handle failures  `reference/` |
-| `SYNTHESIZE` | Collect `files_changed`, detect ownership conflicts, run verification, and trigger `ON_RESULT_CONFLICT` when needed  `reference/` |
-| `CLEANUP` | Confirm completion, send `shutdown_request`, wait for approval, then `TeamDelete` and report  `reference/` |
-| `HARMONIZE` | `COLLECT -> EVALUATE -> EXTRACT -> ADAPT -> SAFEGUARD -> RECORD`  `reference/` |
+| Phase | Required actions | Read |
+|-------|------------------|------|
+| `ASSESS` | Confirm Rally is appropriate, identify independent units, and reject false parallelism | `reference/orchestration-patterns.md` |
+| `DESIGN` | Choose a team pattern, teammate roles, models, modes, and `ownership_map` | `reference/team-design-patterns.md`, `reference/file-ownership-protocol.md` |
+| `SPAWN` | `TeamCreate`, then spawn teammates with complete context | `reference/agent-teams-api-reference.md` |
+| `ASSIGN` | `TaskCreate`, assign owners, and wire dependencies through `addBlockedBy` | `reference/lifecycle-management.md` |
+| `MONITOR` | Poll `TaskList`, respond to `idle`, resolve blockers, and handle failures | `reference/lifecycle-management.md` |
+| `SYNTHESIZE` | Collect `files_changed`, detect ownership conflicts, run verification, and trigger `ON_RESULT_CONFLICT` when needed | `reference/file-ownership-protocol.md`, `reference/integration-patterns.md` |
+| `CLEANUP` | Confirm completion, send `shutdown_request`, wait for approval, then `TeamDelete` and report | `reference/lifecycle-management.md` |
+| `HARMONIZE` | `COLLECT -> EVALUATE -> EXTRACT -> ADAPT -> SAFEGUARD -> RECORD` | `reference/parallel-learning.md` |
 
 ## Teammate Modes
 
@@ -253,7 +253,7 @@ When running on Codex CLI, Rally uses `spawn_agent` / `wait_agent` / `send_input
 | `reference/orchestration-patterns.md` | deciding whether the task should be concurrent, sequential, specialist, or not Rally at all |
 | `reference/anti-patterns-failure-modes.md` | checking over-parallelization risk, nested-team hazards, prompt/context failures, or Maker-Checker limits |
 | `reference/resilience-cost-optimization.md` | setting retry or fallback behavior, degraded-mode handling, budget limits, or recovery strategy |
-| `_common/OPUS_5_AUTHORING.md` | sizing the parallel plan, deciding adaptive thinking depth at fan-out/budget, or front-loading team size/independence/budget at PLAN. Critical for Rally: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | sizing the parallel plan, deciding adaptive thinking depth at fan-out/budget, or front-loading team size/independence/budget at ASSESS. Critical for Rally: P3, P5. |
 | `_common/EVIDENCE_LADDER.md` | unverified teammate output is accumulating faster than reconciliation can absorb it (§5 Verification Debt — signals, WIP cap, drain order), or deciding how independent a teammate's own verification claim is (§2 Circular Verification) |
 
 ## Operational

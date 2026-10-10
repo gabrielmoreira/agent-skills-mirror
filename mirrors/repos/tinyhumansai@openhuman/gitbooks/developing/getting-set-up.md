@@ -1,19 +1,15 @@
 ---
 description: >-
-  Building OpenHuman from source: the pinned toolchain, the vendored
-  submodules, the Tauri CLI wrapper, and local desktop builds, plus the
-  release installers for each platform.
+  Build OpenHuman from source, or install a release: toolchain, submodules,
+  desktop builds and the installers for each platform.
 icon: wrench
 ---
 
-# Getting Set Up
+# Getting set up
 
-This guide covers the full desktop/source install path plus the release installers, so pick whichever path matches what you're doing:
+There are two ways to get OpenHuman running: build it from source, or install the latest release. This page covers both.
 
-1. Build OpenHuman from source
-2. Install the latest stable release binaries
-
-If you only need the Rust workspace under `crates/` on a fresh machine (no Node, no Tauri), use [Building the Rust Core](building-rust-core.md) instead. That page has the pinned Rust toolchain, OS package prerequisites, and the exact `cargo` commands for `openhuman-core`.
+If you only need the Rust workspace under `crates/` (no Node, no Tauri), use [Building the Rust core](building-rust-core.md). It has the pinned toolchain, OS packages and the `cargo` commands for `openhuman-core`.
 
 ## Prerequisites
 
@@ -22,7 +18,7 @@ If you only need the Rust workspace under `crates/` on a fresh machine (no Node,
 - `pnpm@10.10.0` (see the root `package.json` `packageManager` field)
 - Rust 1.96.1 through `rustup` with `rustfmt` and `clippy` (see `rust-toolchain.toml`)
 - CMake, required by native Rust dependencies
-- Every `vendor/` submodule listed in `.gitmodules`, initialized recursively (`git submodule update --init --recursive`). The root `Cargo.toml` `[patch]` tables point into that tree, so cargo reads each manifest whether the crate is optional or not; a subset is always a build break
+- Every `vendor/` submodule listed in `.gitmodules`, initialized recursively (`git submodule update --init --recursive`). The root `Cargo.toml` `[patch]` tables point into that tree, so cargo reads every manifest, optional crate or not. A partial checkout always fails to build
 - Platform desktop build tools: Xcode Command Line Tools on macOS, or the Tauri GTK/WebKit/AppIndicator package set on Linux
 
 macOS Homebrew quick start:
@@ -46,7 +42,7 @@ rustup toolchain install 1.96.1 --profile minimal
 rustup component add rustfmt clippy --toolchain 1.96.1
 ```
 
-## Build from source (local compile)
+## Build from source
 
 Run from the repository root:
 
@@ -55,17 +51,17 @@ Run from the repository root:
 git clone https://github.com/tinyhumansai/openhuman.git
 cd openhuman
 
-# 2) Fetch the vendored tiny* crate submodules
+# 2) Fetch the vendored tiny* submodules
 git submodule update --init --recursive
 
-# 3) Install JS deps (workspace)
+# 3) Install JS dependencies
 pnpm install
 
-# 4) Build desktop app artifacts
+# 4) Build the desktop app
 pnpm build
 ```
 
-For local development instead of production build:
+For development instead of a production build:
 
 ```bash
 # Web-only UI development
@@ -78,50 +74,38 @@ pnpm dev:app
 pnpm tauri build
 ```
 
-## Install latest stable release (macOS/Linux x64)
+## Install the latest release on macOS and Linux
 
-Primary install command:
+Run the install script:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/tinyhumansai/openhuman/main/scripts/install.sh | bash
 ```
 
-Installer behavior:
+The script:
 
-- Resolves latest stable OpenHuman release for your platform
-- Validates artifact digest when available
-- Installs locally (no sudo by default)
-- macOS: installs `OpenHuman.app` into `~/Applications`
-- Linux x64: installs AppImage as `~/.local/bin/openhuman` and writes a desktop entry
+- Finds the latest stable release for your platform.
+- Checks the download against its SHA-256 digest.
+- Installs without sudo.
+- On macOS, installs `OpenHuman.app` into `~/Applications`.
+- On Linux x64, installs the AppImage as `~/.local/bin/openhuman` and writes a desktop entry.
 
-### Arch Linux package recipe
+To preview what it would do without writing files, add `--dry-run`:
 
-The repository includes an `openhuman-bin` AUR recipe at
-[`packages/arch/openhuman-bin`](https://github.com/tinyhumansai/openhuman/tree/main/packages/arch/openhuman-bin). It uses the
-official x86_64 AppImage as the binary source, extracts the bundled application
-tree during `makepkg`, installs a desktop entry, and exposes `/usr/bin/openhuman`.
+```bash
+curl -fsSL https://raw.githubusercontent.com/tinyhumansai/openhuman/main/scripts/install.sh | bash -s -- --dry-run
+```
 
-Until the package is published on AUR, build it locally on Arch:
+### Arch Linux
+
+There is no published AUR package. The repository includes an `openhuman-bin` recipe at [`packages/arch/openhuman-bin`](https://github.com/tinyhumansai/openhuman/tree/main/packages/arch/openhuman-bin). It uses the official x86_64 AppImage, extracts it during `makepkg`, installs a desktop entry and exposes `/usr/bin/openhuman`. Build it locally:
 
 ```bash
 cd packages/arch/openhuman-bin
 makepkg --syncdeps --install
 ```
 
-After publication, Arch users can install it with:
-
-```bash
-yay -S openhuman-bin
-```
-
-Useful flags:
-
-```bash
-# Preview actions without writing files
-curl -fsSL https://raw.githubusercontent.com/tinyhumansai/openhuman/main/scripts/install.sh | bash -s -- --dry-run
-```
-
-## Windows (latest stable)
+## Windows
 
 Use PowerShell:
 
@@ -129,17 +113,16 @@ Use PowerShell:
 irm https://raw.githubusercontent.com/tinyhumansai/openhuman/main/scripts/install.ps1 | iex
 ```
 
-Windows installer behavior:
+The script:
 
-- Resolves latest stable release
-- Downloads MSI/EXE for x64
-- Verifies digest when available
-- Runs per-user install where supported by installer package
+- Finds the latest stable release.
+- Downloads the x64 MSI or EXE.
+- Checks its SHA-256 digest.
+- Runs a per-user install where the installer supports it.
 
 ## ARM Linux build (aarch64)
 
-CI builds the `aarch64-unknown-linux-gnu` target on an `ubuntu-24.04-arm` runner
-with the same Tauri command as x64 (see
+CI builds the `aarch64-unknown-linux-gnu` target on an `ubuntu-24.04-arm` runner with the same Tauri command as x64 (see
 [`.github/workflows/build-desktop.yml`](https://github.com/tinyhumansai/openhuman/blob/main/.github/workflows/build-desktop.yml)).
 Locally, with the Linux desktop package set installed:
 
@@ -147,31 +130,23 @@ Locally, with the Linux desktop package set installed:
 pnpm tauri build --target aarch64-unknown-linux-gnu --bundles deb appimage
 ```
 
-The shell is stock Tauri on Wry, so the resulting binary needs no extra
-library path. Install the `.deb` bundle with `dpkg -i`.
+The shell is stock Tauri on Wry, so the binary needs no extra library path. Install the `.deb` bundle with `dpkg -i`.
 
-Manual download links (all platforms):
-
-- Website: https://tinyhumans.ai/openhuman
-- Latest release: https://github.com/tinyhumansai/openhuman/releases/latest
+You can also download any platform's installer from [tinyhumans.ai/openhuman](https://tinyhumans.ai/openhuman) or the [latest release](https://github.com/tinyhumansai/openhuman/releases/latest).
 
 ## Troubleshooting
 
-### Stale `openhuman` RPC process on the core port
+### Stale `openhuman` process on the core port
 
-**Symptom**
-
-A previous Tauri build or `openhuman-core run` harness left a process listening on `OPENHUMAN_CORE_PORT` (default `7788`). Until issue #1130 the new Tauri build would silently attach to that listener, leading to version drift and 401s when the new build's `OPENHUMAN_CORE_TOKEN` didn't match.
-
-**Current behavior (issue #1130)**
+A previous Tauri build or `openhuman-core run` can leave a process listening on `OPENHUMAN_CORE_PORT` (default `7788`). If a new build attached to it, you would see version drift and 401s, because the new build's `OPENHUMAN_CORE_TOKEN` would not match.
 
 `core_process::ensure_running` now probes the port at startup:
 
-- If `GET /` identifies the listener as an OpenHuman core (JSON body with `"name": "openhuman"`), it is treated as a stale process from a previous run and proactively terminated (`SIGTERM`, then `SIGKILL` after 750ms on Unix; `taskkill /F /T /PID` on Windows). The Tauri host then spawns its own fresh embedded core.
-- If the listener is something else (or doesn't speak HTTP), startup fails loudly with the conflict surfaced in the log instead of silently attaching.
-- Set `OPENHUMAN_CORE_REUSE_EXISTING=1` to opt back into the legacy attach-to-anything behavior, useful when running `openhuman-core run` as a manual debugging harness.
+- If `GET /` identifies the listener as an OpenHuman core (a JSON body with `"name": "openhuman"`), it is treated as a stale process and stopped. On Unix it gets `SIGTERM`, then `SIGKILL` after 750 ms. On Windows it uses `taskkill /F /T /PID`. The Tauri host then starts its own embedded core.
+- If the listener is something else, or does not speak HTTP, startup fails and the log shows the conflict.
+- Set `OPENHUMAN_CORE_REUSE_EXISTING=1` to attach to whatever is listening instead. This is useful when you run `openhuman-core run` by hand for debugging.
 
-**Manual cleanup (still works)**
+To clean up manually:
 
 ```bash
 pkill -f "OpenHuman.app/Contents"
@@ -182,7 +157,7 @@ pkill -f "openhuman-core"
 
 ## See also
 
-- [Building the Rust Core](building-rust-core.md): the cargo-only path, without Node or Tauri.
-- [E2E Testing Guide](e2e-testing.md): the harness a local desktop build feeds.
+- [Building the Rust core](building-rust-core.md): the cargo-only path, without Node or Tauri.
+- [E2E testing guide](e2e-testing.md): the harness a local desktop build feeds.
 - [Architecture](architecture.md): what the shell, the core and the frontend each own.
 - [Cloud deployment](../features/cloud-deploy.md): running the same core headless on a server.

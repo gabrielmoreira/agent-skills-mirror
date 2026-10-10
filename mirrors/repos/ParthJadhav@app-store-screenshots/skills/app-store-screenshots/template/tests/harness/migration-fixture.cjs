@@ -4,7 +4,7 @@ const path = require("path");
 
 const PROJECT_FILE = "app-store-screenshots.json";
 const DEFAULT_LOCALE = "en";
-const DEVICE_KEYS = ["iphone", "ipad", "tvos", "watchos", "carplay", "mac", "android", "android-7", "android-10", "feature-graphic"];
+const DEVICE_KEYS = ["iphone", "ipad", "duo-outer", "duo-outer-landscape", "duo-inner", "duo-inner-landscape", "tvos", "watchos", "carplay", "mac", "android", "android-7", "android-10", "feature-graphic", "creative-universal", "creative-header", "creative-search"];
 const LAYOUTS = ["hero", "device-bottom", "device-top", "two-devices", "no-device", "split-landscape", "feature-graphic"];
 
 function readJson(file) {

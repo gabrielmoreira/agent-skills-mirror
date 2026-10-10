@@ -399,6 +399,16 @@ identifier 不能仅因都归一化为缺失值而被视为相等；此类 obser
 blocker writeback 或解除后续义务。仍在使用的 Python writer predicate 同样拒绝该
 情况，不改写任何活跃历史。
 
+Quota 的 work-lane 读取端现在也遵守这一边界。历史 run 的 `classification`
+及由它形成的 status 标签不能选择 `dependency_observation` lane，也不能取代
+typed follow-through 义务。Status 压缩投影保留已写入的
+`progress_scope=goal|agent_lane`，供既有归属消费者使用；这两个值与本地
+work-lane 的 `dependency_observation` 模式并非同一分类。没有显式 scope 的旧
+run 继续可读，默认走普通推进；typed Todo／monitor 事实要求观察时仍走观察。
+本地显式 work-lane scope 继续有效；到期与安静等待的 monitor 门槛保持 typed
+行为。这是对旧标签所导致 quota 指引的有意修正，不改写历史 run，也不新增
+Python 交付历史决策 owner。
+
 下一步另行盘点仍缺少 material-result 字段的 writer，并用明确兼容计划退役旧
 marker/hint 配置。精确的旧 lifecycle classification code、历史选取与其他 cadence
 policy 不在本批范围内，不能宣称所有 writer 已迁移或全局已无文本规则。这一读策略
@@ -1586,6 +1596,13 @@ real-backend and captured-source qualification, and retire Python only where its
 actual callers have moved. [Operator contract](../../reference/reviewed-coordination-promotion.md).
 
 ### Todo 摘要决策收口
+
+S7 到期 Monitor 公平选择复用同一 typed planning owner：先筛选资格，保留
+claim/profile/priority 等级，再让同等级的到期时刻先于展示 index。先选择再按
+一项裁剪；一般展示与旧 untimed wire 兼容不变。真实 legacy/File/SQLite CLI
+覆盖连续 Monitor 选择、精确 poll 重放与无额外扣额。保留逐 Turn 结算和所有者
+周期，只关闭 index 导致的选择饥饿，不宣称多职责宿主容量或同次唤醒接续已完成。
+见[调用契约](../../reference/todo-work-counts.md#due-monitor-selection-before-display-limits)。
 
 相邻截止点修复：Agent／User frontier 等待必须比较 UTC 时刻，保留裁剪前证据和
 quota 压缩、Monitor 等待、scheduler 接续三个真实调用方。此前独立 TS 读取虽保留

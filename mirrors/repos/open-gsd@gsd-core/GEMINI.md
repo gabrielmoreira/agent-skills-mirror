@@ -25,7 +25,7 @@ files rather than in the conversation.
 > run the dedicated installer:
 >
 > ```bash
-> npx gsd-core --antigravity --global
+> npx @opengsd/gsd-core@latest --antigravity --global
 > ```
 >
 > The commands below are available only once that installer has run.

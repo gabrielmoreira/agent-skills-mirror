@@ -25,7 +25,7 @@ payment construction, the ledger or the tool belongs in `tinywallet`, not here.
 `pub mod x402;` (declared in `web3/mod.rs`) is always compiled: it is a
 facade. The real payment surface (`seams`, `schemas`, `budget` and the
 `tinywallet_x402` re-exports) is gated behind the default-ON `web3` Cargo feature (shared with
-`web3` and `web3::wallet`). When the feature is off, `stub.rs` takes its
+`web3` and `web3::wallet`). When the feature is off, [`stub.rs`](./stub.rs) takes its
 place and exposes only the three entry points with always-on callers:
 `init_ledger` (a no-op; the boot call site in `core/runtime/bootstrap.rs` is itself
 runtime-gated on `DomainGroup::Web3`), `all_x402_registered_controllers`, and
@@ -40,13 +40,13 @@ and does not need a stub. Signatures must match the real ones exactly;
 
 | File | Role |
 | --- | --- |
-| `mod.rs` | Facade root: feature gate; re-exports from `tinywallet_x402` (`X402Client`, `X402Error`, `X402PaymentResult`, `handle_402`, the ledger and wire types); `init_ledger`, `handle_402_and_pay` and `request_tool`, which supply the seams; the `store` accessors used by `http_request`. |
-| `seams.rs` | `WalletPaymentSigner` (the crate's `PaymentSigner`: keyring secret, decrypt, `modules::wallet::{derive_account, sign_message}`), `RuntimeProxyPolicy` (`ProxyPolicy` over `config::apply_runtime_proxy_to_builder`), and the `payments()` / `request_tool()` constructors that pair them with the wallet's `OpenHumanTransport`. |
-| `budget.rs` | The spending limits: the crate's defaults plus the `OPENHUMAN_X402_*` overrides. |
-| `records.rs` | `pending_record`: the `Pending` ledger record for the `http_request` fallback (ledger session + chat thread). |
-| `schemas.rs` | RPC controller schemas and handlers for the `x402` namespace: `get_summary`, `list_payments`, `update_budget`. |
-| `stub.rs` | Disabled facade compiled when `web3` is off. See Compile-time gate above. |
-| `seams_tests.rs`, `budget_tests.rs`, `stub_tests.rs` | Behavior tests. `stub_tests.rs` runs only in the disabled build. The protocol, builder, ledger and tool tests live in the crate. |
+| [`mod.rs`](./mod.rs) | Facade root: feature gate; re-exports from `tinywallet_x402` (`X402Client`, `X402Error`, `X402PaymentResult`, `handle_402`, the ledger and wire types); `init_ledger`, `handle_402_and_pay` and `request_tool`, which supply the seams; the `store` accessors used by `http_request`. |
+| [`seams.rs`](./seams.rs) | `WalletPaymentSigner` (the crate's `PaymentSigner`: keyring secret, decrypt, `modules::wallet::{derive_account, sign_message}`), `RuntimeProxyPolicy` (`ProxyPolicy` over `config::apply_runtime_proxy_to_builder`), and the `payments()` / `request_tool()` constructors that pair them with the wallet's `OpenHumanTransport`. |
+| [`budget.rs`](./budget.rs) | The spending limits: the crate's defaults plus the `OPENHUMAN_X402_*` overrides. |
+| [`records.rs`](./records.rs) | `pending_record`: the `Pending` ledger record for the `http_request` fallback (ledger session + chat thread). |
+| [`schemas.rs`](./schemas.rs) | RPC controller schemas and handlers for the `x402` namespace: `get_summary`, `list_payments`, `update_budget`. |
+| [`stub.rs`](./stub.rs) | Disabled facade compiled when `web3` is off. See Compile-time gate above. |
+| [`seams_tests.rs`](./seams_tests.rs), [`budget_tests.rs`](./budget_tests.rs), [`stub_tests.rs`](./stub_tests.rs) | Behavior tests. `stub_tests.rs` runs only in the disabled build. The protocol, builder, ledger and tool tests live in the crate. |
 
 ## The seams
 
@@ -78,12 +78,12 @@ from the retry's outcome and the `PAYMENT-RESPONSE` header. It differs from the
 generic `http_request` tool (`tinytools_std::network::HttpRequestTool`, with its payment hook in `tools/impl/network/host.rs`), which
 handles a 402 only as a silent fallback.
 
-The tool is built with `TaskLocalThread` (`seams.rs`), the host's
+The tool is built with `TaskLocalThread` ([`seams.rs`](./seams.rs)), the host's
 `tinywallet_x402::thread::ThreadScope`: it reads the chat thread id from the
 `APPROVAL_CHAT_CONTEXT` task-local and the crate records it as
 `PaymentRecord.thread_id` (absent outside a chat turn). `session_id` is always
 the ledger's own `x402-<uuid>` boot id. The `http_request` 402 fallback builds
-its record with `pending_record` (`records.rs`), which applies the same rule.
+its record with `pending_record` ([`records.rs`](./records.rs)), which applies the same rule.
 
 ## Persistence
 
@@ -101,7 +101,7 @@ its record with `pending_record` (`records.rs`), which applies the same rule.
   carries (both writers), so it is the process's total; it is not a cap. The chat
   thread is recorded separately in `thread_id`. `init_ledger` seeds the limits from
   `OPENHUMAN_X402_PER_REQUEST_MAX` / `OPENHUMAN_X402_DAILY_MAX` /
-  `OPENHUMAN_X402_MONTHLY_MAX` when set (`budget.rs`); `update_budget` changes
+  `OPENHUMAN_X402_MONTHLY_MAX` when set ([`budget.rs`](./budget.rs)); `update_budget` changes
   them for the running process only and does not rewrite historical records.
 
 ## Dependencies
@@ -146,3 +146,10 @@ its record with `pending_record` (`records.rs`), which applies the same rule.
   tool (always expects a 402) and the generic `http_request` tool's
   opportunistic 402 fallback. Both funnel through `handle_402_and_pay` and the
   same ledger, so spending is tracked consistently regardless of entry point.
+
+## Further reading
+
+- [Parent module (`web3`)](../README.md)
+- [Wallet](../../../../../gitbooks/features/wallet.md)
+- [tinywallet submodule](../../../../../vendor/tinywallet/README.md)
+- [Loadable modules](../../../../../gitbooks/developing/loadable-modules.md)

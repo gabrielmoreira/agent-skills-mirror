@@ -137,6 +137,16 @@ listed after the table because its connector is not one of these files:
 | Command Code       | `commandcode`    |
 | VS Code            | `vscode`         |
 | Grok Build         | `grok_build`     |
+| OMP                | `omp`            |
+
+For OMP, setup writes a `type: "stdio"` entry to the user-level
+`~/.omp/agent/mcp.json`. It follows `PI_CONFIG_DIR`, an absolute
+`PI_CODING_AGENT_DIR`, and the profile selected by `OMP_PROFILE` or
+`PI_PROFILE` (`~/.omp/profiles/<name>/agent/mcp.json`). Setup also removes
+`rea` from that file's `disabledServers` list, which would otherwise hide the
+registration. Doctor treats an `enabled: false` entry as active when
+`enabledServers` lists `rea`, as OMP does, unless `disabledServers` also lists
+it. Run setup under each profile that should load REA.
 
 For OpenCode, setup writes the V1 `mcp.rea` entry, which OpenCode V1 and V2
 both load. If the configuration already uses OpenCode V2's native
@@ -182,6 +192,19 @@ default. Hopper is a separate optional choice: setup shows its proposed
 installation or connection and requires its own explicit approval. It can also
 save verified paths for an existing Ghidra installation.
 
+The bundled skill is installed where each selected client discovers personal
+skills: Claude Code uses `~/.claude/skills` (or
+`$CLAUDE_CONFIG_DIR/skills` when configured), while other supported clients
+use the shared `~/.agents/skills` directory. A mixed selection plans both
+paths. Selecting the skill without a client uses the shared directory. Setup
+leaves existing skill copies in other locations untouched.
+
+`doctor --skill --json` verifies the selected copies against the bundled
+instructions and references. Consumers should use `identity.skill.state`,
+`installed_version`, and `installed_tool_count` for skill readiness. The
+obsolete `installed_catalog_digest` field has been removed; current catalog
+identity remains available at `identity.catalog`.
+
 After selection, review the plan's exact paths and changes and approve before
 REA writes files or installs Hopper. You can cancel at any prompt.
 
@@ -189,14 +212,15 @@ Before applying changes, REA checks your current configuration. The plan lists:
 
 - an existing Hopper installation, a verified existing Ghidra installation, or the official Hopper package it proposes to install;
 - each detected agent configuration path;
-- the REA skill destination;
+- each selected REA skill destination;
 - external software, network origins, integrity evidence, and package-manager
   commands.
 
 Malformed or unsafe existing configuration blocks the whole transaction before
 Hopper installation or any file write. Declining or pressing Ctrl-C makes no
-changes. Agent configuration writes preserve unrelated
-entries, create backups, use atomic replacement, and verify their result.
+changes. Agent configuration writes preserve unrelated entries and comments,
+create backups, use atomic replacement, and verify their result. Setup and
+uninstall retain an existing `.rea.backup` rather than replacing the first snapshot.
 
 After setup, REA reports which agents, analysis tools, and workflow files passed
 its final checks. Restart any agent named in the completion message, then begin
@@ -279,7 +303,7 @@ vendor-defined limits, and a paid license is optional. REA reuses any detected
 installation and preserves Hopper during uninstall.
 
 The supported native host baseline is macOS 12+, Ubuntu 24.04+, Fedora 41+,
-64-bit Arch Linux, or CachyOS. Ghidra and IDA have their own provider-specific
+Nobara 44+, 64-bit Arch Linux, or CachyOS. Ghidra and IDA have their own provider-specific
 host requirements; Windows Ghidra uses the [experimental P0 boundary](windows-ghidra-p0.md).
 
 On macOS, approved setup downloads the official DMG, checks its published size
@@ -405,6 +429,17 @@ Closing or switching a target closes its bound Hopper document, shuts down REA's
 bridge and removes its temporary socket directory while preserving the Hopper
 application and unrelated documents. A `cleanup_incomplete`
 result identifies resources whose cleanup could not be verified.
+REA retains unresolved cleanup ownership and any confirmed shutdown phases.
+After addressing the reported failure, retry `close_binary` on the same
+connection. Unconfirmed document or process cleanup retains the target/application
+lease and prevents another client from launching against that owned resource.
+Once document and process closure are confirmed, the lease can be released even
+if temporary-file cleanup fails. Another client can then launch, but the owning
+client must finish its retained cleanup before starting again.
+An unconfirmed external document can be retried while its authenticated bridge
+remains connected. If that bridge has disconnected, another close cannot confirm
+the document: inspect and close the reported document in Hopper before ending
+the owning REA connection.
 
 ### Hopper in CI
 
@@ -437,8 +472,11 @@ and JDK 21. Each installation must include the native decompiler for the host
 architecture in `Ghidra/Features/Decompiler/os/<platform>/` or the corresponding
 `build/os/<platform>/` directory. Linux ARM64 uses `linux_arm_64`; official
 release archives may require you to build that native component separately.
-REA checks the executable prerequisite and does not build or install native
-tools, or change Gatekeeper quarantine settings.
+REA checks the executable prerequisite by inspecting the file's own executable
+header, so a native component built for another platform or architecture is
+reported as incompatible instead of being admitted from its directory name, and
+a header that cannot be read or recognized is reported as unknown. REA does not
+build or install native tools, or change Gatekeeper quarantine settings.
 
 The adapter exposes 25 read-only operations: thirteen inventory/name/search
 operations and twelve function-analysis operations. These cover metadata,
@@ -492,14 +530,14 @@ installs, upgrades, or modifies Ghidra or Java.
 
 Each verified session uses an ephemeral temporary project and isolated
 home/cache/config/temp paths. REA passes `-readOnly`, `-deleteProject`, uses
-Ghidra's default analysis and resource settings, and loads its packaged Java
+Ghidra's default analysis settings, and loads its packaged Java
 bridge via `-scriptPath`; it never opens an existing user project. Linux and
 macOS use a current-user-only local bridge socket and descriptor. The
 project remains under the selected temporary directory. If its Unix socket
 pathname would exceed the host's byte limit, REA allocates a separate mode-0700
 socket directory under `/tmp` and removes it on close, cancellation, or failure.
 Diagnostics retain the actual endpoint and both owned directories.
-On macOS, REA starts the inspected JVM directly using Ghidra's own LaunchSupport
+On Linux and macOS, REA starts the inspected JVM directly using Ghidra's own LaunchSupport
 configuration. Apple platform shell wrappers hide their environments from
 ownership inspection, so retaining those wrappers would prevent verified
 process-group cancellation during startup.
@@ -514,8 +552,9 @@ import and auto-analysis. The first Ghidra-backed query starts that work lazily.
 The provider startup deadline is 330,000 ms by default for import, analysis,
 bridge, and health readiness. Large binaries can need more: set
 `REA_GHIDRA_STARTUP_TIMEOUT_MS` to an integer between 1 and 2,147,483,647
-milliseconds in the server environment. An absent, empty, invalid or out-of-range
-value keeps the default. REA parses the supplied configuration environment and
+milliseconds in the server environment. An absent setting uses the default;
+empty, invalid or out-of-range supplied values fail configuration validation.
+REA parses the supplied configuration environment and
 passes the deadline to each provider client; a startup failure is returned by the query that triggered it,
 without exposing partial analysis. This deadline is separate from MCP transport
 initialization and the client's deadline for that individual tool call. A client
@@ -531,6 +570,65 @@ Operations run until a result, caller cancellation, or provider shutdown; there
 is no fixed per-operation or response-size ceiling. Unresolved computed calls
 remain unknown, reference-kind provenance is preserved, and provider-specific
 pseudocode is never treated as original source or Hopper-equivalent text.
+
+### Ghidra heap and CPU controls
+
+Set resource controls in the environment that launches the CLI or MCP server,
+before opening a new Ghidra session. On Linux and macOS, REA chooses the first
+nonempty setting in this order: `GHIDRA_HEADLESS_MAXMEM`, `GHIDRA_MAXMEM`, then
+`2G`. The chosen value becomes the JVM's `-Xmx` argument. Use a JVM heap-size
+value such as `512M` or `2G`; an invalid value causes Java startup to fail.
+The supported Ghidra 12.1.4 Windows headless script consumes the same settings
+with the same precedence.
+
+For a small target on a constrained host:
+
+```bash
+export GHIDRA_HEADLESS_MAXMEM=512M
+```
+
+In PowerShell:
+
+```powershell
+$env:GHIDRA_HEADLESS_MAXMEM = "512M"
+```
+
+An MCP client must pass this setting to its REA server process; changing an
+unrelated terminal's environment does not reconfigure an existing server or
+JVM. A 512 MiB heap was verified with small native fixtures, but larger targets
+can require more memory. The Java heap limit does not bound JVM RSS, Node's
+heap, or total memory used by the process family. The startup deadline controls
+waiting time independently of these memory settings.
+
+REA clears `_JAVA_OPTIONS`, `JAVA_TOOL_OPTIONS`, `JDK_JAVA_OPTIONS`, and
+`GHIDRA_JAVA_OPTIONS` inherited from the caller, and owns
+`GHIDRA_HEADLESS_JAVA_OPTIONS`. Custom flags injected through these variables
+are not supported configuration. On Windows, REA replaces `JDK_JAVA_OPTIONS`
+with its own isolated home/temp settings and `-XX:-UsePerfData`; on Linux and
+macOS it supplies isolated paths directly to Java. Use the supported heap
+settings above instead of adding a second `-Xmx` through an injection variable.
+
+The Linux/macOS launch sets `-XX:ParallelGCThreads=2` and
+`-XX:CICompilerCount=2`; the supported Windows headless script also sets these
+counts. These constrain particular JVM thread pools, not all analysis threads
+or CPU usage. REA does not pass Ghidra's `-max-cpu` option or expose a general
+Ghidra CPU limit. When needed, apply host CPU affinity and scheduling controls
+to the REA process and verify the resulting JVM's affinity. Select CPUs allowed
+on the host; do not assume CPU numbers from another machine are valid.
+
+Verify controls at their consumer after the first Ghidra-backed query starts
+the JVM: inspect that owned JVM's effective `-Xmx` and GC/compiler flags, CPU
+affinity, and observed memory use. Do not infer them from the parent shell's
+environment or the absence of an error. On Linux, `/proc/<jvm-pid>/cmdline`
+contains the launch arguments and `/proc/<jvm-pid>/status` reports
+`Cpus_allowed_list` and `VmRSS`. Inspect only the process belonging to this
+session and retain the resource flags needed for the measurement rather than
+copying full command lines or environments into reports. Heap and affinity
+settings affect cost and latency; they are not part of REA's semantic analysis
+profile identity. See [real-provider testing](testing.md) for bounded
+verification workflows.
+
+### Ghidra diagnostics and verification
 
 Unexpected request failures retain their original internal cause. CLI and MCP
 errors expose Error names, messages, and available codes under
@@ -576,7 +674,8 @@ and other MCP servers. Purging removes only REA's cache and state under
 `~/.rea`. A client configuration that is malformed, unreadable, or at an unsafe
 path stops the operation before anything is removed, and a client that fails
 while being updated stops the remaining removals. A purge path that is a
-symbolic link is retained and reported rather than followed. See the
+symbolic link is retained and reported rather than followed. Uninstall checks
+REA's managed shared and Claude Code personal skill locations. See the
 [CLI guide](cli.md#output-and-exit-status) for exit statuses.
 
 ## MCP Registry
@@ -598,7 +697,7 @@ For a client that requires manual configuration, use:
   "mcpServers": {
     "rea": {
       "command": "npx",
-      "args": ["-y", "rea-agents@6.1.0", "mcp"]
+      "args": ["-y", "rea-agents@6.3.0", "mcp"]
     }
   }
 }

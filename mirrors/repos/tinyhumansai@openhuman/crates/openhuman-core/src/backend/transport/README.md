@@ -16,11 +16,11 @@ panicking.
 
 | File | Purpose |
 | --- | --- |
-| `mod.rs` | `BackendTransport` trait, `BackendRequest`, `TransportProfile`, `credential_headers`, `parse_body_text`, `unwrap_envelope`, `compose_url` |
-| `error.rs` | `BackendTransportError`, the core-owned mirror of the variants classifiers match on |
-| `install.rs` | Process-global install/resolve for the transport, plus the `CoreContext`-scoped lookup |
-| `plain.rs` | `cfg(test)`-only reqwest transport, so this crate's tests do not need a host crate |
-| `transport_tests.rs` | Tests for `mod.rs` (included via `#[path]`) |
+| [`mod.rs`](./mod.rs) | `BackendTransport` trait, `BackendRequest`, `TransportProfile`, `credential_headers`, `parse_body_text`, `unwrap_envelope`, `compose_url` |
+| [`error.rs`](./error.rs) | `BackendTransportError`, the core-owned mirror of the variants classifiers match on |
+| [`install.rs`](./install.rs) | Process-global install/resolve for the transport, plus the `CoreContext`-scoped lookup |
+| [`plain.rs`](./plain.rs) | `cfg(test)`-only reqwest transport, so this crate's tests do not need a host crate |
+| [`transport_tests.rs`](./transport_tests.rs) | Tests for `mod.rs` (included via `#[path]`) |
 
 ## Key types
 
@@ -51,7 +51,7 @@ and must be safe to call concurrently.
 ambient `CoreContext` (set via `CoreBuilder::backend_transport`, inherited by
 `derive_with`), then the process global set by `install_backend_transport`
 (what the desktop shell, TUI, and CLI use, since they boot the core through
-`run_server_embedded_with_ready` / `run_core_from_args` rather than the
+`openhuman_rpc::host` / `run_core_from_args` rather than the
 builder), then, under `cfg(test)` only, the `plain.rs` fallback. Outside
 tests, a miss returns `Err(BackendTransportError::Unavailable)`. There is no
 implicit production fallback.
@@ -62,7 +62,7 @@ Everything else under `crates/openhuman-core/src/api/` (routes in `rest.rs`,
 attribution headers in `headers.rs`, URL resolution in `config.rs`) calls
 through this trait rather than building `reqwest` requests directly. The
 only production implementation is `SdkBackendTransport` in
-`crates/openhuman-tinyhumans`, built on top of the vendored `tinyhumans-sdk`,
+[`crates/openhuman-tinyhumans`](../../../../openhuman-tinyhumans/), built on top of the vendored `tinyhumans-sdk`,
 and installed once per process by `openhuman_tinyhumans::install` (or
 `RuntimeBuilder` for library hosts, or `CoreBuilder::backend_transport`).
 
@@ -72,3 +72,10 @@ Read `crates/openhuman-core/src/api/README.md` for the routes and error
 classification that sit above this port, and `crates/openhuman-tinyhumans/`
 for the real transport and how it maps SDK errors onto
 `BackendTransportError`.
+
+## Further reading
+
+- [Parent module README](../README.md)
+- [One TinyHumans API key](../../../../../gitbooks/developing/tinyhumans-api-key.md)
+- [openhuman-tinyhumans crate](../../../../openhuman-tinyhumans/README.md)
+- [tinyhumans-sdk](../../../../../vendor/tinyhumans-sdk/README.md)

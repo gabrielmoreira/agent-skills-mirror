@@ -1,8 +1,8 @@
 # mcp/server
 
-Opt-in **Model Context Protocol (MCP) server** that exposes a curated, security-gated slice of OpenHuman's tool surface (Memory v2 reads/writes, core/agent introspection, subagent execution, web search) and bundled prompt assets to external MCP clients (Claude Desktop, Cursor, Windsurf, …). Started via `openhuman-core mcp`: stdio transport by default, or `--transport http` for Streamable HTTP + SSE on a local bind address. It is a JSON-RPC dispatcher, not a registered RPC domain: it has no `schemas.rs`/controllers and is wired only through `crates/openhuman-core/src/core/cli.rs`, translating each MCP `tools/call` into an existing registered core RPC method.
+Opt-in **Model Context Protocol (MCP) server** that exposes a curated, security-gated slice of OpenHuman's tool surface (Memory v2 reads/writes, core/agent introspection, subagent execution, web search) and bundled prompt assets to external MCP clients (Claude Desktop, Cursor, Windsurf, …). Started via `openhuman-core mcp`: stdio transport by default, or `--transport http` for Streamable HTTP + SSE on a local bind address. It is a JSON-RPC dispatcher, not a registered RPC domain: it has no `schemas.rs`/controllers and is wired only through [`crates/openhuman-core/src/core/cli.rs`](../../core/cli.rs), translating each MCP `tools/call` into an existing registered core RPC method.
 
-The generic server half — JSON-RPC protocol, client-provenance sessions, argument validators, and the stdio and Streamable HTTP transports — lives in `tinymcp::server` (`vendor/tinymcp`). This module is the host half: it implements `tinymcp::McpServerHandler` (`handler.rs`) over OpenHuman's config, security policy, write audit, agent turns, tool catalog, prompt resources and subagent depth.
+The generic server half (JSON-RPC protocol, client-provenance sessions, argument validators, and the stdio and Streamable HTTP transports) lives in `tinymcp::server` ([`vendor/tinymcp`](../../../../../vendor/tinymcp/)). This module is the host half: it implements `tinymcp::McpServerHandler` ([`handler.rs`](./handler.rs)) over OpenHuman's config, security policy, write audit, agent turns, tool catalog, prompt resources and subagent depth.
 
 ## Responsibilities
 
@@ -19,18 +19,18 @@ The generic server half — JSON-RPC protocol, client-provenance sessions, argum
 
 | File | Role |
 | --- | --- |
-| `crates/openhuman-core/src/mcp/server/mod.rs` | Module docstring + private submodule decls; re-exports `run_http`/`run_http_reporting`/`HttpServerConfig`, `run_stdio_from_cli`, `ensure_local_http`/`LocalMcpEndpoint`, `current_subagent_depth`/`HEADER_SUBAGENT_DEPTH`, `tool_specs`/`McpToolSpec`. |
+| [`crates/openhuman-core/src/mcp/server/mod.rs`](./mod.rs) | Module docstring + private submodule decls; re-exports `run_http`/`run_http_reporting`/`HttpServerConfig`, `run_stdio_from_cli`, `ensure_local_http`/`LocalMcpEndpoint`, `current_subagent_depth`/`HEADER_SUBAGENT_DEPTH`, `tool_specs`/`McpToolSpec`. |
 | `crates/openhuman-core/src/mcp/server/handler.rs` | `OpenHumanMcpHandler`, the `tinymcp::McpServerHandler` every transport serves: `serverInfo` (`openhuman-core` + instructions), the `mcp` source-type prefix, `tools/list` from the config-gated catalog, `tools/call` through `tools::dispatch` inside the request's subagent-depth scope, and the prompt resources. |
-| `crates/openhuman-core/src/mcp/server/tools/` | Tool catalog and dispatch: `mod.rs` (facade; re-exports `tinymcp::ToolCallError`), `types.rs` (`McpToolSpec` and the limit/tag constants, ungated so `McpToolSpec` is one real type in both builds), `specs.rs` (`tool_specs`/`base_tool_specs`/`tool_specs_for_loaded_config` builders and the `server_tool_spec` conversion), `params.rs` (OpenHuman's per-tool argument policy → RPC params, over `tinymcp::server::args`), `dispatch.rs` (`call_tool`/`list_tool_specs`, policy enforcement, subagent handlers). |
-| `crates/openhuman-core/src/mcp/server/write_dispatch.rs` | Write/audit pipeline for `memory.learn`/`memory.forget`: config load, act-policy enforcement, RPC dispatch to `openhuman.memory_learn` / `openhuman.memory_forget`, audit-record write (success/rejection) via `crate::mcp::audit::record_write`, PII-redacting arg summaries. |
-| `crates/openhuman-core/src/mcp/server/resources.rs` | Static `RESOURCE_CATALOG` of compile-time-embedded (`include_str!`) prompt markdown, served as `tinymcp::ResourceSpec`s and read by URI (`-32002` when unknown). Test cross-checks catalog vs `agent::agents::BUILTINS`. |
-| `crates/openhuman-core/src/mcp/server/http.rs` | OpenHuman's `run_http`/`run_http_reporting`: `tinymcp::run_http_reporting` bound to the handler. Gated on `all(feature = "mcp", feature = "http-server")`; `http-server` forwards `tinymcp/server-http`. |
-| `crates/openhuman-core/src/mcp/server/local.rs` | Lazily-started, process-wide in-process loopback HTTP MCP server (`ensure_local_http`, `LocalMcpEndpoint`). Lets the sandboxed `claude` subprocess (Claude Code provider) reach OpenHuman's memory/tools over loopback without the MCP server inheriting Claude Code's OS jail; a per-process random bearer token stops any other local process from talking to it. |
-| `crates/openhuman-core/src/mcp/server/subagent_depth.rs` | Per-delegation-chain depth tracking for `agent.run_subagent`, propagated across the loopback MCP HTTP hop via the `X-OpenHuman-Subagent-Depth` header (read by `handler.rs` from `tinymcp`'s `RequestContext`) so nested Claude Code subagent calls are bounded without penalizing unrelated parallel callers. |
-| `crates/openhuman-core/src/mcp/server/stdio.rs` | CLI entry `run_stdio_from_cli` (arg parse: `--transport`/`--host`/`--port`/`--auth-token`/`-v`/`--help`), logging init, then `tinymcp::run_stdio` or `run_http` with the handler. |
-| `crates/openhuman-core/src/mcp/server/stub.rs` | The `mcp`-less mirror of `run_stdio_from_cli`, `ensure_local_http`/`LocalMcpEndpoint`, and `tool_specs`: disabled-error / empty-catalog bodies so always-on callers (`core/cli.rs`, the Claude Code driver, `tools/registry/ops.rs`) keep a stable surface. |
-| `crates/openhuman-core/src/mcp/server/wire_golden_tests.rs`, `http_golden_tests.rs` | Golden wire fixtures captured before the move to `tinymcp`: exact protocol bytes and HTTP status/body/header behavior. A diff here is a wire change. `test_support.rs` is the one seam they call through. |
-| `crates/openhuman-core/src/mcp/server/tools_tests.rs` | Sibling `#[cfg(test)]` suite for `tools/` (via `#[path]`). |
+| [`crates/openhuman-core/src/mcp/server/tools/`](./tools/) | Tool catalog and dispatch: `mod.rs` (facade; re-exports `tinymcp::ToolCallError`), `types.rs` (`McpToolSpec` and the limit/tag constants, ungated so `McpToolSpec` is one real type in both builds), `specs.rs` (`tool_specs`/`base_tool_specs`/`tool_specs_for_loaded_config` builders and the `server_tool_spec` conversion), `params.rs` (OpenHuman's per-tool argument policy → RPC params, over `tinymcp::server::args`), `dispatch.rs` (`call_tool`/`list_tool_specs`, policy enforcement, subagent handlers). |
+| [`crates/openhuman-core/src/mcp/server/write_dispatch.rs`](./write_dispatch.rs) | Write/audit pipeline for `memory.learn`/`memory.forget`: config load, act-policy enforcement, RPC dispatch to `openhuman.memory_learn` / `openhuman.memory_forget`, audit-record write (success/rejection) via `crate::mcp::audit::record_write`, PII-redacting arg summaries. |
+| [`crates/openhuman-core/src/mcp/server/resources.rs`](./resources.rs) | Static `RESOURCE_CATALOG` of compile-time-embedded (`include_str!`) prompt markdown, served as `tinymcp::ResourceSpec`s and read by URI (`-32002` when unknown). Test cross-checks catalog vs `agent::agents::BUILTINS`. |
+| [`crates/openhuman-core/src/mcp/server/http.rs`](./http.rs) | OpenHuman's `run_http`/`run_http_reporting`: `tinymcp::run_http_reporting` bound to the handler. Gated on `all(feature = "mcp", feature = "http-server")`; `http-server` forwards `tinymcp/server-http`. |
+| [`crates/openhuman-core/src/mcp/server/local.rs`](./local.rs) | Lazily-started, process-wide in-process loopback HTTP MCP server (`ensure_local_http`, `LocalMcpEndpoint`). Lets the sandboxed `claude` subprocess (Claude Code provider) reach OpenHuman's memory/tools over loopback without the MCP server inheriting Claude Code's OS jail; a per-process random bearer token stops any other local process from talking to it. |
+| [`crates/openhuman-core/src/mcp/server/subagent_depth.rs`](./subagent_depth.rs) | Per-delegation-chain depth tracking for `agent.run_subagent`, propagated across the loopback MCP HTTP hop via the `X-OpenHuman-Subagent-Depth` header (read by `handler.rs` from `tinymcp`'s `RequestContext`) so nested Claude Code subagent calls are bounded without penalizing unrelated parallel callers. |
+| [`crates/openhuman-core/src/mcp/server/stdio.rs`](./stdio.rs) | CLI entry `run_stdio_from_cli` (arg parse: `--transport`/`--host`/`--port`/`--auth-token`/`-v`/`--help`), logging init, then `tinymcp::run_stdio` or `run_http` with the handler. |
+| [`crates/openhuman-core/src/mcp/server/stub.rs`](./stub.rs) | The `mcp`-less mirror of `run_stdio_from_cli`, `ensure_local_http`/`LocalMcpEndpoint`, and `tool_specs`: disabled-error / empty-catalog bodies so always-on callers (`core/cli.rs`, the Claude Code driver, [`tools/registry/ops.rs`](../../tools/registry/ops.rs)) keep a stable surface. |
+| [`crates/openhuman-core/src/mcp/server/wire_golden_tests.rs`](./wire_golden_tests.rs), `http_golden_tests.rs` | Golden wire fixtures captured before the move to `tinymcp`: exact protocol bytes and HTTP status/body/header behavior. A diff here is a wire change. [`test_support.rs`](./test_support.rs) is the one seam they call through. |
+| [`crates/openhuman-core/src/mcp/server/tools_tests.rs`](./tools_tests.rs) | Sibling `#[cfg(test)]` suite for `tools/` (via `#[path]`). |
 
 ## Public surface
 
@@ -60,12 +60,12 @@ This module exposes **no** registered core RPC methods (no `schemas.rs`, no cont
 
 ## Agent tools
 
-It does **not** own any agent tools in the `tools.rs`/`crates/openhuman-core/src/tools` sense. The "tools" here are **MCP-protocol tools** advertised to external clients:
+It does **not** own any agent tools in the `tools.rs`/[`crates/openhuman-core/src/tools`](../../tools/) sense. The "tools" here are **MCP-protocol tools** advertised to external clients:
 
 - Read-only (`ToolOperation::Read`): `core.list_tools`, `core.tool_instructions`, `agent.list_subagents`, `memory.recall`, `memory.fetch`, `memory.list`, `web_search`, `web_answer`, `searxng_search` (listed only when a search provider can serve them; `crate::search::providers`).
 - Act-policy (`ToolOperation::Act`): `agent.run_subagent` (annotated destructive/open-world), and `memory.learn` (annotated non-destructive, non-idempotent, local-only) and `memory.forget` (annotated destructive/idempotent, local-only).
 
-Argument bounds enforced in-layer: memory `limit` capped at `MEMORY_MAX_LIMIT` (100; rejected, not clamped); `memory.forget` capped at 100 ids; `filter` is validated field by field (MetaFilter of `docs/specs/memory-v2.md`); `memory.fetch` `mode` is one of keyword/vector/hybrid but must be supported by the active engine (both launch engines: `hybrid` only); `web_search` and `web_answer` `max_results` capped at `SEARCH_MAX_RESULTS` (20).
+Argument bounds enforced in-layer: memory `limit` capped at `MEMORY_MAX_LIMIT` (100; rejected, not clamped); `memory.forget` capped at 100 ids; `filter` is validated field by field (MetaFilter of [`docs/specs/memory-v2.md`](../../../../../docs/specs/memory-v2.md)); `memory.fetch` `mode` is one of keyword/vector/hybrid but must be supported by the active engine (both launch engines: `hybrid` only); `web_search` and `web_answer` `max_results` capped at `SEARCH_MAX_RESULTS` (20).
 
 ## Events
 
@@ -92,7 +92,7 @@ No `store.rs`. The only durable side effect is the **MCP write-audit log**, writ
 
 ## Used by
 
-- `crates/openhuman-core/src/core/cli.rs`: dispatches `mcp` / `mcp-server` subcommands to `run_stdio_from_cli`; the only production entry point for the stdio/HTTP transports. `crates/openhuman-core/src/platform/about_app/catalog_conversation_intelligence.rs` lists it as `intelligence.mcp_server`.
+- `crates/openhuman-core/src/core/cli.rs`: dispatches `mcp` / `mcp-server` subcommands to `run_stdio_from_cli`; the only production entry point for the stdio/HTTP transports. [`crates/openhuman-core/src/platform/about_app/catalog_conversation_intelligence.rs`](../../platform/about_app/catalog_conversation_intelligence.rs) lists it as `intelligence.mcp_server`.
 - `crates/openhuman-core/src/inference/provider/claude_code/driver.rs`: calls `ensure_local_http` on each Claude Code turn to hand the sandboxed `claude` subprocess a loopback MCP endpoint.
 - `crates/openhuman-core/src/tools/registry/ops.rs`: reads `McpToolSpec`/`tool_specs()` (via `crate::mcp::server::McpToolSpec`) to fold this server's advertised tools into the agent tool registry catalog.
 - The other `mcp/` members (`mcp::host`, `mcp::registry`, `mcp::audit`) are siblings in the broader MCP feature set, not consumers of this server's code paths. `mcp::http_client` is a re-export module of `tinymcp`, used here only by the test-only `McpHttpClient` HTTP round-trip.
@@ -108,3 +108,9 @@ No `store.rs`. The only durable side effect is the **MCP write-audit log**, writ
 - **Resource catalog parity is CI-enforced:** `resources.rs` content is `include_str!`-embedded at compile time and the `catalog_mirrors_builtins` test fails if a built-in subagent lacks a matching `openhuman://prompts/agents/<id>` entry.
 - **`agent.run_subagent` limits:** runs a fresh single-turn agent session tagged with an `mcp:<agent_id>:<uuid>` event context.
 - **stdio logging defaults to `warn`** on stderr (so failures surface in client UIs); `--verbose` → `debug`; a user-set `RUST_LOG` always wins. Stdout is reserved for protocol messages only.
+
+## Further reading
+
+- [Parent module README](../README.md)
+- [MCP server](../../../../../gitbooks/developing/mcp-server.md)
+- [MCP servers and skills](../../../../../gitbooks/features/integrations/mcp-and-skills.md)

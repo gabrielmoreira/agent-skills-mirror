@@ -14,8 +14,8 @@ through [`modules::runtime`](../../modules/runtime.rs).
 
 | File | Role |
 | --- | --- |
-| `mod.rs` | Export-focused: submodule decls and `pub use` re-exports. |
-| `bootstrap.rs` | The interpreter client. `PythonBootstrap` (`resolve`, `probe_installed`, `try_cached`), `ResolvedPython`, `PythonSource`. |
+| [`mod.rs`](./mod.rs) | Export-focused: submodule decls and `pub use` re-exports. |
+| [`bootstrap.rs`](./bootstrap.rs) | The interpreter client. `PythonBootstrap` (`resolve`, `probe_installed`, `try_cached`), `ResolvedPython`, `PythonSource`. |
 
 ## Public surface
 
@@ -60,3 +60,10 @@ client, no archive crates, no `walkdir`, no `fs2`: those went with the pipeline.
   blocking on a bus round trip.
 - Inline Python code goes through `runtime::pool::python`, which routes to the
   module's warm workers.
+
+## Further reading
+
+- [Parent module (`runtime`)](../README.md)
+- [tinyruntime submodule](../../../../../vendor/tinyruntime/README.md)
+- [System and utilities tools](../../../../../gitbooks/features/native-tools/system-and-utilities.md)
+- [Loadable modules](../../../../../gitbooks/developing/loadable-modules.md)

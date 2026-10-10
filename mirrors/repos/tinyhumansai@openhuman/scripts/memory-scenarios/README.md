@@ -18,7 +18,7 @@ node scripts/memory-scenarios/run.mjs --engine local --keep
 node scripts/memory-scenarios/run.mjs --grade-only target/memory-scenarios/<run-id>
 ```
 
-Requires a core build (`cargo build -p openhuman-cli --bin openhuman-core`),
+The driver is [`run.mjs`](./run.mjs), with scenarios in [`scenarios.mjs`](./scenarios.mjs) and the two engine setups in [`engines.mjs`](./engines.mjs). Requires a core build (`cargo build -p openhuman-cli --bin openhuman-core`),
 Docker, and for the local
 engine's embeddings a running Ollama with `nomic-embed-text` (and `llama3.2:3b`
 for CortexDB's extraction and answer lanes; both pulled when missing).
@@ -35,7 +35,7 @@ stores memory on the account, so the run needs a credential:
 
 The script reads the file when it spawns the core and hands the value over in
 the core's environment only; the core seeds it at boot
-(`security/credentials/ops/boot_env.rs`). It is never an RPC argument, never
+([`security/credentials/ops/boot_env.rs`](../../crates/openhuman-core/src/security/credentials/ops/boot_env.rs)). It is never an RPC argument, never
 printed and never written to the run directory: `core.log`, `rpc.jsonl` and
 every error text are scrubbed of the value itself and of anything `tiny_…` or
 JWT-shaped (`eyJ…`). A core spawned for an engine that should not have a
@@ -45,7 +45,7 @@ scope for builtin; without it every memory call answers 403.
 
 ## Headless, but shaped like the desktop app
 
-Same rig as [`../life-scenarios`](../life-scenarios/README.md): the core runs
+Same rig as [`life-scenarios`](https://github.com/tinyhumansai/openhuman-benchmarks/blob/main/life-scenarios/README.md) in openhuman-benchmarks: the core runs
 as `openhuman-core serve` with **its own `HOME`** under
 `target/memory-scenarios/<run-id>/<engine>/home`, and turns go through
 `openhuman.channel_web_chat` with the reply on `GET /events`, exactly like the
@@ -55,7 +55,7 @@ composer. Memory RPCs (`memory_learn`, `memory_items_list`, `memory_recall`,
 
 ## The two engines
 
-**local**: a throwaway CortexDB **v0.10.5** per run (`cortexdb/` here) with its
+**local**: a throwaway CortexDB **v0.10.5** per run ([`cortexdb/`](./cortexdb) here) with its
 own compose project `memscen-<run>`, its own volume and a free port. It never
 touches the user's `cortexdb` container, its `cortexdb-data` volume or port 3141,
 and is torn down with its volume at the end, or on Ctrl-C (`--keep` keeps the
@@ -130,6 +130,8 @@ running it.
 
 ## Scenarios
 
+The definitions live in [`scenarios.mjs`](./scenarios.mjs); the memory domain they exercise is documented in the [`memory` README](../../crates/openhuman-core/src/memory/README.md).
+
 | id            | engines | what it checks                                                                                                                                                                                                                                                                           |
 | ------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | A-storing     | both    | chats with two agents logged under each agent; learnings of every kind, kind visible on read-back; brain text; a file from a path holding a username (only the basename may reach the engine); dated facts                                                                               |
@@ -151,7 +153,7 @@ so the channel sender name (#7131) is inert.
 
 ## The corpus is fictional
 
-`fixtures/persona.json`: one persona (Jordan Lee `<jordan.lee@example.com>`),
+[`fixtures/persona.json`](./fixtures/persona.json): one persona (Jordan Lee `<jordan.lee@example.com>`),
 `*.example` domains, `555-01xx` phone numbers. The mock's mail and issues are
 invented too. Dates the checks reason about are the real clock's, in the
 persona's time zone, because the engine stamps items with the real time.
@@ -172,3 +174,10 @@ target/memory-scenarios/<run-id>/
 
 A finding's `basis` is **READ** when it was seen (a response, a log line) and
 **INFERRED** when it was judged (a reply's wording, a heuristic).
+
+## See also
+
+- [Memory](../../gitbooks/features/memory.md) and [Memory architecture](../../gitbooks/developing/architecture/memory.md), the behavior under test.
+- [`vendor/tinymemory/`](../../vendor/tinymemory) and its repo, [tinyhumansai/tinymemory](https://github.com/tinyhumansai/tinymemory).
+- [`docs/specs/memory-v2.md`](../../docs/specs/memory-v2.md) for the layout spec.
+- [`life-scenarios/`](https://github.com/tinyhumansai/openhuman-benchmarks/blob/main/life-scenarios/README.md) in openhuman-benchmarks, and [`scripts/README.md`](../README.md).

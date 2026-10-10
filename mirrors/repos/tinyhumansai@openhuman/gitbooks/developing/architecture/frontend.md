@@ -1,29 +1,29 @@
 ---
 description: >-
-  The React + Vite frontend (`app/src/`) - architecture, state, services,
-  providers, routing, components, hooks.
+  The React and Vite frontend in app/src/: state, services, providers,
+  routing, components and hooks.
 icon: browsers
 ---
 
 # Frontend
 
-`app/src/` is the OpenHuman desktop UI: a Vite and React 19 tree in the pnpm workspace `openhuman-app`. It uses Redux Toolkit with persistence for session state, talks to the in-process Rust core over JSON-RPC (`coreRpcClient` → local HTTP, with the Tauri `relay_http_rpc` command as a fallback relay) and socket.io (`socketService`), and reaches the cloud backend via REST (`apiClient`). Heavy logic lives in the core, not here.
+`app/src/` is the OpenHuman desktop UI: a Vite and React 19 tree in the pnpm workspace `openhuman-app`. It uses Redux Toolkit with persistence for session state, talks to the in-process Rust core over JSON-RPC (`coreRpcClient` over local HTTP, with the Tauri `relay_http_rpc` command as a fallback relay) and socket.io (`socketService`), and reaches the cloud backend via REST (`apiClient`). Heavy logic lives in the core, not here.
 
-This is one consolidated reference. Use the table of contents above (or your reader's outline) to jump between sections.
+This page is a single reference. Use the table of contents to jump between sections.
 
-The tree also carries a **mobile shell**: `AppRoutesIOS.tsx`, `pages/ios/`, the `services/transport/` connection profiles and the `app/src-tauri-mobile/` host. That client is **experimental and not part of the shipped desktop host**, which targets Windows, macOS and Linux only. It appears on this page because those files sit in the same tree and share the `App.tsx` provider chain, not because the client ships. See [iOS Companion](../../features/ios-companion.md) for what it is and what still has no desktop surface.
+The tree also carries a mobile shell: `AppRoutesIOS.tsx`, `pages/ios/`, the `services/transport/` connection profiles and the `app/src-tauri-mobile/` host. That client is experimental and not part of the shipped desktop host, which targets Windows, macOS and Linux only. It appears here because those files sit in the same tree and share the `App.tsx` provider chain. See [iOS companion](../../features/ios-companion.md) for what it is and what still has no desktop surface.
 
 ## Quick reference
 
 | Section                                      | Covers                                                          |
 | -------------------------------------------- | --------------------------------------------------------------- |
 | [Architecture](#architecture-overview)       | Provider chain, build, layout, conventions                      |
-| [State Management](#state-management)        | Redux Toolkit slices, selectors, persistence                    |
-| [Services Layer](#services-layer)            | `apiClient`, `socketService`, `coreRpcClient`                   |
+| [State management](#state-management)        | Redux Toolkit slices, selectors, persistence                    |
+| [Services layer](#services-layer)            | `apiClient`, `socketService`, `coreRpcClient`                   |
 | [Providers](#providers)                      | `ThemeProvider`, `CoreState`, `Socket`, `ChatRuntime` providers |
-| [Pages & Routing](#pages--routing)           | `HashRouter`, route guards, main routes                         |
+| [Pages and routing](#pages-and-routing)      | `HashRouter`, route guards, main routes                         |
 | [Components](#components)                    | UI / settings component patterns                                |
-| [Hooks & Utilities](#hooks--utilities)       | Shared hooks, helpers, config                                   |
+| [Hooks and utilities](#hooks-and-utilities)   | Shared hooks, helpers, config                                   |
 
 ## Scale
 
@@ -56,20 +56,20 @@ app/src/
 
 ### System architecture
 
-OpenHuman's desktop UI is a **React 19** app (`app/src/`) that:
+OpenHuman's desktop UI is a React 19 app (`app/src/`) that:
 
-- Uses **Redux Toolkit** with persistence for session-related state
-- Connects to the backend with **REST** (`apiClient`) and to the local core with **Socket.io** (`socketService` → core socket endpoint)
-- Calls the **Rust core** (embedded in the Tauri host as a tokio task) over HTTP via **`coreRpcClient`** (JSON-RPC methods implemented in `crates/openhuman-core/src/`); non-loopback plain-http runtimes are relayed through the Tauri **`relay_http_rpc`** command
-- Leaves **AI prompts** to the core: bundled `crates/openhuman-core/src/agent/prompts` ship as Tauri resources (see `crates/openhuman-app/tauri.conf.json` resources) and are read core-side, not by the frontend
-- Uses a **minimal MCP-style** helper layer under `lib/mcp/` (transport, validation)
+- Uses Redux Toolkit with persistence for session-related state
+- Connects to the backend with REST (`apiClient`) and to the local core with Socket.io (`socketService` → core socket endpoint)
+- Calls the Rust core (embedded in the Tauri host as a tokio task) over HTTP via `coreRpcClient` (JSON-RPC methods implemented in `crates/openhuman-core/src/`); non-loopback plain-http runtimes are relayed through the Tauri `relay_http_rpc` command
+- Leaves AI prompts to the core: bundled `crates/openhuman-core/src/agent/prompts` ship as Tauri resources (see `crates/openhuman-app/tauri.conf.json` resources) and are read core-side, not by the frontend
+- Uses a minimal MCP-style helper layer under `lib/mcp/` (transport, validation)
 
 ### Entry points
 
 | File                    | Purpose                                                                          |
 | ----------------------- | -------------------------------------------------------------------------------- |
 | `app/src/main.tsx`      | React root, polyfills, Sentry boundary, store, global styles                     |
-| `app/src/App.tsx`       | Provider chain (see below) + desktop/mobile shells, Settings modal overlay       |
+| `app/src/App.tsx`       | Provider chain (see below) + desktop/mobile shells, Settings       |
 | `app/src/AppRoutes.tsx` | `HashRouter` routes, `ProtectedRoute` / `PublicRoute` / `DefaultRedirect` guards |
 
 ### Provider chain
@@ -95,7 +95,7 @@ _Generated from `app/src/App.tsx` by `scripts/generate-architecture-docs.mjs`. D
 
 <!-- END GENERATED: provider-chain -->
 
-**Why this order**
+Why this order
 
 1. Redux `Provider` is outermost so `useAppSelector` / dispatch work everywhere.
 2. `PersistGate` rehydrates persisted slices before children assume stable auth/session.
@@ -133,9 +133,9 @@ services/
 
 The desktop app does not bake the core RPC URL or the API host into the bundle as a hard requirement. At runtime the app resolves them in this order (highest first):
 
-1. **Welcome-screen RPC URL field**, saved via `utils/configPersistence` and restored on next launch. End users configure a self-hosted core address here, not by hand-editing `config.toml` or `.env` files.
-2. **Tauri `core_rpc_url` command**, the port the embedded core is listening on for this process.
-3. **`VITE_OPENHUMAN_CORE_RPC_URL`**, build-time fallback for development.
+1. Welcome-screen RPC URL field, saved via `utils/configPersistence` and restored on next launch. End users configure a self-hosted core address here, not by hand-editing `config.toml` or `.env` files.
+2. Tauri `core_rpc_url` command, the port the embedded core is listening on for this process.
+3. `VITE_OPENHUMAN_CORE_RPC_URL`, build-time fallback for development.
 4. The hardcoded `http://127.0.0.1:7788/rpc` default.
 
 Once the RPC handshake succeeds, `services/backendUrl` calls `openhuman.config_resolve_api_url` to pull `api_url` (and other safe client fields) from the loaded core `Config`. `VITE_BACKEND_URL` is only used as a web fallback when the app runs outside Tauri.
@@ -145,15 +145,15 @@ Components that need the backend URL should call `useBackendUrl()` (or `getBacke
 ### Related docs
 
 - Rust architecture: [Architecture](../architecture.md)
-- Tauri shell: [Tauri Shell](tauri-shell.md)
+- Tauri shell: [Tauri shell](tauri-shell.md)
 
-## State Management
+## State management
 
-The application uses Redux Toolkit with Redux-Persist. There is no single root persist config: each slice that persists wraps its own reducer with `persistReducer` in **`store/index.ts`**, whitelisting exactly the fields that should survive a restart.
+The application uses Redux Toolkit with Redux-Persist. There is no single root persist config: each slice that persists wraps its own reducer with `persistReducer` in `store/index.ts`, whitelisting exactly the fields that should survive a restart.
 
 ### Storage backends
 
-- `userScopedStorage` (`store/userScopedStorage.ts`) is the default storage for persisted slices. Blobs are keyed `${userId}:persist:<key>` so state never leaks across users on logout/login (#900).
+- `userScopedStorage` (`store/userScopedStorage.ts`) is the default storage for persisted slices. Blobs are keyed `${userId}:persist:<key>` so state never leaks across users on logout or login.
 - Plain `localStorage` is used only for pre-login, device-wide slices (`coreMode`, `locale`, `theme`) that must survive user switches.
 
 ### Slices
@@ -183,10 +183,10 @@ Authoritative list = the `reducer` map in `store/index.ts`. One-line purposes:
 | `thread`              | Chat thread list + per-thread message caches                                      | only `selectedThreadId`                                          |
 | `threadGoal`          | Durable per-thread goal state                                                     | no (in-memory only)                                              |
 | `threadTodos`         | Live per-thread todo list                                                         | no (in-memory only)                                              |
-| `userErrors`          | User-actionable runtime errors (#3931)                                            | no (in-memory only)                                              |
+| `userErrors`          | User-actionable runtime errors                                            | no (in-memory only)                                              |
 | `walletPreferences`   | Hidden-token preferences for the wallet view                                      | `hiddenTokenKeys`                                                |
 
-Ephemeral chat state (streaming buffers, tool timelines) must **not** survive a restart: the UI would try to resume a turn whose live driver is gone. The one exception, agent-generated artifacts, goes through the `artifactsReadyOnlyTransform` in `store/index.ts` (pure logic in `store/artifactsPersistFilter.ts`).
+Ephemeral chat state (streaming buffers, tool timelines) must not survive a restart: the UI would try to resume a turn whose live driver is gone. The one exception, agent-generated artifacts, goes through the `artifactsReadyOnlyTransform` in `store/index.ts` (pure logic in `store/artifactsPersistFilter.ts`).
 
 ### Typed hooks
 
@@ -208,7 +208,7 @@ export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 ---
 
-## Services Layer
+## Services layer
 
 The application uses singleton services for external communication. This prevents connection leaks and provides consistent API access.
 
@@ -228,7 +228,7 @@ app/src/services/
   └─ services/api/* - domain API modules (~50 files, see below)
 ```
 
-### API Client (`services/apiClient.ts`)
+### API client (`services/apiClient.ts`)
 
 Fetch-based HTTP REST client for backend communication with typed request/response handling and error handling. The backend URL is resolved at runtime (`services/backendUrl`), not baked in.
 
@@ -257,15 +257,15 @@ const result = await apiClient.post<LoginResponse>("/auth/login", {
 
 For the full list, `ls app/src/services/api/`. New feature surfaces get their own module here rather than growing `apiClient`.
 
-### Socket Service (`services/socketService.ts`)
+### Socket service (`services/socketService.ts`)
 
-Socket.io client singleton connected to the **local core's** socket endpoint (base URL derived from the resolved RPC URL via `coreSocket.ts`; authenticated with the core RPC token). It ingests realtime core events (connection status, channel updates) and dispatches them into Redux (`socketSlice`, `connectivitySlice`, `channelConnectionsSlice`). It also hosts the MCP-style transport (`SocketIOMCPTransportImpl` from `lib/mcp`).
+Socket.io client singleton connected to the local core's socket endpoint (base URL derived from the resolved RPC URL via `coreSocket.ts`; authenticated with the core RPC token). It ingests realtime core events (connection status, channel updates) and dispatches them into Redux (`socketSlice`, `connectivitySlice`, `channelConnectionsSlice`). It also hosts the MCP-style transport (`SocketIOMCPTransportImpl` from `lib/mcp`).
 
 Keep `socketService` and the core socket behavior aligned (the "dual socket sync" rule in AGENTS.md). Connection lifecycle is owned by `providers/SocketProvider.tsx`; on mobile the provider is not mounted at all: events arrive through the `TunnelTransport` relay instead.
 
 ### Core RPC (`services/coreRpcClient.ts`)
 
-The Rust core runs **in-process** inside the Tauri host (no sidecar). The UI calls JSON-RPC methods on it over local HTTP:
+The Rust core runs in-process inside the Tauri host (no sidecar). The UI calls JSON-RPC methods on it over local HTTP:
 
 ```typescript
 import { callCoreRpc } from "../services/coreRpcClient";
@@ -282,14 +282,14 @@ const result = await callCoreRpc<MyType>({
 
 How a call flows:
 
-1. **URL + token resolution**: the RPC URL follows the precedence in [Runtime config precedence](#runtime-config-precedence); the per-launch bearer token comes from the Tauri `core_rpc_token` command (or the stored token for self-hosted cores).
-2. **Direct fetch**: the webview `fetch()`es the JSON-RPC envelope straight to the core (loopback http or any https URL).
-3. **Shell relay fallback**: plain `http://` to a **non-loopback** host is active mixed content and Chromium blocks it (#3865). `rpcUrlNeedsShellRelay()` detects this and routes the call through `invoke('relay_http_rpc', { url, token, body })`, implemented in **`crates/openhuman-app/src/core_rpc.rs`** (a thin wrapper over `openhuman_rpc::post_json_rpc` from `crates/openhuman-rpc/`), which returns `{ status, body }` re-wrapped as a `Response`.
-4. **Transport override**: iOS/remote connection profiles install a `CoreTransport` (`setActiveCoreTransport`) so the same `callCoreRpc` surface rides LAN/tunnel/cloud transports.
+1. URL + token resolution: the RPC URL follows the precedence in [Runtime config precedence](#runtime-config-precedence); the per-launch bearer token comes from the Tauri `core_rpc_token` command (or the stored token for self-hosted cores).
+2. Direct fetch: the webview `fetch()`es the JSON-RPC envelope straight to the core (loopback http or any https URL).
+3. Shell relay fallback: plain `http://` to a non-loopback host is active mixed content and Chromium blocks it. `rpcUrlNeedsShellRelay()` detects this and routes the call through `invoke('relay_http_rpc', { url, token, body })`, implemented in `crates/openhuman-app/src/core_rpc.rs` (a thin wrapper over `openhuman_rpc::post_json_rpc` from `crates/openhuman-rpc/`), which returns `{ status, body }` re-wrapped as a `Response`.
+4. Transport override: iOS/remote connection profiles install a `CoreTransport` (`setActiveCoreTransport`) so the same `callCoreRpc` surface rides LAN/tunnel/cloud transports.
 
 Errors are classified into a stable `CoreRpcError.kind` (`auth_expired`, `transport`, `timeout`, `rate_limited`, …): callers branch on `kind`, never on message regexes. An `auth_expired` classification broadcasts `core-rpc-auth-expired`, which `CoreStateProvider` turns into a session clear.
 
-### Best Practices
+### Best practices
 
 1. Use singletons. Never create multiple service instances.
 2. Keep Tauri IPC and RPC calls in services. Do not scatter `invoke()` or raw fetches through components.
@@ -300,7 +300,7 @@ Errors are classified into a stable `CoreRpcError.kind` (`auth_expired`, `transp
 
 ## Providers
 
-React context providers (`app/src/providers/`) manage service lifecycle and expose core-owned state. The full nesting (including gates that live in `components/`) is the generated [provider chain](#provider-chain) above. There is **no** `UserProvider`, `AIProvider`, or `SkillProvider`: auth/user state lives in `CoreStateProvider`, AI configuration lives in the Rust core, and skills execute in the core (the frontend QuickJS skills engine was removed).
+React context providers (`app/src/providers/`) manage service lifecycle and expose core-owned state. The full nesting (including gates that live in `components/`) is the generated [provider chain](#provider-chain) above. There is no `UserProvider`, `AIProvider` or `SkillProvider`. Auth and user state live in `CoreStateProvider`, AI configuration lives in the Rust core, and skills run in the core.
 
 ### ThemeProvider (`providers/ThemeProvider.tsx`)
 
@@ -308,7 +308,7 @@ Applies theme tokens and dark-mode handling from the persisted `theme` slice (mo
 
 ### CoreStateProvider (`providers/CoreStateProvider.tsx`)
 
-The authoritative auth/session/onboarding context. Fetches the core app snapshot (`fetchCoreAppSnapshot()` RPC), exposes it via `useCoreState()` (`{ snapshot, isBootstrapping, refresh }`), and clears the session on the global `core-rpc-auth-expired` event. It follows a **turn-boundary refetch contract**: after every agent reply completes (`chat_done` in `ChatRuntimeProvider`) it refetches the user state (debounced 750ms) and merges it into the snapshot via `patchSnapshot`: see `providers/README.md`.
+The authoritative auth/session/onboarding context. Fetches the core app snapshot (`fetchCoreAppSnapshot()` RPC), exposes it via `useCoreState()` (`{ snapshot, isBootstrapping, refresh }`), and clears the session on the global `core-rpc-auth-expired` event. It follows a turn-boundary refetch contract: after every agent reply completes (`chat_done` in `ChatRuntimeProvider`) it refetches the user state (debounced 750ms) and merges it into the snapshot via `patchSnapshot`: see `providers/README.md`.
 
 ### SocketProvider (`providers/SocketProvider.tsx`)
 
@@ -336,9 +336,9 @@ Example: `SocketProvider` owns the socket instance; Redux stores connection stat
 
 ---
 
-## Human Mascot Surface
+## Human mascot surface
 
-The mascot appears on **two** surfaces, deliberately. `/human`
+The mascot appears on two surfaces, deliberately. `/human`
 (`app/src/features/human/HumanPage.tsx`) is the dedicated full-bleed stage with a
 right-rail chat. `/chat` carries the same mascot docked on its composer, where it
 expands into a voice stage in place. Both read one set of mascot preferences from
@@ -362,12 +362,11 @@ are the same conversation. `pages/Accounts.tsx` animates the column width;
 to a destination that is still moving. Expanded/collapsed and the speak-replies
 preference are persisted in `mascotSlice`.
 
-**Two invariants worth keeping.** The mascot re-renders at ~60fps during TTS
+Two invariants matter here. The mascot re-renders at ~60fps during TTS
 lipsync, so (a) it is rendered as a leaf with nothing beneath it, and (b) the
 mascot context value is deliberately non-reactive: reactive state lives in
 Redux or in the send-binding external store instead. A reactive context value
-would reconcile the whole chat tree every frame, which is the stall #5357 had to
-fix. And the overlay only mounts while the agent account is selected, so a fixed
+would reconcile the whole chat tree every frame, which stalls the UI. And the overlay only mounts while the agent account is selected, so a fixed
 overlay is never left alive as an invisible canvas still burning frames under
 another account.
 
@@ -433,9 +432,9 @@ the generic fallback, so a new core tool cannot reach the chat unlabelled.
 
 ---
 
-## Pages & Routing
+## Pages and routing
 
-The application uses HashRouter with protected and public route guards. Desktop routes live in **`app/src/AppRoutes.tsx`**; on mobile (iOS/Android) `AppRoutesIOS.tsx` renders a reduced Human/Chat/Settings set instead.
+The application uses HashRouter with protected and public route guards. Desktop routes live in `app/src/AppRoutes.tsx`; on mobile (iOS/Android) `AppRoutesIOS.tsx` renders a reduced Human/Chat/Settings set instead.
 
 ### Route map
 
@@ -452,7 +451,7 @@ The application uses HashRouter with protected and public route guards. Desktop 
 | `/flows` | `FlowsPage` | `ProtectedRoute` |
 | `/flows/draft` | `FlowCanvasDraftPage`, an unsaved proposed graph passed in `location.state` | `ProtectedRoute` |
 | `/flows/:id` | `FlowCanvasPage` | `ProtectedRoute` |
-| `/workflows` | `Activity`, the legacy `SKILL.md` workflow hub | `ProtectedRoute` |
+| `/workflows` | `Activity`, the `SKILL.md` workflow hub | `ProtectedRoute` |
 | `/workflows/run` | `WorkflowsRun`, the single-purpose Skill runner | `ProtectedRoute` |
 | `/connections` | `Skills`, the connections hub | `ProtectedRoute` |
 | `/invites` | `Invites` | `ProtectedRoute` |
@@ -484,17 +483,17 @@ Back-compat redirects, all `Navigate replace`. The `ForwardSearch` ones copy the
 | `/routines` | `/flows` |
 | `/webhooks` | `/settings/integrations` (`ForwardSearch`) |
 
-There is **no** `/login` route: authentication flows through the Welcome page, the `/auth` callback, and deep links. `/agents` does not exist either, and Settings is an ordinary route rather than an overlay (see [Settings](#settings)).
+There is no `/login` route: authentication flows through the Welcome page, the `/auth` callback, and deep links. `/agents` does not exist either, and Settings is an ordinary route rather than an overlay (see [Settings](#settings)).
 
 ### Route guards
 
 All three guards read `useCoreState()` (not Redux auth state) and render `RouteLoadingScreen` while bootstrapping:
 
-- **`ProtectedRoute`** (`components/ProtectedRoute.tsx`, `({ children, requireAuth = true, redirectTo })`): without a session token, navigates to `redirectTo || '/'`. Onboarding gating is _not_ done here; an effect in `AppShellDesktop` (App.tsx) forces non-onboarding routes back to `/onboarding` while `onboarding_completed` is false, and bounces off it once complete.
-- **`PublicRoute`** (`components/PublicRoute.tsx`): redirects signed-in users to `/home` (which forwards to `/chat`).
-- **`DefaultRedirect`** (`components/DefaultRedirect.tsx`): signed out → `/`; signed in but onboarding incomplete → `/onboarding`; otherwise → `/chat`. Waits for `snapshot.currentUser` to avoid the post-login race.
+- `ProtectedRoute` (`components/ProtectedRoute.tsx`, `({ children, requireAuth = true, redirectTo })`): without a session token, navigates to `redirectTo || '/'`. Onboarding gating is _not_ done here; an effect in `AppShellDesktop` (App.tsx) forces non-onboarding routes back to `/onboarding` while `onboarding_completed` is false, and bounces off it once complete.
+- `PublicRoute` (`components/PublicRoute.tsx`): redirects signed-in users to `/home` (which forwards to `/chat`).
+- `DefaultRedirect` (`components/DefaultRedirect.tsx`): signed out → `/`; signed in but onboarding incomplete → `/onboarding`; otherwise → `/chat`. Waits for `snapshot.currentUser` to avoid the post-login race.
 
-### Onboarding Flow (`pages/onboarding/`)
+### Onboarding flow (`pages/onboarding/`)
 
 A routed stepper (`Onboarding.tsx` mounts nested routes inside `OnboardingLayout`):
 
@@ -506,17 +505,17 @@ A routed stepper (`Onboarding.tsx` mounts nested routes inside `OnboardingLayout
                → embeddings → (activity) → vault → /chat
 ```
 
-Each custom step offers **Default** (let OpenHuman manage it) vs **Configure** (inline controls, or a deep-link callout to Settings for domains not yet embedded). Pages live in `pages/onboarding/pages/`; the legacy Composio/skills/context-gathering steps (`pages/onboarding/steps/`) are retired from the default flow but remain on disk. Completion is tracked by the core's `onboarding_completed` flag, enforced by the AppShell onboarding gate. After onboarding, `AppWalkthrough` (Joyride) runs the post-onboarding tour.
+Each custom step offers Default (let OpenHuman manage it) or Configure (inline controls, or a deep-link callout to Settings for domains not yet embedded). Pages live in `pages/onboarding/pages/`; the older Composio, skills and context-gathering steps (`pages/onboarding/steps/`) are not in the default flow. Completion is tracked by the core's `onboarding_completed` flag, enforced by the AppShell onboarding gate. After onboarding, `AppWalkthrough` (Joyride) runs the post-onboarding tour.
 
 ### Settings
 
-Settings is a routed `/settings/*` page like every other surface, on desktop and on iOS alike. It was a desktop modal overlay that kept the page behind it rendered; that system is gone, and so are the older `SettingsPanelLayout` / `useSettingsAnimation` / `ProfilePanel` modals and the registry-derived settings search field (see [Removed](#removed) below).
+Settings is a routed `/settings/*` page like every other surface, on desktop and on iOS alike. It is not a modal overlay. Older names such as `SettingsPanelLayout`, `useSettingsAnimation` and `ProfilePanel` are covered in [Removed names](#removed-names) below.
 
-- **`components/settings/settingsRouteRegistry.ts`**: single declarative source of truth for every settings destination (id and route slug, i18n keys, section, sidebar `navGroup`, `devOnly`, `searchKeywords`). Navigation menus and breadcrumbs derive from it.
-- **`components/settings/settingsRouteElements.tsx`**: maps registry entries to panel `<Route>` elements, including the redirects (`/settings/memory-engine` to the Memory `engine` chip).
-- **`components/settings/layout/`**: the two-pane chrome. `SettingsLayout` projects the settings nav into the app sidebar's dynamic region; `SettingsSidebar` groups entries by `SettingsNavGroup` (`general`, `appearance`, `agentsAutonomy`, `security`, `data`, `knowledgeMemory`, `automationIntegrations`, `diagnosticsLogs`, in `NAV_GROUP_ORDER`); `SettingsSubNav`, `SettingsIndexRedirect`, `SettingsTabbedPage` and `SettingsPanel`, the one panel template, sit beside them.
-- **`components/settings/panels/`**: leaf panels such as `AccountPanel`, `AppearancePanel`, `ThemeStudioPanel`, `AgentAccessPanel`, `AutonomyPanel`, `McpServerPanel`, `PrivacyPanel` and `DeveloperOptionsPanel`. Adding a panel means adding the component and a registry entry; navigation and breadcrumbs pick it up automatically.
-- **`components/settings/controls/`**: the shared form primitives every panel composes (`SettingsSwitch`, `SettingsRow`, `SettingsSection`, `SettingsSelect`, and the rest), so a boolean is a switch everywhere.
+- `components/settings/settingsRouteRegistry.ts`: single declarative source of truth for every settings destination (id and route slug, i18n keys, section, sidebar `navGroup`, `devOnly`, `searchKeywords`). Navigation menus and breadcrumbs derive from it.
+- `components/settings/settingsRouteElements.tsx`: maps registry entries to panel `<Route>` elements, including the redirects (`/settings/memory-engine` to the Memory `engine` chip).
+- `components/settings/layout/`: the two-pane chrome. `SettingsLayout` projects the settings nav into the app sidebar's dynamic region; `SettingsSidebar` groups entries by `SettingsNavGroup` (`general`, `appearance`, `agentsAutonomy`, `security`, `data`, `knowledgeMemory`, `automationIntegrations`, `diagnosticsLogs`, in `NAV_GROUP_ORDER`); `SettingsSubNav`, `SettingsIndexRedirect`, `SettingsTabbedPage` and `SettingsPanel`, the one panel template, sit beside them.
+- `components/settings/panels/`: leaf panels such as `AccountPanel`, `AppearancePanel`, `ThemeStudioPanel`, `AgentAccessPanel`, `AutonomyPanel`, `McpServerPanel`, `PrivacyPanel` and `DeveloperOptionsPanel`. Adding a panel means adding the component and a registry entry; navigation and breadcrumbs pick it up automatically.
+- `components/settings/controls/`: the shared form primitives every panel composes (`SettingsSwitch`, `SettingsRow`, `SettingsSection`, `SettingsSelect`, and the rest), so a boolean is a switch everywhere.
 
 ### HashRouter vs BrowserRouter
 
@@ -530,14 +529,14 @@ import { HashRouter } from "react-router-dom";
 // Instead of: app://localhost/home
 ```
 
-**Why HashRouter:**
+Why HashRouter:
 
 1. Tauri deep links work with hash-based URLs
 2. No server configuration needed
 3. Works with file:// protocol
 4. Prevents 404 on direct URL access
 
-### Deep Link Handling
+### Deep link handling
 
 Deep links are handled before routing:
 
@@ -561,7 +560,7 @@ components/
 ├── ProtectedRoute / PublicRoute / DefaultRedirect   # Route guards
 ├── layout/shell/            # RootShellLayout, AppSidebar, SidebarSlot (two-pane app chrome)
 ├── settings/                # Settings registry, layout, panels, controls (see above)
-├── accounts/                # Connected-app provider icons (the live WebviewHost overlay was removed with the CEF provider webviews)
+├── accounts/                # Connected-app provider icons 
 ├── BootCheckGate/, daemon/  # Boot + service gates in the provider chain
 ├── commands/                # CommandProvider (command palette)
 ├── Announcement/, upsell/, notices/, walkthrough/    # Shell-level overlays
@@ -579,9 +578,9 @@ Conventions:
 
 ---
 
-## Hooks & Utilities
+## Hooks and utilities
 
-### Custom Hooks (`hooks/`)
+### Custom hooks (`hooks/`)
 
 `app/src/hooks/` holds the app-level hooks (the [Scale](#scale) table names the command that counts them). Representative examples:
 
@@ -599,7 +598,7 @@ Feature-local hooks live next to their feature under `features/*/`.
 
 #### Configuration (`utils/config.ts`)
 
-Centralized build-time environment variable access: **never read `import.meta.env` directly elsewhere**. These constants only carry the value baked into the bundle; for the **runtime** URL the app actually talks to, see `services/backendUrl` and `hooks/useBackendUrl`.
+Centralized build-time environment variable access: never read `import.meta.env` directly elsewhere. These constants only carry the value baked into the bundle; for the runtime URL the app actually talks to, see `services/backendUrl` and `hooks/useBackendUrl`.
 
 ```typescript
 // Build-time fallback only (used outside Tauri).
@@ -610,7 +609,7 @@ export const CORE_RPC_URL = /* VITE_OPENHUMAN_CORE_RPC_URL || 'http://127.0.0.1:
 export const DEV_FORCE_ONBOARDING = /* dev-only VITE_DEV_FORCE_ONBOARDING */;
 ```
 
-> **Do not** import `BACKEND_URL` directly to make API calls. Resolve the URL at runtime so the core's `api_url` (via `openhuman.config_resolve_api_url`) takes effect:
+> Do not import `BACKEND_URL` directly to make API calls. Resolve the URL at runtime so the core's `api_url` (via `openhuman.config_resolve_api_url`) takes effect:
 >
 > ```typescript
 > // React components
@@ -622,11 +621,11 @@ export const DEV_FORCE_ONBOARDING = /* dev-only VITE_DEV_FORCE_ONBOARDING */;
 > const backendUrl = await getBackendUrl();
 > ```
 
-#### Desktop Deep Link Listener (`utils/desktopDeepLinkListener.ts`)
+#### Desktop deep link listener (`utils/desktopDeepLinkListener.ts`)
 
 Handles incoming `openhuman://` deep links via the Tauri deep-link plugin: parses the URL, performs the Rust-side token exchange (bypasses CORS), stores the session, and navigates. Set up lazily from `main.tsx` so the Tauri IPC bridge is ready first.
 
-#### URL Opener (`utils/openUrl.ts`)
+#### URL opener (`utils/openUrl.ts`)
 
 Cross-platform URL opening: tries the Tauri opener plugin, falls back to `window.open`. Always use this instead of raw `window.open` so links open in the system browser.
 
@@ -640,12 +639,12 @@ Node.js globals (`Buffer`, `process`, `util`) are polyfilled for the browser. Se
 
 Two layers provide them:
 
-1. **`vite-plugin-node-polyfills`** in `app/vite.config.ts` (`buffer`, `process`, `util`, `os`, `crypto`, `stream`, plus `Buffer`/`process`/`global` globals).
-2. **`polyfills.ts`**, imported **first** in `main.tsx`, which synchronously assigns `Buffer`/`process`/`util` onto `globalThis`/`window`/`global`/`self` before any dependent module executes.
+1. `vite-plugin-node-polyfills` in `app/vite.config.ts` (`buffer`, `process`, `util`, `os`, `crypto`, `stream`, plus `Buffer`/`process`/`global` globals).
+2. `polyfills.ts`, imported first in `main.tsx`, which synchronously assigns `Buffer`/`process`/`util` onto `globalThis`/`window`/`global`/`self` before any dependent module executes.
 
-### Best Practices
+### Best practices
 
-#### Hook dependencies & cleanup
+#### Hook dependencies and cleanup
 
 ```typescript
 useEffect(() => {
@@ -679,9 +678,9 @@ const result = await callCoreRpc<Snapshot>({
 });
 ```
 
-## Removed
+## Removed names
 
-Stated rather than deleted, because each of these still turns up in older code and in older notes:
+These names still turn up in older code and notes. Use the replacement:
 
 | Removed | Replaced by |
 | --- | --- |
@@ -695,9 +694,9 @@ Stated rather than deleted, because each of these still turns up in older code a
 
 ## See also
 
-- [Architecture overview](../architecture.md): the Rust side this UI presents.
-- [Tauri Shell](tauri-shell.md): the host that serves this bundle and owns the IPC surface.
-- [Agent Harness](agent-harness.md): what the chat surface's tool timeline is rendering.
+- [Architecture](../architecture.md): the Rust side this UI presents.
+- [Tauri shell](tauri-shell.md): the host that serves this bundle and owns the IPC surface.
+- [Agent harness](agent-harness.md): what the chat surface's tool timeline is rendering.
 - [Memory](../../features/memory.md): the user-facing shape of the `/connections?tab=brain` chips.
 - [Theming](../theming.md): the token layer behind `ThemeProvider` and Theme Studio.
-- [iOS Companion](../../features/ios-companion.md): the experimental mobile client the `AppRoutesIOS` shell and the `transport/` profiles belong to.
+- [iOS companion](../../features/ios-companion.md): the experimental mobile client the `AppRoutesIOS` shell and the `transport/` profiles belong to.

@@ -13,3 +13,9 @@ Entry points (re-exported from `contract::mod`): `catalog_for_toolkit`,
 `native_provider_sync_interval_secs`, `parse_sync_interval_override`,
 `sync_interval_env_var`, `toolkit_description`, `toolkit_has_scope`,
 `toolkit_result_notes`, `CAPABILITY_TOOLKITS`, `NATIVE_PROVIDERS`.
+
+## Further reading
+
+- [Parent module README](../../README.md)
+- [Third-party integrations](../../../../../../../gitbooks/features/integrations/README.md)
+- [tinyconnectors](../../../../../../../vendor/tinyconnectors/README.md)

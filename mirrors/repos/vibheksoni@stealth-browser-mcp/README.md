@@ -21,21 +21,7 @@ Navigate Cloudflare challenges, anti-bot checks, and login walls with real Chrom
 
 ## Sponsors
 
-<table>
-<tr>
-<td align="center" width="50%">
-
 <a href="https://go.nodemaven.com/stealthbrowsermcpreadmesept"><img src="media/nodemaven-sponsor.png" alt="NodeMaven" width="100%"></a>
-
-</td>
-<td align="center" width="50%">
-
-<a href="https://www.rapidproxy.io/?ref=mcp"><img src="media/rapidproxy-sponsor.png" alt="RapidProxy" width="100%"></a>
-
-</td>
-</tr>
-<tr>
-<td valign="top">
 
 [NodeMaven](https://go.nodemaven.com/stealthbrowsermcpreadmesept) — The most efficient proxy provider for Web Scraping and Automation with the Highest Quality IP on the market.
 
@@ -54,32 +40,7 @@ Navigate Cloudflare challenges, anti-bot checks, and login walls with real Chrom
 
 [Get started with NodeMaven](https://go.nodemaven.com/stealthbrowsermcpreadmesept)
 
-</td>
-<td valign="top">
-
-[RapidProxy](https://www.rapidproxy.io/?ref=mcp) powers scraping and automation with 90M+ residential IPs across 200+ countries, supporting rotation, geo-targeting, and high concurrency to improve success rates and reduce bans.
-
-Get 500MB of free trial traffic, non-expiring bandwidth, and pricing as low as **$0.55/GB**.
-
-**Why RapidProxy?**
-
-- 90M+ clean residential IPs
-- Sticky sessions for up to 180 minutes
-- Geo-targeting by country and city
-- Unlimited concurrent sessions
-- Never-expiring traffic
-
-**Special offer**
-
-Use promo code `RAPID10` for **10% off**.
-
-[Explore RapidProxy →](https://www.rapidproxy.io/?ref=mcp)
-
-</td>
-</tr>
-</table>
-
-> Sponsored placement. NodeMaven and RapidProxy are paid sponsors of this project.
+> Sponsored placement. NodeMaven is a paid sponsor of this project.
 
 ---
 

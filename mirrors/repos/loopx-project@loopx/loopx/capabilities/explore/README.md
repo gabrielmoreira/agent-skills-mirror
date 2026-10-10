@@ -398,6 +398,20 @@ packet with:
 - the safety boundary that keeps the packet advisory rather than an
   replacement for `quota should-run`.
 
+Both planners apply the existing Todo readiness rule before scheduling or
+bundling current work. An open Todo with `resume_when` is selectable only when
+its projected `resume_ready` is true. Unready Todos remain in rejected-candidate
+diagnostics with their condition, but consume no verification width or resource
+slot and carry no claim/lease suggestions. The bounded turn context preserves
+these diagnostics and reports omitted candidates; read the full plan for detail.
+If no branch is actionable, the plan asks the caller to inspect the conditions
+and replan instead of suggesting execution.
+
+For `B.resume_when=todo_done:A`, handing A to another Agent does not release B;
+completing A does. Successor lineage alone is not a completion dependency. Future
+work remains visible for planning, and fresh quota, claim and lease checks still
+govern execution after any plan, handoff or readiness change.
+
 An advancement todo may opt into typed result diagnostics by attaching one or
 more explicit Explore node ids:
 
@@ -546,13 +560,16 @@ planning remains enabled fails with an actionable mode command. Do not combine
 `--explore-mode` with the legacy enable flags in one request.
 
 Both enabled modes register an `explore.turn_context` turn-start hook. Its
-`required_reads` entry is a **before-work read obligation** in the normal packet.
-The command returns at most three recent nodes/findings and, in planning mode,
-three suggested Todo branches, plus structured commands for detail or evidence
-recording. The read folds existing history but bounds the returned context;
-it does not claim to reduce history IO. The agent chooses evidence-backed work;
-planner suggestions do not require branching on every turn or recording empty
-ceremonial nodes. Use the detail command when the short view is insufficient.
+bounded result is projected inline under
+`interaction_contract.agent_channel.work_context.sources` before work. The
+source retains a command for replay, but the inline context is not a separate
+`required_reads` obligation. It contains at most three recent nodes/findings
+and, in planning mode, three suggested Todo branches, plus structured commands
+for detail or evidence recording. The read folds existing history but bounds
+the returned context; it does not claim to reduce history IO. The agent chooses
+evidence-backed work; planner suggestions do not require branching on every
+turn or recording empty ceremonial nodes. Use the detail command when the
+short view is insufficient.
 
 Explicit writeback results default to three full scoped details, not a hard
 visibility limit. `graph.result_page` reports total/remaining counts and an

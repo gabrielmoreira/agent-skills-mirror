@@ -8,7 +8,7 @@ to pick the interpreter it launches.
 
 One backend currently runs inside the worker process:
 
-- **Kompress** (`kompress.rs`): TokenJuice's ModernBERT/torch plain-text
+- **Kompress** ([`kompress.rs`](./kompress.rs)): TokenJuice's ModernBERT/torch plain-text
   compressor, gated by `config.tokenjuice.ml_compression_enabled`.
 
 It is gated behind `config.runtime_python.enabled`; `registry::enabled_backends`
@@ -18,10 +18,10 @@ computes the active set from that flag and `config.tokenjuice.ml_compression_ena
 
 | File | Role |
 | --- | --- |
-| `mod.rs` | Submodule decls and `pub use` re-exports. |
-| `server.rs` | Host side: maps `Config` and the managed interpreter onto a `ServerLaunch`, holds the process-wide `ServerSlot` (`ensure_started`, `status`). The process lifecycle itself (spawn, handshake, request/response, restart-on-failure, idle expiry, start back-off) is `tinyruntime_pyserver::{PythonServer, ServerSlot}`. |
-| `registry.rs` | `RuntimePythonBackend` enum (`Kompress`) and `enabled_backends(config)`. |
-| `kompress.rs` | Kompress venv provisioning (`ensure_kompress`, `install_into`, `kompress_provisioned`) and the compress request (`request_kompress`). |
+| [`mod.rs`](./mod.rs) | Submodule decls and `pub use` re-exports. |
+| [`server.rs`](./server.rs) | Host side: maps `Config` and the managed interpreter onto a `ServerLaunch`, holds the process-wide `ServerSlot` (`ensure_started`, `status`). The process lifecycle itself (spawn, handshake, request/response, restart-on-failure, idle expiry, start back-off) is `tinyruntime_pyserver::{PythonServer, ServerSlot}`. |
+| [`registry.rs`](./registry.rs) | `RuntimePythonBackend` enum (`Kompress`) and `enabled_backends(config)`. |
+| [`kompress.rs`](./kompress.rs) | Kompress venv provisioning (`ensure_kompress`, `install_into`, `kompress_provisioned`) and the compress request (`request_kompress`). |
 | (`tinyruntime-pyserver`) | Owns the JSONL wire types (`PROTOCOL_VERSION`, request/response/ready-line), the status types (`BackendStatus`, `ServerStatus`, re-exported here as `RuntimePythonServerStatus`) and the worker script itself (`SERVER_SCRIPT`), written to the cache root as `runtime_python_server.py` each time a server is prepared. Library crate in `vendor/tinyruntime`. |
 
 ## Lifecycle
@@ -73,9 +73,9 @@ computes the active set from that flag and `config.tokenjuice.ml_compression_ena
 
 | File | Role |
 | --- | --- |
-| `mod.rs` | Submodule decls and `pub use` re-exports. |
-| `server.rs` | Host side: maps `Config` and the managed interpreter onto a `ServerLaunch`, holds the process-wide `ServerSlot` (`ensure_started`, `status`). The process lifecycle itself (spawn, handshake, request/response, restart-on-failure, idle expiry, start back-off) is `tinyruntime_pyserver::{PythonServer, ServerSlot}`. |
-| `registry.rs` | `RuntimePythonBackend` enum (`Kompress`) and `enabled_backends(config)`. |
+| [`mod.rs`](./mod.rs) | Submodule decls and `pub use` re-exports. |
+| [`server.rs`](./server.rs) | Host side: maps `Config` and the managed interpreter onto a `ServerLaunch`, holds the process-wide `ServerSlot` (`ensure_started`, `status`). The process lifecycle itself (spawn, handshake, request/response, restart-on-failure, idle expiry, start back-off) is `tinyruntime_pyserver::{PythonServer, ServerSlot}`. |
+| [`registry.rs`](./registry.rs) | `RuntimePythonBackend` enum (`Kompress`) and `enabled_backends(config)`. |
 | `kompress.rs` | Kompress venv provisioning (`ensure_kompress`, `install_into`, `kompress_provisioned`) and the compress request (`request_kompress`). |
 | (`tinyruntime-pyserver`) | Owns the JSONL wire types (`PROTOCOL_VERSION`, request/response/ready-line), the status types (`BackendStatus`, `ServerStatus`, re-exported here as `RuntimePythonServerStatus`) and the worker script itself (`SERVER_SCRIPT`), written to the cache root as `runtime_python_server.py` each time a server is prepared. Library crate in `vendor/tinyruntime`. |
 
@@ -182,3 +182,10 @@ sent, not here.
 - Restart-on-failure in `RuntimePythonServer::request` means a transient
   worker crash is invisible to callers except for added latency on the retried
   call.
+
+## Further reading
+
+- [Parent module (`runtime`)](../README.md)
+- [tinyruntime submodule](../../../../../vendor/tinyruntime/README.md)
+- [System and utilities tools](../../../../../gitbooks/features/native-tools/system-and-utilities.md)
+- [Loadable modules](../../../../../gitbooks/developing/loadable-modules.md)

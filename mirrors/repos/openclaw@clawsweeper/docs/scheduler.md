@@ -130,6 +130,13 @@ policy. Fence and reservation failures are attributed to the existing
 `queue_completion_failure` infrastructure category, including a review that
 never starts because its status fence is unavailable.
 
+Signed shell requests use `control_plane_signed_post <url> <body> [curl options...]`
+from the same helper. Shell steps compute the
+`x-clawsweeper-exact-review-signature` header only there: `sha256=` plus the hex
+HMAC-SHA256 of the exact body bytes, keyed by `CLAWSWEEPER_WEBHOOK_SECRET`. It
+sends the body with `--data-binary` and `content-type: application/json` through
+`control_plane_curl`, so signed calls get the same retries.
+
 Before a job's source checkout, the workflow downloads this single helper from
 `raw.githubusercontent.com`, pinned to `GITHUB_REPOSITORY` and `GITHUB_SHA`,
 with three curl retries into `RUNNER_TEMP`. The bootstrap fails if the download
@@ -140,6 +147,84 @@ only when the source checkout succeeded. They use the validated temporary copy
 when checkout failed or was skipped, including direct-lifecycle recovery.
 The bootstrap never changes workspace Git configuration: an early sparse
 checkout can otherwise leave later checkouts sparse and omit local actions.
+
+After setup, `event-review-apply` builds every lease heartbeat body with
+`node dist/repair/exact-review-queue-request.js heartbeat --phase <review|status|finalizing>`.
+The command reads the lease tuple from the `EXACT_REVIEW_*` and `GITHUB_RUN_*`
+environment, validates it, and prints the JSON body for `control_plane_curl`.
+`--review-acknowledgement-comment-id` is accepted only with `--phase status`, and
+`--generation-start` only with `--phase review`, as the queue requires. An
+invalid tuple stops the step before any request.
+
+After checkout, the direct lifecycle step in `event-review-apply` and the
+receipt steps in `event-review-publish` build their lifecycle bodies with
+`exact-review-queue-request.js lifecycle <router-receipt|canonical-receipt|terminal-disposition>`.
+The command reads `TARGET_REPO`, `ITEM_NUMBER`, `FENCE_KEY` and `REVISION`, and
+accepts only the outcomes and terminal kinds that the queue accepts. A receipt id
+is `--receipt-id-prefix` plus the run id and run attempt.
+
+The direct-lifecycle replay in `event-review-publish` runs before checkout. Its
+bootstrap step also downloads `src/repair/exact-review-queue-request.ts`, pinned
+to `GITHUB_SHA` like the curl helper, into
+`RUNNER_TEMP/exact-review-queue-request.mts`. The runner Node strips the types,
+so the source file runs without a build; it imports only Node built-ins. The
+replay builds each body before its side effect, so a body error stops the step
+before the router dispatch or any queue write.
+
+The `legacy-event-queue-intake` job has no checkout. Its bootstrap step downloads
+the same command source. `enqueue route` prints the queue path for the
+`repository_dispatch` client payload in `CLIENT_PAYLOAD`: `branch-authority` when
+the payload names no branch, `source-authority` for an edited pull request with
+its complete source tuple, and `enqueue` otherwise. `enqueue body` prints the
+request body. Both reject an invalid target repository or branch before any
+request.
+
+`event-review-apply` claims and completes its lease with the same command.
+Its bootstrap step downloads the command source. `claim body` reads the
+dispatch tuple (`QUEUE_LEASE_ID`, `ITEM_KEY`, `QUEUE_LEASE_REVISION`); an older
+dispatch without a tuple claims by lease id only. `complete body` reads the claim
+outputs and the results of the review steps, and a protocol 1 claim completes by
+lease id only. On HTTP 409, `claim conflict` and `complete conflict` read the
+response in `RESPONSE`. They print the error, and the step stops without an
+error, only when another run or a newer revision owns the lease:
+`lease_not_active`, `lease_already_claimed`, `lease_decision_unavailable` or
+`stale_run_attempt` for the claim, and `lease_superseded` for the completion.
+Every other 409 fails the step. Like the curl helper, the completion runs
+`src/repair/exact-review-queue-request.ts` from the checkout only when the
+checkout succeeded, and the downloaded copy otherwise.
+
+`event-review-publish` claims and completes its publication lease with the same
+command. `claim body --require-tuple` fails when the dispatch does not name its
+tuple, because a publication dispatch always names it, and `claim conflict`
+classifies its 409. `complete publication` reads the publisher claim outputs and
+the publication result. It accepts only the completion kinds and reason codes
+that the queue accepts, and it adds the lifecycle disposition that the result
+implies. The publication completion has no safe 409, so every non-2xx response
+fails the step. The completion uses the same checkout-or-download rule. Its
+checkout is `main`, like the rest of the publisher.
+
+`event-review-terminal-finalization` builds all its bodies with the same command.
+Its claim uses `claim body --require-tuple` and `claim conflict` before checkout.
+`terminal-finalization <attempt|skip|retry>` reads the claimed lease tuple from
+the `EXACT_REVIEW_*` and `GITHUB_RUN_*` environment. `retry` carries only the
+tuple. The requeue step that sends it uses the same checkout-or-download rule as
+the other completions. `lifecycle command-ack-failed` and `lifecycle
+command-ack-observed` read the lifecycle target like the other lifecycle records.
+`--status-marker` and `--status-comment-id` address the command status comment;
+an empty value means no such address. The attempt, skip and observed bodies need
+at least one address. Every step that runs before checkout now builds its queue
+request body with the command.
+
+The two enqueue steps that run after checkout use the built command.
+`enqueue publication` ("Queue durable exact review publication" in
+`event-review-apply`) reads the claim outputs, `ARTIFACT_NAME`, `GITHUB_SHA` and
+the `LIVE_*` result flags. A protocol 1 claim sends a null lease revision and
+claim generation. `enqueue source-drift` ("Queue fresh review after source
+drift" in `event-review-publish`) reads the claimed decision and the producer
+run in `PRODUCER_RUN_ID` and `PRODUCER_RUN_ATTEMPT`. It keeps the
+`failed_review_shard_recovery` and `command_proof_result` source actions and
+sends every other action as `source_drift_requeue`. No step in `sweep.yml`
+builds a queue request body inline now.
 
 The terminal-run observer (`scripts/review-run-observer.mjs`) uses plain Node
 after checkout and retries its telemetry POST up to three times. Each attempt
@@ -435,7 +520,9 @@ cleanup is idempotent and cannot duplicate accounting.
 
 Failed Codex review backstop:
 
-- failed-review retry: `13 * * * *`
+- failed-review retry: `13 * * * *`, in `.github/workflows/failed-review-retry.yml`
+- each retry sends one `clawsweeper_item` repository dispatch; `sweep.yml`
+  routes it to the exact-review queue
 - retries remain dry-run unless `CLAWSWEEPER_FAILED_REVIEW_RETRY_ENABLED=1`
 - each retry is exact-item, cooldown- and attempt-bounded, and complements the
   immediate one-shot failed-shard recovery in the originating workflow

@@ -19,7 +19,7 @@ Interactive approval workflow for supervised mode (issue #1339). `ApprovalGate` 
 | --- | --- |
 | `crates/openhuman-core/src/security/approval/mod.rs` | Export-focused: module docstring, `pub mod` decls, `pub use` re-exports including the controller-schema pair. |
 | `crates/openhuman-core/src/security/approval/gate.rs` | `ApprovalGate` struct + `DecideMiss`, `DEFAULT_APPROVAL_TTL` (10 minutes) and the shorter `COPILOT_APPROVAL_TTL`, the `ApprovalChatContext` / `FlowRunContext` task-locals, `parse_approval_reply`, and the `ApprovalGateBootState` record. |
-| `crates/openhuman-core/src/security/approval/gate_setup.rs` (`include!`d by `gate.rs`, as are the next two) | `ApprovalGate::init_global`/`try_global` (process-global install, re-install-safe) and the private constructor. |
+| `crates/openhuman-core/src/security/approval/gate_setup.rs` (`include!`d by [`gate.rs`](./gate.rs), as are the next two) | `ApprovalGate::init_global`/`try_global` (process-global install, re-install-safe) and the private constructor. |
 | `crates/openhuman-core/src/security/approval/gate_intercept.rs` | `intercept`/`intercept_audited`/`intercept_audited_bounded`: the origin check, allowlist short-circuit, persist-and-park flow, and cancellation-safe bounded park used by the Flow Canvas copilot live-run path. |
 | `crates/openhuman-core/src/security/approval/gate_state.rs` | `decide` (resolves the parked future, emits `ApprovalDecided`), `classify_decide_miss`, `record_execution` (best-effort terminal audit row), `list_pending`/`list_recent_decisions`, the flow-trust helpers, and the thread→request routing lookups. |
 | `crates/openhuman-core/src/security/approval/store.rs` | SQLite persistence (`pending_approvals` table). `insert_pending`, `decide`, `get_decision`, `record_execution`, `list_pending`, `list_recent_decisions`, `purge_session`, `expire_stale`, plus idempotent column migration for the v1 schema. |
@@ -30,7 +30,7 @@ Interactive approval workflow for supervised mode (issue #1339). `ApprovalGate` 
 
 ## Public surface
 
-Re-exported from `mod.rs`:
+Re-exported from [`mod.rs`](./mod.rs):
 
 - Gate: `ApprovalGate`, `ApprovalChatContext`, `FlowRunContext`, the `APPROVAL_CHAT_CONTEXT` / `APPROVAL_COPILOT_STREAM_CONTEXT` / `APPROVAL_FLOW_RUN_CONTEXT` task-locals, `parse_approval_reply`.
 - Redaction: `redact_args`, `summarize_action`.
@@ -61,8 +61,8 @@ None. This module gates other domains' tools; it owns no tools of its own (no `t
 
 Published via `crate::core::bus::BUS.publish` with variants from `crate::core::events::DomainEvent` (`crates/openhuman-core/src/core/events.rs`):
 
-- `DomainEvent::ApprovalRequested { request_id, tool_name, action_summary, args_redacted, session_id, thread_id, client_id }`: emitted (`gate_intercept.rs`) when a call is parked. Bridged to the `approval_request` web-channel socket event by `ApprovalSurfaceSubscriber` (defined in `crates/openhuman-core/src/web_chat/`).
-- `DomainEvent::ApprovalDecided { request_id, tool_name, decision }`: emitted (`gate_state.rs`) when a decision is applied.
+- `DomainEvent::ApprovalRequested { request_id, tool_name, action_summary, args_redacted, session_id, thread_id, client_id }`: emitted ([`gate_intercept.rs`](./gate_intercept.rs)) when a call is parked. Bridged to the `approval_request` web-channel socket event by `ApprovalSurfaceSubscriber` (defined in `crates/openhuman-core/src/web_chat/`).
+- `DomainEvent::ApprovalDecided { request_id, tool_name, decision }`: emitted ([`gate_state.rs`](./gate_state.rs)) when a decision is applied.
 - `DomainEvent::FlowApprovalRequested { request_id, flow_id, run_id, tool_name, summary }`: emitted (`gate_intercept.rs`) alongside `ApprovalRequested` when the parked call has a `Workflow` origin. It carries no thread/client id, so `ApprovalSurfaceSubscriber` drops it; `openhuman_rpc::server::socketio` broadcasts it as `flow_approval_request` for the Workflows UI.
 
 No `bus.rs` in this module. It only publishes; the subscriber (`ApprovalSurfaceSubscriber`) lives in `crates/openhuman-core/src/web_chat/event_bus.rs`.
@@ -70,6 +70,21 @@ No `bus.rs` in this module. It only publishes; the subscriber (`ApprovalSurfaceS
 ## Persistence
 
 SQLite DB at `{workspace_dir}/approval/approval.db`, table `pending_approvals` (opened per-call via `with_connection`, schema + column migration applied idempotently). Columns: `request_id` (PK), `tool_name`, `action_summary`, `args_redacted` (JSON), `session_id`, `created_at`, `expires_at`, `decided_at`, `decision`, plus the after-action audit columns `executed_at`, `execution_outcome`, `execution_error` (added by `migrate_columns` for v1 DBs). Pending rows survive restart; expired rows are lazily transitioned to a terminal `deny` decision; `record_execution` is write-once (`executed_at IS NULL` guard) and sanitizes/caps error text to 512 chars to keep secrets/PII out of the durable log.
+
+### On a storage backend
+
+When the host configured a storage backend (`OPENHUMAN_STORAGE_URL` /
+`[storage] url`, see `crate::storage`), every `store` function uses
+`store_documents.rs` instead of `approval.db`: the same operations on the
+`tinystoragedrivers` document port, under the current call's storage scope
+(the acting agent; `local` on a single-user host; refused in SaaS mode with
+no acting agent). Collections `approvals` (one document per `request_id`)
+and `approval_flow_trust` (one per `(flow_id, tool_name)`). The SQL guards
+become preconditions: insert-only for new requests, compare-and-swap for
+decide, expiry and `record_execution`, so two processes on one database
+decide a request at most once. `args_redacted` and `source_context` are
+stored as JSON strings. With no backend configured (the desktop default)
+`approval.db` is used exactly as above.
 
 ## Dependencies
 
@@ -91,7 +106,7 @@ SQLite DB at `{workspace_dir}/approval/approval.db`, table `pending_approvals` (
 
 ## Notes / gotchas
 
-- **Fail-closed 10-minute TTL is an invariant, not a tunable.** `gate.rs`'s
+- **Fail-closed 10-minute TTL is an invariant, not a tunable.** [`gate.rs`](./gate.rs)'s
   `DEFAULT_APPROVAL_TTL` (`Duration::from_secs(60 * 10)`) matches the
   default `expires_at` written into the persisted row; a parked call that
   times out resolves to `Deny`. Do not weaken this default or the fail-closed
@@ -107,4 +122,10 @@ SQLite DB at `{workspace_dir}/approval/approval.db`, table `pending_approvals` (
 
 ## Tests
 
-- `gate_tests.rs`, `store_tests.rs`, `redact_tests.rs`, `schemas_tests.rs`, `types_tests.rs`.
+- [`gate_tests.rs`](./gate_tests.rs), [`store_tests.rs`](./store_tests.rs), [`redact_tests.rs`](./redact_tests.rs), [`schemas_tests.rs`](./schemas_tests.rs), [`types_tests.rs`](./types_tests.rs).
+
+## Further reading
+
+- [Parent module (`security`)](../README.md)
+- [Approval gate](../../../../../gitbooks/features/approval-gate.md)
+- [Security architecture](../../../../../gitbooks/developing/architecture/security.md)

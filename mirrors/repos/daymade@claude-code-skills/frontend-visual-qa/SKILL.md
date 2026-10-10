@@ -373,6 +373,12 @@ node --test <skill-root>/tests/test_silent_degradation_probe.mjs
 
 ### 5. Exercise Journeys And Outputs
 
+For UI refactors, category splits, or navigation changes, first apply the
+**Refactor Preservation** recipe in
+[references/journey-and-page-contracts.md](references/journey-and-page-contracts.md).
+Derive affected journeys from the immutable pre-change version, then verify them
+on the current target; the new navigation alone cannot define what survived.
+
 **A visible signifier is not proof of behavior — trigger every relevant control
 whose side effects fit the explicit action authority, confirm the response, and
 mark the rest unverified.** Pointer/hover/button styling can be a false affordance:
@@ -407,6 +413,9 @@ when the audit includes state transitions, authorization, modes,
 summary-to-detail disclosure, provider/model/runtime truth, routes, transient states, overlays, browser
 outputs, native shells, landing/deck/browser tool/game artifacts, dashboards,
 design-system artifacts, GIS/maps, or review tools.
+
+For citation markers that promise original evidence, run that reference's
+**Cited Source Inspection** against the actual text, image or PDF and its return path.
 
 Load
 [references/data_viz_tier_and_token_audit.md](references/data_viz_tier_and_token_audit.md)
@@ -540,6 +549,8 @@ check the available agent tools can perform.
   layout, and media-state sweep with screenshots and JSON evidence.
 - scripts/attention_inventory.mjs — observed text/geometry, repetition and label
   echo inventory used by the sweep; it never certifies necessity.
+- scripts/painted_text_probe.mjs — vertical text-fragment clipping used by the
+  sweep; reports examined coverage and unsupported clipping/scroll windows.
 - references/history-derived-checklist.md — core visual/responsive defect
   catalog plus standards-backed checks.
 - references/journey-and-page-contracts.md — state, route, overlay,

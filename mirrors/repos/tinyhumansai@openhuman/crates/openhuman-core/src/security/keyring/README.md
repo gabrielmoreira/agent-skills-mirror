@@ -26,17 +26,17 @@ OS-keychain-backed secret storage with pluggable test and debug backends, plus a
 | `crates/openhuman-core/src/security/keyring/crypto.rs` | Shared ChaCha20-Poly1305 helpers (`chacha20_encrypt`/`chacha20_decrypt`), random-byte generation, hex encode/decode. Used by both `encrypted_store` and `encrypted_file_backend`. |
 | `crates/openhuman-core/src/security/keyring/error.rs` | `KeyringError` (thiserror) with variants `Os`/`InvalidUtf8`/`MigrationReadFailed`/`VerifyFailed`/`MigrationDeleteFailed`/`RandomGeneration`/`Crypto`/`Backend`, plus a log-safe `diagnostic()` that preserves the `keyring::Error` variant and `OSStatus`. |
 | `crates/openhuman-core/src/security/keyring/keyring_tests.rs` | Module tests (backend isolation via `force_backend_for_test`). |
-| `crates/openhuman-core/src/security/keyring/store_tests.rs`, `store_tests_2_tests.rs`, `store_test_scope_tests.rs` | Test-isolation regressions: test builds ignore `OPENHUMAN_WORKSPACE`, production resolution still honours it, scoped workspaces do not share secrets, and a deleted scoped workspace cannot reset the default store. |
-| `crates/openhuman-core/src/security/keyring/encrypted_store_tests.rs`, `encrypted_store_crypto_migration_tests.rs`, `encrypted_store_key_management_tests.rs` | `SecretStore` tests (wired via `#[path]` from `encrypted_store.rs`). |
+| `crates/openhuman-core/src/security/keyring/store_tests.rs`, [`store_tests_2_tests.rs`](./store_tests_2_tests.rs), [`store_test_scope_tests.rs`](./store_test_scope_tests.rs) | Test-isolation regressions: test builds ignore `OPENHUMAN_WORKSPACE`, production resolution still honours it, scoped workspaces do not share secrets, and a deleted scoped workspace cannot reset the default store. |
+| `crates/openhuman-core/src/security/keyring/encrypted_store_tests.rs`, [`encrypted_store_crypto_migration_tests.rs`](./encrypted_store_crypto_migration_tests.rs), [`encrypted_store_key_management_tests.rs`](./encrypted_store_key_management_tests.rs) | `SecretStore` tests (wired via `#[path]` from [`encrypted_store.rs`](./encrypted_store.rs)). |
 
 ## Public surface
 
-Re-exported from `mod.rs`:
+Re-exported from [`mod.rs`](./mod.rs):
 
 - `KeyringBackend`: backend trait (`get`/`set`/`delete`/`name`).
 - `SecretStore`: config-field encrypt/decrypt; `encrypt`/`decrypt`/`decrypt_and_migrate`/`needs_migration`/`is_encrypted`/`new`.
 - `KeyringError`: error enum with `diagnostic()`.
-- `init_master_key`: load the app master key at startup (staging/prod only) — from the environment (`OPENHUMAN_KEYRING_MASTER_KEY` inline, or `OPENHUMAN_KEYRING_MASTER_KEY_FILE` naming a file; 64 hex characters, exactly one of the two) when set, otherwise from the OS keychain. A set-but-malformed variable is a boot error, not a fall-through; the source is logged at `info`, the value never. Key files must not be group- or world-writable; read-only group/world access is supported for secret mounts, but any principal able to read the file can decrypt the keyring.
+- `init_master_key`: load the app master key at startup (staging/prod only), from the environment (`OPENHUMAN_KEYRING_MASTER_KEY` inline, or `OPENHUMAN_KEYRING_MASTER_KEY_FILE` naming a file; 64 hex characters, exactly one of the two) when set, otherwise from the OS keychain. A set-but-malformed variable is a boot error, not a fall-through; the source is logged at `info`, the value never. Key files must not be group- or world-writable; read-only group/world access is supported for secret mounts, but any principal able to read the file can decrypt the keyring.
 - `init_workspace`: register the workspace dir for file and encrypted-file backends.
 - `get`, `set`, `delete`, `get_or_create_random`, `is_available`, `migrate_from_file`, `MigrationOutcome`.
 - `force_backend_for_test`: `pub(crate)`, test-only.
@@ -58,7 +58,7 @@ None. There is no `bus.rs`, and the module publishes and subscribes to no `Domai
 Secret storage backend, selected once and frozen in a `OnceLock`:
 
 - `os` (production default outside staging/prod special-casing): native OS credential store, macOS Keychain, Windows Credential Manager, or Linux Secret Service, under service name `"openhuman"`.
-- `encrypted_file` (staging/production, and via `OPENHUMAN_KEYRING_BACKEND=encrypted_file`): single ChaCha20-Poly1305 file `{workspace}/secrets.enc`, encrypted with a master key loaded once — from `OPENHUMAN_KEYRING_MASTER_KEY` / `OPENHUMAN_KEYRING_MASTER_KEY_FILE` when set, otherwise from the OS keychain (`openhuman` / `app:master_key`). Files are written `0600` on Unix via temp-file plus atomic rename.
+- `encrypted_file` (staging/production, and via `OPENHUMAN_KEYRING_BACKEND=encrypted_file`): single ChaCha20-Poly1305 file `{workspace}/secrets.enc`, encrypted with a master key loaded once, from `OPENHUMAN_KEYRING_MASTER_KEY` / `OPENHUMAN_KEYRING_MASTER_KEY_FILE` when set, otherwise from the OS keychain (`openhuman` / `app:master_key`). Files are written `0600` on Unix via temp-file plus atomic rename.
 - `file` (dev default, `cfg(test)`, or `OPENHUMAN_KEYRING_BACKEND=file`): plaintext JSON `{workspace}/dev-keychain.json`. Not encrypted; test and debug use only.
 - `mock` (test-only): in-memory `HashMap`.
 
@@ -67,6 +67,21 @@ Secret storage backend, selected once and frozen in a `OnceLock`:
 The workspace dir resolves from `init_workspace`, else `OPENHUMAN_WORKSPACE`, else `~/.openhuman` (or `~/.openhuman-staging` under `OPENHUMAN_APP_ENV=staging`). In `cfg(test)` builds only, that rule is bypassed; see the test-isolation note below.
 
 Both file backends keep every secret in one file, so a `set` of one key rewrites all of them. That read-modify-write cycle is guarded by `file_store::lock_for_write`. An in-process mutex is not sufficient, because a desktop core, another process embedding the same core, and a `cargo test` run that inherited `OPENHUMAN_WORKSPACE` can all address the same path.
+
+### On a storage backend
+
+When the host configured a storage backend (`OPENHUMAN_STORAGE_URL` /
+`[storage] url`, see `crate::storage`), `get`, `set` and `delete` serve the
+secret from `storage::secrets` instead: one encrypted document per
+namespaced key in the acting agent's storage scope, under a per-scope key
+derived from the master key above. `is_available` reports `true` without
+probing. The app-level keys stay on the process backend: the availability
+probe, `get_or_create_random` and `migrate_from_file` (the config
+encryption key, `secretstore.master_key`) use `process_get` / `process_set` /
+`process_delete`. `backend_name` keeps naming the process backend, which is
+what the consent UI describes. The `enc2:` cipher itself is
+`tinystoragedrivers::secrets::crypto` (byte-compatible; its fixtures were
+written by this module), used by `crypto.rs` and `SecretStore`.
 
 ## Dependencies
 
@@ -99,3 +114,9 @@ Discovered consumers (`crate::security::keyring::*`):
 - The `SecretStore` master-key file is write-once. On Windows it survives transient AV-scanner sharing violations via retry/backoff and attempts `icacls` ACL self-repair on permission errors. Decoded keys are cached so repeated decrypts (for example, snapshot polls) hit memory.
 - Legacy formats: `SecretStore` migrates `enc:` (XOR) to `enc2:` (ChaCha20-Poly1305) on decrypt; `EncryptedFileBackend` migrates plaintext `dev-keychain.json` to `secrets.enc` (renaming the legacy file `.json.migrated`).
 - Errors never carry secret values, only namespaced keys. `diagnostic()` is safe to log and preserves the underlying `keyring::Error` variant and `OSStatus`.
+
+## Further reading
+
+- [Parent module (`security`)](../README.md)
+- [OS keyring and secret storage](../../../../../gitbooks/features/os-keyring-and-secret-storage.md)
+- [Security architecture](../../../../../gitbooks/developing/architecture/security.md)

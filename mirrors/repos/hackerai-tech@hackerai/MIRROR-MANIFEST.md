@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hackerai-tech/hackerai` — 26 default patterns, 2 followed patterns, 21 file(s) materialized.
+Mirror of `hackerai-tech/hackerai` — 26 default patterns, 1 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `hackerai-tech/hackerai` — 26 default patterns, 2 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 21 |
+| Followed pats | 1 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,7 +52,6 @@ Mirror of `hackerai-tech/hackerai` — 26 default patterns, 2 followed patterns,
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `README.md`
-- `docs/miosa-pro-pilot.md`
 
 ## File Index
 
@@ -72,15 +71,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 12 | ✓ | [`docker/centrifugo/README.md`](docker/centrifugo/README.md) |
-| 13 | ✓ | [`docs/miosa-workspace-migration.md`](docs/miosa-workspace-migration.md) |
-| 14 | ✓ | [`e2b/README.md`](e2b/README.md) |
-| 15 | ✓ | [`e2e/README.md`](e2e/README.md) |
-| 16 | ✓ | [`packages/desktop/README.md`](packages/desktop/README.md) |
-| 17 | ✓ | [`packages/local/README.md`](packages/local/README.md) |
-| 18 | ✓ | [`scripts/README.md`](scripts/README.md) |
-| 19 | ✓ | [`third_party/strix-skills/skills/README.md`](third_party/strix-skills/skills/README.md) |
-| 20 | → | [`docs/miosa-pro-pilot.md`](docs/miosa-pro-pilot.md) |
-| 21 | → | [`README.md`](README.md) |
+| 13 | ✓ | [`e2b/README.md`](e2b/README.md) |
+| 14 | ✓ | [`e2e/README.md`](e2e/README.md) |
+| 15 | ✓ | [`packages/desktop/README.md`](packages/desktop/README.md) |
+| 16 | ✓ | [`packages/local/README.md`](packages/local/README.md) |
+| 17 | ✓ | [`scripts/README.md`](scripts/README.md) |
+| 18 | ✓ | [`third_party/strix-skills/skills/README.md`](third_party/strix-skills/skills/README.md) |
+| 19 | → | [`README.md`](README.md) |
 
 ---
 

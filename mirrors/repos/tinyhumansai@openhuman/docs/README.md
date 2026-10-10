@@ -44,19 +44,15 @@ The first two are referenced from `.github/PULL_REQUEST_TEMPLATE.md`.
 
 ## Engineering notes
 
-Resource-footprint work for the embeddable core. Drivers live in
-`scripts/profile/`; the scenario binary is
-`crates/openhuman-cli/src/bin/library_profile/main.rs` (`library-profile`,
-behind the `rss-bench` feature).
+Resource-footprint work for the embeddable core. The profiling binaries
+(`library-profile`, `rss-bench`), their driver scripts and the benchmark
+method (`profile/docs/library-benchmarking.md`) live in
+[`tinyhumansai/openhuman-benchmarks`](https://github.com/tinyhumansai/openhuman-benchmarks), with the agent-scale, life-scenario
+and onboarding stress suites. The core keeps only the `rss-bench` feature they
+build against.
 
-- `library-benchmarking.md` — the benchmark environment: scenarios, driver
-  scripts, and default/slim baselines.
 - `library-minimal-recipe.md` — the `--no-default-features --features
   "skills,flows"` recipe for a headless library build, with measurements.
-- `harness-comparison-2026-07-22.md` — dated footprint comparison of
-  OpenHuman's core against other agent harnesses. Linked from the root
-  `README.md`. Task-level comparisons now live in their own repository,
-  `tinyhumansai/openhuman-benchmarks`.
 - `dep-audit/<date>.md` — archived dependency-audit snapshots. These are
   machine-generated: `pnpm dep:audit` writes a fresh report to
   `target/dep-audit/REPORT.md`, and `pnpm dep:audit --snapshot` archives it

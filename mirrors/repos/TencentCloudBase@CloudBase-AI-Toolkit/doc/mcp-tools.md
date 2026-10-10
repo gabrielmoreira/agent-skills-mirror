@@ -386,7 +386,7 @@ AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业
     {
       name: "packageId",
       type: "string",
-      description: `套餐 ID（action=create/modifyPlan 时必填）。可选值如 baas_personal(个人版)、baas_pf_standard(标准版)、baas_pf_enterprise(企业版)`,
+      description: `套餐 ID（action=create/modifyPlan 时必填）。取值以 manageEnv(action="listPackages") 返回的 PackageName 为准，各站点可售套餐不同，不要凭记忆填写。`,
     },
     {
       name: "resources",
@@ -960,7 +960,7 @@ AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业
 ---
 
 ### `queryMysqlDatabase`
-查询 CloudBase MySQL 数据库信息。支持执行只读 SQL、查询 MySQL 开通结果、查询 MySQL 任务状态、获取当前实例生命周期上下文，以及查询实例慢查询/错误日志（对齐 Manager SDK describeInstanceSlowQueries / describeInstanceErrorLogs）。标准 getInstanceInfo/describeInstance 不返回连接凭据；仅 getConnectionInfo 透传原始连接/集群载荷（含可能的凭据），且仅用于显式 TCP 迁移。业务 CRUD 优先使用 SDK 或 runQuery/runStatement。
+查询 CloudBase MySQL 数据库信息。支持执行只读 SQL、查询实例创建任务结果（控制台发起）、查询 MySQL 任务状态、获取当前实例生命周期上下文，以及查询实例慢查询/错误日志（对齐 Manager SDK describeInstanceSlowQueries / describeInstanceErrorLogs）。标准 getInstanceInfo/describeInstance 不返回连接凭据；仅 getConnectionInfo 透传原始连接/集群载荷（含可能的凭据），且仅用于显式 TCP 迁移。业务 CRUD 优先使用 SDK 或 runQuery/runStatement。
 
 #### 参数
 
@@ -970,7 +970,7 @@ AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业
       name: "action",
       type: "string",
       required: true,
-      description: `runQuery=执行只读 SQL；describeCreateResult=查询 CreateMySQL 结果；describeTaskStatus=查询 MySQL 任务状态；getInstanceInfo=获取不含连接凭据的生命周期上下文；describeInstance=getInstanceInfo 的别名；getConnectionInfo=透传可能包含凭据的原始连接/集群载荷（仅限 TCP 迁移例外场景）；describeInstanceSlowQueries=查询实例慢查询日志；describeInstanceErrorLogs=查询实例错误日志 可填写的值: "runQuery", "describeCreateResult", "describeTaskStatus", "getInstanceInfo", "describeInstance", "getConnectionInfo", "describeInstanceSlowQueries", "describeInstanceErrorLogs"`,
+      description: `runQuery=执行只读 SQL；describeCreateResult=查询实例创建任务结果（控制台发起）；describeTaskStatus=查询 MySQL 任务状态；getInstanceInfo=获取不含连接凭据的生命周期上下文；describeInstance=getInstanceInfo 的别名；getConnectionInfo=透传可能包含凭据的原始连接/集群载荷（仅限 TCP 迁移例外场景）；describeInstanceSlowQueries=查询实例慢查询日志；describeInstanceErrorLogs=查询实例错误日志 可填写的值: "runQuery", "describeCreateResult", "describeTaskStatus", "getInstanceInfo", "describeInstance", "getConnectionInfo", "describeInstanceSlowQueries", "describeInstanceErrorLogs"`,
     },
     {
       name: "sql",
@@ -1063,7 +1063,7 @@ AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业
 ---
 
 ### `manageMysqlDatabase`
-管理 CloudBase MySQL 数据库资源。支持开通 MySQL、销毁 MySQL、执行写入 SQL/DDL，以及初始化数据库 Schema。注意：必须先开通 MySQL（action=provisionMySQL，confirm=true）才能执行 runStatement 或 initializeSchema。若 MySQL 尚未开通，工具会返回 MYSQL_NOT_CREATED 并给出开通的 nextAction 提示。
+管理既有 CloudBase MySQL 实例：支持销毁实例、执行写入 SQL/DDL、初始化数据库 Schema。注意：MySQL 开通能力已下线，本工具不再创建实例——需要新开通请前往云开发控制台。环境内没有实例时返回 MYSQL_NOT_CREATED 并给出控制台入口，不再提供开通引导。新环境请优先使用 CloudBase PostgreSQL（managePgDatabase / queryPgDatabase）。
 
 #### 参数
 
@@ -1073,12 +1073,12 @@ AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业
       name: "action",
       type: "string",
       required: true,
-      description: `provisionMySQL=创建 MySQL 实例；destroyMySQL=销毁 MySQL 实例；runStatement=执行写入 SQL 或 DDL；initializeSchema=按顺序执行 Schema 初始化语句 可填写的值: "provisionMySQL", "destroyMySQL", "runStatement", "initializeSchema"`,
+      description: `destroyMySQL=销毁 MySQL 实例；runStatement=执行写入 SQL 或 DDL；initializeSchema=按顺序执行 Schema 初始化语句 可填写的值: "destroyMySQL", "runStatement", "initializeSchema"`,
     },
     {
       name: "confirm",
       type: "boolean",
-      description: `action=provisionMySQL 或 action=destroyMySQL 所需的显式确认`,
+      description: `action=destroyMySQL 所需的显式确认`,
     },
     {
       name: "sql",
@@ -1088,7 +1088,7 @@ AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业
     {
       name: "request",
       type: "object",
-      description: `action=provisionMySQL 或 action=destroyMySQL 使用的官方请求载荷`,
+      description: `action=destroyMySQL 使用的官方请求载荷`,
     },
     {
       name: "statements",
@@ -1103,7 +1103,7 @@ AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业
     {
       name: "statusContext",
       type: "object",
-      description: `initializeSchema 前用于确认就绪状态的可选开通状态请求`,
+      description: `initializeSchema 前用于确认就绪状态的可选实例状态请求（针对控制台发起的开通/销毁任务）`,
       children: [
         {
           name: "createResultRequest",
@@ -2232,7 +2232,7 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
 
       返回内容包含该 skill 的 SKILL.md 全文，以及它在远端聚合仓（CNB raw）中的全部 .md 文件地址清单（SKILL.md 与 references/ 等，可直接 HTTP 抓取）。正文中代码栅栏之外的相对链接也会改写为绝对地址；若该 skill 在远端仓中不存在，则只返回内联内容并明确标注，不返回失效链接。
 
-      不确定该选哪个时：mode=skill 下不传 skillName、mode=openapi 下不传 apiName 直接调用，会返回当前可用清单及各自的适用场景 / 接口简介，再带上名称重新调用即可。可选名称也见本工具的 skillName / apiName 枚举（skill 共 31 个，API 共 8 个）。
+      不确定该选哪个时：mode=skill 下不传 skillName、mode=openapi 下不传 apiName 直接调用，会返回当前可用清单及各自的适用场景 / 接口简介，再带上名称重新调用即可。可选名称也见本工具的 skillName / apiName 枚举（skill 共 33 个，API 共 8 个）。
 
       注意：OpenAPI 文档 (openapi) 查询只需要传 mode="openapi" 和 apiName，不要传 action；action 仅用于 mode="docs"。
 
@@ -2249,7 +2249,7 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
     {
       name: "skillName",
       type: "string",
-      description: `mode=skill 时指定。技能名称。 可填写的值: "ai-model-nodejs", "ai-model-web", "ai-model-wechat", "auth-nodejs-cloudbase", "auth-tool-cloudbase", "auth-web-cloudbase", "auth-wechat-miniprogram", "cloud-api-operations", "cloud-functions", "cloud-storage-web", "cloudbase-agent", "cloudbase-cli", "cloudbase-code-review", "cloudbase-declarative-deploy", "cloudbase-document-database-in-wechat-miniprogram", "cloudbase-document-database-web-sdk", "cloudbase-platform", "cloudbase-wechat-integration", "cloudrun-development", "data-model-creation", "http-api-cloudbase", "minimal-web-baas-demo", "miniprogram-development", "ops-inspector", "postgresql-best-practices-cloudbase", "postgresql-development-cloudbase", "relational-database-mcp-cloudbase", "relational-database-web-cloudbase", "spec-workflow", "ui-design", "web-development"`,
+      description: `mode=skill 时指定。技能名称。 可填写的值: "cloudbase-all-in-one", "ai-model-nodejs", "ai-model-web", "ai-model-wechat", "auth-nodejs-cloudbase", "auth-tool-cloudbase", "auth-web-cloudbase", "auth-wechat-miniprogram", "cloud-api-operations", "cloud-functions", "cloud-storage-web", "cloudbase-agent", "cloudbase-cli", "cloudbase-code-review", "cloudbase-declarative-deploy", "cloudbase-document-database-in-wechat-miniprogram", "cloudbase-document-database-web-sdk", "cloudbase-mcp", "cloudbase-platform", "cloudbase-wechat-integration", "cloudrun-development", "data-model-creation", "http-api-cloudbase", "minimal-web-baas-demo", "miniprogram-development", "ops-inspector", "postgresql-best-practices-cloudbase", "postgresql-development-cloudbase", "relational-database-mcp-cloudbase", "relational-database-web-cloudbase", "spec-workflow", "ui-design", "web-development"`,
     },
     {
       name: "apiName",
@@ -3736,18 +3736,16 @@ CloudBase Agent 域统一写入口。支持创建、更新和删除远端 Agent�
 ---
 
 ### `prepareFeedback`
-把当前这次 CloudBase 开发整理成用户可以自己提交的反馈。作品做出来了，用它生成案例，方便展示；开发不顺利，用它生成复盘，方便把卡点反馈给平台。
+返回公开仓库的新建 issue 页面。
 
 **什么时候用**：
-- `channel="case"`：部署或发布已经成功，用户愿意把作品放到案例墙时使用。返回案例草稿；用户确认后附上预填好的新建 issue 链接。
-- `channel="retrospective"`：用户表示这次开发不顺利、想反馈时使用。根据本会话里真实的工具调用失败生成复盘草稿；用户确认后同样附上预填链接。
+- `channel="case"`：作品已经做出来，用户想展示到案例墙。
+- `channel="retrospective"`：这次开发不顺利，用户想把卡点反馈给平台。
 
 **怎么用**：
-- 第一次不要传 `confirmed`。先把返回的草稿全文给用户看。
-- 用户明确同意后，再以 `confirmed=true` 调用。这时才会返回可打开的链接。
-- 本工具不会替用户提交。链接里的正文就是本次返回的 draft，不要改写成另一份再让用户提交。
-- 不采集对话轮次，不要编造轮次、作品名、简介或公网地址。
-- 国际站是英文草稿和 GitHub 链接（body 参数）。国内站是中文草稿，链接指向 CNB 上公开的 CloudBase-AI-ToolKit 仓库，正文放在模板字段 session。若页面没自动填上，把 draft 粘贴到「本次会话记录」。
+- 只调用一次。返回的是页面地址，不是已提交的 issue。
+- 在对话里写好正文，把链接交给用户。用户登录后自己提交。
+- 不要代为提交，不要把环境 ID 或密钥写进正文。
 
 #### 参数
 
@@ -3757,12 +3755,7 @@ CloudBase Agent 域统一写入口。支持创建、更新和删除远端 Agent�
       name: "channel",
       type: "string",
       required: true,
-      description: `反馈用途：\`case\` 是把已完成的作品整理成案例；\`retrospective\` 是把这次不顺利的开发整理成复盘。 可填写的值: "case", "retrospective"`,
-    },
-    {
-      name: "confirmed",
-      type: "boolean",
-      description: `用户是否已经看过草稿全文并明确同意提交。省略或 false 时只返回草稿、不给链接。`,
+      description: `\`case\` 打开案例模板；\`retrospective\` 打开复盘模板。 可填写的值: "case", "retrospective"`,
     }
   ]}
 />

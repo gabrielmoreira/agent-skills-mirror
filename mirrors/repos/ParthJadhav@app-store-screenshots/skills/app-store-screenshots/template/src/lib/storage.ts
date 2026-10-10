@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { DEFAULT_SCREENSHOT_FONT_ID, PROJECT_SCHEMA_VERSION, SCREENSHOT_FONTS, STORAGE_KEY } from "./constants";
+import { DEFAULT_SCREENSHOT_FONT_ID, PROJECT_SCHEMA_VERSION, SCREENSHOT_FONTS, STORAGE_KEY, orientationOf } from "./constants";
 import { cleanHexColor } from "./clean-hex-color";
 import { cleanImportedFont } from "./clean-imported-font";
 import { DEFAULT_PROJECT } from "./defaults";
@@ -177,6 +177,8 @@ function mergeWithDefaults(parsed: Partial<ProjectState>): ProjectState {
       ...slidesByDevice,
     } as ProjectState["slidesByDevice"],
   };
+  // Duo decks are fixed to one orientation each; keep the project's in step.
+  merged.orientation = orientationOf(merged.device, merged.orientation);
   // Clamp the active locale into the project's locale list so a stale
   // `locale` (e.g. from a project that dropped languages) doesn't show blank.
   if (!merged.locales || merged.locales.length === 0) {

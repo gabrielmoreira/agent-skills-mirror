@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `amruthpillai/reactive-resume` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `amruthpillai/reactive-resume` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `amruthpillai/reactive-resume` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,8 +62,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`skills/resume-builder/references/schema.md`](skills/resume-builder/references/schema.md) |
-| 5 | ✓ | [`skills/resume-builder/SKILL.md`](skills/resume-builder/SKILL.md) |
+| 4 | ✓ | [`plugins/reactive-resume/skills/interview-prep/SKILL.md`](plugins/reactive-resume/skills/interview-prep/SKILL.md) |
+| 5 | ✓ | [`plugins/reactive-resume/skills/job-application-manager/SKILL.md`](plugins/reactive-resume/skills/job-application-manager/SKILL.md) |
+| 6 | ✓ | [`plugins/reactive-resume/skills/mock-interview/SKILL.md`](plugins/reactive-resume/skills/mock-interview/SKILL.md) |
+| 7 | ✓ | [`plugins/reactive-resume/skills/offer-negotiation/SKILL.md`](plugins/reactive-resume/skills/offer-negotiation/SKILL.md) |
+| 8 | ✓ | [`plugins/reactive-resume/skills/resume-builder/SKILL.md`](plugins/reactive-resume/skills/resume-builder/SKILL.md) |
+| 9 | ✓ | [`plugins/reactive-resume/skills/resume-bullet-writer/SKILL.md`](plugins/reactive-resume/skills/resume-bullet-writer/SKILL.md) |
+| 10 | ✓ | [`plugins/reactive-resume/skills/resume-content-guide/SKILL.md`](plugins/reactive-resume/skills/resume-content-guide/SKILL.md) |
+| 11 | ✓ | [`plugins/reactive-resume/skills/resume-tailor/SKILL.md`](plugins/reactive-resume/skills/resume-tailor/SKILL.md) |
 
 ---
 

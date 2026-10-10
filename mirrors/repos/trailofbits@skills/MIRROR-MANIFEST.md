@@ -82,8 +82,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 21 | ✓ | [`plugins/c-review/AGENTS.md`](plugins/c-review/AGENTS.md) |
 | 22 | ✓ | [`plugins/c-review/README.md`](plugins/c-review/README.md) |
 | 23 | ✓ | [`plugins/c-review/skills/c-review/SKILL.md`](plugins/c-review/skills/c-review/SKILL.md) |
-| 24 | ✓ | [`plugins/claude-in-chrome-troubleshooting/README.md`](plugins/claude-in-chrome-troubleshooting/README.md) |
-| 25 | ✓ | [`plugins/claude-in-chrome-troubleshooting/skills/chrome-mcp-troubleshooting/SKILL.md`](plugins/claude-in-chrome-troubleshooting/skills/chrome-mcp-troubleshooting/SKILL.md) |
+| 24 | ✓ | [`plugins/chrome-mcp-troubleshooting/README.md`](plugins/chrome-mcp-troubleshooting/README.md) |
+| 25 | ✓ | [`plugins/chrome-mcp-troubleshooting/skills/chrome-mcp-troubleshooting/SKILL.md`](plugins/chrome-mcp-troubleshooting/skills/chrome-mcp-troubleshooting/SKILL.md) |
 | 26 | ✓ | [`plugins/code-improver/evals/ablation/README.md`](plugins/code-improver/evals/ablation/README.md) |
 | 27 | ✓ | [`plugins/code-improver/evals/README.md`](plugins/code-improver/evals/README.md) |
 | 28 | ✓ | [`plugins/code-improver/README.md`](plugins/code-improver/README.md) |

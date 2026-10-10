@@ -20,13 +20,13 @@ Not to be confused with `crate::agent::tool_policy` (the generic `ToolPolicy` pr
 | `crates/openhuman-core/src/tools/agent_policy/mod.rs` | Export-only: module docstring + `mod` decls + `pub use` re-exports of the engine, prompt renderer, and types. |
 | `crates/openhuman-core/src/tools/agent_policy/types.rs` | Serde-free domain types: `TaskRiskLevel`, `TaskProfile`, `ToolPolicyAction`, `ToolPolicyDecision`, `ToolCapability`, `ToolPolicySession` (with query helpers). Holds the private `NO_TOOLS_ALLOWED_SENTINEL`. |
 | `crates/openhuman-core/src/tools/agent_policy/engine.rs` | `ToolPolicyEngine::build_session` / `build_session_from_refs`: the classification logic; private `permission_for_channel` / `parse_permission_level` helpers. |
-| `crates/openhuman-core/src/tools/agent_policy/engine_tests.rs` | Engine tests, attached via `#[path]` from `engine.rs`. |
+| `crates/openhuman-core/src/tools/agent_policy/engine_tests.rs` | Engine tests, attached via `#[path]` from [`engine.rs`](./engine.rs). |
 | `crates/openhuman-core/src/tools/agent_policy/prompt.rs` | `render_tool_policy_boundary` + `TOOL_POLICY_BOUNDARY_HEADING`; private UTF-8-safe `truncate_utf8`. |
-| `crates/openhuman-core/src/tools/agent_policy/prompt_tests.rs` | Prompt-rendering tests, attached via `#[path]` from `prompt.rs`. |
+| `crates/openhuman-core/src/tools/agent_policy/prompt_tests.rs` | Prompt-rendering tests, attached via `#[path]` from [`prompt.rs`](./prompt.rs). |
 
 ## Public surface
 
-Re-exported from `mod.rs`:
+Re-exported from [`mod.rs`](./mod.rs):
 
 - `ToolPolicyEngine::build_session(agent_id, channel, entrypoint, channel_permissions: &HashMap<String,String>, tools: &[Box<dyn Tool>], visible_tool_names: &HashSet<String>) -> ToolPolicySession`.
 - `ToolPolicyEngine::build_session_from_refs(..., tools: &[&dyn Tool], ...)`: same classification over borrowed tools so the harness can classify its durable registry and its synthesized delegate tools together; `build_session` delegates to it.
@@ -65,3 +65,11 @@ Re-exported from `mod.rs`:
 - `ToolPolicyAction::RequireApproval` is handled (routed to `blocked_tool_names`) but the engine never produces it.
 - `visible_tool_names_for_prompt()` inserts `NO_TOOLS_ALLOWED_SENTINEL` when restrictions exist but nothing is allowed, so callers can distinguish an empty-but-restricted surface from an unrestricted one.
 - `truncate_utf8` keeps `render_tool_policy_boundary` output within `max_bytes` on a char boundary, appending `\n[...truncated]` only when there is room.
+
+## Further reading
+
+- [Parent module (`tools`)](../README.md)
+- [Native tools overview](../../../../../gitbooks/features/native-tools/README.md)
+- [Agent harness architecture](../../../../../gitbooks/developing/architecture/agent-harness.md)
+- [Approval gate](../../../../../gitbooks/features/approval-gate.md)
+- [tinyagents submodule](../../../../../vendor/tinyagents/README.md)

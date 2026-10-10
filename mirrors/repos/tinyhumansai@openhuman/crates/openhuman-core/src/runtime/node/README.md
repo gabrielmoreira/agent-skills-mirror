@@ -47,13 +47,13 @@ entirely, the first native toolchain build removed rather than merely gated.
 
 | File | Role |
 | --- | --- |
-| `mod.rs` | Export-focused: submodule decls, the `runtime-node` gate, and `pub use` re-exports including the controller registry pair. |
-| `bootstrap.rs` | The toolchain client. `NodeBootstrap` (`resolve`, `probe_installed`, `try_cached`), `ResolvedNode`, `NodeSource`. Adapts a module `ResolvedRuntime`; derives `npm` when the provider does not report it. |
-| `stub.rs` | Type surface for `runtime-node`-less builds. `try_cached`/`probe_installed` return `None`; `resolve` errors with a build fact. |
-| `ops.rs` | Bridge logic: `build_runtime_tools`, `list_tools`, `execute_tool` (event publish + timing). |
-| `rpc.rs` | RPC param structs and `*_handler` fns; loads config and delegates through the `javascript` alias. |
-| `schemas.rs` | Controller schemas + registered controllers for `javascript_list_tools` / `javascript_execute_tool`. |
-| `types.rs` | `RuntimeToolSummary`, `ExecuteToolOutcome` serde types. |
+| [`mod.rs`](./mod.rs) | Export-focused: submodule decls, the `runtime-node` gate, and `pub use` re-exports including the controller registry pair. |
+| [`bootstrap.rs`](./bootstrap.rs) | The toolchain client. `NodeBootstrap` (`resolve`, `probe_installed`, `try_cached`), `ResolvedNode`, `NodeSource`. Adapts a module `ResolvedRuntime`; derives `npm` when the provider does not report it. |
+| [`stub.rs`](./stub.rs) | Type surface for `runtime-node`-less builds. `try_cached`/`probe_installed` return `None`; `resolve` errors with a build fact. |
+| [`ops.rs`](./ops.rs) | Bridge logic: `build_runtime_tools`, `list_tools`, `execute_tool` (event publish + timing). |
+| [`rpc.rs`](./rpc.rs) | RPC param structs and `*_handler` fns; loads config and delegates through the `javascript` alias. |
+| [`schemas.rs`](./schemas.rs) | Controller schemas + registered controllers for `javascript_list_tools` / `javascript_execute_tool`. |
+| [`types.rs`](./types.rs) | `RuntimeToolSummary`, `ExecuteToolOutcome` serde types. |
 
 ## Public surface
 
@@ -138,3 +138,10 @@ crate: those went with the machinery.
 - **A toolchain without `npm` still resolves.** `npm_bin` is derived when the
   provider does not report it: refusing would take `node_exec` down along with
   `npm_exec`, for an install that runs `node` perfectly well.
+
+## Further reading
+
+- [Parent module (`runtime`)](../README.md)
+- [tinyruntime submodule](../../../../../vendor/tinyruntime/README.md)
+- [System and utilities tools](../../../../../gitbooks/features/native-tools/system-and-utilities.md)
+- [Loadable modules](../../../../../gitbooks/developing/loadable-modules.md)

@@ -14,7 +14,7 @@ CAPABILITIES_SUMMARY:
 - reframed_problem_generation: 3-5 problem statements with insight maps
 - blind_spot_detection: Surface cognitive biases (incl. bias blind spot) and hidden constraints
 - anti_pattern_guard: Detect superficial reframing, framework abuse, false insights, assumption padding
-- collaboration_bridging: Package breakthroughs for Magi/Spark/Magi/Atlas/Oracle handoff
+- collaboration_bridging: Package breakthroughs for Magi/Spark/Atlas/Oracle handoff
 - cognitive_bias_audit: Dedicated mode for anchoring, sunk cost, confirmation bias, groupthink, IKEA effect, and 15+ patterns with debiasing recommendations
 - contradiction_resolution: TRIZ contradiction matrix (classical 39x40, Matrix 2003, Matrix 2022) with LLM-assisted tooling when available
 - tri_engine_reframe: `multi` Recipe — parallel assumption-inversion across Codex + Antigravity + Claude; Pattern D top-bills `VERIFIED-DIVERGENT x HIGH`; Portfolio-only merge; assumption_root grouping keeps same-assumption-inverted-differently separate
@@ -29,7 +29,7 @@ COLLABORATION_PATTERNS:
 - Pattern E Bias-Aware Reframing (Flux -> Oracle -> Flux): output validated against bias detection
 - Pattern F Market Reframe (Flux -> Compete): market assumptions to differentiation axes
 - Flux -> Field / Breach / Shift / Scribe[unified]: research design, attacker perspective, migration approach, requirement assumption challenges
-- Flux -> Magi[expert]: reframed problem handed to a documented named-expert lens (`FLUX_TO_MAGI_EXPERT`)
+- Flux -> Magi[advisor expert]: reframed problem handed to a documented named-expert lens (`FLUX_TO_MAGI_EXPERT`)
 
 BIDIRECTIONAL_PARTNERS:
 - INPUT: User, Nexus, Magi, Scribe[unified], Oracle
@@ -199,6 +199,7 @@ Numeric thresholds, prompt banks, and worked mechanics for each Recipe live in i
 Parse the first token of user input:
 - If it matches a Recipe Subcommand in the Recipes table → activate that Recipe; load only the "Read First" column files at the initial step.
 - Otherwise → default Recipe (`reframe`). Apply normal CLASSIFY → CHALLENGE → COMBINE → SHIFT → CRYSTALLIZE workflow.
+- `ideate` parses a second token as its mode: `expand` (default) · `propose` · `evaluate` · `subtract` · `steelman` · `scamper` · `crazy8` · `multi`. Mode notes → `reference/ideation/patterns.md` § Per-Recipe Behavior Notes. `ideate multi` is the tri-engine brainstorm round (`reference/ideation/tri-engine-ideate.md`) and is distinct from top-level `multi` (tri-engine reframe, `reference/tri-engine-reframe.md`); `ideate scamper` is the dialogue variant of top-level `scamper`.
 
 Work Mode (DEEP / RAPID / LENS / AUDIT) follows each Recipe's pinned default but may be overridden by the user.
 
@@ -212,7 +213,7 @@ Routes on user-signal keywords (natural language); a subcommand match wins if bo
 | `what if`, `different angle`, `another way` | RAPID | Perspective-shift report | User |
 | `assumptions`, `taking for granted`, `first principles` | LENS (CHALLENGE) | Assumption Map | Magi/User |
 | `combine`, `cross-domain`, `analogy` | LENS (COMBINE) | Cross-domain insight report | Spark or User |
-| `reframe`, `rethink the problem` | DEEP | Full reframing package | Magi or Magi |
+| `reframe`, `rethink the problem` | DEEP | Full reframing package | Magi |
 | `contradiction`, `trade-off`, `improving X breaks Y` | LENS (TRIZ) | Contradiction resolution + inventive principles | Builder/User |
 | `pre-mortem`, `what could go wrong`, `blind spots` | RAPID | Assumption vulnerability + Blind Spot Report | Magi/User |
 | `complexity paralysis`, `too many options` | DEEP | Cynefin classification + prioritized reframing set | Sherpa or User |

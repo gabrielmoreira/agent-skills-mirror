@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `QwenLM/qwen-code` — 26 default patterns, 8 followed patterns, 132 file(s) materialized.
+Mirror of `QwenLM/qwen-code` — 26 default patterns, 8 followed patterns, 133 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `QwenLM/qwen-code` — 26 default patterns, 8 followed patterns, 132 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 132 |
+| Files         | 133 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -107,97 +107,98 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 39 | ✓ | [`docs/users/features/hooks.md`](docs/users/features/hooks.md) |
 | 40 | ✓ | [`docs/users/features/skills.md`](docs/users/features/skills.md) |
 | 41 | ✓ | [`docs/verification/11076-webui-retirement-followups/README.md`](docs/verification/11076-webui-retirement-followups/README.md) |
-| 42 | ✓ | [`docs/verification/abort-controller-refactor/README.md`](docs/verification/abort-controller-refactor/README.md) |
-| 43 | ✓ | [`docs/verification/batch-api/README.md`](docs/verification/batch-api/README.md) |
-| 44 | ✓ | [`docs/verification/context-token-governance/README.md`](docs/verification/context-token-governance/README.md) |
-| 45 | ✓ | [`docs/verification/export-html-runtime-size/README.md`](docs/verification/export-html-runtime-size/README.md) |
-| 46 | ✓ | [`docs/verification/export-renderer-delegation-mermaid/README.md`](docs/verification/export-renderer-delegation-mermaid/README.md) |
-| 47 | ✓ | [`docs/verification/models-dev-catalog/README.md`](docs/verification/models-dev-catalog/README.md) |
-| 48 | ✓ | [`docs/verification/pnpm-stage2-evidence/README.md`](docs/verification/pnpm-stage2-evidence/README.md) |
-| 49 | ✓ | [`docs/verification/remote-computer-use/README.md`](docs/verification/remote-computer-use/README.md) |
-| 50 | ✓ | [`docs/verification/resident-tool-prompt-assembly/README.md`](docs/verification/resident-tool-prompt-assembly/README.md) |
-| 51 | ✓ | [`docs/verification/workspace-agent-token-budget/README.md`](docs/verification/workspace-agent-token-budget/README.md) |
-| 52 | ✓ | [`integration-tests/concurrent-runner/README.md`](integration-tests/concurrent-runner/README.md) |
-| 53 | ✓ | [`integrations/external-context-mem0/README.md`](integrations/external-context-mem0/README.md) |
-| 54 | ✓ | [`integrations/external-context/examples/provider-extension-local/README.md`](integrations/external-context/examples/provider-extension-local/README.md) |
-| 55 | ✓ | [`integrations/external-context/examples/provider-extension-remote/README.md`](integrations/external-context/examples/provider-extension-remote/README.md) |
-| 56 | ✓ | [`integrations/external-context/README.md`](integrations/external-context/README.md) |
-| 57 | ✓ | [`packages/acp-bridge/README.md`](packages/acp-bridge/README.md) |
-| 58 | ✓ | [`packages/channels/base/README.md`](packages/channels/base/README.md) |
-| 59 | ✓ | [`packages/channels/plugin-example/README.md`](packages/channels/plugin-example/README.md) |
-| 60 | ✓ | [`packages/chrome-extension/README.md`](packages/chrome-extension/README.md) |
-| 61 | ✓ | [`packages/cli/src/acp-integration/session/rewrite/README.md`](packages/cli/src/acp-integration/session/rewrite/README.md) |
-| 62 | ✓ | [`packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md`](packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md) |
-| 63 | ✓ | [`packages/cli/src/commands/extensions/examples/starter/README.md`](packages/cli/src/commands/extensions/examples/starter/README.md) |
-| 64 | ✓ | [`packages/cli/src/commands/extensions/examples/starter/skills/synonyms/SKILL.md`](packages/cli/src/commands/extensions/examples/starter/skills/synonyms/SKILL.md) |
-| 65 | ✓ | [`packages/core/src/core/openaiContentGenerator/provider/README.md`](packages/core/src/core/openaiContentGenerator/provider/README.md) |
-| 66 | ✓ | [`packages/core/src/skills/bundled/agent-delegation/SKILL.md`](packages/core/src/skills/bundled/agent-delegation/SKILL.md) |
-| 67 | ✓ | [`packages/core/src/skills/bundled/batch-api/SKILL.md`](packages/core/src/skills/bundled/batch-api/SKILL.md) |
-| 68 | ✓ | [`packages/core/src/skills/bundled/batch/SKILL.md`](packages/core/src/skills/bundled/batch/SKILL.md) |
-| 69 | ✓ | [`packages/core/src/skills/bundled/browser-use/SKILL.md`](packages/core/src/skills/bundled/browser-use/SKILL.md) |
-| 70 | ✓ | [`packages/core/src/skills/bundled/computer-use/SKILL.md`](packages/core/src/skills/bundled/computer-use/SKILL.md) |
-| 71 | ✓ | [`packages/core/src/skills/bundled/coordinate/SKILL.md`](packages/core/src/skills/bundled/coordinate/SKILL.md) |
-| 72 | ✓ | [`packages/core/src/skills/bundled/dataviz/SKILL.md`](packages/core/src/skills/bundled/dataviz/SKILL.md) |
-| 73 | ✓ | [`packages/core/src/skills/bundled/extension-creator/SKILL.md`](packages/core/src/skills/bundled/extension-creator/SKILL.md) |
-| 74 | ✓ | [`packages/core/src/skills/bundled/goal-draft/SKILL.md`](packages/core/src/skills/bundled/goal-draft/SKILL.md) |
-| 75 | ✓ | [`packages/core/src/skills/bundled/loop/SKILL.md`](packages/core/src/skills/bundled/loop/SKILL.md) |
-| 76 | ✓ | [`packages/core/src/skills/bundled/new-app/SKILL.md`](packages/core/src/skills/bundled/new-app/SKILL.md) |
-| 77 | ✓ | [`packages/core/src/skills/bundled/qc-helper/SKILL.md`](packages/core/src/skills/bundled/qc-helper/SKILL.md) |
-| 78 | ✓ | [`packages/core/src/skills/bundled/review/SKILL.md`](packages/core/src/skills/bundled/review/SKILL.md) |
-| 79 | ✓ | [`packages/core/src/skills/bundled/simplify/SKILL.md`](packages/core/src/skills/bundled/simplify/SKILL.md) |
-| 80 | ✓ | [`packages/core/src/skills/bundled/stuck/SKILL.md`](packages/core/src/skills/bundled/stuck/SKILL.md) |
-| 81 | ✓ | [`packages/core/src/skills/bundled/workflow-authoring/SKILL.md`](packages/core/src/skills/bundled/workflow-authoring/SKILL.md) |
-| 82 | ✓ | [`packages/core/src/skills/bundled/workflow-creator/SKILL.md`](packages/core/src/skills/bundled/workflow-creator/SKILL.md) |
-| 83 | ✓ | [`packages/core/src/skills/bundled/zvec-grep-install/SKILL.md`](packages/core/src/skills/bundled/zvec-grep-install/SKILL.md) |
-| 84 | ✓ | [`packages/cua-driver/compat-fixtures/apps/README.md`](packages/cua-driver/compat-fixtures/apps/README.md) |
-| 85 | ✓ | [`packages/cua-driver/compat-fixtures/README.md`](packages/cua-driver/compat-fixtures/README.md) |
-| 86 | ✓ | [`packages/cua-driver/contract/README.md`](packages/cua-driver/contract/README.md) |
-| 87 | ✓ | [`packages/cua-driver/examples/agent-sdks/README.md`](packages/cua-driver/examples/agent-sdks/README.md) |
-| 88 | ✓ | [`packages/cua-driver/python/README.md`](packages/cua-driver/python/README.md) |
-| 89 | ✓ | [`packages/cua-driver/README.md`](packages/cua-driver/README.md) |
-| 90 | ✓ | [`packages/cua-driver/rust/crates/cua-driver/tests/README.md`](packages/cua-driver/rust/crates/cua-driver/tests/README.md) |
-| 91 | ✓ | [`packages/cua-driver/rust/crates/cursor-overlay/assets/README.md`](packages/cua-driver/rust/crates/cursor-overlay/assets/README.md) |
-| 92 | ✓ | [`packages/cua-driver/rust/include/README.md`](packages/cua-driver/rust/include/README.md) |
-| 93 | ✓ | [`packages/cua-driver/rust/README.md`](packages/cua-driver/rust/README.md) |
-| 94 | ✓ | [`packages/cua-driver/rust/Skills/cua-driver/README.md`](packages/cua-driver/rust/Skills/cua-driver/README.md) |
-| 95 | ✓ | [`packages/cua-driver/rust/Skills/cua-driver/SKILL.md`](packages/cua-driver/rust/Skills/cua-driver/SKILL.md) |
-| 96 | ✓ | [`packages/cua-driver/rust/test-apps/README.md`](packages/cua-driver/rust/test-apps/README.md) |
-| 97 | ✓ | [`packages/cua-driver/scripts/README.md`](packages/cua-driver/scripts/README.md) |
-| 98 | ✓ | [`packages/cua-driver/tests/fixtures/apps/README.md`](packages/cua-driver/tests/fixtures/apps/README.md) |
-| 99 | ✓ | [`packages/cua-driver/tests/fixtures/build/README.md`](packages/cua-driver/tests/fixtures/build/README.md) |
-| 100 | ✓ | [`packages/cua-driver/tests/fixtures/README.md`](packages/cua-driver/tests/fixtures/README.md) |
-| 101 | ✓ | [`packages/cua-driver/tests/fixtures/smoke/README.md`](packages/cua-driver/tests/fixtures/smoke/README.md) |
-| 102 | ✓ | [`packages/cua-driver/tests/runners/macos-lume/README.md`](packages/cua-driver/tests/runners/macos-lume/README.md) |
-| 103 | ✓ | [`packages/cua-driver/tests/runners/windows-sandbox/README.md`](packages/cua-driver/tests/runners/windows-sandbox/README.md) |
-| 104 | ✓ | [`packages/cua-driver/tests/runners/windows/README.md`](packages/cua-driver/tests/runners/windows/README.md) |
-| 105 | ✓ | [`packages/cua-driver/tools/cursor-gallery/README.md`](packages/cua-driver/tools/cursor-gallery/README.md) |
-| 106 | ✓ | [`packages/cua-driver/typescript/computer-use/README.md`](packages/cua-driver/typescript/computer-use/README.md) |
-| 107 | ✓ | [`packages/cua-driver/typescript/README.md`](packages/cua-driver/typescript/README.md) |
-| 108 | ✓ | [`packages/cua-driver/wayland-helper/README.md`](packages/cua-driver/wayland-helper/README.md) |
-| 109 | ✓ | [`packages/desktop/.agents/skills/desktop-brand-builder/SKILL.md`](packages/desktop/.agents/skills/desktop-brand-builder/SKILL.md) |
-| 110 | ✓ | [`packages/desktop/README.md`](packages/desktop/README.md) |
-| 111 | ✓ | [`packages/live-host/README.md`](packages/live-host/README.md) |
-| 112 | ✓ | [`packages/mobile-mcp/README.md`](packages/mobile-mcp/README.md) |
-| 113 | ✓ | [`packages/mobile-shell/README.md`](packages/mobile-shell/README.md) |
-| 114 | ✓ | [`packages/node-repl/README.md`](packages/node-repl/README.md) |
-| 115 | ✓ | [`packages/qwen-live/README.md`](packages/qwen-live/README.md) |
-| 116 | ✓ | [`packages/sdk-java/client/README.md`](packages/sdk-java/client/README.md) |
-| 117 | ✓ | [`packages/sdk-java/managed-agent-server/README.md`](packages/sdk-java/managed-agent-server/README.md) |
-| 118 | ✓ | [`packages/sdk-java/runtime-broker/README.md`](packages/sdk-java/runtime-broker/README.md) |
-| 119 | ✓ | [`packages/sdk-typescript/src/daemon-mcp/serve-bridge/README.md`](packages/sdk-typescript/src/daemon-mcp/serve-bridge/README.md) |
-| 120 | ✓ | [`packages/vscode-ide-companion/README.md`](packages/vscode-ide-companion/README.md) |
-| 121 | ✓ | [`packages/web-shell/README.md`](packages/web-shell/README.md) |
-| 122 | ✓ | [`packages/zed-extension/README.md`](packages/zed-extension/README.md) |
-| 123 | ✓ | [`scripts/sandbox-runtime/README.md`](scripts/sandbox-runtime/README.md) |
-| 124 | ✓ | [`scripts/tui-parity/README.md`](scripts/tui-parity/README.md) |
-| 125 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 126 | → | [`docs/design/README.md`](docs/design/README.md) |
-| 127 | → | [`docs/developers/development/integration-tests.md`](docs/developers/development/integration-tests.md) |
-| 128 | → | [`docs/users/support/tos-privacy.md`](docs/users/support/tos-privacy.md) |
-| 129 | → | [`packages/sdk-java/qwencode/README.md`](packages/sdk-java/qwencode/README.md) |
-| 130 | → | [`packages/sdk-python/README.md`](packages/sdk-python/README.md) |
-| 131 | → | [`packages/sdk-typescript/README.md`](packages/sdk-typescript/README.md) |
-| 132 | → | [`README.md`](README.md) |
+| 42 | ✓ | [`docs/verification/12904-operator-recovery/README.md`](docs/verification/12904-operator-recovery/README.md) |
+| 43 | ✓ | [`docs/verification/13532-linux-h3/README.md`](docs/verification/13532-linux-h3/README.md) |
+| 44 | ✓ | [`docs/verification/abort-controller-refactor/README.md`](docs/verification/abort-controller-refactor/README.md) |
+| 45 | ✓ | [`docs/verification/batch-api/README.md`](docs/verification/batch-api/README.md) |
+| 46 | ✓ | [`docs/verification/context-token-governance/README.md`](docs/verification/context-token-governance/README.md) |
+| 47 | ✓ | [`docs/verification/export-html-runtime-size/README.md`](docs/verification/export-html-runtime-size/README.md) |
+| 48 | ✓ | [`docs/verification/export-renderer-delegation-mermaid/README.md`](docs/verification/export-renderer-delegation-mermaid/README.md) |
+| 49 | ✓ | [`docs/verification/models-dev-catalog/README.md`](docs/verification/models-dev-catalog/README.md) |
+| 50 | ✓ | [`docs/verification/pnpm-stage2-evidence/README.md`](docs/verification/pnpm-stage2-evidence/README.md) |
+| 51 | ✓ | [`docs/verification/remote-computer-use/README.md`](docs/verification/remote-computer-use/README.md) |
+| 52 | ✓ | [`docs/verification/resident-tool-prompt-assembly/README.md`](docs/verification/resident-tool-prompt-assembly/README.md) |
+| 53 | ✓ | [`integration-tests/concurrent-runner/README.md`](integration-tests/concurrent-runner/README.md) |
+| 54 | ✓ | [`integrations/external-context-mem0/README.md`](integrations/external-context-mem0/README.md) |
+| 55 | ✓ | [`integrations/external-context/examples/provider-extension-local/README.md`](integrations/external-context/examples/provider-extension-local/README.md) |
+| 56 | ✓ | [`integrations/external-context/examples/provider-extension-remote/README.md`](integrations/external-context/examples/provider-extension-remote/README.md) |
+| 57 | ✓ | [`integrations/external-context/README.md`](integrations/external-context/README.md) |
+| 58 | ✓ | [`packages/acp-bridge/README.md`](packages/acp-bridge/README.md) |
+| 59 | ✓ | [`packages/channels/base/README.md`](packages/channels/base/README.md) |
+| 60 | ✓ | [`packages/channels/plugin-example/README.md`](packages/channels/plugin-example/README.md) |
+| 61 | ✓ | [`packages/chrome-extension/README.md`](packages/chrome-extension/README.md) |
+| 62 | ✓ | [`packages/cli/src/acp-integration/session/rewrite/README.md`](packages/cli/src/acp-integration/session/rewrite/README.md) |
+| 63 | ✓ | [`packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md`](packages/cli/src/commands/extensions/examples/skills/skills/synonyms/SKILL.md) |
+| 64 | ✓ | [`packages/cli/src/commands/extensions/examples/starter/README.md`](packages/cli/src/commands/extensions/examples/starter/README.md) |
+| 65 | ✓ | [`packages/cli/src/commands/extensions/examples/starter/skills/synonyms/SKILL.md`](packages/cli/src/commands/extensions/examples/starter/skills/synonyms/SKILL.md) |
+| 66 | ✓ | [`packages/core/src/core/openaiContentGenerator/provider/README.md`](packages/core/src/core/openaiContentGenerator/provider/README.md) |
+| 67 | ✓ | [`packages/core/src/skills/bundled/agent-delegation/SKILL.md`](packages/core/src/skills/bundled/agent-delegation/SKILL.md) |
+| 68 | ✓ | [`packages/core/src/skills/bundled/batch-api/SKILL.md`](packages/core/src/skills/bundled/batch-api/SKILL.md) |
+| 69 | ✓ | [`packages/core/src/skills/bundled/batch/SKILL.md`](packages/core/src/skills/bundled/batch/SKILL.md) |
+| 70 | ✓ | [`packages/core/src/skills/bundled/browser-use/SKILL.md`](packages/core/src/skills/bundled/browser-use/SKILL.md) |
+| 71 | ✓ | [`packages/core/src/skills/bundled/computer-use/SKILL.md`](packages/core/src/skills/bundled/computer-use/SKILL.md) |
+| 72 | ✓ | [`packages/core/src/skills/bundled/coordinate/SKILL.md`](packages/core/src/skills/bundled/coordinate/SKILL.md) |
+| 73 | ✓ | [`packages/core/src/skills/bundled/dataviz/SKILL.md`](packages/core/src/skills/bundled/dataviz/SKILL.md) |
+| 74 | ✓ | [`packages/core/src/skills/bundled/extension-creator/SKILL.md`](packages/core/src/skills/bundled/extension-creator/SKILL.md) |
+| 75 | ✓ | [`packages/core/src/skills/bundled/goal-draft/SKILL.md`](packages/core/src/skills/bundled/goal-draft/SKILL.md) |
+| 76 | ✓ | [`packages/core/src/skills/bundled/loop/SKILL.md`](packages/core/src/skills/bundled/loop/SKILL.md) |
+| 77 | ✓ | [`packages/core/src/skills/bundled/new-app/SKILL.md`](packages/core/src/skills/bundled/new-app/SKILL.md) |
+| 78 | ✓ | [`packages/core/src/skills/bundled/qc-helper/SKILL.md`](packages/core/src/skills/bundled/qc-helper/SKILL.md) |
+| 79 | ✓ | [`packages/core/src/skills/bundled/review/SKILL.md`](packages/core/src/skills/bundled/review/SKILL.md) |
+| 80 | ✓ | [`packages/core/src/skills/bundled/simplify/SKILL.md`](packages/core/src/skills/bundled/simplify/SKILL.md) |
+| 81 | ✓ | [`packages/core/src/skills/bundled/stuck/SKILL.md`](packages/core/src/skills/bundled/stuck/SKILL.md) |
+| 82 | ✓ | [`packages/core/src/skills/bundled/workflow-authoring/SKILL.md`](packages/core/src/skills/bundled/workflow-authoring/SKILL.md) |
+| 83 | ✓ | [`packages/core/src/skills/bundled/workflow-creator/SKILL.md`](packages/core/src/skills/bundled/workflow-creator/SKILL.md) |
+| 84 | ✓ | [`packages/core/src/skills/bundled/zvec-grep-install/SKILL.md`](packages/core/src/skills/bundled/zvec-grep-install/SKILL.md) |
+| 85 | ✓ | [`packages/cua-driver/compat-fixtures/apps/README.md`](packages/cua-driver/compat-fixtures/apps/README.md) |
+| 86 | ✓ | [`packages/cua-driver/compat-fixtures/README.md`](packages/cua-driver/compat-fixtures/README.md) |
+| 87 | ✓ | [`packages/cua-driver/contract/README.md`](packages/cua-driver/contract/README.md) |
+| 88 | ✓ | [`packages/cua-driver/examples/agent-sdks/README.md`](packages/cua-driver/examples/agent-sdks/README.md) |
+| 89 | ✓ | [`packages/cua-driver/python/README.md`](packages/cua-driver/python/README.md) |
+| 90 | ✓ | [`packages/cua-driver/README.md`](packages/cua-driver/README.md) |
+| 91 | ✓ | [`packages/cua-driver/rust/crates/cua-driver/tests/README.md`](packages/cua-driver/rust/crates/cua-driver/tests/README.md) |
+| 92 | ✓ | [`packages/cua-driver/rust/crates/cursor-overlay/assets/README.md`](packages/cua-driver/rust/crates/cursor-overlay/assets/README.md) |
+| 93 | ✓ | [`packages/cua-driver/rust/include/README.md`](packages/cua-driver/rust/include/README.md) |
+| 94 | ✓ | [`packages/cua-driver/rust/README.md`](packages/cua-driver/rust/README.md) |
+| 95 | ✓ | [`packages/cua-driver/rust/Skills/cua-driver/README.md`](packages/cua-driver/rust/Skills/cua-driver/README.md) |
+| 96 | ✓ | [`packages/cua-driver/rust/Skills/cua-driver/SKILL.md`](packages/cua-driver/rust/Skills/cua-driver/SKILL.md) |
+| 97 | ✓ | [`packages/cua-driver/rust/test-apps/README.md`](packages/cua-driver/rust/test-apps/README.md) |
+| 98 | ✓ | [`packages/cua-driver/scripts/README.md`](packages/cua-driver/scripts/README.md) |
+| 99 | ✓ | [`packages/cua-driver/tests/fixtures/apps/README.md`](packages/cua-driver/tests/fixtures/apps/README.md) |
+| 100 | ✓ | [`packages/cua-driver/tests/fixtures/build/README.md`](packages/cua-driver/tests/fixtures/build/README.md) |
+| 101 | ✓ | [`packages/cua-driver/tests/fixtures/README.md`](packages/cua-driver/tests/fixtures/README.md) |
+| 102 | ✓ | [`packages/cua-driver/tests/fixtures/smoke/README.md`](packages/cua-driver/tests/fixtures/smoke/README.md) |
+| 103 | ✓ | [`packages/cua-driver/tests/runners/macos-lume/README.md`](packages/cua-driver/tests/runners/macos-lume/README.md) |
+| 104 | ✓ | [`packages/cua-driver/tests/runners/windows-sandbox/README.md`](packages/cua-driver/tests/runners/windows-sandbox/README.md) |
+| 105 | ✓ | [`packages/cua-driver/tests/runners/windows/README.md`](packages/cua-driver/tests/runners/windows/README.md) |
+| 106 | ✓ | [`packages/cua-driver/tools/cursor-gallery/README.md`](packages/cua-driver/tools/cursor-gallery/README.md) |
+| 107 | ✓ | [`packages/cua-driver/typescript/computer-use/README.md`](packages/cua-driver/typescript/computer-use/README.md) |
+| 108 | ✓ | [`packages/cua-driver/typescript/README.md`](packages/cua-driver/typescript/README.md) |
+| 109 | ✓ | [`packages/cua-driver/wayland-helper/README.md`](packages/cua-driver/wayland-helper/README.md) |
+| 110 | ✓ | [`packages/desktop/.agents/skills/desktop-brand-builder/SKILL.md`](packages/desktop/.agents/skills/desktop-brand-builder/SKILL.md) |
+| 111 | ✓ | [`packages/desktop/README.md`](packages/desktop/README.md) |
+| 112 | ✓ | [`packages/live-host/README.md`](packages/live-host/README.md) |
+| 113 | ✓ | [`packages/mobile-mcp/README.md`](packages/mobile-mcp/README.md) |
+| 114 | ✓ | [`packages/mobile-shell/README.md`](packages/mobile-shell/README.md) |
+| 115 | ✓ | [`packages/node-repl/README.md`](packages/node-repl/README.md) |
+| 116 | ✓ | [`packages/qwen-live/README.md`](packages/qwen-live/README.md) |
+| 117 | ✓ | [`packages/sdk-java/client/README.md`](packages/sdk-java/client/README.md) |
+| 118 | ✓ | [`packages/sdk-java/managed-agent-server/README.md`](packages/sdk-java/managed-agent-server/README.md) |
+| 119 | ✓ | [`packages/sdk-java/runtime-broker/README.md`](packages/sdk-java/runtime-broker/README.md) |
+| 120 | ✓ | [`packages/sdk-typescript/src/daemon-mcp/serve-bridge/README.md`](packages/sdk-typescript/src/daemon-mcp/serve-bridge/README.md) |
+| 121 | ✓ | [`packages/vscode-ide-companion/README.md`](packages/vscode-ide-companion/README.md) |
+| 122 | ✓ | [`packages/web-shell/README.md`](packages/web-shell/README.md) |
+| 123 | ✓ | [`packages/zed-extension/README.md`](packages/zed-extension/README.md) |
+| 124 | ✓ | [`scripts/sandbox-runtime/README.md`](scripts/sandbox-runtime/README.md) |
+| 125 | ✓ | [`scripts/tui-parity/README.md`](scripts/tui-parity/README.md) |
+| 126 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 127 | → | [`docs/design/README.md`](docs/design/README.md) |
+| 128 | → | [`docs/developers/development/integration-tests.md`](docs/developers/development/integration-tests.md) |
+| 129 | → | [`docs/users/support/tos-privacy.md`](docs/users/support/tos-privacy.md) |
+| 130 | → | [`packages/sdk-java/qwencode/README.md`](packages/sdk-java/qwencode/README.md) |
+| 131 | → | [`packages/sdk-python/README.md`](packages/sdk-python/README.md) |
+| 132 | → | [`packages/sdk-typescript/README.md`](packages/sdk-typescript/README.md) |
+| 133 | → | [`README.md`](README.md) |
 
 ---
 

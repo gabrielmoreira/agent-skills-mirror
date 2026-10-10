@@ -7,7 +7,7 @@ ref: canary
 
 # Mirror Manifest
 
-Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 95 file(s) materialized.
+Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 79 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 95 file
 | Ref           | `canary` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 95 |
+| Files         | 79 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -114,46 +114,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 53 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 54 | ✓ | [`apps/bundle-analyzer/AGENTS.md`](apps/bundle-analyzer/AGENTS.md) |
 | 55 | ✓ | [`evals/AGENTS.md`](evals/AGENTS.md) |
-| 56 | ✓ | [`evals/next-upgrade/evals/future-cache-components-nudge/AGENTS.md`](evals/next-upgrade/evals/future-cache-components-nudge/AGENTS.md) |
-| 57 | ✓ | [`evals/next-upgrade/evals/future-cache-components-nudge/CLAUDE.md`](evals/next-upgrade/evals/future-cache-components-nudge/CLAUDE.md) |
-| 58 | ✓ | [`evals/next-upgrade/evals/future-cache-components-same-version/AGENTS.md`](evals/next-upgrade/evals/future-cache-components-same-version/AGENTS.md) |
-| 59 | ✓ | [`evals/next-upgrade/evals/future-cache-components-same-version/CLAUDE.md`](evals/next-upgrade/evals/future-cache-components-same-version/CLAUDE.md) |
-| 60 | ✓ | [`evals/next-upgrade/evals/future-cache-components/AGENTS.md`](evals/next-upgrade/evals/future-cache-components/AGENTS.md) |
-| 61 | ✓ | [`evals/next-upgrade/evals/future-cache-components/CLAUDE.md`](evals/next-upgrade/evals/future-cache-components/CLAUDE.md) |
-| 62 | ✓ | [`evals/next-upgrade/evals/latest-cross-major/AGENTS.md`](evals/next-upgrade/evals/latest-cross-major/AGENTS.md) |
-| 63 | ✓ | [`evals/next-upgrade/evals/latest-cross-major/CLAUDE.md`](evals/next-upgrade/evals/latest-cross-major/CLAUDE.md) |
-| 64 | ✓ | [`evals/next-upgrade/evals/latest-nudge/AGENTS.md`](evals/next-upgrade/evals/latest-nudge/AGENTS.md) |
-| 65 | ✓ | [`evals/next-upgrade/evals/latest-nudge/CLAUDE.md`](evals/next-upgrade/evals/latest-nudge/CLAUDE.md) |
-| 66 | ✓ | [`evals/next-upgrade/evals/latest-same-major/AGENTS.md`](evals/next-upgrade/evals/latest-same-major/AGENTS.md) |
-| 67 | ✓ | [`evals/next-upgrade/evals/latest-same-major/CLAUDE.md`](evals/next-upgrade/evals/latest-same-major/CLAUDE.md) |
-| 68 | ✓ | [`evals/next-upgrade/evals/security-cross-major/AGENTS.md`](evals/next-upgrade/evals/security-cross-major/AGENTS.md) |
-| 69 | ✓ | [`evals/next-upgrade/evals/security-cross-major/CLAUDE.md`](evals/next-upgrade/evals/security-cross-major/CLAUDE.md) |
-| 70 | ✓ | [`evals/next-upgrade/evals/security-duplicate/AGENTS.md`](evals/next-upgrade/evals/security-duplicate/AGENTS.md) |
-| 71 | ✓ | [`evals/next-upgrade/evals/security-duplicate/CLAUDE.md`](evals/next-upgrade/evals/security-duplicate/CLAUDE.md) |
-| 72 | ✓ | [`evals/next-upgrade/evals/security-nudge-original-task/AGENTS.md`](evals/next-upgrade/evals/security-nudge-original-task/AGENTS.md) |
-| 73 | ✓ | [`evals/next-upgrade/evals/security-nudge-original-task/CLAUDE.md`](evals/next-upgrade/evals/security-nudge-original-task/CLAUDE.md) |
-| 74 | ✓ | [`evals/next-upgrade/evals/security-same-major/AGENTS.md`](evals/next-upgrade/evals/security-same-major/AGENTS.md) |
-| 75 | ✓ | [`evals/next-upgrade/evals/security-same-major/CLAUDE.md`](evals/next-upgrade/evals/security-same-major/CLAUDE.md) |
-| 76 | ✓ | [`packages/next/AGENTS.md`](packages/next/AGENTS.md) |
-| 77 | ✓ | [`skills/.claude-plugin/plugin.json`](skills/.claude-plugin/plugin.json) |
-| 78 | ✓ | [`skills/next-bundle-optimizer/references/fix-patterns.md`](skills/next-bundle-optimizer/references/fix-patterns.md) |
-| 79 | ✓ | [`skills/next-bundle-optimizer/references/graph-methods.md`](skills/next-bundle-optimizer/references/graph-methods.md) |
-| 80 | ✓ | [`skills/next-bundle-optimizer/SKILL.md`](skills/next-bundle-optimizer/SKILL.md) |
-| 81 | ✓ | [`skills/next-cache-components-adoption/references/dev-only-validations.md`](skills/next-cache-components-adoption/references/dev-only-validations.md) |
-| 82 | ✓ | [`skills/next-cache-components-adoption/references/per-page-decisions.md`](skills/next-cache-components-adoption/references/per-page-decisions.md) |
-| 83 | ✓ | [`skills/next-cache-components-adoption/SKILL.md`](skills/next-cache-components-adoption/SKILL.md) |
-| 84 | ✓ | [`skills/next-cache-components-optimizer/reference/red-test-robustness.md`](skills/next-cache-components-optimizer/reference/red-test-robustness.md) |
-| 85 | ✓ | [`skills/next-cache-components-optimizer/rig-template.md`](skills/next-cache-components-optimizer/rig-template.md) |
-| 86 | ✓ | [`skills/next-cache-components-optimizer/SKILL.md`](skills/next-cache-components-optimizer/SKILL.md) |
-| 87 | ✓ | [`skills/next-cache-components-optimizer/test-template.md`](skills/next-cache-components-optimizer/test-template.md) |
-| 88 | ✓ | [`skills/next-dev-loop/SKILL.md`](skills/next-dev-loop/SKILL.md) |
-| 89 | ✓ | [`skills/next-partial-prefetching-adoption/rig-template.md`](skills/next-partial-prefetching-adoption/rig-template.md) |
-| 90 | ✓ | [`skills/next-partial-prefetching-adoption/SKILL.md`](skills/next-partial-prefetching-adoption/SKILL.md) |
-| 91 | ✓ | [`skills/next-partial-prefetching-optimizer/reference/red-test-robustness.md`](skills/next-partial-prefetching-optimizer/reference/red-test-robustness.md) |
-| 92 | ✓ | [`skills/next-partial-prefetching-optimizer/rig-template.md`](skills/next-partial-prefetching-optimizer/rig-template.md) |
-| 93 | ✓ | [`skills/next-partial-prefetching-optimizer/SKILL.md`](skills/next-partial-prefetching-optimizer/SKILL.md) |
-| 94 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
-| 95 | ✓ | [`turbopack/AGENTS.md`](turbopack/AGENTS.md) |
+| 56 | ✓ | [`evals/next-upgrade/apps/member-dashboard/next-13/AGENTS.md`](evals/next-upgrade/apps/member-dashboard/next-13/AGENTS.md) |
+| 57 | ✓ | [`evals/next-upgrade/apps/member-dashboard/next-13/CLAUDE.md`](evals/next-upgrade/apps/member-dashboard/next-13/CLAUDE.md) |
+| 58 | ✓ | [`evals/next-upgrade/apps/member-dashboard/next-15/AGENTS.md`](evals/next-upgrade/apps/member-dashboard/next-15/AGENTS.md) |
+| 59 | ✓ | [`evals/next-upgrade/apps/member-dashboard/next-15/CLAUDE.md`](evals/next-upgrade/apps/member-dashboard/next-15/CLAUDE.md) |
+| 60 | ✓ | [`packages/next/AGENTS.md`](packages/next/AGENTS.md) |
+| 61 | ✓ | [`skills/.claude-plugin/plugin.json`](skills/.claude-plugin/plugin.json) |
+| 62 | ✓ | [`skills/next-bundle-optimizer/references/fix-patterns.md`](skills/next-bundle-optimizer/references/fix-patterns.md) |
+| 63 | ✓ | [`skills/next-bundle-optimizer/references/graph-methods.md`](skills/next-bundle-optimizer/references/graph-methods.md) |
+| 64 | ✓ | [`skills/next-bundle-optimizer/SKILL.md`](skills/next-bundle-optimizer/SKILL.md) |
+| 65 | ✓ | [`skills/next-cache-components-adoption/references/dev-only-validations.md`](skills/next-cache-components-adoption/references/dev-only-validations.md) |
+| 66 | ✓ | [`skills/next-cache-components-adoption/references/per-page-decisions.md`](skills/next-cache-components-adoption/references/per-page-decisions.md) |
+| 67 | ✓ | [`skills/next-cache-components-adoption/SKILL.md`](skills/next-cache-components-adoption/SKILL.md) |
+| 68 | ✓ | [`skills/next-cache-components-optimizer/reference/red-test-robustness.md`](skills/next-cache-components-optimizer/reference/red-test-robustness.md) |
+| 69 | ✓ | [`skills/next-cache-components-optimizer/rig-template.md`](skills/next-cache-components-optimizer/rig-template.md) |
+| 70 | ✓ | [`skills/next-cache-components-optimizer/SKILL.md`](skills/next-cache-components-optimizer/SKILL.md) |
+| 71 | ✓ | [`skills/next-cache-components-optimizer/test-template.md`](skills/next-cache-components-optimizer/test-template.md) |
+| 72 | ✓ | [`skills/next-dev-loop/SKILL.md`](skills/next-dev-loop/SKILL.md) |
+| 73 | ✓ | [`skills/next-partial-prefetching-adoption/rig-template.md`](skills/next-partial-prefetching-adoption/rig-template.md) |
+| 74 | ✓ | [`skills/next-partial-prefetching-adoption/SKILL.md`](skills/next-partial-prefetching-adoption/SKILL.md) |
+| 75 | ✓ | [`skills/next-partial-prefetching-optimizer/reference/red-test-robustness.md`](skills/next-partial-prefetching-optimizer/reference/red-test-robustness.md) |
+| 76 | ✓ | [`skills/next-partial-prefetching-optimizer/rig-template.md`](skills/next-partial-prefetching-optimizer/rig-template.md) |
+| 77 | ✓ | [`skills/next-partial-prefetching-optimizer/SKILL.md`](skills/next-partial-prefetching-optimizer/SKILL.md) |
+| 78 | ✓ | [`test/AGENTS.md`](test/AGENTS.md) |
+| 79 | ✓ | [`turbopack/AGENTS.md`](turbopack/AGENTS.md) |
 
 ---
 

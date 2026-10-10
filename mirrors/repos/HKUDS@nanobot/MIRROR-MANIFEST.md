@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HKUDS/nanobot` — 26 default patterns, 9 followed patterns, 23 file(s) materialized.
+Mirror of `HKUDS/nanobot` — 26 default patterns, 10 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `HKUDS/nanobot` — 26 default patterns, 9 followed patterns, 23 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 9 |
-| Files         | 23 |
+| Followed pats | 10 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `HKUDS/nanobot` — 26 default patterns, 9 followed patterns, 23 file(
 
 - `.agent/design.md`
 - `.agent/simplify.md`
+- `.agent/copywriting.md`
 - `.agent/security.md`
 - `.agent/gotchas.md`
 - `.agent/workflow.md`
@@ -81,15 +82,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`nanobot/skills/update-setup/SKILL.md`](nanobot/skills/update-setup/SKILL.md) |
 | 13 | ✓ | [`nanobot/skills/weather/SKILL.md`](nanobot/skills/weather/SKILL.md) |
 | 14 | ✓ | [`nanobot/templates/AGENTS.md`](nanobot/templates/AGENTS.md) |
-| 15 | → | [`.agent/design.md`](.agent/design.md) |
-| 16 | → | [`.agent/gotchas.md`](.agent/gotchas.md) |
-| 17 | → | [`.agent/review-guide.md`](.agent/review-guide.md) |
-| 18 | → | [`.agent/security.md`](.agent/security.md) |
-| 19 | → | [`.agent/simplify.md`](.agent/simplify.md) |
-| 20 | → | [`.agent/workflow.md`](.agent/workflow.md) |
-| 21 | → | [`COMMUNICATION.md`](COMMUNICATION.md) |
-| 22 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 23 | → | [`docs/releasing.md`](docs/releasing.md) |
+| 15 | → | [`.agent/copywriting.md`](.agent/copywriting.md) |
+| 16 | → | [`.agent/design.md`](.agent/design.md) |
+| 17 | → | [`.agent/gotchas.md`](.agent/gotchas.md) |
+| 18 | → | [`.agent/review-guide.md`](.agent/review-guide.md) |
+| 19 | → | [`.agent/security.md`](.agent/security.md) |
+| 20 | → | [`.agent/simplify.md`](.agent/simplify.md) |
+| 21 | → | [`.agent/workflow.md`](.agent/workflow.md) |
+| 22 | → | [`COMMUNICATION.md`](COMMUNICATION.md) |
+| 23 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 24 | → | [`docs/releasing.md`](docs/releasing.md) |
 
 ---
 

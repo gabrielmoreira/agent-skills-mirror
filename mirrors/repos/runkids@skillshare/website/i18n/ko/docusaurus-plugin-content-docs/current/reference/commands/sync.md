@@ -210,6 +210,8 @@ $ skillshare sync
   Context  ~1.2K tokens always loaded · ~18.5K on demand
 ```
 
+직접 만든 폴더가 skill의 sync 대상 이름을 이미 차지하고 있으면, sync는 그 폴더를 그대로 두고 skill을 설치하지 않습니다. 이런 폴더가 있는 target마다 처음 몇 개의 이름을 알려 주는 한 줄(`kept local: a, b (sync --force replaces them)`)이 출력되며, `up to date`가 아닌 `local`로 집계됩니다. `skillshare diff`는 이들을 `Local override`로 보여 줍니다.
+
 ---
 
 ## Collect
@@ -340,7 +342,7 @@ targets:
 ```
 
 - 매칭은 flat target 이름(예: `team__frontend__ui`)을 기준으로 합니다
-- 어떤 skill에도 일치하지 않는 `include` 패턴은 보고됩니다. 그런 target은 아무것도 동기화하지 못하고 이전 패턴이 링크한 항목을 제거하기 때문입니다. `target_naming: standard`로 target 폴더에 SKILL.md 이름만 표시되어도 filter는 flat 이름을 기준으로 합니다
+- 어떤 skill에도 일치하지 않는 `include` 패턴은 보고됩니다. 그런 target은 아무것도 동기화하지 못하고 이전 패턴이 링크한 항목을 제거하기 때문입니다. `target_naming: standard`나 `prefixed`로 target 폴더 이름이 SKILL.md 이름을 따라도 filter는 flat 이름을 기준으로 합니다
 - `include`가 먼저 적용되고, 그다음 `exclude`가 적용됩니다
 - `diff`, `status`, `doctor`, 그리고 UI drift는 모두 필터링된 expected set을 사용합니다
 - symlink mode에서는 filter가 무시됩니다

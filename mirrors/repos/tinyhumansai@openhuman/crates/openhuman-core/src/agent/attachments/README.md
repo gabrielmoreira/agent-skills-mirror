@@ -92,7 +92,7 @@ retain the source references so later requests can reevaluate routing.
 
 ## Published document capability
 
-The pinned TinyDocs `0.1.21` release exposes `ExtractDocument` and `RenderPdf`.
+The pinned TinyDocs `0.1.22` release exposes `ExtractDocument` and `RenderPdf`.
 Its source tag and all 11 platform archive digests match the published release
 manifest. Office extraction, PDF text extraction, and bounded scanned-page
 rendering use this native module through the shared bus contract. A disabled or
@@ -112,3 +112,9 @@ Legacy `[IMAGE:path]` markers remain supported; filenames mentioned only in
 ordinary prose grant no read. An explicit image selection replaces automatic
 parent-image forwarding. A vision task without a resolvable, nonempty image
 fails before inference is constructed.
+
+## Further reading
+
+- [Parent module README](../README.md)
+- [Agent harness architecture](../../../../../gitbooks/developing/architecture/agent-harness.md)
+- [Chat](../../../../../gitbooks/features/chat.md)

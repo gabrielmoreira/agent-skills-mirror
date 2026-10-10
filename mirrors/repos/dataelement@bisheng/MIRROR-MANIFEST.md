@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dataelement/bisheng` — 26 default patterns, 2 followed patterns, 51 file(s) materialized.
+Mirror of `dataelement/bisheng` — 26 default patterns, 2 followed patterns, 56 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dataelement/bisheng` — 26 default patterns, 2 followed patterns, 51
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 51 |
+| Files         | 56 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -95,22 +95,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 33 | ✓ | [`src/backend/AGENTS.md`](src/backend/AGENTS.md) |
 | 34 | ✓ | [`src/backend/bisheng/core/database/alembic/AGENTS.md`](src/backend/bisheng/core/database/alembic/AGENTS.md) |
 | 35 | ✓ | [`src/backend/bisheng/core/database/alembic/CLAUDE.md`](src/backend/bisheng/core/database/alembic/CLAUDE.md) |
-| 36 | ✓ | [`src/backend/bisheng/linsight/builtin_skills/bisheng-docx/SKILL.md`](src/backend/bisheng/linsight/builtin_skills/bisheng-docx/SKILL.md) |
-| 37 | ✓ | [`src/backend/bisheng/linsight/builtin_skills/bisheng-pptx/SKILL.md`](src/backend/bisheng/linsight/builtin_skills/bisheng-pptx/SKILL.md) |
-| 38 | ✓ | [`src/backend/bisheng/linsight/builtin_skills/bisheng-xlsx/SKILL.md`](src/backend/bisheng/linsight/builtin_skills/bisheng-xlsx/SKILL.md) |
-| 39 | ✓ | [`src/backend/CLAUDE.md`](src/backend/CLAUDE.md) |
-| 40 | ✓ | [`src/backend/scripts/AGENTS.md`](src/backend/scripts/AGENTS.md) |
-| 41 | ✓ | [`src/backend/scripts/CLAUDE.md`](src/backend/scripts/CLAUDE.md) |
-| 42 | ✓ | [`src/frontend/client/.agents/skills/i18n-localizer/SKILL.md`](src/frontend/client/.agents/skills/i18n-localizer/SKILL.md) |
-| 43 | ✓ | [`src/frontend/client/.agents/skills/react-component-refactor/SKILL.md`](src/frontend/client/.agents/skills/react-component-refactor/SKILL.md) |
-| 44 | ✓ | [`src/frontend/client/AGENTS.md`](src/frontend/client/AGENTS.md) |
-| 45 | ✓ | [`src/frontend/client/CLAUDE.md`](src/frontend/client/CLAUDE.md) |
-| 46 | ✓ | [`src/frontend/packages/ui/AGENTS.md`](src/frontend/packages/ui/AGENTS.md) |
-| 47 | ✓ | [`src/frontend/packages/ui/CLAUDE.md`](src/frontend/packages/ui/CLAUDE.md) |
-| 48 | ✓ | [`src/frontend/platform/AGENTS.md`](src/frontend/platform/AGENTS.md) |
-| 49 | ✓ | [`src/frontend/platform/CLAUDE.md`](src/frontend/platform/CLAUDE.md) |
-| 50 | → | [`docs/constitution.md`](docs/constitution.md) |
-| 51 | → | [`docs/SDD-Guide.md`](docs/SDD-Guide.md) |
+| 36 | ✓ | [`src/backend/bisheng/linsight/AGENTS.md`](src/backend/bisheng/linsight/AGENTS.md) |
+| 37 | ✓ | [`src/backend/bisheng/linsight/builtin_skills/AGENTS.md`](src/backend/bisheng/linsight/builtin_skills/AGENTS.md) |
+| 38 | ✓ | [`src/backend/bisheng/linsight/builtin_skills/bisheng-docx/SKILL.md`](src/backend/bisheng/linsight/builtin_skills/bisheng-docx/SKILL.md) |
+| 39 | ✓ | [`src/backend/bisheng/linsight/builtin_skills/bisheng-pptx/SKILL.md`](src/backend/bisheng/linsight/builtin_skills/bisheng-pptx/SKILL.md) |
+| 40 | ✓ | [`src/backend/bisheng/linsight/builtin_skills/bisheng-xlsx/SKILL.md`](src/backend/bisheng/linsight/builtin_skills/bisheng-xlsx/SKILL.md) |
+| 41 | ✓ | [`src/backend/bisheng/linsight/builtin_skills/CLAUDE.md`](src/backend/bisheng/linsight/builtin_skills/CLAUDE.md) |
+| 42 | ✓ | [`src/backend/bisheng/linsight/CLAUDE.md`](src/backend/bisheng/linsight/CLAUDE.md) |
+| 43 | ✓ | [`src/backend/bisheng/open_api/skill_packs/knowledge-search/SKILL.md`](src/backend/bisheng/open_api/skill_packs/knowledge-search/SKILL.md) |
+| 44 | ✓ | [`src/backend/CLAUDE.md`](src/backend/CLAUDE.md) |
+| 45 | ✓ | [`src/backend/scripts/AGENTS.md`](src/backend/scripts/AGENTS.md) |
+| 46 | ✓ | [`src/backend/scripts/CLAUDE.md`](src/backend/scripts/CLAUDE.md) |
+| 47 | ✓ | [`src/frontend/client/.agents/skills/i18n-localizer/SKILL.md`](src/frontend/client/.agents/skills/i18n-localizer/SKILL.md) |
+| 48 | ✓ | [`src/frontend/client/.agents/skills/react-component-refactor/SKILL.md`](src/frontend/client/.agents/skills/react-component-refactor/SKILL.md) |
+| 49 | ✓ | [`src/frontend/client/AGENTS.md`](src/frontend/client/AGENTS.md) |
+| 50 | ✓ | [`src/frontend/client/CLAUDE.md`](src/frontend/client/CLAUDE.md) |
+| 51 | ✓ | [`src/frontend/packages/ui/AGENTS.md`](src/frontend/packages/ui/AGENTS.md) |
+| 52 | ✓ | [`src/frontend/packages/ui/CLAUDE.md`](src/frontend/packages/ui/CLAUDE.md) |
+| 53 | ✓ | [`src/frontend/platform/AGENTS.md`](src/frontend/platform/AGENTS.md) |
+| 54 | ✓ | [`src/frontend/platform/CLAUDE.md`](src/frontend/platform/CLAUDE.md) |
+| 55 | → | [`docs/constitution.md`](docs/constitution.md) |
+| 56 | → | [`docs/SDD-Guide.md`](docs/SDD-Guide.md) |
 
 ---
 

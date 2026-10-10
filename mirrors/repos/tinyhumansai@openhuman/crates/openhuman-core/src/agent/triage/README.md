@@ -9,9 +9,9 @@ notification ingest); those build a `TriggerEnvelope` and call in.
 
 ## Pipeline
 
-1. Envelope (`envelope.rs`): the caller builds a `TriggerEnvelope` via
+1. Envelope ([`envelope.rs`](./envelope.rs)): the caller builds a `TriggerEnvelope` via
    `from_composio`, `from_webhook`, `from_cron` or `from_external`, or by
-   filling the struct directly (`desktop/notifications/rpc.rs` does this for
+   filling the struct directly ([`desktop/notifications/rpc.rs`](../../desktop/notifications/rpc.rs) does this for
    `TriggerSource::WebviewIntegration`). It carries the `TriggerSource` and
    the raw payload, truncated to 8 KB when rendered into the prompt.
 2. Evaluator (`evaluator*.rs`): `run_triage` sends the `trigger_triage`
@@ -26,25 +26,25 @@ notification ingest); those build a `TriggerEnvelope` and call in.
    `TriggerEscalationFailed`. `decision.rs::parse_triage_decision` parses
    the reply tolerantly (fenced JSON, prose around the object, trailing
    commas, wrong-case action).
-3. Escalation (`escalation.rs`): `apply_decision` publishes
+3. Escalation ([`escalation.rs`](./escalation.rs)): `apply_decision` publishes
    `TriggerEvaluated` for every action. `drop`/`acknowledge` do no further
    work. `react`/`escalate` first pass `ApprovalGate::intercept_audited` with
    tool key `triage.react` / `triage.escalate`, then build a root
    `ParentExecutionContext` (`orchestration::parent_context::build_root_parent`)
    and dispatch `trigger_reactor` or `orchestrator` via
    `agent::subagent_host::run_subagent`.
-4. Origin (`origin.rs`): every caller scopes an `AgentTurnOrigin` around
+4. Origin ([`origin.rs`](./origin.rs)): every caller scopes an `AgentTurnOrigin` around
    `apply_decision` because `AGENT_TURN_ORIGIN` is a task-local and none of
    the callers inherit one; an unscoped call reads `Unknown` and the gate
    fails closed. `local_trigger_origin` (`Cli`, trust root, no audit row) is
    for triggers the machine generated itself; `remote_trigger_origin`
    (`TrustedAutomation::Workflow { require_approval: true }`) is for anything
    whose payload came from outside.
-5. Events (`events.rs`): thin wrappers around `DomainEvent::Trigger*`
+5. Events ([`events.rs`](./events.rs)): thin wrappers around `DomainEvent::Trigger*`
    (`TriggerEvaluated`, `TriggerEscalated`, `TriggerEscalationFailed`) so the
    field list lives in one place.
 
-`routing.rs` resolves the arms. `resolve_provider_with_config` resolves the
+[`routing.rs`](./routing.rs) resolves the arms. `resolve_provider_with_config` resolves the
 `chat` workload role and forces the managed backend whenever that
 role points at a local runtime, a local CLI delegate, or an incomplete BYOK
 route, so the initial attempt never depends on a local model being up.
@@ -59,8 +59,8 @@ the gate. Tests use a `_for_test` variant that skips the permit.
 ## Not routed through triage
 
 `TriggerEnvelope::from_cron` still exists, but only the manual RPCs
-`agent.triage_evaluate` (`agent/schemas.rs`) and `webhooks.trigger_agent`
-(`skills/webhooks/ops.rs`) build one. The cron scheduler does not call
+`agent.triage_evaluate` ([`agent/schemas.rs`](../schemas.rs)) and `webhooks.trigger_agent`
+([`skills/webhooks/ops.rs`](../../skills/webhooks/ops.rs)) build one. The cron scheduler does not call
 `run_triage`: `cron/scheduler/agent_run.rs::run_agent_job` runs the job's
 agent directly, and `scheduler/delivery.rs` hard-codes
 `triage_action: "react"` / `triage_reason: "Scheduled delivery"` on the
@@ -68,11 +68,11 @@ delivered notification for display.
 
 ## Public surface
 
-Re-exported from `mod.rs`:
+Re-exported from [`mod.rs`](./mod.rs):
 
 - `TriggerEnvelope`, `TriggerSource`: `envelope.rs`.
 - `TriageAction`, `TriageDecision`, `parse_triage_decision`, `ParseError`:
-  `decision.rs`.
+  [`decision.rs`](./decision.rs).
 - `run_triage(&envelope) -> anyhow::Result<TriageOutcome>`, `TriageOutcome`,
   `TriageRun`, `TriageResolutionPath`: `evaluator*.rs`. Also `pub` on the
   module: `TRIGGER_TRIAGE_AGENT_ID`.
@@ -84,7 +84,7 @@ Re-exported from `mod.rs`:
 
 ## Called by
 
-- `crates/openhuman-core/src/skills/webhooks/bus.rs`: incoming webhook
+- [`crates/openhuman-core/src/skills/webhooks/bus.rs`](../../skills/webhooks/bus.rs): incoming webhook
   requests on a tunnel registered to an agent.
 - `crates/openhuman-core/src/skills/webhooks/ops.rs`: `webhooks.trigger_agent`
   manual RPC (`webhook` / `cron` / `external` sources).
@@ -92,7 +92,7 @@ Re-exported from `mod.rs`:
   trigger events; `OPENHUMAN_TRIGGER_TRIAGE_DISABLED`,
   `composio.triage_disabled`, and `composio.triage_disabled_toolkits` skip
   the pipeline.
-- `crates/openhuman-core/src/integrations/task_sources/route.rs`: proactive
+- [`crates/openhuman-core/src/integrations/task_sources/route.rs`](../../integrations/task_sources/route.rs): proactive
   task-source cards targeting `SourceTarget::AgentTodoProactive`.
 - `crates/openhuman-core/src/desktop/notifications/rpc.rs`: background
   triage spawned after `notification_ingest`; score persisted via
@@ -103,16 +103,19 @@ Re-exported from `mod.rs`:
 
 ## Related
 
-- `crates/openhuman-core/src/agent/registry/agents/trigger_triage/`: the
+- [`crates/openhuman-core/src/agent/registry/agents/trigger_triage/`](../registry/agents/trigger_triage/): the
   classifier agent definition; `prompt.md` describes the JSON contract
   `decision.rs` parses.
-- `crates/openhuman-core/src/agent/registry/agents/trigger_reactor/`: the
+- [`crates/openhuman-core/src/agent/registry/agents/trigger_reactor/`](../registry/agents/trigger_reactor/): the
   single-step sub-agent `react` decisions dispatch to.
-- `crates/openhuman-core/src/cron/scheduler_gate/README.md`: the LLM-permit
+- [`crates/openhuman-core/src/cron/scheduler_gate/README.md`](../../cron/scheduler_gate/README.md): the LLM-permit
   gate the local arm waits on.
+- [Parent module README](../README.md)
+- [Triggers](../../../../../gitbooks/features/integrations/triggers.md)
+- [Agent harness architecture](../../../../../gitbooks/developing/architecture/agent-harness.md)
 
 ## Tests
 
-`envelope_tests.rs`, `decision_tests.rs`, `escalation_tests.rs`,
-`evaluator_tests.rs`, `evaluator_deferral_tests.rs`, `evaluator_fallback_chain_tests.rs`, `events_tests.rs`,
-`origin_tests.rs`, `routing_tests.rs`.
+[`envelope_tests.rs`](./envelope_tests.rs), [`decision_tests.rs`](./decision_tests.rs), [`escalation_tests.rs`](./escalation_tests.rs),
+[`evaluator_tests.rs`](./evaluator_tests.rs), [`evaluator_deferral_tests.rs`](./evaluator_deferral_tests.rs), [`evaluator_fallback_chain_tests.rs`](./evaluator_fallback_chain_tests.rs), [`events_tests.rs`](./events_tests.rs),
+[`origin_tests.rs`](./origin_tests.rs), [`routing_tests.rs`](./routing_tests.rs).

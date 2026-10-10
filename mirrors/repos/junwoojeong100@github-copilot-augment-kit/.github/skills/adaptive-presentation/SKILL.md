@@ -15,7 +15,10 @@ argument-hint: "주제, 청중, 목적, 슬라이드 수를 알려주세요 — 
 - 최종 출력 위치에는 요청한 파일만 남긴다. 조사 메모·생성 스크립트·PDF·QA 이미지는 저장소와 최종
   출력 폴더 밖의 세션 작업 디렉터리에 두고 완료 시 정리한다.
 - `<session>`은 client가 제공한 artifact 디렉터리다. 없으면 저장소·최종 출력 폴더 밖의 고유 OS
-  temporary directory를 사용하고 최종 파일을 복사한 뒤 삭제한다.
+  temporary directory를 사용하고 최종 파일을 복사한 뒤 삭제한다. `<work>`는 `<session>/<deck>-work`다.
+- `<skill>`은 이 `SKILL.md`가 있는 폴더다(예: 프로젝트 설치 `.github/skills/adaptive-presentation`, 개인 설치
+  `~/.copilot/skills/adaptive-presentation`). 경로를 모르면 `copilot skill list --json`의 `path`로 확인한다.
+  `python3`는 환경의 Python 3 실행 파일이다(Windows는 `py -3` 또는 `python`).
 
 ## 입력
 
@@ -37,9 +40,9 @@ argument-hint: "주제, 청중, 목적, 슬라이드 수를 알려주세요 — 
 ### 0. 실행 준비
 
 - 신규 제작/기존 덱 개선, 외부 조사 필요/제공 자료만을 구분하고 출력·원본 보존 조건을 확정한다.
-- `scripts/toolcheck.py --strict`로 도구·폰트를 먼저 확인한다. 한국어 덱은 `--require-korean-font`를 추가한다.
+- `<skill>/scripts/toolcheck.py --strict`로 도구·폰트를 먼저 확인한다. 한국어 덱은 `--require-korean-font`를 추가한다.
 - 누락이 확인된 의존성만 준비한다. 도구·권한으로 검증이 막히면 초안과 미검증 범위를 밝히고 완료로 처리하지 않는다.
-- 템플릿이 있으면 `scripts/inspect_template.py`로 profile을 추출하고 canvas·theme·사용할 폰트를 확정한다.
+- 템플릿이 있으면 `<skill>/scripts/inspect_template.py`로 profile을 추출하고 canvas·theme·사용할 폰트를 확정한다.
 - 기존 PPT 개선은 [`reference/refinement.md`](./reference/refinement.md)를 먼저 따른다. 내용 원본과
   디자인 참고 덱을 구분하고, 장수·발표 시간·사례·수치·조건·출처를 목록화한 뒤 새 버전을 만든다.
 - 여러 덱은 각각 완성·검증한다. 파일별 위임을 요청받았을 때만
@@ -58,9 +61,9 @@ argument-hint: "주제, 청중, 목적, 슬라이드 수를 알려주세요 — 
 
 ### 2. 스토리라인
 
-- 코드 전에 [`reference/deck-spec.md`](./reference/deck-spec.md)의 `deck-spec.json`과 `storyline.md`에
-  장별 결론형 제목·한 문장 메시지·다음 행동·근거·시각 형태·앞뒤 연결·발표 cue를 확정한다.
-- `python3 -B .github/skills/adaptive-presentation/scripts/deck_spec.py <work>/deck-spec.json`을 통과한 뒤 생성 코드를 작성한다.
+- 코드 전에 `storyline.md`에 장별 결론형 제목·한 문장 메시지·다음 행동·근거·시각 형태·앞뒤 연결·발표 cue를 확정한다.
+- [`reference/deck-spec.md`](./reference/deck-spec.md)의 `deck-spec.json`에는 요청·장별 제목/ID·폰트·QA 등 검증 입력과
+  필요한 override만 기록하고 `python3 -B <skill>/scripts/deck_spec.py <work>/deck-spec.json`을 통과한 뒤 생성 코드를 작성한다.
 - 제목만 읽어도 논리가 이어져야 한다. 반복 설명은 통합하되 원본의 의미·조건을 누락하지 않는다.
   장수가 고정이면 장식 대신 근거·사례·비교·실행 기준으로 채운다.
 - 새 근거나 시각적 blocker가 있을 때만 storyline과 deck spec을 함께 갱신한다.
@@ -92,19 +95,13 @@ argument-hint: "주제, 청중, 목적, 슬라이드 수를 알려주세요 — 
 ### 4. 렌더 검증과 수정
 
 ```bash
-python3 -B .github/skills/adaptive-presentation/scripts/verify_deck.py <deck>.pptx --out <work> \
-  --deck-spec <work>/deck-spec.json --reuse-render
+python3 -B <skill>/scripts/verify_deck.py <deck>.pptx --out <work> --deck-spec <work>/deck-spec.json --reuse-render
 ```
 
-- [`scripts/verify_deck.py`](./scripts/verify_deck.py)와 [`검증 가이드`](./reference/verification.md)로
-  동일 PPTX의 구조 감사·전체 렌더를 실행한다. 전체 contact sheet는 한 장씩 보고 위험 장만 확대한다.
-- 미지원 chart·SmartArt·unmapped text도 finding ID별로 검토한다. 결함을 일괄 수정하고 다시 렌더한다.
-  의도적 예외만 이유를 기록하며, 최종 SHA-256에 묶인 `visual-review.json`으로 verifier를 재실행한다.
-  재사용 모드의 증거는 현재 `qa/render-cache.json`의 SHA-256을 `renderCacheSha256`으로 연결해 환경 변경 시 무효화한다.
-- `--reuse-render`는 입력·환경·옵션·산출물 해시가 같은 전체 렌더만 재사용한다. QA 판단은 매번 다시 검사하며,
-  변경된 입력은 새로 렌더한다. 손상된 캐시는 오류로 처리하고 옵션 없는 실행으로 새 검증을 수행한다.
-- `claimIds`에서 출처 대상이 도출되며 footer 발행자·상태·언어·폰트·notes를 검증한다.
-  대비 측정·의미 보존·발표 시간은 별도 편집 검토로 확인하고 자동 PASS와 혼동하지 않는다.
+- [검증 가이드](./reference/verification.md)의 Runner가 동일 PPTX의 구조 감사·전체 렌더·출처·상태·언어·폰트·notes를 검사한다.
+- 전체 contact sheet는 한 장씩 보고 위험 장만 확대하며, 미지원 chart·SmartArt·unmapped text는 finding ID별로 검토한다.
+- 결함은 일괄 수정하고, 최종 SHA-256에 묶인 새 `visual-review-rNNN.json`을 `--visual-review`로 지정해 재실행한다.
+- 대비 측정·의미 보존·발표 시간은 별도 편집 검토이며 자동 PASS와 혼동하지 않는다.
 
 ## 완료 조건
 

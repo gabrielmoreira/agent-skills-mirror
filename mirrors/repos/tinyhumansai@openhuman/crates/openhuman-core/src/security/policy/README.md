@@ -10,7 +10,7 @@ trusted roots, and the per-hour action budget.
 
 `SecurityPolicy::enabled` mirrors `[autonomy] enabled` in config and defaults
 to `false`. With the policy disabled, `SecurityPolicy::from_config`
-(`enforcement.rs`) still builds the struct, but `can_act()`,
+([`enforcement.rs`](./enforcement.rs)) still builds the struct, but `can_act()`,
 `record_action()`, and `is_rate_limited()` all short-circuit: command
 classification, the approval gate, the command allowlist, the hourly action
 budget, `workspace_only`, `forbidden_paths`, and the workspace-internal
@@ -21,7 +21,7 @@ traversal and null bytes in a path. Setting `[autonomy] enabled = true`
 restores the full policy. Note the asymmetry with `Default`: a policy built
 from config defaults to disabled, while a policy built with no config at all
 (`SecurityPolicy::default()`) defaults to enabled; see the comment on that
-impl in `types.rs`.
+impl in [`types.rs`](./types.rs).
 
 ## Responsibilities
 
@@ -41,10 +41,10 @@ impl in `types.rs`.
 
 | File | Purpose |
 | --- | --- |
-| `types.rs` | `SecurityPolicy` fields, `AutonomyLevel`, `CommandRiskLevel`, `CommandClass`, `GateDecision`, `ToolOperation`, `ActionTracker`, `TrustedRoot`/`TrustedAccess`, `WORKSPACE_INTERNAL_DIRS`/`WORKSPACE_INTERNAL_FILES`, the two policy markers |
-| `path_checks.rs` | `is_workspace_internal_path`, `is_always_forbidden`, `check_cross_profile`, `is_within_trusted_root`, `is_resolved_path_allowed[_for]`, `check_resolved_against_forbidden` |
-| `command_checks.rs` | `classify_command`, `gate_decision`, `check_gated_command`, `is_command_allowed`, `command_risk_level`, `parse_declared_class`, `is_command_executor`, `split_unquoted_segments` |
-| `enforcement.rs` | `can_act`, `enforce_write_tier`, `enforce_tool_operation`, `record_action`/`is_rate_limited`, `from_config`, `with_privacy_mode`, `openhuman_scratch_dir`/`ensure_openhuman_scratch_dir`, `validate_path_within_root` |
+| [`types.rs`](./types.rs) | `SecurityPolicy` fields, `AutonomyLevel`, `CommandRiskLevel`, `CommandClass`, `GateDecision`, `ToolOperation`, `ActionTracker`, `TrustedRoot`/`TrustedAccess`, `WORKSPACE_INTERNAL_DIRS`/`WORKSPACE_INTERNAL_FILES`, the two policy markers |
+| [`path_checks.rs`](./path_checks.rs) | `is_workspace_internal_path`, `is_always_forbidden`, `check_cross_profile`, `is_within_trusted_root`, `is_resolved_path_allowed[_for]`, `check_resolved_against_forbidden` |
+| [`command_checks.rs`](./command_checks.rs) | `classify_command`, `gate_decision`, `check_gated_command`, `is_command_allowed`, `command_risk_level`, `parse_declared_class`, `is_command_executor`, `split_unquoted_segments` |
+| [`enforcement.rs`](./enforcement.rs) | `can_act`, `enforce_write_tier`, `enforce_tool_operation`, `record_action`/`is_rate_limited`, `from_config`, `with_privacy_mode`, `openhuman_scratch_dir`/`ensure_openhuman_scratch_dir`, `validate_path_within_root` |
 | `tinybox_core::shell::{scan,classify,executor,env_guard}` (vendored) | Shell-parsing helpers behind the command checks: `split_unquoted_segments`, `skip_env_assignments`, `normalized_command_name`, `is_command_executor`, `classify_segment`, `has_hidden_execution`, `has_dangerous_env_prefix`, `contains_unquoted_char`, and the `CommandClass` enum (re-exported from `types.rs`) |
 
 ## Public surface
@@ -79,7 +79,7 @@ Each of these must not be weakened to make a feature work:
   by `check_resolved_against_forbidden` before any trusted-root grant is
   consulted. Kept as two separate fields on `SecurityPolicy` (`types.rs`) so
   the two roots can diverge.
-- `is_workspace_internal_path` (`path_checks.rs`) is true for any path
+- `is_workspace_internal_path` ([`path_checks.rs`](./path_checks.rs)) is true for any path
   whose first component under `workspace_dir` is in `WORKSPACE_INTERNAL_DIRS`
   or `WORKSPACE_INTERNAL_FILES` (`types.rs`), or starts
   with `memory-`, `memory_tree-`, or `session_raw-`. It is checked against the
@@ -94,7 +94,7 @@ Each of these must not be weakened to make a feature work:
   Gray-area directories (`/usr`, `/opt`, `/var`, `~/Library`) deliberately
   stay in the user-overridable `forbidden_paths` list instead, so a grant can
   still reach, for example, `/usr/local/...`.
-- `classify_command`'s fail-closed floor (`command_checks.rs`): a
+- `classify_command`'s fail-closed floor ([`command_checks.rs`](./command_checks.rs)): a
   command that is not provably read-only (and not a recognized
   network/destructive command) is at least `CommandClass::Write`. The highest
   class across `;`/`|`/`&&`/`||`/newline-separated segments wins, and any
@@ -122,11 +122,19 @@ Each of these must not be weakened to make a feature work:
 
 ## Tests
 
-- `policy_tests.rs`, `policy_allowlist_tests.rs`, `policy_injection_tests.rs`,
-  `policy_paths_and_risk_tests.rs`, `policy_trusted_roots_tests.rs`, and
-  `policy_workspace_internal_tests.rs`: behavior tests for classification,
+- [`policy_tests.rs`](./policy_tests.rs), [`policy_allowlist_tests.rs`](./policy_allowlist_tests.rs), [`policy_injection_tests.rs`](./policy_injection_tests.rs),
+  [`policy_paths_and_risk_tests.rs`](./policy_paths_and_risk_tests.rs), [`policy_trusted_roots_tests.rs`](./policy_trusted_roots_tests.rs), and
+  [`policy_workspace_internal_tests.rs`](./policy_workspace_internal_tests.rs): behavior tests for classification,
   path checks, and tier enforcement.
-- `policy_disabled_tests.rs`: behavior with `[autonomy] enabled = false`.
-- `proptest_tests.rs`: property tests over command classification.
-- `enforcement_scratch_dir_tests_tests.rs`: `openhuman_scratch_dir` is
+- [`policy_disabled_tests.rs`](./policy_disabled_tests.rs): behavior with `[autonomy] enabled = false`.
+- [`proptest_tests.rs`](./proptest_tests.rs): property tests over command classification.
+- [`enforcement_scratch_dir_tests_tests.rs`](./enforcement_scratch_dir_tests_tests.rs): `openhuman_scratch_dir` is
   namespaced on every platform and `ensure_openhuman_scratch_dir` creates it.
+
+## Further reading
+
+- [Parent module (`security`)](../README.md)
+- [Security architecture](../../../../../gitbooks/developing/architecture/security.md)
+- [Privacy and security](../../../../../gitbooks/features/privacy-and-security.md)
+- [Approval gate](../../../../../gitbooks/features/approval-gate.md)
+- [OS keyring and secret storage](../../../../../gitbooks/features/os-keyring-and-secret-storage.md)

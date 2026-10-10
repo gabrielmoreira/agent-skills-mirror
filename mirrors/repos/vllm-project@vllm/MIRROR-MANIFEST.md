@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vllm-project/vllm` — 26 default patterns, 6 followed patterns, 28 file(s) materialized.
+Mirror of `vllm-project/vllm` — 26 default patterns, 6 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vllm-project/vllm` — 26 default patterns, 6 followed patterns, 28 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 28 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -78,20 +78,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`.agents/skills/model-recipes/scripts/read_recipe.sh`](.agents/skills/model-recipes/scripts/read_recipe.sh) |
 | 13 | ✓ | [`.agents/skills/model-recipes/SKILL.md`](.agents/skills/model-recipes/SKILL.md) |
 | 14 | ✓ | [`.agents/skills/pr-checklist/SKILL.md`](.agents/skills/pr-checklist/SKILL.md) |
-| 15 | ✓ | [`.agents/skills/triton-kernel-writing/agents/openai.yaml`](.agents/skills/triton-kernel-writing/agents/openai.yaml) |
-| 16 | ✓ | [`.agents/skills/triton-kernel-writing/SKILL.md`](.agents/skills/triton-kernel-writing/SKILL.md) |
-| 17 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 18 | ✓ | [`rust/AGENTS.md`](rust/AGENTS.md) |
-| 19 | ✓ | [`rust/src/bench/AGENTS.md`](rust/src/bench/AGENTS.md) |
-| 20 | ✓ | [`vllm/parser/AGENTS.md`](vllm/parser/AGENTS.md) |
-| 21 | ✓ | [`vllm/reasoning/AGENTS.md`](vllm/reasoning/AGENTS.md) |
-| 22 | ✓ | [`vllm/tool_parsers/AGENTS.md`](vllm/tool_parsers/AGENTS.md) |
-| 23 | → | [`docs/contributing/editing-agent-instructions.md`](docs/contributing/editing-agent-instructions.md) |
-| 24 | → | [`docs/contributing/incremental_build.md`](docs/contributing/incremental_build.md) |
-| 25 | → | [`docs/contributing/model/tests.md`](docs/contributing/model/tests.md) |
-| 26 | → | [`docs/contributing/vulnerability_management.md`](docs/contributing/vulnerability_management.md) |
-| 27 | → | [`docs/usage/security.md`](docs/usage/security.md) |
-| 28 | → | [`SECURITY.md`](SECURITY.md) |
+| 15 | ✓ | [`.agents/skills/transformers-upgrade/agents/openai.yaml`](.agents/skills/transformers-upgrade/agents/openai.yaml) |
+| 16 | ✓ | [`.agents/skills/transformers-upgrade/scripts/diff_dumps.py`](.agents/skills/transformers-upgrade/scripts/diff_dumps.py) |
+| 17 | ✓ | [`.agents/skills/transformers-upgrade/scripts/dump_configs.py`](.agents/skills/transformers-upgrade/scripts/dump_configs.py) |
+| 18 | ✓ | [`.agents/skills/transformers-upgrade/scripts/dump_model.py`](.agents/skills/transformers-upgrade/scripts/dump_model.py) |
+| 19 | ✓ | [`.agents/skills/transformers-upgrade/scripts/find_upstreamed.py`](.agents/skills/transformers-upgrade/scripts/find_upstreamed.py) |
+| 20 | ✓ | [`.agents/skills/transformers-upgrade/SKILL.md`](.agents/skills/transformers-upgrade/SKILL.md) |
+| 21 | ✓ | [`.agents/skills/triton-kernel-writing/agents/openai.yaml`](.agents/skills/triton-kernel-writing/agents/openai.yaml) |
+| 22 | ✓ | [`.agents/skills/triton-kernel-writing/SKILL.md`](.agents/skills/triton-kernel-writing/SKILL.md) |
+| 23 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 24 | ✓ | [`rust/AGENTS.md`](rust/AGENTS.md) |
+| 25 | ✓ | [`rust/src/bench/AGENTS.md`](rust/src/bench/AGENTS.md) |
+| 26 | ✓ | [`vllm/parser/AGENTS.md`](vllm/parser/AGENTS.md) |
+| 27 | ✓ | [`vllm/reasoning/AGENTS.md`](vllm/reasoning/AGENTS.md) |
+| 28 | ✓ | [`vllm/tool_parsers/AGENTS.md`](vllm/tool_parsers/AGENTS.md) |
+| 29 | → | [`docs/contributing/editing-agent-instructions.md`](docs/contributing/editing-agent-instructions.md) |
+| 30 | → | [`docs/contributing/incremental_build.md`](docs/contributing/incremental_build.md) |
+| 31 | → | [`docs/contributing/model/tests.md`](docs/contributing/model/tests.md) |
+| 32 | → | [`docs/contributing/vulnerability_management.md`](docs/contributing/vulnerability_management.md) |
+| 33 | → | [`docs/usage/security.md`](docs/usage/security.md) |
+| 34 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

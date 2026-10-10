@@ -881,6 +881,46 @@ L3 checkpoint: standalone acquisition/takeover, atomic claim admission and maint
 - **Exit:** use shared-authority Section 7.2's separate decisions for a bounded change, reversible opt-in cohort and released default. Each requires affected real CLI/backend and independent baseline/negative/recovery evidence at its own scope. Formal D2 retains applicable volume and at least ten-day evidence; a cohort need not wait for that certificate. D3 retains explicit cutover authority. This plan runs no soak or provider promotion.
 - **Rollback:** reviewed fenced export/import and schema-aware downgrade; replacing a binary cannot restore old write authority.
 
+Cold-source inventory is now an explicit read-only CLI prerequisite through the
+same TS source/lease owners. It includes unreferenced archives and retained
+leases, with full text and source-byte witnesses, before any shadow opt-in.
+Original outbox disposition is also qualified through the shipped TS effects
+with Python Todo/bootstrap/capture producers absent from a disposable receiver:
+markerless abandoned/committed recovery, receipt replay without duplicate effects,
+unchanged active leases, and refusal plus same-operation archival of ambiguous
+originals. Retain the OS-lock adapter and original history readers. This covers
+the existing disposition owner, not global Host stop, lease settlement, import
+confirmation, a canonical cutover, or permission to delete active old writers.
+The same observation discovers original capture stores/identity, management
+operation files, outbox bytes and Goal-bound rollback archives through the
+existing typed owners; present history is validated without replay or drain.
+Compact readback never replaces the witnessed historical files or proves Host
+stop. Invalid history and missing completed rollback archives refuse inspection.
+Active original outbox inspection reuses the native drain proof owner to show
+pending records and receipt-proven residue per partition without any effects.
+An unavailable disposition retains raw witnesses; inactive/interrupted capture
+still needs its original management recovery. This preview never settles the
+outbox, updates a cursor or grants cleanup/import authority.
+Expired or orphan `active` leases still require settlement; canonical selectors
+and fences prevent treating display Markdown as an old authority source.
+This observation creates no capture or import receipt and never reports import
+readiness. Goal settings now consume that same observation: current/archive
+task counts, unsettled historical leases and retained capture/outbox presence,
+with path-free readback, unavailable-source refusal and fresh retry. This is the
+inventory stage only; no import, capture activation or execution grant is exposed.
+R5/D1 and T4/C1 still need stopped writer/Host proof, original outbox disposition,
+the backup-bound reviewed target and its Goal storage frontend,
+confirmation and same-operation import/recovery. Keep the cold-import work open;
+neither this prerequisite nor archive export qualifies writer cutoff or defaults.
+
+Cold-source retention checkpoint: current-project full backup discovers its
+registered custom state and source-registry routes. Real CLI backups and inert
+independent extraction preserve complete Markdown bytes, unreferenced archived
+Todos and raw runtime history, including SQLite snapshots. This closes a routing
+omission, not reviewed cold import or complete-state reactivation. Continue the
+existing R5/T4 import plan/confirmation, writer/Host/outbox fence and packaged App
+acceptance before retiring affected old writers; D2 and release defaults stay open.
+
 Existing canonical File/SQLite cutover now has a packaged settings journey using
 the existing typed migration/archive owner: immutable preview, explicit apply,
 original-plan recovery and independent current-source readback. Active capture
@@ -889,6 +929,109 @@ writes→File must use the current head; historical completion never selects the
 provider. This is a bounded App companion, not full old-source/Host upgrade or
 D2/release-default qualification. Continue those original acceptance frontiers
 and retire each last caller separately.
+
+Cold-source import now has a bounded CLI/App coordination stage: complete source
+records, an immutable source/target carrier bound to actual backup member bytes,
+explicit operator shutdown attestation, revalidation before the durable writer
+fence, and original-receipt recovery through the existing File/SQLite owners.
+It refuses unresolved capture/outbox and unsettled leases, including expired
+active and orphan records, without manufacturing shadow qualification. A killed
+fenced process can resume without rereading Markdown; original-receipt replay
+preserves later canonical writes. Coordination-source backup verification
+**does not qualify complete Goal recovery**. Packaged Goal storage settings
+reuse that transaction for private backup, inventory, explicit policy/stop
+confirmation and original-operation readback. Reload is read-only, including a
+fenced but uncommitted operation; applying the original carrier requires fresh
+confirmation. File/SQLite HTTP qualification preserves later writes and refuses
+source/backup drift. The operator-led POSIX stop path now exercises actual owned
+Host processes and native source leases on File/SQLite: process exit and lease
+release remain separate, expired active leases refuse import, and the old grant
+cannot launch a Host after cutover. Fresh canonical acquisition advances the
+retained lease version/epoch and launches a real owned Host. Source-free original
+import replay preserves that active grant and its later native settlement;
+a stale token refuses before launch even while the same Todo has a fresh active
+lease. Process exit remains separate from lease release after cutover as well.
+This qualifies the existing POSIX supervisor/lease reactivation boundary with
+synthetic work. App startup, full-state identity adoption, automatic Host
+discovery and live model use remain separate acceptance gaps.
+Proved original Todo outbox disposition now composes with cold import on both
+File and SQLite: four interrupted-write windows retain pending-source backups,
+exact original receipts and revision-bound rollback archives. Active capture
+still refuses import after its queue drains; a fresh post-disposition backup
+binds the reviewed import. Import replay preserves later canonical writes and
+the original archived bytes with the old normal producers absent in the receiver.
+Original lease disposition also refuses import until native owner release;
+the fresh reviewed backup retains the released record without a new grant.
+Unproved A→B→A entries remain refused and raw-byte archived by original-operation
+rollback. A fresh confirmed import binds the current source, never treats that
+ambiguous queue as committed receipts, and preserves it after later writes and
+import replay. This qualifies inert history preservation, not proof of an
+ambiguous commit or automatic Host/lease settlement. Continue App loading with
+the old normal writer absent and authorized full-state reactivation in R5. The
+installed cold-import CLI uses the existing selected dispatcher and
+Goal path resolver; real File/SQLite import and original-receipt recovery pass
+with the four old normal producer modules physically absent in a disposable
+package. This qualifies that command's loading boundary, not every other CLI
+caller or removal of those modules. Keep T4 retirement on actual callers: the
+retained prose-write guard now belongs to the existing source/fence boundary;
+the source partition projector has one shared owner, with compatible old
+imports. Configuration and direct guard checks run without both capture modules.
+Pure runtime-root routing and its actual canonical Todo, acceptance, Chat and
+CLI callers now use the existing paths owner, with an identical compatibility
+reexport for capture callers. Source and fresh-wheel File/SQLite App HTTP import,
+process restart, original-operation recovery, later canonical writes and prose
+checks pass the same oracle with both capture modules present and physically
+absent. Source/maintenance identity, Todo/handoff invariance, JSON types,
+project-relative routing and failed-write behavior remain unchanged. Historical
+outbox disposition and independent data/history recovery retain their separate
+qualifications below; authorized reactivation and remaining App writer callers
+stay open. This stage does not retire the supported old writer or qualify a
+released default.
+The shared TS source check admits runtime directory aliases by physical identity,
+preserving the original snapshot and foreign-source rejection. File/SQLite HTTP
+joins alias-bound import, externally configured registry backup, later writes and original-operation recovery; a
+retargeted alias refuses before the fence. This does not change the writer cutoff.
+Cold-import preservation checkpoint (R5/D1, T4/C1): full-state backups now
+witness each saved regular member's bytes in their existing manifests, including
+raw Markdown history, lease/receipt files, SQLite snapshots and stored
+configuration. Hashing the copied stream avoids binding a reviewed backup to a
+later source reread; failed reads retain the previous backup. Real CLI cold
+import→later canonical write→full-state backup→inert independent recovery now
+retains the complete File/SQLite head and committed journal, unreferenced archived
+requirements, stored configuration and original capture/rollback/released-lease
+bytes. Readback runs with the original project/runtime unreachable; missing
+selected-provider storage fails without replacement or File fallback. The
+pre-import backup separately retains original Markdown before later projection.
+This qualifies independent data/history recovery, not identity adoption, pending
+effect disposition or live Host reactivation. Continue those boundaries and the
+packaged App recovery journey through the existing owners. Do not retire the last
+normal Markdown writer or claim the released SQLite default from this checkpoint.
+
+The qualified shadow→canonical archive→isolated File/SQLite restore path retains
+committed dependency archives, terminal lease facts and later canonical writes.
+It does not preserve every unreferenced old-source archive or raw historical
+receipt. R5/T4 now qualifies those original bytes through full-state backup and
+inert independent readback; it still must qualify their authorized adoption
+before deleting caller chains that own live recovery. Source hashes and canonical
+archive verification alone cannot substitute for that acceptance. Supported
+backup-format and original-receipt recovery retain their
+separate upgrade boundary. See the
+[archive scope](../../reference/authority-archive.md).
+
+Reviewed source admission now rejects unsupported lease JSON filenames,
+non-regular records and linked source subtrees instead of silently omitting or
+following them. The existing typed coordination owner verifies exact source
+bytes under shared locks; Python retains filesystem transport. Regular retained
+lease history remains witnessed without granting a live lease. This closes a
+bounded source-inventory gap; complete cold-source import, original-operation
+recovery, packaged App adoption and the reversible developer trial remain on
+the [existing migration/release path](../../reference/local-authority-provider-selection.md#proposed-compatibility-cutoff-and-release-sequence).
+
+审核源准入拒绝不支持的租约 JSON 文件名、非普通文件和链接子目录，不再静默漏读
+或跟随链接。既有 TS coordination owner 在共享锁内核对原始字节；Python 保留
+文件系统传输。普通租约历史仍参与源见证，不产生新执行授权。这仅关闭有界源盘点
+缺口；完整冷源导入、原操作恢复、打包 App 采用和可逆开发者试用继续沿既有迁移
+与发布路径验收。
 
 New-Goal App recovery is a separate bounded R5/T4 gap: after Goal/Todo commit,
 Host startup or a lost response must resume the frozen original operation,

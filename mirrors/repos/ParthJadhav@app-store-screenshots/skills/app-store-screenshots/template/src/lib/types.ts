@@ -1,6 +1,12 @@
 export type Device =
   | "iphone"
   | "ipad"
+  // iPhone Duo's two displays. Each orientation is its own target with its own
+  // deck, so turning the device never rewrites a composed placement.
+  | "duo-outer"
+  | "duo-outer-landscape"
+  | "duo-inner"
+  | "duo-inner-landscape"
   | "tvos"
   | "watchos"
   | "carplay"
@@ -8,7 +14,11 @@ export type Device =
   | "android"
   | "android-7"
   | "android-10"
-  | "feature-graphic";
+  | "feature-graphic"
+  // App Store creative assets (product page header and search results).
+  | "creative-universal"
+  | "creative-header"
+  | "creative-search";
 
 export type Orientation = "portrait" | "landscape";
 

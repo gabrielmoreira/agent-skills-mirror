@@ -4,7 +4,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Copy, GripVertical, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { LAYOUT_LABEL } from "@/lib/constants";
+import { layoutLabel } from "@/lib/constants";
 import { pickText } from "@/lib/locale";
 import type { Device, Orientation, Scene, Slide, Theme } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -147,7 +147,7 @@ export function SlideThumb({
         </div>
         <div className="flex min-w-0 flex-1 flex-col">
           <span className="truncate text-[10px] uppercase tracking-wide text-muted-foreground">
-            {`Screen ${index + 1} · ${LAYOUT_LABEL[slide.layout]}`}
+            {`Screen ${index + 1} · ${layoutLabel(slide.layout, device)}`}
           </span>
           <span className="truncate text-sm font-medium leading-tight">
             {headline.split("\n")[0] || (

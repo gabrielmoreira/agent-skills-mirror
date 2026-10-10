@@ -4,8 +4,11 @@ import JSZip from "jszip";
 import { Toaster, toast } from "sonner";
 import {
   DEFAULT_SCREENSHOT_FONT_ID,
+  DEVICE_LABEL,
+  deviceForOrientation,
   getExportSizes,
   hasTheme,
+  orientationOf,
   IMPORTED_FONT_FAMILY,
   SCREENSHOT_FONTS,
   supportsLandscape,
@@ -15,6 +18,7 @@ import { detectPlatform, nid } from "@/lib/defaults";
 import { imageElementKey, isBuiltInElementId, isImageElementId, isTextElementId, textElementKey } from "@/lib/elements";
 import { renderSlide } from "@/lib/export-render";
 import { exportAssetPaths } from "@/lib/export-assets";
+import { DUO_COMPANION, duoGeometry, frameAssetPaths, isDuoDevice, setFrameAssets, type FrameFile, type MeasuredFrame } from "@/lib/frame-assets";
 import { didFail, preloadImages } from "@/lib/image-cache";
 import { resolveScreenshot, writeLocalized } from "@/lib/locale";
 import { useProject } from "@/lib/storage";
@@ -32,6 +36,7 @@ import type {
 import { Inspector } from "./inspector";
 import { PreviewStage } from "./preview-stage";
 import { Sidebar } from "./sidebar";
+import { DUO_FIT_TOLERANCE, captureFits } from "./device-frames";
 import { DeckCanvas, getCanvas } from "./slide-canvas";
 import { StyleLab } from "./style-lab";
 import { Toolbar } from "./toolbar";
@@ -42,6 +47,7 @@ export function ScreenshotEditor() {
   const [selectedElement, setSelectedElement] = React.useState<SelectedElement | null>(null);
   const [exporting, setExporting] = React.useState<string | null>(null);
   const [ready, setReady] = React.useState(false);
+  const framesLoaded = useFrameAssets();
   const [, refreshAssets] = React.useReducer((version: number) => version + 1, 0);
   const [exportLocaleOverride, setExportLocaleOverride] = React.useState<string | null>(null);
   const [exportSlideIndex, setExportSlideIndex] = React.useState(0);
@@ -77,8 +83,10 @@ export function ScreenshotEditor() {
   }, [hydrated, currentSlides, activeSlideId]);
 
   React.useEffect(() => {
-    if (!supportsLandscape(state.device) && state.orientation !== "portrait") {
-      setState((p) => ({ ...p, orientation: "portrait" }), { history: false });
+    // Undo can restore a device whose orientation differs from the current one.
+    const expected = supportsLandscape(state.device) ? orientationOf(state.device, state.orientation) : "portrait";
+    if (state.orientation !== expected) {
+      setState((p) => ({ ...p, orientation: expected }), { history: false });
     }
   }, [state.device, state.orientation, setState]);
 
@@ -94,12 +102,18 @@ export function ScreenshotEditor() {
   const assetPaths = React.useMemo(() => {
     const paths = new Set<string>();
     paths.add("/mockup.png");
+    // Only the open deck's bezel: each is a large PNG, and export preloads its
+    // own device's bezel before capturing.
+    for (const path of frameAssetPaths(state.device)) paths.add(path);
     if (state.appIcon) paths.add(state.appIcon);
     // Preload every locale variant so bulk export doesn't race image loads.
     const allSlides: Slide[] = Object.values(state.slidesByDevice).flat();
     for (const s of allSlides) {
       for (const raw of [s.screenshot, s.screenshotSecondary]) {
-        if (!raw || raw.startsWith("data:")) continue;
+        if (!raw) continue;
+        // Inline (data URI) captures are decoded too, so their size is known
+        // after a reload and a mismatched Duo capture is still flagged.
+        if (raw.startsWith("data:")) { paths.add(raw); continue; }
         if (raw.includes("{locale}")) {
           for (const loc of state.locales) paths.add(resolveScreenshot(raw, loc));
         } else {
@@ -111,11 +125,14 @@ export function ScreenshotEditor() {
       }
     }
     return Array.from(paths).sort();
-  }, [state.slidesByDevice, state.appIcon, state.locales]);
-  const assetSig = assetPaths.join("|");
+  }, [state.slidesByDevice, state.appIcon, state.locales, state.device, framesLoaded]);
+  // Inline captures can be megabytes long; a length and tail stand in for them.
+  const assetSig = assetPaths.map((p) => (p.startsWith("data:") ? `data:${p.length}:${p.slice(-48)}` : p)).join("|");
 
   React.useEffect(() => {
-    if (!hydrated) return;
+    // Wait for the bezel measurements, so the first paint already has the
+    // open deck's bezel cached instead of swapping it in under the user.
+    if (!hydrated || !framesLoaded) return;
     let cancelled = false;
     preloadImages(assetPaths).finally(() => {
       if (!cancelled) { setReady(true); refreshAssets(); }
@@ -124,7 +141,7 @@ export function ScreenshotEditor() {
     // assetPaths is derived from assetSig; depending on the string keeps the
     // effect from re-firing when slidesByDevice churns without path changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hydrated, assetSig]);
+  }, [hydrated, framesLoaded, assetSig]);
 
   // Surface storage failures (quota exceeded etc.) so the user knows their work isn't safe.
   React.useEffect(() => {
@@ -454,19 +471,38 @@ export function ScreenshotEditor() {
     }
     await waitForPaint();
 
+    const device = state.device;
+    // On iPhone Duo the back device is the other display: it never reuses the
+    // front capture, so a missing one leaves that device empty.
+    const duoPair = (slide: Slide) => isDuoDevice(device) && slide.layout === "two-devices";
     const missingScreens = currentSlides
       .map((slide, index) => ({ slide, index }))
-      .filter(({ slide }) => slideNeedsScreenshot(state.device, slide) && !slide.screenshot);
+      .filter(({ slide }) =>
+        slideNeedsScreenshot(device, slide) && (!slide.screenshot || (duoPair(slide) && !slide.screenshotSecondary)),
+      );
     const reusedBackScreens = currentSlides
       .map((slide, index) => ({ slide, index }))
       .filter(
         ({ slide }) =>
-          state.device !== "feature-graphic" &&
+          device !== "feature-graphic" &&
           slide.layout === "two-devices" &&
+          !duoPair(slide) &&
           slide.screenshot &&
           !slide.screenshotSecondary,
       );
-    if (missingScreens.length > 0 || reusedBackScreens.length > 0) {
+    // A capture from another display is letterboxed inside a Duo frame, never
+    // cropped or stretched, so name it rather than let it pass unnoticed.
+    const fitsDisplay = (raw: string | undefined, display: Device) =>
+      !raw || !isDuoDevice(display) ||
+      locales.every((loc) => captureFits(resolveScreenshot(raw, loc), duoGeometry(display).screenAspect, DUO_FIT_TOLERANCE));
+    const mismatched = isDuoDevice(device)
+      ? currentSlides.filter((slide) =>
+          slideNeedsScreenshot(device, slide) &&
+          (!fitsDisplay(slide.screenshot, device) ||
+            (slide.layout === "two-devices" && !fitsDisplay(slide.screenshotSecondary, DUO_COMPANION[device]))),
+        ).length
+      : 0;
+    if (missingScreens.length > 0 || reusedBackScreens.length > 0 || mismatched > 0) {
       const details = [
         missingScreens.length
           ? `${missingScreens.length} screen${missingScreens.length === 1 ? "" : "s"} will export with an empty device.`
@@ -474,8 +510,11 @@ export function ScreenshotEditor() {
         reusedBackScreens.length
           ? `${reusedBackScreens.length} two-device screen${reusedBackScreens.length === 1 ? "" : "s"} will reuse the primary screenshot in back.`
           : null,
+        mismatched
+          ? `${mismatched} screen${mismatched === 1 ? "" : "s"} use${mismatched === 1 ? "s" : ""} a capture that doesn't match its iPhone Duo display, so it is letterboxed. Capture on that display.`
+          : null,
       ].filter(Boolean);
-      toast.warning("Export includes placeholder screenshots", {
+      toast.warning(missingScreens.length || reusedBackScreens.length ? "Export includes placeholder screenshots" : "Check these screenshots", {
         description: details.join(" "),
         duration: 7000,
       });
@@ -647,7 +686,7 @@ export function ScreenshotEditor() {
 
   // ---------- Render ----------
 
-  if (!hydrated || !ready) {
+  if (!hydrated || !ready || !framesLoaded) {
     return (
       <div className="flex h-screen items-center justify-center">
         <div className="flex flex-col items-center gap-2 text-muted-foreground">
@@ -684,9 +723,11 @@ export function ScreenshotEditor() {
         setLocale={(v) => setState((p) => ({ ...p, locale: v }), { history: false })}
         locales={state.locales}
         device={state.device}
-        setDevice={(v) => setState((p) => ({ ...p, device: v }), { history: false })}
+        setDevice={(v) => setState((p) => ({ ...p, device: v, orientation: orientationOf(v, p.orientation) }), { history: false })}
         orientation={state.orientation}
-        setOrientation={(v) => setState((p) => ({ ...p, orientation: v }), { history: false })}
+        // A Duo orientation is its own deck: switching opens it rather than
+        // re-laying out the current one, so both compositions survive.
+        setOrientation={(v) => setState((p) => ({ ...p, orientation: v, device: deviceForOrientation(p.device, v) }), { history: false })}
         onExport={exportAll}
         onResetAll={() => {
           reset();
@@ -894,6 +935,39 @@ function useImportedFontFace(font: ImportedFont | undefined) {
     document.head.appendChild(style);
     return () => style.remove();
   }, [font?.src, font?.format]);
+}
+
+// Measures any Apple bezels the user added to public/frames/ before the
+// first Duo frame renders. Missing files are normal; the drawn frame is used.
+function useFrameAssets() {
+  const [loaded, setLoaded] = React.useState(false);
+  React.useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const resp = await fetch("/api/frames", { cache: "no-store", signal: AbortSignal.timeout(15000) });
+        const json = (await resp.json()) as {
+          ok: boolean;
+          frames?: Partial<Record<FrameFile, MeasuredFrame>>;
+          errors?: Partial<Record<FrameFile, string>>;
+        };
+        if (cancelled) return;
+        setFrameAssets(json.frames ?? {});
+        const errors = Object.values(json.errors ?? {});
+        if (errors.length) {
+          toast.warning("A device bezel couldn't be used", {
+            description: `${errors.join("\n")}\nThe drawn frame is shown instead.`,
+            duration: 12000,
+          });
+        }
+      } catch {
+        // No frames route (e.g. a static build): the drawn frames still work.
+      }
+      if (!cancelled) setLoaded(true);
+    })();
+    return () => { cancelled = true; };
+  }, []);
+  return loaded;
 }
 
 function slugify(s: string) {

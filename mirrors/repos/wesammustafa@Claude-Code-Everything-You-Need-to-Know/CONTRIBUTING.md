@@ -13,14 +13,10 @@ Thanks for your interest in improving this guide. This is a learning resource â€
 | Improve an explanation or fix a fact | Open a pull request. Follow [Sources and citations](#sources-and-citations), [Pull requests](#pull-requests) and the [Doc style guide](#doc-style-guide). |
 | Expand a thin section | Open a pull request. SDLC walkthroughs, new workflow recipes, and copy-ready examples for a lesson (see [Adding a skill](#adding-a-skill)) are all high-value. |
 
-### While the guide is reworked
+<a id="while-the-guide-is-reworked"></a>
+### Response times
 
-The guide is being reworked into lessons in three levels.
-
-- Fixes to content the rework keeps are welcome and reviewed as usual.
-- A pull request that changes content scheduled for removal is closed with thanks and the one-line reason for the cut.
-- Pull requests that add listings are closed under the [Listing policy](#listing-policy).
-- Stale-content issues get a first response within 7 days: a correction, or the Tier 1 source that settles it. Lesson-feedback issues get a first response within 7 days too.
+Stale-content issues get a first response within 7 days: a correction, or the Tier 1 source that settles it. Lesson-feedback issues get a first response within 7 days too.
 
 ## Sources and citations
 
@@ -74,7 +70,7 @@ Mental models, analogies, the guide's own advice, and how-to steps whose command
 - Each page that carries a [stamp](#the-stamp), and this file, has a one-line `Sources:` footer after its content. Only the navigation line follows it: on a lesson, the one [Lessons](#lessons) describes; on other pages, the `Up:` link. The footer lists every page the page's statements rely on: each page linked as the source of a fact it states.
   - Links that back no statement need not be listed: further reading (Go further, Official companions, Related pages), download and install pages, this repo's issue forms and the practice template, and pointers that say where to look, such as the sites in the Tier 1 table.
   - A page made of links to its sources may name them in summary, as Further learning ("the pages linked above") and the Feature map ("each feature's linked page") do. A page that relies on no outside page needs no footer.
-  - README, the other community files, stubs and pages from the previous edition need no footer.
+  - README, the other community files and stubs need no footer.
 - Anchor date-sensitive claims to a version (`v2.1.x`) or a full date.
 - Do not add access dates inline.
 
@@ -98,7 +94,7 @@ Lessons, Electives, capstones, level indexes, topic indexes and reference pages 
 Verified against Claude Code vX.Y.Z (stable) on YYYY-MM-DD
 ```
 
-It certifies that on that date every volatile claim on the page was checked against its Tier 1 source at that `stable` version, and that the page's exercise and check, if any, were dry-run there. It does not certify third-party items beyond the [listing bar](#the-listing-bar), or behavior on other release channels and surfaces. The README, the community files, stubs and pages from the previous edition carry no stamp.
+It certifies that on that date every volatile claim on the page was checked against its Tier 1 source at that `stable` version, and that the page's exercise and check, if any, were dry-run there. It does not certify third-party items beyond the [listing bar](#the-listing-bar), or behavior on other release channels and surfaces. The README, the community files and stubs carry no stamp.
 
 The `stamps` rule in the [checks](#checks) fails on a stamped page whose Stamp is missing or malformed. Once README carries a trust strip, it also fails if the strip's version differs from the latest edition entry in [CHANGELOG.md](CHANGELOG.md).
 
@@ -220,8 +216,9 @@ It needs Node.js LTS, git, Ruby (for YAML), jq (for the examples' smoke tests), 
 | `images` | An image lacks alt text, a Mermaid block lacks its accessibility lines, or a file under `assets/` breaks the naming, reference or size rules |
 | `lesson-lint` | A lesson or Elective breaks the [lesson anatomy](#lessons) |
 | `static-validation` | JSON, YAML, skill or agent frontmatter, a workflow script or a shell script does not parse or lint |
-| `inertness` | `examples/` holds a path Claude Code can load on its own |
+| `inertness` | `examples/` holds a path Claude Code can load on its own, or a marketplace manifest not renamed to `dot-claude-plugin/`, or the repository root holds a `.claude-plugin/` folder |
 | `smoke-tests` | An example's `test.sh` fails (only when the change touches `examples/`) |
+| `tutor-quotes` | With `TUTOR_DIR` set to a practice template checkout's `.claude/skills/tutor` folder, or in the weekly run: a quote, the title, the Stamp, a linked anchor or a step count in a `/tutor` step script no longer matches its lesson. On a pull request that changes a lesson listed in `tutor.txt`, it only warns |
 
 Each rule has known-bad fixtures under `.github/scripts/fixtures/`, one folder per case: `fixture.json` names the rule and the expected result, `tree/` holds the files, `base/` the state before a change, and `generate.mjs` writes anything that would be live Claude Code config if committed. If you change a rule, run the self-test too:
 
@@ -238,6 +235,7 @@ Scheduled checks keep watch between editions. Each opens or updates one tracking
 | Weekly external links | Mondays | Broken external links |
 | Daily expiry markers | Daily | Expired facts in the guide |
 | Weekly version drift | Mondays | New Claude Code stable release |
+| Weekly tutor quotes | Mondays | Tutor quotes drifted from a lesson |
 
 Every month, the maintainer:
 
@@ -248,7 +246,7 @@ Every two weeks, the maintainer runs `.github/scripts/traffic-snapshot.sh` and k
 
 ## Doc style guide
 
-The guide is moving to lessons in three levels: Beginner, Intermediate and Advanced. New pages follow these rules. Pages from the previous edition are brought in line when they are rewritten.
+The guide is organized as lessons in three levels: Beginner, Intermediate and Advanced. New and changed pages follow these rules.
 
 ### Lessons
 
@@ -320,7 +318,7 @@ Callouts are GitHub alerts, at most two per lesson, each with one meaning:
 
 ## File layout
 
-The folder layout changes while the guide is reworked into three levels, so this file does not list it yet. For examples, see [Adding a skill](#adding-a-skill).
+For where examples go, see [Adding a skill](#adding-a-skill).
 
 A pull request that adds a page under `docs/` also adds it to the "Everything in the guide" index in [README.md](README.md), so every page stays reachable from the front door.
 
@@ -343,7 +341,7 @@ This keeps inbound links from social posts working even after restructures.
 
 ## Adding a skill
 
-Learner examples go under `examples/<level>/<NN-lesson>/` (an Elective's under `examples/<level>/electives/<name>/`), in the folder of the lesson that uses them. Each folder mirrors the project layout, but nothing in it may sit at a path Claude Code discovers on its own: use `dot-claude/` for `.claude/`, `dot-mcp.json` for `.mcp.json`, and `CLAUDE.example.md` and `AGENTS.example.md` for `CLAUDE.md` and `AGENTS.md`. A skill goes in `dot-claude/skills/<name>/SKILL.md`, which means "copy to `.claude/skills/<name>/SKILL.md` in your project", where Claude Code loads project skills. A real `.claude/` folder there would not stay inert: Claude Code loads skills from a nested `.claude/skills/` once Claude works on files in that folder ([Skills](https://code.claude.com/docs/en/skills#where-skills-live)).
+Learner examples go under `examples/<level>/<NN-lesson>/` (an Elective's under `examples/<level>/electives/<name>/`), in the folder of the lesson that uses them. Each folder mirrors the project layout, but nothing in it may sit at a path Claude Code discovers on its own: use `dot-claude/` for `.claude/`, `dot-mcp.json` for `.mcp.json`, and `CLAUDE.example.md` and `AGENTS.example.md` for `CLAUDE.md` and `AGENTS.md`. A skill goes in `dot-claude/skills/<name>/SKILL.md`, which means "copy to `.claude/skills/<name>/SKILL.md` in your project", where Claude Code loads project skills. A real `.claude/` folder there would not stay inert: Claude Code loads skills from a nested `.claude/skills/` once Claude works on files in that folder ([Skills](https://code.claude.com/docs/en/skills#where-skills-live)). A plugin keeps its own `.claude-plugin/plugin.json`, because Claude Code doesn't discover a plugin under `examples/` on its own: it doesn't scan a project's `.claude/plugins/` directory, and `examples/` holds no `.claude/skills/` ([Plugin loading reference](https://code.claude.com/docs/en/plugins/loading#plugins-shared-through-a-repository)). A marketplace manifest goes in `dot-claude-plugin/marketplace.json`, which means "copy to `.claude-plugin/marketplace.json`", so neither the example's folder nor the guide repository can be added as a marketplace by its folder path or as `owner/repo` ([Marketplace reference](https://code.claude.com/docs/en/plugins/marketplace-reference#marketplace-file)).
 
 Every executable example (hook, script, workflow, settings snippet, skill with `allowed-tools`, plugin) meets this safety contract:
 
@@ -363,4 +361,4 @@ The root `.claude/` is reserved for maintainer tooling. Do not add skills or oth
 
 By contributing, you agree your contributions are licensed under the MIT license (see [`LICENSE`](LICENSE)).
 
-Sources: [Extend Claude with skills](https://code.claude.com/docs/en/skills), [Advanced setup](https://code.claude.com/docs/en/setup), [Environment variables](https://code.claude.com/docs/en/env-vars), [Settings](https://code.claude.com/docs/en/settings), [Output styles](https://code.claude.com/docs/en/output-styles), [Your first day in Claude Code](https://support.claude.com/en/articles/14552382-your-first-day-in-claude-code), [The MCP Registry](https://modelcontextprotocol.io/registry/about), [official plugin `marketplace.json`](https://github.com/anthropics/claude-plugins-official/blob/main/.claude-plugin/marketplace.json), [Basic writing and formatting syntax](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax), [Disabling and enabling a workflow](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/disable-and-enable-workflows), [REST API endpoints for repository traffic](https://docs.github.com/en/rest/metrics/traffic)
+Sources: [Extend Claude with skills](https://code.claude.com/docs/en/skills), [Plugin loading reference](https://code.claude.com/docs/en/plugins/loading), [Marketplace reference](https://code.claude.com/docs/en/plugins/marketplace-reference), [Advanced setup](https://code.claude.com/docs/en/setup), [Environment variables](https://code.claude.com/docs/en/env-vars), [Settings](https://code.claude.com/docs/en/settings), [Output styles](https://code.claude.com/docs/en/output-styles), [Your first day in Claude Code](https://support.claude.com/en/articles/14552382-your-first-day-in-claude-code), [The MCP Registry](https://modelcontextprotocol.io/registry/about), [official plugin `marketplace.json`](https://github.com/anthropics/claude-plugins-official/blob/main/.claude-plugin/marketplace.json), [Basic writing and formatting syntax](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax), [Disabling and enabling a workflow](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/disable-and-enable-workflows), [REST API endpoints for repository traffic](https://docs.github.com/en/rest/metrics/traffic)

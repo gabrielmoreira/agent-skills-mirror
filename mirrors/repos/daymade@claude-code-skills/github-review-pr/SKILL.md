@@ -1,11 +1,10 @@
 ---
 name: github-review-pr
 description: >-
-  Reviews or re-reviews a contributor PR as repository maintainer — a closed PR reconsidered, or a
-  sweep of open PRs — against the live base with immutable snapshots and three-way merges. Use for a
-  PR URL/number, "main changed, review again", "review all open PRs", "fix the rest ourselves?", or
-  merge readiness. Not for GitHub CRUD (use github-ops), your own PR (use github-contributor), or
-  merging without fresh review.
+  Reviews PRs against the live base with immutable objects and three-way merges. Use for PR
+  review/merge readiness, main changed, closed-PR reconsideration, open-PR sweeps, review-led repair,
+  or explicitly requested independent review of your own contribution. Not for GitHub CRUD
+  (use github-ops), authoring/maintaining your PR (use github-contributor), or merging without fresh review.
 argument-hint: "[--personal-maintainer] [--all-open | PR URL or owner/repo#number]"
 ---
 
@@ -37,6 +36,11 @@ Use this workflow for any of these:
 - All currently open contributor PRs in one repository when the user explicitly asks
   for an open-PR queue review. Process them by `createdAt` from newest to oldest and
   issue one evidence ledger and decision per PR.
+- An author's own contribution only when the user explicitly requests an independent
+  maintainer-style evaluation. Apply the same immutable-object and counter-review
+  method in read-only mode; do not switch to personal-maintainer mode, post a formal
+  approval, or acquire merge authority. Return the verdict to the author; authorized
+  repairs remain with `github-contributor:github-contributor`.
 
 Use a narrower workflow instead when the request is only one of these:
 
@@ -289,6 +293,24 @@ gh api --paginate "repos/$BASE_REPO/issues/$PR_NUMBER/comments"
 State the intended behavioral change in one or two sentences. Flag unrelated changes,
 missing promised changes, generated artifacts without their source changes, and
 dependency or lockfile drift. Do not infer intent from filenames alone.
+
+For document ingestion, first retrieve the original request and the corresponding
+source text or attachment. Separate source-material quality, changes introduced by
+ingestion, and integration conflicts. A request to archive an existing text does
+not require rewriting its narrative or adding an implementation plan. Report a
+material source error or misleading claim explicitly; preserve approved originals
+and distinguish any correction or annotation from them.
+
+Check changed citations by their destination and purpose: a link opening successfully
+does not prove it reaches the named evidence. Compare text and diagrams when fidelity
+is part of the request; do not discard link destinations from the comparison and
+then claim the evidence chain is preserved. Keep unavailable originals or unverified
+versions explicit rather than treating their absence as a contributor failure.
+
+Choose review depth from the affected claims and behavior. A mechanical link repair
+needs verification of the target and retained content, not a new content rewrite,
+general validator or CI workflow. Create automation only within separate user
+authorization and keep its stated coverage distinct from document correctness.
 
 When the head contains broad unrelated history, separate **branch state** from
 **contribution merit**. Use the GitHub PR commit list, title/body, exact commit patches,

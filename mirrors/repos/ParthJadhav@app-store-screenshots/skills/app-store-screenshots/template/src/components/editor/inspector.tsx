@@ -35,7 +35,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { LAYOUT_HINT, LAYOUT_LABEL } from "@/lib/constants";
+import { CANVAS, DEVICE_LABEL, LAYOUT_LABEL, isCreative, layoutHint, layoutLabel } from "@/lib/constants";
+import { DUO_COMPANION, duoGeometry, isDuoDevice } from "@/lib/frame-assets";
 import { COPY_IDEA_SLOTS } from "@/lib/copy-ideas";
 import { nid } from "@/lib/defaults";
 import { img } from "@/lib/image-cache";
@@ -48,7 +49,7 @@ import {
   textElementKey,
   toTextElementId,
 } from "@/lib/elements";
-import { pickText, writeLocalized } from "@/lib/locale";
+import { pickText, resolveScreenshot, writeLocalized } from "@/lib/locale";
 import { slideColors } from "@/lib/contrast";
 import { cn } from "@/lib/utils";
 import {
@@ -76,6 +77,7 @@ import type {
 import { BackgroundControls } from "./background-controls";
 import { ScreenshotPicker } from "./screenshot-picker";
 import { CalloutControls } from "./callout-controls";
+import { DUO_FIT_TOLERANCE, captureFits } from "./device-frames";
 import { calloutAvailable, getCanvas, getElementTransform } from "./slide-canvas";
 
 type Props = {
@@ -116,9 +118,11 @@ export function Inspector({
   const isFeatureGraphic = device === "feature-graphic" || slide.layout === "feature-graphic";
   const isNoDevice = slide.layout === "no-device";
   const layoutValue = device === "feature-graphic" ? "feature-graphic" : slide.layout;
-  const layoutOptions = Object.entries(LAYOUT_LABEL).filter(([layout]) =>
-    device === "feature-graphic" ? layout === "feature-graphic" : layout !== "feature-graphic",
-  );
+  const layoutOptions = (Object.keys(LAYOUT_LABEL) as SlideLayout[])
+    .filter((layout) => (device === "feature-graphic" ? layout === "feature-graphic" : layout !== "feature-graphic"))
+    .map((layout) => [layout, layoutLabel(layout, device)] as const);
+  // On iPhone Duo the back device is the other display, so it needs its own capture.
+  const companion = isDuoDevice(device) ? DUO_COMPANION[device] : null;
   const localeLabel = slide.label?.[locale] ?? "";
   const localeHeadline = slide.headline?.[locale] ?? "";
   // When the active locale is empty, surface the fallback (typically en) as
@@ -142,7 +146,7 @@ export function Inspector({
             editing · {locale.toUpperCase()}
           </span>
         </div>
-        <p className="text-xs text-muted-foreground">{LAYOUT_HINT[layoutValue]}</p>
+        <p className="text-xs text-muted-foreground">{layoutHint(layoutValue, device)}</p>
       </div>
 
       <div className="flex-1 space-y-4 overflow-y-auto p-3">
@@ -156,7 +160,9 @@ export function Inspector({
                 layout: next,
                 transforms: undefined,
                 screenshotSecondary:
-                  next === "two-devices" ? slide.screenshotSecondary || slide.screenshot : slide.screenshotSecondary,
+                  next === "two-devices" && !companion
+                    ? slide.screenshotSecondary || slide.screenshot
+                    : slide.screenshotSecondary,
               });
             }}
           >
@@ -172,6 +178,16 @@ export function Inspector({
             </SelectContent>
           </Select>
         </div>
+
+        {isCreative(device) && (
+          <p className="rounded-md border border-green-600/30 bg-green-600/5 p-2 text-[11px] leading-relaxed text-muted-foreground">
+            Keep the message and focal art inside the green <span className="font-medium text-foreground">art safe area</span>
+            {device === "creative-universal"
+              ? "; the backdrop fills the rest. One universal asset is used for both the product page header and search results. The dashed crops are estimates. Check the real result with App Store Connect's Preview tool."
+              : "; the backdrop fills the rest."}{" "}
+            Write a short brand line here; don&apos;t reuse a long screenshot headline.
+          </p>
+        )}
 
         <BackgroundControls slide={isFeatureGraphic ? { ...slide, inverted: slide.inverted ?? true } : slide} theme={theme} onChange={onChange} />
 
@@ -217,18 +233,24 @@ export function Inspector({
               locale={locale}
               onChange={(v) => onChange({ screenshot: v })}
             />
+            <CaptureNote device={device} src={resolveScreenshot(slide.screenshot, locale)} />
           </div>
         )}
 
         {slide.layout === "two-devices" && (
           <div className="space-y-1.5">
-            <Label className="text-xs">Back device screenshot</Label>
+            <Label className="text-xs">
+              {companion ? `${DEVICE_LABEL[companion]} screenshot` : "Back device screenshot"}
+            </Label>
             <ScreenshotPicker
-              label="Secondary (back layer)"
+              label={companion ? DEVICE_LABEL[companion] : "Secondary (back layer)"}
               value={slide.screenshotSecondary || ""}
               locale={locale}
               onChange={(v) => onChange({ screenshotSecondary: v })}
             />
+            {companion && (
+              <CaptureNote device={companion} src={resolveScreenshot(slide.screenshotSecondary, locale)} />
+            )}
           </div>
         )}
 
@@ -267,6 +289,20 @@ export function Inspector({
         )}
       </div>
     </div>
+  );
+}
+
+// iPhone Duo frames show a capture uncropped only when it came from that display.
+function CaptureNote({ device, src }: { device: Device; src: string }) {
+  if (!isDuoDevice(device)) return null;
+  const { w, h } = CANVAS[device];
+  const fits = !src || captureFits(src, duoGeometry(device).screenAspect, DUO_FIT_TOLERANCE);
+  return (
+    <p className={cn("text-[11px] leading-relaxed", fits ? "text-muted-foreground" : "text-amber-600")}>
+      {fits
+        ? `Use a ${w} × ${h} capture from the ${DEVICE_LABEL[device].replace(/ \(landscape\)$/, "")} display${device.endsWith("-landscape") ? " in landscape" : ""}.`
+        : `This capture isn't ${w} × ${h} (${DEVICE_LABEL[device]}), so it is letterboxed, not cropped. Capture on that display.`}
+    </p>
   );
 }
 

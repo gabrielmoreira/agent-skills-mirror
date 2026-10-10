@@ -1,7 +1,7 @@
 # tinyflows capability seam
 
 Wires the vendored `tinyflows` workflow engine (validate → compile → run over
-its own in-crate state-graph runtime, `vendor/tinyflows/`) to real OpenHuman
+its own in-crate state-graph runtime, [`vendor/tinyflows/`](../../../../../vendor/tinyflows/)) to real OpenHuman
 services. `tinyflows` knows nothing about OpenHuman. Every effect a flow node
 can have (calling an LLM, running an agent, making an HTTP request, running
 code, calling a tool, reading/writing state, resolving a sub-workflow,
@@ -13,7 +13,7 @@ security model); this README covers only the host seam.
 
 ## Layout
 
-- `mod.rs`: export-focused. Re-exports `caps::build_capabilities` and
+- [`mod.rs`](./mod.rs): export-focused. Re-exports `caps::build_capabilities` and
   `caps::open_flow_checkpointer`, the two entry points `flows::ops*.rs`
   calls to drive a run; re-exports `tinyflows_sqlite::checkpoint` as
   `checkpoint_sqlite` under its historical path.
@@ -58,23 +58,23 @@ security model); this README covers only the host seam.
     the assistant uses), `composio.rs` for everything else (Composio
     actions; must stay the catch-all backend since Composio slugs carry no
     prefix).
-- `memory_adapter.rs`: `OpenHumanMemory`, the `MemoryProvider` adapter for
+- [`memory_adapter.rs`](./memory_adapter.rs): `OpenHumanMemory`, the `MemoryProvider` adapter for
   the `memory` node. Routes every operation through the same `tier.rs` gate
   pair as the other acting adapters (`CommandClass::Read` for
   `recall`/`search`/`flavour`/`people`, `CommandClass::Write` for
   `remember`/`forget`); `remember`/`forget` hard-refuse any scope other than
   `"flow"`. Scopes are memory v2 tag filters: `user` reads everything,
   `flow` reads the run's own `flow:<id>` items, `flows` reads every flow's
-  items (tag `flows`) — the same tags the `flow_memory_*` agent tools use.
+  items (tag `flows`), the same tags the `flow_memory_*` agent tools use.
   `recall` returns the engine's answer plus citations, `search` raw hits;
   `flavour` and `people` are unsupported in v2 (unknown slug / empty
   listing).
-- `observability.rs`: `tinyflows::observability::RunObserver` impls:
+- [`observability.rs`](./observability.rs): `tinyflows::observability::RunObserver` impls:
   `FlowRunObserver`, which persists live
   steps via `flows::upsert_flow_run_step` and publishes
   `DomainEvent::FlowRunProgress` twice per non-trigger node so the frontend
   can render a run live.
-- `langfuse_export.rs`: after a run settles, exports its durable
+- [`langfuse_export.rs`](./langfuse_export.rs): after a run settles, exports its durable
   `GraphObservation` slice as one Langfuse trace via `tinyagents`'
   `GraphLangfuseExporter`, tagged with the Langfuse Agent Graph view keys.
 
@@ -85,7 +85,7 @@ The contract is spelled out in
 this module holds the outer gate. `tier.rs` consults the user's autonomy
 tier for each acting node's `CommandClass` and forces an `ApprovalGate`
 round-trip on `Prompt`, even when the saved flow's own `require_approval` is
-false. Composio `tool_call` nodes additionally pass `caps/ops.rs`'s
+false. Composio `tool_call` nodes additionally pass [`caps/ops.rs`](./caps/ops.rs)'s
 deny-by-default curation check (`is_curated_flow_tool`), stricter than the
 agent loop's because a flow author's slug is free-form and never round-trips
 through live tool discovery; `tools/composio.rs` documents why the tier gate
@@ -101,9 +101,15 @@ new origin wrapper.
 
 ## Tests
 
-`tinyflows_tests.rs` (capability-seam smoke tests against the real engine;
+[`tinyflows_tests.rs`](./tinyflows_tests.rs) (capability-seam smoke tests against the real engine;
 note the real `HttpRequestTool` blocks loopback, so HTTP coverage asserts the
 SSRF/allowlist rejections rather than a mock round-trip),
-`memory_adapter_tests.rs` (the `memory` node adapter against an in-memory
+[`memory_adapter_tests.rs`](./memory_adapter_tests.rs) (the `memory` node adapter against an in-memory
 reference engine), plus a `<module>_tests.rs` file beside most modules
 above.
+
+## Further reading
+
+- [Parent module README](../README.md)
+- [Workflows](../../../../../gitbooks/features/workflows.md)
+- [tinyflows](../../../../../vendor/tinyflows/README.md)

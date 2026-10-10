@@ -1,3 +1,5 @@
+import { isCreative } from "./constants";
+import { frameAssetPaths } from "./frame-assets";
 import { resolveScreenshot } from "./locale";
 import type { ProjectState } from "./types";
 
@@ -11,7 +13,9 @@ export function exportAssetPaths(state: ProjectState): string[] {
       continue;
     }
     if (slide.layout !== "no-device" || slide.transforms?.device || slide.transforms?.deviceSecondary) {
-      if (state.device === "iphone") add("/mockup.png");
+      // Creatives draw the iPhone frame too.
+      if (state.device === "iphone" || isCreative(state.device)) add("/mockup.png");
+      for (const path of frameAssetPaths(state.device)) add(path);
       for (const locale of state.locales) {
         add(resolveScreenshot(slide.screenshot, locale));
         if (slide.layout === "two-devices" || slide.transforms?.deviceSecondary) {

@@ -612,6 +612,43 @@ L3 检查点：独立领取/接管、原子 claim 准入与维护共用 typed le
 - **退出：** 按 shared-authority 7.2 分别决定有界改动、可回退自愿 cohort、发布默认值，各自在适用范围具备真实 CLI/backend、独立基线、负例和恢复证据。正式 D2 保留适用容量及至少十日证据，cohort 不必等该证书。D3 保留明确切换权限。本计划没有启动 soak 或晋升 provider。
 - **回滚：** 按已审阅的 fenced export/import 和 schema-aware downgrade，不能靠替换二进制恢复旧写权威。
 
+冷旧 Goal 导入复用既有 TS source/promotion/receipt owner，CLI/App 使用绑定实际
+备份字节的预览、明确确认、停写 fence 与原操作恢复。POSIX 人工停止旅程现以真实
+owned Host 进程、未晋升源的原生租约和 File/SQLite 验证：进程退出不释放租约，
+过期 active 租约仍拒绝导入；原生释放后保留历史身份，切换后旧 grant 在 Host 启动前
+拒绝。这是合成工作对既有 supervisor/lease 边界的验证，不是自动发现/停止 Host
+或 live 模型验收。可证明的原 Todo outbox 现与 File/SQLite 冷导入串联：四种中断窗口
+保留待处理源备份、精确原回执及绑定 revision 的 rollback 归档；队列 drain 后 capture
+仍活跃则继续拒绝导入。处置后重新备份并审核导入，原操作重试保留后续 canonical
+新写入和原归档字节，接收端旧正常生产者物理缺席。原 lease 处置后仍拒绝导入，
+直到原 owner 原生释放；新审核备份保留已释放记录，不转新 grant。无证明的 A→B→A
+记录仍被拒绝，通过原操作 rollback 保留原始字节；重新备份并明确确认当前来源的
+导入，不把歧义队列当作已提交回执，后续写入和导入重试仍保留其历史。这验收惰性
+历史保留，不证明歧义写入提交，也不自动停止 Host／结算 lease。旧正常 writer 物理缺席的 App 加载、
+完整状态重新激活继续开放；协调源备份验证不结算完整恢复。详见
+[冷源导入与支持边界](../../reference/local-authority-provider-selection.md)。
+
+仍有调用方的 prose 写入保护现归属于既有 source/fence 边界，source partition
+projector 共用同一 owner，并保留旧导入兼容。配置和直接 guard 可在两个 capture
+模块物理缺席时运行。纯 runtime-root 解析及其真实 canonical Todo、terminal
+lifecycle、acceptance、Chat 和 CLI 调用方现复用既有 paths owner；旧 capture adapter
+兼容导出同一个函数。源码与 fresh wheel 的 File/SQLite App HTTP 使用同一 oracle，
+在两个 capture 模块均存在/均物理缺席时验证导入、进程重启、原操作恢复、后续
+canonical 写入及 prose 保护。保留相对项目路由、显式 override 优先、source/maintenance
+身份、Todo/handoff 不变、JSON 类型与失败不写；历史 outbox 处置和独立数据／历史
+恢复保留下述独立资格，授权重新激活及其余 App writer 调用方继续开放，不据此
+删除受支持旧 writer 或结算发布默认资格。
+
+冷旧源保留检查点：本项目全量备份现盘点注册的自定义状态与来源 registry 路由。
+真实 CLI 冷导入→新增 canonical 写入→全量备份→独立静态解包现已串联验证
+File/SQLite 完整 head、全部 committed journal、未引用的归档要求、存储配置和原始
+capture/rollback/已释放 lease 字节。回读前让原项目与 runtime 不可访问；选定 provider
+存储缺失时明确失败，不新建替代库或回退 File。导入前备份另行保留投影前的原始
+Markdown。这资格化独立数据与历史回读，不代表身份采用、pending effect 处置或
+Host 重新激活。继续既有 R5/T4 的这些边界和 packaged App 恢复旅程，通过后才退役
+受影响旧 writer；D2 与发布默认值继续开放。详见
+[全量状态恢复边界](../../reference/configuration-backup.md#full-state-recovery-after-cold-import)。
+
 [Goal instance/recovery RFC](goal-instance-identity-and-orphan-recovery-v0.zh-CN.md)
 为 R2/R3 retirement 和迟到结果安全提供有界 R5 依赖。Codec 和 source-session lifetime
 transaction 已存在；attached Chat、handoff、Turn journal 的 fence 已分别资格化，

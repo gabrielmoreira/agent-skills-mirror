@@ -133,6 +133,58 @@ function macStarter(): Slide[] {
   ];
 }
 
+// iPhone Duo. The outer display is a short, wide phone (1398 × 2034) and the
+// inner display opens to about the shape of A-series paper (2853 × 2007), so
+// each gets its own deck. Opening the phone held upright gives the inner display
+// in landscape, so that deck leads; it opens on the two-pane view and pairs the
+// closed and open phone. "Two devices" on a Duo deck is that folded + open pair.
+// See iphone-duo.md beside SKILL.md.
+function duoOuterStarter(): Slide[] {
+  return [
+    { id: nid(), layout: "hero", label: en("MEET YOUR APP"), headline: en("Everything,\none hand."), screenshot: "" },
+    { id: nid(), layout: "device-bottom", label: en("FEATURE 01"), headline: en("One idea\nper screen."), screenshot: "" },
+    { id: nid(), layout: "two-devices", label: en("OPEN IT"), headline: en("Open it for\nthe full view."), screenshot: "", screenshotSecondary: "" },
+    { id: nid(), layout: "device-top", label: en("FEATURE 02"), headline: en("Flip the contrast."), screenshot: "", inverted: true },
+    { id: nid(), layout: "no-device", label: en("MORE"), headline: en("And so\nmuch more."), screenshot: "" },
+  ];
+}
+
+function duoOuterLandscapeStarter(): Slide[] {
+  return [
+    { id: nid(), layout: "hero", label: en("TURN IT"), headline: en("Made for the wide view."), screenshot: "" },
+    { id: nid(), layout: "split-landscape", label: en("FEATURE 01"), headline: en("One idea\nper screen."), screenshot: "" },
+    { id: nid(), layout: "device-top", label: en("FEATURE 02"), headline: en("Flip the contrast."), screenshot: "", inverted: true },
+  ];
+}
+
+function duoInnerStarter(): Slide[] {
+  return [
+    { id: nid(), layout: "hero", label: en("UNFOLD IT"), headline: en("Room for\nthe whole view."), screenshot: "" },
+    { id: nid(), layout: "device-bottom", label: en("FEATURE 01"), headline: en("One idea\nper screen."), screenshot: "" },
+    { id: nid(), layout: "two-devices", label: en("FOLDED + OPEN"), headline: en("Turn it, open it,\nkeep going."), screenshot: "", screenshotSecondary: "" },
+    { id: nid(), layout: "device-top", label: en("FEATURE 02"), headline: en("Flip the contrast."), screenshot: "", inverted: true },
+  ];
+}
+
+// Landscape copy runs across the top in one line; the device is the hero.
+function duoInnerLandscapeStarter(): Slide[] {
+  return [
+    { id: nid(), layout: "hero", label: en("UNFOLD IT"), headline: en("Lead with the two-pane view."), screenshot: "" },
+    { id: nid(), layout: "two-devices", label: en("FOLDED + OPEN"), headline: en("Same moment, closed and open."), screenshot: "", screenshotSecondary: "" },
+    { id: nid(), layout: "split-landscape", label: en("FEATURE 02"), headline: en("One idea\nper screen."), screenshot: "" },
+    { id: nid(), layout: "device-top", label: en("FEATURE 03"), headline: en("Show what only the wide screen can."), screenshot: "", inverted: true },
+    { id: nid(), layout: "no-device", label: en("MORE"), headline: en("And so much more."), screenshot: "" },
+  ];
+}
+
+// App Store creatives: one short brand message each, never a screenshot
+// headline. The layout sits inside Apple's art safe area.
+function creativeStarter(): Slide[] {
+  return [
+    { id: nid(), layout: "split-landscape", label: en("NEW"), headline: en("Your app,\nat a glance."), screenshot: "" },
+  ];
+}
+
 function fgStarter(): Slide[] {
   return [
     {
@@ -167,6 +219,13 @@ export const DEFAULT_PROJECT: ProjectState = {
     "android-7": tabletStarter("7"),
     "android-10": tabletStarter("10"),
     "feature-graphic": fgStarter(),
+    "duo-outer": duoOuterStarter(),
+    "duo-outer-landscape": duoOuterLandscapeStarter(),
+    "duo-inner": duoInnerStarter(),
+    "duo-inner-landscape": duoInnerLandscapeStarter(),
+    "creative-universal": creativeStarter(),
+    "creative-header": creativeStarter(),
+    "creative-search": creativeStarter(),
   },
 };
 

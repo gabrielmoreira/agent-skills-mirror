@@ -18,13 +18,13 @@ Persistent, Rust-native Socket.IO client to the OpenHuman backend. The `socket` 
 | File | Role |
 | --- | --- |
 | `crates/openhuman-core/src/platform/socket/mod.rs` | Module docstring + exports only. Re-exports `SocketManager`, `global_socket_manager`, `set_global_socket_manager`, and the `all_socket_controller_schemas` / `all_socket_registered_controllers` pair. |
-| `crates/openhuman-core/src/platform/socket/manager.rs` | `SocketManager` handle + `SharedState`; global `OnceLock` accessor; `connect` / `connect_with_provider` / `disconnect` / `emit` / `emit_with_ack` / `get_state`; spawns the background `ws_loop`. Holds emit/shutdown channels, ACK waiters, and the loop join handle. |
+| `crates/openhuman-core/src/platform/socket/manager.rs` | `SocketManager` handle + `SharedState`; global `OnceLock` accessor; `connect` / `connect_with_provider` / `disconnect` / `emit` / `emit_with_ack` / `get_state`; spawns the background [`ws_loop`](./ws_loop). Holds emit/shutdown channels, ACK waiters, and the loop join handle. |
 | `crates/openhuman-core/src/platform/socket/ws_loop.rs` | The background reconnection loop and a single connection attempt: Engine.IO/Socket.IO handshake, Socket.IO ACK packet dispatch, redirect-following connect, ping-timeout deadline, backoff, invalid-token decision logic, failure-escalation logging. |
 | `crates/openhuman-core/src/platform/socket/event_handlers.rs` | Inbound SIO event dispatch (`handle_sio_event`), SIO frame parsing (`parse_sio_event`), outbound frame helper (`emit_via_channel`). Maps event names → `DomainEvent` publishes. Redacts payload content from logs. |
 | `crates/openhuman-core/src/platform/socket/token_provider.rs` | `TokenProvider` type alias + `static_token_provider`, `token_provider_from_config`, and `is_invalid_token_error` (strict double-anchor matcher). |
 | `crates/openhuman-core/src/platform/socket/schemas.rs` | Controller schemas + RPC handlers for the `socket` namespace. |
 | `crates/openhuman-core/src/platform/socket/types.rs` | `WsStream` alias, `ConnectionOutcome` enum, observability event-name constants; re-exports `ConnectionStatus` / `SocketState` from `crate::platform::socket::models`. |
-| `crates/openhuman-core/src/platform/socket/ops.rs` | RPC operations behind `schemas.rs` (`connect_with_session` and live-socket reuse). |
+| `crates/openhuman-core/src/platform/socket/ops.rs` | RPC operations behind [`schemas.rs`](./schemas.rs) (`connect_with_session` and live-socket reuse). |
 | `crates/openhuman-core/src/platform/socket/*_tests.rs` | Sibling test suites, included via `#[path]`. |
 
 ## Public surface
@@ -33,7 +33,7 @@ Persistent, Rust-native Socket.IO client to the OpenHuman backend. The `socket` 
 - `global_socket_manager() -> Option<&'static Arc<SocketManager>>` and `set_global_socket_manager(Arc<SocketManager>)`: the process-global singleton (set once at bootstrap).
 - `all_socket_controller_schemas` / `all_socket_registered_controllers`: controller-registry exports wired into `crates/openhuman-core/src/core/all.rs`.
 
-Internal-only (`pub(crate)` / `pub(super)`): `TokenProvider` and its builders, `SharedState`, `ConnectionOutcome`, `WsStream`, the `ws_loop` and event-handler helpers.
+Internal-only (`pub(crate)` / `pub(super)`): `TokenProvider` and its builders, `SharedState`, `ConnectionOutcome`, `WsStream`, the [`ws_loop`](./ws_loop) and event-handler helpers.
 
 ## RPC / controllers
 
@@ -71,17 +71,17 @@ None of its own. State (`status`, `socket_id`, `error`, attached `WebhookRouter`
 
 ## Dependencies
 
-- `crate::platform::socket::models` — `ConnectionStatus`, `SocketState` DTOs.
-- `crate::platform::socket::url::websocket_url`, `crate::backend::require_base_url` (asks the installed transport, which resolves `effective_backend_api_url`), `crate::security::credentials::session_support::get_session_token` — URL derivation and session-token lookup.
-- `crate::core::all` — `ControllerFuture`, `RegisteredController` for the controller registry.
-- `crate::core::{ControllerSchema, FieldSchema, TypeSchema}` — RPC schema types.
-- `crate::core::bus::BUS.publish` / `crate::core::events::DomainEvent` — for routing inbound events.
-- `crate::core::observability::report_error_or_expected` — one-shot sustained-outage classification at the failure threshold.
-- `crate::skills::webhooks` — `WebhookRouter` (attached for parse-error logging / response emission) and `WebhookRequest`.
-- `crate::integrations::composio` — `ComposioTriggerEvent` DTO for `composio:trigger` deserialization.
-- `crate::security::devices::tunnel_client` — `TunnelPeerStatus`, `TunnelFrame` DTOs for tunnel events.
-- `crate::config` — `Config` + `rpc::load_config_with_timeout` for `connect_with_session`.
-- `crate::util::utf8_safe_prefix_at_byte_boundary` — UTF-8-safe log truncation of raw packets.
+- `crate::platform::socket::models`: `ConnectionStatus`, `SocketState` DTOs.
+- `crate::platform::socket::url::websocket_url`, `crate::backend::require_base_url` (asks the installed transport, which resolves `effective_backend_api_url`), `crate::security::credentials::session_support::get_session_token`: URL derivation and session-token lookup.
+- `crate::core::all`: `ControllerFuture`, `RegisteredController` for the controller registry.
+- `crate::core::{ControllerSchema, FieldSchema, TypeSchema}`: RPC schema types.
+- `crate::core::bus::BUS.publish` / `crate::core::events::DomainEvent`: for routing inbound events.
+- `crate::core::observability::report_error_or_expected`: one-shot sustained-outage classification at the failure threshold.
+- `crate::skills::webhooks`: `WebhookRouter` (attached for parse-error logging / response emission) and `WebhookRequest`.
+- `crate::integrations::composio`: `ComposioTriggerEvent` DTO for `composio:trigger` deserialization.
+- `crate::security::devices::tunnel_client`: `TunnelPeerStatus`, `TunnelFrame` DTOs for tunnel events.
+- `crate::config`: `Config` + `rpc::load_config_with_timeout` for `connect_with_session`.
+- `crate::util::utf8_safe_prefix_at_byte_boundary`: UTF-8-safe log truncation of raw packets.
 
 ## Used by
 
@@ -93,7 +93,7 @@ None of its own. State (`status`, `socket_id`, `error`, attached `WebhookRouter`
 
 ## Notes / gotchas
 
-- Event-name constants in `types.rs` (`runtime:socket-state-changed`, `server:event`) are grep-anchored: the frontend subscribes to those exact strings; a rename silently breaks the Tauri event bridge (locked by a test).
+- Event-name constants in [`types.rs`](./types.rs) (`runtime:socket-state-changed`, `server:event`) are grep-anchored: the frontend subscribes to those exact strings; a rename silently breaks the Tauri event bridge (locked by a test).
 - **Payload content is never logged** at any level: webhook bodies / channel messages / Composio payloads can carry PII, secrets, or tokens. Only byte-length and structural shape are logged. This also dodged a UTF-8 char-boundary panic that used to slice raw payloads at byte 500 (OPENHUMAN-TAURI-KC / #1814).
 - `connect` rejects an empty/whitespace token immediately rather than spawning a doomed retry loop; `connect_with_provider` does the same eager pre-check via the provider.
 - The reconnect loop bounds "fresh-token immediate retry" to **one** per cycle so a provider that returns a different non-empty token every call cannot hot-loop without sleeping or escalating (CodeRabbit Major, #2905).
@@ -103,3 +103,9 @@ None of its own. State (`status`, `socket_id`, `error`, attached `WebhookRouter`
 - The ping-timeout warning carries the connection age, the number of Engine.IO pings the connection ever received, and the frames sent since the last server frame; a successful handshake after an outage logs `Reconnected after Ns (N failed attempt(s))`. Both exist so a drop report can be root-caused from the log alone (#6256): drops that always land at the same connection age point at a lifetime ceiling on the path (#5603), zero pings on a minutes-old connection point at the server.
 - Redirect following only persists the "update BACKEND_URL" warning for permanent redirects (301/308); temporary (302/307) hops don't (CodeRabbit, #1547).
 - No agent tools and no `bus.rs`: this is a transport domain that publishes events for others to handle.
+
+## Further reading
+
+- [Parent module (`platform`)](../README.md)
+- [Architecture overview](../../../../../gitbooks/developing/architecture.md)
+- [Platform and availability](../../../../../gitbooks/features/platform.md)

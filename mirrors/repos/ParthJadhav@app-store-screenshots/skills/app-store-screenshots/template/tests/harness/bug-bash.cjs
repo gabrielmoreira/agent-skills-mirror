@@ -160,7 +160,7 @@ const fixture = (extra = {}) => ({schemaVersion:2,appName:'Bug bash',themeId:'cl
  });
  await check('every device exports real images at its advertised sizes',async()=>{
    const JSZip=require('jszip');
-   const devices=['iphone','ipad','tvos','watchos','carplay','mac','android','android-7','android-10','feature-graphic'];
+   const devices=['iphone','ipad','duo-outer','duo-outer-landscape','duo-inner','duo-inner-landscape','tvos','watchos','carplay','mac','android','android-7','android-10','feature-graphic','creative-universal','creative-header','creative-search'];
    for(const device of devices) {
      const bootstrap=await open();
      const src=await bootstrap.page.evaluate(()=>{const c=document.createElement('canvas');c.width=200;c.height=400;const x=c.getContext('2d');x.fillStyle='#ff00ff';x.fillRect(0,0,200,400);return c.toDataURL()});
@@ -170,7 +170,7 @@ const fixture = (extra = {}) => ({schemaVersion:2,appName:'Bug bash',themeId:'cl
      await page.getByRole('button',{name:'Export bundle',exact:true}).click();
      const file=await (await downloaded).path();const zip=await JSZip.loadAsync(await fs.readFile(file));
      const pngs=Object.values(zip.files).filter(f=>f.name.endsWith('.png'));
-     const expected={iphone:4,ipad:2,tvos:2,watchos:6,carplay:4,mac:4,android:1,'android-7':1,'android-10':1,'feature-graphic':1};
+     const expected={iphone:4,ipad:2,'duo-outer':1,'duo-outer-landscape':1,'duo-inner':1,'duo-inner-landscape':1,tvos:2,watchos:6,carplay:4,mac:4,android:1,'android-7':1,'android-10':1,'feature-graphic':1,'creative-universal':1,'creative-header':1,'creative-search':2};
      assert.equal(pngs.length,expected[device],device);
      for(const png of pngs) {
        const bytes=await png.async('nodebuffer');const [,w,h]=png.name.match(/\/(\d+)x(\d+)\//);

@@ -21,7 +21,10 @@ A dispatch receipt requires fresh observation to establish the website result.
 Snapshots include document identity, target bounds, viewport, DOM revision and
 input revision. Effects reject changed URLs, page mutations, user input, field
 values or target geometry; read again after manual progress. Form/editable values
-are excluded from snapshot text and labels. The value comparison stays inside
+are excluded from snapshot text and labels. Text fields and dropdowns report
+only whether they have input; fields also report whether an input/change event
+was observed in this document. These flags do not prove a value is correct or
+that a person caused the event. The value comparison stays inside
 the isolated page realm. These freshness checks do not classify a button as safe
 for a particular task or replace the host's action policy.
 Large native messages use ordered lossless chunks below the Android Binder limit.
@@ -48,8 +51,17 @@ proof about arbitrary JavaScript: a reviewed ordinary button or field can run
 site code. Qualify each supported page and its consequences. Protected OTP fills,
 complete sensitive-page policy, and installed Android task binding remain separate
 work. Binding metadata and target rules must never come from model or page text.
+An expired, unrevoked binding can renew at the same task epoch only with a higher
+binding revision and identical owner, origin, targets and display name. Revoked
+bindings and scope changes require a new epoch.
 
-Run `bun run --cwd packages/os test:browser` for protocol tests.
+Run `bun run --cwd packages/os test:browser` for protocol tests. CI runs this
+lane in the OS verification job (`.github/workflows/os.yml`: `verify:portable`
+runs `test`, which ends with `test:browser`) whenever a change touches
+`packages/os`. That job runs for develop pushes (`develop-full.yml` calls
+`ci.yml`), not in pull request validation. The Chromium scripts
+(`test:browser:page`, `test:browser:guidance`, `test:browser:task-guidance` and
+`scripts/test-protected-fill.mjs`) need a browser and are run by hand.
 Installed-browser and signed Android native-host verification are separate required
 integration checks; a built extension alone does not prove those paths work.
 
@@ -154,13 +166,20 @@ current show, binding, transport, document and per-show key, then sends a
 disconnect ends the offer. `pause` removes the label and answers and leaves a
 grey, show-only "<name> · paused" cursor; it cancels a pending action and is
 owner-bound like removal. Hosts use `pause` for product Pause and `hide` for Close.
-The cursor travels from where it was last seen, taps in the air and hides before
-the ring and label appear; an action cursor stays on its target, and the 800 ms
-readiness starts after it arrives. Reduced motion shows everything in place.
+The cursor travels from where it was last seen and hides before the ring and
+label appear. A show-only guide never plays a tap, because the person presses
+that control. An action cursor stays on its target, and the 800 ms readiness
+starts after it arrives. Reduced motion shows everything in place.
 The binding's optional `assistantName` (default "Eliza") names the cursor tag and
-label mark. `guide-font.mjs` bundles Figtree 500/700 (`figtree-OFL.txt`). The
+label mark. A bound task action may carry the host's own preview sentence
+(`actionText`, at most 200 characters); otherwise the preview uses a generic line.
+A task policy never clicks a control whose name uses the `COMMIT_CONTROL`
+vocabulary in `src/commands.mjs` (pay, confirm, continue, schedule, sign in and
+similar). The person presses those controls. `guide-font.mjs` bundles Figtree 500/700 (`figtree-OFL.txt`). The
 overlay adds it from bytes under a random family name and falls back to the
-system font if a page face claims that name.
+system font if a page face claims that name. Its fixed CSS is an adopted shadow
+stylesheet, so a site's ban on inline style elements does not remove the guide's
+layout. Page styles and content-security policy remain unchanged.
 Run the actual Chromium renderer guidance tests. In Bash or Zsh, run:
 
 ```sh
@@ -211,7 +230,25 @@ and a matching OTP input. It does not allow password fields or Verify/submit
 activation. Run `node --conditions=eliza-source
 packages/os/browser/scripts/test-protected-fill.mjs` for controlled Chromium
 field-policy and snapshot-redaction checks; native transport and provider
-qualification remain separate.
+qualification remain separate. The same script checks the task effect watch: a
+fill that makes a code field submit itself, and a button that calls
+`form.submit()`, are stopped and reported as `effectViolation`; a link click still
+opens its link. A fetch or beacon to the page's own site after a task fill (also
+one sent seconds later), and a same-document `history.pushState`, cannot be
+stopped but are reported (`request`, `navigation`); third-party requests and
+requests that start within 1.5 seconds of her own key press or pointer press are
+not. A site request that starts later than that (a long debounce after she stops
+typing) is reported, which pauses the task rather than missing a commit. The
+watch lasts 30 seconds or until the next task fill or click. Same-site
+`fetch`, `XMLHttpRequest` and beacon requests each have a fixture. It also checks date fills (`YYYY-MM-DD`, real days only), the
+`expectedSelector` target check and the value-free `hasInput` field flag.
+
+Show-only guides scroll an off-screen target into view and report `placement`.
+Action guides never scroll. A trusted Dismiss sends only the guide ID; the
+extension keeps the step dismissed for that tab, task and epoch, also after a
+reload, until the host restores it. Snapshot references in `keepClear` name
+controls the label must not cover. Manual-activity events from a form with a
+password, code or user-name field carry `credential: true`.
 
 
 Android component generation accepts `--embed-host` only as an explicit build
@@ -301,3 +338,13 @@ domains and owns warning copy, suggested navigation and any bypass policy. It
 makes no network requests and is neither an allowlist nor a safety verdict.
 Run its contracts with `node --test protection/domain-lookalike.test.mjs` from
 this directory; the package browser suite includes them.
+
+The task-effect watch covers the interval from a helper action to the person's
+next trusted control activation, for at most 30 seconds. A click on a button or
+link, or a submission/activation keypress, creates that handoff. Stray taps,
+scrolling and ordinary typing retain only the short 1.5-second attribution
+window. A person's submission may finish later; its delayed receipt is not treated
+as an automated helper effect. Requests that started before the handoff remain
+reportable when they finish afterward. Synthetic page events do not end the
+interval, and a new helper action starts a new interval. This observation rule
+does not grant permission to execute payment or sign-in controls.

@@ -10,12 +10,12 @@ budget gating live in one place instead of being copied per domain.
 
 | File | Role |
 | --- | --- |
-| `construct.rs` | The `IntegrationClient` type and its constructors. Holds the backend URL, the app-session auth token, a separate `reqwest::Client` for downloads, and a lazily-fetched pricing cache. Also sanitizes a misconfigured `backend_url` that carries an inference-style path (issue #2075). |
-| `requests.rs` | Outbound request plumbing: route guards (refusing intentionally unexposed routes such as `webhooks`/`admin`), egress disclosure and enforcement, budget gating, and the JSON verb methods (`post`/`get`/`patch`/`delete`/`upload_multipart`). |
-| `download.rs` | Raw-bytes download support. The file-storage download route 302-redirects to a presigned S3 URL; `get_bytes` reads `Content-Type` and `Content-Disposition` off the response since the JSON envelope helpers do not carry them. |
-| `budget_gate.rs` | Refuses `/agent-integrations/*` calls once the account's AI credits are exhausted, so a tool call never burns a backend round trip the backend would reject anyway. Reads `GET /teams/me/usage` through `BackendOAuthClient` with a one-minute failure backoff to avoid flooding Sentry on a persistent outage. |
-| `pricing.rs` | The pricing cache on `IntegrationClient` plus `pricing_for_config`, which short-circuits to empty pricing in Composio direct mode (no backend session exists to serve `/agent-integrations/pricing` there). |
-| `errors.rs` | Backend error classification: extracting a readable detail from an error body, and handling the session-JWT 401 to session-expiry recovery path. |
+| [`construct.rs`](./construct.rs) | The `IntegrationClient` type and its constructors. Holds the backend URL, the app-session auth token, a separate `reqwest::Client` for downloads, and a lazily-fetched pricing cache. Also sanitizes a misconfigured `backend_url` that carries an inference-style path (issue #2075). |
+| [`requests.rs`](./requests.rs) | Outbound request plumbing: route guards (refusing intentionally unexposed routes such as `webhooks`/`admin`), egress disclosure and enforcement, budget gating, and the JSON verb methods (`post`/`get`/`patch`/`delete`/`upload_multipart`). |
+| [`download.rs`](./download.rs) | Raw-bytes download support. The file-storage download route 302-redirects to a presigned S3 URL; `get_bytes` reads `Content-Type` and `Content-Disposition` off the response since the JSON envelope helpers do not carry them. |
+| [`budget_gate.rs`](./budget_gate.rs) | Refuses `/agent-integrations/*` calls once the account's AI credits are exhausted, so a tool call never burns a backend round trip the backend would reject anyway. Reads `GET /teams/me/usage` through `BackendOAuthClient` with a one-minute failure backoff to avoid flooding Sentry on a persistent outage. |
+| [`pricing.rs`](./pricing.rs) | The pricing cache on `IntegrationClient` plus `pricing_for_config`, which short-circuits to empty pricing in Composio direct mode (no backend session exists to serve `/agent-integrations/pricing` there). |
+| [`errors.rs`](./errors.rs) | Backend error classification: extracting a readable detail from an error body, and handling the session-JWT 401 to session-expiry recovery path. |
 
 ## How auth works
 
@@ -44,3 +44,8 @@ See [`../README.md`](../README.md) for the integrations domain overview.
 `BackendTransportError` becomes the `anyhow::Error` every verb method
 returns; `IntegrationClient::map_transport_error` in `AGENTS.md` refers to
 this function.
+
+## Further reading
+
+- [Third-party integrations](../../../../../gitbooks/features/integrations/README.md)
+- [Connections](../../../../../gitbooks/features/connections.md)

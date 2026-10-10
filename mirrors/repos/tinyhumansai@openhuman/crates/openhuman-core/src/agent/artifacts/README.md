@@ -5,7 +5,7 @@ documents, images, video). Metadata lives in the hidden, per-account
 `<workspace_dir>/artifacts/`; the files themselves are written to a visible
 files folder, `~/OpenHuman/projects/Files` by default
 (`config::default_files_dir`, #5505). Producer tools
-(`tools/impl/presentation`, `tools/impl/document`, `media::generation`) call
+([`tools/impl/presentation`](../../tools/impl/presentation/), [`tools/impl/document`](../../tools/impl/document/), `media::generation`) call
 this module to reserve an artifact and its file, write their bytes, and flip the record to
 `Ready` or `Failed`; the module publishes the matching bus events, persists
 `meta.json` / `args.json`, and exposes `ai.*` RPC controllers plus three
@@ -16,14 +16,14 @@ renders artifact content itself.
 
 | File | Role |
 | --- | --- |
-| `mod.rs` | `mod` decls and re-exports: `ArtifactKind` / `ArtifactMeta` / `ArtifactStatus`, the producer API (`create_artifact`, `finalize_artifact`, `fail_artifact`, `read_artifact_bytes`), and `all_artifacts_controller_schemas` / `all_artifacts_registered_controllers`. |
-| `types.rs` | `ArtifactKind` (presentation/document/image/other), `ArtifactStatus` (pending/ready/failed), `ArtifactMeta`. Enums serialize lowercase; `parse` is case-insensitive and never errors (unknown kind → `Other`, unknown status → `Pending`). `ArtifactMeta.error` and `.thread_id` are optional, `skip_serializing_if` none. |
-| `files.rs` | Where the bytes live: `reserve_file` (claims `<stem>.<ext>`, then `<stem> (2).<ext>`, with `create_new` in the shared files folder), `resolve_file` + the escape guard, `resolve_ready_file` (`pub`: the one id → existing-file lookup for readers and the desktop Download command), `remove_empty_placeholder`, the "file missing" error. |
-| `migrate.rs` | `migrate_legacy_artifacts`: the idempotent, crash-safe boot move of pre-#5505 files into the files folder (copy to `.<id>.partial` → claim a name and rename → atomic meta write → delete legacy bytes). Run per account from `config::ensure_agent_dirs`. |
-| `store.rs` | All filesystem I/O over `tokio::fs`: `artifacts_root`, `create_artifact`, `finalize_artifact`, `fail_artifact`, `read_artifact_bytes` (`pub`); `save_artifact_meta`, `save_artifact_args`, `read_artifact_args`, `list_artifacts`, `get_artifact`, `delete_artifact` (`pub(crate)`); `validate_artifact_id` / `assert_within_root` sandboxing; the `REGENERATE_TARGET_ID` task-local; `sanitize_filename_stem`. |
-| `ops.rs` | RPC business logic returning `Outcome<Value>`: `ai_list_artifacts`, `ai_get_artifact`, `ai_delete_artifact`, `ai_regenerate`. `DEFAULT_LIMIT = 50`, `MAX_LIMIT = 200`. The regenerate path that re-runs `PresentationTool` is `#[cfg(feature = "documents")]`; without the feature `ai_regenerate` returns an error. |
-| `schemas.rs` | `ControllerSchema`s and `handle_*` fns for the four `ai.*` controllers; param helpers `read_required`, `read_optional_u64`, `read_optional_string` (whitespace-only → absent), `type_name`. |
-| `tools.rs` | `ArtifactListTool`, `ArtifactGetTool`, `ArtifactDeleteTool`: shims over `ops` that unwrap the `Outcome` and return `outcome.value` as the `ToolResult` string. |
+| [`mod.rs`](./mod.rs) | `mod` decls and re-exports: `ArtifactKind` / `ArtifactMeta` / `ArtifactStatus`, the producer API (`create_artifact`, `finalize_artifact`, `fail_artifact`, `read_artifact_bytes`), and `all_artifacts_controller_schemas` / `all_artifacts_registered_controllers`. |
+| [`types.rs`](./types.rs) | `ArtifactKind` (presentation/document/image/other), `ArtifactStatus` (pending/ready/failed), `ArtifactMeta`. Enums serialize lowercase; `parse` is case-insensitive and never errors (unknown kind → `Other`, unknown status → `Pending`). `ArtifactMeta.error` and `.thread_id` are optional, `skip_serializing_if` none. |
+| [`files.rs`](./files.rs) | Where the bytes live: `reserve_file` (claims `<stem>.<ext>`, then `<stem> (2).<ext>`, with `create_new` in the shared files folder), `resolve_file` + the escape guard, `resolve_ready_file` (`pub`: the one id → existing-file lookup for readers and the desktop Download command), `remove_empty_placeholder`, the "file missing" error. |
+| [`migrate.rs`](./migrate.rs) | `migrate_legacy_artifacts`: the idempotent, crash-safe boot move of pre-#5505 files into the files folder (copy to `.<id>.partial` → claim a name and rename → atomic meta write → delete legacy bytes). Run per account from `config::ensure_agent_dirs`. |
+| [`store.rs`](./store.rs) | All filesystem I/O over `tokio::fs`: `artifacts_root`, `create_artifact`, `finalize_artifact`, `fail_artifact`, `read_artifact_bytes` (`pub`); `save_artifact_meta`, `save_artifact_args`, `read_artifact_args`, `list_artifacts`, `get_artifact`, `delete_artifact` (`pub(crate)`); `validate_artifact_id` / `assert_within_root` sandboxing; the `REGENERATE_TARGET_ID` task-local; `sanitize_filename_stem`. |
+| [`ops.rs`](./ops.rs) | RPC business logic returning `Outcome<Value>`: `ai_list_artifacts`, `ai_get_artifact`, `ai_delete_artifact`, `ai_regenerate`. `DEFAULT_LIMIT = 50`, `MAX_LIMIT = 200`. The regenerate path that re-runs `PresentationTool` is `#[cfg(feature = "documents")]`; without the feature `ai_regenerate` returns an error. |
+| [`schemas.rs`](./schemas.rs) | `ControllerSchema`s and `handle_*` fns for the four `ai.*` controllers; param helpers `read_required`, `read_optional_u64`, `read_optional_string` (whitespace-only → absent), `type_name`. |
+| [`tools.rs`](./tools.rs) | `ArtifactListTool`, `ArtifactGetTool`, `ArtifactDeleteTool`: shims over `ops` that unwrap the `Outcome` and return `outcome.value` as the `ToolResult` string. |
 | `*_tests.rs` | Sibling test files for each of the above (`#[path]`). |
 
 ## Public surface
@@ -39,9 +39,9 @@ renders artifact content itself.
 
 ## RPC / controllers
 
-Namespace `ai`. Registered in `core/all.rs` under `DomainGroup::Agent` via
+Namespace `ai`. Registered in [`core/all.rs`](../../core/all.rs) under `DomainGroup::Agent` via
 `all_artifacts_registered_controllers()`; `all_artifacts_controller_schemas()`
-is used by `schemas_tests.rs` to check every function has a schema and a
+is used by [`schemas_tests.rs`](./schemas_tests.rs) to check every function has a schema and a
 handler. Handlers load config through `config::rpc::load_config_with_timeout()`
 and trim string params.
 
@@ -62,14 +62,14 @@ When `thread_id` is given to `list_artifacts`, legacy records with no
 
 ## Agent tools
 
-Constructed in `tools/ops.rs` (unconditionally) and re-exported through
-`tools/mod.rs` (`pub use crate::agent::artifacts::tools::*`).
+Constructed in [`tools/ops.rs`](../../tools/ops.rs) (unconditionally) and re-exported through
+[`tools/mod.rs`](../../tools/mod.rs) (`pub use crate::agent::artifacts::tools::*`).
 
 | Tool | Permission | Behavior |
 | --- | --- | --- |
 | `artifact_list` | default | `ops::ai_list_artifacts(.., thread_id = None)`: always the whole workspace; the per-thread filter is RPC-only. `offset` / `limit` args. Concurrency-safe. |
 | `artifact_get` | default | `ops::ai_get_artifact`; `artifact_id` required. Concurrency-safe. |
-| `artifact_delete` | `Dangerous` | `ops::ai_delete_artifact`. Default-OFF: listed as its own `ToolFamily` (`id: "artifact_delete"`, `default_enabled: false`) in `TOOL_FAMILIES` in `tools/user_filter.rs`; `artifact_list` / `artifact_get` are deliberately not in that map so they cannot be toggled off. |
+| `artifact_delete` | `Dangerous` | `ops::ai_delete_artifact`. Default-OFF: listed as its own `ToolFamily` (`id: "artifact_delete"`, `default_enabled: false`) in `TOOL_FAMILIES` in [`tools/user_filter.rs`](../../tools/user_filter.rs); `artifact_list` / `artifact_get` are deliberately not in that map so they cannot be toggled off. |
 
 There is no regenerate tool; regeneration is RPC-only.
 
@@ -85,7 +85,7 @@ subscribes to nothing):
 All three carry `thread_id` / `client_id` read from the
 `security::approval::APPROVAL_CHAT_CONTEXT` task-local; outside a chat turn
 (CLI, cron, sub-agents) both are `None` and the
-`web_chat::artifact_surface` subscriber (`web_chat/event_bus.rs`) drops the
+`web_chat::artifact_surface` subscriber ([`web_chat/event_bus.rs`](../../web_chat/event_bus.rs)) drops the
 event.
 
 ## Persistence
@@ -119,13 +119,13 @@ event.
 
 ## Used by
 
-- `tools/impl/presentation/mod.rs` and `tools/impl/document/mod.rs`
+- [`tools/impl/presentation/mod.rs`](../../tools/impl/presentation/mod.rs) and [`tools/impl/document/mod.rs`](../../tools/impl/document/mod.rs)
   (`documents` feature; in `scripts/ci/product-features.txt`, not in Cargo
-  defaults), and `media/generation/artifact_tool.rs`: the producers.
+  defaults), and [`media/generation/artifact_tool.rs`](../../media/generation/artifact_tool.rs): the producers.
   Presentation also uses `read_artifact_bytes` for its image pipeline.
-- `config/ops/agent.rs` (`ensure_agent_dirs`): creates the files folder and
+- [`config/ops/agent.rs`](../../config/ops/agent.rs) (`ensure_agent_dirs`): creates the files folder and
   runs the migration at boot.
-- `crates/openhuman-app/src/artifact_commands.rs`: the desktop Download
+- [`crates/openhuman-app/src/artifact_commands.rs`](../../../../openhuman-app/src/artifact_commands.rs): the desktop Download
   command resolves an artifact id through `resolve_ready_file`.
 - `web_chat/event_bus.rs`: bridges the three events to web-channel
   `artifact_*` events.
@@ -145,3 +145,9 @@ event.
   containing `/`, `\`, or `.`. Filename stems are lowercased ASCII
   `[a-z0-9_-]`, capped at 80 chars, fallback `artifact`.
 - Log prefix is `[artifacts]` (`[tool][artifacts]` in `tools.rs`).
+
+## Further reading
+
+- [Parent module README](../README.md)
+- [Agent harness architecture](../../../../../gitbooks/developing/architecture/agent-harness.md)
+- [Chat](../../../../../gitbooks/features/chat.md)

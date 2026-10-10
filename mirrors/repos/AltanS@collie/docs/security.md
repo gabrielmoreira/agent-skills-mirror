@@ -110,7 +110,7 @@ When a pairing ends, the phone deletes what Collie stored under it. This happens
 phone from Settings, and when the bridge refuses its token with `device not paired` or `device expired`.
 
 The phone deletes the token, every unsent draft, the saved pane text and herd, the push subscription,
-and Collie's caches except the app shell. Your settings stay: theme, language, pins and other
+the "No prompts" confirms, and Collie's caches except the app shell. Your settings stay: theme, language, pins and other
 preferences hold no session text. Settings asks you to confirm before it revokes any device.
 
 The phone's own wipe is the only one. The bridge sends no `Clear-Site-Data` header, because that
@@ -179,6 +179,25 @@ Key security boundaries and risks:
   `~/.codex`, `~/.config/gh` or `~/.ssh` shows what is there. So does the `.env` of a second Collie
   whose config folder sits under the workspace. A hard link inside the folder to a file outside it is
   not caught either.
+- **A paired device can add launchers.** With the default `[phone] adds = true`, a phone may add a
+  row built from a recipe: an agent plus option chips whose flags the bridge picks from its own
+  table. A line typed by hand needs `free_text = true`, which is off by default. A recipe can still
+  skip permission prompts. Such a row carries a "No prompts" badge, and each device confirms it once.
+  Revoking a device removes the rows it added. Set `adds = false` to turn off every phone-added row
+  ([Your own launchers](configure.md#launchers-added-from-a-phone),
+  [ADR 0094](../.adr/0094-launchers-added-from-a-phone.md)).
+- **A paired device can run a one-off command.** With the default `[phone] run = true`, a phone may
+  type a line it wrote into a fresh shell on a machine. This adds no power, because a paired phone can
+  already open a shell and type into it. The line follows the free-line character rule, and the bridge
+  refuses it with no paired device. Each command that started is kept, up to 12, in
+  `commands-recent.json` in the state folder (mode 0600). A line that seems to carry a secret (an
+  assignment such as `TOKEN=…`, a URL with a password, or a word such as `token` or `password`) runs
+  but is not kept. The check is a guess, so a secret can still slip into the list; the audit log
+  records only a line's first word and its length. Unpairing or revoking a device leaves the
+  list as it is, because running a line again needs a paired device. Set `run = false` to remove the
+  shortcut
+  ([One-off commands](configure.md#one-off-commands-and-their-history),
+  [ADR 0095](../.adr/0095-one-off-commands-and-their-history.md)).
 - **A single instance exposes all sessions.** By default, one Collie process fronts every
   multiplexer session discovered under Herdr's configuration root, including sandbox sessions
   ([Multi-session](configure.md#multi-session)).

@@ -8,17 +8,6 @@ This repository is a Claude Code skills marketplace.
 
 ## Skills Architecture
 
-### Directory Structure
-
-Each skill follows a standard structure:
-```
-skill-name/
-├── SKILL.md (required)          # Core skill instructions with YAML frontmatter
-├── scripts/ (optional)          # Executable Python/Bash scripts
-├── references/ (optional)       # Documentation loaded as needed
-└── assets/ (optional)           # Update-owned templates and resources for output
-```
-
 ### Progressive Disclosure Pattern
 
 Skills use progressive loading:
@@ -61,11 +50,30 @@ Use [skill-creator](daymade-skill/skill-creator/SKILL.md) before creating or
 changing a skill. It owns change classification, evidence selection, regression
 review, validation, initialization, and packaging.
 
+Operational or code-bearing Skill edits complete directly affected document alignment
+before the first candidate freeze; follow skill-creator's Edit workflow.
+For project instruction-entry maintenance, enter
+[claude-md-progressive-disclosurer](daymade-claude-code/claude-md-progressive-disclosurer/SKILL.md).
+Its verification reference owns dual-entry reconciliation and native-host readback;
+keep the detailed procedure there.
+For a valid check that emits warnings, follow its
+[warning interpretation](daymade-skill/skill-creator/references/knowledge-skill-grounding.md#interpret-validation-warnings).
+For local/remote ASR selection, speed comparison and speech-content acceptance, enter
+[asr-transcribe-to-text](daymade-audio/asr-transcribe-to-text/SKILL.md) and its
+[execution SOP](daymade-audio/asr-transcribe-to-text/references/execution_location_and_comparison.md).
+For competitor claims, citations and existing-product learning, enter
+[competitors-analysis](competitors-analysis/SKILL.md) and its
+[citation readback checklist](competitors-analysis/references/analysis_checklist.md#citation-readback-and-counterevidence).
+
 For permission-sensitive fixtures, use its
 [execution-context verification recipe](daymade-skill/skill-creator/references/stateful-script-verification.md#execution-identity-and-permission-fixtures).
 
 For its audit, release, source-contract or materialization commands from another
 working directory, use the [fixed command entry](daymade-skill/skill-creator/references/fixed-command-entry.md).
+
+For plugin/Skill naming, source registration or release labels, use
+[source location and activation](daymade-skill/skill-creator/references/source-location-and-activation.md)
+and [delivery identity](daymade-skill/skill-creator/references/delivery-identity.md).
 
 For saved HTML batches, follow [the conversion owner](daymade-docs/doc-to-markdown/references/html-conversion.md#gate-a-batch-through-the-existing-recipe)
 and its actual-reader pilot before expansion. Keep conversion evidence and reader
@@ -92,7 +100,7 @@ the bundled CLIs own executable argument and validation behavior. Keep this file
 as the route rather than a second copy of those procedures.
 
 For customer-approved report forms, follow
-[skill-creator's report-template contract](daymade-skill/skill-creator/SKILL.md#show-the-result-not-just-the-work).
+[skill-creator's report-template contract](daymade-skill/skill-creator/references/authoring-and-reuse.md#show-the-result-not-just-the-work).
 
 For HTML report creation or updates, enter
 [report-with-html's Define success workflow](report-with-html/SKILL.md#workflow)
@@ -102,6 +110,10 @@ owns concrete plans, cost boundaries and next-verification choices; do not turn 
 shortlist into purchase or deployment approval.
 Its [maintenance contract](report-with-html/references/long-lived-report-maintenance.md)
 owns later reconciliation and consumer readback.
+
+For citation previews and in-place source inspection, enter
+[report-with-html's interaction owner](report-with-html/references/interaction-components.md)
+and [frontend-visual-qa's source-inspection route](frontend-visual-qa/references/journey-and-page-contracts.md#cited-source-inspection).
 
 For HTML report images and explanatory diagrams, enter
 [report-with-html](report-with-html/SKILL.md); its
@@ -143,6 +155,9 @@ Python hooks.
 For rendered UI freshness, delayed editor/batch responses or deployment acceptance, enter
 [frontend-visual-qa](frontend-visual-qa/SKILL.md). Keep its manifest, launcher,
 result semantics and rendered-journey procedure in that owner.
+For nested zoomable workspaces, use its
+[mode-specific acceptance](frontend-visual-qa/references/journey-and-page-contracts.md#journey-and-state-matrix);
+ordinary and enlarged evidence remain separate.
 Before designing or judging monitoring, availability or certificate matrices, enter
 [data-visualization-discipline](data-visualization-discipline/SKILL.md).
 Keep observation and risk semantics in its data-validation route, not a second checklist here.
@@ -193,6 +208,12 @@ A `tests/` directory under a Skill does **not** automatically run in CI.
 timeouts and additional test steps. For required-check readback, installation stalls,
 test failures and temporary-Git cleanup, follow [CI operations](references/ci-operations.md).
 
+For CI demand, notification overload, exhausted allowance or repeated validation,
+enter [github-ops' CI demand workflow](github-ops/references/ci-demand-and-notifications.md).
+For self-hosted routing, resource limits or cache persistence, follow its
+[runner acceptance](github-ops/references/workflow_operations.md#self-hosted-runner-capacity-and-acceptance).
+Keep demand selection, validation-reuse and capacity acceptance in those owners.
+
 For browser-backed recurring jobs, enter
 [macos-watchdog](daymade-macos/macos-watchdog/SKILL.md) and apply its deployment
 acceptance before shipping. That Skill owns resource-budget and focus evidence;
@@ -202,6 +223,9 @@ Before choosing or changing any periodic observer's cadence, follow
 [macos-watchdog's observation contract](daymade-macos/macos-watchdog/references/probe-cost.md).
 For named macOS load/runaway alerts, follow
 [macos-load-doctor's intervention and diagnosis-completion contract](daymade-macos/macos-load-doctor/SKILL.md#5-act-within-the-boundary).
+For memory pressure or suspected child-process leaks, enter that Skill's
+[triage](daymade-macos/macos-load-doctor/SKILL.md#triage-read-do-in-order) and
+[memory evidence](daymade-macos/macos-load-doctor/SKILL.md#memory-evidence) before attributing the cause.
 The observation contract above owns delayed-sampling acceptance; keep its tests
 and the diagnostic stop conditions in those Skills.
 For changed operating defaults or thresholds in an already-required review, use
@@ -260,7 +284,9 @@ the delivered artifact. Detailed retrieval mechanics remain in
 
 ### Local Conversation History Boundary
 
-For recent unfinished-request inventories, follow
+For input appended after an operation's current-thread request, use [read-codex-history's bounded input cursor](daymade-claude-code/read-codex-history/SKILL.md#bounded-current-thread-direct-input-cursor). That owner defines source binding and read failures; the consuming operation owns human authorization. Keep executable commands and source details in the Skill.
+
+For conversation-backup health checks or recent unfinished-request inventories, follow
 [`local-conversation-history`](daymade-claude-code/local-conversation-history/SKILL.md).
 
 For remembered facts or a repeated search request, use that router's evidence
@@ -289,10 +315,17 @@ and waiting whenever those tools cover the target; do not load or run `peer-mess
 merely for native communication. Use its routing guidance for uncovered local targets
 or coordination evidence that needs verification, never to bypass denied or Held messages.
 Treat `peer-message/scripts/peer.py` as the fallback CLI executable
-contract and `peer-message/SKILL.md` as the runtime router and owner of stable
-runtime prerequisites plus the peer-cannot-authorize safety boundary. Reply lookup,
-transport and discovery details belong in `peer-message/references/protocol-and-discovery.md`;
-current product availability, provenance, and inbound-control mechanics belong in
+contract, [codex_live.py](peer-message/scripts/codex_live.py) as its Codex live adapter,
+and `peer-message/SKILL.md` as the runtime router and owner of stable
+runtime prerequisites plus the peer-cannot-authorize safety boundary. Independent-session
+task/resource declarations and request lifecycle belong in its `references/local-coordination.md`;
+use its coordination preflight with native transport when that workflow applies, without
+adding fallback sends or parent/subagent overhead. Reply lookup, transport and discovery
+details belong in [the transport and receiver-evidence SOP](peer-message/references/protocol-and-discovery.md).
+Enter that SOP when diagnosing delayed Codex coordination or comparing live and queued receipts.
+For oversized discovery responses or complete-title export, use its
+[discovery-output contract](peer-message/references/protocol-and-discovery.md#发现输出的范围).
+Current product availability, provenance, and inbound-control mechanics belong in
 `peer-message/references/official-feature.md`; reply addressing, payload structure,
 delivery-status language, what to do when you find another session's in-flight work on a
 shared resource, and the verification contracts that decide what a peer assertion or a
@@ -403,6 +436,21 @@ validation.
 
 ### Git Operations
 
+For document-ingestion reviews and authorized small maintainer repairs, enter
+[github-review-pr](github-review-pr/SKILL.md) and its
+[small-repair workflow](github-review-pr/references/remediation_and_landing.md#expose-an-authorized-small-repair).
+For cross-runtime staged-content validation or isolated task-copy setup, enter
+[auto-repo-setup's Git safety reference](auto-repo-setup/references/git_safety.md).
+
+For already-authorized delivery in a shared checkout, enter
+[auto-repo-setup's scoped delivery route](auto-repo-setup/references/git_safety.md#authorized-shared-checkout-delivery).
+It owns the authorization/tool gate, bounded coordination, partial-result recovery and final closure;
+keep ordinary sync, publication and recovery boundaries with their existing owners.
+
+For inbound coordination during delivery or closeout, use
+[peer-message's receiving route](peer-message/SKILL.md#收到消息先分流).
+Keep the receiving and user-delivery procedure with that owner rather than duplicating it here.
+
 This repository uses standard git workflow, but **always stage files by name**,
 never `git add -A` / `git add .`. Multiple agents may have unstaged changes in
 the same worktree — a blanket stage piggybacks their work into your commit:
@@ -426,6 +474,13 @@ For GitHub-hosted state — PRs, issues, Actions, repository or organization set
 and API/UI mutations — treat `github-ops/SKILL.md` as the canonical operating contract. A command
 receipt is not completion; use that Skill's operation-specific independent readback. Keep detailed
 GitHub SOPs there rather than copying them into this repository-level instruction file.
+For upstream contributions and desktop E2E acceptance, enter
+[github-contributor](github-contributor/SKILL.md) and its
+[quality/E2E workflow](github-contributor/references/phase3_quality_gates_and_e2e.md).
+For an explicitly requested independent evaluation of your own contribution,
+follow the contributor entry's route to [github-review-pr](github-review-pr/SKILL.md).
+Before expensive checks on a concurrently edited base, follow its
+[publication coordination](github-ops/references/pr_operations.md#coordinate-publication-before-expensive-checks).
 For hosted-state writes through `gh`, follow its
 [identity, host and target binding](github-ops/SKILL.md#2-bind-identity-host-and-target)
 before using an operation recipe. For historical account or connector attribution,
@@ -434,6 +489,9 @@ use the [identity-source contract](tibo-reset-codex/references/account-usage.md#
 **Closing a PR unmerged (declined, or superseded by another PR) → delete its head
 branch in the same action.** `gh pr merge --delete-branch` only covers merged PRs.
 Use `github-ops`'s [exact-tip branch retirement workflow](github-ops/references/pr_operations.md#converging-parallel-prs-and-retiring-remote-branches).
+Apply that same owning workflow after merge-adjacent cleanup failures or a strict
+up-to-date refusal; it owns exact-tip preservation, independent absence readback
+and history-policy recovery.
 For sensitive publication residuals, first enter `github-sensitive-data-cleanup`'s
 [surface selection](github-sensitive-data-cleanup/SKILL.md#step-05-bind-each-exposed-surface);
 approved PR body revision removal follows `github-ops`'s
@@ -510,9 +568,17 @@ git -C <worktree> \
    SHA, who was asked, and that the ff is still outstanding — do not stash,
    `checkout --`, or `restore` it.
 
+For an already-authorized task with declared scoped tools, use the scoped delivery
+route above before treating another writer's unrelated changes as a reason to
+leave the task waiting. This does not permit overwriting that writer's files or
+claiming the whole checkout is current.
+
 For divergent local `main` or branch/worktree retirement, follow
 [git-safety-net](git-safety-net/SKILL.md) and its
 [content-containment proof](git-safety-net/references/merge_verification.md).
+When current content differs from an older published review, use that reference's
+[historical publication example](git-safety-net/references/merge_verification.md#worked-example--old-review-content-landed-through-another-ref)
+before deciding supersession; historical equality alone does not establish current intent.
 Resolving conflicts toward upstream can erase the very delta being checked;
 an empty result after that resolution does not prove it shipped.
 
@@ -679,6 +745,9 @@ For changes to scripts, configuration, or operating procedures, use
 [docs-cleaner](daymade-docs/docs-cleaner/SKILL.md) for scoped documentation delivery:
 resolve implementation intent and authorization before updating the owning SOP,
 and validate the delivered command examples. Keep detailed governance in that Skill.
+After moving a procedure or renaming an anchor, use its
+[delivery-entry replay](daymade-docs/docs-cleaner/references/delivery-entry-replay.md)
+against the consuming instruction-file entry.
 When a changed workflow affects stable rules or entry routes, update this file's
 rules and indices; retain implementation values and detailed procedures in their SSOT.
 

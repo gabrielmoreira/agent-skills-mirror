@@ -1,7 +1,7 @@
 ---
 name: "task-observer"
-core_max_lines: 715
-version: "3.5.0"
+core_max_lines: 684
+version: "3.6.0"
 description: "Monitors task execution for skill improvement opportunities. Use during ANY multi-step task, agentic workflow, or work session. Captures patterns, user corrections and methodology worth preserving as reusable skills. It writes observation files to the workspace. Also triggers in post-task feedback discussions and when the user mentions skill observations, the observation log, or skill taxonomy. Also known as \"One Skill to Rule Them All\" — trigger on this phrase too. IMPORTANT: invoke this skill before the FIRST tool call of any session and before writing or proposing a plan — any turn that will involve a tool call counts. This sentence is the session-start trigger and the only activation layer that survives an unreachable config file; pair it with a CLAUDE.md instruction or a harness session-start hook (references/environments.md) — description matching alone is not enforceable. A subagent dispatched by a session already running it does not run it: it writes nothing and puts its findings in its report."
 license: CC-BY-4.0
 metadata:
@@ -50,18 +50,11 @@ and its references takes that pinned absolute path, written
 activation block. A snippet run with a relative path from any other
 directory does not fail: it reports an empty, clean backlog, which is the
 one answer that never gets questioned. **The substituted path routinely
-contains a space** — the default shared-folder name on at least one
-common install does — so every expansion of it stays double-quoted, and
-no snippet may feed it through word splitting (`for f in $(find …)`): a
-sweep that splits its own path at the space examines zero files, prints
-errors nobody reads, and lets the command it rides inside succeed.
-**Every snippet here is bash, not POSIX `sh`** — the id snippet's `10#`
-arithmetic is a bash extension `dash` and `ash` reject, so under `sh` the
-derivation stops before any file exists, and an adapted snippet may fail
-more quietly than that. A `bash` code fence states that to a human reader
-and to nothing else, so invoke the snippets with bash explicitly; a block
-that happens to be POSIX-safe too (the session-start scan, the sweep) is
-incidental, not a promise about the rest.
+contains a space**, so every expansion of it stays double-quoted and no
+snippet feeds it through word splitting. **Every snippet here is bash, not
+POSIX `sh`**: invoke the snippets with bash explicitly. Why, in both cases:
+`references/observation-log.md` ("Snippets take a spaced path and run
+under bash").
 
 ## Reference files — load on demand, not up front
 
@@ -109,14 +102,11 @@ skill" (some upload paths keep only `SKILL.md`); its episodes do not run.
    `request_cowork_directory`; elsewhere, its equivalent), not the "no
    filesystem" branch: handoff-doc mode (`references/environments.md`) is
    for environments with no filesystem at all, and it is reached too easily
-   when a missing mount is read as one. That request can itself come back
-   refused by the harness's permission classifier rather than by the user
-   (a classifier denial names the classifier and carries a bracketed
-   reason; a user decline does not), so retry it once identically before
-   treating the folder-picker path as failed or even considering the "no
-   filesystem" branch: the **How to Log** rule — consecutive denials from a
-   probabilistic gatekeeper are noise, not a wall — governs every gated
-   call, this one included. Never assert the mount's state, connected or
+   when a missing mount is read as one. A permission-classifier refusal of
+   that request (it names the classifier and gives a bracketed reason; a
+   user decline does not) falls under the **How to Log** denial rule: at
+   most one identical retry, told to the user, never another tool.
+   Never assert the mount's state, connected or
    not, from an environment flag, a config file's presence in context, or
    memory of an earlier turn: that claim needs a probe in the same turn.
    **A successful probe does not mean the activation config fired.**
@@ -150,7 +140,8 @@ skill" (some upload paths keep only `SKILL.md`); its episodes do not run.
 2. **Scan.** Read only the frontmatter of each file in `observation-log/`
    — the header block between the first two `---` lines, never the bodies
    — and build awareness from `status`, `skill`, `proposes_skill` and
-   `title`; also read the active principles. Hold them in awareness, don't
+   `title`, and the active principles' headings, which the scan prints
+   (`principles=` in the checkpoint line). Hold them in awareness, don't
    surface unprompted. Frontmatter-only is the whole point of the per-file
    format: the scan stays cheap once hundreds of observations exist.
 
@@ -160,37 +151,16 @@ skill" (some upload paths keep only `SKILL.md`); its episodes do not run.
    satisfy the per-skill check").
 
    **An empty scan in a log known to be non-empty is a broken command
-   until proven otherwise** — the snippet's guard halts on it. When the guard
-   fires, or before adapting the snippet, load `references/observation-log.md`
+   until proven otherwise** — the script's guard halts on it. When the guard
+   fires, or before adapting the scan, load `references/observation-log.md`
    ("An empty scan over a non-empty log is a broken command").
 
    ```bash
-   d="[ABSOLUTE PATH]/skill-observations/observation-log"   # the pinned workspace path — re-derive in EVERY call, never relative to the cwd; run under bash, not sh
-   n=$(find "[ABSOLUTE PATH]/skill-observations/observation-log" -maxdepth 1 -name '*.md' | wc -l | tr -d ' ')  # literal path: independent of $d
-   parsed=$(find "$d" -maxdepth 1 -name '*.md' -exec awk 'FNR==1 {if (/^---[[:space:]]*$/) print FILENAME; nextfile}' {} + | wc -l | tr -d ' ')
-   sus='FNR==1 {fm = (/^---[[:space:]]*$/ ? 1 : 0); if (!fm) nextfile; next}
-     fm && /^---[[:space:]]*$/ {fm=0; nextfile}
-     fm && /^[a-z_]+:[ ]+([&!][^[:space:]]*[[:space:]]+)*[^"\047[{|>#&![:space:]].*: / {print FILENAME; nextfile}
-     fm && /^[a-z_]+:[ ]+([&!][^[:space:]]*[[:space:]]+)*("([^"\\]|\\.)*"[[:space:]]*[^[:space:]#]|\047([^\047]|\047\047)*\047([[:space:]]+[^[:space:]#]|[^[:space:]#\047]))/ {print FILENAME; nextfile}
-     fm && /^[a-z_]+:[ ]+([&!][^[:space:]]*[[:space:]]+)*[`@%]/ {print FILENAME; nextfile}
-     fm && /^[a-z_]+:[ ]+([&!][^[:space:]]*[[:space:]]+)*"([^"\\]|(\\[0abtnvfre \t\r"\/\\N_LP]|\\x[[:xdigit:]][[:xdigit:]]|\\u[[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]]|\\U[[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]]))*\\([^0abtnvfre \t\r"\/\\N_LPxuU]|x([^[:xdigit:]]|[[:xdigit:]][^[:xdigit:]])|u([^[:xdigit:]]|[[:xdigit:]][^[:xdigit:]]|[[:xdigit:]][[:xdigit:]][^[:xdigit:]]|[[:xdigit:]][[:xdigit:]][[:xdigit:]][^[:xdigit:]])|U([^[:xdigit:]]|[[:xdigit:]][^[:xdigit:]]|[[:xdigit:]][[:xdigit:]][^[:xdigit:]]|[[:xdigit:]][[:xdigit:]][[:xdigit:]][^[:xdigit:]]|[[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]][^[:xdigit:]]|[[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]][^[:xdigit:]]|[[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]][^[:xdigit:]]|[[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]][[:xdigit:]][^[:xdigit:]]))/ {print FILENAME; nextfile}
-     fm && /^[a-z_]+:[ ]+\[/ {v=$0; sub(/^[a-z_]+:[ ]+/,"",v); gsub(/"([^"\\]|\\.)*"/,"",v); gsub(/\047[^\047]*\047/,"",v); sub(/[[:space:]]#.*/,"",v); if (v ~ /:/) {print FILENAME; nextfile}}'   # no literal {} in the program: find -exec … {} + would replace it
-   suspect=$(find "$d" -maxdepth 1 -name '*.md' -exec awk "$sus" {} + | wc -l | tr -d ' ')   # invalid YAML by shape: unquoted ": ", text after a closing quote, a value opening with ` @ %, an undefined escape, a colon in an unquoted list entry
-   a_sus=0; [ -d "$d/archive" ] && a_sus=$(find "$d/archive" -maxdepth 1 -name '*.md' -exec awk "$sus" {} + | wc -l | tr -d ' ')   # archive/ may not exist yet
-   if [ "$n" -gt 0 ] && [ "$parsed" -eq 0 ]; then
-     echo "SCAN COMMAND BROKEN — $n files present, 0 headers parsed"; exit 1
-   fi
-   [ "$suspect" -gt 0 ] || [ "$a_sus" -gt 0 ] && echo "NOTE: $suspect of $n headers (and $a_sus in archive/) look like invalid YAML (an unquoted ': ', text after a closing quote, a value opening with a backtick, @ or %, an undefined escape, a colon in an unquoted list entry) — quote or fix them (File format)"
-   printf 'files: %s  parsed: %s  suspect (awk, a floor): %s  archive-suspect: %s\n' "$n" "$parsed" "$suspect" "$a_sus"
-   printf '%s [%s] session-start scan: files=%s parsed=%s\n' "$(date '+%F %H:%M')" "${PWD##*/}" "$n" "$parsed" \
-     >> "[ABSOLUTE PATH]/skill-observations/checkpoints.log"   # date+time+source: one line per session, not per day
-   find "$(dirname "[ABSOLUTE PATH]")" -maxdepth 3 -type d -path '*/skill-observations/observation-log' 2>/dev/null | LC_ALL=C sort | while IFS= read -r o; do printf '%s=%s\n' "${o%/skill-observations/observation-log}" "$(find "$o" -maxdepth 1 -name '*.md' | wc -l | tr -d ' ')"; done | awk '{s = s "  " $0} END {print "logs under the parent (report; never consolidate from here):" s}'
-   ( LC_ALL=C; [ "$n" -eq 0 ] || { cd "$d" && awk 'FNR==1 && NR>1 && fm {print "---"}
-       FNR==1 {fm=/^---[[:space:]]*$/; if (!fm) {print "---"; nextfile}; next}
-       fm && /^---[[:space:]]*$/ {fm=0; print "---"; nextfile}
-       fm
-       END {if (fm) print "---"}' *.md; } )   # LAST: content print, the only half a classifier can refuse; one awk for the whole set
+   bash "<skill directory>/scripts/session-start-scan.sh" "[ABSOLUTE PATH]"
    ```
+
+   `scripts/session-start-scan.sh` is the scan (`<skill directory>`: the one
+   holding this file); review what it runs and prints there, line by line.
 
    **Only the print can be refused, so it runs last** — a refused print is
    never an empty log: load `references/observation-log.md` ("A refused
@@ -230,8 +200,8 @@ skill" (some upload paths keep only `SKILL.md`); its episodes do not run.
 6. **Targets and staged work.** Resolve each distinct `skill:` value in
    the scanned frontmatter against the installed skill set and mention, in
    one line, any that no longer resolve — and any that resolve but cannot
-   run, because presence in a listing is not capability (`references/skill-
-   authoring.md`, "Runtime prerequisites"). A deleted skill accumulates
+   run, because presence in a listing is not capability
+   (`references/skill-authoring.md`, "Runtime prerequisites"). A deleted skill accumulates
    observations unnoticed; a dead one more so. Say what you resolved against
    (this checkout, this install): an unresolved target is a fact about where
    you looked, not about the world.
@@ -292,7 +262,7 @@ for one skill rarely share a name.
 **Check for a restatement before writing.** Before creating the file, list
 the open observations that name the same target skill (the scan at session
 start already holds their titles; otherwise `find observation-log -name
-'*.md' -exec grep -l "skill:.*<skill>" {} +`) and read those titles. If the
+'*.md' -exec grep -l "skill:.*<bare-name>" {} +`) and read those titles. If the
 finding is the same one restated — the same rule, the same failure shape, a
 different example — extend the existing entry instead: append the new
 instance to its body, add the session to `session_context`, widen `title:`
@@ -301,10 +271,11 @@ roughly forty of ninety-one open entries were one finding restated), and a
 near-duplicate costs a capture every session and a triage every review.
 
 **Validate the target at write time.** `skill:` names a skill that exists
-now, written as the skill listing shows it (a plugin skill as `plugin:name`,
-never bare). If the right home is not a skill — an instructions file, a
-memory note, the register a routine reads — put that path in `target_file:`,
-not the nearest skill; a skill not yet built goes in `proposes_skill:`.
+now and performs the operation the Issue describes, written as its bare
+name (`plugin:name` only where two skills share it). If the
+right home is not a skill — an instructions file, a memory note, the
+register a routine reads — put that path in `target_file:`, not the
+nearest skill; a skill not yet built goes in `proposes_skill:`.
 
 **Check the target's siblings at write time, and record that you did.**
 Before writing, resolve the target against the family registry
@@ -353,13 +324,13 @@ write; a remembered "ask whether" is not enforcement. Roughly every third
 completion is the rule; the count need not be precise. (Exception for a
 priced-write workspace: `references/environments.md`.)
 
-**A denied or failed write is not a read-only log.** Retry once before
-concluding the workspace is unwritable, and try a second tool reaching the
-same path — a classifier can deny one interface while allowing another,
-and consecutive denials from a probabilistic gatekeeper are noise, not a
-wall. Report "failed N times", never "cannot be done", unless retries and
-alternate interfaces are exhausted; otherwise observations are silently
-lost for the rest of the session.
+**A denied or failed write is not a read-only log.** A transient failure
+(an I/O error, a timeout, a tool error with no permission decision) gets
+one retry. A permission or classifier denial is authoritative: tell the
+user in one line what was denied and why the write mattered, then carry
+the observations in report-back or handoff mode (`references/environments.md`).
+Keep at most one identical retry of a classifier denial, told to the user
+as a check for a probabilistic false negative — never a different tool.
 
 **Deliverable-event flush.** Whenever a unit of work is declared complete
 to a human — a file handed over, a render, a staged skill file, a
@@ -400,13 +371,13 @@ id, not a separate duty (see Archival on Write):
 ```bash
 d="[ABSOLUTE PATH]/skill-observations/observation-log"   # the pinned workspace path, never relative to the cwd; it may contain a space, so keep it quoted; bash, not sh
 today=$(date +%F)          # archival rides inside this command (see below):
-n_files=$(find "$d" -maxdepth 1 -name '*.md' ! -empty | wc -l | tr -d ' ')   # a zero-byte file gives awk no line to count
-seen=$(cd "$d" && awk 'FNR==1 {n++; nextfile} END {print n+0}' *.md 2>/dev/null)   # files the sweep's glob reaches, counted apart from the sweep
+n_files=$(find "$d" -maxdepth 1 -name '[0-9]*.md' ! -empty | wc -l | tr -d ' ')   # a zero-byte file gives awk no line to count
+seen=$(cd "$d" && awk 'FNR==1 {n++; nextfile} END {print n+0}' [0-9]*.md 2>/dev/null)   # files the sweep's glob reaches, counted apart from the sweep
 [ "$n_files" -gt 0 ] && [ "${seen:-0}" -eq 0 ] && { echo "ARCHIVAL SWEEP BROKEN — $n_files files present, 0 examined"; exit 1; }
-( cd "$d" && awk -v today="$today" 'FNR==1 {st=""; r=""; fm=/^---[[:space:]]*$/; if (!fm) nextfile; next}
+( cd "$d" && LC_ALL=C awk -v today="$today" 'FNR==1 {st=""; r=""; sub(/^\357\273\277/, ""); fm=/^---[[:space:]]*$/; if (!fm) nextfile; next}
     fm && /^---[[:space:]]*$/ {if (st ~ /^(actioned|declined|superseded)$/ && r ~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/ && r < today) print FILENAME; nextfile}
     fm && /^status:/ {st=$2}
-    fm && /^resolved:/ {r=$2}' *.md 2>/dev/null | while IFS= read -r x; do mv "$x" archive/; done )   # one awk for the set, one mv per stale resolved file; bash
+    fm && /^resolved:/ {r=$2}' [0-9]*.md 2>/dev/null | while IFS= read -r x; do mv -n "$x" archive/ 2>/dev/null; if [ -e "$x" ]; then echo "NOTE: $x not archived — archive/$x exists or the move failed"; fi; done )   # one awk for the set, one mv per stale resolved file, never over an archived one; bash
 floor=$(sed '1!d; s/[^0-9]//g' "$d/archive/.id-floor" 2>/dev/null); floor=$((10#${floor:-0}))   # digits only: a CRLF or padded floor still reads
 ids=$(for p in "$d"/[0-9]*.md "$d"/archive/[0-9]*.md; do [ -e "$p" ] && printf '%s\n' "${p##*/}"; done | grep -oE '^[0-9]+')   # globs and builtins: no `ls` a profile alias can rebind
 [ "$(printf '%s' "$ids" | grep -c .)" -eq "$(find "$d" "$d/archive" -maxdepth 1 -name '[0-9]*.md' | wc -l)" ] || { echo "ID COMMAND BROKEN — the listing and find disagree on the prefixed files"; exit 1; }
@@ -468,7 +439,7 @@ id: 0
 title: "Short descriptive title"
 status: open            # open | actioned | declined | superseded | parked
 type: open-source       # open-source | internal
-skill: [skill-a, "plugin:skill-b"]  # existing skills this improves —
+skill: [skill-a, skill-b]        # existing skills this improves —
                                  # always a list, first entry primary, may be
                                  # empty: []; quote an entry holding a colon
 proposes_skill: []               # new skills this argues for, by working
@@ -488,7 +459,7 @@ session_context: "what task was being worked on"
 parked_until:           # MANDATORY when status is parked, empty otherwise:
                         #   one line naming the condition that unparks it
 resolved:               # date resolved; leave empty while OPEN
-resolution:             # what was done — set only when actioned/declined
+resolution:             # what was done — set only when actioned/declined/superseded
 reference:              # optional — path to saved session-local evidence
 commands_verified:      # MANDATORY when the body quotes a command — each
                         #   `run` with its result, or `NOT RUN` with why; else none
@@ -507,7 +478,7 @@ section or rule; for new skills, scope and key components.]
 colon.** `title`, `siblings_checked`, `area`, `session_context`,
 `resolution`, `parked_until` and `reference` carry free text, and free
 text contains `: ` as the common case; unquoted, that is invalid YAML —
-the scan notices nothing, every consumer that PARSES the header throws.
+the scan flags `key: a: b` as suspect; every consumer that PARSES it throws.
 A plugin-scoped name in a `[]` list (`[plugin:name]`) loads under one
 YAML parser and fails under another: quote it (`"…"`, inner `"` as `\"`);
 bare kebab-case names, dates and status words stay bare. Load

@@ -209,6 +209,8 @@ $ skillshare sync
   Context  ~1.2K tokens always loaded · ~18.5K on demand
 ```
 
+若你自己建立的資料夾已佔用某個 skill 要同步的名稱，sync 會保留你的資料夾，不安裝該 skill。每個有這類資料夾的 target 會多一行，列出前幾個名稱（`kept local: a, b (sync --force replaces them)`），並計為 `local` 而不是 `up to date`。`skillshare diff` 會把它們列為 `Local override`。
+
 ---
 
 ## Collect
@@ -339,7 +341,7 @@ targets:
 ```
 
 - 比對的對象是扁平化的 target 名稱（例如 `team__frontend__ui`）
-- 比對不到任何 skill 的 `include` 模式會被回報，因為這樣的 target 不會同步任何東西，還會移除先前由正確模式連結的條目。即使 `target_naming: standard` 讓 target 目錄顯示 SKILL.md 的裸名稱，filters 用的仍是扁平化名稱
+- 比對不到任何 skill 的 `include` 模式會被回報，因為這樣的 target 不會同步任何東西，還會移除先前由正確模式連結的條目。即使 `target_naming: standard` 或 `prefixed` 讓 target 目錄依 SKILL.md 的名稱命名，filters 用的仍是扁平化名稱
 - `include` 先套用，然後才套用 `exclude`
 - `diff`、`status`、`doctor` 與 UI drift 都使用篩選後的預期集合
 - 在 symlink mode 中，filters 會被忽略

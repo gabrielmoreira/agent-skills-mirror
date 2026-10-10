@@ -1698,12 +1698,23 @@ func oracleListSQLWithVisibleSchemas(baseSQL string, visibleSchemas []string) (s
 }
 
 func (s *server) currentSchema() (string, error) {
+	const sqlText = "SELECT SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA') FROM DUAL"
+	var schema string
+	// CURRENT_SCHEMA is per Oracle session. A manual transaction sets it only on
+	// its pinned connection and skips per-statement setSchema, so a pooled
+	// session would report the login user's schema and resolve unqualified
+	// tables against the wrong owner (#11258).
+	if s.manualTx != nil {
+		if err := s.manualTx.QueryRow(sqlText).Scan(&schema); err != nil {
+			return "", err
+		}
+		return strings.ToUpper(schema), nil
+	}
 	db, err := s.requireDB()
 	if err != nil {
 		return "", err
 	}
-	var schema string
-	if err := db.QueryRow("SELECT SYS_CONTEXT('USERENV', 'CURRENT_SCHEMA') FROM DUAL").Scan(&schema); err != nil {
+	if err := db.QueryRow(sqlText).Scan(&schema); err != nil {
 		return "", err
 	}
 	return strings.ToUpper(schema), nil
@@ -1993,7 +2004,7 @@ func completionRequestHasTableLikeKind(kinds []string) bool {
 func completionRequestHasRoutineKind(kinds []string) bool {
 	for _, kind := range kinds {
 		switch strings.ToLower(strings.TrimSpace(kind)) {
-		case "routine", "procedure", "function":
+		case "routine", "procedure", "function", "sequence":
 			return true
 		}
 	}
@@ -2439,13 +2450,54 @@ func oracleCompletionSynonymTargetsQuery(targets []oracleCompletionSynonymTarget
 	}
 }
 
+func oracleCompletionRoutineObjectTypes(kinds []string) []string {
+	if len(kinds) == 0 {
+		return []string{"'FUNCTION'", "'PROCEDURE'", "'PACKAGE'", "'SEQUENCE'"}
+	}
+	hasRoutine := false
+	hasProc := false
+	hasFunc := false
+	hasSeq := false
+	for _, kind := range kinds {
+		switch strings.ToLower(strings.TrimSpace(kind)) {
+		case "routine":
+			hasRoutine = true
+		case "procedure":
+			hasProc = true
+		case "function":
+			hasFunc = true
+		case "sequence":
+			hasSeq = true
+		}
+	}
+	types := make([]string, 0, 4)
+	if hasRoutine {
+		types = append(types, "'FUNCTION'", "'PROCEDURE'", "'PACKAGE'")
+	} else {
+		if hasProc {
+			types = append(types, "'PROCEDURE'")
+		}
+		if hasFunc {
+			types = append(types, "'FUNCTION'")
+		}
+	}
+	if hasSeq {
+		types = append(types, "'SEQUENCE'")
+	}
+	if len(types) == 0 {
+		return []string{"'FUNCTION'", "'PROCEDURE'", "'PACKAGE'"}
+	}
+	return types
+}
+
 func oracleCompletionRoutinesQuery(request completionAssistantRequest, preferredSchema string, limit int) oracleMetadataListQuery {
 	pattern := oracleCompletionLikePattern(request.Mask, request.MatchMode)
 	args := make([]any, 0, 5)
-	baseSQL := `
+	objectTypes := oracleCompletionRoutineObjectTypes(request.ObjectKinds)
+	baseSQL := fmt.Sprintf(`
 SELECT o.OWNER, o.OBJECT_NAME, o.OBJECT_TYPE, CAST(NULL AS VARCHAR2(128)) AS PARENT_NAME
 FROM ALL_OBJECTS o
-WHERE o.OBJECT_TYPE IN ('FUNCTION', 'PROCEDURE', 'PACKAGE')`
+WHERE o.OBJECT_TYPE IN (%s)`, strings.Join(objectTypes, ", "))
 	args = append(args, pattern)
 	nameParam := len(args)
 
@@ -3674,7 +3726,13 @@ func (s *server) getExplainInfo(sqlText, database, schema string, timeoutSecs in
 	}
 
 	statementID := "DBX_" + strings.ToUpper(strconv.FormatInt(time.Now().UnixNano(), 36))
-	defer cleanupOracleExplainPlan(conn, statementID)
+	// EXPLAIN PLAN resolves its plan table in the session user's schema, while a bare
+	// PLAN_TABLE inside DBMS_XPLAN.DISPLAY resolves through CURRENT_SCHEMA - and the
+	// schema switch above changes CURRENT_SCHEMA. Name the table explicitly so the read
+	// and the cleanup hit the same object EXPLAIN PLAN wrote to, otherwise DISPLAY answers
+	// "cannot fetch plan for statement_id '...'".
+	planTable := oracleExplainPlanTableName(ctx, conn)
+	defer cleanupOracleExplainPlan(conn, statementID, planTable)
 	statementSQL := trimStatementSQL(sqlText)
 	explainArgs := oracleExplainPlanBindArgs(statementSQL)
 	if _, err := conn.ExecContext(ctx, "EXPLAIN PLAN SET STATEMENT_ID = '"+statementID+"' FOR "+statementSQL, explainArgs...); err != nil {
@@ -3682,7 +3740,7 @@ func (s *server) getExplainInfo(sqlText, database, schema string, timeoutSecs in
 	}
 	planRows, err := conn.QueryContext(
 		ctx,
-		"SELECT PLAN_TABLE_OUTPUT FROM TABLE(DBMS_XPLAN.DISPLAY('PLAN_TABLE', :1, 'TYPICAL +PREDICATE'))",
+		"SELECT PLAN_TABLE_OUTPUT FROM TABLE(DBMS_XPLAN.DISPLAY('"+planTable+"', :1, 'TYPICAL +PREDICATE'))",
 		statementID,
 	)
 	if err != nil {
@@ -3712,10 +3770,40 @@ func oracleExplainTargetSchema(database, schema, configuredDatabase string) stri
 	return database
 }
 
-func cleanupOracleExplainPlan(conn *sql.Conn, statementID string) {
+// oracleExplainPlanTableName returns the explicitly qualified name of the plan table that
+// EXPLAIN PLAN resolves for this session: the session user's own object named PLAN_TABLE when
+// it exists, otherwise the table behind the PUBLIC synonym (usually SYS.PLAN_TABLE$). Falls
+// back to the bare name when neither can be resolved.
+func oracleExplainPlanTableName(ctx context.Context, conn *sql.Conn) string {
+	const probe = `SELECT
+		(SELECT OWNER FROM ALL_OBJECTS WHERE OWNER = USER AND OBJECT_NAME = 'PLAN_TABLE' AND ROWNUM = 1),
+		(SELECT OBJECT_NAME FROM ALL_OBJECTS WHERE OWNER = USER AND OBJECT_NAME = 'PLAN_TABLE' AND ROWNUM = 1),
+		(SELECT TABLE_OWNER FROM ALL_SYNONYMS WHERE OWNER = 'PUBLIC' AND SYNONYM_NAME = 'PLAN_TABLE' AND ROWNUM = 1),
+		(SELECT TABLE_NAME FROM ALL_SYNONYMS WHERE OWNER = 'PUBLIC' AND SYNONYM_NAME = 'PLAN_TABLE' AND ROWNUM = 1)
+	FROM DUAL`
+	var sessionOwner, sessionName, publicOwner, publicName sql.NullString
+	if err := conn.QueryRowContext(ctx, probe).Scan(&sessionOwner, &sessionName, &publicOwner, &publicName); err != nil {
+		return "PLAN_TABLE"
+	}
+	return oraclePlanTableName(sessionOwner.String, sessionName.String, publicOwner.String, publicName.String)
+}
+
+// oraclePlanTableName picks the qualified plan table name from the probe results, preferring
+// the session user's own PLAN_TABLE because that is what EXPLAIN PLAN writes to.
+func oraclePlanTableName(sessionOwner, sessionName, publicOwner, publicName string) string {
+	if strings.TrimSpace(sessionOwner) != "" && strings.TrimSpace(sessionName) != "" {
+		return quoteIdentifier(strings.TrimSpace(sessionOwner)) + "." + quoteIdentifier(strings.TrimSpace(sessionName))
+	}
+	if strings.TrimSpace(publicOwner) != "" && strings.TrimSpace(publicName) != "" {
+		return quoteIdentifier(strings.TrimSpace(publicOwner)) + "." + quoteIdentifier(strings.TrimSpace(publicName))
+	}
+	return "PLAN_TABLE"
+}
+
+func cleanupOracleExplainPlan(conn *sql.Conn, statementID, planTable string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	_, _ = conn.ExecContext(ctx, "DELETE FROM PLAN_TABLE WHERE STATEMENT_ID = :1", statementID)
+	_, _ = conn.ExecContext(ctx, "DELETE FROM "+planTable+" WHERE STATEMENT_ID = :1", statementID)
 }
 
 type oracleBindParam struct {

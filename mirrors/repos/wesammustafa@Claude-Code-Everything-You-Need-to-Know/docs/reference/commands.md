@@ -3,7 +3,7 @@
 
 <sub>Verified against Claude Code v2.1.285 (stable) on 2026-10-05</sub>
 
-The built-in commands and bundled skills the lessons use, grouped by the level that teaches them. It is not the full list: the official [commands reference](https://code.claude.com/docs/en/commands#all-commands) has every command and its options, and typing `/` in a session shows the commands available to you. Each lesson name below becomes a link when the lesson is published.
+The built-in commands, bundled skills and workflows, and `claude` command-line forms the lessons use, grouped by the level that teaches them. It is not the full list: the official [commands reference](https://code.claude.com/docs/en/commands#all-commands) has every command and its options, the [CLI reference](https://code.claude.com/docs/en/cli-reference#cli-flags) has the command-line flags, and typing `/` in a session shows the commands available to you.
 
 <a id="common-built-in-slash-commands"></a>
 ## Beginner
@@ -39,11 +39,16 @@ Electives: `/statusline` ([The status line](../intermediate/electives/status-lin
 
 ## Advanced
 
-- `/workflows`: watch, pause, resume and save dynamic workflows. *Run and save a dynamic workflow*
-- `/install-github-app`: install the Claude GitHub App for a repository, with optional workflow and secret setup. *GitHub Actions*
-- `/usage`: the session's cost, your plan's usage limits and activity stats. *Put bounds on autonomous runs*
+- `claude --worktree <name>` (`-w`): start a session in an isolated git worktree at `.claude/worktrees/<name>` ([CLI reference](https://code.claude.com/docs/en/cli-reference#cli-flags)). [Parallel sessions with worktrees](../advanced/01-parallel-sessions.md)
+- `/tasks`: view and manage background work in this session, including subagents that have finished. [Choose an orchestration pattern](../advanced/02-orchestration-patterns.md)
+- `/workflows`: watch, pause, resume and save dynamic workflows. [Run and save a dynamic workflow](../advanced/03-dynamic-workflows.md)
+- `/deep-research <question>`: a bundled workflow that fans out web searches on a question, cross-checks the sources and writes a cited report. [Run and save a dynamic workflow](../advanced/03-dynamic-workflows.md)
+- `claude -p "<prompt>"`: run one prompt without the interactive interface, print the answer and exit; a script adds `--output-format json`, `--allowedTools` and `--max-turns` ([CLI reference](https://code.claude.com/docs/en/cli-reference#cli-commands)). [Script Claude Code with `claude -p`](../advanced/04-headless.md)
+- `/install-github-app`: install the Claude GitHub App for a repository, with optional workflow and secret setup. [GitHub Actions](../advanced/05-github-actions.md)
+- `claude plugin validate <dir>`: check a marketplace or a plugin folder before you share it; `--strict` also fails on warnings ([Plugin commands reference](https://code.claude.com/docs/en/plugins/cli-reference#plugin-validate)). [Share your setup with a team](../advanced/06-share-your-setup.md)
+- `/usage`: the session's cost, your plan's usage limits and activity stats. [Put bounds on autonomous runs](../advanced/07-bounded-runs.md)
 
-Electives: `/background` (agent view) and `/tasks` (background work in this session); `/goal`, `/loop` and `/schedule` (`/goal`, `/loop` and routines).
+Electives: `claude agents` and `/background` ([Agent view](../advanced/electives/agent-view.md)); `/goal`, `/loop` and `/schedule` ([`/goal`, `/loop` and routines](../advanced/electives/goal-loop-routines.md)); `claude plugin eval` ([Testing and publishing a plugin](../advanced/electives/publish-a-plugin.md)).
 
 <a id="custom-slash-commands-skills"></a>
 ## Your own commands
@@ -57,6 +62,6 @@ A command you write yourself is a skill: a `SKILL.md` file in `.claude/skills/<n
 
 ---
 
-<sub>Sources: [Commands](https://code.claude.com/docs/en/commands) · [Checkpointing](https://code.claude.com/docs/en/checkpointing) · [Manage sessions](https://code.claude.com/docs/en/sessions) · [Extend Claude with skills](https://code.claude.com/docs/en/skills) · [Interactive mode](https://code.claude.com/docs/en/interactive-mode) · [Claude Code cheatsheet](https://support.claude.com/en/articles/14553413-claude-code-cheatsheet)</sub>
+<sub>Sources: [Commands](https://code.claude.com/docs/en/commands) · [CLI reference](https://code.claude.com/docs/en/cli-reference) · [Checkpointing](https://code.claude.com/docs/en/checkpointing) · [Manage sessions](https://code.claude.com/docs/en/sessions) · [Extend Claude with skills](https://code.claude.com/docs/en/skills) · [Interactive mode](https://code.claude.com/docs/en/interactive-mode) · [Plugin commands reference](https://code.claude.com/docs/en/plugins/cli-reference) · [Claude Code cheatsheet](https://support.claude.com/en/articles/14553413-claude-code-cheatsheet)</sub>
 
 <sub>Up: [Reference](README.md)</sub>

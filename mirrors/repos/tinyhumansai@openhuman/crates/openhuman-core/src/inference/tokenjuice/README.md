@@ -17,14 +17,14 @@ OpenHuman-owned files:
 
 | Path | Role |
 | --- | --- |
-| `mod.rs` | TinyBus calls (through `tinyjuice_bus::names::methods` constants), config installation, pass-through fallback, and savings wiring. |
-| `types.rs` | Re-export of the `tinyjuice-bus` contract (`tinyjuice_bus::types::{AgentTokenjuiceCompression, CompressOptions, CompressedOutput, CompressorKind, ContentHint, ContentKind}` and `tinyjuice_bus::wire::{CacheStats, CompactResponse, InstallRequest, RangeUnit, RetrieveRange}`) under the paths ~40 call sites in this crate already use. |
-| `schemas.rs` | JSON-RPC controller schemas and handlers. |
-| `config_patch.rs` | Partial update shape for the `[tokenjuice]` config block. |
-| `repl_tools.rs` | The three REPL tools (`juice_find`, `juice_extract`, `juice_summarize`) over a stored result. TinyJuice owns the ops and declarations (`tinyjuice::repl::tools`, cargo feature `tinytools`); the CCR store lives in the module, so each call fetches the original with `Retrieve` and hands the stock tool a one-entry store. Registered by `tools/ops.rs` only while `repl_handle_active(config)`. |
-| `tools.rs` | OpenHuman agent tool implementation for the retrieve tool (`RETRIEVE_TOOL_NAME = "juice_retrieve"`; `"tokenjuice_retrieve"` is a recognized recovery-tool alias, not the tool's registered name, see `RECOVERY_TOOL_NAMES`). |
+| [`mod.rs`](./mod.rs) | TinyBus calls (through `tinyjuice_bus::names::methods` constants), config installation, pass-through fallback, and savings wiring. |
+| [`types.rs`](./types.rs) | Re-export of the `tinyjuice-bus` contract (`tinyjuice_bus::types::{AgentTokenjuiceCompression, CompressOptions, CompressedOutput, CompressorKind, ContentHint, ContentKind}` and `tinyjuice_bus::wire::{CacheStats, CompactResponse, InstallRequest, RangeUnit, RetrieveRange}`) under the paths ~40 call sites in this crate already use. |
+| [`schemas.rs`](./schemas.rs) | JSON-RPC controller schemas and handlers. |
+| [`config_patch.rs`](./config_patch.rs) | Partial update shape for the `[tokenjuice]` config block. |
+| [`repl_tools.rs`](./repl_tools.rs) | The three REPL tools (`juice_find`, `juice_extract`, `juice_summarize`) over a stored result. TinyJuice owns the ops and declarations (`tinyjuice::repl::tools`, cargo feature `tinytools`); the CCR store lives in the module, so each call fetches the original with `Retrieve` and hands the stock tool a one-entry store. Registered by [`tools/ops.rs`](../../tools/ops.rs) only while `repl_handle_active(config)`. |
+| [`tools.rs`](./tools.rs) | OpenHuman agent tool implementation for the retrieve tool (`RETRIEVE_TOOL_NAME = "juice_retrieve"`; `"tokenjuice_retrieve"` is a recognized recovery-tool alias, not the tool's registered name, see `RECOVERY_TOOL_NAMES`). |
 | `ml/` | Bridge from TinyJuice's optional ML callback into the shared `runtime::python_server` Kompress backend (ModernBERT token/sentence salience); opt-in via `config.tokenjuice.ml_compression_enabled` (default off), degrades gracefully when the flag is off or the runtime server is unavailable. |
-| `savings.rs` | OpenHuman model-pricing attribution and persisted dashboard stats. |
+| [`savings.rs`](./savings.rs) | OpenHuman model-pricing attribution and persisted dashboard stats. |
 
 TinyJuice-owned engine pieces:
 
@@ -86,9 +86,9 @@ callback stay here.
   `crate::modules::host::runtime()`; without the feature `proxy` errors and the
   pass-through fallback applies.
 - Controllers are registered from `crate::inference::tokenjuice::all_tokenjuice_registered_controllers()`,
-  called by `core/all.rs`.
+  called by [`core/all.rs`](../../core/all.rs).
 - `tools/ops.rs` registers `crate::inference::tokenjuice::TokenjuiceRetrieveTool::new()`
-  in the agent tool catalog (it is not re-exported through `tools/mod.rs`) and
+  in the agent tool catalog (it is not re-exported through [`tools/mod.rs`](../../tools/mod.rs)) and
   treats every `RECOVERY_TOOL_NAMES` entry as a recovery tool. The registered
   tool name is `RETRIEVE_TOOL_NAME` (`"juice_retrieve"`);
   `"tokenjuice_retrieve"` and `LEGACY_RETRIEVE_TOOL_NAME`
@@ -107,5 +107,10 @@ callback stay here.
   their answers from being stored behind a second handle (their own
   `max_result_size_chars` still caps them). The bus `Repl` member is not used
   from here: it is not yet a `tinyjuice-bus` name constant.
-- Contract crate: `tinyjuice-bus` (`vendor/tinyjuice/crates/tinyjuice-bus`,
-  path dependency in `crates/openhuman-core/Cargo.toml`).
+- Contract crate: `tinyjuice-bus` ([`vendor/tinyjuice/crates/tinyjuice-bus`](../../../../../vendor/tinyjuice/crates/tinyjuice-bus/),
+  path dependency in [`crates/openhuman-core/Cargo.toml`](../../../Cargo.toml)).
+
+## Further reading
+
+- [Parent module README](../README.md)
+- [tinyjuice](../../../../../vendor/tinyjuice/README.md)

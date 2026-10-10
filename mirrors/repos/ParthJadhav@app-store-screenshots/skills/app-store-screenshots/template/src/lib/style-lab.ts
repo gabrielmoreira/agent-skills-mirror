@@ -286,6 +286,8 @@ export function withLocks(look: Look, base: Look, locks: Locks): Look {
 // canvases, watches and the Play banner keep their own layouts.
 export function canRearrange(device: Device, orientation: ProjectState["orientation"]) {
   if (device === "iphone" || device === "android" || device === "ipad") return true;
+  // Both Duo displays in portrait take every portrait layout.
+  if (device === "duo-outer" || device === "duo-inner") return true;
   if (device === "android-7" || device === "android-10") return orientation === "portrait" || !supportsLandscape(device);
   return false;
 }

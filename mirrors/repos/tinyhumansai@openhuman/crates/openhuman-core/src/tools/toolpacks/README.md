@@ -114,7 +114,7 @@ in the orchestrator prompt's `## Skills` section
 (`agent/registry/agents/orchestrator/prompt.md`). Lookup detail and the step
 by step loop belong in the guide.
 
-`toolpacks_tests.rs` keeps guides honest: every guided pack must carry a
+[`toolpacks_tests.rs`](./toolpacks_tests.rs) keeps guides honest: every guided pack must carry a
 non-empty guide, every guide stays under `GUIDE_BUDGET_BYTES` (2,400 bytes,
 about 550 tokens), no guide may name a removed specialist's hand-off tool
 (`run_code`, `do_crypto`, `manage_settings`, ...), every tool in a guided
@@ -138,7 +138,7 @@ listing offers the hand-off beside the raw registry tools.
 - `core/runtime/builder.rs` and `core/runtime/context.rs`: `CoreBuilder::tool_groups` and the ambient `ToolGroups` on `CoreContext`.
 - `agent/session_host/builder/`: `builder_build.rs` strips packed names
   from the agent's visible set and binds both registries once the tool `Arc`s
-  exist; `mod.rs` calls `scope_use_skill_spec` so the advertised `use_skill`
+  exist; [`mod.rs`](./mod.rs) calls `scope_use_skill_spec` so the advertised `use_skill`
   spec lists only packs this session can call something in, and drops the
   spec entirely when that is none.
 - `agent/session_host/turn/tools.rs`: rebinds the synthesized registry
@@ -165,9 +165,17 @@ listing offers the hand-off beside the raw registry tools.
 
 ## Tests
 
-`toolpacks_tests.rs` (pack-table invariants, owner rules,
+[`toolpacks_tests.rs`](./toolpacks_tests.rs) (pack-table invariants, owner rules,
 `strip_packed_from_visible`, `use_skill` dispatch and permission / timeout /
 effect forwarding, dual-registry binding) and
-`toolpacks_tests_scoping_and_visibility_tests.rs`
+[`toolpacks_tests_scoping_and_visibility_tests.rs`](./toolpacks_tests_scoping_and_visibility_tests.rs)
 (`scope_use_skill_spec`, `render_pack_filtered` filtering, `route_sentence`,
-rebinding); `groups_tests.rs` (`GroupMode` defaults and narrowing rules).
+rebinding); [`groups_tests.rs`](./groups_tests.rs) (`GroupMode` defaults and narrowing rules).
+
+## Further reading
+
+- [Parent module (`tools`)](../README.md)
+- [Native tools overview](../../../../../gitbooks/features/native-tools/README.md)
+- [Agent harness architecture](../../../../../gitbooks/developing/architecture/agent-harness.md)
+- [Approval gate](../../../../../gitbooks/features/approval-gate.md)
+- [tinyagents submodule](../../../../../vendor/tinyagents/README.md)

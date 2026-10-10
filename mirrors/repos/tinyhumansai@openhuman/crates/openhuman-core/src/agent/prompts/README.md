@@ -11,8 +11,8 @@ domains use to compose their own prompts.
   `PromptTool`, `ToolCallFormat`, `UserIdentity`, `ConnectedIntegration`,
   `SubagentRenderOptions`. Pure data, no rendering logic. Also holds the
   `pub(crate)` cap `BOOTSTRAP_MAX_CHARS` (20K, for
-  `SOUL.md`/`IDENTITY.md`/`ROLE.md` and each `AGENTS.md` layer).
-- `render_connected_identities` (`connected_identities.rs`): best-effort,
+  [`SOUL.md`](./SOUL.md)/[`IDENTITY.md`](./IDENTITY.md)/[`ROLE.md`](./ROLE.md) and each `AGENTS.md` layer).
+- `render_connected_identities` ([`connected_identities.rs`](./connected_identities.rs)): best-effort,
   sync render of the `## Connected Identities` block. It reads through the
   bound memory driver via `block_in_place` and returns empty when there is no
   multi-thread runtime or the config/driver read fails.
@@ -27,7 +27,7 @@ domains use to compose their own prompts.
   `DateTimeSection`, `RuntimeSection`, `AgentsInstructionsSection`,
   `PersonalityRosterSection`, `ArchetypePromptSection`,
   `DynamicPromptSection`, `GroundingSection`).
-- Named re-exports from `render_helpers` (`render_helpers.rs` plus the
+- Named re-exports from `render_helpers` ([`render_helpers.rs`](./render_helpers.rs) plus the
   `render_helpers/` submodules `section_renderers.rs`, `subagent.rs`,
   `workspace_files.rs`): free `render_*` functions (thin wrappers over the
   section structs), the workspace-file helpers
@@ -40,10 +40,10 @@ domains use to compose their own prompts.
 
 ## Bundled assets
 
-`IDENTITY.md`, `ROLE.md`, `SOUL.md`, `STYLE.md` are the bundled copies of the
+`IDENTITY.md`, `ROLE.md`, `SOUL.md`, [`STYLE.md`](./STYLE.md) are the bundled copies of the
 master agent's identity, role brief, personality, and writing style. They are
-embedded with `include_str!` in `render_helpers/workspace_files.rs`
-(`default_workspace_file_content`) and, for `STYLE.md`, again in `builder.rs`
+embedded with `include_str!` in [`render_helpers/workspace_files.rs`](./render_helpers/workspace_files.rs)
+(`default_workspace_file_content`) and, for `STYLE.md`, again in [`builder.rs`](./builder.rs)
 as `GLOBAL_STYLE_SUFFIX`. There are two uses:
 
 - Seed and refresh: `sync_workspace_file(workspace_dir, filename)` writes the
@@ -60,8 +60,8 @@ as `GLOBAL_STYLE_SUFFIX`. There are two uses:
 - Compile-time fallback: `GLOBAL_STYLE_SUFFIX` is used when the workspace
   `STYLE.md` cannot be read.
 
-`USER.md` is different: nothing in this module reads it. It is exposed as the
-`openhuman://prompts/user` MCP resource by `mcp/server/resources.rs`
+[`USER.md`](./USER.md) is different: nothing in this module reads it. It is exposed as the
+`openhuman://prompts/user` MCP resource by [`mcp/server/resources.rs`](../../mcp/server/resources.rs)
 (`include_str!("../../agent/prompts/USER.md")`).
 
 The user's memory is not part of the system prompt: memory v2 injects the
@@ -82,8 +82,8 @@ module for this API.
 
 Other domains contribute prompt content without living in this directory:
 
-- `tools/agent_policy/prompt.rs`: `render_tool_policy_boundary` is not a
-  section. `agent/session_host/turn/context.rs` string-appends its
+- [`tools/agent_policy/prompt.rs`](../../tools/agent_policy/prompt.rs): `render_tool_policy_boundary` is not a
+  section. [`agent/session_host/turn/context.rs`](../session_host/turn/context.rs) string-appends its
   `## Tool Policy Boundary` block after the builder output so the
   session-scoped bytes land at the tail of the prompt.
 
@@ -91,7 +91,7 @@ Built-in archetype system prompts (orchestrator, planner, image_agent,
 and so on) live in `agent/registry/agents/<name>/prompt.rs` and
 `flows/agents/{flow_discovery,workflow_builder}/prompt.rs`, not here. Each is a
 `PromptSource::Dynamic` function that hand-assembles its body via the
-`render_*` helpers; `agent/session_host/builder/factory.rs` wraps it with
+`render_*` helpers; [`agent/session_host/builder/factory.rs`](../session_host/builder/factory.rs) wraps it with
 `SystemPromptBuilder::from_dynamic`.
 
 ## Builder entry points
@@ -149,6 +149,12 @@ user message via `current_datetime_line`).
   the tool-policy boundary.
 - `agent/session_host/builder/factory.rs`: picks the entry point per
   `PromptSource`.
-- `agent/debug/`: `dump_agent_prompt` / `dump_all_agent_prompts` (`mod.rs`)
+- [`agent/debug/`](../debug/): `dump_agent_prompt` / `dump_all_agent_prompts` ([`mod.rs`](./mod.rs))
   build the same `PromptContext` to render each agent's prompt,
   `dump_writer.rs` writes it to disk, `prompt_size.rs` measures it.
+
+## Further reading
+
+- [Parent module README](../README.md)
+- [Agent harness architecture](../../../../../gitbooks/developing/architecture/agent-harness.md)
+- [Personalization and self-learning](../../../../../gitbooks/features/personalization.md)

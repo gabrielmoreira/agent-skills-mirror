@@ -9,7 +9,7 @@ applied to embeddings.
 
 ## Providers
 
-Declared in `mod.rs` and resolved by `factory.rs`:
+Declared in [`mod.rs`](./mod.rs) and resolved by [`factory.rs`](./factory.rs):
 
 - **Managed** (default): routed through the OpenHuman backend's
   `POST /openai/v1/embeddings` (Voyage-backed). Works on a fresh install with
@@ -27,11 +27,11 @@ Declared in `mod.rs` and resolved by `factory.rs`:
 | File | Role |
 | --- | --- |
 | `mod.rs` | Module docs and re-exports. Declares the provider list above. |
-| `provider_trait.rs` | Re-exports `EmbeddingProvider` and `format_embedding_signature` from `tinymemory_api::host`, and defines `TinyInferenceEmbeddingProvider`, the adapter from a TinyInference `EmbeddingModel` to the memory host's trait. |
+| [`provider_trait.rs`](./provider_trait.rs) | Re-exports `EmbeddingProvider` and `format_embedding_signature` from `tinymemory_api::host`, and defines `TinyInferenceEmbeddingProvider`, the adapter from a TinyInference `EmbeddingModel` to the memory host's trait. |
 | `factory.rs` | OpenHuman's binding onto TinyInference's embedding factory: `create_embedding_provider_with_credentials`, `create_embedding_provider_with_config`, and `default_embedding_provider_with_config` (falls back to a `Noop` model if the configured provider fails to build). |
-| `cloud_adapter.rs` | `OpenHumanCloudEmbeddingModel`: the managed-provider transport, with OpenHuman's own bearer-token and egress-guard wiring around the crate-owned `CloudEmbeddingModel`. |
-| `rpc.rs` + `rpc/` (`api_keys.rs`, `embed.rs`, `settings.rs`) | The `embeddings` RPC handlers: get/update settings, set/clear API key, embed text, test a connection. |
-| `schemas.rs` | Controller schemas and thin handlers for the `embeddings` RPC namespace, registered as `all_embeddings_controller_schemas` / `all_embeddings_registered_controllers`. |
+| [`cloud_adapter.rs`](./cloud_adapter.rs) | `OpenHumanCloudEmbeddingModel`: the managed-provider transport, with OpenHuman's own bearer-token and egress-guard wiring around the crate-owned `CloudEmbeddingModel`. |
+| [`rpc.rs`](./rpc.rs) + `rpc/` (`api_keys.rs`, `embed.rs`, `settings.rs`) | The `embeddings` RPC handlers: get/update settings, set/clear API key, embed text, test a connection. |
+| [`schemas.rs`](./schemas.rs) | Controller schemas and thin handlers for the `embeddings` RPC namespace, registered as `all_embeddings_controller_schemas` / `all_embeddings_registered_controllers`. |
 
 ## Why the trait lives here, not in the engine
 
@@ -60,3 +60,7 @@ connection test.
 See [`../provider`](../provider/README.md) for the equivalent story on the
 chat-model side, and [`../README.md`](../README.md) for how this fits into
 the wider `inference` domain.
+
+## Further reading
+
+- [Local AI](../../../../../gitbooks/features/model-routing/local-ai.md)

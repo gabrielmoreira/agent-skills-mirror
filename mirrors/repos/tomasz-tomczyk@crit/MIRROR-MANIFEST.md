@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tomasz-tomczyk/crit` — 26 default patterns, 0 followed patterns, 47 file(s) materialized.
+Mirror of `tomasz-tomczyk/crit` — 26 default patterns, 0 followed patterns, 53 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tomasz-tomczyk/crit` — 26 default patterns, 0 followed patterns, 47
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 47 |
+| Files         | 53 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -94,18 +94,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 33 | ✓ | [`integrations/hermes/skills/crit-cli/SKILL.md`](integrations/hermes/skills/crit-cli/SKILL.md) |
 | 34 | ✓ | [`integrations/hermes/skills/crit-story/SKILL.md`](integrations/hermes/skills/crit-story/SKILL.md) |
 | 35 | ✓ | [`integrations/hermes/skills/crit/SKILL.md`](integrations/hermes/skills/crit/SKILL.md) |
-| 36 | ✓ | [`integrations/opencode/skills/crit-cli/SKILL.md`](integrations/opencode/skills/crit-cli/SKILL.md) |
-| 37 | ✓ | [`integrations/opencode/skills/crit-story/SKILL.md`](integrations/opencode/skills/crit-story/SKILL.md) |
-| 38 | ✓ | [`integrations/pi/skills/crit-cli/SKILL.md`](integrations/pi/skills/crit-cli/SKILL.md) |
-| 39 | ✓ | [`integrations/pi/skills/crit-story/SKILL.md`](integrations/pi/skills/crit-story/SKILL.md) |
-| 40 | ✓ | [`integrations/pi/skills/crit/SKILL.md`](integrations/pi/skills/crit/SKILL.md) |
-| 41 | ✓ | [`integrations/qwen/skills/crit-cli/SKILL.md`](integrations/qwen/skills/crit-cli/SKILL.md) |
-| 42 | ✓ | [`integrations/qwen/skills/crit-story/SKILL.md`](integrations/qwen/skills/crit-story/SKILL.md) |
-| 43 | ✓ | [`integrations/qwen/skills/crit/SKILL.md`](integrations/qwen/skills/crit/SKILL.md) |
-| 44 | ✓ | [`integrations/windsurf/skills/crit-cli/SKILL.md`](integrations/windsurf/skills/crit-cli/SKILL.md) |
-| 45 | ✓ | [`integrations/windsurf/skills/crit-story/SKILL.md`](integrations/windsurf/skills/crit-story/SKILL.md) |
-| 46 | ✓ | [`scripts/AGENTS.md`](scripts/AGENTS.md) |
-| 47 | ✓ | [`scripts/CLAUDE.md`](scripts/CLAUDE.md) |
+| 36 | ✓ | [`integrations/omo/skills/crit-cli/SKILL.md`](integrations/omo/skills/crit-cli/SKILL.md) |
+| 37 | ✓ | [`integrations/omo/skills/crit-story/SKILL.md`](integrations/omo/skills/crit-story/SKILL.md) |
+| 38 | ✓ | [`integrations/omo/skills/crit/SKILL.md`](integrations/omo/skills/crit/SKILL.md) |
+| 39 | ✓ | [`integrations/omp/skills/crit-cli/SKILL.md`](integrations/omp/skills/crit-cli/SKILL.md) |
+| 40 | ✓ | [`integrations/omp/skills/crit-story/SKILL.md`](integrations/omp/skills/crit-story/SKILL.md) |
+| 41 | ✓ | [`integrations/omp/skills/crit/SKILL.md`](integrations/omp/skills/crit/SKILL.md) |
+| 42 | ✓ | [`integrations/opencode/skills/crit-cli/SKILL.md`](integrations/opencode/skills/crit-cli/SKILL.md) |
+| 43 | ✓ | [`integrations/opencode/skills/crit-story/SKILL.md`](integrations/opencode/skills/crit-story/SKILL.md) |
+| 44 | ✓ | [`integrations/pi/skills/crit-cli/SKILL.md`](integrations/pi/skills/crit-cli/SKILL.md) |
+| 45 | ✓ | [`integrations/pi/skills/crit-story/SKILL.md`](integrations/pi/skills/crit-story/SKILL.md) |
+| 46 | ✓ | [`integrations/pi/skills/crit/SKILL.md`](integrations/pi/skills/crit/SKILL.md) |
+| 47 | ✓ | [`integrations/qwen/skills/crit-cli/SKILL.md`](integrations/qwen/skills/crit-cli/SKILL.md) |
+| 48 | ✓ | [`integrations/qwen/skills/crit-story/SKILL.md`](integrations/qwen/skills/crit-story/SKILL.md) |
+| 49 | ✓ | [`integrations/qwen/skills/crit/SKILL.md`](integrations/qwen/skills/crit/SKILL.md) |
+| 50 | ✓ | [`integrations/windsurf/skills/crit-cli/SKILL.md`](integrations/windsurf/skills/crit-cli/SKILL.md) |
+| 51 | ✓ | [`integrations/windsurf/skills/crit-story/SKILL.md`](integrations/windsurf/skills/crit-story/SKILL.md) |
+| 52 | ✓ | [`scripts/AGENTS.md`](scripts/AGENTS.md) |
+| 53 | ✓ | [`scripts/CLAUDE.md`](scripts/CLAUDE.md) |
 
 ---
 

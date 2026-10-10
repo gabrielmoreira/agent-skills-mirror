@@ -29,15 +29,13 @@ GitHub Copilot CLI와 VS Code Copilot Chat/Agent의 검색 capability를 사용�
 2. Microsoft Learn/Docs MCP, GitHub search/API 같은 도메인 공식 검색
 3. Copilot이 제공하는 general web search tool(예: `web_search`)
 4. 위임이 요청·지시된 경우, 여러 독립 조사 축을 병렬 수집할 때만 `/research` 또는 web source를 지원하는 Research agent
-5. 접근 가능한 경로가 없으면 실시간 검증 불가로 명시
+5. 접근 가능한 경로가 없으면 실시간 검증 불가로 명시하고 사용자에게 출발 URL이 필요함을 알리며 최신 사실을 만들지 않는다
 
 검색 결과·snippet·AI 요약은 URL 발견용이며 근거가 아니다. `web_fetch` 같은 조회 도구로 canonical
 원문을 확인한다. JS challenge·CAPTCHA·403·429는 우회·반복하지 않고 동급 출처로 전환한다.
-공식 URL도 capability도 없으면 사용자에게 출발 URL이 필요함을 알리고 최신 사실을 만들지 않는다.
-HTTP 성공이나 URL 존재만으로 원문 확인을 판정하지 않는다. 빈 본문·사이트 footer만 반환되면
-공식 원문의 일반 브라우저 렌더를 확인할 수 있지만, 접근 제한 우회에는 사용하지 않는다.
-같은 요청에서 확인한 원문은 범위·버전·시점이 같은 주장과 후속 스킬에 공유한다.
-새 주장이나 조건 변경은 해당 구간을 다시 확인한다.
+HTTP 성공이나 URL 존재만으로 원문 확인을 판정하지 않는다. 빈 본문·사이트 footer만 반환되면 공식 원문의
+일반 브라우저 렌더를 확인할 수 있지만, 접근 제한 우회에는 사용하지 않는다. 같은 요청에서 확인한 원문은
+범위·버전·시점이 같은 주장과 후속 스킬에 공유한다. 새 주장이나 조건 변경은 해당 구간을 다시 확인한다.
 
 ## 안전
 
@@ -85,7 +83,8 @@ HTTP 성공이나 URL 존재만으로 원문 확인을 판정하지 않는다. �
 - schema·validator 통과는 형식·참조 무결성의 확인이지 사실성의 증명이 아니다. 원문 대조를 대체하지 않는다.
 
 ```bash
-python3 -B .github/skills/web-search/scripts/validate_fact_ledger.py <work>/fact-ledger.json \
+# <skill>: 이 SKILL.md가 있는 폴더, <work>: 세션 작업 폴더 (python3는 환경의 Python 3, Windows는 py -3)
+python3 -B <skill>/scripts/validate_fact_ledger.py <work>/fact-ledger.json \
   --markdown-output <work>/fact-ledger.md
 ```
 

@@ -20,7 +20,7 @@ Centralized, deterministic prompt-injection screening. Given a user-provided pro
 
 ## Public surface
 
-Re-exported from `mod.rs` (all defined in `detector.rs`):
+Re-exported from [`mod.rs`](./mod.rs) (all defined in [`detector.rs`](./detector.rs)):
 
 - `enforce_prompt_input(input: &str, context: PromptEnforcementContext) -> PromptEnforcementDecision`: the entry point for user-facing prompts.
 - `scan_tool_definition(field: &str, text: &str) -> Option<ToolDefinitionScanHit>`: same rules applied to remote MCP tool descriptions and titles; any non-`Allow` verdict is a hit and the registry rejects the tool.
@@ -71,3 +71,11 @@ Consumers call `enforce_prompt_input` and treat any non-`Allow` action as a reje
 - The verb list for exfiltration intent is deliberately conservative: `exfiltrate.credentials_with_intent` excludes high-false-positive verbs (`show`, `give`, `tell`, `fetch`, `return`, `output`) and requires a determiner within a bounded window, so benign technical questions ("show me the password reset flow", "reveal how to set my api key") do not trip it (issue #1940).
 - `is_obfuscation_char` is the single source of truth shared between the `had_zwsp` flag and the stripping step, to prevent drift.
 - `Review` and `Block` both yield non-`Allow` actions. Every current caller treats them identically as a rejection, so the distinction is informational and audit-only at the call sites.
+
+## Further reading
+
+- [Parent module (`security`)](../README.md)
+- [Security architecture](../../../../../gitbooks/developing/architecture/security.md)
+- [Privacy and security](../../../../../gitbooks/features/privacy-and-security.md)
+- [Approval gate](../../../../../gitbooks/features/approval-gate.md)
+- [OS keyring and secret storage](../../../../../gitbooks/features/os-keyring-and-secret-storage.md)

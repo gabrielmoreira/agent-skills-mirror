@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wesammustafa/Claude-Code-Everything-You-Need-to-Know` — 26 default patterns, 51 followed patterns, 120 file(s) materialized.
+Mirror of `wesammustafa/Claude-Code-Everything-You-Need-to-Know` — 26 default patterns, 62 followed patterns, 137 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `wesammustafa/Claude-Code-Everything-You-Need-to-Know` — 26 default 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 51 |
-| Files         | 120 |
+| Followed pats | 62 |
+| Files         | 137 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,6 +62,13 @@ Mirror of `wesammustafa/Claude-Code-Everything-You-Need-to-Know` — 26 default 
 - `docs/intermediate/electives/status-line.md`
 - `docs/intermediate/electives/fast-mode.md`
 - `examples/README.md`
+- `docs/advanced/README.md`
+- `docs/advanced/electives/agent-teams.md`
+- `docs/advanced/electives/agent-view.md`
+- `docs/advanced/electives/goal-loop-routines.md`
+- `docs/advanced/electives/publish-a-plugin.md`
+- `docs/advanced/electives/dev-containers.md`
+- `docs/advanced/beyond-this-guide.md`
 - `docs/reference/commands.md`
 - `docs/reference/feature-map.md`
 - `docs/beginner/README.md`
@@ -70,7 +77,6 @@ Mirror of `wesammustafa/Claude-Code-Everything-You-Need-to-Know` — 26 default 
 - `docs/reference/glossary.md`
 - `docs/reference/models.md`
 - `docs/reference/further-reading.md`
-- `docs/advanced/README.md`
 - `docs/beginner/01-install-and-look-around.md`
 - `docs/beginner/02-permission-modes-and-plan-mode.md`
 - `docs/beginner/03-first-change.md`
@@ -89,6 +95,14 @@ Mirror of `wesammustafa/Claude-Code-Everything-You-Need-to-Know` — 26 default 
 - `docs/intermediate/07-mcp.md`
 - `docs/intermediate/08-plugins.md`
 - `docs/intermediate/capstone.md`
+- `docs/advanced/01-parallel-sessions.md`
+- `docs/advanced/02-orchestration-patterns.md`
+- `docs/advanced/03-dynamic-workflows.md`
+- `docs/advanced/04-headless.md`
+- `docs/advanced/05-github-actions.md`
+- `docs/advanced/06-share-your-setup.md`
+- `docs/advanced/07-bounded-runs.md`
+- `docs/advanced/capstone.md`
 - `docs/topics/permissions-and-safety.md`
 - `docs/topics/memory-and-context.md`
 - `docs/topics/models-effort-and-cost.md`
@@ -98,9 +112,6 @@ Mirror of `wesammustafa/Claude-Code-Everything-You-Need-to-Know` — 26 default 
 - `docs/topics/plugins.md`
 - `docs/topics/automation.md`
 - `docs/reference/changelog.md`
-- `docs/legacy/subagents-and-parallel-work.md`
-- `docs/agent-teams.md`
-- `docs/workflows.md`
 - `docs/reference/faq.md`
 
 ## File Index
@@ -142,93 +153,110 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 31 | ✓ | [`.github/scripts/fixtures/lesson-watch-out-too-long/tree/docs/intermediate/05-hooks.md`](.github/scripts/fixtures/lesson-watch-out-too-long/tree/docs/intermediate/05-hooks.md) |
 | 32 | ✓ | [`.github/scripts/fixtures/live-config-under-examples/tree/README.md`](.github/scripts/fixtures/live-config-under-examples/tree/README.md) |
 | 33 | ✓ | [`.github/scripts/fixtures/malformed-stamp-on-models-page/tree/docs/reference/models.md`](.github/scripts/fixtures/malformed-stamp-on-models-page/tree/docs/reference/models.md) |
-| 34 | ✓ | [`.github/scripts/fixtures/mermaid-without-accessibility/tree/README.md`](.github/scripts/fixtures/mermaid-without-accessibility/tree/README.md) |
-| 35 | ✓ | [`.github/scripts/fixtures/orphan-asset/tree/README.md`](.github/scripts/fixtures/orphan-asset/tree/README.md) |
-| 36 | ✓ | [`.github/scripts/fixtures/readme-without-trust-strip/tree/CHANGELOG.md`](.github/scripts/fixtures/readme-without-trust-strip/tree/CHANGELOG.md) |
-| 37 | ✓ | [`.github/scripts/fixtures/readme-without-trust-strip/tree/docs/reference/changelog.md`](.github/scripts/fixtures/readme-without-trust-strip/tree/docs/reference/changelog.md) |
-| 38 | ✓ | [`.github/scripts/fixtures/readme-without-trust-strip/tree/README.md`](.github/scripts/fixtures/readme-without-trust-strip/tree/README.md) |
-| 39 | ✓ | [`.github/scripts/fixtures/removed-stub-path/tree/docs/reference/models.md`](.github/scripts/fixtures/removed-stub-path/tree/docs/reference/models.md) |
-| 40 | ✓ | [`.github/scripts/fixtures/sample-lessons-pass-lesson-lint/tree/docs/beginner/02-permission-modes-and-plan-mode.md`](.github/scripts/fixtures/sample-lessons-pass-lesson-lint/tree/docs/beginner/02-permission-modes-and-plan-mode.md) |
-| 41 | ✓ | [`.github/scripts/fixtures/sample-lessons-pass-lesson-lint/tree/docs/intermediate/05-hooks.md`](.github/scripts/fixtures/sample-lessons-pass-lesson-lint/tree/docs/intermediate/05-hooks.md) |
-| 42 | ✓ | [`.github/scripts/fixtures/scratch-folder-not-checked/tree/README.md`](.github/scripts/fixtures/scratch-folder-not-checked/tree/README.md) |
-| 43 | ✓ | [`.github/scripts/fixtures/skill-missing-description/tree/examples/intermediate/01-first-skill/dot-claude/skills/five-whys/SKILL.md`](.github/scripts/fixtures/skill-missing-description/tree/examples/intermediate/01-first-skill/dot-claude/skills/five-whys/SKILL.md) |
-| 44 | ✓ | [`.github/scripts/fixtures/smoke-tests-skip-untouched-examples/base/README.md`](.github/scripts/fixtures/smoke-tests-skip-untouched-examples/base/README.md) |
-| 45 | ✓ | [`.github/scripts/fixtures/smoke-tests-skip-untouched-examples/tree/README.md`](.github/scripts/fixtures/smoke-tests-skip-untouched-examples/tree/README.md) |
-| 46 | ✓ | [`.github/scripts/fixtures/stable-release-after-baseline/tree/CHANGELOG.md`](.github/scripts/fixtures/stable-release-after-baseline/tree/CHANGELOG.md) |
-| 47 | ✓ | [`.github/scripts/fixtures/stable-release-matches-baseline/tree/CHANGELOG.md`](.github/scripts/fixtures/stable-release-matches-baseline/tree/CHANGELOG.md) |
-| 48 | ✓ | [`.github/scripts/fixtures/stale-stamp-on-edition-tag/tree/CHANGELOG.md`](.github/scripts/fixtures/stale-stamp-on-edition-tag/tree/CHANGELOG.md) |
-| 49 | ✓ | [`.github/scripts/fixtures/stale-stamp-on-edition-tag/tree/docs/beginner/README.md`](.github/scripts/fixtures/stale-stamp-on-edition-tag/tree/docs/beginner/README.md) |
-| 50 | ✓ | [`.github/scripts/fixtures/trust-strip-mismatch/tree/CHANGELOG.md`](.github/scripts/fixtures/trust-strip-mismatch/tree/CHANGELOG.md) |
-| 51 | ✓ | [`.github/scripts/fixtures/trust-strip-mismatch/tree/README.md`](.github/scripts/fixtures/trust-strip-mismatch/tree/README.md) |
-| 52 | ✓ | [`.github/scripts/fixtures/unanchored-heading-rename/base/docs/hooks.md`](.github/scripts/fixtures/unanchored-heading-rename/base/docs/hooks.md) |
-| 53 | ✓ | [`.github/scripts/fixtures/unanchored-heading-rename/tree/docs/hooks.md`](.github/scripts/fixtures/unanchored-heading-rename/tree/docs/hooks.md) |
-| 54 | ✓ | [`.github/scripts/fixtures/valid-asset-tree/tree/docs/beginner/04-keep-a-session-on-track.md`](.github/scripts/fixtures/valid-asset-tree/tree/docs/beginner/04-keep-a-session-on-track.md) |
-| 55 | ✓ | [`.github/scripts/fixtures/valid-asset-tree/tree/README.md`](.github/scripts/fixtures/valid-asset-tree/tree/README.md) |
-| 56 | ✓ | [`.github/scripts/fixtures/valid-example-kit/tree/examples/intermediate/01-first-skill/dot-claude/skills/five-whys/SKILL.md`](.github/scripts/fixtures/valid-example-kit/tree/examples/intermediate/01-first-skill/dot-claude/skills/five-whys/SKILL.md) |
-| 57 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 58 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 59 | ✓ | [`docs/reference/effort-levels.md`](docs/reference/effort-levels.md) |
-| 60 | ✓ | [`docs/skills.md`](docs/skills.md) |
-| 61 | ✓ | [`docs/topics/skills.md`](docs/topics/skills.md) |
-| 62 | ✓ | [`examples/intermediate/01-first-skill/dot-claude/skills/five-whys/SKILL.md`](examples/intermediate/01-first-skill/dot-claude/skills/five-whys/SKILL.md) |
-| 63 | ✓ | [`examples/intermediate/01-first-skill/dot-claude/skills/tdd/SKILL.md`](examples/intermediate/01-first-skill/dot-claude/skills/tdd/SKILL.md) |
-| 64 | ✓ | [`examples/intermediate/01-first-skill/README.md`](examples/intermediate/01-first-skill/README.md) |
-| 65 | ✓ | [`examples/intermediate/05-hooks/README.md`](examples/intermediate/05-hooks/README.md) |
-| 66 | ✓ | [`examples/intermediate/06-subagents/README.md`](examples/intermediate/06-subagents/README.md) |
-| 67 | ✓ | [`examples/intermediate/07-mcp/README.md`](examples/intermediate/07-mcp/README.md) |
-| 68 | ✓ | [`mcp-servers/README.md`](mcp-servers/README.md) |
-| 69 | ✓ | [`specialized-agents/README.md`](specialized-agents/README.md) |
-| 70 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 71 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 72 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 73 | → | [`docs/advanced/README.md`](docs/advanced/README.md) |
-| 74 | → | [`docs/agent-teams.md`](docs/agent-teams.md) |
-| 75 | → | [`docs/beginner/01-install-and-look-around.md`](docs/beginner/01-install-and-look-around.md) |
-| 76 | → | [`docs/beginner/02-permission-modes-and-plan-mode.md`](docs/beginner/02-permission-modes-and-plan-mode.md) |
-| 77 | → | [`docs/beginner/03-first-change.md`](docs/beginner/03-first-change.md) |
-| 78 | → | [`docs/beginner/04-keep-a-session-on-track.md`](docs/beginner/04-keep-a-session-on-track.md) |
-| 79 | → | [`docs/beginner/05-project-memory.md`](docs/beginner/05-project-memory.md) |
-| 80 | → | [`docs/beginner/capstone.md`](docs/beginner/capstone.md) |
-| 81 | → | [`docs/beginner/electives/built-in-teachers.md`](docs/beginner/electives/built-in-teachers.md) |
-| 82 | → | [`docs/beginner/electives/ide-extensions.md`](docs/beginner/electives/ide-extensions.md) |
-| 83 | → | [`docs/beginner/electives/screenshots-and-images.md`](docs/beginner/electives/screenshots-and-images.md) |
-| 84 | → | [`docs/beginner/README.md`](docs/beginner/README.md) |
-| 85 | → | [`docs/intermediate/01-first-skill.md`](docs/intermediate/01-first-skill.md) |
-| 86 | → | [`docs/intermediate/02-organize-memory.md`](docs/intermediate/02-organize-memory.md) |
-| 87 | → | [`docs/intermediate/03-model-and-effort.md`](docs/intermediate/03-model-and-effort.md) |
-| 88 | → | [`docs/intermediate/04-permissions-and-sandbox.md`](docs/intermediate/04-permissions-and-sandbox.md) |
-| 89 | → | [`docs/intermediate/05-hooks.md`](docs/intermediate/05-hooks.md) |
-| 90 | → | [`docs/intermediate/06-subagents.md`](docs/intermediate/06-subagents.md) |
-| 91 | → | [`docs/intermediate/07-mcp.md`](docs/intermediate/07-mcp.md) |
-| 92 | → | [`docs/intermediate/08-plugins.md`](docs/intermediate/08-plugins.md) |
-| 93 | → | [`docs/intermediate/capstone.md`](docs/intermediate/capstone.md) |
-| 94 | → | [`docs/intermediate/electives/claude-in-chrome.md`](docs/intermediate/electives/claude-in-chrome.md) |
-| 95 | → | [`docs/intermediate/electives/fast-mode.md`](docs/intermediate/electives/fast-mode.md) |
-| 96 | → | [`docs/intermediate/electives/skill-patterns.md`](docs/intermediate/electives/skill-patterns.md) |
-| 97 | → | [`docs/intermediate/electives/status-line.md`](docs/intermediate/electives/status-line.md) |
-| 98 | → | [`docs/intermediate/README.md`](docs/intermediate/README.md) |
-| 99 | → | [`docs/legacy/subagents-and-parallel-work.md`](docs/legacy/subagents-and-parallel-work.md) |
-| 100 | → | [`docs/reference/changelog.md`](docs/reference/changelog.md) |
-| 101 | → | [`docs/reference/commands.md`](docs/reference/commands.md) |
-| 102 | → | [`docs/reference/faq.md`](docs/reference/faq.md) |
-| 103 | → | [`docs/reference/feature-map.md`](docs/reference/feature-map.md) |
-| 104 | → | [`docs/reference/further-reading.md`](docs/reference/further-reading.md) |
-| 105 | → | [`docs/reference/glossary.md`](docs/reference/glossary.md) |
-| 106 | → | [`docs/reference/models.md`](docs/reference/models.md) |
-| 107 | → | [`docs/reference/README.md`](docs/reference/README.md) |
-| 108 | → | [`docs/topics/automation.md`](docs/topics/automation.md) |
-| 109 | → | [`docs/topics/hooks.md`](docs/topics/hooks.md) |
-| 110 | → | [`docs/topics/mcp.md`](docs/topics/mcp.md) |
-| 111 | → | [`docs/topics/memory-and-context.md`](docs/topics/memory-and-context.md) |
-| 112 | → | [`docs/topics/models-effort-and-cost.md`](docs/topics/models-effort-and-cost.md) |
-| 113 | → | [`docs/topics/permissions-and-safety.md`](docs/topics/permissions-and-safety.md) |
-| 114 | → | [`docs/topics/plugins.md`](docs/topics/plugins.md) |
-| 115 | → | [`docs/topics/README.md`](docs/topics/README.md) |
-| 116 | → | [`docs/topics/subagents-and-parallel-work.md`](docs/topics/subagents-and-parallel-work.md) |
-| 117 | → | [`docs/workflows.md`](docs/workflows.md) |
-| 118 | → | [`examples/README.md`](examples/README.md) |
-| 119 | → | [`README.md`](README.md) |
-| 120 | → | [`SECURITY.md`](SECURITY.md) |
+| 34 | ✓ | [`.github/scripts/fixtures/marketplace-manifest-under-examples/tree/README.md`](.github/scripts/fixtures/marketplace-manifest-under-examples/tree/README.md) |
+| 35 | ✓ | [`.github/scripts/fixtures/mermaid-without-accessibility/tree/README.md`](.github/scripts/fixtures/mermaid-without-accessibility/tree/README.md) |
+| 36 | ✓ | [`.github/scripts/fixtures/orphan-asset/tree/README.md`](.github/scripts/fixtures/orphan-asset/tree/README.md) |
+| 37 | ✓ | [`.github/scripts/fixtures/plugin-folder-at-root/tree/README.md`](.github/scripts/fixtures/plugin-folder-at-root/tree/README.md) |
+| 38 | ✓ | [`.github/scripts/fixtures/plugin-skill-missing-description/tree/examples/advanced/06-share-your-setup/plugins/team-kit/skills/onboard/SKILL.md`](.github/scripts/fixtures/plugin-skill-missing-description/tree/examples/advanced/06-share-your-setup/plugins/team-kit/skills/onboard/SKILL.md) |
+| 39 | ✓ | [`.github/scripts/fixtures/readme-without-trust-strip/tree/CHANGELOG.md`](.github/scripts/fixtures/readme-without-trust-strip/tree/CHANGELOG.md) |
+| 40 | ✓ | [`.github/scripts/fixtures/readme-without-trust-strip/tree/README.md`](.github/scripts/fixtures/readme-without-trust-strip/tree/README.md) |
+| 41 | ✓ | [`.github/scripts/fixtures/removed-stub-path/tree/docs/reference/models.md`](.github/scripts/fixtures/removed-stub-path/tree/docs/reference/models.md) |
+| 42 | ✓ | [`.github/scripts/fixtures/renamed-marketplace-under-examples/tree/examples/advanced/06-share-your-setup/plugins/team-kit/skills/onboard/SKILL.md`](.github/scripts/fixtures/renamed-marketplace-under-examples/tree/examples/advanced/06-share-your-setup/plugins/team-kit/skills/onboard/SKILL.md) |
+| 43 | ✓ | [`.github/scripts/fixtures/sample-lessons-pass-lesson-lint/tree/docs/advanced/03-dynamic-workflows.md`](.github/scripts/fixtures/sample-lessons-pass-lesson-lint/tree/docs/advanced/03-dynamic-workflows.md) |
+| 44 | ✓ | [`.github/scripts/fixtures/sample-lessons-pass-lesson-lint/tree/docs/beginner/02-permission-modes-and-plan-mode.md`](.github/scripts/fixtures/sample-lessons-pass-lesson-lint/tree/docs/beginner/02-permission-modes-and-plan-mode.md) |
+| 45 | ✓ | [`.github/scripts/fixtures/sample-lessons-pass-lesson-lint/tree/docs/intermediate/05-hooks.md`](.github/scripts/fixtures/sample-lessons-pass-lesson-lint/tree/docs/intermediate/05-hooks.md) |
+| 46 | ✓ | [`.github/scripts/fixtures/scratch-folder-not-checked/tree/README.md`](.github/scripts/fixtures/scratch-folder-not-checked/tree/README.md) |
+| 47 | ✓ | [`.github/scripts/fixtures/skill-missing-description/tree/examples/intermediate/01-first-skill/dot-claude/skills/five-whys/SKILL.md`](.github/scripts/fixtures/skill-missing-description/tree/examples/intermediate/01-first-skill/dot-claude/skills/five-whys/SKILL.md) |
+| 48 | ✓ | [`.github/scripts/fixtures/smoke-tests-skip-untouched-examples/base/README.md`](.github/scripts/fixtures/smoke-tests-skip-untouched-examples/base/README.md) |
+| 49 | ✓ | [`.github/scripts/fixtures/smoke-tests-skip-untouched-examples/tree/README.md`](.github/scripts/fixtures/smoke-tests-skip-untouched-examples/tree/README.md) |
+| 50 | ✓ | [`.github/scripts/fixtures/stable-release-after-baseline/tree/CHANGELOG.md`](.github/scripts/fixtures/stable-release-after-baseline/tree/CHANGELOG.md) |
+| 51 | ✓ | [`.github/scripts/fixtures/stable-release-matches-baseline/tree/CHANGELOG.md`](.github/scripts/fixtures/stable-release-matches-baseline/tree/CHANGELOG.md) |
+| 52 | ✓ | [`.github/scripts/fixtures/stale-stamp-on-edition-tag/tree/CHANGELOG.md`](.github/scripts/fixtures/stale-stamp-on-edition-tag/tree/CHANGELOG.md) |
+| 53 | ✓ | [`.github/scripts/fixtures/stale-stamp-on-edition-tag/tree/docs/beginner/README.md`](.github/scripts/fixtures/stale-stamp-on-edition-tag/tree/docs/beginner/README.md) |
+| 54 | ✓ | [`.github/scripts/fixtures/trust-strip-mismatch/tree/CHANGELOG.md`](.github/scripts/fixtures/trust-strip-mismatch/tree/CHANGELOG.md) |
+| 55 | ✓ | [`.github/scripts/fixtures/trust-strip-mismatch/tree/README.md`](.github/scripts/fixtures/trust-strip-mismatch/tree/README.md) |
+| 56 | ✓ | [`.github/scripts/fixtures/unanchored-heading-rename/base/docs/hooks.md`](.github/scripts/fixtures/unanchored-heading-rename/base/docs/hooks.md) |
+| 57 | ✓ | [`.github/scripts/fixtures/unanchored-heading-rename/tree/docs/hooks.md`](.github/scripts/fixtures/unanchored-heading-rename/tree/docs/hooks.md) |
+| 58 | ✓ | [`.github/scripts/fixtures/valid-asset-tree/tree/docs/beginner/04-keep-a-session-on-track.md`](.github/scripts/fixtures/valid-asset-tree/tree/docs/beginner/04-keep-a-session-on-track.md) |
+| 59 | ✓ | [`.github/scripts/fixtures/valid-asset-tree/tree/README.md`](.github/scripts/fixtures/valid-asset-tree/tree/README.md) |
+| 60 | ✓ | [`.github/scripts/fixtures/valid-example-kit/tree/examples/intermediate/01-first-skill/dot-claude/skills/five-whys/SKILL.md`](.github/scripts/fixtures/valid-example-kit/tree/examples/intermediate/01-first-skill/dot-claude/skills/five-whys/SKILL.md) |
+| 61 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 62 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 63 | ✓ | [`docs/skills.md`](docs/skills.md) |
+| 64 | ✓ | [`docs/topics/skills.md`](docs/topics/skills.md) |
+| 65 | ✓ | [`examples/advanced/06-share-your-setup/plugins/team-kit/skills/onboard/SKILL.md`](examples/advanced/06-share-your-setup/plugins/team-kit/skills/onboard/SKILL.md) |
+| 66 | ✓ | [`examples/advanced/06-share-your-setup/README.md`](examples/advanced/06-share-your-setup/README.md) |
+| 67 | ✓ | [`examples/advanced/electives/agent-teams/README.md`](examples/advanced/electives/agent-teams/README.md) |
+| 68 | ✓ | [`examples/intermediate/01-first-skill/dot-claude/skills/five-whys/SKILL.md`](examples/intermediate/01-first-skill/dot-claude/skills/five-whys/SKILL.md) |
+| 69 | ✓ | [`examples/intermediate/01-first-skill/dot-claude/skills/tdd/SKILL.md`](examples/intermediate/01-first-skill/dot-claude/skills/tdd/SKILL.md) |
+| 70 | ✓ | [`examples/intermediate/01-first-skill/README.md`](examples/intermediate/01-first-skill/README.md) |
+| 71 | ✓ | [`examples/intermediate/05-hooks/README.md`](examples/intermediate/05-hooks/README.md) |
+| 72 | ✓ | [`examples/intermediate/06-subagents/README.md`](examples/intermediate/06-subagents/README.md) |
+| 73 | ✓ | [`examples/intermediate/07-mcp/README.md`](examples/intermediate/07-mcp/README.md) |
+| 74 | ✓ | [`mcp-servers/README.md`](mcp-servers/README.md) |
+| 75 | ✓ | [`specialized-agents/README.md`](specialized-agents/README.md) |
+| 76 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 77 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 78 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 79 | → | [`docs/advanced/01-parallel-sessions.md`](docs/advanced/01-parallel-sessions.md) |
+| 80 | → | [`docs/advanced/02-orchestration-patterns.md`](docs/advanced/02-orchestration-patterns.md) |
+| 81 | → | [`docs/advanced/03-dynamic-workflows.md`](docs/advanced/03-dynamic-workflows.md) |
+| 82 | → | [`docs/advanced/04-headless.md`](docs/advanced/04-headless.md) |
+| 83 | → | [`docs/advanced/05-github-actions.md`](docs/advanced/05-github-actions.md) |
+| 84 | → | [`docs/advanced/06-share-your-setup.md`](docs/advanced/06-share-your-setup.md) |
+| 85 | → | [`docs/advanced/07-bounded-runs.md`](docs/advanced/07-bounded-runs.md) |
+| 86 | → | [`docs/advanced/beyond-this-guide.md`](docs/advanced/beyond-this-guide.md) |
+| 87 | → | [`docs/advanced/capstone.md`](docs/advanced/capstone.md) |
+| 88 | → | [`docs/advanced/electives/agent-teams.md`](docs/advanced/electives/agent-teams.md) |
+| 89 | → | [`docs/advanced/electives/agent-view.md`](docs/advanced/electives/agent-view.md) |
+| 90 | → | [`docs/advanced/electives/dev-containers.md`](docs/advanced/electives/dev-containers.md) |
+| 91 | → | [`docs/advanced/electives/goal-loop-routines.md`](docs/advanced/electives/goal-loop-routines.md) |
+| 92 | → | [`docs/advanced/electives/publish-a-plugin.md`](docs/advanced/electives/publish-a-plugin.md) |
+| 93 | → | [`docs/advanced/README.md`](docs/advanced/README.md) |
+| 94 | → | [`docs/beginner/01-install-and-look-around.md`](docs/beginner/01-install-and-look-around.md) |
+| 95 | → | [`docs/beginner/02-permission-modes-and-plan-mode.md`](docs/beginner/02-permission-modes-and-plan-mode.md) |
+| 96 | → | [`docs/beginner/03-first-change.md`](docs/beginner/03-first-change.md) |
+| 97 | → | [`docs/beginner/04-keep-a-session-on-track.md`](docs/beginner/04-keep-a-session-on-track.md) |
+| 98 | → | [`docs/beginner/05-project-memory.md`](docs/beginner/05-project-memory.md) |
+| 99 | → | [`docs/beginner/capstone.md`](docs/beginner/capstone.md) |
+| 100 | → | [`docs/beginner/electives/built-in-teachers.md`](docs/beginner/electives/built-in-teachers.md) |
+| 101 | → | [`docs/beginner/electives/ide-extensions.md`](docs/beginner/electives/ide-extensions.md) |
+| 102 | → | [`docs/beginner/electives/screenshots-and-images.md`](docs/beginner/electives/screenshots-and-images.md) |
+| 103 | → | [`docs/beginner/README.md`](docs/beginner/README.md) |
+| 104 | → | [`docs/intermediate/01-first-skill.md`](docs/intermediate/01-first-skill.md) |
+| 105 | → | [`docs/intermediate/02-organize-memory.md`](docs/intermediate/02-organize-memory.md) |
+| 106 | → | [`docs/intermediate/03-model-and-effort.md`](docs/intermediate/03-model-and-effort.md) |
+| 107 | → | [`docs/intermediate/04-permissions-and-sandbox.md`](docs/intermediate/04-permissions-and-sandbox.md) |
+| 108 | → | [`docs/intermediate/05-hooks.md`](docs/intermediate/05-hooks.md) |
+| 109 | → | [`docs/intermediate/06-subagents.md`](docs/intermediate/06-subagents.md) |
+| 110 | → | [`docs/intermediate/07-mcp.md`](docs/intermediate/07-mcp.md) |
+| 111 | → | [`docs/intermediate/08-plugins.md`](docs/intermediate/08-plugins.md) |
+| 112 | → | [`docs/intermediate/capstone.md`](docs/intermediate/capstone.md) |
+| 113 | → | [`docs/intermediate/electives/claude-in-chrome.md`](docs/intermediate/electives/claude-in-chrome.md) |
+| 114 | → | [`docs/intermediate/electives/fast-mode.md`](docs/intermediate/electives/fast-mode.md) |
+| 115 | → | [`docs/intermediate/electives/skill-patterns.md`](docs/intermediate/electives/skill-patterns.md) |
+| 116 | → | [`docs/intermediate/electives/status-line.md`](docs/intermediate/electives/status-line.md) |
+| 117 | → | [`docs/intermediate/README.md`](docs/intermediate/README.md) |
+| 118 | → | [`docs/reference/changelog.md`](docs/reference/changelog.md) |
+| 119 | → | [`docs/reference/commands.md`](docs/reference/commands.md) |
+| 120 | → | [`docs/reference/faq.md`](docs/reference/faq.md) |
+| 121 | → | [`docs/reference/feature-map.md`](docs/reference/feature-map.md) |
+| 122 | → | [`docs/reference/further-reading.md`](docs/reference/further-reading.md) |
+| 123 | → | [`docs/reference/glossary.md`](docs/reference/glossary.md) |
+| 124 | → | [`docs/reference/models.md`](docs/reference/models.md) |
+| 125 | → | [`docs/reference/README.md`](docs/reference/README.md) |
+| 126 | → | [`docs/topics/automation.md`](docs/topics/automation.md) |
+| 127 | → | [`docs/topics/hooks.md`](docs/topics/hooks.md) |
+| 128 | → | [`docs/topics/mcp.md`](docs/topics/mcp.md) |
+| 129 | → | [`docs/topics/memory-and-context.md`](docs/topics/memory-and-context.md) |
+| 130 | → | [`docs/topics/models-effort-and-cost.md`](docs/topics/models-effort-and-cost.md) |
+| 131 | → | [`docs/topics/permissions-and-safety.md`](docs/topics/permissions-and-safety.md) |
+| 132 | → | [`docs/topics/plugins.md`](docs/topics/plugins.md) |
+| 133 | → | [`docs/topics/README.md`](docs/topics/README.md) |
+| 134 | → | [`docs/topics/subagents-and-parallel-work.md`](docs/topics/subagents-and-parallel-work.md) |
+| 135 | → | [`examples/README.md`](examples/README.md) |
+| 136 | → | [`README.md`](README.md) |
+| 137 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

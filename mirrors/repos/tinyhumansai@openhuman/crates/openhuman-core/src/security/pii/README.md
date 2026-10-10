@@ -22,9 +22,9 @@ whether content is safe to send off-device.
 
 | File | Purpose |
 | --- | --- |
-| `types.rs` | `RiskLevel`, `PiiCategory` (with per-category `weight()` and `is_strong_identifier()`), `CategoryHit`, `PiiScanResult` |
-| `detector.rs` | `scan()`, which walks the compiled rule set, tallies matches, and folds the result into a `PiiScanResult` |
-| `rules.rs` | Compiled rule table: pattern rules (regex plus an optional structural validator, for example Luhn for cards) and keyword rules (word-boundaried term alternations for topical categories) |
+| [`types.rs`](./types.rs) | `RiskLevel`, `PiiCategory` (with per-category `weight()` and `is_strong_identifier()`), `CategoryHit`, `PiiScanResult` |
+| [`detector.rs`](./detector.rs) | `scan()`, which walks the compiled rule set, tallies matches, and folds the result into a `PiiScanResult` |
+| [`rules.rs`](./rules.rs) | Compiled rule table: pattern rules (regex plus an optional structural validator, for example Luhn for cards) and keyword rules (word-boundaried term alternations for topical categories) |
 
 ## Public surface
 
@@ -65,4 +65,11 @@ whether content is safe to send off-device.
 
 ## Tests
 
-- `detector_tests.rs`, `pii_tests.rs`.
+- [`detector_tests.rs`](./detector_tests.rs), [`pii_tests.rs`](./pii_tests.rs).
+
+## Further reading
+
+- [Parent module (`security`)](../README.md)
+- [Privacy mode](../../../../../gitbooks/features/privacy-mode.md)
+- [Privacy and security](../../../../../gitbooks/features/privacy-and-security.md)
+- [Security architecture](../../../../../gitbooks/developing/architecture/security.md)

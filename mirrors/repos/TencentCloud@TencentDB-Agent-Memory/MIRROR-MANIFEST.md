@@ -7,7 +7,7 @@ ref: feat/server_team
 
 # Mirror Manifest
 
-Mirror of `TencentCloud/TencentDB-Agent-Memory` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `TencentCloud/TencentDB-Agent-Memory` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `TencentCloud/TencentDB-Agent-Memory` — 26 default patterns, 0 follo
 | Ref           | `feat/server_team` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 22 |
+| Files         | 23 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,19 +68,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`agents/codex/asset-import.md`](agents/codex/asset-import.md) |
 | 8 | ✓ | [`agents/codex/README.md`](agents/codex/README.md) |
 | 9 | ✓ | [`agents/dsh/asset-import.md`](agents/dsh/asset-import.md) |
-| 10 | ✓ | [`agents/dsh/README.md`](agents/dsh/README.md) |
-| 11 | ✓ | [`agents/hermes/asset-import.md`](agents/hermes/asset-import.md) |
-| 12 | ✓ | [`agents/hermes/README.md`](agents/hermes/README.md) |
-| 13 | ✓ | [`agents/openclaw/asset-import.md`](agents/openclaw/asset-import.md) |
-| 14 | ✓ | [`agents/openclaw/README.md`](agents/openclaw/README.md) |
-| 15 | ✓ | [`agents/opencode/README.md`](agents/opencode/README.md) |
-| 16 | ✓ | [`agents/README.md`](agents/README.md) |
-| 17 | ✓ | [`agents/setup-proxy.sh`](agents/setup-proxy.sh) |
-| 18 | ✓ | [`agents/skills/setup-proxy/setup-proxy.sh`](agents/skills/setup-proxy/setup-proxy.sh) |
-| 19 | ✓ | [`agents/skills/setup-proxy/SKILL.md`](agents/skills/setup-proxy/SKILL.md) |
-| 20 | ✓ | [`agents/workbuddy/asset-import.md`](agents/workbuddy/asset-import.md) |
-| 21 | ✓ | [`agents/workbuddy/README.md`](agents/workbuddy/README.md) |
-| 22 | ✓ | [`MemoryCore/SKILL.md`](MemoryCore/SKILL.md) |
+| 10 | ✓ | [`agents/dsh/imgs/desktop-model-settings.png`](agents/dsh/imgs/desktop-model-settings.png) |
+| 11 | ✓ | [`agents/dsh/README.md`](agents/dsh/README.md) |
+| 12 | ✓ | [`agents/hermes/asset-import.md`](agents/hermes/asset-import.md) |
+| 13 | ✓ | [`agents/hermes/README.md`](agents/hermes/README.md) |
+| 14 | ✓ | [`agents/openclaw/asset-import.md`](agents/openclaw/asset-import.md) |
+| 15 | ✓ | [`agents/openclaw/README.md`](agents/openclaw/README.md) |
+| 16 | ✓ | [`agents/opencode/README.md`](agents/opencode/README.md) |
+| 17 | ✓ | [`agents/README.md`](agents/README.md) |
+| 18 | ✓ | [`agents/setup-proxy.sh`](agents/setup-proxy.sh) |
+| 19 | ✓ | [`agents/skills/setup-proxy/setup-proxy.sh`](agents/skills/setup-proxy/setup-proxy.sh) |
+| 20 | ✓ | [`agents/skills/setup-proxy/SKILL.md`](agents/skills/setup-proxy/SKILL.md) |
+| 21 | ✓ | [`agents/workbuddy/asset-import.md`](agents/workbuddy/asset-import.md) |
+| 22 | ✓ | [`agents/workbuddy/README.md`](agents/workbuddy/README.md) |
+| 23 | ✓ | [`MemoryCore/SKILL.md`](MemoryCore/SKILL.md) |
 
 ---
 

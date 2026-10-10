@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `tradecatlabs/vibe-coding-cn` — 26 default patterns, 19 followed patterns, 476 file(s) materialized.
+Mirror of `tradecatlabs/vibe-coding-cn` — 26 default patterns, 20 followed patterns, 477 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `tradecatlabs/vibe-coding-cn` — 26 default patterns, 19 followed pat
 | Ref Type      | `branch` |
 | Ref           | `develop` |
 | Default pats  | 26 |
-| Followed pats | 19 |
-| Files         | 476 |
+| Followed pats | 20 |
+| Files         | 477 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,6 +55,7 @@ Mirror of `tradecatlabs/vibe-coding-cn` — 26 default patterns, 19 followed pat
 - `docs/gongfa/README.md`
 - `docs/gongfa/ai-core-propositions.md`
 - `metadata/gongfa/README.md`
+- `tools/faqi-catalog.md`
 - `docs/getting-started/learning-map.md`
 - `docs/README.md`
 - `docs/getting-started/README.md`
@@ -552,7 +553,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 473 | → | [`metadata/gongfa/README.md`](metadata/gongfa/README.md) |
 | 474 | → | [`README.md`](README.md) |
 | 475 | → | [`research/README.md`](research/README.md) |
-| 476 | → | [`tools/README.md`](tools/README.md) |
+| 476 | → | [`tools/faqi-catalog.md`](tools/faqi-catalog.md) |
+| 477 | → | [`tools/README.md`](tools/README.md) |
 
 ---
 

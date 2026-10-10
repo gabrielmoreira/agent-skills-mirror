@@ -70,6 +70,24 @@ runtime. Prettier governs the frontend JSON/TS; rustfmt governs `src-tauri/`.
   in a local note. Resume from that note and current Git state; do not restart
   the design or silently drop unfinished parts when the user gives feedback.
 
+## Local Windows builds and previews
+
+- On this machine, keep Cargo output on D: under
+  `D:/EchoBird-build/<worktree-id>/target` (use `main` for the primary checkout).
+  Before compiling, configure the checkout's ignored `.cargo/config.toml`
+  with `[build] target-dir` and verify Cargo metadata resolves that directory.
+  Check for `CARGO_TARGET_DIR` overrides. Never fall back to a C: target.
+- Reuse the same cache for that checkout; do not create a new output directory
+  for each preview. Different checkouts must use separate directories.
+- For frontend-only previews, reuse a verified current backend. Rebuild when
+  Rust changes. Verify the executable and frontend server belong to EchoBird
+  and this checkout before launching; do not launch another project's client.
+- After a preview, stop only its owned processes and remove its temporary
+  overrides/logs. Retain the D: cache for reuse; remove it when the checkout
+  is retired, after verifying its exact path and that no process uses it.
+- These are local Windows storage rules; do not add machine-specific paths
+  to shared Cargo configuration or change macOS/Linux/CI build locations.
+
 ## CI gates (must pass locally before pushing)
 
 CI runs two jobs in parallel, each with this order — **format runs first and
@@ -118,6 +136,12 @@ clippy/test, not optional.
   a duplicated attribute.
 
 ## Account login UI conventions
+
+- In Account Center summaries, show a lone balance as a centered large
+  Balance + value line, matching Model Center. Prefer a lone value for credits
+  or available quota. Retain meaningful period/bucket names
+  and labels needed to distinguish multiple metrics. Center a single metric in
+  the card body; give two progress rows more space without adding card height.
 
 - Reuse `src/pages/AppManager/useManagedAccounts.ts` for account loading,
   selection, login deadlines/cancellation, refresh and deletion. Provider hooks

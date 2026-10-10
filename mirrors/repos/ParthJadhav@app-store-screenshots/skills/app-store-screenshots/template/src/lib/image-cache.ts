@@ -3,11 +3,21 @@
 // non-deterministic image fetch races. Always use img(path) in render.
 
 const cache = new Map<string, string>();
+// Natural pixel size of each cached image, so frames can check a capture's aspect.
+const sizes = new Map<string, { w: number; h: number }>();
 const failed = new Set<string>();
 const pending = new Map<string, Promise<void>>();
 
-async function fetchAsDataUrl(path: string): Promise<string | null> {
+async function fetchAsDataUrl(path: string): Promise<{ data: string; w: number; h: number } | null> {
   try {
+    // A capture saved inline in the project is already a data URI: just decode
+    // it, so its size is known (frames and warnings check a capture's aspect).
+    if (path.startsWith("data:")) {
+      const image = new Image();
+      image.src = path;
+      await image.decode();
+      return { data: path, w: image.naturalWidth, h: image.naturalHeight };
+    }
     const resp = await fetch(path, { signal: AbortSignal.timeout(10000) });
     if (!resp.ok) return null;
     const blob = await resp.blob();
@@ -22,7 +32,7 @@ async function fetchAsDataUrl(path: string): Promise<string | null> {
     const image = new Image();
     image.src = data;
     await image.decode();
-    return data;
+    return { data, w: image.naturalWidth, h: image.naturalHeight };
   } catch {
     return null;
   }
@@ -39,10 +49,10 @@ export async function preloadImages(
       .map((p) => {
         const existing = pending.get(p);
         if (existing) return existing;
-        const task = fetchAsDataUrl(p).then((data) => {
+        const task = fetchAsDataUrl(p).then((loaded) => {
           // A newer upload may have populated the same content-addressed URL.
           if (cache.has(p)) return;
-          if (data) { cache.set(p, data); failed.delete(p); }
+          if (loaded) { cache.set(p, loaded.data); sizes.set(p, { w: loaded.w, h: loaded.h }); failed.delete(p); }
           else failed.add(p);
         }).finally(() => pending.delete(p));
         pending.set(p, task);
@@ -58,9 +68,15 @@ export function img(path: string | undefined): string {
   return cache.get(path) || path;
 }
 
-export function setImage(path: string, dataUrl: string) {
+export function setImage(path: string, dataUrl: string, size?: { w: number; h: number }) {
   cache.set(path, dataUrl);
+  if (size) sizes.set(path, size);
   failed.delete(path);
+}
+
+/** Natural size of a preloaded image, if known. */
+export function imgSize(path: string | undefined): { w: number; h: number } | undefined {
+  return path ? sizes.get(path) : undefined;
 }
 
 export function didFail(path: string | undefined): boolean {

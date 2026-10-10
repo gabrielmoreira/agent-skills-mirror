@@ -217,6 +217,8 @@ $ skillshare sync
   Context  ~1.2K tokens always loaded · ~18.5K on demand
 ```
 
+When a folder you made already sits on the name a skill syncs to, sync keeps your folder and does not install the skill. Each target with such folders gets one line naming the first few (`kept local: a, b (sync --force replaces them)`), and they count as `local` instead of `up to date`. `skillshare diff` lists them as `Local override`.
+
 ---
 
 ## Collect
@@ -347,7 +349,7 @@ targets:
 ```
 
 - Matching is against flat target names (for example `team__frontend__ui`)
-- An `include` pattern that matches no skill is reported, because such a target syncs nothing and drops what a previous pattern linked. Filters keep using flat names even when `target_naming: standard` shows the bare `SKILL.md` name in the target
+- An `include` pattern that matches no skill is reported, because such a target syncs nothing and drops what a previous pattern linked. Filters keep using flat names even when `target_naming: standard` or `prefixed` names the target entry after `SKILL.md`
 - `include` is applied first, then `exclude`
 - `diff`, `status`, `doctor`, and UI drift all use the filtered expected set
 - In symlink mode, filters are ignored

@@ -10,17 +10,22 @@ bus subscriber (see [`memory/`](../../memory/)).
 
 ## Parts
 
-- `mod.rs`: re-exports the store API. `ConversationMessage` and
+- [`mod.rs`](./mod.rs): re-exports the store API. `ConversationMessage` and
   `ConversationMessagePatch` are host-spelled aliases of the crate's
   `ThreadMessage` / `ThreadMessagePatch`; type names never reach the disk.
-- `blocking.rs`: `spawn_blocking` wrappers around every store entry point.
+- [`blocking.rs`](./blocking.rs): `spawn_blocking` wrappers around every store entry point.
   The store is synchronous and takes `parking_lot` locks across fsync'd file
   I/O, so request paths must go through `blocking` rather than calling it from
   an `async fn` (#5156).
-- `bus.rs`: the `core::bus` subscriber
+- [`bus.rs`](./bus.rs): the `core::bus` subscriber
   (`register_conversation_persistence_subscriber`) that mirrors inbound and
   processed channel turns into the store, so channel transcripts (Slack,
   Telegram, ...) persist alongside the UI's own threads.
+  A caller that persists a channel turn itself (the hosted-channel relay)
+  calls `claim_channel_turn(channel, message_id)` first; the subscriber skips
+  claimed turns rather than mirroring them under a second thread id. In SaaS
+  the subscriber is not registered and a claim is a no-op, so the untenanted
+  `(channel, message_id)` key never spans profiles.
 
 ## On-disk layout
 
@@ -35,5 +40,12 @@ Unchanged from before the move:
 
 ## Tests
 
-`blocking_tests.rs` and `bus_tests.rs` cover the wiring; the store's own tests
+[`blocking_tests.rs`](./blocking_tests.rs) and [`bus_tests.rs`](./bus_tests.rs) cover the wiring; the store's own tests
 live in `vendor/tinyagents/crates/tinyagents-session/src/threads/`.
+
+## Further reading
+
+- [Parent module (`threads`)](../README.md)
+- [Chat](../../../../../gitbooks/features/chat.md)
+- [Agent harness architecture](../../../../../gitbooks/developing/architecture/agent-harness.md)
+- [Frontend architecture](../../../../../gitbooks/developing/architecture/frontend.md)

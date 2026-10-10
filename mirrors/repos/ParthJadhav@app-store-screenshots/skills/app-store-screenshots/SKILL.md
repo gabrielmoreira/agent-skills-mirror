@@ -26,6 +26,8 @@ Scaffold a pre-built Next.js + ShadCN editor that lets the user design and expor
 Supported devices out of the box:
 - **iPhone** (portrait) — Apple App Store
 - **iPad** (portrait) — Apple App Store
+- **iPhone Duo** outer and inner displays, each in portrait and landscape (four decks) — Apple App Store; see "iPhone Duo" under Step 5
+- **App Store creative assets**: universal 5244×2950, product page header 3840×1646, search results 3:2 — Apple App Store; see "App Store creative assets" under Step 5
 - **Apple TV** (landscape, 4K + HD) — Apple App Store
 - **Apple Watch** (portrait, every Ultra/Series size) — Apple App Store
 - **CarPlay** (landscape head unit) — uploaded into the **iPhone** slot; see "Apple TV, Apple Watch and CarPlay" under Step 5
@@ -139,7 +141,7 @@ const path = require("path");
 
 const PROJECT_FILE = "app-store-screenshots.json";
 const DEFAULT_LOCALE = "en";
-const DEVICE_KEYS = ["iphone", "ipad", "tvos", "watchos", "carplay", "mac", "android", "android-7", "android-10", "feature-graphic"];
+const DEVICE_KEYS = ["iphone", "ipad", "duo-outer", "duo-outer-landscape", "duo-inner", "duo-inner-landscape", "tvos", "watchos", "carplay", "mac", "android", "android-7", "android-10", "feature-graphic", "creative-universal", "creative-header", "creative-search"];
 const LAYOUTS = ["hero", "device-bottom", "device-top", "two-devices", "no-device", "split-landscape", "feature-graphic"];
 
 function readJson(file) {
@@ -386,11 +388,13 @@ Ask the user these. Do not proceed until you have answers:
 6. **Target stores** — Apple App Store, Mac App Store, Google Play, or a mix? Determines which platform decks to seed.
 7. **iPad / Mac / Android tablet screenshots** — If yes, what sizes and orientations?
 8. **Apple TV / Apple Watch / CarPlay** — Does the app have a tvOS or watchOS app, or CarPlay support? Each gets its own deck.
-9. **Feature Graphic** — Want a 1024×500 Play Store banner too?
-10. **Localized screenshots** — Languages? (e.g. en, de, es, pt, ja, ar, he)
-11. **Number of slides** — Apple allows up to 10, Google Play up to 8.
-12. **Brand colors / font** — If they want a custom theme beyond the built-in presets.
-13. **Additional instructions** — Anything specific.
+9. **iPhone Duo** — Does the app support iPhone Duo? If so, read `iphone-duo.md` before planning. Ask: what does the app do differently on the inner display (two panes, sidebar, wider grid)? Which displays and orientations have their own layout? Do they have simulator captures from each display at the exact sizes? Apple's bezels for iPhone, iPad, Watch, TV, Mac and iPhone Duo ship with the template (see Step 5); ask only whether they want a different finish.
+10. **App Store creative assets** — Do they want a product page header / search results asset? Default to one universal 5244×2950 asset; offer separate header and search assets only if they need different compositions. Ask for a short brand line for each; don't reuse a screenshot headline.
+11. **Feature Graphic** — Want a 1024×500 Play Store banner too?
+12. **Localized screenshots** — Languages? (e.g. en, de, es, pt, ja, ar, he)
+13. **Number of slides** — Apple allows up to 10, Google Play up to 8.
+14. **Brand colors / font** — If they want a custom theme beyond the built-in presets.
+15. **Additional instructions** — Anything specific.
 
 **IMPORTANT:** If the user gives instructions at any point, follow them. They override skill defaults.
 
@@ -429,10 +433,13 @@ Move the user's screenshots into the layout the template expects:
 public/
 ├── app-icon.png                      # ← user's app icon
 ├── mockup.png                        # ← already copied by the template (iPhone bezel)
+├── frames/                           # ← Apple's bezels, bundled; swap a file to change finish (Step 5)
 └── screenshots/
     ├── apple/
     │   ├── iphone/{locale}/01.png … N.png
     │   ├── ipad/{locale}/01.png   … N.png
+    │   ├── duo-outer/{portrait|landscape}/{locale}/01.png … N.png  # iPhone Duo outer display
+    │   ├── duo-inner/{portrait|landscape}/{locale}/01.png … N.png  # iPhone Duo inner display
     │   ├── tvos/{locale}/01.png   … N.png   # Apple TV, 16:9
     │   ├── watchos/{locale}/01.png … N.png  # Apple Watch
     │   ├── carplay/{locale}/01.png … N.png  # CarPlay head-unit captures
@@ -521,6 +528,19 @@ Vary the `layout` field across slides. The editor exposes:
 - `feature-graphic` — Play Store banner (1024×500)
 
 Never repeat the same layout twice in a row. Use 1-2 `inverted` (dark) slides for visual rhythm.
+
+On iPhone Duo decks, `two-devices` is **Folded + open**: the second device is the same phone in its other state, drawn in that display's frame. Its second capture comes from the other display.
+
+### iPhone Duo Decks
+
+Read `iphone-duo.md` before writing copy or seeding any Duo deck. It holds the research behind these rules, with sources. In short:
+
+- **Plan the decks.** Lead with the inner display in landscape when the app has a real two-pane or wide layout. Add an outer portrait deck next. Make inner portrait and outer landscape decks only if the app has a real layout for them.
+- **Show what only an open Duo can do.** At least one inner screenshot shows two panes, a sidebar or a wider grid. A screenshot that could have come from a normal iPhone wastes the Duo slot.
+- **Inner landscape:** a one-line headline (about 30 characters or fewer) across the top, with the device large below. Pick captures where one pane's action and the other pane's result sit in the same frame.
+- **Outer portrait:** a short, wide canvas. Use two short lines at most, large type, and one idea per screen. It can reuse the iPhone story.
+- **Folded + open** once per deck, for the moment that carries across states ("Close it for today. Open it for the week.").
+- **Write copy about what the user gets, not the hardware.** Localise every deck and check that each landscape line still fits on one line.
 
 ### Cross-Screen / Cross-Canvas Composition
 
@@ -673,6 +693,49 @@ Every Apple TV and Apple Watch size below was read from App Store Connect's own 
 - **Layouts:** `split-landscape` (caption left, device right) is the strongest layout for the wide TV and CarPlay canvases. On the watch, keep headlines to two or three short words per line — the canvas is only 422 px wide.
 - **Screenshots:** use real captures at native resolution — Apple TV 3840×2160 or 1920×1080 from the tvOS simulator, Apple Watch from the watchOS simulator, CarPlay from the CarPlay Simulator (or Xcode's I/O → External Displays → CarPlay).
 
+### iPhone Duo
+
+| Target (deck) | Accepted size | Export folder |
+|---|---|---|
+| Outer display portrait (`duo-outer`) | 1398×2034 | `ios/duo-outer/1398x2034/` |
+| Outer display landscape (`duo-outer-landscape`) | 2034×1398 | `ios/duo-outer-landscape/2034x1398/` |
+| Inner display portrait (`duo-inner`) | 2007×2853 | `ios/duo-inner/2007x2853/` |
+| Inner display landscape (`duo-inner-landscape`) | 2853×2007 | `ios/duo-inner-landscape/2853x2007/` |
+
+- Sizes are App Store Connect's exact pixel sizes. Never derive Duo sizes from aspect-ratio labels or other iPhone sizes. PNG/JPG, no alpha (the exporter writes opaque RGB PNG).
+- **Each display and orientation is its own deck.** In the editor, pick **iPhone Duo outer** or **inner** in the device menu and switch with **Orientation**; that opens the other deck rather than re-laying out this one, so portrait and landscape keep independent compositions. When seeding `app-store-screenshots.json`, write the four decks separately, and only the decks the app has real layouts for (see "iPhone Duo Decks" in Step 3 and `iphone-duo.md`).
+- **Duo placements.** Landscape decks put the caption across the top and make the device the hero, wide enough that the capture reads, bleeding off the bottom in `hero`. `two-devices` is **Folded + open**: set `screenshotSecondary` to a capture from the other display (outer portrait ↔ inner landscape, outer landscape ↔ inner portrait). The editor never falls back to the front capture there, and export warns when it is missing. Duo frames ignore the scene's tilt: Apple's guidelines ask for straight-on product images, so don't rotate Duo devices by hand either.
+- **Captures must come from the matching display and orientation.** A mismatched capture is letterboxed (never cropped or stretched) and the inspector and export toast flag it. Don't reuse iPhone captures for Duo, and don't mock up Duo UI by hand.
+  - **Capture real ones** with `scripts/capture-iphone-duo.sh`. It needs Xcode 27.1+, the iOS 27.1 simulator runtime, and Device Hub open with the iPhone Duo simulator selected.
+  - It sets Apple's 9:41 status bar, drives the Closed, Open, Book and turned poses, and writes `public/screenshots/apple/duo-{outer|inner}/{portrait|landscape}/<locale>/NN.png`. Run it after adding a debug-only launch argument that opens each screen, e.g. `-CapturePanel orders`.
+  - Turned poses turn the phone **left**, so the outer display's camera matches Apple's landscape bezel.
+  - Real captures keep the camera corner clear: iOS puts the time and status on a rail below the camera. A capture whose title sits under the camera is either hand-made or taken turned the wrong way.
+  - Portrait-only iPhone apps have no outer landscape: skip that deck.
+- **Apple's bezels ship with the template** in `public/frames/`, taken from Apple Design Resources → Product Bezels. Like fastlane frameit, the template bundles them.
+  - **Licence:** Apple licenses them for mock-ups of apps for Apple platforms only. Never use them in Android decks.
+  - **Bundled files:**
+    - `iphone-portrait` (iPhone 18 Pro Max, Black)
+    - `ipad-portrait` (iPad Pro 13", Space Black)
+    - `watch` (Ultra 3, Ocean Band)
+    - `tv` (Apple TV 4K)
+    - `mac` (MacBook Air 15", Midnight)
+    - `duo-outer-portrait`, `duo-outer-landscape`, `duo-inner-portrait` and `duo-inner-landscape` (Night Sky)
+  - **Another finish or model:** replace the file with another PNG from Apple's pack under the same name. The editor measures each file's transparent screen cutout per corner, and uses the bezel for that device; the App Store creatives use the iPhone bezel.
+  - **Without a file:** Duo uses a drawn frame and every other device keeps its built-in frame. Android and CarPlay never use Apple bezels.
+
+### App Store creative assets
+
+| Target (deck) | Export | Placement |
+|---|---|---|
+| `creative-universal` | 5244×2950 | Product page header **and** search results |
+| `creative-header` | 3840×1646 | Product page header |
+| `creative-search` | 3840×2560 and 1920×1280 | Search results (any 3:2 from 1920×1280 to 3840×2560) |
+
+- Recommend the universal asset first. Use separate header and search assets only when the universal crops don't give enough control.
+- Default layouts sit inside the **art safe area** measured from Apple's own templates (universal x 1921–3323, y 660–1622; header x 1097–2743, y 493–1154; search x 836–3004, y 765–1795). The backdrop fills the rest. Keep the message and focal art inside the green safe-area guide. For the universal asset, the dashed header and search crops and the bottom-left previews are **estimates** (Apple doesn't publish the crop): tell the user to confirm in App Store Connect's Preview tool. Guides never export.
+- Creatives share the deck's theme, font, scene, overlays and text elements. They are not the fixed Play Store feature graphic. Write one short brand line per creative; never paste a long screenshot headline.
+- Creative assets are optional. They are reviewed through App Store Connect, separate from screenshots and from editorial artwork. Don't promise instant swaps, and don't upload or submit anything for the user.
+
 ### Mac
 
 | Device | Display type | Accepted sizes | Canvas |
@@ -706,6 +769,8 @@ Every Apple TV and Apple Watch size below was read from App Store Connect's own 
 - Screenshots correctly aligned inside every device frame
 - Filenames sort correctly (zero-padded numeric prefixes)
 - Feature Graphic exports cleanly at 1024×500 (no device frame)
+- iPhone Duo exports are exactly 1398×2034 / 2034×1398 (outer) and 2007×2853 / 2853×2007 (inner), with no "doesn't match" or placeholder warning; every Folded + open slide has a capture from the other display; inner landscape headlines sit on one line in every locale. Tell the user to check the sets in App Store Connect's iPhone Duo preview tool before submitting
+- Creative assets keep copy and focal art inside the safe-area guide, and a cleared label or headline exports empty (no editor hint text)
 
 ## Common Mistakes
 
@@ -718,12 +783,18 @@ Every Apple TV and Apple Watch size below was read from App Store Connect's own 
 | Reset wiped the deck | Reset clears in-memory state and re-saves defaults to `app-store-screenshots.json`. Recover by `git checkout app-store-screenshots.json` if it was committed, or export first before resetting. |
 | Export is blank | Check the export toast for a "may be missing" warning and re-export; otherwise the source PNG probably has alpha — flatten to RGB |
 | Looked for a CarPlay slot in App Store Connect | There isn't one — upload CarPlay shots into the iPhone slot |
+| Used an Apple bezel on an Android deck | Apple licenses its bezels for Apple platforms only; Android decks keep the built-in frames |
+| Turned a Duo portrait deck into landscape by editing transforms | Use the Orientation menu: landscape is a separate deck, so both compositions survive |
+| Resized iPhone captures to Duo sizes, or used the inner capture on the outer deck | Capture each display in Xcode 27.1's simulator at its exact size (`scripts/capture-iphone-duo.sh`); the editor letterboxes anything else |
+| The bezel's camera covers the clock or a title on an outer-display slide | The capture isn't real, or the phone was turned right. Real captures put the status rail under the camera; capture turned poses turned left |
+| Duo set looks like the iPhone set on a wider canvas | Lead the inner deck with a two-pane capture and a one-line headline; see `iphone-duo.md` |
+| Tilted, 3D or half-folded Duo mock-ups | Keep Duo frames straight-on and unmodified (Apple's marketing guidelines); never draw a crease |
 | Mac window shows two title bars | The source is a single-window capture with its own title bar — crop it off or use a full-screen 16:10 capture |
 | `bun dev` port collision | Template defaults to `next dev`; let Next pick the next free port (3001+) |
 
 ## Project Migration
 
-The current template writes `schemaVersion: 2`. Existing projects made by earlier versions of this skill usually have no `schemaVersion` and may still store string `label` / `headline` values. Do not hand-edit those projects unless the JSON is invalid. On load, `src/lib/storage.ts`:
+The current editor saves `schemaVersion: 3` (v3 adds the iPhone Duo and creative decks). The migration recipe above still writes `schemaVersion: 2`, which the editor accepts and upgrades to v3 on its next save, adding the new decks without touching existing ones. Existing projects made by earlier versions of this skill usually have no `schemaVersion` and may still store string `label` / `headline` values. Do not hand-edit those projects unless the JSON is invalid. On load, `src/lib/storage.ts`:
 
 1. Converts legacy string copy to localized `{ "en": "..." }` objects.
 2. Sanitizes existing element transforms.

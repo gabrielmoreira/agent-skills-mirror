@@ -19,11 +19,14 @@ export function ScenePlayground({
   scene: rawScene,
   theme,
   disabled,
+  straightDevices,
   onChange,
 }: {
   scene: Scene | undefined;
   theme: Theme;
   disabled?: boolean;
+  /** The open deck's devices ignore tilt (iPhone Duo). */
+  straightDevices?: boolean;
   onChange: (scene: Scene | undefined) => void;
 }) {
   const scene = sceneOf(rawScene);
@@ -130,6 +133,11 @@ export function ScenePlayground({
           <Slider label="Shadow" value={scene.shadow} min={0} max={100} unit="%" onChange={(shadow) => patch({ shadow })} />
           <Slider label="Glow" value={scene.glow} min={0} max={100} unit="%" onChange={(glow) => patch({ glow })} />
           <Slider label="Tilt" value={scene.tilt} min={-TILT_LIMIT} max={TILT_LIMIT} unit="°" onChange={(tilt) => patch({ tilt })} />
+          {straightDevices && (
+            <p className="text-[11px] leading-relaxed text-muted-foreground">
+              iPhone Duo frames stay straight: Apple's guidelines ask for straight-on product images.
+            </p>
+          )}
         </Section>
 
         <Section title="Headline">

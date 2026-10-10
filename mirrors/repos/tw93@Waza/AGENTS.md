@@ -27,6 +27,13 @@ Waza is a skill collection for engineering workflows. The repository contains ei
 - `Makefile` - smoke discovery and packaging entrypoints. Adding a `tests/test_<name>.sh` file is enough to create a `smoke-<name>` target automatically.
 - `tests/test_*.sh` - one smoke per surface; sources `tests/test_helpers.sh` for tmpdir / repo-copy / stub-curl / instruction-file fixture factories. `tests/python/` holds the pytest unit layer (`make verify-unit`).
 
+## Issue And Pull Request Maintenance
+
+- Use the official GitHub CLI/API for this repository's issue and PR queue. Read the complete discussion and use [check triage guidance](skills/check/references/mode-triage.md) for disposition and release evidence.
+- Before modifying an item, check relevant local and remote commits, associated PRs, branches/worktrees, and accessible existing agent conversations or task inventories. Report the deduplication evidence and owner first. Verify an existing fix; if another session owns ongoing work, report its verifiable ID/status and leave implementation there. Record unread or inaccessible history as a coverage gap, not evidence that no owner exists.
+- Preserve concurrent and uncommitted work; use an independent branch/worktree for fixes, isolated fixtures for reproduction, and targeted verification. Missing evidence keeps an item pending; an empty queue requires no manufactured changes.
+- Public replies, closure, commits, pushes, merges, and releases follow current task authorization. Historical conversation requests and saved queue snapshots do not grant permission or establish current state. Before implementing any change to user-visible interfaces, visual effects, interaction, user parameters, or configuration defaults, present the concrete before/after behavior and obtain explicit user confirmation; general fix or push authorization does not cover those changes. Pause and isolate any such unconfirmed work already in progress; report already-pushed changes without independently reverting them.
+
 ## Health Implementation Ownership
 
 Verify Health changes with `make verify-unit` plus the matching smoke (`tests/test_health.sh`, `tests/test_maintainability.sh`).

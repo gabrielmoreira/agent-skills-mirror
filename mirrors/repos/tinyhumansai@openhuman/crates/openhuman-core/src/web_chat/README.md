@@ -1,212 +1,347 @@
 # Web chat
 
-The web/desktop channel's turn runner. Owns the `channel.web_*` RPC namespace,
-the Socket.IO `chat:start`/`chat:cancel` handlers' business logic, and the
-whole request lifecycle from a raw message to a delivered, durably stored
-reply. `channels/` owns the external messaging providers (Telegram, WhatsApp,
-and so on); their inbound messages are dispatched through this module's
-`start_chat` too (`channels/bus/subscriber.rs`), so this is the single turn
-runner behind both surfaces.
+The turn runner for the in-app chat (desktop and web). It takes a raw user
+message, runs it through the agent harness on the thread's own session, and
+ends with a reply that is stored durably and announced to the client exactly
+once. It owns the `channel.web_*` RPC namespace and the business logic behind
+the Socket.IO `chat:start` and `chat:cancel` handlers.
 
-## Request lifecycle
+External messaging providers (Telegram, Discord and so on) live in
+`channels/`, but their inbound messages are dispatched through this module's
+`start_chat` as well (`channels/bus/subscriber.rs`). So this is the single
+turn runner behind both surfaces, and its `WebChannelEvent` broadcast bus is
+what Socket.IO, the JSON-RPC `/events` SSE stream, the TUI and the channel
+subscriber all listen to.
 
-1. `openhuman-rpc/src/server/socketio.rs` receives a `chat:start` socket event and calls
-   [`start_chat`] (`ops/start_chat.rs`) with the raw message, thread/client ids,
-   and any model/profile/locale/queue-mode overrides.
-2. `start_chat` preprocesses `[FILE:...]`/`[IMAGE:...]` attachment markers
-   before prompt-injection scanning or persistence (a multi-MB base64 blob
-   must never reach those stages), runs `enforce_prompt_input`, and checks
-   for a parked chat-native approval reply before treating the message as a
-   new turn. It then applies the queue mode (`QueueMode::Interrupt` default,
-   `Steer`, `Followup`, `Collect`, `Parallel`) against the thread's
-   `InFlightEntry`/`ParallelEntry` (`types.rs`).
-3. It spawns a tokio task that runs `run_task::run_chat_task` through
-   `run_turn_under_cancel_and_deadline` (`ops/turn_guards.rs`): a cooperative
-   `CancellationToken`, the wall-clock backstop (`web_turn_deadline`), the
-   `AgentTurnOrigin::WebChat` scope, and the
-   `APPROVAL_CHAT_CONTEXT` task-local scope all wrap the same future.
-4. `run_chat_task` checks the session `Agent` out of the per-thread cache
-   (`session.rs::checkout_session_agent`), reusing the `THREAD_SESSIONS` entry
-   when its `SessionCacheFingerprint` (including the resolved effective model,
-   even without a picker override) still matches and otherwise building one
-   and cold-boot resuming it from the thread's `session_raw` transcript (or
-   the conversation log). A `Parallel` fork always builds a fresh agent and
-   never touches the cache. It then spawns [`spawn_progress_bridge`]
-   (`progress_bridge.rs`), awaits `agent.run_single`, and checks the agent
-   back in (`checkin_session_agent`) unless the turn poisoned it. The bridge
-   forwards `AgentProgress` into `WebChannelEvent` socket events, mirrors turn
-   state into `crate::threads::turn_state::TurnStateStore`, and emits an
-   `inference_heartbeat` beat every `INFERENCE_HEARTBEAT_SECS` (20s) so a long
-   silent prefill doesn't trip the frontend's ~120s silence timeout (#4270).
-5. On `Ok`, the spawned task calls `presentation::deliver_response`, which
-   first calls `reply_persistence::persist_delivered_reply` to write the reply
-   to the thread's conversation store under the deterministic
-   `run_reply_message_id(request_id)` (so the answer survives a client
-   reconnect or reload, #6034) and then emits exactly one `chat_done` carrying
-   the model's unmodified text. The segmentation helpers in `presentation.rs`
-   are legacy and unused on this path.
-6. On `Err`, `run_chat_task`'s error branch first consults the per-thread
-   budget signal (`THREAD_BUDGET_SIGNALS`, `classify_budget_correlation` maps
-   to a `BudgetCorrelation`) so an empty 200 on the same provider binding as a
-   recent budget-exhausted failure is reclassified as out-of-credits (#3386);
-   the spawned task then normalizes the error string through
-   `web_errors::classify_inference_error` into the user-facing `chat_error`
-   (budget-exhausted, non-retryable rate limit, fallback-chain-exhausted, turn
-   timeout, and so on) and decides via `sentry_suppression_reason` whether it
-   pages. The event carries `message` (finished English copy, unchanged for
-   older UIs, the CLI, the TUI and embedders) plus `copy_key`
-   (`chat_error.<class>`, one per row of `inference/failure_copy/table.rs`) and
-   `copy_params` (`retry_after_secs`, `provider`, `detail`); the app renders
-   the key in the user's locale (`app/src/lib/chatErrorCopy.ts`) and falls back
-   to `message` for an unknown or missing key. Loop-guard halt summaries are
-   not `chat_error` events (they become the turn's reply text), so they carry
-   no key.
+## How it works
 
-Host-authored turns, meaning background-delivery notices
-(`agent::orchestration::background_delivery`) and goal continuations
-(`agent::goals::continuation`), enter through `run_system_turn_on_thread`
-(`ops/system_turn.rs`) instead of `start_chat`. They skip ingress, `IN_FLIGHT`
-and the progress bridge but go through the same session checkout, so the
-model sees the conversation and the turn lands in the thread's transcript. A
-turn run on a throwaway host bound to the thread wrote a competing root
-transcript that the next cold-boot resume preferred, dropping every earlier
-turn. Such a turn checks out with `CheckoutPolicy::AdoptCached` (reuse the
-thread's agent under whatever settings the user's last turn chose, rather than
+### The request path
+
+```text
+ Socket.IO chat:start         channel.web_chat RPC      channels/ subscriber
+ (openhuman-rpc socketio.rs)  (schemas.rs)              threads edit/regenerate
+            \                      |                        /
+             v                     v                       v
+        +-----------------------------------------------------+
+        | start_chat (ops/start_chat.rs)                      |
+        |  attachments -> prompt guard -> approval reply?     |
+        |  -> beforeSubmitPrompt hook -> queue mode           |
+        +-----------------------------------------------------+
+             | Interrupt (default)          | Steer/Followup/Collect -> RunQueue
+             | Parallel -> spawn_parallel_turn (ops/parallel_turn.rs)
+             v
+        tokio::spawn( run_turn_under_cancel_and_deadline(        )
+                        cancel token + wall-clock backstop
+                        + WebChat origin + APPROVAL_CHAT_CONTEXT
+                        run_chat_task (run_task.rs) )
+             |
+             |   checkout_session_agent (session.rs)
+             |   spawn_progress_bridge  (progress_bridge.rs) ---> WebChannelEvent
+             |   agent.run_single_with_origin                     (deltas, tools,
+             |   checkin_session_agent                             heartbeat, ...)
+             v
+     Ok(reply) --> presentation::deliver_response
+                     persist_reply (reply_persistence.rs) -> conversation store
+                     announce_reply -> one chat_done
+                     spawn_follow_up_suggestions -> chat_suggestions (later)
+     Err(e)    --> web_errors::classify_inference_error -> one chat_error
+```
+
+1. A `chat:start` socket event arrives in `openhuman-rpc/src/server/socketio.rs`
+   (or a `channel.web_chat` RPC call, or an inbound provider message) and
+   calls `start_chat` with the raw message, the thread and client ids, and any
+   model, temperature, locale or queue-mode overrides.
+
+2. `start_chat` stages `[FILE:...]` and `[IMAGE:...]` markers through
+   `agent::attachments::stage` first. A multi-megabyte base64 blob must never
+   reach prompt-injection scanning or persistence. It then runs
+   `security::prompt_injection::enforce_prompt_input`; a block comes back as
+   `StartChatError::Guardrail` with a verdict, score and reasons so the
+   frontend can classify on `chat_error.error_type == "guardrail"` instead of
+   matching copy. Next it checks whether the thread has a parked chat-native
+   approval and the message parses as an approval reply
+   (`security::approval::parse_approval_reply`); if so the reply goes to the
+   approval gate and no new turn starts. Only after that does a configured
+   `beforeSubmitPrompt` hook see the message, so a bare "yes" answering an
+   approval can never be blocked by a hook.
+
+3. The queue mode decides what happens to a turn already in flight on the
+   thread. `QueueMode` ([`types.rs`](./types.rs)) has five values. `Interrupt` (the default)
+   cancels the current turn and starts this one. `Steer`, `Followup` and
+   `Collect` map to TinyAgents run-queue lanes (`QueueMode::queue_lane`) and
+   are pushed onto the running turn's `RunQueue` instead of starting a turn;
+   with nothing in flight they start a normal turn.
+   `Parallel` starts an isolated fork alongside whatever is running
+   ([`ops/parallel_turn.rs`](./ops/parallel_turn.rs)), tracked in its own `parallel_in_flight()` table
+   keyed by request id so it never touches interrupt or queue semantics.
+
+4. For a primary turn, `start_chat` records an `InFlightEntry` in `in_flight()`
+   and spawns a task (under `CoreContext::propagate`) that drives
+   `run_task::run_chat_task` through `run_turn_under_cancel_and_deadline`
+   ([`ops/turn_guards.rs`](./ops/turn_guards.rs)). That wrapper puts four things around the same
+   future: a cooperative `CancellationToken`, the wall-clock backstop, the
+   `AgentTurnOrigin::WebChat` scope, and the `APPROVAL_CHAT_CONTEXT`
+   task-local.
+
+5. `run_chat_task` checks the session agent out of the per-thread cache
+   (`session::checkout_session_agent`). The entry is removed from
+   `thread_sessions()` for the duration of the turn so two turns can never
+   drive one agent. It is reused when its `SessionCacheFingerprint` still
+   matches; otherwise a new agent is built. A new agent needs no history
+   seeding: `set_thread_id` binds the session's durable identity
+   (`SessionRef`) and the turn resumes the thread's one transcript by it. The
+   task then spawns the progress bridge, awaits
+   `agent.run_single_with_origin`, and checks the agent back in with
+   `checkin_session_agent` unless the turn poisoned it. A fork never takes or
+   returns the cached agent.
+
+6. While the turn runs, `spawn_progress_bridge` turns each `AgentProgress`
+   event into `WebChannelEvent`s (`text_delta`, `thinking_delta`,
+   `tool_call`, `tool_result`, `chat_interim`, `turn_cost`, sub-agent events
+   and so on), mirrors turn state into `threads::turn_state::TurnStateStore`,
+   and emits an `inference_heartbeat` every `INFERENCE_HEARTBEAT_SECS` (20 s)
+   so a long silent prefill does not trip the frontend's roughly 120 s
+   silence timeout (#4270). Sub-agent arms live in
+   [`progress_bridge_subagent_events.rs`](./progress_bridge_subagent_events.rs); time to first visible output is
+   stamped by [`turn_timing.rs`](./turn_timing.rs); at the end of a turn
+   [`journal_shadow.rs`](./journal_shadow.rs) compares the live trace spans with the spans
+   reprojected from the durable journal and logs what differs.
+
+7. On success the spawned task calls `presentation::deliver_response`. It
+   first writes the reply to the thread's conversation store
+   (`persist_reply`, which uses `reply_persistence::persist_delivered_reply`)
+   under the deterministic id `run_reply_message_id(request_id)`, so the
+   answer survives a client reconnect or reload (#6034) and the client's own
+   append collapses onto the same row. Then `announce_reply` emits exactly one
+   `chat_done` carrying the model's unmodified text. For the main single-user
+   turn it also spawns `suggestions::spawn_follow_up_suggestions`, a cheap
+   `summarization`-role call that may emit `chat_suggestions` after
+   `chat_done`. It never delays the reply and is gated on
+   `web_chat.suggestions_enabled`.
+
+8. On failure, `run_chat_task` first consults the per-thread budget signal
+   ([`ops/budget_correlation.rs`](./ops/budget_correlation.rs)). An empty 200 on the same provider binding as
+   a recent budget-exhausted failure is reclassified as out-of-credits (#3386),
+   because the managed route closes the stream cleanly when credits run out.
+   The spawned task then runs the error string through
+   `web_errors::classify_inference_error` and emits one `chat_error`, and
+   `sentry_suppression_reason` decides whether it pages.
+
+### The chat_error payload
+
+A `chat_error` carries `message` (finished English copy, kept for older UIs,
+the CLI, the TUI and embedders), `copy_key` (`chat_error.<class>`, one per row
+of `inference/failure_copy/table.rs`) and `copy_params` (`retry_after_secs`,
+`provider`, `detail`). The app renders the key in the user's locale
+(`app/src/lib/chatErrorCopy.ts`) and falls back to `message` for an unknown or
+missing key. The classifier covers budget exhaustion, non-retryable rate
+limits, an exhausted fallback chain, turn timeouts, backend error codes and
+generic provider failures. Loop-guard halt summaries are not `chat_error`
+events (they become the turn's reply text), so they carry no key.
+
+### Host-authored turns
+
+Background-delivery notices (`agent::orchestration::background_delivery`) and
+goal continuations enter through `run_system_turn_on_thread`
+([`ops/system_turn.rs`](./ops/system_turn.rs)) instead of `start_chat`. They skip ingress, `in_flight()`
+and the progress bridge, run with `SYSTEM_CLIENT_ID` ("system"), and return
+the reply text for the caller to deliver. They still go through the same
+session checkout, so the model sees the conversation and the turn lands in the
+thread's transcript. A turn run on a throwaway session host would write a
+competing root transcript that the next resume preferred, dropping every
+earlier turn.
+
+Such a turn checks out with `CheckoutPolicy::AdoptCached` (reuse the thread's
+agent under whatever settings the user's last turn chose, instead of
 rebuilding on a fingerprint miss) and checks in with
-`checkin_session_agent_if_vacant`: a user turn that started meanwhile and
-re-cached its own agent wins.
+`checkin_session_agent_if_vacant`, so a user turn that started meanwhile and
+re-cached its own agent wins. A checkout failure returns an error prefixed with
+`SESSION_CHECKOUT_FAILURE`, which callers use to tell "no turn ran" from "the
+turn failed".
 
-## Public surface
+### Session cache fingerprint
 
-- Event bus (`event_bus.rs`): `subscribe_web_channel_events`,
-  `publish_web_channel_event`, `approval_request_event`,
-  `register_approval_surface_subscriber`, `register_artifact_surface_subscriber`,
-  `register_egress_surface_subscriber`. These bridge `DomainEvent`s onto the
-  in-process `WebChannelEvent` broadcast bus consumed by both Socket.IO and
-  the JSON-RPC `/events` SSE stream.
-- Operations (`ops.rs`, a thin shell over the `ops/` submodule: `start_chat.rs`,
-  `channel_ops.rs`, `parallel_turn.rs`, `turn_guards.rs`, `state.rs`,
-  `budget_correlation.rs`, `system_turn.rs`, `test_hooks.rs`): `start_chat`,
-  `run_system_turn_on_thread` (+ `SYSTEM_CLIENT_ID`,
-  `SESSION_CHECKOUT_FAILURE`), `cancel_chat`,
-  `cancel_chat_scoped`, `cancel_should_target`, `channel_web_chat`,
-  `channel_web_cancel`, `channel_web_queue_status`, `channel_web_queue_clear`,
-  `invalidate_thread_sessions`, plus `in_flight_entries_for_test` (exported
-  unconditionally; `test_support/introspect.rs` uses it). The turn's
-  in-flight/session state lives here (`THREAD_SESSIONS`,
-  `THREAD_BUDGET_SIGNALS`, `IN_FLIGHT`, `PARALLEL_IN_FLIGHT`).
-- `ChatRequestMetadata` (`types.rs`): per-request metadata passed by every
-  caller of `start_chat`/`spawn_progress_bridge`.
-- Schemas (`schemas.rs`): `all_web_channel_controller_schemas`,
-  `all_web_channel_registered_controllers`, `schemas`. This is the RPC contract
-  for the `channel` namespace.
-- Debug/test-only hooks: `set_test_forced_run_chat_task_error`,
+`SessionCacheFingerprint` ([`types.rs`](./types.rs)) decides when a cached agent can be
+reused. It holds the model override, the resolved effective model (so a
+changed managed default rebuilds even without a picker override), temperature,
+target agent id, provider binding, an autonomy signature and a model-registry
+signature (toggling a model's vision flag keeps the model id but must
+rebuild). A miss logs the fields that differ. Adding a dimension that should
+force a rebuild means adding a field there and filling it in
+`build_session_fingerprint` ([`session.rs`](./session.rs)).
+
+`session::effective_session_config` applies a concrete picker provider and
+model to the per-turn config clone. Managed `openrouter/...` defaults restore
+the managed route after restart without saving changes or touching sibling
+role routes; hints and unqualified legacy model ids keep their configured
+provider route. `provider_role_for_model_override` picks the provider role
+that feeds the fingerprint's binding.
+
+### Cancellation and the backstop
+
+`cancel_chat` and `cancel_chat_scoped` ([`ops/channel_ops.rs`](./ops/channel_ops.rs)) cancel by
+thread, or by request id when one is given. A stale cancel for a superseded
+request is ignored (`cancel_should_target`) so the newer turn survives. Without
+a request id, a cancel also stops the thread's parallel forks and detached
+background sub-agents. `state::cancel_in_flight_gracefully` cancels the token
+first and only hard-aborts the task if it has not unwound after a short grace
+period.
+
+The wall-clock backstop defaults to 900 s (`DEFAULT_WEB_TURN_TIMEOUT_SECS`)
+and is set with `OPENHUMAN_WEB_TURN_TIMEOUT_SECS` (`0` disables it). It is an
+outer safety net. The primary guard is the harness policy's
+`max_wall_clock_ms` (600 s by default), which interrupts a hung model or tool
+call and returns a proper timeout. The backstop only fires when a turn wedges
+outside the harness run, for example in session assembly, so the client still
+gets a terminal event instead of an endless heartbeat stream (#4746).
+
+### The event bus
+
+[`event_bus.rs`](./event_bus.rs) holds an in-process `tokio::sync::broadcast` channel of
+`WebChannelEvent` (the type is defined in [`channel_event.rs`](./channel_event.rs)). Any domain can
+publish to it with `publish_web_channel_event`; consumers call
+`subscribe_web_channel_events`. It also registers process-lifetime,
+`OnceLock`-guarded subscribers on `core::bus::BUS` that turn `DomainEvent`s
+into socket events:
+
+| Registration | DomainEvents | Socket events |
+| --- | --- | --- |
+| `register_approval_surface_subscriber` | `ApprovalRequested`, `ApprovalDecided`, `PlanReviewRequested`, `PlanReviewDecided` | `approval_request`, `approval_decided`, `plan_review_request`, `plan_review_decided` |
+| `register_artifact_surface_subscriber` | `ArtifactPending`, `ArtifactReady`, `ArtifactFailed` | `artifact_pending`, `artifact_ready`, `artifact_failed` |
+| `register_agent_surface_subscriber` | thread goal, todo and run-mode changes; run-queue queued, delivered, dispatched and interrupted | `thread_goal_updated`, `thread_goal_cleared`, `thread_todos_changed`, `run_mode_changed`, `queue_item_queued`, `queue_item_delivered` |
+| `register_memory_activity_surface_subscriber` | `MemoryStored`, `MemoryRecalled` | `memory_activity` |
+| `register_egress_surface_subscriber` ([`egress_surface.rs`](./egress_surface.rs)) | `ExternalTransferPending`, only when the transfer carries chat routing | `external_transfer_pending` |
+
+They are registered from `core/runtime/bootstrap.rs` and
+`channels/runtime/startup/start_channels.rs`; the TUI registers the approval
+and artifact bridges itself (`openhuman-tui/src/runner.rs`).
+
+## Layout
+
+| Path | What it does |
+| --- | --- |
+| [`mod.rs`](./mod.rs) | Module wiring and re-exports. No business logic. |
+| [`ops.rs`](./ops.rs) | Thin shell over [`ops/`](./ops/); re-exports the request surface and state. |
+| [`ops/start_chat.rs`](./ops/start_chat.rs) | `start_chat` and `StartChatError`: ingress, guardrail, approval-reply routing, queue dispatch, and the spawned turn body that delivers or classifies. |
+| [`ops/channel_ops.rs`](./ops/channel_ops.rs) | `cancel_chat`, `cancel_chat_scoped`, and the `channel_web_*` RPC handlers. |
+| [`ops/parallel_turn.rs`](./ops/parallel_turn.rs) | Spawns and cancels `QueueMode::Parallel` forks. |
+| [`ops/system_turn.rs`](./ops/system_turn.rs) | `run_system_turn_on_thread` for host-authored turns. |
+| [`ops/state.rs`](./ops/state.rs) | `thread_sessions()`, `in_flight()`, `parallel_in_flight()`, keying helpers, `invalidate_thread_sessions`, `cancel_should_target`. Each table is a slot of the ambient agent context, so two embedded agents never share an entry; outside an agent context it is the process default. |
+| [`ops/turn_guards.rs`](./ops/turn_guards.rs) | `run_turn_under_cancel_and_deadline`, the wall-clock backstop, Sentry suppression and timeout tagging. |
+| [`ops/budget_correlation.rs`](./ops/budget_correlation.rs) | `thread_budget_signals()` and `classify_budget_correlation` for the empty-200-after-budget case. |
+| [`ops/test_hooks.rs`](./ops/test_hooks.rs) | Debug/test hooks that force or block `run_chat_task`. |
+| [`run_task.rs`](./run_task.rs) | `run_chat_task`: checkout, progress bridge, run, budget correlation on error, checkin. |
+| [`session.rs`](./session.rs) | Session checkout and checkin, fingerprinting, `CheckoutPolicy`, target agent id, locale reply directive, per-turn provider and model routing. |
+| [`progress_bridge.rs`](./progress_bridge.rs) | `spawn_progress_bridge`: `AgentProgress` to `WebChannelEvent`, turn-state mirror, heartbeat. |
+| [`progress_bridge_subagent_events.rs`](./progress_bridge_subagent_events.rs) | The bridge's `AgentProgress::Subagent*` handlers. |
+| [`turn_timing.rs`](./turn_timing.rs) | Time to first visible output, and rate limiting for live `turn_cost` events. |
+| [`journal_shadow.rs`](./journal_shadow.rs) | Compares live trace spans with spans reprojected from the journal and logs divergences. |
+| [`presentation.rs`](./presentation.rs) | `deliver_response` (persist, then one `chat_done`), `deliver_response_single_bubble` for core-initiated turns, and legacy `chat_segment` helpers. |
+| [`reply_persistence.rs`](./reply_persistence.rs) | `persist_delivered_reply`: durable reply row under the deterministic reply id. |
+| [`suggestions.rs`](./suggestions.rs) | Post-turn follow-up suggestions (`chat_suggestions`). |
+| [`channel_event.rs`](./channel_event.rs) | `WebChannelEvent` and its payload types (`TurnUsagePayload`, `GuardrailPayload`, `QueueItemPayload`, `ChatSuggestion`, ...). |
+| [`event_bus.rs`](./event_bus.rs) | The broadcast channel and the `DomainEvent` surface subscribers. |
+| [`egress_surface.rs`](./egress_surface.rs) | The `external_transfer_pending` bridge. |
+| [`web_errors.rs`](./web_errors.rs) | Thin shell over [`web_errors/`](./web_errors/): `classify.rs` (the classification ladder and `ClassifiedError`), `backend_error_code.rs`, `budget.rs`, `retry.rs`, `timeout.rs`. The class to copy table is in `inference/failure_copy/`. |
+| [`schemas.rs`](./schemas.rs) | Controller schemas and thin handlers for the `channel` namespace. |
+| `types.rs` | `QueueMode`, `SessionEntry`, `SessionCacheFingerprint`, `InFlightEntry`, `ParallelEntry`, `WebChatTaskResult`, `ChatRequestMetadata`, RPC param structs. |
+
+## Key types and entry points
+
+- `start_chat` ([`ops/start_chat.rs`](./ops/start_chat.rs)) is the entry point for every user turn.
+  It returns the new request id, or a `StartChatError`.
+- `run_system_turn_on_thread` (`ops/system_turn.rs`) runs a host-authored turn
+  on a thread's own session and returns the reply text.
+- `cancel_chat` / `cancel_chat_scoped` (`ops/channel_ops.rs`) stop a turn by
+  thread or request id.
+- `invalidate_thread_sessions` ([`ops/state.rs`](./ops/state.rs)) drops a thread's cached agent.
+  Thread edit and regenerate (`threads/ops/edit.rs`) and channel remote
+  control (`channels/host/remote_control.rs`) call it.
+- `ChatRequestMetadata` (`types.rs`) is per-request metadata (`speak_reply`,
+  `source`, `session_id`, `agent_id` for trace attribution) passed by every
+  caller of `start_chat` and `spawn_progress_bridge`.
+- `WebChannelEvent` (`channel_event.rs`) is the event payload sent to clients.
+  New fields are additive so older clients keep working.
+- `publish_web_channel_event` / `subscribe_web_channel_events`
+  (`event_bus.rs`) are the bus.
+- `spawn_progress_bridge` and `presentation::deliver_response*` are reused by
+  core-initiated turns (`flows/ops/streaming.rs`,
+  `agent/orchestration/background_delivery.rs`) so they render on the same
+  socket surface.
+- `persist_delivered_reply` and `pick_target_agent_id` are also used by the
+  cron scheduler's origin delivery (`cron/scheduler/origin_delivery.rs`).
+- `classify_inference_error` ([`web_errors/classify.rs`](./web_errors/classify.rs)) maps a flattened
+  error string to a `ClassifiedError`.
+
+## RPC surface
+
+Namespace `channel`, registered through
+`all_web_channel_registered_controllers()` in `core/all.rs` under
+`DomainGroup::Channels`. It is deliberately not behind the `channels` feature,
+because the in-app chat is core product surface (#5002).
+
+| Method | Handler | Purpose |
+| --- | --- | --- |
+| `channel.web_chat` | `channel_web_chat` | Send a message through the agent loop. Takes `client_id`, `thread_id`, `message`, plus optional `model_override`, `temperature`, `locale`, `speak_reply`, `source`, `session_id`, `queue_mode`, `run_mode`, `reasoning_effort`. |
+| `channel.web_cancel` | `channel_web_cancel` | Cancel the thread's turn, or one `request_id`. |
+| `channel.web_queue_status` | `channel_web_queue_status` | Run-queue status for a thread. |
+| `channel.web_queue_clear` | `channel_web_queue_clear` | Clear a thread's run queue. |
+| `channel.web_queue_remove` | `channel_web_queue_remove` | Remove one queued item by `item_id`. |
+
+## Boundaries
+
+- The agent loop, run queue, sessions and transcripts belong to TinyAgents
+  (`vendor/tinyagents`); this module calls `run_single_with_origin` and uses
+  `run_queue::{RunQueue, QueueLane}`. Segmentation helpers come from
+  `tinychannels_bus::delivery` (`vendor/tinychannels`).
+- The Socket.IO transport and the `/events` SSE endpoint live in
+  `openhuman-rpc` (`src/server/socketio.rs`, `src/server/http/events.rs`).
+  This module only produces events.
+- External provider adapters (Telegram, Slack, ...) live in `channels/`.
+- Prompt-injection policy is `security::prompt_injection`; the approval gate
+  and `APPROVAL_CHAT_CONTEXT` are `security::approval`.
+- Failure copy per error class is `inference/failure_copy/`; provider
+  resolution is `inference::provider`.
+- Turn-state storage is `threads::turn_state`; the conversation store that the
+  reply row lands in is `memory::conversations`.
+
+## Gotchas
+
+- `APPROVAL_CHAT_CONTEXT` is a task-local scoped around the `run_chat_task`
+  future. The wallet quote-owner gate
+  (`web3::wallet::execution::current_owner()`) relies on it staying in scope
+  through the inline `.await` chain. Moving the tool loop onto a fresh
+  `tokio::spawn` without re-scoping it would silently disable that gate.
+- Approval-reply routing runs before the `beforeSubmitPrompt` hook on
+  purpose. Reordering them lets a hook strand a turn waiting on an approval.
+- Attachment staging must stay ahead of prompt scanning and persistence.
+- A reply persistence error is non-fatal: the reply is announced anyway, since
+  the client's own append is still a working fallback.
+- Host-authored turns are not in `in_flight()`, so they neither interrupt nor
+  get interrupted by user messages. Callers gate on idleness themselves.
+- Debug/test hooks (`set_test_forced_run_chat_task_error`,
   `RUN_CHAT_TASK_TEST_LOCK`, `set_test_run_chat_task_block`,
-  `TestRunChatTaskBlock`, `parallel_in_flight_entries_for_test`
-  (`#[cfg(any(test, debug_assertions))]`) and
-  `fresh_approval_surface_subscription` (`#[cfg(debug_assertions)]`), so none
-  of them link into a release binary.
-
-## Files
-
-| File | Purpose |
-| --- | --- |
-| `mod.rs` | Module wiring and re-exports; no business logic |
-| `ops.rs` (thin shell over `ops/`: `start_chat.rs`, `channel_ops.rs`, `parallel_turn.rs`, `turn_guards.rs`, `state.rs`, `budget_correlation.rs`, `test_hooks.rs`) | `start_chat`/`cancel_*`/`channel_web_*` operations, session cache, in-flight tracking, budget-signal correlation, `run_turn_under_cancel_and_deadline` |
-| `run_task.rs` | `run_chat_task`: resolves/builds the session agent, spawns the progress bridge, runs the turn, applies the budget correlation to its error |
-| `session.rs` | Builds/fingerprints the cached session `Agent`, resolves target agent id, locale directive, provider role, and turn-local provider/model routing for a model selection |
-| `progress_bridge.rs` | Forwards `AgentProgress` into `WebChannelEvent`s and `TurnStateMirror`, emits the `inference_heartbeat` liveness beat |
-| `presentation.rs` | `deliver_response` (one unsegmented `chat_done`, persisted first) and `deliver_response_single_bubble` (core-initiated turns); local-model emoji-reaction decision; legacy segmentation helpers |
-| `reply_persistence.rs` | Durable write of the reply about to be announced, under a deterministic id shared with the client's own append |
-| `event_bus.rs` | The `WebChannelEvent` broadcast channel plus approval/artifact/egress `DomainEvent` surface subscribers |
-| `web_errors.rs` (thin shell over `web_errors/`: `backend_error_code.rs`, `budget.rs`, `classify.rs`, `provider_detail.rs`, `retry.rs`, `timeout.rs`; the class -> copy table is `inference/failure_copy/`) | Classifies raw provider error strings into user-facing copy; budget-exhausted / rate-limit / fallback-exhausted / timeout detection |
-| `schemas.rs` | `ControllerSchema`/`RegisteredController` definitions for the `channel.web_*` RPC functions |
-| `types.rs` | `SessionEntry`, `SessionCacheFingerprint`, `InFlightEntry`, `ParallelEntry`, `WebChatTaskResult`, `ChatRequestMetadata`, `WebChatParams` |
-
-## RPC
-
-Namespace `channel`, registered via
-`all_web_channel_registered_controllers()` in `core/all.rs`:
-
-| Function | Handler |
-| --- | --- |
-| `web_chat` | `channel_web_chat` |
-| `web_cancel` | `channel_web_cancel` |
-| `web_queue_status` | `channel_web_queue_status` |
-| `web_queue_clear` | `channel_web_queue_clear` |
-
-## Events
-
-- Broadcasts `WebChannelEvent` (defined in `openhuman-rpc/src/server/socketio.rs`) over an
-  in-process `tokio::sync::broadcast` channel. `openhuman-rpc/src/server/socketio.rs` forwards it
-  to the connected Socket.IO client; `core/jsonrpc/http/events.rs` subscribes to that stream and
-  serves the JSON-RPC `/events` SSE endpoint; `channels/bus/subscriber.rs`
-  subscribes to collect the reply for an inbound provider message.
-- Subscribes to `DomainEvent` on `crate::core::bus::BUS` via three
-  process-lifetime, `OnceLock`-guarded subscribers registered at startup from
-  `core/runtime/bootstrap.rs` and `channels/runtime/startup/start_channels.rs`:
-  `register_approval_surface_subscriber`
-  (maps `ApprovalRequested`/`PlanReviewRequested` to `approval_request` /
-  `plan_review_request`), `register_artifact_surface_subscriber`
-  (maps `ArtifactPending`/`ArtifactReady`/`ArtifactFailed` to `artifact_*`), and
-  `register_egress_surface_subscriber` (maps `ExternalTransferPending` to
-  `external_transfer_pending`, only when the transfer carries chat routing).
-
-## Calls into
-
-- `crate::agent::harness`: `Agent::from_config_for_agent`,
-  `run_queue::{RunQueue, QueueMode}`, and the tool-calling loop itself.
-- `crate::threads::turn_state::{TurnStateStore, TurnStateMirror}`: the
-  progress bridge mirrors turn state here for cross-surface visibility.
-- `crate::inference::provider::provider_for_role`: resolves the provider
-  binding for `provider_role_for_model_override`, which feeds the session
-  fingerprint. `effective_session_config` applies a concrete picker provider
-  and model to the per-turn clone; managed `openrouter/...` defaults restore
-  the managed route after restart without saving changes or altering sibling
-  role routes. Hints and unqualified legacy model IDs retain their configured
-  provider route.
-- `crate::security::approval::APPROVAL_CHAT_CONTEXT`: scoped by
-  `run_turn_under_cancel_and_deadline` around the `run_chat_task` future.
-  `crate::web3::wallet::execution::current_owner()` relies on this task-local
-  staying scoped through the inline `.await` chain in `run_chat_task`;
-  detaching the tool loop onto a fresh `tokio::spawn` without re-scoping it
-  would silently disable the quote-owner gate (see `web3/wallet/README.md`).
-- `crate::memory::conversations`: `reply_persistence` appends the durable
-  reply row; `crate::memory::agent::memory_loader::MemoryCitation` carries
-  citations through to that row's metadata.
-
-## Called by
-
-- `openhuman-rpc/src/server/socketio.rs`: the `chat:start` and `chat:cancel` handlers call
-  `start_chat` / `cancel_chat_scoped`, and forward `WebChannelEvent`s to the
-  client.
-- `core/jsonrpc/http/events.rs`: subscribes to the `/events` SSE stream and forwards web-channel events; `core/runtime/bootstrap.rs` registers the `DomainEvent` surface subscribers.
-- `core/all.rs`: registers `all_web_channel_registered_controllers()` under
-  `DomainGroup::Channels`, deliberately not behind the `channels` feature
-  (the in-app chat is core product surface, #5002).
-- `channels/bus/subscriber.rs`: inbound external-provider messages run through
-  `start_chat` with a per-sender `client_id`;
-  `channels/providers/telegram/remote_control.rs` calls
-  `invalidate_thread_sessions`.
-- `flows/ops/streaming.rs` and
-  `agent/orchestration/background_delivery.rs`: core-initiated turns reuse
-  `spawn_progress_bridge` and `presentation::deliver_response*` so they render
-  on the same socket surface.
-- `publish_web_channel_event` is also called from `cron`, `voice`,
-  and `channels/proactive.rs` for surface-level
-  notifications.
+  `TestRunChatTaskBlock`, `parallel_in_flight_entries_for_test`,
+  `fresh_approval_surface_subscription`) are compiled only under
+  `cfg(any(test, debug_assertions))` or `cfg(debug_assertions)`.
+  `in_flight_entries_for_test` is exported unconditionally because
+  `test_support/introspect.rs` uses it.
 
 ## Tests
 
-- `web_tests.rs` (+ `web_tests_error_code_classification_tests.rs`,
-  `web_tests_rate_limit_classification_tests.rs`,
-  `web_tests_session_and_concurrency_tests.rs`,
-  `web_tests_start_chat_ingress_tests.rs`): end-to-end coverage
-  of `start_chat`/`cancel_*`/queue behavior.
-- `mod_test_support_tests.rs`: the `test_support` module
-  (`classify_error_for_test`, `ClassifiedErrorSnapshot`) exposed through
-  `mod.rs` for debug/test builds.
-- Per-file unit tests: `event_bus_tests.rs`, `ops_budget_correlation_tests_tests.rs`,
-  `presentation_tests.rs` + `presentation_test_support_tests.rs`,
-  `progress_bridge_tests.rs`, `reply_persistence_tests.rs`, `run_task_tests.rs`,
-  `session_checkout_tests.rs`, `session_routing_tests.rs`.
+Tests live in sibling `*_tests.rs` files. [`web_tests.rs`](./web_tests.rs) and its
+`web_tests_*_tests.rs` siblings cover `start_chat`, cancellation, queueing,
+session concurrency and error classification end to end;
+[`mod_test_support_tests.rs`](./mod_test_support_tests.rs) is the debug/test `test_support` module
+(`classify_error_for_test`). The rest are per-file unit tests.
+
+```bash
+cargo test -p openhuman web_chat
+pnpm debug rust web_chat
+```
+
+## Further reading
+
+- [Chat](../../../../gitbooks/features/chat.md)
+- [Agent harness architecture](../../../../gitbooks/developing/architecture/agent-harness.md)
+- [Frontend architecture](../../../../gitbooks/developing/architecture/frontend.md)

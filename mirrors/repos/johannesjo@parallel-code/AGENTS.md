@@ -33,6 +33,11 @@ When committing, use conventional commit messages, such as `fix(terminal): resto
 - Electron TypeScript uses NodeNext resolution: follow existing relative imports with `.js` suffixes.
 - Desktop renderer/main communication uses Electron IPC. The phone UI uses the existing HTTP/WebSocket API. Renderer imports of backend code are restricted to the shared modules allowed in `.dependency-cruiser.cjs`.
 
+### UI design
+
+- Reserve visual intensity for urgency. Filled or tinted backgrounds, accent or status colours, and strong borders signal something that needs attention now, such as failures, blocking questions, or conflicts. Routine actions, including primary ones such as Finish, stay neutral and use muted text with a subtle border. They can gain emphasis on hover. Showing state is an exception: a pressed toggle or a brief success confirmation may use accent or success colour.
+- Dense areas such as task headers already contain status text and badges. Don't add another attention-seeking element; use a label, placement, or spacing to make an action discoverable.
+
 ### IPC changes
 
 - Named channels originate in `electron/ipc/channel-manifest.json`; `electron/ipc/channels.ts` exports the manifest and its type.

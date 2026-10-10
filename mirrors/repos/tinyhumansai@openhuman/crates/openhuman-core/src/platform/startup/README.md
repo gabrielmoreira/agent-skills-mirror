@@ -51,3 +51,10 @@ No own state/store. It triggers migrations that mutate on-disk workspace artifac
 - Idempotency is delegated: this module does not track whether a migration already ran: it relies on each helper's own `already_done` markers. Re-running is safe.
 - Grep-friendly log prefixes: `[runtime]` for session-layout, `[migration::welcome-to-orchestrator]` for the thread/artifact migration.
 - Module is intentionally minimal: no `types.rs`/`store.rs`/`schemas.rs` because it holds no domain types, no persisted state, and no RPC surface.
+
+## Further reading
+
+- [Parent module (`platform`)](../README.md)
+- [Platform and availability](../../../../../gitbooks/features/platform.md)
+- [Tauri shell architecture](../../../../../gitbooks/developing/architecture/tauri-shell.md)
+- [Architecture overview](../../../../../gitbooks/developing/architecture.md)

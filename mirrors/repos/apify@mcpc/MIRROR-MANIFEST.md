@@ -59,7 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`skills/mcpc/SKILL.md`](skills/mcpc/SKILL.md) |
 | 3 | ✓ | [`skills/record-demo/SKILL.md`](skills/record-demo/SKILL.md) |
 

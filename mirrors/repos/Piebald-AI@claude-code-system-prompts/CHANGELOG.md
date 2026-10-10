@@ -4,6 +4,31 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.296](https://github.com/Piebald-AI/claude-code-system-prompts/commit/9462d0d)
+
+_+560 tokens_
+
+- **NEW:** Data: Managed Agents quickstart (Bug hunter, Explainer video maker, Watchlist scanner) — Three bundled templates, each with `agent.md`, environment and session definitions, built on parallel workflow runs with an independent review step.
+- **NEW:** System Prompt: Subagent delegation when-to-use guidance — Delegate when an agent type matches, work is independent and parallel, or answers span several files; search directly for single-fact lookups.
+- **NEW:** Data: Self-hosted runner disabled-by-organization fatal message — Explains that registration was refused because self-hosted environments are off for the organization, and that the accepted environment secret should not be rotated.
+- **NEW:** Data: SDK set model only_if_model_is_current field — Internal flag making a set_model request a system-prompt-only update that succeeds only when the named model is already current.
+- **NEW:** Data: Turn handoff hydrates_carried_lines field — Internal field marking workers that rebuilt their conversation from the stored transcript, and describing how resent handoffs are re-accepted, echoed, or refused.
+- **REMOVED:** Tool Description: Artifact publishing introduction, Artifact runtime capabilities guidance (including optional marker), Artifact browser storage guidance (v2 page contract and capabilities-skill variants), Updating existing artifacts, Prohibited artifact publishing, Publish audience-facing deliverables, and Artifact gallery and publish response guidance — Terminal-wording variants dropped; app-wording counterparts remain, but the gallery and publish-response note has no replacement.
+- **REMOVED:** System Prompt: Bash call cost guidance — Drops the advice to batch a decision's work into one command, keep printed output small, and recheck every requirement before finishing.
+- **REMOVED:** Data: Managed Agents outcomes — Drops the standalone outcomes reference covering `user.define_outcome`, rubrics, grader iterations, and deliverables.
+- **REMOVED:** Data: Tool use reference — PHP — Drops the PHP tool-use reference, including the beta tool runner and manual agentic loop.
+- Data: Tool use reference (C#, Ruby) — Adds a "When to offer Managed Agents" section: after finishing large repeated-step Messages API jobs, offer Managed Agents once, with trade-offs.
+- Data: Claude Code gateway protocol — Documents a Desktop Code tab probe sending `If-None-Match: *` for session settings, and how 200/304/404, errors, and timeouts affect session startup.
+- System Prompt: Self-hosted runner doctor — Adds troubleshooting rows for the organization-disabled refusal, spent or expired work orders, rejected work orders, and poll-auth failures on on-demand runners.
+- Tool Description: SendMessage — When messaging beyond a session's own agents is disabled, recipients are limited to session agents, and the inbox and legacy protocol-response text are dropped.
+- Tool Description: Agent usage notes — Adds a conditional note: give each parallel fan-out lookup `effort: "lower"`, use `"lower"` for mechanical, self-checking briefs, and `"higher"` for pieces needing more reasoning.
+- Tool Parameter: Bash run_in_background guidance — Adds a conditional note that background commands keep running after the reply ends until they finish or time out, while shell-detached processes (`nohup`, `&`) are usually stopped minutes later.
+- System Prompt: Subagent delegation cost guidance — Calls the subagent brief your "first" lever on every cost, rather than your "one" lever.
+- Agent Prompt: Dream memory consolidation — Removes the session-logs (`logs/`) source and its `ls -R logs/` step; `sessions/` entries and transcript search remain.
+- Agent Prompt: Conversation summarization (short variant) — Drops the security-instruction preservation note, user-message attribution guard, and closing line about following additional summarization instructions.
+- Data: Data visualization marks and anatomy — Y-axis ticks now use compact labels from 1,000 up (0 / 1K / 2K) instead of comma-separated thousands.
+- Data: Turn handoff available event schema — Adds `hydrates_carried_lines` to the capabilities the available event reports.
+
 # [2.1.295](https://github.com/Piebald-AI/claude-code-system-prompts/commit/b6361d3)
 
 _+5,697 tokens_

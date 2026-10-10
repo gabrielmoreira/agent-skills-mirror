@@ -1,62 +1,36 @@
 # Testing REA
 
-Prefer evidence in this order: full end-to-end workflows with real production
-providers, integration tests across data/API boundaries, then golden regressions
-from real captured inputs. Keep focused module tests for distinct failure or
-semantic cases that these workflows cannot reliably reproduce. A test's path
-or suite name does not establish its behavioral depth.
+Use this guide when choosing coverage, pruning tests, or running a verification
+lane. For commands, jump to [developer commands](#developer-commands); for engine
+prerequisites, use [real-toolchain lanes](#real-toolchain-verification-lanes).
 
-Avoid tests that mirror getters, enum mappings, fixture helpers, or prescribed
-call sequences, or assert cache object identity without a caller-visible contract.
-Prefer representative workflows over a Cartesian matrix when rows cross the
-same boundary. Retain combinations that exercise a distinct interaction, such as
-filtering within a full-output envelope. Keep distinct command handlers,
-producer representations, failure reasons, and lifecycle states covered.
-Consolidate their shared setup without hiding the inputs or expected evidence.
+Prefer real public CLI/MCP workflows, then production-boundary integration,
+then goldens captured from real producers. Keep module tests for distinct
+failures or semantics that stronger workflows cannot reliably reproduce.
+Paths, compiled imports, and suite names do not establish test depth.
 
-Tests are grouped into Vitest projects so ownership, allowed dependencies and
-runtime cost are visible from their paths. Before pruning a distinct boundary
-regression, identify the replacement scenario and its assertions; passing
-success journeys do not replace malformed input, cancellation, permission or
-cleanup coverage. Trivial helper checks do not need a replacement. If only
-tests consume a production module, trace CLI/MCP and verifier imports,
-including imports of compiled files, and remove abandoned scaffolding with its
-tests when it has no runtime consumer.
+Prune tests that mirror implementation details or duplicate a stronger claim.
+Before deleting a distinct regression, identify the replacement scenario and
+assertions. Preserve malformed formats, cancellation, cleanup, permissions,
+capacity, target identity, and combinations with distinct interactions.
+Trivial helper assertions need no replacement. Remove abandoned production
+scaffolding only after checking runtime and verifier consumers, including
+compiled imports.
 
-When a test expects a `Result` to succeed, throw its error before asserting the
-returned value. An `.ok` assertion immediately before the same throwing guard
-adds no coverage and hides the typed failure. A removed parser matrix can leave
-one golden malformed-input case and a real filesystem lifecycle that proves
-configure, update, readback, and removal; an add-only journey does not cover the
-whole lifecycle.
+Use representative scenarios rather than Cartesian matrices of equivalent
+cases. Share setup without hiding inputs or expected evidence. For successful
+`Result` values, throw the typed error before asserting the value; a preceding
+`.ok` assertion adds no coverage. Protocol fixtures must reject unmodeled
+commands and preserve actual producer reply shapes.
 
-Protocol fixtures must model the commands they support and their producer reply
-shapes. Reject unmodeled commands instead of returning a generic success; an
-empty result is appropriate only for a supported command with no result fields.
+Report unavailable authority as a named skip. Await owned cleanup before a
+verifier reports success. Native process inspectors are released at Vitest
+worker teardown; fork termination does not run Node exit hooks, and per-file
+teardown would retire inspectors still needed by other files.
 
-Keep transport-only in-memory MCP sessions in the MCP boundary lane and direct
-filesystem workflows in the filesystem boundary lane. Real process-tree capture
-belongs in the serial process boundary lane, including captures invoked through
-MCP. Report unavailable capture authority as a named skip rather than returning
-from the test without assertions. Reserve acceptance paths for journeys
-through the compiled public CLI or MCP runtime. Calling a compiled private
-workflow or injecting a provider still establishes its narrower integration
-claim, even if a directory name calls it acceptance.
-
-Emit a verifier's final success report only after awaited cleanup. Observe final
-process lineage after closing its owned resources.
-
-The Vitest runner releases cached native process inspectors during awaited
-worker teardown. Fork termination does not run Node's normal exit hooks; a
-per-file teardown would instead retire shared inspectors before later files
-can use them.
-
-Measure slow files before removing capacity regressions. Optimize repeated
-process startup, fixture construction, and production algorithms when they
-dominate runtime. Keep at least one input beyond each formerly failing size or
-depth; smaller fixtures do not establish that truncation or stack exhaustion
-has been fixed. Record the toolchain, coverage mode, and cache conditions when
-comparing durations.
+Measure slow cases before pruning capacity coverage. Retain inputs beyond the
+formerly failing size/depth and distinguish cold runs, warm builds, coverage,
+and toolchain conditions when comparing timings.
 
 ## Behavioral depths
 
@@ -78,12 +52,6 @@ entrypoint. Composition tests may assemble provider-neutral sessions and
 registries but do not cross production filesystem, process, socket, or browser boundaries.
 Boundary tests cross one production boundary. Only acceptance tests assemble
 the complete runtime or invoke the compiled product surface.
-
-Binary session, registry, lazy-client and snapshot module cases live under
-`src/application/binary/`. Their composition cases stay in
-`tests/composition/analysis-sessions/`; snapshot persistence and actual SDK calls
-stay in the filesystem and MCP boundary lanes. The shared injected session fixture
-serves several capabilities and remains under `tests/fixtures/`.
 
 Focused immutable builders and recording ports shared by one test family live
 beside their production owner as `src/**/*.fixture.ts`. They are typechecked
@@ -151,29 +119,6 @@ an empty versioned scan or a suffix that only repeats the original path.
 
 It runs in macOS CI.
 
-Apple artifact verifiers live in `scripts/verify/apple/`, with the macOS bundle
-builder under `scripts/fixtures/apple/` and NIB byte fixtures beside the decoder
-in `src/artifacts/apple/`. The npm entrypoints are unchanged. Format-specific
-Swift/XIB/asset sources and goldens retain their locations; real Apple workflows
-resolve them from the verifier file URL and run in the macOS CI lane.
-
-Portable native semantics and their tests live in `src/domain/native/`; shared
-analyst workflows and service-lane tests live in `src/application/native/`.
-Named native contracts live in `src/contracts/native/`. Provider protocol and
-host UI tests retain their adapter/boundary lanes, and real verifier command
-names remain unchanged.
-The existing Apple CI job also runs the host Swift-demangling CLI/MCP regression
-suites, including option-like symbols, carriage returns and multiline rejection.
-
-Process semantics/tests live in `src/domain/process/`; PTY capture implementation
-and forked helper tests live in `src/process/capture/`. Evidence projection and
-file workflows live in `src/application/process/`; producer-backed Evidence/host
-cases run in the serial `tests/boundary/process/` lane. Installed-package probes
-load the compiled capture capability owner, including the missing-optional-module
-case. Real capture tests preserve actual descendant and cleanup checks.
-The existing Apple job also exercises the relocated filesystem snapshot identity,
-cancellation and descriptor cleanup regressions on macOS.
-
 Prepare the native inspector before cases that measure producer output or exit
 behavior; keep startup deadlines and cancellation in distinct cases. Run real
 process-capture verification separately from package or build checks. On macOS,
@@ -184,8 +129,7 @@ MCP SDK transport tests with recording providers remain integration tests.
 They are useful for schema drift and failure projection but do not prove that
 Hopper, Ghidra or another substituted engine works. `verify:package` proves
 packaging/install behavior and fake-provider integration; use the corresponding
-real-provider lanes for engine claims. Packed-bridge checks verify shipped files
-and Python syntax without deleted mock fixtures or source-spelling assertions.
+real-provider lanes for engine claims. Packed-bridge checks verify shipped files and Python syntax.
 Real Apple dispatch and Interface
 Builder verifiers currently prove format integration through production readers.
 
@@ -260,12 +204,17 @@ Do not call handcrafted utility output or synthetic binary builders real-data
 goldens. Keep unsupported binary layouts and malformed boundaries as targeted
 regressions until a real fixture establishes equivalent coverage.
 
-`verify:browser` exercises source-map failure isolation and expanded-output limits through the compiled CLI and stdio MCP with real Chrome. It also submits five 2 MiB source-map annotations, checks retained script identities and explicit map omissions, and closes its owned fixture target. These public workflows replace redundant metadata-admission assertions; replacement and document-reset boundaries remain focused producer regressions.
+`verify:browser` exercises source-map failure isolation and expanded-output limits through the compiled CLI and stdio MCP with real Chrome. It also submits five 2 MiB source-map annotations, checks retained script identities and explicit map omissions, and closes its owned fixture target. Replacement and document-reset behavior has separate producer-boundary coverage.
 
 `verify:browser` also captures a source-owned noise canvas as a real PNG above
 8 MiB through the CLI and stdio MCP, with complete byte/digest parity and real PNG
 decoding. Its SDK client explicitly permits the larger inline JSON response;
 this lane does not establish large image-comparison request transport coverage.
+
+The scenario checks read locale, timezone, device scale and viewport dimensions
+from actual page JavaScript through CLI and stdio MCP DOM captures. They also
+verify that attached-page emulation is released after success, initialization
+failure, action failure and cancellation while the external target stays open.
 
 `verify:browser:network` is a focused real-browser lane for transaction identity,
 selected request/response bytes, binary and compressed responses, duplicate
@@ -313,10 +262,17 @@ prove behavior on the verified Ghidra 12.1.4 and JDK 21 build.
 | Ghidra lane                                | Supported runner/target                                                            | Additional local tools                                              |
 | ------------------------------------------ | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | `npm run verify:ghidra`                    | Linux x64/arm64 ELF or macOS x64/arm64 Mach-O                                      | Host C compiler, Ghidra 12.1.4, and full JDK 21                     |
+| `npm run verify:ghidra:swift`              | macOS x64/arm64 Mach-O                                                             | Host Swift compiler, Ghidra 12.1.4, and full JDK 21                 |
 | `npm run verify:ghidra:switch`             | Linux x64 ELF; GCC/Clang optimized and stripped switch fixtures                    | GCC, Clang, GNU nm/objdump/strip, Ghidra 12.1.4, and full JDK 21    |
 | `npm run verify:ghidra:aarch64-jump-table` | Any supported Ghidra host; AArch64 ELF; byte/halfword tables; host ARM64 Mach-O    | Clang with AArch64 target support, Ghidra 12.1.4, and full JDK 21   |
 | `npm run verify:ghidra:cross-format`       | Any supported Ghidra host; also analyzes AArch64 ELF, x86-64 PE, and x86-64 Mach-O | `clang`, LLD, and `lld-link` in addition to host-lane prerequisites |
 | `npm run verify:ghidra:windows`            | Controlled Windows x64 with native x86-64 PE; `-- --x86` selects native x86 PE     | Ghidra 12.1.4, full JDK 21, and the matching native artifact        |
+
+The optional Swift lane compiles a source-owned fixture and checks modern and
+provider-demangled procedure names through real stdio MCP, with and without the
+dSYM companion. It checks unfiltered, structs, and literal-name filters,
+same-address alias evidence, deduplication, and explicit unresolved categories.
+It does not add a Swift prerequisite to the host C fixture lane.
 
 The host lane also verifies namespaced C++ ABI symbols and annotation identity.
 That facet requires Ghidra's matching `demangler_gnu_v2_41` native component in
@@ -373,9 +329,7 @@ Instruction inspection and containing-function lookup also agree across
 hexadecimal case, leading zeros, and encoded default address-space spellings.
 The same source-acquisition workflow exercises missing and directory-replaced
 inputs, plus real read-permission denial on a non-root host. Root runs report
-that permission-denial check as unverified. A focused filesystem integration
-check retains selected-platform routing and exclusive creation; two copy/digest
-checks duplicated by the real workflow have been removed.
+that permission-denial check as unverified. Filesystem integration separately checks selected-platform routing and exclusive creation.
 Namespace annotation probes compile a separate host C fixture with C++ ABI
 symbols, avoiding a C++ runtime prerequisite. Real Ghidra demangling supplies
 duplicate leaf names in two top-level namespaces and a nested namespace. The
@@ -390,8 +344,7 @@ Successful-result and oversized-error delivery constraints must identify their
 successfully retained Evidence records;
 export must recover every source byte, complete annotation and original error
 diagnostic, with CLI parity
-and an unchanged executable. The focused formatter check retains only the
-separate case where recording was not acknowledged.
+and an unchanged executable. Formatter integration separately checks unacknowledged Evidence recording.
 Long ordinary procedure names and encoded address-space selectors must produce
 normal validation errors without exhausting Java's regex stack or losing the
 private bridge connection. Each rejection is followed by a real provider lookup;
@@ -431,16 +384,18 @@ the CLI and stdio MCP, including special filenames, unresolved discovery
 locations, and independently resolved loaded scripts. Double-quote filenames
 are tested on POSIX only because Windows does not support them.
 
-Inspector adapters live in `src/inspector/`, with loopback fixtures under
-`tests/fixtures/inspector/` and forked producer boundaries under
-`tests/boundary/inspector/`. The real lane is owned by
-`scripts/verify/inspector/runtime-observation.mjs` and
-`tests/conformance/inspector/`. Browser and Inspector deliberately share the
-existing browser CDP transport/value and file-location helpers. Node fixture
-success proves this Inspector workflow on the tested host; it does not prove
-Electron GUI behavior or another engine.
+Node Inspector verification does not establish Electron GUI or other engine
+behavior. Browser and Inspector share CDP transport/value and file-location
+helpers; their producer workflows remain distinct.
 
 ## Android APK analysis
+
+The real Android lane also runs on Windows x64 with its matching bundled native
+controls. It verifies bidirectional protocol input, CLI/MCP result parity,
+real MCP cancellation/disconnect and Java exit after abrupt CLI owner
+termination. The forced Windows exit does not exercise the POSIX SIGTERM
+handler and can leave temporary workspace files. `verify:windows-native`
+separately checks binary input, backpressure, EOF and pending-write job closure.
 
 `npm run verify:android` requires an existing Java 17+ and an explicit
 `REA_JADX_MCP_JAR` for jadx-headless-mcp 0.7.1. Set `REA_ANDROID_TEST_APK` to the
@@ -452,14 +407,6 @@ class search, class inventory, method decompilation and incoming references.
 See [Android analysis](android-analysis.md) for boundaries and resource budgets.
 Authenticated IPA and macOS application inventory projection is documented in
 [Apple application analysis](apple-application-analysis.md).
-
-The lane and owned-process cancellation helper live in `scripts/verify/android/`.
-The explicit downloader and fixed manifest live in `scripts/fixtures/android/`;
-their default remains repository-root `_reference/apk-integration/`. Producer
-fixtures live in `tests/fixtures/android/`, boundary cases in
-`tests/boundary/android/`, and inventory projection composition cases in
-`tests/composition/android/`. Real engine success and synthetic protocol success
-are separate proof levels.
 
 Synthetic producer regressions run independently:
 
@@ -565,6 +512,17 @@ not make native host acceptance unavailable.
 
 ## Native platform baseline in CI
 
+Pull requests that change only root `README*.md` files, `docs/`, `AGENTS.md`,
+or `CONTRIBUTING.md` run formatting and generated-document validation without
+the source-test shards or native package lanes. Classification compares the PR
+head with its merge base, so later base-branch changes do not expand that scope.
+The required static and coverage aggregate jobs remain present and fail if
+classification fails. Mixed changes, unknown paths and CI configuration changes
+retain full checks. Main pushes retain the full baseline, including after
+documentation merges; newer commits cancel superseded CI for the same PR or
+main branch. Release publication has its own concurrency group and retains its
+package verification and public-registry canary.
+
 CI exercises the pinned Node.js runtime on native hosted runners:
 
 | Host                  | Runner             | Baseline checks                                                                          |
@@ -575,17 +533,13 @@ CI exercises the pinned Node.js runtime on native hosted runners:
 | macOS 15 x64          | `macos-15-intel`   | Installed package and real Node Inspector CLI/MCP                                        |
 | Windows x64           | `windows-latest`   | Curated capabilities, native controls, installed package and real Node Inspector CLI/MCP |
 
-Package and Inspector matrices assert the actual Node platform/architecture
-before verification and record those values with the Node version. Each matrix
+Package lanes assert the actual Node platform/architecture before verification
+and record those values with the Node version. The four-host package matrix
 runs at most two jobs concurrently with explicit timeouts and Node heap/thread
-limits. Package checks cover installation, CLI/MCP discovery, target-free
+limits; Windows retains its curated capability lane. Package checks cover
+installation, CLI/MCP discovery, target-free
 analysis, configuration backups/recovery, Evidence and owned lifecycle; Inspector
 checks execute source-owned loopback targets and special filename cases.
-
-macOS uses one OS version with one native baseline job per architecture. Each job
-runs package and Inspector checks after a single dependency installation. The
-separate Inspector matrix covers Linux and Windows; Apple artifact checks retain
-their own macOS 15 arm64 job for Xcode-dependent workflows.
 
 These native baseline checks complement the Linux source-test shards and the
 separate Apple-artifact and real-provider lanes. Actual Hopper, Ghidra, IDA,
@@ -631,6 +585,17 @@ The dry-run option reports the chosen merge base, scope and build prerequisite
 without executing tests or building. A missing Git base reports how to fetch
 it or select another revision.
 
+Source typechecking needs no compiled runtime or generated test metadata.
+`npm run build:cached` compiles the CLI/MCP runtime and its packaged skill.
+`npm run test:prepare` also generates the MCP contract test catalog, product
+catalog, and portable managed evidence used by the complete suite. Focused
+tests prepare those extra outputs only when their selected files consume them.
+The MCP test catalog is JSON in `.cache/mcp-tool-catalog.json`; the tracked
+test loader supplies its types without making generation a source-check
+prerequisite. Run `npm run mcp-catalog:generate` to refresh it independently.
+Documentation generation and managed conformance run through their separate
+`docs:generate` and `evidence:generate` task graphs.
+
 Changed selection can miss runtime registration, generated data, shell
 entrypoints, bridges, or other relationships absent from the import graph.
 An empty changed selection means no tests were selected, not verified
@@ -645,23 +610,15 @@ broad changes or diagnosing CI, rather than after every edit. Package/install
 changes additionally need package verification; provider changes need actual
 provider evidence.
 
-Each Vitest project uses up to two workers, bounded by available host parallelism.
-Default-group projects can run together. Only `process-boundary` runs in the
-later sequence group and serializes its files because process-tree observations
-share host sampling resources. Tests that launch the real process harness belong
-in `tests/boundary/process/`, including CLI command and environment tests.
-Acceptance and process-global files retain isolated
-forks but are not serialized; isolation does not imply serial scheduling. CI uses
-the same per-project worker bound.
-The pure domain/contracts and recording-port service projects share one worker
-module context because their tests own no mutable runtime resources. MCP
-boundary files also share the immutable server module graph while creating and
-closing independent in-memory sessions. Adapter, composition, acceptance,
-process-global, and other boundary projects retain per-file isolation.
-Build and documentation writers use checkout-local locks for their respective
-output files. `npm test` delegates its build to the build lock; the Vitest suite
-does not hold a test-command lock. `check:pr` runs its test task before starting
-generated-document validation.
+Vitest projects use up to two workers, bounded by host parallelism.
+`process-boundary` runs later with serial files because process-tree sampling
+shares host resources. Acceptance and process-global cases use isolated forks
+without serial scheduling. Pure domain/service and MCP boundary projects share
+immutable module graphs; each MCP session still owns its resources. Other
+projects retain per-file isolation. See `vitest.config.ts` for current settings.
+
+Build/documentation writers hold checkout-local output locks. Tests do not
+hold a broad command lock; `check:pr` finishes tests before document validation.
 
 Vitest and Node persistent compile caches are deliberately not enabled by
 default. To evaluate repeated local runs, opt in for both cold and warm
@@ -677,13 +634,9 @@ instrumentation remains equivalent.
 
 ## Coverage and timing
 
-CI owns coverage. The aggregate floors are 65% statements, 60% branches, 60%
-functions, and 68% lines. `src/domain/**` must reach 80% statements, 75%
-branches, 75% functions, and 80% lines. `src/contracts/**` must reach 85%
-statements, 80% branches, 80% functions, and 85% lines. Thresholds are
-glob-specific rather than per-file and are never updated automatically.
-Coverage does not replace named boundary, acceptance, or real-provider scenario
-matrices.
+CI owns coverage; aggregate and domain/contract thresholds are maintained in
+`vitest.config.ts`. They are glob-specific and never updated automatically.
+Coverage does not replace named boundary or real-provider scenarios.
 
 CI runs four native Vitest shards without retries. Each shard emits a blob
 report; the merge job produces aggregate coverage plus JUnit and JSON timing
@@ -756,12 +709,6 @@ unknown chunks, depth limits and extracted child digests. The optional
 `REA_FIRMWARE_VERIFY_GHIDRA=1` lane checks a selected host ELF through real Ghidra.
 Neither optional toolchain is a base-lane prerequisite. See
 [firmware analysis](firmware-analysis.md) for limits and unverified formats.
-
-The real entrypoint is `scripts/verify/firmware/analysis.mjs`; the fixture runner
-and unchanged Python producer belong together in `scripts/fixtures/firmware/`.
-Producer fixtures and boundaries remain in `tests/fixtures/firmware/` and
-`tests/boundary/firmware/`. Source-fixture generation proves the runner and
-independent oracle; actual Binwalk/Unblob CLI/MCP proof requires selected tools.
 
 ### JavaScript source recovery
 
@@ -885,8 +832,48 @@ real local Codex CLI with:
 npm run verify:agent
 ```
 
-Its report records tool selection, repeated calls, token use, completion quality,
-and handling of permissions and unknowns.
+The packaged desktop and parser-comparison scenarios now assess a closed set of
+known fixture claims. Each final answer must be a strict JSON manifest containing
+exactly the requested claim IDs, values, Evidence IDs, and Evidence authority and
+confidence. Golden values are not included in the prompt. The evaluator checks
+exact values against both the fixture oracle and authenticated successful REA
+results; an Evidence ID by itself is insufficient. Missing, duplicate, extra,
+contradictory, incorrectly sourced, or unsupported claims fail the scenario.
+
+The desktop rubric covers the exposed bridge API and members, renderer and main
+IPC operations, and the resolved preload. It binds its Evidence to the exact
+packaged artifact path and SHA-256. The parser rubric checks the precise heading
+depth addition, discriminant, complete comparison counts, and the explicit limit
+on runtime semantics. Its comparison must link to the two delivered source
+analyses and use the requested module and export selectors. Boundary tests package
+the same source-owned desktop fixture and compare the same source-owned parser
+files through actual MCP tool results, then verify that fabricated answers fail.
+
+Per-scenario `factualCorrectness` is `passed`, `failed`, or `not_assessed` within
+the `configured_fixture_claims` scope. A pass establishes only the configured
+claims, not unrestricted factual correctness. Native, managed, browser,
+navigation-context, and address-context scenarios have no factual rubric and
+remain `not_assessed`; the managed workflow requires both artifact and member
+inspection to answer its type and entry-point question.
+
+All scenarios retain routing, workflow, validation, repetition, process-exit,
+and token-use gates. Configured factual scenarios additionally require a factual
+pass. Their answer-text heuristics are diagnostic and do not affect the gate.
+Scenarios without a rubric retain the legacy text-heuristic gate.
+`answerTermCoverageMet` checks case-insensitive substrings,
+`epistemicCuePresent` checks keywords, and `finalCitesEvidence` checks only an ID's
+presence. These metrics can still accept fabricated prose and must not be read
+as factual assessments. Set `REA_AGENT_EVAL_TRANSCRIPT_DIR` to retain complete
+tool results and final answers for review.
+
+Report schema version 3 changes the top-level `factualCorrectness` from a constant
+string to an assessment summary with status, scope, and assessed/passed/failed/
+not-assessed scenario counts. Scenario records include the factual assessment and
+configured claim IDs. The evaluation scope is
+`routing_workflow_and_configured_fixture_claims`. Update report consumers for
+these changes. The narrower heuristic field names introduced in version 2 remain:
+`answerHeuristicsMet`, `epistemicCuePresent`, `answerTermCoverageMet`, and
+`requiredAnswerTermGroups`.
 
 Regenerate the managed conformance manifest and Evidence completion ledger from
 live verification results, or check them for drift:

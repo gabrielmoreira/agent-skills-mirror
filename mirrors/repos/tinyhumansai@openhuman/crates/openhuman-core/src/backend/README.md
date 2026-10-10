@@ -1,173 +1,259 @@
-# Backend
+# backend
 
-The core's side of reaching a hosted backend it knows nothing about: request
-plumbing, the authenticated JSON client, error classification, and
-budget-exhaustion detection.
+This folder is the core's side of talking to a hosted backend it otherwise
+knows nothing about. It defines the transport port every backend call rides,
+the authenticated JSON client (`BackendClient`) that domains use to call
+routes, and the typed errors those calls return. Domains such as channels,
+voice, memory billing, media generation and the integrations budget gate call
+into it; hosts install the actual transport.
 
-The core has **no dependency on `tinyhumans-sdk`**. It reaches the backend
-only through the port in `transport/` (`BackendTransport`); the SDK-backed
-implementation lives in `crates/openhuman-tinyhumans`, which hosts install
-once per process. A core with no transport installed runs agents, memory,
-tools and RPC as normal and answers every backend-touching call with the
-typed `BackendApiError::BackendUnavailable` / `BACKEND_UNAVAILABLE:`
-sentinel, which `core::observability` demotes.
+The core has no dependency on `tinyhumans-sdk` and holds no hosted URL,
+default, environment variable, header policy or product identity of its own.
+All of that belongs to the installed transport, and the helpers in [`mod.rs`](./mod.rs)
+ask it. The only production transport is `SdkBackendTransport` in
+[`crates/openhuman-tinyhumans`](../../../openhuman-tinyhumans/), built on the vendored SDK.
 
-Routes are named here (and in the domains that call `authed_json`); the SDK
-still owns route *policy* (its unexposed-route registry) inside the
-transport. Add a missing backend route to `vendor/tinyhumans-sdk` so the
-policy tables know it, then name it from the core as usual.
+## How it works
 
-The core also holds no hosted URL, default, environment variable, header
-policy or product identity of its own any more — those live with the
-transport implementation (`crates/openhuman-tinyhumans/src/backend/`) and are
-asked for through the helpers in `mod.rs`.
+A backend call goes through three layers. The domain names a route and a
+credential, `BackendClient` checks the endpoint, sends the request through the
+resolved transport and classifies the result, and the transport does the HTTP
+round trip with the SDK's route policy.
+
+```text
+domain code (channels, voice, memory billing, ...)
+    |  BackendClient::from_config(&cfg)?.authed_json(cred, method, path, body)
+    v
+BackendClient                                  backend/client.rs
+    |  endpoint checks (HTTPS or loopback; API key only to managed host)
+    |  resolve_backend_transport()
+    v
+dyn BackendTransport                           backend/transport/
+    |  send_json(BackendRequest { profile, base_url, path, credential, .. })
+    v
+SdkBackendTransport (crates/openhuman-tinyhumans)
+    |  TLS, timeouts, attribution headers, route policy, wire classification
+    v
+hosted backend
+    |
+    v  Result<Value, BackendTransportError>
+BackendClient::finish_authed_json  ->  Value  or  BackendApiError / anyhow
+    |
+    v  (on the JSON-RPC String error channel)
+flatten_authed_error  ->  SESSION_EXPIRED: / API_KEY_REJECTED: /
+                          BACKEND_UNAVAILABLE: / full error chain
+```
+
+### Finding a transport
+
+`transport::install::resolve_backend_transport` picks the transport for the
+current call. The first hit wins:
+
+1. The transport bound to the ambient `CoreContext`
+   (`CoreBuilder::backend_transport`, inherited by `CoreContext::derive_with`).
+2. The process global set by `install_backend_transport`. The desktop shell,
+   TUI and CLI use this path because they boot the core through
+   `openhuman_rpc::host` or `run_core_from_args` rather than the
+   builder. `openhuman_tinyhumans::install` (or `RuntimeBuilder` for library
+   hosts) does the install.
+3. Under `cfg(test)` only, `PlainHttpTransport` from [`transport/plain.rs`](./transport/plain.rs).
+4. Otherwise `BackendTransportError::Unavailable`.
+
+Production has no implicit fallback. A core nobody gave a transport runs
+agents, memory, tools and RPC as normal, and every backend-touching call
+answers with a typed "backend unavailable" error. `is_installed()` lets paths
+that reach the backend host directly (the Langfuse proxy push, the socket,
+channel reply delivery, browser-task module config) skip quietly when there is
+no transport.
+
+### Base URLs and attribution
+
+`mod.rs` has thin helpers that ask the transport for host-specific values:
+
+| Helper | Returns |
+| --- | --- |
+| `base_url(&config.api_url)` | The control-plane origin (account, integrations, channels, voice, sockets, telemetry) for `BaseUrlPurpose::ControlPlane`. `Unavailable` without a transport. |
+| `require_base_url` | The same, on the `String` error channel: a missing transport becomes the `BACKEND_UNAVAILABLE:` sentinel. |
+| `inference_base_url` | The managed OpenAI-compatible inference origin (`BaseUrlPurpose::Inference`), which honours an `api_url` that points at an inference endpoint. Without a transport it still returns an explicitly configured override (normalized by `util::url::normalize_api_base_url`), because managed inference talks to that URL directly. |
+| `product_identity()` | The `x-sdk-name` value the host attributes traffic to, or `None`. |
+| `attribution_headers()` | The host's full attribution header set (`x-sdk-name`, client versions), or an empty map. |
+
+The two purposes differ only in how an operator override is treated: a
+control-plane call must never land on an inference endpoint the user pointed
+`api_url` at, while managed inference uses it as given. The transport owns
+the defaults, the `BACKEND_URL` / `VITE_BACKEND_URL` overrides and that guard
+([`crates/openhuman-tinyhumans/src/backend/url.rs`](../../../openhuman-tinyhumans/src/backend/url.rs)).
+
+### Sending an authenticated request
+
+`BackendClient::new` parses the base URL, requires an absolute `http(s)` URL
+with a host, and strips any path, query and fragment so `Url::join` resolves
+root-relative routes correctly even when a caller passes a full completions
+URL. `BackendClient::from_config` resolves the base through `base_url` and
+fails with `BackendApiError::BackendUnavailable` when no transport is
+installed.
+
+`authed_json(credential, method, path, body)` accepts a `BackendCredential`
+(or a bare session token). Before sending it refuses two unsafe cases: an API
+key may only go to the managed host (`api.tinyhumans.ai`,
+`staging-api.tinyhumans.ai`) or a loopback endpoint, and any credential
+requires HTTPS or loopback HTTP. These checks live in
+`inference::provider::openhuman_backend_model`. It then sends a
+`BackendRequest` with `TransportProfile::Api` and `unwrap_envelope: true`.
+The transport puts a session JWT on `Authorization: Bearer` and an API key on
+`x-api-key` (`transport::credential_headers`).
+
+### Classifying the result
+
+The private `finish_authed_json` is the classification chokepoint for every
+`authed_json` call:
+
+| Transport result | Outcome |
+| --- | --- |
+| `Ok(value)` | Returned as is. |
+| `Unavailable` | `BackendApiError::BackendUnavailable`. |
+| `Http(reqwest::Error)` | Walks the whole `reqwest`/`hyper`/`rustls` source chain. A transient transport phrase (`core::observability::contains_transient_transport_phrase`) is logged as a warning; anything else goes to `report_error`. |
+| `ChannelMessageRouteMissing` | `BackendApiError::ChannelEditUnsupported`. |
+| `ChannelMessageNotFound` | `BackendApiError::MessageNotFound`. |
+| `Status { 401, .. }` | `ApiKeyRejected` for an API-key credential, `Unauthorized` for a session. Not reported to Sentry. |
+| `Status { 400, budget body }` | Logged at info as a budget exhaustion, not reported. |
+| `Status { transient code }` | Logged as a warning (`is_transient_http_status_code`), not reported. |
+| other `Status` | Reported with method, path, host, status and a PII-safe `body_shape`, then returned as an error. |
+| any other error | Returned with `backend request <METHOD> <path>` context. |
+
+`body_shape` (`backend_api_body_shape`) never echoes response values. For a
+JSON object it records the key count and only the keys that look like short
+ASCII identifiers, so an email or UUID used as a key is counted as redacted.
+
+The core never reads a response body to decide what a 404 means. The
+transport classifies the two channel-message 404s (`tinyhumans_sdk::classify`,
+applied by `openhuman-tinyhumans`'s `map_sdk_error`), and the core decides
+the recovery.
+
+### Flattening for JSON-RPC
+
+`flatten_authed_error` turns an `authed_json` error into the string that
+crosses the JSON-RPC boundary, keyed off the typed downcast rather than the
+display text:
+
+- `Unauthorized` becomes `SESSION_EXPIRED: ...`, which the dispatcher treats
+  as session expiry: no Sentry report, and `DomainEvent::SessionExpired` is
+  published so the host can drive re-sign-in.
+- `ApiKeyRejected` becomes `API_KEY_REJECTED: ...`
+  (`core::observability::API_KEY_REJECTED_PREFIX`). It is kept apart from
+  session expiry because a library runtime authenticating with an API key has
+  no session to clear.
+- `BackendUnavailable` becomes `BACKEND_UNAVAILABLE: ...`
+  (`core::observability::BACKEND_UNAVAILABLE_PREFIX`), which observability
+  demotes.
+- Everything else keeps its full `{err:#}` chain so real failures still reach
+  Sentry.
 
 ## Layout
 
-| File | Purpose |
+| Path | What it does |
 | --- | --- |
-| `transport/` | `BackendTransport` port, `BackendRequest`, `BackendTransportError`, process-global install/resolve; `transport/plain.rs` is the `cfg(test)`-only reqwest fallback — production has no fallback, a host installs the transport from `openhuman-tinyhumans` |
-| `client.rs` | `BackendClient`: authenticated JSON calls over the port, the typed `BackendApiError` results domains recover from, and `flatten_authed_error`, the chokepoint that turns them into the `SESSION_EXPIRED:` / `API_KEY_REJECTED:` / `BACKEND_UNAVAILABLE:` sentinels `core::observability` classifies |
-| `client_tests.rs` | Tests for `client.rs` (included via `#[path]`) |
-| `classify.rs` | `is_budget_exhausted_message` — backend/provider budget-exhaustion body classification shared by inference, agent loop guards, scheduler, web chat and telemetry |
-| `mod.rs` | `base_url`, `require_base_url`, `inference_base_url`, `product_identity`, `attribution_headers` — thin helpers that ask the installed transport; there is no local URL, header or identity state here |
+| `mod.rs` | Re-exports, plus `base_url`, `require_base_url`, `inference_base_url`, `product_identity` and `attribution_headers`. No local URL, header or identity state. |
+| [`client.rs`](./client.rs) | `BackendClient`, `BackendApiError`, `flatten_authed_error`, endpoint checks and `finish_authed_json` classification. |
+| [`client/channel.rs`](./client/channel.rs) | Channel routes on `BackendClient`: `send_channel_message`, `send_channel_typing`, `send_channel_edit`, `send_channel_delete`, `send_channel_reaction`, `create_channel_thread`, `update_channel_thread`, `list_channel_threads`. |
+| [`classify.rs`](./classify.rs) | `is_budget_exhausted_message`, a one-line wrapper over `tinyinference_providers::is_budget_exhausted_message`. |
+| [`transport/`](transport/README.md) | The port: `BackendTransport`, `BackendRequest`, `TransportProfile`, `BaseUrlPurpose`, `BackendTransportError`, the install slot, and shared helpers (`credential_headers`, `parse_body_text`, `unwrap_envelope`, `compose_url`). |
+| `transport/plain.rs` | `PlainHttpTransport`, compiled only under `cfg(test)` so the core's wiremock tests need no host crate. It applies no route policy. |
 
-## `transport/`
+## Key types and entry points
 
-`BackendTransport` is the one HTTP primitive every hosted-backend call rides:
+- `BackendTransport` ([`transport/mod.rs`](./transport/mod.rs)) is the trait a transport
+  implements: `send_json`, `send_multipart`, `http_client(profile)`,
+  `base_url(configured, purpose)`, `product_identity`,
+  `attribution_headers` and `name`. Implementations are process-wide
+  `Arc<dyn BackendTransport>` singletons and must be safe to call
+  concurrently.
+- `BackendRequest` (`transport/mod.rs`) fully describes one round trip:
+  profile (`Api` for control-plane REST, `Integrations` for
+  `/agent-integrations/*`), base URL, method, path, query pairs, JSON body,
+  optional credential, and whether to unwrap the `{success, data}` envelope.
+- `BackendTransportError` ([`transport/error.rs`](./transport/error.rs)) mirrors the SDK error arms
+  the classifiers match on: `Unavailable`, `Url`, `Http`, `Status`,
+  `ChannelMessageNotFound`, `ChannelMessageRouteMissing`, `Envelope`,
+  `Header`, `Decode`, `RouteNotExposed`, `Other`.
+- `install_backend_transport`, `resolve_backend_transport`, `is_installed`
+  ([`transport/install.rs`](./transport/install.rs)) manage the process slot.
+- `BackendClient` (`client.rs`) is the client domains hold. Besides
+  `authed_json` it has `url_for(path)` and `raw_client()`, which returns the
+  transport's `Api`-profile `reqwest::Client` (attribution headers, no
+  credential) for non-JSON shapes such as multipart STT uploads.
+- `BackendApiError` (`client.rs`) is what callers match on for expected
+  states: `Unauthorized`, `ApiKeyRejected`, `MessageNotFound`,
+  `ChannelEditUnsupported`, `BackendUnavailable`.
 
-```rust
-async fn send_json(&self, req: BackendRequest<'_>) -> Result<Value, BackendTransportError>;
-async fn send_multipart(&self, req: BackendRequest<'_>, form: Form) -> Result<Value, BackendTransportError>;
-fn http_client(&self, profile: TransportProfile) -> reqwest::Client;
-fn base_url(&self, configured: Option<&str>, purpose: BaseUrlPurpose) -> String;
-fn product_identity(&self) -> String;
-fn attribution_headers(&self) -> reqwest::header::HeaderMap;
-fn name(&self) -> &'static str;
-```
+## Boundaries
 
-`BaseUrlPurpose::ControlPlane` resolves the origin for auth, billing,
-integrations, channels, voice and sockets; `BaseUrlPurpose::Inference`
-resolves the managed OpenAI-compatible proxy, honouring an `api_url` override
-that points at an inference endpoint. `product_identity` and
-`attribution_headers` answer the `x-sdk-name` value and the full attribution
-header set (`x-core-version`, `x-tauri-version`, `x-sdk-name`) the installed
-host attributes traffic to; both are empty/default without a transport.
+- Route policy, TLS, timeouts, redirects, attribution headers, URL defaults
+  and wire classification belong to the transport implementation in
+  `crates/openhuman-tinyhumans` (`src/transport/`, `src/backend/url.rs`,
+  `src/backend/headers.rs`, `src/backend/product.rs`).
+- Backend routes are defined in [`vendor/tinyhumans-sdk`](../../../../vendor/tinyhumans-sdk/). Add a missing route
+  there (its unexposed-route registry is the policy the transport enforces)
+  and then name it from the core. Do not recreate route implementations in
+  this folder.
+- Account-bound hosted routes (link tokens, OAuth connect and handoff,
+  billing, team, webhook tunnels, announcements) are called from
+  [`crates/openhuman-tinyhumans/src/hosted/`](../../../openhuman-tinyhumans/src/hosted/) on the SDK's typed clients, not
+  through `BackendClient`. The integration token handoff decrypt lives in
+  [`crates/openhuman-tinyhumans/src/hosted/oauth/handoff.rs`](../../../openhuman-tinyhumans/src/hosted/oauth/handoff.rs).
+- Session-token lookup, JWT parsing and `Authorization` formatting live in
+  `security::credentials::jwt`. The core never obtains, exchanges or validates
+  a session.
+- The Socket.IO handshake URL builder is `platform::socket::url::websocket_url`.
+- `IntegrationClient::map_transport_error`
+  ([`integrations/client/errors.rs`](../integrations/client/errors.rs)) does the same classification job for
+  `/agent-integrations/*` traffic.
+- Hosted memory does not go through this port. The TinyMemory engine uses its
+  own HTTP client and only takes `base_url`, `attribution_headers` and a
+  credential source from the core.
 
-`BackendRequest` carries the profile (`Api` for control-plane REST,
-`Integrations` for `/agent-integrations/*`), base URL, method, path, query,
-JSON body, the `BackendCredential` (session JWT → `Authorization: Bearer`,
-API key → `x-api-key`) and whether the `{success,data}` envelope is unwrapped.
-`BackendTransportError` mirrors the variants the classifiers match on
-(`Http`, `Status`, `Envelope`, `RouteNotExposed`, …) plus `Unavailable`, and
-the two backend-specific 404 meanings the transport classifies for the core:
-`ChannelMessageNotFound` (a handler says the message is gone) and
-`ChannelMessageRouteMissing` (no route matched — today every `PATCH` edit,
-#5230). The core never inspects a response body to tell them apart; that
-wire knowledge lives in `tinyhumans_sdk::classify` and is applied by
-`openhuman-tinyhumans`'s `map_sdk_error`.
+## Gotchas
 
-Resolution (`resolve_backend_transport`), first hit wins: the transport bound
-to the ambient `CoreContext` (`CoreBuilder::backend_transport`, inherited by
-`derive_with`) → the process global (`install_backend_transport`, what the
-desktop shell, TUI and CLI use because they boot the core through
-`run_server_embedded_with_ready` / `run_core_from_args`) → under `cfg(test)`
-only, `PlainHttpTransport` → `Err(Unavailable)`. Production has no implicit
-fallback.
-
-## `client.rs`
-
-`BackendClient` (renamed from `BackendOAuthClient`) holds the backend origin
-(base URL stripped to its origin) and sends every request through the
-process `BackendTransport` (`TransportProfile::Api`: attribution headers,
-platform TLS, timeouts — all specified by the transport implementation). Key
-surface:
-
-- `authed_json` — send an authenticated request and route the result through
-  `finish_authed_json`.
-- Typed route helpers (`send_channel_*`, `*_channel_thread`) all go through
-  `authed_json` and are bearer-only: the core never obtains, exchanges or
-  validates a session. The account-bound routes (link tokens, `/auth/me`
-  link checks, OAuth connect / integrations / client-key handoff, billing,
-  team, webhook tunnels, announcements) are called by
-  `openhuman-tinyhumans` (`hosted/`) on the TinyHumans SDK's typed clients.
-- `url_for`, `raw_client` — URL helpers for callers that need to drive a
-  non-JSON request (e.g. multipart uploads) without re-implementing TLS/proxy
-  setup. `raw_client` returns the transport's `Api`-profile client and fails
-  with `BackendUnavailable` when no transport is installed.
-
-`BackendApiError` is the typed-error surface `authed_json` callers should
-match on for expected backend states rather than treating as failures:
-`Unauthorized` (401 — session lapsed, not a bug), `ApiKeyRejected` (401 on a
-library-mode API-key credential, kept distinct from `Unauthorized` so it
-does not trigger session-expiry recovery), `MessageNotFound` (404 on a
-channel message the provider or backend already deleted),
-`ChannelEditUnsupported` (404 because the backend never implemented the
-`PATCH` edit route), `BackendUnavailable` (no transport installed).
-`flatten_authed_error` maps `Unauthorized` onto the `SESSION_EXPIRED`
-JSON-RPC sentinel so the dispatcher classifies it as session expiry instead of
-reporting it to Sentry, `ApiKeyRejected` onto `API_KEY_REJECTED:`, and
-`BackendUnavailable` onto `BACKEND_UNAVAILABLE:`
-(`core::observability::BACKEND_UNAVAILABLE_PREFIX`) for the same reasons.
-
-The private `BackendClient::finish_authed_json` is the error classification
-chokepoint for every `authed_json` call: it walks the
-`reqwest`/`hyper`/`rustls` error source chain (not just the top-level
-message) to distinguish a transient transport failure from one worth
-reporting, maps a `401` onto `Unauthorized` / `ApiKeyRejected` by the
-credential kind, and maps the transport's typed channel-message 404s onto
-`MessageNotFound` / `ChannelEditUnsupported`. The recovery each variant
-implies is the core's; what a backend response *means* is the transport's. `IntegrationClient::map_transport_error`
-(`integrations/client/errors.rs`) plays the same role for integrations.
-Route new backend calls through those helpers instead of matching
-`BackendTransportError` by hand.
-
-Session-token lookup, JWT parsing and `Authorization` header formatting now
-live in `security::credentials::jwt` (including
-`user_id_from_profile_payload`); `decrypt_handoff_blob` (AES-256-GCM decrypt
-for integration token handoff) moved to
-`crates/openhuman-tinyhumans/src/hosted/oauth/handoff.rs`; the Socket.IO
-handshake URL builder moved to `platform::socket::url::websocket_url`, and
-its DTOs to `platform::socket::models`.
-
-## `classify.rs`
-
-`is_budget_exhausted_message` — backend/provider budget-exhaustion body
-classification shared by inference, agent loop guards, scheduler, web chat
-and telemetry.
-
-## Backend request rules (from `AGENTS.md`)
-
-- Add missing backend routes to `vendor/tinyhumans-sdk`, not to
-  `crates/openhuman-core/src/backend/`.
-- Every TinyHumans backend request must carry a sanitized `x-sdk-name`, now
-  stamped by the installed transport's `attribution_headers`:
-  `BackendClient`, `IntegrationClient` (except redirected file downloads),
-  the agent's Langfuse/OTLP ingestion request, the managed model catalog
-  call, and — outside this crate — the host session owner's
-  `POST /auth/login-token/consume` / `GET /auth/me`
-  (`openhuman_tinyhumans::session`).
-- Never add `x-sdk-name` to third-party endpoints, MCP servers, BYOK
-  inference endpoints, or presigned storage redirects.
+- Every TinyHumans backend request must carry a sanitized `x-sdk-name`, which
+  the transport stamps. That covers `BackendClient`, `IntegrationClient`
+  (except redirected file downloads), the Langfuse and OTLP ingestion push,
+  the managed model catalog listing, and the host session owner's
+  `POST /auth/login-token/consume` and `GET /auth/me`. Never add it to
+  third-party endpoints, MCP servers, BYOK inference endpoints or presigned
+  storage redirects.
+- Route new backend calls through `authed_json` (or
+  `IntegrationClient::map_transport_error`) instead of matching
+  `BackendTransportError` by hand, or 401s and transient failures will page
+  Sentry.
+- `ChannelEditUnsupported` and `MessageNotFound` mean different things. A
+  missing edit route (every `PATCH` edit today, #5230) says the message still
+  exists, so callers must keep its id and only disable editing. Forgetting
+  the id there leaves streaming drafts undeleted in the chat.
+- Under `cfg(test)` the "global" transport slot is per thread, so a test that
+  installs a fake transport must run on a single thread to see it.
 - When auditing hand-built backend requests, grep for
   `bearer_authorization_value` and `header(AUTHORIZATION`.
 
 ## Tests
 
-`client_tests.rs` covers `BackendClient::new` base stripping, `authed_json`
-401 classification into `BackendApiError`, `flatten_authed_error`, and
-`backend_api_body_shape`. `client_channel_tests.rs` covers the channel route
-shapes and, with a stub transport, the mapping of the typed channel-message
-404s onto `MessageNotFound` / `ChannelEditUnsupported`. The 404 wire
-classification itself is tested where it lives:
-`vendor/tinyhumans-sdk/tests/classify.rs` and
-`crates/openhuman-tinyhumans/src/transport/channel_404_tests.rs`. Transient-transport classification is not unit
-tested here; it relies on
-`core::observability::contains_transient_transport_phrase`. `transport/`
-carries its own tests (`transport_tests.rs`, `mod_tests.rs`); `classify.rs`
-carries its own (`classify_tests.rs`).
+[`client_tests.rs`](./client_tests.rs) covers base stripping in `BackendClient::new`, 401
+classification, `flatten_authed_error` and `backend_api_body_shape`.
+[`client_channel_tests.rs`](./client_channel_tests.rs) covers channel route shapes and, with a stub
+transport, the mapping of the typed channel-message 404s. [`mod_tests.rs`](./mod_tests.rs) and
+[`transport/transport_tests.rs`](./transport/transport_tests.rs) cover the URL helpers and the port. The 404
+wire classification is tested where it lives
+([`vendor/tinyhumans-sdk/tests/classify.rs`](../../../../vendor/tinyhumans-sdk/tests/classify.rs),
+[`crates/openhuman-tinyhumans/src/transport/channel_404_tests.rs`](../../../openhuman-tinyhumans/src/transport/channel_404_tests.rs)), and the
+attribution header tests are in
+[`crates/openhuman-tinyhumans/src/backend/headers_tests.rs`](../../../openhuman-tinyhumans/src/backend/headers_tests.rs) and
+[`crates/openhuman-tinyhumans/src/transport/transport_tests.rs`](../../../openhuman-tinyhumans/src/transport/transport_tests.rs).
 
-Product-identity attribution and header-shape tests now live with the
-transport implementation:
-`crates/openhuman-tinyhumans/src/backend/headers_tests.rs` and
-`crates/openhuman-tinyhumans/src/transport/transport_tests.rs`.
+Run with `cargo test -p openhuman backend::` or `pnpm debug rust backend::`.
+
+## Further reading
+
+- [Parent module README](../../README.md)
+- [One TinyHumans API key](../../../../gitbooks/developing/tinyhumans-api-key.md)
+- [Deep architecture reference](../../../../gitbooks/developing/architecture.md)
+- [openhuman-tinyhumans crate](../../../openhuman-tinyhumans/README.md)
+- [tinyhumans-sdk](../../../../vendor/tinyhumans-sdk/README.md)

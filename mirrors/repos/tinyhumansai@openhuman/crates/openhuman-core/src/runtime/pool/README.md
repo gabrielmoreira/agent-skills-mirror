@@ -38,9 +38,9 @@ and post-dispatch, move a failure out of the default.
 
 | File | Role |
 | --- | --- |
-| `mod.rs` | `PoolRunError`, the shared `run_inline` dispatch, and `classify`. |
-| `node.rs` / `python.rs` | Per-language `enabled()` and `run_inline()`; they differ only in which language they name. |
-| `types.rs` | `PoolExecOutcome` (with `queue_wait` kept apart from `elapsed`), `PoolLang`, `PoolSettings`. |
+| [`mod.rs`](./mod.rs) | `PoolRunError`, the shared `run_inline` dispatch, and `classify`. |
+| [`node.rs`](./node.rs) / [`python.rs`](./python.rs) | Per-language `enabled()` and `run_inline()`; they differ only in which language they name. |
+| [`types.rs`](./types.rs) | `PoolExecOutcome` (with `queue_wait` kept apart from `elapsed`), `PoolLang`, `PoolSettings`. |
 
 ## Why it exists
 
@@ -72,3 +72,10 @@ state across jobs). Set `enabled` explicitly per language to override.
 - **A worker is still a child of this process.** A TinyBus module is a `cdylib`
   loaded in-process, so the resident cost and the process-tree shape the
   `library-profile skill-run` gate asserts on are unchanged by the move.
+
+## Further reading
+
+- [Parent module (`runtime`)](../README.md)
+- [tinyruntime submodule](../../../../../vendor/tinyruntime/README.md)
+- [System and utilities tools](../../../../../gitbooks/features/native-tools/system-and-utilities.md)
+- [Loadable modules](../../../../../gitbooks/developing/loadable-modules.md)

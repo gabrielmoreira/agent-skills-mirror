@@ -1,139 +1,408 @@
-# Cron
+# cron
 
-Scheduled-job runtime. Owns cron-expression and human-delay parsing, the persistent job + run store, the polling scheduler that fires due jobs (`shell`, `agent`, and `flow` types), and the delivery layer that publishes events into the agent / channel pipelines. Does NOT own shell sandboxing (`security::SecurityPolicy`) or flow trigger dispatch (`flows::bus::FlowTriggerSubscriber`).
+The cron domain runs scheduled jobs. It owns the background scheduler loop that
+fires due jobs, the three ways a job can run (a shell command, an agent turn, or
+a hand-off to another domain), the delivery layer that routes a run's output to
+the right place, and the `cron.*` RPC controllers and agent tools that create
+and manage jobs. The scheduler is spawned as a core background service; agents
+reach it through the `cron` and `schedule` tools, and the desktop UI through
+the `cron` RPC namespace.
 
-## Public surface
+The schedule model itself (cron expressions, one-shot instants, intervals,
+active hours, the agent-job cadence floor) and the SQLite job store live in the
+vendored `tinyflows` submodule. This folder is the host runtime on top of them.
 
-- `pub struct CronJob` / `pub struct CronJobPatch` / `pub struct CronRun` / `pub struct ActiveHours` / `pub enum JobType` / `pub enum Schedule` (`Cron` / `At` / `Every`) / `pub enum SessionTarget` (`Isolated` / `Current` / `Main`) / `pub enum JobOrigin` (`Web` / `Channel`) / `pub enum DeliveryStatus` / `pub struct DeliveryConfig`: `types.rs`: durable job + run model.
-- `pub fn add_once` / `pub fn add_once_at` / `pub fn parse_human_delay` / `pub fn pause_job` / `pub fn resume_job` / `pub fn update_cron_job`: `ops.rs` (also re-exported as `pub use ops as rpc`).
-- `pub fn schedule_cron_expression` / `pub fn next_run_for_schedule` / `pub fn normalize_expression` / `pub fn validate_schedule` / `pub fn validate_agent_schedule` / `pub fn runs_closer_than` / `pub struct TooFrequent` / `pub const MIN_AGENT_JOB_INTERVAL`: `schedule.rs`.
-- `pub fn add_job` / `pub fn add_agent_job` / `pub fn add_agent_job_with_definition` / `pub fn add_shell_job` / `pub fn add_flow_schedule_job` / `pub fn find_flow_schedule_job` / `pub fn due_jobs` / `pub fn get_job` / `pub fn list_jobs` / `pub fn list_runs` / `pub fn record_last_run` / `pub fn record_run` / `pub fn remove_job` / `pub fn reschedule_after_run` / `pub fn update_job`: `store.rs`, a thin `Config` -> `CronStoreOptions` wrapper over `tinyflows_sqlite::schedule` (schema, job CRUD and run history live upstream).
-- `pub mod scheduler` (`pub async fn run(config: Config)`, `pub async fn execute_job_now` for the `cron.run` "Run Now" path): `scheduler.rs`, split into submodules `scheduler/failure_classification.rs` (failure classifiers), `scheduler/retry.rs` (`execute_job_now`, `execute_job_with_retry`), `scheduler/agent_run.rs` (`run_agent_job`, `build_agent_for_cron_job`, `run_flow_schedule_job`), `scheduler/delivery.rs` (`deliver_run`, `deliver_job`), `scheduler/origin_context.rs` (the prompt of a `current` run), `scheduler/origin_delivery.rs` (`delivery.mode = "origin"`), `scheduler/shell_job.rs` (`run_job_command_with_timeout`), and `scheduler/run_record.rs`; the poll loop and `run` stay in `scheduler.rs` itself.
-- `pub mod scheduler_gate`: throttles *background* LLM work (memory digests, embeddings, summarisation) on host power / CPU signals via `current_policy()` / `wait_for_capacity()`. It lives here for historical reasons; the cron poll loop does not consult it, and its consumers are `modules/memory_host.rs` and `security/credentials/`. See its own [README](scheduler_gate/README.md).
-- `pub mod seed`: `seed.rs`: `seed_proactive_agents` installs the built-in proactive jobs when onboarding flips to completed (`config/ops/ui.rs`); `prune_retired_jobs` removes rows for removed features on boot and workspace activation.
-- `pub mod origin` / `pub mod job_builder` / `pub mod channel_bridge`: the conversation a job was created from. `origin.rs` captures a `JobOrigin` from the live `AgentTurnOrigin`, decides whether a creation call may skip the approval gate, and picks the turn origin a run executes under; `job_builder.rs` is the one path (`create_agent_job`) the `cron` and `schedule` tools both use to build agent jobs with origin-aware defaults and delivery validation; `channel_bridge.rs` is cron's handle on the channel runtime (per-chat history and live channels, registered by `start_channels`).
-- `pub mod bus`: `bus.rs`: `CronDeliverySubscriber` (`cron::delivery`) consumes `CronDeliveryRequested` and sends through the named `tinychannels_bus::Channel`.
-- `pub mod tools`: `tools.rs` + `tools/`: agent-facing tools: `CronAddTool`, `CronListTool`, `CronUpdateTool`, `CronRemoveTool`, `CronRunTool`, `CronRunsTool`, and the collapsed `CronTool` / `CRON_TOOL_NAME`. `tools/collapsed.rs` explains why the six stay registered as hidden schemas behind the one advertised tool; see also [tools/README.md](tools/README.md).
-- RPC namespace `cron`: `add`, `list`, `update`, `remove`, `run`, `runs`: `schemas.rs` (aggregated as `all_cron_controller_schemas` / `all_cron_registered_controllers`).
+## How it works
 
-## Job types
+### The poll loop
 
-- `shell`: `run_job_command_with_timeout` refuses the command unless the `SecurityPolicy` (`SecurityPolicy::from_config`, built once in `scheduler::run` and per call in `execute_job_now`) passes `can_act`, `is_rate_limited`, and `is_command_allowed`; a `blocked by security policy:` result is never retried.
-- `agent`: the scheduler builds an `Agent` directly and runs a turn (see below); it does not go through `agent::triage`.
-- `flow`: a `flows::Flow` schedule-trigger binding, the mechanism behind a workflow's [schedule trigger](../../../../gitbooks/features/workflows.md). `flows/ops/triggers.rs::bind_schedule_trigger` creates it via `add_flow_schedule_job` (idempotent through `find_flow_schedule_job`) from both `flows_set_enabled` and `reconcile_schedule_triggers_on_boot`. Its `command` column carries the bound flow's id; on fire `run_flow_schedule_job` publishes `DomainEvent::FlowScheduleTick { flow_id }` instead of running anything itself. `flows::bus::FlowTriggerSubscriber` does the actual dispatch. Never created via the `cron_add` agent tool, whose `job_type` enum is `shell` / `agent` only.
+`scheduler::run` is the whole service. It initializes the event bus, registers
+the health subscriber, builds one `SecurityPolicy` from config, publishes
+`SystemStartup { component: "scheduler" }`, and then ticks forever at
+`reliability.scheduler_poll_secs` (never faster than 5 seconds).
 
-### Agent jobs
+```text
+  interval tick
+       |
+       v
+  tick_once ---- due_jobs(config, now) ----> tinyflows_sqlite store
+       |              (jobs.db)
+       |  error -> HealthChanged{healthy:false} (only on transition)
+       |  ok    -> HealthChanged{healthy:true}  (only on transition)
+       v
+  process_due_jobs
+       |  try_acquire_run(job.id) per job; skip if already running
+       |  buffer_unordered(scheduler.max_concurrent)
+       v
+  execute_and_persist_job (per job)
+       |  CronJobTriggered
+       |  execute_job_with_retry_for_run --> shell | agent | flow
+       |  persist_job_result_for_run    --> deliver_run, record run,
+       |                                    reschedule / disable / delete
+       |  CronJobCompleted
+       v
+  HealthChanged per job result
+```
 
-`run_agent_job` prefixes the prompt (`[cron:<id> <name>] <prompt>`), applies a per-job `model` override to a cloned `Config`, and, when `job.agent_id` names a definition in `AgentDefinitionRegistry`, resolves that definition's `ModelSpec` onto the cloned config (the iteration cap is left to the session builder, see #4868). `build_agent_for_cron_job` uses `Agent::from_config_for_agent` for a recognized `agent_id`, falling back to `Agent::from_config` when it cannot build a definition or no id was supplied.
+Health is published on transitions only, so an idle queue does not put a
+steady `healthy: true` event on the bus every poll. A successful tick after a
+failed job re-emits `healthy: true`, which lets the Docker health check recover
+on its own (#3312).
 
-`execute_job_with_retry` wraps every job type with `config.reliability.scheduler_retries` attempts and exponential backoff. For agent jobs it classifies failures before retrying: backend session-expired, provider insufficient-credits (402), managed-backend budget-exhausted (400), API-key-unset, and local-LLM-unreachable all halt the loop immediately and suppress the retries-exhausted error report. The user-facing message is a canned string from `classify_agent_anyhow_for_user`; the raw error goes only to observability.
+Every execution gets a fresh `run_id` (a UUID). The same id names the run
+record, the origin delivery key (`cron:<job>:<run>`) and, for channel-origin
+jobs, the turn's message id.
+
+### Run claims
+
+[`ops.rs`](./ops.rs) keeps a process-wide `ACTIVE_RUNS` set. The poll loop claims each due
+job through `try_acquire_run`, which returns an `ActiveRunGuard` that releases
+the claim on drop (including panic and cancellation). The `cron.run` "Run Now"
+RPC uses the same set and rejects a second concurrent run of one job. A job
+that is already running is skipped on a tick and picked up on a later one, so
+a scheduled run and a manual run never overlap.
+
+### Executing a job
+
+`execute_job_with_retry_for_run` (in [`scheduler/retry.rs`](./scheduler/retry.rs)) dispatches on
+`JobType` and wraps all three types in `reliability.scheduler_retries` retries
+with exponential backoff starting at `reliability.provider_backoff_ms` (at
+least 200 ms).
+
+`shell` jobs run through `run_job_command_with_timeout`
+([`scheduler/shell_job.rs`](./scheduler/shell_job.rs)). Before spawning anything it checks the security
+policy in order: `can_act`, `is_rate_limited`, `is_command_allowed`, a scan of
+the arguments for forbidden paths, and `record_action` against the action
+budget. Any refusal returns a string starting `blocked by security policy:`,
+which the retry loop treats as final. The command has a hard 120 second timeout
+(`SHELL_JOB_TIMEOUT_SECS`). With the autonomy policy disabled (the default),
+most of these checks are inert; see the project `CLAUDE.md`.
+
+`agent` jobs run a full agent turn ([`scheduler/agent_run.rs`](./scheduler/agent_run.rs)):
+
+1. `build_run_prompt` ([`scheduler/origin_context.rs`](./scheduler/origin_context.rs)) composes the prompt from
+   the job's `session_target` (see below).
+2. A per-job `model` override is applied to a cloned `Config`.
+3. The job's `agent_id` (default `orchestrator`) is looked up in
+   `AgentDefinitionRegistry`. A definition's `ModelSpec` is resolved onto the
+   cloned config; a `Hint` goes through
+   `inference::provider::create_chat_model_with_model_id` so the workload's
+   configured model is used on any provider. The iteration cap is left to the
+   session builder (#4868).
+4. `build_agent_for_cron_job` builds an `OpenHumanSessionHost` with
+   `from_config_for_agent`, falling back to the `orchestrator` definition if the
+   requested one fails to build.
+5. The turn is tagged with event context `cron:<job>` on channel `cron`, and
+   `start_cron_turn_clean` sets `suppress_transcript_autoload`. A cron agent has
+   no thread, so without this its first turn would resume whatever unthreaded
+   transcript was newest for that agent name.
+6. The turn runs inside `agent::turn_origin::with_origin` with the origin from
+   `origin::turn_origin_for_job_run`. The morning briefing job also runs under a
+   24 hour task-recency window so task-fetch tools only return recent tasks.
+
+An agent failure is classified before anything is logged. The user sees a
+canned string from `classify_agent_anyhow_for_user`
+([`scheduler/failure_classification.rs`](./scheduler/failure_classification.rs)); the full error chain goes only to
+observability. Some failures stop the retry loop on the first attempt and skip
+the retries-exhausted error report: backend session expired, provider
+insufficient credits (402), managed-backend budget exhausted (400), API key
+unset, and a local LLM that is unreachable or has no model loaded.
+
+`flow` jobs run nothing in cron. `run_flow_schedule_job` publishes an event
+and returns. If the row's `command` is `system:<name>` (see system jobs below)
+it publishes `DomainEvent::CronSystemJobDue`; otherwise the command is a flow
+id and it publishes `DomainEvent::FlowScheduleTick { flow_id }`, which
+`flows::bus::FlowTriggerSubscriber` dispatches.
+
+### After the run
+
+`persist_job_result_for_run` ([`scheduler/run_record.rs`](./scheduler/run_record.rs)) calls `deliver_run`
+first, records the run with its `DeliveryStatus`, then decides the job's
+future:
+
+- A `Schedule::At` job is one-shot. If it has `delete_after_run` and succeeded,
+  it is removed. Otherwise it is disabled and keeps its run history.
+- Every other schedule goes through `reschedule_after_run`, which computes the
+  next run in the store.
+
+A delivery failure marks the run failed unless `delivery.best_effort` is set.
+
+### Delivery
+
+`DeliveryConfig.mode` decides where output goes. `deliver_run`
+([`scheduler/delivery.rs`](./scheduler/delivery.rs)) never posts a failed or empty run into a chat (empty
+means blank or the placeholder `agent job executed`). Failures still reach the
+alerts tab and run history.
+
+| Mode | What happens |
+| --- | --- |
+| `none` | Silent. Output lives in the job's `last_output` only. This is `DeliveryConfig::default()`. |
+| `proactive` | Publishes `ProactiveMessageRequested`. `channels::proactive::ProactiveMessageSubscriber` pushes to the in-app web stream and mirrors to `channels_config.active_channel` when set. Used for briefings and other desktop-first output. |
+| `announce` | Requires `channel` and `to`. Publishes `CronDeliveryRequested`; `cron::bus::CronDeliverySubscriber` (`cron::delivery`) sends it through the named `tinychannels_bus::Channel`. The `cron_add` tool checks `to` against the channel's `allowed_users`. |
+| `origin` | Sends the reply back into the conversation that created the job ([`scheduler/origin_delivery.rs`](./scheduler/origin_delivery.rs)). Requires `CronJob.origin`. |
+
+Origin delivery treats blank output or exactly `NO_REPLY` as `Suppressed`:
+nothing is sent and no alert is raised. For a web origin, the reply is stored in
+the origin thread under `run_reply_message_id("cron:<job>:<run>")`, the
+web-channel `proactive_message` event is emitted with that `thread_id` and
+`request_id`, and `append_to_origin_transcript` appends it to the thread's agent
+transcript (idempotent on the same key, and it waits out a live turn on the
+session, up to 120 seconds). For a channel origin, the reply goes to the
+origin's `reply_target` through `cron::channel_bridge` and is appended to that
+chat's in-memory history.
+
+Independently of the mode, `push_cron_alert` writes an entry into the
+notifications store (the alerts tab) for any failed run, and for a non-empty
+successful run in a delivering mode (`proactive`, `announce`, `origin`). A
+`none`-mode success stays silent, and so does an origin run that chose
+`NO_REPLY`.
+
+### Origin and session targets
+
+A job created by an agent inside a conversation records that conversation as a
+`JobOrigin`. `origin::current_job_origin` reads the live `AgentTurnOrigin`: a
+`WebChat` turn becomes `JobOrigin::Web { thread_id }`, a channel processor's
+`ExternalChannel` turn becomes `JobOrigin::Channel { channel, reply_target,
+history_key, sender }`, and any other origin records none.
+
+`job_builder::create_agent_job` is the one path the `cron` and `schedule` tools
+use to build agent jobs. With an origin, an agent job defaults to
+`session_target: current` and `delivery: origin`; without one it defaults to
+`isolated` and `proactive` (`default_delivery`). An explicit `delivery` or
+`session_target` always wins. `validate_delivery` and
+`check_origin_requirements` reject combinations that cannot work. An `announce`
+whose `to` is the origin's own reply target on the same channel skips the
+`allowed_users` check. The origin is stored on the job only when something
+uses it.
+
+The session target shapes the prompt:
+
+| Target | Prompt |
+| --- | --- |
+| `isolated` | `[cron:<id> <name>] <prompt>` |
+| `current` | An unattended-run preamble (the reply is delivered as-is; reply `NO_REPLY` to send nothing), then a tail of the origin conversation (last 10 messages, at most 1400 characters, newest kept), then the task. Web history comes from the thread store, channel history from `channel_bridge`. |
+| `main` | Runs like `current`; it is not yet a distinct main session. |
+
+Trust follows the origin. A job with a channel origin runs under
+`AgentTurnOrigin::ExternalChannel { message_id: "cron:<job>:<run>" }`, so its
+external-effect tools stay gated the way its creator's were. Web-origin and
+origin-less jobs run as `TrustedAutomation { source: Cron }`, which the approval
+gate treats as user-authorized. Creating a job skips the approval gate only when
+`origin::is_self_scoped_agent_job` holds: the turn is a channel conversation,
+the job is an agent job with no shell `command`, and its delivery resolves to
+that same conversation (no `delivery`, `origin`, or a matching `announce`).
+`CronAddTool` and the `schedule` tool express this through
+`external_effect_with_args`. Shell jobs, other recipients, `proactive`/`none`
+delivery and non-channel turns are gated (GHSA-f46p-6vf9-64mm).
+
+### Agent-job minimum interval
+
+An agent job is a full inference turn per run, so agent jobs may not run more
+often than `MIN_AGENT_JOB_INTERVAL` (5 minutes). `validate_agent_schedule` is
+enforced in the upstream store whenever an agent job is created or its schedule
+updated, so the `cron` tool, the `schedule` tool and the `cron.add` /
+`cron.update` RPCs all reject the same schedules, with a message naming the two
+runs that would be too close. Shell and flow jobs are exempt.
+
+The check, `runs_closer_than`, walks a bounded number of consecutive
+occurrences and reports the first pair closer than the floor. An irregular
+expression such as `1,2,30 * * * *` is judged by its tightest gap, and
+wrap-around counts (`*/7 * * * *` fires at :56 and then :00). Rows that predate
+the floor keep running; `warn_if_high_frequency_agent_job` logs `Cron agent job
+'<id>' is scheduled more frequently than every 5 minutes` on each run instead
+(#6158).
+
+### Seeded and system jobs
+
+`seed::seed_proactive_agents` runs when onboarding flips to completed
+([`config/ops/ui.rs`](../config/ops/ui.rs)). It dedupes named jobs, prunes a legacy one-shot `welcome`
+job, and creates the `morning_briefing` agent job (daily at 7 AM, `proactive`
+delivery) disabled until the user opts in. `seed::prune_retired_jobs` removes
+rows for retired features (for example the TinyPlace autopilot, matched by its
+`agent_id`) on boot and on user-scope activation.
+
+System jobs let another domain own a recurring task while still showing up in
+the routines list. A system job is a `flow` row whose command is
+`system:<name>` ([`system_jobs.rs`](./system_jobs.rs)). When it fires, cron publishes
+`CronSystemJobDue` and the owning domain does the work. Memory owns the two
+current ones, `memory_background` and `memory_sources_sync` (every 15 minutes),
+handled in `memory::bus`. `ensure_memory_jobs` is idempotent: it creates a
+missing row, reschedules a drifted one, and removes the retired
+`memory_context_refresh` row. It runs from [`core/runtime/services.rs`](../core/runtime/services.rs) and from
+[`security/credentials/ops/user_scope.rs`](../security/credentials/ops/user_scope.rs).
+
+### On a storage backend
+
+With a storage backend configured (`OPENHUMAN_STORAGE_URL` / `[storage] url`,
+see `crate::storage`), every `store` function is served by
+`tinyflows_drivers::schedule::CronDocuments` instead of `cron/jobs.db`: the
+same jobs and runs on the document port, in the acting agent's storage scope,
+with the same history cap and due-job batch size. `reschedule_after_run`
+advances a job only if its stored schedule still matches the job that fired,
+so two processes sharing one database don't double-advance it.
+
+## Layout
+
+| Path | What it does |
+| --- | --- |
+| [`mod.rs`](./mod.rs) | Module wiring and re-exports. Re-exports the schedule types and pure schedule functions from `tinyflows_schedule` so `cron::CronJob`, `cron::Schedule` and friends resolve here. |
+| [`store.rs`](./store.rs) | Thin wrapper over `tinyflows_sqlite::schedule`. Turns `Config` into `CronStoreOptions` (`<workspace>/cron/jobs.db`, `cron.max_run_history`, `scheduler.max_tasks`) and forwards job CRUD, due-job queries and run history. |
+| `ops.rs` | Business operations: `add_once`, `add_once_at`, `parse_human_delay`, pause/resume, `update_cron_job`, the `ACTIVE_RUNS` claim set, and the async `cron_*` RPC operations. Also re-exported as `cron::rpc`. |
+| [`schemas.rs`](./schemas.rs) | Controller schemas and handlers for the `cron` namespace. |
+| [`scheduler.rs`](./scheduler.rs) | `run`, `tick_once`, `process_due_jobs`, `execute_and_persist_job`. |
+| `scheduler/retry.rs` | `execute_job_now` (Run Now) and the retry loop across job types. |
+| `scheduler/failure_classification.rs` | Canned user messages and the permanent-failure classifiers that halt retries. |
+| `scheduler/shell_job.rs` | Security-gated shell execution with a timeout. |
+| `scheduler/agent_run.rs` | Agent-job turns, `build_agent_for_cron_job`, and `run_flow_schedule_job`. |
+| `scheduler/origin_context.rs` | `build_run_prompt`: the isolated prefix or the `current` preamble plus conversation tail. |
+| `scheduler/delivery.rs` | `deliver_run` and `deliver_job`, the mode switch, and `push_cron_alert`. |
+| `scheduler/origin_delivery.rs` | `deliver_to_origin`, `NO_REPLY` suppression, transcript append. |
+| `scheduler/run_record.rs` | Persisting a run, one-shot handling, the high-frequency warning. |
+| [`origin.rs`](./origin.rs) | `JobOrigin` capture from the live turn, the approval-gate exemption, and the turn origin a run executes under. |
+| [`job_builder.rs`](./job_builder.rs) | `create_agent_job`: origin-aware defaults and delivery validation shared by the `cron` and `schedule` tools. |
+| [`channel_bridge.rs`](./channel_bridge.rs) | Cron's handle on the channel runtime: per-chat history and live channels, registered by `start_channels`. |
+| [`bus.rs`](./bus.rs) | `CronDeliverySubscriber`, which sends `announce` output to a channel. |
+| [`seed.rs`](./seed.rs) | Built-in proactive jobs and pruning of retired rows. |
+| `system_jobs.rs` | `system:<name>` flow rows owned by other domains. |
+| [`tools.rs`](./tools.rs), `tools/` | Agent tools. See [tools/README.md](tools/README.md). |
+| `scheduler_gate/` | Host power and CPU policy for background LLM work. Unrelated to the poll loop. See [scheduler_gate/README.md](scheduler_gate/README.md). |
+
+## Key types and entry points
+
+- `CronJob`, `CronJobPatch`, `CronRun`, `Schedule` (`Cron` / `At` / `Every`),
+  `JobType` (`Shell` / `Agent` / `Flow`), `SessionTarget` (`Isolated` /
+  `Current` / `Main`), `JobOrigin` (`Web` / `Channel`), `DeliveryConfig`,
+  `DeliveryStatus`, `ActiveHours`: the job and run model, defined in
+  `tinyflows_schedule::types` and re-exported from `mod.rs`.
+  `delivery_mode` holds the mode string constants.
+- `AgentJobSpec`: the store's agent-job creation spec (from `tinyflows_sqlite`),
+  used by `add_agent_job_from_spec`.
+- `scheduler::run(config)`: the service entry point.
+- `scheduler::execute_job_now` and `scheduler::deliver_job`: what Run Now uses
+  to execute and deliver outside the loop.
+- `add_job`, `add_shell_job`, `add_agent_job`, `add_agent_job_with_definition`,
+  `add_agent_job_from_spec`, `add_flow_schedule_job`, `find_flow_schedule_job`,
+  `get_job`, `list_jobs`, `update_job`, `remove_job`, `due_jobs`, `list_runs`,
+  `record_run`, `record_run_with_delivery`: store operations in `store.rs`.
+- `schedule_cron_expression`, `next_run_for_schedule`, `normalize_expression`,
+  `validate_schedule`, `validate_agent_schedule`, `runs_closer_than`,
+  `TooFrequent`, `MIN_AGENT_JOB_INTERVAL`: pure schedule logic re-exported
+  from `tinyflows_schedule::schedule`.
+- `job_builder::create_agent_job`: the creation path for agent jobs from a
+  conversation.
+- `origin::current_job_origin`: the origin of the live turn, if any.
+- `system_jobs::ensure_system_job` and `ensure_memory_jobs`: seeding rows for
+  domain-owned recurring work.
+- `tools::CronTool` / `CRON_TOOL_NAME`: the one cron tool the model sees, over
+  the hidden `CronAddTool`, `CronListTool`, `CronUpdateTool`,
+  `CronRemoveTool`, `CronRunTool` and `CronRunsTool`.
+
+## RPC surface
+
+Namespace `cron`, registered through `all_cron_registered_controllers` in
+[`core/all.rs`](../core/all.rs):
+
+| Method | What it does |
+| --- | --- |
+| `cron.add` | Create a job (shell or agent, schedule, prompt, session target, model, agent id, delivery, `delete_after_run`, origin). |
+| `cron.list` | List all jobs. |
+| `cron.update` | Patch a job. |
+| `cron.remove` | Delete a job. |
+| `cron.run` | Run Now. Records a `queued` placeholder run, returns at once, then executes in the background through `execute_job_now` and `deliver_job` and records the real result. Refused when `cron.enabled` is false or the job is already running. |
+| `cron.runs` | Run history for a job. |
 
 ## Event bus
 
-Cron publishes through `core/bus.rs` using variants declared in `core/events.rs`: `DomainEvent::CronJobTriggered` and `CronJobCompleted` (around each execution), `CronDeliveryRequested` and `ProactiveMessageRequested` (from `deliver_if_configured`; the latter is shared with the proactive-message pipeline), and `FlowScheduleTick`.
+Cron publishes, through [`core/bus.rs`](../core/bus.rs), these `DomainEvent` variants from
+[`core/events.rs`](../core/events.rs):
 
-## Calls into
+- `SystemStartup` and `HealthChanged` for component `scheduler`.
+- `CronJobTriggered` and `CronJobCompleted` around each scheduled execution
+  (output truncated to 512 characters).
+- `ProactiveMessageRequested` (`proactive` delivery), consumed by
+  `channels::proactive`.
+- `CronDeliveryRequested` (`announce` delivery), consumed by
+  `cron::bus::CronDeliverySubscriber`.
+- `FlowScheduleTick`, consumed by `flows::bus::FlowTriggerSubscriber`.
+- `CronSystemJobDue`, consumed by `memory::bus`.
 
-- `crates/openhuman-core/src/agent/`: `Agent::from_config_for_agent` for agent jobs and `agent::harness::definition::AgentDefinitionRegistry` to resolve `agent_id`.
-- `crates/openhuman-core/src/security/`: `SecurityPolicy::from_config` gates shell jobs.
-- `crates/openhuman-core/src/config/`: `Config` provides poll interval, workspace dir, autonomy policy, retry counts, and per-job model overrides.
-- `crates/openhuman-core/src/inference/`: `provider::create_chat_model_with_model_id` resolves workload-hint model specs on agent-definition overrides.
-- `crates/openhuman-core/src/platform/health/`: `health::bus::register_health_subscriber` on scheduler startup.
-- `crates/openhuman-core/src/core/bus.rs` / `core/events.rs`: the process-wide event bus and `DomainEvent` variants cron publishes.
+## Who calls in
 
-## Called by
+- `core/runtime/services.rs` spawns `scheduler::run` as the `cron` background
+  service when `cron.enabled` is set, after flows reconcile their schedule
+  triggers. It also calls `ensure_memory_jobs` and `prune_retired_jobs`.
+- `core/all.rs` registers the controllers.
+- [`tools/impl/system/schedule.rs`](../tools/impl/system/schedule.rs) is the `schedule` tool, built on the same
+  store functions and `create_agent_job`.
+- [`channels/runtime/startup/start_channels.rs`](../channels/runtime/startup/start_channels.rs) registers
+  `CronDeliverySubscriber` and the channel bridge.
+- [`flows/ops/triggers.rs`](../flows/ops/triggers.rs) creates and removes flow schedule rows
+  (`bind_schedule_trigger` / `unbind_schedule_trigger`), idempotent through
+  `find_flow_schedule_job`. These rows are never created by the `cron_add`
+  tool, whose `job_type` is `shell` or `agent` only.
+- `config/ops/ui.rs` calls `seed_proactive_agents`;
+  `security/credentials/ops/user_scope.rs` calls `prune_retired_jobs` and
+  `ensure_memory_jobs` on user-scope activation.
 
-- `crates/openhuman-core/src/core/runtime/services.rs`: spawns `cron::scheduler::run` as the `cron` background service (`ServiceSet::cron`).
-- `crates/openhuman-core/src/core/all.rs`: controller registry wires `all_cron_registered_controllers`.
-- `crates/openhuman-core/src/tools/impl/system/schedule.rs`: the `schedule` tool exposes recurring and one-shot scheduling to agents on top of `cron::{list_jobs, get_job, …}`.
-- `crates/openhuman-core/src/channels/runtime/startup/start_channels.rs`: registers `cron::bus::CronDeliverySubscriber` with the channel map; `channels::proactive::ProactiveMessageSubscriber` handles `ProactiveMessageRequested`.
-- `crates/openhuman-core/src/flows/ops/triggers.rs`: `bind_schedule_trigger` / `unbind_schedule_trigger` create and remove flow schedule jobs; `flows::bus::FlowTriggerSubscriber` consumes `FlowScheduleTick`.
-- `crates/openhuman-core/src/config/ops/ui.rs`, `desktop/app_state/`, `security/credentials/`: call `seed::seed_proactive_agents` / `seed::prune_retired_jobs`.
+## Boundaries
 
-## Delivery modes
+- The schedule model, next-run computation, cadence floor and the SQLite store
+  (schema, CRUD, output truncation, pruning) belong to the `tinyflows`
+  submodule ([`vendor/tinyflows/crates/tinyflows-schedule`](../../../../vendor/tinyflows/crates/tinyflows-schedule/) and
+  `tinyflows-sqlite`). Change them there, not in `store.rs`.
+- Shell sandboxing policy is `security::SecurityPolicy`. Cron only asks it.
+- Flow execution is the `flows` domain. Cron only emits `FlowScheduleTick`.
+- Channel construction and sending belong to `channels`. Cron reaches channels
+  through events and `channel_bridge`.
+- Memory's background work is memory's. Cron only fires the system job.
+- Agent construction, definitions and the approval gate belong to `agent`.
 
-A cron job's `DeliveryConfig.mode` decides where its output ends up. `DeliveryConfig::default()` is `none`; the `cron` / `schedule` tools substitute `origin` when an agent job is created inside a conversation and `proactive` otherwise.
+## Gotchas
 
-- `proactive`: `deliver_if_configured` publishes
-  `DomainEvent::ProactiveMessageRequested`. The proactive subscriber
-  (`channels::proactive`) always pushes to the in-app web stream and additionally
-  mirrors to `channels_config.active_channel` when set. Use for jobs whose
-  natural surface is the desktop UI (briefings, app-pushed notifications).
-- `announce`: explicit channel-targeted delivery. Requires `channel` and
-  `to`; publishes `DomainEvent::CronDeliveryRequested` and lands only in that
-  channel. The agent layer should pick this mode when a cron is created from a
-  non-web channel (Telegram, Discord, Slack, …) so the reminder ends up where
-  the user asked for it. The `cron_add` tool validates `to` against the
-  channel's `allowed_users` to reject cross-tenant targets.
-- `origin`: commit the run's reply into the conversation that created the job
-  and send it there once (`scheduler/origin_delivery.rs`). Requires
-  `CronJob.origin`. Output that is blank or exactly `NO_REPLY` is
-  `Suppressed`: nothing is sent and no alert is raised. A web origin stores the
-  reply in the origin thread under `run_reply_message_id("cron:<job>:<run>")`,
-  then emits the web-channel `proactive_message` event with `thread_id` set to
-  that thread and `request_id = "cron:<job>:<run>"`, then appends it to the
-  thread's agent transcript (`append_to_origin_transcript`, idempotent on the
-  same key, waits out a live turn of the session). A channel origin sends to
-  the origin's `reply_target` through `cron::channel_bridge` and appends the
-  reply to that chat's `conversation_histories` entry. Each run records a
-  `DeliveryStatus` (`delivered` / `suppressed` / `failed` / `not_requested`)
-  on its `CronRun`.
-- `none`: silent; output is stored in `last_output` only.
-
-## Origin and session targets
-
-A job created by an agent inside a conversation records that conversation
-(`JobOrigin::Web { thread_id }` from a `WebChat` turn, `JobOrigin::Channel {
-channel, reply_target, history_key, sender }` from the channel processor's
-`ExternalChannel` turn; other origins record none). With an origin, an agent job
-defaults to `session_target: current` and `delivery: origin`; without one it
-keeps `isolated` + `proactive`. An explicit `delivery` or `session_target`
-always wins, and an `announce` whose `to` is the origin's reply target on the
-same channel skips the `allowed_users` check.
-
-- `isolated`: a fresh run, prompt `[cron:<id> <name>] <prompt>`.
-- `current`: a fresh run whose prompt carries an unattended-run preamble
-  (final reply is delivered as-is; `NO_REPLY` skips delivery) and a bounded
-  tail of the origin conversation (last 10 messages, 1400 characters, newest
-  kept; web from the thread store, channel from the chat history).
-- `main`: runs like `current` for now (not yet a distinct main session).
-
-**Trust.** A job with a channel origin runs under
-`AgentTurnOrigin::ExternalChannel { message_id: "cron:<job>:<run>" }`, not
-`TrustedAutomation`, so its external-effect tools stay gated like its creator's.
-Creating such a job needs no approval only when the turn is a channel
-conversation, the job is an agent job with no shell `command`, and its delivery
-resolves to that same conversation (no `delivery`, `origin`, or a matching
-`announce`); `CronAddTool` / `ScheduleTool` express that through
-`external_effect_with_args`. Everything else (shell jobs, other recipients,
-`proactive`/`none`, non-channel turns) is gated as before (GHSA-f46p-6vf9-64mm).
-Web-origin and origin-less jobs keep `TrustedAutomation { Cron }`.
-
-The scheduler loop skips a job already in `ACTIVE_RUNS` (and holds the claim
-for scheduled runs), so Run Now and a tick never overlap. The `[Channel context]`
-block in `channels/runtime/dispatch/helpers.rs` only tells the model that
-reminders created in the chat come back to it automatically.
-
-## Agent-job minimum interval
-
-An agent job is a full inference turn per run, so `schedule.rs` enforces a floor
-of `MIN_AGENT_JOB_INTERVAL` (5 minutes) between consecutive runs of an agent job.
-`validate_agent_schedule` is applied in `store.rs` by `add_agent_job*` and by
-`update_job` whenever an agent job's schedule is set, so every creation path
-(`cron_add` tool, `cron.add` / `cron.update` RPC, the `schedule` tool) gets the
-same rejection, and the message names the two runs that would be too close.
-Shell and flow jobs are not subject to it.
-
-The check is `runs_closer_than`: it walks consecutive occurrences (bounded) and
-reports the first pair closer than the floor, so an irregular expression such as
-`1,2,30 * * * *` is judged by its tightest gap and the verdict does not depend
-on the instant it runs at. Wrap-around gaps count: `*/7 * * * *` fires at :56
-and then at :00. Rows that predate the floor keep running; the scheduler logs
-`Cron agent job '<id>' is scheduled more frequently than every 5 minutes` with
-that evidence on each run instead (#6158).
+- `scheduler_gate` lives here for historical reasons, but the poll loop does not
+  consult it. Its consumers are `modules/memory_host.rs` and
+  [`security/credentials/`](../security/credentials/).
+- Dispatch is non-blocking: each due job is spawned onto a `JoinSet` bounded by
+  `scheduler.max_concurrent` (`scheduler/dispatch.rs`), so one long job does not hold
+  up the poll loop. A job is claimed (`scheduler/in_flight.rs`, shared with Run Now and
+  the `cron_run` tool) from dispatch until its run is persisted, and the scheduler never
+  dispatches a claimed job. A recurring job's `next_run` is advanced at dispatch
+  (at-most-once per slot), then recomputed from the finish time as before.
+- Per-job `JobPolicy { retries, single_flight }` lives in a host-owned
+  `cron_job_policies` table in `jobs.db` (`policy.rs`); `CronJob` belongs to
+  `tinyflows-schedule`. No row is the default policy. `retries: Some(0)` means exactly one
+  attempt; with `single_flight` a slot that comes due mid-run is recorded as a `skipped`
+  run, and Run Now refuses while the job runs. The table stays in SQLite even with a
+  storage backend configured.
+- System jobs: `system_job_handlers::register(name, handler)` installs an awaited in-process
+  handler; the scheduler still publishes `CronSystemJobDue`, then records the handler's
+  result as the run's status. With no handler, behaviour is unchanged.
+- Host agents: `agent::host_agents` is a process-wide `HostAgentResolver`. Cron agent jobs
+  (`scheduler/agent_run.rs`) and workflow `agent` nodes consult it before the registries and run
+  as the embedder's agent (its prompt, host tools and own `CoreContext`).
+- A cron agent turn must suppress transcript autoload, or it resumes an
+  unrelated conversation. Any new cron path that builds a session host needs
+  `start_cron_turn_clean`.
+- `Schedule::At` jobs are always terminated after one run. Rescheduling would
+  leave `next_run` in the past and refire the job every poll.
+- Agent-job failure text shown to users is always a fixed string. Do not put
+  the raw error into notifications or chat; it can carry provider URLs.
 
 ## Tests
 
-- Unit: `ops_tests.rs`, `scheduler_tests.rs` (shared fixtures; `#[path]`-includes `scheduler_profile_and_shell_tests.rs`, `scheduler_halt_and_persist_tests.rs`, `scheduler_classifier_and_delivery_tests.rs`, `scheduler_frequency_tests.rs`), `store_tests.rs` (Config-to-options mapping; the store itself is tested in `tinyflows-sqlite`), `schedule_tests.rs`, `types_tests.rs`, `seed_tests.rs`, `bus_tests.rs`.
-- Schema/parsing coverage lives in `schemas_tests.rs`.
-- Tool coverage: `tools/{add,list,remove,run,runs,update}_tests.rs` (announce-mode `allowed_users` checks live in `add_tests.rs`) and `tools/collapsed_tests.rs` (action enum, merged schema, per-action permission resolution).
+Tests sit beside their modules as `<module>_tests.rs` (for example
+[`scheduler_tests.rs`](./scheduler_tests.rs), which pulls in the `scheduler_*_tests.rs` files, plus
+[`store_tests.rs`](./store_tests.rs), [`ops_tests.rs`](./ops_tests.rs), [`origin_tests.rs`](./origin_tests.rs), [`job_builder_tests.rs`](./job_builder_tests.rs),
+[`system_jobs_tests.rs`](./system_jobs_tests.rs), `scheduler/origin_*_tests.rs` and the per-tool files in
+`tools/`). The store itself is tested in `tinyflows-sqlite`.
+
+```bash
+cargo test -p openhuman cron::
+pnpm debug rust cron
+```
+
+## Further reading
+
+- [Parent module README](../../README.md)
+- [Cron and scheduling](../../../../gitbooks/features/native-tools/cron.md)
+- [Workflows](../../../../gitbooks/features/workflows.md)

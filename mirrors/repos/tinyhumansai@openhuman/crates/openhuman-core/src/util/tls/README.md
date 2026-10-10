@@ -31,7 +31,7 @@ Every HTTP-client construction site that talks to external HTTPS endpoints, incl
 
 - `crates/openhuman-core/src/config/schema/proxy.rs`: proxy-aware client builders (primary and fallback).
 - `crates/openhuman-core/src/integrations/client/construct.rs` and `crates/openhuman-core/src/integrations/composio/client/connections.rs`.
-- `crates/openhuman-core/src/search/tools/*.rs` (`tavily`, `exa`, `brave`, `searxng`, `querit`, `seltz`) — search-tool HTTP clients.
+- `crates/openhuman-core/src/search/tools/*.rs` (`tavily`, `exa`, `brave`, `searxng`, `querit`, `seltz`): search-tool HTTP clients.
 - `crates/openhuman-core/src/desktop/app_state/ops/current_user_fetch.rs`.
 - `crates/openhuman-tinyhumans/src/backend/headers.rs` (REST API client profiles for the TinyHumans backend transport).
 
@@ -42,3 +42,9 @@ Declared via `pub mod tls;` in `crates/openhuman-core/src/util/mod.rs`; not re-e
 - Backend choice is compile-time (`cfg(target_os = ...)`), not runtime. You cannot switch backends at runtime without recompiling for the target.
 - Always start from `tls_client_builder()` rather than `reqwest::Client::builder()` directly, otherwise Windows corporate-CA environments will fail with `UnknownIssuer`.
 - The doctest in the docstring is `rust,ignore`.
+
+## Further reading
+
+- [Parent module (`util`)](../README.md)
+- [Architecture overview](../../../../../gitbooks/developing/architecture.md)
+- [Testing strategy](../../../../../gitbooks/developing/testing-strategy.md)

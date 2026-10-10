@@ -1,6 +1,6 @@
 # workspace
 
-Owns workspace layout bootstrap and the editable "Persona Pack" prompt files (`SOUL.md`, `IDENTITY.md`) that drive the agent's personality. Two concerns live here: (1) `init_workspace`, the one-shot setup that creates the default directory tree and copies the bundled prompt/skills files into a fresh workspace (backs CLI `init`-style entrypoints); and (2) read/edit/reset RPCs over a tightly allowlisted set of persona files, so the settings UI can round-trip those prompts without ever exposing an arbitrary path under the workspace. It also carries an unrelated file-watcher state store (see `state.rs` below).
+Owns workspace layout bootstrap and the editable "Persona Pack" prompt files (`SOUL.md`, `IDENTITY.md`) that drive the agent's personality. Two concerns live here: (1) `init_workspace`, the one-shot setup that creates the default directory tree and copies the bundled prompt/skills files into a fresh workspace (backs CLI `init`-style entrypoints); and (2) read/edit/reset RPCs over a tightly allowlisted set of persona files, so the settings UI can round-trip those prompts without ever exposing an arbitrary path under the workspace. It also carries an unrelated file-watcher state store (see [`state.rs`](./state.rs) below).
 
 ## Responsibilities
 
@@ -15,11 +15,11 @@ Owns workspace layout bootstrap and the editable "Persona Pack" prompt files (`S
 
 | File | Role |
 | --- | --- |
-| `crates/openhuman-core/src/config/workspace/mod.rs` | Export-focused. Re-exports `ops::*` and the RPC controller-schema pair (`all_workspace_controller_schemas` / `all_workspace_registered_controllers`). |
-| `crates/openhuman-core/src/config/workspace/ops.rs` | `init_workspace(force)` bootstrap logic, the `BOOTSTRAP_FILES` table (`SOUL.md`, `IDENTITY.md`), `bundled_default_contents` (the editable allowlist + reset source of truth), and `ensure_workspace_file`. |
-| `crates/openhuman-core/src/config/workspace/rpc.rs` | Pure-domain persona file API: `WorkspaceFile` type, `read_workspace_file` / `write_workspace_file` / `reset_workspace_file`, `MAX_WORKSPACE_FILE_BYTES`, allowlist enforcement (`ensure_editable`). Returns `Outcome<WorkspaceFile>`. |
-| `crates/openhuman-core/src/config/workspace/schemas.rs` | Controller schemas + `handle_*` fns delegating to `rpc.rs`; loads config to resolve `workspace_dir`. |
-| `crates/openhuman-core/src/config/workspace/tools.rs` | LLM-callable wrappers over the persona-file RPCs: `WorkspaceReadPersonaTool` (default-on), `WorkspaceUpdatePersonaTool`, `WorkspaceResetPersonaTool`, and `WorkspaceInitTool` (all three mutators default-off, gated by the `workspace_manage` toggle in `tools/user_filter.rs`). |
+| [`crates/openhuman-core/src/config/workspace/mod.rs`](./mod.rs) | Export-focused. Re-exports `ops::*` and the RPC controller-schema pair (`all_workspace_controller_schemas` / `all_workspace_registered_controllers`). |
+| [`crates/openhuman-core/src/config/workspace/ops.rs`](./ops.rs) | `init_workspace(force)` bootstrap logic, the `BOOTSTRAP_FILES` table (`SOUL.md`, `IDENTITY.md`), `bundled_default_contents` (the editable allowlist + reset source of truth), and `ensure_workspace_file`. |
+| [`crates/openhuman-core/src/config/workspace/rpc.rs`](./rpc.rs) | Pure-domain persona file API: `WorkspaceFile` type, `read_workspace_file` / `write_workspace_file` / `reset_workspace_file`, `MAX_WORKSPACE_FILE_BYTES`, allowlist enforcement (`ensure_editable`). Returns `Outcome<WorkspaceFile>`. |
+| [`crates/openhuman-core/src/config/workspace/schemas.rs`](./schemas.rs) | Controller schemas + `handle_*` fns delegating to `rpc.rs`; loads config to resolve `workspace_dir`. |
+| [`crates/openhuman-core/src/config/workspace/tools.rs`](./tools.rs) | LLM-callable wrappers over the persona-file RPCs: `WorkspaceReadPersonaTool` (default-on), `WorkspaceUpdatePersonaTool`, `WorkspaceResetPersonaTool`, and `WorkspaceInitTool` (all three mutators default-off, gated by the `workspace_manage` toggle in [`tools/user_filter.rs`](../../tools/user_filter.rs)). |
 | `crates/openhuman-core/src/config/workspace/state.rs` | `WatcherStateStore`, a SQLite-backed `path -> last_mtime_secs` table for a vault file watcher, so it can skip re-ingesting unchanged files after a restart. Not otherwise wired to the persona/bootstrap concerns above; currently has no other caller in the tree. |
 
 ## Public surface
@@ -42,14 +42,14 @@ Namespace `workspace`; three controllers (defined in `schemas.rs`, all return th
 | `openhuman.workspace_file_write` | `filename`, `contents` | Overwrite an editable persona file (size-capped server-side). |
 | `openhuman.workspace_file_reset` | `filename` | Restore an editable persona file to its bundled default. |
 
-Handlers resolve `workspace_dir` from config (`config_rpc::load_config_with_timeout`), trim the filename, delegate to `rpc.rs`, and serialize via `Outcome::into_cli_compatible_json`. Unknown function names yield an `unknown` schema. Wired into the global registry in `crates/openhuman-core/src/core/all.rs`.
+Handlers resolve `workspace_dir` from config (`config_rpc::load_config_with_timeout`), trim the filename, delegate to `rpc.rs`, and serialize via `Outcome::into_cli_compatible_json`. Unknown function names yield an `unknown` schema. Wired into the global registry in [`crates/openhuman-core/src/core/all.rs`](../../core/all.rs).
 
 ## Persistence
 
 No dedicated `store.rs`. State is plain files under the configured `workspace_dir`:
 
 - Directories: `memory/`, `sessions/`, `state/`, `cron/`.
-- Files: `SOUL.md`, `IDENTITY.md` (bundled-prompt copies), `skills/README.md`.
+- Files: `SOUL.md`, `IDENTITY.md` (bundled-prompt copies), [`skills/README.md`](../../skills/README.md).
 
 The editable surface is restricted to the `BOOTSTRAP_FILES` allowlist (`SOUL.md`, `IDENTITY.md`); the workspace dir is created on demand by write/reset.
 
@@ -66,7 +66,7 @@ The editable surface is restricted to the `BOOTSTRAP_FILES` allowlist (`SOUL.md`
 ## Used by
 
 - `crates/openhuman-core/src/core/all.rs` extends the global controller and schema registries with the workspace controllers (the only external consumer found in-tree). The CLI/JSON-RPC surface reaches `init_workspace` and the persona RPCs through that registry rather than direct calls.
-- `crates/openhuman-core/src/tools/mod.rs` re-exports `workspace::tools::*` into the agent tool catalog.
+- [`crates/openhuman-core/src/tools/mod.rs`](../../tools/mod.rs) re-exports `workspace::tools::*` into the agent tool catalog.
 
 ## Notes / gotchas
 
@@ -75,3 +75,9 @@ The editable surface is restricted to the `BOOTSTRAP_FILES` allowlist (`SOUL.md`
 - `WorkspaceFile` intentionally omits the absolute on-disk path to avoid leaking host filesystem layout over RPC.
 - The persona/bootstrap surface has no `store.rs`, `bus.rs`, or `types.rs`: no event-bus subscribers, no persisted in-memory state beyond plain files. `tools.rs` and `state.rs` are the exceptions to an otherwise stateless-handler domain.
 - The module's own `init_workspace` is unrelated to `keyring::init_workspace` (same name, different domain).
+
+## Further reading
+
+- [Parent module README](../README.md)
+- [Settings](../../../../../gitbooks/features/settings.md)
+- [Deep architecture reference](../../../../../gitbooks/developing/architecture.md)

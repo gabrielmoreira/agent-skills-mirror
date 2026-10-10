@@ -293,7 +293,7 @@ A record of short name to catalog entry (`schema/model-catalog.ts`). The canonic
 {
   "models": {
     "opus": { "model": "anthropic/claude-opus-5-5", "reasoning": "max" },
-    "fast": { "model": "anthropic/claude-haiku-4-5" }
+    "fast": { "model": "anthropic/claude-haiku-5-5" }
   },
   "categories": {
     "deep-low": { "model": "opus" },          // resolves to anthropic/claude-opus-5-5 at reasoning max

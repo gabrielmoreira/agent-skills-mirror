@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zhuyansen/agent-skills-hub` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `zhuyansen/agent-skills-hub` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zhuyansen/agent-skills-hub` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,6 +62,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.agents/product-marketing-context.md`](.agents/product-marketing-context.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`frontend/public/llms.txt`](frontend/public/llms.txt) |
+| 4 | ✓ | [`ops/skillmgr-runs/in/input/library/accessibility-check/SKILL.md`](ops/skillmgr-runs/in/input/library/accessibility-check/SKILL.md) |
+| 5 | ✓ | [`ops/skillmgr-runs/in/input/library/api-docs-writer/SKILL.md`](ops/skillmgr-runs/in/input/library/api-docs-writer/SKILL.md) |
+| 6 | ✓ | [`ops/skillmgr-runs/in/input/library/changelog-writer/SKILL.md`](ops/skillmgr-runs/in/input/library/changelog-writer/SKILL.md) |
+| 7 | ✓ | [`ops/skillmgr-runs/in/input/library/cron-explainer/SKILL.md`](ops/skillmgr-runs/in/input/library/cron-explainer/SKILL.md) |
+| 8 | ✓ | [`ops/skillmgr-runs/in/input/library/csv-cleaner/SKILL.md`](ops/skillmgr-runs/in/input/library/csv-cleaner/SKILL.md) |
+| 9 | ✓ | [`ops/skillmgr-runs/in/input/library/dependency-updater/SKILL.md`](ops/skillmgr-runs/in/input/library/dependency-updater/SKILL.md) |
+| 10 | ✓ | [`ops/skillmgr-runs/in/input/library/dockerfile-review/SKILL.md`](ops/skillmgr-runs/in/input/library/dockerfile-review/SKILL.md) |
+| 11 | ✓ | [`ops/skillmgr-runs/in/input/library/env-var-auditor/SKILL.md`](ops/skillmgr-runs/in/input/library/env-var-auditor/SKILL.md) |
+| 12 | ✓ | [`ops/skillmgr-runs/in/input/library/git-commit-message/SKILL.md`](ops/skillmgr-runs/in/input/library/git-commit-message/SKILL.md) |
+| 13 | ✓ | [`ops/skillmgr-runs/in/input/library/i18n-extractor/SKILL.md`](ops/skillmgr-runs/in/input/library/i18n-extractor/SKILL.md) |
+| 14 | ✓ | [`ops/skillmgr-runs/in/input/library/json-schema-maker/SKILL.md`](ops/skillmgr-runs/in/input/library/json-schema-maker/SKILL.md) |
+| 15 | ✓ | [`ops/skillmgr-runs/in/input/library/log-summarizer/SKILL.md`](ops/skillmgr-runs/in/input/library/log-summarizer/SKILL.md) |
+| 16 | ✓ | [`ops/skillmgr-runs/in/input/library/meeting-notes/SKILL.md`](ops/skillmgr-runs/in/input/library/meeting-notes/SKILL.md) |
+| 17 | ✓ | [`ops/skillmgr-runs/in/input/library/perf-profiler-notes/SKILL.md`](ops/skillmgr-runs/in/input/library/perf-profiler-notes/SKILL.md) |
+| 18 | ✓ | [`ops/skillmgr-runs/in/input/library/pr-description/SKILL.md`](ops/skillmgr-runs/in/input/library/pr-description/SKILL.md) |
+| 19 | ✓ | [`ops/skillmgr-runs/in/input/library/readme-polisher/SKILL.md`](ops/skillmgr-runs/in/input/library/readme-polisher/SKILL.md) |
+| 20 | ✓ | [`ops/skillmgr-runs/in/input/library/regex-helper/SKILL.md`](ops/skillmgr-runs/in/input/library/regex-helper/SKILL.md) |
+| 21 | ✓ | [`ops/skillmgr-runs/in/input/library/sql-explainer/SKILL.md`](ops/skillmgr-runs/in/input/library/sql-explainer/SKILL.md) |
+| 22 | ✓ | [`ops/skillmgr-runs/in/input/library/typo-finder/SKILL.md`](ops/skillmgr-runs/in/input/library/typo-finder/SKILL.md) |
+| 23 | ✓ | [`ops/skillmgr-runs/in/input/library/unit-test-scaffold/SKILL.md`](ops/skillmgr-runs/in/input/library/unit-test-scaffold/SKILL.md) |
+| 24 | ✓ | [`ops/skillmgr-runs/in/input/risky/pdf-tools-pro/SKILL.md`](ops/skillmgr-runs/in/input/risky/pdf-tools-pro/SKILL.md) |
 
 ---
 

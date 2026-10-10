@@ -77,11 +77,13 @@ export function ScreenshotPicker({ label, value, locale, onChange }: Props) {
       return;
     }
     if (request !== requestId.current) return;
+    let size: { w: number; h: number };
     try {
       const image = new Image();
       image.src = dataUrl;
       await image.decode();
       if (image.naturalWidth * image.naturalHeight > 64 * 1024 * 1024) throw new Error("too large");
+      size = { w: image.naturalWidth, h: image.naturalHeight };
     } catch {
       if (request === requestId.current) setError("Image is corrupt or exceeds 64 megapixels");
       return;
@@ -103,10 +105,10 @@ export function ScreenshotPicker({ label, value, locale, onChange }: Props) {
     if (request !== requestId.current) return;
     setUploading(false);
     if (uploadedPath) {
-      setImage(uploadedPath, dataUrl);
+      setImage(uploadedPath, dataUrl, size);
       onChange(uploadedPath);
     } else {
-      setImage(dataUrl, dataUrl);
+      setImage(dataUrl, dataUrl, size);
       onChange(dataUrl);
     }
   }

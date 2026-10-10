@@ -21,6 +21,12 @@ open; each decision reads the current schema version and quarantine row in one
 SQLite snapshot and validates any recorded file generation. WAL safety, quarantine authority, and recovery
 behavior are unchanged.
 
+Managed writes publish committed facts before their public observers. Private
+receipts distinguish explicit absence from incomplete coverage and preserve known
+commits independently of reply delivery. See
+[committed facts and completeness](/reference/database-schemas/worker-access#committed-facts-and-completeness)
+for ordering, rollback, and the writer families that still retain native guards.
+
 Schema-version, integrity, canonical-index, and table-existence checks belong to open/admission and the migration owner after migrations; runtime paths must carry admitted schema facts with the handle, never re-query them, and use fresh `PRAGMA data_version` checks to observe foreign commits on the next unpinned read while preserving active SQLite snapshots. Existing per-call checks are legacy and must be migrated when touched.
 
 Shared-state and agent read-only connections reuse bounded prepared statements under their native connection lifecycle. Prepared-statement reuse alone does not retain query results. Read admission shares one freshness check within its synchronous operation; schema-fact lookups reuse the admitted handle without checking again. Write transactions refresh after acquiring `BEGIN`, before consuming those facts. Explicit fresh checks always execute, even inside another read operation. A foreign commit compares the schema and user versions before retaining or replacing schema facts, preserving active SQLite snapshots. Closing or replacing the connection clears retained statements and facts.
@@ -142,7 +148,8 @@ Canonical main-key policy reads reuse a connection-owned value at the current re
 
 The Gateway does not schedule daily full-database scans. Admission-requested
 background checks stay limited to the requested agent database: `quick_check`
-for clean restart proof, or a full check after proven same-boot process death.
+for clean restart proof, or a full check after proven same-boot process death or
+native WAL admission without a verification receipt while the verifier is running.
 See [integrity admission and Doctor maintenance](/reference/database-schemas/integrity-and-recovery#integrity-checks)
 for the provenance requirements and operator-requested verification.
 

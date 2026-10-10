@@ -219,8 +219,24 @@ does not classify paths or patches for config or stored-data changes. Defects,
 security concerns, missing proof, and undecided product or plugin API direction
 still block. Readiness does not itself grant merge authority.
 
-PR reviews load `instructions/pr-review-rules.md` as the prompt's
-`Review Rules` section and record three typed assessments: `productReview`
+The review prompt keeps evidence-backed implementation choices with the PR owner:
+individually source-verified oracle/snapshot/baseline exceptions for tool-owned
+metadata that preserve exact user data without masking regressions; recovery
+removal of only invalid or unreachable data after a verified backup,
+with counts reported and valid data untouched; and ownership, ordering, or
+internal transaction/lifecycle choices within an authorized maintainer
+repair-and-land request. The PR body records the choice and evidence, which the
+review verifies. These choices do not request design acceptance or create a
+`Resolve maintainer decision` item, including through product review or risk
+fields. Broad exceptions and missing data-model compatibility proof still need
+PR-owner action. Unresolved new config options, breaking public API/SDK changes,
+new schemas/tables, changed retention of valid data, and paid services retain
+the maintainer-decision requirement. This changes reviewer guidance only;
+OpenClaw Bay's observer fields, routes, and controls are unchanged.
+The OpenClaw profile supplies the Doctor examples for these choices.
+
+PR reviews use `prompts/review-item-pr.md`, whose `Review Rules` section
+guides three typed assessments: `productReview`
 (kind, user problem, fix scope, `worthIt`), `provenance` (the introducing commit
 or PR and stated reason for each changed behavior), and `testingReview` (proof
 path, low-value tests, missing end-to-end scenario). `worthIt: no` and
@@ -817,7 +833,7 @@ pnpm run apply-decisions -- --target-repo openclaw/openclaw --sync-comments-only
 
 Hosted Codex issue/PR review tools use the `clawsweeper-review` permission profile in
 `.github/actions/setup-codex/review-permissions.toml`, owned by ClawSweeper
-maintainers and verified with Codex 0.159.3. Update this guidance when
+maintainers and verified with Codex 0.162.1. Update this guidance when
 the pinned CLI, profile, credential handling, or setup smoke changes. The active profile
 extends read-only filesystem access and enables the managed proxy in limited
 mode for its explicit GitHub, npm, Node, MDN, and OpenClaw documentation hosts.

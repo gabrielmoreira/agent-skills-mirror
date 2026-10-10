@@ -1,54 +1,139 @@
-# Media
+# media
 
-Family root for media-related agent tool contracts. Agent-tools-only: no
-controller, store, or bus subscriber is tagged `DomainGroup::Media`; the only
-thing the group tags is the `media_*` tool names (`tool_group()` in
-`crates/openhuman-core/src/tools/ops.rs`), which is what the runtime
-`DomainSet::media` flag filters.
+Family root for media agent tools. Today it has one member,
+[`generation`](generation/README.md), which gives the agent image and video
+generation through OpenRouter, proxied by the TinyHumans backend. The family
+is tools-only: there is no RPC controller, no store, and no bus subscriber.
+The tool registry in `tools/ops.rs` is the only caller.
 
-## Members
+## How it works
 
-- [`generation`](generation/mod.rs), the `media_generate_*` agent tools
-  (image/video via GMI, proxied through the TinyHumans backend). Wired: built
-  by `build_media_tools()` and registered from
-  `crates/openhuman-core/src/tools/ops.rs` under `#[cfg(feature = "media")]`.
-  The builder returns no tools when `integrations::build_client()` yields no
-  `IntegrationClient` for the config.
+The work is split across three owners. This crate holds only the host policy.
 
-## Gate
+```text
+ tools/ops.rs  (#[cfg(feature = "media")], DomainSet::media)
+     |
+     v
+ media::generation::build_media_tools(config, action_dir)
+     |
+     |-- provider::managed_generators(config)
+     |     BackendClient: raw_client(), url_for(OPENROUTER_PROXY_PATH)
+     |       (OPENROUTER_PROXY_PATH = "/agent-integrations/openrouter")
+     |     no backend transport installed -> None -> no media tools
+     |
+     |     MediaGenerators { image, video }, each wrapped in a Guard:
+     |       admit():  local-only enforcement, then egress disclosure
+     |       budget(): refuse a billed submit when managed credits are out
+     |
+     v
+ tinyagents_harness::media::{GenerateImageTool, GenerateVideoTool}
+     renamed media_generate_image / media_generate_video
+     wrapped in MediaArtifactTool (files each output as an artifact)
+   + MediaListModelsTool (media_list_models)
+     |
+     v
+ tinyinference-image / tinyinference-video
+     OpenRouter wire contract, submit -> poll -> download job loop
+```
 
-The family is wholly gated behind the `media` feature
-(`#[cfg(feature = "media")] pub mod media;` in
-`crates/openhuman-core/src/lib.rs`). `media` is a default feature
-(`crates/openhuman-core/Cargo.toml`) and is forwarded explicitly from
-`crates/openhuman-app/Cargo.toml` and listed in
-`scripts/ci/product-features.txt`, per the feature-forwarding rule in
-`AGENTS.md`.
+When the agent calls `media_generate_image`, the TinyAgents tool parses the
+arguments and calls the guarded generator. The guard checks the privacy
+policy and announces the external transfer, checks the managed-credit budget,
+then hands the request to TinyInference, which talks to OpenRouter through the
+backend proxy. The image is written under `<action_dir>/generated-media/`.
+`MediaArtifactTool` then moves each saved file into the visible files folder,
+records it as an artifact (metadata under the workspace's `artifacts/<id>/`),
+and adds an `artifact_id` to that file's entry in the result so the chat UI
+can show a card. Video works the same way, except the generator submits a job
+and polls it (every 5 s, for up to 600 s) before downloading the clip. A
+timed-out video can be resumed with `resume_job_id` instead of paying for a
+new job.
 
-It is a **surface-only** gate: media generation is backend-proxied through the
-shared `IntegrationClient`/`reqwest`, so disabling the feature sheds no exclusive dependency.
+The credential is resolved per request through `resolve_backend_credential`,
+so a desktop session JWT and a library API key both work, and a refreshed
+session is picked up mid-run. Billing and margin stay on the backend; this
+module never charges, it only refuses to submit when
+`integrations::client::budget_gate::managed_tool_budget_exhausted` says the
+account is out of managed credits.
 
-## `generation`
+## Layout
 
-The backend (`/agent-integrations/media-generation/{images,videos,models}` and
-`.../requests/{requestId}`) owns provider keys, billing, and the standardized
-response envelope (`types.rs`). The tools submit a request, poll
-`requests/{id}` every `POLL_INTERVAL` (4 s) until a terminal status or the
-per-modality wait budget elapses, download the resulting media into
-`generated-media/` under the agent's `action_dir` (`GENERATED_MEDIA_DIR` in
-`download.rs`), and return the local artifact paths.
+| Path | What it does |
+| --- | --- |
+| [`mod.rs`](./mod.rs) | Declares [`generation`](./generation). |
+| [`generation/`](generation/README.md) | The three `media_*` tools, the guarded OpenRouter generators, the local-reference policy, and the artifact wrapper. |
 
-Exported tools (`tools.rs`):
+Inside `generation/`:
 
-- `MediaGenerateImageTool`: `name() == "media_generate_image"`
-- `MediaGenerateVideoTool`: `name() == "media_generate_video"`
-- `MediaListModelsTool`: `name() == "media_list_models"`
+| File | What it does |
+| --- | --- |
+| `provider.rs` | `managed_generators`, `MediaGenerators`, `OPENROUTER_PROXY_PATH`, the per-request bearer resolver, and the `Guard` that wraps both generators. |
+| `tools.rs` | `build_media_tools`, `media_tools_from` (the same assembly over any generators, used by tests), `reference_policy`, `MediaListModelsTool`, and the tool-name constants. |
+| `artifact_tool.rs` | `MediaArtifactTool<T>`: runs the inner tool unchanged, then files every reported output as an artifact, or annotates that one entry with `artifact_error` on failure. |
 
-Tests: `generation/download_tests.rs` (file-extension derivation from
-content type, URL, then kind), `generation/tools_tests.rs` (tool schemas and
-metadata, empty-prompt rejection without network, and submit/poll/download
-flows against a `wiremock` server).
+## Key types and entry points
 
-## Related docs
+- `build_media_tools(&Config, &Path)` ([`generation/tools.rs`](./generation/tools.rs)) is the registry
+  entry point. It returns an empty list, not an error, when no backend is
+  reachable.
+- `managed_generators(&Config)` ([`generation/provider.rs`](./generation/provider.rs)) builds
+  `MediaGenerators { image, video }` against the backend proxy.
+- `MediaArtifactTool` ([`generation/artifact_tool.rs`](./generation/artifact_tool.rs)) is the artifact-tracking
+  wrapper, following the same `create_artifact_for_call` /
+  `finalize_artifact` / `fail_artifact` pattern the document and presentation
+  tools use.
+- `IMAGE_TOOL_NAME`, `VIDEO_TOOL_NAME`, `LIST_MODELS_TOOL_NAME` pin the names
+  the `media` tool pack and agent allowlists depend on.
 
-- [`gitbooks/features/native-tools/media-generation.md`](../../../../gitbooks/features/native-tools/media-generation.md)
+## Agent tools
+
+| Tool | Permission | Effect |
+| --- | --- | --- |
+| `media_generate_image` | Execute | Generates or edits images from a prompt, optionally with reference images (URLs or workspace paths). Billed per call. |
+| `media_generate_video` | Execute | Generates a short clip, optionally from a first or last frame. Blocks until ready. Billed per call. |
+| `media_list_models` | ReadOnly | Lists image and/or video models with an optional substring filter. |
+
+## Boundaries
+
+- The OpenRouter wire contract, reference and output-shape standards, and the
+  job loop belong to TinyInference (`tinyinference-image`,
+  `tinyinference-video`, in `vendor/tinyagents/vendor/tinyinference`, upstream
+  `tinyhumansai/tinyinference`), reached through `tinyagents_harness`.
+- Argument parsing, writing files into the workspace, and result wording
+  belong to TinyAgents (`tinyagents_harness::media`, in `vendor/tinyagents`).
+- Provider keys, billing, and the proxy route belong to the backend.
+- Artifact storage belongs to `agent::artifacts`.
+
+## Gotchas
+
+- Two gates. The `media` Cargo feature (in the core's default set, listed in
+  `scripts/ci/product-features.txt`, forwarded from
+  `crates/openhuman-app/Cargo.toml`) decides whether `openhuman::media`
+  compiles. It turns on `tinyagents-harness/media`. At runtime,
+  `DomainSet::media` in `core/runtime/builder.rs` filters any tool whose name
+  starts with `media_` (`tool_group()` in `tools/ops.rs`). Nothing else is
+  tagged `DomainGroup::Media`.
+- Local reference files are limited by `reference_policy` to the action
+  directory or workspace, with no `..` and nothing under an always-forbidden
+  path (credential stores, system roots). Anything else must be an https URL.
+- A core with no backend transport installed (a library host with no
+  TinyHumans connection) has no media tools at all, rather than broken ones.
+
+## Tests
+
+[`generation/tools_tests.rs`](./generation/tools_tests.rs) (tool schemas, reference policy, flows over mock
+generators) and [`generation/artifact_tool_tests.rs`](./generation/artifact_tool_tests.rs) (artifact filing and
+per-entry failure).
+
+```bash
+cargo test -p openhuman media::
+```
+
+User-facing docs:
+[`gitbooks/features/native-tools/media-generation.md`](../../../../gitbooks/features/native-tools/media-generation.md).
+
+## Further reading
+
+- [Image and video generation](../../../../gitbooks/features/native-tools/media-generation.md)
+- [Image tools](../../../../gitbooks/features/native-tools/image-tools.md)
+- [Native tools overview](../../../../gitbooks/features/native-tools/README.md)

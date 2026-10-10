@@ -136,7 +136,7 @@ cd /path/to/parent  # e.g., if repo is at ~/projects/skills, be in ~/projects
 
 | Plugin | Description |
 |--------|-------------|
-| [claude-in-chrome-troubleshooting](plugins/claude-in-chrome-troubleshooting/) | Diagnose and fix Claude in Chrome MCP extension connectivity issues |
+| [chrome-mcp-troubleshooting](plugins/chrome-mcp-troubleshooting/) | Diagnose and fix Claude in Chrome MCP extension connectivity issues |
 
 ## Trophy Case
 
@@ -154,6 +154,10 @@ When reporting bugs you've found, feel free to mention:
 We welcome contributions! See [AGENTS.md](AGENTS.md) for skill authoring guidelines, and
 run `make check` before you push — it runs most of CI locally (see AGENTS.md for
 what it does not cover).
+
+Codex provides advisory fast reviews for eligible PRs from this repository. Maintainers
+with write access can request another fast review by commenting `@codex review`, or a
+deeper review by applying the `deep-review` label. Fork PRs are excluded.
 
 ## License
 

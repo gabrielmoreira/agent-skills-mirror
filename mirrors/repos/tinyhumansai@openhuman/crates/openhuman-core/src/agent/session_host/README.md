@@ -13,21 +13,21 @@ run after each turn commits.
 
 | File | Role |
 | --- | --- |
-| `types.rs` | `OpenHumanSessionHost` and `SessionHostBuilder` struct definitions, no logic |
+| [`types.rs`](./types.rs) | `OpenHumanSessionHost` and `SessionHostBuilder` struct definitions, no logic |
 | `builder/` | `SessionHostBuilder` fluent API and the `from_config` factory |
-| `factory.rs` | `OpenHumanSessionFactory` |
-| `runtime_session.rs` | Runtime session composition and the public `turn()` |
+| [`factory.rs`](./factory.rs) | `OpenHumanSessionFactory` |
+| [`runtime_session.rs`](./runtime_session.rs) | Runtime session composition and the public `turn()` |
 | `runtime/` | Public accessors, `run_single` |
-| `session_api.rs` | Start, read back, and list the generations of a durable session |
-| `driver.rs` | The OpenHuman `SessionDriver` that runs the model and tools |
-| `hooks.rs` | Product prepare, commit, and terminal hooks |
-| `codec.rs` | `OpenHumanTranscriptCodec`, the product transcript dialect |
-| `policy.rs` | Prompt and turn policy applied before dispatch |
-| `prefix_snapshot.rs` | Cache-prefix bookkeeping across resumes |
-| `recorded_tools.rs` | Rebuilds recorded Composio actions as deferred executors on resume |
-| `prelude_integrations.rs` | Fetches connected integrations on the first turn of a session instance |
-| `announcement_notes.rs`, `artifact_wiring.rs` | Smaller product wiring pulled out of the builder |
-| `turn/`, `turn_checkpoint.rs` | Per-turn state and checkpointing |
+| [`session_api.rs`](./session_api.rs) | Start, read back, and list the generations of a durable session |
+| [`driver.rs`](./driver.rs) | The OpenHuman `SessionDriver` that runs the model and tools |
+| [`hooks.rs`](./hooks.rs) | Product prepare, commit, and terminal hooks |
+| [`codec.rs`](./codec.rs) | `OpenHumanTranscriptCodec`, the product transcript dialect |
+| [`policy.rs`](./policy.rs) | Prompt and turn policy applied before dispatch |
+| [`prefix_snapshot.rs`](./prefix_snapshot.rs) | Cache-prefix bookkeeping across resumes |
+| [`recorded_tools.rs`](./recorded_tools.rs) | Rebuilds recorded Composio actions as deferred executors on resume |
+| [`prelude_integrations.rs`](./prelude_integrations.rs) | Fetches connected integrations on the first turn of a session instance |
+| [`announcement_notes.rs`](./announcement_notes.rs), [`artifact_wiring.rs`](./artifact_wiring.rs) | Smaller product wiring pulled out of the builder |
+| `turn/`, [`turn_checkpoint.rs`](./turn_checkpoint.rs) | Per-turn state and checkpointing |
 
 Import `OpenHumanSessionHost` and `SessionHostBuilder` from `crate::agent`,
 which re-exports them from here. The child files are an implementation
@@ -60,5 +60,11 @@ long conversation's generations without reading the whole chain.
   builds from OpenHuman state, and for the harness call site itself.
 - `crate::agent::subagent_host` for the same kind of adapter work, but over a
   child agent run instead of the top-level session.
-- `vendor/tinyagents` for the session, resume, and transcript mechanics this
+- [`vendor/tinyagents`](../../../../../vendor/tinyagents/) for the session, resume, and transcript mechanics this
   module wraps rather than reimplements.
+
+## Further reading
+
+- [Parent module README](../README.md)
+- [Agent harness architecture](../../../../../gitbooks/developing/architecture/agent-harness.md)
+- [Memory architecture](../../../../../gitbooks/developing/architecture/memory.md)

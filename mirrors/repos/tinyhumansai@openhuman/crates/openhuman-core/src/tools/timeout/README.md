@@ -23,7 +23,7 @@ Highest precedence first:
 | File | Role |
 | --- | --- |
 | `crates/openhuman-core/src/tools/timeout/mod.rs` | Entire module: constants, env parsing, pure resolver, atomic-backed runtime value, setter, public accessors. |
-| `crates/openhuman-core/src/tools/timeout/mod_tests.rs` | Unit tests for the module, run via the `#[path = "mod_tests.rs"] mod tests` include in `mod.rs`. |
+| `crates/openhuman-core/src/tools/timeout/mod_tests.rs` | Unit tests for the module, run via the `#[path = "mod_tests.rs"] mod tests` include in [`mod.rs`](./mod.rs). |
 
 ## Public surface
 
@@ -63,3 +63,11 @@ The global timeout governs non-scripting tools only, since a hung network or MCP
 - `0` is deliberately rejected (it would mean "disable timeout") and falls back to the default rather than disabling.
 - A present-but-invalid env value (non-numeric, `0`, or out of range) counts as "no override", so the config value still applies. Only a valid env value overrides.
 - The default (`120`s) must stay in sync with any frontend timeout that mirrors it (`app/src/utils/config.ts` `TOOL_TIMEOUT_SECS`).
+
+## Further reading
+
+- [Parent module (`tools`)](../README.md)
+- [Native tools overview](../../../../../gitbooks/features/native-tools/README.md)
+- [Agent harness architecture](../../../../../gitbooks/developing/architecture/agent-harness.md)
+- [Approval gate](../../../../../gitbooks/features/approval-gate.md)
+- [tinyagents submodule](../../../../../vendor/tinyagents/README.md)

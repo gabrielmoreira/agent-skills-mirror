@@ -19,11 +19,11 @@ so the app never silently drops to local storage without the user agreeing.
 
 | File | Purpose |
 | --- | --- |
-| `types.rs` | `StorageMode`, `KeyringFailureReason`, `KeyringStatus`, `ConsentPreference`, `PolicyDecision` |
-| `policy.rs` | `check_secret_access`, `current_status`, `active_mode_for`, `record_consent`/`build_consent_preference`/`apply_consent`, `retry_probe`, `notify_master_key_unavailable`, `notify_decrypt_failure` |
-| `ops.rs` | RPC handler bodies: `keyring_status`, `keyring_consent_decide`, `keyring_retry_probe` |
-| `schemas.rs` | Controller registration for the `keyring_consent` RPC namespace |
-| `mod.rs` | Module doc + re-exports |
+| [`types.rs`](./types.rs) | `StorageMode`, `KeyringFailureReason`, `KeyringStatus`, `ConsentPreference`, `PolicyDecision` |
+| [`policy.rs`](./policy.rs) | `check_secret_access`, `current_status`, `active_mode_for`, `record_consent`/`build_consent_preference`/`apply_consent`, `retry_probe`, `notify_master_key_unavailable`, `notify_decrypt_failure` |
+| [`ops.rs`](./ops.rs) | RPC handler bodies: `keyring_status`, `keyring_consent_decide`, `keyring_retry_probe` |
+| [`schemas.rs`](./schemas.rs) | Controller registration for the `keyring_consent` RPC namespace |
+| [`mod.rs`](./mod.rs) | Module doc + re-exports |
 
 ## Public surface
 
@@ -60,7 +60,7 @@ so the app never silently drops to local storage without the user agreeing.
 
 ## RPC / controllers
 
-Namespace `keyring_consent`, three functions (`schemas.rs`):
+Namespace `keyring_consent`, three functions ([`schemas.rs`](./schemas.rs)):
 
 - `keyring_consent.status`: current `KeyringStatus`.
 - `keyring_consent.decide`: record `mode` (`"local_encrypted"` or
@@ -100,4 +100,10 @@ matches on `keyring::backend_name()`'s identifiers (`"os"`,
 
 ## Tests
 
-- `types_tests.rs`, `policy_tests.rs`, `ops_tests.rs`, `schemas_tests.rs`.
+- [`types_tests.rs`](./types_tests.rs), [`policy_tests.rs`](./policy_tests.rs), [`ops_tests.rs`](./ops_tests.rs), [`schemas_tests.rs`](./schemas_tests.rs).
+
+## Further reading
+
+- [Parent module (`security`)](../README.md)
+- [OS keyring and secret storage](../../../../../gitbooks/features/os-keyring-and-secret-storage.md)
+- [Security architecture](../../../../../gitbooks/developing/architecture/security.md)

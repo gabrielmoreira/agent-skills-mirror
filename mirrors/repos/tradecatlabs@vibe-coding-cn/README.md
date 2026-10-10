@@ -22,8 +22,7 @@
 <!-- 单一徽章行：紧凑标签，原链接与完整说明保留在href/alt。 -->
 <p>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/tukuaiai/vibe-coding-cn?label=%E8%AE%B8%E5%8F%AF%E8%AF%81&style=flat" alt="许可证"></a>
-  <a href="https://x.com/123olp"><img src="https://img.shields.io/badge/X-123olp-black?style=flat&logo=x" alt="X"></a>
-  <a href="https://t.me/glue_coding"><img src="https://img.shields.io/badge/聊天-Telegram-blue?style=flat&logo=telegram" alt="交流群"></a>
+  <a href="https://t.me/glue_coding"><img src="https://img.shields.io/badge/交流-Telegram-blue?style=flat&logo=telegram" alt="交流群"></a>
   <a href="./docs/gongfa/README.md"><img src="https://img.shields.io/badge/功法-体系-slateblue?style=flat" alt="功法体系：思想、准则、方法与流程"></a>
   <a href="./research/README.md"><img src="https://img.shields.io/badge/研究-证据-teal?style=flat" alt="研究事实与证据"></a>
   <a href="./docs/getting-started/learning-map.md"><img src="https://img.shields.io/badge/入门-教程-red?style=flat" alt="从零开始完整入门"></a>
@@ -32,27 +31,8 @@
   <a href="./prompts/README.md#在线提示词库"><img src="https://img.shields.io/badge/提示词-表格-blue?style=flat" alt="提示词在线表格"></a>
   <a href="./assets/README.md#外部资源本地注册表"><img src="https://img.shields.io/badge/资源-索引-teal?style=flat" alt="外部资源本地注册表"></a>
   <a href="https://github.com/tukuaiai/vibe-coding-cn/wiki"><img src="https://img.shields.io/badge/Wiki-导航-slateblue?style=flat" alt="Wiki 导航入口"></a>
-</p>
-
-<!-- 快捷导航徽章：保留原目标与顺序，窄屏自然换行。 -->
-<p>
-  <a href="#ai-six-propositions"><img src="https://img.shields.io/badge/命题-六条核心-slateblue?style=flat" alt="🧠 六条核心命题"></a>
-  <a href="docs/gongfa/README.md"><img src="https://img.shields.io/badge/功法-体系-slateblue?style=flat" alt="功法体系"></a>
   <a href="metadata/gongfa/catalog.md"><img src="https://img.shields.io/badge/功法-总表-purple?style=flat" alt="功法总表"></a>
   <a href="metadata/gongfa/catalog.xlsx"><img src="https://img.shields.io/badge/Excel-完整视图-forestgreen?style=flat" alt="Excel 完整视图"></a>
-  <a href="research/README.md"><img src="https://img.shields.io/badge/研究-目录-teal?style=flat" alt="🔬 研究域"></a>
-  <a href="#root-tldr"><img src="https://img.shields.io/badge/速读-摘要-grey?style=flat" alt="📌 字多不看"></a>
-  <a href="#getting-started"><img src="https://img.shields.io/badge/快速-开始-blue?style=flat" alt="⚡ 1 分钟快速开始"></a>
-  <a href="docs/getting-started/learning-map.md"><img src="https://img.shields.io/badge/入门-完整教程-red?style=flat" alt="🚀 从零开始完整入门"></a>
-  <a href="#ai-summary"><img src="https://img.shields.io/badge/AI-推荐摘要-slateblue?style=flat" alt="🤖 AI 推荐摘要"></a>
-  <a href="#why-vibe-coding-cn"><img src="https://img.shields.io/badge/项目-选择理由-forestgreen?style=flat" alt="✅ 为什么选择"></a>
-  <a href="https://github.com/tukuaiai/vibe-coding-cn/wiki"><img src="https://img.shields.io/badge/Wiki-导航-slateblue?style=flat" alt="📚 GitHub Wiki"></a>
-  <a href="#contact"><img src="https://img.shields.io/badge/研究-交流-teal?style=flat" alt="📞 研究交流"></a>
-  <a href="#support"><img src="https://img.shields.io/badge/项目-支持-orange?style=flat" alt="✨ 支持项目"></a>
-  <a href="#contributing"><img src="https://img.shields.io/badge/贡献-指南-blue?style=flat" alt="🤝 参与贡献"></a>
-</p>
-
-<p>
   <a href="https://zread.ai/tukuaiai/vibe-coding-cn/1-overview"><img src="https://img.shields.io/badge/Zread-AI解读-blue?style=flat" alt="zread.ai/tukuaiai/vibe-coding-cn"></a>
 </p>
 
@@ -78,6 +58,7 @@
 
 逐条身份、内容版本、冻结来源与已有意见查看[功法登记](metadata/gongfa/README.md)及上方总表。
 文集归并不等于全部内容已经逐条登记；已有初评也不等于正式效果验证。
+程序内容及外部资源所指的初审见[法器清单](tools/faqi-catalog.md)；清单区分纳入对象与按范围明确排除的程序证据，排除不代表其不是软件；源码核定不等于运行、许可或效果验证。
 
 </details>
 
@@ -426,8 +407,11 @@ pip install -r tools/prompts-library/scripts/requirements.txt
 │   ├── auto-tmux/               # tmux 自动化脚本、pane 巡检、救援与多终端协作
 │   └── claude-official-skills/  # Claude 官方 skills 软链接入口
 ├── tools/                       # 辅助工具、外部仓库与工具配置
+│   └── faqi-catalog.md           # 法器来源初审与外部资源分流的只读视图
 ├── scripts/                     # 自动化脚本
 ├── metadata/                    # 机器可读索引与限定子域数据
+│   ├── faqi.json                # 法器来源限定初审，不含品级或运行批准
+│   ├── faqi.schema.json         # 初审字段契约，复用唯一BFO树
 │   └── gongfa/                   # 功法登记、来源快照与单一总表（Markdown/Excel）
 ├── assets/                      # 静态资产、外部资源注册表与 AI 引用资产
 │
@@ -671,8 +655,6 @@ gantt
    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=tukuaiai/vibe-coding-cn&type=date&legend=top-left" />
  </picture>
 </a>
-
-**由 [tukuaiai](https://github.com/tukuaiai), [Nicolas Zullo](https://x.com/NicolasZu), 和 [123olp](https://x.com/123olp) 倾力打造**
 
 [⬆ 返回顶部](#vibe-coding-指南)
 </div>

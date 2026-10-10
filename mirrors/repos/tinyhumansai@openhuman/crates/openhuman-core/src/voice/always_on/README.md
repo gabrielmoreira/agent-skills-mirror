@@ -14,10 +14,10 @@ The split follows the audio callback, not the cost of a call. A module call is a
 
 | File | Role |
 | --- | --- |
-| `capture.rs` | Host microphone-permission policy over `tinyvoice::capture`, which owns the `cpal` stream and its realtime callback. `spawn_capture_thread` builds the input stream on a dedicated thread and blocks on a readiness handshake; each callback converts the device sample format to `f32` and forwards the interleaved buffer untouched via `try_send` (never blocking `send`), dropping the newest chunk and counting drops when the processor falls behind. |
-| `lock_watcher.rs` | The macOS screen-lock privacy hook. `spawn_lock_watcher` polls `CGSessionCopyCurrentDictionary` every two seconds and flips `PAUSED` on lock/unlock transitions. Other platforms log that the watcher is unavailable and never pause (no lock signal yet). |
-| `processor.rs` | The async pipeline: owns the `ENABLED`/`PAUSED`/`RUNNING` gates, opens and retries the `tinyvoice::VadSession`, turns raw capture chunks into segmented utterances, and hands finished ones to `transcribe_and_deliver`. `start_if_enabled` is safe to call at boot and at runtime (the Settings toggle calls it through the config RPC); `stop` flips `ENABLED` off for logout without tearing down the microphone stream. |
-| `transcribe.rs` | Transcribes a finished utterance through the configured STT provider (the same factory dispatch `voice.stt_dispatch` uses), applies the wake-word gate (`tinyvoice::extract_command`), and routes recognized commands either to a local fast path (`execute_intent`, media transport and volume via `osascript` on macOS) or, for `VoiceIntent::Unknown` or a failed local execution, to the agent via `crate::voice::dictation_listener::publish_transcription`. |
+| [`capture.rs`](./capture.rs) | Host microphone-permission policy over `tinyvoice::capture`, which owns the `cpal` stream and its realtime callback. `spawn_capture_thread` builds the input stream on a dedicated thread and blocks on a readiness handshake; each callback converts the device sample format to `f32` and forwards the interleaved buffer untouched via `try_send` (never blocking `send`), dropping the newest chunk and counting drops when the processor falls behind. |
+| [`lock_watcher.rs`](./lock_watcher.rs) | The macOS screen-lock privacy hook. `spawn_lock_watcher` polls `CGSessionCopyCurrentDictionary` every two seconds and flips `PAUSED` on lock/unlock transitions. Other platforms log that the watcher is unavailable and never pause (no lock signal yet). |
+| [`processor.rs`](./processor.rs) | The async pipeline: owns the `ENABLED`/`PAUSED`/`RUNNING` gates, opens and retries the `tinyvoice::VadSession`, turns raw capture chunks into segmented utterances, and hands finished ones to `transcribe_and_deliver`. `start_if_enabled` is safe to call at boot and at runtime (the Settings toggle calls it through the config RPC); `stop` flips `ENABLED` off for logout without tearing down the microphone stream. |
+| [`transcribe.rs`](./transcribe.rs) | Transcribes a finished utterance through the configured STT provider (the same factory dispatch `voice.stt_dispatch` uses), applies the wake-word gate (`tinyvoice::extract_command`), and routes recognized commands either to a local fast path (`execute_intent`, media transport and volume via `osascript` on macOS) or, for `VoiceIntent::Unknown` or a failed local execution, to the agent via `crate::voice::dictation_listener::publish_transcription`. |
 
 `always_on.rs` (one level up, in `voice/`) is the module entry point: it declares these four submodules, re-exports `start_if_enabled`/`stop`, and holds the shared `LOG_PREFIX` constant.
 
@@ -42,7 +42,7 @@ Transcription is forced to English (`Some("en")`) because auto-detect rendered t
 
 - The microphone stream is spawned once per process and stays open for the process lifetime once started; toggling `always_on_enabled` off only stops processing, it does not close the stream. Toggling back on reuses it.
 - A VAD session that fails to open (for example, the module has not finished downloading) does not stop the capture thread. Audio is dropped and the open is retried on `SESSION_RETRY_INTERVAL` so the feature self-heals without a restart.
-- `tinyvoice::capture` (via `capture.rs`) never blocks the realtime audio callback: a full queue drops the newest chunk, which is deliberately the newer end to lose, since the queue ahead of it is older speech closer to being transcribed.
+- `tinyvoice::capture` (via [`capture.rs`](./capture.rs)) never blocks the realtime audio callback: a full queue drops the newest chunk, which is deliberately the newer end to lose, since the queue ahead of it is older speech closer to being transcribed.
 
 ## See also
 

@@ -274,13 +274,13 @@ Seek receives search and RAG requirements from upstream agents and sends retriev
 | `reference/handoffs.md` | Inbound/outbound handoff YAML templates |
 | `reference/embedding-models.md` | Embedding model comparison, selection tree, benchmarks |
 | `reference/evaluation-methods.md` | Canonical search-quality evaluation: offline metrics (nDCG/MRR/MAP/P@k/R@k), golden-query curation, click models (Cascade/PBM/DBN/UBM), A/B design (interleaving/split/switchback/shadow), reranker evaluation hooks, regression gates, diagnostics |
-| `reference/scaling-guide.md` | Schema[tenant] sizing, vector DB scaling, caching strategies |
+| `reference/scaling-guide.md` | Shard sizing, vector DB scaling, caching strategies |
 | `reference/engine-comparison.md` | Search engine and vector DB feature/cost comparison |
 | `reference/rerank-design.md` | You are running the `rerank` recipe and need cross-encoder vs LTR selection, two-stage latency budgets, or click-feedback loop design. |
 | `reference/rag-retrieval.md` | You are running the `rag` recipe and need chunking-aware retrieval anti-patterns, the `RAG_RETRIEVAL_SPEC` template, or the multi-stage retrieval pipeline. |
 | `reference/authorization.md` | You are running `authz`, or the corpus is not uniformly readable — filter placement, mandatory-filter algebra, three-valued ACL resolution, chunk/summary inheritance, cache keys, T0-T6 revocation SLI, disclosure-surface tests. |
 | `reference/suggest-design.md` | You are running the `suggest` recipe and need autocomplete index design (edge n-gram / completion suggester), typo tolerance (Levenshtein / BK-tree / symspell), or sub-50ms latency tuning. |
-| `_common/OPUS_5_AUTHORING.md` | Sizing the search design, deciding adaptive thinking depth at DESIGN, or front-loading search type/latency/recall targets at PROFILE. Critical for Seek: P3, P5 |
+| `_common/OPUS_5_AUTHORING.md` | Sizing the search design, deciding adaptive thinking depth at SELECT, or front-loading search type/latency/recall targets at PROFILE. Critical for Seek: P3, P5 |
 | `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Seek-specific Output/Next schema. |
 
 ---

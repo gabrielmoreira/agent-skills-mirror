@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `morluto/rea` — 26 default patterns, 41 followed patterns, 76 file(s) materialized.
+Mirror of `morluto/rea` — 26 default patterns, 40 followed patterns, 76 file(s) materialized.
 
 ## Metadata
 
@@ -17,7 +17,7 @@ Mirror of `morluto/rea` — 26 default patterns, 41 followed patterns, 76 file(s
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 41 |
+| Followed pats | 40 |
 | Files         | 76 |
 
 ## Default Sparse Patterns  *(included from config)*
@@ -51,11 +51,10 @@ Mirror of `morluto/rea` — 26 default patterns, 41 followed patterns, 76 file(s
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `docs/testing.md`
 - `CONTRIBUTING.md`
-- `README.md`
 - `docs/tool-design.md`
-- `docs/capability-migration.md`
+- `docs/testing.md`
+- `README.md`
 - `docs/releasing.md`
 - `README_zh.md`
 - `README_zh-TW.md`
@@ -99,46 +98,46 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`docs/adr/README.md`](docs/adr/README.md) |
+| 1 | ✓ | [`.agents/skills/rea-tool-design/SKILL.md`](.agents/skills/rea-tool-design/SKILL.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 3 | ✓ | [`docs/browser-observation.md`](docs/browser-observation.md) |
 | 4 | ✓ | [`docs/browser-scenario-contract.md`](docs/browser-scenario-contract.md) |
 | 5 | ✓ | [`docs/electron-observation.md`](docs/electron-observation.md) |
 | 6 | ✓ | [`docs/ghidra-nativeaot.md`](docs/ghidra-nativeaot.md) |
-| 7 | ✓ | [`docs/javascript-application-graph.md`](docs/javascript-application-graph.md) |
-| 8 | ✓ | [`docs/javascript-application-workflows.md`](docs/javascript-application-workflows.md) |
-| 9 | ✓ | [`docs/javascript-runtime-observation.md`](docs/javascript-runtime-observation.md) |
-| 10 | ✓ | [`docs/javascript-runtime-reconciliation.md`](docs/javascript-runtime-reconciliation.md) |
-| 11 | ✓ | [`docs/native-investigation.md`](docs/native-investigation.md) |
-| 12 | ✓ | [`docs/provider-evaluation.md`](docs/provider-evaluation.md) |
-| 13 | ✓ | [`docs/web-runtime.md`](docs/web-runtime.md) |
-| 14 | ✓ | [`docs/web-source-location.md`](docs/web-source-location.md) |
-| 15 | ✓ | [`docs/website-module-trace.md`](docs/website-module-trace.md) |
-| 16 | ✓ | [`docs/website-script-export.md`](docs/website-script-export.md) |
-| 17 | ✓ | [`native/windows/README.md`](native/windows/README.md) |
-| 18 | ✓ | [`skill-src/reverse-engineer-anything/SKILL.md`](skill-src/reverse-engineer-anything/SKILL.md) |
-| 19 | ✓ | [`tests/conformance/ghidra/README.md`](tests/conformance/ghidra/README.md) |
-| 20 | ✓ | [`tests/conformance/README.md`](tests/conformance/README.md) |
-| 21 | ✓ | [`tests/fixtures/golden/README.md`](tests/fixtures/golden/README.md) |
-| 22 | ✓ | [`tests/fixtures/native-macos/archive-xml-encoding/README.md`](tests/fixtures/native-macos/archive-xml-encoding/README.md) |
-| 23 | ✓ | [`tests/fixtures/native-macos/dyld-inventory/README.md`](tests/fixtures/native-macos/dyld-inventory/README.md) |
-| 24 | ✓ | [`tests/fixtures/native-macos/load-command-text-values/README.md`](tests/fixtures/native-macos/load-command-text-values/README.md) |
-| 25 | ✓ | [`tests/fixtures/native-macos/native-macho-header/README.md`](tests/fixtures/native-macos/native-macho-header/README.md) |
-| 26 | ✓ | [`tests/fixtures/native-macos/native-reexport/README.md`](tests/fixtures/native-macos/native-reexport/README.md) |
-| 27 | ✓ | [`third_party/evmole/README.md`](third_party/evmole/README.md) |
-| 28 | ✓ | [`third_party/pwndbg/README.md`](third_party/pwndbg/README.md) |
-| 29 | ✓ | [`third_party/pwntools/README.md`](third_party/pwntools/README.md) |
-| 30 | ✓ | [`third_party/README.md`](third_party/README.md) |
-| 31 | ✓ | [`third_party/web-network-captures/README.md`](third_party/web-network-captures/README.md) |
-| 32 | ✓ | [`website/AGENTS.md`](website/AGENTS.md) |
-| 33 | ✓ | [`website/figures.md`](website/figures.md) |
-| 34 | ✓ | [`website/README.md`](website/README.md) |
-| 35 | ✓ | [`website/style-guide.md`](website/style-guide.md) |
-| 36 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 37 | → | [`docs/android-analysis.md`](docs/android-analysis.md) |
-| 38 | → | [`docs/apple-application-analysis.md`](docs/apple-application-analysis.md) |
-| 39 | → | [`docs/binary-diagnostics.md`](docs/binary-diagnostics.md) |
-| 40 | → | [`docs/capability-migration.md`](docs/capability-migration.md) |
+| 7 | ✓ | [`docs/ghidra-provider.md`](docs/ghidra-provider.md) |
+| 8 | ✓ | [`docs/javascript-application-graph.md`](docs/javascript-application-graph.md) |
+| 9 | ✓ | [`docs/javascript-application-workflows.md`](docs/javascript-application-workflows.md) |
+| 10 | ✓ | [`docs/javascript-runtime-observation.md`](docs/javascript-runtime-observation.md) |
+| 11 | ✓ | [`docs/javascript-runtime-reconciliation.md`](docs/javascript-runtime-reconciliation.md) |
+| 12 | ✓ | [`docs/migration-6.2.md`](docs/migration-6.2.md) |
+| 13 | ✓ | [`docs/native-investigation.md`](docs/native-investigation.md) |
+| 14 | ✓ | [`docs/web-runtime.md`](docs/web-runtime.md) |
+| 15 | ✓ | [`docs/web-source-location.md`](docs/web-source-location.md) |
+| 16 | ✓ | [`docs/website-module-trace.md`](docs/website-module-trace.md) |
+| 17 | ✓ | [`docs/website-script-export.md`](docs/website-script-export.md) |
+| 18 | ✓ | [`native/windows/README.md`](native/windows/README.md) |
+| 19 | ✓ | [`skill-src/reverse-engineer-anything/SKILL.md`](skill-src/reverse-engineer-anything/SKILL.md) |
+| 20 | ✓ | [`tests/conformance/ghidra/README.md`](tests/conformance/ghidra/README.md) |
+| 21 | ✓ | [`tests/conformance/README.md`](tests/conformance/README.md) |
+| 22 | ✓ | [`tests/fixtures/golden/README.md`](tests/fixtures/golden/README.md) |
+| 23 | ✓ | [`tests/fixtures/native-macos/archive-xml-encoding/README.md`](tests/fixtures/native-macos/archive-xml-encoding/README.md) |
+| 24 | ✓ | [`tests/fixtures/native-macos/dyld-inventory/README.md`](tests/fixtures/native-macos/dyld-inventory/README.md) |
+| 25 | ✓ | [`tests/fixtures/native-macos/load-command-text-values/README.md`](tests/fixtures/native-macos/load-command-text-values/README.md) |
+| 26 | ✓ | [`tests/fixtures/native-macos/native-macho-header/README.md`](tests/fixtures/native-macos/native-macho-header/README.md) |
+| 27 | ✓ | [`tests/fixtures/native-macos/native-reexport/README.md`](tests/fixtures/native-macos/native-reexport/README.md) |
+| 28 | ✓ | [`third_party/evmole/README.md`](third_party/evmole/README.md) |
+| 29 | ✓ | [`third_party/pwndbg/README.md`](third_party/pwndbg/README.md) |
+| 30 | ✓ | [`third_party/pwntools/README.md`](third_party/pwntools/README.md) |
+| 31 | ✓ | [`third_party/README.md`](third_party/README.md) |
+| 32 | ✓ | [`third_party/web-network-captures/README.md`](third_party/web-network-captures/README.md) |
+| 33 | ✓ | [`website/AGENTS.md`](website/AGENTS.md) |
+| 34 | ✓ | [`website/figures.md`](website/figures.md) |
+| 35 | ✓ | [`website/README.md`](website/README.md) |
+| 36 | ✓ | [`website/style-guide.md`](website/style-guide.md) |
+| 37 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 38 | → | [`docs/android-analysis.md`](docs/android-analysis.md) |
+| 39 | → | [`docs/apple-application-analysis.md`](docs/apple-application-analysis.md) |
+| 40 | → | [`docs/binary-diagnostics.md`](docs/binary-diagnostics.md) |
 | 41 | → | [`docs/cli.md`](docs/cli.md) |
 | 42 | → | [`docs/evm-bytecode.md`](docs/evm-bytecode.md) |
 | 43 | → | [`docs/firmware-analysis.md`](docs/firmware-analysis.md) |

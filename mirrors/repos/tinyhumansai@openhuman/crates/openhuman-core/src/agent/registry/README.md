@@ -49,9 +49,9 @@ the harness runs come from [`agents/`](agents/) below.
   definitions for namespace `agent_registry`: `list`, `get`,
   `available_tools`, `create_custom`, `upsert_custom`, `update`,
   `set_enabled`, `remove`. Registered through
-  `all_agent_registry_registered_controllers` in `core/all.rs`.
+  `all_agent_registry_registered_controllers` in [`core/all.rs`](../../core/all.rs).
 - [`rpc.rs`](rpc.rs): request/response payload types and the `*_rpc` handler
-  functions that `schemas.rs` wires up, delegating into `ops.rs`.
+  functions that [`schemas.rs`](./schemas.rs) wires up, delegating into [`ops.rs`](./ops.rs).
 - [`tools.rs`](tools.rs): backwards-compatible re-export of
   `agent::orchestration::tools::*`; nothing in the tree imports it any more.
 - [`agents/`](agents/): the built-in agent archetypes and their loader.
@@ -78,8 +78,8 @@ rejected (the pair rule is `validate_tier_transition` in the harness; unknown
 subagent ids are tolerated here as a separate integrity concern).
 `BUILTINS` is also the registration point for archetypes that live with
 other domains: `skill_setup`
-(`skills/catalog/agent/`, feature `skills`), and
-`workflow_builder` and `flow_discovery` (`flows/agents/`, feature `flows`).
+([`skills/catalog/agent/`](../../skills/catalog/agent/), feature `skills`), and
+`workflow_builder` and `flow_discovery` ([`flows/agents/`](../../flows/agents/), feature `flows`).
 Workspace-level overrides (`<workspace_dir>/agents/*.toml`, with a
 `~/.openhuman/agents/` fallback) are loaded separately by
 `agent::harness::definition_loader` and replace built-ins on id collision;
@@ -108,7 +108,7 @@ The orchestrator's chat delegates (its `[subagents]` allowlist) are
 `image_agent`, `video_agent`, `presentation_agent`, `skill_setup`,
 `workflow_builder` and `flow_discovery`. `planner` and `critic` stay
 registered only for the `parallel_research_cross_check` workflow-run template
-(`agent/orchestration/workflow_runs/ops.rs`: decompose = `planner`, research
+([`agent/orchestration/workflow_runs/ops.rs`](../orchestration/workflow_runs/ops.rs): decompose = `planner`, research
 = `planner` x2, cross_check = `critic`, synthesize = `summarizer`); the
 orchestrator does not list them. Everything else is runtime-only.
 
@@ -136,15 +136,15 @@ ranking works.
 
 - `core/all.rs`: registers the `agent_registry` controllers under
   `DomainGroup::Agent`.
-- `config/schema/`: `Config.agent_registry: AgentRegistryConfig` is the
+- [`config/schema/`](../../config/schema/): `Config.agent_registry: AgentRegistryConfig` is the
   persisted store every `ops.rs` function reads and writes.
-- `agent/harness/builtin_definitions.rs`: `load_builtins()` seeds the
-  process-global `AgentDefinitionRegistry`; `agent/harness/definition/registry.rs`
+- [`agent/harness/builtin_definitions.rs`](../harness/builtin_definitions.rs): `load_builtins()` seeds the
+  process-global `AgentDefinitionRegistry`; [`agent/harness/definition/registry.rs`](../harness/definition/registry.rs)
   calls `validate_tier_hierarchy` again after workspace overrides merge.
-- `agent/session_host/builder/factory.rs`:
+- [`agent/session_host/builder/factory.rs`](../session_host/builder/factory.rs):
   `Agent::from_config_for_agent` falls back to `find_custom_in_config` +
   `definition_from_registry_entry` when an id is not in the harness registry.
-- `agent/schemas.rs`: `agent.graph_topologies` and `agent.registry_snapshot`
+- [`agent/schemas.rs`](../schemas.rs): `agent.graph_topologies` and `agent.registry_snapshot`
   enumerate `load_builtins()`.
 - `flows/` (`ops/inference_readiness.rs`, `ops/builder_gates.rs`,
   `builder_tools/kind_reads.rs`, `tinyflows/caps/agent.rs`): resolve a flow
@@ -152,7 +152,13 @@ ranking works.
 
 ## Tests
 
-`defaults_tests.rs`, `ops_tests.rs`, `schemas_tests.rs`, `types_tests.rs`;
+[`defaults_tests.rs`](./defaults_tests.rs), [`ops_tests.rs`](./ops_tests.rs), [`schemas_tests.rs`](./schemas_tests.rs), [`types_tests.rs`](./types_tests.rs);
 under `agents/`: `loader_tests.rs` (+ `loader_tests_orchestrator_tier_tests.rs`,
 `loader_tests_builtin_registration_tests.rs`, `loader_tests_specialist_agents_tests.rs`)
 and a `prompt_tests.rs` beside almost every archetype's `prompt.rs`.
+
+## Further reading
+
+- [Parent module README](../README.md)
+- [Agent harness architecture](../../../../../gitbooks/developing/architecture/agent-harness.md)
+- [The orchestrator](../../../../../gitbooks/features/orchestration.md)

@@ -1,6 +1,6 @@
 ---
 name: copilot-session-management
-description: "Manage and diagnose GitHub Copilot CLI sessions, plugins, marketplaces, and MCP configuration. Use when sessions cannot resume, plugin installation fails, or local Copilot state needs repair."
+description: "Manage and diagnose GitHub Copilot CLI sessions, plugins, marketplaces, and MCP configuration. Use when sessions cannot resume, a running session needs passive observation, plugin installation fails, or local Copilot state needs repair."
 ---
 
 # GitHub Copilot CLI Session Management
@@ -160,6 +160,67 @@ When a session cannot be resumed:
   than recovery.
 - Prefer recovery over repair when the active CLI version's event or rewind
   schema is unknown.
+
+## Passive observation of a running UI-server session
+
+This is **not** the inactive-session repair workflow above. In disposable tests
+of Copilot CLI **1.0.88 and 1.0.89-1**, `session.eventLog.tail/read` observed an
+existing session without `session.resume`. These observations do not establish
+a stable, published UI-server protocol, a complete state snapshot, or safe
+behavior on other versions. An SDK resume is an ownership/control operation,
+not a read-only way to attach an observer: in those tests, `session.resume`
+while a synthetic form was pending stalled RPC operations until the form was
+cancelled in the terminal.
+
+For an **authorized, read-only** observer:
+
+1. Record the installed Copilot CLI version and verify that version's UI-server
+   access and event-log behavior using current, authoritative documentation
+   and a disposable session. Confirm the connection can be limited to
+   observation without taking ownership. Do not extrapolate from the versions
+   above.
+2. Independently verify authentication **and** access control for that version,
+   including which local users or clients can connect and read the session.
+   Confirm an unauthorized client is denied in a controlled, disposable test.
+   Endpoint locality and possession of a connection token alone are **not**
+   evidence of a security boundary; neither the protocol nor its token is
+   guaranteed to provide one. Do not connect to a sensitive session when
+   these checks are unresolved.
+3. Only after these checks, use the version-verified event-log read/tail
+   facilities to inspect permitted events. Do **not** call `session.resume`,
+   submit replies, cancel a pending request, or issue any other control or
+   state-changing RPC from the observer. Leave the terminal/owning client in
+   control.
+4. On completion or error, stop tailing and reconnect attempts, release any
+   observer subscription supported by that version, and close the observer
+   connection. Do not close the owner's connection, stop its UI server, or
+   edit its on-disk session state. Verify the owner still controls its session.
+
+Event-log replay may omit outstanding requests: a `tail/read` replay is **not**
+an inventory of pending forms or a complete reconstruction of current UI
+state. Mark an unmatched request **unknown**, not resolved or safe to answer.
+If a pending request is missing or its status cannot be established by the
+owning terminal or an authoritative, version-verified interface, leave it with
+the owner. Do not reissue it or synthesize a reply. Concurrent observation
+does **not** establish safe concurrent replies, even if reading events works.
+
+### Disposable pending-form check
+
+Use an isolated session containing only fictional data. Have the **owning
+terminal** present a harmless form such as "Choose a sample color: blue or
+green" and leave it pending. After the authorization checks above, attach a
+read-only observer through the version-verified event-log facilities; confirm
+that the terminal remains able to handle the form and distinguish live events
+from any replayed history. Do not assume the pending form will appear in
+replay. Disconnect the observer, then have the **owner** cancel or answer the
+form; confirm the terminal still works. Do not test `session.resume` against
+someone else's running session or use an observer to respond to the form.
+
+If any protocol, permissions, pending-state, or cleanup assumption cannot be
+verified for the installed version, **stop observation**. Fall back to the
+owning terminal's supported UI or, after the session is inactive, an authorized
+backup/recovery workflow; never use resume as a substitute for read-only
+observation.
 
 ## Plugin management
 

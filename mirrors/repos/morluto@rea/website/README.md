@@ -4,10 +4,11 @@
 >
 > — N0zoM1z0
 
-An English static website with explanatory figures, worked guides and DX-Ball, Notion, TH04 and CTF investigations.
-The public files are in `website/public/`. The site uses HTML, CSS and a small
-script for copying code and following the assembly-to-C comparison. Python
-packages the downloadable example; there is no frontend bundler or npm dependency.
+An English static website with explanatory figures, worked guides and Aegis, DX-Ball, Notion, TH04 and CTF investigations.
+The public files are in `website/public/`. The site uses HTML, CSS and small
+scripts for copying code, following code comparisons and playing the dinosaur
+speed reconstruction. Python prepares the example ZIP, sitemap and sharing
+image; there is no frontend bundler or npm dependency.
 
 [style-guide.md](style-guide.md) explains the writing, page structure, figures,
 visual system and review process. Read it before adding or revising a page.
@@ -17,16 +18,31 @@ visual system and review process. Read it before adding or revising a page.
 From the repository root:
 
 ```sh
+python3 -m venv website/.venv
+source website/.venv/bin/activate
+python3 -m pip install -r website/requirements.txt
 python3 scripts/prepare-website.py
 python3 -m http.server 4173 --bind 127.0.0.1 --directory website/public
 ```
 
 Open <http://127.0.0.1:4173/>. Refresh the browser after editing a file.
+Keep the virtual environment active when preparing assets. CairoSVG needs the
+native Cairo library; the sharing card uses DejaVu Sans. On Debian or Ubuntu,
+install them with `sudo apt-get install libcairo2 fonts-dejavu-core`. For other
+systems, see [CairoSVG's installation instructions](https://cairosvg.org/documentation/#installation).
+CI installs both packages explicitly before rendering the card.
+
+After adding, moving or removing a page, or changing its indexing policy, rerun
+`python3 scripts/prepare-website.py`. It regenerates the sitemap from the current
+HTML files. No URL list needs to be maintained.
 
 ## Pages
 
-- `public/index.html`: product introduction and case-study overviews.
+- `public/index.html`: compact setup, reverse-engineering definition and purpose, manual/agent comparison, dinosaur and Calculator examples, and analysis-guide links.
+- `public/examples/dino-lab/index.html`: adjustable-speed mini-game, recovered rule, original-game check and browser analysis steps.
+- `public/first-investigation/index.html`: a guided Notes export investigation, from setup to a checked CSV prediction.
 - `public/showcase/index.html`: the case-study index.
+- `public/showcase/aegis/index.html`: Aegis's Android login-code calculation, with an adjustable clock and reference checks.
 - `public/showcase/dx-ball/index.html`: sound-pan investigation and project status.
 - `public/showcase/notion/index.html`: Notion's Electron clipboard bridge and rich clipboard format.
 - `public/showcase/th04/index.html`: TH04's 16-bit DOS bullet-angle calculation and compiler checks.
@@ -39,6 +55,69 @@ Open <http://127.0.0.1:4173/>. Refresh the browser after editing a file.
 
 Navigation and assets use relative paths, so the same files work at the local
 root and a GitHub Pages project path such as `/rea/`.
+
+## Search and sharing metadata
+
+`https://rea.tools/` is the preferred public origin. Each content page has one
+absolute canonical URL for its own route, including its trailing slash. The
+same HTML on GitHub Pages points to the corresponding rea.tools page. Ordinary
+navigation and asset references remain relative so both hosts and local previews
+keep working.
+
+Maintain a descriptive `<title>` and a short meta description in each page's
+`<head>`. The title names the page's subject; visible headings keep the wording
+that best explains it to a reader. Open Graph and Twitter titles/descriptions
+match those fields. `og:url` matches the canonical, and sharing images use
+absolute rea.tools URLs. Search results and link previews should follow the same
+clear, concise writing standard as the page.
+
+`scripts/prepare-website.py` scans `public/**/*.html` and generates
+`public/sitemap.xml` with absolute rea.tools URLs. An `index.html` maps to its
+directory route; other HTML filenames retain their extension. Pages with
+`noindex` or `none` in a head `robots` or `googlebot` meta directive are excluded.
+The two Notes example applications use `noindex`; their guides and the dinosaur
+lab remain indexable. Downloads, scripts and other non-HTML files are not listed.
+The sitemap has no guessed modification dates, priority or change frequency.
+It is ignored by Git and regenerated before checks and publication.
+
+`public/robots.txt` allows crawling and names the canonical sitemap. Keep example
+applications crawlable so search engines can read their `noindex` directives.
+Cloudflare may prepend managed rules or comments to the served file; inspect the
+live response after publication. The mirrored `/rea/robots.txt` is not the
+hostname-root robots file for `morluto.github.io`; canonical HTML tags establish
+the mirror's preference.
+
+`public/assets/social-card.svg` is the maintained 1200 × 630 preview source.
+CairoSVG generates `social-card.png` for sharing clients. Commit the SVG, not the
+PNG. Both hosts receive the generated image in the same publishing artifact.
+The preview uses the site's typography, palette and direct headline.
+
+Verification checks route-specific canonicals, unique titles, descriptions,
+sharing fields, image dimensions, indexing policy and complete sitemap coverage.
+`scripts/test-website.py` exercises automatic route changes and rejects incorrect
+canonicals, lost fixture exclusions, stale sitemap entries and missing previews.
+Run it after preparing assets:
+
+```sh
+python3 scripts/verify-website.py
+python3 scripts/test-website.py
+```
+
+### After publishing an SEO change
+
+1. Check the served `robots.txt`, `sitemap.xml`, HTML head and preview PNG at
+   rea.tools. Confirm that both hosts contain the same page-specific canonicals.
+2. In the domain's Google Search Console property, submit
+   `https://rea.tools/sitemap.xml`.
+3. Inspect the homepage, a guide and a case study. Check crawl access, indexing
+   and Google's selected canonical; inspect a GitHub Pages URL as well if that
+   property is available. Track indexing and search performance there afterward.
+
+These Search Console checks require the property owner's access. Local checks
+verify the website inputs; Google's indexing reports show how they were used.
+See Google's [canonical guidance](https://developers.google.com/search/docs/crawling-indexing/consolidate-duplicate-urls)
+and [sitemap guidance](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap),
+and Cloudflare's [managed robots behavior](https://developers.cloudflare.com/bots/additional-configurations/managed-robots-txt/).
 
 ## Content
 
@@ -59,6 +138,12 @@ an explicit file list, with fixed timestamps and permissions. The ZIP is ignored
 by Git; website checks and each manual publication regenerate it before checking
 and uploading the public directory. The verifier checks that its entries match
 the current source and contain no extra files.
+
+The first-investigation page uses this same ZIP. Its prompt lets the agent
+download and unpack the target; the download button provides a manual path.
+The reader follows the static export trace, then runs the CSV formatter with
+one changed input. This formatter check needs only Node.js. The separate
+browser Notes example has a different implementation.
 
 Agent terminals show example prompts, not transcripts of previous
 investigations. All cursors blink continuously with the same CSS animation,
@@ -88,7 +173,53 @@ Evidence. [evidence/dx-ball-sound-pan.md](evidence/dx-ball-sound-pan.md) records
 their provenance and the scope of the validation claims. The original executable
 and complete private Evidence records are not website assets.
 
-The homepage and DX-Ball overview diagrams are maintained as SVG source. Initial layout references were
+The homepage starts with a short installation prompt and the ordinary setup
+command, then explains what reverse engineering is and why someone would use
+it. The manual/agent comparison introduces REA’s role before the examples.
+Its opening links directly to Showcases and lets experienced readers skip to
+the analysis guides. Case-study previews live on the Showcases page.
+The closing section offers copyable project prompts, from cloning `rea.tools`
+to reconstructing a game from its executable. The experienced-reader shortcut
+lands directly on the guide links below these prompts.
+The page ends with FAQ, Discord and issue-report links under “Any questions?”.
+A right-side table of contents stays visible at widths of 1440px and above.
+On narrower screens it becomes a sticky, native disclosure; selecting a link
+closes the menu and focuses the destination. The homepage script follows
+the reading position and marks the current link. Without JavaScript, the
+menu stays open and its fragment links remain usable.
+The comparison uses the same Calculator question on both sides: three
+selectable manual steps pair original instructions with an analyst illustration
+and thought bubbles; the agent side begins with “One prompt.” and a copyable
+question. Thoughts illustrate the reasoning behind the findings. The shared
+code-step script selects the initial note on load, so all three notes remain
+readable when JavaScript is disabled.
+The original-instruction panel starts expanded on desktop. On narrow screens,
+the homepage script collapses it; a native disclosure keeps the code available
+while the thought bubble and agent prompt remain close together.
+Dinosaur is the first example; Calculator follows as the native example.
+Both name the goal and the reason to inspect the program before showing the
+demo. A labeled finding explains what REA returned, and the flow distinguishes
+REA’s inspection from the agent’s interpretation and implementation.
+Its game precedes the prompt and code on small screens. Calculator’s excerpt
+comes from an installed model DLL; Microsoft’s public implementation supplies
+names and a crosscheck. Its controls apply the percentage rule to generic inputs.
+
+The dinosaur example connects an inspected running script to a new playable
+mini-game. `public/assets/dino-speed.js` owns the recovered speed rule and replay;
+`dino-demo.js` imports it for automatic acceleration. The slider chooses a fixed
+speed instead. Drawing, jumping and collision code are newly authored for this
+teaching game. It starts on input, pauses when hidden or outside the viewport,
+and retains a static SVG when JavaScript is disabled. The lab links the speed
+module and complete game source, and replays the rule against recorded
+original-game values.
+
+[evidence/calculator-and-dino.md](evidence/calculator-and-dino.md) records both
+targets, selected findings, attribution and verification scope. Update the
+speed rule, game, check table and evidence together. The original script excerpt
+and its BSD license are credited on the pages. Prompt responses are example
+explanations based on findings.
+
+The general investigation and DX-Ball overview diagrams are maintained as SVG source. Initial layout references were
 created with the built-in image generation tool; [figures.md](figures.md) retains
 their prompts and the current asset notes. Figures provide an overview;
 REA requests, assembly and C remain selectable HTML text. On narrow
@@ -106,6 +237,21 @@ configuration, complete vendor bundles and raw captured results stay outside
 the website.
 [evidence/notion-clipboard.md](evidence/notion-clipboard.md) records the REA
 package version, selected findings, source anchors and module-probe scope.
+
+## Aegis Android case study
+
+The Aegis case inspects the official 3.4.3 APK through REA 6.1.0. It follows
+the default login-code calculation from class search and display references to
+the time block, keyed hash and six-digit output. Selected decompiled Java is
+paired with a readable summary; the original app and excerpts are credited to
+Aegis under its GPL-3.0 license.
+
+`public/assets/aegis-otp.js` is a new teaching reconstruction using the fixed,
+public RFC 6238 test key. `aegis-demo.js` connects it to the clock slider and
+reference-check button. The diagram remains readable and controls stay disabled
+without JavaScript. Keep the demo, selected code and
+[evidence/aegis-login-code.md](evidence/aegis-login-code.md) aligned. The APK and
+analysis-provider JAR remain official external downloads.
 
 ## TH04 case study
 
@@ -141,7 +287,7 @@ Wrangler version without adding it to REA's package dependencies.
 Cloudflare documents static-asset requests as free and unlimited, with no
 additional storage cost. See [billing and limitations](https://developers.cloudflare.com/workers/static-assets/billing-and-limitations/).
 
-### Preview and deploy
+### Local and hosted previews
 
 Run these commands from the repository root. `--cwd website` makes the build
 paths consistent with the website configuration. Preview locally first:
@@ -186,13 +332,7 @@ See Cloudflare's [nameserver setup procedure](https://developers.cloudflare.com/
 for the complete migration steps. A CNAME to the preview's `workers.dev` hostname
 at the current DNS provider does not configure a Workers Custom Domain.
 
-Publish to the production Worker:
-
-```sh
-npx wrangler@4.149.0 deploy --cwd website --env production
-```
-
-This creates or updates `rea-website`, attaches `rea.tools`, and lets Cloudflare
+The production environment creates or updates `rea-website`, attaches `rea.tools`, and lets Cloudflare
 manage its DNS record and HTTPS certificate. Deployment can succeed while the
 zone is pending; verify public HTTPS after activation and certificate issuance.
 An existing CNAME at `rea.tools`
@@ -206,19 +346,40 @@ Verify <https://rea.tools/>, <https://rea.tools/guides/javascript/>,
 resolve correctly. The root README and browser guide use `https://rea.tools/`
 as the public website URL.
 
-Deployments are manual. The existing GitHub Pages publisher remains available
-as a separate host; it does not publish to Cloudflare.
+Production publication uses the synchronized GitHub Actions workflow below.
+Local Wrangler commands above publish only the separate preview Worker.
 
-## GitHub Pages
+## Synchronized production publishing
 
-`.github/workflows/website-pages.yml` prepares and deploys only `website/public`.
-It is the sole Pages publisher, manually triggered and restricted to `main`;
+`.github/workflows/website-pages.yml` prepares `website/public` once and deploys
+the same artifact to Cloudflare (`rea.tools`) and GitHub Pages. It is the sole
+production publisher, manually triggered and restricted to `main`;
 ordinary pushes and pull requests do not publish the site.
 
-Website checks run only for pull requests that change `website/`, the verification
-script or workflow definitions. They check local links, HTML fragments, SVG XML
-and the single Pages publisher without installing npm dependencies. The same
-checks run before each manual deployment. You can also run them locally:
+Configure these repository **Actions secrets** before publishing:
+
+- `CLOUDFLARE_API_TOKEN`: a Cloudflare token using the **Edit Cloudflare Workers**
+  template, scoped to the website's account and zone.
+- `CLOUDFLARE_ACCOUNT_ID`: that Cloudflare account's ID.
+
+See Cloudflare's [GitHub Actions authentication instructions](https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/).
+The default `both` target checks that both secrets are present before preparing
+a release. Cloudflare deploys first; GitHub Pages deploys after that step succeeds.
+
+Preparation adds `deployment.json` with the workflow's commit SHA. Cloudflare
+receives the extracted Pages artifact through Wrangler's explicit assets path;
+the production environment disables Wrangler's preview custom build, so deployment
+uses the prepared artifact directly. The workflow then
+checks the selected public version markers and reports success only when they
+match that commit. A failed publication remains failed; fix its cause and rerun the
+workflow to complete both deployments. The two hosts can update at different
+times while a run is in progress.
+
+Website checks run only for pull requests that change `website/`, the website
+scripts or workflow definitions. They check local links, HTML fragments, SVG XML,
+search/sharing metadata and the single Pages publisher without installing npm
+dependencies. The same asset preparation and verification run before each manual
+deployment. With the preview environment active, run them locally:
 
 ```sh
 python3 scripts/prepare-website.py
@@ -233,14 +394,25 @@ the old site.
 
 After the site is approved and merged, select **GitHub Actions** under the
 repository's **Settings → Pages → Build and deployment**. Then run **Publish REA
-website** from the Actions tab on `main`. The workflow uses the `github-pages`
-environment and the official Pages actions.
+website** from the Actions tab on `main`. This publishes both production hosts.
+The workflow uses the `github-pages` environment, the official Pages actions and
+Cloudflare's Wrangler action.
 
-The equivalent CLI command is:
+The equivalent CLI command publishes both hosts:
 
 ```sh
 gh workflow run website-pages.yml --repo morluto/rea --ref main
 ```
+
+While Cloudflare credentials are being configured, an explicitly requested
+Pages-only publication uses the same workflow with `target=pages`:
+
+```sh
+gh workflow run website-pages.yml --repo morluto/rea --ref main -f target=pages
+```
+
+This mode verifies the Pages commit marker. The default remains `both` for
+synchronized production releases.
 
 Local development does not change Pages settings or run the deployment workflow.
 Any environment protection rules are configured separately when publication is

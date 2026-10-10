@@ -15,7 +15,7 @@ bun run test:e2e
 SCREENSHOTS_E2E_PRODUCTION=1 bun run test:e2e
 ```
 
-`bun run test:e2e` runs 37 tests: 34 tests that directly drive/inspect the product with Tester Army (23 in `tests/editor.e2e.ts`, 11 for Style Lab, Scene Playground and the magnifier in `tests/scene-style-lab.e2e.ts`), plus three tests that run 56 existing regression groups (35 browser/export, 12 UI, nine API). Nested loops cover every advertised device size, layout, orientation, theme and built-in font. Counts refer to test/group definitions, not every loop iteration.
+`bun run test:e2e` runs 58 tests: 55 tests that directly drive/inspect the product with Tester Army (30 in `tests/editor.e2e.ts`, 11 for Style Lab, Scene Playground and the magnifier in `tests/scene-style-lab.e2e.ts`, 14 for iPhone Duo, App Store creatives and the issue 41 export regression in `tests/targets.e2e.ts`), plus three tests that run 56 existing regression groups (35 browser/export, 12 UI, nine API). Nested loops cover every advertised device size, layout, orientation, theme and built-in font. Counts refer to test/group definitions, not every loop iteration.
 
 For one direct regression:
 
@@ -55,7 +55,12 @@ Use the default output directory for this suite's ZIP-content checks; the publis
 | Product flow | Verification |
 | --- | --- |
 | iOS, Mac, Android tabs and last selected device | Direct tab round-trip verifies device and preserved copy; UI harness verifies all combinations. |
-| iPhone, iPad, Apple TV, Watch, CarPlay, Mac, Android phone, 7-inch/10-inch tablets, feature graphic | Ten direct deck tests edit/create/undo on each device; browser harness exports every device at every advertised size and checks screenshot pixels. |
+| iPhone, iPad, iPhone Duo (4 decks), Apple TV, Watch, CarPlay, Mac, Android phone, 7-inch/10-inch tablets, feature graphic, App Store creatives (3 decks) | Seventeen direct deck tests edit/create/undo on each device; browser harness exports every device at every advertised size and checks screenshot pixels. |
+| iPhone Duo orientations and displays | Direct test switches outer portrait → landscape → inner landscape → inner portrait → outer, edits copy, checks each deck keeps its own copy and a hand-placed rotated transform, the saved device/orientation, and reload. UI harness iterates every layout on both Duo displays in both orientations. |
+| iPhone Duo and creative export sizes | Seven direct ZIP tests check exact 1398×2034, 2034×1398, 2007×2853, 2853×2007, 5244×2950, 3840×1646, 3840×2560 and 1920×1280 PNGs, file paths, PNG color type 2 and no alpha. |
+| Legacy project upgrade | Direct v2 project with a hand-placed caption saves as v3 with the existing deck unchanged and every new deck present. |
+| Creative guides | Direct test finds the safe-area guide and both placement previews on the editable canvas only, never in the export canvas. |
+| Issue 41: cleared copy in exports | Direct test confirms the editable canvas shows the `LABEL` / `Headline goes here` hints, then exports a cleared screen and a zero-width-space screen and requires them to be pixel-identical. Against the unfixed CSS it failed with 14,379 differing bytes; it passes with the fix. |
 | Portrait/landscape and every layout | UI harness iterates devices/layouts and both supported tablet orientations, checks editing/persistence. |
 | Screen create, select, duplicate, delete, empty state, reorder | Direct CRUD and keyboard reorder assertions; UI harness pointer/keyboard ordering, selected copy, final-slide deletion/undo and usable empty states. |
 | Undo/redo, cross-deck editing, shortcuts | Direct regression proves rapid copy edit + Add screen preserves copy after Undo on ten decks; harness checks typing, menu arrows, cross-deck history and undo/redo. |
@@ -87,6 +92,9 @@ Harness integration also corrected trailing-slash URLs from `app.baseUrl`: `//ap
 
 ## Honest limits
 
+- Apple's iPhone Duo bezels are not in the repository (licence) and were not used: bezel measurement and the real-bezel render/export path were verified with a synthetic bezel PNG of known geometry, not Apple's files.
+- Universal creative header/search crops are centred estimates, not Apple's published crop. The art safe areas come from Apple's templates.
+
 - Chrome on a local desktop and emulated touch/viewport sizes are verified. Real iOS/Android hardware, WebKit/Firefox rendering and installed macOS system fonts on other operating systems are not covered.
 - This is flow/regression coverage, not a complete accessibility audit, visual pixel-baseline suite, load test, or exhaustive security scan. Keyboard actions and responsive overflow are exercised; screen readers, every contrast combination and every tab sequence are not exhaustively judged.
 - Export exposes a busy/progress state and error recovery. The product has no export-cancel control; no cancellation test is presented as covered. Reset dialog cancellation is a separate flow.
@@ -117,3 +125,61 @@ Before the ESM fix, independent Luna verification passed both 26-test suites and
 The independent Luna follow-up passed the repaired cold root dev API sequence (9/9), a fresh dev suite (26/26 plus all 56 groups, zero failures/skips/flakes/retries/model use and all cleanups complete), typecheck and build. It verified the built animation plugin CSS, reviewed the retained final production 26/26 report, and validated a copied standalone scaffold with a webpack build plus all nine API groups using its bundled migration fixture. Production was not repeated during this follow-up; it was independently run before the config fix and fully rerun by the implementation afterward. No additional findings remained. The follow-up report is `/Users/parthjadhav/research/e2e-rollout-2026-10-03/screenshots-luna-followup.md`; cold-dev logs are under `/tmp/screenshots-luna-followup-20261003-root-dev/`. Both independent loops confirmed Chrome use, freed port 4312, workspace cleanup and unchanged canonical project/assets.
 
 The canonical `app-store-screenshots.json` and source `public/` assets remained unchanged, and the original untracked `promo/` directory was preserved. No commits, pushes, PRs, store uploads or external feedback were created.
+
+### iPhone Duo, App Store creatives and issue 41 (2026-10-07)
+
+Validated locally with installed Google Chrome and Playwright WebKit.
+
+| Check | Result |
+| --- | --- |
+| `bun run typecheck`, `bun run build` | Passed |
+| Dev Tester Army suite | 54/55 passed; all 56 harness groups (35 browser/export, 12 UI, 9 API) passed |
+| Production Tester Army suite | 54/55 passed; all 56 harness groups passed |
+| The one failure in both | `keyboard screen reorder…`: the ArrowDown press doesn't move the item within the timeout when it runs after the rest of `editor.e2e.ts`. It also fails on unmodified `main` (`editor.e2e.ts` alone: 22/23) and passes when run by itself (2/2). It predates this change and is still open. |
+| `tests/targets.e2e.ts` | 11/11 passed (12/12 after the Duo design pass below). The issue 41 test failed against the old `[contenteditable]:empty::before` rule (14,379 differing bytes) and passes with the fix. |
+| Manual exports (Chrome, dev and production servers) | All four Duo sizes and 5244×2950: exact dimensions, color type 2, no alpha. Guides absent from PNGs. Mismatched capture letterboxed and named in the warning. |
+| Repeated exports, en/de/ar | `creative-universal` (12 PNGs) and `duo-inner-landscape` (18 PNGs), three times in Chrome and twice in WebKit, all exact, opaque and with every locale folder; about 6 s and 5 s per export, with no slowdown across runs. |
+| Synthetic bezel in `public/frames/` | `/api/frames` measured the cutout exactly (51, 63, 1398×2034, radius 150). Portrait and turned-landscape frames rendered and exported correctly. |
+
+Apple's iPhone Duo bezel pack was downloaded but not opened. Opening it requires accepting Apple's licence, and that licence forbids redistribution. The real-bezel path was therefore verified only with a synthetic bezel. Apple's creative templates (universal, header, search) were downloaded from developer.apple.com and their "Art Safe Area" layers measured. No commits, pushes, uploads or external contact were made.
+
+### iPhone Duo design pass (7 October 2026)
+
+This pass added Duo-specific placements, the **Folded + open** pair and new starter decks (see `../iphone-duo.md`), plus one test: `duo folded + open pairs the other display and never reuses the front capture`.
+
+| Check | Result |
+| --- | --- |
+| `typecheck`, `build` | Passed |
+| Dev Tester Army suite | 56/56 passed, including the keyboard reorder test that failed in the earlier run; all 56 harness groups passed. The UI harness now selects **Folded + open** on Duo decks. |
+| Manual exports | All four Duo decks, with every layout and with a designed example deck, exported from realistic synthetic captures at exact sizes. Folded + open drew each display in its own frame, and export reported no letterbox or placeholder warnings when both captures matched. |
+
+### Apple bezels (7 October 2026)
+
+The editor now draws iPhone, iPad, Apple Watch, Apple TV, Mac, App Store creatives and iPhone Duo under Apple's own bezels when they are in `public/frames/` (see the template README, Real bezels). The bezels are now bundled in `public/frames/`, so the test server copies them and every suite run covers the shipped frames. With them in place, Scene Playground steps first took longer than the 500 ms undo-grouping window. The cause: `DeviceDepth` changed its element tree when shadow, glow or tilt toggled, remounting every frame and re-decoding its bezel. The wrapper is now always the same shape, and the undo test passes with the bezels in place.
+
+| Check | Result |
+| --- | --- |
+| Dev Tester Army suite | 56/56 passed; all 56 harness groups passed |
+| Manual exports with all nine bezels | iPhone, iPad, Watch, TV, Mac, universal creative and all four Duo decks exported at every listed size, color type 2 and no alpha, with no warnings |
+
+### Real iPhone Duo captures (7 October 2026)
+
+Apple's Food Truck sample app was built with Xcode 27.1 RC and captured on the iPhone Duo simulator (iOS 27.1) with `../scripts/capture-iphone-duo.sh` in every pose: closed, closed and turned, open, Book, and open and turned. Every capture came out at the exact App Store size. The captures were then exported through the editor under Apple's bezels: all four Duo decks, opaque RGB, no warnings.
+
+Two fixes came out of this:
+
+- **Bezel cutouts are now measured per corner** (`radii` in `/api/frames`) and the capture is clipped to that shape. The Duo's outer display is square on its hinge side and rounded on the other, so a single radius let the capture poke past the bezel's body.
+- **Turned poses are captured with the phone turned left.** That orientation matches Apple's landscape bezel, which has the camera top left.
+
+### Duo capture checks and bezel measurement (9 October 2026)
+
+Fixes from the review of PR #44.
+
+- **Duo captures are matched within 0.5 %.** The two displays differ by 2.35 %, and the earlier 3 % tolerance let an outer capture pass as inner, so it was cropped without a warning. Other devices keep 3 %, which covers every Apple Watch size: they differ from the Ultra's screen by up to 2.6 %.
+- **Inline (data URI) captures are decoded on load,** so their size is known after a reload.
+- **Bezels are measured with a scanline flood fill over the alpha channel only.** All nine bundled bezels now measure in 250 ms instead of 2,065 ms (Node 24), with peak memory at 258 MB instead of 561 MB. The results are identical.
+
+| Check | Result |
+| --- | --- |
+| New tests: an outer-display capture on the inner deck is flagged, served and inline | Both fail on the old code. The inline test still fails with only the tolerance fixed. Both pass with the fixes. |
+| Dev Tester Army suite | 58/58 passed; all 56 harness groups passed |

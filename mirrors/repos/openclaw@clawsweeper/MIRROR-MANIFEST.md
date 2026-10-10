@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/clawsweeper` — 26 default patterns, 3 followed patterns, 47 file(s) materialized.
+Mirror of `openclaw/clawsweeper` — 26 default patterns, 3 followed patterns, 50 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/clawsweeper` — 26 default patterns, 3 followed patterns, 4
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 47 |
+| Files         | 50 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -103,11 +103,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 40 | ✓ | [`prompts/repair/execute.md`](prompts/repair/execute.md) |
 | 41 | ✓ | [`prompts/repair/plan-only.md`](prompts/repair/plan-only.md) |
 | 42 | ✓ | [`prompts/repair/worker-system.md`](prompts/repair/worker-system.md) |
-| 43 | ✓ | [`prompts/review-commit.md`](prompts/review-commit.md) |
-| 44 | ✓ | [`prompts/review-item.md`](prompts/review-item.md) |
-| 45 | → | [`changelog.d/README.md`](changelog.d/README.md) |
-| 46 | → | [`docs/limits.md`](docs/limits.md) |
-| 47 | → | [`docs/README.md`](docs/README.md) |
+| 43 | ✓ | [`prompts/review-close-reasons.md`](prompts/review-close-reasons.md) |
+| 44 | ✓ | [`prompts/review-commit.md`](prompts/review-commit.md) |
+| 45 | ✓ | [`prompts/review-item-issue.md`](prompts/review-item-issue.md) |
+| 46 | ✓ | [`prompts/review-item-pr.md`](prompts/review-item-pr.md) |
+| 47 | ✓ | [`prompts/review-item.md`](prompts/review-item.md) |
+| 48 | → | [`changelog.d/README.md`](changelog.d/README.md) |
+| 49 | → | [`docs/limits.md`](docs/limits.md) |
+| 50 | → | [`docs/README.md`](docs/README.md) |
 
 ---
 

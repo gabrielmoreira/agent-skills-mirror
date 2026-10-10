@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["mcp>=1.2"]
+# dependencies = ["mcp>=1.7,<2"]
 # ///
 """MCP server for best-of-Agent-Harnesses.
 
@@ -9,7 +9,8 @@ Serves the curated list (harnesses.json) as tools so agents can recommend
 agent harnesses: recommend, compare, compare_for, pick_harness,
 pick_infrastructure (curated picks plus live GitHub/Hacker News discovery),
 search_harnesses, get_harness, list_categories, plus the decision guides,
-templates (files to copy), and playbooks (step-by-step setup guides).
+templates (files to copy), playbooks (step-by-step setup guides), and skills
+(folders an agent installs to check its own setup).
 
 Run directly from GitHub (no clone needed):
     uv run https://raw.githubusercontent.com/RyanAlberts/best-of-Agent-Harnesses/main/mcp/server.py
@@ -21,10 +22,15 @@ import urllib.request
 from pathlib import Path
 
 from mcp.server.fastmcp import FastMCP
+from mcp.types import ToolAnnotations
 
 DATA_URL = "https://raw.githubusercontent.com/RyanAlberts/best-of-Agent-Harnesses/main/harnesses.json"
 
 mcp = FastMCP("agent-harnesses")
+
+# Every tool only reads, and every tool can reach the network: data() fetches
+# harnesses.json from GitHub when there is no local checkout.
+_READ_ONLY = ToolAnnotations(readOnlyHint=True, openWorldHint=True)
 
 _data: dict | None = None
 
@@ -125,7 +131,7 @@ def _ranked(d: dict, use_case: str, max_rank: int = 4, min_a: int = 0,
     return scored
 
 
-@mcp.tool()
+@mcp.tool(annotations=_READ_ONLY)
 def pick_harness(use_case: str, max_complexity: str = "complex",
                  min_autonomy: str = "", min_recovery: str = "",
                  open_source_only: bool = False, limit: int = 5) -> str:
@@ -160,7 +166,7 @@ def pick_harness(use_case: str, max_complexity: str = "complex",
     }, indent=2, ensure_ascii=False)
 
 
-@mcp.tool()
+@mcp.tool(annotations=_READ_ONLY)
 def recommend(need: str, language: str = "", must_run_unattended: bool = False,
               open_source_only: bool = False) -> str:
     """Opinionated single recommendation for a need — a decision, not a list.
@@ -237,7 +243,7 @@ def recommend(need: str, language: str = "", must_run_unattended: bool = False,
     }, indent=2, ensure_ascii=False)
 
 
-@mcp.tool()
+@mcp.tool(annotations=_READ_ONLY)
 def search_harnesses(query: str, limit: int = 10) -> str:
     """Keyword search across all 100+ projects (name, description, tags, category).
 
@@ -260,7 +266,7 @@ def search_harnesses(query: str, limit: int = 10) -> str:
                       indent=2, ensure_ascii=False)
 
 
-@mcp.tool()
+@mcp.tool(annotations=_READ_ONLY)
 def get_harness(github_id: str) -> str:
     """Full record for one project by github_id (e.g. "anomalyco/opencode")."""
     for p in data()["projects"]:
@@ -270,7 +276,7 @@ def get_harness(github_id: str) -> str:
                        "hint": "use search_harnesses to find the right id"})
 
 
-@mcp.tool()
+@mcp.tool(annotations=_READ_ONLY)
 def compare(github_ids: list[str]) -> str:
     """Side-by-side comparison of 2-4 harnesses by github_id — for "should I use X or Y?".
 
@@ -362,7 +368,7 @@ def _compare_payload(d: dict, projects: list, warnings: list) -> dict:
     }
 
 
-@mcp.tool()
+@mcp.tool(annotations=_READ_ONLY)
 def compare_for(use_case: str, limit: int = 3, open_source_only: bool = False) -> str:
     """Pick the top harnesses for a use case or task and compare them side by side.
 
@@ -497,7 +503,7 @@ def _live_hn(query: str, limit: int = 5) -> list:
     } for h in hits[:limit]]
 
 
-@mcp.tool()
+@mcp.tool(annotations=_READ_ONLY)
 def pick_infrastructure(need: str, level: str = "", include_live_search: bool = True,
                         open_source_only: bool = False, limit: int = 5) -> str:
     """Pick agent infrastructure at any level of the stack: curated list first,
@@ -611,7 +617,7 @@ def pick_infrastructure(need: str, level: str = "", include_live_search: bool = 
     }, indent=2, ensure_ascii=False)
 
 
-@mcp.tool()
+@mcp.tool(annotations=_READ_ONLY)
 def list_comparisons() -> str:
     """The list's head-to-head decision guides (e.g. "OpenClaw vs Hermes",
     "How to pick a harness") — slug, title, and summary for each. Fetch the
@@ -620,7 +626,7 @@ def list_comparisons() -> str:
                       indent=2, ensure_ascii=False)
 
 
-@mcp.tool()
+@mcp.tool(annotations=_READ_ONLY)
 def get_comparison(slug: str) -> str:
     """Full markdown of one decision guide by slug (see list_comparisons).
     Guides cover architecture trade-offs, field reports, and the post-June-2026
@@ -644,7 +650,7 @@ def _fetch_text(local: Path, raw_url: str) -> str:
         return r.read().decode()
 
 
-@mcp.tool()
+@mcp.tool(annotations=_READ_ONLY)
 def list_templates() -> str:
     """Copy-paste setup files for agent harnesses (an AGENTS.md that works in
     every harness, safe Claude Code settings, a minimal harness in Python, ...):
@@ -653,7 +659,7 @@ def list_templates() -> str:
     return json.dumps({"templates": data().get("templates", [])}, indent=2, ensure_ascii=False)
 
 
-@mcp.tool()
+@mcp.tool(annotations=_READ_ONLY)
 def get_template(slug: str) -> str:
     """One template by slug (see list_templates): its README plus the full
     content of every file, each with the path to write it to. Use this when a
@@ -671,7 +677,7 @@ def get_template(slug: str) -> str:
                        "available": [t["slug"] for t in data().get("templates", [])]})
 
 
-@mcp.tool()
+@mcp.tool(annotations=_READ_ONLY)
 def list_playbooks() -> str:
     """Step-by-step guides for one setup task each (build your own harness,
     one AGENTS.md for every harness, ...): slug, title, and summary. Fetch the
@@ -679,7 +685,7 @@ def list_playbooks() -> str:
     return json.dumps({"playbooks": data().get("playbooks", [])}, indent=2, ensure_ascii=False)
 
 
-@mcp.tool()
+@mcp.tool(annotations=_READ_ONLY)
 def get_playbook(slug: str) -> str:
     """Full markdown of one playbook by slug (see list_playbooks)."""
     for pb in data().get("playbooks", []):
@@ -690,7 +696,43 @@ def get_playbook(slug: str) -> str:
                        "available": [pb["slug"] for pb in data().get("playbooks", [])]})
 
 
-@mcp.tool()
+@mcp.tool(annotations=_READ_ONLY)
+def list_skills() -> str:
+    """Agent skills that check a user's own harness setup (what the agent can
+    reach, whether its 'tests pass' claims hold, where tokens go, which
+    guardrails leak, ...): name, title, summary, description (when to use
+    it), install command, and file list for each. Fetch one with
+    get_skill(name)."""
+    skills = [{k: s[k] for k in ("name", "title", "summary", "description", "group", "version",
+                                 "license", "install", "url")} | {"files": [f["path"] for f in s["files"]]}
+              for s in data().get("skills", [])]
+    return json.dumps({"skills": skills}, indent=2, ensure_ascii=False)
+
+
+@mcp.tool(annotations=_READ_ONLY)
+def get_skill(name: str, target: str = "claude-code") -> str:
+    """One skill by name (see list_skills): every file's content, each with the
+    path to write it to. target picks the skills folder: "claude-code" writes
+    to .claude/skills/<name>/, "agents" writes to .agents/skills/<name>/ (read
+    by Codex, Gemini CLI, Cursor, and OpenCode). Write the files, then tell the
+    user the skill is installed and how to ask for it."""
+    base = {"claude-code": ".claude/skills", "agents": ".agents/skills"}.get(target)
+    if base is None:
+        return json.dumps({"error": f"unknown target: {target}", "available": ["claude-code", "agents"]})
+    root = Path(__file__).resolve().parent.parent / "skills" / name
+    for s in data().get("skills", []):
+        if s["name"] == name:
+            return json.dumps({
+                "name": name, "title": s["title"], "install": s["install"],
+                "files": [{"path": f"{base}/{name}/{f['path']}",
+                           "content": _fetch_text(root / f["path"], f["raw_url"])}
+                          for f in s["files"]],
+            }, indent=2, ensure_ascii=False)
+    return json.dumps({"error": f"unknown skill: {name}",
+                       "available": [s["name"] for s in data().get("skills", [])]})
+
+
+@mcp.tool(annotations=_READ_ONLY)
 def list_categories() -> str:
     """The list's 10 categories and 14 curated use-case intents, with project counts."""
     d = data()

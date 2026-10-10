@@ -1,8 +1,8 @@
 # Cron tools
 
 Agent-facing tools over the `cron` domain. Six per-operation tools
-(`add.rs`, `list.rs`, `update.rs`, `remove.rs`, `run.rs`, `runs.rs`) are the
-implementation; `collapsed.rs` wraps them into a single action-dispatched
+([`add.rs`](./add.rs), [`list.rs`](./list.rs), [`update.rs`](./update.rs), [`remove.rs`](./remove.rs), [`run.rs`](./run.rs), [`runs.rs`](./runs.rs)) are the
+implementation; [`collapsed.rs`](./collapsed.rs) wraps them into a single action-dispatched
 `CronTool`. All seven are re-exported wholesale by `crate::tools` (`pub use
 crate::cron::tools::*` in `tools/mod.rs`).
 
@@ -75,17 +75,18 @@ or immediately execute a stored command or agent prompt on the host.
 
 - `cron` domain: [`../README.md`](../README.md): job/run model, scheduler,
   delivery modes, agent-job minimum interval.
-- `crates/openhuman-core/src/tools/impl/system/schedule.rs`: the separate
+- [`crates/openhuman-core/src/tools/impl/system/schedule.rs`](../../tools/impl/system/schedule.rs): the separate
   one-shot `schedule` tool built on `cron::add_once` / `cron::add_once_at`;
   not part of the collapse above.
 - `crates/openhuman-core/src/tools/impl/meta/collapse.rs` (module path
   `tinytools::collapse`): the generic
   action-collapsing helper `collapsed.rs` builds on.
+- [Cron and scheduling](../../../../../gitbooks/features/native-tools/cron.md)
 
 ## Tests
 
-`add_tests.rs`, `list_tests.rs`, `update_tests.rs`, `remove_tests.rs`,
-`run_tests.rs`, `runs_tests.rs` cover each per-operation tool;
-`collapsed_tests.rs` covers the merged schema, per-action versus fallback
+[`add_tests.rs`](./add_tests.rs), [`list_tests.rs`](./list_tests.rs), [`update_tests.rs`](./update_tests.rs), [`remove_tests.rs`](./remove_tests.rs),
+[`run_tests.rs`](./run_tests.rs), [`runs_tests.rs`](./runs_tests.rs) cover each per-operation tool;
+[`collapsed_tests.rs`](./collapsed_tests.rs) covers the merged schema, per-action versus fallback
 permission levels, the unknown-action error, and that every member is
 `Hidden`.

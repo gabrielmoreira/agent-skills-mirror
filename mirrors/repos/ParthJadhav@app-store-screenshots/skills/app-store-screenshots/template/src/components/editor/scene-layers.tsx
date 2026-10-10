@@ -301,7 +301,11 @@ function SceneDecor({
 
 // ---------- Device depth ----------
 
-/** Shadow, glow and 3D tilt around a device frame. Classic scenes render the frame untouched. */
+/**
+ * Shadow, glow and 3D tilt around a device frame. The wrapper is always the
+ * same shape, even in classic scenes, so toggling depth never remounts the
+ * frame and re-decodes its (large) bezel image.
+ */
 export function DeviceDepth({
   scene,
   cW,
@@ -313,7 +317,6 @@ export function DeviceDepth({
   accent: string;
   children: React.ReactNode;
 }) {
-  if (!scene.shadow && !scene.glow && !scene.tilt) return <>{children}</>;
   const s = scene.shadow / 100;
   const g = scene.glow / 100;
   return (

@@ -24,7 +24,10 @@ import {
   IMPORTED_FONT_FAMILY,
   PLATFORM_DEVICES,
   SCREENSHOT_FONTS,
+  ORIENTATION_PAIRS,
   THEMES,
+  deviceForOrientation,
+  orientationOf,
   supportsLandscape,
   themeById,
 } from "@/lib/constants";
@@ -88,7 +91,10 @@ export function Toolbar(props: Props) {
   const showLocale = props.locales.length > 1;
 
   const deviceLabel = DEVICE_LABEL[props.device];
-  const platformDevices = PLATFORM_DEVICES[platform];
+  // Paired orientations share one picker entry; the Orientation menu switches.
+  const pickerDevice = deviceForOrientation(props.device, "portrait");
+  const platformDevices = PLATFORM_DEVICES[platform].filter((d) => deviceForOrientation(d, "portrait") === d);
+  const orientation = orientationOf(props.device, props.orientation);
   const activeTheme = themeById(props.themeId);
 
   const fontImporter = React.useRef<FontImporterHandle>(null);
@@ -146,7 +152,7 @@ export function Toolbar(props: Props) {
         <FlaskConical className="h-3.5 w-3.5" />
         Style Lab
       </Button>
-      <ScenePlayground scene={props.scene} theme={activeTheme} disabled={props.busy} onChange={props.setScene} />
+      <ScenePlayground scene={props.scene} theme={activeTheme} disabled={props.busy} straightDevices={props.device.startsWith("duo-")} onChange={props.setScene} />
 
       <Select value={activeTheme.id} onValueChange={props.setThemeId} disabled={props.busy}>
         <SelectTrigger className="h-8 w-40 text-xs" title="Theme" aria-label="Theme">
@@ -219,12 +225,16 @@ export function Toolbar(props: Props) {
       {/* Mac has a single device, so the tab alone says which deck is open. */}
       {platformDevices.length > 1 && (
         <Select
-          value={props.device}
-          onValueChange={(v) => props.setDevice(v as Device)}
+          value={pickerDevice}
+          onValueChange={(v) => {
+            // Moving between Duo displays keeps the orientation you're working in.
+            const keep = ORIENTATION_PAIRS[props.device] ? orientation : "portrait";
+            props.setDevice(deviceForOrientation(v as Device, keep));
+          }}
           disabled={props.busy}
         >
           <SelectTrigger className="h-8 w-36 text-xs" aria-label="Device" title="Device">
-            <SelectValue placeholder="Device">{deviceLabel}</SelectValue>
+            <SelectValue placeholder="Device">{DEVICE_LABEL[pickerDevice]}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             {platformDevices.map((d) => (
@@ -236,7 +246,7 @@ export function Toolbar(props: Props) {
 
       {hasLandscape && (
         <Select
-          value={props.orientation}
+          value={orientation}
           onValueChange={(v) => props.setOrientation(v as Orientation)}
           disabled={props.busy}
         >

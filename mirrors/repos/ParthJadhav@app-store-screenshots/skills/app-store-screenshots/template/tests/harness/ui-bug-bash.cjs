@@ -100,13 +100,15 @@ const fixture=(extra={})=>({schemaVersion:2,appName:'UI bug bash',themeId:'clean
       await page.getByRole('button',{name:'Undo',exact:true}).click();await pause(750);assert.equal(latest().slidesByDevice.watchos[0].imageElements.length,1);await page.close();
     });
     await check('all devices and layouts render and remain editable in both tablet orientations',async()=>{
-      const devices=['iphone','ipad','tvos','watchos','carplay','mac','android','android-7','android-10','feature-graphic'];
+      const devices=['iphone','ipad','duo-outer','duo-inner','tvos','watchos','carplay','mac','android','android-7','android-10','feature-graphic','creative-universal'];
       const layouts=['Hero','Device bottom','Device top','Two devices','No device','Split (landscape)'];
       for(const device of devices) {
         const {page,latest}=await open(fixture({device,slidesByDevice:{[device]:[slide('Layout',{layout:device==='feature-graphic'?'feature-graphic':'hero'})]}}));
-        for(const orientation of (device==='android-7'||device==='android-10'?['portrait','landscape']:['portrait'])) {
+        // Duo landscape is its own deck: the Orientation menu opens it, so the saved device changes with it.
+        for(const orientation of (['android-7','android-10','duo-outer','duo-inner'].includes(device)?['portrait','landscape']:['portrait'])) {
           if(orientation==='landscape'){await page.getByRole('combobox',{name:'Orientation',exact:true}).click();await page.getByRole('option',{name:'Landscape',exact:true}).click();}
-          for(const layout of (device==='feature-graphic'?['Feature graphic']:layouts)) {
+          // On iPhone Duo the two-device layout is the folded + open pair.
+          for(const layout of (device==='feature-graphic'?['Feature graphic']:layouts.map((l)=>device.startsWith('duo-')&&l==='Two devices'?'Folded + open':l))) {
             await page.getByRole('combobox',{name:'Layout',exact:true}).click();await page.getByRole('option',{name:layout,exact:true}).click();
             const headline=page.getByRole('textbox',{name:device==='feature-graphic'?'Tagline':'Headline',exact:true});
             await headline.fill(`${device} ${orientation} ${layout}`);
@@ -114,7 +116,10 @@ const fixture=(extra={})=>({schemaVersion:2,appName:'UI bug bash',themeId:'clean
             await page.getByRole('button',{name:'Zoom in',exact:true}).click();await page.getByRole('button',{name:'Fit active screen',exact:true}).click();
           }
         }
-        await pause(700);assert.equal(latest().device,device);assert.ok(latest().slidesByDevice[device][0].headline.en.includes(device));await page.close();
+        const duo=device.startsWith('duo-');const saved=duo?`${device}-landscape`:device;
+        await pause(700);assert.equal(latest().device,saved);assert.ok(latest().slidesByDevice[saved][0].headline.en.includes(device));
+        if(duo)assert.ok(latest().slidesByDevice[device][0].headline.en.includes(`${device} portrait`));
+        await page.close();
       }
     });
     await check('Fit active screen recenters a manually panned canvas at default zoom',async()=>{

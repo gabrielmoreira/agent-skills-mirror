@@ -2,7 +2,7 @@
 name: reverse-engineer-anything
 description: Reverse engineer native, managed, Electron/JavaScript, packaged, firmware, and browser targets with REA. Use shipped-artifact or requested runtime evidence to explain features, compare versions, decompile code, or guide a reconstruction. Skip REA for ordinary source-repository architecture analysis.
 metadata:
-  version: "33"
+  version: "34"
 ---
 
 # REA
@@ -31,7 +31,7 @@ When tools are absent or registration is stale:
    `npx -y rea-agents@latest doctor --client codex --json`. Substitute the current
    supported client: `claude_code`, `claude_desktop`, `codex`, `cursor`,
    `gemini_cli`, `windsurf`, `devin`, `opencode`, `antigravity`, `copilot_cli`,
-   `commandcode`, `vscode`, `grok_build`, or `grok_bot`. `grok_bot` has no local
+   `commandcode`, `vscode`, `grok_build`, `omp`, or `grok_bot`. `grok_bot` has no local
    file registration: doctor reports the Grok Bot chat step, and setup does not
    write `mcp.json`. If the client is unknown, use `doctor --json` and
    inspect its registration results before choosing a setup scope.
@@ -146,12 +146,13 @@ Start with the default result and use its inline Evidence and graph context.
 Do not repeat an identical tool call. Make a focused follow-up only when the
 returned result leaves a specific question unanswered.
 
-If MCP reports `resource_constraint` with `details.resource: "transport"`, use
-its reported same-session Evidence reference with a focused application tool,
-or call `export_evidence_bundle` to write the complete session to a selected
-path. The analysis remains complete in the ledger; avoid repeating it merely
-to request the same oversized response. Complete CLI JSON output also streams
-without a single MCP frame.
+If MCP reports `resource_constraint` with `details.resource: "transport"`, call
+`inspect_analysis_view` with its reported same-session Evidence reference for a
+summary, one section/module, or a stable page. Use `trace_application_feature`
+once a seed is known, or call `export_evidence_bundle` to write the complete
+session to a selected path. The analysis remains complete in the ledger; avoid
+repeating it merely to request the same oversized response. Complete CLI JSON
+output also streams without a single MCP frame.
 
 Every conclusion must distinguish observations, inferences, and unknowns. Cite
 Evidence IDs, preserve limitations and incomplete coverage, and never imply

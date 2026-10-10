@@ -12,7 +12,7 @@ confirm-then-execute flow.
 `Web3Service::prepare_dapp_call` (in the vendored `tinywallet-web3` crate) validates the contract
 address and calldata (must be `0x`-prefixed, even-length hex), confirms the
 wallet has an EVM account on the requested network, and stores an
-`UnsignedTx::Evm` quote. This module owns the RPC controllers (`schemas.rs`)
+`UnsignedTx::Evm` quote. This module owns the RPC controllers ([`schemas.rs`](./schemas.rs))
 for the `web3_dapp` namespace; the validation and storage logic lives in the
 crate's `crypto::service`, shared with `swap` and `bridge`, and the agent tools
 in `tinywallet_web3::tools::web3`.
@@ -21,8 +21,8 @@ in `tinywallet_web3::tools::web3`.
 
 | File | Role |
 | --- | --- |
-| `mod.rs` | Module docs. |
-| `schemas.rs` | `web3_dapp` RPC controller schemas and handlers: `call`, `execute`. Handlers deserialize params and delegate to the process-wide `Web3Service` (`prepare_dapp_call` / `execute_quote`), wrapping the result in `Outcome`. |
+| [`mod.rs`](./mod.rs) | Module docs. |
+| [`schemas.rs`](./schemas.rs) | `web3_dapp` RPC controller schemas and handlers: `call`, `execute`. Handlers deserialize params and delegate to the process-wide `Web3Service` (`prepare_dapp_call` / `execute_quote`), wrapping the result in `Outcome`. |
 
 ## RPC / controllers
 
@@ -44,3 +44,10 @@ Namespace `web3_dapp` (method form `openhuman.web3_dapp_<function>`):
 - No backend call is involved in preparing a dapp call; deBridge is only used by `swap` and `bridge`. Signing and broadcast still go through the wallet's crate-internal `sign_and_broadcast_evm`, same as the other two families.
 - The quote id returned by `call` is bound to the chat thread that prepared it, TTL'd at 5 minutes, and restored with a refreshed TTL on a failed broadcast; see the parent [README](../README.md) for the shared quote store.
 - BTC and Solana are out of scope here. `dapp` is EVM-only.
+
+## Further reading
+
+- [Parent module (`web3`)](../README.md)
+- [Wallet](../../../../../gitbooks/features/wallet.md)
+- [tinywallet submodule](../../../../../vendor/tinywallet/README.md)
+- [Loadable modules](../../../../../gitbooks/developing/loadable-modules.md)

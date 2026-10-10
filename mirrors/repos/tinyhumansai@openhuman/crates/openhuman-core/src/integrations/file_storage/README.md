@@ -24,13 +24,13 @@ and TTL enforcement.
 
 | File | Role |
 | --- | --- |
-| `mod.rs` | Export-only module root; re-exports `build_file_storage_tools` and the six `Storage*Tool` structs. |
-| `types.rs` | Serde types for backend responses (`UploadResponse`, `ListFilesResponse`, `FileMeta`, `LinkResponse`, `DeleteResponse`). |
-| `tools/mod.rs` | Module doc listing the backend endpoints and billing model; declares and re-exports the tool submodules. |
-| `tools/helpers.rs` | Shared helpers: `resolve_upload_path`, `validate_file_id`, `validate_visibility`, `sanitize_filename`, `action_dir_for_context`, `readonly_autonomy_block`. |
-| `tools/upload.rs`, `tools/download.rs`, `tools/list.rs`, `tools/link.rs`, `tools/visibility.rs`, `tools/delete.rs` | `StorageUploadFileTool`, `StorageDownloadFileTool`, `StorageListFilesTool`, `StorageGetLinkTool`, `StorageSetVisibilityTool`, `StorageDeleteFileTool` respectively, one `Tool` impl per file. |
-| `tools/registry.rs` | The `build_file_storage_tools` builder. |
-| `tools_tests.rs` | Tool metadata/schema tests and path-resolution/sanitization unit tests. |
+| [`mod.rs`](./mod.rs) | Export-only module root; re-exports `build_file_storage_tools` and the six `Storage*Tool` structs. |
+| [`types.rs`](./types.rs) | Serde types for backend responses (`UploadResponse`, `ListFilesResponse`, `FileMeta`, `LinkResponse`, `DeleteResponse`). |
+| [`tools/mod.rs`](./tools/mod.rs) | Module doc listing the backend endpoints and billing model; declares and re-exports the tool submodules. |
+| [`tools/helpers.rs`](./tools/helpers.rs) | Shared helpers: `resolve_upload_path`, `validate_file_id`, `validate_visibility`, `sanitize_filename`, `action_dir_for_context`, `readonly_autonomy_block`. |
+| [`tools/upload.rs`](./tools/upload.rs), [`tools/download.rs`](./tools/download.rs), [`tools/list.rs`](./tools/list.rs), [`tools/link.rs`](./tools/link.rs), [`tools/visibility.rs`](./tools/visibility.rs), [`tools/delete.rs`](./tools/delete.rs) | `StorageUploadFileTool`, `StorageDownloadFileTool`, `StorageListFilesTool`, `StorageGetLinkTool`, `StorageSetVisibilityTool`, `StorageDeleteFileTool` respectively, one `Tool` impl per file. |
+| [`tools/registry.rs`](./tools/registry.rs) | The `build_file_storage_tools` builder. |
+| [`tools_tests.rs`](./tools_tests.rs) | Tool metadata/schema tests and path-resolution/sanitization unit tests. |
 
 ## Agent Tools
 
@@ -77,7 +77,7 @@ the sole construction entry point. It returns an empty tool list when
 configured, or the user is not signed in), otherwise builds a
 `SecurityPolicy` from `root_config.autonomy` and returns all six tools.
 
-Called from `crates/openhuman-core/src/tools/ops.rs` (around line 905):
+Called from [`crates/openhuman-core/src/tools/ops.rs`](../../tools/ops.rs) (around line 905):
 
 ```rust
 tools.extend(crate::integrations::file_storage::build_file_storage_tools(...));
@@ -85,8 +85,8 @@ tools.extend(crate::integrations::file_storage::build_file_storage_tools(...));
 
 The tool structs are exported only from this module
 (`crate::integrations::file_storage::Storage*Tool`); unlike the sibling
-`integrations/tools.rs` family they are not re-exported through
-`crates/openhuman-core/src/tools/mod.rs`, because nothing constructs them
+[`integrations/tools.rs`](../tools.rs) family they are not re-exported through
+[`crates/openhuman-core/src/tools/mod.rs`](../../tools/mod.rs), because nothing constructs them
 outside `build_file_storage_tools`.
 
 ## Dependencies
@@ -109,3 +109,8 @@ for `resolve_upload_path` (traversal escape, directory rejection) and
 and end-to-end flows for each tool against a `wiremock` backend (multipart
 upload, 302-to-presigned download, link, visibility, delete, envelope errors).
 </content>
+
+## Further reading
+
+- [Third-party integrations](../../../../../gitbooks/features/integrations/README.md)
+- [Connections](../../../../../gitbooks/features/connections.md)

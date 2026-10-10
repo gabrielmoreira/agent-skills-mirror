@@ -66,7 +66,7 @@ cut before RIFE existed still cuts — and nothing is left unsaid:
 
 | Where | Default without RIFE | Asked for by name |
 |---|---|---|
-| `video-loop` jump repair (section 2) | `--repair auto`: the loop is cut as filmed; `jump_repair` reads `applied: false`, `why`, `rife` (what was not found), `install`, and the worst jump's score; one `video-loop: warning:` line on stderr | `--repair on`: fails with the install line |
+| `video-loop` jump repair (section 2) | `--repair auto`: a jump is cut as filmed, and each filmed ghost is given way to the clean frame beside it (its own `warning:` line). Where a jump is left, `jump_repair` reads `why`, `rife` (what was not found), `install` and `unmade` (the step, target and score the jump search stopped at), and one `video-loop: warning:` line on stderr says the jump frame was not repaired. `applied` is false only where nothing was replaced | `--repair on`: fails with the install line |
 | `video-set` cycle alignment (section 4) | `--align-cycles auto`: the state is skipped and every loop keeps its own length; `cycle_align.<state>` reads `applied: false` with `why`, `rife`, `install`; the set report lists it under `warnings`; one `video-set: warning:` line | `video-cycle-align`: fails with the install line |
 
 A RIFE that is found and then fails (a binary that cannot reach Vulkan, say) is an error in every
@@ -175,21 +175,69 @@ over the loop — and the larger is the step's score.
 Re-making every frame (an offset of half a frame) is not offered: it softens the frames that
 were fine, and it was judged "not corrected" (2026-10-03).
 
+**A filmed ghost is a target of the same stage, first.** A walk filmed in one direction is
+delivered as cut — it never meets the cycle alignment, which takes a clean frame beside a ghost
+(section 4) — so the cut gives its filmed ghosts way itself. The ghost screen reads the cut as
+filmed, before the repair (`ghost_screen` in the report); each frame it names is a round of its
+own (`why: "ghost"`), in frame order, before the jumps are read:
+
+| A filmed ghost at frame j | Taken there | `taken` |
+|---|---|---|
+| both frames beside it clean, and RIFE's frame half way between them has no fault (`ghost` included, as above) | RIFE's frame | `"rife"` |
+| RIFE's frame has a fault, a frame beside it is a filmed ghost too, or no RIFE is installed | the clean frame beside it: the one after, else the one before (`interpolation_quality.clean_beside`, the alignment's own choice at a time on a ghost) | `{"source": k}` |
+| both frames beside it are filmed ghosts too | nothing: the ghost is kept, named, and the direction is to be filmed again | `null` |
+
+Ghost rounds are outside the three-call budget, which is the jumps'. A cell given way is in
+`replaced` like a jump frame made, so the rule "never next to a frame already made" holds around
+it too, and the jumps are then read on the loop as the ghosts left it. A cell given way to the
+frame beside it is that frame shown twice in a row — a step of nothing and a step of two — and the
+jolt index (section 3) measures it as it plays; the GIF and WebP hold it as one frame of twice the
+delay, and are checked for one frame per run of identical cells. The seam gate reads it as filmed
+(below). A loop the screen does not read (drawn part-covered, `reads: false`) has no ghost round.
+
+The report's `jump_repair` carries `replaced` (cycle frame indices, ghost and jump rounds alike), `attempts` (the jumps' calls),
+`blocked` targets, and each round's `why` (`ghost` or `jump`), target, `original` and `proposal`
+measurements (with each one's `ghost`, and the proposal's `crossfade`), `faults`, `look` and
+`outcome`. A jump round adds its step, score and whole/hair parts, its `outcome` `accepted` or
+`rejected`. A ghost round adds its `neighbours`, `taken` and `outcome` (`accepted` for RIFE's
+frame, `given-way` for the frame beside it, `kept`), and `no_proposal` where no frame was made
+("a frame beside it is a filmed ghost too", "no interpolator"); its `original.ghost` is the
+screen's reading. The report and its summary also carry `ghost_given_way` (`frame`, `ghost`,
+`taken`) and `ghost_kept` (`frame`, `ghost`), and the strip metadata carries each where it is not
+empty: `cycle/` is what `video-cycle-align` reads as `cycle.source/`, and its screen no longer
+sees a ghost given way, so the strip says what the cut gave way, in frames of the cut. A
+`warning:` line names each: "frame 10 of the cut carries a part-covered band … a filmed ghost;
+given way to RIFE's frame between frames 9 and 11", "given way to frame 11 beside it, shown twice
+in a row", or "kept … — film this direction again". A cell given way is a cell the jump repair
+made for the source projection and for restoration, which never restores it ([the ghost
+guard](loop-comparison.md#the-ghost-guard)). `--repair off` gives nothing way: the cut's ghosts are
+delivered as filmed, named (section 4).
+
 Blocked targets are skipped while independent candidates remain. Scores are re-read
 after adoption; a rejected target is never retried in that run. The circular last/first
 adjacency rule and call budget still apply. The shared `interpolation_quality` policy
 is the same one used by cycle alignment: `dark_excess > 0.001` or
-`outline_loss > 0.05` rejects a proposal. An empty proposal is also rejected.
+`outline_loss > 0.05` rejects a proposal, and so does a proposal that is a ghost on its own
+coverage (`ghost` over 0.003, read where the loop's ghost screen reads it, section 4). An empty
+proposal is also rejected. A proposal that cross-fades two drawings inside its silhouette
+(`crossfade` over 0.015, section 4) is taken all the same and named: its round's `look` says so, and
+a `warning:` line names the frame.
 The original middle frame is retained, not a duplicate of either neighbour.
 
-The report's `jump_repair` carries `replaced` (cycle frame indices), `attempts`,
-`blocked` targets, and each round's step, target, score, whole/hair parts,
-`original` and `proposal` measurements, `faults`, and `outcome` (`accepted` or
-`rejected`). It also records `score_max_before` / `score_max_after`, why it stopped,
-and which interpolator made the proposals. Rejection is not overall quality failure
+The jump rounds' record is above; `jump_repair` also records `score_max_before` (the cut as
+filmed) / `score_max_after`, why it stopped, and which interpolator made the proposals. Rejection is not overall quality failure
 or success: original drawing changes and normal gait motion can remain.
-When a frame was replaced the seam gate measures the rendered cells
-(`seam_measurement: rendered-cells`), because the source frames no longer say what plays.
+When a frame was made — RIFE's, for a jump or for a filmed ghost — the seam gate measures the
+rendered cells (`seam_measurement: rendered-cells`), because the source frames no longer say what
+plays. A cell given way to the frame beside it is read as filmed (`seam_as_filmed`, frames of the
+cut). The gate asks whether the cut closes, and that frame shown twice in a row is a step of nothing
+and a step of two wherever the ghost was: at the wrap — a ghost at the cut's first frame given way
+to its second, or at its last given way to its first — the step of two read as a cut that does not
+close (a walk whose wrap is an ordinary step read twice its mean step and was refused), and the
+step of nothing as one that closes whatever the cut. On the source frames the cell is the frame as
+filmed; on the rendered cells, the cell of the strip the cut makes with that frame as filmed. A loop
+that only gave its ghosts way to the frames beside them is gated on its source frames, as filmed.
+`--anchor body` reads its `seam_ratio_after_anchor` the same way.
 
 To compare an active result with a final candidate after all processing, use
 [`video-loop-compare`](loop-comparison.md); a seam pass alone is not an improvement.
@@ -198,7 +246,11 @@ same scores around it, with the recorded `facing`: a restoration that brings
 the jump back is not an improvement ([the jump guard](loop-comparison.md#the-jump-guard)).
 
 RIFE is located only when a frame is to be made. A loop with a jump and no RIFE is cut as filmed
-with a warning under `--repair auto`, and fails under `--repair on` (section 1, "Without RIFE").
+with a warning under `--repair auto`, and fails under `--repair on` (section 1, "Without RIFE");
+so does a filmed ghost between two clean frames under `--repair on`. Under `--repair auto` each
+filmed ghost then gives way to the clean frame beside it (`no_proposal: "no interpolator"`), and
+only a jump left (`unmade`: the step, target and score the search stopped at) sets `why`, `rife`
+and `install`.
 `--repair off` cuts the loop as filmed and records `jump_repair: {"applied": false, "why":
 "--repair off"}`. Other states are not touched (`"why": "not a gait state (…)"`).
 
@@ -543,22 +595,25 @@ sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-
 
 - **Length**: the median of the set's own lengths (`--length` overrides). The median is the
   length that needs the fewest made frames across the set; a loop already that long is not
-  touched.
+  resampled — every frame is its own, and only the ghost screen (below) may give one way.
 - **Resample, offset 0**: frame k of a loop of L frames resampled to L* is the source at time
   k·L/L*, cyclic. A time within 0.03 of a source frame takes that frame as filmed; only a time
   between two frames is made, by RIFE at that fraction (section 1). An offset of half a frame,
   which would remake every frame, is not offered (section 2).
 - **Between two source frames** (`--between`): `auto` (default) makes the frame with RIFE,
   measures it (below) and keeps it unless it has a fault, where the nearer source frame is taken
-  instead and named; `rife` keeps every made frame and names the faulty ones; `nearest` takes the
-  nearer source frame every time, so nothing is made and no RIFE is needed, and the motion keeps
+  instead and named — the other one beside it where the nearer is a filmed ghost (below); `rife`
+  keeps every made frame and names the faulty ones; `nearest` takes the nearer source frame every
+  time (the other where the nearer is a filmed ghost), so nothing is made and no RIFE is needed, and the motion keeps
   the filmed frames at up to half a frame off their time (a loop stretched longer shows a frame
   twice, which the GIF and WebP hold as one frame of twice the delay). `video-set` passes
   `--align-between`. `auto` runs RIFE for every frame between two source frames, as `rife` does,
   and needs it installed the same way.
 - **Smear and melt, per made frame**: `cycle_align.smear` lists every frame RIFE made, with its
-  `method` — `rife` (kept) or `nearest` (the nearer source frame taken instead) — its `faults`,
-  and what it has that neither source frame beside it has (`rife.smear`):
+  `method` — `rife` (kept) or `nearest` (a source frame beside it taken instead) — its `faults`,
+  its own ghost reading (`ghost`, below; `null` where the screen does not read the loop), its
+  cross-fade reading and what to `look` at (`crossfade`, below — named, never judged), and what
+  it has that neither source frame beside it has (`rife.smear`):
   - `dark_excess`: dark pixels (luma under 70/255) inside the body beyond the darker neighbour's
     count, as a fraction of its solid pixels — a black smear raises it, a dark part that only
     moved (a hat, a watch) does not. Over 0.1 % it is the fault `smear`.
@@ -569,11 +624,14 @@ sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-
     Over 5 % it is the fault `outline`. A step the flow follows keeps its outline; a figure drawn
     without outlines loses none against neighbours that have none, and is not judged by it.
   - `partial_excess`: part-covered pixels beyond the more ragged neighbour's, as a fraction of
-    its solid pixels. Reported, not judged: a melted frame and a clean one read alike on it.
+    its solid pixels. Reported, not judged: a melted frame and a clean one read alike on it, and a
+    frame made beside a filmed ghost carries the ghost without adding to it — the ghost screen
+    reads part coverage on the frame alone.
 
   Every fault is a line in the report's `warnings` (and on stderr, and in `video-set`'s
   `warnings`), whichever `--between`: under `auto` it says the nearer source frame was taken
-  there; under `rife` that the frame is kept, to look at in `cycle/`. The report counts the
+  there (or the other, the nearer being a filmed ghost); under `rife` that the frame is kept, to
+  look at in `cycle/`. The report counts the
   frames kept from RIFE (`made_by_rife`) and those replaced (`replaced`); a loop row lists both
   (`made_at`, `nearest_at`).
 
@@ -585,6 +643,91 @@ sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-
   short step at every fraction and 32 % for the melted frame. The 5 % line is where a frame stops
   reading as a little soft at a foot and starts reading as melted; it is a reference, not a
   measured optimum, and frames near it are worth a look either way.
+- **The ghost screen, every frame delivered** (`interpolation_quality.ghost_screen`, `rife.ghost`):
+  a video model filming a walk held on twos or threes sometimes leaves a frame half way between two
+  drawings — a band of part coverage where a leg was and is going.
+  Taken at its own time it was delivered as filmed, never measured; a frame RIFE made beside it
+  carried the band, and measured against that neighbour it added nothing. So every frame the
+  alignment delivers is read on its own coverage, not against its neighbours:
+  - `ghost`: part-covered pixels (alpha 0.1–0.9) inside regions at least **5 px** thick
+    (`rife.GHOST_THICK`; an antialiased edge or a keyed strand of hair is a pixel or two wide and
+    erodes away), as a fraction of the frame's solid pixels. Over **0.3 %**
+    (`interpolation_quality.GHOST_WARN`) the frame is a ghost: on a made frame the fault `ghost`.
+  - The screen reads the loop as filmed (`cycle.source/`): `ghost_screen` per loop row and in
+    `cycle_align` — `limit`, `thick_px`, the loop's own `level` (its median frame's reading), `reads`,
+    and `ghosts` (each `frame` of `cycle.source/` over the limit, with its reading). A loop whose
+    level is itself over the limit is drawn part-covered — a glow, a translucent cape — and is not
+    judged (`reads: false`, with `why`): every made frame's `ghost` is `null`, nothing gives way, and
+    a line in `warnings` (on stderr, and in `video-loop`'s own output for the cut) says the screen
+    does not read it, so whoever delivers it looks at `cycle/` instead.
+  - A time on a filmed ghost takes the source frame after it, or the one before it where that one
+    is a ghost too, under `auto` and `nearest`; a made frame that is a ghost gives way like any
+    faulty one, to the nearer source frame, or to the other beside its time where the nearer is a
+    filmed ghost. `rife` keeps both, named. Where both frames beside it are ghosts the ghost is
+    kept, named, and the loop is a take to film again (`retake`, reason `filmed-ghost`, below). A
+    loop already the set's length is screened the same way.
+  - Each cell where a filmed ghost would have been delivered is listed in `ghost_at` (`at`, the
+    ghost `source` as a frame of `cycle.source/`, its `ghost` reading, and the frame `taken` — the
+    ghost itself where it was kept, with why: `kept` is `no-clean-frame` where neither source frame
+    beside its time is clean, under any `--between`, and `between-rife` where `rife` kept it beside
+    a clean one), with a line in `warnings` ("source frame 5 is a filmed ghost (…), so source frame
+    6 beside it was taken there"). `cells_from` says the same per cell. A made frame given way at
+    such a cell says which: the other frame beside its time taken, "the nearer being a filmed
+    ghost", or the nearer kept, "the frames beside it being filmed ghosts too".
+  - Where 0.3 % sits: set by eye on drawn walks, between the half-drawn frames (and the frames
+    made beside them) that a person sees as ghosts, which read well above it, and the frames seen
+    as clean, which read well under it; a sliver of the same kind, too small to see at a strip's
+    size, reads under it too. On the synthetic legs of `tests/video/test_ghost_screen.py` a keyed
+    edge softened over two or three pixels reads 0.04 % and a band of 0.3 coverage between the
+    feet 2 %. It is a reference, not a measured optimum, and a frame near it is worth a look either way.
+  - What it does not see: a frame RIFE made that blends two drawings inside one silhouette — the
+    near and far boots cross-faded while the outline stays whole — has no part coverage to read
+    and is not a ghost here; the cross-fade reading below names it.
+  - `video-loop` reads the same screen on the cut as filmed, for a walk or run (`ghost_screen` in
+    its report), before its jump repair, and gives each ghost it names way there (section 2): a
+    loop delivered as cut — one direction, never aligned, as a run of one direction is — would
+    show it otherwise. RIFE's frame between the two clean frames beside it, else the clean frame
+    beside it, else the ghost kept and named (`ghost_given_way`, `ghost_kept`, a `warning:` line
+    each). The cut it writes is the alignment's `cycle.source/`, so a set aligned later reads a cut
+    already given way; the strip metadata says what was. Under `--repair off` the cut is delivered
+    as filmed and each ghost is a `warning:` line naming `cycle/frame-NNN.png`; the alignment
+    screens `cycle.source/` again and takes a clean frame beside it. The jump repair also rejects
+    a proposal that is a ghost. `video-loop-compare` keeps its versioned measure (`rife.smear`,
+    [loop comparison](loop-comparison.md)) and does not read it; `video-loop-repair` reads it since
+    `source-restoration-v5` ([the ghost guard](loop-comparison.md#the-ghost-guard)): a cell the cut
+    gave a ghost way is never restored to it. Its evidence and receipts of `source-restoration-v4`
+    are refused, never read as v5, as v3's were by v4.
+- **A cross-fade inside the silhouette — named, not judged** (`rife.crossfade`,
+  `interpolation_quality.looks`): where two drawings differ more than the flow can follow — the legs
+  trading places across a gap two or three frames wide — RIFE can move the coverage and cross-fade
+  the colour: both drawings' boots at part strength inside one whole outline. No band of part
+  coverage, nothing darker inside the body, and an outline the outline rule reads only where the art
+  outlines in near-black (it counts pixels under 70/255 as outline): outlined lighter than 70/255
+  (grey, a light brown), the same frame passes every fault.
+  - `crossfade`: in windows 8 % of the body's height over the frame where the two source frames
+    differ, two things in one window — pixels of the made frame's solid body at the plain blend of
+    the two at its own fraction and well away from each (in patches 5 px thick, past an edge's soft
+    rim), and the made frame keeping under 60 % of the source frames' strong edges there (local range
+    over 7 px, wider than RIFE's blur, above half the sources' 95th percentile there): a blend shows
+    each edge at part height, a flow that moved the part shows it whole, only softer. The strong-edge
+    pixels lost in such windows, over the frame's solid pixels — the windows step by half their size,
+    so one lost pixel is counted in up to four of them (nine where the window is an odd number of
+    pixels wide); 0 where it shows no blend. Relative to the source frames' own edges, so the
+    palette's lightness does not decide it.
+  - Over **0.015** (`interpolation_quality.CROSSFADE_LOOK`) the frame is named to look at: its
+    `smear` row's `look` is `["crossfade"]`, and a kept frame (`method: rife`) gets a line in
+    `warnings` ("frame 14 (made by RIFE) may cross-fade two drawings inside its outline …; kept").
+    It is no fault: `auto` keeps it, it gives nothing way, and the retake rule does not count it.
+  - Why a reading and not a fault: checked against frames labelled by eye, it does not part them.
+    On drawn walks the frame seen cross-faded read well over the line and the frames seen clean
+    under it; on synthetic legs (the walker of `tests/video/test_crossfade.py`, its palette varied
+    32 ways — the outline black, brown, grey or none, the boots dark, mid, light or none, two leg
+    fills — four steps, three fractions, 1,536 frames) the colour-blended, coverage-whole frame reads over it in
+    209 of 384 — 74 of 96 outlined in grey, where the fault rules catch 2, but 11 of 96 drawn
+    without outlines — and the clean drawing between, drawn, reads over it in 29 of 384, every one
+    a step of 13 degrees or more between far-apart drawings, most outlined in grey. A fault would
+    give way for clean frames and still pass blends; a line to look at costs neither. 0.015 is set
+    by eye between the cross-faded frames and the clean ones, a reference, not a measured optimum.
 - **What `auto` costs**: a frame replaced shows the nearer source frame, so the motion there
   steps as filmed, up to half a frame off its time, and the loop shows fewer distinct drawings a
   second than `rife` — but no melted one. A clip drawn on twos has a long step between drawings
@@ -617,19 +760,37 @@ sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-
   - **The rule**: a loop is named when its cut is held (`hold` 2 or 3), the set's length leaves
     it under **13 drawings a second** (`align.RETAKE_DRAWINGS_MIN`), and **one or more** frames
     between its drawings were not made (`align.RETAKE_UNMADE_MIN`) — taken from the nearer source
-    frame (`auto`'s replacements, every made time under `nearest`) or made with a fault and kept
-    (`rife`). Each loop row carries `drawings` and `retake` (the record, or `null`): `reason`,
+    frame (`auto`'s replacements, a made ghost's among them, every made time under `nearest`) or
+    made with a fault and kept (`rife`); a filmed ghost given way at a whole time is no frame
+    between drawings left unmade, and is named in `ghost_at` instead. Each loop row carries `drawings` and `retake` (the record, or `null`): `reason`,
     `hold`, `source`, `drawings` (in the cycle), `drawings_per_second_filmed`,
     `drawings_per_second` (at the set's length), `frames_per_drawing` (the gap, in frames of the
     aligned loop), `unmade`, and the `limits`. The report's `retake` lists every such loop (`dir`,
     `name` and the same numbers), a warning line names it ("film this direction again
     (held-drawings) — …", by its directory where two loops share a strip name), and `video-set`
     carries both into its record.
+  - **A filmed ghost with no clean frame beside it** (reason `filmed-ghost`): a ghost the screen
+    names at a time whose source frames on both sides are ghosts too (three in a row at a whole
+    time, two at a time between them) is delivered as filmed — no frame of the take shows the
+    drawing there, and nothing but a new take fixes it. A loop with **one or more** such cells
+    (`ghost_at` `kept: "no-clean-frame"`, `align.RETAKE_GHOST_KEPT_MIN`) is named whatever its
+    hold; a ghost `--between rife` kept beside a clean frame (`between-rife`) is the choice of
+    whoever aligned it and is not counted. Its numbers are under `ghost`: the cells `kept`, their
+    frames of `cycle.source/` (`sources`), the highest reading (`ghost_max`) and the screen's
+    `limit`, with `limits.ghost_kept_min`. Its line: "film this direction again (filmed-ghost) —
+    frame(s) 5 show source frame(s) 10 of cycle.source/, filmed ghosts (…), and the source frames
+    beside each are filmed ghosts too …".
+  - **One record per loop**: `retake` is one object (or `null`). `reason` is the first reason
+    that applies, `held-drawings` before `filmed-ghost`, and `reasons` lists every one; the held
+    numbers (`hold`, `drawings`, …, `unmade`) stand only where `held-drawings` applies, `ghost`
+    only where `filmed-ghost` does, and `limits` carries each one's. A held loop that also keeps a
+    ghost reads `reason: "held-drawings"`, `reasons: ["held-drawings", "filmed-ghost"]`, with a
+    line for each — one new take fixes both.
   - **Not named**: a held loop at its own length (nothing is made — on twos it plays at 12 a
     second, as filmed), a held loop whose made frames all kept their outline, a held loop squeezed
     to 13 drawings a second or more (its drawings come closer than on twos), and a loop drawn every
     frame with a replaced frame (one soft step, not a gap the take cannot fill).
-  - **Exit code and words**: the set is still aligned and written (`applied: true`, exit 0) — the
+  - **Exit code and words** (both reasons): the set is still aligned and written (`applied: true`, exit 0) — the
     loop is the best this take allows, and the caller decides: a pipeline with a retake budget
     films that direction again and aligns the set anew; one without delivers it with the warning.
     Nothing passes quietly: the line is on stderr and in `warnings`, and `retake` is the
@@ -718,7 +879,7 @@ sprite-gen video-cycle-align --loop-dir set/front-walk/loop --loop-dir set/side-
   rewritten at the loop's own cell rules (`cell_height_cap`, body-height target, anchor), at the
   loop's frame rate, so the aligned cycle lasts L*/fps seconds. `strip.json` gains
   `cycle_align` (`from`, `to`, `between`, `taken`, `made_by_rife`, `made_at`, `smear` and/or
-  `nearest_at`, `drawings`, `retake`, `turned_by`, `turned_on`, `view`, `start_foot`, `start_foot_source`, `strikes`, the seam ratio of the rebuilt
+  `nearest_at`, `ghost_screen`, `ghost_at`, `drawings`, `retake`, `turned_by`, `turned_on`, `view`, `start_foot`, `start_foot_source`, `strikes`, the seam ratio of the rebuilt
   cells, `cells_from`, `origin`, and the re-verified GIF/WebP).
 - **Where every cell is from**: `cycle_align.cells_from` holds, per cell of the rebuilt strip,
   `{"source": i}` — frame i of `cycle.source/`, taken as filmed (a turn, a snap, or the nearer

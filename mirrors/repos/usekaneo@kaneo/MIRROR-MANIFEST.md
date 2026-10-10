@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `usekaneo/kaneo` — 26 default patterns, 0 followed patterns, 77 file(s) materialized.
+Mirror of `usekaneo/kaneo` — 26 default patterns, 0 followed patterns, 78 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `usekaneo/kaneo` — 26 default patterns, 0 followed patterns, 77 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 77 |
+| Files         | 78 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -136,6 +136,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 75 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 76 | ✓ | [`apps/site/app/llms.txt/route.ts`](apps/site/app/llms.txt/route.ts) |
 | 77 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 78 | ✓ | [`skills/kaneo-cli/SKILL.md`](skills/kaneo-cli/SKILL.md) |
 
 ---
 
