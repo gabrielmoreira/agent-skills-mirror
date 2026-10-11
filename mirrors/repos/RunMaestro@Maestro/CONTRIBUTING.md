@@ -105,7 +105,7 @@ npm run dev:prod-data  # Start dev server using production data (requires closin
 npm run dev:demo       # Start in demo mode (fresh settings, isolated data)
 npm run dev:web-desktop # Start browser (web-desktop) build dev server
 npm run build          # Full production build (main + renderer + web-desktop + CLI)
-npm run build:main     # Build main process only
+npm run build:main     # Build main process + preload only (clears stale output first)
 npm run build:renderer # Build renderer only
 npm run build:web-desktop # Build browser (web-desktop) bundle only
 npm run build:cli      # Build CLI tool only

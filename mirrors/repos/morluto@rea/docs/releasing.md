@@ -15,6 +15,48 @@ the original run after a partial publication.
 For a release that needs an independently frozen application checkpoint, use
 the optional manual path below. It retains explicit prepare and publish phases.
 
+## Contributor-aware release notes
+
+Use [the rea-changelog-update skill](https://github.com/morluto/rea/blob/main/.agents/skills/rea-changelog-update/SKILL.md)
+to turn the bot draft into grouped Highlights, Changes, and Fixes with inline
+`Thanks @...` credit. `npm run release:notes -- inventory` collects the full
+selected Git range and paginated GitHub PR/author/closing-issue metadata;
+`record` produces the complete contribution record, `check` validates credits
+and optional PR-body equality, and `render` writes the verified release section.
+Run a subcommand without its required options to see its usage. GitHub reads
+require an authenticated `gh`; record/check/render work offline from the saved
+inventory and complete local Git history.
+
+Save a finalized inventory on the release branch at
+`docs/releases/VERSION.contributions.json`. Review unknown identities and
+reverted/backported work explicitly; GitHub metadata does not establish the
+quality of a user-facing claim. Preserve the existing breaking-change section
+and checkpoint checks. The contribution inventory is a reviewed snapshot, not
+a signed attestation; the offline checker verifies local range coverage and
+credit consistency, not GitHub's authorship independently.
+
+Before editing the live PR, add `rea:release-notes-finalized` to prevent ordinary
+main-push proposals from overwriting the editorial notes. Wait for any already
+running proposal to finish. The guard applies to main-push automation; do not
+run manual checkpoint preparation over finalized notes. Remove the label to
+resume bot regeneration. The label does not freeze the base branch: new base
+commits require re-inventorying and re-reviewing the notes.
+
+Update both the release branch's `CHANGELOG.md` and the PR body, preserving
+Release Please's surrounding metadata. Before creating a release, the workflow
+checks an inventory when present, requires its target to equal the reviewed
+merge's first parent, and compares the freshly fetched PR body to the changelog.
+It rejects changes outside the release metadata paths and stale credit records
+before any tag or publication. Review the diffs within allowed metadata paths
+as well, especially package dependencies and scripts. Existing candidates without inventories retain their current
+checks. Merging still starts publication; a notes edit does not authorize a
+merge or release by itself.
+
+The checker supports inline Release Please PR bodies up to GitHub's 65,536
+character limit, including the surrounding header/footer. Overflow-link PR
+bodies need a separate integration and fail explicitly; credits are never
+silently truncated.
+
 ## 1. Select a source for a manual checkpoint
 
 Use the next minor version proposed by Release Please, including releases with

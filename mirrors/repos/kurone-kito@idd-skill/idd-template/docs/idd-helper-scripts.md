@@ -1237,11 +1237,12 @@ future inventory reviews do not need to re-infer their role from code.
   mirror-only commit is not diffable (observed 2026-09-27 during
   [kurone-kito/idd-skill#3576](https://github.com/kurone-kito/idd-skill/pull/3576)
   review).
-  During a re-import, `idd-onboard --import` may restore the target's three
-  validate-command rows in `.github/idd/config.json` after the template copy.
+  During a re-import, `idd-onboard --import` may restore the target's four
+  command rows in `.github/idd/config.json` after the template copy.
   Keep that file in scope with `--path-prefix .github/idd/config.json`, and
-  repeat `--normalize-json-key` for only `commands.fix-validate`,
-  `commands.pre-push-validate`, and `commands.post-fix-validate`. For each key,
+  repeat `--normalize-json-key` for only `commands.install-deps`,
+  `commands.fix-validate`, `commands.pre-push-validate`, and
+  `commands.post-fix-validate`. For each key,
   the verifier first proves that the target still matches its value at
   `--target-base-ref` (the pre-import commit), then normalizes the upstream
   value to that preserved baseline. Other config fields stay checked; never
@@ -1261,6 +1262,7 @@ future inventory reviews do not need to re-infer their role from code.
     --upstream-path <idd-skill>/idd-template \
     --path-prefix .github/instructions --path-prefix .github/workflows \
     --path-prefix .github/idd/config.json \
+    --normalize-json-key .github/idd/config.json:commands.install-deps \
     --normalize-json-key .github/idd/config.json:commands.fix-validate \
     --normalize-json-key .github/idd/config.json:commands.pre-push-validate \
     --normalize-json-key .github/idd/config.json:commands.post-fix-validate \
@@ -1394,8 +1396,8 @@ future inventory reviews do not need to re-infer their role from code.
   `--normalize-json-key <path>:<key.path>` replaces only the upstream JSON key
   with the pre-import target-base value after proving the target still matches
   it and upstream still has its restoration placeholder; repeat it for the
-  three validate-command keys above and add the config path prefix to this
-  command.
+  four command keys above (`install-deps` and the three validate-command keys)
+  and add the config path prefix to this command.
 
   ```sh
   node node_modules/@kurone-kito/idd-skill/scripts/verify-import-mirror.mjs \
@@ -1404,6 +1406,7 @@ future inventory reviews do not need to re-infer their role from code.
     --upstream-path node_modules/@kurone-kito/idd-skill/idd-template \
     --path-prefix .github/instructions --path-prefix .github/workflows \
     --path-prefix .github/idd/config.json \
+    --normalize-json-key .github/idd/config.json:commands.install-deps \
     --normalize-json-key .github/idd/config.json:commands.fix-validate \
     --normalize-json-key .github/idd/config.json:commands.pre-push-validate \
     --normalize-json-key .github/idd/config.json:commands.post-fix-validate \
@@ -2655,6 +2658,9 @@ The adopted helper boundaries are intentionally narrow:
   decisions
 - it does not replace the E/F gate decision tables; it only reduces
   command-copy variance when collecting canonical snapshot fields
+- its policy values (trusted marker actors and advisory bot logins) come from
+  `.github/idd/config.json` at the PR's base ref, never from the PR branch's
+  working tree (#3958)
 
 - `advisory-wait-state.mjs` is read-only, emits machine-readable AW1-AW3
   evidence plus the computed AW outcome, and never requests reviewers,
@@ -5683,7 +5689,10 @@ reflexively as any other CLI option.
   `reviewAckNeeded` is Clause 1's ack rule (`suppressedCount > 0`, or an
   `unrecognized` body with the default Copilot bot), and `reviewAckCovers`
   says whether a trusted, unedited `review-ack:` for this HEAD was created
-  after the review. The invariant is one-directional: `reviewAckCovers:
+  after the review. Cited suppressed items (a file or line named) change the
+  rule: a citation-free item still needs the ack, each cited item needs its own
+  stamped disposition, and a bare ack does not cover a cited item (#3942).
+  The invariant is one-directional: `reviewAckCovers:
   true` implies the gate's ack check passes under the same flag,
   environment and config, but `false` only means the ack is not provably
   present. An ack is outstanding only when `reviewAckNeeded &&
@@ -6597,7 +6606,10 @@ in place of the raw mechanical value:
 matchesHead
   && (itemCount === 0 || (itemCount is known AND >= itemCount thread(s)
       THIS review opened cover it AND all of them are resolved/dispositioned))
-  && (suppressedCount === 0 || hasValidReviewAck)
+  && (suppressedCount === 0
+      || ((citationFreeCount === 0 || hasValidReviewAck)
+          && every citation-bearing suppressed item has its own stamped
+             disposition))
   && (primaryBotLogin is not the Copilot default
       || bodyShape !== 'unrecognized' || hasValidReviewAck)
 ```
@@ -7306,6 +7318,12 @@ same as `AW4`/`AW5`.
   (`schemas/token-cost-event.schema.json`), matched on `claimId`; elsewhere
   it is informational.
 
+- Fan-out draft: a worker writes its report without `verifiedAt` and
+  `recordedAt`, because it cannot know them. The orchestrator sets
+  `verifiedAt` to when it checked GitHub and `recordedAt` to when it appends,
+  then runs `append`. The helper stores the file as written and stamps neither
+  field.
+
 ### F4 branch-failure routes
 
 Reference detail for `idd-merge.instructions.md` F4 step 4 and step 5
@@ -7655,7 +7673,7 @@ a whole-module `export * from './y.mts'` barrel) is resolved back to its
 origin declaration rather than counted as a use in its own right. A
 `// audit:ignore-dead-export: <reason>` comment — on the declaration's
 own line, or the line immediately above it — suppresses one finding.
-Wired into `lint:minimum`.
+Wired into the `check` script.
 
 ## Friction Inventory
 

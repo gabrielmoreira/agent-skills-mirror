@@ -3,6 +3,7 @@
 Status: implemented
 Date: 2026-09-18
 PR: #429
+后续：[注入预算改量写手读到的那几行](../architecture/2026-10-09-author-memory-budget-on-writer-text.md)（2048 不变；计量对象从 JSON 外壳改为 `lines`，`omitted_ids` 不再封顶）
 
 ## Problem
 

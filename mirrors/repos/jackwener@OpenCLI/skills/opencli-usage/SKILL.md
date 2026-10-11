@@ -6,7 +6,7 @@ allowed-tools: Bash(opencli:*), Read
 
 # opencli-usage
 
-OpenCLI turns websites and Electron desktop apps into a uniform `opencli <site> <command>` surface that agents can drive without screen-scraping. This skill is the orientation layer — once you know what you want to do, load one of the specialized skills below.
+OpenCLI turns websites into a uniform `opencli <site> <command>` surface that agents can drive without screen-scraping. This skill is the orientation layer — once you know what you want to do, load one of the specialized skills below.
 
 ## Main capabilities
 
@@ -38,8 +38,6 @@ npx tsx src/main.ts <command>               # same surface, no global install
 | `INTERCEPT` | Same as COOKIE, plus opencli opens an automation window to capture a signed request. |
 | `UI` | Same as COOKIE, full DOM interaction. |
 | `LOCAL` | No browser; talks to a local/dev endpoint. |
-
-Electron desktop apps (cursor, codex, chatwise, discord-app, doubao-app, antigravity, chatgpt-app) route through CDP against the running app — same cookie-less flow as a logged-in browser. Make sure the app is running before invoking.
 
 ## Discover what's installed — don't read this file, run a command
 
@@ -80,7 +78,7 @@ A few commands override the default via `cmd.defaultFormat` (e.g. chat commands 
 |----------|---------|---------|
 | `OPENCLI_BROWSER_CONNECT_TIMEOUT` | `45` | Seconds to wait for the browser bridge. |
 | `OPENCLI_BROWSER_COMMAND_TIMEOUT` | `60` | Per-command timeout. |
-| `OPENCLI_CDP_ENDPOINT` | — | Manual CDP endpoint override (dev / remote Chrome / Electron). |
+| `OPENCLI_CDP_ENDPOINT` | — | Manual CDP endpoint override (dev / remote Chrome). |
 | `OPENCLI_CACHE_DIR` | `~/.opencli/cache` | Network capture + browser-state cache. |
 | `OPENCLI_WINDOW` | command-specific | `foreground` or `background` browser window mode. |
 | `OPENCLI_VERBOSE` | `false` | Verbose logging (also triggered by `-v`). |

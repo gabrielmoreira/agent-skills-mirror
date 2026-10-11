@@ -95,8 +95,12 @@ Pre-commit formats and lints staged files; pre-push runs `check:fast`.
 `evidence:generate` prepares only the managed commitment and its runtime/skill
 dependencies. The ignored outputs are `docs/public/product-catalog.json`,
 `docs/verification/managed-conformance-*.json`, and `skills/`. Edit authored
-skill instructions in `skill-src/`. CI validates generated outputs and retains
-them as artifacts; do not commit them. Reviewed source metadata, including
+skill instructions in `.agents/skills/reverse-engineer-anything/`, where Skills
+can discover the public bundle directly from a clean checkout. `verify:package`
+installs that bundle with Skills 1.7.2 using default repository-root discovery
+and checks every installed file, alongside the packaged setup checks.
+CI validates generated outputs and retains them as artifacts; do not commit
+them. Reviewed source metadata, including
 `src/generatedPackageMetadata.ts` and `docs/error-contract.schema.json`, remains
 tracked and checked for freshness.
 
@@ -120,9 +124,10 @@ for exact-path, awaited cleanup, including failures and timeouts.
 rejects remaining REA-owned paths. Never glob-clean shared `/tmp/rea-*` content.
 
 `REA_LOG_LEVEL` selects `trace`, `debug`, `info`, `warn`, `error`, `fatal`, or
-`silent`. MCP defaults to `info` on stderr; one-shot CLI logging is opt-in on
-stdout. Request arguments, bridge tokens, and environment data are redacted
-from diagnostic logs.
+`silent`. Logs go to stderr: MCP defaults to `info`, and one-shot CLI logging
+is opt-in, so stdout carries only protocol messages and command results.
+Request arguments, bridge tokens, and environment data are redacted from
+diagnostic logs.
 
 ## Real Hopper changes
 
@@ -143,9 +148,14 @@ Generated fixtures and manifests remain ignored.
 Use the [release guide](docs/releasing.md). Main pushes automatically refresh a
 Release Please PR with the next version and changelog. Review its migration
 notes, wait for the current CI checks to pass, and merge it into main to publish.
+
 The Release workflow validates and tags that merge; both publishers build its
 exact SHA. Ordinary main pushes cannot publish packages. An optional manual
 `release/VERSION` checkpoint retains explicit preparation and publication.
+
+For grouped release notes with verified contributor thanks, use the repository's
+`rea-changelog-update` skill in `.agents/skills/rea-changelog-update/`. Its inventory,
+credit checks, and finalization process are described in the release guide.
 
 Keep new implementation commits on main for the next release. The workflow
 owns packaged-artifact verification, npm publication, the published CLI/MCP

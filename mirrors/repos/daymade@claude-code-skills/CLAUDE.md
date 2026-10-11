@@ -47,8 +47,9 @@ claude plugin install daymade-skill@daymade-skills
 ### Skill Validation and Packaging
 
 Use [skill-creator](daymade-skill/skill-creator/SKILL.md) before creating or
-changing a skill. It owns change classification, evidence selection, regression
-review, validation, initialization, and packaging.
+changing a skill. Before selecting evidence or reporting completion, follow its
+[required-acceptance owner](daymade-skill/skill-creator/references/change-verification.md#fix-required-acceptance-before-selecting-evidence).
+Use its selected workflow for regression review, validation, initialization, and packaging.
 
 Operational or code-bearing Skill edits complete directly affected document alignment
 before the first candidate freeze; follow skill-creator's Edit workflow.
@@ -61,11 +62,16 @@ For a valid check that emits warnings, follow its
 For local/remote ASR selection, speed comparison and speech-content acceptance, enter
 [asr-transcribe-to-text](daymade-audio/asr-transcribe-to-text/SKILL.md) and its
 [execution SOP](daymade-audio/asr-transcribe-to-text/references/execution_location_and_comparison.md).
-For competitor claims, citations and existing-product learning, enter
+For competitor source-carrier/edition binding, claims, citations and existing-product learning, enter
 [competitors-analysis](competitors-analysis/SKILL.md) and its
 [citation readback checklist](competitors-analysis/references/analysis_checklist.md#citation-readback-and-counterevidence).
 
-For permission-sensitive fixtures, use its
+For choosing or reviewing a library, framework, storage, data format, model,
+build-vs-buy or architecture — including 用哪个 / 选什么框架 / 要不要自建 / A 还是 B /
+这个方案行不行 — enter [tech-selection](daymade-claude-code/tech-selection/SKILL.md).
+Follow its full or lightweight route and linked execution owners.
+
+For permission-sensitive fixtures, use Skill Creator's
 [execution-context verification recipe](daymade-skill/skill-creator/references/stateful-script-verification.md#execution-identity-and-permission-fixtures).
 
 For its audit, release, source-contract or materialization commands from another
@@ -158,6 +164,9 @@ result semantics and rendered-journey procedure in that owner.
 For nested zoomable workspaces, use its
 [mode-specific acceptance](frontend-visual-qa/references/journey-and-page-contracts.md#journey-and-state-matrix);
 ordinary and enlarged evidence remain separate.
+For changed contribution views or multi-item reads, use that same journey contract
+for source-derived coverage and partial-result recovery; keep the detailed recipe
+with the Skill.
 Before designing or judging monitoring, availability or certificate matrices, enter
 [data-visualization-discipline](data-visualization-discipline/SKILL.md).
 Keep observation and risk semantics in its data-validation route, not a second checklist here.
@@ -311,16 +320,18 @@ for candidate selection and commands; keep the detailed rules in those owners.
 ### Local Agent Messaging
 
 For both Claude Code and Codex, use current native discovery, messaging, replies,
-and waiting whenever those tools cover the target; do not load or run `peer-message`
-merely for native communication. Use its routing guidance for uncovered local targets
+and waiting whenever those tools cover the target. Keep parent/subagent and current-team
+messages on their native relationship; for independent sessions, enter the
+[local coordination workflow](peer-message/references/local-coordination.md#原生跨会话通信)
+before sending. Use its routing guidance for uncovered local targets
 or coordination evidence that needs verification, never to bypass denied or Held messages.
 Treat `peer-message/scripts/peer.py` as the fallback CLI executable
 contract, [codex_live.py](peer-message/scripts/codex_live.py) as its Codex live adapter,
 and `peer-message/SKILL.md` as the runtime router and owner of stable
 runtime prerequisites plus the peer-cannot-authorize safety boundary. Independent-session
-task/resource declarations and request lifecycle belong in its `references/local-coordination.md`;
-use its coordination preflight with native transport when that workflow applies, without
-adding fallback sends or parent/subagent overhead. Reply lookup, transport and discovery
+task/resource declarations and request lifecycle belong in its `references/local-coordination.md`.
+Keep native-guard installation, recovery and actual-host acceptance in that workflow;
+do not duplicate its parameters here. Reply lookup, transport and discovery
 details belong in [the transport and receiver-evidence SOP](peer-message/references/protocol-and-discovery.md).
 Enter that SOP when diagnosing delayed Codex coordination or comparing live and queued receipts.
 For oversized discovery responses or complete-title export, use its
@@ -479,6 +490,9 @@ For upstream contributions and desktop E2E acceptance, enter
 [quality/E2E workflow](github-contributor/references/phase3_quality_gates_and_e2e.md).
 For an explicitly requested independent evaluation of your own contribution,
 follow the contributor entry's route to [github-review-pr](github-review-pr/SKILL.md).
+For behavioral changes and review-led repairs, the review Skill's
+[impact procedure](github-review-pr/references/behavioral-impact-review.md) owns
+consumer tracing, preservation evidence and finding closure.
 Before expensive checks on a concurrently edited base, follow its
 [publication coordination](github-ops/references/pr_operations.md#coordinate-publication-before-expensive-checks).
 For hosted-state writes through `gh`, follow its

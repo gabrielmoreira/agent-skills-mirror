@@ -135,7 +135,7 @@ transport from `main.rs`.
 | [`src/main.rs`](src/main.rs) | The `openhuman-core` binary entry point described above. |
 | [`src/bin/`](src/bin/README.md) | Ops binaries: `test-mcp-stub`, `openhuman-fleet`. The benchmark binaries live in [openhuman-benchmarks](https://github.com/tinyhumansai/openhuman-benchmarks) (`profile/`, #6944). |
 | `../../tests/*.rs` | 27 `[[test]]` targets, including the two aggregators. See [`tests/README.md`](../../tests/README.md). |
-| `../../examples/*.rs` | 2 `[[example]]` targets on the `openhuman_embed::Runtime` API: `embed_headless` and `embed_kernel`. |
+| [`../openhuman-embed/examples/`](../openhuman-embed/examples/README.md) | Offline embedding examples, built and run as `openhuman-embed` targets. |
 | `../../build.rs` | Shared build script: generates the `raw_coverage_all` and `in_process_all` module lists and exports `OPENHUMAN_REPOSITORY_ROOT`. |
 
 ## Targets

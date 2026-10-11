@@ -41,7 +41,7 @@ and does not need a stub. Signatures must match the real ones exactly;
 | File | Role |
 | --- | --- |
 | [`mod.rs`](./mod.rs) | Facade root: feature gate; re-exports from `tinywallet_x402` (`X402Client`, `X402Error`, `X402PaymentResult`, `handle_402`, the ledger and wire types); `init_ledger`, `handle_402_and_pay` and `request_tool`, which supply the seams; the `store` accessors used by `http_request`. |
-| [`seams.rs`](./seams.rs) | `WalletPaymentSigner` (the crate's `PaymentSigner`: keyring secret, decrypt, `modules::wallet::{derive_account, sign_message}`), `RuntimeProxyPolicy` (`ProxyPolicy` over `config::apply_runtime_proxy_to_builder`), and the `payments()` / `request_tool()` constructors that pair them with the wallet's `OpenHumanTransport`. |
+| [`seams.rs`](./seams.rs) | `WalletPaymentSigner` (the crate's `PaymentSigner`: keyring secret, decrypt, `modules::wallet::{derive_account, sign_message}`), `HostRequestGuard` (action, privacy and destination policy), `RuntimeProxyPolicy` (direct-egress permission from runtime and environment proxy settings), and the `payments()` / `request_tool()` constructors that pair them with the wallet's `OpenHumanTransport`. |
 | [`budget.rs`](./budget.rs) | The spending limits: the crate's defaults plus the `OPENHUMAN_X402_*` overrides. |
 | [`records.rs`](./records.rs) | `pending_record`: the `Pending` ledger record for the `http_request` fallback (ledger session + chat thread). |
 | [`schemas.rs`](./schemas.rs) | RPC controller schemas and handlers for the `x402` namespace: `get_summary`, `list_payments`, `update_budget`. |
@@ -54,7 +54,8 @@ and does not need a stub. Signatures must match the real ones exactly;
 | --- | --- | --- |
 | `PaymentSigner` (`account`, `sign`) | `WalletPaymentSigner` | The mnemonic is decrypted here for one confidential module call and never enters the crate; it sees an address and finished signatures. Errors keep their historical prefixes (`wallet secret:`, `load config:`, `decrypt mnemonic:`, `derive account:`). |
 | `rpc::Transport` (from `tinywallet-crypto`) | `wallet::transport::OpenHumanTransport` | Reads the Solana blockhash through the wallet's failover-aware RPC layer. |
-| `ProxyPolicy` (`apply`) | `RuntimeProxyPolicy` | Applies the runtime proxy configuration to the tool's HTTP client. |
+| `RequestGuard` (`authorize`) | `HostRequestGuard` | Checks action and privacy policy, vets DNS, and returns the complete request with pinned socket addresses. |
+| `ProxyPolicy` (`apply`, `allows_direct_connection`) | `RuntimeProxyPolicy` | Applies runtime proxy settings and refuses direct address-pinned requests while a runtime or environment proxy is required. |
 
 ## RPC / controllers
 

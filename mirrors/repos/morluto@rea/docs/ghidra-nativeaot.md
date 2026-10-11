@@ -1,16 +1,25 @@
 # Optional NativeAOT metadata recovery
 
-REA integrates [Washi1337/ghidra-nativeaot](https://github.com/Washi1337/ghidra-nativeaot)
-through an optional headless adapter. The original source is an opt-in submodule,
-pinned to `effeb734fc570c32650f88b159608979dc7b423e`; its MIT license and existing
-source notices are retained. No upstream source or algorithms are rewritten.
+REA has a built-in read-only snapshot parser for x64 PE targets with .NET 8 RTR
+9.1 metadata. It parses the exact admitted Ghidra session snapshot and uses an
+in-memory overlay for rehydrated metadata; it does not define Ghidra DataTypes,
+labels, functions, or memory bytes. The hydration semantics are adapted from
+[Washi1337/ghidra-nativeaot](https://github.com/Washi1337/ghidra-nativeaot) at
+`effeb734fc570c32650f88b159608979dc7b423e` (MIT), cross-checked against
+.NET's `MethodTable.h` at runtime commit
+`a3b2d40328be0be3f8dd43f0e5cc925b8827b044` (MIT). The required notice ships in
+[`licenses/nativeaot-parser-MIT.txt`](../licenses/nativeaot-parser-MIT.txt).
 
-The initial tested layout is .NET runtime **8.0.22**, NativeAOT RTR **9.1**,
-x86-64 ELF and native Windows PE **targets analyzed on Linux x64**, using
-Ghidra **12.1.4** and JDK **21**. The build accepts any Ghidra 12.1.x release and
-javac 21 or newer, and it compiles with `--release 21`. Real verification of
-this layout remains the Ghidra 12.1.4 and JDK 21 pair. Other NativeAOT layouts,
-architectures, and hosts are unsupported.
+The optional headless Ghidra adapter remains available for database annotations
+and broader recovery. It uses the same pinned upstream commit as an opt-in
+submodule and is a separate, more capable workflow.
+
+The parser currently handles x64 PE32+ and RTR 9.1, including bounded
+DEHYDRATED_DATA processing, MethodTable relationships, virtual slots, and
+frozen strings. Other RTR versions and PE architectures are reported as
+unsupported or partial. The matching .NET 8.0.22 fixture is source-built and
+the parser's Windows-host Ghidra workflow has not yet had a real Windows-host
+run. This does not establish Windows Ghidra import or decompiler behavior.
 Windows Ghidra P0 has no database mutation authority. A PE/CLI or ReadyToRun
 assembly should use `inspect_managed_artifact`; it is not NativeAOT.
 
@@ -43,42 +52,62 @@ arbitrary caller-supplied bytes. The bounded loader accepts regular JARs up to
 
 ## Use existing tools
 
-Open the executable with provider `ghidra`. `inspect_native_load_image` returns
-optional `observations.metadata_recovery` inline, including the detected header,
-layout, recovery status, type category paths/addresses, diagnostics, annotation
-coverage and derived-memory SHA. The enclosing `unsupported` load-image status
-for PE/ELF concerns independent DOS loader verification; metadata recovery has
-its own status. It is not a failed import.
+Open the executable with provider `ghidra`. For an x64 PE, `inspect_native_load_image`
+returns `observations.metadata_recovery` inline from the captured source snapshot,
+including the RTR header, MethodTable addresses, frozen strings, derived overlay
+identity, and examined/recovered counts. Its enclosing `unsupported` load-image
+status means independent PE load-image verification was not performed; it does
+not mean the metadata parser failed or the executable failed to load.
 
-Pass one returned type path or its typed address to `inspect_native_data_type`.
-Its optional `metadata_recovery` includes related/base type, implemented
-interfaces and virtual slots with targets and known procedure names. Follow
-these with `analyze_function`, string searches and ordinary cross-references.
-For CLI use:
+Pass a returned MethodTable address to `inspect_native_data_type`. A direct PE
+query also derives the snapshot metadata from the authenticated Ghidra session
+handshake, so it does not require a preceding load-image call. In a persistent
+MCP session, load-image followed by type inspection reuses that same derivation.
+The database result remains `unavailable` when Ghidra has no DataType at that
+address; its `metadata_recovery.source` is `read-only-derived-overlay` and
+carries related type, interface, slot, and target observations. Generated
+address identities do not claim original managed names. The parser does not
+merge frozen literals into Ghidra's database string inventory. Follow slot
+targets with `analyze_function` and ordinary cross-references.
+
+The built-in CLI path uses a MethodTable address returned by the parser or
+another observation:
 
 ```sh
 rea inspect-native-load-image ./NativeAotFixture --provider ghidra --json
-rea inspect-native-data-type ./NativeAotFixture --type /NativeAOT/MethodTables/Class_ADDRESS_MT --provider ghidra --json
+rea inspect-native-data-type ./NativeAotFixture --address 0xMETHODTABLE_ADDRESS --provider ghidra --json
 rea function ./NativeAotFixture 0xADDRESS --provider ghidra --json
 ```
 
-No new MCP workflow or approval flag is required. Configuration opts into the
-adapter; without it ordinary Ghidra profiles/results remain unchanged.
+The generated `/NativeAOT/...` category path belongs to the optional headless
+adapter. Use `--type /NativeAOT/MethodTables/Class_ADDRESS_MT` only when that
+adapter is configured and has created the corresponding Ghidra DataType.
+Built-in PE analysis includes its parser contract and resource policy in the
+Ghidra analysis profile; non-PE profiles do not include that contract.
 
 ## Evidence boundaries
 
-Discovery prefers an imported RTR symbol, otherwise the upstream initialized,
-non-executable-memory signature heuristic. REA rejects ambiguous candidates,
-unknown layout versions, malformed directory rows, unsupported flags and
-unmapped ranges before recovery. It requires the verified dehydrated layout.
+The built-in parser uses an initialized non-executable PE signature scan and
+requires a unique RTR 9.1 header and exactly one DEHYDRATED_DATA row. Rehydrated
+bytes live only in a parser-owned overlay, identified by virtual address, size,
+and SHA-256; the caller's source Buffer remains unchanged. Limits derive from
+captured section extents and format field bounds. Separate resource policies
+admit up to 128 MiB of captured PE bytes, 64 MiB-equivalent parser work, 64 MiB
+of exact parser-owned overlay/index Buffers, and 4 MiB of serialized NativeAOT
+report JSON. These are local parser limits, independent of MCP delivery; the
+buffer counter does not claim to cap V8 heap or total process memory. Rows that
+do not fit the report budget are omitted with explicit partial status and
+coverage. Coverage counts describe the pointer scan, recovered MethodTables,
+and frozen-string candidates examined, not every possible runtime type or
+object. Cancellation is honored during snapshot I/O and checked immediately
+before and after parsing; the synchronous parser call itself is bounded but
+cannot be interrupted mid-call. Parser output never claims that a Ghidra
+database type was defined.
 
-The adapter performs rehydration, method-table recovery and frozen-object
-annotation in one ephemeral Program transaction. Fatal failure/cancellation
-rolls it back. Recovery may change analysis-memory bytes, never the original
-executable file. Derived ranges have a digest and **no original file offset**;
-they are not captured runtime state. Candidate/committed instance annotation
-counts distinguish partial frozen-object coverage. Coverage concerns the
-recovered candidate set, not every possible object or every runtime type.
+The optional adapter performs its annotations in an ephemeral Program
+transaction. That workflow may change analysis-memory bytes, never the original
+executable file. It is unavailable on Windows P0, which has no database
+mutation authority.
 
 REA preserves pre-recovery calling conventions and uses the loaded compiler
 specification default for newly created methods. The upstream universal

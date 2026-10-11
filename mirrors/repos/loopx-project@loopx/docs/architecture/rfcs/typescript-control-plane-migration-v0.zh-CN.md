@@ -46,12 +46,31 @@ Goal 保持已记录的选择。见[配置及关闭契约](../../reference/local
 这是源码候选，不认证安装采用、发布默认、完整共享 Goal 意图或 D2/D3；不重建
 创建／默认值 owner。
 
+canonical Todo 入口隔离（T4）：五种 mutation facade 统一进入既有
+`todos/mutation_api.py`；历史导入改为惰性，未迁移 writer 隔离在
+`todos/legacy_mutation.py`。安装态 File/SQLite 检查可物理移除整个 writer，验证
+生命周期及结算恢复。冷导入检查进一步组合审核导入、新租约下的更新／新增写入、
+原操作恢复，并保持整个 writer 不存在；显示源丢失或 provider 中断不能替换
+当前 authority 或抹去后续写入。原导入 cursor 仍是历史回执，当前 provider
+revision 保持。这为最后调用方删除建立边界，不宣称代码已退役：bootstrap、
+handoff、team-plan 和 Monitor 仍有受支持的旧源调用；capture/outbox 及历史恢复
+各等自己的出口。见[调用方及回滚清单](../../reference/canonical-todo-completion-update.md#canonical-mutation-entrypoint-isolation)。
+
 存量 Goal 迁移、两策略退役和格式升级仍各有独立回执及出口；原回执恢复不能成为
 保留 legacy 活跃策略的理由，必要迁移 reader 保留。
 
 有界 cohort 在安装恢复和相关执行控制通过后可开始，不代表发布默认值或正式十天
 D2 已通过；冻结的失败／缺项保持可见。T4 随实现删除已证明重复的 owner，不等 R6
 或所有 Python 消失。本节替代陈旧的当前数量估算，不覆盖历史执行证据。
+
+公共扫描隐私检查点：保留的 Python 文件系统／正则 owner 在提交 reader 前分类
+canonical 输入，分类独立于显示路径。重叠扫描根不能移除私有分类；报告统一使用
+最宽的请求根。窄范围显式文件／目录保留私有祖先信息。经 Git 核验的 worktree
+即使位于私有父目录下，也保留自己的命名空间；仅名为 `.git` 的目录不构成例外。
+worktree 外、私有状态目录下的显式输入仍须排除。tracked 文件策略、每次重新
+解析的符号链接及既有错误规则均留在这个 owner，不新增第二份控制面决策源或
+配置项。这次安全修复不认证扫描耗时、SQLite 发布默认值或整个 T4 退役。CLI
+检查和 quota 准备复用此规则；App status 继续明确报告仓库扫描为 deferred。
 
 ## Todo 事件路径退役（2026-09-25）
 
@@ -1620,6 +1639,36 @@ TS 摘要批次；Python 保留旧格式解码、公开字段筛选及渲染。�
 公开 `todo_summary_v0` 和持久记录不变；完整来源的关系求值先于筛选，来源完整性不被
 查询命中情况覆盖。见[语义及回滚](../../reference/todo-work-counts.md)。这是 T3/L5 的
 共享读取边界推进，不替代 D2/D3 或 provider 默认切换。
+
+fresh 公共边界扫描继续归现有专门 Python regex／Host IO owner。
+Characterization 已覆盖全部十一种 `splitlines` 分隔符、Unicode regex 折叠、
+casefold 扩展的假阳性、逐规则命中顺序、凭据引用、公共主机例外及字面量元字符；
+这些是 scanner 语义，不新增决策 owner 或缓存。
+
+折叠字面量合并的受控干预，在真实 quota 扫描集合上降低中位 wall／CPU 成本
+8.5%／6.9%，完整 scanner payload 相等。但每 provider 固定 32 对交替完整 CLI
+比较仍得到 File p95 976.33 → 986.84 ms（+10.52 ms／1.08%）、SQLite p95
+936.00 → 962.34 ms（+26.33 ms／2.81%）。后者未通过既有未解释 25 ms 目标，
+因此撤回运行时候选，保留全部样本；profile 不能证明尾延迟根因或豁免资格。
+后续完整 payload 对照淘汰了 folded-line 复用及 literal regex 合并；既有
+direct-loop 与 line-union 组合仅降低 scanner wall 3.6%。另一次独立固定每 provider
+32 对 A/A 对照，在运行时字节及完整 CLI 负载相同的两个 checkout 间，仍得到
+File p95 -8.20 ms／-0.84%、SQLite p95 -85.95 ms／-9.90%；全部 128 次命令的
+selection／frontier 均符合预期。这证明比较存在混杂，尚未证明其根因或优化资格；
+此前候选失败及全部观察继续保留。同一 checkout 的冷暖对照随后隔离了 runtime
+启动：32 次冷态均更换 setup PID，且比暖态配对更慢；暖态仍明显波动。
+这证明启动成本贡献，未解释历史 A/A 尾差。
+
+下一项干预在 Git 枚举和目录遍历中，先跳过后缀不支持的普通文件，再做 canonical
+路径解析；符号链接仍先解析目标，再判断后缀及 local 名称。Git 跟踪的剪枝目录、
+显式文件 root 及链接改指向后的 fresh 读取保持原行为。同一 package-root 负载少做
+602／3,281 次解析，完整 payload 相等；8 对交替 scanner 中位 wall 改善 5.1%。
+每 provider 固定 32 对完整 quota CLI，在同一 physical checkout 逐次确认暖态
+setup PID 复用。File p50/p95 为 708.70/891.78 → 689.04/856.32 ms；SQLite 为
+758.55/1036.27 → 769.41/1026.34 ms，均通过原 25 ms 及 5% 尾延迟预算。
+SQLite 中位数略升，收益不能外推为全面加速。这只资格化本次枚举干预，不改写
+已撤回 filter 的失败，也不解除历史 frontier／direct-loop hold 或冻结多命令时限。
+这些与新 Goal 默认、可恢复导入、开发者试用及最后调用方退役分别保留。
 
 2026-09-24：[完整源捕获的 TS 组装与剩余交付包](ledger/shared-goal-authority-state-provider-v0/2026-09-24-source-capture.zh-CN.md)统一源构造、身份拒绝和当前图成员规则；不关闭 L7/D2/D3 或启用默认 provider。
 

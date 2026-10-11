@@ -60,7 +60,7 @@ build too, not just the desktop shell. `crates/openhuman-core/Cargo.toml`
 path-depends on `vendor/tinyagents`, `vendor/tinymemory`, `vendor/tinymcp`,
 and the rest of the `tiny*` family, and the root `Cargo.toml` `[patch]`
 tables point into `vendor/tinymemory`, `vendor/tinyflows`,
-`vendor/tinychannels`, `vendor/motosan-ai-oauth`, and the `tinyinference`
+`vendor/tinychannels`, and the `tinyinference`
 copy nested under `vendor/tinyagents/`.
 
 ```bash

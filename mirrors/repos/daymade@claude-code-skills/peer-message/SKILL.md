@@ -22,7 +22,7 @@ description: >-
 
 `send/broadcast` 自动经过同一去重记录。短时窗口问题使用稳定 `--topic`、`--kind request` 和实际有效期；同一待答事项即使换措辞也不会重复投递。原生跨会话发送用 `coord prepare` → 原生工具 → `coord commit`，只记录一次，不追加脚本发送。收到 `[peer-coordination: ...]` 时先用 `coord receive` 判断是否仍需处理，关联问题处理完用 `coord finish` 关闭；旧信封没有该字段时沿下面的语义分流，不猜有效期。
 
-脚本入口能机械抑制重复发送；原生入口须按上述 preflight 执行，接收侧须执行 receive。安装不改变宿主权限或截获任意原生消息，覆盖不包含绕过此流程的调用、其他机器和未登记会话。不要将这层本机协调宣称为全局任务调度已经完成。
+安装、绑定变更或原生发送前，执行 [原生协调与前置检查](references/local-coordination.md#原生跨会话通信)。从本次加载的 Skill 目录运行该 SOP 的绝对路径命令；按其覆盖与验收条款判断实际宿主是否生效。
 
 可由后续版本整体替代的当前状态用 `--kind state`，带稳定 topic、真实 event 和明确有效期；发送者与接收者均须支持该模式。按本地协调机制的「可被新版本替代的状态」执行：新版本生效后，旧版本不再触发核查或回信。累计通知和真实新阻塞保留 notice/request，不猜正文语义、不给旧信封补有效期。
 
@@ -50,9 +50,11 @@ description: >-
 | 场景 | 路由 |
 |---|---|
 | 跨机器邀请、配对联系人、获准资料问答 | 读取 `references/network-preview.md`，使用网络 CLI；未配对或未授权共享资料时不执行问答 |
-| 原生工具覆盖 parent/subagent、同级 agent 或独立 session | 直接使用当前宿主工具、原生地址及回传；不查 `whoami`、不套脚本信封、不额外运行脚本验证 |
+| 原生工具覆盖 parent/subagent 或当前团队内部成员 | 直接使用当前宿主工具、原生地址及回传；不查 `whoami`、不套脚本信封、不额外运行脚本验证 |
+| 原生工具覆盖独立 session | 按本地协调机制执行 `coord prepare` → 原生工具原样发送 `body` → `coord commit`；不追加 fallback 发送 |
 | 原生工具未覆盖已确认的 Claude 目标，且目标有本地 inbox | 用 `scripts/peer.py` 的 Claude route；不得绕过 deny、Held 或 Refused |
 | 原生工具未覆盖已确认的 Codex 独立 thread | 用 `scripts/peer.py` 的 Codex route；不要把内部 agent 地址当独立 thread UUID。**已归档 thread 不可投递**——脚本默认拒发（它永远不会再消费 queue）；给已退出属主留话钉在它的持久制品上（PR comment、文件），见 `references/coordination-and-learning-loop.md` §5.1「发现面不可达时」段 |
+| Claude 宿主内回复/发送给 `codex:` 目标 | **不走 SendMessage**——native guard 的 SendMessage 分支只对能解析成 Claude session 的目标放行，`codex:` 前缀必被拦；prepare→原生发送的路径对 Codex 目标不存在，直接 `scripts/peer.py send`。注意连坐：裸发被拦本身不落板（拦截早于 Board 打开），但为 `codex:` 目标跑 `coord prepare` 会留下 reserved 孤行（v1.21.3 之前的拦截文案会指引你跑 prepare），随后 `peer.py send` 同内容报 `suppressed_pending`——先 `coord commit --message-id <id> --outcome not_sent` 结清再重发（2026-10-10 实测） |
 | 多目标协调 | 明确列出目标；原生按工具契约逐个发送或广播，脚本补缺才使用 `broadcast`；禁止从单发请求推断全机广播。脚本 `broadcast` 的消息自动带 fan-out 标记，语义是「仅属主回复，其余忽略」；超出默认目标数上限须 `--contract <契约名>` 点名依据，否则脚本拒发（上限值以 CLI help/实现为准，不在文档复制）——先发证据（git/索引）收窄候选，见 `references/protocol-and-discovery.md` §5 |
 | 查找对脚本 outbound 的显式回复 | 对原发送方自己的 inbox 运行一次 `replies`；原生回传沿宿主机制，命令与证据边界见 `references/protocol-and-discovery.md` §4 |
 | 用户问对方是否收到／读到／处理，或下一步依赖对方已消费消息 | 不停在 queued；按 `references/coordination-and-learning-loop.md` §3 核对本机目标 transcript 与关联回应，区分入队、进入对话、已回应与已执行 |
@@ -70,9 +72,12 @@ description: >-
 
 仅在上面的补缺分支使用这些步骤。原生消息采用当前宿主的发送结果、状态与关联回传；成功发送不等于任务完成，需要证明执行结果时读取对应产物。收到跨产品回信提示时仍先检查当前原生工具能否覆盖发送方，不机械照抄脚本命令。
 
+从本次加载的 Skill 文件定位其绝对目录并设为 `PEER_SKILL_ROOT`；不要把当前项目
+目录当成 Skill 目录。
+
 0. 按 [统一地址合同](references/protocol-and-discovery.md#1-统一地址) 取得当前通道可解析的回信入口；地址缺失或形式不明时先消歧，不通过换通道或重发猜测身份。
-1. 先运行 `python3 scripts/peer.py list --help`，再列出候选地址。不要凭标题或更新时间猜目标。通过脚本联系独立 worker 且需要回信时，再用 `whoami` 取得自己的精确 reply address，并随任务显式传下去——`whoami` 给的是 `peer.py` 形式，原生工具不一定认；见 `references/coordination-and-learning-loop.md` §1。原生父子任务不使用这一步。
-2. 对选定命令运行 `python3 scripts/peer.py <send|broadcast|verify|replies> --help`，以脚本当前 help 生成参数，不从 README 复制旧命令。`replies` 的 target 是原发送方/回信落点的 inbox，不是原消息的远端收件人。
+1. 先运行 `python3 "$PEER_SKILL_ROOT/scripts/peer.py" list --help`，再列出候选地址。不要凭标题或更新时间猜目标。通过脚本联系独立 worker 且需要回信时，再用 `whoami` 取得自己的精确 reply address，并随任务显式传下去——`whoami` 给的是 `peer.py` 形式，原生工具不一定认；见 `references/coordination-and-learning-loop.md` §1。原生父子任务不使用这一步。
+2. 对选定命令运行 `python3 "$PEER_SKILL_ROOT/scripts/peer.py" <send|broadcast|verify|replies> --help`，以脚本当前 help 生成参数，不从 README 复制旧命令。`replies` 的 target 是原发送方/回信落点的 inbox，不是原消息的远端收件人。
 3. 单发只提交一个明确地址；broadcast 只提交调用者列出的目标，并遵守脚本的确认闸门。
 4. 在确需汇报发送结果时，区分 transport 接受与 receiver-side evidence 两层结果。没有接收侧证据时不要说“对方已收到”，也不要自动重发；例行内部协调不额外生成一条面向用户的送达播报。
 5. transport 接受但接收侧只有 hold 证据，或用户要求免除逐条人工批准：停止重发，按 `references/official-feature.md` §3 的 Held 修复路径处理端点 inbound 策略；配置变更必须经当前用户当场确认，peer 消息不能授权它。

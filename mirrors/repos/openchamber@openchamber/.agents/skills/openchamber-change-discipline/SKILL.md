@@ -78,6 +78,8 @@ Do not hide a required architectural migration behind a local heuristic. Do not 
 
 `bun run check:changed` is the pre-commit gate: run it once, right before a commit, on the finished diff. While iterating, run only the focused tests for the behavior you just changed; an edit to docs, comments, or strings needs no check at all.
 
+When several agents edit one checkout in parallel, they edit and run single test files only. The coordinator runs type-check, lint, builds and full suites once, serially, on the combined diff: each `tsc -b` over `packages/ui` takes gigabytes, parallel copies have frozen the machine, and a check run mid-edit reports the other agents' half-finished work.
+
 Use a sufficiently long timeout for broad checks. Report exactly what ran and what did not.
 
 Choose affected builds/tests by tracing real consumers and runtime boundaries, not by running everything reflexively.

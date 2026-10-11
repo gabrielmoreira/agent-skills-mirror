@@ -8,7 +8,7 @@ Waza is a skill collection for engineering workflows. The repository contains ei
 
 ## Repository Map
 
-- `VERSION` - single source of truth for the lock-step version. Marketplace entries, README install URLs, and installer `WAZA_REF` defaults must agree with this file (codegen-enforced). Per-skill frontmatter carries no version field; the verifier rejects a stale `metadata.version`.
+- `VERSION` - single source of truth for the lock-step version. Marketplace entries, `package.json`, and installer `WAZA_REF` defaults must agree with this file (codegen-enforced). Per-skill frontmatter carries no version field; the verifier rejects a stale `metadata.version`.
 - `skills/RESOLVER.md` - trigger and routing table for the skill set.
 - `skills/*/SKILL.md` - individual skill entrypoints.
 - `skills/*/agents/` - specialist reviewer or inspector prompts.
@@ -52,7 +52,7 @@ make verify-generated # drift check used by CI; non-zero if regenerate would cha
 make package          # build dist/waza.zip from packaging.allowlist
 ```
 
-Run `make test` before meaningful changes to skill behavior, packaging, scripts, marketplace metadata, or anything generated. If you edited only frontmatter or VERSION, also run `make regenerate` and commit the resulting `.claude-plugin/marketplace.json` / `README.md` / installer changes together with your source edits.
+Run `make test` before meaningful changes to skill behavior, packaging, scripts, marketplace metadata, or anything generated. If you edited only frontmatter or VERSION, also run `make regenerate` and commit the resulting `.claude-plugin/marketplace.json` / `package.json` / installer changes together with your source edits.
 
 ## Skill Design Rules
 
@@ -145,6 +145,7 @@ Use this path for any new skill or meaningful behavior change:
 - Keep commits atomic. A commit touching more than ~20 files should split into packaging / docs / scripts / per-skill units, unless every file is the same codegen output from `make regenerate`.
 - Release tags use lowercase `v{version}`.
 - Rebuild packaged artifacts before publishing release assets. Run `make package` before publishing; CI should upload the ZIP on published releases.
+- The first release that ships `rules/clarity.md` also drops the Clarity main-only line (`# Clarity is available on main; it is not in the current release yet.`) and the `WAZA_REF=main ` prefix on the clarity command in all seven READMEs, so they stop pointing installs at `main`.
 - Before saying a Waza release is ready or done, separate the evidence layers: source diff, CI, generated metadata, package contents, GitHub release assets, npm registry/dist-tag state, and installed-runtime smoke. Missing layers are explicit gaps, not implied passes.
 - After a GitHub release is published and assets are verified, add every positive release reaction with `gh api`: `+1`, `laugh`, `heart`, `hooray`, `rocket`, and `eyes`. Resolve the release id from the tag, POST each reaction to `repos/<owner>/<repo>/releases/<id>/reactions`, then re-read reactions to confirm them.
 - **Never add the `-1` or `confused` reactions**. Those are negative signals; adding them to one's own release reads as self-deprecation. Only the six positive reactions above.
@@ -156,7 +157,7 @@ Use this path for any new skill or meaningful behavior change:
 
 ```markdown
 <div align="center">
-  <img src="..." width="120" />
+  <img src="https://raw.githubusercontent.com/tw93/Waza/main/assets/logo.svg" width="120" />
   <h1>Waza V{version}</h1>
   <p><em>tagline</em></p>
 </div>

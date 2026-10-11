@@ -172,28 +172,33 @@ Lists active Plannotator server sessions, each with its full target (absolute pa
 ## plannotator inbox
 
 ```bash
-plannotator inbox [--background | --no-open]
+plannotator inbox [--background | --no-open] [--tailscale]
 plannotator inbox mcp
 ```
 
-The Plannotator Inbox is one local window per machine where agents leave the person messages: `:::question` blocks (the syntax below) they answer with a click, files to read and annotate (`attachments`, paths inside the project), project decisions, and guided reviews of a diff. Nothing blocks: you send and keep working or end your turn, and the person answers when they can.
+The Plannotator Inbox is one local window per machine where agents leave the person messages: `:::question` blocks (the syntax below) they answer with a click, files to see and annotate (`attachments`: any file you can read, by its absolute path or one relative to `project_path`; images show in the message, code and documents open with comments, anything else downloads; `.env` files are refused), project decisions, and guided reviews of a diff. Nothing blocks: you send and keep working or end your turn, and the person answers when they can.
+
+Run `plannotator inbox --help` for the full guide: when to use the Inbox, every tool and its arguments, how threads route, where replies arrive, the question syntax, and how to connect other agents.
 
 - Use the Inbox for what can wait: a question that does not hold up everything, status to read, a file to look at later. Use a review (plan review, `annotate`, `review`) when you need a decision on this document or diff before you go on.
 - If you have a `plannotator_inbox` tool, use it; its `action` names one of the tools below. Claude Code has it with the Plannotator mod (on by default); Pi and OpenCode only when `PLANNOTATOR_INBOX_TOOL=1` or `{ "inboxTool": true }` was set before the session started. The person's reply then arrives in your session as a new message once you are idle (OpenCode 1 excepted), so end your turn if you need the answer.
+- Replies come back to the session that sent the message: send with your `plannotator_inbox` tool; inside Claude Code or Pi, a command your session runs also carries the session's identity.
 - Any other agent uses the stdio MCP server `plannotator inbox mcp` (for example `claude mcp add plannotator-inbox -- plannotator inbox mcp`). Tools: `send_message`, `read_thread`, `wait_for_reply`, `resolve_message`, `list_decisions`, `record_decision`, `get_guide_brief`, `submit_guide`. Nothing wakes you there: call `wait_for_reply`, which returns the reply as soon as it is sent, or a cursor to wait again after 50 seconds.
 - Your messages join one thread per session; pass `thread` (a name) to group related messages, or `reply_to` to answer the person's reply.
 - Calls start a stopped Inbox in the background without opening a tab, so never run `plannotator inbox` just to send. Bare `plannotator inbox` is for the person: it opens the window. `--background` starts it detached and prints the URL; `--no-open` runs it in the foreground without a browser.
-- It is local only: it binds `127.0.0.1` and ignores `PLANNOTATOR_REMOTE` and `PLANNOTATOR_PORT`.
+- It binds `127.0.0.1` and ignores `PLANNOTATOR_REMOTE` and `PLANNOTATOR_PORT`. `--tailscale` (or `PLANNOTATOR_INBOX_TAILSCALE=1`, or the Settings switch) also publishes the window over the tailnet for the person's own Tailscale login only; it is the person's choice, so do not add it to the `--background` start you run. MCP and agent tools answer only on this computer.
 
 ## Other subcommands
 
 ```bash
 plannotator setup-goal <interview|facts> <bundle.json | -> [--json]
+plannotator update [--check]
 plannotator uninstall [--purge] [--yes] [--dry-run]
 plannotator improve-context
 ```
 
 - `setup-goal` opens the interview or facts-acceptance UI for /goal workflows; it is driven by the `plannotator-setup-goal` skill and takes a bundle JSON (`-` reads stdin). Do not hand-build bundles.
+- `update` installs the newest release now (the install script, with the choices from the last install); `--check` only reports whether one exists. Run it only when the person asks you to update Plannotator: it replaces the binary. Exit 0 up to date or updated, 1 failed, 2 usage, 130 interrupted.
 - `uninstall` removes Plannotator-installed components (`--purge` also deletes local data; `--yes` is required without a TTY; `--dry-run` previews).
 - `improve-context` and `install-runtime` are internal integration commands (hook plumbing and managed runtime install). Never run `improve-context` directly; `plannotator install-runtime agent-terminal` exists for reinstalling the optional annotate-terminal runtime and is normally run by the installer.
 - Additional host-internal subcommands (the `opencode-*` and `copilot-plan` family) are invoked by their plugins, not by you.
@@ -209,6 +214,7 @@ plannotator improve-context
 | `PLANNOTATOR_SHARE=disabled` | Disable URL sharing, including guide share links. |
 | `PLANNOTATOR_DATA_DIR` | Move the data directory (default `~/.plannotator`): plans, history, drafts, config. |
 | `PLANNOTATOR_BROWSER` | Open sessions in a specific browser. |
+| `PLANNOTATOR_UPDATE_CHECK=0` | No automatic check for a newer release (and no update notices or auto-update). `plannotator update` still checks when run. |
 
 ## Posting annotations into a live session
 
@@ -216,13 +222,13 @@ A running plan-review session exposes a small HTTP API on its base URL for exter
 
 ## Asking the reviewer questions
 
-When a decision needs the reviewer (a trade-off you cannot settle from the code or the conversation), write it as a question block. The reviewer answers in place, and the answers come back to you in an "Answers to your questions" section at the top of their feedback, with the questions they left open listed under "Unanswered".
+Ask what only the reviewer can decide as a question block. Answers come back at the top of their feedback ("Answers to your questions", then "Unanswered").
 
 ```markdown
 :::question
-Where should losing conflict versions be kept?
+Where should we keep the edit that loses a sync conflict?
 
-Last-write-wins silently drops the loser unless we keep it somewhere.
+When two devices edit one note offline, the later save wins and the other edit is lost. Local storage keeps it with no server work.
 
 - [ ] Local only, purged after 30 days — cheap, no server change
 - [ ] Server-side per user — survives reinstall, needs a retention policy
@@ -232,13 +238,17 @@ Recommended: Local only, purged after 30 days
 :::
 ```
 
-- `:::question` picks one choice, `:::question-multi` picks any number, `:::question-text` asks for free text (a block with no choices is free text too).
-- The first line is the question. Other prose lines are context. Most reviewers answer faster with a sentence or two of it: what the choice affects and what you already know. Context can include an image (`![alt](path)`), which helps when the question is about something visual, such as a screen.
-- Choices are task-list items: `- [ ] label`, optionally `- [ ] label — why`. The reviewer can always answer "Other", add a note, or skip.
-- `Recommended: <label>` marks your recommendation. Text that matches no choice is offered as a suggested answer.
-- `- [x]` means the choice is already settled. Use it when you resubmit: keep an answered question with the chosen choice checked, or remove the block and write the decision into the prose.
-- Leave blank lines between the parts so the block also reads well on GitHub.
-- Ask only what you cannot decide alone, and keep a round short (about 8 questions at most). Do not ask rhetorical questions or questions the codebase answers.
+- `:::question` picks one choice, `:::question-multi` any number, `:::question-text` free text (so does a block with no choices).
+- The first line is the question; the lines after it are context. Never send a bare question: the reviewer switches in cold, thinks at the level of the product, and does not know what you know.
+  - Say what the choice affects, what you know or tried, and why you recommend it, so they can decide without opening anything else.
+  - Be terse: one to three short sentences, plain words, no jargon or internal names they would not know.
+  - Add a screenshot (`![alt](path)`) for anything visual.
+  - Link a file that shows it better (a plan, an HTML mock): `[the mock](mock.html)`. In the Inbox, attach it too; the link opens it beside the thread.
+- Choices: `- [ ] label`, optionally `- [ ] label — why`. The reviewer can also answer "Other", add a note, or skip.
+- `Recommended: <label>` marks yours; text matching no choice shows as a suggested answer.
+- Ask only what you cannot decide alone, about 8 a round at most. Do not ask rhetorical questions or questions the codebase answers.
+- `- [x]` marks a settled choice. On resubmit, check the chosen answer, or drop the block and state the decision in prose.
+- Leave blank lines between the parts so the block reads well on GitHub.
 - Each answer comes back under its question (`### Q2. <question> (line N)`) as `Answer: <choice>`, marked `(your recommendation)` when the reviewer took yours, or as `Other: …`, free text in a quote, or `Skipped`, plus any `Note:`. A question you marked `- [x]` is settled and only comes back if the reviewer changed it or added a note.
 
 ## Do not

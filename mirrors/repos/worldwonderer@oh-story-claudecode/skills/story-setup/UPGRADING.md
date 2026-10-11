@@ -2,7 +2,7 @@
 
 ## 当前版本
 
-发布版本 `v0.8.3`。`agents_version` 仍是 34（与 v0.8.2 相同）：从 v0.8.2 升级只需更新技能包并新开会话，不用重跑 `/story-setup`；从 v0.8.1 或更早升级，按下方「v0.8.2 必须重跑 story-setup」重跑一次。
+发布版本 `v0.8.5`。`agents_version` 仍是 34（与 v0.8.2 相同）：从 v0.8.2 及之后的版本升级只需更新技能包并新开会话，不用重跑 `/story-setup`；从 v0.8.1 或更早升级，按下方「v0.8.2 必须重跑 story-setup」重跑一次。
 
 - `setup_skill_version: 1.3.2`
 - `agents_version: 34`

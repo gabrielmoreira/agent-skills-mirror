@@ -23,6 +23,37 @@ Running a crew? Update the lead first; members follow on their own. Details:
 
 ## [Unreleased]
 
+### Fixed
+
+- **Chat and History follow a Grok session reopened with `/resume`.** Herdr keeps the first session id a Grok pane reports, so while Grok runs, Collie checks Grok's own list of live sessions and reads the one live session in the pane's folder instead. Thanks @GGGODLIN (#405).
+- **A new Grok pane does not borrow a neighbour's Chat.** The `/resume` correction stands down while another Grok pane runs in the same folder, and ignores a live-session list over 1 MiB.
+- **The update button no longer stays greyed out until the app reloads.** When the first update read failed or carried no preflight, the card asks again when it opens, and the bridge logs a preflight that cannot start. Thanks @GGGODLIN (#404).
+- **A sheet opens whole after a slide into a pane.** The slide no longer holds its last frame, which made every sheet on that screen, such as the pane menu, open one header too low with its last row off screen. Thanks @GGGODLIN (#403).
+
+## [1.19.2] - 2026-10-10
+
+### Fixed
+
+- **The harness canary marks a pane live when it reads it.** The canary's own transport never told `lib/liveness.ts` about a successful pane read, so the M46 liveness gate in `sendGuardedReply` refused every canary send; the canary now stamps the pane live after each 200 or 304 read, as the client does, and skips this on older `--readers` checkouts that have no liveness module. Thanks @raffaelenatale (#397). ([fee6f273](https://github.com/AltanS/collie/commit/fee6f273))
+- **An omp question whose options have descriptions gets its option card.** Each description shows on its option, instead of a card with only Esc. Thanks @Aeternologist (#372, #399). ([d80253ce](https://github.com/AltanS/collie/commit/d80253ce))
+- **The unread-dialog card follows Wrap lines.** Its mirror of a wide pane wraps or pans as the pane mirror does, also after Put away (#372, #399). ([d80253ce](https://github.com/AltanS/collie/commit/d80253ce))
+- **A reply to Muse no longer stays in the box as an unsent draft.** Muse waits 350 ms after the text before the guarded Enter; other agents send as before. Thanks @jpcarranza94 (#395). ([2089b132](https://github.com/AltanS/collie/commit/2089b132))
+- **Copy works over plain HTTP.** Where the browser has no clipboard API, as on a tailnet page served from `http://host:8788`, the Copy output row and the new copy icons fall back to the browser's older copy command, so they copy there too. ([292dd2bd](https://github.com/AltanS/collie/commit/292dd2bd))
+- **An installed iPhone app no longer hides its bottom row behind the home bar.** The standalone height now takes the smaller of the large viewport and the dynamic viewport plus the top inset, so iOS releases that report the large viewport too tall no longer push the composer off screen (#394, also the cause of #371). Checked against the reporter's screenshot and a WebKit run, not yet on a device; please report if your iPhone still cuts the bottom row. ([7a994d31](https://github.com/AltanS/collie/commit/7a994d31))
+
+### Added
+
+- **Code blocks, tables, commands and diffs have a copy icon.** One tap copies the block as text, masked secrets stay masked, and the icon confirms the copy on every screen. Thanks @GGGODLIN (#396). ([edac919d](https://github.com/AltanS/collie/commit/edac919d))
+
+## [1.19.1] - 2026-10-10
+
+### Fixed
+
+- **The `/auth/` page tells an unpaired device to pair.** With no proxy in front of Collie, the page now says to run `collie pair` on the computer and enter the code in Settings, and links Settings next to the way back, also under a `COLLIE_BASE_PATH` mount. Reported by @djbclark (#393). ([d21438e8](https://github.com/AltanS/collie/commit/d21438e8))
+- **`--help` on a command prints its usage and changes nothing.** `collie update --help` used to start the real update, and `restart`, `uninstall` and `build` did the same; every command and sub-command now answers `-h` and `--help` with its usage first, and an argument after `--` is left alone. Reported by @djbclark (#392). ([eb4b2429](https://github.com/AltanS/collie/commit/eb4b2429))
+- **A send no longer types into an opencode overlay box.** When a /models-style box holds the keyboard, Collie refuses the send instead of typing into the box's filter, and a send that stalls on a dialog, menu or overlay now names it. Thanks @AndiWandHerd (#391). ([526d7a92](https://github.com/AltanS/collie/commit/526d7a92))
+- **A Mac's memory figure leaves out the file cache.** On macOS, Collie now reports app memory, wired memory and compressed memory, the figure Activity Monitor calls Memory Used, so a Mac no longer sits at 88 to 98 % all the time. It reads `vm_stat` and was checked against Apple's source, not yet on a Mac; if `vm_stat` fails, the old figure comes back. Reported by @dmstjd1024 (#383). ([38cf987f](https://github.com/AltanS/collie/commit/38cf987f))
+
 ## [1.19.0] - 2026-10-09
 
 ### Added

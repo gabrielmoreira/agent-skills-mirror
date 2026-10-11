@@ -27,7 +27,7 @@ Invoke them by name (e.g., `/office-hours`).
 
 | Skill | What it does |
 |-------|-------------|
-| `/review` | Pre-landing PR review. Finds bugs that pass CI but break in prod. |
+| `/review` | Pre-landing PR review. Finds bugs that pass CI but break in prod; lists every gate edit for gate integrity. |
 | `/deslop-shared-libs` | Find worthwhile shared-code extractions in recent work. Recommendations only. |
 | `/test-audit` | Sweep existing tests for low-value, implementation-coupled or duplicate tests. Report-only unless you approve a batch. |
 | `/codex` | Second opinion via OpenAI Codex. Review, challenge, or consult modes. Available outside the Codex harness. |
@@ -46,7 +46,7 @@ Invoke them by name (e.g., `/office-hours`).
 
 | Skill | What it does |
 |-------|-------------|
-| `/ship` | Run tests, review, push, open PR. Workspace-aware version queue. |
+| `/ship` | Run tests, review, gate integrity, push, open PR. Workspace-aware version queue. |
 | `/land-and-deploy` | Merge the PR, wait for CI and deploy, verify production health. |
 | `/canary` | Post-deploy monitoring loop in your Aside browser (or gstack's own when Aside is absent). |
 | `/landing-report` | Read-only dashboard for the workspace-aware ship queue. |
@@ -66,6 +66,7 @@ Invoke them by name (e.g., `/office-hours`).
 | `/health` | Code quality dashboard (type checker, linter, tests, dead code). |
 | `/benchmark` | Performance regression detection (page load, Core Web Vitals). |
 | `/benchmark-models` | Cross-model benchmark for skills (Claude, GPT, Gemini side-by-side). |
+| `/eval-plan` | Preregister a paid eval (bars, arms, decoys, stop rules), dry-run it for $0, pilot three priced items, then approve the spend. |
 | `/cso` | Supported security findings with explicit coverage. Static assessment remains available without catalog profiles; contained runtime/scanner execution requires matching qualified profiles, and no catalog has one yet (scanner build inputs are reviewed and await their qualification run; runtime qualification needs a private evaluator that is still being built), so `/cso` runs static assessment only. Runtime-tested bundles authenticate separate external assertions. Project-test completion remains `self_reported` because target code controls the test process; `tested` is reserved for a future target-independent completion witness. |
 | `/setup-gbrain` | Set up gbrain for cross-machine session memory sync. |
 | `/sync-gbrain` | Keep gbrain current with this repo's code; refresh agent search guidance in CLAUDE.md. |

@@ -45,6 +45,7 @@ Non-user-visible child processes must never flash a console window.
 - Keep native/external modules configured according to `packages/electron/README.md` and `bundle-main.mjs`.
 - Preserve startup, quit, updater, notification, and deep-link behavior across development and packaged builds.
 - Ensure cleanup tolerates partial startup and repeated shutdown signals.
+- Quitting ends in `app.exit()`, which skips Chromium's shutdown and the pages' unload handlers, so localStorage writes still held by the page or by Chromium are lost and the next launch paints from an older cache. Every quit path runs `flushRendererStorage()` (`main.mjs`) before it exits.
 - Do not infer readiness from stdout when an in-process callback or returned server handle exists.
 
 ## Validation

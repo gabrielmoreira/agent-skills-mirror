@@ -60,13 +60,17 @@ Design Read: [page or flow] for [audience] — [tone] · [constraints]
 
 An explicit request to execute, build, generate, or continue authorizes the fast path. Do not make the user confirm information they already supplied.
 
+## Existing project discovery
+
+Before generating or changing interfaces in an existing code project, read `references/project-discovery.md`. Establish the target entry, brand and behavior constraints, related dependencies and unknowns. The bundled read-only scanner assists this review; it does not prove complete understanding or runtime support.
+
 ## Shared context
 
 Before design work, read `variant-output/.variant-context.json` when it exists. For the schema and update rules, read `references/project-context.md`.
 
 - User instructions override persisted preferences.
 - A confirmed design system locks visual tokens, not content hierarchy or product judgment.
-- Preference writes are best-effort. Before replacing existing output, a successful durable snapshot is required; on failure keep the original and deliver a separate candidate.
+- Preference writes are best-effort. Before generating an edit, use `variant-history.mjs prepare` to create a new candidate with its original baseline; never retrofit a baseline onto an old candidate. Before replacing existing output, a successful durable snapshot is required; on failure keep the original and deliver a separate candidate.
 - `reset context` may remove only `variant-output/.variant-context.json` after resolving that exact path.
 
 ## Product-critical work
@@ -145,3 +149,7 @@ Then load only the design-system references needed for the task:
 - Generated UI includes meaningful content and relevant loading, empty, error, and success behavior.
 - Accessibility, reduced motion, keyboard use, and visible focus are baseline requirements.
 - Report what was verified and what remains an assumption.
+
+## Version-bound verification
+
+For checks on generated artifacts, follow `references/artifact-verification.md`. Record evidence against the actual revision and recheck it before delivery; changes invalidate prior results. Static-only checks do not establish runtime correctness.

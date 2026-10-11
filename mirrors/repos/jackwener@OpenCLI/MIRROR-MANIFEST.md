@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jackwener/OpenCLI` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
+Mirror of `jackwener/OpenCLI` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jackwener/OpenCLI` — 26 default patterns, 0 followed patterns, 35 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 35 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,41 +59,40 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`clis/antigravity/SKILL.md`](clis/antigravity/SKILL.md) |
-| 2 | ✓ | [`docs/adapters/browser/claude.md`](docs/adapters/browser/claude.md) |
-| 3 | ✓ | [`docs/adapters/browser/gemini.md`](docs/adapters/browser/gemini.md) |
-| 4 | ✓ | [`llms.txt`](llms.txt) |
-| 5 | ✓ | [`skills/opencli-adapter-author/references/adapter-template.md`](skills/opencli-adapter-author/references/adapter-template.md) |
-| 6 | ✓ | [`skills/opencli-adapter-author/references/api-discovery.md`](skills/opencli-adapter-author/references/api-discovery.md) |
-| 7 | ✓ | [`skills/opencli-adapter-author/references/coverage-matrix.md`](skills/opencli-adapter-author/references/coverage-matrix.md) |
-| 8 | ✓ | [`skills/opencli-adapter-author/references/deep-recon.md`](skills/opencli-adapter-author/references/deep-recon.md) |
-| 9 | ✓ | [`skills/opencli-adapter-author/references/field-conventions.md`](skills/opencli-adapter-author/references/field-conventions.md) |
-| 10 | ✓ | [`skills/opencli-adapter-author/references/field-decode-playbook.md`](skills/opencli-adapter-author/references/field-decode-playbook.md) |
-| 11 | ✓ | [`skills/opencli-adapter-author/references/jsdom-fixture-pattern.md`](skills/opencli-adapter-author/references/jsdom-fixture-pattern.md) |
-| 12 | ✓ | [`skills/opencli-adapter-author/references/output-design.md`](skills/opencli-adapter-author/references/output-design.md) |
-| 13 | ✓ | [`skills/opencli-adapter-author/references/site-memory.md`](skills/opencli-adapter-author/references/site-memory.md) |
-| 14 | ✓ | [`skills/opencli-adapter-author/references/site-memory/bilibili.md`](skills/opencli-adapter-author/references/site-memory/bilibili.md) |
-| 15 | ✓ | [`skills/opencli-adapter-author/references/site-memory/eastmoney.md`](skills/opencli-adapter-author/references/site-memory/eastmoney.md) |
-| 16 | ✓ | [`skills/opencli-adapter-author/references/site-memory/gmail.md`](skills/opencli-adapter-author/references/site-memory/gmail.md) |
-| 17 | ✓ | [`skills/opencli-adapter-author/references/site-memory/tonghuashun.md`](skills/opencli-adapter-author/references/site-memory/tonghuashun.md) |
-| 18 | ✓ | [`skills/opencli-adapter-author/references/site-memory/xueqiu.md`](skills/opencli-adapter-author/references/site-memory/xueqiu.md) |
-| 19 | ✓ | [`skills/opencli-adapter-author/references/site-recon.md`](skills/opencli-adapter-author/references/site-recon.md) |
-| 20 | ✓ | [`skills/opencli-adapter-author/references/strategy-selection.md`](skills/opencli-adapter-author/references/strategy-selection.md) |
-| 21 | ✓ | [`skills/opencli-adapter-author/references/success-rate-pitfalls.md`](skills/opencli-adapter-author/references/success-rate-pitfalls.md) |
-| 22 | ✓ | [`skills/opencli-adapter-author/references/typed-errors.md`](skills/opencli-adapter-author/references/typed-errors.md) |
-| 23 | ✓ | [`skills/opencli-adapter-author/SKILL.md`](skills/opencli-adapter-author/SKILL.md) |
-| 24 | ✓ | [`skills/opencli-autofix/SKILL.md`](skills/opencli-autofix/SKILL.md) |
-| 25 | ✓ | [`skills/opencli-browser/SKILL.md`](skills/opencli-browser/SKILL.md) |
-| 26 | ✓ | [`skills/opencli-usage/SKILL.md`](skills/opencli-usage/SKILL.md) |
-| 27 | ✓ | [`skills/smart-search/references/sources-ai.md`](skills/smart-search/references/sources-ai.md) |
-| 28 | ✓ | [`skills/smart-search/references/sources-info.md`](skills/smart-search/references/sources-info.md) |
-| 29 | ✓ | [`skills/smart-search/references/sources-media.md`](skills/smart-search/references/sources-media.md) |
-| 30 | ✓ | [`skills/smart-search/references/sources-other.md`](skills/smart-search/references/sources-other.md) |
-| 31 | ✓ | [`skills/smart-search/references/sources-shopping.md`](skills/smart-search/references/sources-shopping.md) |
-| 32 | ✓ | [`skills/smart-search/references/sources-social.md`](skills/smart-search/references/sources-social.md) |
-| 33 | ✓ | [`skills/smart-search/references/sources-tech.md`](skills/smart-search/references/sources-tech.md) |
-| 34 | ✓ | [`skills/smart-search/references/sources-travel.md`](skills/smart-search/references/sources-travel.md) |
-| 35 | ✓ | [`skills/smart-search/SKILL.md`](skills/smart-search/SKILL.md) |
+| 1 | ✓ | [`docs/adapters/browser/claude.md`](docs/adapters/browser/claude.md) |
+| 2 | ✓ | [`docs/adapters/browser/gemini.md`](docs/adapters/browser/gemini.md) |
+| 3 | ✓ | [`llms.txt`](llms.txt) |
+| 4 | ✓ | [`skills/opencli-adapter-author/references/adapter-template.md`](skills/opencli-adapter-author/references/adapter-template.md) |
+| 5 | ✓ | [`skills/opencli-adapter-author/references/api-discovery.md`](skills/opencli-adapter-author/references/api-discovery.md) |
+| 6 | ✓ | [`skills/opencli-adapter-author/references/coverage-matrix.md`](skills/opencli-adapter-author/references/coverage-matrix.md) |
+| 7 | ✓ | [`skills/opencli-adapter-author/references/deep-recon.md`](skills/opencli-adapter-author/references/deep-recon.md) |
+| 8 | ✓ | [`skills/opencli-adapter-author/references/field-conventions.md`](skills/opencli-adapter-author/references/field-conventions.md) |
+| 9 | ✓ | [`skills/opencli-adapter-author/references/field-decode-playbook.md`](skills/opencli-adapter-author/references/field-decode-playbook.md) |
+| 10 | ✓ | [`skills/opencli-adapter-author/references/jsdom-fixture-pattern.md`](skills/opencli-adapter-author/references/jsdom-fixture-pattern.md) |
+| 11 | ✓ | [`skills/opencli-adapter-author/references/output-design.md`](skills/opencli-adapter-author/references/output-design.md) |
+| 12 | ✓ | [`skills/opencli-adapter-author/references/site-memory.md`](skills/opencli-adapter-author/references/site-memory.md) |
+| 13 | ✓ | [`skills/opencli-adapter-author/references/site-memory/bilibili.md`](skills/opencli-adapter-author/references/site-memory/bilibili.md) |
+| 14 | ✓ | [`skills/opencli-adapter-author/references/site-memory/eastmoney.md`](skills/opencli-adapter-author/references/site-memory/eastmoney.md) |
+| 15 | ✓ | [`skills/opencli-adapter-author/references/site-memory/gmail.md`](skills/opencli-adapter-author/references/site-memory/gmail.md) |
+| 16 | ✓ | [`skills/opencli-adapter-author/references/site-memory/tonghuashun.md`](skills/opencli-adapter-author/references/site-memory/tonghuashun.md) |
+| 17 | ✓ | [`skills/opencli-adapter-author/references/site-memory/xueqiu.md`](skills/opencli-adapter-author/references/site-memory/xueqiu.md) |
+| 18 | ✓ | [`skills/opencli-adapter-author/references/site-recon.md`](skills/opencli-adapter-author/references/site-recon.md) |
+| 19 | ✓ | [`skills/opencli-adapter-author/references/strategy-selection.md`](skills/opencli-adapter-author/references/strategy-selection.md) |
+| 20 | ✓ | [`skills/opencli-adapter-author/references/success-rate-pitfalls.md`](skills/opencli-adapter-author/references/success-rate-pitfalls.md) |
+| 21 | ✓ | [`skills/opencli-adapter-author/references/typed-errors.md`](skills/opencli-adapter-author/references/typed-errors.md) |
+| 22 | ✓ | [`skills/opencli-adapter-author/SKILL.md`](skills/opencli-adapter-author/SKILL.md) |
+| 23 | ✓ | [`skills/opencli-autofix/SKILL.md`](skills/opencli-autofix/SKILL.md) |
+| 24 | ✓ | [`skills/opencli-browser/SKILL.md`](skills/opencli-browser/SKILL.md) |
+| 25 | ✓ | [`skills/opencli-usage/SKILL.md`](skills/opencli-usage/SKILL.md) |
+| 26 | ✓ | [`skills/smart-search/references/sources-ai.md`](skills/smart-search/references/sources-ai.md) |
+| 27 | ✓ | [`skills/smart-search/references/sources-info.md`](skills/smart-search/references/sources-info.md) |
+| 28 | ✓ | [`skills/smart-search/references/sources-media.md`](skills/smart-search/references/sources-media.md) |
+| 29 | ✓ | [`skills/smart-search/references/sources-other.md`](skills/smart-search/references/sources-other.md) |
+| 30 | ✓ | [`skills/smart-search/references/sources-shopping.md`](skills/smart-search/references/sources-shopping.md) |
+| 31 | ✓ | [`skills/smart-search/references/sources-social.md`](skills/smart-search/references/sources-social.md) |
+| 32 | ✓ | [`skills/smart-search/references/sources-tech.md`](skills/smart-search/references/sources-tech.md) |
+| 33 | ✓ | [`skills/smart-search/references/sources-travel.md`](skills/smart-search/references/sources-travel.md) |
+| 34 | ✓ | [`skills/smart-search/SKILL.md`](skills/smart-search/SKILL.md) |
 
 ---
 

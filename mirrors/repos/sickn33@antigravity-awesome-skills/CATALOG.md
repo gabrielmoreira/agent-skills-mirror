@@ -1,8 +1,8 @@
 # Skill Catalog
 
-Generated at: 2026-10-09T08:09:47.000Z
+Generated at: 2026-10-10T09:03:24.000Z
 
-Total skills: 2671
+Total skills: 2675
 
 ## agent-behavior (5)
 
@@ -1081,7 +1081,7 @@ Total skills: 2671
 | `liuguang-banlan-ui` | Builds two parameterized UI modes—流光溢彩白 (iridescent white) and 五彩斑斓黑 (colorful black)—with OKLCH, WebGL/CSS fallback, vision gating, screenshot QA, and total... | critical | self | ui, frontend, oklch, webgl, accessibility | ui, frontend, oklch, webgl, accessibility, liuguang, banlan, two, parameterized, modes, iridescent, white |
 | `modellix` | Integrate the Modellix API/CLI for async AI image, video, and speech generation or transcription (model run --wait, task download). | critical | Modellix/modellix-plugin | image-generation, video-generation, audio-generation, text-to-speech, speech-to-text, speech-to-speech, modellix, cli, api | image-generation, video-generation, audio-generation, text-to-speech, speech-to-text, speech-to-speech, modellix, cli, api, integrate, async, ai |
 
-## data (42)
+## data (43)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -1092,6 +1092,7 @@ Total skills: 2671
 | `analytics-tracking` | Design, audit, and improve analytics tracking systems that produce reliable, decision-ready data. | critical | community | analytics, tracking | analytics, tracking, audit, improve, produce, reliable, decision, data |
 | `arrowspace` | Spectral vector search using graph Laplacian eigenstructure. Use when cosine/L2 similarity misses latent structure in your embeddings. | safe | Genefold/arrowspace-skills | vector-search, spectral-analysis, graph-laplacian, embeddings, lambda-tau | vector-search, spectral-analysis, graph-laplacian, embeddings, lambda-tau, arrowspace, spectral, vector, search, graph, laplacian, eigenstructure |
 | `data-engineer` | Build scalable data pipelines, modern data warehouses, and real-time streaming architectures. Implements Apache Spark, dbt, Airflow, and cloud-native data pl... | critical | community | data | data, engineer, scalable, pipelines, warehouses, real, time, streaming, architectures, implements, apache, spark |
+| `datacircle` | Look up LinkedIn profiles by URL through Datacircle (Up2Data or HarvestAPI, no markup), over its hosted MCP server or REST API, with the user's yes before ea... | critical | self | b2b-data, linkedin, enrichment, rest-api, mcp | b2b-data, linkedin, enrichment, rest-api, mcp, datacircle, look, up, profiles, url, through, up2data |
 | `dbt-transformation-patterns` | Production-ready patterns for dbt (data build tool) including model organization, testing strategies, documentation, and incremental processing. | none | community | dbt, transformation | dbt, transformation, data, including, model, organization, testing, documentation, incremental, processing |
 | `firecrawl-scraper` | Deep web scraping, screenshots, PDF parsing, and website crawling using Firecrawl API. Use when you need deep content extraction from web pages, page interac... | critical | community | firecrawl, scraper | firecrawl, scraper, deep, web, scraping, screenshots, pdf, parsing, website, crawling, api, content |
 | `glasser` | Search, inspect, and run third-party data APIs through one CLI when the environment has no suitable integration. | critical | self | api, data, search, enrichment, marketing, research, cli | api, data, search, enrichment, marketing, research, cli, glasser, inspect, run, third, party |
@@ -1217,7 +1218,7 @@ Total skills: 2671
 | `logic-locate` | Locate the root cause of a CONFIRMED failure via backward-then-forward semi-formal tracing. | safe | hyhmrright/logic-lens | logic, locate | logic, locate, root, cause, confirmed, failure, via, backward, then, forward, semi, formal |
 | `phase-gated-debugging` | Use when debugging any bug. Enforces a 5-phase protocol where code edits are blocked until root cause is confirmed. Prevents premature fix attempts. | safe | community | phase, gated, debugging | phase, gated, debugging, any, bug, enforces, protocol, where, code, edits, blocked, until |
 
-## design (42)
+## design (43)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -1243,6 +1244,7 @@ Total skills: 2671
 | `lookdev` | Human-in-the-loop web studio to tune AI-generated output by eye. Stand up a local interactive studio (sliders, pickers, drag handles) or an inline edit/highl... | safe | connerkward/lookdev-studio-skill | lookdev, design, ui, tuning, studio, visual-eval, annotation | lookdev, design, ui, tuning, studio, visual-eval, annotation, human, loop, web, tune, ai |
 | `lookdev-auto` | Automated visual tuning: a vision or video model rates rendered variants in a loop. Render several labeled variants into one artifact, ask the model to rate ... | safe | connerkward/lookdev-auto-skill | visual-eval, vision-model, tuning, automation, render-loop | visual-eval, vision-model, tuning, automation, render-loop, lookdev, auto, automated, visual, vision, video, model |
 | `loss-aversion-designer` | One sentence - what this skill does and when to invoke it | safe | community | loss, aversion, designer | loss, aversion, designer, one, sentence, what, skill, does, invoke |
+| `qrx` | Make branded, print-ready art QR codes that always scan with QRX (qrx.codes). Use when a link needs a QR code that looks like artwork or matches a brand for ... | critical | qrxcodes/qrx-mcp | qr-code, design, branding, mcp, rest-api, print | qr-code, design, branding, mcp, rest-api, print, qrx, branded, art, qr, codes, always |
 | `rayden-use` | Build and maintain Rayden UI components and screens in Figma via Figma MCP with full design token enforcement | safe | https://github.com/playbookTV/rayden-ui-design-skill | figma, design-system, ui, components, mcp, rayden, rayna-ui | figma, design-system, ui, components, mcp, rayden, rayna-ui, maintain, screens, via, full, token |
 | `stitch-ui-design` | Expert guidance for crafting effective prompts in Google Stitch, the AI-powered UI design tool by Google Labs. This skill helps create precise, actionable pr... | safe | self | stitch, ui | stitch, ui, guidance, crafting, effective, prompts, google, ai, powered, labs, skill, helps |
 | `theme-factory` | This skill provides a curated collection of professional font and color themes themes, each with carefully selected color palettes and font pairings. Once a ... | critical | community | theme, factory | theme, factory, skill, provides, curated, collection, professional, font, color, themes, each, carefully |
@@ -1866,7 +1868,7 @@ Total skills: 2671
 | `ui-ux-pro-max` | Comprehensive design guide for web and mobile applications. Use when designing new UI components or pages, choosing color palettes and typography, or reviewi... | critical | community | ui, ux, max | ui, ux, max, pro, web, mobile, applications, designing, new, components, pages, choosing |
 | `web-performance-optimization` | Optimize website and web application performance including loading speed, Core Web Vitals, bundle size, caching strategies, and runtime performance | critical | community | web, performance, optimization | web, performance, optimization, optimize, website, application, including, loading, speed, core, vitals, bundle |
 
-## frontend (36)
+## frontend (37)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -1905,6 +1907,7 @@ Total skills: 2671
 | `sveltekit` | Build full-stack web applications with SvelteKit — file-based routing, SSR, SSG, API routes, and form actions in one framework. | safe | community | svelte, sveltekit, fullstack, ssr, ssg, typescript | svelte, sveltekit, fullstack, ssr, ssg, typescript, full, stack, web, applications, file, routing |
 | `tailwind-patterns` | Tailwind CSS v4 principles. CSS-first configuration, container queries, modern patterns, design token architecture. | none | community | tailwind | tailwind, css, v4, principles, first, configuration, container, queries, token, architecture |
 | `tastegate` | Build or fix a frontend so it looks designed, not AI-generated, then prove it in a real browser: renders at phone and desktop width and fails on overlap, low... | safe | stas4000/tastegate | frontend, design, ui, browser-testing, quality-gate | frontend, design, ui, browser-testing, quality-gate, tastegate, fix, so, looks, designed, ai, generated |
+| `uxkin-research` | Research how real products handle a screen, flow or visual style before designing it: search UXKIN's real iOS screens, user journeys and website design syste... | safe | uxkin/agent | ui, ux, design, research, mcp, design-system | ui, ux, design, research, mcp, design-system, uxkin, how, real, products, handle, screen |
 | `zustand-store-ts` | Create Zustand stores following established patterns with proper TypeScript types and middleware. | critical | community | zustand, store, ts | zustand, store, ts, stores, following, established, proper, typescript, types, middleware |
 
 ## fullstack (1)
@@ -3031,11 +3034,12 @@ Total skills: 2671
 | --- | --- | --- | --- | --- | --- |
 | `travel-planner` | 旅行/行程规划需求时使用:规划去某地旅行、X天X城、带老人孩子、自驾、假期安排等。产出逐日行程表、预算估算(经济/舒适/奢华三档)、交通住宿建议、景点美食清单。必须先问预算,预算未确认只输出问题清单;事实数据带来源和查询日期。 | safe | saudademjj/luopan | travel, itinerary, planning, trip, chinese | travel, itinerary, planning, trip, chinese, planner |
 
-## uncategorized (1)
+## uncategorized (2)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
 | `changelog-entry` | Generate a properly formatted CHANGELOG.md entry in Keep a Changelog format from a commit range or PR. Groups changes into Added/Changed/Deprecated/Removed/F... | safe | self | git, changelog, developer-workflow, documentation | git, changelog, developer-workflow, documentation, entry, generate, properly, formatted, md, keep, format, commit |
+| `reverse-engineer-anything` | Use REA to investigate shipped apps, binaries, packages, and runtimes; trace features with evidence, compare versions, or guide reconstruction. Skip ordinary... | safe | morluto/rea | reverse, anything | reverse, anything, engineer, rea, investigate, shipped, apps, binaries, packages, runtimes, trace, features |
 
 ## video (1)
 

@@ -12,6 +12,14 @@ bun run --cwd plugins/plugin-native-secure-store build
 
 Native storage behavior requires testing on the target Apple or Android device.
 
+`KeystoreTextFrame` is a native-only codec for existing
+`Base64(IV):Base64(AES-GCM ciphertext/tag)` records. Hosts retain the deployed
+alias, storage and access policy; the format has no AAD or unlock requirement.
+It serializes cold key creation across instances and bounds encoded records on
+read and write. Native custody tests cover old-writer/new-reader and
+new-writer/old-reader compatibility, tampering and concurrent cold use. Use the
+authenticated password vault for passwords, not this codec.
+
 Android's device suite verifies the real WebView/Capacitor/Keystore round trip,
 activity recreation, ciphertext persistence, deletion, and invalid/corrupt input:
 
@@ -87,3 +95,16 @@ covers cold key creation, reads, writes, removal and compare-and-exchange across
 instances; writers in separate Android processes need separate coordination.
 The device suite checks old-frame compatibility, backup recovery, tampering,
 byte limits, concurrent cold writes and competing admissions with synthetic JSON.
+
+`CredentialAccessSession.currentTicket()` binds queued work to the grant that admitted it.
+Check `authenticated(ticket)` before use. `lock(ticket)` cancels only that owner; an old
+Activity cannot revoke a newer challenge or grant. The host must serialize access to the session.
+
+`PasswordVaultStore.KeyPolicy` selects the vault key's user-authentication window and whether
+strong biometrics are accepted besides the device credential. The boolean constructor keeps
+the deployed `KeyPolicy.LEGACY` (device credential, 120 s); an alias is never reused under a
+different policy. `saveEntry`/`entries` add named entries with up to 20 normalized bindings
+(`PasswordFacets`: exact HTTPS origins or `android://<sha256>@<package>`); legacy single-origin
+records read as one binding, and `list()` still reports the primary web origin. `entries()`
+never includes passwords. `PasswordVaultFrame` is the unchanged ciphertext frame, extracted so
+it can be tested on a JVM: `bun run --cwd plugins/plugin-native-secure-store test:native-passwords`.

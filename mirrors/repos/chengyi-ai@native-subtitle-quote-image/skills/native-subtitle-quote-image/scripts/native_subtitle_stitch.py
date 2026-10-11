@@ -57,7 +57,8 @@ def video_metadata(path):
     proc = subprocess.run(
         [FFMPEG, "-hide_banner", "-i", str(path)],
         capture_output=True,
-        text=True,
+        encoding="utf-8",
+        errors="replace",
     )
     stderr = proc.stderr or ""
     size_match = re.search(r"Video:.*?(\d{2,5})x(\d{2,5})[\s,]", stderr)
@@ -233,9 +234,33 @@ def load_subtitle_font(path, size, text):
     return ImageFont.load_default()
 
 
-def draw_scripted_subtitle(image, text, y_center, font_path, font_size, max_width):
+# 说话人前缀：比台词小一号、用强调色，与台词共用基线。
+SPEAKER_PREFIX_SCALE = 0.68
+SPEAKER_PREFIX_FILL = (255, 214, 74)
+SPEAKER_MODES = ("none", "on-change", "every")
+
+
+def speaker_label(speaker, text):
+    separator = "：" if contains_cjk(speaker + text) else ": "
+    return f"{speaker}{separator}"
+
+
+def draw_scripted_subtitle(
+    image, text, y_center, font_path, font_size, max_width, speaker=None
+):
     draw = ImageDraw.Draw(image)
     minimum = max(12, round(font_size * 0.55))
+    label = speaker_label(speaker, text) if speaker else ""
+    label_width = 0
+    if label:
+        # 前缀字号只跟基础字号走，不随台词缩小；放不下时只缩台词。
+        label_size = max(12, round(font_size * SPEAKER_PREFIX_SCALE))
+        label_font = load_subtitle_font(font_path, label_size, label)
+        label_stroke = max(2, label_size // 14)
+        label_box = draw.textbbox(
+            (0, 0), label, font=label_font, stroke_width=label_stroke
+        )
+        label_width = label_box[2] - label_box[0]
     chosen = None
     box = None
     for size in range(font_size, minimum - 1, -2):
@@ -244,7 +269,7 @@ def draw_scripted_subtitle(image, text, y_center, font_path, font_size, max_widt
         candidate_box = draw.textbbox(
             (0, 0), text, font=font, stroke_width=stroke
         )
-        if candidate_box[2] - candidate_box[0] <= max_width:
+        if label_width + candidate_box[2] - candidate_box[0] <= max_width:
             chosen = (font, stroke)
             box = candidate_box
             break
@@ -255,8 +280,20 @@ def draw_scripted_subtitle(image, text, y_center, font_path, font_size, max_widt
     font, stroke = chosen
     text_width = box[2] - box[0]
     text_height = box[3] - box[1]
-    x = (image.width - text_width) // 2 - box[0]
+    x = (image.width - label_width - text_width) // 2 - box[0] + label_width
     y = y_center - text_height // 2 - box[1]
+    if label:
+        # 默认锚点在字形上沿，基线 = y + ascent；前缀对齐到台词基线。
+        baseline = y + font.getmetrics()[0]
+        label_y = baseline - label_font.getmetrics()[0]
+        draw.text(
+            (x + box[0] - label_width - label_box[0], label_y),
+            label,
+            font=label_font,
+            fill=SPEAKER_PREFIX_FILL,
+            stroke_width=label_stroke,
+            stroke_fill="black",
+        )
     draw.text(
         (x, y),
         text,
@@ -267,7 +304,7 @@ def draw_scripted_subtitle(image, text, y_center, font_path, font_size, max_widt
     )
 
 
-def normalize_script_lines(data, duration):
+def normalize_script_lines(data, duration, speaker_mode="none"):
     lines = data.get("lines") if isinstance(data, dict) else None
     if not isinstance(lines, list) or len(lines) < 2:
         raise SystemExit("台词脚本必须包含至少 2 项的 lines 数组")
@@ -295,9 +332,34 @@ def normalize_script_lines(data, duration):
             raise SystemExit(f"lines[{index}].text 不能为空")
         if "\n" in text or "\r" in text:
             raise SystemExit(f"lines[{index}].text 必须是单行台词")
-        normalized.append({"t": seconds, "text": text})
+        entry = {"t": seconds, "text": text}
+        speaker = item.get("speaker")
+        if speaker is not None:
+            if not isinstance(speaker, str) or not speaker.strip():
+                raise SystemExit(f"lines[{index}].speaker 必须是非空字符串")
+            speaker = speaker.strip()
+            if "\n" in speaker or "\r" in speaker:
+                raise SystemExit(f"lines[{index}].speaker 必须是单行")
+            entry["speaker"] = speaker
+        elif speaker_mode != "none":
+            raise SystemExit(
+                f"--speaker-prefix {speaker_mode} 需要每句都有 speaker；"
+                f"lines[{index}] 缺少 speaker"
+            )
+        normalized.append(entry)
         previous = seconds
     return normalized
+
+
+def apply_speaker_prefix(lines, mode):
+    """按模式决定每句是否显示前缀，结果写入 prefix 字段；text 不变。"""
+    previous = None
+    for line in lines:
+        speaker = line.get("speaker")
+        show = mode == "every" or (mode == "on-change" and speaker != previous)
+        line["prefix"] = speaker if show else None
+        previous = speaker
+    return lines
 
 
 def normalize_times(values, label="时间点"):
@@ -341,6 +403,16 @@ def choose_hero_fraction(strip_count, requested=None):
     if requested is not None:
         return requested
     return min(0.82, max(0.48, 1.0 - strip_count * 0.075))
+
+
+def six_line_geometry(out_width, out_height):
+    """Return the fixed six-line card's hero and strip heights."""
+    strip_height = max(1, round(out_width * 114 / 1080))
+    hero_height = out_height - 5 * strip_height
+    hero_fraction = hero_height / out_height
+    if not 0.25 <= hero_fraction <= 0.85:
+        raise SystemExit("六句卡主画面高度比例必须在 0.25–0.85 之间")
+    return hero_height, strip_height, hero_fraction
 
 
 def scale_to_width(image, width):
@@ -496,6 +568,7 @@ def scripted_render_one(
     frame_top=0.0,
     frame_bottom=1.0,
     check_duplicates=False,
+    six_line_card=False,
 ):
     frames = [
         crop_band(grab_frame(video, line["t"]), frame_top, frame_bottom)[0]
@@ -514,6 +587,7 @@ def scripted_render_one(
         draw_scripted_subtitle(
             hero, lines[0]["text"], hero.height - strip_height // 2,
             font_path, base_font, round(out_width * 0.92),
+            speaker=lines[0].get("prefix"),
         )
         parts = [hero]
         for line, frame in zip(lines[1:], frames[1:]):
@@ -524,6 +598,7 @@ def scripted_render_one(
             draw_scripted_subtitle(
                 strip, line["text"], strip.height // 2,
                 font_path, base_font, round(out_width * 0.92),
+                speaker=line.get("prefix"),
             )
             parts.append(strip)
         save_stack(parts, out_path)
@@ -531,13 +606,20 @@ def scripted_render_one(
     aw, ah = aspect
     out_height = round(out_width * ah / aw)
     strip_count = len(lines) - 1
-    hero_fraction = choose_hero_fraction(strip_count, hero_fraction)
-    hero_height = round(out_height * hero_fraction)
-    remaining = out_height - hero_height
-    base_strip = remaining // strip_count
-    strip_heights = [base_strip] * strip_count
-    strip_heights[-1] += remaining - sum(strip_heights)
-    base_font = font_size or max(24, round(out_width / 18))
+    if six_line_card:
+        # 1080x1440: 870px hero + five contiguous 114px strips.
+        # Keep the strip pitch proportional when --width changes.
+        hero_height, strip_height, hero_fraction = six_line_geometry(out_width, out_height)
+        strip_heights = [strip_height] * strip_count
+        base_font = font_size or max(24, round(out_width * 0.0587))
+    else:
+        hero_fraction = choose_hero_fraction(strip_count, hero_fraction)
+        hero_height = round(out_height * hero_fraction)
+        remaining = out_height - hero_height
+        base_strip = remaining // strip_count
+        strip_heights = [base_strip] * strip_count
+        strip_heights[-1] += remaining - sum(strip_heights)
+        base_font = font_size or max(24, round(out_width / 18))
 
     hero = ImageOps.fit(
         first_frame,
@@ -546,13 +628,17 @@ def scripted_render_one(
         centering=(0.5, 0.5),
     )
     first_strip_height = strip_heights[0]
+    first_line_y = hero.height - first_strip_height // 2
+    if not six_line_card:
+        first_line_y -= max(4, out_height // 150)
     draw_scripted_subtitle(
         hero,
         lines[0]["text"],
-        hero.height - first_strip_height // 2 - max(4, out_height // 150),
+        first_line_y,
         font_path,
         min(base_font, max(16, round(first_strip_height * 0.62))),
         round(out_width * 0.92),
+        speaker=lines[0].get("prefix"),
     )
 
     strips = []
@@ -577,6 +663,7 @@ def scripted_render_one(
             font_path,
             min(base_font, max(16, round(strip.height * 0.62))),
             round(out_width * 0.92),
+            speaker=line.get("prefix"),
         )
         strips.append(strip)
 
@@ -708,6 +795,21 @@ def refuse_existing(paths, overwrite):
         )
 
 
+FAILURE_REPORT = "渲染失败报告.json"
+
+
+def is_valid_image(path):
+    try:
+        with Image.open(path) as image:
+            image.verify()
+        # verify() 不解码像素，查不出被截断的 JPEG；再完整解码一次。
+        with Image.open(path) as image:
+            image.load()
+    except Exception:
+        return False
+    return True
+
+
 def command_band(args):
     video = input_file(args.video, "视频")
     _, _, duration = video_metadata(video)
@@ -725,6 +827,63 @@ def command_band(args):
     draw.line((0, y1, frame.width, y1), fill="red", width=line_width)
     frame.save(out_path, quality=93)
     print(f"字幕区域预览: {out_path} (y={y0}-{y1})")
+
+
+LOW_RES_WARN_HEIGHT = 720
+
+
+def decode_errors(path, seconds):
+    """解码前 seconds 秒，返回 FFmpeg 报告的错误行（空列表表示干净）。"""
+    try:
+        proc = subprocess.run(
+            [FFMPEG, "-hide_banner", "-v", "error", "-t", f"{seconds:g}",
+             "-i", str(path), "-map", "0:v:0", "-f", "null", "-"],
+            capture_output=True,
+        )
+    except FileNotFoundError:
+        raise SystemExit(f"找不到 FFmpeg 可执行文件: {FFMPEG}") from None
+    stderr = proc.stderr.decode("utf-8", errors="replace")
+    lines = [line.strip() for line in stderr.splitlines() if line.strip()]
+    if proc.returncode != 0 and not lines:
+        lines = [f"FFmpeg 退出码 {proc.returncode}"]
+    return lines
+
+
+def command_check_source(args):
+    video = input_file(args.video, "视频")
+    seconds = validate_time(args.seconds, "--seconds")
+    if seconds <= 0:
+        raise SystemExit("--seconds 必须大于 0")
+    if args.min_height is not None and args.min_height <= 0:
+        raise SystemExit("--min-height 必须为正整数")
+    try:
+        width, height, duration = video_metadata(video)
+    except SystemExit as exc:
+        raise SystemExit(f"源视频自检失败（无法读取元数据，文件可能已损坏）: {exc}") from None
+    print(f"源视频: {width}x{height}, 时长 {duration:.2f}s")
+
+    failed = False
+    if args.min_height is not None and height < args.min_height:
+        print(f"失败: 分辨率 {height}p 低于 --min-height {args.min_height}", file=sys.stderr)
+        failed = True
+    elif args.min_height is None and height < LOW_RES_WARN_HEIGHT:
+        print(
+            f"警告: 分辨率 {height}p 低于 {LOW_RES_WARN_HEIGHT}p，画质可能不足；"
+            "请征得用户确认，或用 --min-height 强制门槛",
+            file=sys.stderr,
+        )
+
+    errors = decode_errors(video, seconds)
+    if errors:
+        failed = True
+        print(f"失败: 解码前 {seconds:g} 秒出现错误:", file=sys.stderr)
+        for line in errors[:5]:
+            print(f"  {line}", file=sys.stderr)
+        if len(errors) > 5:
+            print(f"  …共 {len(errors)} 行", file=sys.stderr)
+    if failed:
+        raise SystemExit(1)
+    print(f"自检通过: 前 {seconds:g} 秒解码无错误")
 
 
 def command_sample(args):
@@ -793,27 +952,63 @@ def command_render(args):
     outputs = [out_dir / f"{index:02d}_{title}.jpg" for index, title, _ in jobs]
     manifest_target = out_dir / "原生字幕时间点.json"
     contact_target = out_dir / "final_contact_sheet.jpg"
-    guarded = [*outputs, contact_target]
-    if manifest_path != manifest_target:
-        guarded.append(manifest_target)
-    refuse_existing(guarded, args.overwrite)
+    report_target = out_dir / FAILURE_REPORT
+    if args.resume:
+        # 续跑只补缺失或损坏的卡；已有的有效图保留，总览图与时间点文件重新生成。
+        # 待补的卡要么不存在、要么已确认损坏，不是成品，无需 --overwrite 即可重渲。
+        pending = [
+            (job, path) for job, path in zip(jobs, outputs) if not is_valid_image(path)
+        ]
+        skipped = len(jobs) - len(pending)
+        if skipped:
+            print(f"续跑: 跳过 {skipped} 张已完成的图")
+    else:
+        pending = list(zip(jobs, outputs))
+        guarded = [*outputs, contact_target]
+        if manifest_path != manifest_target:
+            guarded.append(manifest_target)
+        refuse_existing(guarded, args.overwrite)
 
-    for (_, _, times), out_path in zip(jobs, outputs):
-        render_one(
-            video,
-            times,
-            out_path,
-            args.aspect,
-            args.width,
-            args.band_top,
-            args.band_bottom,
-            args.hero_fraction,
-            args.layout,
-            args.fit or "crop",
-            0.5 if args.crop_center is None else args.crop_center,
-            check_duplicates=not args.allow_duplicate_frames,
+    keep_going = args.keep_going or args.resume
+    failures = []
+    for (index, title, times), out_path in pending:
+        try:
+            render_one(
+                video,
+                times,
+                out_path,
+                args.aspect,
+                args.width,
+                args.band_top,
+                args.band_bottom,
+                args.hero_fraction,
+                args.layout,
+                args.fit or "crop",
+                0.5 if args.crop_center is None else args.crop_center,
+                check_duplicates=not args.allow_duplicate_frames,
+            )
+        except (Exception, SystemExit) as exc:
+            if not keep_going:
+                raise
+            out_path.unlink(missing_ok=True)
+            failures.append({
+                "index": index,
+                "title": title,
+                "times": times,
+                "reason": str(exc) or type(exc).__name__,
+            })
+            print(f"失败: 第 {index} 张（{title}）时间点 {times}: {failures[-1]['reason']}")
+
+    if failures:
+        report_target.write_text(
+            json.dumps({"failures": failures}, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
         )
+        print(f"失败 {len(failures)}/{len(pending)} 张，清单: {report_target}")
+        print("修正 manifest 后加 --resume 只重渲失败的卡；总览图未生成。")
+        raise SystemExit(1)
 
+    report_target.unlink(missing_ok=True)
     if manifest_path != manifest_target:
         shutil.copyfile(manifest_path, manifest_target)
     contact_sheet(outputs, contact_target)
@@ -831,7 +1026,13 @@ def command_render_script(args):
             f"台词脚本 JSON 格式错误（第 {exc.lineno} 行第 {exc.colno} 列）: "
             f"{exc.msg}"
         ) from None
-    lines = normalize_script_lines(data, duration)
+    lines = normalize_script_lines(data, duration, args.speaker_prefix)
+    apply_speaker_prefix(lines, args.speaker_prefix)
+    if args.speaker_prefix == "none" and any("speaker" in line for line in lines):
+        print("提示: 台词含 speaker 字段，但未启用 --speaker-prefix，画面不显示说话人")
+    if args.six_line_card:
+        if len(lines) != 6:
+            raise SystemExit("--six-line-card 需要恰好 6 句已核对台词")
     out_path = Path(args.out).expanduser().resolve()
     refuse_existing([out_path], args.overwrite)
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -852,12 +1053,21 @@ def command_render_script(args):
         args.frame_top,
         args.frame_bottom,
         check_duplicates=not args.allow_duplicate_frames,
+        six_line_card=args.six_line_card,
     )
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
+
+    check = sub.add_parser("check-source", help="下载后自检：分辨率与前 N 秒解码")
+    check.add_argument("video")
+    check.add_argument("--seconds", type=float, default=10.0,
+                       help="解码自检的秒数（默认 10）")
+    check.add_argument("--min-height", type=int,
+                       help="最低画面高度；低于则失败。默认只在低于 720 时警告")
+    check.set_defaults(func=command_check_source)
 
     sample = sub.add_parser("sample", help="生成带时间点的候选帧总览")
     sample.add_argument("video")
@@ -925,6 +1135,16 @@ def main():
         help="跳过重复画面检查（默认遇到静态封面或重复字幕条会中止）",
     )
     render.add_argument("--overwrite", action="store_true")
+    render.add_argument(
+        "--keep-going",
+        action="store_true",
+        help="单张失败不中断整批，结束时输出失败清单并写入 渲染失败报告.json（有失败则退出码非零）",
+    )
+    render.add_argument(
+        "--resume",
+        action="store_true",
+        help="续跑：跳过已存在且有效的图，只渲染缺失或失败的卡（隐含 --keep-going）",
+    )
     render.set_defaults(func=command_render)
 
     scripted = sub.add_parser(
@@ -943,16 +1163,24 @@ def main():
     scripted.add_argument(
         "--band-center",
         type=float,
-        default=0.88,
-        help="字幕条在源画面中的垂直中心比例（默认 0.88）",
+        help="字幕条在源画面中的垂直中心比例（默认 0.88；六句卡默认 0.60）",
     )
     scripted.add_argument(
         "--hero-fraction",
         type=float,
         help="主画面高度比例；默认按台词数量自动保持紧凑密度",
     )
+    scripted.add_argument(
+        "--six-line-card", action="store_true",
+        help="可选 3:4 六句卡：首句在主画面，另五句等距排在连续字幕条上",
+    )
     scripted.add_argument("--font", help="中文字体文件；未指定时尝试系统字体")
     scripted.add_argument("--font-size", type=int, help="基础字号，过长台词仍会自动缩小")
+    scripted.add_argument(
+        "--speaker-prefix", choices=SPEAKER_MODES, default="none",
+        help="说话人前缀：none 不显示（默认）；on-change 换人时显示；every 每句显示。"
+             "需在台词 JSON 每句写 speaker",
+    )
     scripted.add_argument(
         "--allow-duplicate-frames",
         action="store_true",
@@ -987,8 +1215,16 @@ def main():
             raise SystemExit("--crop-center 只用于 --fit crop")
     if hasattr(args, "aspect") and args.aspect is None:
         args.aspect = parse_aspect("3:4")
-    if hasattr(args, "band_center") and not 0.1 <= args.band_center <= 0.98:
-        raise SystemExit("--band-center 必须在 0.10–0.98 之间")
+    if getattr(args, "six_line_card", False):
+        if args.layout != "fixed" or not math.isclose(args.aspect[0] / args.aspect[1], 0.75):
+            raise SystemExit("--six-line-card 只支持固定 3:4 布局")
+        if args.hero_fraction is not None:
+            raise SystemExit("--six-line-card 不接受 --hero-fraction；主画面高度由字幕条计算")
+    if hasattr(args, "band_center"):
+        if args.band_center is None:
+            args.band_center = 0.60 if args.six_line_card else 0.88
+        if not 0.1 <= args.band_center <= 0.98:
+            raise SystemExit("--band-center 必须在 0.10–0.98 之间")
     if getattr(args, "font_size", None) is not None and args.font_size < 12:
         raise SystemExit("--font-size 不能小于 12")
     if (

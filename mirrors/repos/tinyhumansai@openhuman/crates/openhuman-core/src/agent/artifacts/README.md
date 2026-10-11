@@ -94,6 +94,7 @@ event.
   `artifacts_root`. Per account. Not in `WORKSPACE_INTERNAL_DIRS`: the
   agent reads its large tool outputs back from `artifacts/tool-results/`,
   so a record's `file` is bounded by the escape guard instead.
+- With a storage backend configured (`crate::storage`) the records (`meta.json`, `args.json`) are `artifacts` / `artifact_args` documents under the acting agent's scope instead ([`store_documents.rs`](./store_documents.rs)); the first use imports the legacy files, and the content files stay files in the files folder on every backend.
 - `<root>/<id>/meta.json`: pretty-printed `ArtifactMeta`, written
   atomically (temp + rename).
 - `<root>/<id>/args.json`: verbatim producer-tool args, written by the

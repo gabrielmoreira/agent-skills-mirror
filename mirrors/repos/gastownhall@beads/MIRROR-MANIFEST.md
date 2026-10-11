@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `gastownhall/beads` — 26 default patterns, 31 followed patterns, 78 file(s) materialized.
+Mirror of `gastownhall/beads` — 26 default patterns, 32 followed patterns, 79 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `gastownhall/beads` — 26 default patterns, 31 followed patterns, 78 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 31 |
-| Files         | 78 |
+| Followed pats | 32 |
+| Files         | 79 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,6 +73,7 @@ Mirror of `gastownhall/beads` — 26 default patterns, 31 followed patterns, 78 
 - `docs/getting-started/installation.md`
 - `docs/reference/antivirus.md`
 - `docs/architecture/dolt.md`
+- `engdocs/design/http-divergence-ledger.md`
 - `docs/community-tools.md`
 - `docs/related-projects.md`
 - `docs/core-concepts/sync-concepts.md`
@@ -154,19 +155,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 63 | → | [`engdocs/ADDING_AN_ISSUEOPS_ROLE.md`](engdocs/ADDING_AN_ISSUEOPS_ROLE.md) |
 | 64 | → | [`engdocs/AGENT_SIGNING.md`](engdocs/AGENT_SIGNING.md) |
 | 65 | → | [`engdocs/design/dolt-concurrency.md`](engdocs/design/dolt-concurrency.md) |
-| 66 | → | [`engdocs/ERROR_HANDLING.md`](engdocs/ERROR_HANDLING.md) |
-| 67 | → | [`engdocs/ICU-POLICY.md`](engdocs/ICU-POLICY.md) |
-| 68 | → | [`engdocs/LINTING.md`](engdocs/LINTING.md) |
-| 69 | → | [`engdocs/PROJECT_CHARTER.md`](engdocs/PROJECT_CHARTER.md) |
-| 70 | → | [`engdocs/RELEASE-STABILITY-GATE.md`](engdocs/RELEASE-STABILITY-GATE.md) |
-| 71 | → | [`engdocs/SERVE_RUNBOOK.md`](engdocs/SERVE_RUNBOOK.md) |
-| 72 | → | [`engdocs/TESTING.md`](engdocs/TESTING.md) |
-| 73 | → | [`engdocs/UI_PHILOSOPHY.md`](engdocs/UI_PHILOSOPHY.md) |
-| 74 | → | [`internal/storage/schema/migrations/README.md`](internal/storage/schema/migrations/README.md) |
-| 75 | → | [`PR_MAINTAINER_GUIDELINES.md`](PR_MAINTAINER_GUIDELINES.md) |
-| 76 | → | [`README.md`](README.md) |
-| 77 | → | [`RELEASING.md`](RELEASING.md) |
-| 78 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 66 | → | [`engdocs/design/http-divergence-ledger.md`](engdocs/design/http-divergence-ledger.md) |
+| 67 | → | [`engdocs/ERROR_HANDLING.md`](engdocs/ERROR_HANDLING.md) |
+| 68 | → | [`engdocs/ICU-POLICY.md`](engdocs/ICU-POLICY.md) |
+| 69 | → | [`engdocs/LINTING.md`](engdocs/LINTING.md) |
+| 70 | → | [`engdocs/PROJECT_CHARTER.md`](engdocs/PROJECT_CHARTER.md) |
+| 71 | → | [`engdocs/RELEASE-STABILITY-GATE.md`](engdocs/RELEASE-STABILITY-GATE.md) |
+| 72 | → | [`engdocs/SERVE_RUNBOOK.md`](engdocs/SERVE_RUNBOOK.md) |
+| 73 | → | [`engdocs/TESTING.md`](engdocs/TESTING.md) |
+| 74 | → | [`engdocs/UI_PHILOSOPHY.md`](engdocs/UI_PHILOSOPHY.md) |
+| 75 | → | [`internal/storage/schema/migrations/README.md`](internal/storage/schema/migrations/README.md) |
+| 76 | → | [`PR_MAINTAINER_GUIDELINES.md`](PR_MAINTAINER_GUIDELINES.md) |
+| 77 | → | [`README.md`](README.md) |
+| 78 | → | [`RELEASING.md`](RELEASING.md) |
+| 79 | → | [`ROADMAP.md`](ROADMAP.md) |
 
 ---
 

@@ -1,13 +1,13 @@
 # devices
 
-Mobile-device pairing domain. Brokers a secure, end-to-end-encrypted tunnel between the Rust core and iOS clients over the tinyhumans backend's `tunnel:*` Socket.IO relay. It registers a pairing channel, generates an X25519 keypair, performs key agreement when the device connects, and persists the resulting paired device. Frame confidentiality/integrity is XChaCha20-Poly1305 over an X25519-derived shared secret. This is the Rust counterpart to the iOS `TunnelTransport` strategy described in the repo's iOS-client notes.
+Mobile-device pairing domain. Brokers a secure, end-to-end-encrypted tunnel between the Rust core and iOS clients over the tinyhumans backend's `tunnel:*` Socket.IO relay. It registers a pairing channel, generates an X25519 keypair, performs key agreement when the device connects, and persists the resulting paired device. Frame confidentiality and integrity use XChaCha20-Poly1305 with HKDF-SHA256-derived directional session keys from static and ephemeral X25519 exchanges. This is the Rust counterpart to the iOS `TunnelTransport` strategy described in the repo's iOS-client notes.
 
 ## Responsibilities
 
 - Register a new pairing channel with the backend tunnel (`tunnel:register`) and return QR-bound fields (`channel_id`, `pairing_token`, `core_pubkey`, optional `rpc_url`, `expires_at`).
 - Generate an X25519 static keypair per pairing; encrypt and persist the private half (via `SecretStore`) so reconnect handshakes survive restart.
 - Connect as `role:"core"` on the channel (`tunnel:connect`) and listen for the device.
-- On the device's first `tunnel:frame`, complete the X25519 handshake (sealed-handshake or plaintext-pubkey fallback), derive the shared secret, and persist a `PairedDevice`.
+- On the device's first `tunnel:frame`, require the version `0x03` sealed handshake, derive session keys, and persist a `PairedDevice`.
 - Track live peer-online status from `tunnel:peer-status` and overlay it onto `devices_list` results.
 - List non-revoked devices; revoke a device (soft delete) and tear down its in-memory + tunnel state.
 - Provide a reusable `TunnelCipher` (seal/open with replay-protection window) for tunnel frame crypto.
@@ -113,8 +113,8 @@ revives a device another process revoked. With no backend configured (the deskto
 
 ## Notes / gotchas
 
-- **Handshake frame format** (`bus::handle_tunnel_frame`): version `0x01` = sealed-handshake (`eph_pub(32) || nonce(24) || ciphertext+tag`; device seals its static pubkey under an ephemeral DH); a non-`0x01`/`0x02` leading byte falls back to treating the whole payload as a plaintext base64url device pubkey (pre-Layer-2 compat). The sealed-handshake decrypt path does **not** reuse `TunnelCipher::open`; it calls `XChaCha20Poly1305` directly on `nonce||ct` after stripping the `eph_pub` prefix.
-- **`TunnelCipher` frame format** (`crypto`): `version(1)=0x01 || nonce(24) || ciphertext+tag`, random nonce per frame, replay protection via a 128-entry sliding window of seen nonces. Wrap in a `Mutex`/`RwLock` at the call site (it is `&mut self` on `open`).
+- **Handshake frame format** (`bus::handle_tunnel_frame`): `0x03 || client_handshake_eph_pub(32) || nonce(24) || ciphertext+tag`. The device seals its static public key and session ephemeral public key under a key derived with HKDF-SHA256 from the handshake ephemeral-to-core-static DH, salted by `client_handshake_eph_pub || core_static_pub`. The 33-byte marker and public-key header is authenticated as associated data. The core replies with `0x04 || nonce(24) || ciphertext+tag`; its key comes from the static DH salted by the client session ephemeral public key, and its associated data is `0x04 || client_session_eph_pub`. The reply carries the server session ephemeral public key. Raw-DH `0x01` handshakes and plaintext public keys are rejected; older clients must upgrade before reconnecting. An upgraded client can reuse its pairing profile and device key while the channel and credential remain valid.
+- **`TunnelCipher` frame format** (`crypto`): `0x02 || nonce(24) || ciphertext+tag`. Session keys derive from the static and session ephemeral DH values with separate client-to-server and server-to-client HKDF labels. Each frame has a random nonce; the receiver tracks a 128-entry replay window. Wrap the cipher in a `Mutex`/`RwLock` at the call site (`open` takes `&mut self`).
 - The `label` persisted on pairing currently falls back to the `channel_id` (the pending session stores no real label field; `PairingSession.channel_id` is used as the label source).
 - `devices_revoke` only tears down local + in-memory state. There is **no backend revoke endpoint yet** (TODO referencing PR #709 follow-up); the backend channel is left to expire via the pairing-token TTL.
 - `rpc_url` LAN detection uses the UDP "connect to 8.8.8.8" trick to read the local IPv4; port comes from `OPENHUMAN_CORE_RPC_PORT` env (default `7788`). Non-fatal if it fails.

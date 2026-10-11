@@ -31,7 +31,7 @@ OpenHuman ships for desktop only: Windows, macOS and Linux. Web is not a support
 | `crates/openhuman-core/src/skills/` | Skill metadata and run orchestration (`ops_create`, `ops_discover`, `ops_install`, `ops_parse`, `catalog/`, `registry`, `runtime/`, `schemas/`, `types`, `bundled/`, `webhooks/`). Skills contribute metadata and tool descriptors that are injected into agent prompts. Tool execution flows through native Rust handlers and Node-backed helpers via `runtime::node` (Cargo feature `runtime-node`). |
 | `gitbooks/`             | This book (public product and contributor documentation). |
 | `docs/`                 | Internal maintainer documentation (test-coverage matrix, release smoke checklist, library benchmarking notes). |
-| `vendor/`               | Recursive git submodules for the `tiny*` crate family (`tinyagents`, `tinyflows`, `tinychannels`, `tinyjuice`, `tinymemory`, `tinymcp`, `tinybus`, `tinybox`, `tinycomputer`, `tinyruntime`, `tinydocs`, `tinysearch`, `tinyskills`, `tinyvoice`, `tinywallet`, `tinyhosts`, `tinyconnectors`, `tinyhumans-sdk`) plus `motosan-ai-oauth`. |
+| `vendor/`               | Recursive git submodules for the `tiny*` crate family (`tinyagents`, `tinyflows`, `tinychannels`, `tinyjuice`, `tinymemory`, `tinymcp`, `tinybus`, `tinybox`, `tinycomputer`, `tinyruntime`, `tinydocs`, `tinysearch`, `tinyskills`, `tinyvoice`, `tinywallet`, `tinyhosts`, `tinyconnectors`, `tinyhumans-sdk`). |
 
 The desktop app's webview loads the UI from `app/`. RPC, agents and skills run in the `openhuman_core` core, hosted in-process as a tokio task by the Tauri shell (`crates/openhuman-app/src/core_process.rs`, `openhuman_rpc::host::desktop`) and reachable over loopback HTTP. The renderer's `coreRpcClient` `fetch()`es `http://127.0.0.1:<port>/rpc` directly. The `relay_http_rpc` Tauri command (backed by `openhuman_rpc::post_json_rpc`) is only the fallback for non-loopback plain-`http://` runtimes that the webview would block as mixed content. The standalone `openhuman-core serve` binary is the CLI/debug path.
 
@@ -227,6 +227,10 @@ Memory is three operations (recall, fetch, store) over a pluggable engine. The e
 Conversation state is separate from memory: each thread's transcript is a JSONL file keyed by thread and agent id (the thread store is `tinyagents_session::threads` in `vendor/tinyagents`, wrapped by `threads::store`), and compaction seals a generation rather than deleting it. The full history stays recoverable even though a resumed session reads only the latest generation.
 
 ---
+
+## Storage
+
+Durable state sits on the ports of `tinystoragedrivers` (documents, streams, blobs, search, secrets), vendored through `vendor/tinyagents/vendor/tinystoragedrivers`. One URL picks the backend for the process: `OPENHUMAN_STORAGE_URL`, else `[storage] url`, else nothing, which keeps the classic per-domain files on desktop. The drivers are Cargo features (`storage-sqlite`, `storage-file`, `storage-mongodb`; `memory` is always there), and a URL for a driver the build lacks fails at boot. Records live in a scope: the tenant's profile when work runs for one, else the acting agent's id, else `local` for the operator in single-user mode. In SaaS mode a call with no profile is refused. The host side is `crates/openhuman-core/src/storage/`. See [Storage](architecture/storage.md).
 
 ## Security architecture
 

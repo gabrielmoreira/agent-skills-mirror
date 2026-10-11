@@ -156,6 +156,18 @@ Storage cookies are scoped to the page URL at each capture. Unsupported action
 tags, unknown fields, duplicate step IDs, and undeclared secret references fail
 validation.
 
+Cookies are installed before the initial navigation. Local storage entries are
+seeded once per browser storage partition; session storage entries are seeded
+once per origin in each top-level browsing context. Seeding occurs before the
+first document scripts for that area. An origin first reached by a later action
+receives its seed on that first visit. Application updates, deletions, and
+empty values then persist across later navigations in the same area; a new
+scenario starts with its own seeds. Partitioned frames can receive separate
+local storage seeds even when they share an origin. The pre-script mechanism
+uses CDP debugger instrumentation. The observer resumes only pauses whose top
+frame belongs to its private seed script; page breakpoints and `debugger`
+statements remain under the attached debugger client's control.
+
 The result is Evidence with an initial state followed by one record per
 declared action. Each step reports action status, elapsed time, sanitized URLs,
 event bounds, and independently typed capture states for screenshot, DOM,

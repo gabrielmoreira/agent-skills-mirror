@@ -38,6 +38,20 @@ Inspect separately obtained components explicitly and preserve their identities.
 A valid implementation marker establishes a candidate native boundary, not
 recovered native semantics or runtime behavior.
 
+### Resource admission
+
+The static provider admits regular input files up to 128 MiB before retaining
+their bytes. Reads remain bounded if a file grows after admission. Metadata,
+CIL decoding, and projected inspection records have a separate conservative
+64 MiB representation budget; shared heap strings are cached, but repeated
+output occurrences still consume that budget. These are inspection resource
+policies, not PE format limits or a hard bound on total V8 heap use.
+
+Input overflow returns a resource constraint. Decode or projection overflow
+reports `resource-limit` with unavailable or partial coverage; omitted facts do
+not become empty observations. Ambiguous PE section mappings are rejected
+rather than interpreted according to section order.
+
 ## Analysis objective
 
 REA's managed-code track is intended to answer five different questions without
@@ -81,6 +95,10 @@ x86-64 ELF and native Windows PE targets analyzed on Linux x64 with Ghidra
 12.1.4 and JDK 21. Other layouts, architectures, and hosts are unsupported.
 See [NativeAOT recovery](ghidra-nativeaot.md) for build/configuration, recovered
 metadata, derived-memory provenance, and the real verification lane.
+
+REA's experimental Windows Ghidra boundary admits native x86 and x86-64 PE
+applications and DLLs for static analysis. This does not establish Windows
+NativeAOT metadata-recovery coverage.
 
 For NativeAOT analysis, preserve the selected native artifact's path and digest
 and report recovered type data as provider observations. Linking those types

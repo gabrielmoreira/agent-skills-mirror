@@ -2,15 +2,18 @@
 
 - Status: active, volatile architecture and operations reference
 - Owner: ClawSweeper maintainers
-- Source of truth: `.github/workflows/sweep.yml`, planner/runtime source,
-  `config/automation-limits.json`, and focused scheduler tests
+- Source of truth: `.github/workflows/review-plan.yml`, `.github/workflows/sweep.yml`,
+  `.github/workflows/target-fanout.yml`, `.github/workflows/audit.yml`,
+  planner/runtime source, `config/automation-limits.json`, and focused scheduler
+  tests
 - Last verified: `openclaw/clawsweeper@647503ec44b8e777dd172adf974a945367da0d19`
 - Update when: cadence, fanout, admission, retry, publication, apply, or
   state-writing behavior changes
 
-Read when changing `.github/workflows/sweep.yml`, `src/clawsweeper.ts` planner
-selection, review cadence, dashboard capacity fields, or GitHub Actions
-concurrency for issue/PR review and apply.
+Read when changing `.github/workflows/review-plan.yml`, `.github/workflows/sweep.yml`,
+`.github/workflows/target-fanout.yml`, `.github/workflows/audit.yml`,
+`src/clawsweeper.ts` planner selection, review or audit cadence, dashboard
+capacity fields, or GitHub Actions concurrency for issue/PR review and apply.
 
 The global worker budget comes from `config/automation-limits.json`; see
 [Automation Limits](limits.md) for the derived lane limits and GitHub variable
@@ -115,8 +118,8 @@ and runtime packaging rules.
 
 ### Control-plane workflow retries
 
-Shell calls to the control plane in `sweep.yml`, `exact-review-reconcile-run.yml`,
-and `exact-review-dead-letter-reconcile.yml` use
+Shell calls to the control plane in `review-plan.yml`, `sweep.yml`,
+`exact-review-reconcile-run.yml`, and `exact-review-dead-letter-reconcile.yml` use
 `scripts/control-plane-curl.sh`. Each request retries connection failures and
 HTTP 5xx up to four attempts. A valid `Retry-After` delay (seconds or HTTP-date)
 is capped at 60 seconds; otherwise the waits are 2, 4, and 8 seconds. Each
@@ -248,8 +251,8 @@ its schema, observer-only UI, and mutation boundaries do not change.
 
 ## Workflow
 
-Explicit `workflow_dispatch` `item_number`/`item_numbers` selections, excluding
-`apply_existing`, use `src/repair/manual-review-enqueue.ts` before review. They
+Explicit `workflow_dispatch` `item_number`/`item_numbers` selections in
+`review-plan.yml` use `src/repair/manual-review-enqueue.ts` before review. They
 do not fall back to matrix publication. Admission is independently durable per
 item; the CLI reports failed members and continues the requested tail. Retries
 of the same workflow run reuse its run ID and item number, excluding attempt.
@@ -497,6 +500,10 @@ cleanup is idempotent and cannot duplicate accounting.
 
 ## Schedules
 
+`ClawSweeper Review Plan` (`review-plan.yml`) owns the normal-backfill and
+hot-intake schedules below. `sweep.yml` retains exact event execution and apply;
+`audit.yml` owns audit schedules. All three keep their existing cadence.
+
 `openclaw/openclaw`:
 
 - hot intake: `*/5 * * * *`
@@ -546,17 +553,20 @@ Generic `openclaw/*` and `steipete/*` repositories:
   implemented there
 - generic `steipete/*` repositories are review/comment-only for issues and PRs
 
-Manual `workflow_dispatch` supports `target_repo`, `target_branch`, `item_number`,
-`item_numbers`, `codex_timeout_ms`, `additional_prompt`, and `hot_intake`. Explicit
-item selections use manual queue admission; broad runs offer due candidates to
-shared queue limits. Per-run `batch_size`, `shard_count`, `apply_after_review`,
+Manual review `workflow_dispatch` in `review-plan.yml` supports `target_repo`,
+`target_branch`, `item_number`, `item_numbers`, `codex_timeout_ms`,
+`additional_prompt`, and `hot_intake`. Explicit item selections use manual queue
+admission; broad runs offer due candidates to shared queue limits. Per-run
+`batch_size`, `shard_count`, `apply_after_review`,
 and its reason/age sub-options are retired. Existing callers must stop sending
 those inputs; there is no silent compatibility alias. Apply remains available
-through the separate `apply_existing` lane and its existing apply controls.
+through `sweep.yml`'s separate `apply_existing` lane and its existing apply controls.
 
 Target fanout dispatches review batches through `repository_dispatch` so each
 selected repository can carry its inventory default branch without consuming
-manual workflow inputs. Scheduled fanout uses:
+manual workflow inputs. Scheduled fanout runs in `.github/workflows/target-fanout.yml`
+and dispatches review plans to `review-plan.yml` and audit work to `audit.yml`. Its
+schedules are:
 
 - hot intake: `4/20 * * * *`, 20 target repositories per cursor step. This
   20-minute cadence is temporary containment for scheduled self-feedback;
@@ -1163,13 +1173,27 @@ uses one ordinary fetch, commit, and push.
 
 ## Audit
 
-Audit is read-only and runs separately from review and apply. It refreshes
-`results/audit/<repo-slug>.json` and the README Audit Health table from live
-GitHub state. Scheduled audit currently covers:
+Audit is target-read-only and runs separately from review and apply in
+`.github/workflows/audit.yml`. It refreshes `results/audit/<repo-slug>.json` and
+the README Audit Health table from live GitHub state. Scheduled audit currently
+covers:
 
 - `openclaw/openclaw`: `7 */6 * * *`
 - `openclaw/clawhub`: `12 */6 * * *`
 - `openclaw/clawsweeper`: `17 */6 * * *`
+
+Every manual dispatch of `audit.yml` runs an audit. Its only input is
+`target_repo`; do not send the retired `audit_dashboard` input to either
+workflow. Review planning dispatch uses `review-plan.yml`; exact event execution
+and apply remain in `sweep.yml`.
+
+```bash
+gh workflow run audit.yml -f target_repo=openclaw/openclaw
+```
+
+Audit runs retain the `Audit ClawSweeper state` title, the existing per-target
+scheduled concurrency groups, and the run-scoped manual operator concurrency
+group. The hosted public-target admission gate remains in place.
 
 The audit lane first tries a ClawSweeper GitHub App read token for the target
 repository. If that token is unavailable, it falls back to the workflow token for
@@ -1227,7 +1251,8 @@ To change review cadence, update the cadence constants and the scheduler bucket
 logic in `src/clawsweeper.ts`, then update dashboard labels and this document.
 
 To add a new target repository, add a repository profile, wire schedule target
-resolution and concurrency target resolution in `.github/workflows/sweep.yml`,
+resolution and concurrency target resolution in `.github/workflows/review-plan.yml`
+and `.github/workflows/sweep.yml`,
 then confirm the generated state paths remain flat under one repo slug.
 
 Hosted owner fallback is limited to `openclaw/*` and `steipete/*`. To schedule

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `growthack88/growth-marketing-os` — 26 default patterns, 0 followed patterns, 90 file(s) materialized.
+Mirror of `growthack88/growth-marketing-os` — 26 default patterns, 0 followed patterns, 103 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `growthack88/growth-marketing-os` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 90 |
+| Files         | 103 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -125,30 +125,43 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 64 | ✓ | [`skills/community/win-loss/references/quality.md`](skills/community/win-loss/references/quality.md) |
 | 65 | ✓ | [`skills/community/win-loss/SKILL.md`](skills/community/win-loss/SKILL.md) |
 | 66 | ✓ | [`skills/conversion-copywriter/SKILL.md`](skills/conversion-copywriter/SKILL.md) |
-| 67 | ✓ | [`skills/funnel-decomposition/SKILL.md`](skills/funnel-decomposition/SKILL.md) |
-| 68 | ✓ | [`skills/mena-ads/CREDITS.md`](skills/mena-ads/CREDITS.md) |
-| 69 | ✓ | [`skills/mena-ads/install.sh`](skills/mena-ads/install.sh) |
-| 70 | ✓ | [`skills/mena-ads/licenses/LICENSE-claude-ads.txt`](skills/mena-ads/licenses/LICENSE-claude-ads.txt) |
-| 71 | ✓ | [`skills/mena-ads/licenses/LICENSE-claude-marketing-rebecca-rae-barton.txt`](skills/mena-ads/licenses/LICENSE-claude-marketing-rebecca-rae-barton.txt) |
-| 72 | ✓ | [`skills/mena-ads/licenses/LICENSE-gomarble-marketing-agent.txt`](skills/mena-ads/licenses/LICENSE-gomarble-marketing-agent.txt) |
-| 73 | ✓ | [`skills/mena-ads/licenses/LICENSE-meta-ads-skills.txt`](skills/mena-ads/licenses/LICENSE-meta-ads-skills.txt) |
-| 74 | ✓ | [`skills/mena-ads/README.md`](skills/mena-ads/README.md) |
-| 75 | ✓ | [`skills/mena-ads/references/audit-checklist.md`](skills/mena-ads/references/audit-checklist.md) |
-| 76 | ✓ | [`skills/mena-ads/references/budget-scaling.md`](skills/mena-ads/references/budget-scaling.md) |
-| 77 | ✓ | [`skills/mena-ads/references/creative-system.md`](skills/mena-ads/references/creative-system.md) |
-| 78 | ✓ | [`skills/mena-ads/references/data-connections.md`](skills/mena-ads/references/data-connections.md) |
-| 79 | ✓ | [`skills/mena-ads/references/google.md`](skills/mena-ads/references/google.md) |
-| 80 | ✓ | [`skills/mena-ads/references/mena-market-playbook.md`](skills/mena-ads/references/mena-market-playbook.md) |
-| 81 | ✓ | [`skills/mena-ads/references/meta.md`](skills/mena-ads/references/meta.md) |
-| 82 | ✓ | [`skills/mena-ads/references/other-platforms.md`](skills/mena-ads/references/other-platforms.md) |
-| 83 | ✓ | [`skills/mena-ads/references/reporting.md`](skills/mena-ads/references/reporting.md) |
-| 84 | ✓ | [`skills/mena-ads/references/snapchat.md`](skills/mena-ads/references/snapchat.md) |
-| 85 | ✓ | [`skills/mena-ads/references/tiktok.md`](skills/mena-ads/references/tiktok.md) |
-| 86 | ✓ | [`skills/mena-ads/references/tracking-measurement.md`](skills/mena-ads/references/tracking-measurement.md) |
-| 87 | ✓ | [`skills/mena-ads/scripts/ads_calc.py`](skills/mena-ads/scripts/ads_calc.py) |
-| 88 | ✓ | [`skills/mena-ads/SKILL.md`](skills/mena-ads/SKILL.md) |
-| 89 | ✓ | [`skills/performance-media-buyer/SKILL.md`](skills/performance-media-buyer/SKILL.md) |
-| 90 | ✓ | [`skills/README.md`](skills/README.md) |
+| 67 | ✓ | [`skills/experiment-coach/install.sh`](skills/experiment-coach/install.sh) |
+| 68 | ✓ | [`skills/experiment-coach/README.md`](skills/experiment-coach/README.md) |
+| 69 | ✓ | [`skills/experiment-coach/references/benchmarks-used.md`](skills/experiment-coach/references/benchmarks-used.md) |
+| 70 | ✓ | [`skills/experiment-coach/references/calculations.md`](skills/experiment-coach/references/calculations.md) |
+| 71 | ✓ | [`skills/experiment-coach/references/experiment-cards.md`](skills/experiment-coach/references/experiment-cards.md) |
+| 72 | ✓ | [`skills/experiment-coach/references/experiment-log.md`](skills/experiment-coach/references/experiment-log.md) |
+| 73 | ✓ | [`skills/experiment-coach/references/interviews.md`](skills/experiment-coach/references/interviews.md) |
+| 74 | ✓ | [`skills/experiment-coach/references/mena-notes.md`](skills/experiment-coach/references/mena-notes.md) |
+| 75 | ✓ | [`skills/experiment-coach/references/readout.md`](skills/experiment-coach/references/readout.md) |
+| 76 | ✓ | [`skills/experiment-coach/references/test-assets.md`](skills/experiment-coach/references/test-assets.md) |
+| 77 | ✓ | [`skills/experiment-coach/references/validation-ladder.md`](skills/experiment-coach/references/validation-ladder.md) |
+| 78 | ✓ | [`skills/experiment-coach/scripts/exp_calc.py`](skills/experiment-coach/scripts/exp_calc.py) |
+| 79 | ✓ | [`skills/experiment-coach/SKILL.md`](skills/experiment-coach/SKILL.md) |
+| 80 | ✓ | [`skills/funnel-decomposition/SKILL.md`](skills/funnel-decomposition/SKILL.md) |
+| 81 | ✓ | [`skills/mena-ads/CREDITS.md`](skills/mena-ads/CREDITS.md) |
+| 82 | ✓ | [`skills/mena-ads/install.sh`](skills/mena-ads/install.sh) |
+| 83 | ✓ | [`skills/mena-ads/licenses/LICENSE-claude-ads.txt`](skills/mena-ads/licenses/LICENSE-claude-ads.txt) |
+| 84 | ✓ | [`skills/mena-ads/licenses/LICENSE-claude-marketing-rebecca-rae-barton.txt`](skills/mena-ads/licenses/LICENSE-claude-marketing-rebecca-rae-barton.txt) |
+| 85 | ✓ | [`skills/mena-ads/licenses/LICENSE-gomarble-marketing-agent.txt`](skills/mena-ads/licenses/LICENSE-gomarble-marketing-agent.txt) |
+| 86 | ✓ | [`skills/mena-ads/licenses/LICENSE-meta-ads-skills.txt`](skills/mena-ads/licenses/LICENSE-meta-ads-skills.txt) |
+| 87 | ✓ | [`skills/mena-ads/README.md`](skills/mena-ads/README.md) |
+| 88 | ✓ | [`skills/mena-ads/references/audit-checklist.md`](skills/mena-ads/references/audit-checklist.md) |
+| 89 | ✓ | [`skills/mena-ads/references/budget-scaling.md`](skills/mena-ads/references/budget-scaling.md) |
+| 90 | ✓ | [`skills/mena-ads/references/creative-system.md`](skills/mena-ads/references/creative-system.md) |
+| 91 | ✓ | [`skills/mena-ads/references/data-connections.md`](skills/mena-ads/references/data-connections.md) |
+| 92 | ✓ | [`skills/mena-ads/references/google.md`](skills/mena-ads/references/google.md) |
+| 93 | ✓ | [`skills/mena-ads/references/mena-market-playbook.md`](skills/mena-ads/references/mena-market-playbook.md) |
+| 94 | ✓ | [`skills/mena-ads/references/meta.md`](skills/mena-ads/references/meta.md) |
+| 95 | ✓ | [`skills/mena-ads/references/other-platforms.md`](skills/mena-ads/references/other-platforms.md) |
+| 96 | ✓ | [`skills/mena-ads/references/reporting.md`](skills/mena-ads/references/reporting.md) |
+| 97 | ✓ | [`skills/mena-ads/references/snapchat.md`](skills/mena-ads/references/snapchat.md) |
+| 98 | ✓ | [`skills/mena-ads/references/tiktok.md`](skills/mena-ads/references/tiktok.md) |
+| 99 | ✓ | [`skills/mena-ads/references/tracking-measurement.md`](skills/mena-ads/references/tracking-measurement.md) |
+| 100 | ✓ | [`skills/mena-ads/scripts/ads_calc.py`](skills/mena-ads/scripts/ads_calc.py) |
+| 101 | ✓ | [`skills/mena-ads/SKILL.md`](skills/mena-ads/SKILL.md) |
+| 102 | ✓ | [`skills/performance-media-buyer/SKILL.md`](skills/performance-media-buyer/SKILL.md) |
+| 103 | ✓ | [`skills/README.md`](skills/README.md) |
 
 ---
 

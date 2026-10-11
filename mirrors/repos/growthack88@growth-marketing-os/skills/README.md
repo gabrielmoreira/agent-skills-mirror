@@ -10,11 +10,18 @@ Original, battle-tested assets. Every file follows the [master template](../temp
 | [Benchmark Analyst](benchmark-analyst/SKILL.md) | "Is this number good?" answered with panel-matched, sourced benchmarks | EN |
 | [COD Operations Analyst](cod-operations-analyst/SKILL.md) | Real revenue, RTO tax & break-even delivery rate for COD stores | EN |
 | [Conversion Copywriter](conversion-copywriter/SKILL.md) | Direct-response copy in 5 modes: write, rewrite, audit, hook, teach — framework-chosen, objection-aware | EN + AR aware |
+| ⭐ [Experiment Coach](experiment-coach/README.md) | Validate ideas before launch and run growth experiments after it: interviews, smoke tests, fake doors, pre-sales, pass lines from your economics, sample sizes, A/B readouts, experiment log. Works with GrowthLab exports | EN + AR |
 | [Performance Media Buyer](performance-media-buyer/SKILL.md) | Paid media in 6 modes: plan, build, optimize, diagnose, audit, report — across Meta/Google/TikTok/LinkedIn | EN |
 
 ## 🌍 Community skills — now included in this repo
 
-The best MIT-licensed community skills are curated INTO [`community/`](community/) with full attribution: [Marketing Psychology](community/marketing-psychology/SKILL.md) · [A/B Testing](community/ab-testing/SKILL.md) · [Programmatic SEO](community/programmatic-seo/SKILL.md) · [Churn Prevention](community/churn-prevention/SKILL.md) · [Onboarding](community/onboarding/SKILL.md) — all from [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills) (MIT). See [community/README.md](community/README.md) for the attribution and licensing details.
+Eleven MIT-licensed community skills are curated INTO [`community/`](community/) with full attribution:
+
+- **Growth and product:** [Marketing Psychology](community/marketing-psychology/SKILL.md) · [A/B Testing](community/ab-testing/SKILL.md) · [Programmatic SEO](community/programmatic-seo/SKILL.md) · [Churn Prevention](community/churn-prevention/SKILL.md) · [Onboarding](community/onboarding/SKILL.md) — from [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills)
+- **Product marketing and GTM:** [Positioning & Messaging](community/positioning-messaging-framework/SKILL.md) · [Launch Tier Framework](community/launch-tier-framework/SKILL.md) · [Voice of Customer Synthesis](community/voice-of-customer-synthesis/SKILL.md) — from [adam-lagerhausen/b2b-marketing-skills](https://github.com/adam-lagerhausen/b2b-marketing-skills)
+- **Sales enablement and research:** [Battlecards](community/battlecards/SKILL.md) · [ICP Research](community/icp-research/SKILL.md) · [Win-Loss Analysis](community/win-loss/SKILL.md) — from [matteotitta/genesys-skills](https://github.com/matteotitta/genesys-skills)
+
+See [community/README.md](community/README.md) for attribution and licensing details.
 
 More open-source collections we rate (licenses verified) — different focus, compose well with this repo:
 

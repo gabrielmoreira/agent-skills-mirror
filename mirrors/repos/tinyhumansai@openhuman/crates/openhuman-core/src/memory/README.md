@@ -97,18 +97,19 @@ session has no root and memory stays off.
 ### Around every turn
 
 TinyMemory's `AgentMemory` runs the lifecycle. [`lifecycle/mod.rs`](./lifecycle/mod.rs) builds one
-for an identity under the `[memory.recall]` policy, and [`lifecycle/hooks.rs`](./lifecycle/hooks.rs)
-has the three hooks the agent calls:
+for an identity under the `[memory.recall]` policy. The live turn calls
+[`lifecycle/prefetch.rs`](./lifecycle/prefetch.rs), which reads completed context
+immediately and queues engine work. [`lifecycle/hooks.rs`](./lifecycle/hooks.rs)
+contains the underlying lifecycle operations and bounded manual wrappers:
 
 ```text
 user message
    |
    v
-session host prelude ----> hooks::pre_turn
-(agent/session_host/          logs the user turn (index 2n)
- runtime_session/             recalls a TurnPack within
- memory_ingest.rs)            [memory.recall] pre_turn_timeout_ms
-   |                          optional date hint runs beside it
+session host prelude ----> prefetch::pre_turn
+(agent/session_host/          takes a completed cached TurnPack (or none)
+ runtime_session/             queues user log (index 2n), recall and
+ memory_ingest.rs)            optional date hint in a scoped worker
    v
 MemoryPackMiddleware ----> adds the pack to each model request of the
 (agent/tinyagents/            turn as an ephemeral instruction; it is
@@ -118,24 +119,40 @@ MemoryPackMiddleware ----> adds the pack to each model request of the
 model + tools run, turn is committed
    |
    v
-session host ------------> hooks::post_turn
+session host ------------> scoped background hooks::post_turn
                               logs the reply with a tool-call summary
                               (index 2n + 1); queues belief builds
    |
    v (later, when the transcript is compacted)
-memory_summarizer -------> hooks::compaction
-(agent/tinyagents/            recalls what the folded-away turns carried
- memory_summarizer.rs)
+memory_summarizer -------> prefetch::compaction
+(agent/tinyagents/            enriches from completed context only;
+ memory_summarizer.rs)        queues recall of the folded-away turns
 ```
 
 Turn indices follow the committed transcript: the user message of the turn
 after `n` committed turns is `2n` and its reply `2n + 1`. They are stable
 across retries and restarts, which is what lets TinyMemory treat a retried
-turn as a replay. Every hook is bounded by a timeout and never fails a
-turn: an engine outage degrades memory, it does not block the agent. If the
-engine refuses the whole account (for example `INSUFFICIENT_CREDITS`), the
-pack becomes a notice saying so, so the model does not read an empty pack
-as "nothing is stored".
+turn as a replay. Automatic hooks never await engine I/O on the live turn
+or the authoritative compaction summarizer. Cold or expired caches supply
+no pack; completed packs are labelled as context from an earlier lookup,
+which may be incomplete or unrelated to the current question. Explicit
+recall/fetch is the path to a current answer. If completed recall refuses
+the account (for example `INSUFFICIENT_CREDITS`), its pack is a notice that
+memory is unavailable, rather than evidence that nothing is stored.
+
+The cache is scoped to CoreContext, workspace, config fingerprint, resolved
+memory identity and thread. Entries expire after 60 seconds. There are at
+most 64 entries per context, 64 KiB per pack (including citations), eight
+active workers globally and 16 pending operations per entry. Each operation
+has a 120-second background deadline. When capacity is exhausted, automatic
+work is skipped without making the turn wait. The cache itself stays in process memory.
+Content invalidation clears packs and rejects stale completions while
+preserving queued logs; engine/credential invalidation also clears pending
+refreshes. Scoped spawns retain the caller's core and memory identity.
+
+The explicit/manual `hooks::pre_turn` and `hooks::compaction` retain their
+configured `pre_turn_timeout_ms` and `compaction_timeout_ms` deadlines; they
+are not what the live prelude and compaction wrapper await.
 
 A few details hang off the turn. For a message that arrived on a channel,
 `lifecycle::sender::channel_actor` records the sender as the observed actor
@@ -256,12 +273,14 @@ The agent `memory` tool applies the same confinement and overwrites any
 | [`scope.rs`](./scope.rs) | `MemoryIdentity`, `ResolvedIdentity`, resolution order, `within` / `within_agent`, layout v3 roots. |
 | [`local_root.rs`](./local_root.rs) | The persistent install-id root of a signed-out session. |
 | [`lifecycle/mod.rs`](./lifecycle/mod.rs) | Builds `AgentMemory` for an identity under the `[memory.recall]` policy. |
-| [`lifecycle/hooks.rs`](./lifecycle/hooks.rs) | `pre_turn`, `post_turn`, `compaction`; `TurnPack`, `MemoryTurn`. |
+| [`lifecycle/hooks.rs`](./lifecycle/hooks.rs) | Lifecycle operations and bounded manual wrappers; `TurnPack`, `MemoryTurn`. |
+| [`lifecycle/prefetch.rs`](./lifecycle/prefetch.rs) | Scoped in-memory packs and bounded automatic background refresh. |
 | [`lifecycle/jobs.rs`](./lifecycle/jobs.rs) | The persisted background job queue and the `memory_background` run. |
 | [`lifecycle/views.rs`](./lifecycle/views.rs) | Policy get/set, pack preview, agents list, jobs list/run for the UI. |
 | [`lifecycle/sender.rs`](./lifecycle/sender.rs) | Maps a channel message's sender to an observed actor. |
 | [`lifecycle/date_hint.rs`](./lifecycle/date_hint.rs) | Optional model call that works out which days a turn refers to. |
 | [`ops.rs`](./ops.rs) | Engine list/get/set, recall, fetch, learn, forget, erase all, items list. |
+| [`tool_budget.rs`](./tool_budget.rs), [`tool_writes.rs`](./tool_writes.rs) | Agent call deadlines and durable, owner-scoped admission/delivery of optional writes. |
 | [`confine.rs`](./confine.rs) | Confines the RPC surface to the acting identity's subtree. |
 | [`explore.rs`](./explore.rs) | The facet explorer behind `memory_explore` and `memory_items_get`. |
 | [`brain.rs`](./brain.rs) | Brain source mapping and the `memory_brain_*` ops. |
@@ -290,14 +309,37 @@ The agent `memory` tool applies the same confinement and overwrites any
   supply its own `MemoryEngine`.
 - `scope::within_agent` and `scope::resolve_current` (`scope.rs`): set and
   read the acting identity around a turn.
-- `lifecycle::hooks::pre_turn`, `post_turn`, `compaction`
-  (`lifecycle/hooks.rs`): what the agent harness calls.
+- `lifecycle::prefetch::pre_turn` and `compaction`
+  (`lifecycle/prefetch.rs`): synchronous reads of completed packs plus scoped
+  background refresh. `lifecycle::hooks` contains the underlying operations;
+  `post_turn` is spawned after durable commit.
 - `lifecycle::jobs::enqueue` and `run_due` (`lifecycle/jobs.rs`): the
   background queue.
 - `MemoryTool` and `run_action` ([`tools.rs`](./tools.rs)): the `recall | fetch | learn |
   forget` tool. `learn` stamps the item with facts the model does not choose:
   workspace, thread id, memory agent id, the learnings namespace, the tool
   call, and `source.kind = agent`.
+  `MemoryTool` bounds calls with [`tool_budget.rs`](./tool_budget.rs): 15 seconds
+  per call, 30 seconds of aggregate reserved time and eight attempts per tracked
+  harness run. Concurrent calls reserve from the same budget. The tracker holds
+  128 run records and never evicts an outstanding reservation. Aggregate limits
+  apply while the record is retained; idle eviction under churn can reset the
+  record if that same run later calls memory again. A timeout disables further
+  memory calls in the retained record and tells the model to continue without
+  retrying; a new run starts fresh. Calls
+  outside a harness still have the per-call deadline.
+  Explicit `recall`/`fetch` await the engine within that budget. Agent
+  `learn`/`forget` instead validate, confine and scrub their request into the
+  private durable [`tool_writes.rs`](./tool_writes.rs) outbox, then start scoped
+  background delivery. An acknowledgement says "queued; not yet saved to memory"
+  or "queued; not yet removed from memory"; it confirms local admission, not a
+  remote mutation. The model must not claim the write completed or repeat it to
+  force indexing. A timed-out admission may already be durable, so it also must
+  not be retried blindly. The queue holds at most 256 entries and 2 MiB per
+  partition, retries under the matching owner on auth/background ticks, and
+  keeps credentials out of persisted entries. Explicit RPC, UI, import and
+  deletion workflows retain their own behavior.
+
 - `deletion::forget_thread` (`deletion.rs`): called by `threads` when a
   thread is deleted. `channels::forget_channel` is called by `channels` on
   disconnect.

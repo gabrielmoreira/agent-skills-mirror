@@ -61,9 +61,9 @@ registry filters on.
 | Preset | Shape |
 | --- | --- |
 | `DomainSet::full()` | Every family on: today's default, byte-identical to registration with no runtime narrowing. |
-| `DomainSet::harness()` | `agent` + `memory` + `threads` + `config` + `security` only; every gate family and `platform` off. The embeddable agent core (`examples/embed_headless.rs`). |
+| `DomainSet::harness()` | `agent` + `memory` + `threads` + `config` + `security` only; every gate family and `platform` off. The embeddable agent core; see the [lean headless example](../../../../openhuman-embed/examples/lean_headless.rs). |
 | `DomainSet::embedded()` | The harness families plus `flows` (boot reconciliation keys off `ctx.domains().flows`), `skills`, `channels` (`channel.web_chat` is tagged `Channels` and is how an embedded host drives chat turns), `inference`, `integrations`, `automation`, `runtimes`, and `platform`. `mcp`/`web3`/`voice`/`media`/`desktop`/`hosted`/`modules` stay off: an embedded host supplies its own routing and presentation. |
-| `DomainSet::kernel()` | The floor: `threads` + `config` + `security` only. Distinct from `none()`: this is "opt a subsystem back in from nothing," so `agent` and `memory` (the two largest, most replaceable subsystems) are deliberately off. See `examples/embed_kernel.rs`. |
+| `DomainSet::kernel()` | The floor: `threads` + `config` + `security` only. Distinct from `none()`: this is "opt a subsystem back in from nothing," so `agent` and `memory` (the two largest, most replaceable subsystems) are deliberately off. See the [capability report example](../../../../openhuman-embed/examples/capability_report.rs) for inspecting runtime composition. |
 | `DomainSet::none()` | Every family off. |
 
 ## `TokenSource`: how the RPC bearer is seeded
@@ -138,7 +138,7 @@ existing single-tenant call sites keep working unmodified.
 
 `runtime/mode.rs` holds the process mode. `SingleUser` is today's
 behaviour and the default: the desktop app, the CLI and embedders. `Saas`
-serves many users from one process, one agent per user, behind a trusted
+serves many users from one process, one profile per user, behind a trusted
 gateway that authenticates them. The mode belongs to the process, not to any
 user's `Config`. The first SaaS boot locks it (`lock_mode`), and from then on
 `CoreContext::init_with_config` refuses every non-SaaS core. Code asks
@@ -146,14 +146,24 @@ user's `Config`. The first SaaS boot locks it (`lock_mode`), and from then on
 
 `openhuman-core run --mode saas --saas-config <file>` (or
 `OPENHUMAN_MODE=saas`, which can raise the mode but never lower it) boots
-through `runtime/saas.rs`:
+through `runtime/saas.rs`. So does `openhuman_embed::ProfileRuntime`, which
+runs the same `saas::build` in-process without serving a port (it writes a
+random service token when none exists, since no gateway presents it). Either
+way the lock is one-way: once it is built, no `Runtime::builder()` or other
+non-SaaS core can boot in that process, and neither can a second SaaS core.
+
+`saas::build`:
 
 - `SaasConfig` is the **operator's** file. It sets `root`,
   `service_token_file` (defaults to `<root>/service.token`), `tool_allowlist`
   (host tool groups, see `profiles/README.md`), `[sandbox]` (the shell
   container), `rpc_allowlist_extra`, `max_profiles_open`, `profile_ids`, `idle_evict_secs`,
   `shared_backend_api_key`, `custom_definitions` and `require_user_signature`
-  (default `true`). Unknown keys are refused.
+  (default `true`), and the cluster settings: `storage_url` (the shared
+  backend; `OPENHUMAN_STORAGE_URL` wins), `node_id` (else
+  `OPENHUMAN_NODE_ID`, else random per process), `advertise_url`,
+  `lease_ttl_secs` (default 30) and `operator_dir` (default
+  `<root>/operator`). Unknown keys are refused.
 - `runtime/boot_guard.rs` refuses the boot, listing every problem at once,
   when:
   - the host kind is not `Saas`;
@@ -166,8 +176,11 @@ through `runtime/saas.rs`:
     non-positive limits;
   - `rpc_allowlist_extra` is non-empty (the per-user RPC surface is fixed);
   - the root is relative, missing, world-writable or inside `~/.openhuman`;
-  - the service token is missing, readable by others, or shorter than 32 bytes.
-- The operator plane boots with its own config under `<root>/operator/`, so
+  - the service token is missing, readable by others, or shorter than 32 bytes;
+  - the node is clustered (`advertise_url` set) without a storage URL whose
+    driver keeps compare-and-swap atomic across processes (SQLite, MongoDB).
+- The operator plane boots with its own config under `operator_dir()`
+  (`<root>/operator/` by default), so
   it never resolves `~/.openhuman` or an `active_user.toml`. The gateway
   bearer is the RPC token.
 
@@ -179,8 +192,10 @@ keeps the two planes apart: the operator scope reaches only the operator
 plane, and a user's scope only the reviewed `USER_METHODS`.
 `saas::build` installs the process's `profiles::ProfileHost`. Each open
 profile (`<root>/users/<profile-id>/`, the desktop's user layout) runs under a
-context derived from the operator's, with its own forced config and
-`session_agent` (see `profiles/README.md`).
+context derived from the operator's, with its own forced config, policy,
+`profile` (its default agent has no `session_agent`, as on the desktop),
+behind a lease that keeps it on one process
+(see `profiles/README.md`). `saas::build` also starts the lease heartbeat.
 
 Three guards keep SaaS work from falling back to process-wide state:
 

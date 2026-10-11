@@ -113,6 +113,44 @@ outermost to innermost:
 The bearer is the per-launch RPC token the core owns
 (`openhuman::core::auth`); [`auth.rs`](auth.rs) is only the route policy over it.
 
+### SaaS mode
+
+`run_server_saas` (`--mode saas --saas-config <file>`) boots the operator's
+config instead of a builder. Before boot it installs the session store for
+the operator's storage URL (`OPENHUMAN_STORAGE_URL`, else `storage_url`)
+through `session_store::install_for_saas`: the on-disk store with no URL,
+else `DriverSessionStores` over that backend with `recover_on_open(false)`,
+because a profile's turns are recovered when its lease is taken over, not
+when its stores open. On shutdown it releases the leases of idle profiles.
+
+In place of the single-context layer, [`saas_gateway.rs`](saas_gateway.rs)
+picks each request's context (the decision is
+`openhuman::profiles::gateway`):
+
+- routes a SaaS core never serves (`/v1`, `/events/*`, `/ws/*`,
+  `/socket.io`, `/dev/connect`, `/oauth/*`) answer `404`, and so does
+  `/events` without a user;
+- no `X-OpenHuman-User`: the operator plane;
+- with one: the bearer first (`401`), then a duplicate or unreadable header
+  (`400`), the signature (`401`), and the user's profile, which is opened
+  and leased: `403` when it is not provisioned, `503` when every slot is
+  busy or storage fails.
+
+A profile another core hosts answers **`409 Conflict`**:
+
+```text
+X-OpenHuman-Profile-Owner: <owner node id>
+
+{"error": "profile_held", "owner": "<node id>",
+ "endpoint": "<owner's advertise_url, or null>", "retry_after_ms": <ms>}
+```
+
+`endpoint` is where the owner can be reached (null for a node that
+advertises none) and `retry_after_ms` how long its lease lasts unless it is
+renewed. A gateway routes the user to the owner, or retries after that
+long; a dead owner's lease lapses within `lease_ttl_secs`. The refusal comes
+after the bearer check, so an unauthenticated caller learns nothing.
+
 ### A failed call
 
 `rpc_handler` decodes the controller's `StructuredRpcError` (if any), then

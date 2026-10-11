@@ -42,7 +42,7 @@ python3 "<SKILL_DIR>/scripts/check_update.py" --json
 
 ## 按任务读参考文件
 
-- **YouTube 等 URL**：先读 [references/yt-dlp-and-transcripts.md](references/yt-dlp-and-transcripts.md)，获取用户有权处理的视频、元数据和辅助时间轴。URL 任务不能在一次公开请求失败后直接退回“只支持本地视频”：若 YouTube 返回机器人登录验证、年龄验证或用户自己的非公开视频限制，先说明原因并取得授权，再按参考文件用 `yt-dlp --cookies-from-browser chrome` 继续。字幕和视频分两条命令下载；视频报 HTTP 403 时按参考文件的格式回退表逐级降级，字幕报 429 时缩减语言并放慢请求，都不要无限重试。
+- **YouTube 等 URL**：先读 [references/yt-dlp-and-transcripts.md](references/yt-dlp-and-transcripts.md)，获取用户有权处理的视频、元数据和辅助时间轴。URL 任务不能在一次公开请求失败后直接退回“只支持本地视频”：若 YouTube 返回机器人登录验证、年龄验证或用户自己的非公开视频限制，先说明原因并取得授权，再按参考文件用 `yt-dlp --cookies-from-browser chrome` 继续。字幕和视频分两条命令下载；下载前用 `yt-dlp -F` 枚举变体并按 AV1 → VP9 → H.264 择优，下载后必须运行 `native_subtitle_stitch.py check-source VIDEO --min-height 720`（解码前 N 秒无错误、分辨率达标）才能继续；视频报 HTTP 403 或自检失败时按参考文件的格式回退表逐级换变体，低于 720p 的级别须先征得用户确认，每次尝试记入 `download-attempts.log`；字幕报 429 时缩减语言并放慢请求，都不要无限重试。
 - **读长视频 → 选题 → 写文章/帖子 → 配图**：读 [references/end-to-end-workflow.md](references/end-to-end-workflow.md)。
 - **台词条太高、间隔太宽、缺少美感**：读 [references/visual-style.md](references/visual-style.md)。
 - **本地短视频且时间点已确定**：直接执行下面的核心流程。
@@ -77,8 +77,10 @@ python3 -m pip install -r "<SKILL_DIR>/requirements.txt"
 - 默认使用 5 个严格递增的时间点：第一帧是主画面，其余四帧是字幕条。
 - 两种模式每张图最多 7 个时间点（1 个主画面 + 6 个字幕条）；台词更多时拆成多张图，不压缩字幕条。
 - 脚本固定布局的 4 个字幕条时，主画面约占 70%，每条约占 7.5%。原生模式不强制这个比例，第一句和后续字幕必须保持同一缩放倍数；原视频字号不同则保留差异，不重绘文字。两种模式条间距都为 0。
+- 可选 `render-script --six-line-card` 使用 6 个严格递增的时间点：首句画在主画面底部，其余 5 句各占连续字幕条；固定 3:4 布局，1080×1440 时主画面 870px、每条 114px，六句行距一致。原版默认布局不变。
 - 原生模式显式 `--aspect 3:4` 或 `--layout fixed` 时，默认 `--fit crop`：自动识别每句字幕左右边界，对整张拼图统一裁去两侧，最多裁到字幕安全边界，剩余差额留黑边；任一句识别不到字幕边界时不裁切、整图留边。人物偏离中心时用 `--crop-center`（0–1）移动裁切窗口；用户要求不裁画面时用 `--fit pad`。不得单独放大主图来填满。`--hero-fraction` 只调整源主图裁切高度，受真实帧高度限制，不保证占最终含边画布的该比例。脚本模式只有自动布局确实不适用时才传它。
 - 不覆盖已有成品。只有用户明确要替换时才添加 `--overwrite`。
+- 批量 `render` 默认遇到失败就中止。需要容错时加 `--keep-going`：单张失败不影响其余，结束时输出失败清单（序号、时间点、原因）并写入 `渲染失败报告.json`，退出码非零且不生成总览图。向用户报告失败清单，修正 manifest 后加 `--resume` 只补渲缺失或损坏的卡；已有效的图即使 manifest 改了也不会重渲（要重渲先删掉对应图），总览图和时间点文件会重新生成。
 - 渲染器遇到重复画面会中止：所有时间点画面几乎相同（疑似静态封面视频或画面冻结），或原生模式相邻字幕条几乎相同。先用 `sample` 核对画面并向用户说明；不要为了出图直接加 `--allow-duplicate-frames`，只有用户确认确实需要时才加。
 - 源视频低清时可输出 1440×1920 版面，但必须说明这不等于真实清晰度提升。
 
@@ -124,6 +126,15 @@ python3 "<SKILL_DIR>/scripts/native_subtitle_stitch.py" sample VIDEO \
 ### 2. 选主题与稳定帧
 
 一张图只表达一个连贯观点。候选句需要语义递进，并且每个时间点都能回到视频验证。避免空字幕、同句重复、字幕切换残影、转场、黑帧、广告贴片、播放器 UI 和人物闭眼。
+
+### 多人对话与访谈
+
+渲染器只按时间点顺序拼图，不识别谁在说话；字幕条只裁画面底部，读者会默认整张图都是主画面人物说的。访谈、播客、对谈、辩论等多人素材必须先做说话人区分，再选句：
+
+1. **先标说话人**：YouTube 字幕轨和普通 Whisper 文字稿都不带说话人。有说话人分离（diarization）的转写就使用它；没有时，在文字稿里逐句写上说话人，并用 `sample -t ... --around 0.8` 回看画面（口型、机位、画面内名牌）确认。无法确认归属的句子不用。
+2. **默认一张图只放一个人的话**：同一说话人连续表达一个观点；主画面必须是这个人在说话的稳定帧。
+3. **问答结构要明确**：用户要“一问一答”时，先向用户确认结构；问与答必须在原视频中相邻，不得跳过对方插话后把两人的句子拼成一个人的观点。原生模式无法在画面上补标说话人，问答图要在交付说明里逐句写明说话人；脚本模式可在每句写 `speaker` 并用 `--speaker-prefix on-change` 在画面上标出（见 4B）。
+4. **核对每个时间点的说话人**：两人交替快或抢话时，同一时间点画面里的字幕可能是对方的话。逐个时间点回看完整画面，而不是只看裁出的字幕条。
 
 ## 原生字幕模式
 
@@ -186,6 +197,35 @@ python3 "<SKILL_DIR>/scripts/native_subtitle_stitch.py" render-script VIDEO \
   --aspect 3:4 --width 1440
 ```
 
+可选六句卡（脚本字幕）：准备 6 句已核对、时间点严格递增的 `script.json`，然后运行：
+
+```bash
+python3 "<SKILL_DIR>/scripts/native_subtitle_stitch.py" render-script VIDEO \
+  --script script.json --out six-line.jpg \
+  --six-line-card --aspect 3:4 --width 1080
+```
+
+此预设默认在源画面高度的 60% 处取字幕条；必要时仍可用 `--band-center` 调整。它不接受 `--hero-fraction`，因为主画面高度由五条连续字幕条反推。`--six-line-card` 仅影响后期绘制的脚本字幕，不改变原生字幕模式。
+
+可选说话人前缀（仅脚本字幕）：经用户确认的问答、对谈图，在每句加 `speaker`，说话人写在这里，不写进 `text`：
+
+```json
+{"lines": [
+  {"t": 37.2, "speaker": "主持人", "text": "在这么竞争激烈的行业里，"},
+  {"t": 38.8, "speaker": "主持人", "text": "你觉得是什么让你脱颖而出？"},
+  {"t": 44.0, "speaker": "王薇薇", "text": "说实话，我觉得是运气。"}
+]}
+```
+
+```bash
+python3 "<SKILL_DIR>/scripts/native_subtitle_stitch.py" render-script VIDEO \
+  --script script.json --out qa.jpg --speaker-prefix on-change
+```
+
+- `--speaker-prefix none`（默认）不画前缀；`on-change` 只在换人时画，推荐用于问答；`every` 每句都画，画面较挤，只在用户要求时用。
+- 启用前缀时每句都必须有 `speaker`；前缀比台词小一号、用强调色，字号不随台词缩小，台词放不下时只缩台词。
+- 说话人名称同样要核对：确认不了身份时写“主持人”“嘉宾”等角色，不猜人名。单人独白不用前缀。
+
 脚本会尝试 macOS、Windows 和 Linux 常见 CJK 字体；台词含谚文时优先尝试韩文字体（macOS AppleSDGothicNeo、Windows Malgun Gothic），`--font` 始终最优先。无法自动找到时，用 `--font /path/to/font.ttc` 指定已获授权的字体。需要调整字幕条在原帧中的垂直采样位置时，使用 `--band-center`；不要把它当作行距参数。
 
 ## 逐张质检与有界返工
@@ -193,6 +233,7 @@ python3 "<SKILL_DIR>/scripts/native_subtitle_stitch.py" render-script VIDEO \
 先看缩略总览，再打开每张原尺寸 JPG。
 
 - 字幕完整、稳定、无重复，时间顺序与原视频一致。
+- 多人素材：每条字幕的说话人与文字稿标注一致；默认同一张图只有一个说话人，主画面就是该说话人。脚本模式启用 `--speaker-prefix` 时，画面前缀与 JSON 的 `speaker` 一致，并且台词字号没有因前缀明显变小。
 - 原生模式没有改字；脚本模式的文字与已审核 JSON 一致。
 - 主体完整，没有异常切脸、巨大空白、无关 UI 或变形。
 - 原生模式检查第一句与后续字幕是否使用同一缩放倍数、没有横向裁字；固定画布允许外侧留边。`--fit crop` 的成品要逐张确认每句字幕两端完整、人物没有被两侧裁切切脸，并在交付中说明渲染输出的裁切或留边结果。脚本固定布局默认四条时主图约占 68–72%；内容块之间没有额外间距。

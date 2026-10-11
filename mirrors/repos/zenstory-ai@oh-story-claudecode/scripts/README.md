@@ -59,7 +59,7 @@
 | `test-tracking-commit.py` | 单权威追踪行为：原子 state、字数事件链、hash 失效、激活边界、幂等与并发提交 | CI |
 | `test-storyctl.py` | `visible_chars_v1`、双层区间与作者范围、「字数目标」两端解析一致、章节检查状态与去味豁免、提交记录与 demo 同口径证据 | Linux / Windows / macOS CI |
 | `test-chapter-completion-lifecycle.py` | 公开 CLI 的 checkpoint、正常提交、欠长接受、超长单次压缩区间、blocking quality 阻断与下一章继续 | Linux / Windows / macOS CI |
-| `test-author-memory-commit.py` | 工作区作者记忆行为：单事件回执、≤2KB 相关查询、证据候选、冲突替代、撤回、失败零写入、旧修订、幂等重放与派生修复 | CI |
+| `test-author-memory-commit.py` | 工作区作者记忆行为：单事件回执、交写手的行 ≤2KB 且漏项全数列出、证据候选、冲突替代、撤回、失败零写入、旧修订、幂等重放与派生修复 | CI |
 | `test-codex-hooks.sh` | Codex hook 合成 stdin/stdout 契约 | CI |
 | `test-static-check.py` | 真 frontmatter block、精确路径/锚点、跨 Skill 引用、fence、死 reference、Agent 与章节链接 fixture | CI |
 | `test-current-skill-contracts.py` | current-contract manifest 类型/固定值与主产物 fail-fast 语义 fixture | CI |
@@ -68,8 +68,8 @@
 | `test-shared-assets.py` | 共享资产 manifest 的 drift、sync、路径越界、basename 单一 owner 与未登记重复检测 | CI |
 | `test-shared-references.py` | reference manifest 的别名、目录组、drift/sync、未登记副本与 Agent 消费链回归 | CI |
 | `test-normalize-punctuation.js` | 标点归一化的只读检查、frontmatter/fence、CRLF、引号模式与幂等性 | CI |
-| `test-scan-runtime.js` | CDP argv 边界/报错/JSON 契约与 7 个 scraper 无副作用 import | CI |
-| `test-scan-aggregate.py` | 扫榜聚合 `aggregate-rank.js`：七个平台采集格式与手动榜单的题材/热度口径/字数分桶/标签解析、同书跨榜去重、采集问题上浮、样本不足标注、抽样取回原文、跳过非榜单文件、700 条级输入压到五分之一以下 | Linux / Windows / macOS CI |
+| `test-scan-runtime.js` | CDP argv 边界/报错/JSON 契约与 7 个 scraper 无副作用 import；七猫、起点书库翻页（名次跨页、去重、空页停止、部分失败、参数校验）与起点反爬字体解码 | CI |
+| `test-scan-aggregate.py` | 扫榜聚合 `aggregate-rank.js`：七个平台采集格式与手动榜单的题材/热度口径/字数分桶/标签解析、同书跨榜去重、采集问题上浮、样本不足标注、抽样取回原文、跳过非榜单文件、700 条级输入压到五分之一以下、没有热度的书库新书不拖掉平台热度口径 | Linux / Windows / macOS CI |
 | `test-scan-runtime-policy.py` | 变异验证 scan/browser 静态策略不会被无关或死代码关键词骗过 | CI；改 `check-scan-runtime-policy.sh` 后 |
 | `test-opencode-plugin.mjs` | 以 2.x `setup(ctx)` 直接执行 OpenCode TypeScript plugin，验大纲守卫、Shell 绕过、写后检查、compaction 注入与 `ctx.location` 定位 | 被 `check-opencode-adapter.sh` 调用 |
 | `test-codex-cli-e2e.sh` | 隔离 HOME 后用真实 Codex CLI 检查 repo 13 个 skill 的发现结果 | CLI compatibility CI；需已安装 `codex` |

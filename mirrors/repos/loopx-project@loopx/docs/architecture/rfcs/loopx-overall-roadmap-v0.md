@@ -418,6 +418,12 @@ Chat, session, collaboration and presentation owners as R2/R3 integration work.
 Do not call a candidate catalog, spinner or queued inbox receipt a completed
 worker handoff. This checkpoint does not lower R1–R3 or G1 gates.
 
+Observed native command-output and MCP-progress notifications now refresh the
+existing Chat work step and bounded Lark post, without persisting their text or
+inventing activity during silence. See the same presentation checkpoint for
+coalescing, source isolation and the remaining packaged timing/stop/recovery
+qualification; this source repair does not close R2/R3.
+
 CLI and MCP receiver inbox guidance now composes the existing shared conversation answer
 instruction, making the verbatim requester-facing use of report text explicit.
 It preserves requested depth, evidence and material failures; it adds no
@@ -630,6 +636,18 @@ admission, fresh task derivation and frontend/Lark qualification remain open.
 中文：异常读回区分本次调用未知副作用与原 Turn 的持久观察/待核对效果，只完成
 R2 的一个恢复切片；调用方准入、新任务生成与前端/Lark 验收仍未闭环。
 
+[PR #6163](https://github.com/loopx-project/loopx/pull/6163) proposes the
+S2/S7/S10 PR dependency observation slice in the existing opt-in heartbeat
+prequota path, independent of open review-queue membership. The Todo typed owner
+selects exact unfinished waits and durable polling cadence from complete
+retained facts. Resume readback shares that source before display compaction,
+retaining the original merge proof through history growth and restart without
+clearing requirements or changing claims, leases or status. Real File/SQLite
+CLI growth/restart and repository/failure negatives qualify this bounded slice;
+installed host adoption and TurnEnvelope polling remain distinct. It does not
+close legacy retirement or sustained authority qualification. See
+[Todo readback](../../reference/todo-continuation-readback.md#pr-dependency-observation--pr-依赖观察).
+
 [PR #5283](https://github.com/loopx-project/loopx/pull/5283) is the proposed
 S2/S10 read-preview cost slice. Summary and succession validation share the
 existing TS owner request; empty succession skips transport. Read models are
@@ -664,6 +682,15 @@ admission remain separate open acceptances; this PR does not retire Python
 planning or establish a machine default.
 
 中文：
+[#6163](https://github.com/loopx-project/loopx/pull/6163) 拟交付 S2/S7/S10
+PR 依赖观察切片：既有 opt-in heartbeat prequota 不依赖 open review 队列成员，
+Todo 类型化 owner 从完整保留的事实选择精确未完成等待及持久核验节奏。恢复回读
+在展示裁剪前复用同一源，历史增长和重启保留原合并证明，不清要求、不改认领、
+lease 或状态。真实 File/SQLite CLI 的增长／重启及仓库／失败负例只验收本批；
+安装态 host 采用、TurnEnvelope 核验分别跟踪，不关闭 legacy 退役或 authority
+持续运行资格。参见
+[Todo 回读](../../reference/todo-continuation-readback.md#pr-dependency-observation--pr-依赖观察)。
+
 [#5283](https://github.com/loopx-project/loopx/pull/5283) 是拟交付的 S2/S10
 只读预检成本切片：摘要与继承验证共用既有 TS owner 请求，空继承行跳过传输；
 读模型与写适配器分离，未选中的报告、Lark、扩展及 Host 路由延迟加载。兼容导出
@@ -952,8 +979,9 @@ import replay preserves that active grant and its later native settlement;
 a stale token refuses before launch even while the same Todo has a fresh active
 lease. Process exit remains separate from lease release after cutover as well.
 This qualifies the existing POSIX supervisor/lease reactivation boundary with
-synthetic work. App startup, full-state identity adoption, automatic Host
-discovery and live model use remain separate acceptance gaps.
+synthetic work. Full-state identity adoption, automatic Host discovery and live
+model use remain separate acceptance gaps; the App loading checkpoint below
+qualifies its own synthetic import boundary.
 Proved original Todo outbox disposition now composes with cold import on both
 File and SQLite: four interrupted-write windows retain pending-source backups,
 exact original receipts and revision-bound rollback archives. Active capture
@@ -978,15 +1006,27 @@ the source partition projector has one shared owner, with compatible old
 imports. Configuration and direct guard checks run without both capture modules.
 Pure runtime-root routing and its actual canonical Todo, acceptance, Chat and
 CLI callers now use the existing paths owner, with an identical compatibility
-reexport for capture callers. Source and fresh-wheel File/SQLite App HTTP import,
-process restart, original-operation recovery, later canonical writes and prose
-checks pass the same oracle with both capture modules present and physically
-absent. Source/maintenance identity, Todo/handoff invariance, JSON types,
-project-relative routing and failed-write behavior remain unchanged. Historical
-outbox disposition and independent data/history recovery retain their separate
-qualifications below; authorized reactivation and remaining App writer callers
-stay open. This stage does not retire the supported old writer or qualify a
-released default.
+reexport for capture callers. Source and fresh-wheel File/SQLite qualification
+now uses the full `serve_chat`
+entrypoint with all four Todo/bootstrap/capture producer modules physically
+absent. Shared Todo input transport calls the existing typed create/update/
+terminal owners; pure readback and Goal identity no longer load the old writers.
+The compatibility facade reexports the same APIs and retains its real Markdown
+write bodies and bootstrap effects. Reviewed App import, source/backup drift
+refusal, original-operation restart/replay, full current/archive readback and
+later App create/edit/complete preserve the provider head under an explicitly
+selected `soft_claim` policy. Missing selected storage and absent `hard_lease`
+execution proof still refuse without Markdown fallback. The packaged settings
+journey uses backup, preview, reload/readback and explicit confirmation.
+Reviewed canonical Todo creation carries its provider revision into the existing
+typed command identity and provider transaction, rejecting concurrent writes
+without applying the stale request. Original-operation recovery precedes that
+current-head check and preserves later writes. After import or receipt recovery,
+the same settings screen independently rereads current ownership; a failed read
+shows a retryable error instead of retaining the pre-import policy.
+This qualifies the bounded App import/loading path, not deletion of remaining
+bootstrap/Host/history callers, full-state identity adoption, D2 or a released
+default. Keep those existing acceptances open.
 The shared TS source check admits runtime directory aliases by physical identity,
 preserving the original snapshot and foreign-source rejection. File/SQLite HTTP
 joins alias-bound import, externally configured registry backup, later writes and original-operation recovery; a

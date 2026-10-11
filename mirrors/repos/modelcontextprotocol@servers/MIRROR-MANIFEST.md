@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `modelcontextprotocol/servers` — 26 default patterns, 1 followed patterns, 3 file(s) materialized.
+Mirror of `modelcontextprotocol/servers` — 26 default patterns, 8 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `modelcontextprotocol/servers` — 26 default patterns, 1 followed pat
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 3 |
+| Followed pats | 8 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,14 @@ Mirror of `modelcontextprotocol/servers` — 26 default patterns, 1 followed pat
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `docs/quality-gate.md`
+- `RELEASING.md`
+- `CONTRIBUTING.md`
+- `docs/contribution-model.md`
 - `.github/pull_request_template.md`
+- `docs/skill-authoring.md`
+- `.changeset/README.md`
+- `CODE_OF_CONDUCT.md`
 
 ## File Index
 
@@ -59,9 +66,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`src/everything/AGENTS.md`](src/everything/AGENTS.md) |
-| 3 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 1 | ✓ | [`.claude/skills/board-ops/SKILL.md`](.claude/skills/board-ops/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/client-smoke/SKILL.md`](.claude/skills/client-smoke/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/issue-create/SKILL.md`](.claude/skills/issue-create/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/issue-triage/SKILL.md`](.claude/skills/issue-triage/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/local-dev/SKILL.md`](.claude/skills/local-dev/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/pr-flow/SKILL.md`](.claude/skills/pr-flow/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/pre-push-gate/SKILL.md`](.claude/skills/pre-push-gate/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/project-structure/SKILL.md`](.claude/skills/project-structure/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/release/SKILL.md`](.claude/skills/release/SKILL.md) |
+| 10 | ✓ | [`.claude/skills/security-advisory/SKILL.md`](.claude/skills/security-advisory/SKILL.md) |
+| 11 | ✓ | [`.claude/skills/testing/SKILL.md`](.claude/skills/testing/SKILL.md) |
+| 12 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 13 | ✓ | [`docs/agent-guidance-inception.md`](docs/agent-guidance-inception.md) |
+| 14 | ✓ | [`src/everything/AGENTS.md`](src/everything/AGENTS.md) |
+| 15 | → | [`.changeset/README.md`](.changeset/README.md) |
+| 16 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 17 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 18 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 19 | → | [`docs/contribution-model.md`](docs/contribution-model.md) |
+| 20 | → | [`docs/quality-gate.md`](docs/quality-gate.md) |
+| 21 | → | [`docs/skill-authoring.md`](docs/skill-authoring.md) |
+| 22 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

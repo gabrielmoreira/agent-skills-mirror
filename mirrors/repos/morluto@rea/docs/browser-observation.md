@@ -24,6 +24,29 @@ REA can attach to a user-owned Chrome-family browser through the Chrome DevTools
 
 Target discovery returns the complete in-scope target array in one result.
 
+## Screenshot comparison memory budget
+
+`compare_web_screenshots` admits both PNGs against a 256 MiB estimated
+working-memory budget before inflating either image. This is a processing
+buffer budget for this operation, not a PNG dimension limit, CDP transport
+limit, or process RSS guarantee. Header-valid dimensions that exceed the
+budget return `resource_constraint` with `details.resource: "memory"` and the
+estimated and maximum working-set bytes. Invalid PNG structure remains
+malformed input; encodings outside supported pixel-comparison coverage remain
+unsupported-target errors.
+
+The conservative estimate includes the two decoder-owned decoded input
+buffers, the current image's concatenated IDAT buffer, Node zlib's default
+16 KiB output chunk backing rounded up for retained chunks, the concatenated
+inflate result while its output chunks are retained, one possible extra output
+chunk before zlib checks `maxOutputLength`, unfiltered scanline storage,
+RGB-to-RGBA expansion, and the first retained RGBA image while the second is
+decoded. RGBA output aliases its unfiltered buffer and is counted once.
+Admission uses checked integer arithmetic before image-sized allocation.
+Caller-owned JSON/base64 strings, input parsing and validation, transport
+buffers, garbage-collector behavior, and other runtime memory are outside this
+estimate; the budget does not promise a bound on total process memory.
+
 Electron `file://` pages use a separate provider and target boundary; see [electron-observation.md](electron-observation.md).
 
 ## Provider authorities
@@ -53,7 +76,18 @@ google-chrome \
 
 REA does not launch, own, or terminate this browser. Use a dedicated profile and stop it yourself when the investigation is complete. Do not expose the debugging port on a non-loopback interface.
 
+On Linux, a reachable but locked desktop keyring can stall Chrome before its
+first navigation. For a dedicated investigation profile, add
+`--password-store=basic` to bypass that keyring. Empty or placeholder frame URLs
+then describe an unloaded page; REA continues to require an allowed, committed
+URL. See [the startup investigation](https://github.com/morluto/rea/issues/1384#issuecomment-6093781686).
+
 ## Request boundary
+
+CDP connections enforce the shared 64 MiB limit per WebSocket message. A larger
+reply, including a valid reply from Chrome, fails with `payload_limit`. The limit
+counts message bytes before JSON parsing; it does not bound the memory used by
+decoded strings or JSON objects.
 
 Discovery supplies a literal loopback CDP endpoint and returns all eligible
 page targets unless an exact HTTP(S) origin filter narrows the result. Follow-up

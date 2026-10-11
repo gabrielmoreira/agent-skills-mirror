@@ -6,7 +6,7 @@ Interactive approval workflow for supervised mode (issue #1339). `ApprovalGate` 
 
 - Intercept external-effect tool calls and gate them behind explicit user consent.
 - Short-circuit to `Allow` when the tool is on the user's `autonomy.auto_approve` allowlist (read live via `security::live_policy`).
-- Allow through (never park) when there is no live chat context: background/triage/cron turns carry no `ApprovalChatContext` and are pre-authorized.
+- Cron agent turns may use read-only tools and the job's configured delivery. Their external-effect calls are denied, including schedule mutation. Other automation follows its origin-specific gate policy.
 - Persist pending requests in SQLite so they survive a core restart; lazily expire stale rows; keep a durable decided/executed audit trail.
 - Resolve a parked call on a user decision (`approve_once` / `approve_always_for_tool` / `deny`), TTL timeout, or channel drop, failing closed in every non-approve path.
 - Redact arguments (`redact_args`) and build safe action summaries (`summarize_action`) before anything leaves the gate.
@@ -18,7 +18,7 @@ Interactive approval workflow for supervised mode (issue #1339). `ApprovalGate` 
 | File | Role |
 | --- | --- |
 | `crates/openhuman-core/src/security/approval/mod.rs` | Export-focused: module docstring, `pub mod` decls, `pub use` re-exports including the controller-schema pair. |
-| `crates/openhuman-core/src/security/approval/gate.rs` | `ApprovalGate` struct + `DecideMiss`, `DEFAULT_APPROVAL_TTL` (10 minutes) and the shorter `COPILOT_APPROVAL_TTL`, the `ApprovalChatContext` / `FlowRunContext` task-locals, `parse_approval_reply`, and the `ApprovalGateBootState` record. |
+| `crates/openhuman-core/src/security/approval/gate.rs` | `ApprovalGate` struct + `DecideMiss`, `DEFAULT_APPROVAL_TTL` (10 minutes) and the shorter `COPILOT_APPROVAL_TTL` and `SUBAGENT_APPROVAL_TTL` (3 minutes, any park inside a sub-agent run), `APPROVAL_UNANSWERED_PHRASE` / `is_unanswered_approval_reason` (TTL expiry vs refusal), `is_detached_request` (a park routed to its chat thread from an async sub-agent, marked `detached` on the `approval_request` web event so the client keeps it past the parent turn), the `ApprovalChatContext` / `FlowRunContext` task-locals, `parse_approval_reply`, and the `ApprovalGateBootState` record. |
 | `crates/openhuman-core/src/security/approval/gate_setup.rs` (`include!`d by [`gate.rs`](./gate.rs), as are the next two) | `ApprovalGate::init_global`/`try_global` (process-global install, re-install-safe) and the private constructor. |
 | `crates/openhuman-core/src/security/approval/gate_intercept.rs` | `intercept`/`intercept_audited`/`intercept_audited_bounded`: the origin check, allowlist short-circuit, persist-and-park flow, and cancellation-safe bounded park used by the Flow Canvas copilot live-run path. |
 | `crates/openhuman-core/src/security/approval/gate_state.rs` | `decide` (resolves the parked future, emits `ApprovalDecided`), `classify_decide_miss`, `record_execution` (best-effort terminal audit row), `list_pending`/`list_recent_decisions`, the flow-trust helpers, and the thread→request routing lookups. |

@@ -5,9 +5,21 @@ The process's storage backend on the
 ports, vendored through `vendor/tinyagents/vendor/tinystoragedrivers`.
 
 One URL picks it: `OPENHUMAN_STORAGE_URL`, else `[storage] url` in
-`config.toml` (`config::StorageConfig`). With neither set, the desktop
-default, nothing is opened and every domain keeps the classic on-disk layout
-under the workspace.
+`config.toml` (`config::StorageConfig`), else the default,
+`sqlite:<workspace_dir>` (`storage::config`).
+
+The default installs no process-wide backend. The large relational stores
+(`sessions.db`, `flows.db`, `jobs.db`, `graph_checkpoints.db`) keep serving
+their own SQLite files as they always have, so nothing is migrated or
+duplicated. The small stores (approvals, devices, notifications, task
+sources) keep their rows as document tables inside their existing `.db` file
+(`approval/approval.db`, `devices/devices.db`, `notifications/notifications.db`,
+`task_sources/sources.db`): the first call in a process opens it with the
+SQLite driver and `storage::local` imports the rows of the old tables, then
+renames them to `_legacy_<name>` and keeps them for one release. The legacy
+code paths stay for reading old data during that import, for builds without
+`storage-sqlite`, for SaaS, and for the opt-out: `OPENHUMAN_STORAGE_URL=classic`
+(or `[storage] url = "classic"`) keeps the pure legacy tables untouched.
 
 | URL | Driver | Cargo feature |
 | --- | --- | --- |
@@ -16,9 +28,10 @@ under the workspace.
 | `mongodb://…/<db>`, `mongodb+srv://…/<db>` | MongoDB, one database shared by every scope | `storage-mongodb` |
 | `file:<dir>` | JSON and JSONL files | `storage-file` |
 
-A URL for a driver the build lacks fails at `open`, naming the feature. None
-of the features are in the shipped desktop product yet; a cloud build turns
-on `storage-mongodb`.
+A URL for a driver the build lacks fails at `open`, naming the feature.
+`storage-sqlite` is a default feature and in the shipped product; `file` is
+always compiled in; `storage-mongodb` is in neither, a cloud build turns it
+on.
 
 ## Entry points
 
@@ -36,9 +49,14 @@ on `storage-mongodb`.
   that driver is atomic across processes (MongoDB, SQLite), which a
   clustered node's leases need. Memory and file drivers coordinate only
   within one process.
-- `current_scope()` / `current_scoped()`: the acting agent's scope (`local`
-  on a single-user host; an error in SaaS mode with no acting agent) and the
-  installed backend under it.
+- `fence` / `fenced_backend`: lease-epoch write fencing (see
+  [Write fencing](#write-fencing)).
+- `scope_for_profile(profile_id)`: the scope a SaaS profile's records live
+  under (`profile:<id>`, hashed when that is not a valid scope).
+- `current_scope()` / `current_scoped()`: the tenant's scope — its profile's
+  when it serves one, else the acting agent's, else `local` on a single-user
+  host; an error in SaaS mode without a profile — and the installed backend
+  under it.
 - `block_on(future)`: runs a storage future from synchronous store code on
   one shared runtime thread.
 - `documents::Repo` and `documents::compare_and_swap`: the base the domain
@@ -89,8 +107,69 @@ eight-thread race on a SQLite file with `--features storage-sqlite`),
 release, clock and crash steps across 2 to 4 nodes checked against a
 reference model.
 
+## Write fencing
+
+`storage::fence` and `storage::fenced_backend` fence writes by lease epoch.
+Every backend `open` returns is a `FencedBackend`: its scoped handles look
+the scope up in the process's `FenceRegistry` on each write (document `put`,
+`delete`, `delete_where`, `claim`, `atomic_batch`, `drop_collection`; stream
+`append`, `append_batch`, `truncate_before`, `delete_stream`; blob `put`,
+`delete`). A scope with no fence passes through, so single-user hosts see no
+change. A scope with one runs `LeaseFence::check` first:
+
+1. the latch (set by the heartbeat on a lost lease, or by an earlier check);
+2. the grant's expiry by this node's clock, less a skew margin (no I/O);
+3. the stored lease record must still name this node at this epoch,
+   unreleased and unexpired; a moved record latches the fence, an
+   unreadable one refuses the write without latching.
+
+A write the host check admits then goes to the driver through
+`StorageBackend::for_scope_fenced` with `LeaseFence::driver_fence`: the lease
+record (`cluster` scope, `leases` collection, id = the profile) must still
+match `epoch`, `owner` = this node and `released = false`. The driver checks
+it in the same statement or transaction as the write (tinystoragedrivers
+v0.5.0, `Capability::Fencing`), so a holder paused between its check and
+its write cannot land the write after a takeover. The driver answers
+`ErrorKind::Fenced`, and the host re-reads the record, latches the fence
+and returns `FenceError::Superseded`.
+
+A refusal is a `StorageError` of kind `Backend` (not retryable, so CAS loops
+do not spin) whose source is the typed `FenceError`; `fence::fence_error`
+recovers it. The lookup is per write rather than per bound scope because
+the session store caches its handles across a profile's open, fence and
+re-open.
+
+The write runs after the host check alone (and the paused-holder race stays
+open) where the driver cannot fence it:
+
+- a driver without `Capability::Fencing`: MongoDB without transactions (a
+  standalone server);
+- a write the driver answers `Unsupported(Fencing)`: MongoDB blob writes
+  (GridFS cannot join a transaction);
+- a named database (`StorageBackend::database`), which cannot see the lease
+  records in the default database;
+- a lease store with no record in the ports (`LocalLeases`).
+
+Tests: `fence_tests.rs` (matching, local expiry, latch, record checks,
+registry replace/retire/prune), `fenced_backend_tests.rs` (node A loses the
+lease to node B by a clock advance: A's writes on every port are refused,
+B's succeed; a paused node refuses its own writes inside the margin; named
+databases; a fence over `LocalLeases`; and the paused-holder race on the
+memory and SQLite drivers: A's check passes, B takes over, and the driver
+refuses A's write, plus the fallbacks for named databases and drivers
+without fencing).
+
 ## Consumers
 
+- The SaaS profile host (`profiles::lease`, `profiles::registry`): one
+  lease per profile (`DocumentLeases` over the installed backend, else
+  `LocalLeases` under `<root>/users`) and the profile registry, collection
+  `profiles` in the same `cluster` scope. A lease taken over unclean runs
+  the profile's workspace recovery; a lost one fences the profile. See
+  `profiles/README.md`. The server opens the operator's storage URL before
+  boot (`openhuman-rpc`'s `session_store::install_for_saas`);
+  `openhuman_embed::ProfileRuntime` opens and installs it itself when no
+  backend is installed yet.
 - The session store: `openhuman_rpc::session_store::install_for_host` opens
   the configured backend before boot and installs `DriverSessionStores`
   over it. See that module's README.
@@ -121,7 +200,8 @@ reference model.
 ## Background work and agent scopes
 
 Work done inside an agent's turn runs under that agent's `CoreContext`
-(`session_agent`, set for embed agents and SaaS profiles), so with a
+(`session_agent`, set for embed agents; a SaaS profile's context carries
+`profile` instead, and its records land in the profile's scope), so with a
 backend installed its records land in that agent's scope. Background work
 runs under the process default context and on its own would only see
 `local`. `storage::agents` closes the gap:

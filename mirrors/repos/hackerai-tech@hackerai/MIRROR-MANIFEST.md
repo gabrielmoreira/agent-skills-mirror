@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hackerai-tech/hackerai` — 26 default patterns, 1 followed patterns, 19 file(s) materialized.
+Mirror of `hackerai-tech/hackerai` — 26 default patterns, 2 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `hackerai-tech/hackerai` — 26 default patterns, 1 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 19 |
+| Followed pats | 2 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `hackerai-tech/hackerai` — 26 default patterns, 1 followed patterns,
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `README.md`
+- `docs/desktop-local-acceptance.md`
 
 ## File Index
 
@@ -77,7 +78,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`packages/local/README.md`](packages/local/README.md) |
 | 17 | ✓ | [`scripts/README.md`](scripts/README.md) |
 | 18 | ✓ | [`third_party/strix-skills/skills/README.md`](third_party/strix-skills/skills/README.md) |
-| 19 | → | [`README.md`](README.md) |
+| 19 | → | [`docs/desktop-local-acceptance.md`](docs/desktop-local-acceptance.md) |
+| 20 | → | [`README.md`](README.md) |
 
 ---
 

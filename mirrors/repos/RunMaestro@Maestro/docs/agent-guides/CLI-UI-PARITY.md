@@ -238,6 +238,7 @@ of taking a second round trip or trusting a value the caller guessed.
 | Focus an agent, switch AI/Shell mode               | `focus-agent`, `switch-mode`                                                                     |
 | Create / rename / remove a group                   | `create-group`, `rename-group`, `remove-group`                                                   |
 | Group icon, color, and nesting                     | `create-group --icon/--color/--parent`, `update-group`                                           |
+| Move an agent or a whole group to another window   | `window move-agent`, `window move-group` (`--to new\|main\|<n>`); read: `window list`            |
 | Create a worktree agent                            | `create-worktree`                                                                                |
 | New / close / rename a tab                         | `tab new`, `tab close`, `tab rename`                                                             |
 | Star a tab (Cmd+Shift+S)                           | `tab star` / `tab unstar`                                                                        |
@@ -257,6 +258,7 @@ of taking a second round trip or trusting a value the caller guessed.
 | Toasts and center flashes                          | `notify toast`, `notify flash`                                                                   |
 | Save a pasted chat image (right-click)             | `image save` (`image list` to find it)                                                           |
 | Cue subscriptions and scheduled tasks              | `cue trigger`, `cue schedule`, `cue pipeline`                                                    |
+| Pipeline Graph agent node: Model / Effort          | cue.yaml `tier`/`model`/`effort`, `cue schedule --tier --model --effort`; read: `cue list`       |
 | Snooze a tab, list / wake / dismiss what is parked | `snooze tab`, `snooze list`, `unsnooze`, `snooze dismiss`, `snooze reschedule`, `snooze history` |
 | Send Feedback modal (open / file / +1)             | `open feedback`, `feedback auth\|search\|submit\|subscribe`                                      |
 | Feedback: screenshots, support package box         | `feedback submit --attach <png...> --support-package`                                            |
@@ -326,6 +328,13 @@ a design constraint; they are simply not built yet.
     Graph preview width via `usePersistedPanelWidth`). Pure view preferences
     with nothing for an agent to act on; the values never reach main, so a
     verb needs a renderer round trip. Double-click on the grip resets them.
+13. **Log in to a provider account** (Usage Dashboard quota row "Log in",
+    palette "Reauthenticate Provider"). The login is an interactive OAuth or
+    device-code flow in a PTY, so there is nothing a non-interactive verb could
+    complete. The capability is reachable from an agent's shell as
+    `CODEX_HOME=<dir> codex login` / `CLAUDE_CONFIG_DIR=<dir> claude` then
+    `/login`. There is no CLI read of the quota snapshots yet, so verifying the
+    login from the CLI is part of this gap.
 
 ### Audit backlog (2026-09-27)
 

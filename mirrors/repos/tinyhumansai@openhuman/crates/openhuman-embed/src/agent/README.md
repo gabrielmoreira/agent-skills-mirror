@@ -101,7 +101,10 @@ directories; transcripts and memory persist with the workspace.
 ## Tool factories
 
 `AgentSpec::tools` supplies a host's own in-process tools when an agent is
-created. Each tool is a real tool with its own schema on the wire, unlike a
+created. Import `Tool`, `ToolResult` and `ToolPolicy` from `openhuman_embed`;
+`Tool::policy` declares execution requirements using the same vendored contract
+as the core. Application-specific executors belong to the embedding host.
+Each tool is a real tool with its own schema on the wire, unlike a
 tool reached through an MCP server's `mcp_call_tool` envelope. The factory
 runs once per session build, which in practice is once per turn: an `Agent`
 is `Clone` and `Box<dyn Tool>` is not, so a stored belt could not survive the
@@ -144,16 +147,7 @@ Use `runtime_id()` to check that supplied agents belong to one runtime and
 conflicting id. Runtime ids are opaque and valid only for that runtime's
 lifetime; they are not persistence keys.
 
-```rust,no_run
-use std::sync::Arc;
-use openhuman_embed::{Agent, HostTools, HostTurnTools, Tool};
-# fn connect(agent: &Agent, make_tools: impl Fn() -> Vec<Box<dyn Tool>> + Send + Sync + 'static) -> Result<(), openhuman_embed::ToolAttachmentError> {
-let source: HostTools = Arc::new(move |_| HostTurnTools::advertised(make_tools()));
-agent.attach_tools("tinyhivemind", source.clone())?;
-agent.clone().attach_tools("tinyhivemind", source)?;   // idempotent
-# Ok(())
-# }
-```
+See the runnable [host_tools example](../../examples/host_tools.rs), region `host_tools`. It uses the public facade and asserts its behavior against an offline stub.
 
 ## Boundaries
 

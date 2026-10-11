@@ -176,7 +176,11 @@ through its bounded file tools. Ordinary project Sessions keep native instructio
 and skill discovery. Workspace-only native Sessions now also launch with a private
 `HOME`/`CODEX_HOME`, a minimal process environment and file-based native credential
 storage. Effective MCP servers, including managed and project configuration layers,
-are disabled before the thread opens. Core derives the store identity from the
+and native Apps connectors are disabled on thread start and resume. The operator's
+`LOOPX_CHAT_PUBLIC_SOURCE_READ=on` opt-in admits only the anonymous
+`read_public_url` and `read_public_image` tools with explicit native tool approval;
+other MCP tools remain unavailable. Turning it off removes that reader, while
+Apps stay disabled for workspace-only Sessions. Core derives the store identity from the
 authorized workspace and App/owner binding; topics retain independent threads
 without requiring a new login for every message. Default `host_default` Sessions
 keep the account's existing native configuration and authentication.
@@ -513,6 +517,13 @@ receipt → observed work or actionable failure → readable answer in the same 
   upstream observations; never simulate phases, expose hidden reasoning, or
   infer progress from elapsed time. A period without new events has an explicit
   waiting caption, not an invented failure or continually changing animation.
+- Generate the visible answer once, then append a complete hidden review envelope
+  with `message: ""`. The production parser reuses the preceding Markdown and
+  applies the same redaction and typed metadata normalization. Legacy nonempty
+  envelope messages remain authoritative; missing/null messages do not select
+  this convention. Codex uses the completed final answer item, excluding earlier
+  commentary. Incomplete or malformed envelopes still drop action metadata.
+  Removing duplicate generation does not qualify end-to-end response latency.
 - Before dispatch, cancel only session preparation and state that the request
   was not submitted. After acceptance, existing exact-turn steering/interrupt
   controls own effects; stopping observation is not stopping the worker.

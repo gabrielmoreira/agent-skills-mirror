@@ -186,8 +186,12 @@ The session target shapes the prompt:
 Trust follows the origin. A job with a channel origin runs under
 `AgentTurnOrigin::ExternalChannel { message_id: "cron:<job>:<run>" }`, so its
 external-effect tools stay gated the way its creator's were. Web-origin and
-origin-less jobs run as `TrustedAutomation { source: Cron }`, which the approval
-gate treats as user-authorized. Creating a job skips the approval gate only when
+origin-less jobs run as `TrustedAutomation { source: Cron }`. This grants the
+saved agent prompt read-only tool use and delivery to the job's configured
+destination. It does not grant shell, network, write, or cron mutation tools;
+those calls are denied on every run, including when approval prompts are
+globally disabled. A shell job runs its approved, stored command directly;
+this limit applies to agent tool calls. Creating a job skips the approval gate only when
 `origin::is_self_scoped_agent_job` holds: the turn is a channel conversation,
 the job is an agent job with no shell `command`, and its delivery resolves to
 that same conversation (no `delivery`, `origin`, or a matching `announce`).

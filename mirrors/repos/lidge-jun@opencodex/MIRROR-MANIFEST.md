@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 60 file(s) materialized.
+Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 61 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 60
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 60 |
+| Files         | 61 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -110,19 +110,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 45 | ✓ | [`structure/dashboard-and-usage.md`](structure/dashboard-and-usage.md) |
 | 46 | ✓ | [`structure/design-methodology.md`](structure/design-methodology.md) |
 | 47 | ✓ | [`structure/desktop-shell.md`](structure/desktop-shell.md) |
-| 48 | ✓ | [`structure/gui-and-management-api.md`](structure/gui-and-management-api.md) |
-| 49 | ✓ | [`structure/local-messaging.md`](structure/local-messaging.md) |
-| 50 | ✓ | [`structure/overview.md`](structure/overview.md) |
-| 51 | ✓ | [`structure/providers-and-adapters.md`](structure/providers-and-adapters.md) |
-| 52 | ✓ | [`structure/remote-link.md`](structure/remote-link.md) |
-| 53 | ✓ | [`structure/remote-workspace.md`](structure/remote-workspace.md) |
-| 54 | ✓ | [`structure/runtime.md`](structure/runtime.md) |
-| 55 | ✓ | [`structure/subagents.md`](structure/subagents.md) |
-| 56 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
-| 57 | → | [`CREDITS.md`](CREDITS.md) |
-| 58 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
-| 59 | → | [`SECURITY.md`](SECURITY.md) |
-| 60 | → | [`structure/INDEX.md`](structure/INDEX.md) |
+| 48 | ✓ | [`structure/desktop-terminal-command.md`](structure/desktop-terminal-command.md) |
+| 49 | ✓ | [`structure/gui-and-management-api.md`](structure/gui-and-management-api.md) |
+| 50 | ✓ | [`structure/local-messaging.md`](structure/local-messaging.md) |
+| 51 | ✓ | [`structure/overview.md`](structure/overview.md) |
+| 52 | ✓ | [`structure/providers-and-adapters.md`](structure/providers-and-adapters.md) |
+| 53 | ✓ | [`structure/remote-link.md`](structure/remote-link.md) |
+| 54 | ✓ | [`structure/remote-workspace.md`](structure/remote-workspace.md) |
+| 55 | ✓ | [`structure/runtime.md`](structure/runtime.md) |
+| 56 | ✓ | [`structure/subagents.md`](structure/subagents.md) |
+| 57 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
+| 58 | → | [`CREDITS.md`](CREDITS.md) |
+| 59 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
+| 60 | → | [`SECURITY.md`](SECURITY.md) |
+| 61 | → | [`structure/INDEX.md`](structure/INDEX.md) |
 
 ---
 

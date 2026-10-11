@@ -4,6 +4,8 @@ Repo-maintenance, CI, dev-loop, and release tooling. This is a map, not a
 manual, each entry point below has its own header comment or README with the
 details.
 
+Standalone Embed source bundles: [`bootstrap-embed-consumer.py`](bootstrap-embed-consumer.py) verifies a commit pin, prepares submodules and generates a consumer Cargo workspace; see [consumer setup](../crates/openhuman-embed/CONSUMERS.md).
+
 ## Sub-directories
 
 The first five have their own README; the rest are documented by the header

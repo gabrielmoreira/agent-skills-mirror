@@ -126,7 +126,7 @@ step.
 | [`orchestrator_tools.rs`](./orchestrator_tools.rs) | Per-subagent `delegate_*` tools and deferred Composio action expansion. |
 | [`user_filter.rs`](./user_filter.rs) | `filter_tools_by_user_preference` and the UI toggle to tool-name map. |
 | [`host_extensions.rs`](./host_extensions.rs) | Readers over `tinytools`' erased host-extension slots: `pack_registry_handle`, `delegation_target`, `tool_call_id`. |
-| [`schemas.rs`](./schemas.rs), [`schemas/`](./schemas/) | The `tools.*` controllers: `registry.rs` (schemas and dispatch), `composio.rs`, `web_search.rs`, `apify.rs`, `linkedin.rs`. |
+| [`schemas.rs`](./schemas.rs), [`schemas/`](./schemas/) | The `tools.*` controllers: `registry.rs` (schemas and dispatch), `composio.rs`, `web_search.rs`. |
 | [`impl/`](impl/README.md) | Built-in tool families: `filesystem/` (the `FsGate` adapter only; the tools are `tinytools_std::filesystem`), `browser/`, `system/`, `network/`, `meta/`, and the `documents`-gated `document/` and `presentation/`. |
 | [`toolpacks/`](toolpacks/README.md) | On-demand tool disclosure (`use_skill`, pack catalog, guides) and `ToolGroups` / `GroupMode`. |
 | [`agent_policy/`](agent_policy/README.md) | Per-session tool boundary against a channel's permission ceiling. |
@@ -181,7 +181,6 @@ else is agent-only.
 | `openhuman.tools_web_answer` | Grounded answer with citations through the `answer` role. |
 | `openhuman.tools_web_contents` | Page contents for given URLs through the `contents` role. |
 | `openhuman.tools_searxng_search` | The `search` role pinned to a self-hosted SearXNG (requires SearXNG enabled). |
-| `openhuman.tools_apify_linkedin_scrape` | Apify LinkedIn profile scrape, returning raw JSON and rendered markdown. |
 
 [`registry/`](./registry/) registers a second namespace, `tool_registry` (`list`, `get`,
 `diagnostics`). Dotted ids such as `tools.web_search` in that registry are

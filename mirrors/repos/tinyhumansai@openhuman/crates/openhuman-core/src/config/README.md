@@ -124,7 +124,10 @@ Overrides are applied after parsing and never written back to disk.
 `SecretStore` ([`schema/load/secrets.rs`](./schema/load/secrets.rs), `enc2:` ChaCha20-Poly1305 values), serializes to TOML, and
 writes a temp file that is chmod 0600 before any secret byte is written. It then fsyncs and hands off to
 [`schema/load/atomic_commit.rs`](./schema/load/atomic_commit.rs), which copies the old file to `config.toml.bak` and renames the temp file
-into place. The live config is untouched unless the commit succeeds.
+into place. The live config is untouched unless the commit succeeds. That is the file source. On a shared (multi-tenant) storage
+backend `save` writes the scope's `config/{scope}` document instead: the secrets are not field-encrypted (the whole body is sealed with
+the scope's data key), there is no temp file or `.bak`, and the `[storage]` table is never stored. See
+[`schema/load/source/`](./schema/load/source/mod.rs).
 
 ### Migrations
 

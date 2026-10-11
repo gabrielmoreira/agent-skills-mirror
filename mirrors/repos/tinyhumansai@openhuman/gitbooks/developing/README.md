@@ -48,6 +48,7 @@ If this is your first time in the repo:
 - [Pluggable engines](engines.md): how config chooses the LLM, embeddings, memory and web search layers, and what is available for each.
 - [Jev](jev.md): the fast probability model behind tool selection and routine browser decisions.
 - [Embedding OpenHuman](embedding.md) (see also [`crates/openhuman-embed`](https://github.com/tinyhumansai/openhuman/tree/main/crates/openhuman-embed)): using `openhuman-embed` to run the core, and any number of agents on it, inside another Rust product. The [Rust quickstart](quickstart.md) walks through it.
+- [SaaS profiles](saas-profiles.md): running the core as a multi-user service behind a gateway, one profile per user, on one node or a cluster with leased profiles.
 - [One TinyHumans API key](tinyhumans-api-key.md): what a single key unlocks, including managed inference, embeddings, web search, media, integrations, voice and Jev.
 
 ---

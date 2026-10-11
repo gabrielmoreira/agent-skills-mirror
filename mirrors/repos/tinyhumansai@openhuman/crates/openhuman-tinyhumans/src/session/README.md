@@ -12,6 +12,20 @@ in-process `CoreRuntime`). This module absorbed the former standalone
 
 ## How it works
 
+New session credentials carry the normalized backend origin used for exchange
+and validation as `issuingBackend`. Core stores this non-secret association in
+the existing profile metadata beside the encrypted JWT. Both core token release
+and host profile refresh refuse a bound session when the configured backend
+differs, before sending its credential. Restore the issuing backend or sign in
+again; a mismatch does not erase the stored session. API keys and local sessions
+retain their existing behavior. Legacy profiles without an association remain
+compatible and unbound because their issuing origin cannot be inferred.
+
+Browser hosts pass their captured origin to `login_with_token_for_backend` or
+`store_session_token_for_backend`. These reject a changed backend before any
+credential-bearing request and retain the accepted client through exchange,
+validation and persistence, so configuration changes cannot redirect a callback.
+
 Four pieces stack up. `SessionManager` is the one hosts drive; it composes the
 other three.
 
@@ -46,14 +60,14 @@ reads the stored token back through the link when it needs to refresh
 then calls `store_session_token(jwt, None)`. Storing runs under a mutation
 lock so two login or logout callbacks cannot interleave, and decides:
 
-| Case | Result |
-| --- | --- |
-| local offline token | stored as-is; a non-empty `user` payload is required |
-| JWT whose `exp` has passed | `SessionError::Expired`, nothing stored |
-| `/auth/me` confirms the JWT | pushed to the core with the backend's user; cache seeded |
-| `/auth/me` rejects the JWT | `SessionError::Rejected`, nothing stored |
+| Case                                                    | Result                                                                                    |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| local offline token                                     | stored as-is; a non-empty `user` payload is required                                      |
+| JWT whose `exp` has passed                              | `SessionError::Expired`, nothing stored                                                   |
+| `/auth/me` confirms the JWT                             | pushed to the core with the backend's user; cache seeded                                  |
+| `/auth/me` rejects the JWT                              | `SessionError::Rejected`, nothing stored                                                  |
 | backend unreachable, JWT has a live `exp` and a user id | stored provisionally with `pendingBackendValidation: true`; a background loop revalidates |
-| backend unreachable, no live `exp` | `SessionError::Transient`, nothing stored |
+| backend unreachable, no live `exp`                      | `SessionError::Transient`, nothing stored                                                 |
 
 Store-time validation (`SessionClient::validate_for_store`) bounds
 `/auth/me` by a budget (12 s by default, `OPENHUMAN_AUTH_ME_TIMEOUT_MS`, with
@@ -101,16 +115,16 @@ attribution headers from `ClientHeaders` (`x-sdk-name`, plus
 
 ## Layout
 
-| Path | What it does |
-| --- | --- |
-| [`mod.rs`](mod.rs) | Module declarations and re-exports. |
-| [`manager.rs`](manager.rs) | `SessionManager`, `SessionState`, `SessionEvent`, `SessionError`; the login, store, logout, revalidation and current-user flows. |
-| [`client.rs`](client.rs) | `SessionClient` (login-token exchange, `GET /auth/me`, store-time validation), `ClientHeaders`, `SessionClientError`, `FetchMeError`, transient status and phrase classification. |
-| [`cache.rs`](cache.rs) | `CurrentUserCache`, `CachedUser`, TTL, backoff and fetch-timeout policy. |
-| [`link.rs`](link.rs) | `CoreLink`, `CoreAuthState`, the RPC method-name constants, and helpers (`push_credential`, `clear_credential`, `core_auth_state`, `core_session_token`, `resolve_backend_url`, `unwrap_envelope`). |
-| [`credential.rs`](credential.rs) | `Credential` and `CredentialKind` (`Session`, `ApiKey`, `Local`), `Credential::classify`, and the JWT and profile helpers (`decode_jwt_exp`, `jwt_is_live`, `user_id_from_jwt_claims`, `user_id_from_profile_payload`). |
-| [`identity.rs`](identity.rs) | Process-global user id (`set_user_id`, `peek_user_id`, `clear`) for Sentry `before_send` hooks that cannot await. Only the id is kept, never a token or profile. |
-| [`test_support.rs`](test_support.rs) | Axum stub backend and stub `CoreLink` for this module's tests (test builds only). |
+| Path                                 | What it does                                                                                                                                                                                                            |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`mod.rs`](mod.rs)                   | Module declarations and re-exports.                                                                                                                                                                                     |
+| [`manager.rs`](manager.rs)           | `SessionManager`, `SessionState`, `SessionEvent`, `SessionError`; the login, store, logout, revalidation and current-user flows.                                                                                        |
+| [`client.rs`](client.rs)             | `SessionClient` (login-token exchange, `GET /auth/me`, store-time validation), `ClientHeaders`, `SessionClientError`, `FetchMeError`, transient status and phrase classification.                                       |
+| [`cache.rs`](cache.rs)               | `CurrentUserCache`, `CachedUser`, TTL, backoff and fetch-timeout policy.                                                                                                                                                |
+| [`link.rs`](link.rs)                 | `CoreLink`, `CoreAuthState`, the RPC method-name constants, and helpers (`push_credential`, `clear_credential`, `core_auth_state`, `core_session_token`, `resolve_backend_url`, `unwrap_envelope`).                     |
+| [`credential.rs`](credential.rs)     | `Credential` and `CredentialKind` (`Session`, `ApiKey`, `Local`), `Credential::classify`, and the JWT and profile helpers (`decode_jwt_exp`, `jwt_is_live`, `user_id_from_jwt_claims`, `user_id_from_profile_payload`). |
+| [`identity.rs`](identity.rs)         | Process-global user id (`set_user_id`, `peek_user_id`, `clear`) for Sentry `before_send` hooks that cannot await. Only the id is kept, never a token or profile.                                                        |
+| [`test_support.rs`](test_support.rs) | Axum stub backend and stub `CoreLink` for this module's tests (test builds only).                                                                                                                                       |
 
 ## Key types and entry points
 

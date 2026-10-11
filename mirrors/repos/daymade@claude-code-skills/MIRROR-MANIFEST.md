@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `daymade/claude-code-skills` — 26 default patterns, 42 followed patterns, 170 file(s) materialized.
+Mirror of `daymade/claude-code-skills` — 26 default patterns, 43 followed patterns, 171 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 42 followed patt
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 42 |
-| Files         | 170 |
+| Followed pats | 43 |
+| Files         | 171 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -82,6 +82,7 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 42 followed patt
 - `daymade-claude-code/claude-switch-models-setup/references/context-window-config.md`
 - `auto-repo-setup/references/git_safety.md`
 - `github-contributor/references/phase3_quality_gates_and_e2e.md`
+- `github-review-pr/references/behavioral-impact-review.md`
 - `daymade-skill/skill-creator/references/release-readiness.md`
 - `git-safety-net/references/merge_verification.md`
 - `daymade-skill/skill-creator/references/sanitization_checklist.md`
@@ -256,20 +257,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 154 | → | [`git-safety-net/references/merge_verification.md`](git-safety-net/references/merge_verification.md) |
 | 155 | → | [`github-contributor/references/phase3_quality_gates_and_e2e.md`](github-contributor/references/phase3_quality_gates_and_e2e.md) |
 | 156 | → | [`github-ops/references/ci-demand-and-notifications.md`](github-ops/references/ci-demand-and-notifications.md) |
-| 157 | → | [`peer-message/references/protocol-and-discovery.md`](peer-message/references/protocol-and-discovery.md) |
-| 158 | → | [`references/ci-operations.md`](references/ci-operations.md) |
-| 159 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
-| 160 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
-| 161 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
-| 162 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
-| 163 | → | [`report-with-html/references/interaction-components.md`](report-with-html/references/interaction-components.md) |
-| 164 | → | [`report-with-html/references/long-lived-report-maintenance.md`](report-with-html/references/long-lived-report-maintenance.md) |
-| 165 | → | [`report-with-html/references/visual-evidence.md`](report-with-html/references/visual-evidence.md) |
-| 166 | → | [`report-with-html/references/visualization-patterns.md`](report-with-html/references/visualization-patterns.md) |
-| 167 | → | [`tibo-reset-codex/references/account-usage.md`](tibo-reset-codex/references/account-usage.md) |
-| 168 | → | [`tibo-reset-codex/references/forecast-feedback.md`](tibo-reset-codex/references/forecast-feedback.md) |
-| 169 | → | [`tibo-reset-codex/references/next-reset-forecast.md`](tibo-reset-codex/references/next-reset-forecast.md) |
-| 170 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
+| 157 | → | [`github-review-pr/references/behavioral-impact-review.md`](github-review-pr/references/behavioral-impact-review.md) |
+| 158 | → | [`peer-message/references/protocol-and-discovery.md`](peer-message/references/protocol-and-discovery.md) |
+| 159 | → | [`references/ci-operations.md`](references/ci-operations.md) |
+| 160 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
+| 161 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
+| 162 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
+| 163 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
+| 164 | → | [`report-with-html/references/interaction-components.md`](report-with-html/references/interaction-components.md) |
+| 165 | → | [`report-with-html/references/long-lived-report-maintenance.md`](report-with-html/references/long-lived-report-maintenance.md) |
+| 166 | → | [`report-with-html/references/visual-evidence.md`](report-with-html/references/visual-evidence.md) |
+| 167 | → | [`report-with-html/references/visualization-patterns.md`](report-with-html/references/visualization-patterns.md) |
+| 168 | → | [`tibo-reset-codex/references/account-usage.md`](tibo-reset-codex/references/account-usage.md) |
+| 169 | → | [`tibo-reset-codex/references/forecast-feedback.md`](tibo-reset-codex/references/forecast-feedback.md) |
+| 170 | → | [`tibo-reset-codex/references/next-reset-forecast.md`](tibo-reset-codex/references/next-reset-forecast.md) |
+| 171 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
 
 ---
 

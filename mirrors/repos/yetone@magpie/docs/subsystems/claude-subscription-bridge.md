@@ -7,6 +7,52 @@ saved session, that had its last turn, and what a run leaves on disk. Tool
 calls within a turn (`match`, `continueWith`) are only touched on where they
 meet it.
 
+## Which Claude Code runs
+
+`claudeBinary` (and the sign-in's `claudeExecutable`) take
+`claudecode.Find`: the machine's own `claude` (`proc.FindTool`), else the
+one `magpie claude-code install` downloaded into
+`<cache>/claude-code/<version>/` (`internal/claudecode`), else, on Windows,
+one in WSL. The download is Anthropic's native build from
+`downloads.claude.ai/claude-code-releases`, the "latest" channel, as
+`claude.ai/install.sh` takes it: the release's `manifest.json` gives the
+platform's SHA-256 and size, and a build that doesn't match both is not
+kept. It is only made when the user asks (`magpie claude-code install`, or
+yes to `magpie accounts add claude`'s offer on a machine without one), for
+a server or a container (Jorben on Discord). It is not on PATH and stands
+in for no agent. It doesn't update itself (the bridge sets
+`DISABLE_AUTOUPDATER`); installing again takes the newest and removes the
+older one.
+
+A run is started with `--dangerously-skip-permissions` (`claudeCLIArgs`):
+its only tools are magpie's MCP ones, answered by the client, and
+Anthropic's web search. Claude Code run as root refuses that flag ("cannot
+be used with root/sudo privileges") unless `IS_SANDBOX` is `1` or
+`CLAUDE_CODE_BUBBLEWRAP` is set, so a run as root, magpie's own euid 0 or
+a WSL distro whose default user is root (the probe's `uid`,
+`wslrun.Tool.Root`), is given `IS_SANDBOX=1` (`claudeCLI.asRoot`;
+FrierenF on Discord). A run as anyone else has its env as before. Only the
+bridge's run gets it; the warm-up and `/usage` runs don't skip
+permissions.
+
+The run's MCP server is magpie itself (`magpie claude-mcp-helper`,
+`internal/claudebridge`), which hands each tool call back to the gateway
+at `POST /_magpie/claude-mcp/<token>` (`mcpCall`), where the call is
+registered in `b.calls` for the turn with its results to find. The token
+is `randomToken` (24 bytes from `crypto/rand`), one per run. The callback
+URL is written to `callback` in the run's own temp folder (0600) and the
+helper is given that file's path, so the token is never on Claude Code's
+command line. The helper calls the address the gateway listens on
+(`callbackBaseURL`: `MAGPIE_ADDR`, `0.0.0.0`/`::` as `127.0.0.1`), which,
+pinned to one interface's address, isn't loopback, and it sends no
+gateway key. `lanGuard` therefore lets in exactly that path, by POST, with
+the token of a run now live (`ownCallback`: `addCallback` when the run is
+registered, `dropCallback` in `removeRun`, compared in constant time).
+Every other request, and this path with a wrong, spent or encoded token,
+is judged as any other. Without it the call was refused 401, never
+reached the run, and every turn with tool results found no run waiting and
+started a new Claude Code told the whole conversation (#1546).
+
 ## Why turns go on in one run
 
 A run started anew is told the whole conversation in one user message
@@ -207,7 +253,8 @@ carries none.
 ## Verification
 
 ```sh
-go test -tags nogui ./internal/gateway/ -run 'ClaudeRewritten|LostMedia|ImagesTakenOut|RunLetGoWhenTheClientRewrote|ClaudeSessionTempFiles|ClaudeLetGo|ClaudeSessionFiles|ClaudeOldSessions|ClaudeSubscriptionReplySaysTheAllowance|ClaudeAllowanceHeaders|ClaudeForksAnsweringTheLeadsCalls|ClaudeTurnGivenUpOn|ClaudeToolResultsGivenUpOn|ClaudePromptMarksEarlierTurns|ClaudeUnloadableSession|ClaudeEndedRunSaysWhy' -count=1
+go test -tags nogui ./internal/claudecode/ -count=1
+go test -tags nogui ./internal/gateway/ -run 'ClaudeSubscriptionRunsTheDownloaded|ClaudeSubscriptionWithoutClaudeCode|ClaudeRewritten|LostMedia|ImagesTakenOut|RunLetGoWhenTheClientRewrote|ClaudeSessionTempFiles|ClaudeLetGo|ClaudeSessionFiles|ClaudeOldSessions|ClaudeSubscriptionReplySaysTheAllowance|ClaudeAllowanceHeaders|ClaudeForksAnsweringTheLeadsCalls|ClaudeTurnGivenUpOn|ClaudeToolResultsGivenUpOn|ClaudePromptMarksEarlierTurns|ClaudeUnloadableSession|ClaudeEndedRunSaysWhy' -count=1
 ```
 
 `claude_rewritten_test.go` has a case for each relaxation and one for each

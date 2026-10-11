@@ -52,6 +52,7 @@ Bad example:
 - Observed repo facts and source/web evidence gaps are named.
 - At least two options or one chosen option plus rejected alternatives are recorded.
 - Risks, acceptance criteria, and verification commands are testable or explicitly blocked.
+- Every target-state difference has a `Success criteria` row with a task and a verification scenario or is recorded as a user-excluded non-goal, and the `Target-state coverage` check left none unmapped.
 - The plan exists as a recorded file-backed artifact, not only as chat narration.
 - The implementation handoff is prepared only after plan acceptance and remains prepared_not_observed.
 - The follow-on engine or executor path was started only after the user's explicit go-ahead in this conversation, never from plan acceptance alone.
@@ -82,9 +83,15 @@ Quality bar:
 - Start from observed repo facts and source/web evidence when freshness or external behavior matters.
 - Include planner view, critic/risk review, alternative paths, rejected options, and a testability check before handoff.
 - Produce testable acceptance criteria and exact verification commands or explain why they are not yet knowable.
+- Before comparing options, write the target state: name each consumer of the result (a person, a maintainer, or a program reading its output), their current workflow on this surface, the state in which that workflow keeps working with no new friction or loss, and every difference between current and target, each with why it matters.
+- Record a `Success criteria` table with columns `Criterion | Task | Verification scenario`, one row per target-state difference naming its owning task and the scenario that shows the difference closed; these rows are the acceptance criteria above, extended to the target state.
+- End with a `Target-state coverage` check: a difference with no owning task or no verification scenario is added to the plan as its own task, unless the user excluded it, in which case the plan records it as a non-goal with that reason; a difference blocked on missing evidence stays in the evidence-gap record below instead.
+- Never shrink scope on your own: plan an MVP or a first phase only when the user requested one, plan a split or phasing the user requested as given, and when the target state exceeds what was literally asked, state that in one sentence and plan the full target state.
+- Size each task as one band, never as hours or days: `XS` (one small edit), `S` (one file and its test), `M` (several files in one module), `L` (several modules or one contract change), `XL` (crosses subsystems; split it into smaller tasks).
 - Record unresolved tradeoffs and evidence gaps instead of flattening uncertainty.
 - When plan-shaping evidence is missing — current external behavior, contested claims, or unstudied reference implementations — run the `research` workflow as a bounded in-plan stage (not an exhaustive deep-research run) before comparing options, record its dossier the way the `research` artifact contract requires, and consume it instead of planning on assumptions.
 - Consume a recorded `research` dossier when one exists: plan options and rejected alternatives should cite its decision drivers and verified claims.
+- Take plan acceptance only from the answer the user gave — the response status and value the question tool returns, or the user's own reply — never from the wording of the question you asked: when the acceptance question times out, is dismissed, or returns with no answer, the plan stays unaccepted, so record no acceptance, prepare no handoff, and start nothing; a missing answer is not a refusal either, so ask again later or report the plan as awaiting acceptance.
 - End with a selected executor/runtime handoff shape only after the plan is accepted.
 - Plan acceptance approves the plan content, not execution: after acceptance, recommend the follow-on path that fits the work's shape — `ultrawork` durable checkpoints for progress that must survive sessions as a checkpointed ledger, `ultrawork` coordinated lanes for an accepted plan split into disjoint parallel lanes, `ultrawork` single-owner persistence for one already-scoped task with a single owner, `ultrawork` for one bounded delivery cycle, or a direct selected executor/runtime handoff for a single prepared coding change — state the fit reason in one line, and start it only after the user's explicit go-ahead.
 - Do not implement directly from consensus planning.

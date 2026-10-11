@@ -1,4 +1,4 @@
-<!-- reviewed-through: 3c629133 (2026-10-09 02:48 +0800) -->
+<!-- reviewed-through: c98160c0 (2026-10-10 13:51 +0800) -->
 # Lessons from merged work
 
 magpie's code is written, reviewed, merged and released by agents. Each night
@@ -23,6 +23,26 @@ tagged after a green run. Two more lessons were seen a third day and moved:
 real use before building on it, and GUI tests in both engines and every
 language. The acceptance checks now include `gofmt -l` and a Linux and
 Windows `go vet`, since a cross-OS build skips `_test.go`.
+
+2026-10-09 had 109 commits and 10-10 had 74 up to 13:51 (v0.1.1127 to
+v0.1.1154). Every tag waited for a green run, every release has its 16
+assets, and every commit over 400 lines has a body that says what was run.
+What went wrong was earlier in the work. A privacy exemption was keyed on a
+field's name, which let tool arguments go out unmasked. Two sessions
+committing from one checkout shipped each other's files under the wrong
+subjects. A known DNS-rebinding hole sat documented in a subsystem page
+until the review reproduced it (fixed in c431225a). Three lessons were seen
+a second day.
+
+From 10-10 13:51 to 10-11 05:20 there were 191 commits and 18 releases
+(v0.1.1155 to v0.1.1172), each tagged on a green run. Most bodies say what
+was run, what was broken by hand, and what wasn't tried. What went wrong was
+in the tests and in what "the same on main" meant. A test-isolation fix was
+made twice and missed a package each time (#1524). Four commits shipped past
+a red they called load or "the same on main" without filing it, and one of
+those reds was a real rate-limit gap. Two lessons were seen a third day and
+moved into the code standards: whatever a test starts ends when it does, and
+a timing test leaves room on both sides.
 
 ## Reading the report
 
@@ -79,7 +99,10 @@ content before you rest an account.**
   their requests work.
 - When a report shows a wrong label, also ask why the request failed. Fix
   that, or point the user to the fix in the message itself.
-- Seen 1× (2026-10-06).
+- 10-10: 1134c7a8 reworded the "restart codex" advice. luci hit the same
+  stale app-server daemon on the next release, and e611fc65 then restarted
+  it from magpie.
+- Seen 2× (2026-10-06, 2026-10-10).
 
 ## Fix the class, not the sample
 
@@ -102,6 +125,29 @@ content before you rest an account.**
   checked that requests behind Tailscale Serve still count as remote.
 - Seen 1× (2026-10-05).
 
+**Scope a privacy or security exemption by where the value sits in the
+protocol, never by a key's name.**
+- 7137feb4 kept any object holding a "signature" or "encrypted_content" key,
+  and any `*_id` key, unmasked. A tool call's input is written by the model,
+  so `{"signature": …, "body": "DB_PASSWORD=… 13800138000"}` or a `user_id`
+  in tool_use input went to the vendor unmasked. 1965e1f0 limited the
+  exemption to thinking/reasoning blocks and Gemini's thoughtSignature, and
+  never keeps anything under a tool call's arguments.
+- Test the exemption with the protected key placed where the user's data
+  goes: tool arguments, message text, a nested object.
+- Seen 1× (2026-10-09).
+
+**A security gap a doc names is an open bug, not a description.**
+- docs/subsystems/gateway-routing.md said "There is no `Host` check, so a
+  page whose own name resolves to 127.0.0.1 (DNS rebinding) counts as
+  same-origin". On 10-10 the review reproduced it on main. A rebound page
+  got 200 on /v1/models, /v1/chat/completions and /v1/magpie/quotas without
+  a key. Fixed in c431225a.
+- A same-origin exemption needs the Host checked too. A rebound page's GET
+  carries no Origin at all.
+- When writing such a sentence, file an issue in the same commit.
+- Seen 1× (2026-10-10).
+
 ## The user's own files and settings
 
 **Never let magpie's default override a value the user set themselves.**
@@ -111,7 +157,13 @@ content before you rest an account.**
   dropped the stash for 12 days (fe2603ff).
 - Before writing a key, list everywhere the agent reads that setting from.
   Test with user-owned values present.
-- Seen 1× (2026-10-05).
+- 10-09/10-10: four fixes for magpie writing over a user's own choice.
+  - 603dc0c4: dsh's picked model was lost on Disconnect.
+  - 5aca7d09: Codex's effort left at Default was written over with medium.
+  - c65d9fb4: magpie-models.json dropped keys added by hand.
+  - d9bf7c1c: ZCode's API format was put back on every start.
+  - Each was written first without a test that holds a user-set value.
+- Seen 2× (2026-10-05, 2026-10-10).
 
 **A failed read, parse or hash means "unknown". It never means "empty" or
 "equal".**
@@ -125,7 +177,17 @@ content before you rest an account.**
   moving it whole, and doesn't move it when the backup fails. 2c2137be
   deletes a dsh session only under its own folder, to the trash, with
   Restore, and was tried with real dsh.
-- Seen 1× (2026-10-05).
+- 10-11: agent/stash.go, which holds every agent's config from before
+  magpie, had readLogins' bug, never looked at when b363327d fixed it. A
+  stash.json that didn't parse read as empty, writes were plain
+  os.WriteFile with no lock, and 40 stashes at once kept none of them
+  (270b5257). 8b393938 (StepCode, the same evening) noticed and wrote its
+  own strict reader beside the shared one instead of fixing it. When you
+  find a shared helper wrong, fix the helper.
+- Done right on 10-10: 89271cd4 (#1505) recovers zeroed state files from a
+  .bak, copies a bad one aside, and deliberately doesn't recover caller
+  keys (a revoked key must stay revoked).
+- Seen 2× (2026-10-05, 2026-10-11).
 
 **Before deleting or overwriting a live credential, find every record that
 could match the same key.**
@@ -177,7 +239,27 @@ re-derives every place that discloses it.**
 - 9755201b's test opened ChatGPT, whose Cloudflare challenge hung it.
   9f0831b2 and 88f2eb8a did the same with other vendor pages.
 - Serve the page from httptest, built from bytes saved from the real one.
-- Seen 1× (2026-10-08).
+- 10-11: the same holds for a test's broken state. With the icon proxy
+  turned off by hand, a library test's github.com avatar URL reached the
+  real GitHub, and a worker test's stub fell through to a real fetch
+  (f04792f9 moved them to .invalid hosts and a stub that throws). Break the
+  change and watch where the test's requests go.
+- Seen 2× (2026-10-08, 2026-10-11).
+
+**A test that reads a dependency's source needs the dependency on disk.**
+- 884dbdb2's TestTrayMenuOpenFrameIsWails read Wails' source through
+  `go list -m` Dir. CI's fresh module cache hasn't unpacked it, so main was
+  red on macOS and ubuntu for ~25 minutes (9b6b9966).
+- Run `go mod download` for it in the test, or keep the bytes it checks in
+  testdata.
+- Seen 1× (2026-10-10).
+
+**A check that a value is gone looks past text magpie generates.**
+- 6c099edd's redact test checked that "ops" was gone by substring. The
+  placeholder's random suffix spelled it ({{HOSTNAME_mlopsiy3}}) on macOS
+  CI. f0453192 strips placeholders before the check, in its sibling
+  TestMask too.
+- Seen 1× (2026-10-10).
 
 **Reproduce on CI's Go version.**
 - #1184 couldn't be reproduced on go1.27.1 locally. CI ran 1.26.x, and the
@@ -202,27 +284,15 @@ handoff that lets another goroutine look at it.**
   map is not a copy (15afd988).
 - Seen 2× (2026-10-06, 2026-10-08).
 
-**A fake or child process a test starts ends when the test does.**
-- TestClaudeSignInByPaste's fake `claude auth login` polled every 50ms for 2
-  days after its test, waiting on a file in a TempDir that was gone
-  (38a0f470). On 10-07 #1060's kept fake Claude Code runs end with their
-  test.
-- After a test times out, check `ps` for its binary. An orphaned gateway.test
-  spun at 96% CPU for 30 minutes.
-- Size -count to -timeout. A timeout panic is not a hang until its stacks
-  show one.
-- 10-08: #1318's detached goroutine outlived its test; its review caught it.
-- Seen 2× (2026-10-06, 2026-10-08).
-
-**A timing test leaves room on both sides.**
-- Leave slack against a fake's sleep (8d6e9bad). Keep a threshold
-  classifier's fixture far from every threshold it has (5e17a183). A
-  wall-clock bound fails under CI load (bc7c62dc).
-- When fixing one, list every timing assumption in the test, not only the
-  one that failed.
+**A fake or child process a test starts ends when the test does**, and
+**a timing test leaves room on both sides**, are in the code standards
+since 10-11. See [Moved to the code standards](#moved-to-the-code-standards).
+Two habits from them:
+- After a test times out, check `ps` for its binary. An orphaned
+  gateway.test spun at 96% CPU for 30 minutes. Size -count to -timeout; a
+  timeout panic is not a hang until its stacks show one.
 - Reproduce a timing flake by injecting the delay, not by rerunning until
-  it fails (0f8e4ebc).
-- Seen 1× (2026-10-08).
+  it fails (0f8e4ebc, 229ce19a, 9e35eef3).
 
 **A test named for a guarantee fails when the guarantee breaks.**
 - #1318's TestHistoryWriteHoldsNoWaiter still passes with the waiter held:
@@ -256,6 +326,22 @@ cause:
   a2a7fb11, 5d0c1dca and #950 each shipped past "fails the same on main".
 - Done right on 10-08: #1184 found the Go 1.26.8 segfault behind its flake,
   and 30a8ce29 fixed its flake at the cause.
+- 10-11: four commits named a red and shipped past it unfiled. b1396d23
+  reran TestMaxRPM as load; it was a real gap (the vendor counted a late
+  first request in the next request's minute, ce1ecaa4). 2305ab1f's dsh
+  test and 20582866a's queued-stream test "pass alone"; both had causes
+  (9c377231, 3f4287e6). db965824 said panel-usage "fails the same on
+  origin/main 0a11b183", but 0a11b183 was hours old and f823a53d had fixed
+  that test; on the real main it passed 3 of 3.
+  - "The same on main" means on origin/main just fetched: `git fetch`, then
+    name the sha you ran.
+  - A red under load is a timing assumption a user will meet on a busy
+    machine. File it, with its output, in the same commit.
+- 10-11: two sessions again fixed one flake in the same minute (4caae1c8 and
+  3f4287e6), and on 10-10 3a1ade97 landed while another fix of the same
+  test was being written. Checking `git log` isn't enough while both are
+  working; say on an issue, or file one, that you are on it before you
+  start.
 - Done right: 2bd49cc5's race was fixed at its cause in 25 minutes
   (28049bd2, -race -count=40 -cpu 1,2). 60f87223, b1cba654, 443f1cbc and
   395c4bc5 fixed flakes at their cause instead of retrying. 06420a71 fixed
@@ -311,6 +397,18 @@ it doesn't.**
   e22d5eef and d2241a57 had no body either, so a later review can't tell
   what was verified.
 - Seen 1× (2026-10-08).
+- Done right on 10-09/10-10: none of the 22 commits over 400 lines lacks a
+  body.
+
+**Two sessions never commit from the same checkout.**
+- 10-09 12:10: 2018882e carries the davsync subject but holds the GTK
+  font-DPI fix (#1371, 7 files). b86001d4, "#1371 GTK", is empty. be203728
+  is the real davsync change under the same subject. One session committed
+  the other's staged files, because they shared the main checkout's index.
+- Work in a worktree of your own (`git worktree add --detach`). After
+  committing, `git show --stat HEAD` must list your files and only yours. An
+  empty commit means another session took your index.
+- Seen 1× (2026-10-09).
 
 ## Moved to the code standards
 
@@ -342,3 +440,40 @@ each one.
   choke point, tried on the Windows box), 74a809dc with 84f37ac9
   (re-derived account keys), #1271/#1275 (built-in and plugin together),
   3aeb7d1b (a refusal scoped to the model) and #1288.
+- **10-09/10-10, criteria still missed.**
+  - Sibling: 12c0550a said "Only aBlock had this" while #1445 (open for an
+    hour) listed the class. 64179e73, 13356b9d and d7186e51 followed.
+  - The suite: 2da8fbe4 ran six packages, not `go test ./...`. Its testenv
+    exec broke internal/proc's TestNoCommandBypassesProc, red ~50 min until
+    b934d64a.
+  - Real use: a3a8e257 shipped GitHub plugin icons without loading the real
+    list, and the owner found none showing (52f6b3a3). aa82288f's Volcengine
+    plan windows went out "not tried against the real API". It was said
+    honestly, and #1427 stays open.
+- **Whatever a test starts ends when the test does** (10-06, 10-08,
+  10-11). On 10-11 a CLI-identity ask outliving its test wrote into the
+  next test's folder (#1524). 4ee3a76b fixed it in the gateway's TestMain
+  only; 9c377231 fixed it for every binary through testenv's marker, but
+  the gateway isolates itself without testenv and never set the marker, so
+  #1524 came back on CI (a349de82). A guard test now fails if the gateway's
+  TestMain doesn't set it.
+- **A timing test leaves room on both sides** (10-08, 10-09, 10-11). On
+  10-10 8424a004 assumed two concurrent handlers let go in order
+  (3a1ade97). On 10-11 TestMaxRPM and the queued-stream tests (above).
+- **Done right on 10-10/10-11.**
+  - 9e35eef3 fixed #1469 half an hour after it was filed, reproducing CI's
+    numbers with an injected pause.
+  - ede1e32a (#1508) audited all six pickers of the same kind and added a
+    guard test that every one can be narrowed.
+  - 64262a19 (Prime Agent), 9c11abbd (jcode) and b72e7d4a (#1539) were tried
+    with the real binary in a sandbox, and each says what was broken by hand.
+  - #1197 scoped Kimi's sampling rule to Kimi Code's endpoints and models.
+- **Done right on 10-09/10-10.**
+  - 229ce19a, 570b8fdb and ab72c8eb reproduced CI flakes by injecting a
+    delay and fixed their cause.
+  - 7f62dbf3 named the siblings the reporter's patch missed (Cursor, Muse,
+    GUI, CLI) and covered them.
+  - 9b51428e found the same hold-out in Factory's list.
+  - #1454 stayed open until the reporter confirmed.
+  - #1213 and #1282 merged at the reviewed head with the record seconds
+    before.

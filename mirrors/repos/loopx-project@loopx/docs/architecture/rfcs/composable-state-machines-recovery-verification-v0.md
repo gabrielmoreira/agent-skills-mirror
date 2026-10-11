@@ -304,27 +304,22 @@ lease/GoalRef fence, followed by M3's actual delivery callers.
 
 ### Source-grounded implementation sequence
 
-These are unimplemented composition deltas within existing M2/M3 and roadmap
-R2/R3/R4, not new milestones. Source owners were rechecked at
-`44931b6d22a50b949d43354e6ea498fb6b68d231`.
+The table tracks independent composition boundaries within M2/M3 and roadmap R2/R3/R4. Candidate checkpoints do not establish installed behavior or full M2 acceptance. The source baseline is `233cc76fd22760947d73e1501032b8b77e28148b`.
 
-| Bounded outcome | Existing entry and owner | Current gap and decisive exit |
+| Bounded outcome | Existing entry and owner | Current checkpoint and decisive exit |
 | --- | --- | --- |
-| Unavailable declared ancestry prevents new dependent use | `Delegations._read_current/start`, `delegation_results.require_dependencies/adoption_evidence`, `delegation.ts` | Alignment §3.8: source → A → B with A input invalidated must refuse current dependent use even if A output is unchanged. Qualify real read/start/adopt/settlement and packaged evidence readback; keep historical completion. |
-| Independent check failure reaches an actionable original-task recovery journey | `executor._task_validation_stage`, `ValidatedTurnReceipt`, canonical `turn_loop_controller_contract_v0.json`, `turn_journal.ts` | Preserve qualified failure scope and repair/replan detail; complete bounded repair or verifier-only retry, current validation and original-effect settlement. Host assertions cannot become trusted validation. |
-| Optional semantic review explains its evidence and coverage | Existing progress-review receipt/loader and canonical Goal acceptance inspection | Bind a selected criterion and evidence coverage in shadow readback; show missing/stale basis and separate judgment dimensions. Model quality and intervention qualify separately. |
+| Unavailable declared ancestry prevents current use | `Delegations.read/start`, `delegation_results.py`, `delegation_result_use.ts` | `current_use` separates historical completion from present eligibility. New dispatch, adoption and settlement share ancestry checks; same-operation replay only reads back. Real File/SQLite three-level counterexamples and the packaged team reader cover withdrawal, cause/input references and restored readback. |
+| Independent failure can recheck the original task | `executor`, `task_validation_failure.ts`, canonical controller JSON, `Delegations.revalidate` | Qualified postcondition failures retain repair/replan; legacy detail still routes to generic repair. Explicit CLI/MCP/App revalidation uses the original Turn's cached result: unchanged failure remains rejected, repaired artifacts continue original settlement without repeating Host work. A retained recheck intent and original committed receipts recover response loss through the same operation; replay produces no new Host or quota effects. |
+| Shadow review explains criteria and coverage | progress-review receipt/context, `progress_review_evidence.ts`, canonical acceptance inspect | Select current canonical task criteria; exact GoalRef preserves instance identity, while changed tasks or recreated instances withdraw old judgments. Independent older cores retain only the legacy manual-study shape; canonical scope never downgrades. Show separate dimensions, declared-file net change, missing evidence and unreadable storage. Default off and existing assist trigger rules retain their semantics. |
 
-For the second outcome, `_task_validation_stage` already saves the independent
-result and blocks settlement. `ValidatedTurnReceipt` omits that validation's
-`recovery_kind`; the canonical controller intentionally maps legacy
-`validation_failed` to generic repair. Preserving a trusted validator's replan
-request is a disclosed contract extension, not a violation of today's rule.
-Change the canonical contract, `scripts/generate_turn_contract.py` and the
-existing `validation_failed`/`repair` definitions in
-`loopx/semantics/vocabulary_v0.json`, retaining legacy omitted detail as generic
-repair. Do not hand-edit generated code or add
-a parallel Python decision source. Review missing, malformed and contradictory
-detail and old/new reader compatibility before selecting a wire change.
+`validation_failed` extension updates canonical JSON, the generator and
+existing vocabulary definitions; generated bindings are regenerated. Conflicting
+independent detail is rejected and a Host format error is not a postcondition
+failure. `revalidate` is an explicit effectful recovery operation: success may
+continue existing settlement. Actual code repair still requires current execution
+authority; this operation does not edit code, rerun a model or switch Agents.
+Unknown effects remain subject to the original journal's reconciliation rule.
+A replacement validator cannot erase them.
 
 Failed-Turn retry at `validation_stage=task_postcondition` already reuses the
 cached Host result and reruns validation without invoking the Host again.
@@ -344,6 +339,22 @@ entries share the owner. A command-copy button or backend receipt alone does not
 complete the journey. Bound repeated verification and source-chain traversal
 using measured workloads. Roll back code through its owner while retaining
 receipts, completed effects and unresolved recovery obligations.
+
+One ancestry admission reads at most 64 operations and 16 levels, merging
+repeated source reads by operation. The 15-second elapsed budget stops starting
+further checks; an already running validator retains its configured timeout.
+This is not a 15-second HTTP deadline. Exhaustion is unavailable, never saved
+success. Coverage is explicit local delegation inputs, not undeclared memory or
+arbitrary reasoning; multiple sources are not an atomic snapshot.
+
+An optional `acceptance_scope` refers only to registry/runtime paths inside the
+selected workspace. Criteria come from the current owner; private commands and
+paths stay out of model questions. Hashes, versions and declared coverage are
+observations, not proof of model correctness, a durable business checkpoint or
+whole-task completion. Existing team evidence and capability settings carry App
+readback, and CLI/MCP share the owner; no Lark-specific protocol is introduced.
+Live correction, remote exactly-once, takeover, observer quality and intervention
+retain their existing RFC acceptance owners.
 
 ## 12. Open decisions
 

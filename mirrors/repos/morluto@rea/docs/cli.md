@@ -20,6 +20,23 @@ files when neither `--provider` nor `--snapshot` is supplied. See
 [JavaScript artifact reconstruction](javascript-artifact-reconstruction.md)
 for results, integrity checks and coverage.
 
+The complete application Evidence can be hundreds of megabytes for a real
+application. When an agent or a person reads the result, save it to a file and
+project a summary, a module page or one module from the saved Evidence:
+
+```bash
+rea analyze-javascript-application /absolute/path/to/app --json > app-evidence.json
+jq -c '{source: {kind: "inline", evidence: .}, view: {kind: "summary"}}' app-evidence.json > app-view.json
+rea inspect-analysis-view app-view.json
+```
+
+For example, a 334 MB Obsidian application Evidence file yields a summary view
+of about 10 KB. Replace the view with
+`{"kind": "page", "collection": "modules", "offset": 0, "limit": 32}` for a
+module page. See
+[JavaScript application workflows](javascript-application-workflows.md) for
+views, feature traces and comparisons that take the same saved Evidence.
+
 ## Native analysis
 
 Configure [Hopper or Ghidra](installation.md#hopper), or the
@@ -149,9 +166,16 @@ rea import-reference-source /absolute/path/to/source
 ```
 
 The import records hashes and metadata for the supplied files, separately
-from observations of the current app. File names do not automatically exclude
-files. Set `REA_REFERENCE_SECRET_PATTERNS_JSON` to a JSON array of ignore
-patterns when you want to exclude selected paths.
+from observations of the current app. It honors the source tree's `.gitignore`
+and applies default exclusions for common generated and dependency paths such
+as `node_modules/`, `dist/`, and `*.log`. Pattern-based exclusions record the
+matched pattern and whether it came from project, default, caller, or sensitive
+path policy. Set `REA_REFERENCE_SECRET_PATTERNS_JSON` to a JSON array of ignore
+patterns when you want to mark selected paths as sensitive; those patterns are
+reported separately as configured-secret exclusions.
+
+Re-import saved graphs whose pattern-based exclusions lack `pattern` before
+using them in source-to-bundle comparisons.
 
 JavaScript and TypeScript import parsing requires valid UTF-8. Malformed source
 bytes retain their original hashes and sizes with a decoding diagnostic; REA
@@ -179,7 +203,10 @@ user permissions; consult the chosen guide for host requirements and effects.
 ## Output and exit status
 
 The default terminal format is TOON. Use `--json` when saving results for a
-JSON consumer. Output selection and formatting do not change operation status.
+JSON consumer. `--json` is indented on a terminal and compact when piped or
+redirected, which keeps large results smaller for agents and scripts; pipe
+through `jq .` for indented files. Output selection and formatting do not change
+operation status.
 
 | Status    | Meaning                                                                                                                                              |
 | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |

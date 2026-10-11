@@ -107,7 +107,7 @@ The user has context you do not. Cross-model agreement is a recommendation, not 
 ## Completion Status Protocol
 
 When completing a skill workflow, report status using one of:
-- **DONE** — completed with evidence.
+- **DONE** — completed with evidence valid for the final consumed inputs; name reuse and anything not independently verified.
 - **DONE_WITH_CONCERNS** — completed, but list concerns.
 - **BLOCKED** — cannot proceed; state blocker and what was tried.
 - **NEEDS_CONTEXT** — missing info; state exactly what is needed.
@@ -166,12 +166,14 @@ _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
 B=""
 [ -n "$_ROOT" ] && [ -x "$_ROOT/.claude/skills/gstack/browse/dist/browse" ] && B="$_ROOT/.claude/skills/gstack/browse/dist/browse"
 [ -z "$B" ] && B="$HOME/.claude/skills/gstack/browse/dist/browse"
-if [ -x "$B" ]; then
+if [ -x "$B" ] && "${B%/browse/*}/bin/gstack-browser-ensure"; then
   echo "READY: $B"
 else
   echo "NEEDS_SETUP"
 fi
 ```
+
+`gstack-browser-ensure` installs Chromium on first use when the install skipped it (lazy browser); it prints `BROWSER_OK` or `BROWSER_UNAVAILABLE <reason>` first.
 
 If `NEEDS_SETUP`:
 1. Tell the user: "gstack browse needs a one-time build (~10 seconds). OK to proceed?" Then STOP and wait.
@@ -196,7 +198,7 @@ If `NEEDS_SETUP`:
        echo "  got:      $actual_sha" >&2
        rm "$tmpfile"; exit 1
      fi
-     BUN_VERSION="$BUN_VERSION" bash "$tmpfile"
+     bash "$tmpfile" "bun-v$BUN_VERSION"
      rm "$tmpfile"
    fi
    ```

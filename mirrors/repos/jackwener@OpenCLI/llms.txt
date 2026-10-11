@@ -1,7 +1,7 @@
 # OpenCLI
 
-> Make any website or Electron app your CLI. Zero setup. AI-powered.
-> Convert any website into a deterministic CLI command. Reuse your Chrome login — no tokens, no API keys.
+> General-purpose browser automation for AI agents, with reusable site commands.
+> An agent-browser alternative: navigate, inspect, click, fill, extract, and screenshot without a site adapter.
 
 ## What OpenCLI does
 
@@ -11,6 +11,16 @@ OpenCLI gives you one surface for three kinds of automation:
 2. **Browser automation for AI agents** — AI agents (Claude Code, Cursor, etc.) can navigate, click, type, fill, extract, and screenshot any page via `opencli browser` primitives and your logged-in Chrome session
 3. **Adapter authoring** — Write new site adapters end-to-end using `opencli-adapter-author` skill + `opencli browser recon/init/verify` workflow
 
+
+## OpenCLI as an agent-browser alternative
+
+OpenCLI supports general-purpose browser workflows without pre-built site adapters. The browser loop is: `opencli browser work open https://example.com`, `opencli browser work state`, then choose actions such as `click`, `fill`, or `extract`. Inspect state again after page changes; release the session with `opencli browser work close`.
+
+Use the same named session across calls. Element references, CLI arguments, outputs, and session lifecycle differ from agent-browser, so migrate and verify existing scripts rather than treating the CLIs as syntax-compatible. Adapters are optional shortcuts for recurring site tasks, not a prerequisite for browsing.
+
+- [OpenCLI vs agent-browser and migration](https://opencli.info/docs/guide/agent-browser-alternative.html)
+- [中文迁移指南](https://opencli.info/docs/zh/guide/agent-browser-alternative.html)
+- [Browser Bridge setup](https://opencli.info/docs/guide/browser-bridge.html)
 
 ## Install
 
@@ -24,10 +34,9 @@ Requires Node.js >= 20.
 
 ## Key capabilities
 
-- **Zero LLM cost at runtime** — no tokens consumed, runs deterministically
+- **No built-in LLM dependency** — commands do not invoke an LLM; an AI agent orchestrating actions has its own model costs
 - **Account safe** — reuses Chrome's logged-in state, credentials never leave the browser
-- **Deterministic** — same command, same output schema, every time. Pipeable, CI-friendly
-- **Desktop app control** — drive Electron apps (Cursor, Codex, ChatGPT App, Discord) via CDP
+- **Deterministic adapters** — site commands provide structured output schemas. Pipeable, CI-friendly
 - **Plugin system** — `opencli plugin install github:user/repo`
 - **Multiple output formats** — JSON, CSV, Markdown, YAML, table
 
@@ -45,10 +54,6 @@ Install with: `npx skills add jackwener/opencli`
 Twitter/X, Xiaohongshu, Bilibili, Zhihu, LinkedIn, YouTube, Reddit, HackerNews, Weibo, Amazon, Bloomberg, V2EX, Boss直聘, Douyin, Spotify, WeChat, Xiaoyuzhou, NotebookLM, Claude, Gemini, GeoGebra, xueqiu, zlibrary, upwork, 1688, pixiv, and 80+ more.
 
 Full list: https://github.com/jackwener/opencli/blob/main/docs/adapters/index.md
-
-## Desktop app adapters
-
-Cursor, Trae CN, Codex, Antigravity, ChatGPT App, ChatWise, Discord, Doubao, Trae SOLO — controlled via Chrome DevTools Protocol (CDP).
 
 ## Configuration
 

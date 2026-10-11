@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kreuzberg-dev/kreuzberg` — 26 default patterns, 0 followed patterns, 55 file(s) materialized.
+Mirror of `kreuzberg-dev/kreuzberg` — 26 default patterns, 0 followed patterns, 69 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kreuzberg-dev/kreuzberg` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 55 |
+| Files         | 69 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -107,13 +107,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 46 | ✓ | [`plugin/.hermes/plugins/xberg/skills/extracting-with-ocr/SKILL.md`](plugin/.hermes/plugins/xberg/skills/extracting-with-ocr/SKILL.md) |
 | 47 | ✓ | [`plugin/.hermes/plugins/xberg/skills/picking-a-format/SKILL.md`](plugin/.hermes/plugins/xberg/skills/picking-a-format/SKILL.md) |
 | 48 | ✓ | [`plugin/.hermes/plugins/xberg/skills/xberg/SKILL.md`](plugin/.hermes/plugins/xberg/skills/xberg/SKILL.md) |
-| 49 | ✓ | [`plugin/skills/batch-extraction/SKILL.md`](plugin/skills/batch-extraction/SKILL.md) |
-| 50 | ✓ | [`plugin/skills/chunking/SKILL.md`](plugin/skills/chunking/SKILL.md) |
-| 51 | ✓ | [`plugin/skills/extracting-keywords/SKILL.md`](plugin/skills/extracting-keywords/SKILL.md) |
-| 52 | ✓ | [`plugin/skills/extracting-tables/SKILL.md`](plugin/skills/extracting-tables/SKILL.md) |
-| 53 | ✓ | [`plugin/skills/extracting-with-ocr/SKILL.md`](plugin/skills/extracting-with-ocr/SKILL.md) |
-| 54 | ✓ | [`plugin/skills/picking-a-format/SKILL.md`](plugin/skills/picking-a-format/SKILL.md) |
-| 55 | ✓ | [`plugin/skills/xberg/SKILL.md`](plugin/skills/xberg/SKILL.md) |
+| 49 | ✓ | [`plugin/.opencode/skills/batch-extraction/SKILL.md`](plugin/.opencode/skills/batch-extraction/SKILL.md) |
+| 50 | ✓ | [`plugin/.opencode/skills/chunking/SKILL.md`](plugin/.opencode/skills/chunking/SKILL.md) |
+| 51 | ✓ | [`plugin/.opencode/skills/extracting-keywords/SKILL.md`](plugin/.opencode/skills/extracting-keywords/SKILL.md) |
+| 52 | ✓ | [`plugin/.opencode/skills/extracting-tables/SKILL.md`](plugin/.opencode/skills/extracting-tables/SKILL.md) |
+| 53 | ✓ | [`plugin/.opencode/skills/extracting-with-ocr/SKILL.md`](plugin/.opencode/skills/extracting-with-ocr/SKILL.md) |
+| 54 | ✓ | [`plugin/.opencode/skills/picking-a-format/SKILL.md`](plugin/.opencode/skills/picking-a-format/SKILL.md) |
+| 55 | ✓ | [`plugin/.opencode/skills/xberg/SKILL.md`](plugin/.opencode/skills/xberg/SKILL.md) |
+| 56 | ✓ | [`plugin/.pi/skills/batch-extraction/SKILL.md`](plugin/.pi/skills/batch-extraction/SKILL.md) |
+| 57 | ✓ | [`plugin/.pi/skills/chunking/SKILL.md`](plugin/.pi/skills/chunking/SKILL.md) |
+| 58 | ✓ | [`plugin/.pi/skills/extracting-keywords/SKILL.md`](plugin/.pi/skills/extracting-keywords/SKILL.md) |
+| 59 | ✓ | [`plugin/.pi/skills/extracting-tables/SKILL.md`](plugin/.pi/skills/extracting-tables/SKILL.md) |
+| 60 | ✓ | [`plugin/.pi/skills/extracting-with-ocr/SKILL.md`](plugin/.pi/skills/extracting-with-ocr/SKILL.md) |
+| 61 | ✓ | [`plugin/.pi/skills/picking-a-format/SKILL.md`](plugin/.pi/skills/picking-a-format/SKILL.md) |
+| 62 | ✓ | [`plugin/.pi/skills/xberg/SKILL.md`](plugin/.pi/skills/xberg/SKILL.md) |
+| 63 | ✓ | [`plugin/skills/batch-extraction/SKILL.md`](plugin/skills/batch-extraction/SKILL.md) |
+| 64 | ✓ | [`plugin/skills/chunking/SKILL.md`](plugin/skills/chunking/SKILL.md) |
+| 65 | ✓ | [`plugin/skills/extracting-keywords/SKILL.md`](plugin/skills/extracting-keywords/SKILL.md) |
+| 66 | ✓ | [`plugin/skills/extracting-tables/SKILL.md`](plugin/skills/extracting-tables/SKILL.md) |
+| 67 | ✓ | [`plugin/skills/extracting-with-ocr/SKILL.md`](plugin/skills/extracting-with-ocr/SKILL.md) |
+| 68 | ✓ | [`plugin/skills/picking-a-format/SKILL.md`](plugin/skills/picking-a-format/SKILL.md) |
+| 69 | ✓ | [`plugin/skills/xberg/SKILL.md`](plugin/skills/xberg/SKILL.md) |
 
 ---
 

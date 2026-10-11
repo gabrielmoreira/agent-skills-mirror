@@ -218,7 +218,7 @@ It needs Node.js LTS, git, Ruby (for YAML), jq (for the examples' smoke tests), 
 | `static-validation` | JSON, YAML, skill or agent frontmatter, a workflow script or a shell script does not parse or lint |
 | `inertness` | `examples/` holds a path Claude Code can load on its own, or a marketplace manifest not renamed to `dot-claude-plugin/`, or the repository root holds a `.claude-plugin/` folder |
 | `smoke-tests` | An example's `test.sh` fails (only when the change touches `examples/`) |
-| `tutor-quotes` | With `TUTOR_DIR` set to a practice template checkout's `.claude/skills/tutor` folder, or in the weekly run: a quote, the title, the Stamp, a linked anchor or a step count in a `/tutor` step script no longer matches its lesson. On a pull request that changes a lesson listed in `tutor.txt`, it only warns |
+| `lesson-quotes` | With `LEARN_DIR` set to a practice template checkout's `learn/lessons` folder, or in the weekly run: a quoted line, the title, the Stamp or a step count in a lesson file of the template's learning app no longer matches its lesson (a warm-up's quotes, the earlier lesson its `from` line names). On a pull request that changes a lesson listed in `learn.txt`, it only warns |
 
 Each rule has known-bad fixtures under `.github/scripts/fixtures/`, one folder per case: `fixture.json` names the rule and the expected result, `tree/` holds the files, `base/` the state before a change, and `generate.mjs` writes anything that would be live Claude Code config if committed. If you change a rule, run the self-test too:
 
@@ -235,7 +235,7 @@ Scheduled checks keep watch between editions. Each opens or updates one tracking
 | Weekly external links | Mondays | Broken external links |
 | Daily expiry markers | Daily | Expired facts in the guide |
 | Weekly version drift | Mondays | New Claude Code stable release |
-| Weekly tutor quotes | Mondays | Tutor quotes drifted from a lesson |
+| Weekly lesson quotes | Mondays | Lesson quotes drifted from a lesson |
 
 Every month, the maintainer:
 
@@ -286,11 +286,12 @@ Callouts are GitHub alerts, at most two per lesson, each with one meaning:
 - Diagrams are Mermaid, with `accTitle:` and `accDescr:` lines. The sentence before the diagram states its takeaway in words.
 - Terminal state that the docs give as text is shown as text in a code block, not as a screenshot.
 - A screen capture is allowed only when recognizing the real interface is the point and text cannot show it: at most three across the Beginner level. Each is taken in the practice template, cropped to the relevant interface (no startup banner, no Anthropic logo), scrubbed of personal paths, usernames, account emails, org names and tokens, given a 1px border, and captioned `Claude Code vX.Y.Z (stable), YYYY-MM-DD`.
+- README may also show up to three captures of the practice template's learning app, `npm run learn`, under the same rules, with the hero's text in a `<details>` block below it. Their visible captions carry no version or date, so the front page doesn't date itself: the `Claude Code vX.Y.Z (stable), YYYY-MM-DD` line goes in an HTML comment beside each image instead.
 - Every image has alt text that says what the reader should learn from it, not "screenshot" and not a repeat of the caption.
 - Text in a diagram or image reaches 4.5:1 contrast in GitHub's light and dark themes; other marks reach 3:1.
 - No third-party images (logos, icons, slides, product screenshots), no animation and no embedded video. The one exception is the Claude mascot, [`assets/brand/claude-jumping.svg`](assets/brand/claude-jumping.svg) (MIT, credited in README), which jumps beside README's title and appears on the social card in its own colors.
 - The `images` check enforces the alt text, the Mermaid lines, and the names, references and budget below.
-- New images go under `assets/`: `assets/brand/` for the guide's identity and `assets/lessons/<lesson-id>/` for captures. Names are kebab-case, and paths are explicit and relative. Budget: an SVG up to 50 KB, a capture up to 200 KB. Every image that is not a capture ships its editable source beside it. Hand-drawn SVG is for the guide's identity pieces only.
+- New images go under `assets/`: `assets/brand/` for the guide's identity, `assets/lessons/<lesson-id>/` for captures and `assets/readme/` for README's. Names are kebab-case, and paths are explicit and relative. Budget: an SVG up to 50 KB, a capture up to 200 KB. Every image that is not a capture ships its editable source beside it. Hand-drawn SVG is for the guide's identity pieces only.
 
 ### Headings
 

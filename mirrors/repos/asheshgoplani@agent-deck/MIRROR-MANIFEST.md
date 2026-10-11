@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `asheshgoplani/agent-deck` — 26 default patterns, 0 followed patterns, 68 file(s) materialized.
+Mirror of `asheshgoplani/agent-deck` — 26 default patterns, 0 followed patterns, 67 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `asheshgoplani/agent-deck` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 68 |
+| Files         | 67 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -121,12 +121,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 60 | ✓ | [`skills/fleet/SKILL.md`](skills/fleet/SKILL.md) |
 | 61 | ✓ | [`skills/session-share/evals/evals.json`](skills/session-share/evals/evals.json) |
 | 62 | ✓ | [`skills/session-share/evals/RUNNER.md`](skills/session-share/evals/RUNNER.md) |
-| 63 | ✓ | [`skills/session-share/scripts/.gitkeep`](skills/session-share/scripts/.gitkeep) |
-| 64 | ✓ | [`skills/session-share/scripts/export.sh`](skills/session-share/scripts/export.sh) |
-| 65 | ✓ | [`skills/session-share/scripts/import.sh`](skills/session-share/scripts/import.sh) |
-| 66 | ✓ | [`skills/session-share/scripts/utils.sh`](skills/session-share/scripts/utils.sh) |
-| 67 | ✓ | [`skills/session-share/SKILL.md`](skills/session-share/SKILL.md) |
-| 68 | ✓ | [`skills/session-share/tests/test_export_895_regression.sh`](skills/session-share/tests/test_export_895_regression.sh) |
+| 63 | ✓ | [`skills/session-share/scripts/export.sh`](skills/session-share/scripts/export.sh) |
+| 64 | ✓ | [`skills/session-share/scripts/import.sh`](skills/session-share/scripts/import.sh) |
+| 65 | ✓ | [`skills/session-share/scripts/utils.sh`](skills/session-share/scripts/utils.sh) |
+| 66 | ✓ | [`skills/session-share/SKILL.md`](skills/session-share/SKILL.md) |
+| 67 | ✓ | [`skills/session-share/tests/test_export_895_regression.sh`](skills/session-share/tests/test_export_895_regression.sh) |
 
 ---
 

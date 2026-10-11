@@ -88,6 +88,191 @@ entrypoint and include its verifier/fixture files in their cache inputs.
 
 ## End-to-end, integration and golden evidence
 
+The optional `verify:qwen-client`, `verify:pi-client`, and `verify:hermes-client`
+lanes require an installed native client. Select its executable with
+`REA_VERIFY_QWEN_COMMAND`, `REA_VERIFY_PI_COMMAND`, or `REA_VERIFY_HERMES_COMMAND`.
+They configure disposable profiles through the public REA CLI, preserve caller
+settings and backups, and exercise real stdio MCP calls and skill loading. The
+`call` mode checks complete catalog discovery and actual JavaScript Evidence;
+pass `-- chat` to check plain chat with REA enabled. Qwen also reads the full
+result that its client offloads, and Pi exercises default codemode execution.
+Use `REA_VERIFY_RUNTIME_ROOT` to select a production-only installed REA package.
+Receipts retain client versions, result digests, host coverage and owned-process
+cleanup. These POSIX lanes use a deterministic loopback model, so they do not
+prove live model-provider or native Windows compatibility. Qwen, Pi and Hermes
+bind both `HOME` and `USERPROFILE` to the disposable account. Qwen and Pi discover
+the shared personal skill through their default search paths without an explicit
+skill setting; Hermes discovers it through the selected `HERMES_HOME`.
+Set `REA_VERIFY_HERMES_STICKY_PROFILE=1` to exercise native Hermes selection of
+a named sticky profile with `HERMES_HOME` still pointing to its root.
+
+`verify:gemini-client` requires an installed Gemini CLI (verified with
+`@google/gemini-cli@0.63.0`); select it with `REA_VERIFY_GEMINI_COMMAND`.
+The optional POSIX lane uses native `GEMINI_CLI_HOME` discovery in an isolated
+Git project, checks setup plans, backups and idempotence, activates the installed
+personal skill, validates all forwarded input JSON Schemas against their declared
+dialect, forwards the complete REA catalog and checks full JavaScript
+Evidence for a Unicode path. Use `-- chat` for ordinary chat with REA enabled,
+or `REA_VERIFY_RUNTIME_ROOT` for a production-only installed REA package.
+The local fixture exercises the real Gemini API adapter, including its
+`untrusted_context` tool-result envelope. Token counts are synthetic; live
+Google API and native Windows compatibility remain unverified. The lane disables
+the client's memory-based relaunch to preserve the caller's Node heap budget.
+
+`verify:opencode-client` requires an installed OpenCode (verified with
+`opencode-ai@1.18.35`); select it with `REA_VERIFY_OPENCODE_COMMAND`.
+The optional POSIX lane configures isolated XDG roots and `OPENCODE_CONFIG_DIR`,
+checks setup plans, backups, preserved JSONC comments and idempotence, activates
+the installed skill, validates all forwarded input schemas and verifies complete
+JavaScript Evidence for a Unicode path. JSONC is the default fixture; set
+`REA_VERIFY_OPENCODE_CONFIG_FORMAT=json` for JSON. Use `-- chat` for ordinary
+chat or `REA_VERIFY_RUNTIME_ROOT` for a production-only installed package.
+The native core runs with external plugins disabled through `OPENCODE_PURE`;
+the local OpenAI-compatible fixture has a caller-declared one-million-token
+context and synthetic usage. Skills use an explicit isolated `skills.paths`
+directory, so default OS-home discovery remains unverified. Live model APIs and
+native Windows are also unverified.
+
+`verify:claude-client` requires installed Claude Code (verified with
+`@anthropic-ai/claude-code@2.1.296`); select it with `REA_VERIFY_CLAUDE_COMMAND`.
+The optional POSIX lane uses native `CLAUDE_CONFIG_DIR` discovery, an independent
+Git workspace, user settings and default built-in tools. It preserves caller
+preferences and backups, checks idempotent setup, waits through the native
+`WaitForMcpServers` tool when discovery is pending, and validates the complete
+catalog and forwarded input schemas. Call mode loads the personal skill through
+native `Skill`, checks its full body and verifies named-schema JavaScript Evidence
+for a Unicode path. Use `-- chat` for ordinary chat with REA enabled, or
+`REA_VERIFY_RUNTIME_ROOT` for a production-only installed package. The local
+Anthropic Messages/SSE fixture preserves native resource-hint envelopes in its
+request artifacts. Usage is synthetic; live Anthropic API, native Windows and
+bare-mode personal-skill activation remain unverified by this lane.
+
+`verify:copilot-client` requires installed GitHub Copilot CLI (verified with
+`@github/copilot@1.0.95`); select it with `REA_VERIFY_COPILOT_COMMAND`.
+The optional POSIX lane uses native `COPILOT_HOME` discovery, an independent
+Git workspace, guarded setup plans, preserved registrations, backups and
+idempotence. Native `skill add` registers the isolated installed skill; call
+mode loads its full body, validates all forwarded input schemas and checks
+named-schema JavaScript Evidence for a Unicode path. When Copilot spills a
+large MCP result, the model requests native `view` with `forceReadLargeFiles`
+and validates the complete returned Evidence rather than its preview.
+Use `-- chat` for ordinary
+chat or `REA_VERIFY_RUNTIME_ROOT` for a production-only installed package.
+The native offline BYOK adapter uses a loopback OpenAI completions/SSE fixture
+and `gpt-5.4` model metadata; model inference and token usage are synthetic.
+Set `REA_VERIFY_COPILOT_MODEL` to examine another client model ID and
+`REA_VERIFY_COPILOT_WIRE_MODEL` for its backend model name (defaults to the client
+ID). Every actual HTTP request's model is checked and recorded separately.
+Both `HOME` and `USERPROFILE` point to the disposable account; native `skill add`
+still selects the installed skill directory explicitly.
+
+The same native client passed full-profile chat and analysis with the actual
+wire model `gpt-4.1` under a distinct BYOK model ID:
+
+```bash
+REA_VERIFY_COPILOT_MODEL=rea-gpt-4.1 REA_VERIFY_COPILOT_WIRE_MODEL=gpt-4.1 npm run verify:copilot-client -- chat
+REA_VERIFY_COPILOT_MODEL=rea-gpt-4.1 REA_VERIFY_COPILOT_WIRE_MODEL=gpt-4.1 npm run verify:copilot-client -- call
+```
+
+These runs retain full canonical input/output schemas, all tools, installed-skill
+loading and complete Evidence readback. They use the fixture's requested
+one-million-token BYOK prompt setting; effective capacity and live API acceptance
+remain unknown. With the built-in `gpt-4.1` model ID, the verified client still
+blocks the full input-schema profile before HTTP with
+`compaction_static_context_blocked`, even when requesting a larger BYOK prompt
+capacity. The effective capacity is unknown. The default verifier preserves
+the complete catalog and full schemas. To verify the existing compact profile:
+
+```bash
+REA_VERIFY_COPILOT_MODEL=gpt-4.1 REA_VERIFY_COPILOT_SCHEMA_PROFILE=compact npm run verify:copilot-client -- chat
+REA_VERIFY_COPILOT_MODEL=gpt-4.1 REA_VERIFY_COPILOT_SCHEMA_PROFILE=compact npm run verify:copilot-client -- call
+```
+
+Both native workflows passed with the complete tool inventory. The verifier selects the
+profile only in its disposable Copilot registration and records it in the
+receipt. Compact advertisements can reduce nested validation structure; the
+server still validates complete canonical inputs. This is a tested alternate
+workflow, not a fix for the full-profile client/model limit tracked in #1554.
+Live model APIs, native Windows and default OS-home skill discovery remain
+unverified.
+
+`verify:grok-client` requires installed Grok Build (verified with the official
+Linux x64 1.0.50 binary); select it with `REA_VERIFY_GROK_COMMAND`. This optional
+POSIX lane isolates `GROK_HOME`, an independent Git workspace and additional
+skill roots, disables foreign configuration discovery, guards setup writes,
+preserves unrelated registrations/backups and checks idempotence. Call mode
+loads the full skill through native `read_file`, queries all REA names and input
+schemas through native `search_tool`, and calls analysis through `use_tool`.
+If discovery reports `partial`, the native agent diagnoses REA registration and
+retries discovery. No startup-timeout override or fixed readiness delay is used.
+A larger Unicode-path fixture exercises native result offloading: the full
+retained Evidence is validated against its named schema, then native terminal
+queries recover the selected export facts, subject and full artifact digest in
+the next model request. This verifies useful artifact recovery without claiming
+that every offloaded graph fact enters model context. Native line-number and
+truncation envelopes remain in the request artifacts. Use `-- chat` for ordinary
+chat, or `REA_VERIFY_RUNTIME_ROOT` for a production-only installed package.
+The loopback OpenAI completions/SSE custom model declares a one-million-token
+context and synthetic usage. Live xAI APIs, native Windows and default OS-home
+skill discovery remain unverified.
+
+`verify:commandcode-client` requires installed Command Code (verified with npm
+1.79.2); select it with `REA_VERIFY_COMMANDCODE_COMMAND`. Auth, MCP tokens and
+sessions use the actual OS home, so provision a disposable POSIX account rather
+than overriding `HOME`. Set `REA_VERIFY_COMMANDCODE_ACCOUNT_HOME` to that account's
+actual home and create `.rea-client-verification` there with exactly
+`Disposable REA client verification account` followed by a newline. The lane
+owns that account's `.commandcode` configuration and shared REA skill. Build the
+runtime as the checkout owner, then run `node scripts/verify-commandcode-client.mjs`
+as the disposable account; the npm shortcut also needs a writable checkout.
+The verifier does not create accounts or install clients. It guards setup
+targets, preserves an unrelated registration and backups, checks idempotence,
+and verifies native default shared-skill discovery and complete activation.
+Default deferred-schema delivery stays enabled: the native prompt advertises
+every REA tool, exact-name `search_tools` returns every input schema, and a native
+shell query recovers the saved catalog's count and digest when the client spills
+it. Actual analysis of a Unicode-path fixture delivers full named-schema Evidence
+to the next model request. Use `-- chat` for ordinary chat or
+`REA_VERIFY_RUNTIME_ROOT` for a production-only installed package. The loopback
+OpenAI completions/SSE model is a keyless BYOK endpoint declaring a million-token
+context with synthetic usage. A synthetic account-key value satisfies the
+client's print-mode gate; native local-only mode refuses hosted API calls.
+Updates, telemetry and cron are disabled. Hosted authentication, live models
+and Windows remain unverified.
+
+`verify:omp-client` requires installed OMP (verified with the official Linux x64
+18.8.7 binary); select it with `REA_VERIFY_OMP_COMMAND`. This optional POSIX lane
+isolates the default agent, global config and XDG roots, guards setup targets,
+preserves unrelated registrations and backups, and checks idempotence. It
+compares native rejection of an invalid profile with REA's refusal to plan
+fallback writes. OMP's default `xd://` interface mounts the complete REA catalog
+as devices: call mode reads the complete installed skill and tool documentation,
+then dispatches analysis through native `write`. It checks full named-schema
+JavaScript Evidence with a Unicode path in the next model request. Device
+metadata and documentation are distinct from forwarding all JSON schemas as
+model functions. Native print-mode MCP readiness uses its defaults.
+Use `-- chat` for ordinary chat or `REA_VERIFY_RUNTIME_ROOT` for a production-only
+installed package. The loopback OpenAI completions/SSE model fixture declares a
+one-million-token context and synthetic usage. Live model APIs, native Windows,
+named-profile native execution and default OS-home skill discovery are
+unverified; skill discovery uses an explicit isolated custom directory.
+
+`verify:deepseek-client` requires an installed DeepSeek Harness (`dsh`;
+verified with `@deepseek-ai/dsh@0.2.0-rc.2`) and Git. Set
+`REA_VERIFY_DEEPSEEK_COMMAND` to select its executable. This optional POSIX lane
+installs the skill through `rea setup --skill`, writes the native Cordis MCP
+patch into an isolated `DSH_HOME`, and binds `HOME` and `USERPROFILE` to the
+disposable account. The native default `~/.agents/skills` search path discovers
+the installed skill without a `DSH_AGENTS_HOME` override. A separate Git root prevents inherited project skills from
+masking a missing installation. The default `call` mode checks skill loading,
+complete catalog discovery, the actual forwarded input schemas and regexes,
+and full JavaScript Evidence for a Unicode path. Use `-- chat` for ordinary
+chat with REA enabled, or `REA_VERIFY_RUNTIME_ROOT` for an installed package.
+The fixture uses Harness's custom OpenAI adapter and the one-million-token
+context capacity declared by its default DeepSeek Flash model; it does not
+establish live DeepSeek API or native Windows coverage. Receipts include
+request artifacts, result digests and owned-process lineage.
+
 Full E2E tests invoke the production command dispatcher and real providers,
 without fake launchers, runners or responses. `verify:keyed-archive` writes an
 actual Foundation binary archive, runs the CLI and a separate stdio MCP
@@ -206,6 +391,12 @@ regressions until a real fixture establishes equivalent coverage.
 
 `verify:browser` exercises source-map failure isolation and expanded-output limits through the compiled CLI and stdio MCP with real Chrome. It also submits five 2 MiB source-map annotations, checks retained script identities and explicit map omissions, and closes its owned fixture target. Replacement and document-reset behavior has separate producer-boundary coverage.
 
+The raw Chrome fixture launchers use `--password-store=basic` so Linux startup
+does not wait for an unlock prompt from a reachable but locked desktop keyring.
+Such a stall leaves the initial page unloaded with empty or placeholder CDP URLs;
+it does not establish permission to capture that page. See
+[the keyring diagnosis](https://github.com/morluto/rea/issues/1384#issuecomment-6093781686).
+
 `verify:browser` also captures a source-owned noise canvas as a real PNG above
 8 MiB through the CLI and stdio MCP, with complete byte/digest parity and real PNG
 decoding. Its SDK client explicitly permits the larger inline JSON response;
@@ -259,14 +450,15 @@ installation (`application.java.min` through `application.java.max`). Current
 12.1 releases require JDK 21 or newer and set no maximum. The lanes below still
 prove behavior on the verified Ghidra 12.1.4 and JDK 21 build.
 
-| Ghidra lane                                | Supported runner/target                                                            | Additional local tools                                              |
-| ------------------------------------------ | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `npm run verify:ghidra`                    | Linux x64/arm64 ELF or macOS x64/arm64 Mach-O                                      | Host C compiler, Ghidra 12.1.4, and full JDK 21                     |
-| `npm run verify:ghidra:swift`              | macOS x64/arm64 Mach-O                                                             | Host Swift compiler, Ghidra 12.1.4, and full JDK 21                 |
-| `npm run verify:ghidra:switch`             | Linux x64 ELF; GCC/Clang optimized and stripped switch fixtures                    | GCC, Clang, GNU nm/objdump/strip, Ghidra 12.1.4, and full JDK 21    |
-| `npm run verify:ghidra:aarch64-jump-table` | Any supported Ghidra host; AArch64 ELF; byte/halfword tables; host ARM64 Mach-O    | Clang with AArch64 target support, Ghidra 12.1.4, and full JDK 21   |
-| `npm run verify:ghidra:cross-format`       | Any supported Ghidra host; also analyzes AArch64 ELF, x86-64 PE, and x86-64 Mach-O | `clang`, LLD, and `lld-link` in addition to host-lane prerequisites |
-| `npm run verify:ghidra:windows`            | Controlled Windows x64 with native x86-64 PE; `-- --x86` selects native x86 PE     | Ghidra 12.1.4, full JDK 21, and the matching native artifact        |
+| Ghidra lane                                | Supported runner/target                                                                         | Additional local tools                                              |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `npm run verify:ghidra`                    | Linux x64/arm64 ELF or macOS x64/arm64 Mach-O                                                   | Host C compiler, Ghidra 12.1.4, and full JDK 21                     |
+| `npm run verify:ghidra:seeds`              | POSIX host; source-owned 32-bit x86 raw fixture; function order and BSS labels                  | Ghidra 12.1.4 and full JDK 21                                       |
+| `npm run verify:ghidra:swift`              | macOS x64/arm64 Mach-O                                                                          | Host Swift compiler, Ghidra 12.1.4, and full JDK 21                 |
+| `npm run verify:ghidra:switch`             | Linux x64 ELF; GCC/Clang optimized and stripped switch fixtures                                 | GCC, Clang, GNU nm/objdump/strip, Ghidra 12.1.4, and full JDK 21    |
+| `npm run verify:ghidra:aarch64-jump-table` | Any supported Ghidra host; AArch64 ELF; signed/unsigned byte/halfword tables; host ARM64 Mach-O | Clang with AArch64 target support, Ghidra 12.1.4, and full JDK 21   |
+| `npm run verify:ghidra:cross-format`       | Any supported Ghidra host; also analyzes AArch64 ELF, x86-64 PE, and x86-64 Mach-O              | `clang`, LLD, and `lld-link` in addition to host-lane prerequisites |
+| `npm run verify:ghidra:windows`            | Controlled Windows x64 with native x86-64 PE; `-- --x86` selects native x86 PE                  | Ghidra 12.1.4, full JDK 21, and the matching native artifact        |
 
 The optional Swift lane compiles a source-owned fixture and checks modern and
 provider-demangled procedure names through real stdio MCP, with and without the
@@ -405,6 +597,25 @@ kept under ignored `_reference/`. No Gradle build, Android SDK, emulator or
 application execution is required. The lane compares real CLI/MCP package,
 class search, class inventory, method decompilation and incoming references.
 See [Android analysis](android-analysis.md) for boundaries and resource budgets.
+
+`verify:jeb` requires a caller-started JEB client serving MCP at
+`REA_JEB_MCP_URL` (default `http://127.0.0.1:8425/mcp`) with a project
+already open, and verifies real CLI client inspection, unit listing coverage,
+and method decompilation. The script records the engine's exact response to
+`open_jeb_project`; JEB 5.48.0 headless instances do not advertise that tool.
+REA does not install or launch JEB; see [JEB analysis](jeb-analysis.md) for
+the bring-your-own boundary. Verified against JEB 5.48.0 serving
+`jeb-mcp-server` 1.3.0 at four scales: a compiled Java class fixture, a
+locally built signed probe APK with a launcher activity (manifest, v1/v2/v3
+certificates, dex bytecode, filtered and paginated listing), the published
+Signal 8.30.3 universal release APK (109 MB, R8-processed Kotlin/Compose,
+four signature schemes, native arm64 ELF units) with MainActivity method
+decompilation through both CLI and MCP, and the official Flutter Gallery
+2.9.2 release APK (112 MB): per-ABI `libapp.so` Dart AOT snapshot images
+analyzed as native code (75k methods on arm64) and decompiled through both
+CLI and MCP with explicit unit selection, plus the thin Java wrapper and
+decoded manifest. The dedicated Dart snapshot processor and `run_script`
+remain GUI-only surfaces in JEB 5.48.0 headless.
 Authenticated IPA and macOS application inventory projection is documented in
 [Apple application analysis](apple-application-analysis.md).
 
@@ -414,7 +625,59 @@ Synthetic producer regressions run independently:
 npm run test:focused -- tests/boundary/process/jadxIntegration.test.ts tests/boundary/process/androidAnalysisMcp.test.ts
 ```
 
+## Apktool resource decoding
+
+`npm run verify:apktool -- --apk PATH` exercises both Apktool operations
+against a real launcher (`REA_APKTOOL_COMMAND` or PATH) and one APK. No
+download or build step is involved. Record: apktool 2.7.0-dirty (Debian
+packaging) on Linux with OpenJDK 25, against a signed aapt2-built probe APK
+carrying two resource locales — launcher version, on-disk digest agreement
+with the reported target identity, apktool.yml metadata projection
+(1.2.3, SDK 24–34), manifest package agreement, and both the default and
+`de` string tables projected through the locale option. Parser goldens in
+`src/apktool/ApktoolDecodeOutput.test.ts` come from the same decode. See
+[Apktool resource analysis](apktool-resource-analysis.md) for boundaries and
+budgets.
+
+## ADB device acquisition
+
+`npm run verify:adb` exercises every ADB operation against a live device or
+emulator through the caller's adb binary (`REA_ADB_PATH` or PATH). No SDK
+installation or emulator management is involved; the device-mutating tools
+run only in the explicit lifecycle section (`--install-apk` drives a
+lane-owned install → resolve → start → observe → force-stop → uninstall
+probe). `--pull` acquires a real package and re-digests the pulled files on
+disk against the returned SHA-256 values; `--serial` selects a device when
+several are attached.
+
+Record: adb 34.0.5-debian on Linux against an Android 14 (API 34) x86_64
+emulator. The lane covered the complete observation surface — 337-process
+listing, 287 binder services including AIDL `/`-suffixed names, 92 features
+including hex GL versions, display size/density, window focus (legitimately
+null on headless devices), `settings get global adb_enabled`, bounded
+logcat, directory listings — plus a real two-APK split set
+(`base.apk` plus `split_probe.apk`, built and installed through
+`install-multiple`) pulled with byte-exact digests, a push/pull roundtrip
+verified by the device's own sha256sum, a 1.3 MB screen capture with PNG
+dimensions, `dumpsys package` projection, and the full lifecycle: unique
+resolution before launch, launcher-activity start through
+`cmd package resolve-activity` with `am start -W`, the started app visible
+in the process listing, force-stop, uninstall, and zero matches after
+removal. System-package pulls whose APKs keep non-`base.apk` names report
+the `unknown` role with the file-name basis, verified with
+`com.android.settings` (single 73.9 MB APK). Parser goldens for
+`adb devices -l`, `getprop`, `pm list packages -f`, and `pm path` come from
+the same device. See [ADB device analysis](adb-device-analysis.md) for
+boundaries and budgets.
+
 ## Optional NativeAOT Ghidra analysis
+
+The source parser lane is independent of the optional annotation JAR. Its
+synthetic RTR 9.1 PE golden checks captured-byte digest admission, rehydration
+into an immutable parser overlay, MethodTable/slot relationships, and frozen
+literal extraction; provider tests exercise `inspect_native_load_image` and
+address-based `inspect_native_data_type` with the database result still
+unavailable. These tests do not establish Windows Ghidra host behavior.
 
 This lane is separate from the default native lane. `build:fixtures:nativeaot`
 requires an existing .NET SDK 8.0.416, the platform NativeAOT compiler/linker and
@@ -516,12 +779,37 @@ Pull requests that change only root `README*.md` files, `docs/`, `AGENTS.md`,
 or `CONTRIBUTING.md` run formatting and generated-document validation without
 the source-test shards or native package lanes. Classification compares the PR
 head with its merge base, so later base-branch changes do not expand that scope.
-The required static and coverage aggregate jobs remain present and fail if
-classification fails. Mixed changes, unknown paths and CI configuration changes
-retain full checks. Main pushes retain the full baseline, including after
-documentation merges; newer commits cancel superseded CI for the same PR or
-main branch. Release publication has its own concurrency group and retains its
-package verification and public-registry canary.
+Static and coverage aggregate jobs remain present and fail if classification
+fails. Every code change retains the complete four-shard Linux suite; individual
+test files are not selected by imports or filenames.
+
+`scripts/ci/plan.mjs` selects lanes using the ownership table in
+`scripts/ci/scopes.mjs`. Provider implementation changes run their real-provider
+verifiers and the Linux x64 installed-package/Inspector baseline. Test-only
+changes run the Linux suite without native package verification. Website changes
+run website checks. Provider workflow changes validate the workflow and run that provider's verifier.
+Manual-provider/Android workflow changes run workflow validation only.
+Shared process/contract/CLI boundaries, dependencies, packaging inputs, unknown
+paths, and changes to the planner select the full baseline. Package script-only
+edits select their owning verifier when its entrypoint is identifiable; unknown
+or shared script changes select everything. Android build-script edits retain
+the Linux suite and workflow validation; real Android verification stays manual.
+Renames account for both paths.
+
+Main pushes and manual dispatch retain the full baseline, including all portable
+provider lanes and the native matrix below. A `ci:full` PR label selects the full
+baseline on the next PR run; manual dispatch can request it immediately. Each
+classification job records its selection and broad-fallback reasons in the run
+summary. Representative Git-diff cases live in
+`tests/boundary/filesystem/ciChangeScope.test.ts`.
+
+`CI required` checks classification and every selected lane, rejecting failed,
+cancelled, or unexpectedly skipped work. Existing required check names are
+preserved; changing branch protection to require the new aggregate is a separate
+repository-settings operation. Newer commits cancel superseded CI for the same
+PR or main branch. Release publication has its own concurrency group and retains
+its package verification and public-registry canary. Licensed/self-hosted
+provider workflows and the Android smoke test retain their explicit triggers.
 
 CI exercises the pinned Node.js runtime on native hosted runners:
 
@@ -545,6 +833,35 @@ These native baseline checks complement the Linux source-test shards and the
 separate Apple-artifact and real-provider lanes. Actual Hopper, Ghidra, IDA,
 browser and managed-tool claims require their corresponding verification lanes.
 Runner labels follow the [GitHub hosted-runner reference](https://docs.github.com/en/actions/reference/runners/github-hosted-runners).
+
+### Termux Android browser smoke test
+
+The **Real Termux browser verification** workflow is manual-only while its
+emulator setup is being validated. After the workflow reaches the default
+branch, select a revision under **Actions → Real Termux browser verification →
+Run workflow**. It boots an Android 11 (API 30) x86_64 emulator, installs the
+checksum-verified Termux 0.118.3 APK, and lets the app initialize its bootstrap.
+The host stages the selected revision using `git archive HEAD`; no workstation
+build outputs or dependencies are copied into Android.
+
+`scripts/verify/termux/emulator.sh` sends a `RUN_COMMAND` intent to Termux's app
+service. Root access is limited to staging files, sending the intent, and reading
+diagnostics; installation, compilation, Node, and Chromium run as Termux's app
+UID. The in-app script installs Termux's Android-linked Node distribution,
+checks its version against `.nvmrc`, pins npm from `packageManager`, runs
+`npm ci`, and builds with `build:termux`. Termux repository packages, including
+Chromium, are resolved at run time; their installed versions are logged.
+
+The verifier leaves Playwright's cache environment overrides unset, requires
+a healthy public MCP doctor result, and captures URL plus DOM from a loopback
+HTTP fixture through `capture-browser-scenario`. It checks completed steps,
+the exact URL, a DOM marker, and reported browser cleanup. This lane covers one
+Android emulator and Termux combination, not physical ARM devices, Electron,
+or the complete desktop browser suite. A workflow definition alone does not
+establish passing Android coverage; inspect its execution receipt.
+
+The `termux-browser-diagnostics` artifact retains the Termux command log, exit
+status, and Android logcat on success or failure. The emulator is disposable.
 
 ## Developer commands
 
@@ -714,12 +1031,14 @@ Neither optional toolchain is a base-lane prerequisite. See
 
 Build once with `npm run build:cached`, then run `npm run verify:javascript:recovery`.
 This focused lane requires Linux x64, util-linux `prlimit`,
-`REA_WAKARU_COMMAND` pointing to the official Wakaru 1.13.0 Linux x64 binary,
+`REA_WAKARU_COMMAND` pointing to the official Wakaru 1.14.0 Linux x64 binary,
 and `REA_JAVASCRIPT_FIXTURE_TOOLS` pointing to an isolated npm prefix containing
 esbuild 0.25.10 and webpack 5.101.3. No global installation is required.
 The lane compiles source-owned fixtures, exercises CLI and stdio MCP, verifies
 published bytes and provenance, feeds recovered modules into existing analysis,
-and compares a finite set of known fixture results. It does not establish
+and compares a finite set of known fixture results. The provider also accepts
+other ^1.13.0 releases and reports them as unverified; this lane proves the
+audited release. It does not establish
 arbitrary recovered-application equivalence. CI installs these prerequisites only
 in `.github/workflows/real-javascript-recovery.yml`; the existing `real-browser`
 lane uses real Chrome for browser capture and website workflows.
@@ -832,6 +1151,39 @@ real local Codex CLI with:
 npm run verify:agent
 ```
 
+The lane runs scenarios sequentially in standalone Codex (`--no-daemon`) with a
+disposable HOME and CODEX_HOME under `~/.cache/rea-agent-evaluations/`. Set
+`REA_AGENT_EVAL_ROOT` to choose another parent directory outside the OS temporary
+directory: current Codex refuses helper aliases under `/tmp`, preventing shell
+commands and skill reads even if MCP works. Each owned run directory is removed
+after verification unless fixture retention is requested. The lane
+installs the packaged skill and MCP registration through public `rea setup`,
+rather than copying a skill into a project that also inherits the caller's
+skills and configuration. Only authentication is copied, when present, and it
+is removed even with `REA_AGENT_EVAL_KEEP_FIXTURES=true`. No user configuration,
+rules, plugins or history is copied; shell snapshots and additional agents are
+disabled. Existing API-key environment authentication remains available.
+The native missing-provider scenario preapproves only `open_binary` and
+`close_binary` in the disposable client so it reaches REA's actual provider
+boundary instead of stopping at Codex approval. This does not validate a real
+native engine or authorize arbitrary runtime execution.
+
+Select a smaller run with `REA_AGENT_EVAL_SCENARIOS`, a comma-separated list of
+scenario IDs. `asar-zh` exercises the packaged desktop rubric from a Chinese
+request. `javascript-module-view` exercises summary analysis, module paging and
+item inspection in a tree with unrelated modules; its routing and text checks
+remain heuristic, so review the retained transcript for selector choice and
+coverage claims. Set `REA_CODEX_CLI` to an installed Codex executable and
+`REA_AGENT_EVAL_MODEL` to an account-supported model. Use an external resource
+limit for the whole process tree when testing on a constrained host; a Node
+heap limit alone does not bound client and child-process memory.
+
+`missing-target` leaves desktop fixtures visible without selecting one in the
+request. It requires zero REA calls and a structured request for an app name or
+artifact path. Its `expectedFirstTool` is `null`, and
+`targetClarificationPassed` grades that limited routing outcome independently
+of analysis prose heuristics. Analyzing a nearby example cannot pass this case.
+
 The packaged desktop and parser-comparison scenarios now assess a closed set of
 known fixture claims. Each final answer must be a strict JSON manifest containing
 exactly the requested claim IDs, values, Evidence IDs, and Evidence authority and
@@ -856,9 +1208,21 @@ navigation-context, and address-context scenarios have no factual rubric and
 remain `not_assessed`; the managed workflow requires both artifact and member
 inspection to answer its type and entry-point question.
 
+The closed factual scenarios request complete producer Evidence on the initial
+analysis so their source selectors can authenticate all configured facts.
+Summary/page/item workflows are exercised separately by `javascript-module-view`;
+its heuristic gate does not establish full-producer factual correctness.
+
 All scenarios retain routing, workflow, validation, repetition, process-exit,
 and token-use gates. Configured factual scenarios additionally require a factual
 pass. Their answer-text heuristics are diagnostic and do not affect the gate.
+Validation counts include complete text-only REA `invalid_request` envelopes
+and failed SDK calls whose arguments violate the named current REA contract.
+Client approval rejections and provider unavailability remain distinct failures;
+truncated JSON previews are not parsed into invented error codes.
+Repeated `binary_session` observations separated by a successful `open_binary`
+or `close_binary` are treated as lifecycle verification. An unchanged retry,
+including one after a failed lifecycle call, still counts as repetition.
 Scenarios without a rubric retain the legacy text-heuristic gate.
 `answerTermCoverageMet` checks case-insensitive substrings,
 `epistemicCuePresent` checks keywords, and `finalCitesEvidence` checks only an ID's
@@ -866,7 +1230,11 @@ presence. These metrics can still accept fabricated prose and must not be read
 as factual assessments. Set `REA_AGENT_EVAL_TRANSCRIPT_DIR` to retain complete
 tool results and final answers for review.
 
-Report schema version 3 changes the top-level `factualCorrectness` from a constant
+Report schema version 4 adds negative routing scenarios with nullable
+`expectedFirstTool` and a `targetClarificationPassed` outcome. Consumers must
+allow an expected absence of REA calls; this does not make an analysis scenario
+pass without its required tools. Version 3 changed the top-level
+`factualCorrectness` from a constant
 string to an assessment summary with status, scope, and assessed/passed/failed/
 not-assessed scenario counts. Scenario records include the factual assessment and
 configured claim IDs. The evaluation scope is

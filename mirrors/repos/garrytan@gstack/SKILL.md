@@ -105,7 +105,7 @@ The user has context you do not. Cross-model agreement is a recommendation, not 
 ## Completion Status Protocol
 
 When completing a skill workflow, report status using one of:
-- **DONE** — completed with evidence.
+- **DONE** — completed with evidence valid for the final consumed inputs; name reuse and anything not independently verified.
 - **DONE_WITH_CONCERNS** — completed, but list concerns.
 - **BLOCKED** — cannot proceed; state blocker and what was tried.
 - **NEEDS_CONTEXT** — missing info; state exactly what is needed.
@@ -226,6 +226,7 @@ Generic “second opinion”, “outside review”, or “cross-model review” 
 - User asks to share the browser with another agent, "pair OpenClaw/Codex with my browser" → invoke `/pair-agent` (fallback browser)
 - User asks to codify or save the last `/scrape` as a reusable skill → invoke `/skillify` (fallback browser)
 - User asks about page speed, web performance regression → invoke `/benchmark`; model or skill benchmarks → invoke `/benchmark-models`
+- User asks to plan, preregister, price or pilot a paid eval → invoke `/eval-plan`
 - User asks what gstack has learned, "show learnings" → invoke `/learn`
 - User asks to tune question sensitivity, "stop asking me that" → invoke `/plan-tune`
 - User asks for code quality dashboard, "health check" → invoke `/health`

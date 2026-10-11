@@ -79,7 +79,7 @@ record which generic mechanics its verification protocol replaces.
 |---|---|
 | Current conversation or ordinary skill creation/editing | Read [Capture Intent](references/authoring-and-reuse.md#capture-intent) when inputs or intended behavior remain unresolved, then only the authoring sections needed by the actual draft; reuse already resolved intent/evidence for bounded corrections. Extract verified knowledge into references and needed parameterized helpers into scripts, after checking existing owners |
 | Actual third-party installation/debugging work being distilled | [Wrapper workflow](workflows/wrapper-skill/workflow.md); verify installation state rather than force incompatible file assertions |
-| Explicitly approved earlier local sessions, with known session/time/scope boundaries | [Conversation mining](workflows/conversation-mining/workflow.md); finish deterministic manifest → discover → redact → chunk before agents see content; hand them only redacted chunks |
+| Explicitly approved earlier local sessions, with known session/time/scope boundaries | [Conversation mining](workflows/conversation-mining/workflow.md); retrieve through the owning index and exact reader, then use manifest → discover → redact → chunk for selected corpus distillation. For cross-task improvement, load its matched-case route before selecting changes; agents receive only prepared, redacted evidence |
 | User-endorsed finished artifacts used to extract preferences | [Artifact corpus distillation](workflows/artifact-corpus-distillation/workflow.md); extract evidence-backed decision rules, not merely a sample catalog |
 | Authorized old/new or no-skill comparison | [Paired evaluation](references/paired-evaluation.md) and [schemas](references/eval_pipeline_schemas.md); use the original immutable old skill for existing-skill comparisons |
 | Real missed/misfired trigger requiring description tuning | [Description triggering](references/description-triggering.md); first verify a working probe, inspect every skill call, and distinguish invocation from output correctness |
@@ -176,6 +176,9 @@ evals or an unreachable reference is a gap. Regenerate stale reviews after edits
 Inspect changed prose pointers and adjacent rule clauses with the migration
 guide's reference/self-application procedure; text survival alone does not prove
 the section's behavior survived.
+Finish this edit only after the
+[static preservation and required task-result gates](references/change-verification.md#fix-required-acceptance-before-selecting-evidence)
+both clear.
 
 Validate each entry edit immediately:
 
@@ -197,6 +200,11 @@ cover every clause and examined-item count. False green, false alarms and vacuou
 checks require different probes. Deterministic criteria use code; subjective
 outputs use appropriately calibrated independent/human judgment. Read actual
 outputs and traces before trusting a benchmark or reviewer finding.
+
+Validate aggregate and standalone viewer grades through the shared
+[grading validator](scripts/grading_validation.py). Bind populated canonical
+eval-directory assertions by original text and multiplicity; keep missing or
+empty targets explicitly unbound for legacy/preparation observations.
 
 Before shipping a new skill or a changed rule/contract/number, follow
 [independent review](references/independent-review-protocol.md). Freeze the exact

@@ -227,8 +227,7 @@ from status and Dashboard surfaces. Publishing does not install or enable the
 extension, activate or replace a Finance method, spend LoopX quota, consume a
 learning queue, create a trade, or place an order.
 
-Render the exact published-view semantics for an authorized Lark delivery
-without sending anything:
+Prepare a card from a research input without publishing or sending it:
 
 ```bash
 loopx-finance-value-discovery render-lark-card \
@@ -243,6 +242,33 @@ a separate readiness rule. 中文：该命令只生成卡片、不发消息；�
 `loopx extension disable loopx-finance-value-discovery --execute`；若只回退
 期次指标，删除可选字段并重新发布旧 view 即可。
 
+For an already published result, use the extension state file selected for
+that runtime (by default `~/.loopx/extensions/state.json`, or
+`<runtime-root>/extensions/state.json` with a custom runtime root) and the exact
+revision/hash reference from the Goal's result index:
+
+```bash
+loopx-finance-value-discovery render-lark-card \
+  --published-state-file extensions-state.json \
+  --goal-id example-goal \
+  --extension-revision EXACT_REVISION \
+  --payload-sha256 EXACT_PAYLOAD_SHA256
+```
+
+This reads through Core's existing projection reader, verifies the requested
+Goal, and includes the original source/version, publication and review dates,
+supersedes references, revision and payload digest. It does not rebuild the
+research, renew its review deadline or fall back to an input on failure. Wrong
+hashes, old revisions, another Goal, missing publication and disabled extensions
+fail before a card is returned. A missing review date stays `unknown`.
+`--surface-id` can select another declared Finance surface; the default is
+`investment-research`. The input and publication-reference modes are exclusive.
+
+中文：已发布成果使用原生状态文件与精确版本/摘要引用，卡片保留原 Goal、来源版本、
+复核期限和摘要；错误、停用或缺失时拒绝，不重建旧稿或延长时效。生成卡片仍不代表
+外部送达、读者采用或交易授权。旧 `--input-json` 入口继续兼容；停用仍用既有
+extension disable，回退用既有 `loopx extension rollback` 选择已保留版本。
+
 The Goal's **Files & Outputs** tab loads the published research only when
 opened. Chat and `serve-status` expose the same extension index and exact
 revision/hash readback. Only a public-safe view belonging to that Goal is
@@ -254,9 +280,12 @@ clocks, exact metric strings, counterevidence, event review conditions and
 artifact references, even when no source-period metrics exist. It rejects a
 research card exceeding 18,000 UTF-8 bytes rather than silently cutting its
 review basis. The existing source-period-only Python renderer remains available.
-For an exact published receipt, render its Core-validated `view` with
-`build_decision_research_lark_card`; rebuilding an input is not publication
-readback, and preparing a card is not sending or adopting a method.
+For an exact published receipt, use
+`build_published_decision_research_lark_card` or the publication-reference CLI
+above. `build_decision_research_lark_card(view)` remains a view-only renderer;
+rebuilding an input is not publication readback, and preparing a card is not
+sending or adopting a method. The same no-truncation limit includes the
+publication reference as well as the research text.
 
 中文：Goal 的“成果”页按需读取已发布的研究，绑定当前 Goal、扩展版本和内容摘要；
 读取失败或停用时清除旧内容。通知卡保留研究结论、反证、未知、原始时点和下一步，
@@ -303,6 +332,44 @@ encodes that method as an illustrative historical packet. It is not a current
 view on PayPal or any control company.
 
 ## Install And Run
+
+### Cumulative flow difference (candidate 0.8.11)
+
+To derive a tail flow, provide a cumulative total and its prefix. The new
+`assess-period-difference` operation requires the same subject, metric, unit and
+economic role, source-bound finite duration contexts with a common absolute
+start, an earlier prefix end, compatible filing versions, and producer-declared
+exact accuracy on both amounts. The synthetic example derives 95 − 60 = 35
+over July through September. It checks declarations, never source truth or PIT.
+
+```bash
+loopx-finance-value-discovery assess-period-difference \
+  --input-json packages/loopx-finance-value-discovery/examples/flow-difference-v1.json
+loopx extension run loopx-finance-value-discovery \
+  --input-json packages/loopx-finance-value-discovery/examples/flow-difference-v1.json \
+  --execute --format json
+```
+
+Both direct and schema-selected stdin use the same
+[Finance contract](CONTRACT.md#cumulative-flow-difference-extension-0811).
+Missing period/version/accuracy evidence keeps `derived_value` and
+`derived_period` null; a conditional `candidate_lexical_difference` remains a
+diagnostic. Missing amounts never become zero. Stocks, averages and ratios are
+refused even if their naive difference happens to match a desired result.
+Finite accuracy propagation, duration-weighted averages and EPS semantics are
+outside this v1. App/Lark result interaction and source-provider adoption remain
+companion work; this CLI/provider prerequisite is partial product delivery.
+
+Use the install/enable and disable commands below for explicit opt-in and
+restoration. To roll back, reinstall the prior pinned wheel and upgrade the
+runtime registration to its matching manifest. 0.8.10 rejects this new schema;
+existing period v1/v2, cash reconciliation and reducer inputs keep their routes.
+No default registration, account access, financial permission or trade changes.
+
+0.8.11 候选新增累计流量减前缀：只有同主体／指标／单位、共有绝对起点、
+兼容来源版本与已声明精确值齐备时，才输出尾段期间值。缺证继续保留 null，
+条件差额只作诊断；存量、平均量与比率不套用此算法。有限精度传播、时间加权、
+EPS、来源有效性／PIT 和 App/Lark 交互仍待对应 owner 验收。
 
 ### Disclosure and presentation basis (candidate 0.8.6)
 

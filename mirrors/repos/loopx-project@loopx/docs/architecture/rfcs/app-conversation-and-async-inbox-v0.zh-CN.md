@@ -90,6 +90,12 @@ Core、HTTP、provider 读回及原生协议 fixture 验证上述边界，属于
 模型认证与真实调试群旅程通过后，才能接入两个正式开发群。公开来源读取另需完成其
 限定范围工具的验收；本改动不启用无限制网络或个人浏览器。
 
+`workspace_only` 会话新建与恢复时均关闭原生 Apps connector 和继承的 MCP。
+宿主显式设置 `LOOPX_CHAT_PUBLIC_SOURCE_READ=on` 后，仅允许匿名
+`read_public_url` / `read_public_image`，并为这两项工具设置原生批准规则；其他 MCP
+工具仍不可用。关闭该开关会移除公开 reader，隔离会话的 Apps 仍保持关闭。
+普通 `host_default` 会话保留账号原有配置。
+
 已有项目原生登录继续使用其选定账号；否则，可信宿主的原生文件式 ChatGPT 认证
 可通过 Codex 实验性 `chatgptAuthTokens` 接口，仅在私有 stdio 中提供 access token
 和账号标识。短期认证保留在进程内存，不写入项目存储、模型上下文、工具环境或命令行。
@@ -318,6 +324,11 @@ CLI/SSH 导出使用 `goal-portfolio --manager-view todos --goal-id GOAL --todo-
   持续计算的证明。切换视图保留起始时间；恢复时使用已记录的回合时间，未知则不编造。
 - 工具和阶段记录可展开，只显示上游报告的信息，不模拟阶段或暴露隐藏推理。
   一段时间没有新事件时明确说明仍在等待，不推断失败，也不靠动画假装有进展。
+- 可见答案只生成一次，随后附加完整隐藏 review envelope，`message: ""` 表示
+  复用前面的 Markdown，仍经过相同脱敏与 typed 元数据归一化。旧的非空 message
+  保持优先；缺失或 null 不启用该约定。Codex 采用完成的最终答案 item，排除之前
+  的 commentary。信封不完整或格式错误时仍丢弃动作元数据。减少重复生成不代表
+  端到端回复时延已经达标。
 - 提交前只能取消准备，并说明请求尚未提交；接收后复用精确回合的纠偏与中断。
   停止观察不等于停止执行器。总览回执和完整对话提供相同的操作。
 - Codex provider 通过原生 `turn/steer` 发送纠偏本身，保留多行文本和精确的

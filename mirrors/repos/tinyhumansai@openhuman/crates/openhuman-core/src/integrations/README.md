@@ -3,11 +3,11 @@
 This domain is how the core reaches third-party services through the
 OpenHuman backend. It owns `IntegrationClient`, the one HTTP client every
 backend-proxied integration uses for `/agent-integrations/*`, a small family
-of managed agent tools built on it (Google Places, stock and market data,
-Twilio calls), and three child sub-domains: Composio connectors, task sources,
+of managed agent tools built on it (Google Places, stock and market data),
+and three child sub-domains: Composio connectors, task sources,
 and managed file storage. Callers are the tool registry in [`tools/ops.rs`](../tools/ops.rs), the
 controller registry in [`core/all.rs`](../core/all.rs), and a few other domains (`web3`,
-[`modules/connectors.rs`](../modules/connectors.rs), [`tools/schemas/apify.rs`](../tools/schemas/apify.rs)) that borrow the client.
+[`modules/connectors.rs`](../modules/connectors.rs)) that borrow the client.
 
 Most integrations never see a provider API key. The backend holds the keys,
 bills each call, applies rate limits and markup, and returns a
@@ -168,7 +168,6 @@ in BYO mode):
 | --- | --- | --- |
 | `google_places` | `google_places_search`, `google_places_details` | `/agent-integrations/google-places/{search,details}` |
 | `stock_prices` | `stock_quote`, `stock_exchange_rate`, `stock_options`, `stock_crypto_series`, `stock_commodity` | `/agent-integrations/financial-apis/*` |
-| `twilio` | `twilio_call` | `/agent-integrations/twilio/call` |
 
 File storage tools come from `file_storage::build_file_storage_tools`, called
 separately from `tools/ops.rs`, because they need `action_dir` and a
@@ -183,7 +182,7 @@ pub use crate::integrations::tools::*;
 ```
 
 `tools/ops.rs` also maps the `google_places_`, `stock_`, `storage_` and
-`task_source_` prefixes and `twilio_call` to `DomainGroup::Integrations`, so
+`task_source_` prefixes to `DomainGroup::Integrations`, so
 a `DomainSet` without integrations hides them.
 
 ## Layout
@@ -199,7 +198,7 @@ a `DomainSet` without integrations hides them.
 | `client/pricing.rs` | Pricing cache, `pricing_for_config`, `build_client`. |
 | `client/budget_gate.rs` | Credits-exhausted pre-check and the shared `/teams/me/usage` failure backoff. |
 | [`types.rs`](./types.rs) | `BackendResponse<T>` envelope and the pricing types. |
-| [`tools.rs`](./tools.rs), `tools/` | The managed tools: `google_places.rs`, `stock_prices.rs`, `twilio.rs`. `tools.rs` only declares and re-exports. |
+| [`tools.rs`](./tools.rs), `tools/` | The managed tools: `google_places.rs`, `stock_prices.rs`. `tools.rs` only declares and re-exports. |
 | [`composio/`](composio/README.md) | Composio connector sub-domain: toolkit catalogs, connections, triggers, direct-auth mode, the `tinyconnectors` module bridge, `composio_*` agent tools and RPC. |
 | [`task_sources/`](task_sources/README.md) | Pulls work items from GitHub, Notion, Linear and ClickUp through the Composio providers, dedups and enriches them, and drops cards on the `task-sources` thread board. |
 | [`file_storage/`](file_storage/README.md) | `storage_*` tools over the backend's S3-backed file storage (upload, download, list, link, visibility, delete). |
