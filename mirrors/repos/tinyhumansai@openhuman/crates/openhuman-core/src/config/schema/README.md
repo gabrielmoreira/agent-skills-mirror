@@ -22,7 +22,7 @@ is mounted as a submodule of [`load/dirs.rs`](./load/dirs.rs) via `#[path]`.
 | `[[capability_providers]]` | [`capability_providers.rs`](./capability_providers.rs) | `CapabilityProviderConfig` |
 | `[channels_config]`, `[sandbox]` | [`channels.rs`](./channels.rs) | `ChannelsConfig` and per-provider configs re-exported from `tinychannels_bus`; `SandboxConfig`, `ResourceLimitsConfig`, `AuditConfig`, and `SecurityConfig` (only `DaemonConfig` embeds the last one) |
 | `[claude_agent_sdk]` | [`claude_agent_sdk.rs`](./claude_agent_sdk.rs) | `ClaudeAgentSdkConfig` |
-| `[[cloud_providers]]`, `primary_cloud`, `*_provider` slugs | [`cloud_providers.rs`](./cloud_providers.rs) | `CloudProviderCreds`, `CloudProviderType`, `AuthStyle` |
+| `[[cloud_providers]]`, `primary_cloud`, `*_provider` slugs | [`cloud_providers.rs`](./cloud_providers.rs) | `CloudProviderCreds`, `AuthStyle` |
 | `[context]` | [`context.rs`](./context.rs) | `ContextConfig` |
 | `[cost]` | [`identity_cost.rs`](./identity_cost.rs) | `CostConfig`, `ModelPricing` |
 | `[dashboard]` | [`dashboard.rs`](./dashboard.rs) | `DashboardConfig`, `DiagramViewerConfig`, `EventStreamConfig`, `ModelHealthConfig` |
@@ -34,15 +34,12 @@ is mounted as a submodule of [`load/dirs.rs`](./load/dirs.rs) via `#[path]`.
 | `[learning]` | `learning.rs` | `LearningConfig`, `ReflectionSource` |
 | `[local_ai]` | [`local_ai.rs`](./local_ai.rs) | `LocalAiConfig`, `LocalAiUsage` |
 | `[modules]` | [`modules.rs`](./modules.rs) | `ModulesConfig`, `ModuleOverride`: controls only whether compiled-in modules load. The loadable *set* is fixed by `crate::modules::registry` |
-| `[node]` | [`node.rs`](./node.rs) | `NodeConfig` (managed Node.js toolchain for skills) |
 | `[observability]` | [`observability.rs`](./observability.rs) | `ObservabilityConfig`, `AgentTracingConfig` |
 | `[privacy]` | [`privacy.rs`](./privacy.rs) | `PrivacyConfig`, `PrivacyMode` |
 | `[proxy]` | [`proxy.rs`](./proxy.rs) | `ProxyConfig`, `ProxyScope`, plus `runtime_proxy_config()` / `set_runtime_proxy_config()` process-wide accessors |
 | `[[model_routes]]`, `[[embedding_routes]]` | [`routes.rs`](./routes.rs) | `ModelRouteConfig`, `EmbeddingRouteConfig` |
 | `[runtime]` (+ `[runtime.docker]`), `[shell]`, `[reliability]`, `[scheduler]` | [`runtime.rs`](./runtime.rs) | `RuntimeConfig`, `DockerRuntimeConfig`, `ShellConfig`, `ReliabilityConfig`, `SchedulerConfig` |
-| `[runtime_pool]` | [`runtime_pool.rs`](./runtime_pool.rs) | `RuntimePoolConfig`, `RuntimePoolLangConfig` |
 | `[runtime.local_jail]` | [`runtime_local_jail.rs`](./runtime_local_jail.rs) | `LocalJailConfig`: filesystem grants for the local OS jail |
-| `[runtime_python]` | [`runtime_python.rs`](./runtime_python.rs) | `RuntimePythonConfig` |
 | `[scheduler_gate]` | [`scheduler_gate.rs`](./scheduler_gate.rs) | `SchedulerGateConfig`, `SchedulerGateMode` |
 | `[memory]` (engine, `engines.<id>`, `conversations`, `context`, `sources`, embedding settings) | [`memory.rs`](./memory.rs) | `MemoryConfig`, `MemoryEngineSettings`, `MemoryConversationsConfig`, `MemoryContextConfig`, `MemorySourceConfig` (see [`docs/specs/memory-v2.md`](../../../../../docs/specs/memory-v2.md)) |
 | `[task_sources]` | [`task_sources.rs`](./task_sources.rs) | `TaskSourcesConfig` |
@@ -120,7 +117,7 @@ sandbox policy contract described under Workspace/identity helpers below.
 5. Run pending schema migrations ([`../migrations/`](../migrations/), via
    `migrations::run_pending`), which bump `schema_version` and save as they go.
 6. Decrypt at-rest secrets ([`load/secrets.rs`](./load/secrets.rs)); a legacy `enc:` (XOR) value is
-   force-migrated to `enc2:` (ChaCha20-Poly1305 via `security::keyring`) and
+   force-migrated to `enc2:` (ChaCha20-Poly1305 via `security::secret_storage`) and
    the config is saved again immediately.
 
 A brand-new workspace is instead stamped at `CURRENT_SCHEMA_VERSION`, seeded

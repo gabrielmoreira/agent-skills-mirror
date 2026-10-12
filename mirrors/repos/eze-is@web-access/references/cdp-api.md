@@ -1,0 +1,134 @@
+# CDP Proxy API 参考
+
+## 基础信息
+
+- 地址：`http://localhost:3456`
+- 检查、复用或后台启动：`node ~/.claude/skills/web-access/scripts/check-deps.mjs`
+- 服务持续运行，没有时长或空闲退出计时器；检查超时不会停止服务
+- 集中维护：`node <skill路径>/scripts/proxy-maintenance.mjs status|restart|stop`（Windows / macOS / Linux 相同）
+
+## API 端点
+
+### GET /health
+健康检查，不建立浏览器连接。`status: "ok"` 表示服务响应正常；只有 `connected === true` 才表示已有连接可复用。已有服务断线时，前置检查通过 `/targets` 让原服务重新连接，不启动第二个进程。浏览器重启或撤销权限后，重连可能再次需要浏览器授权。
+```bash
+curl -s http://localhost:3456/health
+```
+
+| 字段 | 含义 |
+|------|------|
+| `instanceId` / `pid` / `startedAt` | 当前服务实例身份、进程号和启动时间 |
+| `browser.source` | 浏览器选择来源（偏好或临时覆盖），不是端口进程身份的自动验证 |
+| `runningRevision` | 启动时加载的 Proxy 与连接模块源码指纹，文件修改不会自动重启服务 |
+| `connectionState` | `disconnected` → `discovering` → `connecting` → `connected`；失败退回 `disconnected` |
+| `connectionAttempts` | 当前实例累计的连接尝试次数；并发等待不会增加次数 |
+| `pendingCommands` | 未完成的 CDP 命令数 |
+| `activeRequests` | 执行中的浏览器操作请求数，不含健康检查和维护请求 |
+| `managedTabs` | 当前服务管理的 Agent 标签页数 |
+| `maintenance` | 正在停止；前置检查不得把它当作可用或启动第二个实例 |
+
+### POST /shutdown
+
+维护 CLI 专用。JSON body 为 `{ "instanceId": "从健康检查读取的身份" }`。只接受不带 `Origin` 的本机 POST；实例不一致或仍有请求、命令、标签页、发现/握手时返回 `409`。接受后返回 `202`，进入维护状态，普通操作返回 `503`，退出只执行一次。健康检查仍可用于观察退出，CLI 不会因为实例被替换而停止新实例。
+
+维护 CLI 的退出码：`0` 表示状态检查/停止完成或重启后连接确认就绪；`2` 表示忙碌、身份冲突、旧服务缺少维护接口或参数错误；`3` 表示新服务已启动但尚未连接（`waitingAuthorization`，也可能是调试设置或浏览器不可用）；其他错误为 `1`。旧服务的一次性迁移需要先确认没有任务使用它，不自动强停。普通任务不要在结束时停止服务，代码变更由集中维护升级一次。
+
+连接模块 `scripts/cdp-connection.mjs` 唯一拥有 socket、连接尝试和命令响应。`connect()` 从浏览器发现开始共享同一个 Promise；`send()` 只在已有连接发送，不隐式连接；`close()` 立即拒绝该连接的等待者。每个 socket 的事件只作用于它自己的连接上下文，失败会清空该连接的命令等待，后续请求可重试。模块同时支持原生 WebSocket（EventTarget）和 `ws`（EventEmitter）。服务端 HTTP 和标签页职责保留在 Proxy，浏览器选择保留在 discovery 模块。
+
+`config.env` 中可选的 `WEB_ACCESS_CDP_PORT` 明确绑定 `WEB_ACCESS_BROWSER`，用于端口文件受系统权限限制或固定端口的连接方式。留空使用文件发现，非空必须是十进制 `1..65535` 且浏览器受当前平台支持。显式映射须先核对浏览器归属；发现只检测 TCP，不建立授权握手。不同浏览器覆盖不借用此端口，离线也不回退。端口文件的 `EPERM/EACCES` 会作为权限事实报告，不能据此断言未开启调试。
+
+### GET /targets
+列出所有已打开的页面 tab。返回数组，每项含 `targetId`、`title`、`url`。
+```bash
+curl -s http://localhost:3456/targets
+```
+
+### POST /new
+创建新后台 tab。Proxy 会先创建 `about:blank`、完成 CDP attach，再显式导航并等待目标 URL 的 DOM 至少进入 `interactive`，避免把新标签页初始的空白文档误判为目标页面。**URL 通过 POST body 原样传入**，无需 URL-encode、不会因 query 中含 `&` 被切分。返回 `{ targetId }`。
+```bash
+curl -s -X POST --data-raw 'https://example.com' http://localhost:3456/new
+# 含 query 的目标 URL（如带 token 的小红书笔记）也直接原样传：
+curl -s -X POST --data-raw 'https://www.xiaohongshu.com/explore/xxx?xsec_source=app_share&xsec_token=ABC&type=normal' http://localhost:3456/new
+```
+> v2.5.3 起改为 POST。旧的 `GET /new?url=...` 返回 400 + 迁移指引，详见 `migration-2.5.3.md`。
+
+### GET /close?target=ID
+关闭指定 tab。
+```bash
+curl -s "http://localhost:3456/close?target=TARGET_ID"
+```
+
+### POST /navigate?target=ID
+在已有 tab 中导航到新 URL，自动等待加载。**target 走 query（不带特殊字符的不透明 ID），URL 走 POST body**。
+```bash
+curl -s -X POST --data-raw 'https://example.com' "http://localhost:3456/navigate?target=ID"
+```
+> v2.5.3 起改为 POST。旧的 `GET /navigate?target=...&url=...` 返回 400 + 迁移指引，详见 `migration-2.5.3.md`。
+
+> `/new` 和 `/navigate` 的等待是浏览器文档层的基础保证，不是业务内容完成保证。验证页、登录跳转、SPA 异步渲染等仍可能继续变化；调用后必须按主 Skill 的“页面就绪与完成判断”检查目标内容，不能只看 `readyState`。
+
+### GET /back?target=ID
+后退一页。
+```bash
+curl -s "http://localhost:3456/back?target=ID"
+```
+
+### GET /info?target=ID
+获取页面基础信息（title、url、readyState）。
+```bash
+curl -s "http://localhost:3456/info?target=ID"
+```
+
+### POST /eval?target=ID
+执行 JavaScript 表达式，POST body 为 JS 代码。
+```bash
+curl -s -X POST "http://localhost:3456/eval?target=ID" -d 'document.title'
+```
+
+### POST /click?target=ID
+JS 层面点击（`el.click()`），POST body 为 CSS 选择器。自动 scrollIntoView 后点击。简单快速，覆盖大多数场景。
+```bash
+curl -s -X POST "http://localhost:3456/click?target=ID" -d 'button.submit'
+```
+
+### POST /clickAt?target=ID
+CDP 浏览器级真实鼠标点击（`Input.dispatchMouseEvent`），POST body 为 CSS 选择器。先获取元素坐标，再模拟鼠标按下/释放。算真实用户手势，能触发文件对话框、绕过部分反自动化检测。
+```bash
+curl -s -X POST "http://localhost:3456/clickAt?target=ID" -d 'button.upload'
+```
+
+### POST /setFiles?target=ID
+给 file input 设置本地文件路径（`DOM.setFileInputFiles`），完全绕过文件对话框。POST body 为 JSON。
+```bash
+curl -s -X POST "http://localhost:3456/setFiles?target=ID" -d '{"selector":"input[type=file]","files":["/path/to/file1.png","/path/to/file2.png"]}'
+```
+
+### GET /scroll?target=ID&y=3000&direction=down
+滚动页面。`direction` 可选 `down`（默认）、`up`、`top`、`bottom`。滚动后自动等待 800ms 供懒加载触发。
+```bash
+curl -s "http://localhost:3456/scroll?target=ID&y=3000"
+curl -s "http://localhost:3456/scroll?target=ID&direction=bottom"
+```
+
+### GET /screenshot?target=ID&file=/tmp/shot.png
+截图。指定 `file` 参数保存到本地文件；不指定则返回图片二进制。可选 `format=jpeg`。
+```bash
+curl -s "http://localhost:3456/screenshot?target=ID&file=/tmp/shot.png"
+```
+
+## /eval 使用提示
+
+- POST body 为任意 JS 表达式，返回 `{ value }` 或 `{ error }`
+- 支持 `awaitPromise`：可以写 async 表达式
+- 返回值必须是可序列化的（字符串、数字、对象），DOM 节点不能直接返回，需要提取属性
+- 提取大量数据时用 `JSON.stringify()` 包裹，确保返回字符串
+- 根据页面实际 DOM 结构编写选择器，不要套用固定模板
+
+## 错误处理
+
+| 错误 | 原因 | 解决 |
+|------|------|------|
+| `Chrome 未开启远程调试端口` | Chrome 未开启远程调试 | 提示用户打开 `chrome://inspect/#remote-debugging` 并勾选 Allow |
+| `attach 失败` | targetId 无效或 tab 已关闭 | 用 `/targets` 获取最新列表 |
+| `CDP 命令超时` | 页面长时间未响应 | 重试或检查 tab 状态 |
+| `端口已被占用` | 另一个 proxy 已在运行 | 已有实例可直接复用 |

@@ -1,6 +1,6 @@
 name: degardis-authoring
 format_version: 2
-version: 2.1.0
+version: 2.2.0
 license: MIT
 copyright: Copyright (c) 2026 Kambiz Khojasteh
 description: "Write, review, plan, revise, and build Degardis skill source, and explain the format, compiler, and authoring choices. Describe or test any skill, with or without its source. Installing, replacing, publishing, or releasing bundles is outside this skill."
@@ -40,6 +40,9 @@ content:
   - knowledge/*.md
   guides:
   - guides/*.md
+  scripts:
+  - scripts/*.py
+  - "!scripts/test_*.py"
 interface:
   display_name: Degardis Authoring
   short_description: Author and build Degardis skills; describe or test any skill

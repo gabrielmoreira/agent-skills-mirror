@@ -1,0 +1,4 @@
+interface:
+  display_name: "Non-WSQ Storefront Push"
+  short_description: "Publish non-WSQ courseware links"
+  default_prompt: "Use $non-wsq-lms-push to publish this course Drive links to the storefront."

@@ -100,6 +100,7 @@ hold the arms still, and check the loop with `handed-check --state walk`.
 | GPT image sprites | `prepare`, `gen-set --provider codex`, `extract`, compose and QA | [atlas-workflow](docs/atlas-workflow.md) |
 | Standalone video / animate a still, pin a last frame, reference images | `video` (`--image`, `--last-frame`, `--reference`) | [video](docs/video.md) |
 | Continue or edit an existing clip | `video-extend`, `video-edit` | [video](docs/video.md) |
+| A clip run left unfinished (its line or report names a `request_id`): ask for it again, never submit it again | `video-resume --request-id <id>` | [video](docs/video.md#sprite-gen-video-resume--ask-again-for-an-unfinished-generation) |
 | Grok video sprites | `video-set` | [video-pipeline](docs/video-pipeline.md) |
 | A soft part of a walk loop follows the body (a chest, a belly): an ellipse in the first cell, after `video-cycle-align` — `--read-on <sha256>` where it was read on the cut the loop was aligned from; `--stretch-floor D` to keep a least area | `video-follow` | [video-pipeline](docs/video-pipeline.md#6-follow-through--video-follow) |
 | Where that ellipse is carried in every other cell, and what the move changes there (an arm crossing a chest moves with it; the stretch, the bend and the seam): a record and boards of every cell, nothing moved | `video-follow-inspect` | [video-pipeline](docs/video-pipeline.md#inspecting-a-follow-through--video-follow-inspect) |

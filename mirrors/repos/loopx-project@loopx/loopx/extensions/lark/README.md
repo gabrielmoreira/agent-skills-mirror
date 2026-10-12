@@ -183,6 +183,13 @@ loopx lark-inbox history-catch-up \
   --execute
 ```
 
+Inline `thread_replies` returned by the CLI are ingested under their own message
+ids and sender/mention evidence, retaining the source root and thread. The repeated
+root row is skipped; verified self-Bot replies are filtered like root messages.
+Malformed or foreign-source expansions fail before inbox/cursor writes. This
+covers supplied inline replies only: it does not independently paginate threads
+or discover later replies whose root is outside the requested group window.
+
 Retries resume the exact private page token. A completed window replays
 without another provider read only while its upper coverage bound is current;
 a later invocation opens one bounded forward window from the previous end, so

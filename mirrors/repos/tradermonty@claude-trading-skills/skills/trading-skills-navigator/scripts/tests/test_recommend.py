@@ -7,6 +7,7 @@ skillset.id / honest_gap against the REAL repo SSoT.
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -509,9 +510,18 @@ def test_honest_gap_returns_suggested_skills(repo_metadata: dict[str, Any]) -> N
 
 def test_no_api_excludes_fmp_required_swing(repo_metadata: dict[str, Any]) -> None:
     r = recommend("I want to find swing candidates", repo_metadata, no_api=True)
-    assert r["primary_workflow"]["id"] == "market-regime-daily"
+    assert r["primary_workflow"] is None
+    assert r["goal_match"]["workflow"]["id"] == "swing-opportunity-daily"
+    assert r["goal_match"]["runnability"] == "blocked"
+    assert r["alternative_workflow"]["workflow"]["id"] == "market-regime-daily"
+    assert r["alternative_workflow"]["relationship"] == "different_goal"
+    assert "portfolio" not in r["alternative_workflow"]["explanation"]
+    assert r["honest_gap"] is True
+    assert r["routing_diagnostics"]["status"] == "unavailable"
+    assert r["setup_bundle"]["required"] == []
+    assert r["no_api_path"] is None
     assert r["no_api"] is True
-    assert any("swing-opportunity-daily" in x and "excluded" in x for x in r["rationale"])
+    assert any("fmp-required" in x for x in r["rationale"])
 
 
 def test_no_api_excludes_alpaca_required_core_portfolio(
@@ -520,11 +530,85 @@ def test_no_api_excludes_alpaca_required_core_portfolio(
     # core-portfolio-weekly is api_profile: mixed, but its required
     # portfolio-manager needs Alpaca (required) -> must be excluded.
     r = recommend("I want to review holdings this week", repo_metadata, no_api=True)
-    assert r["primary_workflow"]["id"] == "market-regime-daily"
+    assert r["primary_workflow"] is None
+    assert r["goal_match"]["workflow"]["id"] == "core-portfolio-weekly"
+    assert r["goal_match"]["runnability"] == "blocked"
     assert any(
         "core-portfolio-weekly" in x and "portfolio-manager" in x and "alpaca" in x
         for x in r["rationale"]
     )
+
+
+def test_csv_portfolio_goal_is_not_disguised_as_exact_fallback(
+    repo_metadata: dict[str, Any],
+) -> None:
+    query = "Review my portfolio from a CSV file"
+    result = recommend(query, repo_metadata, no_api=True)
+    assert result["honest_gap"] is True
+    assert result["primary_workflow"] is None
+    assert result["goal_match"]["persona"] == "dividend-long-term-investor"
+    assert result["goal_match"]["workflow"]["id"] == "core-portfolio-weekly"
+    assert [item["kind"] for item in result["goal_match"]["missing_requirements"]] == [
+        "paid_api",
+        "missing_input",
+        "unsupported_capability",
+    ]
+    assert result["routing_diagnostics"]["status"] == "unavailable"
+    assert result["alternative_workflow"]["relationship"] == "different_goal"
+    assert result["setup_bundle"] == {
+        "required": [],
+        "recommended": [],
+        "optional": [],
+        "sources": [],
+    }
+    assert "none usable" in render_text(result)
+    assert "Different-goal alternative" in render_text(result)
+
+
+def test_csv_portfolio_cli_json_and_text(capsys: pytest.CaptureFixture[str]) -> None:
+    args = ["--query", "Review my portfolio from a CSV file", "--no-api"]
+    assert main([*args, "--format", "json"]) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["goal_match"]["runnability"] == "blocked"
+    assert payload["routing_diagnostics"]["status"] == "unavailable"
+    assert main([*args, "--format", "text"]) == 0
+    output = capsys.readouterr().out
+    assert "Missing requirement (missing_input)" in output
+    assert "Different-goal alternative" in output
+
+
+def test_csv_portfolio_remains_blocked_with_path_in_prose(repo_metadata: dict[str, Any]) -> None:
+    result = recommend("Review my portfolio from a CSV file at /tmp/holdings.csv", repo_metadata)
+    assert result["goal_match"]["runnability"] == "blocked"
+    assert result["alternative_workflow"] is None
+    assert result["primary_workflow"] is None
+
+
+def test_no_api_phrase_is_constraint_on_portfolio_goal(repo_metadata: dict[str, Any]) -> None:
+    result = recommend("Review my portfolio without API", repo_metadata)
+    assert result["no_api"] is True
+    assert result["goal_match"]["persona"] == "dividend-long-term-investor"
+    assert result["goal_match"]["workflow"]["id"] == "core-portfolio-weekly"
+    assert result["goal_match"]["runnability"] == "blocked"
+    assert result["routing_diagnostics"]["status"] == "unavailable"
+    assert result["alternative_workflow"]["relationship"] == "different_goal"
+    swing = recommend("Find swing candidates without API", repo_metadata)
+    assert swing["goal_match"]["workflow"]["id"] == "swing-opportunity-daily"
+    assert swing["goal_match"]["runnability"] == "blocked"
+    standalone = recommend("I need a no API path", repo_metadata)
+    assert standalone["goal_match"]["persona"] == "no-api-path"
+    assert standalone["primary_workflow"]["id"] == "market-regime-daily"
+
+
+def test_eligible_exact_and_unmatched_goal_metadata(repo_metadata: dict[str, Any]) -> None:
+    exact = recommend("I want to review holdings this week", repo_metadata)
+    assert exact["goal_match"]["runnability"] == "eligible"
+    assert exact["goal_match"]["workflow"]["id"] == "core-portfolio-weekly"
+    assert exact["routing_diagnostics"]["status"] == "exact"
+    assert "runnability=eligible" in render_text(exact)
+    unmatched = recommend("asdf qwer zxcv 12345", repo_metadata)
+    assert unmatched["goal_match"]["runnability"] == "unmatched"
+    assert unmatched["goal_match"]["workflow"] is None
 
 
 def test_no_api_keeps_no_api_basic_workflow(repo_metadata: dict[str, Any]) -> None:
@@ -631,6 +715,9 @@ def test_json_schema_keys_present(repo_metadata: dict[str, Any]) -> None:
         "note",
         "rationale",
         "routing_diagnostics",
+        "dropped_secondary_workflows",
+        "goal_match",
+        "alternative_workflow",
         "setup_path_ref",
     }
     assert set(r["routing_diagnostics"]) == {
@@ -1104,3 +1191,91 @@ def test_persona_targets_resolve(repo_metadata: dict[str, Any]) -> None:
             assert p.primary in wf_ids, p.name
             for sid in p.secondary:
                 assert sid in wf_ids, f"{p.name}:{sid}"
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "weekly portfolio review with Alpaca, export a csv",
+        "Review my portfolio, export the results to csv",
+        "Alpacaのポートフォリオを見直したい、CSVで出力もしたい",
+        "ポートフォリオを見直したい、結果はCSVに出力したい",
+        "weekly portfolio review with Alpaca, then send me the csv file afterwards",
+        "Review my portfolio with Alpaca, not from a CSV file",
+        "weekly portfolio review, give me results as a csv",
+        "weekly portfolio review, put the results into a csv",
+        "Alpaca portfolio review, download the report as csv",
+    ],
+)
+def test_csv_export_mention_is_not_csv_input_gap(repo_metadata: dict[str, Any], query: str) -> None:
+    result = recommend(query, repo_metadata)
+    assert result["goal_match"]["workflow"]["id"] == "core-portfolio-weekly"
+    assert result["goal_match"]["runnability"] == "eligible"
+    assert result["honest_gap"] is False
+    assert result["primary_workflow"]["id"] == "core-portfolio-weekly"
+    assert result["goal_match"]["missing_requirements"] == []
+
+
+@pytest.mark.parametrize(
+    "query",
+    [
+        "Review my portfolio from a CSV file",
+        "Review my portfolio using a broker csv export",
+        "Review the holdings in holdings.csv",
+        "CSVからポートフォリオを見直したい",
+        "CSVの保有銘柄を取り込んで見直したい",
+        "Review my portfolio, I have a csv",
+        "download the csv from my broker and review my portfolio",
+        "download the csv and review my portfolio",
+        "review my portfolio from the csv, then export results to csv",
+        "portfolio review csv",
+        "CSV portfolio review",
+        "review my portfolio, data is csv",
+        "portfolio review with csv",
+        "my positions are stored as csv, do a weekly portfolio review",
+        "CSVファイルで管理しているポートフォリオを見直したい",
+        "I don't use Alpaca, I have a CSV, review my portfolio",
+        "Review my portfolio without Alpaca, I have a CSV",
+        "Review my portfolio from a CSV file, not Alpaca",
+        "Review my portfolio with Alpaca, import my CSV and export results to csv",
+    ],
+)
+def test_csv_as_portfolio_source_stays_blocked(repo_metadata: dict[str, Any], query: str) -> None:
+    result = recommend(query, repo_metadata)
+    assert result["goal_match"]["runnability"] == "blocked"
+    assert result["honest_gap"] is True
+
+
+_NO_API_SWING_QUERY = (
+    "I'm a part-time swing trader and only trade when the market regime is favorable"
+)
+
+
+def test_no_api_reports_dropped_paid_secondary(repo_metadata: dict[str, Any]) -> None:
+    with_api = recommend(_NO_API_SWING_QUERY, repo_metadata)
+    assert with_api["dropped_secondary_workflows"] == []
+    assert [w["id"] for w in with_api["secondary_workflows"]] == ["swing-opportunity-daily"]
+
+    result = recommend(_NO_API_SWING_QUERY, repo_metadata, no_api=True)
+    assert result["secondary_workflows"] == []
+    assert result["goal_match"]["missing_requirements"] == []
+    assert result["honest_gap"] is False
+    dropped = result["dropped_secondary_workflows"]
+    assert [d["id"] for d in dropped] == ["swing-opportunity-daily"]
+    assert dropped[0]["reason"].startswith("requires paid API")
+    assert "Dropped secondary" in render_text(result)
+    assert "swing-opportunity-daily" in render_text(result)
+
+
+def test_no_api_dropped_secondary_cli_json_and_text(capsys: pytest.CaptureFixture[str]) -> None:
+    args = ["--query", _NO_API_SWING_QUERY, "--no-api"]
+    assert main([*args, "--format", "json"]) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert [d["id"] for d in payload["dropped_secondary_workflows"]] == ["swing-opportunity-daily"]
+    assert main([*args, "--format", "text"]) == 0
+    assert "Dropped secondary (no-API)" in capsys.readouterr().out
+
+
+def test_blocked_text_output_names_skillset(repo_metadata: dict[str, Any]) -> None:
+    result = recommend("Review my portfolio from a CSV file", repo_metadata)
+    assert f"Skillset: {result['skillset']['id']}" in render_text(result)

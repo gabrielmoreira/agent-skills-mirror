@@ -14,4 +14,4 @@ Take the artifact's layout, section names, and reference conventions from what i
 
 ## Attribution limits
 
-Judge routing, instructions, reachable references, shipped files, and observable behavior. Authored organization, omitted material, history, and where a defect originated were never put into generated output, so a finding may not reach them from an artifact alone. Name each of those as unsupported without matching source, rather than leaving a report that reads as though the artifact had settled them.
+An artifact shows its routing, instructions, reachable references, shipped files, and observable behavior. Authored organization, omitted material, history, and where a defect originated were never put into generated output, so no conclusion about them can rest on an artifact alone. Where the work reaches one of them, name it as unsupported without matching source, rather than leaving a report that reads as though the artifact had settled it.

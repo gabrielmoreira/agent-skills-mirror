@@ -29,7 +29,10 @@ presented as a confident exact match.
 
 ## Persona table (order matters)
 
-Evaluated top-to-bottom; first match wins. Order encodes precedence:
+Evaluated top-to-bottom; first match wins, except that `no-api-path` becomes a
+constraint when another substantive goal also matches. Candidate order stays
+unchanged, while the selected persona identifies the substantive goal. Order
+otherwise encodes precedence:
 
 | # | Persona | Trigger gist | Result |
 |---|---|---|---|
@@ -177,9 +180,29 @@ credentials are always inspected. Consequences:
 - `trade-memory-loop` / `monthly-performance-review` are `no-api-basic`;
   `trader-memory-core` has FMP at `optional` (not required) → kept.
 
-When `--no-api` removes the persona's primary, the engine falls back to the
-universal no-API on-ramp (`market-regime-daily`) and records the exclusion
-reason in `rationale`. Honest gaps are unaffected (they have no primary).
+When `--no-api` blocks the matched workflow, the engine keeps that workflow
+in `goal_match` with `runnability: blocked` and the paid integration in
+`missing_requirements`. The requested goal has `primary_workflow: null`,
+`honest_gap: true`, `no_api_path: null`, and an empty `setup_bundle`.
+`market-regime-daily` may appear separately as a different-goal
+`alternative_workflow`; it never becomes an exact portfolio/swing match.
+For core-portfolio-weekly, any CSV mention ("from a CSV file", "I have a csv",
+"portfolio review csv", "CSVファイルで管理している…") is read as the portfolio
+*source* and stays blocked because #512 has not shipped a CSV workflow.
+Navigator accepts no CSV path argument. The one exception is a CSV that is
+clearly an output ("export/save/send … csv", "CSVに出力") with no input
+pattern present; input patterns win, a negated CSV ("not from a CSV") is
+ignored, and naming or negating Alpaca never changes the outcome by itself.
+Known limitation: a CSV query with no portfolio wording (for example "I have
+a CSV") does not match the portfolio persona and falls back to
+market-regime-daily; goal matching is unchanged here.
+
+Under `--no-api`, paid-API *secondary* workflows are removed from
+`secondary_workflows` and listed in `dropped_secondary_workflows`
+(`[{id, reason}]`, `[]` when none). The field is deliberately separate from
+`goal_match.missing_requirements`: dropping a follow-on step does not block the
+matched goal. Text output prints one `Dropped secondary (no-API): <id>` line
+per entry.
 
 ## `no_api` vs `no_api_path` (the DoD's API-vs-no-API separation)
 
@@ -191,7 +214,7 @@ Two distinct booleans — narrate `no_api_path`, not `no_api`:
 - **`no_api_path`** — *path-side*: does the **entire** recommendation (primary
   **and every** secondary) work without paid API keys?
   `workflow_paid_api_reason(primary) is None and all(... for secondary)`.
-  `null` on an honest gap (no path). This is the 10-Question Contract's
+  `null` when no usable goal path exists (unshipped or blocked). This is the 10-Question Contract's
   "no-API" column.
 
 This is why Q1 and Q2 both recommend `market-regime-daily` yet differ: Q2 has
@@ -219,3 +242,19 @@ category, `suggested_skills` = that category's non-deprecated skills
 (id-sorted, `{id, display_name, category}`), `honest_gap: true`, and a `note`
 stating the workflow manifest is deferred. Exit code is still `0` — an honest
 gap is a successful, honest recommendation.
+
+## Goal availability (Issue #511)
+
+`goal_match` retains the original persona and best matching workflow before
+constraints are applied. Its `runnability` is `eligible` (metadata and stated
+constraints allow the path, not proof that data is ready), `blocked` (a matching
+workflow exists but the request cannot use it), `unshipped` (no dedicated
+workflow), or `unmatched` (unmapped input and a beginner fallback). A blocked
+result has `routing_diagnostics.status: unavailable`, typed
+`missing_requirements`, and no primary/setup bundle. A different-goal
+`alternative_workflow` is shown independently.
+
+When a query combines a substantive goal with a phrase such as "without API",
+the no-API persona supplies a constraint and the substantive persona remains
+the goal. A standalone request for a no-API path still selects that persona's
+general on-ramp.

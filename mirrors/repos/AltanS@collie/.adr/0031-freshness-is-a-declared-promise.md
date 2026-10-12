@@ -127,3 +127,8 @@ operator is typing.
 
 2026-08-25: the Follow terminal toggle was removed as unnecessary; the rule that the phone never
 moves the terminal except via "Show in terminal" stands.
+
+2026-10-11: no screen draws the "synced Ns ago" line today, and its unused hook
+(`useTopologyLatency`) was removed in 1.20.0. `topologyLatency` is still declared and published
+under `mux` in `/api/config`, and `muxTopologyLatency()` in `web/src/lib/mux-capability.ts` still
+reads it with absent meaning `push`. A screen that brings the line back reads it there.

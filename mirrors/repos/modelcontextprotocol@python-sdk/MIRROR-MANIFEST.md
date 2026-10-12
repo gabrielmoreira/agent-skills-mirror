@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `modelcontextprotocol/python-sdk` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `modelcontextprotocol/python-sdk` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `modelcontextprotocol/python-sdk` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,6 +62,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.claude/skills/test-quality/SKILL.md`](.claude/skills/test-quality/SKILL.md) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`docs/advanced/extensions.md`](docs/advanced/extensions.md) |
+| 5 | ✓ | [`docs/advanced/skills.md`](docs/advanced/skills.md) |
+| 6 | ✓ | [`i18n/de/pages/advanced/extensions.md`](i18n/de/pages/advanced/extensions.md) |
+| 7 | ✓ | [`i18n/es/pages/advanced/extensions.md`](i18n/es/pages/advanced/extensions.md) |
+| 8 | ✓ | [`i18n/fr/pages/advanced/extensions.md`](i18n/fr/pages/advanced/extensions.md) |
+| 9 | ✓ | [`i18n/hi/pages/advanced/extensions.md`](i18n/hi/pages/advanced/extensions.md) |
+| 10 | ✓ | [`i18n/ja/pages/advanced/extensions.md`](i18n/ja/pages/advanced/extensions.md) |
+| 11 | ✓ | [`i18n/ko/pages/advanced/extensions.md`](i18n/ko/pages/advanced/extensions.md) |
+| 12 | ✓ | [`i18n/pt/pages/advanced/extensions.md`](i18n/pt/pages/advanced/extensions.md) |
+| 13 | ✓ | [`i18n/ru/pages/advanced/extensions.md`](i18n/ru/pages/advanced/extensions.md) |
+| 14 | ✓ | [`i18n/tr/pages/advanced/extensions.md`](i18n/tr/pages/advanced/extensions.md) |
+| 15 | ✓ | [`i18n/uk/pages/advanced/extensions.md`](i18n/uk/pages/advanced/extensions.md) |
+| 16 | ✓ | [`i18n/zh-hant/pages/advanced/extensions.md`](i18n/zh-hant/pages/advanced/extensions.md) |
+| 17 | ✓ | [`i18n/zh/pages/advanced/extensions.md`](i18n/zh/pages/advanced/extensions.md) |
 
 ---
 

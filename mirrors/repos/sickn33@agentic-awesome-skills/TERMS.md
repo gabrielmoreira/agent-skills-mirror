@@ -1,12 +1,12 @@
 # Terms of Use
 
-Last updated: August 7, 2026
+Last updated: October 11, 2026
 
 These terms apply to the Agentic Awesome Skills (AAS) open-source repository, its packaged skills and plugins, and the companion catalog.
 
 ## Open-source license
 
-The repository software and original project materials are provided under the [MIT License](LICENSE). Individual bundled skills may identify additional upstream licenses or attribution requirements in their metadata and accompanying files. Those notices remain controlling for the relevant material.
+Original code and tooling are provided under the [MIT License](LICENSE). Original documentation and other non-code written content use [CC BY 4.0](LICENSE-CONTENT), unless a more specific upstream notice applies. Individual bundled skills may identify additional upstream licenses or attribution requirements in their metadata and accompanying files. Those notices remain controlling for the relevant material.
 
 ## What the project provides
 

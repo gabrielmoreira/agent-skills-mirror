@@ -10,7 +10,10 @@ from __future__ import annotations
 
 import argparse
 import glob
+import hashlib
 import json
+import math
+import re
 import sys
 from collections import defaultdict
 from copy import deepcopy
@@ -41,7 +44,7 @@ DEFAULT_CONFIG = {
     "deduplication": {
         "similarity_threshold": 0.60,
         "ticker_overlap_threshold": 0.30,
-        "merge_bonus_per_duplicate": 0.05,
+        "merge_bonus_per_duplicate": 0.05,  # deprecated (Issue #510): ignored, kept for YAML compat
     },
     "agreement": {
         "two_skills_bonus": 0.10,
@@ -93,7 +96,26 @@ def load_config(config_path: str | None) -> dict[str, Any]:
                 merged[key] = {**merged.get(key, {}), **value}
             else:
                 merged[key] = value
+    _reject_non_finite_config_values(merged)
     return merged
+
+
+def _reject_non_finite_config_values(config: dict[str, Any]) -> None:
+    """Issue #510: NaN/inf in a custom YAML (e.g. weights) must not leak into output JSON."""
+
+    def walk(node):
+        if isinstance(node, dict):
+            for v in node.values():
+                yield from walk(v)
+        elif isinstance(node, list):
+            for v in node:
+                yield from walk(v)
+        else:
+            yield node
+
+    for value in walk(config):
+        if isinstance(value, float) and not math.isfinite(value):
+            raise ValueError("Config contains non-finite numeric values (NaN/infinity)")
 
 
 def load_json_files(pattern: str | None) -> list[dict[str, Any]]:
@@ -174,23 +196,135 @@ def as_ticker_list(value: Any) -> list[str]:
     return sorted(set(tickers))
 
 
-def normalize_score_auto(score: Any) -> float:
-    """Best-effort score normalization supporting both 0-1 and 0-100 inputs."""
+GRADE_SCALE_MAP = {"A": 1.0, "B": 0.8, "C": 0.6, "D": 0.4, "F": 0.2}
+
+
+def parse_raw_score(score, declared_scale=None):
+    """Parse a raw score into (score, status, reason).
+
+    Status is one of "valid", "invalid", "assumed_scale". Reason is None or one of
+    "non_finite", "negative", "out_of_range", "missing_scale", "unparsable".
+    Invalid inputs never produce a numeric score (Issue #510: NaN/inf must never
+    surface as maximum confidence). When no scale is declared, values in (1, 100]
+    are assumed to be on a 0-100 scale and flagged as "assumed_scale".
+    """
     if score is None:
-        return 0.0
+        return 0.0, "valid", None
     if isinstance(score, str):
-        return normalize_score(score)
+        text = score.strip()
+        if text.upper() in GRADE_SCALE_MAP:
+            return GRADE_SCALE_MAP[text.upper()], "valid", None
+        try:
+            return _parse_numeric_score(float(text), declared_scale)
+        except (TypeError, ValueError):
+            return None, "invalid", "unparsable"
     try:
-        val = float(score)
+        value = float(score)
     except (TypeError, ValueError):
-        return 0.0
-    if val < 0:
-        return 0.0
-    if val <= 1.0:
-        return val
-    if val <= 100.0:
-        return val / 100.0
-    return 1.0
+        return None, "invalid", "unparsable"
+    return _parse_numeric_score(value, declared_scale)
+
+
+def _parse_numeric_score(value: float, declared_scale):
+    if not math.isfinite(value):
+        return None, "invalid", "non_finite"
+    if value < 0:
+        return None, "invalid", "negative"
+    if declared_scale is not None:
+        scale = str(declared_scale).strip().lower()
+        if scale == "0-1":
+            if value <= 1.0:
+                return value, "valid", None
+            return None, "invalid", "out_of_range"
+        if scale == "0-100":
+            if value <= 100.0:
+                return value / 100.0, "valid", None
+            return None, "invalid", "out_of_range"
+        # Producer attempted a scale declaration it failed to express.
+        return None, "invalid", "missing_scale"
+    # Undeclared scale: best-effort assumption with an explicit flag upstream.
+    if value <= 1.0:
+        return value, "valid", None
+    if value > 100.0:
+        return None, "invalid", "out_of_range"
+    return value / 100.0, "assumed_scale", None
+
+
+def _is_finite_score(value) -> bool:
+    return isinstance(value, (int, float)) and math.isfinite(value)
+
+
+def _stable_title(title) -> str:
+    return " ".join(str(title or "").strip().split()).lower()
+
+
+def _ticker_token(tickers) -> str:
+    return ",".join(sorted({str(t).strip().upper() for t in (tickers or []) if t}))
+
+
+def _default_evidence_id(
+    skill: str,
+    signal_ref,
+    title,
+    tickers,
+    direction: str,
+    provided=None,
+) -> str:
+    """Deterministic fallback identity per producer item; timestamp excluded."""
+    if provided:
+        return str(provided)
+    raw = f"{skill}|{signal_ref}|{_stable_title(title)}|{_ticker_token(tickers)}|{direction}"
+    return hashlib.sha1(raw.encode("utf-8"), usedforsecurity=False).hexdigest()
+
+
+def _default_event_fingerprint(title, tickers) -> str:
+    raw = f"{_stable_title(title)}|{_ticker_token(tickers)}"
+    return hashlib.sha1(raw.encode("utf-8"), usedforsecurity=False).hexdigest()
+
+
+def _invalid_signal_entry(
+    skill: str,
+    signal_ref,
+    title,
+    reason: str,
+    declared_scale,
+    raw_value,
+    source_file,
+) -> dict:
+    return {
+        "skill": skill,
+        "signal_ref": signal_ref,
+        "title": title,
+        "reason": reason,
+        "declared_scale": declared_scale,
+        "raw_value_repr": repr(raw_value),
+        "source_file": source_file,
+    }
+
+
+def _resolve_item_score(raw_score, item, doc, skill, signal_ref, title, source_file):
+    """Apply Issue #510 scoring contract to one producer item.
+
+    Returns (signal_payload|None, invalid_entry|None). signal_payload carries the
+    parsed score plus scale/identity bookkeeping, or None when invalid.
+    """
+    declared_scale = None
+    if isinstance(item, dict) and "score_scale" in item:
+        declared_scale = item.get("score_scale")
+    elif isinstance(doc, dict) and "score_scale" in doc:
+        declared_scale = doc.get("score_scale")
+    raw_value, status, reason = parse_raw_score(raw_score, declared_scale)
+    if status == "invalid":
+        return None, _invalid_signal_entry(
+            skill, signal_ref, title, reason, declared_scale, raw_score, source_file
+        )
+    payload = {
+        "raw_score": raw_value,
+        "input_value": raw_score,
+        "score_scale_assumed": status == "assumed_scale",
+        "declared_scale": declared_scale,
+    }
+    return payload, None
 
 
 def horizon_bucket(horizon: str | None) -> str:
@@ -233,7 +367,12 @@ def horizons_overlap(horizon_a: str | None, horizon_b: str | None) -> bool:
 
 
 def normalize_score(score: float | str | None, min_val: float = 0.0, max_val: float = 1.0) -> float:
-    """Normalize a score to [0, 1] range."""
+    """Normalize a score to [0, 1] range.
+
+    Legacy helper, no longer used by the Issue #510 extraction pipeline (which uses
+    parse_raw_score). Kept only for backward compatibility with external callers;
+    note it silently clamps instead of rejecting invalid values.
+    """
     if score is None:
         return 0.0
     if isinstance(score, str):
@@ -254,32 +393,24 @@ def calculate_recency_factor(timestamp_str: str | None, recency_config: dict[str
     if not timestamp_str:
         return recency_config.get("days_7_plus", 0.85)
 
-    try:
-        # Try ISO format first
-        if "T" in timestamp_str:
-            ts = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
-        else:
-            ts = datetime.strptime(timestamp_str, "%Y-%m-%d")
-            ts = ts.replace(tzinfo=timezone.utc)
-
-        now = datetime.now(timezone.utc)
-        age_days = (now - ts).days
-
-        if age_days < 1:
-            return recency_config.get("within_24h", 1.0)
-        elif age_days <= 3:
-            return recency_config.get("days_1_to_3", 0.95)
-        elif age_days <= 7:
-            return recency_config.get("days_3_to_7", 0.90)
-        else:
-            return recency_config.get("days_7_plus", 0.85)
-    except (ValueError, TypeError):
+    ts = _parse_timestamp(timestamp_str)
+    if ts is None:
         return recency_config.get("days_7_plus", 0.85)
 
+    age_days = (datetime.now(timezone.utc) - ts).days
+    if age_days < 1:
+        return recency_config.get("within_24h", 1.0)
+    elif age_days <= 3:
+        return recency_config.get("days_1_to_3", 0.95)
+    elif age_days <= 7:
+        return recency_config.get("days_3_to_7", 0.90)
+    return recency_config.get("days_7_plus", 0.85)
 
-def extract_signals_from_edge_candidates(data: list[dict]) -> list[dict]:
+
+def extract_signals_from_edge_candidates(data: list[dict]) -> tuple[list[dict], list[dict]]:
     """Extract signals from edge-candidate-agent output."""
     signals = []
+    invalids = []
     for doc in data:
         source_file = doc.get("_source_file", "unknown")
         tickets = doc.get("tickets", [])
@@ -306,11 +437,30 @@ def extract_signals_from_edge_candidates(data: list[dict]) -> list[dict]:
                 if not symbol and isinstance(ticket.get("observation"), dict):
                     symbol = ticket["observation"].get("symbol")
                 tickers = as_ticker_list([symbol] if symbol else [])
+            signal_ref = ticket.get("ticket_id", ticket.get("id", "unknown"))
+            title = ticket.get("title", ticket.get("description", "Unnamed signal"))
+            payload, invalid_entry = _resolve_item_score(
+                score, ticket, doc, "edge_candidate_agent", signal_ref, title, source_file
+            )
+            if invalid_entry is not None:
+                invalids.append(invalid_entry)
+                continue
             signal = {
                 "skill": "edge_candidate_agent",
-                "signal_ref": ticket.get("ticket_id", ticket.get("id", "unknown")),
-                "title": ticket.get("title", ticket.get("description", "Unnamed signal")),
-                "raw_score": normalize_score_auto(score),
+                "signal_ref": signal_ref,
+                "title": title,
+                "raw_score": payload["raw_score"],
+                "score_scale_assumed": payload["score_scale_assumed"],
+                "input_value": payload["input_value"],
+                "evidence_id": _default_evidence_id(
+                    "edge_candidate_agent",
+                    signal_ref,
+                    title,
+                    tickers,
+                    normalize_direction(ticket.get("direction"), default="NEUTRAL"),
+                    ticket.get("evidence_id"),
+                ),
+                "event_fingerprint": _default_event_fingerprint(title, tickers),
                 "tickers": tickers,
                 "direction": normalize_direction(ticket.get("direction"), default="NEUTRAL"),
                 "time_horizon": ticket.get(
@@ -323,12 +473,13 @@ def extract_signals_from_edge_candidates(data: list[dict]) -> list[dict]:
                 "source_file": source_file,
             }
             signals.append(signal)
-    return signals
+    return signals, invalids
 
 
-def extract_signals_from_concepts(data: list[dict]) -> list[dict]:
+def extract_signals_from_concepts(data: list[dict]) -> tuple[list[dict], list[dict]]:
     """Extract signals from edge-concept-synthesizer output."""
     signals = []
+    invalids = []
     for doc in data:
         source_file = doc.get("_source_file", "unknown")
         concepts = doc.get("concepts", doc.get("edge_concepts", []))
@@ -345,11 +496,30 @@ def extract_signals_from_concepts(data: list[dict]) -> list[dict]:
             tickers = as_ticker_list(concept.get("tickers", concept.get("symbols", [])))
             if not tickers:
                 tickers = as_ticker_list(support.get("symbols", []))
+            signal_ref = concept.get("concept_id", concept.get("id", "unknown"))
+            title = concept.get("title", concept.get("name", "Unnamed concept"))
+            payload, invalid_entry = _resolve_item_score(
+                score, concept, doc, "edge_concept_synthesizer", signal_ref, title, source_file
+            )
+            if invalid_entry is not None:
+                invalids.append(invalid_entry)
+                continue
             signal = {
                 "skill": "edge_concept_synthesizer",
-                "signal_ref": concept.get("concept_id", concept.get("id", "unknown")),
-                "title": concept.get("title", concept.get("name", "Unnamed concept")),
-                "raw_score": normalize_score_auto(score),
+                "signal_ref": signal_ref,
+                "title": title,
+                "raw_score": payload["raw_score"],
+                "score_scale_assumed": payload["score_scale_assumed"],
+                "input_value": payload["input_value"],
+                "evidence_id": _default_evidence_id(
+                    "edge_concept_synthesizer",
+                    signal_ref,
+                    title,
+                    tickers,
+                    normalize_direction(concept.get("direction"), default="NEUTRAL"),
+                    concept.get("evidence_id"),
+                ),
+                "event_fingerprint": _default_event_fingerprint(title, tickers),
                 "tickers": tickers,
                 "direction": normalize_direction(concept.get("direction"), default="NEUTRAL"),
                 "time_horizon": concept.get(
@@ -363,12 +533,13 @@ def extract_signals_from_concepts(data: list[dict]) -> list[dict]:
                 "source_file": source_file,
             }
             signals.append(signal)
-    return signals
+    return signals, invalids
 
 
-def extract_signals_from_themes(data: list[dict]) -> list[dict]:
+def extract_signals_from_themes(data: list[dict]) -> tuple[list[dict], list[dict]]:
     """Extract signals from theme-detector output."""
     signals = []
+    invalids = []
     for doc in data:
         source_file = doc.get("_source_file", "unknown")
         theme_payload = doc.get("themes", doc.get("detected_themes", []))
@@ -390,11 +561,30 @@ def extract_signals_from_themes(data: list[dict]) -> list[dict]:
                 tickers = as_ticker_list(
                     theme.get("representative_stocks", theme.get("static_stocks", []))
                 )
+            signal_ref = theme.get("theme_id", theme.get("id", "unknown"))
+            title = theme.get("theme_name", theme.get("name", "Unnamed theme"))
+            payload, invalid_entry = _resolve_item_score(
+                score, theme, doc, "theme_detector", signal_ref, title, source_file
+            )
+            if invalid_entry is not None:
+                invalids.append(invalid_entry)
+                continue
             signal = {
                 "skill": "theme_detector",
-                "signal_ref": theme.get("theme_id", theme.get("id", "unknown")),
-                "title": theme.get("theme_name", theme.get("name", "Unnamed theme")),
-                "raw_score": normalize_score_auto(score),
+                "signal_ref": signal_ref,
+                "title": title,
+                "raw_score": payload["raw_score"],
+                "score_scale_assumed": payload["score_scale_assumed"],
+                "input_value": payload["input_value"],
+                "evidence_id": _default_evidence_id(
+                    "theme_detector",
+                    signal_ref,
+                    title,
+                    tickers,
+                    normalize_direction(theme.get("direction"), default="NEUTRAL"),
+                    theme.get("evidence_id"),
+                ),
+                "event_fingerprint": _default_event_fingerprint(title, tickers),
                 "tickers": tickers,
                 "direction": normalize_direction(theme.get("direction"), default="NEUTRAL"),
                 "time_horizon": theme.get("horizon", theme.get("time_horizon", "3-6 months")),
@@ -402,12 +592,13 @@ def extract_signals_from_themes(data: list[dict]) -> list[dict]:
                 "source_file": source_file,
             }
             signals.append(signal)
-    return signals
+    return signals, invalids
 
 
-def extract_signals_from_sectors(data: list[dict]) -> list[dict]:
+def extract_signals_from_sectors(data: list[dict]) -> tuple[list[dict], list[dict]]:
     """Extract signals from sector-analyst output."""
     signals = []
+    invalids = []
     for doc in data:
         source_file = doc.get("_source_file", "unknown")
         sectors = doc.get("sectors", doc.get("sector_analysis", []))
@@ -435,11 +626,32 @@ def extract_signals_from_sectors(data: list[dict]) -> list[dict]:
             score = sector.get("strength", sector.get("score"))
             if score is None:
                 score = sector.get("ratio_pct", sector.get("ratio"))
+            signal_ref = sector.get("sector_name", sector.get("sector", "unknown"))
+            title = f"{sector.get('sector_name', sector.get('sector', 'Unknown'))} Sector"
+            payload, invalid_entry = _resolve_item_score(
+                score, sector, doc, "sector_analyst", signal_ref, title, source_file
+            )
+            if invalid_entry is not None:
+                invalids.append(invalid_entry)
+                continue
             signal = {
                 "skill": "sector_analyst",
-                "signal_ref": sector.get("sector_name", sector.get("sector", "unknown")),
-                "title": f"{sector.get('sector_name', sector.get('sector', 'Unknown'))} Sector",
-                "raw_score": normalize_score_auto(score),
+                "signal_ref": signal_ref,
+                "title": title,
+                "raw_score": payload["raw_score"],
+                "score_scale_assumed": payload["score_scale_assumed"],
+                "input_value": payload["input_value"],
+                "evidence_id": _default_evidence_id(
+                    "sector_analyst",
+                    signal_ref,
+                    title,
+                    as_ticker_list(sector.get("top_stocks", sector.get("tickers", []))),
+                    direction,
+                    sector.get("evidence_id"),
+                ),
+                "event_fingerprint": _default_event_fingerprint(
+                    title, as_ticker_list(sector.get("top_stocks", sector.get("tickers", [])))
+                ),
                 "tickers": as_ticker_list(sector.get("top_stocks", sector.get("tickers", []))),
                 "direction": direction,
                 "time_horizon": "1-3 months",
@@ -447,12 +659,13 @@ def extract_signals_from_sectors(data: list[dict]) -> list[dict]:
                 "source_file": source_file,
             }
             signals.append(signal)
-    return signals
+    return signals, invalids
 
 
-def extract_signals_from_institutional(data: list[dict]) -> list[dict]:
+def extract_signals_from_institutional(data: list[dict]) -> tuple[list[dict], list[dict]]:
     """Extract signals from institutional-flow-tracker output."""
     signals = []
+    invalids = []
     for doc in data:
         source_file = doc.get("_source_file", "unknown")
         flows = doc.get("flows", doc.get("institutional_flows", []))
@@ -480,19 +693,44 @@ def extract_signals_from_institutional(data: list[dict]) -> list[dict]:
 
             score = flow.get("confidence", flow.get("magnitude"))
             if score is None:
-                score = abs(float(flow.get("percent_change", 0.0)))
+                try:
+                    score = abs(float(flow.get("percent_change", 0.0)))
+                except (TypeError, ValueError):
+                    score = None
 
+            signal_ref = flow.get(
+                "flow_id",
+                f"{flow.get('institution', 'unknown')}_{flow.get('ticker', flow.get('symbol', 'unknown'))}",
+            )
+            title = flow.get(
+                "title",
+                f"{flow.get('institution', flow.get('company_name', 'Unknown'))} - {flow.get('ticker', flow.get('symbol', 'Unknown'))}",
+            )
+            flow_tickers = as_ticker_list(
+                flow.get("tickers", [flow.get("ticker", flow.get("symbol"))]),
+            )
+            payload, invalid_entry = _resolve_item_score(
+                score, flow, doc, "institutional_flow_tracker", signal_ref, title, source_file
+            )
+            if invalid_entry is not None:
+                invalids.append(invalid_entry)
+                continue
             signal = {
                 "skill": "institutional_flow_tracker",
-                "signal_ref": flow.get(
-                    "flow_id",
-                    f"{flow.get('institution', 'unknown')}_{flow.get('ticker', flow.get('symbol', 'unknown'))}",
+                "signal_ref": signal_ref,
+                "title": title,
+                "raw_score": payload["raw_score"],
+                "score_scale_assumed": payload["score_scale_assumed"],
+                "input_value": payload["input_value"],
+                "evidence_id": _default_evidence_id(
+                    "institutional_flow_tracker",
+                    signal_ref,
+                    title,
+                    flow_tickers,
+                    direction,
+                    flow.get("evidence_id"),
                 ),
-                "title": flow.get(
-                    "title",
-                    f"{flow.get('institution', flow.get('company_name', 'Unknown'))} - {flow.get('ticker', flow.get('symbol', 'Unknown'))}",
-                ),
-                "raw_score": normalize_score_auto(score),
+                "event_fingerprint": _default_event_fingerprint(title, flow_tickers),
                 "tickers": as_ticker_list(
                     flow.get("tickers", [flow.get("ticker", flow.get("symbol"))]),
                 ),
@@ -502,12 +740,13 @@ def extract_signals_from_institutional(data: list[dict]) -> list[dict]:
                 "source_file": source_file,
             }
             signals.append(signal)
-    return signals
+    return signals, invalids
 
 
-def extract_signals_from_hints(data: list[dict]) -> list[dict]:
+def extract_signals_from_hints(data: list[dict]) -> tuple[list[dict], list[dict]]:
     """Extract signals from edge-hint-extractor output."""
     signals = []
+    invalids = []
     for doc in data:
         source_file = doc.get("_source_file", "unknown")
         hints = doc.get("hints", doc.get("edge_hints", []))
@@ -517,13 +756,37 @@ def extract_signals_from_hints(data: list[dict]) -> list[dict]:
         for hint in hints:
             if not isinstance(hint, dict):
                 continue
+            signal_ref = hint.get("hint_id", hint.get("id", "unknown"))
+            title = hint.get("title", hint.get("hint", hint.get("description", "Unnamed hint")))
+            hint_tickers = as_ticker_list(hint.get("tickers", hint.get("symbols", [])))
+            payload, invalid_entry = _resolve_item_score(
+                hint.get("relevance", hint.get("score", 0.3)),
+                hint,
+                doc,
+                "edge_hint_extractor",
+                signal_ref,
+                title,
+                source_file,
+            )
+            if invalid_entry is not None:
+                invalids.append(invalid_entry)
+                continue
             signal = {
                 "skill": "edge_hint_extractor",
-                "signal_ref": hint.get("hint_id", hint.get("id", "unknown")),
-                "title": hint.get(
-                    "title", hint.get("hint", hint.get("description", "Unnamed hint"))
+                "signal_ref": signal_ref,
+                "title": title,
+                "raw_score": payload["raw_score"],
+                "score_scale_assumed": payload["score_scale_assumed"],
+                "input_value": payload["input_value"],
+                "evidence_id": _default_evidence_id(
+                    "edge_hint_extractor",
+                    signal_ref,
+                    title,
+                    hint_tickers,
+                    normalize_direction(hint.get("direction"), default="NEUTRAL"),
+                    hint.get("evidence_id"),
                 ),
-                "raw_score": normalize_score_auto(hint.get("relevance", hint.get("score", 0.3))),
+                "event_fingerprint": _default_event_fingerprint(title, hint_tickers),
                 "tickers": as_ticker_list(hint.get("tickers", hint.get("symbols", []))),
                 "direction": normalize_direction(hint.get("direction"), default="NEUTRAL"),
                 "time_horizon": hint.get("horizon", "unknown"),
@@ -531,7 +794,7 @@ def extract_signals_from_hints(data: list[dict]) -> list[dict]:
                 "source_file": source_file,
             }
             signals.append(signal)
-    return signals
+    return signals, invalids
 
 
 def calculate_ticker_overlap(tickers_a: list[str], tickers_b: list[str]) -> float:
@@ -573,54 +836,186 @@ def are_signals_similar(sig_a: dict, sig_b: dict, config: dict) -> bool:
     return ticker_sim >= ticker_threshold or text_sim >= similarity_threshold
 
 
+def _contributor_entry(sig: dict) -> dict:
+    """Contributing-skill entry with identity fields for agreement tiering."""
+    title = sig.get("title")
+    tickers = sig.get("tickers")
+    fingerprint = sig.get("event_fingerprint")
+    if not fingerprint and (title is not None or tickers is not None):
+        fingerprint = _default_event_fingerprint(title, tickers)
+    entry = {
+        "skill": sig["skill"],
+        "signal_ref": sig["signal_ref"],
+        "raw_score": sig["raw_score"],
+        "evidence_id": sig.get("evidence_id"),
+        "event_fingerprint": fingerprint,
+    }
+    if title is not None:
+        entry["title"] = title
+    if tickers is not None:
+        entry["tickers"] = sorted({str(x).strip().upper() for x in tickers if x})
+    return entry
+
+
+EXACT_MERGE_RULE = (
+    "newest timestamp wins; ties, missing, or unparsable timestamps keep the "
+    "highest raw_score, then a stable key"
+)
+
+
+_TS_OFFSET_RE = re.compile(r"([+-])(\d{2})(?::?(\d{2}))?$")
+_TS_FRACTION_RE = re.compile(r"(\.\d+)")
+
+
+def _parse_timestamp(value) -> datetime | None:
+    """Parse an ISO-8601 timestamp or YYYY-MM-DD date to an aware datetime.
+
+    Only ISO-8601 strings are ordered; epoch numbers and compact forms such as
+    ``20261010`` return None. Naive values are read as UTC. The text is normalized
+    (``Z``/``+HHMM``/``+HH`` offsets, fractions truncated to 6 digits) so behavior is
+    identical on Python 3.10 through 3.14.
+    """
+    if not isinstance(value, str) or not value.strip():
+        return None
+    text = value.strip()
+    try:
+        if "T" in text or " " in text:
+            text = text.replace(" ", "T", 1)
+            if text.endswith(("Z", "z")):
+                text = text[:-1] + "+00:00"
+            head, sep, tail = text.partition("T")
+            match = _TS_OFFSET_RE.search(tail)
+            if match:
+                hh, mm = match.group(2), match.group(3) or "00"
+                tail = tail[: match.start()] + f"{match.group(1)}{hh}:{mm}"
+            tail = _TS_FRACTION_RE.sub(lambda m: m.group(1)[:7], tail, count=1)
+            parsed = datetime.fromisoformat(head + sep + tail)
+        else:
+            parsed = datetime.strptime(text, "%Y-%m-%d")
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed
+
+
+def _score_or_zero(value) -> float:
+    return float(value) if _is_finite_score(value) else 0.0
+
+
+def _exact_copy_sort_key(sig: dict) -> tuple:
+    """Total order, ascending: index 0 is the copy to retain."""
+    parsed = _parse_timestamp(sig.get("timestamp"))
+    ts_rank = parsed.timestamp() if parsed is not None else float("-inf")
+    return (
+        -ts_rank,
+        -_score_or_zero(sig.get("raw_score")),
+        str(sig.get("signal_ref", "")),
+        str(sig.get("source_file", "")),
+        str(sig.get("title", "")),
+        str(sig.get("direction", "")),
+        _ticker_token(sig.get("tickers")),
+        json.dumps(sig, sort_keys=True, default=str),
+    )
+
+
+def _copy_summary(sig: dict) -> dict:
+    return {
+        "signal_ref": sig.get("signal_ref"),
+        "source_file": sig.get("source_file"),
+        "raw_score": sig.get("raw_score"),
+        "timestamp": sig.get("timestamp"),
+    }
+
+
 def deduplicate_signals(signals: list[dict], config: dict) -> tuple[list[dict], list[dict]]:
     """
     Deduplicate signals, merging similar ones.
     Returns (deduplicated_signals, dedup_log).
+
+    Issue #510: identical evidence (same skill + evidence_id) merges silently with no
+    bonus; near-duplicate merges keep the old merge path but carry identity fields so
+    agreement tiering can distinguish same-skill copies from independent evidence.
     """
     if not signals:
         return [], []
 
-    # Sort by raw score descending so we keep highest-scoring as primary
-    sorted_signals = sorted(signals, key=lambda s: s.get("raw_score", 0), reverse=True)
+    # Pass 1: merge exact-evidence re-ingestions (same skill + evidence_id).
+    # Newest observation wins: the copy with the latest parsed (timezone-aware)
+    # timestamp is the primary. Equal, missing, or unparsable timestamps fall back to
+    # the highest raw_score, then a stable key, so ingestion order cannot change the
+    # result (Issue #510). A copy that declared no score_scale still toggles the
+    # assumed-scale flag on the primary.
+    groups: dict[tuple[str, Any], list[dict]] = {}
+    for sig in signals:
+        identity = (sig.get("skill", "unknown"), sig.get("evidence_id"))
+        groups.setdefault(identity, []).append(sig)
+
+    exact_signals: list[dict] = []
+    exact_logs: dict[tuple[str, Any], dict] = {}
+    for identity, group in groups.items():
+        ordered = sorted(group, key=_exact_copy_sort_key)
+        primary = dict(ordered[0])
+        discarded = ordered[1:]
+        if discarded:
+            primary["_duplicate_copies"] = len(discarded)
+            if any(c.get("score_scale_assumed") for c in discarded):
+                primary["score_scale_assumed"] = True
+            exact_logs[identity] = {
+                "merged_into": f"{primary['skill']}:{primary['signal_ref']}",
+                "duplicates_removed": [
+                    f"{c['skill']}:{c['signal_ref']}@{c.get('source_file')}" for c in discarded
+                ],
+                "similarity_score": 1.0,
+                "reason": "same evidence re-ingested",
+                "selection_rule": EXACT_MERGE_RULE,
+                "retained_copy": _copy_summary(primary),
+                "discarded_copies": [_copy_summary(c) for c in discarded],
+            }
+        exact_signals.append(primary)
+
+    # Deterministic order for the near-duplicate pass (independent of ingestion order).
+    exact_signals.sort(
+        key=lambda s: (
+            -_score_or_zero(s.get("raw_score")),
+            str(s.get("skill", "")),
+            str(s.get("signal_ref", "")),
+            str(s.get("evidence_id", "")),
+        )
+    )
 
     merged = []
     dedup_log = []
     used_indices = set()
 
-    for i, sig in enumerate(sorted_signals):
+    # Exact-copy merges are logged BEFORE pass 2 so they surface regardless of the
+    # primary's own fate in the near-duplicate merge (Issue #510 review finding).
+    for sig in exact_signals:
+        identity = (sig.get("skill", "unknown"), sig.get("evidence_id"))
+        if identity in exact_logs:
+            dedup_log.append(exact_logs[identity])
+
+    # Pass 2: near-duplicate similarity merge (existing behaviour).
+    for i, sig in enumerate(exact_signals):
         if i in used_indices:
             continue
 
-        # Find all signals similar to this one
         duplicates = []
-        for j, other in enumerate(sorted_signals):
+        for j, other in enumerate(exact_signals):
             if j != i and j not in used_indices:
                 if are_signals_similar(sig, other, config):
                     duplicates.append((j, other))
                     used_indices.add(j)
 
-        # Create merged signal
         merged_signal = sig.copy()
-        merged_signal["contributing_skills"] = [
-            {
-                "skill": sig["skill"],
-                "signal_ref": sig["signal_ref"],
-                "raw_score": sig["raw_score"],
-            }
-        ]
+        merged_signal["contributing_skills"] = [_contributor_entry(sig)]
         merged_signal["merged_from"] = []
 
-        # Merge duplicates
         for dup_idx, dup in duplicates:
-            merged_signal["contributing_skills"].append(
-                {
-                    "skill": dup["skill"],
-                    "signal_ref": dup["signal_ref"],
-                    "raw_score": dup["raw_score"],
-                }
-            )
+            merged_signal["contributing_skills"].append(_contributor_entry(dup))
             merged_signal["merged_from"].append(f"{dup['skill']}:{dup['signal_ref']}")
+            if dup.get("score_scale_assumed"):
+                merged_signal["score_scale_assumed"] = True
 
             # Merge tickers
             existing_tickers = set(t.upper() for t in merged_signal.get("tickers", []))
@@ -799,7 +1194,6 @@ def calculate_composite_score(signal: dict, config: dict) -> dict:
     agreement_config = config.get("agreement", {})
     recency_config = config.get("recency", {})
     confidence_factors = config.get("confidence_factors", {})
-    dedup_config = config.get("deduplication", {})
 
     contributing = signal.get(
         "contributing_skills",
@@ -808,48 +1202,81 @@ def calculate_composite_score(signal: dict, config: dict) -> dict:
                 "skill": signal["skill"],
                 "signal_ref": signal["signal_ref"],
                 "raw_score": signal["raw_score"],
+                "evidence_id": signal.get("evidence_id"),
+                "event_fingerprint": signal.get("event_fingerprint"),
             }
         ],
     )
+
+    # Identity fallbacks for externally supplied contributor dicts (Issue #510).
+    for contrib in contributing:
+        if not _is_finite_score(contrib.get("raw_score")):
+            # A non-finite/None raw score must never reach serialized output.
+            contrib["raw_score"] = None
+        if not contrib.get("evidence_id"):
+            contrib["evidence_id"] = hashlib.sha1(
+                f"{contrib.get('skill', 'unknown')}|{contrib.get('signal_ref', 'unknown')}".encode(),
+                usedforsecurity=False,
+            ).hexdigest()
+        if not contrib.get("event_fingerprint"):
+            if contrib.get("title") is not None or contrib.get("tickers") is not None:
+                contrib["event_fingerprint"] = _default_event_fingerprint(
+                    contrib.get("title"), contrib.get("tickers")
+                )
+            else:
+                contrib["event_fingerprint"] = hashlib.sha1(
+                    f"{contrib.get('skill', 'unknown')}|{contrib.get('signal_ref', 'unknown')}".encode(),
+                    usedforsecurity=False,
+                ).hexdigest()
 
     # Calculate weighted score from contributing skills
     weighted_sum = 0.0
     total_weight = 0.0
     for contrib in contributing:
+        raw = contrib["raw_score"]
+        if not _is_finite_score(raw):
+            # Belt-and-suspenders guard: non-finite contributions are ignored.
+            continue
         skill = contrib["skill"]
         weight = weights.get(skill, 0.10)
-        weighted_sum += contrib["raw_score"] * weight
+        weighted_sum += raw * weight
         total_weight += weight
-        contrib["weighted_contribution"] = round(contrib["raw_score"] * weight, 4)
+        contrib["weighted_contribution"] = round(raw * weight, 4)
 
     base_score = weighted_sum / total_weight if total_weight > 0 else 0.0
 
-    # Agreement bonus
-    num_skills = len(set(c["skill"] for c in contributing))
-    if num_skills >= 3:
+    # Agreement bonus (Issue #510): credit requires distinct evidence AND distinct
+    # events AND distinct skills; agreement_tier_n = min of the three distinct counts.
+    distinct_evidence = len({c.get("evidence_id") for c in contributing})
+    distinct_events = len({c.get("event_fingerprint") for c in contributing})
+    distinct_skills = len({c.get("skill") for c in contributing})
+    agreement_tier = min(distinct_evidence, distinct_events, distinct_skills)
+    if agreement_tier >= 3:
         agreement_bonus = agreement_config.get("three_plus_skills_bonus", 0.20)
-    elif num_skills == 2:
+    elif agreement_tier == 2:
         agreement_bonus = agreement_config.get("two_skills_bonus", 0.10)
     else:
         agreement_bonus = 0.0
 
-    # Merge bonus
-    num_merged = len(signal.get("merged_from", []))
-    merge_bonus = num_merged * dedup_config.get("merge_bonus_per_duplicate", 0.05)
+    # Merge bonus REMOVED (Issue #510): re-ingested duplicates must not inflate scores.
 
     # Recency factor
     recency_factor = calculate_recency_factor(signal.get("timestamp"), recency_config)
 
-    # Composite score with cap
+    # Composite score with cap; final non-finite guard.
     max_score = agreement_config.get("max_score", 1.0)
-    composite = min(max_score, (base_score + agreement_bonus + merge_bonus) * recency_factor)
+    composite = (base_score + agreement_bonus) * recency_factor
+    if not math.isfinite(composite):
+        composite = 0.0
+    composite = max(0.0, min(max_score, composite))
 
     # Confidence breakdown
     agreement_weight = confidence_factors.get("multi_skill_agreement", 0.35)
     strength_weight = confidence_factors.get("signal_strength", 0.40)
     recency_weight = confidence_factors.get("recency", 0.25)
 
-    avg_raw_score = sum(c["raw_score"] for c in contributing) / len(contributing)
+    finite_scores = [c["raw_score"] for c in contributing if _is_finite_score(c["raw_score"])]
+    avg_raw_score = sum(finite_scores) / len(finite_scores) if finite_scores else 0.0
 
     confidence_breakdown = {
         "multi_skill_agreement": round(
@@ -879,19 +1306,67 @@ def aggregate_signals(
     config: dict,
 ) -> dict:
     """Main aggregation function."""
-    # Extract signals from all sources
+    # Extract signals from all sources (Issue #510: extraction returns valid + invalid)
     all_signals = []
-    all_signals.extend(extract_signals_from_edge_candidates(edge_candidates))
-    all_signals.extend(extract_signals_from_concepts(edge_concepts))
-    all_signals.extend(extract_signals_from_themes(themes))
-    all_signals.extend(extract_signals_from_sectors(sectors))
-    all_signals.extend(extract_signals_from_institutional(institutional))
-    all_signals.extend(extract_signals_from_hints(hints))
+    invalid_signals = []
+    scale_assumptions_report = []
+
+    def extract(source_name, extractor, data):
+        nonlocal invalid_signals
+        src_signals, src_invalids = extractor(data or [])
+        all_signals.extend(src_signals)
+        invalid_signals.extend(src_invalids)
+
+    extract("edge_candidates", extract_signals_from_edge_candidates, edge_candidates)
+    extract("edge_concepts", extract_signals_from_concepts, edge_concepts)
+    extract("themes", extract_signals_from_themes, themes)
+    extract("sectors", extract_signals_from_sectors, sectors)
+    extract("institutional", extract_signals_from_institutional, institutional)
+    extract("hints", extract_signals_from_hints, hints)
 
     total_input = len(all_signals)
 
+    idempotency_check = {
+        "total_input_signals": total_input,
+        "unique_evidence_ids": len({s.get("evidence_id") for s in all_signals}),
+        "duplicate_copies_merged": 0,
+        "independent_units_total": len(
+            {(s.get("skill"), s.get("evidence_id")) for s in all_signals}
+        ),
+    }
+
     # Deduplicate
     deduped_signals, dedup_log = deduplicate_signals(all_signals, config)
+    exact_copy_count = sum(
+        len(entry["duplicates_removed"])
+        for entry in dedup_log
+        if entry.get("reason") == "same evidence re-ingested"
+    )
+    idempotency_check["duplicate_copies_merged"] = exact_copy_count
+
+    assumed_by_key: dict[tuple, dict] = {}
+    for sig in all_signals:
+        if sig.get("score_scale_assumed"):
+            key = (sig.get("skill"), sig.get("signal_ref"), sig.get("evidence_id"))
+            best = assumed_by_key.get(key)
+            if best is None or _exact_copy_sort_key(sig) < _exact_copy_sort_key(best):
+                assumed_by_key[key] = sig
+    for sig in sorted(
+        assumed_by_key.values(),
+        key=lambda x: (str(x.get("skill")), str(x.get("signal_ref")), str(x.get("evidence_id"))),
+    ):
+        scale_assumptions_report.append(
+            {
+                "skill": sig.get("skill"),
+                "signal_ref": sig.get("signal_ref"),
+                "value": sig.get("input_value", sig.get("raw_score")),
+                "normalized_value": round(sig["raw_score"], 6)
+                if _is_finite_score(sig.get("raw_score"))
+                else None,
+                "assumed_scale": "0-100",
+                "source_file": sig.get("source_file"),
+            }
+        )
 
     # Detect contradictions
     contradictions = detect_contradictions(deduped_signals)
@@ -905,6 +1380,8 @@ def aggregate_signals(
             "signal_id": f"sig_{len(scored_signals):03d}",
             "title": sig["title"],
             "composite_score": score_data["composite_score"],
+            "evidence_id": sig.get("evidence_id"),
+            "score_scale_assumed": bool(sig.get("score_scale_assumed")),
             "contributing_skills": score_data["contributing_skills"],
             "tickers": sig.get("tickers", []),
             "direction": sig.get("direction", "NEUTRAL"),
@@ -937,7 +1414,6 @@ def aggregate_signals(
     signals_above_threshold = [s for s in ranked_signals if s["composite_score"] >= min_conviction]
 
     return {
-        "schema_version": "1.0",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "config": {
             "weights": config.get("weights", DEFAULT_WEIGHTS),
@@ -952,11 +1428,16 @@ def aggregate_signals(
             "contradictions_found": len(contradictions),
             "contradiction_adjustments_applied": len(contradiction_adjustments),
             "signals_above_threshold": len(signals_above_threshold),
+            "invalid_signals_dropped": len(invalid_signals),
+            "idempotency_check": idempotency_check,
         },
+        "schema_version": "1.1",
         "ranked_signals": ranked_signals,
         "contradictions": contradictions,
         "contradiction_adjustments": contradiction_adjustments,
         "deduplication_log": dedup_log,
+        "invalid_signals": invalid_signals,
+        "scale_assumptions_report": scale_assumptions_report,
     }
 
 
@@ -970,7 +1451,7 @@ def generate_markdown_report(result: dict) -> str:
         f"- Total Input Signals: {result['summary']['total_input_signals']}",
         f"- Unique After Dedup: {result['summary']['unique_signals_after_dedup']}",
         f"- Contradictions: {result['summary']['contradictions_found']}",
-        f"- High Conviction (>{result['config']['min_conviction']}): {result['summary']['signals_above_threshold']}",
+        f"- High Conviction (>={result['config']['min_conviction']}): {result['summary']['signals_above_threshold']}",
         "",
     ]
 
@@ -991,9 +1472,9 @@ def generate_markdown_report(result: dict) -> str:
             )
             lines.append("- **Contributing Skills:**")
             for contrib in sig["contributing_skills"]:
-                lines.append(
-                    f"  - {contrib['skill']}: {contrib['raw_score']:.2f} ({contrib['signal_ref']})"
-                )
+                contrib_score = contrib.get("raw_score")
+                score_text = f"{contrib_score:.2f}" if _is_finite_score(contrib_score) else "n/a"
+                lines.append(f"  - {contrib['skill']}: {score_text} ({contrib['signal_ref']})")
             cb = sig["confidence_breakdown"]
             lines.append(
                 f"- **Confidence:** Agreement {cb['multi_skill_agreement']:.2f} | Strength {cb['signal_strength']:.2f} | Recency {cb['recency']:.2f}"
@@ -1014,6 +1495,17 @@ def generate_markdown_report(result: dict) -> str:
             )
             lines.append(f"- **Hint:** {contra['resolution_hint']}")
             lines.append("")
+
+    # Dropped by score validation (Issue #510)
+    if result.get("invalid_signals"):
+        lines.append("## Dropped by Score Validation")
+        lines.append("")
+        for item in result["invalid_signals"]:
+            lines.append(
+                f"- {item['skill']}:{item['signal_ref']} - {item['reason']} "
+                f"(declared_scale: {item.get('declared_scale')}, raw: {item.get('raw_value_repr')})"
+            )
+        lines.append("")
 
     # Deduplication summary
     if result["deduplication_log"]:
@@ -1094,7 +1586,11 @@ def main() -> int:
         return 1
 
     # Load configuration
-    config = load_config(args.weights_config)
+    try:
+        config = load_config(args.weights_config)
+    except ValueError as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        return 1
     if args.min_conviction is not None:
         config["min_conviction"] = args.min_conviction
 

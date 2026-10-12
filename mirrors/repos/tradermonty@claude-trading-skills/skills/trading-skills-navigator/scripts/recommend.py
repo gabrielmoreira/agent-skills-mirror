@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -225,7 +226,8 @@ def resolve_metadata(
 
 
 # ---------------------------------------------------------------------------
-# Personas — ordered; first match wins. Encodes the 10-question contract
+# Personas — ordered; first match wins except no-api-path is a constraint
+# when a substantive goal also matches. Encodes the 10-question contract
 # (test_recommend.py) + PROJECT_VISION.md §7 target users.
 # ---------------------------------------------------------------------------
 
@@ -1084,6 +1086,45 @@ def _order_secondary(
     return ordered
 
 
+_CSV_INPUT_PATTERNS = (
+    # CSV named as where the portfolio comes from. These always win.
+    r"\bfrom\s+(?:an?\s+|my\s+|the\s+)?(?:[\w-]+\s+){0,2}csv\b",
+    r"\b(?:import|upload|load|read|ingest|parse|using|use|based on)\b[^.;]{0,30}\bcsv\b",
+    r"\b(?:holdings|positions|portfolio)\b[^.;]{0,20}\bin\s+(?:an?\s+)?csv\b",
+    r"[\w/\\-]+\.csv\b",
+    r"\bcsv\b[^.;]{0,20}\bfrom\s+(?:my|the|an?|your)\s+(?:[\w-]+\s+)?(?:broker|brokerage|bank|account)\b",
+    r"csv\s*(?:から|を取り込|を取込|を読み込|を読込|をインポート|をアップロード|の保有|のポジション)",
+    r"(?:保有|ポジション|銘柄).{0,10}csv",
+    r"csv.{0,10}(?:取り込|取込|読み込|インポート|アップロード)",
+)
+_CSV_OUTPUT_PATTERNS = (
+    r"\b(?:export|save|write|send|output|email|mail)\b[^.;]{0,25}\bcsv\b",
+    r"\bdownload\s+(?:the\s+|my\s+)?(?:results?|report|summary)\b[^.;]{0,25}\bcsv\b",
+    r"\b(?:results?|reports?|summary|output|give|send|show|return|provide|deliver)\b[^.;]{0,25}\bas\s+(?:an?\s+)?csv\b",
+    r"\b(?:to|into)\s+(?:an?\s+)?csv\b",
+    r"\bcsv\s+(?:export|output|report)\b",
+    r"csv\s*(?:に|で)\s*(?:出力|保存|書き出|エクスポート)",
+    r"csv\s*を\s*(?:出力|エクスポート|書き出)",
+)
+_NEGATED_CSV_RE = re.compile(r"\b(?:not|without|no)\s+(?:from\s+)?(?:an?\s+|any\s+)?csv\b")
+
+
+def _wants_csv_portfolio_input(norm: str) -> bool:
+    """True when a CSV mention should be read as the portfolio *source* (#511).
+
+    Any CSV mention defaults to "input", because Navigator cannot read files.
+    The exception is a CSV that is clearly an output (export/save/send, JA
+    CSVに出力) with no input pattern anywhere; input patterns win. A negated
+    CSV ("not from a CSV") is ignored. Naming Alpaca never matters on its own.
+    """
+    text = _NEGATED_CSV_RE.sub(" ", norm)
+    if "csv" not in text:
+        return False
+    if any(re.search(pat, text) for pat in _CSV_INPUT_PATTERNS):
+        return True
+    return not any(re.search(pat, text) for pat in _CSV_OUTPUT_PATTERNS)
+
+
 def recommend(
     query: str,
     metadata: dict[str, Any],
@@ -1109,6 +1150,27 @@ def recommend(
     matches = [persona for persona in PERSONAS if persona.matches(norm)]
     matched = matches[0] if matches else None
     routing_diagnostics = _routing_diagnostics(matches)
+    no_api_intent = any(persona.name == "no-api-path" for persona in matches)
+    if no_api_intent:
+        no_api = True
+        # "without API" is a constraint on a substantive goal when both are
+        # present, not a reason to replace that goal with the generic path.
+        substantive = next((p for p in matches if p.name != "no-api-path"), None)
+        if matched is not None and matched.name == "no-api-path" and substantive is not None:
+            matched = substantive
+            routing_diagnostics["selected_persona"] = substantive.name
+            routing_diagnostics["explanation"] = (
+                f"No-API intent is a constraint; selected goal persona '{substantive.name}'."
+            )
+    goal_workflow_id = matched.primary if matched is not None else None
+    goal_workflow = workflows_by_id.get(goal_workflow_id) if goal_workflow_id else None
+    goal_match: dict[str, Any] = {
+        "persona": matched.name if matched is not None else None,
+        "workflow": _workflow_public_view(goal_workflow) if goal_workflow else None,
+        "runnability": "unmatched" if matched is None else "unshipped",
+        "missing_requirements": [],
+    }
+    alternative_workflow: dict[str, Any] | None = None
 
     if matched is not None:
         rationale.append(f"matched persona: {matched.name} — {matched.rationale}")
@@ -1183,24 +1245,91 @@ def recommend(
             note=note,
             rationale=rationale,
             routing_diagnostics=routing_diagnostics,
+            goal_match=goal_match,
+            alternative_workflow=None,
         )
 
     # ---- workflow branch ---------------------------------------------------
     assert primary_id is not None  # set in every non-gap path above
 
+    missing_requirements: list[dict[str, str]] = []
+    dropped_secondary: list[dict[str, str]] = []
     if no_api:
         reason = workflow_paid_api_reason(workflows_by_id.get(primary_id, {}), skills_by_id)
         if reason is not None:
-            rationale.append(
-                f"--no-api: '{primary_id}' excluded ({reason}); defaulting to "
-                f"the no-API on-ramp 'market-regime-daily'"
-            )
-            primary_id = "market-regime-daily"
-        secondary_ids = [
-            wid
-            for wid in secondary_ids
-            if workflow_paid_api_reason(workflows_by_id.get(wid, {}), skills_by_id) is None
-        ]
+            missing_requirements.append({"kind": "paid_api", "id": primary_id, "detail": reason})
+        kept_secondary: list[str] = []
+        for wid in secondary_ids:
+            drop_reason = workflow_paid_api_reason(workflows_by_id.get(wid, {}), skills_by_id)
+            if drop_reason is None:
+                kept_secondary.append(wid)
+            else:
+                dropped_secondary.append({"id": wid, "reason": f"requires paid API: {drop_reason}"})
+        secondary_ids = kept_secondary
+
+    # CSV portfolio review is a separate, unshipped capability (#512). The
+    # Navigator accepts no file input, so a CSV *source* request cannot make
+    # the Alpaca-backed portfolio workflow runnable, even if a path is in
+    # prose. Merely mentioning CSV (e.g. exporting results) is not a gap.
+    if goal_workflow_id == "core-portfolio-weekly" and _wants_csv_portfolio_input(norm):
+        missing_requirements.extend(
+            [
+                {
+                    "kind": "missing_input",
+                    "id": "portfolio_csv_path",
+                    "detail": "Navigator has no portfolio CSV input parameter",
+                },
+                {
+                    "kind": "unsupported_capability",
+                    "id": "portfolio_csv_review",
+                    "detail": "No shipped CSV portfolio-review workflow (#512)",
+                },
+            ]
+        )
+
+    if missing_requirements:
+        goal_match["runnability"] = "blocked"
+        goal_match["missing_requirements"] = missing_requirements
+        routing_diagnostics["status"] = "unavailable"
+        routing_diagnostics["explanation"] = (
+            f"Matched persona '{matched.name}', but goal workflow '{goal_workflow_id}' "
+            "is unavailable: " + "; ".join(item["detail"] for item in missing_requirements)
+        )
+        rationale.append(routing_diagnostics["explanation"])
+        if no_api:
+            fallback = workflows_by_id.get("market-regime-daily")
+            if fallback is not None and workflow_paid_api_reason(fallback, skills_by_id) is None:
+                alternative_workflow = {
+                    "workflow": _workflow_public_view(fallback),
+                    "relationship": "different_goal",
+                    "no_api_path": True,
+                    "explanation": "General market-regime on-ramp; does not serve the requested goal",
+                }
+        category = dominant_category(goal_workflow, skills_by_id) if goal_workflow else "meta"
+        skillset = _skillset(
+            category, skillset_ids, skillsets_by_id, primary_workflow_id=goal_workflow_id
+        )
+        return _finalize_result(
+            query=query,
+            primary=None,
+            secondary=[],
+            skillset=skillset,
+            setup_bundle={"required": [], "recommended": [], "optional": [], "sources": []},
+            suggested_skills=[],
+            operational_roles={},
+            no_api=no_api,
+            no_api_path=None,
+            honest_gap=True,
+            note="The matched goal has no usable workflow under the stated constraints.",
+            rationale=rationale,
+            routing_diagnostics=routing_diagnostics,
+            goal_match=goal_match,
+            alternative_workflow=alternative_workflow,
+            dropped_secondary_workflows=dropped_secondary,
+        )
+
+    if matched is not None:
+        goal_match["runnability"] = "eligible"
 
     primary_wf = workflows_by_id.get(primary_id)
     if primary_wf is None:
@@ -1272,6 +1401,9 @@ def recommend(
         note=note,
         rationale=rationale,
         routing_diagnostics=routing_diagnostics,
+        goal_match=goal_match,
+        alternative_workflow=alternative_workflow,
+        dropped_secondary_workflows=dropped_secondary,
     )
 
 
@@ -1290,6 +1422,9 @@ def _finalize_result(
     note: str | None,
     rationale: list[str],
     routing_diagnostics: dict[str, Any],
+    goal_match: dict[str, Any],
+    alternative_workflow: dict[str, Any] | None,
+    dropped_secondary_workflows: list[dict[str, str]] | None = None,
 ) -> dict[str, Any]:
     return {
         "query": query,
@@ -1305,6 +1440,9 @@ def _finalize_result(
         "note": note,
         "rationale": rationale,
         "routing_diagnostics": routing_diagnostics,
+        "goal_match": goal_match,
+        "alternative_workflow": alternative_workflow,
+        "dropped_secondary_workflows": dropped_secondary_workflows or [],
         "setup_path_ref": SETUP_PATH_REF,
     }
 
@@ -1344,11 +1482,24 @@ def render_text(result: dict[str, Any]) -> str:
         f"Routing: {diagnostics['status']} (selected={diagnostics['selected_persona'] or 'none'}; "
         f"candidates={candidates}) — {diagnostics['explanation']}"
     )
+    goal = result["goal_match"]
+    goal_wf = goal["workflow"]
+    lines.append(
+        f"Goal match: {goal['persona'] or 'none'}; "
+        f"workflow={goal_wf['id'] if goal_wf else 'none'}; "
+        f"runnability={goal['runnability']}"
+    )
+    for requirement in goal["missing_requirements"]:
+        lines.append(f"  Missing requirement ({requirement['kind']}): {requirement['detail']}")
     if result["honest_gap"]:
-        lines.append(f"Recommended workflow: (none yet — {result['skillset']['id']})")
-        lines.append("Suggested skills:")
-        for s in result["suggested_skills"]:
-            lines.append(f"  - {s['display_name']} ({s['id']})")
+        if goal["runnability"] == "unshipped":
+            lines.append(f"Recommended workflow: (none shipped — {result['skillset']['id']})")
+            lines.append("Suggested skills:")
+            for s in result["suggested_skills"]:
+                lines.append(f"  - {s['display_name']} ({s['id']})")
+        else:
+            lines.append("Recommended workflow: (none usable for the requested goal)")
+            lines.append(f"Skillset: {result['skillset']['id']}")
     else:
         pw = result["primary_workflow"]
         lines.append(
@@ -1358,6 +1509,8 @@ def render_text(result: dict[str, Any]) -> str:
         )
         for sw in result["secondary_workflows"]:
             lines.append(f"Secondary: {sw['display_name']} ({sw['id']})")
+        for dropped in result["dropped_secondary_workflows"]:
+            lines.append(f"Dropped secondary (no-API): {dropped['id']} — {dropped['reason']}")
         lines.append(
             f"Skillset: {result['skillset']['id']} "
             f"(manifest_status={result['skillset']['manifest_status']})"
@@ -1371,7 +1524,11 @@ def render_text(result: dict[str, Any]) -> str:
             lines.append(f"    Related workflows: {', '.join(man['related_workflows']) or '—'}")
     sb = result["setup_bundle"]
     if result["honest_gap"]:
-        lines.append("Setup bundle: (use suggested skills above)")
+        lines.append(
+            "Setup bundle: (use suggested skills above)"
+            if goal["runnability"] == "unshipped"
+            else "Setup bundle: (none for the blocked goal)"
+        )
     else:
         lines.append("Setup bundle:")
         lines.append(f"  Required:    {', '.join(sb['required']) or '—'}")
@@ -1384,12 +1541,18 @@ def render_text(result: dict[str, Any]) -> str:
         suffix = f" — {rationale}" if rationale else ""
         lines.append(f"  - {skill_id}: {role['type']}{suffix}")
     if result["no_api_path"] is None:
-        lines.append("No-API path: n/a (no workflow shipped)")
+        lines.append("No-API path: n/a (no usable recommendation for the goal)")
     else:
         lines.append(
             f"No-API path: {'yes' if result['no_api_path'] else 'no'} (works without paid API keys)"
         )
     lines.append(f"No-API mode requested: {result['no_api']}")
+    alternative = result["alternative_workflow"]
+    if alternative is not None:
+        lines.append(
+            f"Different-goal alternative: {alternative['workflow']['display_name']} "
+            f"({alternative['workflow']['id']}) — {alternative['explanation']}"
+        )
     if result["note"]:
         lines.append(f"Note: {result['note']}")
     lines.append("Why:")

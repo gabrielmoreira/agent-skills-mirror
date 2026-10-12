@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "benchmark_version": "2026-09-28.v2",
-  "description": "Manually labeled EN/JA gold corpus for deterministic first-match Navigator routing.",
+  "benchmark_version": "2026-10-10.issue-511",
+  "description": "Manually labeled EN/JA gold corpus for deterministic Navigator routing, including the no-API constraint exception.",
   "baseline": {
     "candidate_precision": 1,
     "candidate_recall": 1,
@@ -4801,6 +4801,262 @@
         "ambiguous",
         "shadowing"
       ]
+    },
+    {
+      "id": "availability-csv-en",
+      "language": "en",
+      "query": "Review my portfolio from a CSV file",
+      "label": "no_api",
+      "target_persona": "dividend-long-term-investor",
+      "expected_candidate_personas": [
+        "dividend-long-term-investor"
+      ],
+      "expected_selected_persona": "dividend-long-term-investor",
+      "expected_primary_workflow": null,
+      "expected_honest_gap": true,
+      "expected_no_api_path": null,
+      "neighbor_of": null,
+      "base_id": null,
+      "transformation": null,
+      "tags": [
+        "issue-511",
+        "availability"
+      ],
+      "options": {
+        "no_api": true
+      },
+      "expected_runnability": "blocked",
+      "expected_routing_status": "unavailable",
+      "expected_alternative_workflow": "market-regime-daily",
+      "expected_missing_requirement_kinds": [
+        "paid_api",
+        "missing_input",
+        "unsupported_capability"
+      ]
+    },
+    {
+      "id": "availability-csv-ja",
+      "language": "ja",
+      "query": "CSVからポートフォリオを見直したい",
+      "label": "no_api",
+      "target_persona": "dividend-long-term-investor",
+      "expected_candidate_personas": [
+        "dividend-long-term-investor"
+      ],
+      "expected_selected_persona": "dividend-long-term-investor",
+      "expected_primary_workflow": null,
+      "expected_honest_gap": true,
+      "expected_no_api_path": null,
+      "neighbor_of": null,
+      "base_id": null,
+      "transformation": null,
+      "tags": [
+        "issue-511",
+        "availability"
+      ],
+      "options": {
+        "no_api": true
+      },
+      "expected_runnability": "blocked",
+      "expected_routing_status": "unavailable",
+      "expected_alternative_workflow": "market-regime-daily",
+      "expected_missing_requirement_kinds": [
+        "paid_api",
+        "missing_input",
+        "unsupported_capability"
+      ]
+    },
+    {
+      "id": "availability-phrase-portfolio-en",
+      "language": "en",
+      "label": "no_api",
+      "query": "Review my portfolio without API",
+      "target_persona": "dividend-long-term-investor",
+      "expected_candidate_personas": [
+        "no-api-path",
+        "dividend-long-term-investor"
+      ],
+      "expected_selected_persona": "dividend-long-term-investor",
+      "expected_primary_workflow": null,
+      "expected_honest_gap": true,
+      "expected_no_api_path": null,
+      "neighbor_of": null,
+      "base_id": null,
+      "transformation": null,
+      "tags": [
+        "issue-511",
+        "availability"
+      ],
+      "expected_runnability": "blocked",
+      "expected_routing_status": "unavailable",
+      "expected_alternative_workflow": "market-regime-daily",
+      "expected_missing_requirement_kinds": [
+        "paid_api"
+      ]
+    },
+    {
+      "id": "availability-phrase-swing-en",
+      "language": "en",
+      "label": "no_api",
+      "query": "Find swing candidates without API",
+      "target_persona": "swing-trader",
+      "expected_candidate_personas": [
+        "no-api-path",
+        "swing-trader"
+      ],
+      "expected_selected_persona": "swing-trader",
+      "expected_primary_workflow": null,
+      "expected_honest_gap": true,
+      "expected_no_api_path": null,
+      "neighbor_of": null,
+      "base_id": null,
+      "transformation": null,
+      "tags": [
+        "issue-511",
+        "availability"
+      ],
+      "expected_runnability": "blocked",
+      "expected_routing_status": "unavailable",
+      "expected_alternative_workflow": "market-regime-daily",
+      "expected_missing_requirement_kinds": [
+        "paid_api"
+      ]
+    },
+    {
+      "id": "availability-csv-export-en",
+      "language": "en",
+      "label": "positive",
+      "query": "Review my portfolio, export the results to csv",
+      "target_persona": "dividend-long-term-investor",
+      "expected_candidate_personas": [
+        "dividend-long-term-investor"
+      ],
+      "expected_selected_persona": "dividend-long-term-investor",
+      "expected_primary_workflow": "core-portfolio-weekly",
+      "expected_honest_gap": false,
+      "expected_no_api_path": false,
+      "neighbor_of": null,
+      "base_id": null,
+      "transformation": null,
+      "tags": [
+        "issue-511",
+        "availability",
+        "csv-output-not-input"
+      ],
+      "expected_runnability": "eligible",
+      "expected_routing_status": "exact",
+      "expected_alternative_workflow": null,
+      "expected_missing_requirement_kinds": []
+    },
+    {
+      "id": "availability-csv-export-ja",
+      "language": "ja",
+      "label": "positive",
+      "query": "ポートフォリオを見直したい、結果はCSVに出力したい",
+      "target_persona": "dividend-long-term-investor",
+      "expected_candidate_personas": [
+        "dividend-long-term-investor"
+      ],
+      "expected_selected_persona": "dividend-long-term-investor",
+      "expected_primary_workflow": "core-portfolio-weekly",
+      "expected_honest_gap": false,
+      "expected_no_api_path": false,
+      "neighbor_of": null,
+      "base_id": null,
+      "transformation": null,
+      "tags": [
+        "issue-511",
+        "availability",
+        "csv-output-not-input"
+      ],
+      "expected_runnability": "eligible",
+      "expected_routing_status": "exact",
+      "expected_alternative_workflow": null,
+      "expected_missing_requirement_kinds": []
+    },
+    {
+      "id": "availability-csv-bare-en",
+      "language": "en",
+      "query": "portfolio review with csv",
+      "label": "positive",
+      "target_persona": "dividend-long-term-investor",
+      "expected_candidate_personas": [
+        "dividend-long-term-investor"
+      ],
+      "expected_selected_persona": "dividend-long-term-investor",
+      "neighbor_of": null,
+      "base_id": null,
+      "transformation": null,
+      "tags": [
+        "issue-511",
+        "availability",
+        "csv-input-default"
+      ],
+      "expected_primary_workflow": null,
+      "expected_honest_gap": true,
+      "expected_no_api_path": null,
+      "expected_runnability": "blocked",
+      "expected_routing_status": "unavailable",
+      "expected_alternative_workflow": null,
+      "expected_missing_requirement_kinds": [
+        "missing_input",
+        "unsupported_capability"
+      ]
+    },
+    {
+      "id": "availability-csv-managed-ja",
+      "language": "ja",
+      "query": "CSVファイルで管理しているポートフォリオを見直したい",
+      "label": "positive",
+      "target_persona": "dividend-long-term-investor",
+      "expected_candidate_personas": [
+        "dividend-long-term-investor"
+      ],
+      "expected_selected_persona": "dividend-long-term-investor",
+      "neighbor_of": null,
+      "base_id": null,
+      "transformation": null,
+      "tags": [
+        "issue-511",
+        "availability",
+        "csv-input-default"
+      ],
+      "expected_primary_workflow": null,
+      "expected_honest_gap": true,
+      "expected_no_api_path": null,
+      "expected_runnability": "blocked",
+      "expected_routing_status": "unavailable",
+      "expected_alternative_workflow": null,
+      "expected_missing_requirement_kinds": [
+        "missing_input",
+        "unsupported_capability"
+      ]
+    },
+    {
+      "id": "availability-csv-send-after-alpaca-en",
+      "language": "en",
+      "query": "weekly portfolio review with Alpaca, then send me the csv file afterwards",
+      "label": "positive",
+      "target_persona": "dividend-long-term-investor",
+      "expected_candidate_personas": [
+        "dividend-long-term-investor"
+      ],
+      "expected_selected_persona": "dividend-long-term-investor",
+      "neighbor_of": null,
+      "base_id": null,
+      "transformation": null,
+      "tags": [
+        "issue-511",
+        "availability",
+        "csv-input-default"
+      ],
+      "expected_primary_workflow": "core-portfolio-weekly",
+      "expected_honest_gap": false,
+      "expected_no_api_path": false,
+      "expected_runnability": "eligible",
+      "expected_routing_status": "exact",
+      "expected_alternative_workflow": null,
+      "expected_missing_requirement_kinds": []
     }
   ]
 }

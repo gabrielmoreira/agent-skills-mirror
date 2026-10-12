@@ -42,10 +42,10 @@ guides:
 handoffs:
 - task: implement-change
   applicability:
-  - When surviving consumers need new or changed behavior beyond the withdrawal's migration path, the requester authorized that change, and it is neither made nor pending on this route
+  - When surviving consumers need new or changed behavior beyond the withdrawal's migration path, the requester authorized that change, and it is not yet made
 ---
 
-This task owns withdrawal as the requested finished state. Do not treat removal as ordinary implementation with negative code: the work must establish what stops being supported, what must continue to work, and whether compatibility requires deprecation, migration, a transitional shim, or immediate absence.
+Do not treat removal as ordinary implementation with negative code: the work must establish what stops being supported, what must continue to work, and whether compatibility requires deprecation, migration, a transitional shim, or immediate absence.
 
 Before editing, establish the withdrawal target, the authorized degree of removal, and the point after which use must fail or disappear if such a point exists. The surviving contract, its consumers, and any compatibility or migration promise are fixed under [[guide:change-contract]], and whether the behavior was published and which kinds of consumer can rely on it are established under [[guide:removal-and-compatibility]]. Search by behavior and public names over the mechanisms that bind consumers without a textual reference, so indirect ownership is not mistaken for dead code.
 

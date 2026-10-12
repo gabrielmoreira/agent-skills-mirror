@@ -137,6 +137,14 @@ serialized UTF-8 bytes; screenshots use the configured capture/redaction budgets
 Local Kev uses `/v1/systemone`, requires no key by default and works offline.
 Keys stay in local storage; config exports include them in plaintext.
 
+If automatic page or iframe updates would discard a terminal Ask reply, a
+ten-second dependency check can send the current user task, qualified prior
+conversation text and the exact candidate answer to the active conversation
+provider. It uses that provider's normal cost, cancellation and privacy controls;
+it does not change the selected decision provider. An exact answer's result is
+cached only within its current task/run/provider/document scope. This check
+cannot authorize a browser action or retain an answer after a user correction.
+
 Decision requests have a five-second deadline and no transport retries; dedicated
 tool-free LLM checks have ten seconds. Visual uncertainty or unsupported images
 tries AX. Authentication/transport failures fall through to the active LLM, then
@@ -147,6 +155,12 @@ can be reused for scheduled completion without another model call. Generic
 publication can be verified despite an unrelated comment form; recipient, payment,
 download, authorization and workflow contracts remain required. Future votes and
 moderation outcomes are not certified.
+
+GitHub release verification may read the exact saved release's edit form with a
+bounded authenticated same-origin GET to compare its tag, title and raw Markdown
+notes with the reviewed form. These values remain in private execution state;
+verification diagnostics contain predicate names and status only. This readback
+does not submit or republish the release.
 
 The Cloud decision endpoint logs route, model, modality, latency, outcome, usage
 and fallback reasons without raw screenshots or page evidence. Consent and

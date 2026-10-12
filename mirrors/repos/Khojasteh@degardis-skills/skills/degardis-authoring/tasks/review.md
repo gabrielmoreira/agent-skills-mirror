@@ -1,13 +1,14 @@
 ---
 title: Review a Degardis source
 cues:
-- the requester asks for an assessment of a supplied skill as written
-- the requester asks which version a skill should carry
+- the requester asks for an assessment of a supplied Degardis source as written
+- the requester asks which version a Degardis source should carry
 - the requester asks what a Degardis compiler result establishes about a supplied source
 goal: An evidence-grounded assessment of the declared surface, with this task itself changing neither supplied source nor artifacts, and making every unsupported conclusion visible.
 knowledge:
 - working-accounts
 - evidence-bounds
+- child-skill-and-agent
 - source-defects
 - skill-judgments
 - compiler-evidence
@@ -40,10 +41,12 @@ handoffs:
   - When the review admits a finding the requester asked to fix, host instructions prohibit changing its supplied Degardis source, and no unfinished plan or planning outcome on this route covers the finding
 ---
 
-A review judges authored Degardis source, so it needs that source. Material without it, such as a built bundle, an installed skill, or a skill authored another way, shows what reaches the agent but not the constructs behind it, so a review of it would guess at what was authored, omitted, or decided. When no Degardis source is supplied, report the review as unsupported and leave the material as it is. Otherwise, use the effective compiler to enumerate every input, construct, declared relationship, and generated output inside the request boundary. A named concern narrows the criterion applied, not the enumerated surface.
+A review judges authored Degardis source, so it needs that source. A built bundle or an installed skill shows what reaches the agent but not the constructs behind it, so a review of it would guess at what was authored, omitted, or decided. A skill authored another way has no Degardis constructs to judge.
 
-Run the effective compiler's checks first: what they establish is a prerequisite to any further judgment, not the conclusion. If they report an error, report the structural findings and limit further judgment to what the supplied bytes themselves settle.
+Use the effective compiler to enumerate every input, construct, declared relationship, and generated output inside the request boundary. A named concern narrows the criterion applied, not the enumerated surface. Run the effective compiler's checks before judging the source: what they establish is a prerequisite to any further judgment, not the conclusion. If they report an error, report the structural findings and limit further judgment to what the supplied bytes themselves settle.
 
 Composition establishes what reaches a page, not what the assembled page makes its reader do. For a whole-source review, read the generated root first, then every generated task page end to end in that context. For a narrower review, read the root when its rendered content is implicated and every task page whose content or placement is in scope. When a candidate first implicates an unread page, enter it in coverage as unread and read it fully before deciding the candidate. Judge ordering, neighboring provisions, prerequisite order, and whether the assembled guidance derives the task goal without guessing, and close each required page separately.
 
-When they apply, close the [[guide:obligation-ledger]], the [[guide:construct-agreements]], and the [[guide:path-rehearsal]] with explicit dispositions. Admit a finding only when the working accounts identify the governing requirement, evidence, why the source is wrong rather than merely different, its earliest authored cause, and the implied action. Report unread material as a coverage gap and close clean units without ceremony.
+A review of changes made to close findings an earlier review admitted verifies those changes rather than reviewing the source again. It judges what the changes reached, taken from the account of them that comes with the work or from a comparison with the state the earlier review judged: every changed construct, every generated page whose content or placement changed, and every agreement a changed construct enters, along with whether each closed finding is gone at its earliest authored cause rather than only where the text changed. Source the changes left untouched stays outside it unless the requester asks for more.
+
+When they apply, close the [[guide:obligation-ledger]], the [[guide:construct-agreements]], and the [[guide:path-rehearsal]] with explicit dispositions. Admit a finding only when the working accounts identify the governing requirement, evidence, why the source is wrong rather than merely different, its earliest authored cause, and the implied action.

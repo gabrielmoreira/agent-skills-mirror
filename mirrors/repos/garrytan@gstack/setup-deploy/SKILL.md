@@ -525,7 +525,10 @@ Use AskUserQuestion to gather the information:
    - B) Via GitHub Actions workflow
    - C) Via a deploy script or CLI command (describe it)
    - D) Manually (SSH, dashboard, etc.)
-   - E) This project doesn't deploy (library, CLI, tool)
+   - E) Nothing is deployed yet (the first production deploy is still to come)
+   - F) This project never deploys (library, CLI, tool)
+
+   On E, stop here and write nothing: there is no production URL and no deploy trigger to record yet. Tell the user that this skill configures how `/land-and-deploy` verifies a deploy, and the first bring-up is its own step, done with the platform's own CLI or whatever bring-up tool they choose. Bring the project up first, then re-run `/setup-deploy` after the first production deploy exists. On F, Step 4 writes the `none` configuration.
 
 2. **What's the production URL?** (Free text — the URL where the app runs)
 

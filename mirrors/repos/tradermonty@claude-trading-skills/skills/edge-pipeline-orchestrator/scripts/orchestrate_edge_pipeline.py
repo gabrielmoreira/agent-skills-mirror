@@ -656,6 +656,7 @@ def main() -> int:
         # --- export stage ---
         exported: list[str] = []
         skipped: list[str] = []
+        export_failed: list[dict[str, str]] = []
 
         if not args.dry_run:
             strategies_dir = output_dir / "strategies"
@@ -668,13 +669,20 @@ def main() -> int:
                     continue
 
                 if should_export(draft_data, exportable_families):
-                    ticket_id = export_draft(
-                        draft=draft_data,
-                        draft_path=td.file_path,
-                        strategies_dir=strategies_dir,
-                        exportable_tickets_dir=exportable_tickets_dir,
-                        dry_run=False,
-                    )
+                    # One draft the exporter rejects must not abort the others.
+                    try:
+                        ticket_id = export_draft(
+                            draft=draft_data,
+                            draft_path=td.file_path,
+                            strategies_dir=strategies_dir,
+                            exportable_tickets_dir=exportable_tickets_dir,
+                            dry_run=False,
+                        )
+                    except EdgePipelineError as exc:
+                        failed_id = draft_data["id"].replace("draft_", "edge_")
+                        export_failed.append({"ticket_id": failed_id, "error": str(exc)})
+                        print(f"[WARN] export failed for {failed_id}: {exc}", file=sys.stderr)
+                        continue
                     if ticket_id:
                         exported.append(ticket_id)
                 else:
@@ -693,6 +701,7 @@ def main() -> int:
             "status": "completed" if not args.dry_run else "skipped_dry_run",
             "exported": exported,
             "skipped_not_eligible": skipped,
+            "export_failed": export_failed,
         }
 
         manifest["status"] = "completed"

@@ -1,20 +1,20 @@
 ---
 name: web-access
 license: MIT
-github: https://github.com/eze-is/web-access
-description:
+description: >
   所有联网操作必须通过此 skill 处理，包括：搜索、网页抓取、登录后操作、网络交互等。
   触发场景：用户要求搜索信息、查看网页内容、访问需要登录的网站、操作网页界面、抓取社交媒体内容（小红书、微博、推特等）、读取动态渲染页面、以及任何需要真实浏览器环境的网络任务。
 metadata:
   author: 一泽Eze
   version: "2.5.4"
+  github: https://github.com/eze-is/web-access
 ---
 
 # web-access Skill
 
 ## 前置检查
 
-在开始联网操作前，先检查 CDP 模式可用性：
+在开始联网操作前，先检查 CDP 模式可用性；已有连接优先复用：
 
 ```bash
 node "${CLAUDE_SKILL_DIR}/scripts/check-deps.mjs"
@@ -22,22 +22,33 @@ node "${CLAUDE_SKILL_DIR}/scripts/check-deps.mjs"
 
 **Node.js 22+** 必需（使用原生 WebSocket）。
 
+脚本先读取 `/health`：已有服务且 `connected === true` 时，校验浏览器偏好后直接使用，不重新探测浏览器、不启动第二个 Proxy；已有服务但连接断开时，由原服务重新连接。只有没有可用服务时，才发现浏览器并启动后台 Proxy。
+
 按脚本输出处理：
-- `exit 0` → 继续
+- `exit 0` → 直接调用 Proxy API，不再手动启动或重启 Proxy
 - `exit 2` → 需询问用户偏好，写入 `${CLAUDE_SKILL_DIR}/config.env` 的 `WEB_ACCESS_BROWSER`
 - `exit 1` → 按 stdout 错误信息处理。若提示包含「Agent 处理顺序」，按其步骤执行（如先用系统命令打开浏览器后重跑），自动可解则不打扰用户；仍失败再向用户求助
 
 支持参数 `--browser <chrome|edge>` 表达本次临时覆盖（不写 config.env）。
 
-切换浏览器时，proxy 是长驻进程，需先 `pkill -f cdp-proxy.mjs` 再重跑 check-deps。
+若调试端口文件不可读，脚本会报告 `EPERM/EACCES`，不要当成浏览器未开启调试。可在 `config.env` 将已核对的 `WEB_ACCESS_CDP_PORT` 明确绑定到 `WEB_ACCESS_BROWSER`；端口归属由配置提供，不自动猜测。留空仍使用文件发现，另一浏览器的 `--browser` 不借用此端口。
 
-检查通过后并必须在回复中向用户直接展示以下须知，再启动 CDP Proxy 执行操作：
+Proxy 是全体 Agent 共用的长驻服务。普通任务不因修改代码、连接等待或任务结束重启服务。维护和切换浏览器使用跨平台的 Node 命令（将路径替换为实际 skill 路径）：
+
+```bash
+node "${CLAUDE_SKILL_DIR}/scripts/proxy-maintenance.mjs" status
+node "${CLAUDE_SKILL_DIR}/scripts/proxy-maintenance.mjs" restart
+```
+
+维护命令按实例身份停止服务；有执行中的请求、未完成的 CDP 命令、Agent 标签页或连接正在建立时会拒绝停止，等任务清理完再运行。切换浏览器时先执行 `proxy-maintenance.mjs stop`，成功后再运行 `check-deps.mjs --browser <id>`。旧版本没有维护接口时，命令会提示一次性迁移，不自动强杀。退出码与状态字段见 [API 参考](references/cdp-api.md)。
+
+检查通过后并必须在回复中向用户直接展示以下须知，再执行站点操作：
 
 ```
 温馨提示：部分站点对浏览器自动化操作检测严格，存在账号封禁风险。已内置防护措施但无法完全避免，Agent 继续操作即视为接受。
 ```
 
-## 浏览哲学
+## 浏览哲学与工作流
 
 **像人一样思考，兼顾高效与适应性的完成任务。**
 
@@ -115,7 +126,9 @@ node "${CLAUDE_SKILL_DIR}/scripts/find-url.mjs" [关键词...] [--only bookmarks
 node "${CLAUDE_SKILL_DIR}/scripts/check-deps.mjs"
 ```
 
-脚本会依次检查 Node.js、浏览器调试端口，并确保 Proxy 已连接（未运行则自动启动并等待）。Proxy 启动后持续运行。
+脚本检查 Node.js 后先复用已有 Proxy；没有可用服务时才检查浏览器调试端口、自动启动并等待连接。Proxy 以脱离当前命令会话的后台进程持续运行，没有运行时长或空闲退出计时器。前置检查的等待超时只结束本次检查，不停止 Proxy。
+
+`/health` 的 `status: "ok"` 表示服务在运行，`connected: true` 表示浏览器连接仍有效。浏览器退出、重启或撤销远程调试权限后，服务可继续运行，但重新连接可能需要浏览器再次授权；不要把服务存活当成连接有效。
 
 ### Proxy API
 
@@ -200,7 +213,9 @@ curl -s "http://localhost:3456/close?target=ID"
 
 用 `/close` 关闭自己创建的 tab，必须保留用户原有的 tab 不受影响。
 
-Proxy 持续运行，不建议主动停止——重启后需要在浏览器中重新授权 CDP 连接。
+保留 Proxy 持续运行，不主动停止或设置退出计时器。下一次任务先运行前置检查，再复用已有连接。
+
+Proxy 的自动清理只针对通过 `/new` 创建且闲置 15 分钟的标签页，不会退出服务或关闭用户原有标签页。重启服务或浏览器后，浏览器可能要求重新授权 CDP 连接。
 
 ## 并行调研：子 Agent 分治策略
 
@@ -210,7 +225,7 @@ Proxy 持续运行，不建议主动停止——重启后需要在浏览器中�
 - **速度**：多子 Agent 并行，总耗时约等于单个子任务时长
 - **上下文保护**：抓取内容不进入主 Agent 上下文，主 Agent 只接收摘要，节省 token
 
-**并行 CDP 操作**：每个子 Agent 在当前用户浏览器实例中，自行创建所需的后台 tab（`/new`），自行操作，任务结束自行关闭（`/close`）。所有子 Agent 共享一个浏览器、一个 Proxy，通过不同 targetId 操作不同 tab，无竞态风险。
+**并行 CDP 操作**：每个子 Agent 在当前用户浏览器实例中，自行创建所需的后台 tab（`/new`），自行操作，任务结束自行关闭（`/close`）。所有子 Agent 共享一个浏览器、一个 Proxy 和一条 CDP 连接；并发请求在发现、握手阶段也共用一次连接尝试，不按 Agent 分别发起授权。同一 tab 的操作仍需协调，通过不同 targetId 分配任务。服务维护会影响全体 Agent，应在任务完成后集中执行。
 
 **子 Agent Prompt 写法：目标导向，而非步骤指令**
 - 必须在子 Agent prompt 中写 `必须加载 web-access skill 并遵循指引` ，子 Agent 会自动加载 skill，无需在 prompt 中复制 skill 内容或指定路径。

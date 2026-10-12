@@ -49,6 +49,9 @@ claude plugin install daymade-skill@daymade-skills
 Use [skill-creator](daymade-skill/skill-creator/SKILL.md) before creating or
 changing a skill. Before selecting evidence or reporting completion, follow its
 [required-acceptance owner](daymade-skill/skill-creator/references/change-verification.md#fix-required-acceptance-before-selecting-evidence).
+For executable handoffs, including instruction-only cross-owner workflows, bind its
+[intended-consumer boundary](daymade-skill/skill-creator/references/change-verification.md#bind-the-intended-consumer-before-verification)
+and follow its [first-use route](daymade-skill/skill-creator/references/first-use-and-resume.md).
 Use its selected workflow for regression review, validation, initialization, and packaging.
 
 Operational or code-bearing Skill edits complete directly affected document alignment
@@ -70,6 +73,15 @@ For choosing or reviewing a library, framework, storage, data format, model,
 build-vs-buy or architecture — including 用哪个 / 选什么框架 / 要不要自建 / A 还是 B /
 这个方案行不行 — enter [tech-selection](daymade-claude-code/tech-selection/SKILL.md).
 Follow its full or lightweight route and linked execution owners.
+Before delegation, follow its [public orchestration route](daymade-claude-code/tech-selection/references/delegation-contract.md#agent-orchestration)
+within the current user/host contract.
+
+For research asset discovery, follow [deep-research's catalog contract](deep-research/references/research-asset-contract.md#start-before-external-retrieval);
+keep discovery observations separate from final result checks.
+
+For research-driven evolution of a specified existing Skill, start at
+[skill-evolver](skill-evolver/SKILL.md) and follow its public stage routes; use
+local private adapters only when available.
 
 For permission-sensitive fixtures, use Skill Creator's
 [execution-context verification recipe](daymade-skill/skill-creator/references/stateful-script-verification.md#execution-identity-and-permission-fixtures).
@@ -162,8 +174,12 @@ For rendered UI freshness, delayed editor/batch responses or deployment acceptan
 [frontend-visual-qa](frontend-visual-qa/SKILL.md). Keep its manifest, launcher,
 result semantics and rendered-journey procedure in that owner.
 For nested zoomable workspaces, use its
-[mode-specific acceptance](frontend-visual-qa/references/journey-and-page-contracts.md#journey-and-state-matrix);
-ordinary and enlarged evidence remain separate.
+[journey and state matrix](frontend-visual-qa/references/journey-and-page-contracts.md#journey-and-state-matrix).
+For embedded-reader zoom, return, focus or filtered-selection changes, use its
+[reader journey](frontend-visual-qa/references/journey-and-page-contracts.md#embedded-readers-and-semantic-zoom).
+For browser visibility or long JSONL input problems, load its
+[browser-driving and observation traps](frontend-visual-qa/references/browser-driving-and-observation-traps.md);
+keep adapter requirements and invocation examples in that reference.
 For changed contribution views or multi-item reads, use that same journey contract
 for source-derived coverage and partial-result recovery; keep the detailed recipe
 with the Skill.
@@ -181,10 +197,9 @@ and verification details there.
 When a LaunchAgent cannot read protected data, enter
 [`macos-permissions`](daymade-macos/macos-permissions/SKILL.md) and its
 [automated repair SOP](daymade-macos/macos-permissions/references/automated-full-disk-access.md).
-Identify the actual permission subject and reuse an existing usable grant when
-the owning installer supports it. After repair, restart the job and verify a
-protected read in its real background context; a GUI switch or foreground read
-alone is not completion.
+For a reported denial that may no longer occur, start at its
+[reproduction step](daymade-macos/macos-permissions/SKILL.md#reproduce-the-reported-denial-first).
+Keep attribution, repair and actual-context verification with those owners.
 
 Treat `daymade-skill/skill-creator` as a locked uv project. Run its bundled Python tools from that directory with `uv run --frozen`; the project-local `.venv` is isolated from caller projects while uv's shared cache supplies the pinned packages. Do not reintroduce per-call `--with` overlays for dependencies already in its `pyproject.toml`.
 
@@ -197,6 +212,11 @@ uv run --frozen python -m scripts.quick_validate <skill-path> --audience public
 ```
 
 ### Review and evaluation input preparation
+
+For Skill eval grading, aggregation or previous-iteration review, follow
+[the eval schemas](daymade-skill/skill-creator/references/eval_pipeline_schemas.md)
+and [the viewer workflow](daymade-skill/skill-creator/references/paired-evaluation.md#step-4-grade-aggregate-and-launch-the-viewer).
+Keep assertion identity, missing-data semantics and viewer startup instructions in those owners.
 
 When review, replay or evaluation needs input copies, follow
 [the materialization SOP](daymade-skill/skill-creator/references/materialization-budget.md)
@@ -319,9 +339,8 @@ for candidate selection and commands; keep the detailed rules in those owners.
 
 ### Local Agent Messaging
 
-For both Claude Code and Codex, use current native discovery, messaging, replies,
-and waiting whenever those tools cover the target. Keep parent/subagent and current-team
-messages on their native relationship; for independent sessions, enter the
+For local transport selection or accepted/consumed delivery interpretation, enter
+[peer-message](peer-message/SKILL.md). For independent sessions, enter the
 [local coordination workflow](peer-message/references/local-coordination.md#原生跨会话通信)
 before sending. Use its routing guidance for uncovered local targets
 or coordination evidence that needs verification, never to bypass denied or Held messages.
@@ -495,6 +514,8 @@ For behavioral changes and review-led repairs, the review Skill's
 consumer tracing, preservation evidence and finding closure.
 Before expensive checks on a concurrently edited base, follow its
 [publication coordination](github-ops/references/pr_operations.md#coordinate-publication-before-expensive-checks).
+Before a merge or selecting `--auto`, enter its
+[merge preflight](github-ops/references/pr_operations.md#merging-prs).
 For hosted-state writes through `gh`, follow its
 [identity, host and target binding](github-ops/SKILL.md#2-bind-identity-host-and-target)
 before using an operation recipe. For historical account or connector attribution,

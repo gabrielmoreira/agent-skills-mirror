@@ -125,6 +125,12 @@ confidential-identifier checks as every other durable machine-text field.
   workflow run and bounded before another dispatch.
 - Mutation events require an explicit business `idempotencyIdentity`; outcome
   status and failure reason never define side-effect identity.
+- Review and apply share the mutation-attempt recorder: it owns receipt hashes,
+  causal parent links, attempt counts, and accepted/rejected/unknown outcomes.
+  Their business identities remain separate: review binds coordination writes to
+  the observed item update, while apply binds writes to the source revision,
+  review content, and decision packet. Each caller retains its own phase,
+  subject, operation identity, and mutation bookkeeping.
 - Review operation identity binds each selected item's repository, kind, number,
   and observed `updated_at`, while item starts are written only when processing
   actually begins. Apply operation identity may retain checkpoint and batch
@@ -411,15 +417,15 @@ first publishes authoritative local shards, then gives the entire optional
 projection drain for that spool root one 10000 ms deadline, bounded to at most
 60000 ms through the runtime flush option. Independent ledger roots do not wait
 for or fail one another's projection queues. Timeout, HTTP, and
-response-cleanup failures remain projection failures. Live delivery, including
-exported direct posts, runs at most four fetches concurrently. Each spool root
+response-cleanup failures remain projection failures. Workflow-owned live
+projections run at most four fetches concurrently. Each spool root
 may queue 64 projections, with 64 queued roots and 256 queued projections
 process-wide. Admission selects the queued root with the fewest active requests,
 so one saturated root cannot deny the next recovered slot to an independent
 root. A timed-out fetch keeps its concurrency slot until the underlying request
 and response-body cleanup settle; only that request set's queued projections
-fail closed if all of its slots remain unresolved. Direct events are validated
-before admission, and queued requests have their own bounded deadline so
+fail closed if all of its slots remain unresolved. Workflow events are validated
+before projection admission, and queued requests have their own bounded deadline so
 invalid events, dead slots, or ignored cancellation cannot leave caller
 promises pending forever. Queued projections snapshot their endpoint, session,
 token, and timeout before admission, so later environment mutation cannot

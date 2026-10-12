@@ -9,7 +9,6 @@
 **看到喜歡的功能，弄清它的工作原理，深入到二進位層面。**
 
 [![npm version](https://img.shields.io/npm/v/rea-agents?style=flat-square&color=cb3837)](https://www.npmjs.com/package/rea-agents)
-[![CI](https://img.shields.io/github/actions/workflow/status/morluto/rea/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/morluto/rea/actions/workflows/ci.yml)
 [![MCP tool catalog](https://img.shields.io/badge/MCP-tool_catalog-5c4ee5?style=flat-square)](docs/mcp-contracts.md#generated-catalog)
 [![Node.js requirements](https://img.shields.io/badge/Node.js-requirements-339933?style=flat-square&logo=nodedotjs&logoColor=white)](#current-status)
 [![skills.sh](https://skills.sh/b/morluto/rea?style=flat-square)](https://skills.sh/morluto/rea/reverse-engineer-anything)
@@ -18,7 +17,7 @@
 
 <a href="https://trendshift.io/repositories/82054?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-82054" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/82054" alt="morluto%2Frea | Trendshift" width="250" height="55"/></a>
 
-**[網站](https://rea.tools/) · [指南](https://rea.tools/guides/) · [案例](https://rea.tools/showcase/)**
+**[網站](https://rea.tools/zh-TW/) · [指南](https://rea.tools/zh-TW/guides/) · [案例](https://rea.tools/zh-TW/showcase/)**
 
 [快速開始](#快速開始) · [REA 的工作原理](#rea-的工作原理) · [可以分析什麼](#可以分析什麼) · [案例](#案例) · [常見問題](#常見問題) · [文件](#文件)
 
@@ -54,7 +53,7 @@ REA 將 AI 代理連接到分析工具，用於檢查原生二進位檔案、Jav
 
 設定流程會向 AI 代理註冊 REA，並安裝對應的工作流程指引。原生分析可以使用已有的 Hopper 或 Ghidra；設定流程也可以在你核准後安裝 Hopper。靜態 JavaScript 分析不需要這兩個引擎。
 
-> **[訪問 REA 網站](https://rea.tools/)**，查看設定說明、圖解指南和真實案例。
+> **[訪問 REA 網站](https://rea.tools/zh-TW/)**，查看設定說明、圖解指南和真實案例。
 
 ## 快速開始
 
@@ -133,12 +132,12 @@ REA 需要 Node.js 22.x（>=22.19）、24.x（>=24.11）或 26+，以及 npm。�
 
 | 目標                  | REA 返回的內容                                                  | 要求與指南                                                                                                             |
 | --------------------- | --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| 原生二進位檔案        | 偽程式碼、組合語言、字串、符號、呼叫和引用                      | Hopper、Ghidra 或 IDA；[原生分析](https://rea.tools/guides/native/)                                                    |
+| 原生二進位檔案        | 偽程式碼、組合語言、字串、符號、呼叫和引用                      | Hopper、Ghidra 或 IDA；[原生分析](https://rea.tools/zh-TW/guides/native/)                                              |
 | 離線 ELF 佈局         | 節、段、原始符號/重定位資訊及靜態防護機制候選項                 | Linux x64 上由呼叫方提供的 pwntools；[二進位診斷](docs/binary-diagnostics.md)                                          |
 | EVM 位元組碼          | 分派選擇器、位元組偏移、推斷的參數和狀態可變性                  | Linux x64 上的本地原始位元組/十六進位輸入載體；[離線 EVM 指南](docs/evm-bytecode.md)                                   |
 | 已記錄的 Linux 崩潰   | 原始 note 記錄、每個已記錄執行緒的暫存器/訊號及可選的對映候選項 | Linux x64 上由呼叫方提供的 pwntools；可選的 GDB/pwndbg；[已記錄崩潰](docs/recorded-crashes.md)                         |
-| JavaScript / Electron | 模組、匯入、source map、路由、IPC 和原生附加元件關係            | Node.js 和 npm；[應用分析](https://rea.tools/guides/javascript/)                                                       |
-| 網站                  | 頁面結構、腳本、網路觀察結果和按請求獲取的螢幕擷取畫面          | Chrome 系瀏覽器；[瀏覽器分析](https://rea.tools/guides/browser/)                                                       |
+| JavaScript / Electron | 模組、匯入、source map、路由、IPC 和原生附加元件關係            | Node.js 和 npm；[應用分析](https://rea.tools/zh-TW/guides/javascript/)                                                 |
+| 網站                  | 頁面結構、腳本、網路觀察結果和按請求獲取的螢幕擷取畫面          | Chrome 系瀏覽器；[瀏覽器分析](https://rea.tools/zh-TW/guides/browser/)                                                 |
 | 已保存的網路擷取      | 請求、回應、可訪問的酬載和來源位置                              | HAR；原生 mitmproxy 擷取需要 Linux 上的 mitmdump；[擷取指南](docs/web-network-captures.md)                             |
 | .NET 程式集           | 中繼資料、CIL 指令、聲明的原生依賴和建置對比                    | 靜態檢查；[托管程式碼指南](docs/managed-code-analysis.md)                                                              |
 | Android APK           | 清單聲明、類別、反編譯的方法和引用                              | Linux/macOS/Windows x64 上的無界面 JADX 和完整 JDK；[Android 指南](docs/android-analysis.md)                           |
@@ -157,26 +156,26 @@ REA 需要 Node.js 22.x（>=22.19）、24.x（>=24.11）或 26+，以及 npm。�
 
 ## 案例
 
-[![DX-Ball 聲音平移、Notion 剪貼簿橋接與 TH04 彈幕環案例的插圖](docs/assets/rea-showcases.png)](https://rea.tools/showcase/)
+[![DX-Ball 聲音平移、Notion 剪貼簿橋接與 TH04 彈幕環案例的插圖](docs/assets/rea-showcases.png)](https://rea.tools/zh-TW/showcase/)
 
 ### DX-Ball：重建聲像計算
 
 沿聲音呼叫追蹤到根據位置計算聲像的輔助函數，檢查指令，將不完整的偽程式碼轉為 C。重建結果通過了 3,205 個原始 x86 測試用例，並復現了編譯後函數的全部 63 個位元組。
 
-[閱讀案例](https://rea.tools/showcase/dx-ball/) ·
+[閱讀案例](https://rea.tools/zh-TW/showcase/dx-ball/) ·
 [重建專案儲存庫](https://github.com/N0zoM1z0/dx-ball)
 
 ### Notion：追蹤 Electron 剪貼簿橋
 
 找到渲染處理程序的剪貼簿 API，沿 preload 和 IPC 追蹤到主處理程序，並檢查富格式剪貼簿資料。
 
-[閱讀案例](https://rea.tools/showcase/notion/)
+[閱讀案例](https://rea.tools/zh-TW/showcase/notion/)
 
 ### TH04：恢復 DOS 環形子彈的計算
 
 檢查原始 PC-98 遊戲的 16 位指令，恢復固定角度和瞄準角度的計算，並將重建的 C++ 與當年的編譯器輸出進行對比。
 
-[閱讀案例](https://rea.tools/showcase/th04/) ·
+[閱讀案例](https://rea.tools/zh-TW/showcase/th04/) ·
 [重建專案儲存庫](https://github.com/N0zoM1z0/th04)
 
 如果你用 REA 分析了有趣的目標，我們很想瞭解。歡迎通過 [issue](https://github.com/morluto/rea/issues) 或 [pull request](https://github.com/morluto/rea/pulls) 分享案例，說明目標、你的問題、REA 如何提供幫助，以及你的發現。
@@ -248,7 +247,7 @@ npx rea-agents@latest setup
 
 ## 文件
 
-可以先閱讀網站上的[實操指南](https://rea.tools/guides/)。具體選項、前提條件和結果契約見：
+可以先閱讀網站上的[實操指南](https://rea.tools/zh-TW/guides/)。具體選項、前提條件和結果契約見：
 
 - [安裝與設定](docs/installation.md)：AI 代理註冊、提供者組態、更新和卸載。
 - [就緒檢查與故障排查](docs/installation.md#check-readiness-for-your-task)：診斷特定 AI 代理或分析引擎。
@@ -261,7 +260,7 @@ npx rea-agents@latest setup
 
 ## Star 歷史
 
-🎉 **GitHub Star 達到 50,000 個，感謝大家！**
+🎉 **GitHub Star 達到 90,000 個，感謝大家！**
 
 感謝每一位使用 REA、報告錯誤、提出功能需求、測試建置和貢獻修復的朋友。
 

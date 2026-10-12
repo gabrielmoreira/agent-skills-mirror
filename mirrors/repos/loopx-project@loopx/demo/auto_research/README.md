@@ -380,7 +380,11 @@ The default visible digital employees are:
 | `evaluator-promoter:evaluator-promoter` | Evaluator/promoter | Checks holdout/verification evidence, classifies claims, and keeps promotion boundaries explicit. |
 
 Each Codex TUI role must route through its own quota/frontier/worker-turn path
-inside the pane. The supervisor only makes those roles visible and interactive.
+inside the pane and honor the selected Todo's execution authority. For a `hard_lease` Goal,
+an executing summary worker acquires its own exact task lease before writing,
+passes that lease into completion, and releases it on failure or unfinished
+completion. An existing execution's lease is a conflict, never borrowed.
+The supervisor only makes those roles visible and interactive.
 The panes share the same LoopX goal surface: registry, runtime root, frontier,
 todo projection, and evidence graph. Do not move every pane into an unrelated
 empty workspace; isolate only mutating research-executor attempts with a claimed

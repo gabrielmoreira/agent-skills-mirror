@@ -23,7 +23,6 @@ environment settings are authoritative for workflow variables and secrets.
 | `WORKER_JOB_CACHE_TTL_SECONDS`    | Workflow-job cache lifetime.                                               |
 | `WORKER_HEALTH_CACHE_TTL_SECONDS` | Workflow-health cache lifetime.                                            |
 | `WORKER_HEALTH_FETCH_CONCURRENCY` | Concurrency for workflow-health fetching.                                  |
-| `AUTOMERGE_CACHE_TTL_SECONDS`     | Automerge metrics cache lifetime.                                          |
 | `RECENT_CLOSED_CACHE_TTL_SECONDS` | Recently closed item cache lifetime.                                       |
 | `INCLUDE_CI_STATUS`               | Enables CI status in dashboard assembly when selected.                     |
 | `REVIEW_OBSERVABILITY_REQUIRED`   | Selects whether review observability is required for status assembly.      |
@@ -34,8 +33,7 @@ environment settings are authoritative for workflow variables and secrets.
 Provider keys used by the optional OpenClaw runner are `ANTHROPIC_API_KEY`,
 `GEMINI_API_KEY`, `KIMI_API_KEY`, and `OPENROUTER_API_KEY`. Maintainer-report
 and Cloudflare access workflows reference `CLOUDFLARE_ACCESS_CLIENT_ID`,
-`CLOUDFLARE_ACCESS_CLIENT_SECRET`, `OPENCLAW_CLOUDFLARE_ACCESS_API_TOKEN`,
-`OPENCLAW_CLOUDFLARE_CONFIG_API_TOKEN`, `OPENCLAW_CLOUDFLARE_PAGES_API_TOKEN`,
+`CLOUDFLARE_ACCESS_CLIENT_SECRET`,
 `OPENCLAW_REPORTS_ACCESS_CLIENT_ID`, and `OPENCLAW_REPORTS_ACCESS_CLIENT_SECRET`.
 Their consuming workflows own whether they are required; no values are recorded
 here.

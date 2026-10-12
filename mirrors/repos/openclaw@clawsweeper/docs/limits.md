@@ -30,10 +30,16 @@ budget:
 | `CLAWSWEEPER_AUTHOR_PR_BUDGET_CLOSE_ENABLED`      | `false` | Enables live per-author budget closes.               |
 | `CLAWSWEEPER_AUTHOR_PR_BUDGET`                    |      15 | Allowed open PRs per external author and repository. |
 | `CLAWSWEEPER_AUTHOR_PR_BUDGET_MAX_CLOSES_PER_RUN` |       5 | Gradual trim cap per author in one apply run.        |
-| `CLAWSWEEPER_BULK_FILER_THRESHOLD`                |      10 | Recent authored-issue count that marks bulk filing.  |
+| `CLAWSWEEPER_BULK_FILER_THRESHOLD`                |      10 | Recent authored issues not closed as completed.      |
 | `CLAWSWEEPER_BULK_FILER_WINDOW_DAYS`              |       7 | Lookback window ending at the issue's creation.      |
 | `CLAWSWEEPER_STALE_VERSION_BUG_CLOSE_ENABLED`     | `false` | Enables stale-version bug closes after 120 days.     |
 | `CLAWSWEEPER_OBSOLETE_FIX_PR_CLOSE_ENABLED`       | `false` | Enables obsolete small-fix PR closes after 90 days.  |
+
+The bulk-filer count leaves out issues closed as completed. Every other issue
+in the window counts, including open, rated, not-planned, and duplicate
+issues. Rating labels and priority labels do not change the count: a rating can
+still change between reviews of an unchanged issue, so it is not yet a stable
+signal (https://github.com/openclaw/clawsweeper/issues/1752).
 
 See [`author-pr-budget-close-policy.md`](author-pr-budget-close-policy.md) for
 the rating, proof, inactivity, engagement, and fail-closed gates.
@@ -85,12 +91,9 @@ It does not alter worker budgets, exact-review admission, or target selection.
 
 ## Derived Limits
 
-Review and existing repair limits are intentionally percentages of
-`workers.max`; imported cluster repair has its own lane knob. With
+Review limits are percentages of `workers.max`, with small fixed floors. With
 `workers.max = 128`, normal and hot intake have configured ceilings of 89 and 44.
-The interactive and expansion reserves leave 104 background slots when
-quiet. Existing repair lanes dispatch 51 live workers by default; imported
-cluster repair dispatches two.
+The interactive and expansion reserves leave 104 background slots when quiet.
 
 | Name                                                | Current | Meaning                                                                               |
 | --------------------------------------------------- | ------: | ------------------------------------------------------------------------------------- |
@@ -102,24 +105,13 @@ cluster repair dispatches two.
 | `review_shards.hot_intake_default`                  |      44 | Quiet-system broad hot-intake review shard ceiling.                                   |
 | `review_shards.exact_item_default`                  |       1 | Exact-item hot-intake shard count.                                                    |
 | `review_shards.hard_cap`                            |     128 | Maximum accepted review shard count.                                                  |
-| `repair_live_runs.default`                          |      51 | Default live repair workflow run cap for manual dispatch/requeue/self-heal.           |
-| `repair_live_runs.hard_cap`                         |     128 | Absolute live repair run cap accepted by explicit CLI/env overrides with this config. |
-| `repair_live_runs.automerge_default`                |      51 | Live repair run cap for automerge comment-router dispatches.                          |
-| `repair_live_runs.issue_implementation_default`     |      51 | Live repair run cap for issue-to-PR implementation intake.                            |
-| `repair_live_runs.cluster_default`                  |       2 | Live repair run cap for imported gitcrawl cluster dispatches.                         |
-| `issue_implementation.dispatches_per_sweep_default` |       5 | Maximum implementation intake jobs queued from one review publish run.                |
 
 Formula summary:
 
 - normal review: 70% of `workers.max`
 - normal active floor: 30% of `workers.max`
 - hot intake: 35% of `workers.max`
-- repair, automerge repair, and issue implementation: 40% of `workers.max`
-- imported cluster repair: `lanes.repair.cluster_max_live_runs`, clamped to
-  `workers.max`
-- issue implementation dispatches per sweep: 4% of `workers.max`
 - review hard caps: `workers.max`
-- repair hard cap: `workers.max`
 
 ## Dynamic Scheduling
 
@@ -132,8 +124,7 @@ rate, backlog, and claim limits own their concurrency.
 The scheduler does this for background lanes:
 
 1. start with `workers.max`
-2. subtract active priority work, currently repair workers plus exact-item sweep
-   runs
+2. subtract active priority work, currently exact-item sweep runs
 3. subtract active background work already known to the workflow, meaning
    other active normal/hot sweep runs
 4. reserve `workers.reserve_for_interactive`
@@ -307,7 +298,12 @@ deletes the queue item. Once an item has used
 next source-drift requeue is not admitted: the item is parked with reason
 `source_drift_loop`, and later automatic requeues are deduped against it with
 `dedupe_scope: source_drift_loop`. The publisher still receives a successful
-dedupe, so the parked item is the only new state. An organic webhook item action
+dedupe, so the parked item is the only new state. A direct-publication
+completion that owes a lifecycle requeue (`direct_lifecycle_requeue`) creates the
+same automatic generation without `/enqueue`, so it counts and parks the same
+way: below the limit its successor revision is pending; at the limit the
+successor revision is parked with reason `source_drift_loop`, while the
+completed revision keeps its `requeue` lifecycle fact. An organic webhook item action
 (`opened`, `reopened`, `edited`, `synchronize`, `ready_for_review`,
 `converted_to_draft`, `unlocked`, `unlabeled`), an explicit command, a manual
 review, or an operator `recover-fresh` both resets the counter and admits the
@@ -528,18 +524,9 @@ These limits are owned by `dashboard/exact-review-queue.ts`, implemented in
   default is 10 (clamped 1-1000). The former hardcoded 50 pinned the lane at
   its minimum under hourly rate-limit bursts because the counter resets on
   every failure.
-- `CLAWSWEEPER_MAINTAINER_LOGINS` (comma-separated) supplements the maintainer
-  author-association check in the idea-archive revival watcher — needed where
-  GitHub reports an org owner as `CONTRIBUTOR` on app-operated repositories. A
-  qualifying maintainer or allowlisted author sponsors revival by commenting
-  `@clawsweeper revive` (or `@clawsweeper sponsor`) on the closed issue.
-- `CLAWSWEEPER_IDEA_REVIVAL_REACTIONS` overrides the positive-reaction threshold
-  for reopening an issue parked with `clawsweeper:idea-archive`; the default is 5.
-- `CLAWSWEEPER_IDEA_ARCHIVE_SCAN_PAGES` overrides the bounded created-order scan
-  page count; the default is 5 and the maximum is 10. The watcher first checks
-  the two most recently updated pages for sponsorship commands, then alternates
-  newest/oldest created-order scans. Reaction-only revival can lag in very large
-  archives; raise this override to scan deeper per run.
+- `CLAWSWEEPER_IDEA_REVIVAL_REACTIONS` retains the positive-reaction threshold
+  that prevents closing an old feature request with community traction; the
+  default is 5. It no longer configures an automatic reopening watcher.
 - `REVIEW_PLACEHOLDER_MAX_CHECKS` overrides the number of search candidates
   examined per open and closed state class by each 15-minute
   orphaned-placeholder recovery pass; the default is 20 and the maximum is 1000. Independent durable cursors rotate both state classes so non-actionable
@@ -596,39 +583,5 @@ These limits are owned by `dashboard/exact-review-queue.ts`, implemented in
 - `EXACT_REVIEW_HEARTBEAT_GRACE_MS` overrides the 1,200,000 ms exact-review worker heartbeat
   grace. It is clamped to at least 420,000 ms so a configured grace can never dip
   near the one-minute worker heartbeat interval during scheduler or network stalls.
-- `CLAWSWEEPER_FEATURE_CLUSTER_REPAIR_ENABLED=1` enables the scheduled
-  `repair-cluster-intake.yml` imported-cluster intake. Direct repair import and
-  dispatch commands are not blocked by this variable; they keep the existing
-  repair execution gates. The selector model compares live evidence for a batch
-  of unprocessed clusters and chooses one cluster or rejects the batch. Candidate
-  quality is not decided by word lists, scores, or semantic thresholds.
-- `CLAWSWEEPER_CLUSTER_REPAIR_CANDIDATE_BATCH` controls how many unprocessed
-  clusters the scheduled selector model compares. The default is `8`; the model
-  still selects at most one cluster. The upstream gitcrawl-store refreshes every
-  15 minutes. Intake durably publishes the selected job, store identity, the
-  model's per-cluster decisions and rationale, and stable dispatch key before
-  dispatch. Decisions persist in a versioned sidecar so the
-  strict v2 dispatch ledger remains backward-compatible with in-flight readers.
-  Rejected cluster IDs are therefore not offered again on the next store
-  snapshot. A cluster with one live candidate may be offered when its other
-  members provide useful context; the model remains the usefulness judge. The
-  intake owner recovers pending dispatch before accepting new work without
-  duplicating completed worker execution.
-- `CLAWSWEEPER_MAX_LIVE_WORKERS` overrides the `job_intent`-derived repair
-  dispatch cap.
-- `CLAWSWEEPER_AUTOMERGE_MAX_LIVE_WORKERS` overrides
-  `repair_live_runs.automerge_default`.
-- `CLAWSWEEPER_AUTO_IMPLEMENT_MAX_LIVE_WORKERS` overrides
-  `repair_live_runs.issue_implementation_default`.
-- `CLAWSWEEPER_AUTO_IMPLEMENT_MAX_DISPATCH_PER_SWEEP` overrides
-  `issue_implementation.dispatches_per_sweep_default`.
-- Each enabled automatic issue intake lane scans durable open reports and
-  dispatches at most `issue_implementation.dispatches_per_sweep_default`
-  candidates per target sweep.
-- `CLAWSWEEPER_AUTO_IMPLEMENT_MIN_SUCCESS_PERCENT` sets the 7-day worker run
-  success floor for automatic issue dispatch (default 50). With at least 10
-  finished issue implementation worker runs below the floor, automatic dispatch
-  pauses and the dispatcher's run summary shows the rate; `0` overrides the
-  pause. See [Automatic issue PRs](repair/automatic-issue-prs.md).
 - Broad `review-plan.yml` dispatches use queue-advertised candidate capacity, bounded
   by `review_shards.hard_cap`; there is no per-run shard override.

@@ -6,7 +6,7 @@ applicability:
 
 The surviving contract a removal keeps is fixed under [[guide:change-contract]] before anything is removed. Establish from repository and release evidence whether the behavior was published, deployed, documented as supported, or exists only in unreleased work; keep the status unknown when evidence does not settle it, and never use unreleased status as proof that no consumer exists. Compatibility includes source, binary, data, protocol, schema, serialization, configuration, operational, and behavioral consumers that exist in this project, including rolling deployments and independently versioned components. Distinguish reliance on current behavior, even defective behavior, from an intended guarantee.
 
-Identify generated sources and edit their source of truth. Treat absence as established only within the searched and authorized surface, and exercise runtime discovery or registration after a change; no static-search result alone proves code dead.
+Identify generated sources and edit their source of truth. Exercise runtime discovery or registration after a change; no static-search result alone proves code dead.
 
 Prefer adding beside an existing surface and preserving current defaults where compatibility is required. Make each compatibility break only with explicit approval, given for that break or by an allowance of breaking changes in general; name the affected consumers and give every approved break a migration or rollback path. An instruction that explicitly replaces one identified observable contract approves only that exact replacement, not adjacent consumer effects. Stop at an unapproved break.
 

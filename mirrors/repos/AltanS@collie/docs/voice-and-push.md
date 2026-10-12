@@ -5,24 +5,41 @@ browser notifications that trigger when an agent is waiting for input.
 
 ## Voice input (optional)
 
-A **microphone button in the composer**, and a **hands-free switch** in Settings. Tap the button,
+A **microphone button in the composer**, and a **hands-free switch** in **Settings → Voice**. Tap the button,
 speak, and the transcript lands in the message box for you to read and send. With hands-free on it is
 sent for you — down the same guarded reply path a typed message takes, never around it. The
 microphone **is** the round button at the end of the row, for as long as the box is empty; the first
 character you type turns it back into Send. You dictate a message or you type one, so there is one
 primary action rather than two competing for the width of the field.
 
-**It does not exist until you run `collie stt setup`.** No button is drawn, no audio leaves the
-phone, no credential is held, no child process runs. Absent, not disabled. Three providers:
+While you speak, a recorder covers the whole composer, belt and box, and adds no height, so the
+screen above never moves. **OK** stands where the mic was and finishes the clip. The **bin** at the far
+end throws it away, and still cancels while the clip is being transcribed. Once you have spoken, two
+seconds of quiet finish the clip for you; a ring closes round OK to show it, and speaking again
+starts the count over. Before the first word nothing finishes it on its own.
+
+**It does not exist until you set up a provider.** Run `collie stt setup`, or set up Whistle (below).
+No button is drawn, no audio leaves the phone, no credential is held, no child process runs. Absent,
+not disabled. Four providers:
 
 | provider | what it is |
 | --- | --- |
 | **`openai-compatible`** | Any endpoint that speaks `POST /audio/transcriptions` — the public OpenAI API, a cloud Whisper clone, or **a local engine on the same machine, which is the zero-egress choice** ([below](#zero-egress--point-it-at-your-own-engine)). |
-| **`codex`** | Borrows the `codex` binary you already trust for a short-lived token. No new account, no new key — and a **private, unsupported** endpoint that carries a consent step you have to type `yes` to ([below](#the-codex-provider--what-you-are-accepting)). |
+| **`codex`** | Borrows the `codex` binary you already trust for a short-lived token. No new account and no new key, but a **private, unsupported** endpoint that carries a consent step: you type `yes` in the terminal, or tap **I accept** in Settings ([below](#the-codex-provider--what-you-are-accepting)). |
 | **`local-cli`** | Runs a transcription command already on the host, such as `whisper-cli` or `muesli-cli`, once per recording, and reads the transcript from its stdout. No HTTP server needed ([below](#run-your-own-command-the-local-cli-provider)). |
+| **`whistle`** | Collie's own engine, [Whistle](#whistle-speech-to-text-on-your-phone-or-your-host). No key and no command to configure. A recording of up to 4 minutes goes to it as a WAV file, and the audio stays on the host. A phone can also run Whistle on itself, with no upload. |
 
 Setup is a CLI act for the reason [pairing](security.md#pair-a-device--the-write-credential) is one: this
-surface accepts a credential, so it belongs on the host's keyboard. There is no web setup form.
+surface accepts a credential, so it belongs on the host's keyboard. There is no web form for a key, an
+endpoint or a command. **Two exceptions take none of those.** Whistle holds no credential, runs no
+command you chose and sends no audio off the host, so a device with write access may set it up from
+Settings ([why](security.md#the-speech-engine-whistle)). And in **Settings → Voice → Host speech**,
+a device with write access may switch the host between Whistle, the ChatGPT subscription (the
+`codex` provider) and Off. ChatGPT comes only after the same consent the terminal prints and a tap
+on **I accept** ([below](#the-codex-provider--what-you-are-accepting)). A provider you set up in the
+terminal with a key or a command, or one your environment names, is shown there and never changed
+from the app. For those two, the page shows the commands to run on the host, with **Copy** and
+**Check again**, and no form.
 
 ```console
 $ bin/collie stt setup
@@ -70,6 +87,10 @@ was willing to record is a clip it is willing to wait for. While the upload is i
 polling and stops escalating the connection banner: your own audio saturating a phone's uplink is not
 an outage, and it must not be reported as one.
 
+A recording stops at five minutes. A host that runs Whistle takes four, because the phone sends it a
+WAV file, which is about four times the size of the compressed clip. The recorder shows the cap that
+applies.
+
 **Did it work?** `stt test` sends a fifth of a second of generated silence through the real
 provider, once per container a phone can record:
 
@@ -82,11 +103,161 @@ sending:  0.2 s of generated silence as audio/webm;codecs=opus (Chrome, Android,
 sending:  0.2 s of generated silence as audio/mp4 (Safari, iOS) … ✓ 190 ms
 ```
 
+With Whistle on the host, `stt test` sends one clip, a 16 kHz WAV, and says that webm and mp4 are
+skipped, because the phone converts its recording to 16 kHz WAV before it sends it to that provider.
+
 An **empty transcript is a pass** — silence transcribes to nothing, and the round trip is what was
 being proved. If it fails, the error names its kind (auth, endpoint, response shape). Then reload
 Collie on the phone: a microphone sits beside the message box. `collie stt status` says what is
 configured and *where each setting came from* (the file, or an environment variable that outranks
 it); `collie stt off` removes `stt.json` and the button is gone again, no restart either way.
+
+<a id="quick-start-cactus-whistle-on-this-machine"></a>
+### Whistle: speech to text on your phone or your host
+
+[Whistle](https://huggingface.co/Cactus-Compute/whistle) is a small speech model by Cactus Compute.
+The file is 16.9 MB and the licence is Apache-2.0. It knows English, German, French, Spanish,
+Italian, Dutch and Polish, and finds the language itself. It needs no account, no key and no extra
+program. Collie carries the engine that runs it, so it works on Linux, macOS, Windows and NixOS.
+
+Whistle can run in two places. You choose per phone.
+
+| Engine | Where the words are made | Pick it when |
+| --- | --- | --- |
+| **Host** | On the computer that runs Collie, in a short-lived child process of Collie's own binary. | The phone is weak or old. A recording goes up as a WAV file, and a clip takes a second or two. |
+| **This phone** | In the phone's browser, in a worker. | The phone is recent. There is no upload, so the audio never leaves the phone, and it works offline once the model is on the phone. |
+
+Both engines read the same model. The host keeps one copy. A phone that wants to run Whistle itself
+copies it from the host, never from the internet. A clip takes about a second on a recent phone.
+
+**Set it up from Settings.** You need a device with write access (a device that has
+[paired](security.md#pair-a-device--the-write-credential)). A read-only device sees "A device with
+write access can set this up." and cannot start the download.
+
+**Settings → Voice** is one page with two pages below it:
+
+- **Voice** puts what is in use first. The top card is titled with what is configured: the
+  command your host runs, such as `whisper-cli` with **Model ggml-base.bin** and **Your own command
+  on your host** under it; a speech service's model, such as `whisper-large-v3` with **A speech
+  service at api.groq.com**; **Whistle by Cactus Compute** with **Model ca52876** and **On this
+  phone** or **On your host**; or **ChatGPT subscription (OpenAI)** with **Through Codex on your
+  host**. If the command is the old `whistle-stt` wrapper, the card says so and offers **Switch to
+  built-in Whistle**, which opens Host speech. Then the status, which says what it rests on, for example "Ready. Whistle
+  ca52876 is on this phone." or "Not ready. Codex is signed out on your host.", where the **Audio**
+  goes, and how it was **Set up** (from Settings by which device and when, or in a terminal on the
+  host). Under the card is the hands-free switch. Everything else sits behind one row, **Change how
+  speech works**. While speech works, that row is closed on every visit. While it does not (nothing
+  set up, a paused phone, a host option that does not answer), it stands open, and the top card
+  carries the one action: **Set up speech on this phone**, **Restore** or **Fix**. Opened, it shows
+  this phone's own choice, **On this phone** (marked **Recommended**) or **On your host** (the
+  computer running your agents), which is kept per device. The choice in use has a bold edge, a tint
+  and an **In use** badge, and switching between the two moves nothing on the page. Then one row for
+  what the host uses, a row that opens all five options, and one row for the model. Each choice has
+  an info button that lists five facts about it: where the audio goes, whether it works offline,
+  what it costs, what setup it needs, and how fast it is. A tap on the info button chooses nothing.
+- **Host speech** lists the host's five options. Whistle and your own command keep the audio on
+  your machines. A speech service and the ChatGPT subscription send it off your host. Off stands on
+  its own below them. A change here is for every device paired to the host. A choice that sends
+  audio further than the one it replaces asks first; a step back is sent on the tap. Every option
+  has **How to set up**: numbered steps, the commands to copy, and the app's own buttons where the
+  app may act. The step to take next is marked **Next**. It is open by itself only for the option in
+  use when it does not work. The option in use also says what is configured, for example
+  "Configured: whisper-cli, model ggml-base.bin".
+- **Whistle model** names the maker, Cactus Compute, the licence, and links to the model page on
+  Hugging Face. It shows the copy on the host and the copy on this phone, each with its own state.
+
+To set Whistle up:
+
+1. On a phone where speech does not work yet, tap **Set up speech on this phone** in the top card
+   on **Voice**. One tap does the whole way: the host downloads the model if it lacks it, this phone
+   copies it from the host, and **On this phone** is chosen. One bar shows the progress and says
+   which step runs, "Downloading to your host…" or "Copying to this phone…". If a step fails, it
+   stops there, says why, and offers **Try again**. A read-only device may copy, because copying is a
+   read, but it cannot ask the host for the download. The same two steps are also under **Change how
+   speech works**: **Set up (16.9 MB)** on a phone with no copy, or **Copy to this phone** when the
+   host already has the model.
+2. Or open **Whistle model** and tap **Download to host (16.9 MB)**. A bar shows the progress. If it
+   fails, the page says why. Tap **Try again**. When the model is there, the page lists its version
+   (the first seven characters of the Hugging Face revision, a link to that revision) and its size.
+   **Details** shows a short checksum and when the host downloaded it.
+3. For dictation through the host, open **Host speech** and choose **Whistle on your host**, then
+   **Change for every device**. Or open **How to set up** under it and tap **Use on host**. If you
+   set up another provider in the terminal, with a key or a command, the page shows it and offers no
+   choice. Whistle's steps then start with `collie stt off` on the host, then
+   `collie stt whistle --host`.
+4. On this phone's copy, **Whistle model** names the version, and offers **Remove from this phone**.
+   It also says whether the browser agreed to keep the copy ("Kept") or may clear it when space runs
+   low. If the host later gets a newer model, the copy says so and offers **Update**.
+5. On **Voice**, open **Change how speech works** and choose **On this phone** or **On your host**. **On this phone** is off until the
+   phone has a copy. **On your host** is off while the host has no speech option. The line under
+   the choice says what the host uses.
+6. To remove the model from the host, tap **Remove from host** on **Whistle model** and confirm. If
+   Whistle was the host engine, speech on the host stops until you download it again.
+
+**Who changed it.** When a paired device changes the host's option from Settings, the host writes
+that device's name and the time. **Voice** and **Host speech** then say "Last changed by Pixel 8",
+with the time. A change in the terminal clears it.
+
+**Or set it up in the terminal.**
+
+```console
+$ bin/collie stt whistle                 # fetch the model once
+$ bin/collie stt whistle --host          # also make Whistle this host's engine
+$ bin/collie stt whistle --from <path>   # use a copy you already have, same hash check
+$ bin/collie stt whistle --remove        # remove the model, and the host engine if it is Whistle
+$ bin/collie stt status                  # shows the model line
+```
+
+`--host` asks before it replaces a provider you set up on purpose. `--yes` answers that question for
+a run with no terminal. The question comes before the download, so a refused run fetches nothing.
+`--remove` leaves a provider of another kind alone. `collie stt off` removes the provider and says the
+model stays. `collie doctor` warns when the model on the host is not the one this release accepts.
+The engine is live at once, with no restart. Check it with `collie stt test`.
+
+**What is downloaded, and from where.** The host fetches `whistle.cact` from one pinned Hugging Face
+address, follows the redirect to its CDN (at most five, HTTPS only, and never to a local or private
+address), and keeps the file only when its sha256 equals a hash that this release carries. A mismatch deletes the file and reports both hashes. The download is capped at
+32 MiB and has a 10-minute deadline. The file sits in the `whistle` folder of the state folder. The
+engine code (about 1 MB) is part of every Collie release and comes from Collie's own files.
+
+**Nothing downloads on its own.** Not on install, not on an update, not when you pick an engine. The
+model arrives when a person taps **Download to host**, **Set up**, or runs `collie stt whistle`. A
+phone copies it from the host when its owner taps **Set up**, **Copy to this phone** or **Restore**,
+and from no other place. The host sends
+the model to at most two phones at once. A third gets "try again in a moment".
+
+**Limits.** The host engine takes a recording of up to 4 minutes, because a WAV is about four times
+the size of the compressed clip and the upload cap stays 8 MiB. The recorder shows that cap. The
+phone engine takes up to 5 minutes. The host child has a deadline of half the clip's length, at
+least 60 seconds and at most 3 minutes, and at most two clips run on the host at the same time. A phone needs free space for the model (it asks for twice the file
+size) and a secure connection (HTTPS, as `tailscale serve` gives).
+
+**When the phone cannot do it.** If *On this phone* fails on a clip, the voice screen says why and
+offers **Send to host**, only while the host has a working speech provider. The clip stays in memory,
+in the failed state, until you tap Send to host or discard it. Collie never sends it by itself,
+because you chose an engine whose point is that the audio stays put. Two engine crashes in one
+session turn *On this phone* off until you reload the app.
+
+**When the phone's copy is gone.** A browser may clear the copy to free space. The choice stays on
+this phone, and dictation is paused: **Voice** says "Dictation is paused" and offers **Restore**,
+which copies the model from the host again. The mic still records, and the clip stays on the phone
+with **Send to host** as above. Collie does not switch to the host by itself. To use the host, choose
+**On your host**.
+
+**Browsers.** *This phone* needs a browser that gives the speech worker its own security policy.
+Chrome on Android is tested. WebKit is tested in a WebKit build. Safari on an iPhone is not verified
+on a device yet. A browser that cannot run it shows *On this phone* as off with the reason, and
+*On your host* stays available.
+
+**If you used the old wrapper.** Earlier versions of this page showed a `local-cli` wrapper around a
+native runner, `ffmpeg` and `jq`. That setup is retired, but nothing touches one you already have, and
+it keeps working. To move to the built-in engine, run `bin/collie stt whistle --host --yes`, or run
+`collie stt off` first and then `bin/collie stt whistle --host`. You can also keep the wrapper. Its
+model file is not reused on its own. Pass it with `--from <path>` to skip the download.
+
+The security side of this engine, and why setup from Settings is allowed, is in
+[Security](security.md#the-speech-engine-whistle) and
+[ADR 0096](../.adr/0096-speech-can-stay-on-the-phone.md).
 
 ### Container support is provider-specific
 
@@ -155,6 +326,18 @@ Collie asks that endpoint **under its own name first**. Only if the honest ident
 it fall back to the Codex CLI's headers — and that fallback is written into the config, in a word
 `collie stt status` reads back to you. Collie never reads or stores `~/.codex/auth.json`; the binary
 you already trust stays the only thing that touches it.
+
+**You can also choose it in Settings.** Open **Settings → Voice → Host speech** on a device with
+write access. The page shows what the host uses now. For the ChatGPT subscription it also shows the
+recorded identity: `honest`, or `codex-cli` when the fallback was needed. The **ChatGPT
+subscription** row is open only when `codex` is installed on the host and signed in with ChatGPT.
+Collie asks `codex login status` to find out. Otherwise the row says why in one sentence, and its
+**How to set up** marks the next step: install Codex on the host, sign in with `codex login`, then
+tap **Use ChatGPT subscription**. Tap the row, and a sheet shows the same consent, word for word, under a line that says
+the change is for every device paired to the host. Nothing is sent to the host until you tap
+**I accept**. Then the host runs the same probe as `collie stt setup`, honest identity first, and
+writes the same config. If the probe fails, nothing is written and the sheet says why. **Off** on the
+same page removes the provider. The terminal still works the same way.
 
 ### Run your own command: the local-cli provider
 

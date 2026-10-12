@@ -9,7 +9,6 @@
 **Melihat fitur yang Anda sukai. Pahami cara kerjanya hingga ke tingkat biner.**
 
 [![npm version](https://img.shields.io/npm/v/rea-agents?style=flat-square&color=cb3837)](https://www.npmjs.com/package/rea-agents)
-[![CI](https://img.shields.io/github/actions/workflow/status/morluto/rea/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/morluto/rea/actions/workflows/ci.yml)
 [![MCP tool catalog](https://img.shields.io/badge/MCP-tool_catalog-5c4ee5?style=flat-square)](docs/mcp-contracts.md#generated-catalog)
 [![Node.js requirements](https://img.shields.io/badge/Node.js-requirements-339933?style=flat-square&logo=nodedotjs&logoColor=white)](#current-status)
 [![skills.sh](https://skills.sh/b/morluto/rea?style=flat-square)](https://skills.sh/morluto/rea/reverse-engineer-anything)
@@ -18,7 +17,7 @@
 
 <a href="https://trendshift.io/repositories/82054?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-82054" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/82054" alt="morluto%2Frea | Trendshift" width="250" height="55"/></a>
 
-**[Situs Web](https://rea.tools/) · [Panduan](https://rea.tools/guides/) · [Contoh Penggunaan](https://rea.tools/showcase/)**
+**[Situs Web](https://rea.tools/id/) · [Panduan](https://rea.tools/id/guides/) · [Contoh Penggunaan](https://rea.tools/id/showcase/)**
 
 [Mulai Cepat](#mulai-cepat) · [Cara Kerja REA](#cara-kerja-rea) · [Hal yang Dapat Anda Analisis](#hal-yang-dapat-anda-analisis) · [Contoh Penggunaan](#contoh-penggunaan) · [FAQ](#faq) · [Dokumentasi](#dokumentasi)
 
@@ -54,7 +53,7 @@ REA menghubungkan agen Anda dengan berbagai alat untuk memeriksa biner native, a
 
 Proses penyiapan mendaftarkan REA ke agen Anda dan memasang instruksi alur kerja yang sesuai. Analisis native dapat menggunakan instalasi Hopper, Ghidra, atau IDA yang sudah ada. Proses penyiapan juga dapat memasang Hopper secara opsional setelah mendapatkan persetujuan. Analisis JavaScript statis tidak memerlukan mesin analisis native.
 
-> **[Kunjungi situs web REA](https://rea.tools/)** untuk mendapatkan petunjuk penyiapan, panduan bergambar, dan studi kasus nyata.
+> **[Kunjungi situs web REA](https://rea.tools/id/)** untuk mendapatkan petunjuk penyiapan, panduan bergambar, dan studi kasus nyata.
 
 ## Mulai Cepat
 
@@ -101,11 +100,13 @@ Untuk analisis native, konfigurasikan penyedia terlebih dahulu. Lihat [Panduan C
 
 REA berkembang dengan cepat, dan rilis baru sering menyertakan perbaikan bug. Pastikan instalasi Anda selalu diperbarui.
 
-Untuk CLI yang dipasang melalui npm:
+Untuk CLI yang dipasang melalui `npm install --global` atau `bun add --global`:
 
 ```bash
 rea update
 ```
+
+Pembaruan global dengan Bun memerlukan Bun 1.2.17 atau yang lebih baru. Pada rilis Bun yang lebih lama, perbarui Bun secara manual sebelum menjalankan `rea update`.
 
 Untuk memperbarui pendaftaran agen dan skill Anda, jalankan perintah penyiapan yang ditampilkan oleh proses pembaruan.
 
@@ -115,7 +116,7 @@ Jika Anda menggunakan `npx`, perbarui penyiapan agen dengan:
 npx rea-agents@latest setup
 ```
 
-Tinjau perubahan penyiapan dan mulai ulang agen Anda. Untuk menjalankan perintah CLI sekali pakai, gunakan `npx rea-agents@latest` diikuti dengan perintah yang diinginkan.
+Tinjau perubahan penyiapan dan mulai ulang agen Anda. Untuk menjalankan perintah CLI sekali pakai, gunakan `npx rea-agents@latest` diikuti dengan perintah yang diinginkan. Dengan Bun, gunakan `bunx rea-agents@latest` sebagai pengganti `npx rea-agents@latest`.
 
 ## Cara Kerja REA
 
@@ -137,12 +138,13 @@ Alat tambahan dan dukungan sistem host bergantung pada target yang dianalisis:
 
 | Target                     | Hasil yang diberikan REA                                                                              | Persyaratan dan panduan                                                                                                            |
 | -------------------------- | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| Biner native               | Pseudocode, assembly, string, simbol, pemanggilan, dan referensi                                      | Hopper, Ghidra, atau IDA; [analisis native](https://rea.tools/guides/native/)                                                      |
+| Biner native               | Pseudocode, assembly, string, simbol, pemanggilan, dan referensi                                      | Hopper, Ghidra, atau IDA; [analisis native](https://rea.tools/id/guides/native/)                                                   |
 | Tata letak ELF offline     | Bagian, segmen, simbol/relokasi asli, dan kandidat mitigasi statis                                    | pwntools yang disediakan pemanggil pada Linux x64; [diagnostik biner](docs/binary-diagnostics.md)                                  |
+| Artefak WASM               | Validasi, bagian, bentuk WAT import/ekspor yang tepat, dan WAT yang didekode                          | WABT 1.0.42 yang disediakan pemanggil; `inspect_wasm_artifact`                                                                     |
 | Bytecode EVM               | Selector dispatch, offset byte, argumen yang disimpulkan, dan sifat mutabilitas                       | Pembawa data raw/hex lokal; [panduan EVM offline](docs/evm-bytecode.md)                                                            |
 | Crash Linux yang direkam   | Catatan mentah, register/sinyal setiap thread yang direkam, dan kandidat pemetaan opsional            | pwntools yang disediakan pemanggil; GDB/pwndbg opsional; [crash yang direkam](docs/recorded-crashes.md)                            |
-| JavaScript / Electron      | Modul, impor, source map, rute, IPC, dan hubungan add-on native                                       | Node.js dan npm; [analisis aplikasi](https://rea.tools/guides/javascript/)                                                         |
-| Situs web                  | Struktur halaman, skrip, pengamatan jaringan, dan tangkapan layar yang diminta                        | Peramban berbasis Chrome; [analisis peramban](https://rea.tools/guides/browser/)                                                   |
+| JavaScript / Electron      | Modul, impor, source map, rute, IPC, dan hubungan add-on native                                       | Node.js dan npm; [analisis aplikasi](https://rea.tools/id/guides/javascript/)                                                      |
+| Situs web                  | Struktur halaman, skrip, pengamatan jaringan, dan tangkapan layar yang diminta                        | Peramban berbasis Chrome; [analisis peramban](https://rea.tools/id/guides/browser/)                                                |
 | Rekaman jaringan tersimpan | Permintaan, respons, payload yang terekspos, dan lokasi sumber                                        | HAR; mitmdump di Linux untuk rekaman native mitmproxy; [panduan rekaman](docs/web-network-captures.md)                             |
 | Assembly .NET              | Metadata, instruksi CIL, dependensi native yang dideklarasikan, dan perbandingan build                | Tidak ada (hanya analisis statis); [panduan kode terkelola](docs/managed-code-analysis.md)                                         |
 | APK Android                | Deklarasi manifest, kelas, metode hasil dekompilasi, dan referensi                                    | JADX mode headless dan JDK lengkap di Linux/macOS/Windows x64; [panduan Android](docs/android-analysis.md)                         |
@@ -169,25 +171,25 @@ Periksa [ketersediaan rilis](docs/installation.md#released-package-and-main) unt
 
 ## Contoh Penggunaan
 
-[![Ilustrasi contoh penggunaan DX-Ball sound-pan, Notion clipboard-bridge, dan TH04 bullet-ring](docs/assets/rea-showcases.png)](https://rea.tools/showcase/)
+[![Ilustrasi contoh penggunaan DX-Ball sound-pan, Notion clipboard-bridge, dan TH04 bullet-ring](docs/assets/rea-showcases.png)](https://rea.tools/id/showcase/)
 
 ### DX-Ball: merekonstruksi perhitungan sound-pan
 
 Ikuti pemanggilan suara hingga ke fungsi pembantu yang mengubah posisi menjadi nilai pan, periksa instruksinya, lalu ubah pseudocode yang belum lengkap menjadi C. Hasil rekonstruksi tersebut lolos pada 3.205 kasus x86 asli dan mereproduksi seluruh 63 byte fungsi hasil kompilasi.
 
-[Baca studi kasus](https://rea.tools/showcase/dx-ball/) · [Repositori rekonstruksi](https://github.com/N0zoM1z0/dx-ball)
+[Baca studi kasus](https://rea.tools/id/showcase/dx-ball/) · [Repositori rekonstruksi](https://github.com/N0zoM1z0/dx-ball)
 
 ### Notion: menelusuri jembatan clipboard Electron
 
 Temukan API clipboard pada renderer, telusuri jalurnya melalui preload dan IPC hingga ke proses utama, lalu periksa format clipboard kaya.
 
-[Baca studi kasus](https://rea.tools/showcase/notion/)
+[Baca studi kasus](https://rea.tools/id/showcase/notion/)
 
 ### TH04: memulihkan perhitungan bullet-ring DOS
 
 Periksa instruksi 16-bit dari gim PC-98 asli, pulihkan perhitungan sudut tetap dan sudut yang diarahkan, lalu bandingkan C++ hasil rekonstruksi dengan keluaran historis kompiler.
 
-[Baca studi kasus](https://rea.tools/showcase/th04/) · [Repositori rekonstruksi](https://github.com/N0zoM1z0/th04)
+[Baca studi kasus](https://rea.tools/id/showcase/th04/) · [Repositori rekonstruksi](https://github.com/N0zoM1z0/th04)
 
 Jika Anda telah menggunakan REA untuk menganalisis sesuatu yang menarik, kami ingin melihat hasilnya. Bagikan kasus Anda melalui [issue](https://github.com/morluto/rea/issues) atau [pull request](https://github.com/morluto/rea/pulls), sertakan target, pertanyaan Anda, bagaimana REA membantu, dan apa yang Anda temukan.
 
@@ -246,7 +248,7 @@ REA menganalisis target secara lokal. Agen Anda menerima hasil alat, sedangkan p
 
 Perbarui terlebih dahulu. Rilis terbaru mungkin sudah memperbaiki masalah tersebut.
 
-Untuk CLI yang dipasang melalui npm:
+Untuk CLI yang dipasang melalui `npm install --global` atau `bun add --global`:
 
 ```bash
 rea update
@@ -266,7 +268,7 @@ Coba kembali tugas yang sama. Jika masalah masih terjadi, [buat issue](https://g
 
 ## Dokumentasi
 
-Mulailah dengan [panduan praktik di situs web](https://rea.tools/guides/).
+Mulailah dengan [panduan praktik di situs web](https://rea.tools/id/guides/).
 
 Untuk mengetahui opsi, prasyarat, dan kontrak hasil secara tepat:
 
@@ -281,7 +283,7 @@ Laporkan kerentanan melalui [SECURITY.md](SECURITY.md).
 
 ## Riwayat Bintang
 
-🎉 **50.000 bintang GitHub, terima kasih!**
+🎉 **90.000 bintang GitHub, terima kasih!**
 
 Terima kasih kepada semua orang yang menggunakan REA, melaporkan bug, meminta fitur, menguji build, dan berkontribusi dalam perbaikan.
 

@@ -52,6 +52,21 @@ A plugin can serve TypeSafe's System One for its provider (#1514). Its `config` 
 
 In [`decide.go`](../../internal/provider/decide.go) a plugin provider's decision models are the ones it marks (`pluginMarks`, read from the plugin's current listing) and Jev's by name (`jev-*`). They are kept from agents (`isDecision` in `buildEntries`), refused for chat ("only decides"), refused as a member of a group beside models that hold a conversation (a group of decision models alone answers `/v1/systemone`: [gateway-routing](gateway-routing.md#remote-magpie-apis)), and offered as a group's classifier (`Deciders`, `DecisionModels`). A mark counts only when the provider says `decide`; without it every model stays one to chat with. A plugin provider's editor (the account editor) has no address fields, so this address is never typed; the GUI marks the decision models from `deciders`.
 
+## Where the agent works, for a plugin's fetch
+
+A plugin's fetch runs in magpie's plugin host, so its `process.cwd()` is magpie's own folder, not the folder of the agent that asked. A plugin that tells its vendor the user's environment, as the ZCode plugin's Start Plan request does in its `# Environment` section, said magpie's `~/.config/magpie` as the working directory, and the model went looking there (magpie-community/plugins#86).
+
+The gateway tells the plugin instead. On every request to a plugin's provider, `forwardOnce` calls `tellWorkPlace` ([`workdir.go`](../../internal/gateway/workdir.go)), which reads the request as sent to the plugin with the same `workPlace` that rules by folder use ([gateway-routing](gateway-routing.md)) and sets two headers on the plugin's fetch:
+
+| Header | Value |
+| --- | --- |
+| `x-magpie-work-dir` (`provider.WorkDirHeader`) | The folder the agent says it works in, percent-encoded UTF-8 (`decodeURIComponent` reads it). |
+| `x-magpie-work-git` (`provider.WorkGitHeader`) | `yes` or `no`: whether that folder is in a git repository. The agent's own word beside the folder when it says one (Claude Code's `Is a git repository: true`/`false`, OpenCode's `Is directory a git repo: yes`/`no`), else a `.git` in the folder or above it when the folder is on this computer (`provider.GitSaid`, `provider.GitOnDisk` in [`workplace.go`](../../internal/provider/workplace.go)). |
+
+Each is left off when it isn't known: no folder said, or a folder not on this computer that the agent didn't say is a repository. A plugin then leaves out what it can't know rather than saying magpie's. The host's `fetch` (`unsaid` in `host.js`) takes both headers off every request a plugin sends, so a plugin that sends on the headers it was given sends them to no vendor.
+
+`TestPluginToldWhereTheAgentWorks` ([`plugin_workdir_test.go`](../../internal/gateway/plugin_workdir_test.go)) sends Claude Code's and Codex's captured requests and Pi-style ones from a folder in a repository and one not, through the fake plugin, and checks what the plugin read and that the vendor got neither header.
+
 ## Two plugins for one provider id
 
 The host runs one plugin per provider id. When two installed plugins have `auth` hooks for the same id, such as a third-party plugin and the user's own copy added by its folder, `auths()` in `host.js` takes the one picked for that id in `plugins.json`'s `prefer` map (provider id → spec). Without a pick it takes the last one in the list, as OpenCode does. Only the serving plugin's `provider.models` hook runs for that id. Every plugin's `config` hook still runs, so another plugin can still add models or a name to `config.provider[id]`.
@@ -108,7 +123,7 @@ For a plugin fix, publish the corrected community package and raise the owning m
 
 Keep the migration, host, and upstream behavior separate when investigating failures. A plugin bug can require a community change; a host, provider-card, sign-in orchestration, or migration bug can require a magpie change even for moved users.
 
-The host gets magpie's proxy only as `MAGPIE_*_PROXY` and applies it to each fetch itself. A program a plugin starts, such as the Grok plugin's `grok login`, gets it back as `HTTPS_PROXY`/`HTTP_PROXY` from the spawn wrapper in `host.js`, unless the plugin set one. A sign-in that works in the built-in and fails through the plugin may be a host difference like this one, not a plugin bug.
+The host gets magpie's proxy only as `MAGPIE_*_PROXY` and applies it to each fetch itself (`proxyFor`), and to each HTTP/2 session a plugin opens (`http2.connect`, `tunnel`, #1035). A host on the user's own network goes around that proxy as it does for magpie's own requests (`onLAN` in `host.js`, a port of `internal/netproxy/lan.go`'s: a private, link-local, loopback or CGNAT address, a `.local` name, or a name every address of which is one of those, looked up for 400 ms at most and kept a minute; #1572). A provider's own proxy is still taken as it is. The two rules are kept the same: a change to one is made in the other. A program a plugin starts, such as the Grok plugin's `grok login`, gets it back as `HTTPS_PROXY`/`HTTP_PROXY` from the spawn wrapper in `host.js`, unless the plugin set one. A sign-in that works in the built-in and fails through the plugin may be a host difference like this one, not a plugin bug.
 
 Bun takes only http:// and https:// proxies. A SOCKS5 one, such as a Mac's system SOCKS proxy, is given to every bun magpie starts as a loopback HTTP proxy in front of it (`netproxy.Bridge`): to the host through `hostEnv`, and to `bun add`, `bun update` and `bun remove` through `bunCommand` (`netproxy.EnvForBun`). Before, an install with only a SOCKS system proxy failed as `UnsupportedProxyProtocol` (#1409). An agent CLI that bun installed is updated through the bridge too (`updateEnv` in `internal/agent/cliupdate.go`).
 
@@ -128,7 +143,7 @@ Gateway parity tests in [`plugin_parity_test.go`](../../internal/gateway/plugin_
 
 [`plugin_checkin_test.go`](../../internal/provider/plugin_checkin_test.go) runs the fake plugin's `auth.checkin` (`FAKE_CHECKIN`) through the schedule: off, each outcome, no second press the same day, failures only after the retry window, the next day, cards and Settings, and the vendor check-in stepping aside. `plugin-checkin.test.cjs` covers the card row and the Settings tab.
 
-[`plugin_cliproxy_test.go`](../../internal/plugin/plugin_cliproxy_test.go)'s `TestPluginHostTakesANewProxy` starts a real host without a proxy, sets one, and checks that a program the plugin starts gets it. `plugin-signed-out-account.test.cjs` covers a moved Grok account signed out while in use and as the agent's own, in Chromium and WebKit, en and zh, 420 and 1100 wide.
+[`plugin_cliproxy_test.go`](../../internal/plugin/plugin_cliproxy_test.go)'s `TestPluginHostTakesANewProxy` starts a real host without a proxy, sets one, and checks that a program the plugin starts gets it. [`plugin_lan_test.go`](../../internal/plugin/plugin_lan_test.go)'s `TestPluginLeavesTheUserNetworkDirect` checks with a real host that fetches (http:// and https://) and an HTTP/2 session to this computer's private address reach it directly with a proxy set, and that a public address and an unresolvable name still go through the proxy. `plugin-signed-out-account.test.cjs` covers a moved Grok account signed out while in use and as the agent's own, in Chromium and WebKit, en and zh, 420 and 1100 wide.
 
 These tests cover two plugins on one provider id:
 

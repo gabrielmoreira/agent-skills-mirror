@@ -7,7 +7,7 @@ applicability:
 
 Choose the owner from the obligation, baseline-or-specialization role, domain, selector, consumer, and read path before looking at its current container. The effective manual establishes available construct types and how each reaches an agent; an existing container, familiar label, or compiler acceptance does not establish ownership.
 
-A behavior-bearing point has one primary authored owner. For a requested outcome, the selected task owns its workflow. Supporting constructs may supply reusable discipline, facts, or situational understanding without becoming second owners of that workflow. Classify the point before applying construct-specific quality rules.
+A behavior-bearing point has one authored owner. For a requested outcome, the selected task owns its workflow. Supporting constructs may supply reusable discipline, facts, or situational understanding without becoming second owners of that workflow. Classify the point before applying construct-specific quality rules.
 
 ## Core and optional specialization
 

@@ -129,7 +129,7 @@ python3 skills/backtest-expert/scripts/evaluate_backtest.py \
   --output-dir reports/
 ```
 
-The script scores across 5 dimensions (Sample Size, Expectancy, Risk Management, Robustness, Execution Realism), detects red flags, and outputs a Deploy/Refine/Abandon verdict.
+The script scores across 5 dimensions (Sample Size, Expectancy, Risk Management, Robustness, Execution Realism). Treat the machine-readable `decision` and `blocking_reasons` as authoritative. The 0–100 `quality_score` is diagnostic: even a high score cannot override non-positive expectancy (except that fewer than 30 trades yields `NOT_EVALUABLE` first), a 50% or greater drawdown, a stricter user-supplied drawdown limit, insufficient trades, missing slippage/friction validation, a test period shorter than five years, or results that look too good (win rate above 90% with max drawdown below 5%, reason `too_good`, which needs a look-ahead and data audit before adoption). `verdict` remains a conservative Deploy/Refine/Abandon compatibility field that is never better than the score-based verdict. Use `--max-acceptable-drawdown-pct` to set a personal limit below the hard 50% ceiling; equality with the personal limit is allowed. Invalid inputs exit with status 1 and no report.
 
 ## Key Testing Principles
 
@@ -182,8 +182,14 @@ See `references/failed_tests.md` for detailed examples and diagnostic framework.
 
 ## Output
 
-- `reports/backtest_eval_<timestamp>.json` — structured evaluation with per-dimension scores, red flags, and verdict
+- `reports/backtest_eval_<timestamp>.json` — structured evaluation with per-dimension scores, red flags, `decision`, `blocking_reasons`, and verdict
 - `reports/backtest_eval_<timestamp>.md` — human-readable report with dimension table, key metrics, and red flag details
+
+Key JSON fields:
+
+- `decision`: authoritative result, one of `DEPLOY`, `REFINE`, `ABANDON`, `REJECT`, `RISK_LIMIT_EXCEEDED`, `VALIDATION_REQUIRED`, `NOT_EVALUABLE`. Gate precedence: `NOT_EVALUABLE` (fewer than 30 trades or profit-factor overflow), then `REJECT`, then `RISK_LIMIT_EXCEEDED`, then `VALIDATION_REQUIRED` (no slippage test, under 5 years, or `too_good`). Only when no gate blocks does the score yield `DEPLOY`/`REFINE`/`ABANDON`.
+- `blocking_reasons`: IDs of every gate that fired (`profit_factor_overflow`, `small_sample`, `negative_expectancy`, `zero_expectancy`, `excessive_drawdown`, `risk_limit_exceeded`, `no_slippage_test`, `short_test_period`, `too_good`); all are preserved even when a higher-precedence gate sets the decision.
+- `profit_factor`: may be `null`. `profit_factor_status` explains why: `FINITE` (numeric value), `NO_LOSSES` (positive gross profit, no gross loss), `UNDEFINED_ZERO_GROSS` (no gross profit and no gross loss), or `OVERFLOW` (ratio overflow despite nonzero losses).
 
 ## Resources
 

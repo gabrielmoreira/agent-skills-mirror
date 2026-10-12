@@ -9,7 +9,6 @@
 **قابلیتی دیده‌اید که دوستش دارید؟ سازوکارش را تا سطح باینری درک کنید.**
 
 [![npm version](https://img.shields.io/npm/v/rea-agents?style=flat-square&color=cb3837)](https://www.npmjs.com/package/rea-agents)
-[![CI](https://img.shields.io/github/actions/workflow/status/morluto/rea/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/morluto/rea/actions/workflows/ci.yml)
 [![MCP tool catalog](https://img.shields.io/badge/MCP-tool_catalog-5c4ee5?style=flat-square)](docs/mcp-contracts.md#generated-catalog)
 [![Node.js requirements](https://img.shields.io/badge/Node.js-requirements-339933?style=flat-square&logo=nodedotjs&logoColor=white)](#current-status)
 [![skills.sh](https://skills.sh/b/morluto/rea?style=flat-square)](https://skills.sh/morluto/rea/reverse-engineer-anything)
@@ -18,7 +17,7 @@
 
 <a href="https://trendshift.io/repositories/82054?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-82054" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/82054" alt="morluto%2Frea | Trendshift" width="250" height="55" /></a>
 
-**[وب‌سایت](https://rea.tools/) · [راهنماها](https://rea.tools/guides/) · [نمونه‌های عملی](https://rea.tools/showcase/)**
+**[وب‌سایت](https://rea.tools/fa/) · [راهنماها](https://rea.tools/fa/guides/) · [نمونه‌های عملی](https://rea.tools/fa/showcase/)**
 
 [شروع سریع](#شروع-سریع) · [REA چگونه کار می‌کند؟](#rea-چگونه-کار-میکند) · [چه چیزهایی را میتوان تحلیل کرد؟](#چه-چیزهایی-را-میتوان-تحلیل-کرد) · [نمونه‌های عملی](#نمونههای-عملی) · [پرسش‌های متداول](#پرسشهای-متداول) · [مستندات](#مستندات)
 
@@ -46,7 +45,7 @@ REA ایجنت شما را به ابزارهایی برای بررسی باین�
 
 فرایند راه‌اندازی، REA را در ایجنت شما ثبت می‌کند و دستورالعمل‌های گردش‌کار متناظر را نصب می‌کند. تحلیل بومی می‌تواند از نصب موجود Hopper یا Ghidra استفاده کند؛ همچنین راه‌اندازی می‌تواند با تأیید شما Hopper را به‌صورت اختیاری نصب کند. تحلیل ایستای JavaScript به هیچ‌یک از این موتورهای تحلیل نیاز ندارد.
 
-> برای دستورالعمل‌های راه‌اندازی، راهنماهای تصویری و مطالعات موردی واقعی، **[به وب‌سایت REA مراجعه کنید](https://rea.tools/)**.
+> برای دستورالعمل‌های راه‌اندازی، راهنماهای تصویری و مطالعات موردی واقعی، **[به وب‌سایت REA مراجعه کنید](https://rea.tools/fa/)**.
 
 ## شروع سریع
 
@@ -125,12 +124,12 @@ REA به Node.js 22.x (>=22.19)، 24.x (>=24.11) یا 26+، به‌همراه np
 
 | هدف                   | خروجی REA                                                                           | پیش‌نیازها و راهنما                                                                                                                  |
 | --------------------- | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| باینری‌های بومی        | شبه‌کد، اسمبلی، رشته‌ها، نمادها، فراخوانی‌ها و ارجاعات                                 | Hopper، Ghidra یا IDA؛ [تحلیل بومی](https://rea.tools/guides/native/)                                                               |
+| باینری‌های بومی        | شبه‌کد، اسمبلی، رشته‌ها، نمادها، فراخوانی‌ها و ارجاعات                                 | Hopper، Ghidra یا IDA؛ [تحلیل بومی](https://rea.tools/fa/guides/native/)                                                            |
 | ساختار ELF آفلاین      | بخش‌ها، سگمنت‌ها، نمادها و relocationهای اصلی و گزینه‌های احتمالی کاهش آسیب‌پذیری ایستا | pwntools تأمین‌شده توسط فراخواننده روی Linux x64؛ [تشخیص باینری](docs/binary-diagnostics.md)                                         |
 | بایت‌کد EVM            | selectorهای dispatch، offsetهای بایتی، آرگومان‌های استنباط‌شده و قابلیت تغییر وضعیت   | دادهٔ خام/hex محلی روی Linux x64؛ [راهنمای EVM آفلاین](docs/evm-bytecode.md)                                                          |
 | کرش‌های ثبت‌شدهٔ لینوکس  | یادداشت‌های خام، رجیسترها/سیگنال‌های تمام threadهای ثبت‌شده و گزینه‌های احتمالی نگاشت   | pwntools تأمین‌شده توسط فراخواننده روی Linux x64؛ GDB/pwndbg اختیاری؛ [کرش‌های ثبت‌شده](docs/recorded-crashes.md)                      |
-| JavaScript / Electron | ماژول‌ها، importها، source mapها، مسیرها، IPC و ارتباط افزونه‌های بومی                | Node.js و npm؛ [تحلیل برنامه](https://rea.tools/guides/javascript/)                                                                 |
-| وب‌سایت‌ها              | ساختار صفحه، اسکریپت‌ها، مشاهدات شبکه و اسکرین‌شات‌های درخواستی                        | مرورگر مبتنی بر Chrome؛ [تحلیل مرورگر](https://rea.tools/guides/browser/)                                                           |
+| JavaScript / Electron | ماژول‌ها، importها، source mapها، مسیرها، IPC و ارتباط افزونه‌های بومی                | Node.js و npm؛ [تحلیل برنامه](https://rea.tools/fa/guides/javascript/)                                                              |
+| وب‌سایت‌ها              | ساختار صفحه، اسکریپت‌ها، مشاهدات شبکه و اسکرین‌شات‌های درخواستی                        | مرورگر مبتنی بر Chrome؛ [تحلیل مرورگر](https://rea.tools/fa/guides/browser/)                                                        |
 | داده‌های ضبط‌شدهٔ شبکه   | درخواست‌ها، پاسخ‌ها، payloadهای آشکارشده و مکان آن‌ها در منبع                          | HAR؛ ابزار mitmdump در لینوکس برای ضبط‌های بومی mitmproxy؛ [راهنمای ضبط شبکه](docs/web-network-captures.md)                          |
 | اسمبلی‌های .NET        | فراداده، دستورالعمل‌های CIL، وابستگی‌های بومی اعلام‌شده و مقایسهٔ buildها                | بررسی ایستا؛ [راهنمای کد مدیریت‌شده](docs/managed-code-analysis.md)                                                                  |
 | فایل‌های APK اندروید   | تعاریف Manifest، کلاس‌ها، متدهای دیکامپایل‌شده و ارجاعات                               | JADX بدون رابط گرافیکی و JDK کامل در Linux/macOS/Windows x64؛ [راهنمای اندروید](docs/android-analysis.md)                           |
@@ -149,25 +148,25 @@ REA به Node.js 22.x (>=22.19)، 24.x (>=24.11) یا 26+، به‌همراه np
 
 ## نمونه‌های عملی
 
-[![تصویرهایی از نمونه‌های پنینگ صدای DX-Ball، پل کلیپ‌بورد Notion و حلقهٔ گلوله‌های TH04](docs/assets/rea-showcases.png)](https://rea.tools/showcase/)
+[![تصویرهایی از نمونه‌های پنینگ صدای DX-Ball، پل کلیپ‌بورد Notion و حلقهٔ گلوله‌های TH04](docs/assets/rea-showcases.png)](https://rea.tools/fa/showcase/)
 
 ### DX-Ball: بازسازی محاسبهٔ موقعیت استریوی صدا
 
 یک فراخوانی صوتی را تا تابع کمکی تبدیل موقعیت به pan دنبال کنید، دستورالعمل‌ها را بررسی کنید و شبه‌کد ناقص را به C تبدیل کنید. بازسازی حاصل، هر ۳٬۲۰۵ مورد آزمایش x86 اصلی را با موفقیت پشت سر می‌گذارد و هر ۶۳ بایت تابع کامپایل‌شده را دقیقاً بازتولید می‌کند.
 
-[مطالعهٔ موردی](https://rea.tools/showcase/dx-ball/) · [مخزن بازسازی](https://github.com/N0zoM1z0/dx-ball)
+[مطالعهٔ موردی](https://rea.tools/fa/showcase/dx-ball/) · [مخزن بازسازی](https://github.com/N0zoM1z0/dx-ball)
 
 ### Notion: ردیابی پل کلیپ‌بورد Electron
 
 API کلیپ‌بورد در renderer را پیدا کنید، مسیر آن را از preload و IPC تا فرایند اصلی دنبال کنید و قالب غنی کلیپ‌بورد را بررسی کنید.
 
-[مطالعهٔ موردی](https://rea.tools/showcase/notion/)
+[مطالعهٔ موردی](https://rea.tools/fa/showcase/notion/)
 
 ### TH04: بازیابی محاسبهٔ حلقهٔ گلوله در DOS
 
 دستورالعمل‌های ۱۶بیتی بازی اصلی PC-98 را بررسی کنید، محاسبات زاویهٔ ثابت و هدف‌گیری‌شده را بازیابی کنید و کد C++ بازسازی‌شده را با خروجی کامپایلر تاریخی مقایسه کنید.
 
-[مطالعهٔ موردی](https://rea.tools/showcase/th04/) · [مخزن بازسازی](https://github.com/N0zoM1z0/th04)
+[مطالعهٔ موردی](https://rea.tools/fa/showcase/th04/) · [مخزن بازسازی](https://github.com/N0zoM1z0/th04)
 
 اگر از REA برای بررسی موضوع جالبی استفاده کرده‌اید، خوشحال می‌شویم آن را به اشتراک بگذارید. یک [issue](https://github.com/morluto/rea/issues) یا [pull request](https://github.com/morluto/rea/pulls) ثبت کنید و هدف، پرسش خود، نقش REA و یافته‌هایتان را توضیح دهید.
 
@@ -231,7 +230,7 @@ npx rea-agents@latest setup
 
 ## مستندات
 
-از [راهنماهای عملی وب‌سایت](https://rea.tools/guides/) شروع کنید. برای گزینه‌های دقیق، پیش‌نیازها و قراردادهای خروجی:
+از [راهنماهای عملی وب‌سایت](https://rea.tools/fa/guides/) شروع کنید. برای گزینه‌های دقیق، پیش‌نیازها و قراردادهای خروجی:
 
 - [نصب و راه‌اندازی](docs/installation.md): ثبت ایجنت، پیکربندی ارائه‌دهنده، به‌روزرسانی و حذف نصب.
 - [آمادگی و رفع اشکال](docs/installation.md#check-readiness-for-your-task): عیب‌یابی یک ایجنت یا موتور تحلیل.
@@ -244,7 +243,7 @@ npx rea-agents@latest setup
 
 ## تاریخچهٔ ستاره‌ها
 
-🎉 **۵۰٬۰۰۰ ستارهٔ GitHub — سپاسگزاریم!**
+🎉 **۹۰٬۰۰۰ ستارهٔ GitHub — سپاسگزاریم!**
 
 از همهٔ کسانی که از REA استفاده می‌کنند، خطاها را گزارش می‌دهند، قابلیت‌های جدید پیشنهاد می‌کنند، buildها را آزمایش می‌کنند و در بهبود پروژه مشارکت دارند سپاسگزاریم.
 

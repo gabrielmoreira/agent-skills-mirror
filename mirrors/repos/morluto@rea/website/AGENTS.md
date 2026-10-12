@@ -8,8 +8,18 @@ Read [README.md](README.md) and [style-guide.md](style-guide.md) before changing
 website content, layout or figures. Use [figures.md](figures.md) and `evidence/`
 for asset notes and the source of case-study claims.
 
-- Write English, direct headings and concrete instructions. Each paragraph
-  should explain a new fact or action.
+- Author source pages in English. Use direct headings and concrete instructions
+  in every language. Each paragraph should explain a new fact or action.
+- Follow [locales/README.md](locales/README.md) for translations. Edit standard PO
+  catalogs, run `translations extract` after changing source text, and review
+  translated setup prompts, terminology and case-study reasoning for readability.
+  Keep code, commands, URLs, paths and Evidence unchanged. Use inline `code` or
+  `translate="no"` for executable literals inside a translated sentence. Preserve
+  named placeholders, source references and reviewer comments. Generated language
+  HTML belongs in ignored `_site/`; do not author duplicate translated pages.
+- Keep the language inventory aligned with README editions. Review long headings,
+  figures and right-to-left layouts. A missing or fuzzy translation produces a
+  labeled, nonindexable English fallback; do not present stale text as current.
 - Reuse the shared styles, prompts, figures and code-step components. Keep a
   case study focused on one question, with further examples in native details.
 - Edit shared header, footer and sharing markup in `templates/`; run

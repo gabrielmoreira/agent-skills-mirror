@@ -1,7 +1,7 @@
 ---
 title: Temporary coexistence
 applicability:
-- When old and new forms of one responsibility serve consumers side by side during a transition
+- When a responsibility being replaced or retired still serves consumers during a transition
 ---
 
 Coexistence is justified only when consumers or stored state cannot move atomically; otherwise it is a second implementation to maintain. Define each stage of the transition and, for every stage, one authority per responsibility: reads, writes, configuration, generated output, conflict resolution, traffic, and reversal. Never allow two writable authorities without deterministic conflict semantics. State how synchronization, ordering, idempotency, retries, partial failure, and reconciliation work between the sides, the mixed-version limits, and the condition that ends coexistence.

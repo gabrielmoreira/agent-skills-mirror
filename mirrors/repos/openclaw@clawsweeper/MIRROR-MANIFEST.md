@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/clawsweeper` — 26 default patterns, 3 followed patterns, 50 file(s) materialized.
+Mirror of `openclaw/clawsweeper` — 26 default patterns, 3 followed patterns, 44 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/clawsweeper` — 26 default patterns, 3 followed patterns, 5
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 50 |
+| Files         | 44 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -88,29 +88,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | ✓ | [`docs/related-issue-discovery.md`](docs/related-issue-discovery.md) |
 | 26 | ✓ | [`docs/review-cache.md`](docs/review-cache.md) |
 | 27 | ✓ | [`docs/scheduler.md`](docs/scheduler.md) |
-| 28 | ✓ | [`docs/spam-scanner.md`](docs/spam-scanner.md) |
-| 29 | ✓ | [`docs/sqlite-change-policy-proposal.md`](docs/sqlite-change-policy-proposal.md) |
-| 30 | ✓ | [`docs/stalled-pr-close-policies.md`](docs/stalled-pr-close-policies.md) |
-| 31 | ✓ | [`docs/state-storage.md`](docs/state-storage.md) |
-| 32 | ✓ | [`docs/steerable-repair-automation.md`](docs/steerable-repair-automation.md) |
-| 33 | ✓ | [`docs/target-dispatcher.md`](docs/target-dispatcher.md) |
-| 34 | ✓ | [`docs/target-repositories.md`](docs/target-repositories.md) |
-| 35 | ✓ | [`docs/triage-dashboard.md`](docs/triage-dashboard.md) |
-| 36 | ✓ | [`docs/unsponsored-feature-close-policy.md`](docs/unsponsored-feature-close-policy.md) |
-| 37 | ✓ | [`docs/work-lane.md`](docs/work-lane.md) |
-| 38 | ✓ | [`prompts/pr-close-coverage-proof.md`](prompts/pr-close-coverage-proof.md) |
-| 39 | ✓ | [`prompts/repair/autonomous.md`](prompts/repair/autonomous.md) |
-| 40 | ✓ | [`prompts/repair/execute.md`](prompts/repair/execute.md) |
-| 41 | ✓ | [`prompts/repair/plan-only.md`](prompts/repair/plan-only.md) |
-| 42 | ✓ | [`prompts/repair/worker-system.md`](prompts/repair/worker-system.md) |
-| 43 | ✓ | [`prompts/review-close-reasons.md`](prompts/review-close-reasons.md) |
-| 44 | ✓ | [`prompts/review-commit.md`](prompts/review-commit.md) |
-| 45 | ✓ | [`prompts/review-item-issue.md`](prompts/review-item-issue.md) |
-| 46 | ✓ | [`prompts/review-item-pr.md`](prompts/review-item-pr.md) |
-| 47 | ✓ | [`prompts/review-item.md`](prompts/review-item.md) |
-| 48 | → | [`changelog.d/README.md`](changelog.d/README.md) |
-| 49 | → | [`docs/limits.md`](docs/limits.md) |
-| 50 | → | [`docs/README.md`](docs/README.md) |
+| 28 | ✓ | [`docs/sqlite-change-policy-proposal.md`](docs/sqlite-change-policy-proposal.md) |
+| 29 | ✓ | [`docs/stalled-pr-close-policies.md`](docs/stalled-pr-close-policies.md) |
+| 30 | ✓ | [`docs/state-storage.md`](docs/state-storage.md) |
+| 31 | ✓ | [`docs/target-dispatcher.md`](docs/target-dispatcher.md) |
+| 32 | ✓ | [`docs/target-repositories.md`](docs/target-repositories.md) |
+| 33 | ✓ | [`docs/triage-dashboard.md`](docs/triage-dashboard.md) |
+| 34 | ✓ | [`docs/unsponsored-feature-close-policy.md`](docs/unsponsored-feature-close-policy.md) |
+| 35 | ✓ | [`docs/work-lane.md`](docs/work-lane.md) |
+| 36 | ✓ | [`prompts/pr-close-coverage-proof.md`](prompts/pr-close-coverage-proof.md) |
+| 37 | ✓ | [`prompts/review-close-reasons.md`](prompts/review-close-reasons.md) |
+| 38 | ✓ | [`prompts/review-commit.md`](prompts/review-commit.md) |
+| 39 | ✓ | [`prompts/review-item-issue.md`](prompts/review-item-issue.md) |
+| 40 | ✓ | [`prompts/review-item-pr.md`](prompts/review-item-pr.md) |
+| 41 | ✓ | [`prompts/review-item.md`](prompts/review-item.md) |
+| 42 | → | [`changelog.d/README.md`](changelog.d/README.md) |
+| 43 | → | [`docs/limits.md`](docs/limits.md) |
+| 44 | → | [`docs/README.md`](docs/README.md) |
 
 ---
 

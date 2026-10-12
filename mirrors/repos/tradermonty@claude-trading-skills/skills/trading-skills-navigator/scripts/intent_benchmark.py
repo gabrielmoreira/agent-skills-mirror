@@ -81,6 +81,11 @@ def load_benchmark(path: Path) -> dict[str, Any]:
             raise BenchmarkError(f"{case_id}: expected_candidate_personas must be a list")
         if not isinstance(case["tags"], list):
             raise BenchmarkError(f"{case_id}: tags must be a list")
+        options = case.get("options", {})
+        if not isinstance(options, dict) or set(options) - {"no_api"}:
+            raise BenchmarkError(f"{case_id}: unsupported recommendation options")
+        if "no_api" in options and not isinstance(options["no_api"], bool):
+            raise BenchmarkError(f"{case_id}: options.no_api must be boolean")
     if not isinstance(benchmark.get("shadowing_contracts"), list):
         raise BenchmarkError("shadowing_contracts must be a list")
     fingerprints = [contract.get("fingerprint") for contract in benchmark["shadowing_contracts"]]
@@ -284,7 +289,7 @@ def evaluate_benchmark(benchmark: dict[str, Any], metadata: dict[str, Any]) -> d
         matches = match_personas(case["query"])
         actual_candidates = [persona.name for persona in matches]
         expected_candidates = case["expected_candidate_personas"]
-        result = recommend(case["query"], metadata)
+        result = recommend(case["query"], metadata, **case.get("options", {}))
         actual_selected = result["routing_diagnostics"]["selected_persona"]
         actual_primary = _primary_id(result)
 
@@ -313,6 +318,23 @@ def evaluate_benchmark(benchmark: dict[str, Any], metadata: dict[str, Any]) -> d
             failures.append(f"{case_id}: honest_gap mismatch")
         if result["no_api_path"] is not case["expected_no_api_path"]:
             failures.append(f"{case_id}: no_api_path mismatch")
+        if "expected_runnability" in case and (
+            result["goal_match"]["runnability"] != case["expected_runnability"]
+        ):
+            failures.append(f"{case_id}: goal runnability mismatch")
+        if "expected_routing_status" in case and (
+            result["routing_diagnostics"]["status"] != case["expected_routing_status"]
+        ):
+            failures.append(f"{case_id}: routing status mismatch")
+        if "expected_alternative_workflow" in case:
+            alternative = result["alternative_workflow"]
+            alternative_id = alternative["workflow"]["id"] if alternative else None
+            if alternative_id != case["expected_alternative_workflow"]:
+                failures.append(f"{case_id}: alternative workflow mismatch")
+        if "expected_missing_requirement_kinds" in case:
+            actual_kinds = [item["kind"] for item in result["goal_match"]["missing_requirements"]]
+            if actual_kinds != case["expected_missing_requirement_kinds"]:
+                failures.append(f"{case_id}: missing requirements mismatch")
 
         target = case["target_persona"]
         if target not in persona_coverage:

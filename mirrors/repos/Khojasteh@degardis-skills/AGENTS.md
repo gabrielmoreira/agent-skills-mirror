@@ -13,6 +13,7 @@ A skill source tells an agent how to do the skill's job wherever the bundle land
 ## Layout
 
 - Each skill lives directly in `skills/<skill-name>/`, with a unique name and no manifest in `skills/` or above.
+- Tests maintained under a skill's scripts directory are part of its source, even when excluded from manifest content globs and bundles.
 - `README.md` and `CHANGELOG.md` stay out of manifest content globs and bundles.
 
 ## Documentation names
@@ -25,9 +26,9 @@ READMEs and the guides in `docs/` describe the last released bundle and lag the 
 
 ## One commit, one skill
 
-A commit changes bundle content for at most one skill, and never alongside a README.
+A commit changes source for at most one skill, including its tests, and never alongside a README.
 
-Its body is the change's permanent record and the only input to the skill's next release section: state what changed and, where a reader wouldn't otherwise see it, why. Record built-bundle behavior only; documentation, trial, and automation work belong to no skill's history, and work that never reached the bundle isn't described. Don't add a `Co-Authored-By` trailer.
+Its body is the change's permanent record and the only input to the skill's next release section: state what changed and, where a reader wouldn't otherwise see it, why. Record changes to the skill's source, including its tests, whether or not the affected files ship in the bundle. Repository documentation, blind trials, and release automation belong to no skill's history. Don't add a `Co-Authored-By` trailer.
 
 Don't touch `CHANGELOG.md`: each section is one published version, dated and linked to its release asset, and `changelog.py` accepts nothing else. A never-released skill has none; the release that first publishes it creates one.
 

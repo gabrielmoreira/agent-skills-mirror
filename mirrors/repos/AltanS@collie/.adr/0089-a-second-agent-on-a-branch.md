@@ -136,3 +136,15 @@ name, request id or launcher.
 - A retry that changes the starting point is a new request and gets a new id, like a changed branch.
 - Trail: `bridge/worktree-base.ts` · `bridge/worktree-bases.ts` · `web/src/lib/branch-off.ts`
   (`startFromChoices`, `startFromBase`).
+
+## Addendum — 2026-10-11: the space-scoped routes are gone
+
+Status is unchanged: **Accepted**. Nothing above this line is rewritten.
+
+`GET /api/workspace/:id/worktrees`, `POST /api/workspace/:id/worktree` and its `/open` lost their
+last caller when the New sheet moved to a branch from a folder
+([ADR 0093](./0093-a-branch-folder-is-named-by-its-parent.md)), and were removed in 1.20.0. The
+default branch's name now comes from the `defaultBranch` field of `GET /api/worktree/plan`, and a
+create with a request id, a launcher and a starting point goes to `POST /api/worktree`. The receipt,
+the launcher allowlist and the starting point behave as above; their tests moved to that route
+(`bridge/worktree-route.test.ts`).

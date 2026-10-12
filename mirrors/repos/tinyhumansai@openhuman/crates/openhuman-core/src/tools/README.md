@@ -10,8 +10,9 @@ allowlist of tool-like operations is also exposed over JSON-RPC for the
 desktop shell.
 
 Domain-owned tools (memory, cron, flows, wallet, Composio, skills, voice,
-agent sub-dispatch) live in their own domains. [`mod.rs`](./mod.rs) re-exports them, so a
-single `crate::tools::*` import reaches the full set.
+agent sub-dispatch) live in their own domains. Each domain supplies an explicit
+tool factory; [`ops.rs`](./ops.rs) combines those factories in registry order.
+Callers import individual tools from their owning domain.
 
 ## How it works
 
@@ -26,8 +27,7 @@ assembled. It is called by the session builder
  Config, SecurityPolicy, AuditLogger, RuntimeAdapter, action_dir
         |
         v
- shared NodeBootstrap / PythonBootstrap
-   (node.enabled, runtime_python.enabled)
+ host `node` / `python3` commands used through shell
         |
         v
  base vec: shell, file_read, file_write, grep, glob, list, edit,
@@ -39,7 +39,7 @@ assembled. It is called by the session builder
    flows, web3, voice, skills, mcp, documents, media, hosting,
    memory (memory::engine::is_on), browser (browser.enabled),
    gitbooks (gitbooks.enabled), search, integrations, composio,
-   node/npm/python exec, lsp (OPENHUMAN_LSP_ENABLED), delegate
+   lsp (OPENHUMAN_LSP_ENABLED), delegate
         |
         v
  post-filter 1: DomainSet      drop tools whose DomainGroup is off
@@ -54,7 +54,7 @@ assembled. It is called by the session builder
 
 Most families gate twice: once at compile time with a Cargo feature
 (`flows`, `web3`, `voice`, `skills`, `mcp`, `modules`, `documents`, `media`,
-`hosting`, `runtime-node`) and once at runtime from config. A tool that cannot
+`hosting`) and once at runtime from config. A tool that cannot
 work is left out rather than registered and failing, because a model retries
 a failing tool. For example, the `memory` tool registers only while a memory
 engine is usable, gitbooks and the static MCP bridge are skipped when their
@@ -121,7 +121,7 @@ step.
 
 | Path | What it does |
 | --- | --- |
-| [`mod.rs`](./mod.rs) | Export hub: submodules, re-exports of built-in and domain tools, the `tinytools` vocabulary, and the `all_tools_*` controller pair. |
+| [`mod.rs`](./mod.rs) | Cross-cutting tool modules, their built-in exports, and the `all_tools_*` controller pair. Domain factories are called explicitly from `ops.rs`; tool contracts come directly from `tinytools`. |
 | [`ops.rs`](./ops.rs) | Registry assembly (`default_tools*`, `all_tools*`), all config and feature gating, and `tool_group`. |
 | [`orchestrator_tools.rs`](./orchestrator_tools.rs) | Per-subagent `delegate_*` tools and deferred Composio action expansion. |
 | [`user_filter.rs`](./user_filter.rs) | `filter_tools_by_user_preference` and the UI toggle to tool-name map. |
@@ -142,7 +142,7 @@ Where the built-in tools come from:
 | `detect_tools`, `curl`, `pushover` | `tinytools_std` |
 | `http_request`, `web_fetch` | `tinytools_std::network`, wired with host limits, TinyJuice extraction and the x402 handler in [`impl/network/host.rs`](./impl/network/host.rs) |
 | `current_time`, `resolve_time`, `ask_user_clarification`, `wait`, `wait_loop` | `tinyagents_harness::tools` |
-| `shell`, `node_exec`, `npm_exec`, `python_exec`, `install_tool`, `schedule`, `proxy_config`, `lsp`, `update_check`, `update_apply`, `retrieve_tool_output` | [`impl/system/`](./impl/system/) |
+| `shell`, `install_tool`, `schedule`, `proxy_config`, `lsp`, `update_check`, `update_apply`, `retrieve_tool_output` | [`impl/system/`](./impl/system/) |
 | `gitbooks_search`, `gitbooks_get_page`, `gmail_unsubscribe`, `mcp_list_servers`, `mcp_list_tools`, `mcp_call_tool`, `mcp_<server>_<tool>` | [`impl/network/`](./impl/network/) (MCP tools behind `mcp`) |
 | `browser`, `browser_open` | [`impl/browser/`](./impl/browser/) (behind `modules`) |
 | `generate_document`, `generate_presentation` | [`impl/document/`](./impl/document/), [`impl/presentation/`](./impl/presentation/) (behind `documents`) |
@@ -151,8 +151,9 @@ Where the built-in tools come from:
 ## Key types and entry points
 
 - `Tool`, `ToolSpec`, `ToolResult`, `ToolExposure`, `PermissionLevel`,
-  `ToolScope`, `ToolCategory`: re-exported from `tinytools` in `mod.rs` so an
-  embedder implementing a tool reaches the vendored copy.
+  `ToolScope`, `ToolCategory`: imported from the vendored `tinytools`
+  contract. Embedders get `Tool`, `ToolResult`, `ToolExposure` and
+  `PermissionLevel` from the curated `openhuman_embed` facade.
 - `ops::all_tools_with_runtime`: the full registry. Its last parameter,
   `approval_workspace_root`, scopes `file_write`'s approval prompts.
 - `orchestrator_tools::collect_orchestrator_tools` and
@@ -198,8 +199,10 @@ else is agent-only.
 - Search provider resolution and the TinySearch bridge are `crate::search`
   (see [`../search/README.md`](../search/README.md)); the module itself is
   `tinysearch`.
-- New domain tools go in the owning domain's `tools.rs` and are re-exported
-  through `mod.rs`. Only cross-cutting families belong under [`impl/`](./impl/).
+- New domain tools go in the owning domain's `tools.rs`. Its registration
+  function builds that family, and `ops.rs` composes the families before
+  applying capability filters. Preserve catalogue order when moving
+  registrations. Only cross-cutting families belong under [`impl/`](./impl/).
 - This folder has no persistence and no event-bus subscriber. Approval
   routing reads `Tool::external_effect_with_args`; the gate itself is
   `security/approval/`.
@@ -215,10 +218,7 @@ else is agent-only.
   `permission_level_with_args`.
 - `is_concurrency_safe` tells the harness a call may run alongside others in
   the same batch. Return `true` only for calls with no shared side effects.
-- `shell`, `node_exec` and `npm_exec` share one memoised `NodeBootstrap`.
-  With `node.enabled = false` or the `runtime-node` feature off, node and npm
-  tools are not registered and the shell skips PATH injection. Python works
-  the same way with `runtime_python.enabled`.
+- The shell inherits the host `PATH`; Node.js and Python commands run with the host toolchain.
 - The browser shares `http_request.allowed_domains` but strips the `*`
   wildcard, so unifying the lists can only narrow browser reach. Allow-all
   stays behind `OPENHUMAN_BROWSER_ALLOW_ALL`.

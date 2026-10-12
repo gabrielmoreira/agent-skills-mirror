@@ -811,6 +811,10 @@ record for `DEPLOY_SHA`, then Step 7. No record means deployment UNVERIFIED, not
 Run only the configured read-only status command. Check its exit code and revision
 output; a generic health check cannot certify a new deployment.
 
+A recorded command trigger follows Step 5 route 2: it runs from a checkout of the default
+branch, by the user or by you only with their explicit approval. A zero exit or a reachable
+URL is not revision proof on its own.
+
 ### Common: Timing and failure handling
 
 Record deploy start time. Show progress every 2 minutes: "Deploy is still running... ({X}m so far). This is normal for most platforms."

@@ -1,0 +1,111 @@
+---
+name: bevy-audio-systems
+description: "Docs-first stub for Bevy audio playback. Godot counterpart: godot-audio-systems. Not a full port. Keywords: Bevy, AudioPlayer, AudioSink, PlaybackSettings, AssetServer."
+---
+
+# Bevy audio systems (docs-first stub)
+
+Not a full port. Sound is an entity with an `AudioPlayer` and a handle from `AssetServer`. Buses and Godot players are not mapped.
+
+## When to use
+
+Load this when a clip should start, loop, pause, or change volume. `bevy::audio` on docs.rs `latest` (0.20.0) and the `audio_control` example there are the sources.
+
+## ECS shape
+
+- **Play:** spawn `AudioPlayer::new(asset_server.load(...))`. `AudioPlayer<Source>` holds `Handle<Source>` where `Source: Asset + Decodable`. If the asset is not ready, playback starts when it is. `AudioPlayer` requires `PlaybackSettings`.
+- **Settings:** `PlaybackSettings` configures the start. `PlaybackSettings::LOOP` and `.with_spatial(true)` appear in the spatial examples. Changes to `PlaybackSettings` do not affect audio that is already playing. `PlaybackMode` is `Once`, `Loop`, `Despawn`, or `Remove`.
+- **Control:** when playback begins, Bevy inserts `AudioSink`. The control example queries `AudioSink` and calls `pause`, `toggle_mute`, `set_volume`, `set_speed`, and `position`. `SpatialAudioSink` is the spatial counterpart named on the playback page.
+- **Replay:** after a non-looping sound finishes and the sink is drained, that `AudioPlayer` cannot be reused. Remove the audio components and add them again.
+- **Schedule:** spawn on `Startup` or from a system that has `Res<AssetServer>` and `Commands`. Control systems in the example run where they read `ButtonInput<KeyCode>` and `Res<Time>`.
+
+## Godot idea to Bevy idiom
+
+| Idea | Bevy idiom (idea only) |
+| --- | --- |
+| Play a file | `AudioPlayer::new` plus `AssetServer::load` |
+| Loop | `PlaybackSettings::LOOP` |
+| Pause / mute / volume while playing | `AudioSink` methods on the same entity |
+| One-shot that should leave the world | `PlaybackMode::Despawn` or `Remove` |
+| Positional emitter | `PlaybackSettings` with `with_spatial(true)` and `SpatialAudioSink` |
+
+## Gaps
+
+- Bus graphs, music/sfx mixer layouts, and audio-area shapes were not opened.
+- Sample rates, supported file types, and the exact `AudioSource` type body were not opened beyond the `Handle` in `AudioPlayer::new`.
+- Removing `AudioSink` restarts an attached source (stated on the sink page). A full restart recipe was not opened.
+
+
+## Expert Knowledge Delta
+
+Library target in prose: **Bevy 0.20.0**. Lattice URLs stay unversioned.
+
+Opened canon only: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. This file does not invent their struct APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
+
+### Who owns state
+
+| Piece | Owner | Who may mutate | Schedule |
+| --- | --- | --- | --- |
+| Data on one entity | `Component` | One system via `Query` | `Update` or `FixedMain` |
+| One value for the whole app | `Resource` | One system | `Startup` to insert, then the schedule that reads it |
+| Spawn | `Commands` | The spawning system | `Startup` for the initial world; later schedules for runtime spawn |
+| Order that must not race | `.chain()` | The chained systems only | Same schedule |
+| Plugin boundary | `Plugin` | `build` registers systems and resources | Before the app runs |
+
+Borrow rule: two systems that both mutably query the same component must be ordered (`.chain()`) or split so only one writes. Unrelated systems stay parallel. That is the ECS page rule, not a guess at a system-set API.
+
+### Decision
+
+| If you need | Do this | Do not |
+| --- | --- | --- |
+| Per-entity data | `Component` + `Query` | A Godot node script |
+| App-wide config or clock | `Resource` | Copy the value onto every entity |
+| Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
+| Startup spawn | `Commands` in `Startup` | Spawn from a render system |
+| Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
+| An API this skill did not open | A Gaps row | A fabricated crate (solver, navmesh module, net, XR) |
+
+Load `references/a-gate-notes.md` for the same table plus the gap rule.
+
+## NEVER
+
+- Do not put `/0.20.0/` in lattice URLs. WHY: permalinks stay on `latest`. The 0.20.0 pin belongs in prose once.
+- Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
+- Do not invent a physics, navigation, networking, or XR crate here. WHY: those rows are gaps, blocked, or revisit.
+
+- No Godot audio player, bus, or stream types. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No volume curves or mixer nodes this file did not open. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No third-party audio crates. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Creation Station content. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No umbrella skill over Godot and Bevy. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- Do not mark this row `ported`. It is `docs_mapped`. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+
+## Reference
+
+docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+
+### Official Documentation
+- [Migration guides](https://bevy.org/learn/migration-guides/introduction/)  -  Unversioned hop index.
+- [bevy crate](https://docs.rs/bevy/latest/bevy/)  -  Unversioned API index.
+- [AudioPlayer](https://docs.rs/bevy/latest/bevy/audio/struct.AudioPlayer.html)  -  Component that starts a `Handle`.
+- [PlaybackSettings](https://docs.rs/bevy/latest/bevy/audio/struct.PlaybackSettings.html)  -  Start settings; not live control.
+- [PlaybackMode](https://docs.rs/bevy/latest/bevy/audio/enum.PlaybackMode.html)  -  `Once`, `Loop`, `Despawn`, `Remove`.
+- [AudioSink](https://docs.rs/bevy/latest/bevy/audio/struct.AudioSink.html)  -  Live pause, mute, volume, speed.
+- [Assets](https://bevy.org/assets/)  -  Official asset catalog.
+- [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples)  -  Example tree on the `latest` branch.
+
+### Related Skills
+
+#### Prerequisites
+- [bevy-master](../SKILL.md)  -  Who owns which piece of state.
+- [bevy-asset-scenes](asset-scenes.md)  -  `AssetServer` and `Handle`.
+
+#### Complements
+- [bevy-input-handling](input-handling.md)  -  Keys the control example uses.
+- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md)  -  Godot counterpart. Source idea only.
+
+#### Downstream / consumers
+- None yet. Genre skills that play stingers should route here when they exist.
+
+#### Master
+- [bevy-master](../SKILL.md)  -  Bevy router.

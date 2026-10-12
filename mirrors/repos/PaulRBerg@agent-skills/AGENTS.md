@@ -62,6 +62,9 @@ Treat visual structure as information architecture, not decoration.
 - `skills/<name>/assets/` contains bundled media or other static assets.
 - `.agents/internal-skills/<name>.md` contains repo-private internal skills referenced with `@`.
 - `tests/<name>/` contains tests for that skill's helpers. `scripts/` contains catalog tooling.
+- `mcp/` contains MCP server launchers that `~/.claude.json` and `~/.codex/config.toml` run from this checkout. Edits
+  take effect at the next server start, without publication. Put a launcher that a skill requires in that skill's
+  `scripts/` directory instead.
 - `toolkit/` is the Rust workspace and Bun apps that own the `ai-*` CLIs the skills and the global coordination workflow
   rely on. Follow `toolkit/AGENTS.md` there.
 - `README.md` lists every skill and stays minimal.

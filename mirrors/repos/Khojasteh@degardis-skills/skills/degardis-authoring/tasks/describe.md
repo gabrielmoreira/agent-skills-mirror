@@ -7,6 +7,7 @@ goal: An account of the requested aspect of the supplied material, including pre
 knowledge:
 - working-accounts
 - evidence-bounds
+- child-skill-and-agent
 - compiler-evidence
 guides:
 - effective-compiler
@@ -14,7 +15,7 @@ guides:
 handoffs:
 - task: review
   applicability:
-  - When the account asked for needs a judgment of whether the material is right and that question has neither an unfinished review responsible for it nor a review outcome on this route
+  - When the account asked for needs a judgment of whether supplied Degardis source is right and that question has neither an unfinished review responsible for it nor a review outcome on this route
 ---
 
 Take each statement from the material rather than from what a source of this shape usually does, and where the compiler settles a question the bytes do not — what a page ends up carrying, which task a page is written for, what a build would ship — prefer its own report to a reading of the source prose.

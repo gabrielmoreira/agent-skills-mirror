@@ -8,6 +8,4 @@ Identify the asset, actors, trust boundary, allowed action, and concrete path fr
 
 Validate at the boundary that owns the contract, preserve structured values until the final sink, and use parameterized or platform-provided mechanisms for interpreters, queries, paths, templates, and protocols. Grant the least capability the operation needs and make denial the safe default.
 
-Verify both permitted and denied paths, including confused-deputy, cross-tenant, replay, partial-failure, and disclosure cases that the reachable design admits. Use sanitized fixtures. Do not place secrets or harmful material in tests, logs, examples, reports, or delegated briefs.
-
-A live security probe, credential use, privilege change, external scan, or disclosure needs explicit authority beyond permission to edit code.
+Verify both permitted and denied paths, including confused-deputy, cross-tenant, replay, partial-failure, and disclosure cases that the reachable design admits. Exercise them with payloads that demonstrate a flaw without causing its harm, rather than with working exploits.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `santifer/career-ops` — 26 default patterns, 2 followed patterns, 15 file(s) materialized.
+Mirror of `santifer/career-ops` — 26 default patterns, 2 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `santifer/career-ops` — 26 default patterns, 2 followed patterns, 15
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 15 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,10 +71,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`.qwen/skills/career-ops/SKILL.md`](.qwen/skills/career-ops/SKILL.md) |
 | 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 12 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 13 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 14 | → | [`docs/AUTOMATION.md`](docs/AUTOMATION.md) |
-| 15 | → | [`docs/FREE_TIER.md`](docs/FREE_TIER.md) |
+| 12 | ✓ | [`docs/KEEPING_PORTALS_LIVE.md`](docs/KEEPING_PORTALS_LIVE.md) |
+| 13 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 14 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 15 | → | [`docs/AUTOMATION.md`](docs/AUTOMATION.md) |
+| 16 | → | [`docs/FREE_TIER.md`](docs/FREE_TIER.md) |
 
 ---
 

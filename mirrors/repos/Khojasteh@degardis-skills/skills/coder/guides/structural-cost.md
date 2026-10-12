@@ -4,7 +4,7 @@ applicability:
 - When a decision depends on the cost a code structure imposes
 ---
 
-Name the structural defect and the cost it imposes on a reader, the next change, or execution. A style preference with no demonstrated cost is not a restructuring outcome.
+Name the structural defect and the cost it imposes on a reader, the next change, or execution.
 
 Establish structural cost from what a real change must do: how many independently located edits it requires, how much unstated knowledge a maintainer must carry, and which behavior path the readable code obscures. Weigh that cost by how often the affected surface changes; stable code can carry a real cost that is still lower priority. Similar syntax is not necessarily duplicated knowledge, and direct code is not necessarily a unit with unrelated responsibilities.
 

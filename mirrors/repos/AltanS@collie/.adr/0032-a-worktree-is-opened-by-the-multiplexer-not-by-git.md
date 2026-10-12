@@ -108,3 +108,13 @@ for a repository the operator has checked.
 
 The 0.8.2 row field stays first: when a row carries `worktree`, it is read and no call is made. The
 real 0.9.3 answers are captured in `bridge/mux/herdr/captures/workspaces-0.9.3.json`.
+
+## Addendum — 2026-10-11: the routes scoped to a space are gone
+
+Status is unchanged: **Accepted**. Nothing above this line is rewritten.
+
+The list, create and open routes under `/api/workspace/:id/` had no caller after the New sheet moved
+to a branch from a folder ([ADR 0093](./0093-a-branch-folder-is-named-by-its-parent.md)), and were
+removed in 1.20.0. The decision stands: the multiplexer opens a worktree, and Collie never runs
+`git worktree add`. A branch is now made through `POST /api/worktree`, which finds the repo from the
+folder. `listWorktrees` and `openWorktree` stay on the mux port, and no route asks them today.

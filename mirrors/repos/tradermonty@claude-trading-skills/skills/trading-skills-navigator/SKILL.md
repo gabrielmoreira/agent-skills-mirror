@@ -71,11 +71,20 @@ Parse the JSON and explain, in the user's language:
   `api_profile`. State plainly what it does and when to run it.
 - **Routing diagnostics** — read `routing_diagnostics.status`. For
   `ambiguous`, name every `candidate_personas` entry and explain that the
-  ordered first match was selected. For `fallback`, state that no persona
+  ordered first match was selected, except when `no-api-path` is a constraint
+  on another matched goal. For `fallback`, state that no persona
   matched and ask the user to rephrase; never present the beginner fallback as
-  an exact intent match.
+  an exact intent match. `unavailable` means the matched goal is blocked;
+  retain the original persona in the explanation.
+- **Goal availability** — read `goal_match.workflow`, `runnability`, and
+  `missing_requirements` before describing a recommendation. `eligible` means
+  metadata and specified constraints permit that workflow; it does not confirm
+  that data or input files are ready. If `alternative_workflow` is present,
+  label it a **different-goal** on-ramp.
 - **Secondary workflows** — if any, how they relate (e.g. "run the regime
-  check first, then this when it allows risk").
+  check first, then this when it allows risk"). If `dropped_secondary_workflows`
+  is non-empty, say which follow-on workflows were omitted under no-API mode
+  and why; they never make the goal blocked.
 - **Skillset** — the `skillset.id` (skills-index category).
   `manifest_status: active` means a curated `skillsets/<id>.yaml` bundle ships
   for this category (market-regime, core-portfolio, swing-opportunity,
@@ -84,14 +93,19 @@ Parse the JSON and explain, in the user's language:
   (e.g. honest-gap categories); the recommendation is workflow-based only.
 - **No-API vs API** — read `no_api_path`: `true` → the entire recommended path
   works without paid API keys (state this plainly); `false` → tell the user
-  which paid key(s) the path needs; `null` → honest gap, no path. (`no_api` is
+  which paid key(s) the path needs; `null` → no usable path for the requested goal. (`no_api` is
   the *request* flag — whether no-API mode was active — not whether the path is
   free; always narrate `no_api_path`.) If a workflow was excluded under
   `--no-api`, surface the `rationale` entry naming the paid integration (e.g.
   "swing-opportunity-daily needs FMP").
-- **Honest gap** — if `honest_gap` is true there is **no shipped workflow** for
-  this intent. Say so directly, then present `suggested_skills` from the
-  relevant category and relay the `note`. Never invent a workflow.
+- **Honest gap** — `honest_gap: true` means no usable path for this goal. If
+  `goal_match.runnability` is `unshipped`, no dedicated workflow exists and
+  `suggested_skills` may help. If it is `blocked`, a matching workflow exists
+  but is unavailable: explain each missing requirement. CSV portfolio review
+  is not shipped; offering a CSV as the portfolio source does not make it
+  runnable. Any CSV mention is read as the source unless it is clearly an
+  output (export/save/send; CSVに出力) with no input wording; naming Alpaca
+  alone never clears the gap.
 - **Backtest execution request** — relay the `note` when the research workflow
   is recommended for a request containing backtest terms. It can evaluate
   separately measured metrics but does not execute the backtest. Its
@@ -134,10 +148,13 @@ The JSON the recommender emits (stable, idempotent, `sort_keys`):
 | `operational_roles` | Skill id → `{type, rationale?}` for every setup-bundle skill, or every `suggested_skills` item on an honest gap |
 | `no_api` | Request-side: was no-API constraint mode active (flag or persona) |
 | `no_api_path` | Path-side: does the **whole** recommendation (primary + every secondary) work without paid API keys? `true`/`false`; `null` on an honest gap. This is the DoD's API-vs-no-API separation — narrate it explicitly |
-| `honest_gap` | `true` when no workflow exists for the intent |
+| `honest_gap` | `true` when no usable workflow can serve the matched goal (`unshipped` or `blocked`) |
+| `goal_match` | Original `{persona, workflow, runnability, missing_requirements}`; `eligible` only means metadata/constraint eligibility |
+| `alternative_workflow` | Separate `{workflow, relationship: different_goal, no_api_path, explanation}` or `null`; never substitutes for the goal |
+| `dropped_secondary_workflows` | `[{id, reason}]` — secondary workflows removed because they need a paid API under `--no-api`; `[]` otherwise. Not a blocker: narrate it so the user knows a follow-on step was omitted |
 | `note` | Plain-language explanation for gaps / unmapped input |
 | `rationale` | Ordered list of why-this-was-recommended strings |
-| `routing_diagnostics` | `{status, selected_persona, candidate_personas, explanation}`. `status` is `exact`, `ambiguous`, or `fallback`; candidates are all pre-constraint persona matches in deterministic order |
+| `routing_diagnostics` | `{status, selected_persona, candidate_personas, explanation}`. `status` is `exact`, `ambiguous`, `fallback`, or `unavailable`; candidates are all pre-constraint persona matches in deterministic order |
 | `setup_path_ref` | Pointer to the setup-path reference |
 
 ## Resources

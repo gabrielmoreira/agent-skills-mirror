@@ -36,7 +36,7 @@ AutoClip 在本机把一条素材做成可发布的成片。产物和桌面应�
 
 1. **有 AutoClip MCP 工具** → 用工具，不要自己拼命令。
 2. **没有 MCP，但能跑 shell** → `autoclip produce <source> --json`。
-3. **两者都没有** → 现在就能用：在仓库根目录执行 `python -m pip install -r requirements.txt`，再执行 `python -m pip install --no-deps .`。`uvx autoclip-mcp` 和 `npx skills add zhouxiaoka/autoclip` 即将提供，包发布前不要用。详见 `docs/CLI_AND_MCP.md`。
+3. **两者都没有** → 一行安装：`uvx autoclip-mcp`，skill 用 `npx skills add zhouxiaoka/autoclip`。备选是在仓库根目录执行 `python -m pip install -r requirements.txt`，再执行 `python -m pip install --no-deps .`。详见 `docs/CLI_AND_MCP.md`。
 
 模型密钥放在桌面应用的设置里，或环境变量 `AUTOCLIP_API_KEY`。不要把 key 写进工具参数或对话。
 
@@ -63,7 +63,7 @@ autoclip outputs PROJECT_ID --export-kits
 风格 id 只有三个：`editorial`（杂志风）、`street`（街头快剪）、`classic`（经典）。竖版版式 `portrait_style`（`auto` / `interview` / `podcast`）只改竖版布局，不代替剪辑风格。`template` / `--template` 只在 `mcp_v2_tools` 打开时接受。不支持的值返回 `invalid_input`。
 
 1. 如果工具列表里有 `list_styles`，先调用它，把 id 和名称给用户选。没有 list_styles 就不要传 template。
-2. 用户选定后，MCP 在 `start_quick_output` 上传 `template`。命令行用 `--template`。开关关闭时不要传；不传则按经典制作。
+2. 用户选定后，MCP 在 `start_quick_output` 上传 `template`。命令行用 `--template`。开关关闭时不要传；不传则按经典制作。注意：桌面导入页默认是杂志风，但 CLI / MCP 不传时默认经典；用户想要和桌面一样的效果，就显式传 `editorial`。
 3. 以返回结果里的风格为准。`template` 是实际用的风格，`requested_template` 是请求值。`pkg_templates_v1` 关闭时，即使请求了杂志风或街头快剪，实际风格也是 `classic`。
 4. 其余步骤与示例 1 相同：轮询到终态，再 `export_kits=true`。
 

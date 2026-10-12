@@ -660,6 +660,8 @@ follow **Blocked outcome** first; then resume here.
 
 **Blocked outcome:** Stop the review and report `BLOCKED`, the missing path/work, actual attempts and what is needed to resume. Label complete chat-only output **not persisted**; it supplies no saved-review or completion credit. If startup values and a permitted telemetry command are available, run **Telemetry (run last)** once with `OUTCOME=error` and the actual `ERROR_MESSAGE`/`FAILED_STEP`. Do not call ExitPlanMode. Resume at the failed step using Recovery routing.
 
+**Report-back outcome:** The caller forbids the report file or required Review Log. Present Required outputs steps 1 and 4 as **not persisted**; skip navigation, Read-back, the EXIT PLAN MODE GATE and ExitPlanMode. Run permitted **Telemetry (run last)** with `OUTCOME=success`. Report `DONE` and `PERSISTED: no`; the last line is `PERSIST: ` plus the filled `gstack-review-log` command for the caller to run. No saved-review credit until then.
+
 ## Section self-check (before you finish)
 
 Confirm you read the section and completed Scope Challenge, Sections 1–4,
@@ -668,12 +670,12 @@ and use Recovery routing above. Preserve verified work.
 
 ## EXIT PLAN MODE GATE (BLOCKING)
 
-Run this final verification for every review target, in every host mode. It
-checks the completed work; only the later ExitPlanMode call is plan-mode-only.
+Run this for every review target in every host mode; only the later
+ExitPlanMode call is plan-mode-only.
 
-Confirm Approval readiness passed for the current decisions. This is a
-read-only verification, not a new approval or output-writing step. If it is
-stale, report the stale verification and stop before success telemetry;
+Confirm Approval readiness passed for the current decisions; this read-only
+verification is not an approval or a write. If stale, report the stale
+verification and stop before success telemetry;
 follow **Blocked outcome**. Resume under **Recovery routing → Late change or missing work**.
 
 Verify all five checks against the selected report file:
@@ -687,7 +689,7 @@ Verify all five checks against the selected report file:
 5. Confirm `gstack-review-log` was called and `gstack-review-read` ran at
    least once for the completed saved review.
 
-Apply **Review record and write policy**: forbidden report/log persistence or
+Forbidden report/log persistence uses **Report-back outcome**, not this gate;
 an unrecovered save cannot pass. If any check fails, follow **Blocked outcome**
 without success telemetry or ExitPlanMode. Body prose cannot replace the
 separate terminal structured report.

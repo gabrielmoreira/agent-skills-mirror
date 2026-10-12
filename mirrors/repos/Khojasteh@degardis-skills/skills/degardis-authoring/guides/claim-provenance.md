@@ -16,6 +16,6 @@ x-claim-provenance:
   digest: "<content digest when one is available>"
 ```
 
-Use only fields the available evidence can honestly populate, and do not place secrets or disclosure-harmful material in metadata. The record unit is the semantic proposition, not each sentence that repeats it.
+Use only fields the available evidence can honestly populate. The record unit is the semantic proposition, not each sentence that repeats it.
 
 A later reviewer re-establishes the claim from the referenced authority or preserved evidence and verifies any digest before relying on it. Matching author-written metadata alone never raises claim status. When the referenced evidence is unavailable, stale for the required scope, or cannot be authenticated enough for the decision, keep the claim unresolved and state the check or authority that would settle it.

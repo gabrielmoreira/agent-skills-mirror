@@ -4,12 +4,15 @@
 >
 > — N0zoM1z0
 
-An English static website with explanatory figures, worked guides and Aegis, DX-Ball, Notion, TH04 and CTF investigations.
-The public files are in `website/public/`. The site uses HTML, CSS and small
+An English website with translated editions in every README language, explanatory
+figures, worked guides and Aegis, DX-Ball, Notion, TH04 and CTF investigations.
+English sources are in `website/public/`; translations are standard gettext PO
+catalogs in `website/locales/`. The site uses HTML, CSS and small
 scripts for copying code, following code comparisons and playing the dinosaur
 speed reconstruction. Small Python commands maintain shared HTML, prepare
 downloads and check the site. There is no frontend framework, bundler or npm
-dependency. The checked-in HTML works as ordinary static files.
+dependency. A build generates all editions in `website/_site/`. The resulting
+files work as ordinary static files; language switching needs no JavaScript.
 
 [style-guide.md](style-guide.md) explains the writing, page structure, figures,
 visual system and review process. Read it before adding or revising a page.
@@ -26,6 +29,8 @@ python3 scripts/website.py serve
 ```
 
 Open <http://127.0.0.1:4173/>. Refresh the browser after editing a file.
+After editing source HTML or a catalog, run `python3 scripts/prepare-website.py`
+to rebuild the preview. `serve` prepares the site once when it starts.
 Keep the virtual environment active when preparing assets. CairoSVG needs the
 native Cairo library; the sharing card uses DejaVu Sans. On Debian or Ubuntu,
 install them with `sudo apt-get install libcairo2 fonts-dejavu-core`. For other
@@ -49,6 +54,14 @@ applies to every page.
 | Main navigation                | `NAVIGATION` in `scripts/website.py`                             | `sync`, then `check`                            |
 | Header, social links or footer | `templates/header.html.tmpl` or `templates/footer.html.tmpl`     | `sync`, then `check`                            |
 | Shared link previews           | `templates/sharing.html.tmpl` or `public/assets/social-card.svg` | `sync`, then `check`                            |
+| Translation                    | `locales/<language>/messages.po`                                 | `translations check`, then `check`              |
+
+After changing English text, run `python3 scripts/website.py translations extract`
+before `check`. Existing translations and reviewer comments survive extraction;
+new or changed sentences need updated translations. See
+[the translation guide](locales/README.md) for the editing workflow, terminology
+and the handling of pages whose translations are being updated. Never edit
+generated HTML in `_site/`.
 
 Create a reading page with:
 
@@ -83,7 +96,8 @@ Before opening a PR:
 python3 scripts/website.py check
 ```
 
-This checks shared HTML without rewriting it, prepares generated assets, and
+This checks shared HTML and translation sources without rewriting them, prepares
+all language editions and generated assets, and
 checks page links, copied-text targets, repository documentation links, SEO
 metadata and the publishing configuration. It also runs the maintenance
 regressions. A stale shared region fails with the command needed to fix it.
@@ -145,8 +159,9 @@ Graph and Twitter fields and the canonical from those inputs and the file's
 route. Search results and link previews should follow the same clear, concise
 writing standard as the page.
 
-`scripts/prepare-website.py` scans `public/**/*.html` and generates
-`public/sitemap.xml` with absolute rea.tools URLs. An `index.html` maps to its
+`scripts/prepare-website.py` renders `public/` and the PO catalogs into `_site/`,
+then scans `_site/**/*.html` and generates `_site/sitemap.xml` with absolute
+rea.tools URLs. An `index.html` maps to its
 directory route; other HTML filenames retain their extension. Pages with
 `noindex` or `none` in a head `robots` or `googlebot` meta directive are excluded.
 The two Notes example applications use `noindex`; their guides and the dinosaur
@@ -201,7 +216,7 @@ guide. Add a figure when it contributes a useful explanation; an opening flow
 is optional. Case studies remain focused on one inspected behavior. Keep engine
 details in supporting references unless they explain a relevant decision.
 
-The Touhou article is an English essay. Its provenance,
+The Touhou article is authored in English and translated through the same catalogs. Its provenance,
 quoted README passage and milestone counting rules are in
 [evidence/touhou-reconstruction-method.md](evidence/touhou-reconstruction-method.md).
 The completed text has normal search metadata and is included in the generated
@@ -226,7 +241,7 @@ The Electron guide offers one ZIP containing the six source files under
 `notes-example/`. `scripts/prepare-website.py` generates this download from
 an explicit file list, with fixed timestamps and permissions. The ZIP is ignored
 by Git; website checks and each manual publication regenerate it before checking
-and uploading the public directory. The verifier checks that its entries match
+and uploading `_site/`. The verifier checks that its entries match
 the current source and contain no extra files.
 
 The first-investigation page uses this same ZIP. Its prompt lets the agent
@@ -371,9 +386,9 @@ solver constants and evidence notes aligned when changing this case.
 
 ## Cloudflare Workers
 
-`wrangler.toml` serves `website/public/` through Workers Static Assets. There is
-no Worker script or frontend build. Before a preview or deployment, Wrangler
-runs the existing Python scripts to prepare the example ZIP and verify the
+`wrangler.toml` serves `website/_site/` through Workers Static Assets. There is
+no Worker script or frontend framework. Before a preview or deployment, Wrangler
+runs the Python scripts to build the language editions, prepare the example ZIP and verify the
 website. Node.js and Python 3 must be available; the commands below use a pinned
 Wrangler version without adding it to REA's package dependencies.
 
@@ -444,7 +459,7 @@ Local Wrangler commands above publish only the separate preview Worker.
 
 ## Synchronized production publishing
 
-`.github/workflows/website-pages.yml` prepares `website/public` once and deploys
+`.github/workflows/website-pages.yml` prepares `website/_site` once and deploys
 the same artifact to Cloudflare (`rea.tools`) and GitHub Pages. It is the sole
 production publisher, manually triggered and restricted to `main`;
 ordinary pushes and pull requests do not publish the site.

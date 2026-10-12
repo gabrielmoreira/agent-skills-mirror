@@ -7,6 +7,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [19.4.0] - 2026-10-11 - "Prompt Handoffs And Cost-Gated Scaling"
+
+> Adds **2** reviewed skills for turning a rough request into a clear prompt for another agent and for proving a data/AI workflow end to end on a tiny sample before scaling; it also refreshes the Datacircle LinkedIn lookup skill with the Fetchin provider, corrects the OrcaPromptVault artifact wording, and ships guided discovery, collections and a Core overview on the hosted catalog. Ships **2,677** skills.
+
+A catalog release for Claude Code, Cursor, Codex CLI, Gemini CLI, and related AI coding assistants. It includes the protected maintainer batch merged after `19.3.0`, with existing installation interfaces preserved.
+
+### Start here
+
+- Install: `npx agentic-awesome-skills@19.4.0`
+- [Choose your tool](README.md#choose-your-tool)
+- [Best skills by tool](README.md#best-skills-by-tool)
+- [Bundles](docs/users/bundles.md)
+- [Workflows](docs/users/workflows.md)
+
+### Added
+
+- **kernel-prompt** - turn a rough request or draft into a clear, self-contained prompt for another agent: read the context it mentions, ask one round of decisions only the user can make, then return only the prompt and never perform the task it describes. `risk: safe`, MIT, community source [codegiveness/kernel-prompt](https://github.com/codegiveness/kernel-prompt).
+- **skeleton-first** - prove a data/AI/agent workflow end to end on the smallest input with the cheapest settings, look for cheap wins in the sample (duplicates, boilerplate, invalid inputs that are still billed), then scale in cost-gated rungs within a stated budget and keep a run log of cost and decisions. `risk: safe`, self-authored source.
+
+### Changed
+
+- **datacircle** - add Fetchin as the third LinkedIn profile provider (price, limit, request, response and `404`), use HarvestAPI or Fetchin past Up2Data's daily limit, correct Up2Data's per-profile price, and drop the retired `get_invite_link` MCP tool from the skill. `risk: critical` is preserved.
+- **glasser** - add a source parameter to the maintained setup-instruction link so the provider can see which listings agents follow; the link target and installation-approval guidance are unchanged. `risk: critical` is preserved.
+- **system-prompt-lookup** - correct the second artifact label to "captured off the wire or reported by the model itself", so a model's account of its own prompt is not presented as vendor-published material. `risk: safe` is preserved.
+
+### Site and catalog
+
+- Guided discovery, skill collections and a Core overview on the hosted catalog, plus shared-shortlist review for team adoption and clearer information pages.
+
+### Credits
+
+- **@codegiveness** for `kernel-prompt`
+- **@danhe6** for `skeleton-first`
+- **@waynehamadi** for the Datacircle Fetchin provider update
+- **@glasserai** for the Glasser setup-instruction link
+- **@xizhuomengcontin** for the OrcaPromptVault wording correction
+- **@markqian** for the openCanviz official source
+
 ## [19.3.0] - 2026-10-10 - "Design Research, Reverse Engineering And Art QR Codes"
 
 > Adds **4** reviewed skills for real-product design research, evidence-led reverse engineering of shipped software, paid LinkedIn profile lookups with per-call consent, and branded art QR codes; it also refreshes the 1human motion skill for the current human-controlled onboarding. Ships **2,675** skills.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AltanS/collie` — 26 default patterns, 86 followed patterns, 133 file(s) materialized.
+Mirror of `AltanS/collie` — 26 default patterns, 88 followed patterns, 135 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `AltanS/collie` — 26 default patterns, 86 followed patterns, 133 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 86 |
-| Files         | 133 |
+| Followed pats | 88 |
+| Files         | 135 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -92,6 +92,8 @@ Mirror of `AltanS/collie` — 26 default patterns, 86 followed patterns, 133 fil
 - `.adr/0083-the-files-view-reads-the-changes-root.md`
 - `.adr/0090-files-shows-images.md`
 - `.adr/0013-a-peer-listens-without-becoming-a-front-door.md`
+- `.adr/0096-speech-can-stay-on-the-phone.md`
+- `.adr/0097-codex-speech-can-be-chosen-from-settings.md`
 - `.adr/0086-reads-need-the-pairing-token.md`
 - `.adr/0001-one-managed-front-door.md`
 - `CREW_PROTOCOL.md`
@@ -247,36 +249,38 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 101 | → | [`.adr/0093-a-branch-folder-is-named-by-its-parent.md`](.adr/0093-a-branch-folder-is-named-by-its-parent.md) |
 | 102 | → | [`.adr/0094-launchers-added-from-a-phone.md`](.adr/0094-launchers-added-from-a-phone.md) |
 | 103 | → | [`.adr/0095-one-off-commands-and-their-history.md`](.adr/0095-one-off-commands-and-their-history.md) |
-| 104 | → | [`.adr/README.md`](.adr/README.md) |
-| 105 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 106 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 107 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 108 | → | [`CREW_PROTOCOL.md`](CREW_PROTOCOL.md) |
-| 109 | → | [`DESIGN.md`](DESIGN.md) |
-| 110 | → | [`docs/changes.md`](docs/changes.md) |
-| 111 | → | [`docs/claude-code-on-your-phone.md`](docs/claude-code-on-your-phone.md) |
-| 112 | → | [`docs/commands.md`](docs/commands.md) |
-| 113 | → | [`docs/configure.md`](docs/configure.md) |
-| 114 | → | [`docs/crew.md`](docs/crew.md) |
-| 115 | → | [`docs/deployment.md`](docs/deployment.md) |
-| 116 | → | [`docs/five-minute-install.md`](docs/five-minute-install.md) |
-| 117 | → | [`docs/install.md`](docs/install.md) |
-| 118 | → | [`docs/multiplexers.md`](docs/multiplexers.md) |
-| 119 | → | [`docs/security.md`](docs/security.md) |
-| 120 | → | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
-| 121 | → | [`docs/upgrading.md`](docs/upgrading.md) |
-| 122 | → | [`docs/voice-and-push.md`](docs/voice-and-push.md) |
-| 123 | → | [`docs/windows.md`](docs/windows.md) |
-| 124 | → | [`HARNESS_CONTRIBUTING.md`](HARNESS_CONTRIBUTING.md) |
-| 125 | → | [`HERDR_API.md`](HERDR_API.md) |
-| 126 | → | [`MUX_CONTRACT.md`](MUX_CONTRACT.md) |
-| 127 | → | [`MUX_CONTRIBUTING.md`](MUX_CONTRIBUTING.md) |
-| 128 | → | [`README.md`](README.md) |
-| 129 | → | [`tools/oxlint/README.md`](tools/oxlint/README.md) |
-| 130 | → | [`TRADEMARKS.md`](TRADEMARKS.md) |
-| 131 | → | [`web/src/fixtures/panes/README.md`](web/src/fixtures/panes/README.md) |
-| 132 | → | [`web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md`](web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md) |
-| 133 | → | [`web/src/lib/grammar/WIZARD_NOTES.md`](web/src/lib/grammar/WIZARD_NOTES.md) |
+| 104 | → | [`.adr/0096-speech-can-stay-on-the-phone.md`](.adr/0096-speech-can-stay-on-the-phone.md) |
+| 105 | → | [`.adr/0097-codex-speech-can-be-chosen-from-settings.md`](.adr/0097-codex-speech-can-be-chosen-from-settings.md) |
+| 106 | → | [`.adr/README.md`](.adr/README.md) |
+| 107 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 108 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 109 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 110 | → | [`CREW_PROTOCOL.md`](CREW_PROTOCOL.md) |
+| 111 | → | [`DESIGN.md`](DESIGN.md) |
+| 112 | → | [`docs/changes.md`](docs/changes.md) |
+| 113 | → | [`docs/claude-code-on-your-phone.md`](docs/claude-code-on-your-phone.md) |
+| 114 | → | [`docs/commands.md`](docs/commands.md) |
+| 115 | → | [`docs/configure.md`](docs/configure.md) |
+| 116 | → | [`docs/crew.md`](docs/crew.md) |
+| 117 | → | [`docs/deployment.md`](docs/deployment.md) |
+| 118 | → | [`docs/five-minute-install.md`](docs/five-minute-install.md) |
+| 119 | → | [`docs/install.md`](docs/install.md) |
+| 120 | → | [`docs/multiplexers.md`](docs/multiplexers.md) |
+| 121 | → | [`docs/security.md`](docs/security.md) |
+| 122 | → | [`docs/troubleshooting.md`](docs/troubleshooting.md) |
+| 123 | → | [`docs/upgrading.md`](docs/upgrading.md) |
+| 124 | → | [`docs/voice-and-push.md`](docs/voice-and-push.md) |
+| 125 | → | [`docs/windows.md`](docs/windows.md) |
+| 126 | → | [`HARNESS_CONTRIBUTING.md`](HARNESS_CONTRIBUTING.md) |
+| 127 | → | [`HERDR_API.md`](HERDR_API.md) |
+| 128 | → | [`MUX_CONTRACT.md`](MUX_CONTRACT.md) |
+| 129 | → | [`MUX_CONTRIBUTING.md`](MUX_CONTRIBUTING.md) |
+| 130 | → | [`README.md`](README.md) |
+| 131 | → | [`tools/oxlint/README.md`](tools/oxlint/README.md) |
+| 132 | → | [`TRADEMARKS.md`](TRADEMARKS.md) |
+| 133 | → | [`web/src/fixtures/panes/README.md`](web/src/fixtures/panes/README.md) |
+| 134 | → | [`web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md`](web/src/lib/grammar/PLAN_FEEDBACK_NOTES.md) |
+| 135 | → | [`web/src/lib/grammar/WIZARD_NOTES.md`](web/src/lib/grammar/WIZARD_NOTES.md) |
 
 ---
 

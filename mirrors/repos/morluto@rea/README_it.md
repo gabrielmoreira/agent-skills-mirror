@@ -9,7 +9,6 @@
 **Vedi una funzionalità che ti piace. Capisci come funziona, fino al livello binario.**
 
 [![npm version](https://img.shields.io/npm/v/rea-agents?style=flat-square&color=cb3837)](https://www.npmjs.com/package/rea-agents)
-[![CI](https://img.shields.io/github/actions/workflow/status/morluto/rea/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/morluto/rea/actions/workflows/ci.yml)
 [![MCP tool catalog](https://img.shields.io/badge/MCP-tool_catalog-5c4ee5?style=flat-square)](docs/mcp-contracts.md#generated-catalog)
 [![Node.js requirements](https://img.shields.io/badge/Node.js-requirements-339933?style=flat-square&logo=nodedotjs&logoColor=white)](#cosa-puoi-analizzare)
 [![skills.sh](https://skills.sh/b/morluto/rea?style=flat-square)](https://skills.sh/morluto/rea/reverse-engineer-anything)
@@ -18,9 +17,9 @@
 
 <a href="https://trendshift.io/repositories/82054?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-82054" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/82054" alt="morluto%2Frea | Trendshift" width="250" height="55"/></a>
 
-**[Sito web](https://rea.tools/) · [Guide](https://rea.tools/guides/) · [Showcase](https://rea.tools/showcase/)**
+**[Sito web](https://rea.tools/it/) · [Guide](https://rea.tools/it/guides/) · [Showcase](https://rea.tools/it/showcase/)**
 
-[Quick start](#quick-start) · [Come funziona REA](#come-funziona-rea) · [Cosa puoi analizzare](#cosa-puoi-analizzare) · [Showcase](#showcase) · [FAQ](#faq) · [Documentazione](#documentazione)
+[Avvio rapido](#avvio-rapido) · [Come funziona REA](#come-funziona-rea) · [Cosa puoi analizzare](#cosa-puoi-analizzare) · [Showcase](#showcase) · [FAQ](#faq) · [Documentazione](#documentazione)
 
 <code>npx rea-agents setup</code>
 
@@ -54,9 +53,9 @@ REA collega il tuo agente a strumenti per ispezionare binari nativi, app JavaScr
 
 La configurazione registra REA con il tuo agente e installa le istruzioni di workflow corrispondenti. L'analisi nativa può usare un'installazione esistente di Hopper, Ghidra o IDA; la configurazione può installare opzionalmente Hopper previa approvazione. L'analisi statica JavaScript non richiede alcun motore di analisi nativo.
 
-> **[Visita il sito web di REA](https://rea.tools/)** per istruzioni di configurazione, guide illustrate e veri casi studio.
+> **[Visita il sito web di REA](https://rea.tools/it/)** per istruzioni di configurazione, guide illustrate e veri casi studio.
 
-## Quick start
+## Avvio rapido
 
 ### Configura il tuo agente
 
@@ -102,11 +101,13 @@ Per l'analisi nativa, configura prima un provider. Vedi la [guida CLI ed Evidenc
 
 REA cambia rapidamente e le nuove versioni includono correzioni di bug frequenti. Tieni aggiornata la tua installazione.
 
-Per una CLI installata via npm:
+Per una CLI installata con `npm install --global` o `bun add --global`:
 
 ```bash
 rea update
 ```
+
+Gli aggiornamenti globali con Bun richiedono Bun 1.2.17 o versioni successive. Con una versione precedente di Bun, aggiorna Bun manualmente prima di eseguire `rea update`.
 
 Per aggiornare le registrazioni del tuo agente e lo skill, esegui il comando di configurazione mostrato dall'aggiornamento.
 
@@ -116,7 +117,7 @@ Se usi `npx`, aggiorna la configurazione del tuo agente con:
 npx rea-agents@latest setup
 ```
 
-Rivedi le modifiche di configurazione e riavvia il tuo agente. Per comandi CLI singoli, usa `npx rea-agents@latest` seguito dal comando.
+Rivedi le modifiche di configurazione e riavvia il tuo agente. Per comandi CLI singoli, usa `npx rea-agents@latest` seguito dal comando. Con Bun, usa `bunx rea-agents@latest` al posto di `npx rea-agents@latest`.
 
 ## Come funziona REA
 
@@ -134,12 +135,13 @@ REA richiede Node.js 22.x (>=22.19), 24.x (>=24.11) o 26+, oltre a npm. Strument
 
 | Obiettivo                    | Cosa restituisce REA                                                                              | Requisiti e guida                                                                                                                   |
 | ---------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Binari nativi                | Pseudocodice, assembly, stringhe, simboli, chiamate e riferimenti                                 | Hopper, Ghidra o IDA; [analisi nativa](https://rea.tools/guides/native/)                                                            |
+| Binari nativi                | Pseudocodice, assembly, stringhe, simboli, chiamate e riferimenti                                 | Hopper, Ghidra o IDA; [analisi nativa](https://rea.tools/it/guides/native/)                                                         |
 | Layout ELF offline           | Sezioni, segmenti, simboli/relocazioni originali e candidati mitigazioni statiche                 | pwntools fornito dal chiamante su Linux x64; [diagnostica binaria](docs/binary-diagnostics.md)                                      |
+| Artefatto WASM               | Convalida, sezioni, forme WAT di import/export esatte e WAT decodificato                          | WABT 1.0.42 fornito dal chiamante; `inspect_wasm_artifact`                                                                          |
 | Bytecode EVM                 | Selettori di dispatch, offset dei byte, argomenti inferiti e mutabilità                           | Carrier raw/hex locale; [guida EVM offline](docs/evm-bytecode.md)                                                                   |
 | Crash Linux registrati       | Note grezze, registri/segnai di ogni thread registrato e candidati mapping opzionali              | pwntools fornito dal chiamante; GDB/pwndbg opzionale; [crash registrati](docs/recorded-crashes.md)                                  |
-| JavaScript / Electron        | Moduli, import, source map, route, IPC e relazioni con add-on nativi                              | Node.js e npm; [analisi delle applicazioni](https://rea.tools/guides/javascript/)                                                   |
-| Siti web                     | Struttura della pagina, script, osservazioni di rete e screenshot richiesti                       | Un browser della famiglia Chrome; [analisi browser](https://rea.tools/guides/browser/)                                              |
+| JavaScript / Electron        | Moduli, import, source map, route, IPC e relazioni con add-on nativi                              | Node.js e npm; [analisi delle applicazioni](https://rea.tools/it/guides/javascript/)                                                |
+| Siti web                     | Struttura della pagina, script, osservazioni di rete e screenshot richiesti                       | Un browser della famiglia Chrome; [analisi browser](https://rea.tools/it/guides/browser/)                                           |
 | Acquisizioni di rete salvate | Richieste, risposte, payload esposti e posizioni sorgente                                         | HAR; mitmdump su Linux per acquisizioni mitmproxy native; [guida alle acquisizioni](docs/web-network-captures.md)                   |
 | Assembly .NET                | Metadati, istruzioni CIL, dipendenze native dichiarate e confronti di build                       | Nessuno (solo statico); [guida managed-code](docs/managed-code-analysis.md)                                                         |
 | APK Android                  | Dichiarazioni manifest, classi, metodi decompilati e riferimenti                                  | JADX headless e un JDK completo su Linux/macOS/Windows x64; [guida Android](docs/android-analysis.md)                               |
@@ -158,25 +160,25 @@ I formati nativi e il supporto host variano in base al provider. Vedi la [config
 
 ## Showcase
 
-[![Illustrazioni degli showcase del sound-pan di DX-Ball, del clipboard-bridge di Notion e dell'anello di proiettili di TH04](docs/assets/rea-showcases.png)](https://rea.tools/showcase/)
+[![Illustrazioni degli showcase del sound-pan di DX-Ball, del clipboard-bridge di Notion e dell'anello di proiettili di TH04](docs/assets/rea-showcases.png)](https://rea.tools/it/showcase/)
 
 ### DX-Ball: ricostruisci un calcolo sound-pan
 
 Segui una chiamata sonora fino al suo helper posizione-to-pan, ispeziona le istruzioni e trasforma il pseudocodice incompleto in C. La ricostruzione supera 3.205 casi x86 originali e riproduce tutti i 63 byte di funzione compilati.
 
-[Leggi il case study](https://rea.tools/showcase/dx-ball/) · [Repository di ricostruzione](https://github.com/N0zoM1z0/dx-ball)
+[Leggi il case study](https://rea.tools/it/showcase/dx-ball/) · [Repository di ricostruzione](https://github.com/N0zoM1z0/dx-ball)
 
 ### Notion: traccia il clipboard bridge di Electron
 
 Trova l'API clipboard del renderer, seguila attraverso preload e IPC fino al processo principale e ispeziona il formato rich clipboard.
 
-[Leggi il case study](https://rea.tools/showcase/notion/)
+[Leggi il case study](https://rea.tools/it/showcase/notion/)
 
 ### TH04: recupera un calcolo dell'anello di proiettili DOS
 
 Ispeziona le istruzioni a 16 bit del gioco PC-98 originale, recupera i calcoli dell'angolo fisso e mirato e confronta il C++ ricostruito con l'output del compilatore storico.
 
-[Leggi il case study](https://rea.tools/showcase/th04/) · [Repository di ricostruzione](https://github.com/N0zoM1z0/th04)
+[Leggi il case study](https://rea.tools/it/showcase/th04/) · [Repository di ricostruzione](https://github.com/N0zoM1z0/th04)
 
 Se hai usato REA su qualcosa di interessante, ci piacerebbe vederlo. Condividi il tuo caso in una [issue](https://github.com/morluto/rea/issues) o in una [pull request](https://github.com/morluto/rea/pulls), includendo il bersaglio, la tua domanda, come REA ti ha aiutato e cosa hai scoperto.
 
@@ -229,7 +231,7 @@ REA analizza i bersagli localmente. Il tuo agente riceve i risultati degli strum
 
 Aggiorna prima; una release recente potrebbe averlo già risolto.
 
-Per una CLI installata via npm:
+Per una CLI installata con `npm install --global` o `bun add --global`:
 
 ```bash
 rea update
@@ -247,7 +249,7 @@ Se stai usando un agente, completa l'[aggiornamento della configurazione](#aggio
 
 ## Documentazione
 
-Inizia dalle [guide pratiche](https://rea.tools/guides/) del sito web. Per opzioni esatte, prerequisiti e contratti dei risultati:
+Inizia dalle [guide pratiche](https://rea.tools/it/guides/) del sito web. Per opzioni esatte, prerequisiti e contratti dei risultati:
 
 - [Installazione e configurazione](docs/installation.md): registrazione agente, configurazione provider, aggiornamenti e disinstallazione.
 - [Pronto all'uso e risoluzione dei problemi](docs/installation.md#check-readiness-for-your-task): diagnostica un agente o un motore di analisi.
@@ -260,7 +262,7 @@ Segnala vulnerabilità tramite [SECURITY.md](SECURITY.md).
 
 ## Cronologia delle stelle
 
-🎉 **50.000 stelle su GitHub — grazie!**
+🎉 **90.000 stelle su GitHub — grazie!**
 
 Grazie a tutti coloro che usano REA, segnalano bug, propongono funzionalità, testano le build e contribuiscono con correzioni.
 

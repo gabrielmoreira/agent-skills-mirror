@@ -181,7 +181,8 @@ payload ranges are supported. The supported tree has three levels: type, name,
 and language. Other resource payload formats remain opaque.
 
 `max_file_bytes` defaults to 64 MiB (maximum 512 MiB); `max_entries` defaults to
-4096 (maximum 65536). CLI options are `--max-file-bytes` and `--max-entries`.
+16384, the largest stock Windows resource image measured with headroom
+(maximum 65536). CLI options are `--max-file-bytes` and `--max-entries`.
 Metadata is bounded to 8 MiB; exceeding any budget fails without truncation.
 Large Evidence envelopes may require a caller-configured MCP transport receive
 buffer because envelope copies add overhead. Requests honor cancellation during

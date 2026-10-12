@@ -120,6 +120,33 @@ JSON output list these limits. Use an explicit compatible model for those cases,
 or `host` mode for plan reviews. Implementation recommendations require an
 explicit implementation model rather than delegating to a hidden native choice.
 
+## Reasoning effort
+
+Codex calls carry a `model_reasoning_effort`. It follows the same shape as the
+model: a per-run environment override, then a stored setting, then the default
+each gate ships with.
+
+| Order | Source | Set it with |
+| --- | --- | --- |
+| 1 | `GSTACK_CODEX_EFFORT` (this shell, this run) | `export GSTACK_CODEX_EFFORT=max` |
+| 2 | `codex_effort` in config.yaml | `gstack-config set codex_effort low` (`unset` restores the defaults) |
+| 3 | the gate's default | nothing: `high` for reviews, plan reviews and `/codex` review and challenge; `medium` for `/codex` consult and design direction |
+
+Levels: `minimal`, `low`, `medium`, `high`, `xhigh`, `max`, `ultra`. Support is
+model-dependent, so an unsupported level for your model fails at request time
+through the usual model error. An invalid value never reaches Codex:
+`gstack-config set` rejects it, and `gstack-codex-probe run-with-timeout --effort
+<default>` (which resolves the order above and appends the flag) stops the call
+before anything is sent, naming the source to fix. `gstack-codex-probe
+check-effort <default>` prints the same resolution without a call. `/codex ...
+--xhigh` outranks all three for that request (it sets `GSTACK_CODEX_EFFORT=xhigh`
+on the dispatch).
+
+`/spec`'s quality gate keeps `medium` inside its 120-second budget whatever you
+set, because a higher effort would spend the time the gate is sized for.
+`gstack-models list` prints the effective effort and where it came from
+(`--json`: `codexEffort`). The Claude Code runner takes no effort setting.
+
 ## Which workflows use the tiers?
 
 The plan-review role applies to autoplan's CEO, design, DX and engineering

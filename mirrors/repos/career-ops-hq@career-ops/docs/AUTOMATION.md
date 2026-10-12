@@ -29,6 +29,10 @@ Three independent pieces, smallest first. You can use any of them on their own.
 > local files. Evaluating a shortlisted role later (`/career-ops pipeline`) is the
 > only step that spends tokens.
 
+> Companion page: [Keeping portals.yml live](KEEPING_PORTALS_LIVE.md) covers the
+> house rule that keeps the scan list itself current (companies get auto-added as
+> they come up) and the zero-token commands to validate `portals.yml` afterwards.
+
 ---
 
 ## 1. Schedule the scan

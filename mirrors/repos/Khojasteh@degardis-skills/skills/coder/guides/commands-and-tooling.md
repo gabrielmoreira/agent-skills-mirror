@@ -23,4 +23,4 @@ Treat project-controlled executable configuration as code. Establish whether the
 
 Do not repeat equivalent commands or run a broad suite after every edit; a broader adopted check runs once, when the combined change or repository instructions require its coverage. Keep repository-mandated checks distinct from evidence for the requested outcome.
 
-Record the actual command scope and result in re-readable working state, taking the tool's own count of matched, collected, or deselected items as the evidence that a selector reached the intended scope. A command that cannot run or whose selector is unsupported leaves the corresponding claim unverified; it does not authorize inventing another toolchain.
+Record the actual command scope and result in re-readable working state, taking the tool's own count of matched, collected, or deselected items as the evidence that a selector reached the intended scope.

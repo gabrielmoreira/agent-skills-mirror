@@ -55,9 +55,85 @@ canonical Todo 入口隔离（T4）：五种 mutation facade 统一进入既有
 revision 保持。这为最后调用方删除建立边界，不宣称代码已退役：bootstrap、
 handoff、team-plan 和 Monitor 仍有受支持的旧源调用；capture/outbox 及历史恢复
 各等自己的出口。见[调用方及回滚清单](../../reference/canonical-todo-completion-update.md#canonical-mutation-entrypoint-isolation)。
+保留的 import-compatible field writer 在既有 typed field plan 中统一等待条件
+归一化及矛盾 clear 拒绝；保持 Python 空白输入省略和锁内 IO，只退役重复的
+normalization crossing，不删除仍受支持的 writer 或迁移 reader。
+
+剩余 legacy writer 和 bootstrap 的 capture 适配器，在 runtime shadow 关闭且没有
+活跃持久 binding 时，跳过 rollout 历史读取和 Todo projector 构建。原源身份仍须
+解析；已有活跃 binding 即使配置关闭，也继续要求持久 prepare。普通旧源写入因此
+省去可选捕获工作，输出、历史保留及 outbox 恢复保持原契约。Python 保留这层
+Host IO 适配，直到最后受支持的源 writer 被替换；本批不代表整个 writer 退役或
+默认 provider 资格通过。
+未迁移 lease acquire 现在仅在 typed 结果带有 capture 请求时加载 capture 适配器。
+真实 CLI 与正常 wheel 检查覆盖领取／重放、陈旧续约拒绝、续约、转交及释放：没有
+启用 capture 或活跃 binding 时，可物理移除四个旧 shadow producer 模块。已有活跃
+binding 在移除配置后仍完成 capture。这只退役默认关闭时的依赖，不删除仍受支持的
+源 writer，也不结束待处理 capture／历史恢复窗口。
+
+handoff／continuation 显示决策已归入既有 TypeScript Todo context owner。summary
+在同一个 batch 复用已归一化的身份、claim、exclusion 和任务类型事实；index 在单个
+原生 batch 保留先压缩源、再标注、最后合并审计事件的顺序。planning 与 quota
+收集器整组投影已选记录。过大的显示上下文按字节预算分批读取，计数、依赖决策与
+闭合仍由完整源 owner 处理。超大单条历史记录复用既有私有快照传输，完整文本
+先进入凭证检查，再截断显示；不另加单条 frame 上限。Python facade 保留共享 metadata codec 和历史
+元组／SHA-1 身份编码，没有 Python 决策回退。nested-empty 优先级、Unicode 空白／
+codepoint 上限和截断前凭证拒绝都是需要保留的兼容义务。File／SQLite CLI 与正常
+wheel 的恢复验收要求：Markdown 显示缺失或选定 provider 不可用时，完整源与
+provider revision 仍被保留。这项读模型退役不等于受支持的 mutation／Host 调用方
+已删除，也不认证已发布的 SQLite 默认值。
+
+公开 Todo 创建现在以一次 typed creation-scope 调用组合 scope、受支持的等待条件和
+有界 Monitor metadata。旧 add writer 复用同次准备结果，独立 Markdown codec 与后继
+创建仍自行校验；priority 和 validation declaration 保留原错误顺序，canonical 事务
+仍复核 registry、claim、lease 和 CAS。本批只退出重复创建编排，不删除仍有调用方的
+Markdown writer、bootstrap、Host IO 或历史恢复路径；发布默认与整项退役验收保持独立。
+
+canonical team-plan 只在受支持的未迁移分支加载 capture 和 Markdown 编辑依赖。
+真实 File/SQLite Chat 及正常 wheel 的物理删源检查覆盖确认整批提交、后续写入后
+重放、provider 恢复、投影恢复和导入前历史回执。既有 TS 事务、源锁和投影 owner
+保持；旧批量 IO 的故障注入入口为当前消费方保留惰性加载。这是调用隔离出口，
+不等于删除活跃旧 writer，或完成 receiver adoption、Host 执行、PostgreSQL／D2
+资格。见[合同及保留义务](../../reference/canonical-todo-completion-update.md#team-plan-source-writer-isolation)。
+
+公开 CLI 的 shadow 配置归入 `coordination/configuration.py`，完整源捕获归入
+`coordination/authority_source_capture.py`；冷导入、源检查和历史 promotion 恢复
+复用保留 owner，只有显式开启的 shadow 动作加载旧 producer。隔离源码及正常
+wheel 的副本中物理删除四个 shadow producer 后，真实 CLI 仍覆盖新 Goal 默认
+SQLite、租约工作、一次结算及可回退出口，以及冷 File／SQLite 导入和原操作重放。
+旧模块为现有消费者保留 API 重导出；启用的 capture、outbox 和旧命令仍受支持。
+精确源身份、归档依赖、安全 lease 读取和后续写入恢复均须保留。本批移除提前导入
+阻塞；删除活跃 producer 仍须其最后调用方退出。App／Lark 合同、provider 事务、
+cohort 采用及冻结 D2 证据保持独立。
+
+Monitor router 同样隔离活跃旧源 writer；历史回执 codec／replay 共用 scheduler
+只读 IO owner，原操作身份和决策继续归既有 TS batch。File/SQLite CLI 与正常
+wheel 删源检查须保留后来写入及原 successor；晋升后重放保持旧 outbox 静止，
+未晋升的 markerless batch 恢复保留原 drain。本批只移除 canonical 导入依赖，
+不删除受支持的旧 writer；缺席臂复用上述 CLI 启动隔离，同时移除四个 shadow
+producer module。
+见[保留义务及回滚](../../reference/canonical-todo-completion-update.md#monitor-source-writer-isolation)。
+
+shadow 诊断现在有独立只读边界：历史 outbox 磁盘 codec 位于
+`local_authority_shadow_history.py`，status／candidate read transport 位于
+`local_authority_shadow_readback.py`。公开 status CLI 不加载源 producer；drain
+仍走现有 orchestration。原 entry 身份、损坏证据、cursor 残留和缺失 store 行为
+保持。Python 保留历史文件解码及展示 IO；TS 保留历史证明、投递与清理权限。
+旧 producer 的已有导入为支持调用方保留 alias，不复制实现。源码及正常 wheel
+的 File/SQLite 接收端检查，在 producer 存在／缺席两臂比较完整 status 响应和
+原文件字节。这是历史 reader 的退役前置，不代表 writer 删除、outbox 处置、
+安装 cohort 采用或发布默认资格。
+见[操作读回与回滚](../../reference/authority-observation-retirement.md#retained-readback-without-source-producers)。
 
 存量 Goal 迁移、两策略退役和格式升级仍各有独立回执及出口；原回执恢复不能成为
 保留 legacy 活跃策略的理由，必要迁移 reader 保留。
+
+导入后 canonical bootstrap 重连复用既有 typed authority reader，保留当前
+Todo、租约及原导入回执，避开 Markdown writer。File／SQLite 真实 CLI 覆盖旧
+v0 偏好指向另一 provider、显示缺失、选定权威丢失、force／改向拒绝，以及旧
+producer 不存在时的后续写入重放。Python 保留 bootstrap registry／Host IO，
+不新增决策 owner 或创建回执。本批关闭重连依赖，未关闭未晋升 writer、活跃
+outbox、Host 或发布默认验收。
 
 有界 cohort 在安装恢复和相关执行控制通过后可开始，不代表发布默认值或正式十天
 D2 已通过；冻结的失败／缺项保持可见。T4 随实现删除已证明重复的 owner，不等 R6
@@ -133,6 +209,12 @@ receipt，再执行新准入。这修复同 operation 并发竞争，不扩展 p
 准入/回放之后才请求私有声明。删除 Python 的终结操作审核分流和提前解析声明编排。
 这闭合 T1/T2/L2 的一组真实终结 caller，剩余 leased metadata、executor fence 和 T4
 仍未完成。[语义、调用次数与回滚](../../reference/canonical-terminal-review.zh-CN.md)。
+
+Canonical completion 的后继 role/status 现在由同一 TS 事务 head 读取；Python
+只传声明的 ID 和 registry 意图，删除完整 Todo 复制及旧快照连接。后继状态改变后，
+原 receipt 重放仍返回原策略。本批只退役 canonical 的 Python join，保留未晋升
+writer 的真实源读取、私有 validation 适配和历史回执，不增加 RPC 或改变 provider/
+默认值。见[来源与恢复边界](../../reference/canonical-terminal-review.zh-CN.md#后继来源)。
 
 Canonical supersede 的 CLI/facade 现在把已有后继关联交给同一个 terminal owner。
 一次提交关联已声明的替代工作、退役原任务并释放原租约，取代先更新关联再 supersede
@@ -954,6 +1036,11 @@ acceptance 和 vision。展示限制不能变成结算限制。在 legacy、File
   重复 reference aggregate。
 - 保留永久 Markdown renderer、已验证 import/export 和外部 effect adapter。
   每条保留 bridge 标明真实 caller 与退出条件；不等待全 TS CLI、daemon 或远端服务。
+- canonical handoff-mode show/set 复用共同 runtime-root resolver，只有 canonical
+  路由返回未晋升时才加载兼容来源锁和 Todo capture producer。移除旧源的真实
+  File/SQLite CLI 验证覆盖预览、写入、后续模式变化后的原操作回放及 provider
+  故障时禁止 Markdown 回退。本批闭合 canonical setter 的 import 依赖；未晋升
+  writer、lease capture 恢复及旧源迁移窗口仍保留独立退役验收。
 
 **每张执行卡的验证与停止规则**
 

@@ -77,6 +77,17 @@ While a run is active, Send / Enter queues follow-up messages per tab. **Steer**
 
 In Act and Dev, steering links the initiating request and ordered corrections into one task authority with internal run, message, and revision metadata. At the next safe boundary, both execution paths revalidate that authority through the configured intent or planning gate and refresh execution, recipient, workflow, progress, and tool policy. A newer correction supersedes an in-flight result and invalidates any pending plan-review card. Planner failure stops further dispatch with its concrete error. Ask stays read-only, and ordinary later chat messages remain new tasks. Task-authority messages survive compaction and session recovery; prior submission receipts survive separately from reset completion evidence. After a submission or publication attempt, revised work can inspect the existing effect but cannot submit it again in that run.
 
+When automatic page or iframe updates would discard a terminal Ask reply, the
+configured provider can make a bounded dependency check for that exact reply.
+An exact reply that uses only conversation facts or general knowledge can finish
+without repeating page reads or generation. The proof belongs to the current run,
+task, provider, mode and main document; Stop and genuine corrections revoke it.
+Page-dependent answers retain fresh observation checks. Automatic frame changes
+also consume the existing five-attempt recovery budget when a reply cannot be
+retained, instead of causing unlimited model calls. The dependency call is traced
+as `ask_response_scope` and uses the normal cost and abort guards. It grants no
+browser action or publication authority.
+
 LinkedIn message inspection recognizes image-preview controls in history and native conversation-list rows in the separate rail. A preview requires its image descendant, visible enabled control, matching hit target, and active modal scope outside the composer or form; its label alone is insufficient. Nested row actions and actual Send controls retain recipient verification. The adapter directs the agent to locate the named sender, scroll the history pane to earlier messages, and inspect each attachment in sender context before asking for any missing event details.
 
 Each new user/assistant pair starts in a reading-first scroll state: the question
@@ -209,6 +220,19 @@ coverage. Every matched adapter records adapter/revision/notes-injected as
 content-free trace metadata, while a selected workflow additionally records its
 adapter/revision/job/template. Any user edit to reviewed plan text discards the
 hidden job binding.
+
+Publication verification distinguishes a resolved request with no explicit
+metadata values from an unresolved request. A resolved empty requirement list
+still needs the same dispatch-bound resource and verified final submission.
+Saved metadata and message drafts can bind complete, verified authored field
+replacements or native choices to the current task and document, then require
+exact fresh readback after saving. Explicit user-supplied values remain required.
+GitHub release verification also compares the reviewed native tag, title and raw
+Markdown notes with the saved release's own edit form. Chrome captures the review
+in the submit probe's isolated content-script world and frame, so its AX form
+reference identifies the same form; saved HTML readback needs no AX reference.
+Failure diagnostics name
+the missing verification step and preserve whether submission already occurred.
 
 If the planner returns valid JSON, the side panel receives `agent_update: plan_review` and renders an editable review card. Approval pins the approved plan into the scratchpad so it survives context compaction. Rejection, timeout, or user abort stops the run before any browser tools execute. In Try mode, invalid JSON after one repair degrades only that turn to the Ask prompt and read-only tool catalog; Strict mode still stops before tools. Scheduled runs can set `autoApprovePlanReview` and pin the plan without showing the card.
 

@@ -1,8 +1,8 @@
 # Skill Catalog
 
-Generated at: 2026-10-10T09:03:24.000Z
+Generated at: 2026-10-11T17:57:03.000Z
 
-Total skills: 2675
+Total skills: 2677
 
 ## agent-behavior (5)
 
@@ -1092,7 +1092,7 @@ Total skills: 2675
 | `analytics-tracking` | Design, audit, and improve analytics tracking systems that produce reliable, decision-ready data. | critical | community | analytics, tracking | analytics, tracking, audit, improve, produce, reliable, decision, data |
 | `arrowspace` | Spectral vector search using graph Laplacian eigenstructure. Use when cosine/L2 similarity misses latent structure in your embeddings. | safe | Genefold/arrowspace-skills | vector-search, spectral-analysis, graph-laplacian, embeddings, lambda-tau | vector-search, spectral-analysis, graph-laplacian, embeddings, lambda-tau, arrowspace, spectral, vector, search, graph, laplacian, eigenstructure |
 | `data-engineer` | Build scalable data pipelines, modern data warehouses, and real-time streaming architectures. Implements Apache Spark, dbt, Airflow, and cloud-native data pl... | critical | community | data | data, engineer, scalable, pipelines, warehouses, real, time, streaming, architectures, implements, apache, spark |
-| `datacircle` | Look up LinkedIn profiles by URL through Datacircle (Up2Data or HarvestAPI, no markup), over its hosted MCP server or REST API, with the user's yes before ea... | critical | self | b2b-data, linkedin, enrichment, rest-api, mcp | b2b-data, linkedin, enrichment, rest-api, mcp, datacircle, look, up, profiles, url, through, up2data |
+| `datacircle` | Look up LinkedIn profiles by URL through Datacircle (Up2Data, HarvestAPI or Fetchin, no markup), over its hosted MCP server or REST API, with the user's yes ... | critical | self | b2b-data, linkedin, enrichment, rest-api, mcp | b2b-data, linkedin, enrichment, rest-api, mcp, datacircle, look, up, profiles, url, through, up2data |
 | `dbt-transformation-patterns` | Production-ready patterns for dbt (data build tool) including model organization, testing strategies, documentation, and incremental processing. | none | community | dbt, transformation | dbt, transformation, data, including, model, organization, testing, documentation, incremental, processing |
 | `firecrawl-scraper` | Deep web scraping, screenshots, PDF parsing, and website crawling using Firecrawl API. Use when you need deep content extraction from web pages, page interac... | critical | community | firecrawl, scraper | firecrawl, scraper, deep, web, scraping, screenshots, pdf, parsing, website, crawling, api, content |
 | `glasser` | Search, inspect, and run third-party data APIs through one CLI when the environment has no suitable integration. | critical | self | api, data, search, enrichment, marketing, research, cli | api, data, search, enrichment, marketing, research, cli, glasser, inspect, run, third, party |
@@ -2418,7 +2418,7 @@ Total skills: 2675
 | --- | --- | --- | --- | --- | --- |
 | `idea-os` | Five-phase pipeline (triage → clarify → research → PRD → plan) that turns a raw idea into four linked files: clarifying questions, deep research, a PRD with ... | safe | Slashworks-biz/idea-os | product-management, prd, market-research, mvp, idea-validation, jtbd, swot, competitor-analysis, founder, non-technical | product-management, prd, market-research, mvp, idea-validation, jtbd, swot, competitor-analysis, founder, non-technical, idea, os |
 
-## productivity (50)
+## productivity (51)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -2453,6 +2453,7 @@ Total skills: 2675
 | `interview-style-doc-building` | Build structured strategy documents by asking one question at a time and patching the file. | critical | davidondrej/skills | documentation, interview, planning | documentation, interview, planning, style, doc, building, structured, documents, asking, one, question, time |
 | `jobgpt` | Job search automation, auto apply, resume generation, application tracking, salary intelligence, and recruiter outreach using the JobGPT MCP server. | safe | community | jobgpt | jobgpt, job, search, automation, auto, apply, resume, generation, application, tracking, salary, intelligence |
 | `json-canvas` | Create and edit JSON Canvas files (.canvas) with nodes, edges, groups, and connections. Use when working with .canvas files, creating visual canvases, mind m... | critical | https://github.com/kepano/obsidian-skills | json, canvas | json, canvas, edit, files, nodes, edges, groups, connections, working, creating, visual, canvases |
+| `kernel-prompt` | Use when composing or improving an LLM prompt or agent instruction. Asks one round of questions, then returns only the prompt; never performs the task. | safe | codegiveness/kernel-prompt | prompt-engineering, meta-prompting, prompt-optimization, agent-handoff | prompt-engineering, meta-prompting, prompt-optimization, agent-handoff, kernel, prompt, composing, improving, llm, agent, instruction, asks |
 | `markdown-rendering` | Open Markdown reliably in cmux panes and recover from blank rendered surfaces. | safe | davidondrej/skills | markdown, cmux, rendering | markdown, cmux, rendering, open, reliably, panes, recover, blank, rendered, surfaces |
 | `mdpr-skill` | Review MDPR Markdown presentation workflows with semantic hints, visual checks, and deterministic renderer boundaries. | safe | ch040602/mdpr-skill | mdpr, presentations, markdown, powerpoint, codex, visual-review, agent-hints | mdpr, presentations, markdown, powerpoint, codex, visual-review, agent-hints, skill, review, presentation, semantic, hints |
 | `meeting-distiller-pro` | Transform messy meeting notes and transcripts into structured action items, decisions, and follow-ups. Never lose a meeting insight again. | unknown | demo112/yunqu-ai-skills | meeting, productivity, notes, action-items, summary, corporate | meeting, productivity, notes, action-items, summary, corporate, distiller, pro, transform, messy, transcripts, structured |
@@ -3137,7 +3138,7 @@ Total skills: 2675
 | `web-artifacts-builder` | To build powerful frontend claude.ai artifacts, follow these steps: | critical | community | web, artifacts, builder | web, artifacts, builder, powerful, frontend, claude, ai, follow, these, steps |
 | `webdriverio-skill` | Generates WebdriverIO (WDIO) automation tests in JavaScript or TypeScript. Supports local and TestMu AI cloud. Use when user mentions "WebdriverIO", "WDIO", ... | critical | LambdaTest/agent-skills | webdriverio, skill | webdriverio, skill, generates, wdio, automation, tests, javascript, typescript, supports, local, testmu, ai |
 
-## workflow (68)
+## workflow (69)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -3199,6 +3200,7 @@ Total skills: 2675
 | `receiving-code-review` | Code review requires technical evaluation, not emotional performance. | critical | community | receiving, code | receiving, code, review, requires, technical, evaluation, emotional, performance |
 | `repo-maintainer` | Audit and repair repository hygiene across artifacts, dependencies, CI, docs, Git state, and code-quality signals. Use for repository maintenance, cleanup, h... | critical | Wolfe-Jam/faf-skills | repo, maintainer | repo, maintainer, audit, repair, repository, hygiene, artifacts, dependencies, ci, docs, git, state |
 | `requesting-code-review` | Use when completing tasks, implementing major features, or before merging to verify work meets requirements | critical | community | requesting, code | requesting, code, review, completing, tasks, implementing, major, features, before, merging, verify, work |
+| `skeleton-first` | Prove a data/AI/agent workflow end to end on a tiny sample, find cheap wins, then scale in cost-gated steps within budget. | safe | self | llm, cost, pipeline, etl, rag, dbt, snowflake, budget, data-engineering | llm, cost, pipeline, etl, rag, dbt, snowflake, budget, data-engineering, skeleton, first, prove |
 | `subagent-driven-development` | Use when executing implementation plans with independent tasks in the current session | critical | community | subagent, driven | subagent, driven, development, executing, plans, independent, tasks, current, session |
 | `task-intelligence` | Protocolo de Inteligência Pré-Tarefa — ativa TODOS os agentes relevantes do ecossistema ANTES de executar qualquer tarefa solicitada pelo usuário. | none | community | planning, pre-task, risk-analysis, orchestration | planning, pre-task, risk-analysis, orchestration, task, intelligence, protocolo, de, intelig, ncia, pr, tarefa |
 | `temporal-golang-pro` | Use when building durable distributed systems with Temporal Go SDK. Covers deterministic workflow rules, mTLS worker configs, and advanced patterns. | safe | self | temporal, golang | temporal, golang, pro, building, durable, distributed, go, sdk, covers, deterministic, rules, mtls |

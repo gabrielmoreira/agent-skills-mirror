@@ -1,0 +1,4 @@
+interface:
+  display_name: "Non-WSQ Google Drive Push"
+  short_description: "Archive and publish non-WSQ courseware"
+  default_prompt: "Use $non-wsq-gdrive-push to publish this non-WSQ course package to the supplied Drive folder."

@@ -140,7 +140,7 @@ uses. `--autostash` carries local edits over the pull; render-footprint dirt
 is discarded first because it is regenerable and poisons stashes:
 ```bash
 cd -- "${INSTALL_DIR:?INSTALL_DIR is not set: re-run Step 2 and substitute the printed path}" || exit 1
-{ [ -f VERSION ] && [ -f setup ] && [ -f bin/gstack-config ] && [ "$(git rev-parse --show-toplevel 2>/dev/null)" = "$(pwd -P)" ]; } || { echo "ERROR: $INSTALL_DIR is not a gstack checkout; nothing was changed. Re-run Step 2." >&2; exit 1; }
+{ [ -f VERSION ] && [ -f setup ] && [ -f bin/gstack-config ] && _p=$(git rev-parse --show-prefix 2>/dev/null) && [ -z "$_p" ] && [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = true ]; } || { echo "ERROR: $INSTALL_DIR is not a gstack checkout; nothing was changed. Re-run Step 2." >&2; exit 1; }
 # Discard render-footprint dirt: older gbrain-enabled installs rendered
 # generated SKILL.md / sections files IN PLACE. They are regenerable (setup
 # re-renders to ~/.gstack/render), so discarding is lossless.
@@ -186,7 +186,7 @@ those commits. Gate it:
 
 ```bash
 cd -- "${INSTALL_DIR:?INSTALL_DIR is not set: re-run Step 2 and substitute the printed path}" || exit 1
-{ [ -f VERSION ] && [ -f setup ] && [ -f bin/gstack-config ] && [ "$(git rev-parse --show-toplevel 2>/dev/null)" = "$(pwd -P)" ]; } || { echo "ERROR: $INSTALL_DIR is not a gstack checkout; nothing was changed. Re-run Step 2." >&2; exit 1; }
+{ [ -f VERSION ] && [ -f setup ] && [ -f bin/gstack-config ] && _p=$(git rev-parse --show-prefix 2>/dev/null) && [ -z "$_p" ] && [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = true ]; } || { echo "ERROR: $INSTALL_DIR is not a gstack checkout; nothing was changed. Re-run Step 2." >&2; exit 1; }
 STASH_OUTPUT=$(git stash 2>&1)
 git reset --hard origin/main
 ./setup --refresh-registered
@@ -246,7 +246,7 @@ echo "TEAM_MODE=$_TEAM_MODE"
 ```bash
 (cd -- "${LOCAL_GSTACK:?LOCAL_GSTACK is not set: re-run the detection block above and substitute the printed path}" && [ -f VERSION ] && [ -f setup ] && [ -f bin/gstack-config ]) || { echo "ERROR: LOCAL_GSTACK=${LOCAL_GSTACK:-} is not a gstack copy; nothing was changed." >&2; exit 1; }
 _ROOT=${LOCAL_GSTACK%/.claude/skills/gstack}
-{ [ "$_ROOT" != "$LOCAL_GSTACK" ] && cd -- "${_ROOT:?}" && [ "$(git rev-parse --show-toplevel 2>/dev/null)" = "$(pwd -P)" ]; } || { echo "ERROR: $LOCAL_GSTACK is not the vendored copy at the root of a git repository; nothing was changed." >&2; exit 1; }
+{ [ "$_ROOT" != "$LOCAL_GSTACK" ] && cd -- "${_ROOT:?}" && _p=$(git rev-parse --show-prefix 2>/dev/null) && [ -z "$_p" ] && [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = true ]; } || { echo "ERROR: $LOCAL_GSTACK is not the vendored copy at the root of a git repository; nothing was changed." >&2; exit 1; }
 git rm -r --cached .claude/skills/gstack/ 2>/dev/null || true
 if ! grep -qF '.claude/skills/gstack/' .gitignore 2>/dev/null; then
   echo '.claude/skills/gstack/' >> .gitignore

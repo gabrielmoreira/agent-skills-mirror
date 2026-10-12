@@ -117,19 +117,23 @@ For **code** targets the gate reads the change it is about to allow (Edit
   and clock reads on either side; in shell scripts also
   redirection to a file, `curl`, `wget`, `jq` and PowerShell file and web
   cmdlets. Without them the data
-  question is dropped.
+  question is dropped. With `GATEGUARD_EXTERNAL_CONTRACT_QUESTION` on, a
+  change that keeps the data question is also asked what outside the
+  repository decides its format or semantics.
 - **Trivial:** see [Comment and whitespace-only edits](#comment-and-whitespace-only-edits).
 
 Supported extensions: `.js .mjs .cjs .jsx .ts .tsx .mts .cts .py .pyi .go .rs
 .java .kt .kts .cs .c .h .cc .cpp .cxx .hpp .hh .hxx .sh .bash .zsh .ps1 .psm1
 .bat .cmd`. Any other extension, a
 missing or non-string field, more than 64 MultiEdit entries, a side over
-64 KiB, or 256 KiB in total means the full questions, word for word. Sensitive
+64 KiB, or 256 KiB in total means the full questions, word for word: the
+original four (importers, public API, data schemas, the user's instruction),
+or five with `GATEGUARD_EXTERNAL_CONTRACT_QUESTION` on. Sensitive
 and hard-linked targets and NotebookEdit calls always get the full questions. Other classes keep their class
 questions. Each question has a stable id (`importers`, `public-api`,
 `local-callers`, `callers`, `no-duplicate`, `data-schema`,
-`quote-instruction`, and one per class question), listed in
-`docs/gateguard/change-profile.md`.
+`external-contract` when opted in, `quote-instruction`, and one per class
+question), listed in `docs/gateguard/change-profile.md`.
 
 ### Questions by target class
 
@@ -179,7 +183,8 @@ Condensed denials (after `GATEGUARD_FACT_FORCE_FULL_DENIALS`) carry a
 one-line hint for the same class. For code targets the hint names the same
 questions as the full denial, one short phrase each; an Edit whose change
 cannot be read keeps the fixed hint (importers/callers, affected API, data
-schemas if any). Besides the message text, the class only
+schemas if any) when the external-contract question is off. Opting in adds
+its external-contract phrase. Besides the message text, the class only
 decides [sibling collapse](#same-turn-sibling-creation-collapse): which files
 may collapse, and that a sibling must share the first file's class.
 
@@ -368,10 +373,21 @@ An Edit, Write, NotebookEdit, or MultiEdit entry is allowed, with an
   the hook cannot see, so such a segment never credits. File-name globs that
   restrict a search (Grep `glob: '*.py'`, `rg -g '*.py'`, `grep --include`,
   `find -name`, `tree -P`, `-Include`/`-Filter`) must match the target's file
-  name for its stem to count.
+  name for its stem to count. File types filter the same way: `rg -t`/
+  `--type` and the Grep `type` include the type's globs, `rg -T`/`--type-not`
+  exclude them, and `fd -e`/`--extension` includes `*.<ext>`, so
+  `rg -t py tokenizer src` never credits `tokenizer.js`. An unknown type name,
+  `--type-add`, or `--type-clear` makes the segment never credit.
+- **Lookups are not searches:** a search confined to the target's own file
+  name — every include glob, the Glob pattern, or every path pattern ends in
+  that exact name (`Glob **/tokenizer.js`, `find -name tokenizer.js`,
+  `rg -g tokenizer.js`, Grep `glob: 'tokenizer.js'`) — could only find the
+  target, so it never credits it. `Glob **/tokenizer.*` still does.
 - **Scope:** `Glob`, `Grep`, and `LS` only credit a target strictly inside the
   directory they searched (their `path`, else the tool `cwd`, plus a Glob
-  pattern's literal leading directories). A Glob without glob characters is a
+  pattern's literal leading directories). A Glob pattern is a filter too: it
+  must match the target's path for the stem to count, so `Glob **/tokenizer.py`
+  never credits `tokenizer.js`. A Glob without glob characters is a
   one-file lookup: it names no directory and credits only files directly in
   its directory, never the looked-up file itself. A search whose path is the target is not a search.
 - **Shell segments:** a segment without a path operand counts only when it is
@@ -384,7 +400,8 @@ An Edit, Write, NotebookEdit, or MultiEdit entry is allowed, with an
   characters, never credit.
 - **Shell scope:** a shell segment only credits a target equal to or inside
   one of its path operands (resolved against the tool `cwd`; a glob operand
-  counts as its literal directory), or inside the `cwd` when it has none:
+  must match the target or a directory above it, and a default git pathspec's
+  `*` also matches `/`), or inside the `cwd` when it has none:
   `rg payment docs` or `grep -rn payment /usr/share/doc` never credit
   `src/payment.py`. An input redirection before any operand
   (`rg payment < file`) or a `<` inside a word reads stdin and never counts.
@@ -583,10 +600,12 @@ load-bearing destructive-Bash checks keep running:
 | `GATEGUARD_BASH_EXTRA_DESTRUCTIVE` | unset | Extra destructive-command patterns, as regex source, added to the built-in set. A malformed regex is treated as unset (built-ins still apply) and logged once to stderr. |
 | `GATEGUARD_STATE_DIR` | `~/.gateguard` | Where per-session gate state is kept. If state cannot be persisted the gate allows the operation rather than looping, and names this variable in the warning. |
 | `GATEGUARD_METRICS` | unset (off) | Records one line per Edit/Write/MultiEdit/NotebookEdit/Bash/PowerShell decision in `<GATEGUARD_STATE_DIR>/metrics.jsonl` (see [Decision metrics](#decision-metrics)). Never changes a decision. |
+| `GATEGUARD_EXTERNAL_CONTRACT_QUESTION` | unset (off) | Adds a code question after the data-schema question: name what outside the repository decides the format, units, timezone or protocol semantics. Experimental: in hidden-intent trials it did not change outcomes (`docs/gateguard/question-effectiveness.md`). Never changes a decision. |
 
-`GATEGUARD_BASH_ROUTINE_DISABLED` and `GATEGUARD_METRICS` accept `1`, `true`,
-`on`, `enabled`, `enable`, or `yes` (case- and whitespace-insensitive); any
-other value leaves the routine gate on and metrics off.
+`GATEGUARD_BASH_ROUTINE_DISABLED`, `GATEGUARD_METRICS` and
+`GATEGUARD_EXTERNAL_CONTRACT_QUESTION` accept `1`, `true`, `on`, `enabled`,
+`enable`, or `yes` (case- and whitespace-insensitive); any other value leaves
+the routine gate on, metrics off, and the question unasked.
 
 #### Decision metrics
 

@@ -193,6 +193,17 @@ def build_strategy_spec(ticket: dict[str, Any], candidate_id: str) -> dict[str, 
             DEFAULT_GAP_DETECTION,
             detection.get("gap_up_detection", ticket.get("gap_up_detection", {})),
         )
+    if entry_family == "panic_reversal":
+        # Downstream uses this block's stop/target as the truth source and
+        # requires them to equal signals.exit, so derive them from the exit rules.
+        exit_rules = spec["signals"]["exit"]
+        spec["panic_reversal"] = deep_merge(
+            detection.get("panic_reversal", ticket.get("panic_reversal", {})),
+            {
+                "stop_loss_pct": exit_rules["stop_loss_pct"],
+                "take_profit_rr": exit_rules["take_profit_rr"],
+            },
+        )
 
     strategy_overrides = ticket.get("strategy_overrides", {})
     if strategy_overrides:

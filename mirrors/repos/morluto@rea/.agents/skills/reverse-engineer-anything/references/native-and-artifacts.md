@@ -50,10 +50,19 @@ runs and may change files or use the network. Hardened-runtime targets need the
 `get-task-allow` entitlement.
 
 Use `binary_session` with no arguments to check the open target, selected
-provider, and alignment. Its default `result.tool_availability` includes the
-complete tool inventory with availability reasons and remediation. When choosing
-a tool, use its entry in that result; `tools/list` retains the complete catalog
-when the target or provider state changes.
+provider, and alignment. Its default `result.tool_availability` carries a
+complete inventory grouped by shared facts. Expand each group's `names` and
+inherit the inventory-level client requirements unless a group overrides them;
+availability, reasons, remediation, modes, and flags remain inline. The
+`effects` and `annotations` arrays name true flags from fixed vocabularies, so an
+omitted known flag is false. `tools/list` remains the canonical source for full
+tool schemas when target or provider state changes.
+
+Provider capability groups carry provider identity and ordered limitations.
+Prepend each set's `shared_limitations` to a group's `limitations` to recover the
+operation's full ordered list. Candidate capabilities describe possible
+providers. Top-level session capabilities describe the current route, and
+`analysis_provider_binding` identifies the selected provider.
 
 ## DOS MZ with Ghidra
 
@@ -149,6 +158,13 @@ For headerless DOS COM, explicitly open with `format: "dos-com"` (CLI
 `--target-format dos-com`). Inspect the load image before trusting function
 analysis: the entry is `0x10100`, file offset zero, with imposed real-mode segment
 context. PSP/stack/device state remains unmodeled. See [DOS guide](https://github.com/morluto/rea/blob/main/docs/ghidra-dos.md).
+
+For other headerless images (embedded firmware without ELF/Mach-O/PE/MZ
+headers), open with `format: "raw-binary"`, `architecture` (`x86`, `x86_64`,
+`arm`, or `arm64`), and `entry_point` (`0x` hex). File offset 0 is mapped at
+that address. Hopper and IDA refuse this interpretation; Ghidra uses
+`BinaryLoader` with a little-endian generic language. Big-endian, Thumb-only,
+and Cortex-M variants are unsupported. See [raw binary guide](https://github.com/morluto/rea/blob/main/docs/raw-binary.md).
 
 ### Function annotations in Ghidra
 

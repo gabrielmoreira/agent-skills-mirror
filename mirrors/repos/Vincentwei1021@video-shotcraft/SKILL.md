@@ -5,7 +5,7 @@ description: Create cinematic product videos from shot recipe cards, a validated
 
 # video-shotcraft：电影感产品视频制作
 
-一个自包含的制作能力库：157 张镜头配方卡（附 demo 实现源码与动态样片
+一个自包含的制作能力库：124 张镜头配方卡（附 demo 实现源码与动态样片
 画廊）、一支已验收的完整宣传片模板、可复用组件与音频资产、六阶段工作流。
 当前 focus 是 web/桌面产品宣传片，但镜头卡本身是通用动效词汇——
 也可以单独抽卡做任意视频里的单个镜头。
@@ -204,6 +204,11 @@ node workbench/scripts/open.mjs <成片工程目录>   # 链接工程 → 起 de
    字幕内容/字号/颜色、给分镜头变速或重排、调整或替换音频。用户需要或直接
    点名导出时，读 `references/jianying-export.md` 执行。
 
+**用户主动要求把成片发到社交平台时**（TikTok / Instagram / YouTube / LinkedIn / X 等），
+读 `references/publish-upload-post.md` 执行：先确认文案和平台清单，dry-run 通过后再发布。
+发布命令只跑一次；结果为 `unknown`、超时或报错时**绝不重跑**，只用 `--status <requestId>` 查询。
+这不是第 4 条推荐，用户没提就不要说。
+
 ## 何时读哪个文件
 
 | 时机 | 读 |
@@ -220,6 +225,7 @@ node workbench/scripts/open.mjs <成片工程目录>   # 链接工程 → 起 de
 | 逐镜头实现时写 `src/workbench.ts` 清单 / 镜头 props+schema | workbench.md §2–3（范例 `template/src/workbench.ts`） |
 | 成片交付后（打开动效工作台） | workbench.md（`node workbench/scripts/open.mjs <工程>`；工作台自身文档 `workbench/README.md`） |
 | 成片交付后（剪映工程导出） | jianying-export.md + `jianying-export/` 平台模块 |
+| 用户要求发布到社交平台 | publish-upload-post.md + `publish/upload_post.py` |
 
 ## 资产使用方式
 
@@ -239,9 +245,10 @@ node workbench/scripts/open.mjs <成片工程目录>   # 链接工程 → 起 de
   画面真有点击/开关就该配拟音，但 `ui/` 里一半是合成反馈音（tone/bleep/
   notification）需逐个试听、不可整目录放行（名单见 sound-design 3.3）；
   长样本与轻音素材各有名单需特殊处理（sound-design 4.1）。
-- `demos/` 各卡实现源码：多数为自包含灰阶 demo（部分 import
-  `demos/_fixtures/Fixtures.tsx` 的假 UI 场景件，个别 import
-  `demos/_textures/` 的真实页面纹理），copy 进 Remotion 项目即可跑；
+- `demos/` 各卡实现源码：自包含的成片级 demo（共享件在 `demos/_fixtures/`：`Look.tsx` 视觉系统、
+  `Polish.tsx` 质感件、`Brand.tsx` 品牌件等，个别 import `demos/_textures/` 的真实页面纹理），
+  copy 进 Remotion 项目即可跑；画面里的 logo / 品牌文案是 video-shotcraft 自己，给用户产品用时
+  换成用户的标志与文案；
   个别 demo 用到 `@remotion/motion-blur`（CameraMotionBlur），需
   `npm i @remotion/motion-blur`，名单见 `demos/README.md`。
 - `template/` 完整可渲染工程：`npm install && npx remotion render
@@ -258,8 +265,12 @@ node workbench/scripts/open.mjs <成片工程目录>   # 链接工程 → 起 de
   `smoke_test.py`（新环境先跑的最小冒烟测试）。流程、时间线提取与建轨
   方法见 `references/jianying-export.md`；需 venv + `pip install
   pyJianYingDraft`。
+- `publish/upload_post.py` 社交平台发布（Upload-Post API，纯标准库）：
+  用户要求时把成片发到 TikTok / Instagram / YouTube / LinkedIn / X 等，流程见
+  `references/publish-upload-post.md`；需 `UPLOAD_POST_API_KEY` +
+  `UPLOAD_POST_USER`。离线单测 `python3 -m unittest publish/test_upload_post.py`。
 - `gallery/` 静态画廊：优先直接给用户在线版
   https://vincentwei1021.github.io/video-shotcraft/library.html ；
   本地跑则先 `gallery/fetch-media.sh` 拉样片（mp4 不在 git 里），再
-  `cd gallery && python3 -m http.server 4178`。157 卡 214 条动态样片
+  `cd gallery && python3 -m http.server 4178`。124 卡 150 条动态样片
   可浏览/搜索/多选复制卡名——适合让用户看着样片挑镜头。

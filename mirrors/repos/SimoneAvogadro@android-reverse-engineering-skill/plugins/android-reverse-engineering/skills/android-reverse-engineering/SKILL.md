@@ -246,7 +246,7 @@ On Windows (PowerShell):
 & "${CLAUDE_PLUGIN_ROOT}/skills/android-reverse-engineering/scripts/find-api-calls.ps1" <output>/sources/ -Urls
 
 # Only auth patterns
-& "${CLAUDE_PLUGIN_ROOT}/skills/android-reverse-engineering/scripts/find-api-calls.ps1" <output>/sources/ -Auth
+& "${CLAUDE_PLUGIN_ROOT}/skills/android-reverse-engineering/scripts/find-api-calls.ps1" <output>/sources/ -AuthPatterns
 ```
 
 Document the endpoints in **two tiers** — going deep on every endpoint is

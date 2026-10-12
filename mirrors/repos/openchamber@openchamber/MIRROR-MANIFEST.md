@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openchamber/openchamber` — 26 default patterns, 0 followed patterns, 38 file(s) materialized.
+Mirror of `openchamber/openchamber` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openchamber/openchamber` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 38 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -74,29 +74,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`.agents/skills/performance-engineering/SKILL.md`](.agents/skills/performance-engineering/SKILL.md) |
 | 14 | ✓ | [`.agents/skills/pr-review/SKILL.md`](.agents/skills/pr-review/SKILL.md) |
 | 15 | ✓ | [`.agents/skills/relay-transport/SKILL.md`](.agents/skills/relay-transport/SKILL.md) |
-| 16 | ✓ | [`.agents/skills/serve-sim/SKILL.md`](.agents/skills/serve-sim/SKILL.md) |
-| 17 | ✓ | [`.agents/skills/settings-ui-patterns/references/controls.md`](.agents/skills/settings-ui-patterns/references/controls.md) |
-| 18 | ✓ | [`.agents/skills/settings-ui-patterns/references/layout.md`](.agents/skills/settings-ui-patterns/references/layout.md) |
-| 19 | ✓ | [`.agents/skills/settings-ui-patterns/references/search.md`](.agents/skills/settings-ui-patterns/references/search.md) |
-| 20 | ✓ | [`.agents/skills/settings-ui-patterns/SKILL.md`](.agents/skills/settings-ui-patterns/SKILL.md) |
-| 21 | ✓ | [`.agents/skills/sync-state-invariants/SKILL.md`](.agents/skills/sync-state-invariants/SKILL.md) |
-| 22 | ✓ | [`.agents/skills/theme-system/references/adding-themes.md`](.agents/skills/theme-system/references/adding-themes.md) |
-| 23 | ✓ | [`.agents/skills/theme-system/references/icons.md`](.agents/skills/theme-system/references/icons.md) |
-| 24 | ✓ | [`.agents/skills/theme-system/references/tokens-and-examples.md`](.agents/skills/theme-system/references/tokens-and-examples.md) |
-| 25 | ✓ | [`.agents/skills/theme-system/SKILL.md`](.agents/skills/theme-system/SKILL.md) |
-| 26 | ✓ | [`.agents/skills/triage-issues/references/feature-facts.md`](.agents/skills/triage-issues/references/feature-facts.md) |
-| 27 | ✓ | [`.agents/skills/triage-issues/SKILL.md`](.agents/skills/triage-issues/SKILL.md) |
-| 28 | ✓ | [`.agents/skills/triage-prs/scripts/finish.sh`](.agents/skills/triage-prs/scripts/finish.sh) |
-| 29 | ✓ | [`.agents/skills/triage-prs/scripts/prep.sh`](.agents/skills/triage-prs/scripts/prep.sh) |
-| 30 | ✓ | [`.agents/skills/triage-prs/SKILL.md`](.agents/skills/triage-prs/SKILL.md) |
-| 31 | ✓ | [`.agents/skills/ui-api-decoupling/references/browser-assets-and-auth.md`](.agents/skills/ui-api-decoupling/references/browser-assets-and-auth.md) |
-| 32 | ✓ | [`.agents/skills/ui-api-decoupling/references/implementation-map.md`](.agents/skills/ui-api-decoupling/references/implementation-map.md) |
-| 33 | ✓ | [`.agents/skills/ui-api-decoupling/references/runtime-parity.md`](.agents/skills/ui-api-decoupling/references/runtime-parity.md) |
-| 34 | ✓ | [`.agents/skills/ui-api-decoupling/SKILL.md`](.agents/skills/ui-api-decoupling/SKILL.md) |
-| 35 | ✓ | [`.agents/skills/update-changelog/SKILL.md`](.agents/skills/update-changelog/SKILL.md) |
-| 36 | ✓ | [`.agents/skills/writing-for-agents/SKILL.md`](.agents/skills/writing-for-agents/SKILL.md) |
-| 37 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 38 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 16 | ✓ | [`.agents/skills/rtl-layout/SKILL.md`](.agents/skills/rtl-layout/SKILL.md) |
+| 17 | ✓ | [`.agents/skills/serve-sim/SKILL.md`](.agents/skills/serve-sim/SKILL.md) |
+| 18 | ✓ | [`.agents/skills/settings-ui-patterns/references/controls.md`](.agents/skills/settings-ui-patterns/references/controls.md) |
+| 19 | ✓ | [`.agents/skills/settings-ui-patterns/references/layout.md`](.agents/skills/settings-ui-patterns/references/layout.md) |
+| 20 | ✓ | [`.agents/skills/settings-ui-patterns/references/search.md`](.agents/skills/settings-ui-patterns/references/search.md) |
+| 21 | ✓ | [`.agents/skills/settings-ui-patterns/SKILL.md`](.agents/skills/settings-ui-patterns/SKILL.md) |
+| 22 | ✓ | [`.agents/skills/sync-state-invariants/SKILL.md`](.agents/skills/sync-state-invariants/SKILL.md) |
+| 23 | ✓ | [`.agents/skills/theme-system/references/adding-themes.md`](.agents/skills/theme-system/references/adding-themes.md) |
+| 24 | ✓ | [`.agents/skills/theme-system/references/icons.md`](.agents/skills/theme-system/references/icons.md) |
+| 25 | ✓ | [`.agents/skills/theme-system/references/tokens-and-examples.md`](.agents/skills/theme-system/references/tokens-and-examples.md) |
+| 26 | ✓ | [`.agents/skills/theme-system/SKILL.md`](.agents/skills/theme-system/SKILL.md) |
+| 27 | ✓ | [`.agents/skills/triage-issues/references/feature-facts.md`](.agents/skills/triage-issues/references/feature-facts.md) |
+| 28 | ✓ | [`.agents/skills/triage-issues/SKILL.md`](.agents/skills/triage-issues/SKILL.md) |
+| 29 | ✓ | [`.agents/skills/triage-prs/scripts/finish.sh`](.agents/skills/triage-prs/scripts/finish.sh) |
+| 30 | ✓ | [`.agents/skills/triage-prs/scripts/prep.sh`](.agents/skills/triage-prs/scripts/prep.sh) |
+| 31 | ✓ | [`.agents/skills/triage-prs/SKILL.md`](.agents/skills/triage-prs/SKILL.md) |
+| 32 | ✓ | [`.agents/skills/ui-api-decoupling/references/browser-assets-and-auth.md`](.agents/skills/ui-api-decoupling/references/browser-assets-and-auth.md) |
+| 33 | ✓ | [`.agents/skills/ui-api-decoupling/references/implementation-map.md`](.agents/skills/ui-api-decoupling/references/implementation-map.md) |
+| 34 | ✓ | [`.agents/skills/ui-api-decoupling/references/runtime-parity.md`](.agents/skills/ui-api-decoupling/references/runtime-parity.md) |
+| 35 | ✓ | [`.agents/skills/ui-api-decoupling/SKILL.md`](.agents/skills/ui-api-decoupling/SKILL.md) |
+| 36 | ✓ | [`.agents/skills/update-changelog/SKILL.md`](.agents/skills/update-changelog/SKILL.md) |
+| 37 | ✓ | [`.agents/skills/writing-for-agents/SKILL.md`](.agents/skills/writing-for-agents/SKILL.md) |
+| 38 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 39 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

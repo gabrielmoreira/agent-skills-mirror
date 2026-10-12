@@ -72,6 +72,45 @@ def test_entry_family_requires_matching_detection_block() -> None:
     assert any("gap_up_continuation requires gap_up_detection" in error for error in errors)
 
 
+def build_valid_panic_spec() -> dict:
+    spec = build_valid_spec()
+    del spec["vcp_detection"]
+    spec["signals"]["entry"]["type"] = "panic_reversal"
+    spec["signals"]["exit"]["stop_loss_pct"] = 0.049
+    spec["signals"]["exit"]["take_profit_rr"] = 2.3
+    spec["panic_reversal"] = {"stop_loss_pct": 0.049, "take_profit_rr": 2.3}
+    return spec
+
+
+def test_valid_panic_reversal_spec_passes() -> None:
+    spec = build_valid_panic_spec()
+    errors = validate_interface_contract(spec, candidate_id=spec["id"], stage="phase1")
+    assert errors == []
+
+
+def test_panic_reversal_requires_panic_reversal_block() -> None:
+    # Downstream dispatches on the block, not entry.type: no block = zero trades.
+    spec = build_valid_panic_spec()
+    del spec["panic_reversal"]
+    errors = validate_interface_contract(spec, candidate_id=spec["id"], stage="phase1")
+    assert any("panic_reversal requires panic_reversal block" in error for error in errors)
+
+
+def test_panic_reversal_block_must_match_exit_rules() -> None:
+    spec = build_valid_panic_spec()
+    spec["panic_reversal"]["stop_loss_pct"] = 0.07
+    errors = validate_interface_contract(spec, candidate_id=spec["id"], stage="phase1")
+    assert any("panic_reversal.stop_loss_pct" in error for error in errors)
+
+
+def test_entry_family_without_downstream_detector_is_rejected() -> None:
+    spec = build_valid_spec()
+    del spec["vcp_detection"]
+    spec["signals"]["entry"]["type"] = "news_reaction"
+    errors = validate_interface_contract(spec, candidate_id=spec["id"], stage="phase1")
+    assert any("news_reaction has no downstream detector" in error for error in errors)
+
+
 def test_candidate_id_mismatch_is_rejected() -> None:
     spec = build_valid_spec()
     errors = validate_interface_contract(spec, candidate_id="different_id", stage="phase1")

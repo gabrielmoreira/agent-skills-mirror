@@ -64,10 +64,111 @@ without claiming code retirement:
 bootstrap, handoff, team-plan and Monitor still have supported source callers;
 keep capture/outbox and historical recovery until their own exits. [Caller and
 rollback inventory](../../reference/canonical-todo-completion-update.md#canonical-mutation-entrypoint-isolation).
+The retained import-compatible field writer now composes resume normalization
+and contradictory-clear rejection in its existing typed field plan. Keep blank
+Python input omission and locked IO; retire the duplicate normalization crossing,
+not the still-supported writer or migration reader.
+
+The remaining legacy writer and bootstrap capture adapter now avoids loading
+rollout history and constructing a Todo projector when runtime shadow is off
+and there is no active durable binding. It still resolves the source identity;
+an active binding continues to require durable preparation even after config
+is disabled. This removes optional capture work from ordinary legacy writes,
+without changing their output, history retention or outbox recovery. Python
+retains this Host IO adapter until its last supported source writer is replaced;
+this is neither whole-writer retirement nor default-provider qualification.
+Unpromoted lease acquire now loads the capture adapter only when the typed
+result carries a capture request. The real CLI and normal-wheel oracle cover
+acquire/replay, rejected stale renewal, renewal, transfer and release with the
+four legacy shadow producer modules physically absent and with no enabled
+capture or active binding. An active binding still delivers capture after the
+setting is removed. This retires a default-off dependency, not the supported
+source writer or pending capture/history recovery.
+
+Handoff/continuation display decisions now belong to the existing TypeScript Todo
+context owner. Summary reuses its normalized identity/claim/exclusion/class
+facts in one batch; the index keeps source compaction before labelling and audit
+merging in one native batch. Planning and quota collectors project whole chosen
+sets. Oversized display context uses byte-bounded read-lens batches while
+counts, dependency decisions and closure retain their full-source owner. A
+single oversized historical record reuses the existing private snapshot transport:
+credential checks see its full text before display truncation. The
+Python facade keeps shared metadata codecs and historical tuple/SHA-1 identity
+encoding, with no Python decision fallback. Retain nested-empty precedence,
+Unicode whitespace/codepoint limits and credential rejection before truncation;
+these are compatibility obligations. File/SQLite CLI and normal-wheel recovery
+must preserve exact source and provider revision when Markdown display is absent
+or the selected provider is unavailable. This read-model retirement does not
+retire the supported mutation/Host callers or certify a released SQLite default.
+
+Public add now composes scope, supported wait and bounded Monitor metadata in
+one typed creation-scope request. The legacy add writer consumes that same
+fresh draft rather than re-planning it; standalone line codecs and successor
+creation retain their own admission. Priority and validation-declaration
+checks keep their prior diagnostic order, and canonical provider transactions
+still recheck registry/claim/lease/CAS authority. This retires duplicate add
+composition, not the supported Markdown writer or bootstrap/Host/history IO.
+
+The canonical team-plan caller now loads capture and Markdown editing only in
+its supported unpromoted arm. Real File/SQLite Chat and normal-wheel source
+removal cover confirmed batch commit, later-write replay, provider restoration,
+projection recovery and imported historical receipts. The existing TS
+transaction, source guards and projection owner remain unchanged; the legacy
+batch IO instrumentation seam stays lazy for its current consumers. This is a
+caller-isolation exit, not deletion of the live legacy writer or completion of
+receiver adoption, Host execution, PostgreSQL or D2 qualification.
+[Contract and retained duties](../../reference/canonical-todo-completion-update.md#team-plan-source-writer-isolation).
+
+Public CLI isolation now keeps shadow configuration in `coordination/configuration.py`
+and complete source capture in `coordination/authority_source_capture.py`. Cold import,
+source inspection and historical promotion recovery reuse those retained owners;
+only explicit enabled shadow actions load the old producers. Ordinary new-Goal
+SQLite creation, leased work, once-only settlement and reversible exit, plus cold
+File/SQLite import and original-operation replay, run through the real CLI with
+all four shadow producers physically absent in disposable source/normal-wheel
+copies. The old module still re-exports the retained APIs for current consumers;
+enabled capture, outbox and legacy commands remain supported. Preserve exact
+source identity, archive dependencies, safe lease reads and later-write recovery.
+This removes an eager-import blocker; deleting live producers still requires
+their last-caller exit. App/Lark contracts, provider transactions, cohort adoption
+and frozen D2 evidence remain separate.
+
+The Monitor router likewise isolates its live source writer. Historical receipt
+codec/replay has a small shared scheduler IO owner, while the existing TS batch
+still owns operation identity and decisions. File/SQLite CLI and normal-wheel
+source removal must preserve later canonical writes and original successors;
+promoted replay leaves old outbox bytes inert. Unpromoted markerless batch
+recovery retains its existing drain. This removes a canonical import dependency,
+not the supported legacy writer. The absent arm also removes all four shadow
+producer modules using the qualified CLI startup isolation above.
+[Retained duties and rollback](../../reference/canonical-todo-completion-update.md#monitor-source-writer-isolation).
+
+Shadow diagnostics now have an independent read-only boundary: retained outbox
+disk codecs live in `local_authority_shadow_history.py`, and status/candidate
+read transport in `local_authority_shadow_readback.py`. The public status CLI
+does not load source producers; drain still uses its existing orchestration.
+Original entry identity, malformed evidence, cursor residue and missing-store
+behavior remain unchanged. Python retains historical filesystem decoding and
+presentation IO; TS retains history proof, delivery and cleanup authority.
+Existing producer imports are aliases for supported callers, not duplicate
+implementations. Source and normal-wheel File/SQLite recipient checks compare
+complete status results and unchanged original bytes with producers present or
+absent. This is a historical-reader exit prerequisite, not writer deletion,
+outbox disposition, installed cohort adoption or release-default qualification.
+See [operator readback and rollback](../../reference/authority-observation-retirement.md#retained-readback-without-source-producers).
 
 Existing Goal migration, two-policy ownership retirement and storage-format
 upgrade retain separate receipts and exits. Original-receipt recovery does not
 justify retaining `legacy` as a live policy. Required migration readers remain.
+
+Imported canonical bootstrap reconnect now reuses the existing typed authority
+reader, keeping current Todos, leases and original import receipts without
+entering the Markdown writer. File/SQLite real CLI coverage includes an old v0
+preference naming the other provider, missing display, missing selected authority,
+force/route rejection and later-write replay with legacy producers absent.
+Python retains bootstrap registry/Host IO; it adds no decision owner or creation
+receipt. This closes a reconnect dependency, not the remaining unpromoted writer,
+active outbox, Host or release-default acceptance.
 
 A bounded cohort can start after its installed recovery and relevant execution
 controls pass; it does not certify a released default or formal ten-day D2.
@@ -184,6 +285,14 @@ revision and resolves private declarations only after admission/replay. Python's
 separate terminal review selection and eager declaration sequencing are removed.
 This closes a T1/T2/L2 terminal caller family, not the remaining leased metadata,
 executor fences or T4 retirement. [Semantics, crossings and rollback](../../reference/canonical-terminal-review.md).
+
+Canonical completion now resolves linked-successor role/status in that same
+transaction head. Python forwards the declared IDs and registry intent without
+copying the full Todo collection or joining an earlier snapshot into the policy.
+Existing receipt replay returns its original policy even after linked work
+changes. This retires the canonical Python join; the unpromoted writer's actual
+source reads, private validation adapter and historical receipt contracts remain.
+No crossing or provider/default change is added. [Source and recovery boundary](../../reference/canonical-terminal-review.md#linked-work-source).
 
 The canonical supersede CLI/facade now forwards existing-successor links to that
 same terminal owner. One commit links already declared replacement work, retires
@@ -1399,6 +1508,13 @@ Python writer retirement remain separate exits.
 - Keep permanent Markdown rendering, validated import/export and external
   effect adapters. Every retained bridge names its live caller and exit
   condition. No full TS CLI, daemon or remote service is required.
+- Canonical handoff-mode show/set uses the shared runtime-root resolver and
+  loads compatibility source locks and Todo capture producers only after
+  canonical routing declines. Source-removal CLI validation covers real
+  File/SQLite preview, mutation, original-operation replay after a later mode
+  change, and provider outage without a Markdown fallback. Unpromoted writers,
+  lease capture recovery and the legacy migration window remain separate
+  retirement obligations; this closes the canonical setter's import dependency.
 
 **Validation and stop rules for every card**
 

@@ -185,6 +185,7 @@ Run `plannotator inbox --help` for the full guide: when to use the Inbox, every 
 - Replies come back to the session that sent the message: send with your `plannotator_inbox` tool; inside Claude Code or Pi, a command your session runs also carries the session's identity.
 - Any other agent uses the stdio MCP server `plannotator inbox mcp` (for example `claude mcp add plannotator-inbox -- plannotator inbox mcp`). Tools: `send_message`, `read_thread`, `wait_for_reply`, `resolve_message`, `list_decisions`, `record_decision`, `get_guide_brief`, `submit_guide`. Nothing wakes you there: call `wait_for_reply`, which returns the reply as soon as it is sent, or a cursor to wait again after 50 seconds.
 - Your messages join one thread per session; pass `thread` (a name) to group related messages, or `reply_to` to answer the person's reply.
+- When an open question of yours no longer fits (the plan changed), replace it instead of leaving it to be answered: send into its thread with `supersedes: ["<message id>/<key>"]` (or `["<message id>"]` for all of that message's questions), or put `Replaces: <message id>/<key>` in the new question block. `read_thread` gives the keys; a wrong id refuses the send with `invalid_supersedes`, listing the thread's open questions. The person's pick on a replaced question is never sent.
 - Calls start a stopped Inbox in the background without opening a tab, so never run `plannotator inbox` just to send. Bare `plannotator inbox` is for the person: it opens the window. `--background` starts it detached and prints the URL; `--no-open` runs it in the foreground without a browser.
 - It binds `127.0.0.1` and ignores `PLANNOTATOR_REMOTE` and `PLANNOTATOR_PORT`. `--tailscale` (or `PLANNOTATOR_INBOX_TAILSCALE=1`, or the Settings switch) also publishes the window over the tailnet for the person's own Tailscale login only; it is the person's choice, so do not add it to the `--background` start you run. MCP and agent tools answer only on this computer.
 
@@ -250,6 +251,7 @@ Recommended: Local only, purged after 30 days
 - `- [x]` marks a settled choice. On resubmit, check the chosen answer, or drop the block and state the decision in prose.
 - Leave blank lines between the parts so the block reads well on GitHub.
 - Each answer comes back under its question (`### Q2. <question> (line N)`) as `Answer: <choice>`, marked `(your recommendation)` when the reviewer took yours, or as `Other: …`, free text in a quote, or `Skipped`, plus any `Note:`. A question you marked `- [x]` is settled and only comes back if the reviewer changed it or added a note.
+- In the Inbox, withdraw your own questions that are still open (read_thread state `open` or `picked`) as the thread moves on: when a newer message replaces them, makes them moot or follows up on them, or the person's reply settled them in words, name them in `supersedes` (or a `Replaces:` line) so they stop keeping the thread at the top of the person's list.
 
 ## Do not
 

@@ -170,6 +170,11 @@ Product details that shaped the loop:
   credential in the state dir and the outbound path carrying microphone audio — a local engine keeps
   that egress on loopback, and hands-free sends go through the same guarded reply path a typed reply
   takes ([ADR 0029](./.adr/0029-speech-to-text-is-a-provider-seam-collie-owns.md)).
+  A fourth provider, `whistle`, is Collie's own code: a vendored WebAssembly engine and a 16.9 MB model
+  that the host fetches once on a tap or `collie stt whistle`. It runs in two places, chosen per
+  device. The **Host** engine runs it in a short-lived child of Collie's binary and takes a 16 kHz WAV
+  upload. The **This phone** engine runs it in a worker with its own CSP, with no upload at all
+  ([ADR 0096](./.adr/0096-speech-can-stay-on-the-phone.md)).
 - **Quick replies are heuristics, not guarantees.** Different agents expect different input (a Y/n
   prompt vs a numbered menu vs an approval phrase), so there is always a **"send exactly what I
   type"** fallback.

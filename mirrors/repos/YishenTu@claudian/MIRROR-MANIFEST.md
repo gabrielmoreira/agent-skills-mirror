@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `YishenTu/claudian` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
+Mirror of `YishenTu/claudian` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `YishenTu/claudian` — 26 default patterns, 0 followed patterns, 32 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 32 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -81,16 +81,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`src/providers/claude/CLAUDE.md`](src/providers/claude/CLAUDE.md) |
 | 21 | ✓ | [`src/providers/codex/AGENTS.md`](src/providers/codex/AGENTS.md) |
 | 22 | ✓ | [`src/providers/codex/CLAUDE.md`](src/providers/codex/CLAUDE.md) |
-| 23 | ✓ | [`src/providers/grok/AGENTS.md`](src/providers/grok/AGENTS.md) |
-| 24 | ✓ | [`src/providers/grok/CLAUDE.md`](src/providers/grok/CLAUDE.md) |
-| 25 | ✓ | [`src/providers/opencode/AGENTS.md`](src/providers/opencode/AGENTS.md) |
-| 26 | ✓ | [`src/providers/opencode/CLAUDE.md`](src/providers/opencode/CLAUDE.md) |
-| 27 | ✓ | [`src/providers/pi/AGENTS.md`](src/providers/pi/AGENTS.md) |
-| 28 | ✓ | [`src/providers/pi/CLAUDE.md`](src/providers/pi/CLAUDE.md) |
-| 29 | ✓ | [`src/style/AGENTS.md`](src/style/AGENTS.md) |
-| 30 | ✓ | [`src/style/CLAUDE.md`](src/style/CLAUDE.md) |
-| 31 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
-| 32 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
+| 23 | ✓ | [`src/providers/deepseek/AGENTS.md`](src/providers/deepseek/AGENTS.md) |
+| 24 | ✓ | [`src/providers/deepseek/CLAUDE.md`](src/providers/deepseek/CLAUDE.md) |
+| 25 | ✓ | [`src/providers/grok/AGENTS.md`](src/providers/grok/AGENTS.md) |
+| 26 | ✓ | [`src/providers/grok/CLAUDE.md`](src/providers/grok/CLAUDE.md) |
+| 27 | ✓ | [`src/providers/opencode/AGENTS.md`](src/providers/opencode/AGENTS.md) |
+| 28 | ✓ | [`src/providers/opencode/CLAUDE.md`](src/providers/opencode/CLAUDE.md) |
+| 29 | ✓ | [`src/providers/pi/AGENTS.md`](src/providers/pi/AGENTS.md) |
+| 30 | ✓ | [`src/providers/pi/CLAUDE.md`](src/providers/pi/CLAUDE.md) |
+| 31 | ✓ | [`src/style/AGENTS.md`](src/style/AGENTS.md) |
+| 32 | ✓ | [`src/style/CLAUDE.md`](src/style/CLAUDE.md) |
+| 33 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
+| 34 | ✓ | [`tests/CLAUDE.md`](tests/CLAUDE.md) |
 
 ---
 

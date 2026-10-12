@@ -466,6 +466,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/filter_notice.ts`](src/filter_notice.ts) | The notices a listing command prints when a filter left nothing of what the store holds, so a filtered view never reads as a definitive "nothing here". |
 | [`src/fold_delivery.ts`](src/fold_delivery.ts) | Turning a delivered slice of a source file into a folded one: pick the spans, render the notices. |
 | [`src/fold_structure.ts`](src/fold_structure.ts) | Turning a whole-file delivery into a structural view of it: a heading tree for a document, a declaration skeleton for source. |
+| [`src/git_porcelain.ts`](src/git_porcelain.ts) | One entry of `git status --porcelain -z`: the path as git names it, relative to the repository root, plus the path a rename or copy came from. |
 | [`src/graph_analysis.ts`](src/graph_analysis.ts) | Code graph analysis and query commands: similar, context-for, test-for, coverage-gaps, arch, blame, and ask. |
 | [`src/graph_commands.ts`](src/graph_commands.ts) | CLI command handlers for code-graph commands. |
 | [`src/graph_inspection.ts`](src/graph_inspection.ts) | Code graph inspection commands: dead, deps, types, and scope. |
@@ -539,6 +540,7 @@ token-goat is a TypeScript CLI bundled to `dist/token-goat.mjs` via esbuild. The
 | [`src/query_notices.ts`](src/query_notices.ts) | The trailing notices (`--head` elision, traversal limit) the structured-query commands append to a fanned result. |
 | [`src/queue_waker.ts`](src/queue_waker.ts) | Ends the worker's between-drain sleep when another process appends to `queue/dirty.txt` (fs.watch on the queue directory, timer fallback); the worker's own requeues keep their pacing. |
 | [`src/recall_index.ts`](src/recall_index.ts) | Cross-cache full-text search index for `token-goat recall`. |
+| [`src/reconcile_requests.ts`](src/reconcile_requests.ts) | The worker's side of a reconcile request: a hook that knew files changed but could not learn which (a branch switch whose changed-file list git failed to produce in time) leaves th |
 | [`src/ref_blindness.ts`](src/ref_blindness.ts) | Honest answers for questions the reference index cannot answer. |
 | [`src/regex_guard.ts`](src/regex_guard.ts) | Refusing a regular expression that can stall the process that runs it. |
 | [`src/resident_context.ts`](src/resident_context.ts) | Accounting for the context the harness injects and token-goat's hooks never see. |

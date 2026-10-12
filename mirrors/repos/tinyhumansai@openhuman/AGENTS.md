@@ -363,8 +363,11 @@ Additional rules:
   namespace branches to `cli.rs` or the JSON-RPC server.
 - RPC namespace strings are wire contracts and do not follow directory
   renames.
-- Domain tools live with their domain and are re-exported through
-  `crates/openhuman-core/src/tools/mod.rs`. Keep only cross-cutting tools in
+- Domain tools live with their domain. Each domain builds its tool family
+  through a registration function; `tools::ops` composes those families before
+  applying capability filters. Preserve catalogue order when moving
+  registrations. Import concrete tools from their owning domain instead of
+  adding domain globs to `tools/mod.rs`. Keep only cross-cutting tools in
   `tools/impl/`.
 - Memory scope comes from the namespace, never from metadata or model
   arguments: `memory::scope` resolves the acting identity to a layout root
@@ -521,6 +524,8 @@ builds after changing a gate. Use `scripts/assert-shed.sh` or
 
 ## Loadable modules and bus contracts
 
+Hosts must interface with loadable components through their minimal `*-bus` contracts. Never import, re-export, link, or call their implementation libraries directly, including through wrapper crates or indirect dependencies. Execute component behavior through the compiled TinyBus module. If the required types or operations are missing, extend the contract and implementation in the owning repository and raise a PR against its canonical upstream first; then consume the released module and update OpenHuman’s gitlink and adapter. Do not introduce a host-side implementation workaround.
+
 ### Submodule ownership
 
 OpenHuman is the host and orchestrator for these components. It composes them,
@@ -556,7 +561,6 @@ Direct rendered submodules under `vendor/`:
 | `tinyjuice` | Agent tool-output compression and recovery of omitted content. |
 | `tinymcp` | The TinyMCP module implementation and its bus contract. Put MCP module behavior and contract changes here; OpenHuman owns configuration, lifecycle, and host integration. |
 | `tinymemory` | Engine-neutral memory contracts, operations, and providers. Its nested TinyCortex submodule owns the TinyCortex memory engine. |
-| `tinyruntime` | Runtime discovery/installation and bounded pools of warm language interpreter processes, exposed as a TinyBus module. |
 | `tinysearch` | Web-search module, provider dispatch, tool declarations, and execution behind its TinyBus contract. |
 | `tinyskills` | Host-independent skill/workflow bundle parsing, discovery, scope resolution, resource inventory, and safe reads. OpenHuman owns trust and execution policy. |
 | `tinyvoice` | Host-agnostic voice primitives such as audio framing, VAD, wake-word gating, routing, and STT hallucination detection. |
@@ -590,7 +594,6 @@ method constants, request and response types, and its contract version.
 | `tinydocs-bus` | `documents` |
 | `tinyvoice-bus` | `voice` |
 | `tinyjuice-bus` | inference kernel |
-| `tinyruntime-bus` | runtime clients |
 | `tinywallet-bus` | `web3` (contract; the chain primitives are in `tinywallet-crypto`) |
 | `tinymcp-bus` | `mcp` |
 | `tinychannels-bus` | channel vocabulary |
@@ -601,7 +604,8 @@ Rules:
 - Never redeclare a contract type in OpenHuman.
 - Call members through contract constants, not string literals.
 - Contract crates stay synchronous and free of I/O and runtime dependencies.
-- Shared wire behavior belongs in the contract. Runtime, config, and security
+- Shared wire vocabulary belongs in the contract. Component algorithms execute
+  in the compiled module. Runtime, config, and security
   policy stay in the host.
 - Test the handwritten registry metadata against each contract's bus name and
   object path.

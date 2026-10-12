@@ -8,4 +8,4 @@ Restructure when evidence shows the present arrangement is causing the problem: 
 
 "Cleaner" is not a reason, and a move that changes nothing for the child agent buys nothing while still risking what every move risks.
 
-A move is worth making when it changes reach, removes duplicate load or material for work its reader is not doing, creates an independently reusable unit, or makes a decision materially clearer. Judge its execution effect by behavioral preservation, contribution by contribution, using generated reach and page cost as evidence about what readers receive rather than as the definition of behavior.
+A move is worth making when it changes reach, removes duplicate load or material for work its reader is not doing, creates an independently reusable unit, or makes a decision materially clearer. Judge its execution effect by [[guide:behavioral-preservation]], contribution by contribution, using generated reach and page cost as evidence about what readers receive rather than as the definition of behavior.

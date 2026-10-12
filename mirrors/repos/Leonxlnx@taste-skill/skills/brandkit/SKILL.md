@@ -82,6 +82,13 @@ Unless the user specifies otherwise:
 - Use minimal text
 - Make every panel feel connected
 
+Canvas size and aspect ratio describe the whole output image, not the panel grid.
+Honor requested dimensions (width × height), aspect ratio, or orientation over the defaults. Include them in the internal prompt and use the generator's supported size or aspect-ratio controls accordingly.
+
+If the generator cannot produce the exact requested dimensions or ratio, explain the limit and available alternatives. Use a supported size that preserves the requested ratio where possible. Ask the user to choose only when cropping, resizing, or changing the composition would materially affect the result. Report the actual output size; do not promise unsupported pixel dimensions.
+
+Adapt the grid and spacing to square, portrait, or wide canvases without stretching panels. Keep the defaults when no custom size or layout is requested.
+
 Allowed layouts:
 - `3 × 3` full identity system
 - `2 × 3` cinematic brand deck overview
@@ -90,7 +97,35 @@ Allowed layouts:
 - `4 × 2` wide contact-sheet layout
 - custom layout when requested
 
-If the user gives references, match their quality and rhythm, not their exact content.
+For inspiration references, match their quality and rhythm, not their exact content.
+
+---
+
+# BRAND INTAKE
+
+Before image generation, determine whether this is a new identity or an extension of an existing brand. Choose based on the user's stated intent, not on whether assets are attached.
+
+Use the request, earlier context, and supplied assets first. Do not ask again for information already provided.
+
+If unclear, ask one short intake question covering only the missing details:
+- create from scratch, extend, or refresh / rebrand
+- existing logo / wordmark
+- brand colors / palette
+- typography / fonts
+- visual direction / mood references
+
+Inspiration or mood references alone do not establish an existing identity; treat them as brand constraints only when the user identifies them that way.
+
+Choose the flow:
+
+- **Create from scratch:** If the user requests a new identity or confirms that no existing brand identity applies, follow the full generation flow below.
+- **Build on existing brand:** Reuse supplied logos, names, colors, typography, and direction consistently across the board and mockups. Do not invent replacements or reinterpret the logo.
+
+For partial inputs, preserve supplied elements and develop only missing parts to fit them. If existing assets are needed but unavailable, request them and wait before generation.
+
+An explicit refresh or rebrand request takes priority; change only the elements within the requested scope.
+
+Existing identity constraints take priority over the style, palette, and new-logo defaults below.
 
 ---
 
@@ -131,6 +166,8 @@ Do not pick symbols randomly.
 ---
 
 # LOGO GENERATION STANDARD
+
+Apply this section and the logo concept methods only when a new logo is needed or requested.
 
 The logo must be professional.
 
@@ -271,7 +308,7 @@ The board should have rhythm:
 
 # DEFAULT 3 × 3 PANEL SYSTEM
 
-Use this if no layout is specified:
+Use this if no layout is specified and it fits the canvas; otherwise arrange these panels to suit the requested size or aspect ratio:
 
 ## 1. Logo Cover
 Large logo and wordmark.  
@@ -281,6 +318,7 @@ Strong negative space.
 ## 2. Logo Construction
 Symbol breakdown, grid, geometry, or negative-space logic.  
 Show why the mark exists.
+For an existing logo without documented construction, show supplied variants or usage instead.
 
 ## 3. Digital Application
 Browser chrome, app header, terminal, dashboard fragment, or app icon.
@@ -708,7 +746,9 @@ Make the design quieter, sharper, and more intentional.
 
 # REFERENCE USAGE
 
-When the user provides references:
+Treat assets supplied as the user's existing identity as source material to reuse, not as inspiration to avoid copying.
+
+When the user provides inspiration references:
 
 Extract:
 - layout rhythm
@@ -740,11 +780,16 @@ Use this structure internally:
 Create a premium brand-kit overview image for "[BRAND NAME]".
 
 Brand strategy:
+- identity mode: [create from scratch / build on existing brand / requested refresh]
+- existing assets: [supplied elements to preserve, or none]
 - category: [category]
 - audience: [audience]
 - personality: [traits]
 - core metaphor: [metaphor]
-- logo idea: [how the mark combines symbol + name + category meaning]
+- logo: [supplied logo to reuse, or new logo idea when needed or requested]
+
+Canvas:
+[requested width × height, aspect ratio, or orientation; otherwise 4:3 or 16:10]
 
 Layout:
 [3×3 / 2×3 / custom] grid on a dark or light presentation canvas with strong gutters, clean alignment, and refined negative space.
@@ -767,13 +812,13 @@ Palette:
 [disciplined palette]
 
 Style:
-premium, sparse, cinematic, intentional, polished, brand-guidelines deck, no clutter, no copied real-world logos.
+premium, sparse, cinematic, intentional, polished, brand-guidelines deck, no clutter, no copied inspiration logos; reuse supplied brand assets.
 
 Typography:
 readable, minimal, high hierarchy, no tiny fake text.
 
 Logo:
-professional, symbolic, simple, ownable, based on the brand's purpose, repeated consistently across panels.
+[reuse the supplied logo without redesign, or create a professional, symbolic, simple, ownable mark based on the brand's purpose when needed or requested]; repeat consistently across panels.
 
 ---
 

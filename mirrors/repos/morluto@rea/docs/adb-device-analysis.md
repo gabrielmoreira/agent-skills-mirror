@@ -108,7 +108,13 @@ existing analysis families directly, for example
   `ro.kernel.qemu` value, `null` when absent.
 - **Device paths are not host paths.** `base_apk_device_path` values live on
   the device filesystem. Only pulls and captures produce host-local paths,
-  each paired with byte size and SHA-256 digest.
+  each paired with byte size and SHA-256 digest. A pulled file's host name is
+  the device path's final POSIX segment. REA preserves the original device
+  path and filename; a missing final segment or `.`/`..` is refused before
+  output creation. Windows hosts follow [Windows filename rules](https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file),
+  while POSIX hosts retain valid POSIX filenames such as names with spaces or
+  colons. A package pull checks reported names against the destination
+  filesystem before pulling, and refuses names that would share a local path.
 - **Splits are part of the answer.** `pm path` enumerates the base APK and
   every installed split; pulls cover the whole set. System packages whose
   APKs keep other names report the `unknown` role rather than guessing.

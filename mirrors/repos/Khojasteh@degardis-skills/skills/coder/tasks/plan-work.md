@@ -1,8 +1,9 @@
 ---
 title: Plan software work
 cues:
-- a plan for work that would build, change, or remove software or its documentation, or what that work would take, is asked
-goal: A decision-ready plan connects the requested outcome to the available starting state, ordered implementation units, verification evidence, open decisions, and explicit blockers, is delivered in the response or as the durable record or document the request asks for, and leaves every other project file unchanged.
+- a plan for work that would build, change, or remove software or its documentation is asked
+- what building, changing, or removing software or its documentation would take is asked
+goal: A decision-ready plan connects the requested outcome to the available starting state, ordered implementation units, verification evidence, open decisions, and explicit blockers, sizes its units when the request asks what the work would take, is delivered in the response or as the plan document the request asks for, and leaves every other project file unchanged.
 knowledge:
 - authorized-software-surface
 - project-grounding
@@ -46,24 +47,26 @@ guides:
 handoffs:
 - task: implement-change
   applicability:
-  - When the requester authorized carrying out the plan, its finished state changes existing software beyond reader-facing project text and does more than withdraw a capability, and the plan is neither carried out nor pending on this route
+  - When the requester authorized carrying out the plan, its finished state changes existing software beyond project documentation and does more than withdraw a capability, and the plan is not yet carried out
 - task: create-product
   applicability:
-  - When the requester authorized carrying out the plan, its finished state is a new product, and the plan is neither carried out nor pending on this route
+  - When the requester authorized carrying out the plan, its finished state is a new product, and the plan is not yet carried out
 - task: withdraw-software
   applicability:
-  - When the requester authorized carrying out the plan, its finished state is a withdrawal, and the plan is neither carried out nor pending on this route
+  - When the requester authorized carrying out the plan, its finished state is a withdrawal, and the plan is not yet carried out
 - task: document-software
   applicability:
-  - When the requester authorized carrying out the plan, its finished state changes only reader-facing project text, and the plan is neither carried out nor pending on this route
+  - When the requester authorized carrying out the plan, its finished state changes only project documentation, and the plan is not yet carried out
 ---
 
-A plan request asks for decisions and sequence, not speculative edits or a patch, so a requested durable plan, such as a plan file or design record, is the only project material it may write.
+A plan request asks for decisions and sequence, not speculative edits or a patch.
 
-Establish the requested observable outcome, the available starting state that bears on it, the authorized surface or destination, and the facts still open. Read the applicable instructions before existing project or starter material, then inspect code, configuration, tests, history, platform constraints, and available tooling until every design-driving question is settled or stands as an explicit decision or blocker. Do not run a command merely to make the plan look verified; run one only when it is authorized and its result changes the design.
+Establish the requested observable outcome, the available starting state that bears on it, the authorized surface or destination, and the facts still open. Inspect code, configuration, tests, history, platform constraints, and available tooling until every design-driving question is settled or stands as an explicit decision or blocker. The plan request authorizes running a command whose effects stay confined to disposable output, and any other effect needs authority of its own.
 
-Put the requester-owned choices the investigation leaves open to the requester together before settling the design, even those the plan could carry, since a requester asked nothing can take the plan as settled and pass it on unread. Offer to leave each one open for the plan to carry at the work units it governs, except one without which the design cannot be settled. Put the choices that surface only during design the same way before the plan is delivered, and any the design cannot proceed without as soon as it surfaces. When the requester cannot answer before the plan is delivered, such as when the request says to proceed without questions, the plan carries the choices never put to them.
+Put the requester-owned choices the investigation leaves open to the requester together before settling the design, even those the plan could carry: a requester asked nothing can take the plan as settled and pass it on unread, so settling the design is not independent work for these choices to wait behind. Offer to leave each one open for the plan to carry at the work units it governs, except one without which no plan can be written. Put the choices that surface only during design the same way before the plan is delivered, and any the design cannot proceed without as soon as it surfaces.
 
-Settle the design and the change's contract before ordering the plan, and order it around the smallest coherent change that realizes them. For a new product, separate requester- and platform-fixed decisions from implementation defaults. For each work unit, name its purpose, inputs, affected contracts or state, dependencies, completion evidence, and the next unit that consumes it. Put discovery before a unit only when the answer could change that unit. Keep migrations, compatibility work, test changes, documentation changes, and rollout steps inside the same plan when the requested outcome requires them.
+Settle the design and the change's contract before ordering the plan, and order it around the smallest coherent change that realizes them. For a new product, separate requester- and platform-fixed decisions from implementation defaults. For each work unit, name its purpose, inputs, affected contracts or state, dependencies, the facts it must establish before acting, each open decision or missing authority that blocks it and who settles it, its completion evidence, and the next unit that consumes it. Put discovery before a unit only when the answer could change that unit.
 
-Finish with an ordered plan that another agent can execute without reconstructing the investigation. State what was reached, what was not inspected, the evidence the executing work must obtain, and every missing fact or authority that blocks a unit.
+When the request asks what the work would take, the plan's units, dependencies, open decisions, and blockers are its scope. Size each unit against the others from what drives its cost here, such as the change sites it touches, the consumers and state it must reconcile, and the evidence it must produce, and name the open decision or blocker that could change that size. A duration or effort figure depends on who does the work and at what rate, which the project's code does not establish: give one only from capacity and rate the requester supplies, since a figure the evidence cannot carry reads to the decider as a commitment.
+
+Finish with an ordered plan that another agent can execute without reconstructing the investigation: the outcome it reaches, the starting state it assumes, then its units in execution order. What only the requester needs, to judge or decide on the plan rather than carry it out, belongs in the response that delivers it, outside the plan.

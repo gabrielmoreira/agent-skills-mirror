@@ -19,11 +19,6 @@ The global worker budget comes from `config/automation-limits.json`; see
 [Automation Limits](limits.md) for the derived lane limits and GitHub variable
 overrides.
 
-Repair and automerge jobs also carry the canonical `job_intent` frontmatter
-described in [ClawSweeper Orchestration](orchestration.md). Workflow inputs can
-still override live-worker caps, but when they do not, `repair:dispatch` derives
-the priority lane from `job_intent` instead of relying on workflow-specific
-defaults.
 
 Exact-review completion sends `review_failure_reason` for every diagnostics
 manifest with `failure.stage: agent_input_scan` and `retryable: false`, using
@@ -270,8 +265,7 @@ The queue advertises `manual_publication.policy=record_comment_only` and an
 explicit enabled bit through signed `POST /internal/exact-review/admission-capabilities`.
 The manual producer checks that contract before resolving items, independently
 of the aggregate public dashboard. Admission defaults off until
-`EXACT_REVIEW_MANUAL_PUBLICATION_ENABLED=1` is configured after the consumer
-rollout described in [repair operations](repair/operations.md#manual-publication-rollout).
+`EXACT_REVIEW_MANUAL_PUBLICATION_ENABLED=1` is configured after the consumer rollout.
 Manual decisions carry `sourceAction=manual_explicit_review` and immutable
 `publicationPolicy=record_comment_only`. Their completed artifacts use existing
 direct and batch publication capacity, fences, and retries. Source drift ends
@@ -726,80 +720,12 @@ requeues a fresh `source_drift_requeue` review. Without these receipts, a close
 proposal kept open by its producer made every deferred re-apply drift and
 requeue indefinitely.
 
-## Automerge Fast Path
-
-Automerge is an exact-item event path. A maintainer command dispatches one
-review for the current PR head. If review requests a repair, the adopted repair
-worker may push a branch fix; after a successful contributor-branch repair it
-immediately dispatches another exact-head review and then shepherds the repaired
-head for a bounded window instead of exiting immediately. That keeps the normal
-path to:
-
-1. command acknowledgement;
-2. exact-head review;
-3. optional branch repair;
-4. immediate exact-head re-review;
-5. merge after checks, review verdict, and policy gates pass.
-
-The complete state machine is documented in
-[`docs/repair/automerge-flow.md`](repair/automerge-flow.md). Keep this section
-as the scheduler-facing summary.
-
-The automerge status comment is the live progress surface. It is edited in
-place and records review, repair, re-review, and merge events with durations,
-run links, and commit links.
-
-If a no-op automerge repair finds that the PR was already the canonical fix, the
-worker does not stop at the observational result. It immediately continues the
-state machine: either queueing a fresh exact-head review, or, when the existing
-ClawSweeper review only asked a maintainer to land the canonical PR and the
-maintainer already opted into automerge, queueing the merge gate for that exact
-review comment.
-
-Automerge activation also checks the OpenClaw changelog policy before spending
-an exact-head review pass. User-facing `fix`, `feat`, and `perf` PRs that touch
-non-doc/test files and do not already include `CHANGELOG.md` go straight to the
-adopted repair worker, so the changelog fix happens in the first loop instead
-of being discovered only at the final merge gate.
-
-After live hydration, adopted automerge/autofix repairs now skip the read-only
-Codex planning pass entirely. The worker emits a generic structured fix
-artifact directly: repair the contributor branch, rebase onto current `main`,
-address comments/review findings/failing checks, add a changelog entry when
-required, and validate. The execute stage still owns all GitHub mutations,
-validation authority, push, exact-head review, checks, and merge gating.
-
-For explicit base-sync-only repairs, the repair executor first tries a
-deterministic fast path: rebase onto current `main`, apply known mechanical
-conflict resolvers such as isolated `CHANGELOG.md` conflicts and generated
-config checksum three-way conflicts, push the repaired branch, then wait for
-exact-head review and GitHub checks. For substantive automerge repairs, Codex
-owns the initial rebase plus PR-comment, CI, and local-test repair loop; the
-executor still owns every GitHub mutation and reruns the normalized validation
-gate before push. If `main` moves during that final validation, the worker does
-one final base sync by default and lets the immediate exact-head review plus
-GitHub checks validate the pushed head; `CLAWSWEEPER_FINAL_BASE_SYNC_ATTEMPTS`
-can raise that only when extra local passes are intentionally worth the delay.
-Likewise, the last internal Codex `/review` is not a dead end: if it still finds
-an actionable issue, the worker can run one final review-fix pass, require
-changed-surface validation to pass, push the repaired branch, and leave the
-immediate exact-head review plus GitHub checks as the merge authority.
-The default shepherd wait is ten minutes with 15-second polls, controlled by
-`CLAWSWEEPER_AUTOMERGE_SHEPHERD_WAIT_MS` and
-`CLAWSWEEPER_AUTOMERGE_SHEPHERD_POLL_MS`. Terminal check failures stop the
-shepherd wait immediately and dispatch the router so the failed-check repair
-loop can start without waiting for the full timeout.
-
-The final router gate waits up to ten minutes for transient GitHub merge state
-or pending required checks, polling every 15 seconds. Pending checks are wait
-states, not repair triggers; terminal required-check failures can still dispatch
-the adopted repair worker. If GitHub still reports `UNSTABLE`, ClawSweeper
-allows the merge command to try when the only visible blockers are ignored
-non-gating automation checks such as `ClawSweeper Dispatch`; GitHub branch
-protection still enforces required checks at merge time. If the live merge
-preflight reports `DIRTY`, `BEHIND`, or `CONFLICTING`, automerge treats that as
-repairable rebase work and dispatches the adopted repair worker instead of
-leaving the PR open with only a status comment.
+The post-proof freshness check that runs before a PR close (after the coverage
+proof) starts from the `updated_at` this pre-apply check accepted. It blocks
+only on a change after that point; it does not judge the accepted
+acknowledgement or receipt write again against the older review snapshot. When
+the pre-apply check did not accept the update, the review snapshot stays its
+baseline.
 
 ## Capacity
 
@@ -936,12 +862,14 @@ Review cadence:
 - older inactive issues: weekly
 - review policy hash changes: due immediately
 
-The activity check ignores ClawSweeper-owned GitHub mutations that are already
-recorded in durable report frontmatter. `review_comment_synced_at` covers public
-review comment writes, and `labels_synced_at` covers ClawSweeper label-only
-writes such as priority or advisory issue-label syncs. If GitHub `updated_at` is
-at or before either marker, the planner does not treat it as fresh reporter or
-maintainer activity.
+The activity check does not attribute later item updates to ClawSweeper. GitHub
+`updated_at` has one-second precision, so `review_comment_synced_at` and
+`labels_synced_at` cannot prove that a later update was ClawSweeper's own. An
+item updated at or after its last review stays in the hourly activity bucket,
+including after ClawSweeper's own comment, label, and review-lease writes. The
+exact review then checks the [structural review cache](review-cache.md) against
+the item's prior canonical record, so an unchanged item reuses its verdict
+instead of running the model again.
 
 Selection uses weighted buckets so hot issues cannot starve pull requests and
 older issue backlog forever. The normal scheduler cycles through:

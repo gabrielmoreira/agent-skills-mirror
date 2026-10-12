@@ -9,7 +9,6 @@
 **Repérez une fonctionnalité qui vous plaît. Comprenez son fonctionnement, jusqu'au niveau du binaire.**
 
 [![npm version](https://img.shields.io/npm/v/rea-agents?style=flat-square&color=cb3837)](https://www.npmjs.com/package/rea-agents)
-[![CI](https://img.shields.io/github/actions/workflow/status/morluto/rea/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/morluto/rea/actions/workflows/ci.yml)
 [![MCP tool catalog](https://img.shields.io/badge/MCP-tool_catalog-5c4ee5?style=flat-square)](docs/mcp-contracts.md#generated-catalog)
 [![Node.js requirements](https://img.shields.io/badge/Node.js-requirements-339933?style=flat-square&logo=nodedotjs&logoColor=white)](#current-status)
 [![skills.sh](https://skills.sh/b/morluto/rea?style=flat-square)](https://skills.sh/morluto/rea/reverse-engineer-anything)
@@ -18,7 +17,7 @@
 
 <a href="https://trendshift.io/repositories/82054?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-82054" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/82054" alt="morluto%2Frea | Trendshift" width="250" height="55"/></a>
 
-**[Site web](https://rea.tools/) · [Guides](https://rea.tools/guides/) · [Études de cas](https://rea.tools/showcase/)**
+**[Site web](https://rea.tools/fr/) · [Guides](https://rea.tools/fr/guides/) · [Études de cas](https://rea.tools/fr/showcase/)**
 
 [Démarrage rapide](#démarrage-rapide) · [Comment fonctionne REA](#comment-fonctionne-rea) · [Ce que vous pouvez analyser](#ce-que-vous-pouvez-analyser) · [Études de cas](#études-de-cas) · [Questions fréquentes](#questions-fréquentes) · [Documentation](#documentation)
 
@@ -52,9 +51,9 @@ Vous avez repéré dans une application une fonctionnalité que vous aimeriez av
 
 REA connecte votre agent à des outils d'inspection de binaires natifs, d'applications JavaScript et Electron, d'assemblys .NET et de sites web. Les mêmes outils sont aussi disponibles depuis votre terminal. L'analyse s'exécute localement, et chaque conclusion s'accompagne des preuves et des limites sur lesquelles elle repose.
 
-Setup enregistre REA auprès de votre agent et installe les instructions de workflow correspondantes. L'analyse native peut utiliser une installation existante de Hopper ou de Ghidra ; Setup peut aussi installer Hopper après votre accord. L'analyse statique JavaScript ne nécessite aucun de ces moteurs.
+Setup enregistre REA auprès de votre agent et installe les instructions de workflow correspondantes. L'analyse native peut utiliser une installation existante de Hopper, de Ghidra ou d'IDA ; Setup peut aussi installer Hopper après votre accord. L'analyse statique JavaScript ne nécessite aucun moteur d'analyse natif.
 
-> **[Visitez le site web de REA](https://rea.tools/)** pour les instructions d'installation, des guides illustrés et des études de cas réelles.
+> **[Visitez le site web de REA](https://rea.tools/fr/)** pour les instructions d'installation, des guides illustrés et des études de cas réelles.
 
 ## Démarrage rapide
 
@@ -102,11 +101,13 @@ Pour l'analyse native, configurez d'abord un fournisseur. Consultez le [guide CL
 
 REA évolue rapidement, et les nouvelles versions apportent fréquemment des corrections de bugs. Maintenez votre installation à jour.
 
-Pour une CLI installée avec npm :
+Pour une CLI installée avec `npm install --global` ou `bun add --global` :
 
 ```bash
 rea update
 ```
+
+Les mises à jour globales avec Bun nécessitent Bun 1.2.17 ou une version ultérieure. Avec une version plus ancienne de Bun, mettez à jour Bun manuellement avant d'exécuter `rea update`.
 
 Pour actualiser les enregistrements de vos agents et le skill, exécutez la commande setup affichée par la mise à jour.
 
@@ -116,7 +117,7 @@ Si vous utilisez `npx`, mettez à jour la configuration de votre agent avec :
 npx rea-agents@latest setup
 ```
 
-Vérifiez les modifications proposées par Setup et redémarrez votre agent. Pour des commandes CLI ponctuelles, utilisez `npx rea-agents@latest` suivi de la commande.
+Vérifiez les modifications proposées par Setup et redémarrez votre agent. Pour des commandes CLI ponctuelles, utilisez `npx rea-agents@latest` suivi de la commande. Avec Bun, utilisez `bunx rea-agents@latest` à la place de `npx rea-agents@latest`.
 
 ## Comment fonctionne REA
 
@@ -134,12 +135,13 @@ REA nécessite Node.js 22.x (>=22.19), 24.x (>=24.11) ou 26+, ainsi que npm. Les
 
 | Cible                        | Ce que REA renvoie                                                                                          | Prérequis et guide                                                                                                                    |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| Binaires natifs              | Pseudo-code, assembleur, chaînes, symboles, appels et références                                            | Hopper, Ghidra ou IDA ; [analyse native](https://rea.tools/guides/native/)                                                            |
+| Binaires natifs              | Pseudo-code, assembleur, chaînes, symboles, appels et références                                            | Hopper, Ghidra ou IDA ; [analyse native](https://rea.tools/fr/guides/native/)                                                         |
 | Structure ELF hors ligne     | Sections, segments, symboles et relocations d'origine, et protections statiques candidates                  | pwntools fourni par l'utilisateur sous Linux x64 ; [diagnostics binaires](docs/binary-diagnostics.md)                                 |
+| Artefact WASM                | Validation, sections, formes WAT exactes d'import/export et WAT décodé                                      | WABT 1.0.42 fourni par l'utilisateur ; `inspect_wasm_artifact`                                                                        |
 | Bytecode EVM                 | Sélecteurs de dispatch, offsets en octets, arguments inférés et mutabilité                                  | Fichier local brut ou hexadécimal sous Linux x64 ; [guide EVM hors ligne](docs/evm-bytecode.md)                                       |
 | Crashs Linux enregistrés     | Notes brutes, registres et signaux de chaque thread enregistré, et correspondances de mappings facultatives | pwntools fourni par l'utilisateur sous Linux x64 ; GDB/pwndbg en option ; [crashs enregistrés](docs/recorded-crashes.md)              |
-| JavaScript / Electron        | Modules, imports, source maps, routes, IPC et relations avec les modules natifs                             | Node.js et npm ; [analyse d'applications](https://rea.tools/guides/javascript/)                                                       |
-| Sites web                    | Structure des pages, scripts, observations réseau et captures d'écran demandées                             | Un navigateur de la famille Chrome ; [analyse du navigateur](https://rea.tools/guides/browser/)                                       |
+| JavaScript / Electron        | Modules, imports, source maps, routes, IPC et relations avec les modules natifs                             | Node.js et npm ; [analyse d'applications](https://rea.tools/fr/guides/javascript/)                                                    |
+| Sites web                    | Structure des pages, scripts, observations réseau et captures d'écran demandées                             | Un navigateur de la famille Chrome ; [analyse du navigateur](https://rea.tools/fr/guides/browser/)                                    |
 | Captures réseau enregistrées | Requêtes, réponses, payloads exposés et emplacements dans le code source                                    | HAR ; mitmdump sous Linux pour les captures mitmproxy natives ; [guide des captures](docs/web-network-captures.md)                    |
 | Assemblys .NET               | Métadonnées, instructions CIL, dépendances natives déclarées et comparaisons de builds                      | Inspection statique ; [guide du code managé](docs/managed-code-analysis.md)                                                           |
 | APK Android                  | Déclarations du manifeste, classes, méthodes décompilées et références                                      | JADX headless et un JDK complet sous Linux/macOS/Windows x64 ; [guide Android](docs/android-analysis.md)                              |
@@ -158,25 +160,25 @@ Les formats natifs et les hôtes pris en charge varient selon le fournisseur. Co
 
 ## Études de cas
 
-[![Illustrations des études sur la spatialisation sonore de DX-Ball, le pont du presse-papiers de Notion et le cercle de projectiles de TH04](docs/assets/rea-showcases.png)](https://rea.tools/showcase/)
+[![Illustrations des études sur la spatialisation sonore de DX-Ball, le pont du presse-papiers de Notion et le cercle de projectiles de TH04](docs/assets/rea-showcases.png)](https://rea.tools/fr/showcase/)
 
 ### DX-Ball : reconstruire un calcul de panoramique sonore
 
 Suivez un appel sonore jusqu'à la fonction qui convertit une position en panoramique, inspectez ses instructions et transformez un pseudo-code incomplet en C. La reconstruction réussit 3 205 cas issus du x86 d'origine et reproduit à l'identique les 63 octets de la fonction compilée.
 
-[Lire l'étude de cas](https://rea.tools/showcase/dx-ball/) · [Dépôt de la reconstruction](https://github.com/N0zoM1z0/dx-ball)
+[Lire l'étude de cas](https://rea.tools/fr/showcase/dx-ball/) · [Dépôt de la reconstruction](https://github.com/N0zoM1z0/dx-ball)
 
 ### Notion : suivre le pont du presse-papiers d'Electron
 
 Trouvez l'API de presse-papiers du renderer, suivez-la à travers le preload et l'IPC jusqu'au processus principal, puis inspectez le format de presse-papiers enrichi.
 
-[Lire l'étude de cas](https://rea.tools/showcase/notion/)
+[Lire l'étude de cas](https://rea.tools/fr/showcase/notion/)
 
 ### TH04 : retrouver un calcul d'anneau de projectiles sous DOS
 
 Inspectez les instructions 16 bits du jeu PC-98 d'origine, retrouvez les calculs d'angles fixes et visés, et comparez le C++ reconstruit avec la sortie du compilateur d'époque.
 
-[Lire l'étude de cas](https://rea.tools/showcase/th04/) · [Dépôt de la reconstruction](https://github.com/N0zoM1z0/th04)
+[Lire l'étude de cas](https://rea.tools/fr/showcase/th04/) · [Dépôt de la reconstruction](https://github.com/N0zoM1z0/th04)
 
 Si vous avez utilisé REA sur un projet intéressant, nous serions ravis de le découvrir. Partagez votre cas dans une [issue](https://github.com/morluto/rea/issues) ou une [pull request](https://github.com/morluto/rea/pulls), en précisant la cible, votre question, la manière dont REA vous a aidé et ce que vous avez découvert.
 
@@ -229,7 +231,7 @@ REA analyse les cibles localement. Votre agent reçoit les résultats des outils
 
 Commencez par mettre à jour ; une version récente l'a peut-être déjà corrigé.
 
-Pour une CLI installée avec npm :
+Pour une CLI installée avec `npm install --global` ou `bun add --global` :
 
 ```bash
 rea update
@@ -247,10 +249,10 @@ Si vous utilisez un agent, terminez l'[actualisation de la configuration](#mettr
 
 ## Documentation
 
-Commencez par les [guides pas à pas](https://rea.tools/guides/) du site web. Pour les options exactes, les prérequis et les contrats de résultats :
+Commencez par les [guides pas à pas](https://rea.tools/fr/guides/) du site web. Pour les options exactes, les prérequis et les contrats de résultats :
 
 - [Installation et configuration](docs/installation.md) : enregistrement des agents, configuration des fournisseurs, mises à jour et désinstallation.
-- [Vérification et dépannage](docs/installation.md#check-readiness-for-your-task) : diagnostiquer un agent ou un moteur d'analyse précis.
+- [Vérification et dépannage](docs/installation.md#check-readiness-for-your-task) : diagnostiquer un agent ou un moteur d'analyse donné.
 - [CLI et Evidence](docs/cli.md) : commandes, choix du fournisseur, snapshots, import/export et codes de sortie.
 - [Contrats MCP](docs/mcp-contracts.md) et [prompts pour agents](docs/mcp-prompts.md) : résultats des outils, sessions et investigations guidées.
 - [Catalogue des outils](docs/mcp-contracts.md#generated-catalog) : inventaire des outils, fournisseurs et commandes CLI, généré lors du build.
@@ -260,7 +262,7 @@ Signalez les vulnérabilités via [SECURITY.md](SECURITY.md).
 
 ## Historique des étoiles
 
-🎉 **50 000 étoiles GitHub — merci !**
+🎉 **90 000 étoiles GitHub — merci !**
 
 Merci à toutes les personnes qui utilisent REA, signalent des bugs, proposent des fonctionnalités, testent les builds et contribuent des correctifs.
 
@@ -280,7 +282,7 @@ REA fournit des outils destinés à la recherche, à l'analyse et à la reconstr
 
 Votre aide sur REA est la bienvenue ! [Ouvrez une issue](https://github.com/morluto/rea/issues) pour signaler un bug ou proposer une fonctionnalité, ou [envoyez une pull request](https://github.com/morluto/rea/pulls) pour améliorer le code ou la documentation.
 
-Consultez [CONTRIBUTING.md](CONTRIBUTING.md) pour l'environnement de développement et les vérifications, la page [tests](docs/testing.md) pour les filières de vérification, et la [carte de l'architecture](docs/architecture.mermaid) pour la structure du projet.
+Consultez [CONTRIBUTING.md](CONTRIBUTING.md) pour l'environnement de développement et les vérifications, la page [tests](docs/testing.md) pour les procédures de vérification, et la [carte de l'architecture](docs/architecture.mermaid) pour la structure du projet.
 
 ## Licence
 

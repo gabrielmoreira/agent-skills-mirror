@@ -10,5 +10,3 @@ Keep five accounts distinct in re-readable working state. Initialize each before
 3. **Coverage:** every member and disposition in each outcome-relevant set, with independently derived sets kept separate until compared.
 4. **Evidence:** the question each result settles and remaining gaps.
 5. **Workspace:** everything the run created and what must be removed or restored.
-
-The accounts support closing claims; their form is not part of the result.

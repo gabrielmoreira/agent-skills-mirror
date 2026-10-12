@@ -9,7 +9,7 @@ Set effort by the reach of the requested outcome, not by the amount of material 
 - If a subject is not implicated, state the deciding reason briefly and move on.
 - Stop when the requested outcome is reached; do not spend the requester's budget on unsolicited polish.
 
-Fix an observable stopping condition before spending: a named result obtained, an unavailability established, or a stated surface exhausted. A findings count is not a stopping condition. A spending limit never authorizes leaving part of a declared surface unopened; partition and disclose the uncovered part instead.
+Fix an observable stopping condition before spending: a named result obtained, an unavailability established, or a stated surface exhausted. A findings count is not a stopping condition. A spending limit never lets an unopened part of a declared surface count as covered: when one stops the work, partition the surface and report the unopened part as uncovered.
 
 Scope the work by choosing which stages to reach, not by weakening a reached stage. Once a stage is reached, follow its governing guidance and completion checks. A failed attempt earns another only when the evidence source, configuration, or hypothesis changes in a way that could change the result. Finding nothing does not widen scope unless a named risk or new hypothesis predicts what the added material could settle.
 

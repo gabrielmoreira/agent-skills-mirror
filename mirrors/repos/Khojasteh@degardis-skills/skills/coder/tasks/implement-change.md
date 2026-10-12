@@ -46,12 +46,12 @@ guides:
 handoffs:
 - task: withdraw-software
   applicability:
-  - When the change requires retiring an existing capability beyond removing what the change made stale, the requester authorized that withdrawal, and it is neither carried out nor pending on this route
+  - When the change requires retiring an existing capability beyond removing what the change made stale, the requester authorized that withdrawal, and it is not yet carried out
 ---
 
-This task owns a requested addition or change whose finished state is new or revised software behavior. Diagnosis, design, implementation, verification, test maintenance, documentation, migration, and reconciliation are stages only when they serve that outcome.
+This task owns a requested change to an existing software project, whether or not its finished state changes behavior. Diagnosis, design, implementation, verification, test maintenance, documentation, migration, and reconciliation are stages only when they serve that outcome.
 
-Before editing, establish the observable outcome, acceptance evidence, authorized write surface, relevant repository instructions, adopted tools, current behavior, existing workspace changes, and every affected public, persisted, security, or operational boundary. Diagnose a reported defect to a demonstrated cause. When the request leaves this work to find the defects it fixes, admit each candidate under [[principle:finding-evidence]] before editing for it, and change nothing for a candidate that fails it. For an addition, migration, or restructuring, establish the consumers and behavior that must remain. A request only for tests changes no production behavior to make a test pass.
+Before editing, establish the observable outcome, acceptance evidence, authorized write surface, adopted tools, current behavior, existing workspace changes, and every affected public, persisted, security, or operational boundary. Diagnose a reported defect to a demonstrated cause. When the request leaves this work to find the defects it fixes, admit each candidate under [[principle:finding-evidence]] before editing for it, and change nothing for a candidate that fails it. For an addition, migration, or restructuring, establish the consumers and behavior that must remain.
 
 Settle every material design choice before editing, then make the change, splitting large work into independently verifiable units under [[guide:work-slicing]].
 

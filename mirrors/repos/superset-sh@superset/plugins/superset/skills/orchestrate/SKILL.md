@@ -12,7 +12,7 @@ Coordinate terminal agents with Superset's workspace, agent, and terminal comman
 ## Establish the control surface
 
 1. Run `superset auth whoami --json`.
-2. Run `superset terminals --help` and require `list`, `read`, `send`, and `close`.
+2. Run `superset schema 2>/dev/null | jq -re '.commands[] | select(.path==["terminals"]) | .commands[].path[1]' || superset terminals --help` and require `list`, `read`, `send`, and `close`. The `--help` fallback covers a CLI older than 1.34.0 (no `schema`) and a machine without `jq`.
 3. If those commands are absent, run `superset update` and recheck. Do not invent or substitute unsupported orchestration commands.
 4. Resolve the workspace, host, and terminal-capable agent before dispatching:
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Non-WSQ Courseware Generate"
+  short_description: "Generate and validate non-WSQ courseware"
+  default_prompt: "Use $non-wsq-courseware-gen to generate a complete non-WSQ course package."

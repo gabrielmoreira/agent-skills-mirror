@@ -146,6 +146,8 @@ When unsure about severity or approach: escalate. Say "I'd recommend verifying t
 
 ## Active Technologies
 - Spec 149 implementation: selected-runtime NCFED adapters and additive harness cards; isolated Python 3.12 federation/MCP, pinned Python 3.14 Hermes companion, separate private federation/HUD state and SQLite execution evidence. Mac controlled-provider acceptance covers all four internal runtime pairs, Hermes/Hermes and Hermes/OpenClaw external execution and authenticated mobile Ask Border. See spec149 verification; Linux/WSL production control and physical mobile qualification remain pending.
+- TypeScript 5.9 / VS Code ^1.102; browser JavaScript; HUD Node >=24.19 <25 or >=26.1; existing isolated Python helpers. + Existing Three.js 0.185.1, esbuild, Express, yaml CST and js-yaml. No adaptivecards runtime or new framework. (151-extension-experience)
+- Existing testbed YAML and selected runtime .env/config; private backups and setup evidence. No draft secrets persisted in webview state. (151-extension-experience)
 
 - Spec 148 implementation: JavaScript ESM/Express/React HUD; HUD Node >=24.19 <25 or >=26.1; isolated bridge/tool Python 3.12 and companion Python 3.14; official MCP Node client 2.3.1 and isolated FastMCP 4.0.11/MCP Python SDK 2.3.0. General OpenClaw installer Node policy remains >=24.16 <25 or >=26.1.
 - Qualified Hermes baseline: v0.21.6, source 818c13be1dc4fd28987e1e881a9408224afd4535. Private MCP bridge/protected companion, schema-2 owned HUD bindings, SQLite admission/evidence records and installation-scoped browser storage. Mac and Ubuntu 26.04 WSL live/browser qualification is recorded in specs/148-hermes-hud-integration/closure.md; broader tool and platform qualification is not implied.
@@ -153,3 +155,9 @@ When unsure about severity or approach: escalate. Say "I'd recommend verifying t
 ## Recent Changes
 
 - 148-hermes-hud-integration: all 58 tasks complete for the owner-approved Mac/WSL scope; source version 1.7.0. Live Hermes/provider, browser, process-fault, preservation and existing OpenClaw evidence is in specs/148-hermes-hud-integration/closure.md. Ubuntu 24.04 and native Windows OpenClaw remain explicitly unverified. Hermes n2n/iN2N federation is separate spec 149.
+
+### Spec151 implementation notes
+
+The extension now has local source-development cards/forms, testbed YAML/JSON/CSV management, scoped MCP configuration/setup and native-bound security controls. See specs/151-extension-experience/verification.md for actual evidence and platform limits. Distribution remains held by the owner. DefenseClaw's current connector-scoped rules and revision-aware config writer differ from historical `workspace/skills/defenseclaw-ops/SKILL.md` source-scoping examples: capability-probe the installed CLI; do not infer an MCP-only policy scope from `--source`. OpenShell lacks an atomic revision precondition; coordinate external writers and never claim universal blocking from one removed allow rule.
+
+Spec151 repository merge was explicitly authorized on2026-10-11 after local completion. Commit/push/PR/merge may proceed; packaging, deployment and release/Marketplace publication remain held.

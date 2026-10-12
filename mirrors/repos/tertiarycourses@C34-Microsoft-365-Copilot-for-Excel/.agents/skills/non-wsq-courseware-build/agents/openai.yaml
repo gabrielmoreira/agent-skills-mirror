@@ -1,0 +1,4 @@
+interface:
+  display_name: "Non-WSQ Courseware Build"
+  short_description: "Build branded non-WSQ courseware"
+  default_prompt: "Use $non-wsq-courseware-build to generate a non-WSQ course package."

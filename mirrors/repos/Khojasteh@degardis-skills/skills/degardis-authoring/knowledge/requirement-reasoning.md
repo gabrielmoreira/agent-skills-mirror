@@ -12,7 +12,7 @@ Facts may be stated directly. A choice, precaution, threshold, or order instead 
 3. **Evidence:** the signal, authority, default, or threshold deciding which case this is, including who must settle an unavailable fact.
 4. **Effect:** the resulting action, what it protects, and its completion state.
 
-Derivable means the reader can infer each from what is stated, not that each gets its own sentence: one clause often carries several, and one the page already establishes needs no restating. One the reader cannot infer is written out, whatever it adds in length.
+Derivable means the reader can infer each from what its path carries, principles included, not that each gets its own sentence: one clause often carries several, and one already established needs no restating. One the reader cannot infer is written out, whatever it adds in length.
 
 Words such as *only* and *do not* remain useful when they follow from that model. Without it, the first unlisted case is decided by prior belief.
 

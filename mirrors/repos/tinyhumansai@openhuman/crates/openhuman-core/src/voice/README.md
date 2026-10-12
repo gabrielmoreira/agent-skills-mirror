@@ -113,7 +113,7 @@ background pipeline:
  focused app is OpenHuman? --yes--> publish_transcription -> Socket.IO
         | no
         v
- tinycomputer_accessibility::paste::insert_text (clipboard + keystroke)
+ TinyComputer AccessibilityPaste (confidential bus call)
 ```
 
 A `session_generation` counter makes each recording's state updates
@@ -141,8 +141,8 @@ through `publish_transcription` / `subscribe_transcription_results`. The
 Socket.IO server in `crates/openhuman-rpc/src/server/socketio.rs` subscribes to
 both and forwards them to clients, which is how hotkeys and results reach the
 frontend without Tauri-side shortcut registration. The same file starts and
-stops the core-side rdev listener (`start_if_enabled` / `stop`) and normalizes
-hotkey strings with `normalize_hotkey_for_rdev`.
+stops TinyVoice's native listener (`start_if_enabled` / `stop`) and normalizes
+product hotkey strings before passing them to the module.
 
 Typed events go through the process-wide `BUS`. [`bus.rs`](./bus.rs) publishes
 `DomainEvent::Voice(VoiceEvent::PttTranscriptCommitted)` with the thread id,
@@ -245,13 +245,11 @@ per tick would multiply request count for text the client discards.
 | [`server.rs`](./server.rs), [`server/`](./server/) | The `VoiceServer` dictation runtime: hotkey loop, recording lifecycle, gates, delivery, global singleton. [README](server/README.md). |
 | [`always_on.rs`](./always_on.rs), [`always_on/`](./always_on/) | VAD-driven continuous listening, screen-lock pause, wake word and intent routing. [README](always_on/README.md). |
 | [`audio_capture.rs`](./audio_capture.rs) | Microphone recording to 16 kHz mono WAV (`start_recording`, `RecordingHandle`, `RecordingResult`, `list_input_devices`) with peak RMS and the host microphone-permission policy. The `cpal` stream is `tinyvoice::capture`. |
-| [`hotkey.rs`](./hotkey.rs) | Re-export of `tinyvoice::hotkey`: `ActivationMode`, `HotkeyEvent`, `HotkeyCombination`, `parse_hotkey`, `start_listener`. Its tests live in tinyvoice. |
-| [`dictation_listener.rs`](./dictation_listener.rs) | The two broadcast channels and the core-side rdev listener lifecycle. |
+| [`dictation_listener.rs`](./dictation_listener.rs) | The two broadcast channels and host event-forwarding lifecycle over TinyVoice's native listener. |
 | [`bus.rs`](./bus.rs) | `publish_ptt_transcript_committed`. |
 | `live/` | Live voice agents: `providers.rs`, `session.rs`, `ws.rs` (`http-server` only), `persist.rs`, `ops.rs` / `schemas.rs` (`voice.live_*`), `types.rs`, `error.rs`, and `prompt.md` (voice guidance for the model). |
 | [`realtime.rs`](./realtime.rs) | `mint_voice_agent_signed_url`: a short-lived signed WebSocket URL from the backend's `/voice-agent/get-signed-url`. The provider API key never leaves the server. |
 | [`realtime_harness.rs`](./realtime_harness.rs), [`realtime_harness/`](./realtime_harness/) | `voice:harness` turn handler: `prompt.rs` (prompt extraction), `agent.rs` (per-turn orchestrator), `chat_delivery.rs` (socket emits, deferred chat delivery), `turn_handler.rs`. |
-| [`audio_toolkit/`](./audio_toolkit/) | Podcast generation and email delivery (`audio_toolkit` RPC namespace and agent tools), under the same `voice` gate. [README](audio_toolkit/README.md). |
 | [`cli.rs`](./cli.rs) | `openhuman voice` / `openhuman dictate`: a blocking standalone dictation server. Domain-owned because it never returns and does not fit the controller registry. |
 | [`compile_status.rs`](./compile_status.rs) | `VOICE_COMPILED_IN`, compiled in both feature states. |
 | [`stub.rs`](./stub.rs) | The disabled-voice facade, compiled only when `voice` is off. |
@@ -309,8 +307,7 @@ All methods are in the `voice` namespace and registered through
 
 The CLI adapter in [`cli.rs`](./cli.rs) is registered in `core/all.rs` without a feature
 gate, so a voice-less build answers `openhuman voice` with a "voice disabled"
-error from the stub. The [`audio_toolkit`](./audio_toolkit) namespace is documented in its own
-README.
+error from the stub.
 
 ## Persistence
 
@@ -333,13 +330,15 @@ count, rolling recent-transcript buffer) behind a `OnceCell` singleton.
   `crate::modules::voice` with its contract in `tinyvoice-bus`) owns frame
   preparation, resampling, energies, WAV encoding, the VAD session, wake-word
   detection, command/intent routing and `is_hallucinated`. The `tinyvoice`
-  library, linked directly with its `hotkey` and `capture` features, owns the
-  `rdev` listener and the `cpal` stream. This folder owns only the policy
-  around them.
-- `tinycomputer-accessibility` (`vendor/tinycomputer`) owns text insertion
-  (`paste::insert_text`, which carries `arboard` and `enigo`), focused-text
-  inspection and, on macOS, the Swift Globe-key listener
-  (`globe_listener_start` / `globe_listener_poll`).
+  module owns native hotkey parsing, event capture and listener cleanup. The
+  library capture feature still owns the `cpal` stream until the module capture
+  lifecycle cut lands; this folder owns microphone permission policy.
+- The compiled TinyComputer module owns text insertion, focused-text inspection,
+  permission decisions and the macOS Swift Globe listener. OpenHuman uses
+  `tinycomputer-bus` vocabulary and confidential focus/paste calls. Globe events
+  arrive in bounded replayable batches; the host acknowledges delivered batches
+  and closes the lease on cancellation or server stop. Overflow resets activation
+  and requires a physical release before the next press can rearm it.
 - `tinyliveagents` owns live provider wire protocols and `tinyagents-live` owns
   live tool execution. The tool middleware is `agent::tinyagents::live_harness`.
 - `crates/openhuman-rpc` mounts and authenticates `/ws/dictation` and
@@ -359,14 +358,13 @@ registration), `web_chat/run_task.rs` (reply speech, PTT events),
 `security/credentials/ops/gated_services.rs` (starts and stops the dictation
 server, listener and always-on mode when gating credentials change),
 `config/schemas/controllers/voice.rs`, `desktop/overlay/`,
-`inference/host_runtime/service/speech.rs`, `tools/mod.rs` (re-exports
-`audio_toolkit` tools) and `crates/openhuman-app/src/lib.rs` (asserts
+`inference/host_runtime/service/speech.rs` and `crates/openhuman-app/src/lib.rs` (asserts
 `VOICE_COMPILED_IN`).
 
 ## Gotchas
 
-- The `voice` feature is default-on, but `pub mod voice` always compiles as a
-  facade. With the feature off, [`stub.rs`](./stub.rs) replaces the real modules and mirrors
+- The desktop product enables `voice` explicitly; contributor defaults leave
+  it off. `pub mod voice` always compiles as a facade. With the feature off, [`stub.rs`](./stub.rs) replaces the real modules and mirrors
   the surface other code depends on (`server`, `dictation_listener`,
   `always_on`, `streaming`, `live::ws`, `reply_speech`, `cloud_transcribe`,
   `cli`, `create_stt_provider`, `effective_stt_provider`, `SttProvider`,
@@ -375,15 +373,13 @@ server, listener and always-on mode when gating credentials change),
   (`cargo check --no-default-features --features "<all-but-voice>"`), so change
   both sides together. `VOICE_COMPILED_IN` is ungated so the desktop shell can
   assert at compile time that it did not get the stub (#4901).
-- `voice` pulls in `inference`, `modules`, `tinycomputer-accessibility/paste`
-  and the email channel (for `audio_toolkit`), so a voice-less build sheds a
-  large dependency stack. `streaming` additionally needs `http-server`.
-- macOS hotkeys (#2677): rdev's CGEventTap callback calls
+- `voice` pulls in `inference`, `modules` and the `tinyvoice-bus` contract. `streaming` additionally needs `http-server`.
+- macOS hotkeys (#2677): rdev's former CGEventTap callback called
   `TSMGetInputSourceProperty` off the main thread, which crashes with
   `EXC_BREAKPOINT` on macOS 26. On macOS `dictation_listener::start_if_enabled`
   is a no-op and the dictation server accepts only the `fn` (Globe) key through
-  the Swift listener; any other key returns an error. Other platforms use rdev
-  for all keys.
+  the Swift listener; any other key returns an error. Other platforms use the
+  TinyVoice module's native listener.
 - Approval classification differs by path. Reply speech is internal: if it is
   ever wrapped in a `Tool`, `external_effect()` must stay `false` so TTS never
   prompts (#1339, #1206). Realtime harness and live turns are external-channel

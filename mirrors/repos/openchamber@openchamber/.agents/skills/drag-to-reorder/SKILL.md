@@ -36,7 +36,7 @@ const { transform, transition, isDragging } = useSortable({ id });
 | Layout | Strategy |
 |--------|----------|
 | Wraps onto multiple rows / grid / chips of variable width | `rectSortingStrategy` (default — computes 2D positions, so items can shift to other rows) |
-| Guaranteed single horizontal row (e.g. scrollable tab strip) | `horizontalListSortingStrategy` |
+| Guaranteed single horizontal row (e.g. scrollable tab strip) | `horizontalListSortingStrategy`; in a right-to-left layout `rectSortingStrategy` (see `rtl-layout`) |
 | Single vertical list | `verticalListSortingStrategy` |
 
 `horizontalListSortingStrategy` on a **wrapping** row is the classic mistake: it assumes one row, so dragging to another row makes items overlap instead of reflowing. Use `rectSortingStrategy` for anything that wraps.

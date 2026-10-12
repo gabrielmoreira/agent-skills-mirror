@@ -5,7 +5,7 @@ applicability:
 - Before another agent instance's return is relied on
 ---
 
-Treat every return not yet usable by the coordinator as lost unless the host establishes otherwise; live units can fail together and each increases spend, reset delay, and repeat cost. Therefore one live unit at a time is the default: obtain it immediately before start and close it before obtaining the next. Authority to delegate is not authority for concurrency.
+Plan for every return not yet usable by the coordinator to be lost unless the host establishes otherwise; live units can fail together and each increases spend, reset delay, and repeat cost. Therefore one live unit at a time is the default: obtain it immediately before start and close it before obtaining the next. Authority to delegate is not authority for concurrency.
 
 Before a second live instance, establish all of these: waiting for serial return would harm the outcome; known shared resources cover every unit through usable return plus acceptance, synthesis, and reporting; the requester or standing instructions permit the spend and width; and losing the whole batch is tolerable for the requester. Unknown means unmet; divisibility, open capacity, or easy repetition does not establish these conditions. Use the smallest width that avoids the demonstrated timing harm and never exceed requester, host, or shared-resource limits. If no safe width is established, stay serial or report the timing limit. If a shared brief has not yet produced an accepted return, run its first unit alone so the brief can be corrected before replication unless the same timing harm requires otherwise.
 

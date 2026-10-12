@@ -24,6 +24,22 @@ Tier defaults and resolution rules are documented in
 
 ## Accessibility read budgets
 
+For complete HTML-table JSON, `extract_data({type:"tables", caption:"Exact caption",
+columns:[{name:"ID",index:0,type:"string"}]})` copies the selected cells directly
+from the document. Use `table_index` instead of `caption` when needed;
+`first_data_row` defaults to 1. An optional `row_filter:{column:0,equals:["ID-1"]}`
+selects exact values in document order and refuses missing requested values.
+
+The result contains a small preview and an app-issued `data_ref`. Pass that
+reference to `done({summary:"Table export",data_ref:"..."})` to deliver the full
+`{rowCount,rows}` JSON after a fresh source check. References expire with the
+owning task. String cells retain their literal Unicode and whitespace; numeric
+conversion refuses precision loss. The source scan is limited to 10,000 rows
+and 2,000,000 cell characters; the complete delivered JSON must fit within
+30,000 characters, including JSON escaping. Overlimits fail explicitly before
+issuing a complete data reference. Strict secret handling also checks
+native column headers, so renaming a credential column cannot bypass it.
+
 `get_accessibility_tree` normally uses a 6,000-character structured page inside
 an 8,000-character serialized result. Mid/Full providers with a detected
 context window of at least 65,536 tokens advertise the expanded 12,000 / 16,000
@@ -53,6 +69,7 @@ Legend: **Yes** = available · **-** = not available · **C** = Chrome only ·
 
 | Tool | Ask | Compact | Mid | Full | Dev |
 |------|:---:|:-------:|:---:|:----:|:---:|
+| `calculate` | Yes | Yes | Yes | Yes | - |
 | `get_accessibility_tree` | Yes | Yes | Yes | Yes | - |
 | `read_page` | Yes | Yes | Yes | Yes | - |
 | `read_pdf` | Yes | No | Yes | Yes | - |

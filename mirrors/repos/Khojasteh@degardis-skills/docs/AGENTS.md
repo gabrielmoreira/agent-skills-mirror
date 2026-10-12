@@ -23,7 +23,15 @@ The root `README.md` is the catalog and entry point only: what the collection is
 
 ## Voice
 
-Every reader-facing page reads like a helpful colleague: second person, short plain sentences, one idea per paragraph, contractions where natural, and a reason rather than an order. Assume the reader knows the basics of AI agents and skills but is new to this collection. Safety notices stay direct and unhedged: the install warning, the guidance-is-not-a-guarantee caution, and every instruction to sanitize a report.
+Every reader-facing page reads like a helpful colleague: second person, short plain sentences, one idea per paragraph, contractions where natural, and a reason rather than an order. Assume the reader knows the basics of AI agents and skills but is new to this collection.
+
+Many readers read English as a second language, so write plain English:
+
+- Use common words in their common meaning. Don't carry a skill's own vocabulary onto the page where an everyday word says the same thing: write *true* rather than *holds*, *decide* or *answer* rather than *settle*.
+- Use no idioms, and no phrasal verb where a single plain verb works: *start* rather than *set off*, *update* rather than *bring in line*.
+- Give each sentence about one idea and at most one condition. Split a sentence that needs a colon and a list of clauses, or turn the clauses into a list.
+- Say what happens rather than what doesn't, unless the point is the thing prevented.
+- Keep each table cell to one or two short sentences. Safety notices stay direct and unhedged: the install warning, the guidance-is-not-a-guarantee caution, and every instruction to sanitize a report.
 
 ## A skill README
 

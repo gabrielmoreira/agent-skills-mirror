@@ -756,6 +756,15 @@ path, and canary route rather than as a user-facing release baseline.
   and unavailable Harbor/SForge/PostgreSQL/NoKV environments remain unqualified.
   This release does not claim a paired-version benchmark uplift.
 
+- `v1.3.1` on 2026-10-06 16:10 +08:00: a focused compatibility release at
+  commit `7445ae360aaf330e0067959a5e0084ffd9f76de4`, adapting the renderer to
+  the `linkify-it` 6 named export while preserving user-info URL handling.
+  The [published release](https://github.com/loopx-project/loopx/releases/tag/v1.3.1)
+  records the shipped operating instructions and validation limits. Package,
+  PyPI, desktop assets, signed update feed, `stable` installation and the
+  personal illustrated guide were independently read back. Focused checks
+  passed; full Python/public smoke and paid model matrices were not rerun.
+
 When a new public release is promoted, add it here only after the matching tag,
 release note, stable ref, update path, and focused release canary agree.
 

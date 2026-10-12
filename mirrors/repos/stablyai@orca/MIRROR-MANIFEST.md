@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `stablyai/orca` — 26 default patterns, 2 followed patterns, 16 file(s) materialized.
+Mirror of `stablyai/orca` — 26 default patterns, 3 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `stablyai/orca` — 26 default patterns, 2 followed patterns, 16 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 16 |
+| Followed pats | 3 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `stablyai/orca` — 26 default patterns, 2 followed patterns, 16 file(
 
 - `docs/STYLEGUIDE.md`
 - `.github/pull_request_template.md`
+- `docs/reference/macos-daemon-tcc-attribution.md`
 
 ## File Index
 
@@ -75,7 +76,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`tests/AGENTS.md`](tests/AGENTS.md) |
 | 14 | ✓ | [`tests/e2e/AGENTS.md`](tests/e2e/AGENTS.md) |
 | 15 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 16 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
+| 16 | → | [`docs/reference/macos-daemon-tcc-attribution.md`](docs/reference/macos-daemon-tcc-attribution.md) |
+| 17 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
 
 ---
 

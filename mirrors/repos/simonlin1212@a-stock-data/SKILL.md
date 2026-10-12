@@ -2,16 +2,19 @@
 name: a-stock-data
 description: 当任务需要写代码实际获取A股及相关市场数据时使用——行情/K线/逐笔(腾讯日周月前后复权+分钟线+当日逐笔、通达信官网全市场盘后包、百度)、研报(东财+新浪+同花顺+iwencai)、信号(热点/北向/龙虎榜/解禁/行业/板块资金流)、资金面(融资融券/大宗/股东户数/分红/资金流/ETF份额)、新闻(财联社/东财/华尔街见闻/新闻联播)、财务三表/F10/估值历史/ST名单、公告(巨潮)、打板(涨停池/连板/炸板率/监控池/异动)、ETF期权、舆情互动(互动易/上证e互动/热榜)、筹码分布、复权因子、申万行业变迁、宏观与利率(社融/PMI/中债收益率曲线/回购定盘利率/LPR/全球宏观日历)、指数成分/权重/估值/交易日历、期货与大宗商品(五家期货交易所日行情/商品与股指期权/持仓排名/期货日K含大商所/实时期货/A50/上海金)、事件驱动(业绩预告/机构调研/增减持/回购/股权质押/新股申购)、可转债等真实数据。十五层·87端点(含5备胎)·34个来源·内嵌全部可运行代码，自包含零外部文件；优先用腾讯/交易所官方等不封IP源，东财接口已内置限流防封，主源被封可查「备用源速查」降级。仅在需要调用数据接口取数时使用：A股概念解释、投资观点讨论、策略问答等无需取数的话题不要加载本skill。
 origin: custom
-version: 3.10.1
+version: 3.10.2
 ---
 
 > 📦 项目主页：https://github.com/simonlin1212/a-stock-data — 更新、反馈、支持作者
 > 
 > 作者：Simon 林 · X [@linsizhen](https://x.com/linsizhen) · 邮箱：simonlin0423@gmail.com
 
-# A股全栈数据工具包 V3.10.1
+# A股全栈数据工具包 V3.10.2
 
 十五层数据架构，87 个能力端点（82 主端点 + 5 备胎）、34 个来源。V3.10 新增的 2 个入口于 2026-09-22 实测，V3.9 新增的 25 个入口于 2026-09-20 实测；旧端点的验证日期见各章节。覆盖主板/创业板/科创板/ST，北交所覆盖依端点而异；已有备胎的数据可按「备用源速查」降级。
+
+> **V3.10.2（PE 消化年数修正，2026-10-11 · #58）：** 入口数、来源数不变。`full_valuation()` 的 `digest_years`：
+> 前向 PE 高于 30x 而下一年预测缺失或盈利不增长、或当年 EPS 缺失 / 不为正时，原来返回 `0`（像是已经消化完），现在返回 `None`；其余情况不变。
 
 > **V3.10.1（成交量单位与对账口径更正 · 逐笔提速与盘后核对，2026-10-07 · #57）：** 入口数、来源数不变，返回的数据不变。
 > - §1.2 `tencent_kline()` 的 `volume`：**科创板（688 / 689）是股**，其余是手；此前文档全写成「手」，按此换算科创板会大 100 倍。
@@ -6994,12 +6997,16 @@ def calc_peg(pe: float, cagr: float) -> float:
 
 ### 流程 A: 单票完整估值（30秒）
 
+当年 EPS 为正时，`digest_years` 在 PE 已达到或低于 30x 时为 `0`；PE 高于 30x 且预期增长为正时返回消化年数。
+若当年 EPS 缺失或非正，或 PE 高于 30x 但下一年预测缺失、盈利不增长，无法得出有限消化时间，返回 `None`（JSON 中为 `null`）。
+
 ```python
 import requests
 import urllib.request
 import math
 import pandas as pd
 
+# 依赖：§2.2 ths_eps_forecast()、上方「PE消化时间」的 pe_digestion()，两段要一起复制
 def full_valuation(code: str) -> dict:
     """单票完整估值分析"""
     # 1. 腾讯实时行情
@@ -7045,8 +7052,8 @@ def full_valuation(code: str) -> dict:
     cagr = (eps_next / eps_cur - 1) if (eps_cur and eps_next) else 0
     peg = pe_fwd / (cagr * 100) if cagr > 0 else float("inf")
     digest = (
-        math.log(pe_fwd / 30) / math.log(1 + cagr)
-        if pe_fwd > 30 and cagr > 0 else 0
+        pe_digestion(pe_fwd, cagr)
+        if eps_cur is not None and eps_cur > 0 else float("inf")
     )
 
     return {
@@ -7060,7 +7067,7 @@ def full_valuation(code: str) -> dict:
         "pe_fwd": round(pe_fwd, 1) if eps_cur else None,
         "cagr_pct": round(cagr * 100, 0) if cagr else None,
         "peg": round(peg, 2) if peg != float("inf") else None,
-        "digest_years": round(digest, 1),
+        "digest_years": round(digest, 1) if math.isfinite(digest) else None,
         "analyst_count": analyst_count,
     }
 
@@ -7076,7 +7083,8 @@ stocks = ["688017", "300308", "300476", "002463"]
 for code in stocks:
     try:
         r = full_valuation(code)
-        print(f"{r['name']}({code}): PE_fwd={r['pe_fwd']}x PEG={r['peg']} 消化={r['digest_years']}年 覆盖={r['analyst_count']}家")
+        digest = "无法估算" if r["digest_years"] is None else f"{r['digest_years']}年"
+        print(f"{r['name']}({code}): PE_fwd={r['pe_fwd']}x PEG={r['peg']} 消化={digest} 覆盖={r['analyst_count']}家")
     except Exception as e:
         print(f"{code}: 失败 - {e}")
 ```

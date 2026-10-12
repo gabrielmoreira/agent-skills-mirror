@@ -15,6 +15,9 @@ the fix, and an advisory published before the announcement).
 
 ## Standing rules
 
+- **The minor's parity names the line.** `main` ships `X.EVEN.z`, `rc` ships
+  `X.ODD.z-RC` (1.0.x stable, 1.1.x-RC). Pre-1.0 it was reversed (0.17.x stable,
+  0.18.x-RC). `preflight`, `tag`, and `bump` refuse a version on the wrong line.
 - **No human approval gate.** Draft, dedup, tag, verify, bump, announce. Ask the
   conductor only when a step fails in a way this runbook does not cover, or when
   a decision comes up that nobody has made before. "Are these notes OK?" is not
@@ -117,7 +120,7 @@ Each owner, for their branch only:
 **Stable layout:** `# X.Y.Z Highlights`, three to five highlight paragraphs
 (emoji, bold lead sentence, then the detail), then `## Also in X.Y.Z` bullets.
 
-**RC layout:** `# Major 0.EVEN.x Additions`, a line saying the RC carries
+**RC layout:** `# Major X.ODD.x Additions`, a line saying the RC carries
 everything in the stable release with a link to that release, the rc-only
 headline features, then `## Other Changes in X.Y.Z` bullets.
 

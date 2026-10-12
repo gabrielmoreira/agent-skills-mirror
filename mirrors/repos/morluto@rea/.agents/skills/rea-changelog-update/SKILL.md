@@ -25,6 +25,7 @@ node scripts/release-notes.mjs inventory \
   --manifest /tmp/rea-VERSION.contributions.json
 node scripts/release-notes.mjs record \
   --manifest /tmp/rea-VERSION.contributions.json \
+  --summary \
   --output /tmp/rea-VERSION.record.md
 ```
 
@@ -56,25 +57,31 @@ version/date/link heading. Use single-line Markdown list items under:
   PR/commit references required by the existing checkpoint validator.
 
 Group related work by analyst workflow or user impact. Explain the resulting
-behavior; internal cleanup, tests, CI, and routine documentation generally
-belong only in the contribution record. Read ambiguous PRs/diffs before making
+behavior in short, concrete entries. Highlights summarize the release; avoid
+repeating their full descriptions in Changes. Internal cleanup, tests, CI, and
+routine documentation generally belong only in the provenance file. Read ambiguous PRs/diffs before making
 claims. Distinguish simulated-provider checks from real-provider verification.
 
-Each bullet covering a PR carries its link and `Thanks @...` for its verified
-human author, known co-authors, and confirmed closing-issue reporters. Grouping
-must preserve **all** those credits in the same bullet. Include the issue
-links. Direct-commit bullets carry the commit link and known human credit.
+Credit each represented contribution once in the public notes with its link
+and `Thanks @...` for its verified human author, known co-authors, and confirmed
+closing-issue reporters. Grouping preserves all those credits in one line.
+When Highlights, detailed entries or migrations reference the same work,
+put its thanks in one of those entries, not all of them. Include issue links.
+Direct-commit bullets carry the commit link and known human credit.
 Exclude GitHub bots and known agent accounts. REA's observed Anthropic and
 Cursor co-author trailers resolve to `@claude` and `@cursoragent` with GitHub
 type `User`; the credit policy excludes them while retaining their metadata.
-Do not copy OpenClaw's maintainer-specific exclusions.
+At the REA maintainer's request, omit `@morluto` self-thanks while preserving
+authorship in the inventory. Other human contributors remain eligible.
 Use explicit GitHub links for cross-repository references to avoid ambiguous
 `#NNN` numbers. Unknown handles stay unknown; they are not fabricated credit.
 
-Append the generated `### Complete contribution record` verbatim as the last
-section of this release. It accounts for every discovered in-range PR and
-direct contribution, including internal work omitted from the prose. Do not
-hand-edit generated credits to make validation pass. Refresh the inventory
+Append the generated `record --summary` provenance link verbatim at the end
+of this release. The linked inventory accounts for every discovered in-range
+PR and direct contribution, including internal work omitted from the prose.
+Do not paste the full `record` output into public notes: it duplicates thanks
+and obscures the user-facing changes. Full records remain available for review.
+Do not hand-edit generated credits to make validation pass. Refresh the inventory
 when product history changes; a prose-only correction can reuse the snapshot.
 
 ## Finalize with Release Please

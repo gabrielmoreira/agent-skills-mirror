@@ -45,6 +45,7 @@ python3 "<SKILL_DIR>/scripts/check_update.py" --json
 - **YouTube 等 URL**：先读 [references/yt-dlp-and-transcripts.md](references/yt-dlp-and-transcripts.md)，获取用户有权处理的视频、元数据和辅助时间轴。URL 任务不能在一次公开请求失败后直接退回“只支持本地视频”：若 YouTube 返回机器人登录验证、年龄验证或用户自己的非公开视频限制，先说明原因并取得授权，再按参考文件用 `yt-dlp --cookies-from-browser chrome` 继续。字幕和视频分两条命令下载；下载前用 `yt-dlp -F` 枚举变体并按 AV1 → VP9 → H.264 择优，下载后必须运行 `native_subtitle_stitch.py check-source VIDEO --min-height 720`（解码前 N 秒无错误、分辨率达标）才能继续；视频报 HTTP 403 或自检失败时按参考文件的格式回退表逐级换变体，低于 720p 的级别须先征得用户确认，每次尝试记入 `download-attempts.log`；字幕报 429 时缩减语言并放慢请求，都不要无限重试。
 - **读长视频 → 选题 → 写文章/帖子 → 配图**：读 [references/end-to-end-workflow.md](references/end-to-end-workflow.md)。
 - **台词条太高、间隔太宽、缺少美感**：读 [references/visual-style.md](references/visual-style.md)。
+- **报错、出图异常或结果不对**：先查 [references/troubleshooting.md](references/troubleshooting.md)，按「症状 → 先查什么 → 怎么处理」逐项排查。
 - **本地短视频且时间点已确定**：直接执行下面的核心流程。
 
 ## 环境与路径
@@ -80,6 +81,7 @@ python3 -m pip install -r "<SKILL_DIR>/requirements.txt"
 - 可选 `render-script --six-line-card` 使用 6 个严格递增的时间点：首句画在主画面底部，其余 5 句各占连续字幕条；固定 3:4 布局，1080×1440 时主画面 870px、每条 114px，六句行距一致。原版默认布局不变。
 - 原生模式显式 `--aspect 3:4` 或 `--layout fixed` 时，默认 `--fit crop`：自动识别每句字幕左右边界，对整张拼图统一裁去两侧，最多裁到字幕安全边界，剩余差额留黑边；任一句识别不到字幕边界时不裁切、整图留边。人物偏离中心时用 `--crop-center`（0–1）移动裁切窗口；用户要求不裁画面时用 `--fit pad`。不得单独放大主图来填满。`--hero-fraction` 只调整源主图裁切高度，受真实帧高度限制，不保证占最终含边画布的该比例。脚本模式只有自动布局确实不适用时才传它。
 - 不覆盖已有成品。只有用户明确要替换时才添加 `--overwrite`。
+- 受限环境（沙箱、企业策略）下系统 Temp 不可写时，给 `sample` / `band` / `render` / `render-script` 加 `--tmp-dir <可写目录>`，或设置环境变量 `NSQI_TMP_DIR`（参数优先）；默认仍用系统临时目录。目录不存在或不可写会直接报错，抽帧临时文件用完即删。
 - 批量 `render` 默认遇到失败就中止。需要容错时加 `--keep-going`：单张失败不影响其余，结束时输出失败清单（序号、时间点、原因）并写入 `渲染失败报告.json`，退出码非零且不生成总览图。向用户报告失败清单，修正 manifest 后加 `--resume` 只补渲缺失或损坏的卡；已有效的图即使 manifest 改了也不会重渲（要重渲先删掉对应图），总览图和时间点文件会重新生成。
 - 渲染器遇到重复画面会中止：所有时间点画面几乎相同（疑似静态封面视频或画面冻结），或原生模式相邻字幕条几乎相同。先用 `sample` 核对画面并向用户说明；不要为了出图直接加 `--allow-duplicate-frames`，只有用户确认确实需要时才加。
 - 源视频低清时可输出 1440×1920 版面，但必须说明这不等于真实清晰度提升。
@@ -93,6 +95,7 @@ python3 -m pip install -r "<SKILL_DIR>/requirements.txt"
 - 原生字幕模式保留从画面顶部到 `--band-bottom` 的主图和完整字幕条；不重绘文字。
 - 脚本字幕模式可用 `--frame-top` / `--frame-bottom` 仅裁去不需要的源画面区域，默认保留全帧。先预览边界，不能裁掉人物关键部位；`--band-center` 相对裁切后的画面。
 - `natural` 不与 `--aspect` / `--hero-fraction` 合用；70% 主图验收只适用于脚本固定布局。两种布局都不得非等比拉伸。
+- 选源优先多机位、景别有变化的视频；固定单机位（大师课、网课式录制）是高风险素材，六张主图容易几乎一样。确需使用时可传 `--hero-zoom 1.0,0.9,0.95`（`render` 与 `render-script`）：逗号分隔的每卡主图缩放系数，范围 0.8–1.0，按卡循环，默认不启用且输出不变。它只裁掉更多主图画面再放大，不改字幕条、文字、条间距和 `--six-line-card` 几何；原生模式的裁切窗口不进入字幕条。源清晰度不足时主图会更模糊，不等于真实清晰度提升。`render-script` 只出一张图，取第一个系数。
 
 ```bash
 python3 "<SKILL_DIR>/scripts/native_subtitle_stitch.py" render-script VIDEO \
@@ -126,6 +129,13 @@ python3 "<SKILL_DIR>/scripts/native_subtitle_stitch.py" sample VIDEO \
 ### 2. 选主题与稳定帧
 
 一张图只表达一个连贯观点。候选句需要语义递进，并且每个时间点都能回到视频验证。避免空字幕、同句重复、字幕切换残影、转场、黑帧、广告贴片、播放器 UI 和人物闭眼。
+
+主图（每张图的第一个时间点）由你来选，渲染器不识别人脸、也不自动挑帧，manifest 或 `lines` JSON 写的是哪个时间点就用哪一帧：
+
+- **固定主图时间点**：选定后把时间点直接写进 manifest 或 JSON，渲染前用 `sample -t 时间点 --around 0.8` 回看前后画面，确认主体是说这句话的人、构图完整、没有闭眼或动作模糊。
+- **高风险素材**：两人并排的宽景对谈、主持人与嘉宾同框的节目，主图很容易落在主持人或画面另一侧的人身上。优先找说话人的单人近景；整段都没有时，向用户说明，不要拿错的人凑数。
+- **固定机位素材**：一套图的主图容易几乎一模一样。先用 `sample` 看整段有没有景别或动作变化，尽量为每张图挑不同的画面；源视频只有一个机位时，向用户说明这是素材限制。
+- **第三方水印、台标、角标**：默认保留，不遮盖、不模糊、不涂抹，交给用户决定。用户在意时只能换时间点，或在用户同意后调整裁切位置避开。
 
 ### 多人对话与访谈
 

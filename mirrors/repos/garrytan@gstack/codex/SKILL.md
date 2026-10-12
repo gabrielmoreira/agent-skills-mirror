@@ -598,8 +598,9 @@ above); never read the other two mode sections.
 
 **Reasoning effort override:** If the user's input contains `--xhigh` anywhere,
 note it and remove it from the prompt text before passing to Codex. When `--xhigh`
-is present, use `model_reasoning_effort="xhigh"` for all modes regardless of the
-per-mode default below. Otherwise, use the per-mode defaults:
+is present, prefix the `run-with-timeout` dispatch with `GSTACK_CODEX_EFFORT=xhigh`,
+which outranks `codex_effort` and the per-mode default. Otherwise `--effort` applies
+`GSTACK_CODEX_EFFORT`, then `codex_effort`, then the per-mode defaults:
 - Review (2A): `high` — bounded diff input, needs thoroughness
 - Challenge (2B): `high` — adversarial but bounded by diff
 - Consult (2C): `medium` — large context, interactive, needs speed
@@ -791,6 +792,10 @@ nested skill run.
 - **Review (2A):** `high` — bounded diff input, needs thoroughness but not max tokens
 - **Challenge (2B):** `high` — adversarial but bounded by diff size
 - **Consult (2C):** `medium` — large context (plans, codebase), interactive, needs speed
+
+`run-with-timeout --effort <default>` resolves `GSTACK_CODEX_EFFORT`, then `gstack-config
+set codex_effort <level>`, then the default; an invalid value stops before any Codex call.
+`--user-invoked` runs even with `codex_reviews` disabled: the user asked by name.
 
 `xhigh` uses ~23x more tokens than `high` and causes 50+ minute hangs on large context
 tasks (OpenAI issues #8545, #8402, #6931). Users can override with `--xhigh` flag

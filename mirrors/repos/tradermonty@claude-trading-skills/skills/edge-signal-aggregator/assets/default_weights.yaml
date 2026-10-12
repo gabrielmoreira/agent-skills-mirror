@@ -16,7 +16,7 @@ weights:
 deduplication:
   similarity_threshold: 0.60  # Minimum Jaccard similarity for short titles
   ticker_overlap_threshold: 0.30  # Minimum ticker overlap ratio
-  merge_bonus_per_duplicate: 0.05  # Score boost per merged signal
+  merge_bonus_per_duplicate: 0.05  # DEPRECATED (schema 1.1, Issue #510): ignored, kept for YAML compatibility
 
 # Agreement bonus
 agreement:

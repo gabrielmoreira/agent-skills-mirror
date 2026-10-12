@@ -51,6 +51,23 @@ without this lane reports Windows native controls as unavailable.
   unnamed, non-inherited Job Object. Membership and kill-on-close policy are
   checked before resume. Breakaway is disabled, and cleanup waits for all
   job members and captured output, including detached descendants.
+- A launch may request a Job Object commit limit (`JOB_OBJECT_LIMIT_JOB_MEMORY`)
+  as a positive, page-aligned safe-integer byte count; invalid values fail
+  with `ERROR_INVALID_PARAMETER` before any process is created. Readback must
+  match the requested flags and limit exactly. A private I/O completion port is
+  associated with that job before the child is created; each poll drains it
+  without waiting and records a sticky `memoryLimitReached` when
+  `JOB_OBJECT_MSG_JOB_MEMORY_LIMIT` arrives, alongside the job's
+  `peakJobMemoryBytes`. Notifications are drained before checking for exit
+  and again after exit is observed, so a memory failure between those steps
+  is included in the first exit report. Runtimes report a reached limit
+  differently (Bun 1.4.2 exits 1
+  after a JavaScript out-of-memory exception or 3 after a panic), so callers
+  classify by the notification. `inspect` reports `jobMemoryLimit` only after
+  creating such a job and port. An artifact without that capability refuses a
+  requested limit rather than launching an unlimited process. REA requests
+  limits only for its JavaScript helpers when running on Bun, which ignores
+  their V8 heap flags; Node.js launches are unchanged.
 - Only the suspended child's default file owner is normalized. Caller token
   privileges and ownership remain unchanged. Caller CPU affinity and process
   priority are preserved in the child. Environment names are sorted and
@@ -89,11 +106,41 @@ npm run verify:windows-native
 npm run verify:ghidra:windows
 ```
 
+The native inspection probe retains its directory owner if deletion fails. A
+later availability query retries that cleanup before creating another probe;
+successful admission and static artifact failures remain cached. Environment
+teardown makes one final cleanup attempt and reports a persistent failure to
+stderr rather than claiming the directory was removed.
+
+CI separately builds and verifies a test-only artifact:
+
+```sh
+node scripts/build-windows-native.mjs --inspection-fixture
+```
+
+On Windows, after compiling the runtime:
+
+```powershell
+node scripts/verify-windows-native-inspection.mjs
+```
+
+This artifact injects one access-denied disposition result while using a real
+NTFS directory. The verifier checks retained ownership, recovery on a later
+query, cached successful admission, and cleanup on environment teardown. It
+does not reproduce or identify the host-dependent cause reported in #1701.
+The fixture is stored under `.cache/` and is excluded from the shipped addon.
+
 The native lane checks DACL readback independently, source write/replacement
 rejection, unrelated sibling renames, reparse rejection, immutable snapshots,
 asynchronous cancellation, cleanup containment,
 descendant termination, unrelated-process preservation, normal exit, owner
-close, and forced owner exit. An optional independently built
+close, forced owner exit, and Job Object commit limits: invalid limit
+rejection, a 128 MiB-limited child allocating external Buffer memory that the
+V8 heap flags cannot bound (limit notification, peak commit at the limit, all
+members settled, with the notification present in the first native exit report
+and the wrapper's exit event), and a control under the same limit that
+completes normally.
+An optional independently built
 `tests/fixtures/windows/processBoundary.cc` executable adds breakaway and
 caller/child token observations and an in-place ancestor reparse attempt:
 

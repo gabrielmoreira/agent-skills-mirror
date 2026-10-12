@@ -36,7 +36,26 @@ Setup continues to pin persistent MCP registrations to the exact version that
 performed setup. Running current setup later migrates unversioned or older
 managed registrations through the normal reviewed setup transaction.
 
+With Bun, `bunx rea-agents setup` (or `bunx rea-agents@latest setup`) is the
+equivalent entry point. Setup run through `npx` registers
+`npx -y rea-agents@<version> mcp`; setup run through `bunx` or `bun x` registers
+`bunx rea-agents@<version> mcp`. On Windows, setup wraps either command in
+`cmd.exe /d /c` so clients can start the runner's command shim. Neither
+registration points into the runner's temporary package cache.
+
 REA supports Node.js 22.x (>=22.19), 24.x (>=24.11), and 26+. Node.js 23, 25, and prereleases are unsupported. It uses the npm already paired with that runtime and never upgrades Node.js, npm, or Homebrew.
+
+When REA runs on Bun, the `rea doctor` `node` check reports the Bun version and
+the Node.js compatibility version Bun declares, and passes when that
+compatibility version is in the supported range. Bun does not enforce the V8
+heap flags REA gives its owned helper processes, so Evidence that reports those
+limits on Node.js records them as unavailable under Bun. On Windows, the owned
+Job Object of each JavaScript helper (source analyzer, source-map codec and HAR
+decoder) instead limits its committed memory to that helper's heap budget plus
+a 512 MiB reserve for Bun itself, and Evidence reports that limit. This needs
+the matching bundled Windows native artifact; an artifact without the control
+refuses to start the helper rather than running it unlimited. CI tests Node.js
+only.
 
 Running `npm install rea-agents` without `--global` installs the executable only
 in the current project's `node_modules/.bin`; it does not make `rea` available
@@ -68,23 +87,18 @@ selects the npm release, and persistent MCP registrations are pinned to the
 version that performed setup. Installing newer instructions does not update a
 running server or its registration.
 
-The npm release checked on **2026-10-11** was **6.3.0**, published from
-[`74cf9e14`](https://github.com/morluto/rea/commit/74cf9e1401fcd89482fe39c27cc898f5858e9b72),
-with bundled skill version 34. It does not include automatic Qwen Code, Pi, or
-Hermes registration: `setup --client qwen_code`, `setup --client pi`, and
-`setup --client hermes` reject those IDs before writing configuration. It also
-does not honor `OPENCODE_CONFIG_DIR` when selecting OpenCode's configuration
-directory. These workflows below require a source build or a later release
-containing the relevant changes; `@latest` alone cannot select unpublished
-changes.
-
-The earlier release checked on **2026-10-07** was **5.0.0** (133 MCP tools), published
-from the fixed checkpoint
-[`b33236ec`](https://github.com/morluto/rea/releases/tag/rea-agents-5.0.0).
-The public CLI, MCP catalog and target-free session, and isolated update from
-4.1.0 to 5.0.0 were verified through npm. The artifact includes Windows native
-controls, Android/JADX and firmware tools, Ghidra function annotations, and
-retained application-Evidence references.
+The npm release checked on **2026-10-11** was **6.4.0**, published from
+[`a56f7bb6`](https://github.com/morluto/rea/commit/a56f7bb668ab23fec8d33f7af353ac7ed2fe1895).
+The actual registry package accepted dry-run setup plans for the 17 client IDs
+in that release, including Qwen Code, Pi and Hermes. DeepSeek Harness (`dsh`)
+is on main and is not in npm 6.4.0; `rea setup --client dsh` against `@latest`
+reports an unsupported client until a release containing it is published.
+OpenCode's plan selected
+`OPENCODE_CONFIG_DIR` even when that directory did not yet exist. These checks
+used an isolated home on macOS with Node 24; they verify planning and argument
+admission, without writing client configuration or establishing live integration
+with every client. This resolves the npm 6.3.0 setup gaps tracked in
+[#1650](https://github.com/morluto/rea/issues/1650).
 
 Main's catalog describes the current code. A source build or a subsequent
 release containing changes after this checkpoint is required for newer
@@ -151,6 +165,10 @@ listed after the table because its connector is not one of these files:
 | OMP                | `omp`            |
 | Pi                 | `pi`             |
 | Hermes             | `hermes`         |
+| DeepSeek Harness   | `dsh`            |
+
+`dsh` is main-only until a release after 6.4.0. The registry check above does
+not cover it.
 
 For GitHub Copilot CLI 1.0.95, `gpt-4.1` model metadata can block ordinary
 chat with REA's full input-schema profile before sending a model request
@@ -172,9 +190,6 @@ schema constraints; REA still validates complete canonical inputs. Full-profile
 Windows remain unverified; see [native client verification](testing.md).
 
 For [Pi](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/mcp.md),
-automatic setup requires a build containing the integration; npm 6.3.0 does not
-include it. See [released package and main](#released-package-and-main).
-In a supported build,
 setup writes a `type: "stdio"` entry under `mcpServers.rea` in the user-level
 `~/.pi/agent/mcp.json` and installs the bundled skill under `~/.agents/skills`.
 Use `rea setup --client pi --dry-run --json` to inspect the plan, then
@@ -201,10 +216,7 @@ but unavailable in a project. An extension that registers `/mcp` can replace
 Pi's built-in MCP support and use its own configuration instead. Run `/reload`
 in an existing Pi session after changing servers outside the session.
 
-For Qwen Code, automatic setup requires a build containing the integration;
-npm 6.3.0 does not include it. See
-[released package and main](#released-package-and-main). In a supported build,
-setup registers `rea` in the `mcpServers` table of the
+For Qwen Code, setup registers `rea` in the `mcpServers` table of the
 user-level `~/.qwen/settings.json`, or `$QWEN_HOME/settings.json` when configured.
 Setup and doctor follow Qwen Code's tilde and working-directory-relative home
 overrides. Qwen Code also discovers personal skills in `~/.agents/skills`,
@@ -236,10 +248,7 @@ registration. Doctor treats an `enabled: false` entry as active when
 `enabledServers` lists `rea`, as OMP does, unless `disabledServers` also lists
 it. Run setup under each profile that should load REA.
 
-For Hermes, automatic setup also requires a build containing the integration;
-npm 6.3.0 does not include it. See
-[released package and main](#released-package-and-main).
-In a supported build, setup writes a `mcp_servers.rea` entry to `config.yaml`, preserving
+For Hermes, setup writes a `mcp_servers.rea` entry to `config.yaml`, preserving
 comments and unrelated settings. It resolves that file from `HERMES_HOME`, else
 from the platform default Hermes itself uses — `%LOCALAPPDATA%\hermes` on
 Windows, `~/.hermes` elsewhere — including any `HERMES_DATA_DIR_SUFFIX`. Hermes
@@ -257,11 +266,15 @@ configuration and skill destinations; doctor and uninstall use those same paths.
 
 ### DeepSeek Harness
 
-DeepSeek Harness uses a Cordis YAML patch sequence rather than a `mcpServers`
-object. REA's `setup --client` does not edit this format. For Harness
-`0.2.0-rc.2`, append the following entry to `$DSH_HOME/cordis.patch.yml`
-(`~/.dsh/cordis.patch.yml` when `DSH_HOME` is unset). Preserve existing patches
-and replace the executable paths with absolute paths from your installation:
+DeepSeek Harness registers MCP clients through a Cordis YAML patch sequence
+rather than a `mcpServers` object. `rea setup --client dsh` appends (or
+replaces) the REA entry in the home patch `$DSH_HOME/cordis.patch.yml`
+(`~/.dsh/cordis.patch.yml` when `DSH_HOME` is unset), preserving unrelated
+patches and comments. `rea doctor --client dsh` checks that same entry id.
+`rea uninstall` removes it by scanning supported clients; uninstall takes no
+`--client` flag. The home patch applies to every Harness profile, so the
+registration is written once and no per-profile edit is needed. The written
+entry is:
 
 ```yaml
 - insert:
@@ -272,17 +285,20 @@ and replace the executable paths with absolute paths from your installation:
         transport: stdio
         command: /absolute/path/to/node
         args: ["/absolute/path/to/rea/scripts/rea.mjs", mcp]
-        cwd: !!js process.cwd()
 ```
 
+Setup preserves caller-owned Cordis expressions and replaces launcher fields
+with literal values that doctor can verify. It refuses to edit an expression
+that produces the entire REA config, or a group-targeted REA insertion. Use a
+literal config and a root-level insertion as shown above.
+
 For a global npm installation, the launcher is under
-`$(npm root -g)/rea-agents/scripts/rea.mjs`. Check the Node executable with
-`command -v node`. Register `serverName: rea` only once in each active profile,
-then restart Harness. It exposes tools as `mcp__rea__<tool_name>`.
-Run `rea setup --skill --dry-run`, review the destination, then
-`rea setup --skill --yes` to install the workflow in `~/.agents/skills`.
-Harness discovers that directory, or `$DSH_AGENTS_HOME/skills` when configured;
-its native `skill` tool can load `reverse-engineer-anything`.
+`$(npm root -g)/rea-agents/scripts/rea.mjs`. Restart Harness after setup; it
+exposes tools as `mcp__rea__<tool_name>`. Run `rea setup --skill --dry-run`,
+review the destination, then `rea setup --skill --yes` to install the workflow
+in `~/.agents/skills` (`$DSH_AGENTS_HOME/skills` when configured); Harness
+discovers that directory, and its native `skill` tool can load
+`reverse-engineer-anything`.
 
 REA's optional [native client verification](testing.md#end-to-end-integration-and-golden-evidence)
 checks headless chat, skill loading, all tool input schemas and actual analysis
@@ -293,10 +309,7 @@ for its native configuration contract.
 
 ### Other client settings
 
-For OpenCode, npm 6.3.0 does not honor `OPENCODE_CONFIG_DIR`; use a source build
-or a later release containing the override support when selecting a custom
-configuration directory. See [released package and main](#released-package-and-main).
-In a supported build, setup writes the V1 `mcp.rea` entry, which OpenCode V1 and V2
+For OpenCode, setup writes the V1 `mcp.rea` entry, which OpenCode V1 and V2
 both load. If the configuration already uses OpenCode V2's native
 `mcp.servers` table, setup registers REA there instead and replaces any earlier
 `mcp.rea` entry from REA. Setup honors `OPENCODE_CONFIG_DIR` and
@@ -352,6 +365,12 @@ under its selected home; Antigravity 2.0 uses `~/.gemini/config/skills`.
 Other integrations, including Qwen Code, use `~/.agents/skills`.
 A mixed selection plans each distinct destination. Selecting the skill without a client uses the shared
 directory. Setup leaves existing skill copies in other locations untouched.
+
+`rea setup --skill-client claude_code --yes --json` refreshes and verifies the
+selected skill destination independently of MCP registration selection. The
+final `doctor.scope.skill_clients` records which skill destinations were
+checked; `doctor.scope.clients` continues to describe required registrations.
+An unselected shared skill does not affect a client-only refresh.
 
 `doctor --skill --json` verifies the selected copies against the bundled
 instructions and references. Consumers should use `identity.skill.state`,
@@ -420,9 +439,21 @@ rea setup --yes --all-detected --install-hopper --json
 Setup pins package-runner MCP registrations to the exact installed REA version,
 installs the matching skill and on-demand references in the same plan, and adds
 `startup_timeout_sec = 30` for Codex and Grok Build. `rea update` installs the exact resolved
-release into the npm prefix that owns the running package, then checks the new
-executable's version before reporting success. It does not reopen onboarding.
-Release lookup and installation both use npm's configured registry.
+release into the npm prefix or Bun global directory that owns the running
+package, then checks the new executable's version before reporting success. It
+does not reopen onboarding. For npm installations, release lookup and
+installation both use npm's configured registry. Bun global updates require
+Bun 1.2.17 or later, which introduced `bun info`. The updater checks `bun --version`
+first and stops with an instruction to upgrade Bun manually if the version is
+older or cannot be parsed; it does not upgrade Bun itself.
+For supported Bun global installations, `bun info` and
+`bun add --global --ignore-scripts` use Bun's configured registry
+and run inside the owning Bun global directory (`BUN_INSTALL_GLOBAL_DIR`, else
+`$BUN_INSTALL/install/global`, else `$XDG_CACHE_HOME/.bun/install/global`,
+else `~/.bun/install/global`), never in the caller's current project. A Bun
+global directory without its `package.json` is not treated as an owned
+installation, because Bun would install into the nearest ancestor project
+instead.
 Its maintenance plan selects only existing REA registrations and an already
 installed REA skill. Run the returned scoped setup command to review and approve
 those changes, then restart affected agents. The plan is returned in terminal,
@@ -520,6 +551,25 @@ export HOPPER_LAUNCHER_PATH=/absolute/path/to/Hopper
 rea doctor --provider hopper --json
 ```
 
+Hopper startup allows 120,000 ms for launch, initial analysis, and authenticated
+bridge readiness. For large targets, set `REA_HOPPER_STARTUP_TIMEOUT_MS` to a
+decimal integer from 1 to 2,147,483,647 milliseconds in the environment that
+starts REA. CLI and MCP use the same setting; invalid values fail configuration
+validation. An MCP client's own request timeout must also allow enough time.
+
+If macOS denies Apple Events, allow the application that starts REA under
+**System Settings → Privacy & Security → Automation**, then retry. REA releases
+the target reservation when the native helper reports its complete authorization
+rejection and its arguments cannot alter the helper's generated AppleScript.
+Arguments containing quotes, backslashes, or line breaks remain unchanged but
+cannot establish that a failed handoff opened no document. Other failed handoffs
+retain ownership until document closure is confirmed. If a timed-out bridge
+becomes ready later, `close_binary` connects to that run, authenticates its
+identity, and requests document shutdown. After a connection drops, the bridge
+allows 30 seconds for an authenticated cleanup reconnect, then releases Hopper's
+Python execution thread. Expiry does not establish document closure, so REA
+retains unconfirmed ownership. Retry close while the bridge remains available.
+
 If a Linux launcher exists but cannot start, inspect its shared libraries:
 
 ```bash
@@ -531,8 +581,13 @@ need Xvfb, Python 3, X11 and XTEST; approved setup installs those dependencies
 on supported distributions. Add the curl installer's reported executable
 directory, commonly `~/.local/bin`, to your shell `PATH` if needed.
 
-REA starts Hopper when needed. On macOS, its launcher can bring a window or
-first-run dialog forward; choose demo mode or activate your existing license.
+REA starts Hopper when needed. On macOS, complete its demo or license prompt in
+the same user session before the first CLI/MCP operation or unattended job. Open
+Hopper manually if needed; its launcher can also bring the dialog forward.
+If startup reports `Cannot launch Hopper! Connection is invalid.` or waits for
+bridge readiness, check Hopper for a pending demo, license, or loader dialog.
+Complete the dialog and retry. If REA reports `cleanup_incomplete`, follow the
+retained-resource guidance below before reopening the target.
 Hopper serializes analysis requests. Cancelling a wait can leave provider work
 running, which the session reports. Successful decompilation is cached until
 a relevant rename or comment changes it.
@@ -561,6 +616,11 @@ if document closure is unconfirmed, REA retains the backing image and reports
 MCP-exit behavior.
 Startup deadlines report missing bridge readiness and preserve the launcher
 outcome; a successful helper exit does not prove that a loader dialog completed.
+If an owned provider process exits, request failures preserve its observed exit
+code or signal and bounded output in `details.launcher`. An exit can precede
+output-stream closure; `output_closed: false` keeps that uncertainty explicit.
+Later requests retain the known exit instead of reducing it to socket loss.
+An external GUI's helper exit does not establish that the GUI itself exited.
 Cursor navigation returns the observed object start when Hopper snaps an interior
 address; adjacent-object navigation rejects unmapped inputs and document ends.
 Native API text rejects NUL characters and unpaired Unicode surrogates before
@@ -677,7 +737,7 @@ rea providers --json
 
 `rea setup` can configure supported Windows agents and install the bundled
 REA skill after approval. Direct registrations use Node to launch REA's entry
-script; package-runner registrations use the pinned `npx` command. Hopper
+script; package-runner registrations use the pinned `npx` or `bunx` command. Hopper
 installation remains unavailable on Windows. Setup never installs Ghidra,
 Java, or Python. It preserves valid detected Ghidra/JDK settings in agent
 registrations. See [Windows Ghidra P0](windows-ghidra-p0.md) for provider diagnostics.
@@ -733,6 +793,32 @@ is no fixed per-operation or response-size ceiling. Unresolved computed calls
 remain unknown, reference-kind provenance is preserved, and provider-specific
 pseudocode is never treated as original source or Hopper-equivalent text.
 
+### Missing macOS native decompiler
+
+If `rea doctor --json` reports `native_decompiler` as missing on macOS x64,
+the extracted Ghidra archive may include the decompiler source without the
+macOS executable. For Ghidra 12.1.4, you can build it manually with an existing
+Xcode Command Line Tools installation, `make`, and `bison`:
+
+```bash
+cd "$GHIDRA_INSTALL_DIR/Ghidra/Features/Decompiler/src/decompile/cpp"
+make ghidra_opt
+decompiler_dir="$GHIDRA_INSTALL_DIR/Ghidra/Features/Decompiler/os/mac_x86_64"
+mkdir -p "$decompiler_dir"
+test ! -e "$decompiler_dir/decompile" && test ! -L "$decompiler_dir/decompile" &&
+  install -m 755 ghidra_opt "$decompiler_dir/decompile"
+rea doctor --json
+```
+
+The copy step requires the destination to be absent and preserves an existing
+decompiler. This recipe is specific to macOS x64: the
+[Ghidra 12.1.4 Makefile](https://github.com/NationalSecurityAgency/ghidra/blob/Ghidra_12.1.4_build/Ghidra/Features/Decompiler/src/decompile/cpp/Makefile)
+explicitly selects `-arch x86_64` on Darwin. For other architectures or a Gradle
+build, follow the matching release's
+[native component instructions](https://github.com/NationalSecurityAgency/ghidra/blob/Ghidra_12.1.4_build/GhidraDocs/GettingStarted.md#building-native-components).
+REA accepts the matching executable under either `os/<platform>/` or
+`build/os/<platform>/`; it does not build the component during setup or diagnosis.
+
 ### Ghidra import language and analysis seeds
 
 Ghidra detects the language from the executable header. To set it (for example, Borland C++ PE images):
@@ -753,6 +839,27 @@ export REA_GHIDRA_SEED_FILE=/absolute/path/to/seeds.tsv
 Each line is `address<TAB>kind[<TAB>name]`, where kind is `function`, `code` or `label` (a label needs a name). Addresses are `0x` hex in the default space; `#` lines are comments. A pre-script applies seeds before auto-analysis: functions from the highest address down, then code, then labels. The seed digest is part of the analysis profile, and the session fails if the applied seeds differ. Result limitations report the outcome counts; a seed fails when it overlaps an instruction Ghidra already decoded.
 
 Label seeds can name mapped uninitialized storage such as `.bss`; function and code seeds require initialized bytes.
+
+To skip a named Ghidra auto-analyzer (for example, when default auto-analysis
+stalls in one analyzer on a Swift/Objective-C arm64 Mach-O):
+
+```bash
+export REA_GHIDRA_DISABLED_ANALYZERS="Objective-C Message Analyzer"
+```
+
+The value is a comma-separated list of exact Ghidra analyzer names. A pre-script
+disables each name before auto-analysis, the analysis profile records the
+override in `analyzer_preset` (for example
+`ghidra-default+disabled:Objective-C Message Analyzer`), and a session fails to
+open when its committed profile and the setting differ. A name starts with a
+letter or digit and contains only letters, digits, spaces, periods, underscores,
+and hyphens; at most 32 names are admitted, each at most 120 characters.
+Names must identify analyzers registered for the selected program. Unknown names
+or options that remain enabled abort the headless import before auto-analysis
+and the bridge, so an unsuccessful override cannot produce a session claiming
+that the analyzer was disabled. For Windows PE resource analysis, the exact name
+is `WindowsResourceReference`. Disabling an analyzer skips the facts it would
+have produced.
 
 ### Ghidra heap and CPU controls
 
@@ -815,8 +922,12 @@ verification workflows.
 
 Unexpected request failures retain their original internal cause. CLI and MCP
 errors expose Error names, messages, and available codes under
-`details.diagnostics.failure_cause`; other rejection values retain their
-primitive value or an explicit type. Shutdown warnings include the failure
+`details.diagnostics.failure_cause`, including bounded nested causes and explicit
+truncation markers. Darwin ownership-helper compilation failures also retain
+the compiler outcome, exit code or signal, and bounded stderr; a timed-out
+compiler remains distinguishable from a compiler that exited with an error.
+Other rejection values retain their primitive value or an explicit type.
+Shutdown warnings include the failure
 kind, message, and diagnostics, while process and temporary-project cleanup
 continues. These messages redact known bridge authentication tokens and
 preserve local paths and other analysis context.
@@ -844,7 +955,7 @@ Ghidra/JDK installation; neither is inferred from startup alone.
 
 ## Diagnose, update, and remove
 
-`rea doctor --json` is strictly read-only. `rea update` updates only the npm installation that owns the running CLI. Source checkouts and package-runner copies must be updated through the mechanism that owns them; a fresh package-runner invocation can use `npx rea-agents@latest`. `rea uninstall` removes only REA-owned agent registrations and skill files; `--purge-data` additionally removes REA cache and state paths.
+`rea doctor --json` is strictly read-only. `rea update` updates only the npm or Bun global installation that owns the running CLI. Source checkouts and package-runner copies must be updated through the mechanism that owns them; a fresh package-runner invocation can use `npx rea-agents@latest` or `bunx rea-agents@latest`. `rea uninstall` removes only REA-owned agent registrations and skill files; `--purge-data` additionally removes REA cache and state paths.
 
 ```bash
 rea update
@@ -880,7 +991,7 @@ For a client that requires manual configuration, use:
   "mcpServers": {
     "rea": {
       "command": "npx",
-      "args": ["-y", "rea-agents@6.3.0", "mcp"]
+      "args": ["-y", "rea-agents@6.4.0", "mcp"]
     }
   }
 }
@@ -889,6 +1000,7 @@ For a client that requires manual configuration, use:
 <!-- x-release-please-end -->
 
 Persistent registrations should use one exact package version. `rea setup`
-writes the same package-runner shape and pins it to the exact version that
-performed setup. Run current setup to refresh an older registration, then
-restart the client.
+writes the same package-runner shape, or `bunx rea-agents@<version> mcp` when
+setup runs through `bunx`, and pins it to the exact version that performed
+setup. Run current setup to refresh an older registration, then restart the
+client.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Non-WSQ Lab Author"
+  short_description: "Write connected hands-on lab guides"
+  default_prompt: "Use $non-wsq-lab-author to create detailed labs for this non-WSQ course."

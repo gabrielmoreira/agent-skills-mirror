@@ -33,10 +33,6 @@ still exclude workflow, item, and step titles, raw or source URLs, queries, raw
 failure keys and payloads, internal opaque keys, credentials, tokens, private
 or non-allowlisted repositories, and per-job diagnostic text.
 
-For the end-to-end relationship between GitHub Actions workers, durable jobs,
-CrabFleet action sessions, Codex steering, completion reasons, and dashboard
-rows, see
-[`steerable-repair-automation.md`](steerable-repair-automation.md).
 
 Queue transport failures keep the fixed public `exact_review_queue_unavailable`
 response. Server logs for `exact_review_queue_request_failed` retain only the
@@ -157,14 +153,52 @@ is absent or a cache event lands in another Cloudflare colo.
 
 ### Workflow health source
 
-The deployment sets `CLAWSWEEPER_DASHBOARD_WORKFLOW_SOURCE=poll` to collect
-workflow health through the existing bounded GitHub run/job polls. It skips
-workflow read-model reads, repairs, and missing-subscription warnings even when
-the shared webhook signing secret is configured. Unset or `webhook` retains
-the existing webhook-first behavior. Snapshot and job-cache TTLs, pagination,
-freshness, genuine GitHub errors, and the public Bay contract are unchanged.
-Changing source does not flush persisted snapshots; normal expiry refreshes
-them. Concurrent refreshes with different resolved sources do not coalesce.
+Workflow health uses bounded GitHub run/job polling exclusively. The retired
+workflow-source setting is no longer read. Workflow read-model reads, repairs,
+and missing-subscription warnings are not part of dashboard health, even when
+the shared webhook signing secret is configured. Snapshot and job-cache TTLs,
+pagination, freshness, genuine GitHub errors, and the public Bay contract are
+unchanged.
+
+
+## Operator dashboard pages
+
+The operator dashboard (Overview, Throughput, Quality, Queue, Coverage,
+Repositories) is a static Astro site in `dashboard-site/`. The `Dashboard site`
+workflow (`.github/workflows/dashboard-site.yml`) rebuilds it every 15 minutes
+and publishes it to the Cloudflare Pages project `clawsweeper-dashboard`
+(`https://clawsweeper-dashboard.pages.dev`). A data refresh never redeploys
+this Worker, so webhooks, the queue Durable Object and `/api/*` are not
+restarted by it.
+
+Each build reads three sources:
+
+- the corpus aggregate (totals, decisions, quality, closes, per-repository
+  counts), cached in the workflow state. It is rebuilt only when the workflow is
+  started by hand with `refresh_corpus`: that run hydrates every canonical
+  record read-only with `scripts/hydrate-state.ts`, reads front matter only and
+  keeps repositories that GitHub reports as public. The cache keeps each
+  repository's contribution apart, so every build checks visibility again,
+  drops a repository that is no longer public and recomputes every total
+  without it; a failed check fails the build, so nothing is published. A close counts as a
+  ClawSweeper close only when the record has a close decision and no GitHub
+  close time (`current_item_closed_at`), which apply writes only when it
+  archives an item that someone else closed. The record export runs
+  inside the exact-review queue Durable Object and slows reviews while it runs
+  (a full export on 2026-10-12 failed 26 review runs in 14 minutes), so run it at
+  a quiet hour. Until the first such run, scheduled builds skip with a notice;
+- the public `/api/exact-review-queue` and `/api/review-coverage` responses;
+- GitHub Actions run history for this repository, kept as per-hour buckets in
+  the workflow cache. Each run rereads from three hours before its last
+  refresh, so a late or failed build leaves no gap; a missing cache
+  bootstraps two days with the ClawSweeper app token, and the window then
+  grows to 30 days.
+
+The site shows no report bodies, author identities or free-text concerns.
+Local preview: in `dashboard-site/`, install dependencies, run
+`dashboard-site/scripts/build-data.ts` with `GITHUB_TOKEN`, `--records <records dir>` and
+`--state <state dir>`, then start the Astro dev server.
+
 
 ## What It Shows
 
@@ -179,8 +213,8 @@ them. Concurrent refreshes with different resolved sources do not coalesce.
   validated queue-start or public action-start clock with its closed kind
 - durable lifecycle inventory and six closed lane counts plus at most 24
   minimal cards for verified-public repository/item references
-- a budget-sized capacity rail plus aggregate counts for issue-to-PR, PR repair,
-  review, repair, commit, assist, and other worker classes
+- a budget-sized capacity rail plus aggregate counts for review, commit, assist,
+  and other worker classes
 - queued and waiting run counts
 - operational health derived from queue age and running age: queued runs from
   30 through 1440 minutes old degrade operational health; queued runs older
@@ -191,14 +225,9 @@ them. Concurrent refreshes with different resolved sources do not coalesce.
   depth, and the oldest queued/running ages
 - aggregate worker-attempt error, recovery, and unresolved-failure counts,
   including failures hidden by workflow `continue-on-error`
-- automerge worker reliability from the dedicated repair workflow, including
-  sampled failure rate, average and longest runtime, active or stalled attempts,
-  and bounded unresolved or recovered outcome counts
-- active pipeline rows grouped as automerge, repair, exact review, hot review,
-  apply, or background review
+- active pipeline rows grouped as exact review, hot review, apply, or background
+  review
 - CI state for active PR rows when available
-- global automerge command-to-merge timing buckets and closed terminal outcomes;
-  repository, policy, and session rows are not public
 - explicit workflow status events posted to the ingest API when KV ingest is
   enabled
 - global apply-lane queue, result, lease, and closed failure-category counts;
@@ -264,9 +293,6 @@ every cache/store read. Legacy cache bodies are reprojected, nested or unexpecte
 fields are dropped, and stale, future-dated, or malformed store documents are
 rejected. Diagnostics retain a bounded error count and the fixed
 `telemetry_unavailable` category, never upstream exception or API error text.
-Recent automerge timing and completed-run samples may still be collected
-privately for five minutes, but only their closed aggregate projections enter
-the public response.
 
 ## Public projection contract
 
@@ -279,8 +305,6 @@ Run-level observer writes validate and retain the first terminal tuple per run
 attempt without reading queue items or rescheduling work. Their existing 30-day
 retention cleanup runs on telemetry writes and queue status computation; actual
 queue and auxiliary work retain ownership of alarm scheduling.
-The [controlled local proof](../scripts/proof-review-run-telemetry.mjs) exercises
-the signed HTTP route and file-backed SQLite after `pnpm run build:node`.
 
 - `/api/review-observability` returns the four closed review lanes and global
   health, completeness, run counts, item counts, and timestamps for a normalized
@@ -290,10 +314,6 @@ the signed HTTP route and file-backed SQLite after `pnpm run build:node`.
 - `/api/apply-observability` returns global queue, result, retry, lease, and
   closed failure-category counts for a normalized range. It omits repository
   inventories, run links, and failure messages.
-- `/api/automerge-metrics` returns global summaries, time buckets, closed
-  terminal-outcome counts, and repair-efficiency counts. It omits repository
-  and policy filters and every session row; unrecognized terminal outcomes are
-  combined into `unknown`.
 - `/api/exact-review-queue/item` does not perform a public per-item lookup, and
   `/api/exact-review-queue/reviews` returns a stable empty aggregate envelope.
 

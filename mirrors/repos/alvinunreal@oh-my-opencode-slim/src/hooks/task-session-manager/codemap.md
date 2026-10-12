@@ -9,6 +9,9 @@ Manages V2 background job-board state for task execution and injected completion
 The directory follows a **Facade + Strategy** pattern where `index.ts` acts as the facade that composes and orchestrates behavior across specialized strategy modules:
 
 - **index.ts**: Main facade that wires hooks into OpenCode's lifecycle and coordinates between the job board, pending calls, task context tracking, and explicit user waits. Implements the plugin hook interface (`tool.execute.before`, `tool.execute.after`, `experimental.chat.messages.transform`, `event`) and exposes `beginUserWait()` to the `wait_for_user` tool.
+  Historical-task recovery and injected completions admit already-managed parents
+  regardless of agent name; stale Orchestrator mapping repair stays specific to
+  Orchestrator turns and does not promote unmanaged Build/custom parents.
 - **revived-run-tracker.ts**: Logs terminal notification transport acceptance and failure with the captured transport-attempt number (including late acceptance after a timeout), lease deferral, and once-only ownership release to the fallback publication wake.
 - **../../utils/background-job-terminal-gate.ts**: Shared execution/observation gate for every terminal publication. Runtime quiescence and attributable result evidence authorize one board commit; busy withdraws terminal publications. Grace, bounded retries and single-open reads are shared across adapters.
 - **input-wait-tracker.ts**: Provides the single `hasInputWait()` seam used by idle reconciliation and continuation evaluation. It combines local question/permission waits with the process-global explicit user-wait latch.
@@ -68,7 +71,7 @@ All modules depend on `BackgroundJobBoard` from `src/utils/background-job-board.
    - Prunes stale context during lifecycle events and status transitions
 
 4. **Message Injection (`experimental.chat.messages.transform`)**
-    - Injects a `<system-reminder>` part containing the `### Background Job Board` section into user messages for managed sessions
+    - Injects a `<system-reminder>` part containing the `### Background Job Board` section into user messages for managed sessions, including Build/custom primary parents; latest and checkpoint modes gate by managed-session ownership rather than the parent agent name
     - Lists active, unreconciled, and reusable sessions
     - Remembers injected terminal jobs to reconcile them on the next request after the completion was surfaced to the model (via `reconcileConsumedTerminalJobs`)
     - The idle timer remains a backstop for when the model ends its turn without further requests; after reconciling injected terminal results, the opt-in continuation evaluator can run in the same idle cycle under its existing guards

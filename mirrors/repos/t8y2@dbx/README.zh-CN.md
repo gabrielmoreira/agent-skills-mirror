@@ -146,6 +146,29 @@
       <a href="https://www.ucloud.cn/site/active/kuaijiesale.html?ytag=geo_waituo_github_dbx" target="_blank">访问 UCloud 优刻得</a>
     </td>
   </tr>
+
+  <tr>
+    <td align="center" valign="middle" width="200">
+      <a href="https://www.packyapi.ai/register?aff=wyDA" target="_blank">
+        <img src="docs/public/sponsors/packyapi-card.png" alt="PackyCode" width="175" />
+      </a>
+    </td>
+    <td>
+      PackyCode 是一家稳定、高效的 API 中转服务商，一句话接入主流大模型。统一域名、统一密钥、智能容灾切换，97% 可用性；人民币 1:1 充值，无汇率无手续费坑，新用户首充立享折扣 + $1 免费体验额度，多分组折扣低至 2 折起，并提供专属 Codex/Claude Code 高速通道。
+      <a href="https://www.packyapi.ai/register?aff=wyDA" target="_blank">访问 PackyCode</a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" valign="middle" width="200">
+      <a href="https://mate.vip/ee/" target="_blank">
+        <img src="docs/public/sponsors/taiyi-card.png" alt="太一企业版" width="175" />
+      </a>
+    </td>
+    <td>
+      太一智能体企业版是面向央国企的私有化智能体平台，采用“1+N+N”架构：1 个平台、N 个终端、N 个场景。<strong>可信</strong>：Java 微服务架构，私有化部署，全程留痕可审计。<strong>可控</strong>：关键操作人工审批，资料按密级管理。<strong>可达</strong>：按单位模板直接生成公文、台账和汇报材料。<strong>可复制</strong>：场景方案包化交付，便于推广和二次开发。欢迎预约演示，或在 GitHub 搜索 MateClaw。
+      <a href="https://mate.vip/ee/" target="_blank">访问太一企业版</a>
+    </td>
+  </tr>
   <tr>
     <td align="center" valign="middle" width="200">
       <a href="https://www.trustasia.com/ssl/trustasia/code-signing" target="_blank">

@@ -78,6 +78,31 @@ def test_export_gap_candidate_with_override_id(tmp_path: Path) -> None:
     assert "gap_up_detection" in loaded_spec
 
 
+def test_export_panic_reversal_candidate_emits_dispatch_block(tmp_path: Path) -> None:
+    ticket_path = tmp_path / "ticket.yaml"
+    write_ticket(
+        ticket_path,
+        {
+            "id": "edge_panic_reversal_v1",
+            "hypothesis_type": "panic_reversal",
+            "entry_family": "panic_reversal",
+            "exit": {"stop_loss_pct": 0.049, "take_profit_rr": 2.3},
+        },
+    )
+
+    spec, _, candidate_dir = export_candidate(
+        ticket_path=ticket_path,
+        strategies_dir=tmp_path / "strategies",
+    )
+
+    loaded_spec = read_yaml(candidate_dir / "strategy.yaml")
+    assert loaded_spec["signals"]["entry"]["type"] == "panic_reversal"
+    block = loaded_spec["panic_reversal"]
+    assert block["stop_loss_pct"] == 0.049
+    assert block["take_profit_rr"] == 2.3
+    assert validate_interface_contract(loaded_spec, candidate_id=spec["id"], stage="phase1") == []
+
+
 def test_export_rejects_unsupported_entry_family(tmp_path: Path) -> None:
     ticket_path = tmp_path / "ticket.yaml"
     write_ticket(

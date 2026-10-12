@@ -351,3 +351,5 @@ integration is documented in [`HERDR_API.md`](./HERDR_API.md).
 - Contribution guidelines: [`CONTRIBUTING.md`](./CONTRIBUTING.md)
 - Names, logo and forks: [`TRADEMARKS.md`](./TRADEMARKS.md)
 - Release history: [`CHANGELOG.md`](./CHANGELOG.md)
+- Third-party code: the Whistle speech engine, `needle` by Cactus Compute (Apache-2.0), is vendored in
+  [`web/public/stt/`](./web/public/stt/needle-3-93e88ede/LICENSE)

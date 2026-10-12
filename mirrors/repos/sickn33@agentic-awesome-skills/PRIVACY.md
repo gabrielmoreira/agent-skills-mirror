@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Last updated: August 7, 2026
+Last updated: October 11, 2026
 
 This policy applies to the Agentic Awesome Skills (AAS) open-source repository, its packaged skills and plugins, and the companion catalog at <https://aaskills.tech/>.
 
@@ -14,18 +14,24 @@ Do not place secrets or personal data in prompts, examples, issue reports, or pu
 
 ## Hosted catalog
 
-The hosted catalog is a static GitHub Pages application. It:
+The hosted catalog is a static application hosted on Vercel. It:
 
 - loads public catalog data and public, aggregate skill-save counts;
-- stores a user's saved-skill choices only in that browser's local storage;
+- stores saved-skill choices, shortlists, and named collections (including optional notes) in that browser's local storage;
+- imports collection files into browser memory for an explicit review before saving; exports contain the names, notes, version labels, and IDs chosen by the user;
+- creates shareable links containing exact skill IDs and the catalog version in a URL fragment; anyone receiving a link can inspect it, so it should not be treated as private;
 - keeps Workbench imports in browser memory and does not upload them to AAS;
+- uses Vercel Web Analytics for aggregate visit statistics, with query strings and URL fragments removed by AAS before analytics events are sent;
+- does not send Workbench imports, shortlist contents, or agent briefs as analytics events;
 - does not use an AAS account system or advertising tracker.
 
-GitHub Pages, GitHub, Supabase, the user's browser, and network providers may process routine connection metadata under their own policies. AAS does not sell personal information.
+Vercel, GitHub (including the legacy redirect site), Supabase, the user's browser, and network providers may process routine connection metadata under their own policies. AAS does not sell personal information.
+
+Vercel describes Web Analytics as cookie-free aggregate measurement; see its [analytics privacy documentation](https://vercel.com/docs/analytics/privacy-policy) for data handling and retention. Search text still forms part of the navigation URL and browser history, so do not enter secrets or personal data into catalog searches.
 
 ## Retention and control
 
-AAS does not maintain a user profile or a server-side store of plugin conversations. Browser-local saved skills can be removed by clearing site data. Content voluntarily posted to GitHub is retained and controlled under GitHub's features and policies.
+AAS does not maintain a user profile or a server-side store of plugin conversations. Collections have no automatic cross-device sync. Export a backup before clearing site data; browser-local saved skills and collections can be removed by clearing site data. Content voluntarily posted to GitHub is retained and controlled under GitHub's features and policies.
 
 ## Contact
 

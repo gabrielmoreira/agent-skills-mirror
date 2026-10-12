@@ -72,9 +72,18 @@ One owned Node subprocess decodes the map. Its private request directory is
 removed before success is returned. Only this child's inherited `NODE_OPTIONS`
 is removed; explicit V8 flags set a 192 MiB old-generation and 8 MiB semi-space
 budget, one V8 worker and a 20-second deadline. Reported actual V8 heap limits
-are checked. These are heap limits, not an aggregate process RSS limit. Cleanup
-may extend the deadline and an unconfirmed cleanup overrides success with
-`cleanup_incomplete` and the owning operation/resources.
+are checked. These are heap limits, not an aggregate process RSS limit. When
+REA runs on Bun, the subprocess is Bun, which ignores these V8 flags: `runtime`
+records `id: "bun"`, the Bun version, its Node.js compatibility version and a
+null `v8_heap_limit_bytes`. On Windows, the codec's owned Job Object then
+limits its committed memory to 704 MiB, the 192 MiB budget plus a 512 MiB
+reserve for Bun itself; `process_memory_limit_bytes` records that limit, the
+limitations state it, and reaching it returns `resource_constraint` with
+`codec_process_memory_limit_bytes`. Elsewhere Bun has no enforced codec limit:
+`process_memory_limit_bytes` is null and the limitations state that no codec
+heap limit is established. Cleanup may extend the deadline and an unconfirmed
+cleanup overrides success with `cleanup_incomplete` and the owning
+operation/resources.
 
 Complete evidence is bounded by a 4 MiB map, 32 MiB codec reply, 262144 decoded
 rows/segments and 64 nested section levels. Exceeding a budget returns an explicit

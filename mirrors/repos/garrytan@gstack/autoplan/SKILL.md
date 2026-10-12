@@ -765,10 +765,10 @@ Review skills load at each phase entry; starting the full pipeline with auto-dec
 
 # Codex preflight: the probe runs as a command, so any shell works.
 _CODEX_PROBE=~/.claude/skills/gstack/bin/gstack-codex-probe
-_CODEX_CFG=$(~/.claude/skills/gstack/bin/gstack-config get codex_reviews 2>/dev/null || echo enabled)
+_CODEX_CFG=$(~/.claude/skills/gstack/bin/gstack-config get --stored codex_reviews 2>/dev/null)
 _gstack_helper_error=""
 [ -x "$_CODEX_PROBE" ] || _gstack_helper_error="gstack: cannot load gstack-codex-probe; re-run ./setup. https://github.com/garrytan/gstack/blob/main/docs/troubleshooting.md#sourced-helper-location"
-if [ "$_CODEX_CFG" = "disabled" ]; then
+if [ "$_CODEX_CFG" = "disabled" ] || [ "$_CODEX_CFG" = "unreadable" ]; then
   _CODEX_MODE="disabled"
 elif { [ -n "${CODEX_THREAD_ID:-}" ] || [ -n "${CODEX_SANDBOX:-}" ] || [ "${GSTACK_ACTIVE_HOST:-}" = codex ]; }; then
   _CODEX_MODE="under_codex"
@@ -791,7 +791,7 @@ echo "CODEX_MODE: $_CODEX_MODE"
 ```
 
 Branch on the echoed `CODEX_MODE`:
-- **`disabled`** — the user turned Codex reviews off (`codex_reviews=disabled`). Skip the Codex passes only; the Claude adversarial subagent below STILL runs (it is free and fast). Print: "Codex passes skipped (codex_reviews disabled) — running Claude adversarial only."
+- **`disabled`** (or a send's `consent_missing` line) — `codex_reviews` is off or unreadable. Skip the Codex passes only; the Claude adversarial subagent below STILL runs (it is free and fast). Print: "Codex passes skipped (codex_reviews disabled) — running Claude adversarial only."
 - **`helper_unavailable`** — the probe is missing or not executable; relay the line above (cause and fix). Keep the required Claude adversarial pass; do not dispatch a duplicate.
 - **`not_installed`** — Codex CLI absent. Print: "Codex not installed; outside coverage unavailable. Install: `npm install -g @openai/codex`." Keep the required Claude adversarial pass; do not dispatch a duplicate.
 - **`under_codex`** — stale artifact selected its own harness. Print: "Codex outside review unavailable: harness mismatch; no outside process started. Missing coverage. Repair: setup --host codex." Skip the outside invocation and follow the workflow's native-review instructions below. Conflicting inherited harness markers are not grounds to guess another provider.
@@ -875,7 +875,7 @@ Produce missing outputs before the gate; after at most 2 repair attempts, warn
 there with each incomplete item.
 
 Reality rows: each phase's `PLAN_REALITY: … verdict=complete` from
-`~/.claude/skills/gstack/bin/gstack-plan-reality check --phase <ceo|eng> <review>`. A missing applicable row is `incomplete`
+`~/.claude/skills/gstack/bin/gstack-plan-reality check --phase <ceo|eng> <review-file|->`. A missing applicable row is `incomplete`
 in an unattended run, never a warning; interactive runs follow the repair rule above.
 
 ---

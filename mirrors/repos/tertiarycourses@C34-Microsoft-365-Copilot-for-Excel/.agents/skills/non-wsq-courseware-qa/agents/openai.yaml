@@ -1,0 +1,4 @@
+interface:
+  display_name: "Non-WSQ Courseware QA"
+  short_description: "Validate non-WSQ course artifacts"
+  default_prompt: "Use $non-wsq-courseware-qa to validate this non-WSQ courseware."

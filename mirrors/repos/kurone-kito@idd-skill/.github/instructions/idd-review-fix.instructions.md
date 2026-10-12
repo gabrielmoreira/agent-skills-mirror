@@ -53,7 +53,12 @@ E5's "Verify before accept" rule):
 
 Run a critique pass to verify that the fixes in E9 address the root
 causes and are correct (see `idd-overview-appendix.instructions.md` for per-agent
-implementation). The distributed defaults for the E10 guardrails are
+implementation). As at C1, if possible, a per-agent subagent's brief
+names a parent-created scratch directory and quotes rule 3 of
+`docs/idd-workflow.md`'s "Critique pass invocation" section: "the
+subagent uses only that directory and creates none"; run that section's
+post-round scratch check after each such pass.
+The distributed defaults for the E10 guardrails are
 listed in `docs/policy-constants.md`. Keep an E10 pass count for the
 current E9 fix batch.
 
@@ -112,10 +117,8 @@ non-blocking hardening, treat them as PATH B (disposition-only,
 E4-E7) rather than opening another E9-E10 round.
 
 **Second escalation tier (Tier 2; heuristic, not a hard rule): when the
-structural fix itself doesn't converge.** The heuristic above names
-one escalation (patch-by-patch → one structural fix); it does not say
-what to do when that structural fix keeps drawing new same-area
-findings for a further few rounds. The natural default — a second,
+structural fix itself doesn't converge** (new same-area findings keep
+arriving). The natural default — a second,
 more elaborate structural redesign — tends to cost more rounds, not
 fewer, since the same race or defect class often regenerates at each
 added layer of recovery machinery. Prefer removing or substantially
@@ -164,13 +167,15 @@ follow-up kurone-kito/idd-skill#2865 (see [the rationale example](../../docs/idd
 Same read-only check as
 `idd-review-triage.instructions.md`'s E-phase branch-sync check and
 `idd-pre-merge.instructions.md`'s F1 (`idd-branch-conflict-state --pr
-{pr-number}` or `gh pr view {pr-number} --json
-mergeable,mergeStateStatus`) — reflects the last pushed head, not
-unpushed E9 fixes.
+{pr-number}`, or `gh pr view {pr-number} --json
+mergeable,mergeStateStatus` with the helper contract's table) — reflects
+the last pushed head, not unpushed E9 fixes.
 
-- **`content-conflict`** (`mergeable` `CONFLICTING`): pass the active
-  review gate, merge `{development-branch}` into the feature branch,
-  resolve, complete the merge:
+- **`callSiteRouting.e11` is `merge-development-branch`** (branch state
+  `content-conflict`; without helper runtime, `mergeable` `CONFLICTING`):
+  pass the active review gate, merge
+  `{development-branch}` into the feature branch, resolve, complete the
+  merge:
 
   ```sh
   git fetch origin +refs/heads/{development-branch}:refs/remotes/origin/{development-branch} \
@@ -180,9 +185,10 @@ unpushed E9 fixes.
   Non-interactive-hostile signing: use the
   [signed-commit merge wrapper](../../docs/idd-helper-scripts.md#signed-commit-merge-wrapper-shared-git-procedure)
   instead.
-- Otherwise (clean, behind-no-conflict, computing, dirty,
-  force-push-exception, unknown): skip the merge, proceed to E12 —
-  the E-phase branch-sync check and F1 handle those downstream.
+- Otherwise (`callSiteRouting.e11` is `skip-merge`; without helper
+  runtime, any `mergeable` other than `CONFLICTING`): skip the merge, proceed
+  to E12 — the E-phase branch-sync check and F1 handle those
+  downstream.
 
 ## E12 — Lint, test, push
 
@@ -229,9 +235,7 @@ falls outside the touched-file scope; or either bound is reached.
 fold-in rule is unchanged); never changes PATH A/B routing or triage
 timing (still happens at the next E1 pass — only push timing changes);
 and relaxes nothing else: E14 re-review, `review-watermark`
-invalidation, and individual E6 replies stay as before; the
-[claim revalidation gate](idd-overview-core.instructions.md#claim-revalidation-gate)
-runs immediately before push.
+invalidation, and individual E6 replies stay as before.
 
 **PR body sync.** If this round's fix changes a claim the PR body
 makes (round count, a documented residual limitation, a scope
@@ -270,11 +274,9 @@ unambiguous:
   the thread**, using the same resolve-review-thread mechanism as
   `idd-review-triage.instructions.md`'s E6 (profile-selected helper
   command, reply-before-resolve, manual REST + GraphQL
-  `resolveReviewThread` fallback — see
-  `idd-review-triage.instructions.md`'s E6 for the exact command and
-  flags). Resolution means "agent acted", not "reviewer agreed" — a
-  disagreeing reviewer can reopen the thread, re-surfacing it in the
-  next E1 pass.
+  `resolveReviewThread` fallback). Resolution means "agent acted", not
+  "reviewer agreed" — a disagreeing reviewer can reopen the thread,
+  re-surfacing it in the next E1 pass.
 - **Regular comments**: reply only; do not resolve.
 - **Persistent non-review notices**: a non-review notice already
   dispositioned `**Rejected** — {bot} did not review HEAD …` in a prior

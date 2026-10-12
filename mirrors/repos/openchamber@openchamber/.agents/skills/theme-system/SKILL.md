@@ -24,7 +24,7 @@ description: Use when creating or modifying OpenChamber UI components, styling, 
 | Adding, converting, storing, or generating icons | `references/icons.md` |
 | Adding built-in or custom themes | `references/adding-themes.md` |
 
-Load every matching reference before editing. User-facing or accessible text must load `locale-ui-patterns`. Settings composition is owned by `settings-ui-patterns`, which declares `theme-system` as its one-way companion.
+Load every matching reference before editing. User-facing or accessible text must load `locale-ui-patterns`. Spacing, positioning and directional icons follow `rtl-layout`, which owns how a layout works in both directions. Settings composition is owned by `settings-ui-patterns`, which declares `theme-system` as its one-way companion.
 
 ## Token Decision
 

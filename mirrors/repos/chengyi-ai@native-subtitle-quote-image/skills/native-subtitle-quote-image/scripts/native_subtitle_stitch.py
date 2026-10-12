@@ -29,6 +29,10 @@ MAX_TIMES_PER_IMAGE = 7
 # 真实访谈相邻句子的整帧差异通常在 5% 以上；静态封面重编码后接近 0。
 DUPLICATE_PIXEL_RATIO = 0.005
 DIFF_LEVEL = 12
+# 抽帧临时文件目录环境变量；--tmp-dir 优先，都未设置时用系统临时目录。
+TMP_DIR_ENV = "NSQI_TMP_DIR"
+# 由 main() 根据 --tmp-dir / 环境变量设置；None 表示系统默认。
+TMP_DIR = None
 
 
 def ffmpeg(args, context="FFmpeg 处理失败"):
@@ -82,12 +86,38 @@ def validate_time(value, label="时间点"):
     return seconds
 
 
-def grab_frame(path, seconds):
+def resolve_tmp_dir(value=None):
+    """解析抽帧临时目录：参数优先，其次环境变量；都没有返回 None（系统默认）。"""
+    source = "--tmp-dir"
+    if value is None:
+        value = os.environ.get(TMP_DIR_ENV)
+        source = f"环境变量 {TMP_DIR_ENV}"
+    if value is None or not str(value).strip():
+        return None
+    path = Path(value).expanduser().resolve()
+    if not path.exists():
+        raise SystemExit(f"{source} 指定的临时目录不存在: {path}")
+    if not path.is_dir():
+        raise SystemExit(f"{source} 指定的路径不是目录: {path}")
+    if not os.access(path, os.W_OK | os.X_OK):
+        raise SystemExit(f"{source} 指定的临时目录不可写: {path}")
+    return str(path)
+
+
+def grab_frame(path, seconds, tmp_dir=None):
     """先快速跳转，再精确解码 3 秒，避免长 GOP 视频错帧。"""
     seconds = validate_time(seconds)
     preseek = max(0.0, seconds - 3.0)
     offset = seconds - preseek
-    fd, tmp = tempfile.mkstemp(suffix=".png")
+    tmp_dir = tmp_dir or TMP_DIR
+    try:
+        fd, tmp = tempfile.mkstemp(suffix=".png", dir=tmp_dir)
+    except OSError as exc:
+        where = tmp_dir or tempfile.gettempdir()
+        raise SystemExit(
+            f"无法在临时目录创建抽帧文件: {where}（{exc.strerror or exc}）；"
+            f"可用 --tmp-dir 或环境变量 {TMP_DIR_ENV} 指定可写目录"
+        ) from None
     os.close(fd)
     try:
         ffmpeg(
@@ -415,6 +445,46 @@ def six_line_geometry(out_width, out_height):
     return hero_height, strip_height, hero_fraction
 
 
+HERO_ZOOM_RANGE = (0.8, 1.0)
+
+
+def parse_hero_zoom(text):
+    """解析 --hero-zoom：逗号分隔的每卡缩放系数，范围 0.8–1.0。"""
+    low, high = HERO_ZOOM_RANGE
+    values = []
+    for part in str(text).split(","):
+        part = part.strip()
+        try:
+            value = float(part)
+        except ValueError:
+            raise SystemExit(
+                f"--hero-zoom 含无法解析的系数 {part!r}；示例: 1.0,0.9,0.95"
+            ) from None
+        if not low <= value <= high:
+            raise SystemExit(f"--hero-zoom 系数 {part} 超出范围，必须在 {low}–{high} 之间")
+        values.append(value)
+    return values
+
+
+def hero_zoom_for_card(zooms, card_index):
+    """按卡循环取缩放系数；card_index 从 0 开始。未启用时返回 1.0。"""
+    if not zooms:
+        return 1.0
+    return zooms[card_index % len(zooms)]
+
+
+def zoom_crop(image, zoom):
+    """居中裁掉四周再放回原尺寸；只用于主图，zoom >= 1 时原样返回。"""
+    if zoom >= 1.0:
+        return image
+    width, height = image.size
+    crop_w = max(1, round(width * zoom))
+    crop_h = max(1, round(height * zoom))
+    left, top = (width - crop_w) // 2, (height - crop_h) // 2
+    window = image.crop((left, top, left + crop_w, top + crop_h))
+    return window.resize((width, height), Image.Resampling.LANCZOS)
+
+
 def scale_to_width(image, width):
     """只等比缩放；同宽时保留原始像素，不把裁切区域拉回源高度。"""
     if width == image.width:
@@ -521,6 +591,7 @@ def fit_fixed_canvas(stack, extents, size, fit="crop", crop_center=0.5):
 def render_one(
     video, times, out_path, aspect, out_width, top, bottom, hero_fraction,
     layout="natural", fit="crop", crop_center=0.5, check_duplicates=False,
+    hero_zoom=1.0,
 ):
     times = normalize_times(times)
     frames = [grab_frame(video, seconds) for seconds in times]
@@ -535,6 +606,14 @@ def render_one(
         requested_height = round(sum(b.height for b in bands) * hero_fraction / (1 - hero_fraction))
         hero_source_height = min(subtitle_bottom, max(first_band.height, requested_height))
     hero = first.crop((0, subtitle_bottom - hero_source_height, first.width, subtitle_bottom))
+    band_height = first_band.height
+    if hero_zoom < 1.0 and hero.height > band_height:
+        # 只缩放字幕条以上的画面；第一句原生字幕条原样保留，窗口不会进入其中。
+        scene_height = hero.height - band_height
+        scene = zoom_crop(hero.crop((0, 0, hero.width, scene_height)), hero_zoom)
+        zoomed = hero.copy()
+        zoomed.paste(scene, (0, 0))
+        hero = zoomed
     # 先拼源像素，再对整张画布缩放：所有原生字幕只经历同一个几何变换。
     source_stack = stack_parts([hero, *bands])
     if layout == "natural":
@@ -569,6 +648,7 @@ def scripted_render_one(
     frame_bottom=1.0,
     check_duplicates=False,
     six_line_card=False,
+    hero_zoom=1.0,
 ):
     frames = [
         crop_band(grab_frame(video, line["t"]), frame_top, frame_bottom)[0]
@@ -579,7 +659,7 @@ def scripted_render_one(
     first_frame = frames[0]
     out_width = out_width or (first_frame.width if layout == "natural" else 1440)
     if layout == "natural":
-        hero = scale_to_width(first_frame, out_width)
+        hero = scale_to_width(zoom_crop(first_frame, hero_zoom), out_width)
         # 1280 像素宽的源画面默认采样 72 像素条高，不依赖总画布高度。
         source_strip_height = min(first_frame.height, max(1, round(first_frame.width * 0.05625)))
         strip_height = max(1, round(source_strip_height * out_width / first_frame.width))
@@ -622,7 +702,7 @@ def scripted_render_one(
         base_font = font_size or max(24, round(out_width / 18))
 
     hero = ImageOps.fit(
-        first_frame,
+        zoom_crop(first_frame, hero_zoom),
         (out_width, hero_height),
         method=Image.Resampling.LANCZOS,
         centering=(0.5, 0.5),
@@ -986,6 +1066,7 @@ def command_render(args):
                 args.fit or "crop",
                 0.5 if args.crop_center is None else args.crop_center,
                 check_duplicates=not args.allow_duplicate_frames,
+                hero_zoom=hero_zoom_for_card(args.hero_zoom, index - 1),
             )
         except (Exception, SystemExit) as exc:
             if not keep_going:
@@ -1054,7 +1135,11 @@ def command_render_script(args):
         args.frame_bottom,
         check_duplicates=not args.allow_duplicate_frames,
         six_line_card=args.six_line_card,
+        hero_zoom=hero_zoom_for_card(args.hero_zoom, 0),
     )
+
+
+TMP_DIR_HELP = f"抽帧临时文件目录（默认系统临时目录，也可用环境变量 {TMP_DIR_ENV}）"
 
 
 def main():
@@ -1093,6 +1178,7 @@ def main():
     sample.add_argument("--thumb-width", type=int, default=320)
     sample.add_argument("--out", default="candidate-contact-sheet.jpg")
     sample.add_argument("--overwrite", action="store_true")
+    sample.add_argument("--tmp-dir", help=TMP_DIR_HELP)
     sample.set_defaults(func=command_sample)
 
     band = sub.add_parser("band", help="预览字幕裁切区域")
@@ -1102,6 +1188,7 @@ def main():
     band.add_argument("--band-bottom", type=float, default=0.96)
     band.add_argument("--out", default="band-preview.jpg")
     band.add_argument("--overwrite", action="store_true")
+    band.add_argument("--tmp-dir", help=TMP_DIR_HELP)
     band.set_defaults(func=command_band)
 
     render = sub.add_parser("render", help="按 manifest 渲染整套拼图")
@@ -1120,6 +1207,11 @@ def main():
         help="固定布局的源主图裁切比例；受源高度限制，不单独放大主图",
     )
     render.add_argument(
+        "--hero-zoom",
+        type=parse_hero_zoom,
+        help="每卡主图缩放系数，逗号分隔并按卡循环，如 1.0,0.9,0.95；范围 0.8–1.0，默认不启用。只裁掉更多主图画面再放大，不改字幕条；源清晰度不足时主图会更模糊",
+    )
+    render.add_argument(
         "--fit",
         choices=("crop", "pad"),
         help="固定布局如何适配画布：crop（默认）统一裁两侧到字幕安全边界，pad 只留黑边",
@@ -1135,6 +1227,7 @@ def main():
         help="跳过重复画面检查（默认遇到静态封面或重复字幕条会中止）",
     )
     render.add_argument("--overwrite", action="store_true")
+    render.add_argument("--tmp-dir", help=TMP_DIR_HELP)
     render.add_argument(
         "--keep-going",
         action="store_true",
@@ -1171,6 +1264,11 @@ def main():
         help="主画面高度比例；默认按台词数量自动保持紧凑密度",
     )
     scripted.add_argument(
+        "--hero-zoom",
+        type=parse_hero_zoom,
+        help="主图缩放系数，范围 0.8–1.0，默认不启用；单张图只取第一个系数。只裁掉更多主图画面再放大，不改字幕条和文字；源清晰度不足时主图会更模糊",
+    )
+    scripted.add_argument(
         "--six-line-card", action="store_true",
         help="可选 3:4 六句卡：首句在主画面，另五句等距排在连续字幕条上",
     )
@@ -1187,6 +1285,7 @@ def main():
         help="跳过重复画面检查（默认遇到静态封面或重复字幕条会中止）",
     )
     scripted.add_argument("--overwrite", action="store_true")
+    scripted.add_argument("--tmp-dir", help=TMP_DIR_HELP)
     scripted.set_defaults(func=command_render_script)
 
     args = parser.parse_args()
@@ -1233,6 +1332,9 @@ def main():
         and not 0.25 <= args.hero_fraction <= 0.85
     ):
         raise SystemExit("--hero-fraction 必须在 0.25–0.85 之间")
+    if hasattr(args, "tmp_dir"):
+        global TMP_DIR
+        TMP_DIR = resolve_tmp_dir(args.tmp_dir)
     args.func(args)
 
 

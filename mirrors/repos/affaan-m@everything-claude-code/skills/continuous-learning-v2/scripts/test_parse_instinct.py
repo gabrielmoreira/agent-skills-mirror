@@ -208,6 +208,23 @@ Prevents vulnerabilities.
     assert "Prevents vulnerabilities." in result[0]["content"]
 
 
+@pytest.mark.parametrize("newline", ["\n", "\r\n"])
+def test_parse_initial_utf8_bom(newline):
+    content = SAMPLE_INSTINCT_YAML.replace("\n", newline)
+    assert parse_instinct_file("\ufeff" + content) == parse_instinct_file(content)
+
+
+def test_parse_preserves_bom_inside_content():
+    content = SAMPLE_INSTINCT_YAML.replace("Always write", "Always \ufeffwrite")
+    assert "Always \ufeffwrite" in parse_instinct_file(content)[0]["content"]
+
+
+def test_load_instinct_file_with_utf8_bom(tmp_path):
+    (tmp_path / "bom.yaml").write_text(SAMPLE_INSTINCT_YAML, encoding="utf-8-sig")
+    instincts = _load_instincts_from_dir(tmp_path, "personal", "project")
+    assert [instinct["id"] for instinct in instincts] == ["test-instinct"]
+
+
 def test_empty_content_no_error():
     content = """\
 ---
@@ -250,6 +267,18 @@ Body.
     result = parse_instinct_file(content)
     assert isinstance(result[0]["confidence"], float)
     assert result[0]["confidence"] == pytest.approx(0.42)
+
+
+@pytest.mark.parametrize("confidence", ["nan", "inf", "-inf", "1e309", "-0.1", "1.1", "invalid"])
+def test_parse_invalid_confidence_uses_default(confidence):
+    content = SAMPLE_INSTINCT_YAML.replace("confidence: 0.8", f"confidence: {confidence}")
+    assert parse_instinct_file(content)[0]["confidence"] == 0.5
+
+
+@pytest.mark.parametrize("confidence", [0.0, 0.42, 1.0])
+def test_parse_confidence_preserves_valid_range(confidence):
+    content = SAMPLE_INSTINCT_YAML.replace("confidence: 0.8", f"confidence: {confidence}")
+    assert parse_instinct_file(content)[0]["confidence"] == confidence
 
 
 def test_parse_trigger_strips_quotes():
@@ -669,6 +698,17 @@ def test_cmd_status_with_instincts(patch_globals, monkeypatch, capsys):
     assert "Global instincts:  1" in out
     assert "PROJECT-SCOPED" in out
     assert "GLOBAL" in out
+
+
+@pytest.mark.parametrize("confidence", ["inf", "-inf", "nan"])
+def test_cmd_status_handles_nonfinite_confidence(patch_globals, monkeypatch, capsys, confidence):
+    project = _make_project(patch_globals)
+    monkeypatch.setattr(_mod, "detect_project", lambda: project)
+    content = SAMPLE_INSTINCT_YAML.replace("confidence: 0.8", f"confidence: {confidence}")
+    (project["instincts_personal"] / "nonfinite.yaml").write_text(content, encoding="utf-8")
+
+    assert cmd_status(SimpleNamespace()) == 0
+    assert "50%" in capsys.readouterr().out
 
 
 def test_confidence_bar_uses_unicode_when_supported():

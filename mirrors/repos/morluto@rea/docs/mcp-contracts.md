@@ -113,17 +113,48 @@ Schema does not express those cross-field invariants.
 
 Call `binary_session` with `{}` and read `result.tool_availability` to choose a
 callable operation for the current target, provider, host, and negotiated client
-capabilities. The default result includes the complete inventory with each
-tool's availability, reason, and remediation. Each entry also reports required
-and optional negotiated client features plus the currently missing features.
-The optional inputs `expected_package_version`, `expected_catalog_digest`, and
+capabilities. The default result contains the complete inventory in groups that
+share status facts. `tool_availability.client_requirements` is the baseline for
+each group; a group's optional `client_requirements` replaces that baseline for
+the group's tools. Expand each group's `names` into one tool entry, carrying its
+surface, availability, reason, remediation, default-mode status, modes, and
+client requirements. Compare the union of group names with `tools/list` when
+checking that a client received the full catalog. An operation absent from all
+groups is missing from the complete inventory; it is not an implicit
+unavailable entry.
+
+The `effects` and `annotations` arrays list the true members of their fixed
+vocabularies. A known member omitted from either array is false. This applies
+only to these closed flag sets; it does not make an omitted tool, provider, mode,
+or limitation false. Keep availability reasons, remediation, client-feature
+requirements, and mode facts inline with the grouped tool names. The optional
+inputs `expected_package_version`, `expected_catalog_digest`, and
 `expected_server_path` compare the live session with the caller's expectations.
 
+`server_identity.catalog` contains catalog counts and schema digests. Grouped
+tool availability carries the name set and current per-tool facts; `tools/list`
+is the canonical source for complete tool definitions, including input and
+output schemas. Clients that previously read `server_identity.catalog.tools`
+should expand `tool_availability.groups` and use `tools/list` for schemas. The
+same catalog identity summary is returned by CLI `capabilities` and `providers`;
+MCP tool definitions remain available through `tools/list`.
+
+Provider capabilities are grouped by provider identity and shared facts. In each
+set, `shared_limitations` is the ordered common prefix; append a group's ordered
+`limitations` suffix to recover each operation's exact limitations. Group
+`effects` arrays use the same true-only closed-vocabulary rule as tool
+availability. Expand every group operation while retaining its provider
+identity, availability, reason, rejection code, effects, and ordered
+limitations.
+
 `binary_session.analysis_provider_candidates` is authoritative for deep-engine
-discovery. Target-free discovery is sorted by provider ID, reports host
-availability and `unknown` target support, and does not create an analysis
-client. `open_binary.provider_id` accepts a concrete provider ID or `auto`; it
-uses the same parser and selection policy as CLI `--provider` and
+discovery. Each candidate's capability sets describe that possible provider;
+they do not select it. The top-level `capabilities` describe the current route,
+while `analysis_provider_binding` identifies the concrete selected route. These
+fields are not interchangeable. Target-free discovery is sorted by provider ID,
+reports host availability and `unknown` target support, and does not create an
+analysis client. `open_binary.provider_id` accepts a concrete provider ID or
+`auto`; it uses the same parser and selection policy as CLI `--provider` and
 `REA_ANALYSIS_PROVIDER`. A successful deep open exposes one immutable provider,
 concrete version, selection source, and complete analysis profile through
 `analysis_provider_binding`. Ambiguity and unknown, unavailable, or unsupported
@@ -150,19 +181,26 @@ structured data and matching text projection. Oversized errors are retained
 as Evidence before delivery of a bounded diagnostic with an export reference;
 if retention is unavailable or fails, the diagnostic reports that reason.
 
-REA accepts ordinary `tools/call` progress tokens. Updates are monotonic,
-rate-bounded to at most one intermediate update per 100 ms, and always allow a
-terminal update. Unknown totals are omitted; REA does not fabricate percentages.
+REA accepts ordinary `tools/call` progress tokens. The numeric `progress` counts
+emitted status observations and strictly increases, including when a waiting
+phase has completed no additional work. Updates are rate-bounded to at most one
+intermediate update per 100 ms and always allow a terminal update. `total` is
+omitted because the number of future status observations is unknown. Read
+`message` for the phase and observed work; REA does not fabricate percentages.
 `capture_process_scenario` uses that boundary only when the client supplies a
-progress token. Notifications set `progress` to the count of collected terminal
-frames, process samples, and interaction events, omit `total`, and put the
-lifecycle phase, elapsed time, and final cleanup status in `message`. A client
+progress token. Notifications put the lifecycle phase, elapsed time, and final
+cleanup status in `message`. A client
 that does not send a progress token receives no progress notifications. The
 tool result is unchanged either way.
 Provider calls receive the request cancellation signal. Artifact traversal,
 hashing, version comparisons, Hopper requests, and process capture
 check the same signal. Cancellation is distinct from timeout. A cleanup failure
 uses `cleanup_incomplete` and lists only the owned resource kinds that remain.
+An atomic Evidence bundle or snapshot write can publish its complete output
+before staging cleanup fails. In that case, `details.published: true`,
+`details.published_path`, and `details.bytes` retain the publication receipt.
+Use that receipt to distinguish completed publication from a write that never
+committed. Staging resources remain owned until cleanup is verified.
 Native call tracing and process capture retain available observations in
 `details.partial_observation` on failure, including when cleanup succeeds.
 The observation reports its partial coverage; cleanup details describe host
@@ -204,6 +242,7 @@ These deadlines have different owners:
 | Deadline             | Owner and effect                                                                                                                                                                                                                    |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | MCP initialize       | The client bounds transport/REA connection startup, before any target query.                                                                                                                                                        |
+| Hopper startup       | REA allows 120,000 ms by default; `REA_HOPPER_STARTUP_TIMEOUT_MS` accepts decimal integers from 1–2,147,483,647 ms. Invalid values fail configuration validation. Startup failure is reported by the first provider query.          |
 | Ghidra startup       | REA allows 330,000 ms by default; `REA_GHIDRA_STARTUP_TIMEOUT_MS` accepts decimal integers from 1–2,147,483,647 ms. Invalid supplied values fail configuration validation. Startup failure is reported by the first provider query. |
 | Individual tool call | The client bounds its wait, including cold engine startup. The pinned client SDK 2.3.1 defaults to 60,000 ms and can cancel earlier than REA's startup deadline.                                                                    |
 
@@ -228,6 +267,18 @@ request and handle `notifications/progress`. Progress reports do not establish
 engine readiness or a percentage of Ghidra auto-analysis. A longer server
 startup allowance does not extend the client's deadline; progress also does not
 extend it unless the client explicitly implements that policy.
+
+While Ghidra startup is pending, REA sends a waiting notification every ten
+seconds when the request has a progress token. Its message gives elapsed waiting
+time; import, auto-analysis and bridge readiness may all still be pending.
+Waiting notifications stop when startup settles or the caller cancels. They do
+not measure engine work completed.
+
+The pinned SDK can reset the request's inactivity timeout on progress with
+`resetTimeoutOnProgress: true`. Also set `maxTotalTimeout` to bound the complete
+request; the provider's startup deadline still applies. These options belong in
+the same second argument of `callTool`. Without that explicit client policy, the
+default 60-second request deadline still expires despite waiting notifications.
 
 The 240-second setting is a measured example, not a universal timeout: a
 controlled Linux x64/WSL2 fixture took about 64 seconds for its first overview
@@ -264,9 +315,10 @@ observed process-family member remained after final close. This was a small
 1,024-byte fixture, so the longer request setting remains an example, not a
 guarantee for larger targets. No macOS cold-start recovery was exercised.
 
-With a supplied progress token, the Windows run received an operation-start
+With a supplied progress token, that earlier Windows run received an operation-start
 notification before timeout and start/completion notifications for the
-successful retry. It received no intermediate import or auto-analysis progress.
+successful retry, before startup waiting notifications were added. It received
+no intermediate import or auto-analysis progress.
 These operation markers do not measure analysis work completed or extend the
 client's deadline. Each new provider session still imports the target into a
 fresh temporary project.
@@ -294,6 +346,16 @@ directly to `compare_functions`, and `inspect_artifact` Evidence to
 `compare_artifacts`. Use `get_evidence_bundle` when the task needs broader
 retained session history or an explicit bundle for transfer.
 
+`get_call_graph` returns a `graph` keyed by traversal depth and a top-level
+`limitations` array with deduplicated execution caveats. Each node keeps its
+relationship coverage and read-specific `limitations`, alongside observed
+`calls`. When a provider does not classify its caveats, they remain on that
+node and coverage is `unknown`. An empty call list with partial or unknown
+coverage is not proof that the function has no calls.
+`trace_call_path` reports each limited expansion in `residual_unknowns` and
+sets `truncated: true`; any path already supported by observed edges remains
+visible. Tool errors remain in their existing error or failure fields.
+
 REA prepares complete MCP results within the pinned stdio client's 10 MiB
 receive-buffer budget, including both text and structured representations and
 room for the JSON-RPC envelope. Tool errors carry only their text
@@ -305,8 +367,18 @@ session. Its exact reference is reported in
 `details.reported_limits.evidence_reference`; call `inspect_analysis_view` with
 that reference for a summary, one section/module, or a stable page, or call
 `export_evidence_bundle` with a destination path. Complete
-bundle exports stream canonical JSON into an atomically published file. A broad
-follow-up or `get_evidence_bundle` can also exceed the response budget; exporting
+bundle exports stream canonical JSON into an atomically published file.
+
+For oversized native function Evidence, `details.reported_limits.continuation`
+contains a ready-to-call `inspect_analysis_view` request for the retained
+pseudocode's first page. Use its `name` and `arguments` directly, then follow
+`normalized_result.coverage.next_offset` for subsequent pages. The suggested
+limit is the view contract's default, not a guarantee that arbitrary source or
+metadata fits; reduce the limit or export when needed. Continuations are
+offered for completed `analyze_function` results only after session recording is
+acknowledged; the complete result and its retention reference remain intact.
+
+A broad follow-up or `get_evidence_bundle` can also exceed the response budget; exporting
 preserves the complete session without sending it through a single MCP frame.
 To discover existing records without their large payloads, call
 `get_evidence_bundle` with `detail: "summary"`. Its `result.records` contain
@@ -346,6 +418,13 @@ that complete Evidence in the session and returns the derived
 analysis, so later views and application workflows read it without repeating
 analysis or moving the complete record through the response. A server without
 session retention refuses summary detail with `capability_unavailable`.
+
+`inspect_analysis_view` also accepts `api-surface` for retained HAR capture Evidence,
+grouping request lines by method, origin and format-rule path template. Templated
+segments are inferences. Because paging follows the full grouping, every page is
+inferred Evidence whenever any group is templated, and derived Evidence only when
+no group was templated.
+See [derived API surfaces](web-network-captures.md#derived-api-surface).
 
 `inspect_analysis_view` projects a caller-selected view of already completed
 `inspect_binary_layout`, `analyze_javascript_application`, or `analyze_function`
@@ -434,7 +513,13 @@ Tool annotations describe effects and are hints, not authorization controls
 ([MCP ToolAnnotations](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations)).
 `readOnlyHint` includes session state: an analysis call that records additive
 Evidence is marked non-read-only even when it leaves the target unchanged.
-`destructiveHint` describes possible data loss, not ordinary Evidence recording.
+`destructiveHint` is true when a tool may discard data (overwriting or clearing
+analyst metadata, replacing files, dropping session state), runs or drives code
+REA does not own (`executesForeignCode`: process, LLDB, Electron, browser, and
+native UI scenarios), or changes an attached Android device (`mutatesDevice`:
+push, install, uninstall, start, and stop). Ordinary Evidence recording is not
+destructive. The effect record in `binary_session` and the generated catalog
+carries each flag separately.
 Effect metadata covers possible behavior across supported inputs: DMG inventory
 can launch `hdiutil` and create an owned temporary mount directory; extraction
 creates a fresh output directory on every call. Comparing supplied web captures

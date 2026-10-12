@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `TestAny-io/testany-agent-skills` — 26 default patterns, 1 followed patterns, 42 file(s) materialized.
+Mirror of `TestAny-io/testany-agent-skills` — 26 default patterns, 1 followed patterns, 43 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `TestAny-io/testany-agent-skills` — 26 default patterns, 1 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 42 |
+| Files         | 43 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -97,10 +97,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 36 | ✓ | [`plugins/testany-eng/skills/test-strategy-reviewer/SKILL.md`](plugins/testany-eng/skills/test-strategy-reviewer/SKILL.md) |
 | 37 | ✓ | [`plugins/testany-eng/skills/test-strategy-writer/SKILL.md`](plugins/testany-eng/skills/test-strategy-writer/SKILL.md) |
 | 38 | ✓ | [`plugins/testany-eng/skills/uc-interviewer/SKILL.md`](plugins/testany-eng/skills/uc-interviewer/SKILL.md) |
-| 39 | ✓ | [`plugins/testany-eng/tests/b4-followup/code-review-assets/workspace/AGENTS.md`](plugins/testany-eng/tests/b4-followup/code-review-assets/workspace/AGENTS.md) |
-| 40 | ✓ | [`plugins/testany-llm/skills/prompt-optimizer/SKILL.md`](plugins/testany-llm/skills/prompt-optimizer/SKILL.md) |
-| 41 | ✓ | [`plugins/testany-mrkt/skills/media-writer/SKILL.md`](plugins/testany-mrkt/skills/media-writer/SKILL.md) |
-| 42 | → | [`docs/plugin-development.md`](docs/plugin-development.md) |
+| 39 | ✓ | [`plugins/testany-eng/skills/ui-designer/SKILL.md`](plugins/testany-eng/skills/ui-designer/SKILL.md) |
+| 40 | ✓ | [`plugins/testany-eng/tests/b4-followup/code-review-assets/workspace/AGENTS.md`](plugins/testany-eng/tests/b4-followup/code-review-assets/workspace/AGENTS.md) |
+| 41 | ✓ | [`plugins/testany-llm/skills/prompt-optimizer/SKILL.md`](plugins/testany-llm/skills/prompt-optimizer/SKILL.md) |
+| 42 | ✓ | [`plugins/testany-mrkt/skills/media-writer/SKILL.md`](plugins/testany-mrkt/skills/media-writer/SKILL.md) |
+| 43 | → | [`docs/plugin-development.md`](docs/plugin-development.md) |
 
 ---
 

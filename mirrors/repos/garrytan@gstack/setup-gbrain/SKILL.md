@@ -827,12 +827,16 @@ Do NOT print the actual token in the curl command — leave the placeholder
 
 ```bash
 SLUG="setup-gbrain-smoke-test-$(date +%s)"
-echo "Set up on $(date). Smoke test for /setup-gbrain." | gbrain put "$SLUG"
-gbrain search "smoke test" | grep -i "$SLUG"
+SMOKE_PAGE=$(mktemp "${TMPDIR:-/tmp}/gstack-gbrain-smoke.XXXXXX")
+echo "Set up on $(date). Smoke test for /setup-gbrain." > "$SMOKE_PAGE"
+gbrain put "$SLUG" < "$SMOKE_PAGE"; PUT_RC=$?
+rm -f "$SMOKE_PAGE"
+[ "$PUT_RC" -eq 0 ] && gbrain search "smoke test" | grep -i "$SLUG"
 ```
 
-Confirms the round trip. On failure, surface `gbrain doctor --json` output
-and STOP with a NEEDS_CONTEXT escalation.
+Confirms the round trip. The page goes in from a temp file, not a pipe: on
+Windows, gbrain failed to read a piped page. On failure, surface
+`gbrain doctor --json` output and STOP with a NEEDS_CONTEXT escalation.
 
 ---
 

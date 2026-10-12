@@ -6,7 +6,9 @@ applicability:
 
 Keep the ledger and its ownership map in re-readable working state.
 
-Derive the ledger from the requested outcome, its authorities, supplied evidence, and accepted field facts before inventorying constructs, and keep it separate from the source inventory until both can be compared. Completeness is relative to the declared outcome contract, never universal.
+Derive the ledger from the skill's declared outcome: what the request that created the skill asked for, as later requests widened or narrowed it. For an existing source whose requests are not supplied, every outcome its description or any of its tasks claims is declared. An obligation belongs in the ledger when the domain, as its authorities, supplied evidence, and accepted field facts establish it, requires it for a declared outcome to be delivered correctly and completely, whether or not any request, description, or task mentions it; a part of the domain that no declared outcome needs lies outside the ledger. Widening the outcome therefore brings in everything the widened outcome needs, not only what the widening request names.
+
+Draw each declared outcome's obligations from its domain, not from the source, and list them before the ownership map gives any of them an owner: each element a competent practitioner's delivery of that outcome contains and must get right, and how the work proceeds in each state its inputs can arrive in, such as missing, partial, unclear, or conflicting. The source shows what it covers, not what its outcome needs: an obligation that restates a construct records only that the construct exists, and one that names a construct's content as a single item hides whatever that construct leaves out. Word each in the domain's terms, as it would still be owed with every construct deleted. Skill material supplied in another form is evidence for the ledger, not a source to transcribe: take from it what it establishes, and leave its arrangement behind, since each provision it carries is classified anew.
 
 For every request class and materially different initial state, record:
 

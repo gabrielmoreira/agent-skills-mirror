@@ -6,6 +6,7 @@ goal: Implement the authorized behavior in the effective compiler's accepted for
 knowledge:
 - working-accounts
 - evidence-bounds
+- child-skill-and-agent
 - source-defects
 - compiler-evidence
 - compiler-integrity
@@ -24,10 +25,6 @@ guides:
 - behavioral-preservation
 - names-and-headings
 - wording-and-references
-- guide-design
-- task-cues
-- handoff-conditions
-- facet-design
 - restructuring-on-evidence
 - version-selection
 - supplied-artifact
@@ -41,10 +38,13 @@ handoffs:
   - When the defect's evidence is completed interactions whose attribution to the source has neither an unfinished evaluation responsible for it nor an evaluation outcome on this route
   - When a repaired defect was established by evaluation and its exact final state has neither an unfinished evaluation responsible for re-evaluating it nor a re-evaluation outcome on this route
   - When a required runtime-only acceptance question has neither an unfinished evaluation responsible for it nor an evaluation outcome against the revision's exact final state on this route, and authority and host capability permit that evaluation
+- task: plan
+  applicability:
+  - When host instructions prohibit changing the source and no unfinished plan or planning outcome on this route covers the change
 ---
 
-Frame the change before editing: what the request authorizes, which behavior is meant to change, the independently derived obligations affected, and what already owns them. When only a built bundle or installed skill is supplied, there is no source to revise: report that part as unsupported without the source that produced it, and leave the artifact as it is.
+Frame the change before editing: what the request authorizes, which behavior is meant to change, the obligations the change brings in or affects, and what already owns them. A request asks for its behavior delivered correctly and completely, so it covers what that behavior needs wherever it reaches: what a widened outcome needs, and each edit elsewhere without which another construct would no longer agree with it. Where the requested change or an edit it needs would also alter how a case the request does not decide behaves, as an addition can or an edit to a statement other cases share, that part waits for the requester to accept it.
 
-Before the first edit that could destroy or obscure the starting behavior, establish the preservation account and record every affected starting contribution with inspectable evidence. Do not edit until that starting-state inventory is complete. When it applies, read [[guide:whole-construct-rewrite]] before the change edits maintained source.
+Before the first edit, establish the [[guide:behavioral-preservation]] account and record every affected starting contribution with inspectable evidence. When it applies, read [[guide:whole-construct-rewrite]] before the change edits maintained source.
 
-After the last edit, read every changed generated page end to end as a cold reader who never saw the old text: the changed lines show the edit, not the page, and a sentence that read correctly beside its predecessor can read as its opposite alone, or make sense only beside it. Begin final validation only once every surface is closed on that state as [[guide:path-rehearsal]] requires, every affected member has a terminal disposition, and every required case passes; then validate the exact final source.
+After the last edit, read every changed generated page end to end as a cold reader who never saw the old text: the changed lines show the edit, not the page, and a sentence that read correctly beside its predecessor can read as its opposite alone, or make sense only beside it. Begin final validation only once every surface is closed on that state as [[guide:path-rehearsal]] requires, every affected member has a terminal disposition, and every required case passes. Hand a review verifying this revision the findings it closed and every construct it added, changed, or removed.

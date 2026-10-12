@@ -6,6 +6,7 @@ goal: A new source in the effective compiler's accepted format whose exact gener
 knowledge:
 - working-accounts
 - evidence-bounds
+- child-skill-and-agent
 - source-defects
 - skill-judgments
 - compiler-evidence
@@ -22,8 +23,6 @@ guides:
 - path-rehearsal
 - names-and-headings
 - wording-and-references
-- task-cues
-- handoff-conditions
 - version-selection
 - supplied-artifact
 handoffs:
@@ -33,8 +32,11 @@ handoffs:
 - task: evaluate
   applicability:
   - When a required runtime-only acceptance question has neither an unfinished evaluation responsible for it nor an evaluation outcome against the candidate's exact state on this route, and authority and host capability permit that evaluation
+- task: plan
+  applicability:
+  - When host instructions prohibit writing the source and no unfinished plan or planning outcome on this route covers it
 ---
 
-Establish the effective compiler first. If it provides an initializer, read its help and use it in an authorized working destination to obtain a source skeleton; otherwise follow the effective manual directly. The initializer supplies structure, never domain decisions or release semantics, and the name, license, and copyright are the requester's or standing instructions' to supply; the host interface fields follow from the skill's outcome, so derive them rather than ask for them. Derive the [[guide:obligation-ledger]] before the skeleton or any other source structure defines completeness, and classify each behavior-bearing provision under [[guide:construct-ownership]] before writing structure rather than from a convenient container. Skill material supplied in another form is evidence for that ledger, not a source to transcribe: take from it what it establishes, and classify each provision it carries anew. Close [[guide:construct-agreements]] as they appear.
+Establish the effective compiler first. If it provides an initializer, read its help and use it in a working destination to obtain a source skeleton; otherwise follow the effective manual directly. The initializer supplies structure, never domain decisions or release semantics, and the host interface text fields follow from the skill's outcome, so derive them. The name identifies the bundle wherever it is installed and invoked, so it is the requester's choice: offer candidates derived from the outcome within the manual's naming rules, several where the outcome supports distinct fitting names, for them to choose one or give another. A license or copyright line declares rights only their owner can grant, and an icon is an image the outcome cannot supply; where the manual makes such a field optional and neither the request nor standing instructions supply it, leave it out rather than ask for it, and report that the source declares none. Derive the [[guide:obligation-ledger]] before the skeleton or any other source structure defines completeness, and classify each behavior-bearing provision under [[guide:construct-ownership]] before writing structure rather than from a convenient container. Close [[guide:construct-agreements]] as they appear.
 
-The review that follows judges the candidate's generated state independently, and the authority that covered writing the source covers correcting what that review admits or an evaluation of the candidate establishes.
+The authority that covered writing the source covers correcting what the review of the candidate admits or an evaluation of it establishes. Hand the review of a corrected candidate the findings corrected and every construct the corrections added, changed, or removed.

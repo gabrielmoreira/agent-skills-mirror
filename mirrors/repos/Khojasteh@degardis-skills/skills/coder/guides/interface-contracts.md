@@ -15,4 +15,4 @@ When independently deployed or externally consumed parties can move at different
 
 Verify at the narrowest real boundary that can expose a mismatch. Prefer schema or contract checks, serialization round trips, generated-client compilation, provider/consumer integration, protocol fixtures, or focused end-to-end execution over mocks that only repeat one side's assumptions. Exercise material success and failure cases from both sides of the boundary, including an older or alternate consumer when compatibility depends on it. A passing provider unit test cannot establish an integration contract no consumer observed.
 
-Keep documentation, examples, generated descriptions, and discovery metadata aligned with the same owner. Do not publish, register, or contact an external consumer merely to verify a local change unless the task already has authority for that effect.
+Keep documentation, examples, generated descriptions, and discovery metadata aligned with the same owner.

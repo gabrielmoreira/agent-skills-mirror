@@ -4,10 +4,10 @@
 
 <h1 align="center">Galyarder Framework</h1>
 
-<p align="center"><strong>Open-source Agentic Company Framework.</strong></p>
+<p align="center"><strong>Open-source agent skills, commands, and integrations.</strong></p>
 
 <p align="center">
-  Galyarder Framework is the Intelligence Layer of the Galyarder ecosystem: skills, agents, commands, review gates, and operating protocols for building an agentic company that remains inspectable, testable, and human-directed.
+  Galyarder Framework packages skills, agents, commands, review gates, and operating protocols for AI coding agents, kept inspectable, testable, and human-directed.
 </p>
 
 <p align="center">
@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <img alt="agentic company framework" src="https://img.shields.io/badge/agentic%20company-framework-8A00FF?style=flat-square">
+  <img alt="agentic company framework" src="https://img.shields.io/badge/agent%20skills-framework-8A00FF?style=flat-square">
   <img alt="human directed" src="https://img.shields.io/badge/human--directed-execution-F1C77A?style=flat-square">
 </p>
 
@@ -27,7 +27,7 @@
 
 Most AI-agent setups stop at chat or code generation. They can help with a task, but the work often stays loose: no durable scope, no department routing, no review gates, no audit trail, and no consistent way to move from strategy to implementation.
 
-Galyarder Framework packages the missing operating layer. It gives autonomous agents a structured way to receive intent, route work to the right domain, produce plans, execute through tools, verify output, write reports, and hand control back to the operator.
+Galyarder Framework packages the missing operating layer. It gives agents a structured way to receive intent, route work to the right domain, produce plans, execute through tools, verify output, write reports, and hand control back to the operator.
 
 It is not a kanban board, a prompt pack, or another coding agent. It is a framework for turning high-level operator intent into governed company execution.
 
@@ -61,7 +61,7 @@ Galyarder Framework bridges the gap between intent and execution through a repea
 
 ## What you get
 
-A multi-domain agentic company kit in one repository:
+A multi-domain kit in one repository:
 
 - **40+ specialized agents** across executive, engineering, growth, product, security, infrastructure, legal-finance, and knowledge work.
 - **Department-based routing** so tasks move to the right specialist instead of staying in a generic assistant loop.
@@ -119,16 +119,16 @@ sequenceDiagram
 
 ---
 
-## The Intelligence Layer of the Galyarder ecosystem
+## How it fits with the other repositories
 
-Galyarder Framework is one layer in a larger autonomous execution system:
+Galyarder Framework is one piece of a larger stack:
 
 - **[Galyarder Agent](https://github.com/galyarderlabs/galyarder-agent)** — the continuity and interface layer: memory, identity, channel presence, and tool access.
 - **[Galyarder HQ](https://github.com/galyarderlabs/galyarder-hq)** — the command layer: company structure, goals, budgets, approval gates, reporting lines, and operational control.
-- **Galyarder Framework** — the intelligence layer: agents, skills, commands, review gates, and execution protocols.
+- **Galyarder Framework** — agents, skills, commands, review gates, and execution protocols.
 - **Galyarder Ledger** — the financial execution layer: agent-assisted, ledger-backed finance and operational evidence.
 
-Framework can be used on its own, but it is designed to fit into an agentic-company stack where intent, execution, evidence, memory, and command stay connected.
+Framework can be used on its own, but it is designed to fit alongside the other repositories so that intent, execution, evidence, memory, and command stay connected.
 
 ---
 
@@ -163,7 +163,7 @@ npx skills add galyarderlabs/galyarder-framework --skill engineering
 Use the source directly when you want to inspect, modify, or contribute to the framework.
 
 ```bash
-# 1. Clone the intelligence layer
+# 1. Clone the repository
 git clone https://github.com/galyarderlabs/galyarder-framework.git ~/galyarder-framework
 
 # 2. Link commands globally
@@ -186,7 +186,7 @@ galyarder deploy --tool <name>
 
 ---
 
-## Managed and autonomous options
+## Managed and local options
 
 ### A. Official marketplaces
 
@@ -222,7 +222,7 @@ gemini extensions uninstall galyarder-framework
 
 The framework uses a universal plugin structure. Assets are organized into `agents/`, `skills/`, `commands/`, `personas/`, and `integrations/` so the same operating logic can be adapted across Google, Anthropic, Microsoft, OpenAI, and local-agent environments.
 
-### B. Autonomous directives for Codex and OpenCode
+### B. Directives for Codex and OpenCode
 
 For tools that can fetch instructions directly, point them at the install guides.
 
@@ -302,4 +302,4 @@ The next phase is to make the framework more concrete as an agentic-company oper
 
 ---
 
-© 2026 Galyarder Labs. Galyarder Framework. Agentic company execution infrastructure.
+© 2026 Galyarder Labs. Galyarder Framework. Skills, commands, and integrations for AI coding agents.

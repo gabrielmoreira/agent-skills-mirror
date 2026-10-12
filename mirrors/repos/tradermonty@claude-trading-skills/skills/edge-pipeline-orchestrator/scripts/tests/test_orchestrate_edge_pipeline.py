@@ -1062,6 +1062,67 @@ class TestCLI:
 
     @patch("orchestrate_edge_pipeline.run_stage")
     @patch("orchestrate_edge_pipeline.run_review_loop")
+    def test_export_failure_is_isolated_per_draft(
+        self,
+        mock_review_loop: MagicMock,
+        mock_run_stage: MagicMock,
+        tmp_path: Path,
+        sample_draft_pass: dict,
+        sample_draft_gap_up: dict,
+        drafts_dir: Path,
+    ) -> None:
+        """One draft the exporter rejects must not abort export of the others."""
+        from orchestrate_edge_pipeline import main
+
+        (drafts_dir / f"{sample_draft_gap_up['id']}.yaml").write_text(
+            yaml.safe_dump(sample_draft_gap_up, sort_keys=False), encoding="utf-8"
+        )
+        failing_ticket = sample_draft_pass["id"].replace("draft_", "edge_")
+
+        def side_effect(stage: str, args: list[str], **_: object) -> subprocess.CompletedProcess:
+            if stage == "export" and any(failing_ticket in arg for arg in args):
+                raise EdgePipelineError("stage 'export' failed (exit 1): contract violation")
+            return subprocess.CompletedProcess(args=[], returncode=0, stdout="[OK]", stderr="")
+
+        mock_run_stage.side_effect = side_effect
+        mock_review_loop.return_value = ReviewLoopResult(
+            passed=[
+                TrackedDraft(
+                    draft_id=draft["id"],
+                    file_path=drafts_dir / f"{draft['id']}.yaml",
+                    verdict="PASS",
+                    export_eligible=True,
+                    confidence_score=85,
+                )
+                for draft in (sample_draft_pass, sample_draft_gap_up)
+            ],
+            rejected=[],
+            downgraded=[],
+        )
+
+        output_dir = tmp_path / "output"
+        with patch(
+            "sys.argv",
+            [
+                "orchestrate_edge_pipeline.py",
+                "--review-only",
+                "--drafts-dir",
+                str(drafts_dir),
+                "--output-dir",
+                str(output_dir),
+            ],
+        ):
+            exit_code = main()
+
+        assert exit_code == 0
+        manifest = json.loads((output_dir / "pipeline_run_manifest.json").read_text())
+        export_stage = manifest["stages"]["export"]
+        assert export_stage["exported"] == [sample_draft_gap_up["id"].replace("draft_", "edge_")]
+        assert [f["ticket_id"] for f in export_stage["export_failed"]] == [failing_ticket]
+        assert "contract violation" in export_stage["export_failed"][0]["error"]
+
+    @patch("orchestrate_edge_pipeline.run_stage")
+    @patch("orchestrate_edge_pipeline.run_review_loop")
     def test_pipeline_manifest_complete(
         self,
         mock_review_loop: MagicMock,
