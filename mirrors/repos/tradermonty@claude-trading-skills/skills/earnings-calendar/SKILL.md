@@ -708,6 +708,8 @@ For Claude Web, understand that:
 **Skill Resources**:
 - FMP API Guide: `references/fmp_api_guide.md`
 - Python Script: `scripts/fetch_earnings_fmp.py`
+- Vendored FMP Compat: `scripts/_fmp_compat.py` (v3→stable rewrite shim)
+- Vendored FMP Client: `scripts/fmp_client.py` (generated; handles rate limiting, single 429 retry, and header auth) — note: HTTP failures print one generic `ERROR: API request failed: …` client line plus the script's mapped `❌ ERROR:` message
 - Report Template: `assets/earnings_report_template.md`
 
 ---

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AmadeusITGroup/ai-primitives-hub` — 26 default patterns, 21 followed patterns, 72 file(s) materialized.
+Mirror of `AmadeusITGroup/ai-primitives-hub` — 26 default patterns, 21 followed patterns, 73 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AmadeusITGroup/ai-primitives-hub` — 26 default patterns, 21 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 21 |
-| Files         | 72 |
+| Files         | 73 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -114,43 +114,44 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 33 | ✓ | [`docs/contributor-guide/architecture/adr/0005-universal-xdg-based-app-storage.md`](docs/contributor-guide/architecture/adr/0005-universal-xdg-based-app-storage.md) |
 | 34 | ✓ | [`docs/contributor-guide/architecture/adr/0006-shared-semantic-cache-and-client-owned-state.md`](docs/contributor-guide/architecture/adr/0006-shared-semantic-cache-and-client-owned-state.md) |
 | 35 | ✓ | [`docs/contributor-guide/architecture/adr/0007-source-aware-github-app-authentication.md`](docs/contributor-guide/architecture/adr/0007-source-aware-github-app-authentication.md) |
-| 36 | ✓ | [`docs/contributor-guide/architecture/library-centric-architecture/codemap.md`](docs/contributor-guide/architecture/library-centric-architecture/codemap.md) |
-| 37 | ✓ | [`docs/contributor-guide/architecture/library-centric-architecture/component.md`](docs/contributor-guide/architecture/library-centric-architecture/component.md) |
-| 38 | ✓ | [`docs/contributor-guide/architecture/library-centric-architecture/container.md`](docs/contributor-guide/architecture/library-centric-architecture/container.md) |
-| 39 | ✓ | [`docs/contributor-guide/architecture/library-centric-architecture/system-context.md`](docs/contributor-guide/architecture/library-centric-architecture/system-context.md) |
-| 40 | ✓ | [`docs/contributor-guide/architecture/validation.md`](docs/contributor-guide/architecture/validation.md) |
-| 41 | ✓ | [`docs/contributor-guide/validation.md`](docs/contributor-guide/validation.md) |
-| 42 | ✓ | [`docs/reference/settings.md`](docs/reference/settings.md) |
-| 43 | ✓ | [`lib/README.md`](lib/README.md) |
-| 44 | ✓ | [`packages/AGENTS.md`](packages/AGENTS.md) |
-| 45 | ✓ | [`packages/app/README.md`](packages/app/README.md) |
-| 46 | ✓ | [`packages/CLAUDE.md`](packages/CLAUDE.md) |
-| 47 | ✓ | [`packages/cli/README.md`](packages/cli/README.md) |
-| 48 | ✓ | [`packages/cli/src/commands/AGENTS.md`](packages/cli/src/commands/AGENTS.md) |
-| 49 | ✓ | [`packages/core/README.md`](packages/core/README.md) |
-| 50 | ✓ | [`packages/infra/README.md`](packages/infra/README.md) |
-| 51 | ✓ | [`packages/README.md`](packages/README.md) |
-| 52 | → | [`apps/vscode-extension/README.md`](apps/vscode-extension/README.md) |
-| 53 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 54 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 55 | → | [`docs/author-guide/creating-source-bundle.md`](docs/author-guide/creating-source-bundle.md) |
-| 56 | → | [`docs/contributor-guide/architecture.md`](docs/contributor-guide/architecture.md) |
-| 57 | → | [`docs/contributor-guide/architecture/adr/adr-index.md`](docs/contributor-guide/architecture/adr/adr-index.md) |
-| 58 | → | [`docs/contributor-guide/architecture/library-centric-architecture/clean-architecture.md`](docs/contributor-guide/architecture/library-centric-architecture/clean-architecture.md) |
-| 59 | → | [`docs/contributor-guide/coding-standards.md`](docs/contributor-guide/coding-standards.md) |
-| 60 | → | [`docs/contributor-guide/core-flows.md`](docs/contributor-guide/core-flows.md) |
-| 61 | → | [`docs/contributor-guide/development-setup.md`](docs/contributor-guide/development-setup.md) |
-| 62 | → | [`docs/contributor-guide/testing.md`](docs/contributor-guide/testing.md) |
-| 63 | → | [`docs/README.md`](docs/README.md) |
-| 64 | → | [`docs/reference/commands.md`](docs/reference/commands.md) |
-| 65 | → | [`docs/user-guide/configuration.md`](docs/user-guide/configuration.md) |
-| 66 | → | [`docs/user-guide/getting-started.md`](docs/user-guide/getting-started.md) |
-| 67 | → | [`docs/user-guide/marketplace.md`](docs/user-guide/marketplace.md) |
-| 68 | → | [`docs/user-guide/profiles-and-hubs.md`](docs/user-guide/profiles-and-hubs.md) |
-| 69 | → | [`docs/user-guide/sources.md`](docs/user-guide/sources.md) |
-| 70 | → | [`docs/user-guide/troubleshooting.md`](docs/user-guide/troubleshooting.md) |
-| 71 | → | [`README.md`](README.md) |
-| 72 | → | [`SECURITY.md`](SECURITY.md) |
+| 36 | ✓ | [`docs/contributor-guide/architecture/adr/0008-artifactory-hub-tree-distribution-channel.md`](docs/contributor-guide/architecture/adr/0008-artifactory-hub-tree-distribution-channel.md) |
+| 37 | ✓ | [`docs/contributor-guide/architecture/library-centric-architecture/codemap.md`](docs/contributor-guide/architecture/library-centric-architecture/codemap.md) |
+| 38 | ✓ | [`docs/contributor-guide/architecture/library-centric-architecture/component.md`](docs/contributor-guide/architecture/library-centric-architecture/component.md) |
+| 39 | ✓ | [`docs/contributor-guide/architecture/library-centric-architecture/container.md`](docs/contributor-guide/architecture/library-centric-architecture/container.md) |
+| 40 | ✓ | [`docs/contributor-guide/architecture/library-centric-architecture/system-context.md`](docs/contributor-guide/architecture/library-centric-architecture/system-context.md) |
+| 41 | ✓ | [`docs/contributor-guide/architecture/validation.md`](docs/contributor-guide/architecture/validation.md) |
+| 42 | ✓ | [`docs/contributor-guide/validation.md`](docs/contributor-guide/validation.md) |
+| 43 | ✓ | [`docs/reference/settings.md`](docs/reference/settings.md) |
+| 44 | ✓ | [`lib/README.md`](lib/README.md) |
+| 45 | ✓ | [`packages/AGENTS.md`](packages/AGENTS.md) |
+| 46 | ✓ | [`packages/app/README.md`](packages/app/README.md) |
+| 47 | ✓ | [`packages/CLAUDE.md`](packages/CLAUDE.md) |
+| 48 | ✓ | [`packages/cli/README.md`](packages/cli/README.md) |
+| 49 | ✓ | [`packages/cli/src/commands/AGENTS.md`](packages/cli/src/commands/AGENTS.md) |
+| 50 | ✓ | [`packages/core/README.md`](packages/core/README.md) |
+| 51 | ✓ | [`packages/infra/README.md`](packages/infra/README.md) |
+| 52 | ✓ | [`packages/README.md`](packages/README.md) |
+| 53 | → | [`apps/vscode-extension/README.md`](apps/vscode-extension/README.md) |
+| 54 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 55 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 56 | → | [`docs/author-guide/creating-source-bundle.md`](docs/author-guide/creating-source-bundle.md) |
+| 57 | → | [`docs/contributor-guide/architecture.md`](docs/contributor-guide/architecture.md) |
+| 58 | → | [`docs/contributor-guide/architecture/adr/adr-index.md`](docs/contributor-guide/architecture/adr/adr-index.md) |
+| 59 | → | [`docs/contributor-guide/architecture/library-centric-architecture/clean-architecture.md`](docs/contributor-guide/architecture/library-centric-architecture/clean-architecture.md) |
+| 60 | → | [`docs/contributor-guide/coding-standards.md`](docs/contributor-guide/coding-standards.md) |
+| 61 | → | [`docs/contributor-guide/core-flows.md`](docs/contributor-guide/core-flows.md) |
+| 62 | → | [`docs/contributor-guide/development-setup.md`](docs/contributor-guide/development-setup.md) |
+| 63 | → | [`docs/contributor-guide/testing.md`](docs/contributor-guide/testing.md) |
+| 64 | → | [`docs/README.md`](docs/README.md) |
+| 65 | → | [`docs/reference/commands.md`](docs/reference/commands.md) |
+| 66 | → | [`docs/user-guide/configuration.md`](docs/user-guide/configuration.md) |
+| 67 | → | [`docs/user-guide/getting-started.md`](docs/user-guide/getting-started.md) |
+| 68 | → | [`docs/user-guide/marketplace.md`](docs/user-guide/marketplace.md) |
+| 69 | → | [`docs/user-guide/profiles-and-hubs.md`](docs/user-guide/profiles-and-hubs.md) |
+| 70 | → | [`docs/user-guide/sources.md`](docs/user-guide/sources.md) |
+| 71 | → | [`docs/user-guide/troubleshooting.md`](docs/user-guide/troubleshooting.md) |
+| 72 | → | [`README.md`](README.md) |
+| 73 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

@@ -99,7 +99,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 38 | ✓ | [`.agents/skills/non-wsq-lms-push/agents/openai.yaml`](.agents/skills/non-wsq-lms-push/agents/openai.yaml) |
 | 39 | ✓ | [`.agents/skills/non-wsq-lms-push/lms_push_nonwsq.py`](.agents/skills/non-wsq-lms-push/lms_push_nonwsq.py) |
 | 40 | ✓ | [`.agents/skills/non-wsq-lms-push/SKILL.md`](.agents/skills/non-wsq-lms-push/SKILL.md) |
-| 41 | ✓ | [`labs/lab-06-custom-skills-calendar/skills/interview-calendar/SKILL.md`](labs/lab-06-custom-skills-calendar/skills/interview-calendar/SKILL.md) |
+| 41 | ✓ | [`labs/lab-06-custom-skills-pareto-chart/skills/pareto-chart/SKILL.md`](labs/lab-06-custom-skills-pareto-chart/skills/pareto-chart/SKILL.md) |
 | 42 | ✓ | [`labs/lab-08-dashboard-skill-refresh-and-share/skills/hr-workforce-dashboard/SKILL.md`](labs/lab-08-dashboard-skill-refresh-and-share/skills/hr-workforce-dashboard/SKILL.md) |
 
 ---

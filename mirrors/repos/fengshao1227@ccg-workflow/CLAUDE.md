@@ -2,7 +2,7 @@
 
 > [根目录](../CLAUDE.md) > **skills-v2**
 
-**Last Updated**: 2026-09-15 (v3.6.7)
+**Last Updated**: 2026-10-12 (v3.7.1)
 
 > ⚠ 本文档主体仍停留在 v2.1.16 架构描述（v3.0 引擎重构后未全量同步）。下方变更记录保留 v3.x 修复轨迹，完整历史见 [CHANGELOG.md](./CHANGELOG.md)。
 
@@ -11,6 +11,22 @@
 ## 变更记录 (Changelog)
 
 > 完整变更历史请查看 [CHANGELOG.md](./CHANGELOG.md)
+
+### 2026-10-12 (v3.7.1)
+- 🐛 **新装 CLI 的 JSON 输出**：显式关闭兼容 i18next 新版的 support notice，避免赞助 banner 污染 `skills --json`、`doctor --json` 和版本输出。
+
+### 2026-10-12 (v3.7.0)
+- ✨ **Skills 按需管理**：新增 `ccg skills catalog/list/install/update/remove` 与菜单 S；Claude/Codex 原生 `ccg-*` 入口，immutable source cache、归属清单、写锁、事务回滚；脚本与参考依赖保留，入口只暴露所选技能。
+- ✨ **原生选择持久化**：初始化支持兼容/核心六项/自定义及 `--skills all|none|names`；重装优先读取当前 manifest，显式 legacy 模式可持久切回。
+- ✨ **诊断 JSON**：`doctor --json` 输出稳定 schema/checks/remediation/计数，失败退出 1；按真实 Claude/Codex/Skills-only 模式检查所选路由、Hook 和技能。
+- 🐛 **工作流闭环**：Hooks 配置安全注入，跟随实际后端及具体模型，单后端去重、纯 Claude 用原生 Agent；native 不重复注入旧知识，legacy 片段有大小预算。ESM 项目中的 Hook/skill scripts 有 CommonJS 边界。
+- 🐛 **配置和更新**：OpenCode provider/model 在 init/menu/重装保留；模型菜单复用本地 init；任一安装错误返回失败，不再让更新误清旧备份。
+
+### 2026-10-12 (v3.6.8)
+- 🐛 **dsh 0.2 插件适配（#163 / #165）**：删除失效的 settings 导出依赖，使用 Loader volatile Config 和 profile 表单读写；设置卡迁移到 `settings.plugins.tab`，browser inject 改为 `dsh-client-ui-renderer`。
+- 🐛 **两代委派接口兼容**：rc2 保留旧启动接口，alpha 使用 activation；模型群等待 caller 结果、检查完成状态并清理，队友通过 parent 完成通知交付。运行状态改读直接子级列表。
+- 🐛 **配置与安装结果**：修订号拒绝并发覆盖，非法矩阵在 Loader 提交前拒绝；安装器跟随目标 DSH_HOME 并链接稳定源码副本，链接失败不再报安装成功，Windows cmd shim 使用安全参数。
+- 🔄 **兼容范围**：dsh-ccg 0.5.0 支持 dsh 0.2.0-rc.2 / 0.2.1-alpha.2，不再支持旧 0.1.x；更新后重新运行 `ccg dsh install` 并重启 dsh。
 
 ### 2026-09-15 (v3.6.7)
 - 🐛 **npm 扫描 hold：** tarball 不再含 `templates/skills/domains/security/`（红队/渗透笔记）。3.6.5/3.6.6 的 PUT 成功但永不 GET。文件仍在 git。
@@ -350,7 +366,7 @@
 | TypeScript CLI 源码 | [src/CLAUDE.md](./src/CLAUDE.md) | CLI 主入口、命令实现、安装器、i18n、工具链 |
 | 模板文件 | [templates/CLAUDE.md](./templates/CLAUDE.md) | 斜杠命令、提示词、子智能体、技能、规则模板 |
 | codeagent-wrapper | [codeagent-wrapper/CLAUDE.md](./codeagent-wrapper/CLAUDE.md) | Go 二进制包装器，多模型调用桥接，v5.10.0 |
-| DSH 插件 | [dsh-ccg/CLAUDE.md](./dsh-ccg/CLAUDE.md) | CCG 角色矩阵的 DeepSeek Harness 形态，随主包发布，v0.4.6 |
+| DSH 插件 | [dsh-ccg/CLAUDE.md](./dsh-ccg/CLAUDE.md) | CCG 角色矩阵的 DeepSeek Harness 形态，随主包发布，v0.5.0 |
 
 ---
 

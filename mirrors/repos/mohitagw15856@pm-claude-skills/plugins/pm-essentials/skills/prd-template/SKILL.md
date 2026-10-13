@@ -128,6 +128,8 @@ Format: "As a [user type], I want to [action] so that [benefit]"
 - Related documents
 - Competitive analysis
 
+End every output with a short **Assumptions and gaps** block: two to four bullets naming what was assumed because the input did not say, and what missing information would most change this output. If nothing was assumed and nothing was missing, say so in one line instead.
+
 ## Writing Guidelines
 
 **Tone**: Clear, concise, actionable

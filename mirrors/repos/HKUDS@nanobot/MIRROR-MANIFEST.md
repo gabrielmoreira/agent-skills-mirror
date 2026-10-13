@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HKUDS/nanobot` — 26 default patterns, 10 followed patterns, 24 file(s) materialized.
+Mirror of `HKUDS/nanobot` — 26 default patterns, 11 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `HKUDS/nanobot` — 26 default patterns, 10 followed patterns, 24 file
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 10 |
-| Files         | 24 |
+| Followed pats | 11 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,6 +60,7 @@ Mirror of `HKUDS/nanobot` — 26 default patterns, 10 followed patterns, 24 file
 - `.agent/review-guide.md`
 - `CONTRIBUTING.md`
 - `docs/releasing.md`
+- `webui/README.md`
 - `COMMUNICATION.md`
 
 ## File Index
@@ -76,22 +77,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`nanobot/skills/image-generation/SKILL.md`](nanobot/skills/image-generation/SKILL.md) |
 | 7 | ✓ | [`nanobot/skills/memory/SKILL.md`](nanobot/skills/memory/SKILL.md) |
 | 8 | ✓ | [`nanobot/skills/my/SKILL.md`](nanobot/skills/my/SKILL.md) |
-| 9 | ✓ | [`nanobot/skills/skill-creator/SKILL.md`](nanobot/skills/skill-creator/SKILL.md) |
-| 10 | ✓ | [`nanobot/skills/summarize/SKILL.md`](nanobot/skills/summarize/SKILL.md) |
-| 11 | ✓ | [`nanobot/skills/tmux/SKILL.md`](nanobot/skills/tmux/SKILL.md) |
-| 12 | ✓ | [`nanobot/skills/update-setup/SKILL.md`](nanobot/skills/update-setup/SKILL.md) |
-| 13 | ✓ | [`nanobot/skills/weather/SKILL.md`](nanobot/skills/weather/SKILL.md) |
-| 14 | ✓ | [`nanobot/templates/AGENTS.md`](nanobot/templates/AGENTS.md) |
-| 15 | → | [`.agent/copywriting.md`](.agent/copywriting.md) |
-| 16 | → | [`.agent/design.md`](.agent/design.md) |
-| 17 | → | [`.agent/gotchas.md`](.agent/gotchas.md) |
-| 18 | → | [`.agent/review-guide.md`](.agent/review-guide.md) |
-| 19 | → | [`.agent/security.md`](.agent/security.md) |
-| 20 | → | [`.agent/simplify.md`](.agent/simplify.md) |
-| 21 | → | [`.agent/workflow.md`](.agent/workflow.md) |
-| 22 | → | [`COMMUNICATION.md`](COMMUNICATION.md) |
-| 23 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 24 | → | [`docs/releasing.md`](docs/releasing.md) |
+| 9 | ✓ | [`nanobot/skills/nanobot-document/SKILL.md`](nanobot/skills/nanobot-document/SKILL.md) |
+| 10 | ✓ | [`nanobot/skills/skill-creator/SKILL.md`](nanobot/skills/skill-creator/SKILL.md) |
+| 11 | ✓ | [`nanobot/skills/summarize/SKILL.md`](nanobot/skills/summarize/SKILL.md) |
+| 12 | ✓ | [`nanobot/skills/tmux/SKILL.md`](nanobot/skills/tmux/SKILL.md) |
+| 13 | ✓ | [`nanobot/skills/update-setup/SKILL.md`](nanobot/skills/update-setup/SKILL.md) |
+| 14 | ✓ | [`nanobot/skills/weather/SKILL.md`](nanobot/skills/weather/SKILL.md) |
+| 15 | ✓ | [`nanobot/templates/AGENTS.md`](nanobot/templates/AGENTS.md) |
+| 16 | → | [`.agent/copywriting.md`](.agent/copywriting.md) |
+| 17 | → | [`.agent/design.md`](.agent/design.md) |
+| 18 | → | [`.agent/gotchas.md`](.agent/gotchas.md) |
+| 19 | → | [`.agent/review-guide.md`](.agent/review-guide.md) |
+| 20 | → | [`.agent/security.md`](.agent/security.md) |
+| 21 | → | [`.agent/simplify.md`](.agent/simplify.md) |
+| 22 | → | [`.agent/workflow.md`](.agent/workflow.md) |
+| 23 | → | [`COMMUNICATION.md`](COMMUNICATION.md) |
+| 24 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 25 | → | [`docs/releasing.md`](docs/releasing.md) |
+| 26 | → | [`webui/README.md`](webui/README.md) |
 
 ---
 

@@ -26,11 +26,7 @@ import os
 import sys
 from typing import Optional
 
-try:
-    import requests
-except ImportError:
-    print("Error: 'requests' library not installed. Install with: pip install requests")
-    sys.exit(1)
+from fmp_client import FMPClient
 
 # Add scripts directory to path for data_quality import
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -42,42 +38,27 @@ from data_quality import (
     quarter_end_date,
 )
 
-STABLE_URL = "https://financialmodelingprep.com/stable"
-
 
 class SingleStockAnalyzer:
-    """Analyze institutional ownership for a single stock"""
+    """Analyze institutional ownership for a single stock.
+
+    HTTP/auth/retry live in the vendored ``fmp_client.py`` (generated,
+    Issue #495); the apikey is sent via header so it never appears in a URL.
+    Behavior drift (documented): transport failures still print to
+    stderr via the client, while plain HTTP-status ``None`` results no
+    longer print an ``Error fetching …`` line; consumers branch on the
+    returned None exactly as before.
+    """
 
     def __init__(self, api_key: str, as_of: Optional[datetime.date] = None):
         self.api_key = api_key
-        self.base_url = STABLE_URL
+        self._fmp = FMPClient(api_key=api_key)
         self._as_of = as_of or datetime.date.today()
         self._latest_yq: Optional[tuple[int, int]] = None
 
-    def _get(self, path: str, **params) -> Optional[object]:
-        """GET a /stable endpoint, returning parsed JSON or None.
-
-        The API key is sent via header (not query string) so it never appears
-        in a URL — including any URL embedded in a raised exception message.
-        """
-        symbol = params.get("symbol", "")
-        try:
-            response = requests.get(
-                f"{self.base_url}/{path}",
-                params=params,
-                headers={"apikey": self.api_key},
-                timeout=30,
-            )
-            response.raise_for_status()
-            return response.json()
-        except requests.exceptions.RequestException as e:
-            print(f"Error fetching {path} for {symbol}: {e}")
-            return None
-
     def get_company_profile(self, symbol: str) -> dict:
         """Get company profile information (/stable profile)."""
-        data = self._get("profile", symbol=symbol)
-        profile = data[0] if isinstance(data, list) and data else {}
+        profile = self._fmp.get_company_profile(symbol)
         # /stable returns marketCap; expose mktCap alias for legacy readers.
         if profile and "mktCap" not in profile and "marketCap" in profile:
             profile = {**profile, "mktCap": profile["marketCap"]}
@@ -85,15 +66,7 @@ class SingleStockAnalyzer:
 
     def get_ownership_summary(self, symbol: str, year: int, quarter: int) -> Optional[dict]:
         """Get the aggregate 13F positions summary for one symbol/quarter."""
-        data = self._get(
-            "institutional-ownership/symbol-positions-summary",
-            symbol=symbol,
-            year=year,
-            quarter=quarter,
-        )
-        if isinstance(data, list) and data:
-            return data[0]
-        return None
+        return self._fmp.get_13f_summary(symbol, year, quarter)
 
     def latest_summary(
         self, symbol: str, max_lookback: int = 5
@@ -120,13 +93,7 @@ class SingleStockAnalyzer:
         holders: list[dict] = []
         page = 0
         while len(holders) < limit and page < 5:
-            rows = self._get(
-                "institutional-ownership/extract-analytics/holder",
-                symbol=symbol,
-                year=year,
-                quarter=quarter,
-                page=page,
-            )
+            rows = self._fmp.get_institutional_holders(symbol, year, quarter, page=page)
             if not isinstance(rows, list) or not rows:
                 break
             holders.extend(normalize_holder(r) for r in rows)

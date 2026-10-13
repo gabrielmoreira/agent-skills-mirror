@@ -1,135 +1,135 @@
-# 基础信息录入脚本
+# Basic Info Intake Script
 
-## 开场白
+## Opening
 
 ```
-我来帮你创建这位同事的 Skill。只需要回答 3 个问题，每个都可以跳过。
+I'll help you create a Skill for this colleague. Just answer 3 questions — you can skip any of them.
 ```
 
 ---
 
-## 问题序列
+## Question Sequence
 
-### Q1：花名/代号
+### Q1: Alias / Codename
 
 ```
-这位同事怎么称呼？（花名、昵称或代号都行，多个字用 - 连接）
+What do you call this colleague? (An alias, nickname, or codename all work; join multiple words with -)
 
-例：qing-yun
+Example: qing-yun
 ```
 
-- 接受任意字符串
-- 生成的 slug 统一用 `-` 连接（不用下划线）
-- 中文自动转拼音再用 `-` 连接（"青云" → `qing-yun`，"小李" → `xiao-li`）
-- 英文直接小写 `-` 连接（"Big Mike" → `big-mike`）
+- Accept any string
+- The generated slug always uses `-` as the separator (no underscores)
+- Chinese names are automatically converted to pinyin and joined with `-` (a Chinese name such as "Qingyun" → `qing-yun`, "Xiao Li" → `xiao-li`)
+- English names are lowercased and joined with `-` ("Big Mike" → `big-mike`)
 
 ---
 
-### Q2：基本信息
+### Q2: Basic Info
 
-把公司、职级、职位、性别放在一个问题里，让用户一句话说完：
+Put company, level, role, and gender into a single question so the user can answer in one sentence:
 
 ```
-用一句话描述他的基本信息——公司、职级、职位、性别，想到什么写什么，跳过也行。
+Describe their basic info in one sentence — company, level, role, gender. Write whatever comes to mind, or skip it.
 
-例：字节 2-1 后端工程师 男
+Example: ByteDance 2-1 backend engineer male
 ```
 
-从用户的回答中解析以下字段（缺失的留空）：
-- **公司**
-- **职级**
-- **职位**
-- **性别**
+Parse the following fields from the user's answer (leave missing ones blank):
+- **Company**
+- **Level**
+- **Role**
+- **Gender**
 
-#### 职级对照参考表
+#### Level Reference Table
 
-| 公司 | 职级格式 | 工程师/研究员 | 高级工程师 | 资深/专家 | Staff/Principal |
+| Company | Level format | Engineer/Researcher | Senior Engineer | Senior Staff/Expert | Staff/Principal |
 |------|---------|------------|---------|---------|----------------|
-| 字节跳动 | X-Y | 2-1, 2-2 | 3-1, 3-2 | 3-3 | 3-3+（O级） |
-| 阿里巴巴 | P级 | P5, P6 | P7 | P8 | P9+ |
-| 腾讯 | T级 | T1-1~T2-2 | T3-1, T3-2 | T4 | T4+ |
-| 百度 | T级 | T5, T6 | T7 | T8 | T9+ |
-| 美团 | P级 | P4, P5 | P6 | P7 | P8+ |
-| 华为 | 数字级 | 13-15 | 16-17 | 18-19 | 20-21 |
-| 网易 | P级 | P1-P3 | P4 | P5 | P6+ |
-| 京东 | T级 | T3-T4 | T5 | T6 | T7+ |
-| 小米 | 数字级 | 1-3 | 4-5 | 6-7 | 8+ |
+| ByteDance | X-Y | 2-1, 2-2 | 3-1, 3-2 | 3-3 | 3-3+ (O-level) |
+| Alibaba | P-level | P5, P6 | P7 | P8 | P9+ |
+| Tencent | T-level | T1-1~T2-2 | T3-1, T3-2 | T4 | T4+ |
+| Baidu | T-level | T5, T6 | T7 | T8 | T9+ |
+| Meituan | P-level | P4, P5 | P6 | P7 | P8+ |
+| Huawei | Numeric | 13-15 | 16-17 | 18-19 | 20-21 |
+| NetEase | P-level | P1-P3 | P4 | P5 | P6+ |
+| JD.com | T-level | T3-T4 | T5 | T6 | T7+ |
+| Xiaomi | Numeric | 1-3 | 4-5 | 6-7 | 8+ |
 
-**跨公司粗略对应**：
+**Rough cross-company mapping**:
 
 ```
-字节 2-1/2-2  ≈  阿里 P6   ≈  腾讯 T2  ≈  百度 T6
-字节 3-1      ≈  阿里 P7   ≈  腾讯 T3-1 ≈  百度 T7
-字节 3-2      ≈  阿里 P7+  ≈  腾讯 T3-2
-字节 3-3      ≈  阿里 P8   ≈  腾讯 T4
+ByteDance 2-1/2-2  ≈  Alibaba P6   ≈  Tencent T2   ≈  Baidu T6
+ByteDance 3-1      ≈  Alibaba P7   ≈  Tencent T3-1 ≈  Baidu T7
+ByteDance 3-2      ≈  Alibaba P7+  ≈  Tencent T3-2
+ByteDance 3-3      ≈  Alibaba P8   ≈  Tencent T4
 ```
 
-> 注：字节 2-1 是工程师职称，3-1 起为高级工程师；
-> 2-1 约等于阿里 P6，是独立完成任务的主力工程师级别。
+> Note: ByteDance 2-1 is the Engineer title; Senior Engineer starts at 3-1.
+> 2-1 is roughly equivalent to Alibaba P6 — a core engineer who completes tasks independently.
 
 ---
 
-### Q3：性格画像
+### Q3: Personality Profile
 
-把 MBTI、星座、个性标签、企业文化标签、主观印象全部合在一起，让用户自由描述：
+Combine MBTI, zodiac sign, personality tags, corporate culture tags, and subjective impressions, and let the user describe freely:
 
 ```
-用一句话描述他的性格——MBTI、星座、个性特点、企业文化烙印、你对他的印象，
-想到什么写什么，跳过也行。
+Describe their personality in one sentence — MBTI, zodiac sign, traits, corporate culture imprint, your impression of them.
+Write whatever comes to mind, or skip it.
 
-例：INTJ 摩羯座 甩锅高手 字节范 CR很严格但从来不解释原因
+Example: INTJ Capricorn master blame-shifter ByteDance-style very strict in CR but never explains why
 ```
 
-从用户的回答中识别并提取以下字段（缺失的留空）：
-- **MBTI**：16 种标准类型
-- **星座**：12 星座
-- **个性标签**：从下方标签库匹配，也接受自定义描述
-- **企业文化标签**：从下方标签库匹配
-- **主观印象**：无法归类的自由描述，直接保留原文
+Identify and extract the following fields from the user's answer (leave missing ones blank):
+- **MBTI**: the 16 standard types
+- **Zodiac**: the 12 signs
+- **Personality tags**: match against the tag library below; custom descriptions are also accepted
+- **Corporate culture tags**: match against the tag library below
+- **Subjective impression**: free-form description that can't be categorized; keep the original text as-is
 
-#### 个性标签库
+#### Personality Tag Library
 
-**工作态度**：认真负责 / 差不多就行 / 甩锅高手 / 背锅侠 / 完美主义 / 拖延症
+**Work attitude**: Conscientious / Good-enough / Master blame-shifter / Scapegoat / Perfectionist / Procrastinator
 
-**沟通风格**：直接 / 绕弯子 / 话少 / 话多 / 爱发语音 / 只读不回 / 已读乱回 / 秒回强迫症
+**Communication style**: Direct / Beats around the bush / Quiet / Talkative / Loves voice messages / Reads but never replies / Replies off-topic / Compulsive instant replier
 
-**决策风格**：果断 / 反复横跳 / 依赖上级 / 强势推进 / 数据驱动 / 全凭感觉
+**Decision style**: Decisive / Flip-flopper / Defers to the boss / Pushes hard / Data-driven / Goes by gut feeling
 
-**情绪风格**：情绪稳定 / 玻璃心 / 容易激动 / 冷漠疏离 / 表面和气 / 阴阳怪气
+**Emotional style**: Emotionally stable / Thin-skinned / Easily agitated / Cold and distant / Superficially pleasant / Passive-aggressive
 
-**话术与手段**：PUA 高手 / 职场政治玩家 / 甩锅艺术家 / 向上管理专家 / 爱讲大道理 / 情绪勒索
+**Tactics and maneuvers**: Gaslighting expert / Office politics player / Blame-shifting artist / Managing-up expert / Loves to lecture on principles / Emotional blackmailer
 
-#### 企业文化标签库
+#### Corporate Culture Tag Library
 
-- **字节范** — 坦诚直接、追求 impact、开口必讲 context、爱说"对齐"
-- **阿里味** — 六脉神剑、爱用"赋能""抓手""生态""闭环"
-- **腾讯味** — 数据说话、赛马机制、克制保守、注重用户体验
-- **华为味** — 奋斗者文化、流程规范、爱做 PPT 汇报、强调执行力
-- **百度味** — 技术至上、层级意识强、内部竞争激烈
-- **美团味** — 极致执行、抠细节、本地化思维
-- **第一性原理** — 马斯克式，追问本质、拒绝类比、激进简化
-- **OKR 狂热者** — 凡事先问 Objective、对 KR 斤斤计较
-- **大厂流水线** — 规范完善但创造力低、依赖 SOP、怕背锅
-- **创业公司派** — 资源有限、全栈思维、结果导向、容忍混乱
+- **ByteDance-style** — candid and direct, chases impact, always opens with context, loves to say "align"
+- **Alibaba-flavor** — the "Six Vein Spirit Sword" values, loves "empower", "lever", "ecosystem", "closed loop"
+- **Tencent-flavor** — lets data speak, horse-race mechanism, restrained and conservative, focused on user experience
+- **Huawei-flavor** — striver culture, process and standards, loves PPT reporting, emphasizes execution
+- **Baidu-flavor** — technology above all, strong hierarchy awareness, fierce internal competition
+- **Meituan-flavor** — extreme execution, obsesses over details, localization mindset
+- **First principles** — Musk-style, digs for the essence, rejects analogy, radical simplification
+- **OKR zealot** — asks for the Objective first in everything, nitpicks every KR
+- **Big-tech assembly line** — well-established standards but low creativity, relies on SOPs, afraid of taking blame
+- **Startup type** — limited resources, full-stack mindset, results-oriented, tolerates chaos
 
 ---
 
-## 确认汇总
+## Confirmation Summary
 
-收集完毕后展示：
+After collection, display:
 
 ```
-信息汇总：
+Info summary:
 
-  👤  {花名}
-  🏢  {公司} {职级} {职位}（若未填则省略）
-  ⚧   {性别}（若未填则省略）
-  🧠  {MBTI} {星座}（若未填则省略）
-  🏷️   个性：{标签列表}（若未填则省略）
-  🏢  企业文化：{标签列表}（若未填则省略）
-  💬  印象：{印象文本}（若未填则省略）
+  👤  {alias}
+  🏢  {company} {level} {role} (omit if not provided)
+  ⚧   {gender} (omit if not provided)
+  🧠  {MBTI} {zodiac} (omit if not provided)
+  🏷️   Personality: {tag list} (omit if not provided)
+  🏢  Corporate culture: {tag list} (omit if not provided)
+  💬  Impression: {impression text} (omit if not provided)
 
-确认无误？（确认 / 修改 [字段名]）
+Is this correct? (confirm / edit [field name])
 ```
 
-用户确认后进入 Step 2 文件导入。
+Once the user confirms, proceed to Step 2: file import.

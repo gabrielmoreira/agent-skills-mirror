@@ -267,6 +267,8 @@ def load_subtitle_font(path, size, text):
 # 说话人前缀：比台词小一号、用强调色，与台词共用基线。
 SPEAKER_PREFIX_SCALE = 0.68
 SPEAKER_PREFIX_FILL = (255, 214, 74)
+EMPHASIS_FILL = (255, 196, 64)
+EMPHASIS_PLATE_ALPHA = 110
 SPEAKER_MODES = ("none", "on-change", "every")
 
 
@@ -276,7 +278,8 @@ def speaker_label(speaker, text):
 
 
 def draw_scripted_subtitle(
-    image, text, y_center, font_path, font_size, max_width, speaker=None
+    image, text, y_center, font_path, font_size, max_width, speaker=None,
+    emphasis=False,
 ):
     draw = ImageDraw.Draw(image)
     minimum = max(12, round(font_size * 0.55))
@@ -295,7 +298,7 @@ def draw_scripted_subtitle(
     box = None
     for size in range(font_size, minimum - 1, -2):
         font = load_subtitle_font(font_path, size, text)
-        stroke = max(2, size // 14)
+        stroke = max(3, size // 10) if emphasis else max(2, size // 14)
         candidate_box = draw.textbbox(
             (0, 0), text, font=font, stroke_width=stroke
         )
@@ -312,6 +315,21 @@ def draw_scripted_subtitle(
     text_height = box[3] - box[1]
     x = (image.width - label_width - text_width) // 2 - box[0] + label_width
     y = y_center - text_height // 2 - box[1]
+    if emphasis:
+        # 轻微半透明底衬，只铺在这一行的文字范围内；先画底衬，避免压暗前缀和台词。
+        pad = max(4, size // 4)
+        left = x + box[0] - label_width - pad
+        right = x + box[2] + pad
+        top = y + box[1] - pad // 2
+        bottom = y + box[3] + pad // 2
+        plate = Image.new("RGBA", image.size, (0, 0, 0, 0))
+        ImageDraw.Draw(plate).rounded_rectangle(
+            (left, top, right, bottom), radius=pad,
+            fill=(0, 0, 0, EMPHASIS_PLATE_ALPHA),
+        )
+        blended = Image.alpha_composite(image.convert("RGBA"), plate).convert(image.mode)
+        image.paste(blended)
+        draw = ImageDraw.Draw(image)
     if label:
         # 默认锚点在字形上沿，基线 = y + ascent；前缀对齐到台词基线。
         baseline = y + font.getmetrics()[0]
@@ -328,7 +346,7 @@ def draw_scripted_subtitle(
         (x, y),
         text,
         font=font,
-        fill="white",
+        fill=EMPHASIS_FILL if emphasis else "white",
         stroke_width=stroke,
         stroke_fill="black",
     )
@@ -363,6 +381,11 @@ def normalize_script_lines(data, duration, speaker_mode="none"):
         if "\n" in text or "\r" in text:
             raise SystemExit(f"lines[{index}].text 必须是单行台词")
         entry = {"t": seconds, "text": text}
+        emphasis = item.get("emphasis")
+        if emphasis is not None:
+            if not isinstance(emphasis, bool):
+                raise SystemExit(f"lines[{index}].emphasis 必须是 true 或 false")
+            entry["emphasis"] = emphasis
         speaker = item.get("speaker")
         if speaker is not None:
             if not isinstance(speaker, str) or not speaker.strip():
@@ -379,6 +402,34 @@ def normalize_script_lines(data, duration, speaker_mode="none"):
         normalized.append(entry)
         previous = seconds
     return normalized
+
+
+def apply_emphasis(lines, target):
+    """target 为 None 或 "last" / 1 起算的行号；写入 emphasis 字段，JSON 里显式标注的行保留。"""
+    if target is None:
+        return lines
+    if target == "last":
+        index = len(lines) - 1
+    else:
+        index = target - 1
+        if not 0 <= index < len(lines):
+            raise SystemExit(
+                f"--emphasize-line {target} 超出范围；台词共 {len(lines)} 句（行号从 1 起算）"
+            )
+    lines[index]["emphasis"] = True
+    return lines
+
+
+def parse_emphasize_line(value):
+    if value == "last":
+        return value
+    try:
+        number = int(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError("须为 last 或从 1 起算的行号") from None
+    if number < 1:
+        raise argparse.ArgumentTypeError("须为 last 或从 1 起算的行号")
+    return number
 
 
 def apply_speaker_prefix(lines, mode):
@@ -493,22 +544,50 @@ def scale_to_width(image, width):
     return image.resize((width, height), Image.Resampling.LANCZOS)
 
 
-def stack_parts(parts):
+DIVIDER_HEIGHT = 2
+DIVIDER_COLOR = (96, 96, 96)
+MAX_STRIP_GAP = 8
+
+
+def layout_gaps(strip_count, strip_gap=0, hero_divider="none"):
+    """部件之间插入的 (高度, 颜色) 列表；只新增背景像素，不覆盖任何画面。"""
+    gaps = []
+    if strip_count:
+        gaps.append((DIVIDER_HEIGHT, DIVIDER_COLOR) if hero_divider == "line" else (0, "black"))
+        gaps.extend([(strip_gap, "black")] * (strip_count - 1))
+    return gaps
+
+
+def stack_parts(parts, gaps=None):
     if any(part.width != parts[0].width for part in parts):
         raise SystemExit("源帧宽度不一致；请先检查视频旋转或分辨率变化")
-    canvas = Image.new("RGB", (parts[0].width, sum(p.height for p in parts)), "black")
+    gaps = gaps or [(0, "black")] * (len(parts) - 1)
+    total = sum(p.height for p in parts) + sum(h for h, _ in gaps)
+    canvas = Image.new("RGB", (parts[0].width, total), "black")
     y = 0
-    for part in parts:
+    for index, part in enumerate(parts):
         canvas.paste(part, (0, y))
         y += part.height
+        if index < len(gaps) and gaps[index][0]:
+            canvas.paste(gaps[index][1], (0, y, part.width, y + gaps[index][0]))
+            y += gaps[index][0]
     return canvas
 
 
-def save_stack(parts, out_path):
-    canvas = stack_parts(parts)
+def gap_note(strip_gap, hero_divider):
+    notes = []
+    if hero_divider == "line":
+        notes.append(f"主图与字幕条间 {DIVIDER_HEIGHT}px 分隔线")
+    if strip_gap:
+        notes.append(f"条间缝隙 {strip_gap}px")
+    return "，".join(notes) or "条间距 0"
+
+
+def save_stack(parts, out_path, gaps=None, note="条间距 0"):
+    canvas = stack_parts(parts, gaps)
     canvas.save(out_path, quality=93, subsampling=0)
     print(f"完成: {out_path} ({canvas.width}x{canvas.height})")
-    print("原比例布局: 仅裁切与等比缩放，高度随内容计算，条间距 0")
+    print(f"原比例布局: 仅裁切与等比缩放，高度随内容计算，{note}")
 
 
 def subtitle_extent(band):
@@ -591,7 +670,7 @@ def fit_fixed_canvas(stack, extents, size, fit="crop", crop_center=0.5):
 def render_one(
     video, times, out_path, aspect, out_width, top, bottom, hero_fraction,
     layout="natural", fit="crop", crop_center=0.5, check_duplicates=False,
-    hero_zoom=1.0,
+    hero_zoom=1.0, strip_gap=0, hero_divider="none",
 ):
     times = normalize_times(times)
     frames = [grab_frame(video, seconds) for seconds in times]
@@ -615,7 +694,8 @@ def render_one(
         zoomed.paste(scene, (0, 0))
         hero = zoomed
     # 先拼源像素，再对整张画布缩放：所有原生字幕只经历同一个几何变换。
-    source_stack = stack_parts([hero, *bands])
+    # 缝隙与分隔线是新增的背景像素，随整图一起缩放，不覆盖字幕条。
+    source_stack = stack_parts([hero, *bands], layout_gaps(len(bands), strip_gap, hero_divider))
     if layout == "natural":
         width = out_width or first.width
         canvas = scale_to_width(source_stack, width)
@@ -628,7 +708,7 @@ def render_one(
         )
     canvas.save(out_path, quality=93, subsampling=0)
     print(f"完成: {out_path} ({canvas.width}x{canvas.height})")
-    print(f"原生字幕: 整图统一等比缩放，字幕条 {len(bands)} 个，条间距 0")
+    print(f"原生字幕: 整图统一等比缩放，字幕条 {len(bands)} 个，{gap_note(strip_gap, hero_divider)}")
     if layout == "fixed":
         print(f"固定画布: {fit_note}")
 
@@ -649,6 +729,8 @@ def scripted_render_one(
     check_duplicates=False,
     six_line_card=False,
     hero_zoom=1.0,
+    strip_gap=0,
+    hero_divider="none",
 ):
     frames = [
         crop_band(grab_frame(video, line["t"]), frame_top, frame_bottom)[0]
@@ -668,6 +750,7 @@ def scripted_render_one(
             hero, lines[0]["text"], hero.height - strip_height // 2,
             font_path, base_font, round(out_width * 0.92),
             speaker=lines[0].get("prefix"),
+            emphasis=lines[0].get("emphasis", False),
         )
         parts = [hero]
         for line, frame in zip(lines[1:], frames[1:]):
@@ -679,9 +762,13 @@ def scripted_render_one(
                 strip, line["text"], strip.height // 2,
                 font_path, base_font, round(out_width * 0.92),
                 speaker=line.get("prefix"),
+                emphasis=line.get("emphasis", False),
             )
             parts.append(strip)
-        save_stack(parts, out_path)
+        save_stack(
+            parts, out_path, layout_gaps(len(parts) - 1, strip_gap, hero_divider),
+            gap_note(strip_gap, hero_divider),
+        )
         return
     aw, ah = aspect
     out_height = round(out_width * ah / aw)
@@ -691,11 +778,15 @@ def scripted_render_one(
         # Keep the strip pitch proportional when --width changes.
         hero_height, strip_height, hero_fraction = six_line_geometry(out_width, out_height)
         strip_heights = [strip_height] * strip_count
+        gaps = layout_gaps(strip_count)
         base_font = font_size or max(24, round(out_width * 0.0587))
     else:
         hero_fraction = choose_hero_fraction(strip_count, hero_fraction)
         hero_height = round(out_height * hero_fraction)
-        remaining = out_height - hero_height
+        gaps = layout_gaps(strip_count, strip_gap, hero_divider)
+        remaining = out_height - hero_height - sum(h for h, _ in gaps)
+        if remaining < strip_count * 16:
+            raise SystemExit("缝隙与分隔线占用过多高度；请减小 --strip-gap 或 --hero-fraction")
         base_strip = remaining // strip_count
         strip_heights = [base_strip] * strip_count
         strip_heights[-1] += remaining - sum(strip_heights)
@@ -719,6 +810,7 @@ def scripted_render_one(
         min(base_font, max(16, round(first_strip_height * 0.62))),
         round(out_width * 0.92),
         speaker=lines[0].get("prefix"),
+        emphasis=lines[0].get("emphasis", False),
     )
 
     strips = []
@@ -744,20 +836,25 @@ def scripted_render_one(
             min(base_font, max(16, round(strip.height * 0.62))),
             round(out_width * 0.92),
             speaker=line.get("prefix"),
+            emphasis=line.get("emphasis", False),
         )
         strips.append(strip)
 
     canvas = Image.new("RGB", (out_width, out_height), "black")
     canvas.paste(hero, (0, 0))
     y = hero_height
-    for strip in strips:
+    for index, strip in enumerate(strips):
+        height, color = gaps[index]
+        if height:
+            canvas.paste(color, (0, y, out_width, y + height))
+            y += height
         canvas.paste(strip, (0, y))
         y += strip.height
     canvas.save(out_path, quality=93, subsampling=0)
     print(f"完成: {out_path} ({out_width}x{out_height})")
     print(
         f"脚本模式: 主画面 {hero_fraction:.1%}，"
-        f"字幕条 {strip_count} 个，条间距 0"
+        f"字幕条 {strip_count} 个，{gap_note(strip_gap, hero_divider)}"
     )
 
 
@@ -1067,6 +1164,8 @@ def command_render(args):
                 0.5 if args.crop_center is None else args.crop_center,
                 check_duplicates=not args.allow_duplicate_frames,
                 hero_zoom=hero_zoom_for_card(args.hero_zoom, index - 1),
+                strip_gap=args.strip_gap,
+                hero_divider=args.hero_divider,
             )
         except (Exception, SystemExit) as exc:
             if not keep_going:
@@ -1109,6 +1208,7 @@ def command_render_script(args):
         ) from None
     lines = normalize_script_lines(data, duration, args.speaker_prefix)
     apply_speaker_prefix(lines, args.speaker_prefix)
+    apply_emphasis(lines, args.emphasize_line)
     if args.speaker_prefix == "none" and any("speaker" in line for line in lines):
         print("提示: 台词含 speaker 字段，但未启用 --speaker-prefix，画面不显示说话人")
     if args.six_line_card:
@@ -1136,6 +1236,8 @@ def command_render_script(args):
         check_duplicates=not args.allow_duplicate_frames,
         six_line_card=args.six_line_card,
         hero_zoom=hero_zoom_for_card(args.hero_zoom, 0),
+        strip_gap=args.strip_gap,
+        hero_divider=args.hero_divider,
     )
 
 
@@ -1238,6 +1340,14 @@ def main():
         action="store_true",
         help="续跑：跳过已存在且有效的图，只渲染缺失或失败的卡（隐含 --keep-going）",
     )
+    render.add_argument(
+        "--strip-gap", type=int, default=0,
+        help="字幕条之间的黑色呼吸缝像素，0–8，默认 0；只新增背景像素，不覆盖画面",
+    )
+    render.add_argument(
+        "--hero-divider", choices=("none", "line"), default="none",
+        help="主图与字幕条之间插入 2px 细分隔线（line），默认 none；插入而非叠加，不改原画面",
+    )
     render.set_defaults(func=command_render)
 
     scripted = sub.add_parser(
@@ -1280,12 +1390,25 @@ def main():
              "需在台词 JSON 每句写 speaker",
     )
     scripted.add_argument(
+        "--emphasize-line", type=parse_emphasize_line, metavar="N|last",
+        help="强调指定行（暖色、加粗描边、轻微底衬）：last 为最后一句，数字从 1 起算；"
+             "默认不强调。也可在台词 JSON 的某句写 \"emphasis\": true。仅脚本模式",
+    )
+    scripted.add_argument(
         "--allow-duplicate-frames",
         action="store_true",
         help="跳过重复画面检查（默认遇到静态封面或重复字幕条会中止）",
     )
     scripted.add_argument("--overwrite", action="store_true")
     scripted.add_argument("--tmp-dir", help=TMP_DIR_HELP)
+    scripted.add_argument(
+        "--strip-gap", type=int, default=0,
+        help="字幕条之间的黑色呼吸缝像素，0–8，默认 0；只新增背景像素，不覆盖画面",
+    )
+    scripted.add_argument(
+        "--hero-divider", choices=("none", "line"), default="none",
+        help="主图与字幕条之间插入 2px 细分隔线（line），默认 none；插入而非叠加，不改原画面",
+    )
     scripted.set_defaults(func=command_render_script)
 
     args = parser.parse_args()
@@ -1314,6 +1437,13 @@ def main():
             raise SystemExit("--crop-center 只用于 --fit crop")
     if hasattr(args, "aspect") and args.aspect is None:
         args.aspect = parse_aspect("3:4")
+    if hasattr(args, "strip_gap"):
+        if not 0 <= args.strip_gap <= MAX_STRIP_GAP:
+            raise SystemExit(f"--strip-gap 必须在 0–{MAX_STRIP_GAP} 之间")
+        if getattr(args, "six_line_card", False) and (
+            args.strip_gap or args.hero_divider != "none"
+        ):
+            raise SystemExit("--six-line-card 使用固定几何，不接受 --strip-gap 或 --hero-divider")
     if getattr(args, "six_line_card", False):
         if args.layout != "fixed" or not math.isclose(args.aspect[0] / args.aspect[1], 0.75):
             raise SystemExit("--six-line-card 只支持固定 3:4 布局")

@@ -82,7 +82,9 @@ the workaround goes and the record comes from OpenCode.
   without OpenCode's message or log `ref`.
 
 Open asks upstream (OpenCode Slack): declaring 500 bodies on session
-mutations. Dropped: an import route for missing 1.x
+mutations; `provider.list` and `agent.list` waiting for plugin activation the
+way `model.list` does since 2.0.27, which would retire the cold-catalog
+recovery in `useConfigStore`. Dropped: an import route for missing 1.x
 sessions (the top-up workaround is enough). Check the newest tag before re-asking.
 
 ## Behaviour to expect
@@ -95,6 +97,9 @@ gap.
   one without plugin providers, and the full list about two seconds later,
   announced by `provider.updated` / `model.updated` with that
   `location.directory`. Recovery rides on those events (`markConfigCatalogStale`).
+  Since 2.0.27 `model.list` and `model.default` wait up to 5 seconds for the
+  location's plugins; `provider.list` and `agent.list` still answer early, so
+  the recovery stays.
 - **Plugin providers exist only in the running OpenCode.** Nothing about them
   reaches `opencode.json` or `auth.json`; `/api/provider` is the only view, and
   it strips `options.fetch`, so nothing tells a directly callable provider from

@@ -78,5 +78,7 @@ Downstream launcher hosts may use `createDevelopmentLauncherDescriptor` from
 mode. It verifies one signer against a private APK copy and returns a hash-bound
 descriptor; it grants no production signer authority. `stageLauncher` rechecks
 the staged bytes, manifest and signer, and accepts an optional SDK environment.
+Optional same-signer companion packages are staged beside the launcher without
+grants or privileged placement.
 Product identity, output selection and independently reviewed production
 descriptors remain with the consumer.

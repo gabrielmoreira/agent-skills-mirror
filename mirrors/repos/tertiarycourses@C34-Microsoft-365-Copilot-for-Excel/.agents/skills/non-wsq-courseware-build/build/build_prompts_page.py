@@ -107,7 +107,7 @@ def render_lab(lab):
             # a hands-on Excel step with no Copilot prompt (e.g. create the table) — show it in sequence
             blocks.append(
                 f'<article class="prompt manual"><header><div><span class="pname">Lab {n} · Step {i}</span>'
-                f'<span class="ptool">Do this in Excel first — no Copilot prompt</span></div></header>'
+                f'<span class="ptool">Do this yourself — no Copilot prompt</span></div></header>'
                 f'<p>{esc(instr)}</p>{info}</article>')
         for kind, tag, body in items:
             if kind == "prompt":

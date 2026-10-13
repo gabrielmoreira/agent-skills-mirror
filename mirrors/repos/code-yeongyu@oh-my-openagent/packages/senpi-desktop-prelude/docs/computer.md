@@ -31,6 +31,8 @@ win.menu.select(path, { delivery? }?) → None
     Exec tier: invokes the leaf command `path` names. Matching prefers a case-insensitive exact title, otherwise compares titles ignoring a trailing `...` or `…`; each tier must match exactly one item. An ambiguous label, a disabled item anywhere in the path, a submenu as the leaf, or an untitled separator is refused and NOTHING is dispatched; the engine revalidates the command before the press. Background delivery (the default) refuses an app that has several windows, because the command would act on whichever window that app treats as key; pass `{ delivery: "foreground" }` (Python: `delivery='foreground'`) to raise and key this window first, which needs the human-confirmed grant (`computer.control.acquire`).
 win.ax({ all?, maxDepth? }?) → str
     One formatted TEXT tree, one node per line with `[ref=eN]` tags; NEVER iterate or `.map` it.
+win.observe({ silent?, all?, maxDepth?, maxNodes? }?) → ComputerObserveResult
+    Read tier: one atomic window screenshot plus AX text, nodeCount and truncated. Displays the screenshot then AX text unless silent. The input frame and AX refs change only when both succeed and the reply can be delivered; failure or cancellation preserves the previous frame and delivered ref generations. Window handles only. An older engine without observe refuses it without changing screenshot() or ax().
 win.find({ role?, title?, value?, limit? }) → ComputerElement[]
 win.ref("e5") / computer.ref("e5") → ComputerElement | null
 computer.elementAt(x, y) / computer.focusedElement() → ComputerElement | null

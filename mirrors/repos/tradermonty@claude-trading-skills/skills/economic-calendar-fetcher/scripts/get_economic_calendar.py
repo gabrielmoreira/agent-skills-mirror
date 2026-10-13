@@ -8,11 +8,10 @@ import argparse
 import json
 import os
 import sys
-import urllib.error
-import urllib.parse
-import urllib.request
 from datetime import datetime, timedelta
 from typing import Optional
+
+from fmp_client import FMPClient
 
 
 def get_api_key() -> Optional[str]:
@@ -32,6 +31,14 @@ def fetch_economic_calendar(from_date: str, to_date: str, api_key: str) -> list[
     """
     Fetch economic calendar data from FMP API.
 
+    HTTP/auth/retry live in the vendored ``fmp_client.py`` (generated,
+    Issue #495). The client's ``get_economic_calendar`` extension keeps the
+    raise semantics the old urllib implementation pinned: 402 → the exact
+    upgrade-required ``ValueError``; other HTTP failures → ``API returned
+    status code {code}``; transport failures → ``Network error: ...``;
+    non-list 200 payload → ``Unexpected API response format``. Header auth
+    (deliberate change from query-param): the key never appears in a URL.
+
     Args:
         from_date: Start date in YYYY-MM-DD format
         to_date: End date in YYYY-MM-DD format
@@ -41,44 +48,11 @@ def fetch_economic_calendar(from_date: str, to_date: str, api_key: str) -> list[
         List of economic event dictionaries
 
     Raises:
-        urllib.error.HTTPError: If API request fails
-        ValueError: If response is invalid, or if the endpoint is restricted (402)
+        ValueError: If response is invalid, transport fails, or the endpoint
+            is restricted (402)
     """
-    base_url = "https://financialmodelingprep.com/stable/economic-calendar"
-
-    # Build query parameters (stable API uses apikey as query param)
-    params = {"from": from_date, "to": to_date, "apikey": api_key}
-
-    # Construct URL with parameters
-    url = f"{base_url}?{urllib.parse.urlencode(params)}"
-
-    try:
-        # Make API request
-        request = urllib.request.Request(url)
-        with urllib.request.urlopen(request) as response:
-            if response.status != 200:
-                raise ValueError(f"API returned status code {response.status}")
-
-            data = json.loads(response.read().decode("utf-8"))
-
-            if not isinstance(data, list):
-                raise ValueError(f"Unexpected API response format: {type(data)}")
-
-            return data
-
-    except urllib.error.HTTPError as e:
-        error_body = e.read().decode("utf-8") if e.fp else "No error details"
-        if e.code == 402:
-            raise ValueError(
-                "FMP API returned 402 Payment Required: the Economic Calendar endpoint "
-                "is not included in your current FMP subscription tier. Upgrade your plan "
-                f"at https://financialmodelingprep.com/ to access this endpoint. Details: {error_body}"
-            )
-        raise urllib.error.HTTPError(
-            e.url, e.code, f"FMP API error: {e.reason}. Details: {error_body}", e.hdrs, e.fp
-        )
-    except urllib.error.URLError as e:
-        raise ValueError(f"Network error: {e.reason}")
+    client = FMPClient(api_key=api_key)
+    return client.get_economic_calendar(from_date, to_date)
 
 
 def validate_date_range(from_date: str, to_date: str) -> None:

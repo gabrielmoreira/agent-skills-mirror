@@ -65,6 +65,8 @@ A button that opens a page, panel, or search field is a toggle: while what it op
 
 Controls in one row share one height. Every dropdown trigger on desktop is 28px (`dropdownTriggerVariants()` default, `SelectTrigger`), in forms and toolbars alike. Toolbars, filter rows and the context panel header use 28px throughout: `Button size="sm"`, `<Input inputSize="compact">`, and the active-pill tab strip (its default). Form inputs and buttons stay 32px (`default`). Pick the size variant instead of overriding `h-*` at the call site to match a neighbour; mobile/touch branches keep their own larger sizes (`mobile`, `touch`).
 
+Extensions draw these controls from their own copy, the SDK UI kit in `packages/sdk/src/ui`. A change to a shared primitive's size, radius, or states (button, input, dropdown trigger, select item, checkbox, tabs, badge) also changes its twin in `packages/sdk/src/ui/style.ts` in the same change: appearance in `GUEST_UI_LOOK_CSS`, which the server serves to installed extensions, sizes in `UI_SIZE_CSS`, which reach an extension when its author rebuilds. Then rebuild the SDK example bundles (`packages/sdk/DOCUMENTATION.md`).
+
 ## Keyboard Navigation Contract
 
 - Menus, selects, and autocomplete pickers with ArrowDown/ArrowUp navigation must also support Ctrl+N/Ctrl+P, including submenus and searchable lists.

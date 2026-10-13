@@ -183,8 +183,27 @@ class FMPClient:
         # an endpoint was called with quiet=True.
         self._last_error: Optional[str] = None
 
+    def _redact_secret(self, text) -> str:
+        """Mask the API key in ``text`` by VALUE, then by URL query pattern.
+
+        ``_redact_key`` only masks ``?apikey=...`` in URLs; a proxy or API
+        error body can echo the bare key, so every message that may reach
+        stderr or ``_last_error`` goes through this first.
+        """
+        text = _redact_key(text)
+        # Mask every accepted key regardless of length: leaking a key matters
+        # more than over-masking ordinary words that happen to contain it.
+        if self.api_key:
+            text = text.replace(self.api_key, "***REDACTED***")
+        return text
+
     def _rate_limited_get(
-        self, url: str, params: Optional[dict] = None, quiet: bool = False
+        self,
+        url: str,
+        params: Optional[dict] = None,
+        quiet: bool = False,
+        *,
+        _json_retry: bool = True,
     ) -> Optional[dict]:
         """Make a rate-limited GET request with budget enforcement.
 
@@ -215,20 +234,36 @@ class FMPClient:
 
             if response.status_code == 200:
                 self.retry_count = 0
-                return response.json()
+                try:
+                    data = response.json()
+                except ValueError as e:
+                    # Malformed 200 body: retry once per call chain, then fail
+                    # soft with a redacted reason instead of raising. The retry
+                    # adds no backoff beyond the normal rate-limit delay and
+                    # costs one extra API call (counts against any budget).
+                    msg = self._redact_secret(f"invalid JSON response: {e}")
+                    if _json_retry:
+                        if not quiet:
+                            print(f"WARNING: {msg}; retrying once", file=sys.stderr)
+                        return self._rate_limited_get(url, params, quiet=quiet, _json_retry=False)
+                    self._last_error = msg
+                    if not quiet:
+                        print(f"ERROR: {msg}", file=sys.stderr)
+                    return None
+                return data
             elif response.status_code == 429:
                 self.retry_count += 1
                 if self.retry_count <= self.max_retries:
                     print("WARNING: Rate limit exceeded. Waiting 60 seconds...", file=sys.stderr)
                     time.sleep(60)
-                    return self._rate_limited_get(url, params, quiet=quiet)
+                    return self._rate_limited_get(url, params, quiet=quiet, _json_retry=_json_retry)
                 else:
                     self._last_error = "HTTP 429 (daily rate limit)"
                     print("ERROR: Daily API rate limit reached.", file=sys.stderr)
                     self.rate_limit_reached = True
                     return None
             else:
-                msg = _redact_key(f"HTTP {response.status_code} - {response.text[:200]}")
+                msg = self._redact_secret(f"HTTP {response.status_code} - {response.text[:200]}")
                 self._last_error = msg
                 if not quiet:
                     print(
@@ -237,7 +272,7 @@ class FMPClient:
                     )
                 return None
         except requests.exceptions.RequestException as e:
-            redacted = _redact_key(str(e))
+            redacted = self._redact_secret(str(e))
             self._last_error = f"request exception: {redacted}"
             print(f"ERROR: Request exception: {redacted}", file=sys.stderr)
             return None

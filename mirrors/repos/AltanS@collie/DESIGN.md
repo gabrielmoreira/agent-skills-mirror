@@ -273,10 +273,47 @@ its neighbour by picking a bigger step.
 round came back softer than the direction that was chosen.
 
 **Full-round is RESERVED** for shapes whose width equals their height, where it draws a
-circle: status dots, the avatar, the switch thumb, a bead, the dashed "+" of
+circle: the status marks that ARE a circle (working, done, idle, unknown; blocked is a triangle and unseen a square, see below), the avatar, the switch thumb, a bead, the dashed "+" of
 `ui/add-button.tsx` at both its sizes, the floating New button of `ui/fab.tsx` when folded (its "+ New" pill takes 2px). Anything wider than it is tall becomes a *stadium*,
 and there is no stadium in the mark. The chip, the pane pill and the switch track all take
 2px, each with a comment at the line saying why, so nobody "fixes" one back.
+
+### A status mark is a shape first and a colour second
+
+A pane's state is drawn as a **shape** in one 12px box, so it reads on a small phone and to a
+colour-blind eye. Colour alone did not survive the range: on the app's own `--status-*` tokens a
+deuteranope reads blocked, working and done as one colour in light theme (`status-badge.tsx`
+holds the measurement), and the summary line drops its words on a phone, leaving the marks alone
+(issue 420, 2026-10-12, playground card 9).
+
+| State | Shape |
+| --- | --- |
+| blocked ("needs you") | filled triangle, point up, with a 1.8px round-joined stroke in its own colour so it weighs about the same as the disc (97% of its area) |
+| working | circle with its left half filled, no inner marks |
+| done | filled disc |
+| idle | hollow ring |
+| unknown | hollow dashed ring, so it stays apart from idle |
+| unseen reply (`ui/unseen-mark.tsx`) | 9px full-ink filled square, 1.5px corners; not a status colour, because it is a different kind of fact |
+
+- **One component draws all of them.** `StatusDot` (`status-badge.tsx`) owns the five shapes and
+  `UnseenMark` the square. Counts, headings, rows, chips, the strips and the pane header all call
+  them. Do not draw a status as a bare coloured `rounded-full` span; the chip's, the heading's and
+  the belt's needs-you marks went through this on purpose.
+- **Colour stays the `--status-*` token, drawn as `currentColor`.** It is the second channel and
+  the text tokens are untouched. The resting marks are drawn at 60% so eighteen idle rings do not
+  out-shout the one that needs you; a ring's inside is filled with the surface it sits on (`surface`).
+- **A shape does not read at 8px.** The default box is 12px (`size-3`); a slot that must stay
+  narrower passes `size-2.5` (10px) at the smallest, and the card's mark takes `-mx-px` to keep
+  its row's 10px slot. The pane header's badge is the 12px box, absolutely placed on the agent
+  tile's corner, so growing it moved nothing in the header. Every state fills the same box, so a
+  state change is paint only (§2).
+- **Motion: the watched mark only.** The working mark turns (`.status-turn`: rotation only,
+  linear, 1.8s a turn) where `status-breathe` used to run, on the one mark the operator is
+  watching a pane through (`live`: the pane chip, the header badge, the running card, the stream's
+  "still going"). It replaced the opacity breathe. Every other mark is still, a frozen (`stale`)
+  reading does not turn, and under `prefers-reduced-motion: reduce` nothing moves.
+- **The summary line still drops words from the right** when it is too narrow; the shapes are why
+  that is now safe.
 
 ---
 

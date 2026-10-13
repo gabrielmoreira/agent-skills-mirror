@@ -8,10 +8,13 @@ One URL picks it: `OPENHUMAN_STORAGE_URL`, else `[storage] url` in
 `config.toml` (`config::StorageConfig`), else the default,
 `sqlite:<workspace_dir>` (`storage::config`).
 
-The default installs no process-wide backend. The large relational stores
-(`sessions.db`, `flows.db`, `jobs.db`, `graph_checkpoints.db`) keep serving
-their own SQLite files as they always have, so nothing is migrated or
-duplicated. The small stores (approvals, devices, notifications, task
+The default installs no process-wide backend. `sessions.db` and
+`graph_checkpoints.db` keep serving their own SQLite files as they always have,
+so nothing is migrated or duplicated. Cron jobs and the flow catalog are on the
+ports whatever the URL says (tinyflows has no SQLite store of its own): with no
+backend installed they use SQLite document databases of their own
+(`cron/schedule.db`, `flows/catalog.db`), importing the old `jobs.db`,
+`flows.db`, `checkpoints.db` and `drafts/` on first use. The small stores (approvals, devices, notifications, task
 sources) keep their rows as document tables inside their existing `.db` file
 (`approval/approval.db`, `devices/devices.db`, `notifications/notifications.db`,
 `task_sources/sources.db`): the first call in a process opens it with the
@@ -32,6 +35,18 @@ A URL for a driver the build lacks fails at `open`, naming the feature.
 `storage-sqlite` is a default feature and in the shipped product; `file` is
 always compiled in; `storage-mongodb` is in neither, a cloud build turns it
 on.
+
+## Legacy import
+
+`import/` copies the four small stores' legacy SQLite files into an installed
+backend once, read-only (see the module doc and the architecture page). The
+core calls `import::run` from `bootstrap_core_runtime` before any domain store
+opens; `run_with` takes an explicit backend for tests. The tinyflows stores (cron
+jobs with their runs and policies, the flow catalog with its drafts, and flow
+checkpoints) are copied by `import::tinyflows` with `tinyflows-import`, which
+keeps ids, writes only what is absent and reads copies of the files; a build
+without the `flows` gate imports no cron jobs. Sessions are not imported here:
+their format belongs to TinyAgents.
 
 ## Entry points
 
@@ -63,6 +78,25 @@ on.
   stores build on. A `Repo` holds one domain's scoped document handle,
   declares its collections and runs each call; `compare_and_swap` is the
   guarded-`UPDATE` loop.
+
+## Storage for loadable modules
+
+A loaded module does not hold storage handles. It calls the bus interface
+`ai.tinyhumans.tinystorage.Storage` (`modules::storage_host`), which answers
+from the installed backend:
+
+- the scope is derived by the host from the broker-authenticated caller (module
+  id) and the host's current scope, never taken from the request (the wire types
+  reject unknown fields, so a forged `scope` is a decode failure);
+- the module's grant (`modules::storage_grants::StorageGrant`: collections with
+  their schema, stream, blob and secret-name prefixes, read-only or writable)
+  is enforced on every call, and only the host runs `ensure_collection`;
+- the backend is the fenced one (`open` wraps it), and a profile's module scope
+  sits under the profile's session-key prefix so its lease fence covers it;
+- each call produces one audit line without a payload.
+
+No module declares a grant yet, so none has storage. Bus streams for large
+blobs and watch signals are not served yet.
 
 ## Leases
 

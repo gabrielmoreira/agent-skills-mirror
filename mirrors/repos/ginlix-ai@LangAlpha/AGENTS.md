@@ -5,7 +5,7 @@ Core AI agent service of the Ginlix financial research platform. One agent, the 
 - **Analyst** (default): the agent inside a workspace. Does the R&D and produces the deliverables, which stay in that workspace.
 - **Chief of Staff**: the agent for work in no particular workspace ("All workspaces" in the UI). Runs in a `Home` folder on the user's computer beside the workspace folders, where everything it produces is kept. It answers quick questions and anything the workspaces already hold itself, reading their folders and past threads, and hands new work to the workspace's analyst, which reports back when done.
 
-The Chief of Staff sits behind the `all_workspaces_agent` flag. Without it, work outside a workspace runs on the **Flash agent**, a fast no-sandbox assistant (external tools only, plus any MCP tool bound to the direct path), which the Chief of Staff replaces.
+The Chief of Staff sits behind the `all_workspaces_agent` flag, on by default: a user turns it off in Settings, a deployment in `config.yaml`. Without it, work outside a workspace runs on the **Flash agent**, a fast no-sandbox assistant (external tools only, plus any MCP tool bound to the direct path), which the Chief of Staff replaces.
 
 > Single source of truth for AI coding agents. `CLAUDE.md` imports this via `@AGENTS.md`; Codex/Cursor/Copilot read it directly. Edit here, not there.
 

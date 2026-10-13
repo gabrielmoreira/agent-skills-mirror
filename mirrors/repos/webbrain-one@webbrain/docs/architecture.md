@@ -75,7 +75,17 @@ The user types a message, the panel sends a detached `{action: 'chat_start', tex
 
 While a run is active, Send / Enter queues follow-up messages per tab. **Steer** / **Alt+Enter** sends a text correction to that same run; queued messages also have a Steer action. The background accepts corrections only from the extension chat panel and only for the matching run request ID. Both agent loops consume corrections as user messages before the next model request. An already running tool finishes; the remaining tool calls in its batch receive skipped results before the correction enters the conversation. Steering preserves the current mode and permission checks. If the run ends before consuming a correction, a journal event puts it at the front of that tab's queue for the next turn. A transport error retains the draft without automatically resending it.
 
-In Act and Dev, steering links the initiating request and ordered corrections into one task authority with internal run, message, and revision metadata. At the next safe boundary, both execution paths revalidate that authority through the configured intent or planning gate and refresh execution, recipient, workflow, progress, and tool policy. A newer correction supersedes an in-flight result and invalidates any pending plan-review card. Planner failure stops further dispatch with its concrete error. Ask stays read-only, and ordinary later chat messages remain new tasks. Task-authority messages survive compaction and session recovery; prior submission receipts survive separately from reset completion evidence. After a submission or publication attempt, revised work can inspect the existing effect but cannot submit it again in that run.
+In Act and Dev, steering links the initiating request and ordered corrections into one task authority with internal run, message, and revision metadata. At the next safe boundary, both execution paths revalidate that authority through the configured intent or planning gate and refresh execution, recipient, workflow, progress, and tool policy. A newer correction supersedes an in-flight result and invalidates any pending plan-review card. Planner failure stops further dispatch with its concrete error. Ask stays read-only, and ordinary later chat messages remain new tasks. Task-authority messages survive compaction and session recovery; prior submission receipts survive separately from reset completion evidence. A correction preserves the original mutation receipt. Further consequential work requires reconciliation of that effect and authorization under the latest validated request; accepting a correction never authorizes replaying the original submission.
+
+Completion uses submission receipts belonging to the current task authority;
+receipts from an earlier revision remain available for reconciliation and replay
+protection but cannot certify the revised task as complete.
+
+Action checks distinguish observation and preparation from publication or deletion.
+Positively resolved ordinary controls can open menus or editors without acquiring
+publication authority. Commit controls retain task, payload, account and resource
+checks. This classification uses the observed control and its context; a page
+label or a missing publication contract cannot grant mutation authorization.
 
 When automatic page or iframe updates would discard a terminal Ask reply, the
 configured provider can make a bounded dependency check for that exact reply.

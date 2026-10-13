@@ -16,6 +16,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from importlib.machinery import SourceFileLoader
 from pathlib import Path
@@ -1717,13 +1718,26 @@ class AutoreviewExecutableDiscoveryTests(unittest.TestCase):
 
 
 class AutoreviewCompatibilityTests(unittest.TestCase):
-    def test_default_reviewer_uses_sol_61_high_with_sol_6_access_retry(self) -> None:
+    def test_default_reviewer_uses_sol_61_medium_ultrafast_with_sol_6_access_retry(self) -> None:
         with mock.patch.dict(os.environ, {}, clear=True), mock.patch.object(sys, "argv", ["autoreview"]):
             reviewer = AUTOREVIEW.reviewer_args(AUTOREVIEW.parse_args())[0]
         self.assertEqual(reviewer.engine, "codex")
         self.assertEqual(reviewer.model, "gpt-6.1-sol")
-        self.assertEqual(reviewer.thinking, "high")
+        self.assertEqual(reviewer.thinking, "medium")
         self.assertEqual(reviewer.fallback_model, "gpt-6-sol")
+        self.assertEqual(AUTOREVIEW.codex_speed_override(reviewer), 'service_tier="ultrafast"')
+
+    def test_codex_speed_default_yields_to_explicit_and_raw_service_tier(self) -> None:
+        cases = (
+            (["--codex-speed", "fast"], {}, 'service_tier="fast"'),
+            ([], {"AUTOREVIEW_CODEX_SPEED": "default"}, 'service_tier="default"'),
+            (["--codex-config", 'service_tier="flex"'], {}, None),
+        )
+        for argv, env, expected in cases:
+            with self.subTest(argv=argv, env=env), mock.patch.dict(os.environ, env, clear=True), \
+                    mock.patch.object(sys, "argv", ["autoreview", *argv]):
+                reviewer = AUTOREVIEW.reviewer_args(AUTOREVIEW.parse_args())[0]
+                self.assertEqual(AUTOREVIEW.codex_speed_override(reviewer), expected)
 
     def test_sol_61_and_astra_reject_unsupported_effort_before_preparation(self) -> None:
         with tempfile.TemporaryDirectory(prefix="autoreview-invalid-effort.") as tempdir:
@@ -1822,7 +1836,7 @@ class AutoreviewCompatibilityTests(unittest.TestCase):
                                 continue
                             reviewer = AUTOREVIEW.reviewer_args(AUTOREVIEW.parse_args())[0]
                         self.assertEqual(reviewer.model, model)
-                        self.assertEqual(reviewer.thinking, effort or "high")
+                        self.assertEqual(reviewer.thinking, effort or "medium")
                         self.assertEqual(reviewer.fallback_model, fallback)
 
     def test_astra_preserves_supported_effort_and_explicit_model(self) -> None:
@@ -1841,7 +1855,7 @@ class AutoreviewCompatibilityTests(unittest.TestCase):
                     with mock.patch.dict(os.environ, env, clear=True), mock.patch.object(sys, "argv", argv):
                         reviewer = AUTOREVIEW.reviewer_args(AUTOREVIEW.parse_args())[0]
                     self.assertEqual(reviewer.model, "gpt-6-astra")
-                    self.assertEqual(reviewer.thinking, effort or "high")
+                    self.assertEqual(reviewer.thinking, effort or "medium")
                     self.assertIsNone(reviewer.fallback_model)
 
     def test_astra_effort_restrictions_do_not_change_other_codex_models(self) -> None:
@@ -1902,7 +1916,8 @@ class AutoreviewCompatibilityTests(unittest.TestCase):
                 self.assertEqual(kwargs["input_text"], prompt)
                 model = command[command.index("--model") + 1]
                 events.append(model)
-                self.assertIn('model_reasoning_effort="high"', command)
+                self.assertIn('model_reasoning_effort="medium"', command)
+                self.assertIn('service_tier="ultrafast"', command)
                 if model == "gpt-6.1-sol":
                     return subprocess.CompletedProcess(
                         command, 1, AutoreviewEfficiencyTests.usage_event(),
@@ -2201,6 +2216,353 @@ class AutoreviewCompatibilityTests(unittest.TestCase):
         }
         with self.assertRaisesRegex(SystemExit, "result was not structured JSON"):
             AUTOREVIEW.extract_json(json.dumps(payload))
+
+class AutoreviewAuthFallbackTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.temp = tempfile.TemporaryDirectory(prefix="autoreview-auth-fallback.")
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name).resolve()
+        self.repo = self.root / "repo"
+        self.repo.mkdir()
+        self.home = self.root / "operator"
+        self.home.mkdir()
+        self.env = mock.patch.dict(os.environ, {
+            "HOME": str(self.root), "CODEX_HOME": str(self.home),
+            "AUTOREVIEW_CODEX_CONFIG": "",
+        })
+        self.env.start()
+        self.addCleanup(self.env.stop)
+        self.failure = subprocess.CompletedProcess([], 1, "", "401 Unauthorized")
+
+    def configure_provider(self, *, base_url: str = "https://api.openai.com/v1", extra: str = "") -> None:
+        (self.home / "config.toml").write_text(
+            'model_provider = "review_api"\n'
+            '[model_providers.review_api]\n'
+            f'base_url = {json.dumps(base_url)}\n'
+            f'{extra}'
+            '[model_providers.review_api.auth]\n'
+            f'command = {json.dumps(sys.executable)}\n',
+        )
+
+    def test_route_projects_websocket_transport_and_rejects_non_boolean(self) -> None:
+        self.configure_provider(extra="supports_websockets = true\n")
+        flags, _catalogue = AUTOREVIEW.load_codex_inference_route(self.repo, ["model_provider=review_api"])
+        self.assertIn("model_providers.review_api.supports_websockets=true", flags)
+        self.configure_provider(extra='supports_websockets = "yes"\n')
+        with self.assertRaises(SystemExit):
+            AUTOREVIEW.load_codex_inference_route(self.repo, ["model_provider=review_api"])
+
+    def test_authentication_markers_and_error_event_shapes(self) -> None:
+        for marker in AUTOREVIEW.CODEX_AUTH_FAILURE_MARKERS:
+            for event in (
+                {"type": "error", "message": marker.upper()},
+                {"type": "turn.failed", "error": {"message": marker}},
+            ):
+                with self.subTest(marker=marker, event=event):
+                    self.assertTrue(AUTOREVIEW.codex_authentication_failure(
+                        subprocess.CompletedProcess([], 1, json.dumps(event), ""),
+                    ))
+                    self.assertEqual(AUTOREVIEW.codex_failure_category(
+                        subprocess.CompletedProcess([], 1, "", marker),
+                    ), "authentication")
+
+    def test_authentication_detection_ignores_review_content(self) -> None:
+        stop = AUTOREVIEW.CodexAuthFailureStopper()
+        for line in (
+            "401 Unauthorized",
+            json.dumps({"type": "item.completed", "item": {
+                "type": "agent_message", "text": "refresh_token_reused",
+            }}),
+            json.dumps({"type": "item.completed", "item": {
+                "type": "command_execution", "aggregated_output": "token_expired",
+            }}),
+        ):
+            self.assertFalse(stop("stdout", line))
+        for line in ("Refreshing token", "Reloading refresh token from disk"):
+            self.assertFalse(stop("stderr", line))
+            self.assertFalse(AUTOREVIEW.codex_authentication_failure(
+                subprocess.CompletedProcess([], 1, "", line),
+            ))
+
+    def test_definite_authentication_failures_stop_immediately(self) -> None:
+        for marker in AUTOREVIEW.CODEX_AUTH_TERMINAL_MARKERS:
+            for stream in ("stdout", "stderr"):
+                with self.subTest(marker=marker, stream=stream):
+                    line = marker.upper()
+                    if stream == "stdout":
+                        line = json.dumps({"type": "error", "message": line})
+                    self.assertTrue(AUTOREVIEW.CodexAuthFailureStopper()(stream, line))
+
+    def test_generic_authentication_failures_allow_two_lines_before_stopping(self) -> None:
+        for marker in AUTOREVIEW.CODEX_AUTH_RECOVERY_MARKERS:
+            with self.subTest(marker=marker), mock.patch.object(AUTOREVIEW.time, "monotonic", return_value=1):
+                stop = AUTOREVIEW.CodexAuthFailureStopper()
+                # Multiple markers in one line still count as one failure line.
+                self.assertFalse(stop("stderr", marker + ": HTTP 401"))
+                self.assertFalse(stop("stdout", json.dumps({"type": "error", "message": marker})))
+                self.assertTrue(stop("stderr", marker))
+
+    def test_generic_authentication_failure_window_expires(self) -> None:
+        for times, expected in (
+            ([0, 30, 60], [False, False, True]),
+            ([0, 30, 60.001, 61], [False, False, False, True]),
+        ):
+            with self.subTest(times=times), mock.patch.object(AUTOREVIEW.time, "monotonic", side_effect=times):
+                stop = AUTOREVIEW.CodexAuthFailureStopper()
+                self.assertEqual([stop("stderr", "401 Unauthorized") for _ in times], expected)
+
+    def test_single_401_and_benign_refresh_log_do_not_stop_child(self) -> None:
+        script = (
+            "import sys,time; print('HTTP 401', file=sys.stderr, flush=True); "
+            "print('Reloading refresh token from disk', file=sys.stderr, flush=True); "
+            "time.sleep(0.05); print('recovered', flush=True)"
+        )
+        result = AUTOREVIEW.run_with_heartbeat(
+            [sys.executable, "-c", script], self.repo, label="codex",
+            stop_on_output=AUTOREVIEW.CodexAuthFailureStopper(),
+        )
+        self.assertEqual(result.returncode, 0)
+        self.assertIn("recovered", result.stdout)
+
+    def test_three_401_lines_stop_live_child(self) -> None:
+        script = (
+            "import sys,time; "
+            "print('401 Unauthorized\\nHTTP 401\\nstatus code 401', file=sys.stderr, flush=True); "
+            "time.sleep(30)"
+        )
+        started = time.monotonic()
+        result = AUTOREVIEW.run_with_heartbeat(
+            [sys.executable, "-c", script], self.repo, label="codex",
+            stop_on_output=AUTOREVIEW.CodexAuthFailureStopper(),
+        )
+        self.assertLess(time.monotonic() - started, 5)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertTrue(AUTOREVIEW.codex_authentication_failure(result))
+        self.assertFalse(AUTOREVIEW._OWNED_PROCESSES)
+
+    def test_authentication_stops_live_child_without_enabling_display(self) -> None:
+        for stream in ("stdout", "stderr"):
+            with self.subTest(stream=stream):
+                line = (json.dumps({"type": "error", "message": "token_expired"})
+                        if stream == "stdout" else "refresh_token_reused")
+                script = ("import sys,time; print(" + repr(line)
+                          + f", file=sys.{stream}, flush=True); time.sleep(30)")
+                started = time.monotonic()
+                stdout, stderr = io.StringIO(), io.StringIO()
+                with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+                    result = AUTOREVIEW.run_with_heartbeat(
+                        [sys.executable, "-c", script], self.repo,
+                        label="codex", heartbeat_seconds=30,
+                        stop_on_output=AUTOREVIEW.CodexAuthFailureStopper(),
+                    )
+                self.assertLess(time.monotonic() - started, 5)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertTrue(AUTOREVIEW.codex_authentication_failure(result))
+                self.assertEqual(stdout.getvalue() + stderr.getvalue(), "")
+                self.assertFalse(AUTOREVIEW._OWNED_PROCESSES)
+
+    def test_fallback_selects_only_validated_operator_route(self) -> None:
+        self.configure_provider()
+        provider, route = AUTOREVIEW.load_codex_auth_fallback_route(
+            self.repo, [], self.failure, command_auth=False,
+        )
+        self.assertEqual(provider, "review_api")
+        self.assertEqual(route, AUTOREVIEW.load_codex_inference_route(
+            self.repo, ["model_provider=review_api"],
+        ))
+
+    def test_fallback_rejects_explicit_provider_command_auth_and_non_auth_failure(self) -> None:
+        self.configure_provider()
+        for overrides, command_auth, result in (
+            (['model_provider = "review_api"'], False, self.failure),
+            ([], True, self.failure),
+            ([], False, subprocess.CompletedProcess([], 1, "", "connection reset")),
+            ([], False, subprocess.CompletedProcess([], 0, "", "401 Unauthorized")),
+            ([], False, AUTOREVIEW.TimedOutEngineProcess([], 124, "", "401 Unauthorized")),
+        ):
+            with self.subTest(overrides=overrides, command_auth=command_auth, result=result):
+                with mock.patch.object(AUTOREVIEW, "load_codex_inference_route") as load:
+                    self.assertIsNone(AUTOREVIEW.load_codex_auth_fallback_route(
+                        self.repo, overrides, result, command_auth=command_auth,
+                    ))
+                    load.assert_not_called()
+
+    def test_fallback_rejects_absent_invalid_and_split_routes(self) -> None:
+        config = self.home / "config.toml"
+        for contents in (None, "", 'model_provider = "openai"', "invalid TOML ["):
+            with self.subTest(contents=contents):
+                if contents is not None:
+                    config.write_text(contents)
+                self.assertIsNone(AUTOREVIEW.load_codex_auth_fallback_route(
+                    self.repo, [], self.failure, command_auth=False,
+                ))
+        self.configure_provider(base_url="https://example.invalid/v1")
+        self.assertIsNone(AUTOREVIEW.load_codex_auth_fallback_route(
+            self.repo, [], self.failure, command_auth=False,
+        ))
+        self.configure_provider()
+        self.assertIsNone(AUTOREVIEW.load_codex_auth_fallback_route(
+            self.repo, ["model_context_window=1000"], self.failure, command_auth=False,
+        ))
+
+    def test_login_probe_uses_operator_environment_and_captures_output(self) -> None:
+        for returncode, stdout, stderr, expected in (
+            (1, "", "Not logged in\n", True),
+            (0, "Not logged in\n", "", True),
+            (1, "", "", True),
+            (0, "", "Logged in using ChatGPT\n", False),
+            (1, "", "Error loading configuration PRIVATE_SENTINEL", False),
+            (2, "", "", False),
+        ):
+            with self.subTest(returncode=returncode, stdout=stdout, stderr=stderr), \
+                    mock.patch.object(AUTOREVIEW.subprocess, "run", return_value=subprocess.CompletedProcess(
+                        [], returncode, stdout, stderr,
+                    )) as probe, contextlib.redirect_stdout(io.StringIO()) as out, \
+                    contextlib.redirect_stderr(io.StringIO()) as err:
+                self.assertEqual(AUTOREVIEW.codex_subscription_login_missing("/codex", self.root), expected)
+                self.assertEqual(out.getvalue() + err.getvalue(), "")
+                self.assertEqual(probe.call_args.args, (["/codex", "login", "status"],))
+                kwargs = probe.call_args.kwargs
+                self.assertEqual(kwargs["cwd"], self.root)
+                self.assertEqual(kwargs["env"], dict(os.environ))
+                self.assertEqual(kwargs["timeout"], 10)
+                self.assertEqual(kwargs["stdin"], subprocess.DEVNULL)
+                self.assertEqual(kwargs["stdout"], subprocess.PIPE)
+                self.assertEqual(kwargs["stderr"], subprocess.PIPE)
+
+    def test_login_probe_errors_and_timeout_are_unknown(self) -> None:
+        for error in (OSError("PRIVATE_SENTINEL"), subprocess.TimeoutExpired(
+            ["/codex", "login", "status"], 10, output="Not logged in PRIVATE_SENTINEL",
+        )):
+            with self.subTest(error=type(error).__name__), \
+                    mock.patch.object(AUTOREVIEW.subprocess, "run", side_effect=error), \
+                    contextlib.redirect_stdout(io.StringIO()) as out, \
+                    contextlib.redirect_stderr(io.StringIO()) as err:
+                self.assertFalse(AUTOREVIEW.codex_subscription_login_missing("/codex", self.root))
+                self.assertEqual(out.getvalue() + err.getvalue(), "")
+
+    def run_codex_attempts(
+        self, failures: list[str], *, explicit: bool = False,
+        login_missing: bool = False, configured: bool = True,
+        credential_store: str = "file", inspect_attempt=None,
+    ):
+        if configured:
+            self.configure_provider()
+            config_path = self.home / "config.toml"
+            config_path.write_text(
+                f'cli_auth_credentials_store = "{credential_store}"\n' + config_path.read_text(),
+            )
+        with mock.patch.object(sys, "argv", ["autoreview", "--no-web-search"]):
+            args = AUTOREVIEW.reviewer_args(AUTOREVIEW.parse_args())[0]
+        args.model = "review-model"
+        args.fallback_model = None
+        args.codex_config = ['model_provider="review_api"'] if explicit else []
+        commands = []
+        stoppers = []
+
+        def run(command, _cwd, **kwargs):
+            commands.append(command)
+            if inspect_attempt is not None:
+                inspect_attempt(command, kwargs["env"], len(commands))
+            self.assertEqual(kwargs["input_text"], "same review input")
+            stopper = kwargs["stop_on_output"]
+            self.assertIsInstance(stopper, AUTOREVIEW.CodexAuthFailureStopper)
+            self.assertNotIn(stopper, stoppers)
+            stoppers.append(stopper)
+            if len(commands) <= len(failures):
+                return subprocess.CompletedProcess(command, 1, "", failures[len(commands) - 1])
+            Path(command[command.index("--output-last-message") + 1]).write_text("clean")
+            return subprocess.CompletedProcess(command, 0, "", "")
+
+        stderr = io.StringIO()
+        with mock.patch.object(AUTOREVIEW, "resolve_command", return_value=sys.executable), \
+                mock.patch.object(AUTOREVIEW, "ensure_codex_isolation_supported"), \
+                mock.patch.object(AUTOREVIEW, "codex_subscription_login_missing", return_value=login_missing) as probe, \
+                mock.patch.object(AUTOREVIEW, "run_with_heartbeat", side_effect=run), \
+                contextlib.redirect_stderr(stderr):
+            try:
+                output = AUTOREVIEW.run_codex(args, self.repo, "same review input")
+            except AUTOREVIEW.ReviewerUnavailable as exc:
+                output = str(exc)
+            self.assertEqual(probe.call_count, int(configured and not explicit))
+        return commands, stderr.getvalue(), output
+
+    def test_missing_login_starts_on_configured_route_without_subscription_attempt(self) -> None:
+        commands, notice, output = self.run_codex_attempts([], login_missing=True)
+        self.assertEqual(output, "clean")
+        self.assertEqual(len(commands), 1)
+        self.assertIn('model_provider="review_api"', commands[0])
+        self.assertEqual(notice, "codex auth: no subscription login; using configured provider review_api\n")
+
+    def test_logged_in_or_unknown_login_keeps_subscription_first(self) -> None:
+        commands, notice, output = self.run_codex_attempts([])
+        self.assertEqual(output, "clean")
+        self.assertEqual(len(commands), 1)
+        self.assertNotIn('model_provider="review_api"', commands[0])
+        self.assertEqual(notice, "")
+
+    def test_no_configured_provider_skips_login_probe(self) -> None:
+        commands, notice, output = self.run_codex_attempts([], configured=False)
+        self.assertEqual(output, "clean")
+        self.assertEqual(len(commands), 1)
+        self.assertNotIn('model_provider="review_api"', commands[0])
+        self.assertEqual(notice, "")
+
+    def test_fallback_retries_same_pass_once_and_prints_one_line(self) -> None:
+        commands, notice, output = self.run_codex_attempts(["401 Unauthorized PRIVATE_SENTINEL"])
+        self.assertEqual(output, "clean")
+        self.assertEqual(len(commands), 2)
+        self.assertNotIn('model_provider="review_api"', commands[0])
+        self.assertIn('model_provider="review_api"', commands[1])
+        self.assertEqual(notice, "codex auth: subscription route failed (authentication); "
+                         "retrying on configured provider review_api\n")
+
+    def test_fallback_failure_is_redacted_and_does_not_retry_again(self) -> None:
+        commands, notice, output = self.run_codex_attempts([
+            "token_expired PRIVATE_SENTINEL", "refresh_token_reused PRIVATE_SENTINEL",
+        ])
+        self.assertEqual(len(commands), 2)
+        self.assertEqual(notice.count("codex auth:"), 1)
+        self.assertIn("authentication", output)
+        self.assertNotIn("PRIVATE_SENTINEL", notice + output)
+
+    def test_command_auth_uses_empty_file_store_without_subscription_credentials(self) -> None:
+        source_auth = self.home / "auth.json"
+        original = '{"tokens": {"refresh_token": "synthetic-expired-token"}}'
+        source_auth.write_text(original)
+        for explicit in (False, True):
+            for credential_store in ("file", "keyring"):
+                with self.subTest(explicit=explicit, credential_store=credential_store):
+                    homes = []
+
+                    def inspect(command, env, attempt):
+                        home = Path(env["CODEX_HOME"])
+                        homes.append(home)
+                        if explicit or attempt == 2:
+                            self.assertNotEqual(home, self.home)
+                            self.assertTrue(home.is_dir())
+                            self.assertFalse((home / "auth.json").exists())
+                            self.assertIn('cli_auth_credentials_store="file"', command)
+                            if not explicit:
+                                self.assertNotEqual(home, homes[0])
+                        elif credential_store == "file":
+                            self.assertTrue(os.path.samefile(home / "auth.json", source_auth))
+                        else:
+                            self.assertEqual(home, self.home)
+
+                    _, _, output = self.run_codex_attempts(
+                        [] if explicit else ["refresh_token_reused"], explicit=explicit,
+                        credential_store=credential_store, inspect_attempt=inspect,
+                    )
+                    self.assertEqual(output, "clean")
+                    self.assertEqual(source_auth.read_text(), original)
+
+    def test_explicit_route_authentication_failure_has_no_fallback_notice(self) -> None:
+        commands, notice, output = self.run_codex_attempts(["401 Unauthorized"], explicit=True)
+        self.assertEqual(len(commands), 1)
+        self.assertEqual(notice, "")
+        self.assertIn("authentication", output)
+
 
 if __name__ == "__main__":
     unittest.main()

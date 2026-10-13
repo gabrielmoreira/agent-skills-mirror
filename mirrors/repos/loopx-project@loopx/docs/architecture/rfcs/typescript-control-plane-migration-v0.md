@@ -31,9 +31,9 @@ T0–T4, not additional provider promotion or completed migration claims.
 
 <a id="current-delivery-frontier-2026-10-02"></a>
 
-## Current delivery frontier (2026-10-07)
+## Current delivery frontier (2026-10-12)
 
-Rechecked at main `06b6caa07`: #5413/#5466/#5283 and the affected creation,
+Rechecked at main `38cb407ed`: #5413/#5466/#5283 and the affected creation,
 Host-stop and UI-history owners #5500/#5805/#5308/#5398 are merged. Reuse
 their delivered boundaries rather than reopening the October 2 merge queue.
 The [current validation, migration and deletion plan](ledger/shared-goal-authority-state-provider-v0/2026-09-28-retirement-cadence.md#current-closeout-validation-migration-and-deletion-2026-10-02)
@@ -64,6 +64,55 @@ without claiming code retirement:
 bootstrap, handoff, team-plan and Monitor still have supported source callers;
 keep capture/outbox and historical recovery until their own exits. [Caller and
 rollback inventory](../../reference/canonical-todo-completion-update.md#canonical-mutation-entrypoint-isolation).
+Production Todo consumers use the concrete owners instead of the historic `loopx.todos` re-export:
+CLI registration/actions, quota and planning, capability writeback, source lease
+reads and the Lark source projection import the same concrete mutation, full-read,
+path or Markdown display owners. No new wrapper, decision or RPC is introduced.
+The historic public imports and their supported unpromoted IO remain available.
+Disposable source/normal-wheel probes remove the facade, the whole legacy Todo
+writer and four shadow producers together; real File/SQLite CLI lifecycle,
+once-only settlement, Monitor replay and App cold-import/action/restart journeys
+must still work, with missing-provider/lease and changed-source/backup refusals.
+Lark dry-run and Explore replay qualify local consumers only, not live external
+adoption. The fresh research execution path added by [#5280](https://github.com/loopx-project/loopx/pull/5280)
+reintroduced a function-local historic import after the earlier caller inventory.
+It now imports `todos/list_readback.py` directly, preserving the same typed
+current-Todo validation and the historical replay branch before that read.
+The qualification includes fresh research execution, actor/runnable/input
+refusals, exact lineage readback and replay after current input/Todo changes
+in the same facade-present/absent source and normal-wheel File/SQLite matrix.
+A whole-production Python import guard resolves relative imports and aliases;
+dynamic loading still requires the isolated real journeys. Keep this guard as
+new capabilities arrive, rather than treating a past inventory as a permanent
+exit. Last supported source writers, historical recovery, installed cohort
+and release exits remain independently open.
+
+The next T4 package is the [import-first normal-writer cutoff](../../reference/local-authority-provider-selection.md#proposed-compatibility-cutoff-and-release-sequence),
+not another re-export or producer-loading extraction. At `38cb407ed`, live
+unpromoted callers remain in ordinary mutation, bootstrap/creation opt-out,
+team-plan, Monitor, ownership/source lease and active capture/binding. Reuse
+their typed admission/transaction owners; treat retained source capture,
+historical receipts and permanent document IO as recovery obligations.
+The existing delivery Todos should carry these concrete exits:
+
+- Qualify the installed import/backup/recovery journey for the declared source
+  matrix; importer implementation is already present and is not a missing-code
+  dependency. Do not reinterpret complete coordination backup as complete Goal
+  backup.
+- Run the bounded reversible core-developer SQLite trial before the breaking
+  cutoff, recording real Host adoption/use separately from conversion drills.
+- Deliver the cohesive 2.0 normal-writer cutoff: fresh unmigrated writes and
+  execution grants refuse before effects; canonical work and original-operation
+  recovery pass with the old writer physically absent. Keep the additive 1.x
+  import/deprecation line compatible.
+- After the last source caller exits, reconcile pending outboxes and delete
+  unused capture producers/private decisions together. Keep supported historical
+  readers and current-head rollback; do not wait for every external user to
+  migrate or claim full T4/D2/default qualification from internal deletion.
+
+This updates the existing R5/T4 frontier and release proposal; it creates no
+parallel migration owner, runtime gate or release activation.
+
 The retained import-compatible field writer now composes resume normalization
 and contradictory-clear rejection in its existing typed field plan. Keep blank
 Python input omission and locked IO; retire the duplicate normalization crossing,
@@ -138,15 +187,28 @@ codec/replay has a small shared scheduler IO owner, while the existing TS batch
 still owns operation identity and decisions. File/SQLite CLI and normal-wheel
 source removal must preserve later canonical writes and original successors;
 promoted replay leaves old outbox bytes inert. Unpromoted markerless batch
-recovery retains its existing drain. This removes a canonical import dependency,
+recovery retains its existing bounded drain. Business-receipt replay does not
+guarantee shadow catch-up: lock deferral or an expired proof budget preserves
+pending evidence for an independent `authority-shadow drain`. Recovery keeps
+the original source bytes, successor IDs and once-only quota effect; it does
+not replay the writer to finish catch-up or increase the inline limits.
+This removes a canonical import dependency,
 not the supported legacy writer. The absent arm also removes all four shadow
 producer modules using the qualified CLI startup isolation above.
 [Retained duties and rollback](../../reference/canonical-todo-completion-update.md#monitor-source-writer-isolation).
 
 Shadow diagnostics now have an independent read-only boundary: retained outbox
 disk codecs live in `local_authority_shadow_history.py`, and status/candidate
-read transport in `local_authority_shadow_readback.py`. The public status CLI
-does not load source producers; drain still uses its existing orchestration.
+read transport in `local_authority_shadow_readback.py`. The public status and enabled
+`coordination-shadow inspect`/`qualify`/`read-candidate` commands call that owner
+without loading source producers. Full source and normal-wheel observations
+retain matched/refused, default-off, source-drift and missing/corrupt-store
+recovery behavior with all four producer modules absent. Historical imports
+remain exact aliases; bootstrap, rollback and promotion retain their live adapter.
+The existing TS qualifier now propagates provider read refusals before lineage
+validation can mislabel corruption as `bootstrap_required`; valid/missing stores
+retain their behavior. This is an explicit failure-diagnostic correction, with
+no new RPC or migration authority; drain still uses its existing orchestration.
 Original entry identity, malformed evidence, cursor residue and missing-store
 behavior remain unchanged. Python retains historical filesystem decoding and
 presentation IO; TS retains history proof, delivery and cleanup authority.
@@ -1349,6 +1411,17 @@ Unidentifiable referenced history still needs explicit repair, not a post-promot
 Markdown fallback. This closes the demonstrated dependency omission, not all history
 import, provider qualification, soak, or D3 cutover requirements.
 
+Optional Vision fallback advice now composes resume evaluation and positive
+pending-target proof in `goal_frontier/fallback_disposition.ts`. Python retains
+persisted-input codecs, source I/O and presentation, not a second Monitor-wait or
+declaration aggregation rule. Live quota reads one complete canonical/legacy
+snapshot and selects at most 16 target/direct-dependency records, including
+archive; it no longer performs repeated per-Todo queries. Intentional corrections:
+alternatives resolve their own declaration symmetrically, uncertainty is scoped
+to unresolved declarations, and invalid/ambiguous wait evidence cannot suppress
+advice. This closes one T3 consumer, not all quota snapshot consistency or T1/T2;
+fallback declarations remain optional advisory input, never execution authority.
+
 - Audit Turn/quota, Dashboard, standing decisions, shared-goal alignment and
   amendment revision inputs. Reuse #4117's canonical source adapter and pass
   one snapshot through a decision; do not build another Todo inventory.
@@ -1515,6 +1588,15 @@ Python writer retirement remain separate exits.
   change, and provider outage without a Markdown fallback. Unpromoted writers,
   lease capture recovery and the legacy migration window remain separate
   retirement obligations; this closes the canonical setter's import dependency.
+- Source task-lease facts now use `todos/list_readback.py` directly instead of
+  the historic mutation facade. TypeScript retains acquire/lifecycle decisions;
+  Markdown IO, source capture and public compatibility exports remain live.
+  The CLI distribution counterfactual removes the facade and disables editable
+  install finders, which could otherwise borrow deleted modules from a checkout.
+  Source and installed-wheel coverage includes capture off/on, all three handoff
+  modes, replay, ownership/version rejection, transfer, release and retained
+  history. This removes a reader-to-writer dependency; full writer deletion still
+  needs its remaining callers and migration window qualified.
 
 **Validation and stop rules for every card**
 

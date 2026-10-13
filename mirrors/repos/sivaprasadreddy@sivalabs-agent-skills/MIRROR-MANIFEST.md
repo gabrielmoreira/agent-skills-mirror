@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `sivaprasadreddy/sivalabs-agent-skills` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
+Mirror of `sivaprasadreddy/sivalabs-agent-skills` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `sivaprasadreddy/sivalabs-agent-skills` — 26 default patterns, 0 fol
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 33 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,15 +83,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`skills/spring-boot/references/spring-service-layer.md`](skills/spring-boot/references/spring-service-layer.md) |
 | 23 | ✓ | [`skills/spring-boot/references/spring-webmvc-rest-api.md`](skills/spring-boot/references/spring-webmvc-rest-api.md) |
 | 24 | ✓ | [`skills/spring-boot/references/taskfile.md`](skills/spring-boot/references/taskfile.md) |
-| 25 | ✓ | [`skills/spring-boot/references/testcontainers-wiring.md`](skills/spring-boot/references/testcontainers-wiring.md) |
-| 26 | ✓ | [`skills/spring-boot/references/testing-integration.md`](skills/spring-boot/references/testing-integration.md) |
-| 27 | ✓ | [`skills/spring-boot/references/testing-slices-persistence.md`](skills/spring-boot/references/testing-slices-persistence.md) |
-| 28 | ✓ | [`skills/spring-boot/references/testing-slices-web.md`](skills/spring-boot/references/testing-slices-web.md) |
-| 29 | ✓ | [`skills/spring-boot/references/testing-strategy.md`](skills/spring-boot/references/testing-strategy.md) |
-| 30 | ✓ | [`skills/spring-boot/references/testing-unit-mocking.md`](skills/spring-boot/references/testing-unit-mocking.md) |
-| 31 | ✓ | [`skills/spring-boot/references/thymeleaf.md`](skills/spring-boot/references/thymeleaf.md) |
-| 32 | ✓ | [`skills/spring-boot/SKILL.md`](skills/spring-boot/SKILL.md) |
-| 33 | ✓ | [`skills/spring-modulith-verifier/SKILL.md`](skills/spring-modulith-verifier/SKILL.md) |
+| 25 | ✓ | [`skills/spring-boot/references/test-data-setup.md`](skills/spring-boot/references/test-data-setup.md) |
+| 26 | ✓ | [`skills/spring-boot/references/testcontainers-wiring.md`](skills/spring-boot/references/testcontainers-wiring.md) |
+| 27 | ✓ | [`skills/spring-boot/references/testing-integration.md`](skills/spring-boot/references/testing-integration.md) |
+| 28 | ✓ | [`skills/spring-boot/references/testing-slices-persistence.md`](skills/spring-boot/references/testing-slices-persistence.md) |
+| 29 | ✓ | [`skills/spring-boot/references/testing-slices-web.md`](skills/spring-boot/references/testing-slices-web.md) |
+| 30 | ✓ | [`skills/spring-boot/references/testing-strategy.md`](skills/spring-boot/references/testing-strategy.md) |
+| 31 | ✓ | [`skills/spring-boot/references/testing-unit-mocking.md`](skills/spring-boot/references/testing-unit-mocking.md) |
+| 32 | ✓ | [`skills/spring-boot/references/thymeleaf.md`](skills/spring-boot/references/thymeleaf.md) |
+| 33 | ✓ | [`skills/spring-boot/SKILL.md`](skills/spring-boot/SKILL.md) |
+| 34 | ✓ | [`skills/spring-modulith-verifier/SKILL.md`](skills/spring-modulith-verifier/SKILL.md) |
 
 ---
 

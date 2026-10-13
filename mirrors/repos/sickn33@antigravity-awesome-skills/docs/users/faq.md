@@ -157,6 +157,8 @@ permissions narrow, and require confirmation for consequential actions. See
 
 ### How do I start with AAS Core?
 
+For a complete setup through your first skill selection and installation preview, follow [Codex setup](codex-cli-skills.md) or [Claude Code setup](claude-code-skills.md).
+
 Use the pinned `aas` binary from a release whose notes explicitly state that it includes AAS Core to preview and approve local MCP configuration for Codex or Claude. Release 14.6.0 predates Core; Core-capable packages begin with the 15.x line. Restart the host if needed, then ask the agent to search the full catalog, choose exact IDs, and compose a stack without applying it. The command template and trust boundaries are in [AAS Core](aas-core.md).
 
 The package publishes separate `agentic-awesome-skills`, `aas`, and `aas-mcp` binaries. Use the explicit `aas` binary for Core lifecycle commands; the legacy `agentic-awesome-skills` entrypoint remains the direct installer.

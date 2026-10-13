@@ -43,6 +43,7 @@ user off a Windows home they were running against, and a stat failure other than
 local home rather than switching to a different one. Codex runtime discovery (src/codex/runtime.ts) also reads this home on Linux: after an explicit runtime, PATH, and the ordinary install locations, it enumerates the direct children of <effective CODEX_HOME>/bin/wsl/<version-hash>/codex newest first, probes each through the isolated --version seam, and re-enumerates on every resolve so a Desktop update that replaces the hash directory is picked up (issue 5635). An explicitly
 set path that is unreadable or not a directory is an error, not a fallback: silently using a
 different home than the operator named would write provider state where nobody is looking for it. A proven missing home (including explicit `CODEX_HOME`) resolves lexically; native restore, remove and journal reconcile succeed without creating a directory or acquiring the config write lock. Dangling links do not prove absence, and existing homes retain ownership checks. Lock-path resolution never creates parents; unresolved parents yield a typed, handled refusal. Scalar and multi-agent feature edits refuse missing homes; prompt commits and native feature commands retain their directory creation before locking. The management native feature toggle resolves and retains the spawn invocation before preparing a home; unavailable executables return the toggle failure without creating it. Failed native toggles and prompt commits keep a home they created (`src/codex/prepared-home.ts`): a pathname-based removal cannot prove it still names that directory, and an empty home is what Codex itself creates. A fresh install can have that directory but no `config.toml` yet; applying the integration then creates an empty `config.toml` there (never overwriting an existing file) and continues, while a missing home directory is refused with instructions to start Codex once or set `CODEX_HOME` (issue 5422).
+On macOS, `src/codex/runtime.ts` tries the system then user ChatGPT.app bundle after environment, persisted selection, shim, PATH, established installs and a runnable bare fallback, preferring `Contents/Resources/codex-cli/bin/codex` over `Contents/Resources/codex`. Bundle membership compares the normalized and canonical (symlink-resolved) forms of the path and bundle with a segment boundary, including backing executables; candidate ordering keys on the generated app commands, so an established install path that links into the app keeps its precedence. Discovery and probe prechecks require exactly one top-level `CFBundleIdentifier` equal to `com.openai.codex` in a regular XML `Contents/Info.plist`, read in-process with a 64 KiB limit; the whole document must be valid plist XML, so binary, malformed (anywhere, not only in the identity pair), oversized or unavailable metadata fails closed. App candidates never supersede a runnable persisted selection, including legacy/discovered records and the fast path, but full discovery can report them in `newerAvailable`; invalid selections retain `replacedConfigured` recovery. When a verified app candidate exists, deferred discovery skips the bare fallback as a candidate and retains it only as the no-candidate sentinel.
 `src/codex/home.ts` imports path expansion directly from `src/config/paths.ts`, so a fresh WSL process can resolve its Codex home without re-entering the config facade before the resolver initializes.
 The managed files are:
 
@@ -314,11 +315,19 @@ retry. A changed canonical target refuses recovery, preserves existing journal e
 retains a private preimage file beside the canonical config with its location in the diagnostic.
 Drift is non-retryable and stops further parent publication or alias-based compensation; a
 successful child replacement advances the inode witness before subsequent parent writes.
+Prompt journal recovery uses the same prompt-store then config order as a normal
+prompt commit. A busy config lock preserves config/store/journal bytes; explicit
+retry after release replays only the recorded images, including a missing custom
+config parent. Both leases release on refusal or completion.
 
 `src/codex/prompt-lock-claim.ts` reserves the acquisition/takeover interval with a unique
 PID/token file and bakery ticket. A contender still choosing makes peers refuse, and a
 later contender sees an earlier published ticket. Dead reservations are removed by their
 unique filename; stale observation cannot rename a live successor's reusable lock path.
+A peer's cleanup removes the empty claims directory, so a claims directory that vanishes between a
+contender's `mkdir` and its read is contention (`locked`), never an unsafe namespace or a crash.
+That single read is both the ownership/type check and the parent witness, so a replacement that
+appears after a missing read is never trusted.
 Lock and claim records include host evidence and optional process-start evidence. Takeover requires a
 matching local host and two dead-PID observations; a reused PID with a different known start identity
 remains busy. Unknown start identity disables only that comparison: live or unknown PID liveness
@@ -340,7 +349,8 @@ evidence, with a one-second command timeout; Windows retains trusted PowerShell 
 Choosing evidence is published atomically before the bakery scan.
 Lock filesystem operations reuse `src/lib/windows-atomic-replace.ts`: Windows EPERM, EBUSY and EACCES retry after 25ms and 50ms; exhaustion returns busy. Unreadable evidence or a contended exclusive open followed by EEXIST never authorizes takeover.
 `src/codex/prompt-lock-evidence.ts` shares the claim and reusable-lock guards. Every destructive attempt revalidates captured parent/entry dev/ino and exact evidence bytes; replacements and parent retargets survive retry sleeps. Stale quarantine rename binds the dead-owner observation to those bytes and identity; cleanup deletes only the moved entry, on both acquisition and failure paths. Exclusive creation also revalidates the captured parent on every attempt. Completed local reservations whose cleanup exhausts are tracked by path/token and retried before acquisition, without reclaiming active live-self reservations. Release binds the matching token to the captured file identity, contents and parent before every unlink attempt; protected writer errors propagate.
-`tests/codex-integration/codex-prompt-lock-sharing.test.ts` covers sharing violations.
+The default stat provider retains device, inode and UID evidence as bigints, so distinct 64-bit file IDs remain distinct across retry fences. POSIX ownership still compares the exact UID to the current user; injected numeric stat providers remain supported.
+`tests/codex-integration/codex-prompt-lock-sharing.test.ts` covers sharing violations and distinct 64-bit file IDs that collide when converted to numbers.
 The last reservation removes its directory only with atomic empty-directory rmdir.
 Unsafe acquisition is non-retryable and carries the lock-path diagnostic through writer results.
 Automatic recovery is a no-op when the Codex home is proven absent and creates nothing.
@@ -523,29 +533,13 @@ Codex display-cache expiry, retained blocking main-policy evidence, and reset hi
 
 Plan-based automatic exclusions leave native credential files untouched and preserve the native-main exemption in the [selection policy](providers/openai-accounts.md#automatic-pool-plan-exclusions).
 
+## Base prompt import
+
+The [prompt contract](codex-prompts.md#base-prompt-import) governs base imports and previews.
+
 ## Prompt text probe
 
-`src/codex/prompt-text-probe.ts` reports the prompt Codex assembles for the resolved Codex home. It
-runs `codex debug prompt-input` in that home, bounded in time and in bytes, maps each rendered section
-onto a layer, and takes no caller-supplied directory. Captured process output is never serialized
-back: a failure is a classified kind plus a fixed phrase and the resolved command.
-
-The base prompt is absent from that output, because Codex discards `base_instructions` before
-rendering `prompt.input`. It is read from configuration instead, and it is read before the subprocess
-starts, so an unresolved Codex runtime, a failed probe and a cancelled request all still answer with
-it. Precedence follows Codex: a `model_instructions_file` decides the answer whenever the key is set,
-including when the file it names is missing, blank or unreadable, and otherwise the selected model's
-catalog row supplies `base_instructions`, with `model_messages.instructions_template` as the fallback.
-Only the first form is reported as text Codex sends. A template is reported as a template and the
-legacy `base-instructions` layer slot carries no text for it: that slot has five coarse reasons and no
-representation, and its dialog labels every readable layer as text sent to the model.
-
-Each configured source is opened once, non-blocking, and read to at most the probe's byte ceiling,
-which is what keeps a FIFO, a device node or an oversized file from stalling or ballooning a
-synchronous request. The regular-file check reads the opened descriptor rather than the path, and the
-whole TOML document parses before any key from it is trusted, because Codex rejects a malformed
-config outright. Every failure is a reason on the response rather than an exception, so the
-management read degrades instead of returning an error page.
+The [probe contract](codex-prompts.md#prompt-text-probe) governs prompt capture and bounded sources.
 
 ## Paginated history writer boundary
 

@@ -40,7 +40,17 @@ this helper before reporting macOS capture as available.
 
 ## Capture a command
 
-Write a JSON scenario and pass its path to the CLI:
+For a small first capture, save this as `scenario.json`:
+
+```json
+{
+  "executable": "node",
+  "arguments": ["-e", "console.log('ready')"],
+  "timeout_ms": 5000
+}
+```
+
+Run the scenario through the CLI:
 
 ```sh
 rea capture-process ./scenario.json --json > capture.json
@@ -50,6 +60,85 @@ rea capture-process ./scenario.json --json > capture.json
 format is TOON. The file contains the complete capture Evidence record.
 Choose an output file distinct from the scenario input: shell redirection opens
 and truncates the output before REA reads the scenario.
+
+Read the result's terminal observations, exit/settlement status, and cleanup
+outcome. [Scenario and result details](#scenario-and-result-details) describe
+limits, normalization, filesystem coverage, and incomplete observations.
+
+## Compare two captures
+
+Compare saved capture Evidence with:
+
+```sh
+rea compare-process-captures authority.json reconstruction.json
+```
+
+The comparison checks terminal, interaction, exit, filesystem, and
+process observations under a shared comparison contract. It reports observed
+differences with their locations, while residual unknowns or truncated
+observations prevent a complete-equivalence claim. Matching scenario
+commitments do not reveal whether redacted sensitive inputs were equal.
+
+For scenarios where independent scheduling can change event order, the CLI
+also accepts an optional trace-specification JSON file as the third argument.
+That specification must state the exact events and ordering constraints to
+accept; it does not discard unmatched observations or make timestamps into
+causal evidence. Trace comparison returns `unknown` when a capture lacks the
+required complete event journal or contains relevant residual unknowns.
+
+Each capture carries commitments for the selected scenario, executable,
+comparison contract, and normalization rules. The comparison contract covers
+the working directory, explicit environment, filesystem observation paths,
+terminal size, scripted events, timeouts, limits, and normalization; the
+executable and its arguments may differ. Comparison rejects captures whose
+comparison contracts differ and names the differing fields, so run both
+scenarios from the same absolute working directory and observation paths.
+Captures are local Evidence files; keep
+their source artifacts and invocation context available when interpreting a
+difference.
+
+## Hash a report independently of terminal output
+
+Select the producer's report directory and give `file_bytes` enough room for
+the complete files you need, including other files in those roots. For example,
+save this scenario and run `rea capture-process ./scenario.json --json > capture.json`:
+
+```json
+{
+  "executable": "node",
+  "arguments": [
+    "-e",
+    "const fs=require('node:fs');fs.mkdirSync('reports',{recursive:true});fs.writeFileSync('reports/final.json',JSON.stringify({status:'complete',data:'X'.repeat(131072)}));console.log('x'.repeat(8192));"
+  ],
+  "working_directory": ".",
+  "filesystem_observation_paths": ["./reports"],
+  "limits": { "output_bytes": 1024, "file_bytes": 262144 }
+}
+```
+
+The report exceeds the terminal budget but fits the independent 256 KiB hash
+budget. Its complete SHA-256 appears in `normalized_result.files_after` at
+`root_0:final.json`; check `truncation_details.filesystem_after` for omissions
+and actual bytes hashed. The verbose terminal output is truncated without
+preventing the report digest. The same scenario object is the MCP
+`capture_process_scenario` input. REA never returns a prefix hash as a full-file
+digest: an insufficient remaining budget produces a null digest and an
+explicit omission reason.
+
+A digest binds the complete bytes observed at that checkpoint, not the
+producer's notion of a finished report. A stable periodic or running report
+can also have a complete digest. Choose the final file and verify the
+producer's documented completion marker, exit outcome and settlement
+observations before calling it final. `after_settlement` names a filesystem
+checkpoint, not a guarantee that an application finished successfully or
+that an unobserved writer will never change the file. REA checks opened-file
+identity/state around hashing and reports observed changes or unavailable
+files; cancellation stops the hash. If an external sealer produces a manifest,
+keep its completion claims and digest separate from REA's checkpoint facts.
+
+## Scenario and result details
+
+### Progress
 
 While the capture runs, REA writes live status to stderr as one JSON object per
 line. Stdout stays the final Evidence document:
@@ -79,7 +168,7 @@ into the latest status, and stale live observations are discarded before final
 cleanup status. Progress never copies child output. Child output remains in the
 capture Evidence on stdout.
 
-For example:
+### Scenario with interactions
 
 ```json
 {
@@ -328,73 +417,51 @@ as well. A newly started unreadable process can prevent verified cleanup even
 after the selected command exits. REA preserves this uncertainty and leaves
 that process untouched.
 
-## Hash a report independently of terminal output
+Reading those tokens requires compiling a small Swift helper with `xcrun swiftc`.
+By default that compilation reuses Swift's shared module cache, while the
+compiler's intermediate objects stay inside the per-run temporary root that REA
+removes afterwards. Set `REA_DARWIN_MODULE_CACHE_PATH` to a writable directory
+when a shared cache is unavailable, for example under an enforced write
+boundary. REA creates the directory, passes it to the compiler as
+`-module-cache-path`, and exports it as `CLANG_MODULE_CACHE_PATH` so the
+Objective-C header modules the helper builds land there too. REA never removes
+that directory: it outlives each run, so the first compilation into a new
+directory pays a cold-cache build and later runs reuse it. An absent or empty
+value keeps the shared default.
 
-Select the producer's report directory and give `file_bytes` enough room for
-the complete files you need, including other files in those roots. For example,
-save this scenario and run `rea capture-process ./scenario.json --json > capture.json`:
+`xcrun` also maintains a separate tool-lookup cache. Its `--no-cache` option
+refreshes entries and does not guarantee a write-free lookup. To avoid that
+lookup while compiling REA's helper, set `REA_DARWIN_SWIFTC_PATH` to the absolute
+path of an installed `swiftc` and `SDKROOT` to the absolute path of a compatible
+macOS SDK. REA invokes that compiler directly with `-sdk` and the selected SDK;
+an unset or empty compiler setting keeps the normal `xcrun swiftc` path. A
+missing or relative SDK/compiler path fails with an actionable prerequisite
+error before compilation. An incompatible installation reports the compiler's
+bounded diagnostics; REA does not repair or replace the toolchain.
 
-```json
-{
-  "executable": "node",
-  "arguments": [
-    "-e",
-    "const fs=require('node:fs');fs.mkdirSync('reports',{recursive:true});fs.writeFileSync('reports/final.json',JSON.stringify({status:'complete',data:'X'.repeat(131072)}));console.log('x'.repeat(8192));"
-  ],
-  "working_directory": ".",
-  "filesystem_observation_paths": ["./reports"],
-  "limits": { "output_bytes": 1024, "file_bytes": 262144 }
-}
-```
-
-The report exceeds the terminal budget but fits the independent 256 KiB hash
-budget. Its complete SHA-256 appears in `normalized_result.files_after` at
-`root_0:final.json`; check `truncation_details.filesystem_after` for omissions
-and actual bytes hashed. The verbose terminal output is truncated without
-preventing the report digest. The same scenario object is the MCP
-`capture_process_scenario` input. REA never returns a prefix hash as a full-file
-digest: an insufficient remaining budget produces a null digest and an
-explicit omission reason.
-
-A digest binds the complete bytes observed at that checkpoint, not the
-producer's notion of a finished report. A stable periodic or running report
-can also have a complete digest. Choose the final file and verify the
-producer's documented completion marker, exit outcome and settlement
-observations before calling it final. `after_settlement` names a filesystem
-checkpoint, not a guarantee that an application finished successfully or
-that an unobserved writer will never change the file. REA checks opened-file
-identity/state around hashing and reports observed changes or unavailable
-files; cancellation stops the hash. If an external sealer produces a manifest,
-keep its completion claims and digest separate from REA's checkpoint facts.
-
-## Compare two captures
-
-Compare saved capture Evidence with:
+For example, select paths from your existing Xcode or Command Line Tools
+installation **before** entering an enforced write boundary:
 
 ```sh
-rea compare-process-captures authority.json reconstruction.json
+export REA_DARWIN_SWIFTC_PATH="$(xcrun --find swiftc)"
+export SDKROOT="$(xcrun --show-sdk-path)"
+export REA_DARWIN_MODULE_CACHE_PATH="$PWD/rea-cache/modules"
+export TMPDIR="$PWD/rea-cache/tmp"
+mkdir -p "$TMPDIR"
+rea analyze-javascript-application ./fixture --artifact-format directory
 ```
 
-The comparison checks terminal, interaction, exit, filesystem, and
-process observations under a shared comparison contract. It reports observed
-differences with their locations, while residual unknowns or truncated
-observations prevent a complete-equivalence claim. Matching scenario
-commitments do not reveal whether redacted sensitive inputs were equal.
+Keep the selected compiler and SDK paired. Permit REA's evidence/output paths
+and its temporary directory as well as the caller-owned module cache. REA does
+not create a sandbox or claim that these settings contain every write made by
+arbitrary toolchains or analysis providers. They bypass REA's `xcrun` lookup
+and select the helper's Swift/Clang cache without disabling ownership checks.
+The caller-owned cache survives cancellation and cleanup; per-run compiler
+intermediates and the compiled helper remain REA-owned temporary files.
 
-For scenarios where independent scheduling can change event order, the CLI
-also accepts an optional trace-specification JSON file as the third argument.
-That specification must state the exact events and ordering constraints to
-accept; it does not discard unmatched observations or make timestamps into
-causal evidence. Trace comparison returns `unknown` when a capture lacks the
-required complete event journal or contains relevant residual unknowns.
-
-Each capture carries commitments for the selected scenario, executable,
-comparison contract, and normalization rules. The comparison contract covers
-the working directory, explicit environment, filesystem observation paths,
-terminal size, scripted events, timeouts, limits, and normalization; the
-executable and its arguments may differ. Comparison rejects captures whose
-comparison contracts differ and names the differing fields, so run both
-scenarios from the same absolute working directory and observation paths.
-Captures are local Evidence files; keep
-their source artifacts and invocation context available when interpreting a
-difference.
+The boundary must also permit process-table inspection. On macOS, `/bin/ps`
+is setuid and a blanket sandbox may reject its launch with `spawn EPERM`.
+REA then preserves ownership uncertainty and can report `cleanup_incomplete`;
+it does not disable verification to continue. A sandbox that explicitly allows
+this read-only process inspector is a separate prerequisite from the compiler
+and cache settings.

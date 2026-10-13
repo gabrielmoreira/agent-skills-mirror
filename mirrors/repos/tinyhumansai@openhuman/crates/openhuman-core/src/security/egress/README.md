@@ -54,7 +54,7 @@ Both `enforce_egress` and `local_only_tool_block` read the live mode via
 
 - `config/schema/privacy.rs`: `PrivacyMode` (`Standard` / `Sensitive` /
   `LocalOnly`), the config-facing enum `local_only_blocks` matches on.
-- [`../pii/README.md`](../pii/README.md): the identification-risk detector
+- [`tinymemory_api::safety`](https://github.com/tinyhumansai/tinymemory/blob/d1b06334faf7f8abb62bd1bd4ec4c4d4862f53a4/crates/tinymemory-api/src/safety/README.md): the opt-in local identification-risk detector
   that will eventually populate `EgressDescriptor::risk_level` /
   `risk_categories` via `EgressDescriptor::with_risk`.
 - `core/events.rs`: `DomainEvent::ExternalTransferPending { descriptor,

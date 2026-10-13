@@ -82,4 +82,11 @@ reviewed, but more strictly than others:
 | --- | --- |
 | lunar-me | #233, #234, #235 opened within 12 seconds, all rewriting `codex_prompt.md`, which is kept byte for byte. #590 resubmitted after the rejection. #592 broke a path in AGENTS.md. #590, #592 and #593 opened within 51 seconds. The same template across many repositories. |
 
-Watched: none yet.
+### Watched
+
+Work that is useful but keeps coming back for the same gaps. Not a block
+and not extra care: the review checks the named gaps before merging.
+
+| Author | Check | Evidence |
+| --- | --- | --- |
+| ggbdpq | Break each fix by hand and see its new test go red. Grep for the sibling sites (other deciders, other routes, other providers) the change didn't touch. | On 10-13 two of their batches needed a follow-up. 44b5b2b96 and e21b1dbc1 were merged with tests that pass on the old code. 4ed379f11 decoded `\uXXXX` at four sites but left three deciders reading the raw body, and one site had no test (0c6752dbd). |

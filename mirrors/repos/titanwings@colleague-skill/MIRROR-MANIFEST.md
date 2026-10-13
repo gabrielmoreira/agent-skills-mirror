@@ -7,7 +7,7 @@ ref: dot-skill
 
 # Mirror Manifest
 
-Mirror of `titanwings/colleague-skill` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
+Mirror of `titanwings/colleague-skill` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `titanwings/colleague-skill` — 26 default patterns, 0 followed patte
 | Ref           | `dot-skill` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 32 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,24 +73,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`prompts/correction_handler.md`](prompts/correction_handler.md) |
 | 13 | ✓ | [`prompts/intake.md`](prompts/intake.md) |
 | 14 | ✓ | [`prompts/merger.md`](prompts/merger.md) |
-| 15 | ✓ | [`prompts/persona_analyzer.md`](prompts/persona_analyzer.md) |
-| 16 | ✓ | [`prompts/persona_builder.md`](prompts/persona_builder.md) |
-| 17 | ✓ | [`prompts/relationship/intake.md`](prompts/relationship/intake.md) |
-| 18 | ✓ | [`prompts/relationship/merger.md`](prompts/relationship/merger.md) |
-| 19 | ✓ | [`prompts/relationship/persona_analyzer.md`](prompts/relationship/persona_analyzer.md) |
-| 20 | ✓ | [`prompts/relationship/persona_builder.md`](prompts/relationship/persona_builder.md) |
-| 21 | ✓ | [`prompts/work_analyzer.md`](prompts/work_analyzer.md) |
-| 22 | ✓ | [`prompts/work_builder.md`](prompts/work_builder.md) |
-| 23 | ✓ | [`SKILL.md`](SKILL.md) |
-| 24 | ✓ | [`skills/colleague/example_jiaxiu/meta.json`](skills/colleague/example_jiaxiu/meta.json) |
-| 25 | ✓ | [`skills/colleague/example_jiaxiu/persona.md`](skills/colleague/example_jiaxiu/persona.md) |
-| 26 | ✓ | [`skills/colleague/example_jiaxiu/work.md`](skills/colleague/example_jiaxiu/work.md) |
-| 27 | ✓ | [`skills/colleague/example_tianyi/meta.json`](skills/colleague/example_tianyi/meta.json) |
-| 28 | ✓ | [`skills/colleague/example_tianyi/persona.md`](skills/colleague/example_tianyi/persona.md) |
-| 29 | ✓ | [`skills/colleague/example_tianyi/work.md`](skills/colleague/example_tianyi/work.md) |
-| 30 | ✓ | [`skills/colleague/example_zhangsan/meta.json`](skills/colleague/example_zhangsan/meta.json) |
-| 31 | ✓ | [`skills/colleague/example_zhangsan/persona.md`](skills/colleague/example_zhangsan/persona.md) |
-| 32 | ✓ | [`skills/colleague/example_zhangsan/work.md`](skills/colleague/example_zhangsan/work.md) |
+| 15 | ✓ | [`prompts/owner/intake.md`](prompts/owner/intake.md) |
+| 16 | ✓ | [`prompts/owner/profile_builder.md`](prompts/owner/profile_builder.md) |
+| 17 | ✓ | [`prompts/persona_analyzer.md`](prompts/persona_analyzer.md) |
+| 18 | ✓ | [`prompts/persona_builder.md`](prompts/persona_builder.md) |
+| 19 | ✓ | [`prompts/relationship/intake.md`](prompts/relationship/intake.md) |
+| 20 | ✓ | [`prompts/relationship/merger.md`](prompts/relationship/merger.md) |
+| 21 | ✓ | [`prompts/relationship/persona_analyzer.md`](prompts/relationship/persona_analyzer.md) |
+| 22 | ✓ | [`prompts/relationship/persona_builder.md`](prompts/relationship/persona_builder.md) |
+| 23 | ✓ | [`prompts/work_analyzer.md`](prompts/work_analyzer.md) |
+| 24 | ✓ | [`prompts/work_builder.md`](prompts/work_builder.md) |
+| 25 | ✓ | [`SKILL.md`](SKILL.md) |
 
 ---
 

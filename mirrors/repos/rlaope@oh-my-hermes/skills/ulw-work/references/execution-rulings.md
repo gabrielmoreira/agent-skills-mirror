@@ -57,7 +57,7 @@ The coordinator classifies each finding by this rule, not by the label the revie
 
 ## Reusing Evidence Between Increments
 
-Rerunning every check after every small edit spends the run on checks that cannot have changed. Each captured result therefore records what it exercised (the command, and the files or scenarios it covers), its `observed_tree`, and a commit to diff from: `HEAD` on a clean tree, or on a dirty one the sha `git stash create` prints. The `observed_tree` stays the identity stamp; on a dirty tree it is a content hash that says whether two captures saw the same content, not what differs, so the diff runs against the recorded commit.
+Rerunning every check after every small edit spends the run on checks that cannot have changed. Each captured result therefore records what it exercised (the command, and the files or scenarios it covers), its `observed_tree`, and a commit to diff from: `HEAD` on a clean tree, or on a dirty one the sha `git stash create` prints, or, when it prints nothing, `HEAD`. The `observed_tree` stays the identity stamp; on a dirty tree it is a content hash that says whether two captures saw the same content, not what differs, so the diff runs against the recorded commit.
 
 After an increment, diff that commit against the current tree. A check reruns when its environment or dependency set moved, or when the diff reaches a file it exercises or anything importing such a file; an untracked file it covers counts as changed. For every other check, cite the earlier capture instead of running it again. When it is unclear what a check covers, rerun it.
 

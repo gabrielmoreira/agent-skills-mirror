@@ -53,7 +53,7 @@ must authorize its route and provide its private token and response-size limit.
 It deliberately contains no product route catalog. A second `exchange` overload
 takes up to eight host-chosen request headers, for example a correlation ID
 (`EmbeddedRuntimeService.exchangeHttp` has the same overload). A name must be
-letters, digits or hyphens; a value must be 1-256 printable ASCII characters.
+letters, digits or hyphens; a value must be 1-512 printable ASCII characters.
 The transport's own headers (`Host`, `Authorization`, `Content-Type`,
 `Content-Length`, `Connection`, `Transfer-Encoding`) cannot be replaced, and a
 rejected header fails before any connection. The instrumented contract
@@ -278,3 +278,52 @@ Hosts that capture an endpoint before request admission must use the snapshot-bo
 `NativeRuntimeSession.request(snapshot, ...)` overload. Capture the snapshot before
 selecting the endpoint; a lifecycle change then rejects transport admission instead
 of allowing a stale endpoint to inherit a newer running epoch.
+
+The runtime inventory stager accepts `targetAbi: "x86_64"`; omission retains
+ARM64. It requires the selected loader and rejects mixed ARM64/x86_64 loaders.
+The Java extractor admits exactly one supported loader in the authenticated
+inventory. `EmbeddedRuntimeLaunch` chooses that loader from the APK's verified
+ABI-specific native directory, and rejects an ambiguous or missing loader. The
+same private extraction, restart and environment isolation paths apply to both
+architectures. A multi-ABI APK needs separately selected inventories; one shared
+inventory must not mix native hashes from different architectures.
+
+Task data-key access is an optional, native-only `LocalCredentialBroker` extension.
+The existing constructor disables it. Hosts may supply a `TaskKeyCustody` port
+bound to one native-selected account and database, plus an ownership guard. The
+wire accepts no account ID or path. The broker serializes each key operation on
+the guard and checks it before access and before returning material. Hosts must
+serialize owner changes on that same guard, bind it to the runtime launch, and
+close the broker when the launch retires. Retain the database writer lease;
+`createForNewDatabase` is only for new files or migration destinations. Missing
+keys for existing databases must fail, never trigger creation. An interrupted
+mutation may have committed even if its response is refused or lost; do not
+blindly retry destructive operations.
+
+`createLocalTaskDataKeyStore` is the private native-process client. It validates
+versioned key material and returns `{id, bytes}`; erase the byte array after use.
+It shares the existing loopback bearer transport and redacted errors. Neither the
+port nor its token or keys may enter a renderer, model, logs, or evidence. A host
+must implement the port using encrypted native custody such as `TaskDataKeyStore`;
+this extension does not select an adapter or enable encryption. The stable Cloud
+owner identity and its lifecycle mapping remain host integration work: do not
+substitute a rotating credential fingerprint. Database driver, WAL verification,
+migration, and full account deletion remain separate requirements.
+
+The optional `VerifiedAccountStore` broker port and
+`createLocalVerifiedAccountStore` client transfer opaque whole-record snapshots
+between trusted native processes. Bind an adapter to the encrypted
+`VerifiedAccountCredentialStore` and one native launch/account guard. Serialize
+owner transitions on that guard; the adapter must use the same owner mutex and
+check its guard at the actual encrypted storage operation. Old constructors keep
+this port disabled. In verified mode legacy primary `read` projects the credential;
+legacy `write` and `clear` refuse. Use whole-record compare-and-exchange for changes.
+No renderer receives this port or its token. An uncertain acknowledgement requires
+an explicit snapshot read; the client never retries a mutation.
+
+A host can pass a native `readVerifiedAccount` reader to `createCredentialGate`.
+The reader returns the authenticated record, never a renderer-selected owner.
+The gate retains the credential fingerprint session fence and derives its stable
+owner from the JSON tuple `[authority, userId, organizationId]`. This option changes
+storage ownership semantics: enable only with an explicit migration and database
+writer lease. These ports do not implement either one or enable product encryption.

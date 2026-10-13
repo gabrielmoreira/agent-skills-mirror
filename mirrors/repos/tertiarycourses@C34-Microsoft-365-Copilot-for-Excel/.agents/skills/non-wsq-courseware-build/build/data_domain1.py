@@ -38,20 +38,21 @@ DOMAIN1 = [
             "highlight, sort and filter recruitment pipeline data"
         ),
         goal=(
-            "Turn a raw candidate-pipeline export into a named Excel table, find its data-quality issues with Copilot, "
-            "and answer pipeline questions with checked numbers."
+            "Turn a raw candidate-pipeline export into a named Excel table, find and fix its data-quality issues with "
+            "Copilot, and answer pipeline questions you can check."
         ),
-        workflow=["Open locally", "Create the table", "Chat only: describe", "Plan: fix quality", "Ask, compare, filter"],
+        workflow=["Create the table", "Describe", "Find & fix issues", "Ask & check", "Highlight, sort, filter"],
         desc=(
             "You are a talent analyst at BrightPath Talent Solutions, a fictional Singapore recruitment and staffing firm. "
-            "You will meet Copilot's three modes on a real task: Allow editing turns the H1 2026 pipeline export into a named "
-            "table, Chat only describes it without touching the sheet, and Plan shows you its steps before it fixes duplicate "
-            "IDs and inconsistent Source labels. You will then answer pipeline questions, compare two AI models on the same "
-            "question, and build a highlighted, sorted and filtered review view. Every number is checked with a formula."
+            "You will meet Copilot's three modes on a real task, asking in plain English: Allow editing turns the H1 2026 "
+            "pipeline export into a named table, Chat only describes it without touching the sheet, and Plan shows you its "
+            "steps before it fixes duplicate IDs and inconsistent Source names. You will then ask which source brings in "
+            "the most hires, have Copilot add a Checks sheet to confirm the answer, compare two AI models, and highlight, "
+            "sort and filter the pipeline."
         ),
         build=(
             "BrightPath_Candidate_Pipeline.xlsx in your work-c34 folder with table tblApplications, a Source_Clean column, duplicate "
-            "IDs highlighted, Hired rows highlighted, a verified source-by-hires answer and a filled Prompt_Log"
+            "IDs and Hired rows highlighted, a Checks sheet that confirms the hire counts and a filled Prompt_Log"
         ),
         services="Excel for Microsoft 365 (desktop) · Copilot (Chat only, Plan, Allow editing, model picker) · BrightPath_Candidate_Pipeline.xlsx",
         data_files=["data/BrightPath_Candidate_Pipeline.xlsx"],
@@ -70,76 +71,55 @@ DOMAIN1 = [
             ),
             (
                 "Open Copilot and find the mode menu above the prompt box: Chat only (answers, no changes), Plan (shows its "
-                "steps first) and Allow editing (makes the changes). Choose Allow editing and ask Copilot to turn the "
-                f"Applications data into a named table. Its reply must confirm tblApplications, 13 columns and {E1['rows']} data "
-                "rows. Select Done to keep the change, or Undo to reverse it. If Excel offers 'Clean data with Copilot', select "
-                "Dismiss for now - you will use it in Lab 4.",
+                "steps first) and Allow editing (makes the changes). Choose Allow editing and ask Copilot to turn the data "
+                f"into a table. Its reply should confirm tblApplications with 13 columns and {E1['rows']} rows. Select Done to "
+                "keep the change, or Undo to reverse it. If Excel offers 'Clean data with Copilot', select Dismiss for now - "
+                "you will use it in Lab 4.",
                 "ALLOW EDITING:\n"
-                "Format the data on the Applications sheet (from A1 to the last row and column) as an Excel table\n"
-                "with headers. Name the table tblApplications. Do not change, sort or delete any values.\n"
-                "Then tell me the table name, the number of columns and the number of data rows.",
+                "Turn the data on the Applications sheet into a table named tblApplications. Don't change any values.\n"
+                "Then tell me how many rows and columns it has.",
             ),
             (
-                "Switch to Chat only (no workbook changes). Paste the prompt below. Copilot's row count must match the "
-                f"{E1['rows']} rows it reported in Step 2. If Copilot already points out Source labels such as 'Linked In' or "
-                "'JobStreet ' (trailing space), note them - Step 4 checks and fixes them. You will log every prompt in Step 7.",
-                "GOAL: Describe this candidate pipeline before I analyse it.\n"
-                "CONTEXT: BrightPath recruitment desk, H1 2026. One row should be one application.\n"
-                "DATA: Use only tblApplications.\n"
-                "CONSTRAINTS: Do not change the workbook.\n"
-                "OUTPUT: What a row represents, each column with its data type, the number of rows,\n"
-                "        the Applied_Date range and the distinct values of Stage and Source.\n"
-                "REVIEW: Tell me how you counted the rows.",
-            ),
-            (
-                "Still in Chat only, ask Copilot to check data quality. It should report 2 repeated Application_IDs and Source "
-                "values that are not in the canonical list on About_This_Data. Then switch to Plan mode and send the two changes: "
-                "Copilot first shows its plan - read it, approve it, then select Done. Orange means 'this ID appears more than once': "
-                "each duplicate ID is coloured in both places it occurs, so you see one orange cell near the top of the table "
-                "and its twin further down (press Ctrl+End to jump to the last rows). Check that no row was deleted - the table "
-                f"must still have {E1['rows']} rows.",
+                "Switch to Chat only (no workbook changes) and ask Copilot to describe the data. The row count should match "
+                f"Step 2 ({E1['rows']}). If Copilot already mentions odd Source names such as 'Linked In', note them - you fix "
+                "them in Step 4.",
                 "CHAT ONLY:\n"
-                "Check tblApplications for data-quality issues. List any Application_ID that appears more than once,\n"
-                "and any Source value that is not exactly one of: LinkedIn, JobStreet, MyCareersFuture, Referral,\n"
-                "BrightPath Website, Job Fair, Talent Database. Give the count of each issue. Do not change anything.\n\n"
+                "Describe this data for me. What does one row represent, what dates does it cover,\n"
+                "and what are the different Stage and Source values?",
+            ),
+            (
+                "Still in Chat only, ask Copilot to look for problems. It should find 2 repeated Application_IDs and Source "
+                "names spelt more than one way ('Linked In', and 'JobStreet' with an extra space). Then switch to Plan and ask "
+                "for the fix: read Copilot's plan, approve it, then select Done. Each repeated ID turns orange in both places "
+                "it occurs - one near the top of the table and its copy in the last rows (press Ctrl+End to jump there). To "
+                "check the fix, open the filter arrow on the new Source_Clean column: you should see 7 sources and no "
+                f"'Linked In', and the table still has {E1['rows']} rows.",
+                "CHAT ONLY:\n"
+                "Are there any data-quality problems in tblApplications, such as repeated Application_IDs or\n"
+                "Source names spelt in different ways? Don't change anything yet.\n\n"
                 "PLAN MODE:\n"
-                "1) Highlight Application_ID cells that appear more than once in tblApplications with an orange fill.\n"
-                "2) Add a column Source_Clean to tblApplications that trims spaces from Source and changes 'Linked In'\n"
-                "   to 'LinkedIn'. Do not delete or edit any existing values.\n\n"
-                "FOLLOW-UP: For each duplicated Application_ID, give the row numbers of both copies and say whether the\n"
-                "two rows are identical.\n\n"
-                "FOLLOW-UP: Highlight the Source cells in tblApplications where Source_Clean is different from Source\n"
-                "with a yellow fill. Tell me how many cells you highlighted and list their Application_IDs.\n\n"
-                "FOLLOW-UP: List the distinct Source_Clean values with a count of each. Confirm there is no 'Linked In'\n"
-                f"and no value with a trailing space, and that tblApplications still has {E1['rows']} rows.",
+                "Highlight the repeated Application_IDs in orange. Then add a Source_Clean column with the\n"
+                "Source names tidied up, and keep the original Source column as it is.",
             ),
             (
-                "Ask Copilot a direct question about which sources produce hires, then ask Copilot (Allow editing) to add the two "
-                "check formulas to a Checks sheet. Duplicate rows are Rejected applications, so they do not change the hire counts. "
-                "Finally, open the model picker at the top of the pane (Auto by default), choose a different model, select New chat "
-                "and ask the same question again. Both answers must match the Checks formulas - if a model disagrees, the formula wins.",
+                "Ask Copilot which source brings in the most hires (Chat only). Then switch to Allow editing and ask it to add "
+                "a Checks sheet that counts the hires with formulas, so you can confirm its answer. Finally, open the model "
+                "picker at the top of the pane (Auto by default), choose a different model, select New chat and send the first "
+                "prompt again. Both answers must match the Checks sheet - if a model disagrees, the Checks sheet wins.",
                 "PROMPT (Chat only):\n"
-                "Using tblApplications, count applications and hires (Stage = \"Hired\") by Source_Clean.\n"
-                "Show a table sorted by hires, highest first, with hire rate = hires / applications.\n\n"
+                "Which source brings in the most hires? Show the applications, hires and hire rate for each\n"
+                "source, using Source_Clean.\n\n"
                 "CHECK (Allow editing):\n"
-                "On a sheet named Checks (create it if needed), add these formulas with a label beside each,\n"
-                "then tell me the results:\n"
-                "=COUNTIFS(tblApplications[Stage],\"Hired\")\n"
-                "=COUNTIFS(tblApplications[Source_Clean],\"LinkedIn\",tblApplications[Stage],\"Hired\")\n\n"
-                "CHAT ONLY (new chat, different model):\n"
-                "Using tblApplications, count applications and hires (Stage = \"Hired\") by Source_Clean.\n"
-                "Show a table sorted by hires, highest first.",
+                "Add a Checks sheet with formulas that count the total hires and the LinkedIn hires,\n"
+                "so I can check your answer.",
             ),
             (
-                "Switch to Allow editing and build a review view, one change at a time. After each change, look at the sheet and "
-                "keep it or select Undo in the Copilot pane. Finally ask Copilot how many rows the filter shows, then ask it to "
-                f"clear the filter so all {E1['rows']} rows return.",
-                "1) Highlight entire rows of tblApplications where Stage is \"Hired\" with a light green fill.\n"
-                "2) Sort tblApplications by Interview_Score from highest to lowest, then by Days_in_Pipeline\n"
-                "   from lowest to highest.\n"
-                "3) Filter tblApplications to show only Client_Sector = \"Technology\" and Stage = \"Interview\".\n"
-                "4) How many rows of tblApplications are visible with this filter?\n"
-                f"5) Clear all filters on tblApplications and confirm all {E1['rows']} rows are visible.",
+                "Stay in Allow editing and send these one change at a time. After each change, look at the sheet and keep it "
+                "or select Undo in the Copilot pane. When you have the filtered count, select Data > Clear to show all "
+                f"{E1['rows']} rows again.",
+                "1) Highlight the rows of candidates who were hired in light green.\n"
+                "2) Sort the table so the highest interview scores come first.\n"
+                "3) Show only the Technology candidates at the Interview stage. How many are there?",
             ),
             (
                 "Prompt_Log already lists every prompt in this lab with its step and mode. Ask Copilot to fill in what it did, "
@@ -148,26 +128,21 @@ DOMAIN1 = [
             ),
         ],
         sample_prompts=[
-            ("Describe", "Describe tblApplications: what one row represents, each column's data type, the row count and the Applied_Date range. Do not change the workbook."),
-            ("Data quality", "List any Application_ID that appears more than once in tblApplications and any Source value that is not in the canonical list on About_This_Data."),
-            ("Plan first", "Plan how you would flag duplicate Application_IDs and standardise Source. Show me the steps before you change anything."),
-            ("Clean helper column", "Add a column Source_Clean that trims spaces from Source and replaces 'Linked In' with 'LinkedIn'. Do not change the original Source column."),
-            ("Question", "Using tblApplications, count applications and hires by Source_Clean and show the hire rate. Sort by hires, highest first."),
-            ("Question", "Which Client_Sector received the most applications, and how many? Show the count for every sector."),
-            ("Highlight", "Highlight rows where Stage is Hired in light green."),
-            ("Sort", "Sort tblApplications by Interview_Score from highest to lowest, then by Days_in_Pipeline from lowest to highest."),
-            ("Filter", "Filter to show only Technology applications at the Interview stage."),
-            ("Insight", "What's interesting about this pipeline data? Give three observations, each with the numbers behind it."),
+            ("Summary", "Give me a quick summary of this pipeline data in five bullet points."),
+            ("Question", "Which sector received the most applications?"),
+            ("Question", "Which recruiter has the most candidates at the Offer stage?"),
+            ("Highlight", "Highlight the candidates with an interview score of 5 in light blue."),
+            ("Insight", "What's interesting about this data? Give me three observations with the numbers behind them."),
         ],
         test=(
-            f"tblApplications exists with {E1['rows']} data rows and =COUNTA(UNIQUE(tblApplications[Application_ID])) returns "
-            f"{E1['unique']}. The repeated IDs are {E1['dup_ids'][0]} and {E1['dup_ids'][1]} (both Rejected); all four of their cells are orange - two near the top and their copies in the last two rows. "
-            f"Copilot found {E1['variants_linkedin']} 'Linked In' and {E1['variants_jobstreet']} 'JobStreet ' (trailing space) "
-            f"values, and those {E1['variants_linkedin'] + E1['variants_jobstreet']} Source cells are yellow; "
-            f"=COUNTIF(tblApplications[Source_Clean],\"LinkedIn\") returns {E1['linkedin_clean_all']}. Hires total "
-            f"{E1['hired']} and {E1['top_hire_source']} has the most hires ({E1['top_hire_source_n']}). The Technology + Interview "
-            f"filter shows {E1['tech_interview_all']} rows. Technology received the most applications ({E1['top_sector_n']} unique). "
-            f"After clearing the filter all {E1['rows']} rows are visible, and every Prompt_Log row you ran has What Copilot did, How I verified and a Decision."
+            f"tblApplications exists with {E1['rows']} rows and 13 columns. Copilot found the 2 repeated IDs, "
+            f"{E1['dup_ids'][0]} and {E1['dup_ids'][1]} (both Rejected), and all four of their cells are orange - two near "
+            f"the top and their copies in the last two rows. It also found {E1['variants_linkedin']} 'Linked In' and "
+            f"{E1['variants_jobstreet']} 'JobStreet ' (extra space) values; the Source_Clean filter list shows 7 sources "
+            f"and no 'Linked In'. The Checks sheet shows {E1['hired']} hires in total and {E1['top_hire_source_n']} "
+            f"LinkedIn hires, and both models named {E1['top_hire_source']} as the top source. Hired rows are light green, "
+            f"the table is sorted by interview score, and the Technology + Interview filter showed {E1['tech_interview_all']} "
+            "rows. Every Prompt_Log row you ran has What Copilot did, How I verified and a Decision."
         ),
         checkpoint=(
             "Keep this workbook in work-c34. Lab 2 uses a separate requisitions workbook, so a learner who is behind can "
@@ -191,17 +166,17 @@ DOMAIN1 = [
             ),
             (
                 "Copilot answers about the whole sheet instead of the table.",
-                "Name the table (tblApplications) and the exact columns in the prompt, and click inside the table before asking.",
+                "Mention tblApplications in the prompt and click inside the table before asking.",
             ),
             (
-                "Copilot's count differs from your formula.",
-                "Ask Copilot how it counted (rows vs unique IDs, which Stage values). Trust the formula, record the difference "
-                "and refine the prompt.",
+                "Copilot's count differs from the Checks sheet.",
+                "Ask Copilot how it counted (all rows or unique IDs, which Stage values). Trust the Checks sheet, note the "
+                "difference and ask again more precisely.",
             ),
         ],
         challenge=(
-            "Ask Copilot to add a Pipeline_Status column that groups Stage into Active (Applied, Screening, Interview, Offer), "
-            "Hired and Closed (Rejected, Withdrawn). Verify the three counts add up to the row count."
+            "Ask Copilot to add a Pipeline_Status column that groups the stages into Active, Hired and Closed (Rejected or "
+            "Withdrawn). Check that the three counts add up to the row count."
         ),
         reflection="Which data-quality issue would most distort a source-effectiveness report if you had not found it, and why?",
     ),
@@ -513,10 +488,10 @@ _CHECKS = {
     1: [
         ("Rows in tblApplications", f"{E1['rows']} rows, {E1['unique']} unique Application_IDs"),
         ("Duplicate IDs (orange)", f"{E1['dup_ids'][0]} and {E1['dup_ids'][1]} - 4 orange cells: 2 near the top, 2 in the last rows"),
-        ("Fixed Source cells (yellow)", f"{E1['variants_linkedin'] + E1['variants_jobstreet']} cells: {E1['variants_linkedin']} 'Linked In' + {E1['variants_jobstreet']} 'JobStreet '"),
-        ("LinkedIn count in Source_Clean", f"{E1['linkedin_clean_all']}"),
-        ("Hires", f"{E1['hired']} in total; {E1['top_hire_source']} has the most ({E1['top_hire_source_n']})"),
-        ("Technology + Interview filter", f"{E1['tech_interview_all']} rows; all {E1['rows']} back after clearing it"),
+        ("Source_Clean", f"7 sources - {E1['variants_linkedin']} 'Linked In' and {E1['variants_jobstreet']} 'JobStreet' (extra space) fixed"),
+        ("Hires (Checks sheet)", f"{E1['hired']} in total; {E1['top_hire_source']} has the most ({E1['top_hire_source_n']})"),
+        ("Two models", f"Both name {E1['top_hire_source']} as the top source, matching the Checks sheet"),
+        ("Technology + Interview filter", f"{E1['tech_interview_all']} rows; all {E1['rows']} back after Data > Clear"),
     ],
     2: [
         ("Total estimated fees (Control B3 and B4)", f"Both {_money(E2['fee_total'])}"),

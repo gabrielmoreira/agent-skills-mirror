@@ -12,14 +12,25 @@ user explicitly requests otherwise. After all content and template rendering, ad
 <sub>Co-signed by LLM_NAME</sub>
 ```
 
-Replace `LLM_NAME` with the assisting model's name from trusted session context, such as `Claude Opus 5.5` or
-`GPT-6.1-Sol`. These are examples, not defaults. If the exact model is unavailable, use the known agent name, such as
-`Codex` or `Claude Code`. Never guess a model/version or infer it from the repository being discussed.
+Replace `LLM_NAME` with the assisting model's name from trusted session context, such as `GPT-6-Astra` or
+`Claude Fable 5.1`. These are examples, not defaults. If the exact model is unavailable, use `my AI agent`. Never guess
+a model/version or infer it from the repository being discussed.
 
-Keep exactly one co-signature footer. On edits, when the model matches, reuse the footer. When a different model
-assists, retain the existing attribution and add the current name once in the same line, separated by commas. Insert
-appended content above the footer. Preserve the rest of the body and template structure. Add the footer after rendering
-an issue form, outside its fields, code fences, and quoted text.
+For Codex, resolve the active model before using that fallback. Prefer explicit runtime metadata for the current turn.
+Otherwise, use `CODEX_THREAD_ID` to locate the matching rollout JSONL under `${CODEX_HOME:-$HOME/.codex}/sessions/`.
+Match the filename to that thread ID and verify `session_meta.payload.id`. Extract `payload.model` from the latest
+`turn_context` record for the current turn. Read only the matching thread and extract only identity metadata.
+
+Do not use another thread, an earlier turn's model, or the `config.toml` default as evidence of the active model.
+Rollout storage is client-specific. If the thread ID, file, or current-turn model is unavailable, use `my AI agent`.
+
+Use the model name alone, without an agent prefix or parentheses. Normalize verified model identifiers to display names,
+preserving the family, version, and variant. For example, format `gpt-6-astra` as `GPT-6-Astra`.
+
+Keep exactly one co-signature footer. On edits, when the model matches, normalize its name without adding another
+attribution. When a different model assists, retain the existing attribution and add the current name once in the same
+line, separated by commas. Insert appended content above the footer. Preserve the rest of the body and template
+structure. Add the footer after rendering an issue form, outside its fields, code fences, and quoted text.
 
 Title-only, metadata-only, and state-only updates leave the body untouched. Any authored accompanying comment gets its
 own footer.

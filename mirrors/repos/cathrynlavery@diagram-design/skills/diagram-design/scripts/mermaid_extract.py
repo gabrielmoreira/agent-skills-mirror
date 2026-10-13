@@ -53,6 +53,14 @@ UNSUPPORTED_KINDS = {
 }
 MARKDOWN_SUFFIXES = {".md", ".markdown", ".mdown", ".mkd"}
 MERMAID_SUFFIXES = {".mmd", ".mermaid"}
+# ER entity names start with a letter (any script) or underscore. The regex
+# shapes the token; _er_name enforces the first character, because \w also
+# matches non-decimal numerals such as "²" and "½" that \d does not exclude.
+ER_IDENTIFIER = r"[^\W\d][\w.-]*"
+
+
+def _er_name(name: str) -> bool:
+    return name[:1] == "_" or name[:1].isalpha()
 
 
 def _configure_stdout_utf8() -> None:
@@ -121,7 +129,7 @@ class Diagram:
         self,
         node_id: str,
         label: str = "",
-        shape: str = "rect",
+        shape: str = "",
         parent: str | None = None,
         container: bool = False,
     ) -> Node:
@@ -131,7 +139,7 @@ class Diagram:
                 existing.label = label
                 if label != node_id:
                     self._state_descriptions.pop(node_id, None)
-            if shape != "rect" or not existing.shape:
+            if shape:
                 existing.shape = shape
             if parent is not None and existing.parent is None:
                 existing.parent = parent
@@ -144,7 +152,7 @@ class Diagram:
         node = Node(
             id=node_id,
             label=label or node_id,
-            shape=shape,
+            shape=shape or "rect",
             parent=parent,
             depth=self._depth_for(parent),
             container=container,
@@ -210,12 +218,27 @@ def clean_label(value: str) -> str:
         text = text[1:-1]
     text = re.sub(r"<br\s*/?>", "\n", text, flags=re.IGNORECASE)
     text = re.sub(r"<[^>]+>", "", text)
-    text = re.sub(r"(?<!&)#(quot|apos|amp|lt|gt);", r"&\1;", text)
-    text = html.unescape(text)
     text = re.sub(r"\*\*(.*?)\*\*", r"\1", text)
     text = re.sub(r"__(.*?)__", r"\1", text)
     text = re.sub(r"(?<!\w)[*_](.*?)[*_](?!\w)", r"\1", text)
     text = text.replace("\\\"", '"').replace("\\'", "'")
+
+    def entity_reference(match: re.Match[str]) -> str:
+        entity = match.group(1)
+        if entity.isdecimal():
+            try:
+                codepoint = int(entity, 10)
+            except ValueError:
+                return match.group(0)
+            if not 0 < codepoint <= 0x10FFFF or 0xD800 <= codepoint <= 0xDFFF:
+                return match.group(0)
+            return f"&#{entity};"
+        if entity + ";" in html.entities.html5:
+            return f"&{entity};"
+        return match.group(0)
+
+    text = re.sub(r"(?<!&)#([0-9]+|[A-Za-z][A-Za-z0-9]*);", entity_reference, text)
+    text = html.unescape(text)
     return "\n".join(part.strip() for part in text.splitlines()).strip()
 
 
@@ -230,7 +253,7 @@ def _read_bounded(path: Path) -> str:
             f"source exceeds the {MAX_SOURCE_BYTES // (1024 * 1024)} MiB limit"
         )
     try:
-        return data.decode("utf-8")
+        return data.decode("utf-8-sig")
     except UnicodeDecodeError:
         _fail(f"{path.name}: source is not valid UTF-8 text")
 
@@ -572,6 +595,8 @@ def _parse_expanded_attributes(text: str) -> tuple[str, str] | None:
             shape_name = "image"
         elif "icon" in values:
             shape_name = "icon"
+        elif "shape" not in values:
+            return values.get("label", ""), ""
         else:
             shape_name = "rect"
     if not re.fullmatch(r"[a-z][a-z0-9-]*", shape_name):
@@ -590,7 +615,7 @@ def _parse_node_expression(expression: str) -> tuple[str, str, str] | None:
     node_id = match.group(1)
     rest = text[match.end() :].strip()
     if not rest:
-        return node_id, node_id, "rect"
+        return node_id, node_id, ""
     expanded = _parse_expanded_attributes(rest)
     if expanded is not None:
         label, shape = expanded
@@ -940,7 +965,12 @@ def _state_endpoint(
     if parsed is None:
         return None
     node_id, label, shape = parsed
-    diagram.add_node(node_id, label, "state" if shape == "rect" else shape, parent)
+    if not shape:
+        existing = diagram.node_map.get(node_id)
+        shape = existing.shape if existing is not None else "state"
+    elif shape == "rect":
+        shape = "state"
+    diagram.add_node(node_id, label, shape, parent)
     return node_id
 
 
@@ -948,11 +978,24 @@ def _parse_state(
     diagram: Diagram, lines: list[tuple[int, str]], header_position: int
 ) -> None:
     containers: list[str] = []
+    note_start: int | None = None
     descriptions: dict[str, list[str]] = {}
     pending_descriptions = diagram._state_descriptions
     for line_number, raw in lines[header_position + 1 :]:
         text = raw.strip()
         if not text:
+            continue
+        if note_start is not None:
+            if re.fullmatch(r"end\s+note", text, re.I):
+                note_start = None
+            continue
+        note = re.fullmatch(
+            r"note\s+(?:left|right)\s+of\s+[^\s:]+(?:\s*:\s*(.*))?", text, re.I
+        )
+        if note:
+            # A colon marks a single-line note; otherwise ignore its opaque body
+            # through `end note` before interpreting states, edges or braces.
+            note_start = line_number if note.group(1) is None else None
             continue
         if _discard_nonsemantic(diagram, text):
             continue
@@ -1002,7 +1045,7 @@ def _parse_state(
                 _fail(f"malformed edge at line {line_number}")
             diagram.add_edge(source, target, clean_label(label))
             continue
-        description = re.match(r"^([A-Za-z_][\w.-]*)\s*:\s*(.+)$", text)
+        description = re.match(r"^([\w.-]+)\s*:\s*(.+)$", text)
         if description:
             node_id, label = description.group(1), clean_label(description.group(2))
             if node_id not in descriptions:
@@ -1015,6 +1058,13 @@ def _parse_state(
         plain = re.match(r"^state\s+([\w.:-]+)$", text, re.I)
         if plain:
             diagram.add_node(plain.group(1), plain.group(1), "state", parent)
+            continue
+        if text != "--" and re.fullmatch(r"[\w.:-]+", text):
+            if text not in diagram.node_map:
+                diagram.add_node(text, text, "state", parent)
+
+    if note_start is not None:
+        _fail(f"unterminated state note at line {note_start}")
 
     # Materialize each accumulated label once; later explicit aliases still win.
     for node_id, parts in pending_descriptions.items():
@@ -1029,8 +1079,8 @@ def _parse_er(
 ) -> None:
     current: Node | None = None
     relationship = re.compile(
-        r"^([A-Za-z_][\w.-]*)\s+(\S*(?:--|\.\.)\S*)\s+"
-        r"([A-Za-z_][\w.-]*)\s*(?::\s*(.*))?$"
+        rf"^({ER_IDENTIFIER})\s+(\S*(?:--|\.\.)\S*)\s+"
+        rf"({ER_IDENTIFIER})\s*(?::\s*(.*))?$"
     )
     for line_number, raw in lines[header_position + 1 :]:
         text = raw.strip()
@@ -1045,15 +1095,15 @@ def _parse_er(
         if direction_match and current is None:
             diagram.direction = direction_match.group(1).upper()
             continue
-        entity = re.match(r"^([A-Za-z_][\w.-]*)\s*\{$", text)
-        if entity:
+        entity = re.match(rf"^({ER_IDENTIFIER})\s*\{{$", text)
+        if entity and _er_name(entity.group(1)):
             current = diagram.add_node(entity.group(1), entity.group(1), "table")
             continue
         if current is not None:
             current.fields.append(clean_label(text))
             continue
         edge = relationship.match(text)
-        if edge:
+        if edge and _er_name(edge.group(1)) and _er_name(edge.group(3)):
             source, cardinality, target, relationship_label = edge.groups()
             diagram.add_node(source, source, "table")
             diagram.add_node(target, target, "table")
@@ -1074,6 +1124,8 @@ def _parse_er(
             continue
         if "--" in text or ".." in text:
             _fail(f"malformed edge at line {line_number}")
+        if re.fullmatch(ER_IDENTIFIER, text) and _er_name(text):
+            diagram.add_node(text, text, "table")
 
 
 def parse_block(block: SourceBlock) -> Diagram:
@@ -1099,6 +1151,11 @@ def _finalize_degrees(diagram: Diagram) -> None:
             nodes[edge.source].out_degree += 1
         if edge.target in nodes:
             nodes[edge.target].in_degree += 1
+        if edge.bidirectional:
+            if edge.source in nodes:
+                nodes[edge.source].in_degree += 1
+            if edge.target in nodes:
+                nodes[edge.target].out_degree += 1
 
 
 def _has_cycle(nodes: list[Node], edges: list[Edge]) -> bool:
@@ -1106,6 +1163,8 @@ def _has_cycle(nodes: list[Node], edges: list[Edge]) -> bool:
     for edge in edges:
         if edge.source in adjacency and edge.target in adjacency:
             adjacency[edge.source].append(edge.target)
+            if edge.bidirectional:
+                adjacency[edge.target].append(edge.source)
     WHITE, GREY, BLACK = 0, 1, 2
     colors = {node.id: WHITE for node in nodes}
 
@@ -1375,7 +1434,7 @@ def select_blocks(blocks: list[SourceBlock], selector: str | None) -> list[Sourc
         return blocks[:1]
     if selector == "all":
         return blocks
-    if selector.isdigit():
+    if selector.isdecimal():
         index = int(selector)
         selected = [block for block in blocks if block.index == index]
         if not selected:

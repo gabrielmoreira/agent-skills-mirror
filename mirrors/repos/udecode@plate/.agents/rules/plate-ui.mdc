@@ -1,0 +1,40 @@
+---
+description: Use before editing Plate React components, hooks, providers, registry UI or kits, including drag, drop, handle menus and indicators. Preserve open code and prove the affected browser behavior.
+---
+
+# Plate UI
+
+Start with `shadcn` for its CLI and upstream components. Read the nearest
+current component and package owner before designing a new family.
+Read [Component shape](rules/component-shape.md) for renderer contracts,
+[Registry wiring](rules/registry.md) when changing copied installation
+metadata, and [Shadcn proofing](rules/shadcn-proofing.md) for copied
+component implementation or review.
+
+The copied UI lives under `apps/www/src/registry/ui`; editor composition and
+kits live under `apps/www/src/registry/components/editor`, including
+`plugins/*-kit.tsx`. Registry metadata lives in `registry-*.ts` beside them.
+
+- Keep copied components readable and editable by the consuming application.
+- Put durable editor behavior in its package. Local popover, menu, styling
+  and renderer behavior remain in copied UI unless independent reuse proves
+  a package contract.
+- Use a direct component by default. A shared family controller or private
+  context needs actual sibling coordination. Derive state during render when
+  possible; use event handlers for user actions and subscribe only to rendered
+  editor state.
+- Forward the complete incoming renderer props. Keep live and static renderer
+  setup explicit where their ownership differs. Preserve explicit feature
+  plugins in teaching examples even when a full app kit already includes them.
+- Use the existing `createPlatePlugin`/Slate adapter contracts and inferred
+  editor APIs. Fix weak package typing rather than mirroring it locally.
+- Use stable `data-slot` identities and `data-state` for interaction state.
+  Follow the installed Tailwind version and semantic tokens.
+- Update relevant registry items, feature metadata, examples and dependencies
+  together. A hook, style or kit needs a real installed consumer.
+- `changeset` owns registry changelog entries. CI owns registry build output.
+- `verify` proves the exact reporter route or actual registered demo. Native
+  drag, focus, selection and paint claims require their native interaction.
+
+Use selected `vercel-react-best-practices` rules for implementation tactics.
+Those rules do not choose public APIs or require an extra provider or hook.

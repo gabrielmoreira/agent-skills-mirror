@@ -1,14 +1,18 @@
 """Tests for get_economic_calendar.py"""
 
-import io
 import json
 import os
 import sys
-import urllib.error
+from dataclasses import dataclass
 from datetime import datetime, timedelta
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
+import get_economic_calendar as _script_mod
 import pytest
+import requests
+
+# Patch the vendored class via the script module's import binding.
+FMPClient = _script_mod.FMPClient
 
 # Add parent directory to path so we can import the script module
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -73,107 +77,102 @@ class TestGetApiKey:
 # ---------------------------------------------------------------------------
 
 
-def _fake_response(status: int, body: bytes):
-    cm = MagicMock()
-    cm.__enter__.return_value = cm
-    cm.status = status
-    cm.read.return_value = body
-    return cm
+@dataclass
+class RateFailure:
+    """Shaped HTTP failure injected through the vendored client."""
+
+    message: str
+
+
+def patch_get(monkeypatch, outcome):
+    """Patch FMPClient._rate_limited_get: outcome is a payload, RateFailure,
+    or exception instance; returns captured calls."""
+
+    calls = []
+
+    def fake(self, url, params=None, quiet=False):
+        calls.append({"url": url, "params": params, "quiet": quiet, "client": self})
+        if isinstance(outcome, requests.exceptions.RequestException):
+            # The real client catches transport exceptions internally and
+            # surfaces them via _last_error ("request exception: <str>").
+            self._last_error = f"request exception: {outcome}"
+            return None
+        if isinstance(outcome, Exception):
+            raise outcome
+        if isinstance(outcome, RateFailure):
+            self._last_error = outcome.message
+            return None
+        self._last_error = None
+        return outcome
+
+    monkeypatch.setattr(_script_mod.FMPClient, "_rate_limited_get", fake)
+    return calls
 
 
 class TestFetchEconomicCalendar:
-    def test_uses_singular_stable_endpoint(self):
-        captured = {}
+    def test_uses_singular_stable_endpoint(self, monkeypatch):
+        calls = patch_get(monkeypatch, [])
+        fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
 
-        def fake_urlopen(request):
-            captured["url"] = request.full_url
-            return _fake_response(200, b"[]")
+        assert calls[0]["url"] == "https://financialmodelingprep.com/stable/economic-calendar"
+        assert "economics-calendar" not in calls[0]["url"]
+        # Header auth (deliberate change, Issue #495): no apikey in the URL.
+        assert "apikey" not in calls[0]["url"]
 
-        with patch("get_economic_calendar.urllib.request.urlopen", side_effect=fake_urlopen):
-            fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
-
-        assert captured["url"].startswith(
-            "https://financialmodelingprep.com/stable/economic-calendar?"
-        )
-        assert "economics-calendar" not in captured["url"]
-
-    def test_success_returns_events(self):
-        payload = json.dumps(SAMPLE_EVENTS).encode("utf-8")
-
-        with patch(
-            "get_economic_calendar.urllib.request.urlopen",
-            side_effect=lambda request: _fake_response(200, payload),
-        ):
-            events = fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
+    def test_success_returns_events(self, monkeypatch):
+        calls = patch_get(monkeypatch, SAMPLE_EVENTS)
+        events = fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
 
         assert events == SAMPLE_EVENTS
+        assert calls[0]["client"].session.headers.get("apikey") == "test_key"
 
-    def test_402_raises_clear_restricted_endpoint_error(self):
-        def fake_urlopen(request):
-            raise urllib.error.HTTPError(
-                request.full_url,
-                402,
-                "Payment Required",
-                hdrs=None,
-                fp=io.BytesIO(
-                    b"Restricted Endpoint: not available under your current subscription"
-                ),
-            )
+    def test_402_raises_clear_restricted_endpoint_error(self, monkeypatch):
+        patch_get(
+            monkeypatch,
+            RateFailure("HTTP 402 - not available under your current subscription"),
+        )
+        with pytest.raises(ValueError, match="402|subscription|upgrade"):
+            fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
 
-        with patch("get_economic_calendar.urllib.request.urlopen", side_effect=fake_urlopen):
-            with pytest.raises(ValueError, match="402|subscription|upgrade"):
-                fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
+    def test_402_message_includes_upgrade_advice_and_body(self, monkeypatch):
+        patch_get(
+            monkeypatch,
+            RateFailure("HTTP 402 - not available under your current subscription"),
+        )
+        with pytest.raises(ValueError) as excinfo:
+            fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
+        assert "Upgrade your plan" in str(excinfo.value)
+        assert "not available under your current subscription" in str(excinfo.value)
 
-    def test_genuine_404_raises_instead_of_swallowing(self):
-        def fake_urlopen(request):
-            raise urllib.error.HTTPError(
-                request.full_url,
-                404,
-                "Not Found",
-                hdrs=None,
-                fp=io.BytesIO(b'{"Error Message": "Not found"}'),
-            )
+    def test_genuine_404_raises_instead_of_swallowing(self, monkeypatch):
+        patch_get(monkeypatch, RateFailure('HTTP 404 - {"Error Message": "Not found"}'))
+        with pytest.raises(ValueError, match="status code 404"):
+            fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
 
-        with patch("get_economic_calendar.urllib.request.urlopen", side_effect=fake_urlopen):
-            with pytest.raises(urllib.error.HTTPError):
-                fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
-
-    def test_404_with_empty_array_body_no_longer_swallowed(self):
+    def test_404_with_empty_array_body_no_longer_swallowed(self, monkeypatch):
         # Regression test: a 404 must never be silently treated as "zero events",
         # even if the error body happens to be "[]".
-        def fake_urlopen(request):
-            raise urllib.error.HTTPError(
-                request.full_url, 404, "Not Found", hdrs=None, fp=io.BytesIO(b"[]")
-            )
+        patch_get(monkeypatch, RateFailure("HTTP 404 - []"))
+        with pytest.raises(ValueError, match="status code 404"):
+            fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
 
-        with patch("get_economic_calendar.urllib.request.urlopen", side_effect=fake_urlopen):
-            with pytest.raises(urllib.error.HTTPError):
-                fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
+    def test_non_200_response_fails_closed(self, monkeypatch):
+        patch_get(monkeypatch, RateFailure("HTTP 503 - []"))
+        with pytest.raises(ValueError, match="status code 503"):
+            fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
 
-    def test_non_200_response_fails_closed(self):
-        with patch(
-            "get_economic_calendar.urllib.request.urlopen",
-            side_effect=lambda request: _fake_response(503, b"[]"),
-        ):
-            with pytest.raises(ValueError, match="status code 503"):
-                fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
+    def test_non_list_payload_fails_closed(self, monkeypatch):
+        patch_get(monkeypatch, {"events": SAMPLE_EVENTS})
+        with pytest.raises(ValueError, match="Unexpected API response format"):
+            fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
 
-    def test_non_list_payload_fails_closed(self):
-        payload = json.dumps({"events": SAMPLE_EVENTS}).encode("utf-8")
-        with patch(
-            "get_economic_calendar.urllib.request.urlopen",
-            side_effect=lambda request: _fake_response(200, payload),
-        ):
-            with pytest.raises(ValueError, match="Unexpected API response format"):
-                fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
-
-    def test_transport_error_has_clear_network_message(self):
-        with patch(
-            "get_economic_calendar.urllib.request.urlopen",
-            side_effect=urllib.error.URLError("offline"),
-        ):
-            with pytest.raises(ValueError, match="Network error: offline"):
-                fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
+    def test_transport_error_has_clear_network_message(self, monkeypatch):
+        patch_get(
+            monkeypatch,
+            requests.exceptions.ConnectionError("offline"),
+        )
+        with pytest.raises(ValueError, match="Network error: offline"):
+            fetch_economic_calendar("2025-01-01", "2025-01-07", "test_key")
 
 
 # ---------------------------------------------------------------------------

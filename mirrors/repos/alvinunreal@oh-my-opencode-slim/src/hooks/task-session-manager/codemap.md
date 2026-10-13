@@ -29,7 +29,8 @@ The directory follows a **Facade + Strategy** pattern where `index.ts` acts as t
   preparation into the owning run.
 - **same-provider-policy.ts**: Opt-in per-provider rewrite
   (`backgroundJobs.sameProviderPolicy: { <provider>: "foreground" }`)
-  converting same-provider `background: true` task requests to the foreground
+  converting same-provider `background: true` task requests (including v2
+  omitted-`background` calls, defaulted to true before this check) to the foreground
   path for shared single-runtime backends; fail-open on unknown model/provider.
 - **task-context-tracker.ts**: Manages read context from child sessions with line-count and file caps. Stores context per task ID and provides pruning to prevent unbounded growth.
 

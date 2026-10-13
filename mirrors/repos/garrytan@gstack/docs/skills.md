@@ -1193,7 +1193,9 @@ selection. See [model policy](model-policy.md) for pins, precedence and recovery
 
 A severity-gate PASS is separate from [review freshness](#review-readiness-dashboard): unresolved recorded findings (`findings > findings_fixed`, with missing `findings_fixed` treated as zero) prevent CURRENT even when the gate passes. This does not change the severity gate. Fixes still require a new completed, unchanged review pass before the fixed tree can grade CURRENT.
 
-**Challenge** — adversarial mode. Codex actively tries to break your code. It looks for edge cases, race conditions, security holes, and assumptions that would fail under load. Uses maximum reasoning effort (`xhigh`). Think of it as a penetration test for your logic.
+**Challenge** — adversarial mode. Codex actively tries to break your code. It looks for edge cases, race conditions, security holes, and assumptions that would fail under load. Think of it as a penetration test for your logic.
+
+**Reasoning effort** — Review and Challenge run at `high`, Consult at `medium`. `gstack-config set codex_effort <level>` changes that for every run; `--effort <level>` right after `/codex` or its mode word, among the leading flags (`-m`, `--model`, `--role`), changes it for one (`/codex review --effort medium` for a faster, cheaper review). `--xhigh` is shorthand for `--effort xhigh`. An unknown level stops before Codex runs. See [model policy](model-policy.md#reasoning-effort) for levels and precedence.
 
 **Consult** — open conversation with session continuity. Ask Codex anything about the codebase. Follow-up questions reuse the same session, so context carries over. Great for "am I thinking about this correctly?" moments.
 

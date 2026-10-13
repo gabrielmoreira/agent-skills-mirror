@@ -321,3 +321,20 @@ pub fn status() -> DangerousModeStatus;
 | [`ha-config-schema/src/config.rs`](../../../crates/ha-config-schema/src/config.rs) | `AppConfig.ssrf: SsrfConfig` + `AppConfig.permission: PermissionGlobalConfig` 字段定义（`permission.rs` 内含 `global_yolo`） |
 | [`ha-core/src/tools/execution.rs`](../../../crates/ha-core/src/tools/execution.rs) | `resolve_tool_permission` 构造 `ResolveContext`，把 `is_dangerous_skip_active()` 喂进 `global_yolo`，调 `permission::engine::resolve_async`；YOLO bypass 落在其同步核心 `resolve` |
 | [`ha-base/src/logging/file_ops.rs`](../../../crates/ha-base/src/logging/file_ops.rs) | `redact_sensitive` 脱敏函数 |
+
+
+## 2026-10-12 依赖安全维护
+
+当前固定字节由两套锁文件提供；安全下限来自 06 专项 10-06 成功归档及本轮官方复核，不将公告命中版本等同于已复现攻击。
+
+| 运行链 | 本轮锁定与边界 | 验证限制 |
+| --- | --- | --- |
+| 多窗口 Channel | Tauri 2.11.6；响应队列按所属 webview 隔离，关闭时清理；不放宽 CSP/capability | 依赖源码与 workspace 检查；真实多窗口交互另列待证 |
+| PDF 文本 | ha-core/ha-design 的 pdf-extract 0.12.1 → lopdf 0.42.0 | 合成深嵌套输入在子进程返回错误，正常两页/空页验证通过；按真实页树逐页传播错误，内容流严格语法检查拒绝后页损坏，不返回已读前页作为完整成功；不使用用户 PDF，不把 catch_unwind 当作 abort 隔离 |
+| XML/Excel | 自有 quick-xml 0.41.0，calamine 0.36.1 → quick-xml 0.41.0；属性解码使用 XML 1.0 归一化 API | 原有大小/深度/属性/实体/ZIP 上限继续生效；xcb 构建链的 0.30.0 仍需上游 ABI 兼容路线，不宣称彻底去重 |
+| HTTP/TLS/取消 | 直接 reqwest 0.13.5（native-tls 保留）、rustls 0.23.45、h2 0.4.16、Tokio 1.53.2 | 禁止重定向不取代 SSRF；Telegram 适配器保留 SDK 所需的 reqwest 0.12.28；平台运行证据分别报告 |
+| 内存缓存与脚本 | lru 0.18.5；ha-core/ha-workflow 的 rquickjs 0.14.0 + serde 0.8.0 成对 | 不新增 unsafe 字节借用，保留原容量/超时/内存/取消语义 |
+| Markdown/图表清洗 | DOMPurify override 下限 3.4.16，实际锁 3.4.16 | 不放宽标签或新增 IN_PLACE/hook；依赖有补丁不表示所有嵌入入口已完成真实攻击验收 |
+| 桌面更新 | updater Rust/JS 2.12.0，应用 `allowDowngrades=false` | 不接触生产更新源，不安装真实应用更新；签名/重启审批保持 |
+
+Tauri [GHSA-w28w-mhc8-qvjv](https://github.com/tauri-apps/tauri/security/advisories/GHSA-w28w-mhc8-qvjv)、PDF [RUSTSEC-2026-0187](https://rustsec.org/advisories/RUSTSEC-2026-0187.html)、XML [0194](https://rustsec.org/advisories/RUSTSEC-2026-0194.html)/[0195](https://rustsec.org/advisories/RUSTSEC-2026-0195.html)、TLS [0285](https://rustsec.org/advisories/RUSTSEC-2026-0285.html) 和 HTTP/2 [0258](https://rustsec.org/advisories/RUSTSEC-2026-0258.html) 为当前范围的原始来源。GTK/glib 与维护停更告警仍需按平台/调用链裁决；未取得兼容替代时不强塞跨 ABI patch。

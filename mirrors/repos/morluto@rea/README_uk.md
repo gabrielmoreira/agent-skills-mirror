@@ -144,7 +144,10 @@ REA потребує Node.js 22.x (>=22.19), 24.x (>=24.11) або 26+, а та�
 | Пристрої Android                     | Пристрої, пакети, процеси, журнали, дампи, знімки екрана та передавання APK/файлів                                | adb, наданий викликаючою стороною (емулятор або пристрій); [підручник ADB](docs/adb-device-analysis.md)                                             |
 | Проєкти JEB                          | Єдиниці проєкту від рушія, дайджести артефактів і псевдокод типів/методів                                         | Запущений викликаною стороною клієнт JEB з MCP, обирається через REA_JEB_MCP_URL; [посібник JEB](docs/jeb-analysis.md)                              |
 | Ресурси Android                      | Декодований маніфест, таблиці рядків, мови та відомості про версію                                                | Засіб запуску Apktool, наданий викликаючою стороною; [підручник ресурсів](docs/apktool-resource-analysis.md)                                        |
+| Додатки Flutter                      | Хеш знімка Dart, дайджести бібліотек за ABI та походження збірки рушія                                            | Не потрібні (статичний розбір APK); [підручник Flutter](docs/flutter-analysis.md)                                                                   |
 | Прошивки                             | Області, результати видобування й передавання до нативного аналізу                                                | Binwalk / Unblob у Linux; [посібник прошивок](docs/firmware-analysis.md)                                                                            |
+| Записані пакети                      | Вибрані поля, повторювані значення, фільтри та правила декодування                                                | Linux: TShark 4.x + prlimit; [посібник із записів пакетів](docs/packet-captures.md)                                                                 |
+| Записані логічні сигнали             | Анотації декодера, діапазони відліків і діагностика                                                               | Linux: sigrok-cli 0.7.2 + prlimit; [посібник із сигналів](docs/signal-recordings.md)                                                                |
 | Пакети й ресурси                     | Переліки файлів, хеші, plist, структура пакетів Apple та видобуті ресурси                                         | [Посібник артефактів і JavaScript](docs/javascript-artifact-reconstruction.md), [застосунки Apple](docs/apple-application-analysis.md)              |
 | Поведінка процесів                   | Вивід термінала, взаємодії, спостереження за завершенням і файловою системою та порівняння запусків               | Linux/macOS із нативним PTY; [захоплення процесів](docs/process-capture.md)                                                                         |
 
@@ -258,7 +261,7 @@ npx rea-agents@latest setup
 
 ## Історія зірок
 
-🎉 **90 000 зірок на GitHub — дякуємо!**
+🎉 **110 000 зірок на GitHub — дякуємо!**
 
 Дякуємо всім, хто використовує REA, повідомляє про помилки, пропонує нові функції, тестує збірки й допомагає з виправленнями.
 
@@ -272,7 +275,13 @@ npx rea-agents@latest setup
 
 ## Відмова від відповідальності
 
-REA надає інструменти для законних досліджень, аналізу й реконструкції за допомогою реверс-інжинірингу. Ви відповідаєте за отримання необхідних дозволів і дотримання застосовних законів. Проєкт не підтримує незаконне або несанкціоноване використання.
+Рекомендації щодо відповідального використання наведено в [DISCLAIMER.md](DISCLAIMER.md).
+
+REA призначений для законних досліджень, навчання, забезпечення сумісності, збереження програмного забезпечення й аналізу програм, якими ви володієте або які маєте дозвіл досліджувати.
+
+The project's position on illegal or unauthorized use covers all REA
+versions, distribution channels, and platforms; each copy retains its
+applicable licenses.
 
 ## Участь у проєкті
 
@@ -283,3 +292,15 @@ REA надає інструменти для законних досліджен
 ## Ліцензія
 
 [MIT](LICENSE)
+
+REA-authored code is licensed under MIT. Third-party material retains its own
+licenses and copyright notices; see [Third-party notices](THIRD_PARTY_NOTICES.md)
+for the dependency inventory, preserved license texts, and external-tool terms.
+
+**You must legally obtain and be authorized to use commercial tools**, including
+IDA Pro / Hex-Rays decompilers, Hopper, and JEB, under their applicable licenses.
+REA grants no tool license, key, or activation entitlement. Trials and demos
+remain subject to vendor terms, including user, feature, automation, and output
+sharing restrictions. Cracked copies, stolen keys, unauthorized key sharing,
+and bypassing license restrictions are not authorized. This guidance does not
+amend MIT or third-party licenses.

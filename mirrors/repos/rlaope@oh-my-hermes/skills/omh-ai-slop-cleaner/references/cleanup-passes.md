@@ -60,8 +60,37 @@ Four parts, every run: **changed files** (with per-pass counts),
 **behavior lock** (the commands run before and after, with observed results),
 **remaining risks** (what was found and deliberately not touched, and why).
 
+## Review mode
+
+Review mode judges a cleanup someone already drafted. It opens no file for
+writing. Its inputs are what the writer pass left behind - the plan it worked
+from, the diff it produced, and the before/after checks it ran - and it asks,
+per taxonomy category:
+
+- **Dead code** - did the diff leave unused symbols, exports, or flags behind?
+- **Duplication** - is a decision the plan named still encoded twice?
+- **Needless abstraction** - does a wrapper that only forwards survive?
+- **Boundary violation** - did a move reach into another module's internals?
+- **Missing tests** - is every preserved behavior locked by a check that would
+  go red if it broke, and was that check run before and after?
+- **Templated defaults** - did boilerplate the plan listed survive?
+
+Then one more question that belongs to no category: does any hunk change
+behavior the plan did not say it would? That finding outranks every other.
+
+Findings use the `code-review` shape: each carries `priority` (`P0`-`P3`),
+`confidence`, `evidence`, `path`, and `line_range`, and the review closes with
+one `ship` or `no_ship` verdict. No new verdict vocabulary is invented here, so
+a reader who knows one review knows this one.
+
+A finding is a work order for a separate writer pass. A reviewer who applies
+its own fix has turned back into a writer, and the pass that wrote a change
+cannot also be the evidence that it is right.
+
 ## Boundary
 
 An inventory, pass plan, or prepared detector command is prepared context;
 behavior preservation is claimed only from the observed before/after
 verification, and a cleanup diff is never review, CI, or merge evidence.
+A review-mode verdict is a model's judgement of the evidence it was shown,
+not a run of the checks.

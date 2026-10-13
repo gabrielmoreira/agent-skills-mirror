@@ -148,7 +148,10 @@ REA richiede Node.js 22.x (>=22.19), 24.x (>=24.11) o 26+, oltre a npm. Strument
 | Dispositivi Android          | Dispositivi, pacchetti, processi, log, dump, screenshot e trasferimenti APK/file                  | adb fornito dal chiamante (emulatore o hardware); [guida ADB](docs/adb-device-analysis.md)                                          |
 | Progetti JEB                 | Unità di progetto dal motore, digest degli artifact e pseudocodice di tipi/metodi                 | Client JEB avviato dal chiamante via MCP, selezionato con REA_JEB_MCP_URL; [guida JEB](docs/jeb-analysis.md)                        |
 | Risorse Android              | Manifest decodificato, tabelle stringhe, lingue e dati di versione                                | Launcher Apktool fornito dal chiamante; [guida alle risorse](docs/apktool-resource-analysis.md)                                     |
+| App Flutter                  | Hash dello snapshot Dart, digest delle librerie per ABI e provenienza della build del motore      | Nessuno (analisi APK statica); [guida Flutter](docs/flutter-analysis.md)                                                            |
 | Firmware                     | Regioni, risultati di estrazione e passaggi all'analisi nativa                                    | Binwalk / Unblob su Linux; [guida firmware](docs/firmware-analysis.md)                                                              |
+| Pacchetti registrati         | Campi selezionati, valori ripetuti, filtri e regole di decodifica                                 | Linux: TShark 4.x + prlimit; [guida alle catture](docs/packet-captures.md)                                                          |
+| Segnali logici registrati    | Annotazioni del decoder, intervalli di campioni e diagnostica                                     | Linux: sigrok-cli 0.7.2 + prlimit; [guida ai segnali](docs/signal-recordings.md)                                                    |
 | Pacchetti e risorse          | Inventari file, digest, plist, anatomia dei bundle Apple e risorse estratte                       | [Guida artifact e JavaScript](docs/javascript-artifact-reconstruction.md), [Applicazioni Apple](docs/apple-application-analysis.md) |
 | Comportamento dei processi   | Output del terminale, interazioni, osservazioni su uscita e filesystem ed confronti di esecuzione | Linux/macOS con un PTY nativo; [cattura dei processi](docs/process-capture.md)                                                      |
 
@@ -262,7 +265,7 @@ Segnala vulnerabilità tramite [SECURITY.md](SECURITY.md).
 
 ## Cronologia delle stelle
 
-🎉 **90.000 stelle su GitHub — grazie!**
+🎉 **110.000 stelle su GitHub — grazie!**
 
 Grazie a tutti coloro che usano REA, segnalano bug, propongono funzionalità, testano le build e contribuiscono con correzioni.
 
@@ -276,9 +279,13 @@ Grazie a tutti coloro che usano REA, segnalano bug, propongono funzionalità, te
 
 ## Disclaimer
 
-REA fornisce strumenti per la ricerca, l'analisi e la ricostruzione di ingegneria inversa lecita. Sei responsabile di ottenere le eventuali autorizzazioni richieste e di rispettare le leggi applicabili. Il progetto non approva l'uso illegale o non autorizzato.
+Consulta [DISCLAIMER.md](DISCLAIMER.md) per le indicazioni sull'uso responsabile.
 
-REA è un progetto software open-source. Non abbiamo emesso né approvato alcuna criptovaluta o token. I token che usano il nome REA non sono affiliati al progetto.
+REA è destinato alla ricerca, alla formazione, all’interoperabilità, alla conservazione del software e all’analisi di software di tua proprietà o che sei autorizzato a esaminare, nel rispetto della legge.
+
+The project's position on illegal or unauthorized use covers all REA
+versions, distribution channels, and platforms; each copy retains its
+applicable licenses.
 
 ## Contributing
 
@@ -289,3 +296,15 @@ Vedi [CONTRIBUTING.md](CONTRIBUTING.md) per la configurazione di sviluppo e i co
 ## License
 
 [MIT](LICENSE)
+
+REA-authored code is licensed under MIT. Third-party material retains its own
+licenses and copyright notices; see [Third-party notices](THIRD_PARTY_NOTICES.md)
+for the dependency inventory, preserved license texts, and external-tool terms.
+
+**You must legally obtain and be authorized to use commercial tools**, including
+IDA Pro / Hex-Rays decompilers, Hopper, and JEB, under their applicable licenses.
+REA grants no tool license, key, or activation entitlement. Trials and demos
+remain subject to vendor terms, including user, feature, automation, and output
+sharing restrictions. Cracked copies, stolen keys, unauthorized key sharing,
+and bypassing license restrictions are not authorized. This guidance does not
+amend MIT or third-party licenses.

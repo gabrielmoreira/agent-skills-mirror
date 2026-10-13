@@ -483,10 +483,17 @@ Only for an explicit `--role plan-review` (e.g. `/codex challenge --role plan-re
 set `_CODEX_ROLE='plan-review'` below and in the mode block; the mode block then
 probes and dispatches the policy model within its own timeout. [Policy setup](https://github.com/garrytan/gstack/blob/main/docs/model-policy.md).
 
+**Effort flags, read before the mode:** `--effort <level>`, `--effort=<level>` or `--xhigh`
+(= `--effort xhigh`) directly after `/codex` or its mode word, among its leading flags
+(`-m`, `--model`, `--role`) and before any prompt text, set `<effort-level>` (else `''`);
+remove them before Step 1. A later `--effort` is prompt text; if a level follows, say so. Missing
+value, not one lowercase word, or differing levels: stop, name the levels; nothing is sent.
+
 ```bash
 _CODEX_PROBE=~/.claude/skills/gstack/bin/gstack-codex-probe
 _CODEX_ROLE=''
 [ -x "$_CODEX_PROBE" ] || { echo "HELPER_UNAVAILABLE"; exit 1; }
+"$_CODEX_PROBE" check-effort high --request '<effort-level>' >/dev/null || exit 1   # free
 
 # GSTACK_ACTIVE_HOST names the harness, never the model.
 if { [ -n "${CODEX_THREAD_ID:-}" ] || [ -n "${CODEX_SANDBOX:-}" ] || [ "${GSTACK_ACTIVE_HOST:-}" = codex ]; }; then
@@ -506,6 +513,8 @@ elif "$_CODEX_PROBE" check-sandbox && [ -z "$_CODEX_ROLE" ]; then   # free; Linu
 fi
 "$_CODEX_PROBE" check-version   # warns if known-bad, non-blocking
 ```
+
+If `check-effort` failed, relay its lines and stop; no Codex call was made.
 
 If the runtime guard reports a harness mismatch, stop. Outside coverage is unavailable. Repair with `./setup --host codex`; do not silently substitute another provider or force a same-harness invocation.
 
@@ -570,7 +579,7 @@ After this, every subsequent bash block in this skill uses `"$PLAN_ROOT"` and
 
 ## Step 1: Detect mode
 
-Parse the user's input to determine which mode to run:
+Parse the input, effort flags removed, to determine which mode to run:
 
 1. `/codex review` or `/codex review <instructions>` — **Review mode** (Step 2A)
 2. `/codex challenge` or `/codex challenge <focus>` — **Challenge mode** (Step 2B)
@@ -596,11 +605,8 @@ The three modes are MUTUALLY EXCLUSIVE — at most one runs per invocation. Once
 the mode is determined, read ONLY that mode's section (see the Section index
 above); never read the other two mode sections.
 
-**Reasoning effort override:** If the user's input contains `--xhigh` anywhere,
-note it and remove it from the prompt text before passing to Codex. When `--xhigh`
-is present, prefix the `run-with-timeout` dispatch with `GSTACK_CODEX_EFFORT=xhigh`,
-which outranks `codex_effort` and the per-mode default. Otherwise `--effort` applies
-`GSTACK_CODEX_EFFORT`, then `codex_effort`, then the per-mode defaults:
+**Reasoning effort:** each dispatch passes `--request-effort '<effort-level>'`, which
+outranks `GSTACK_CODEX_EFFORT`, then `codex_effort`, then the per-mode defaults:
 - Review (2A): `high` — bounded diff input, needs thoroughness
 - Challenge (2B): `high` — adversarial but bounded by diff
 - Consult (2C): `medium` — large context, interactive, needs speed
@@ -788,18 +794,14 @@ Native `codex review` selects with `review` and sets both `model` and `review_mo
 flag also keeps installed skills out of Codex's context, so a review cannot become a
 nested skill run.
 
-**Reasoning effort (per-mode defaults):**
-- **Review (2A):** `high` — bounded diff input, needs thoroughness but not max tokens
-- **Challenge (2B):** `high` — adversarial but bounded by diff size
-- **Consult (2C):** `medium` — large context (plans, codebase), interactive, needs speed
-
-`run-with-timeout --effort <default>` resolves `GSTACK_CODEX_EFFORT`, then `gstack-config
-set codex_effort <level>`, then the default; an invalid value stops before any Codex call.
+**Reasoning effort** (defaults in Step 1): `run-with-timeout --effort <default>` resolves
+`--request-effort`, `GSTACK_CODEX_EFFORT`, `codex_effort`, then the default; an invalid
+value stops before any Codex call.
 `--user-invoked` runs even with `codex_reviews` disabled: the user asked by name.
 
-`xhigh` uses ~23x more tokens than `high` and causes 50+ minute hangs on large context
-tasks (OpenAI issues #8545, #8402, #6931). Users can override with `--xhigh` flag
-(e.g., `/codex review --xhigh`) when they want maximum reasoning and are willing to wait.
+Override one run with `--effort <level>` (`/codex review --effort medium`). `xhigh`
+uses ~23x more tokens than `high` and causes 50+ minute hangs on large context tasks
+(OpenAI issues #8545, #8402, #6931).
 
 **Web search:** All codex commands pass `-c 'web_search="cached"'` so `codex exec`
 invocations can look up docs and APIs during review. This is OpenAI's cached index —

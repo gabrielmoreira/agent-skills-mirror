@@ -117,9 +117,6 @@ restating it. No catalog skill wraps ai-skillet by itself.
 
 Files:
 
-- `skills/agents-brain/SKILL.md`
-- `skills/agents-brain/scripts/fetch-guidance.sh`
-- `skills/agents-docs/SKILL.md`
 - `skills/node-deps-bumper/SKILL.md`
 - `skills/orchestration/SKILL.md`
 - `skills/orchestration/references/claude-to-codex.md`
@@ -130,7 +127,6 @@ Files:
 - `skills/orchestration/scripts/run-codex-agent.sh`
 - `skills/orchestration/scripts/select-model.py`
 - `skills/release-bumper/SKILL.md`
-- `skills/skill-writing/SKILL.md`
 - `skills/todo-archive/SKILL.md`
 - `skills/yeet/references/posting.md`
 

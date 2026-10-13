@@ -176,6 +176,12 @@ Google 官方 HTTPS 端点的精确 ID 将 `minimal` 调整为 `low`、`xhigh/ma
 
 编辑页的连接测试、单模型测试与保存复用当前草稿，包括尚未保存的鉴权档案和工作区绑定。HTTP 返回的密钥占位符只在服务端按服务商 ID 与档案 ID 恢复到本次探测副本；显式输入的新密钥、清空操作及其他草稿字段保持不变，不回写配置、不回传明文。找不到对应已保存密钥时发送前拒绝。中转的备用 Bearer 探测通过 `anthropic_bearer_headers` 替换鉴权方式：只发 `Authorization`，不再同时带 `x-api-key`，其余版本和工作区头仍经统一校验。
 
+#### 模型请求的重定向边界
+
+模型、侧聊、摘要、独立审批模型、服务商/模型/嵌入探测以及媒体鉴权请求使用 `apply_model_proxy`；阻塞嵌入与崩溃自诊断使用 `apply_model_proxy_blocking`。两者在保留用户代理模式、超时与 User-Agent 的同时固定 `Policy::none()`，3xx 不授权把凭据或私有输入发往另一个端点；模型列表预检立即停止、不另发探测POST，Chat/Responses探测收到3xx返回明确失败，不显示“连接成功”。主对话与 STT 的既有禁止重定向策略保持。生成结果的无鉴权资源下载仍走各自的逐跳 SSRF 守卫，不由模型客户端自动跟随。
+
+workspace 直接 reqwest 为 0.13.5，明确关闭默认 features，启用原有 native-tls、HTTP/2、system-proxy、query/form 与压缩/流式能力。共享依赖仍包含 rustls；Telegram 适配器通过 `reqwest_teloxide` 保留 SDK 要求的 0.12.28 客户端，不能据直接依赖升级声称所有 HTTP 支线已统一。此边界不替代发送前 SSRF、来源授权或用量记账。
+
 ### 1.6 Provider 写入契约
 
 所有对 `providers` 列表与 `active_model` 的写入，必须走 `crates/ha-core/src/provider/crud.rs` 的 helper——禁止在 Tauri / HTTP / onboarding / importer / local_llm 任何路径里直接 `providers.push` / `retain` 或手写 `active_model`。每个 helper 都带一个 `source: &'static str` 审计标签，并统一经 `mutate_config` 落盘（配置读写契约见 [config-system](../infra/config-system.md)）。

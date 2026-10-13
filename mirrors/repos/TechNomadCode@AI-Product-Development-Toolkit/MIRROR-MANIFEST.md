@@ -59,11 +59,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`agent-configs/claude-code-desktop/claude-opus-5-5/CLAUDE.md`](agent-configs/claude-code-desktop/claude-opus-5-5/CLAUDE.md) |
-| 2 | ✓ | [`agent-configs/claude-code-desktop/claude-opus-5/CLAUDE.md`](agent-configs/claude-code-desktop/claude-opus-5/CLAUDE.md) |
-| 3 | ✓ | [`agent-configs/claude-code-desktop/claude-sonnet-5-5/CLAUDE.md`](agent-configs/claude-code-desktop/claude-sonnet-5-5/CLAUDE.md) |
+| 1 | ✓ | [`agent-configs/claude-code/claude-opus-5-5/CLAUDE.md`](agent-configs/claude-code/claude-opus-5-5/CLAUDE.md) |
+| 2 | ✓ | [`agent-configs/claude-code/claude-opus-5/CLAUDE.md`](agent-configs/claude-code/claude-opus-5/CLAUDE.md) |
+| 3 | ✓ | [`agent-configs/claude-code/claude-sonnet-5-5/CLAUDE.md`](agent-configs/claude-code/claude-sonnet-5-5/CLAUDE.md) |
 | 4 | ✓ | [`agent-skills/mvp-plan/SKILL.md`](agent-skills/mvp-plan/SKILL.md) |
-| 5 | ✓ | [`agent-skills/mvp/SKILL.md`](agent-skills/mvp/SKILL.md) |
+| 5 | ✓ | [`agent-skills/mvp-scope/SKILL.md`](agent-skills/mvp-scope/SKILL.md) |
 | 6 | ✓ | [`agent-skills/nextjs-supabase-vercel/SKILL.md`](agent-skills/nextjs-supabase-vercel/SKILL.md) |
 | 7 | ✓ | [`agent-skills/prd/SKILL.md`](agent-skills/prd/SKILL.md) |
 | 8 | ✓ | [`agent-skills/remotion-video/SKILL.md`](agent-skills/remotion-video/SKILL.md) |

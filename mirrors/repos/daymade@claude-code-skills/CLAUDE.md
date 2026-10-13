@@ -68,6 +68,8 @@ For local/remote ASR selection, speed comparison and speech-content acceptance, 
 For competitor source-carrier/edition binding, claims, citations and existing-product learning, enter
 [competitors-analysis](competitors-analysis/SKILL.md) and its
 [citation readback checklist](competitors-analysis/references/analysis_checklist.md#citation-readback-and-counterevidence).
+For user-selected collection destinations, load the
+[collection destination route](competitors-analysis/references/collection_destination.md).
 
 For choosing or reviewing a library, framework, storage, data format, model,
 build-vs-buy or architecture — including 用哪个 / 选什么框架 / 要不要自建 / A 还是 B /
@@ -83,6 +85,11 @@ For research-driven evolution of a specified existing Skill, start at
 [skill-evolver](skill-evolver/SKILL.md) and follow its public stage routes; use
 local private adapters only when available.
 
+For evidence-based improvement of an existing application, enter
+[app-evolver](app-evolver/SKILL.md). For released-artifact or runtime evidence,
+load its [Skill composition route](app-evolver/references/skill-composition.md);
+keep specialist selection and handoff boundaries in that owner.
+
 For permission-sensitive fixtures, use Skill Creator's
 [execution-context verification recipe](daymade-skill/skill-creator/references/stateful-script-verification.md#execution-identity-and-permission-fixtures).
 
@@ -96,10 +103,6 @@ and [delivery identity](daymade-skill/skill-creator/references/delivery-identity
 For saved HTML batches, follow [the conversion owner](daymade-docs/doc-to-markdown/references/html-conversion.md#gate-a-batch-through-the-existing-recipe)
 and its actual-reader pilot before expansion. Keep conversion evidence and reader
 observations separate; this file does not define another batch recipe.
-
-When creating or changing an operational Skill's first-use setup or recovery
-workflow, enter `skill-creator` and load its
-[first-use and recovery contract](daymade-skill/skill-creator/references/first-use-and-resume.md).
 
 For proxy-selection or disruptive VPN recovery changes, enter `tunnel-doctor` and its
 proxy-conflict and network-recovery references. For automatic WeCom integration,
@@ -263,6 +266,9 @@ Keep decision criteria and verification details in those owners.
 
 ### Transcript Correction
 
+For explicit single-task speaker-inference requests, load
+[scoped speaker inference](daymade-audio/transcript-fixer/references/scoped_speaker_inference.md).
+
 Use [transcript-fixer](daymade-audio/transcript-fixer/SKILL.md) for transcript
 correction. Its Native workflow owns evidence selection, selective human escalation,
 and correction/finalization order;
@@ -272,14 +278,16 @@ validation behavior in
 [native_review.py](daymade-audio/transcript-fixer/scripts/native_review.py), and
 queue anchor behavior in
 [review_queue.py](daymade-audio/transcript-fixer/scripts/core/review_queue.py).
-For a received user answer or an existing correction-ledger update, follow
-[cited answers and ledger writes](daymade-audio/transcript-fixer/references/review_queue_dashboard.md#cited-answers-and-ledger-writes).
-That guide owns source binding, supported answer syntax and interrupted-write recovery;
-keep its schema and commands there.
-For batch audio checks, use [verify_queue_audio.py](daymade-audio/transcript-fixer/scripts/verify_queue_audio.py)
-and its [adjudication guide](daymade-audio/transcript-fixer/references/advanced_correction_evidence.md):
-audio verification may add evidence but never resolves a review row or proves
-whole-transcript completion.
+For remaining pending rows or a received human verdict on an already reviewed file, enter
+[pending continuation](daymade-audio/transcript-fixer/references/pending-continuation.md).
+For source-audio export, identity and timeline pairing, follow
+[the audio setup SOP](daymade-audio/transcript-fixer/references/review_queue_dashboard.md#source-audio-and-timeline-pairing)
+and its [audio helper](daymade-audio/transcript-fixer/scripts/fetch_minute_audio.py).
+For batch audio checks, follow
+[queue-level clip cross-check](daymade-audio/transcript-fixer/references/advanced_correction_evidence.md#batch-pending-adjudication--queue-level-clip-cross-check).
+[verify_queue_audio.py](daymade-audio/transcript-fixer/scripts/verify_queue_audio.py)
+owns executable anchor, duration and attachment validation; keep its CLI and
+adjudication details in that SOP.
 When changing these paths, update their owning instructions together; keep
 review coverage, unresolved verdicts, and repository publication distinct.
 For local correction tests and repository CI ownership, follow the
@@ -411,7 +419,7 @@ receipt, and an automatic outbox path gets one non-retrying HTTP attempt.
 
 ### Testing Skills Locally
 
-Test from the canonical checkout, not from a mutable direct copy. Use the current
+For installed-Skill and fresh-host acceptance, test the canonical source route. Use the current
 `claude-switch-models-setup` local-source workflow for this maintainer machine,
 and use `daymade-skill:skill-governance` to verify source, installed state,
 discovery policy, and the fresh model-visible catalog. Do not blindly remove and
@@ -428,6 +436,8 @@ not establish that policy. Do not hand-create user Skill links.
 For intentional same-name source variants, use the owner's explicit source-selection
 contract; retain every candidate and reject undeclared collisions. Audit tools must
 consume the owner's selected inventory rather than choose a source independently.
+For Skill authoring in an approved independent Fleet clone, follow the
+[leased-authoring owner procedure](daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md#leased-fleet-authoring-clones).
 
 When delivery includes local availability, finish the source owner's dry-run/apply
 and the [newly registered Skill gate](daymade-skill/skill-governance/references/skill-surface-governance.md#14-verify-a-newly-registered-skill).

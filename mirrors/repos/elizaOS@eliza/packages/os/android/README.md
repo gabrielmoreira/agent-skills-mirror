@@ -152,6 +152,13 @@ replace the full local-agent APK contract, grant roles, build an image, or quali
 boot, OTA, Chromium signer admission, or physical hardware. Keep those checks
 separate. Test with `node --test packages/os/scripts/__tests__/stage-launcher-overlay.node.test.ts`.
 
+To stage a second package of the same product, such as its update supervisor, add
+`companions: [{ moduleName, packageName, apkSha256 }]` to the descriptor and pass
+`--companion MODULE=PATH` for each one. A companion must carry exactly the
+launcher's signer (`certificateSha256`), a different package and module name, and
+no HOME activity. It is staged in the launcher's partition as another presigned,
+nonprivileged import, and it gets no default permissions.
+
 For a downstream **system-only GSI**, set `partition: "system"` in the reviewed
 launcher descriptor. Both the nonprivileged APK and optional revocable permission
 file then install in `/system`; the default remains `/product`. Inherit the staged

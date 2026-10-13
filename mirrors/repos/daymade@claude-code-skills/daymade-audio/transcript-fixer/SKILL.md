@@ -31,7 +31,7 @@ Use a two-phase loop:
 - Leave genuinely unresolved text unchanged and enqueue it. A visible garble is safer than a fluent wrong guess; a pending row records uncertainty, not an automatic human handoff.
 - Treat an unfamiliar token as unknown, not as an error. Exhaust the local evidence ladder first. For a load-bearing token that remains unresolved, use the clip-level cross-recognizer rung only when source audio and a permitted second engine are already available; otherwise continue with the available evidence under the escalation policy above. Agreement from a genuinely different recognizer family strongly corroborates the sound, but never chooses between homophonic spellings or overrides the person-name gate. Read native workflow step 4, rung 7 before using it. **A backlog of exhausted pendings is the batch form of this rung**: when a native pass leaves a queue of locally-unresolvable rows, do not hand the queue to the user wholesale — check it with `verify_queue_audio.py` (one transcript, one source audio, one second engine, two clip windows per row). The script can attach acoustic evidence but never records a verdict; identical clips and readings that do not support the disputed word boundary remain pending for adjudication. The operator matrix and timestamp-mapping pitfalls live in [advanced_correction_evidence.md](references/advanced_correction_evidence.md) § Batch pending adjudication.
 - Treat a single-line `asr_note` value as correction provenance: it intentionally cites old forms and is excluded from matching. Multi-line YAML ledger values are not masked; keywords, titles, other ASR-derived metadata, and body text remain in correction scope.
-- Read [references/native_ai_full_workflow.md](references/native_ai_full_workflow.md) in full before performing a native pass. Read the task-specific references named below before their corresponding action.
+- Read [references/native_ai_full_workflow.md](references/native_ai_full_workflow.md) in full before performing a native pass. Contiguous, nonoverlapping reads may cover the full file; if a response is truncated, read the missing range before proceeding. An executed `cat` does not establish that its full output was received. Read the task-specific references named below before their corresponding action.
 
 ## Run context
 
@@ -82,7 +82,8 @@ The Stage 1 JSON contract is:
   "stage2_total_chunks": 0,
   "stage2_failed_chunks": 0,
   "stage2_degraded": false,
-  "boundary_refused": 0
+  "boundary_refused": 0,
+  "boundary_check_active": true
 }
 ~~~
 
@@ -94,6 +95,7 @@ For a native end-to-end example, read [references/example_session_dji_minutes.md
 
 | Route | Use when | Required reading |
 |---|---|---|
+| Pending continuation | Dated Native/review evidence covers this exact file; only uncertain rows remain, or the user supplies a verdict | [pending-continuation.md](references/pending-continuation.md); reuse unchanged completed coverage |
 | Fast native | Short/plain transcript, known speakers, low stakes | This file + [native_ai_full_workflow.md](references/native_ai_full_workflow.md) |
 | Full native | Domain-heavy, unfamiliar entities, 3+ speakers, long or decision-bearing transcript | [native_ai_full_workflow.md](references/native_ai_full_workflow.md), plus queue and evidence references below |
 | Scoped speaker inference | User explicitly authorizes identity inference for this transcript/task | [scoped_speaker_inference.md](references/scoped_speaker_inference.md); keep ordinary ASR correction on the native route |
@@ -261,12 +263,12 @@ Safety rules:
 
 - `file` is mandatory for this workflow. Without it, acceptance can record a verdict without editing the transcript.
 - `original` is only the suspect token/span; never put the whole sentence there.
-- `context` is copied verbatim; `line` is the key, not `line_hint`.
+- `context` is copied verbatim; `line` is the key, not `line_hint`. For same-line repeats, use a unique context or add `context_offset` pointing to the intended token inside that context; see the queue reference for offset units and legacy-row repair.
 - `suggested` is the key, not `suggestion`. Use `actions`, not `action_pack`.
 - Resolve one occurrence at a time; sweep sibling entity occurrences only after the whole batch is resolved.
 - A `pending` row is a blocking state for a high-quality/final transcript, not proof that the issue was handled. Queue detection without a human/evidence verdict leaves the artifact incomplete.
 - Read `resolved_text` after an override; the listing can still display the rejected suggestion.
-- A single-line `asr_note` ledger is masked on the accept path too, so resolving an item never edits the provenance line that cites the old form. A fix you applied by hand before resolving is still closed with `--decision accepted` (or `overridden` for its override text): when the context recorded at enqueue reappears anywhere in the file with the suggestion in the slot the original occupied, the verdict is recorded without writing (`already in place at the anchor — recorded without writing`). Line drift does not matter, and neither does the original surviving in other utterances far from the hint, or inside the suggestion itself (阿里→阿里云). It fails closed with `ReAnchorNeeded`, and the message says which, when the original still sits within the resolve window of the hint outside the suggestion (the anchored utterance, or a look-alike beside it, is still garbled — settle that line on its own row or by hand, then resolve; do not `--reanchor-review` this row onto it), when the recorded neighbourhood also appears with a third form in the slot (anywhere in the file at the width that matched, or near the hint at any width down to two characters a side), or when the edit touched the characters next to the slot. What it cannot see: an anchored utterance deleted or rewritten past both neighbours while an identical one elsewhere reads corrected — that records `accepted` with nothing written, and a garble still in the file is re-deferred by the next Stage 1 run. `--reanchor-review <id>` repairs a row whose original moved or drifted and refuses one whose context already reads corrected.
+- A single-line `asr_note` ledger is masked on the accept path too, so resolving an item never edits the provenance line that cites the old form. A fix you applied by hand before resolving is still closed with `--decision accepted` (or `overridden` for its override text): when the context recorded at enqueue reappears anywhere in the file with the suggestion in the slot the original occupied, the verdict is recorded without writing (`already in place at the anchor — recorded without writing`). Line drift does not matter, and neither does the original surviving in other utterances far from the hint, or inside the suggestion itself (阿里→阿里云). It fails closed with `ReAnchorNeeded`, and the message says which, for a legacy no-offset anchor when the original still sits within the resolve window of the hint outside the suggestion (the anchored utterance, or a look-alike beside it, is still garbled — settle that line on its own row or by hand, then resolve; do not `--reanchor-review` this row onto it), when the recorded neighbourhood also appears with a third form in the slot (anywhere in the file at the width that matched, or near the hint at any width down to two characters a side), or when the edit touched the characters next to the slot. What it cannot see: an anchored utterance deleted or rewritten past both neighbours while an identical one elsewhere reads corrected — that records `accepted` with nothing written, and a garble still in the file is re-deferred by the next Stage 1 run. `--reanchor-review <id>` repairs a row whose original moved or drifted and refuses one whose context already reads corrected.
 
 **Choosing the exit when `accepted` refuses to write — three shapes, three exits.**
 `accepted` is fail-closed by design: it declines to edit when the anchor is
@@ -383,11 +385,12 @@ uv run scripts/generate_word_diff.py original.md corrected.md output.html
 uv run scripts/harvest_corrections.py raw.md corrected.md \
   --context-file ~/.transcript-fixer/contexts/myproject.md --write
 
-# Batch-adjudicate a transcript's pending queue rows via clip-level
-# cross-recognition (one source audio, one second engine, both windows)
+# Collect clip evidence at operator-verified media positions; resolve rows separately
+# Read references/advanced_correction_evidence.md before selecting the engine or clock mapping.
 uv run scripts/verify_queue_audio.py \
   --transcript /abs/meeting.md --audio /abs/source.wav \
-  --speed 1.0 --engine-script /abs/stepfun-asr/scripts/asr_transcribe.py
+  --time-overrides /abs/verified-times.json \
+  --engine-script /abs/stdout_recognizer.py --outdir /abs/audio-evidence
 
 # Multi-format Stage 1/API comparison report
 uv run scripts/generate_diff_report.py \
@@ -419,6 +422,7 @@ All references are one level from this file.
 | Dictionary, people roster, domain contexts | [dictionary_identity_and_context.md](references/dictionary_identity_and_context.md) |
 | False-positive policy | [false_positive_guide.md](references/false_positive_guide.md) |
 | Queue, dashboard, audio, re-anchor | [review_queue_dashboard.md](references/review_queue_dashboard.md) |
+| Resume pending evidence or apply an explicit human verdict | [pending-continuation.md](references/pending-continuation.md) |
 | Numbers, photos, multi-recording, clip cross-check, batches, batch pending-queue audio adjudication | [advanced_correction_evidence.md](references/advanced_correction_evidence.md) |
 | Context-file grammar/template | [domain_context_guide.md](references/domain_context_guide.md) |
 | CLI flags and review-item schema | [script_parameters.md](references/script_parameters.md) |

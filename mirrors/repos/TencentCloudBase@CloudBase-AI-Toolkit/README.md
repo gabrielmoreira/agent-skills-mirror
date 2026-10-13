@@ -29,6 +29,7 @@ The CloudBase integration layer for AI coding tools: Plugin installs the stack, 
 - Hosted / Auth: each hosted MCP request runs on its own transport with client metadata cached per credential, and a project-level credential now takes precedence over the account login state
 - Tools / Skills: MySQL provisioning is retired from the tool surface; every skill package ships a `LICENSE.md` next to `SKILL.md`; a new MCP reference skill documents the remote endpoints, the plugin flags and the tool schemas
 - Feedback: `prepareFeedback` returns the repository's new-issue page instead of an auto-filled error report, and a hosted server now enables the same default plugin set as a local one
+- Onboarding / Docs: every `initialize` response now carries server `instructions` — the call to make first, the order a first run needs, and prompts that can be copied verbatim; the remote setup docs now lead with OAuth, so the URL alone is the configuration and a key pair is the CI path
 
 **v2.34.x** (2026-09)
 
@@ -257,7 +258,20 @@ Others: [IDE setup guide](https://docs.cloudbase.net/ai/cloudbase-ai-toolkit/ide
 
 Pick the endpoint matching the site your environment lives in—the two sites use separate accounts, consoles, and credentials.
 
-**Local**: runs `npx @cloudbase/cloudbase-mcp@latest` on your machine—full features, including local filesystem upload and template download.
+**OAuth (interactive, recommended)**: the URL is the whole configuration. Your IDE opens the browser for login and consent, and you pick the environment there—no keys in the config file, and nothing to rotate.
+
+```json
+{
+  "mcpServers": {
+    "cloudbase": {
+      "type": "http",
+      "url": "https://tcb-api.cloud.tencent.com/mcp/v1"
+    }
+  }
+}
+```
+
+**Static credentials** (for a client without OAuth, and for CI/CD): append `env_id` and a key pair created on the same site as the endpoint.
 
 ```json
 {
@@ -274,10 +288,9 @@ Pick the endpoint matching the site your environment lives in—the two sites us
 }
 ```
 
-Remote auth takes one of two paths:
+> A static key pair stays valid until it is rotated or deleted; an OAuth session ends when you log out. Use the static form only where the browser flow is impossible—and keep it out of a repository.
 
-- **OAuth (interactive, recommended)**: add the URL only. Your IDE opens the browser for login and consent—no keys in config files.
-- **Static credentials (CI/CD)**: add `env_id` with the `X-TencentCloud-*` headers above.
+**Local**: runs `npx @cloudbase/cloudbase-mcp@latest` on your machine—full features, including local filesystem upload and template download.
 
 Remote trade-off: local-filesystem features (upload, template download) are unavailable, and the international site does not yet expose NoSQL tools.
 

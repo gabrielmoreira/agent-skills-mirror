@@ -30,7 +30,7 @@ Sequence:
 
 ### Mode B — Correction-driven update
 
-Triggered when the user says "this is wrong", "你刚才理解错了", provides a direct
+Triggered when the user says "this is wrong", "you got that wrong", provides a direct
 quote that contradicts current output, or demands a tone/boundary fix.
 
 Sequence:

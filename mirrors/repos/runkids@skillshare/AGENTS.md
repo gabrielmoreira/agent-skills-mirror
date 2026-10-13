@@ -22,7 +22,7 @@ skillshare is a Go CLI with a React dashboard and a Docusaurus documentation sit
 
 ## Hard Limits
 
-- Never run `ss`, `skillshare`, `go test`, `make test`, or frontend package scripts on the host.
+- Never run `ss`, `skillshare`, `go test`, `make test`, or frontend package scripts on the host. Exception: on explicit user request, the installed CLI may manage the user's own shared memory on the host (`skillshare extras memory ... -g`).
 - Never expose, hardcode, or commit secrets, tokens, credentials, or private user-path contents.
 - Never bypass audits, hooks, tests, trust prompts, or native client confirmation.
 - Never change permissions, delete persistent data, rewrite Git history, commit, tag, push, or release without explicit authorization.

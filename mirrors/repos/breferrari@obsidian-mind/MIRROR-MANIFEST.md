@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `breferrari/obsidian-mind` — 26 default patterns, 4 followed patterns, 18 file(s) materialized.
+Mirror of `breferrari/obsidian-mind` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `breferrari/obsidian-mind` — 26 default patterns, 4 followed pattern
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 4 |
-| Files         | 18 |
+| Followed pats | 0 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,10 +51,7 @@ Mirror of `breferrari/obsidian-mind` — 26 default patterns, 4 followed pattern
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `README.md`
-- `README.ja.md`
-- `README.zh-CN.md`
-- `README.ko.md`
+_None._
 
 ## File Index
 
@@ -62,24 +59,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/defuddle/SKILL.md`](.claude/skills/defuddle/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/excalidraw-diagram/SKILL.md`](.claude/skills/excalidraw-diagram/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/json-canvas/SKILL.md`](.claude/skills/json-canvas/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/mermaid-visualizer/SKILL.md`](.claude/skills/mermaid-visualizer/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/obsidian-bases/SKILL.md`](.claude/skills/obsidian-bases/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/obsidian-cli/SKILL.md`](.claude/skills/obsidian-cli/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/obsidian-markdown/SKILL.md`](.claude/skills/obsidian-markdown/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/qmd/SKILL.md`](.claude/skills/qmd/SKILL.md) |
-| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 11 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 12 | ✓ | [`perf/competencies/README.md`](perf/competencies/README.md) |
-| 13 | ✓ | [`thinking/README.md`](thinking/README.md) |
-| 14 | ✓ | [`work/meetings/README.md`](work/meetings/README.md) |
-| 15 | → | [`README.ja.md`](README.ja.md) |
-| 16 | → | [`README.ko.md`](README.ko.md) |
-| 17 | → | [`README.md`](README.md) |
-| 18 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 1 | ✓ | [`.claude/rules/skills.md`](.claude/rules/skills.md) |
+| 2 | ✓ | [`.claude/skills/defuddle/SKILL.md`](.claude/skills/defuddle/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/excalidraw-diagram/SKILL.md`](.claude/skills/excalidraw-diagram/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/json-canvas/SKILL.md`](.claude/skills/json-canvas/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/mermaid-visualizer/SKILL.md`](.claude/skills/mermaid-visualizer/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/obsidian-bases/SKILL.md`](.claude/skills/obsidian-bases/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/obsidian-cli/SKILL.md`](.claude/skills/obsidian-cli/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/obsidian-markdown/SKILL.md`](.claude/skills/obsidian-markdown/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/qmd/SKILL.md`](.claude/skills/qmd/SKILL.md) |
+| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
 
 ---
 

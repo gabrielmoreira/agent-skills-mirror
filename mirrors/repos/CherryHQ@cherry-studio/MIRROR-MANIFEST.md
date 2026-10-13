@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 30 followed patterns, 276 file(s) materialized.
+Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 30 followed patterns, 277 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 30 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 30 |
-| Files         | 276 |
+| Files         | 277 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -331,39 +331,40 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 241 | ✓ | [`src/shared/data/api/README.md`](src/shared/data/api/README.md) |
 | 242 | ✓ | [`src/shared/data/presets/README.md`](src/shared/data/presets/README.md) |
 | 243 | ✓ | [`src/shared/data/README.md`](src/shared/data/README.md) |
-| 244 | ✓ | [`tests/e2e/README.md`](tests/e2e/README.md) |
-| 245 | ✓ | [`tests/e2e/regression/README.md`](tests/e2e/regression/README.md) |
-| 246 | ✓ | [`tests/helpers/http/README.md`](tests/helpers/http/README.md) |
-| 247 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 248 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 249 | → | [`DESIGN.md`](DESIGN.md) |
-| 250 | → | [`docs/contrib/branching-strategy.md`](docs/contrib/branching-strategy.md) |
-| 251 | → | [`docs/contrib/development.md`](docs/contrib/development.md) |
-| 252 | → | [`docs/contrib/test-plan.md`](docs/contrib/test-plan.md) |
-| 253 | → | [`docs/references/architecture/main-process.md`](docs/references/architecture/main-process.md) |
-| 254 | → | [`docs/references/architecture/naming-conventions.md`](docs/references/architecture/naming-conventions.md) |
-| 255 | → | [`docs/references/architecture/renderer.md`](docs/references/architecture/renderer.md) |
-| 256 | → | [`docs/references/architecture/shared-layer.md`](docs/references/architecture/shared-layer.md) |
-| 257 | → | [`docs/references/components/ui-semantic-contract.md`](docs/references/components/ui-semantic-contract.md) |
-| 258 | → | [`docs/references/data/boot-config-overview.md`](docs/references/data/boot-config-overview.md) |
-| 259 | → | [`docs/references/data/cache-overview.md`](docs/references/data/cache-overview.md) |
-| 260 | → | [`docs/references/data/data-api-overview.md`](docs/references/data/data-api-overview.md) |
-| 261 | → | [`docs/references/data/preference-overview.md`](docs/references/data/preference-overview.md) |
-| 262 | → | [`docs/references/data/README.md`](docs/references/data/README.md) |
-| 263 | → | [`docs/references/ipc/README.md`](docs/references/ipc/README.md) |
-| 264 | → | [`docs/references/lifecycle/lifecycle-decision-guide.md`](docs/references/lifecycle/lifecycle-decision-guide.md) |
-| 265 | → | [`docs/references/lifecycle/lifecycle-migration-guide.md`](docs/references/lifecycle/lifecycle-migration-guide.md) |
-| 266 | → | [`docs/references/lifecycle/lifecycle-usage.md`](docs/references/lifecycle/lifecycle-usage.md) |
-| 267 | → | [`docs/references/lifecycle/README.md`](docs/references/lifecycle/README.md) |
-| 268 | → | [`docs/references/testing/database-testing.md`](docs/references/testing/database-testing.md) |
-| 269 | → | [`docs/references/testing/frontend-testing.md`](docs/references/testing/frontend-testing.md) |
-| 270 | → | [`docs/references/window-manager/README.md`](docs/references/window-manager/README.md) |
-| 271 | → | [`docs/sponsor.md`](docs/sponsor.md) |
-| 272 | → | [`packages/ui/docs/design-token-system.md`](packages/ui/docs/design-token-system.md) |
-| 273 | → | [`packages/ui/docs/variable-catalog.md`](packages/ui/docs/variable-catalog.md) |
-| 274 | → | [`README.md`](README.md) |
-| 275 | → | [`src/main/core/paths/README.md`](src/main/core/paths/README.md) |
-| 276 | → | [`tests/__mocks__/README.md`](tests/__mocks__/README.md) |
+| 244 | ✓ | [`src/shared/utils/async/README.md`](src/shared/utils/async/README.md) |
+| 245 | ✓ | [`tests/e2e/README.md`](tests/e2e/README.md) |
+| 246 | ✓ | [`tests/e2e/regression/README.md`](tests/e2e/regression/README.md) |
+| 247 | ✓ | [`tests/helpers/http/README.md`](tests/helpers/http/README.md) |
+| 248 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 249 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 250 | → | [`DESIGN.md`](DESIGN.md) |
+| 251 | → | [`docs/contrib/branching-strategy.md`](docs/contrib/branching-strategy.md) |
+| 252 | → | [`docs/contrib/development.md`](docs/contrib/development.md) |
+| 253 | → | [`docs/contrib/test-plan.md`](docs/contrib/test-plan.md) |
+| 254 | → | [`docs/references/architecture/main-process.md`](docs/references/architecture/main-process.md) |
+| 255 | → | [`docs/references/architecture/naming-conventions.md`](docs/references/architecture/naming-conventions.md) |
+| 256 | → | [`docs/references/architecture/renderer.md`](docs/references/architecture/renderer.md) |
+| 257 | → | [`docs/references/architecture/shared-layer.md`](docs/references/architecture/shared-layer.md) |
+| 258 | → | [`docs/references/components/ui-semantic-contract.md`](docs/references/components/ui-semantic-contract.md) |
+| 259 | → | [`docs/references/data/boot-config-overview.md`](docs/references/data/boot-config-overview.md) |
+| 260 | → | [`docs/references/data/cache-overview.md`](docs/references/data/cache-overview.md) |
+| 261 | → | [`docs/references/data/data-api-overview.md`](docs/references/data/data-api-overview.md) |
+| 262 | → | [`docs/references/data/preference-overview.md`](docs/references/data/preference-overview.md) |
+| 263 | → | [`docs/references/data/README.md`](docs/references/data/README.md) |
+| 264 | → | [`docs/references/ipc/README.md`](docs/references/ipc/README.md) |
+| 265 | → | [`docs/references/lifecycle/lifecycle-decision-guide.md`](docs/references/lifecycle/lifecycle-decision-guide.md) |
+| 266 | → | [`docs/references/lifecycle/lifecycle-migration-guide.md`](docs/references/lifecycle/lifecycle-migration-guide.md) |
+| 267 | → | [`docs/references/lifecycle/lifecycle-usage.md`](docs/references/lifecycle/lifecycle-usage.md) |
+| 268 | → | [`docs/references/lifecycle/README.md`](docs/references/lifecycle/README.md) |
+| 269 | → | [`docs/references/testing/database-testing.md`](docs/references/testing/database-testing.md) |
+| 270 | → | [`docs/references/testing/frontend-testing.md`](docs/references/testing/frontend-testing.md) |
+| 271 | → | [`docs/references/window-manager/README.md`](docs/references/window-manager/README.md) |
+| 272 | → | [`docs/sponsor.md`](docs/sponsor.md) |
+| 273 | → | [`packages/ui/docs/design-token-system.md`](packages/ui/docs/design-token-system.md) |
+| 274 | → | [`packages/ui/docs/variable-catalog.md`](packages/ui/docs/variable-catalog.md) |
+| 275 | → | [`README.md`](README.md) |
+| 276 | → | [`src/main/core/paths/README.md`](src/main/core/paths/README.md) |
+| 277 | → | [`tests/__mocks__/README.md`](tests/__mocks__/README.md) |
 
 ---
 

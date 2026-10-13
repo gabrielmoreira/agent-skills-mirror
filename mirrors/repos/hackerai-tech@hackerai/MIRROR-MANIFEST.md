@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hackerai-tech/hackerai` — 26 default patterns, 2 followed patterns, 20 file(s) materialized.
+Mirror of `hackerai-tech/hackerai` — 26 default patterns, 2 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `hackerai-tech/hackerai` — 26 default patterns, 2 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 20 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,23 +63,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.agents/skills/hackerai-retention-analysis/agents/openai.yaml`](.agents/skills/hackerai-retention-analysis/agents/openai.yaml) |
 | 2 | ✓ | [`.agents/skills/hackerai-retention-analysis/references/measurement-guide.md`](.agents/skills/hackerai-retention-analysis/references/measurement-guide.md) |
 | 3 | ✓ | [`.agents/skills/hackerai-retention-analysis/SKILL.md`](.agents/skills/hackerai-retention-analysis/SKILL.md) |
-| 4 | ✓ | [`.agents/skills/hackerai-user-research/agents/openai.yaml`](.agents/skills/hackerai-user-research/agents/openai.yaml) |
-| 5 | ✓ | [`.agents/skills/hackerai-user-research/references/pm-runbook.md`](.agents/skills/hackerai-user-research/references/pm-runbook.md) |
-| 6 | ✓ | [`.agents/skills/hackerai-user-research/references/privacy-policy.md`](.agents/skills/hackerai-user-research/references/privacy-policy.md) |
-| 7 | ✓ | [`.agents/skills/hackerai-user-research/scripts/run-research.mjs`](.agents/skills/hackerai-user-research/scripts/run-research.mjs) |
-| 8 | ✓ | [`.agents/skills/hackerai-user-research/scripts/run-research.test.mjs`](.agents/skills/hackerai-user-research/scripts/run-research.test.mjs) |
-| 9 | ✓ | [`.agents/skills/hackerai-user-research/SKILL.md`](.agents/skills/hackerai-user-research/SKILL.md) |
-| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 12 | ✓ | [`docker/centrifugo/README.md`](docker/centrifugo/README.md) |
-| 13 | ✓ | [`e2b/README.md`](e2b/README.md) |
-| 14 | ✓ | [`e2e/README.md`](e2e/README.md) |
-| 15 | ✓ | [`packages/desktop/README.md`](packages/desktop/README.md) |
-| 16 | ✓ | [`packages/local/README.md`](packages/local/README.md) |
-| 17 | ✓ | [`scripts/README.md`](scripts/README.md) |
-| 18 | ✓ | [`third_party/strix-skills/skills/README.md`](third_party/strix-skills/skills/README.md) |
-| 19 | → | [`docs/desktop-local-acceptance.md`](docs/desktop-local-acceptance.md) |
-| 20 | → | [`README.md`](README.md) |
+| 4 | ✓ | [`.agents/skills/hackerai-test-quality/SKILL.md`](.agents/skills/hackerai-test-quality/SKILL.md) |
+| 5 | ✓ | [`.agents/skills/hackerai-user-research/agents/openai.yaml`](.agents/skills/hackerai-user-research/agents/openai.yaml) |
+| 6 | ✓ | [`.agents/skills/hackerai-user-research/references/pm-runbook.md`](.agents/skills/hackerai-user-research/references/pm-runbook.md) |
+| 7 | ✓ | [`.agents/skills/hackerai-user-research/references/privacy-policy.md`](.agents/skills/hackerai-user-research/references/privacy-policy.md) |
+| 8 | ✓ | [`.agents/skills/hackerai-user-research/scripts/run-research.mjs`](.agents/skills/hackerai-user-research/scripts/run-research.mjs) |
+| 9 | ✓ | [`.agents/skills/hackerai-user-research/scripts/run-research.test.mjs`](.agents/skills/hackerai-user-research/scripts/run-research.test.mjs) |
+| 10 | ✓ | [`.agents/skills/hackerai-user-research/SKILL.md`](.agents/skills/hackerai-user-research/SKILL.md) |
+| 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 13 | ✓ | [`docker/centrifugo/README.md`](docker/centrifugo/README.md) |
+| 14 | ✓ | [`e2b/README.md`](e2b/README.md) |
+| 15 | ✓ | [`e2e/README.md`](e2e/README.md) |
+| 16 | ✓ | [`packages/desktop/README.md`](packages/desktop/README.md) |
+| 17 | ✓ | [`packages/local/README.md`](packages/local/README.md) |
+| 18 | ✓ | [`scripts/README.md`](scripts/README.md) |
+| 19 | ✓ | [`third_party/strix-skills/skills/README.md`](third_party/strix-skills/skills/README.md) |
+| 20 | → | [`docs/desktop-local-acceptance.md`](docs/desktop-local-acceptance.md) |
+| 21 | → | [`README.md`](README.md) |
 
 ---
 

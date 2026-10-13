@@ -184,9 +184,7 @@ Safety rules:
 
 ## Tests-First Delivery
 
-When the user asks for TDD, tests first, or red-green delivery, every implementation lane runs under the red/green contract. The iron law: no implementation line before a failing test - write the test that describes the missing behavior, run it, and watch it fail for the right reason before any implementation edit. A cycle is observed only when a failing (non-zero) run of the lane's test command precedes a passing (zero) run, both with pasted output; a lane that shows only green is `prepared_not_observed` on its red phase and does not count as tests-first delivery. Never edit, delete, skip, xfail, or weaken a test to make it pass - a failing test means fix the code - and a test that passes on its first run proves nothing: make it fail first. Commit the failing test as a checkpoint before implementing, so any later test edit is diff-visible.
-
-Hermes bundles the superpowers `test-driven-development` skill; when it is loaded, follow its cycle - this contract reinforces it with OMH's evidence vocabulary and never overrides it. Load `references/tdd-red-green.md` for the full discipline: the evidence ledger, forbidden moves, the rationalization table, and the observed red-before-green rule.
+When the user asks for TDD, tests first, or red-green delivery, every implementation lane runs under the red/green contract. The iron law: no implementation line before a failing test. Load `references/tdd-red-green.md` before the first lane for the full discipline.
 
 ## Runtime Evidence
 

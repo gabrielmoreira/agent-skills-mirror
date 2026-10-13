@@ -151,6 +151,15 @@ non-blank rows names a key" (`namesAMenuKey`), which every screen on Claude's al
 and a shell prompt does not. This is a gate on showing the card, not a footer parse for its key: the
 key is still the declaration. Adapters that declare nothing keep the four conditions unchanged.
 
+Codex, Grok and Muse declared `modalOnScreen` afterwards (harness canary 2026-10-12: Codex 0.159.3,
+Grok Build 1.0.50, Muse 1.4.6), each with its own positive evidence and the same fail-closed reading:
+
+| Adapter | `modalOnScreen` answers `true` when |
+|---|---|
+| codex | one of the last six non-blank rows names `esc`, as every Codex dialog footer does |
+| grok | one of the last six non-blank rows is a `Key:verb │ Key:verb` footer; the shell after exit prints none, so the card no longer offers `ctrl+c` to it |
+| muse | its bottom rule and statusline are there (`locateTail`); the shell after `muse resume` and the banner before the composer have neither |
+
 The same day, most of the screens that had been showing the card were read instead: the permission
 dialog is now recognised by its own words when its footer drops "Tab to amend", Claude's `▔` modal
 top is a menu region top, and the amend note and AskUserQuestion's "Type something." row are

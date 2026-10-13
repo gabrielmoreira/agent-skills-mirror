@@ -45,6 +45,8 @@ export FMP_API_KEY=your_key_here
 
 # Or provide when running scripts
 python3 scripts/track_institutional_flow.py --api-key YOUR_KEY
+
+FMP transport (rate limiting, single 429 retry, apikey header auth so the key never appears in a URL) is owned by the vendored generated `scripts/fmp_client.py` (Issue #495).
 ```
 
 **API Tier Requirements:**

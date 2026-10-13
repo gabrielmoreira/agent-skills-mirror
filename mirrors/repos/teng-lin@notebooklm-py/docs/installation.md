@@ -1,6 +1,6 @@
 # Installation
 
-**Last Updated:** 2026-10-01
+**Last Updated:** 2026-10-12
 
 This is the canonical installation guide for `notebooklm-py`. The README has a quickstart; everything else lives here.
 
@@ -808,7 +808,7 @@ For the full CLI surface, see [cli-reference.md](cli-reference.md).
 |---|---|---|
 | **macOS** | Chromium auto-downloads on first login. `--browser-cookies` from Chrome/Edge/Brave/Opera may prompt for Keychain access. | [troubleshooting.md#macos](troubleshooting.md#macos) |
 | **Linux** | (a) `playwright install-deps chromium` for system libs (Debian/Ubuntu). (b) **Known bug:** `playwright > 1.57` may fail with `TypeError: onExit is not a function` — pin `playwright==1.57.0`. | [troubleshooting.md#linux](troubleshooting.md#linux) |
-| **Windows** | The library auto-configures `WindowsSelectorEventLoopPolicy` and `PYTHONUTF8=1`. Prefer plain `pip install` (uv/pipx less common on Windows). | [troubleshooting.md#windows](troubleshooting.md#windows) |
+| **Windows** | The CLI sets `PYTHONUTF8=1` and runs on asyncio's default (Proactor) event loop; set `NOTEBOOKLM_WINDOWS_EVENT_LOOP=selector` only if commands hang inside a sandbox. Prefer plain `pip install` (uv/pipx less common on Windows). | [troubleshooting.md#windows](troubleshooting.md#windows) |
 | **WSL** | The browser opens in the Windows host (expected); `storage_state.json` lives in the WSL filesystem. | [troubleshooting.md#wsl](troubleshooting.md#wsl) |
 
 ---

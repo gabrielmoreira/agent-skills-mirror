@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ultraworkers/claw-code` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `ultraworkers/claw-code` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ultraworkers/claw-code` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,11 +65,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`rust/CLAUDE.md`](rust/CLAUDE.md) |
 | 5 | ✓ | [`rust/crates/api/AGENTS.md`](rust/crates/api/AGENTS.md) |
 | 6 | ✓ | [`rust/crates/commands/AGENTS.md`](rust/crates/commands/AGENTS.md) |
-| 7 | ✓ | [`rust/crates/plugins/AGENTS.md`](rust/crates/plugins/AGENTS.md) |
-| 8 | ✓ | [`rust/crates/runtime/AGENTS.md`](rust/crates/runtime/AGENTS.md) |
-| 9 | ✓ | [`rust/crates/rusty-claude-cli/AGENTS.md`](rust/crates/rusty-claude-cli/AGENTS.md) |
-| 10 | ✓ | [`rust/crates/tools/AGENTS.md`](rust/crates/tools/AGENTS.md) |
-| 11 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
+| 7 | ✓ | [`rust/crates/commands/bundled/chain-example/SKILL.md`](rust/crates/commands/bundled/chain-example/SKILL.md) |
+| 8 | ✓ | [`rust/crates/commands/bundled/example-skill/SKILL.md`](rust/crates/commands/bundled/example-skill/SKILL.md) |
+| 9 | ✓ | [`rust/crates/plugins/AGENTS.md`](rust/crates/plugins/AGENTS.md) |
+| 10 | ✓ | [`rust/crates/runtime/AGENTS.md`](rust/crates/runtime/AGENTS.md) |
+| 11 | ✓ | [`rust/crates/rusty-claude-cli/AGENTS.md`](rust/crates/rusty-claude-cli/AGENTS.md) |
+| 12 | ✓ | [`rust/crates/tools/AGENTS.md`](rust/crates/tools/AGENTS.md) |
+| 13 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
 
 ---
 

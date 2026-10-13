@@ -286,14 +286,14 @@ class TestCotClientBackoff:
             ]
         )
         # Monkeypatch time.sleep via the module under test's imported `time`.
-        import screen_cot_crowding as mod
+        import time as time_module
 
-        original_sleep = mod.time.sleep
-        mod.time.sleep = lambda _seconds: None
+        global_sleep_limit = time_module.sleep
+        time_module.sleep = lambda _seconds: None
         try:
             data = client.get_market_list()
         finally:
-            mod.time.sleep = original_sleep
+            time_module.sleep = global_sleep_limit
         assert data == [{"symbol": "ES", "name": "S&P 500 E-Mini (ES)"}]
         assert len(client.session.calls) == 2
 
@@ -407,14 +407,14 @@ class TestApiKeyRedactionOnErrorPaths:
         client = CotClient(api_key=self.SECRET, sleep_seconds=0.0)
         client.session = _RaisingSession(self._connection_error())
 
-        import screen_cot_crowding as mod
+        import time as time_module
 
-        original_sleep = mod.time.sleep
-        mod.time.sleep = lambda _seconds: None
+        global_sleep_limit = time_module.sleep
+        time_module.sleep = lambda _seconds: None
         try:
             rows, error = client.get_report("ES", "2020-01-01", "2026-07-07")
         finally:
-            mod.time.sleep = original_sleep
+            time_module.sleep = global_sleep_limit
 
         captured = capsys.readouterr()
 
@@ -473,15 +473,15 @@ class TestApiKeyRedactionOnErrorPaths:
         client = CotClient(api_key=self.SECRET, sleep_seconds=0.0)
         client.session = _RaisingSession(self._connection_error())
 
-        import screen_cot_crowding as mod
+        import time as time_module
 
-        original_sleep = mod.time.sleep
-        mod.time.sleep = lambda _seconds: None
+        global_sleep_limit = time_module.sleep
+        time_module.sleep = lambda _seconds: None
         try:
             with pytest.raises(RuntimeError) as exc_info:
                 client.get_market_list()
         finally:
-            mod.time.sleep = original_sleep
+            time_module.sleep = global_sleep_limit
 
         assert self.SECRET not in str(exc_info.value)
         assert "***REDACTED***" in str(exc_info.value)
@@ -496,14 +496,14 @@ class TestApiKeyRedactionOnErrorPaths:
         client = CotClient(api_key=self.SECRET, sleep_seconds=0.0)
         client.session = _RaisingSession(self._connection_error())
 
-        import screen_cot_crowding as mod
+        import time as time_module
 
-        original_sleep = mod.time.sleep
-        mod.time.sleep = lambda _seconds: None
+        global_sleep_limit = time_module.sleep
+        time_module.sleep = lambda _seconds: None
         try:
             rows, error = client.get_report("ES", "2020-01-01", "2026-07-07")
         finally:
-            mod.time.sleep = original_sleep
+            time_module.sleep = global_sleep_limit
 
         args = default_args(lookback_weeks=4, short_lookback_weeks=2)
         result = analyze_market("ES", rows, error, args)
@@ -520,3 +520,193 @@ class TestApiKeyRedactionOnErrorPaths:
 
         assert self.SECRET not in json_path.read_text(encoding="utf-8")
         assert self.SECRET not in md_path.read_text(encoding="utf-8")
+
+
+class _BadJsonResponse:
+    """HTTP 200 whose body is not valid JSON."""
+
+    status_code = 200
+    text = "<html>not json</html>"
+
+    def json(self):
+        raise ValueError("Expecting value: line 1 column 1 (char 0)")
+
+
+class _SequenceSession:
+    """Serve scripted outcomes keyed by the request's ``symbol`` param."""
+
+    def __init__(self, by_symbol):
+        self.by_symbol = {k: list(v) for k, v in by_symbol.items()}
+        self.calls = []
+
+    def get(self, url, params=None, timeout=None):
+        symbol = (params or {}).get("symbol")
+        self.calls.append(symbol)
+        outcome = self.by_symbol[symbol].pop(0)
+        if isinstance(outcome, Exception):
+            raise outcome
+        return outcome
+
+
+class TestBareKeyRedactionBeforePrint:
+    """Value-based redaction must happen BEFORE any stderr print in the transport."""
+
+    SECRET = "secret-token-xyz"  # pragma: allowlist secret
+
+    def test_bare_key_in_request_exception_never_reaches_stderr(self, capsys):
+        client = CotClient(api_key=self.SECRET, sleep_seconds=0.0)
+        client.session = _RaisingSession(
+            requests.ConnectionError(f"proxy echoed {self.SECRET} in failure")
+        )
+
+        rows, error = client.get_report("ES", "2026-01-01", "2026-01-07")
+
+        captured = capsys.readouterr()
+        assert rows == []
+        assert error is not None
+        assert self.SECRET not in error
+        assert self.SECRET not in captured.err
+        assert self.SECRET not in captured.out
+
+    def test_short_key_in_request_exception_never_reaches_stderr(self, capsys):
+        # Short keys are accepted without validation, so they must be masked too.
+        short_key = "abcde"  # pragma: allowlist secret
+        client = CotClient(api_key=short_key, sleep_seconds=0.0)
+        client.session = _RaisingSession(
+            requests.ConnectionError(f"proxy echoed {short_key} in failure")
+        )
+
+        rows, error = client.get_report("ES", "2026-01-01", "2026-01-07")
+
+        captured = capsys.readouterr()
+        assert rows == []
+        assert error is not None
+        assert short_key not in error
+        assert short_key not in captured.err
+        assert short_key not in captured.out
+
+    def test_bare_key_in_http_error_body_never_reaches_stderr(self, capsys):
+        response = _FakeResponse({}, status_code=500)
+        response.text = f"upstream said bad credential {self.SECRET}"
+        client = CotClient(api_key=self.SECRET, sleep_seconds=0.0)
+        client.session = _FakeSession([response])
+
+        # quiet=False exercises the generic (non-COT) HTTP error print.
+        data = client._rate_limited_get("https://example.invalid/x", params={}, quiet=False)
+
+        captured = capsys.readouterr()
+        assert data is None
+        assert self.SECRET not in captured.err
+        assert self.SECRET not in (client._last_error or "")
+
+    def test_bare_key_in_invalid_json_error_never_reaches_stderr(self, capsys):
+        class _LeakyJson:
+            status_code = 200
+            text = ""
+
+            def json(self):
+                raise ValueError("bad body containing secret-token-xyz")
+
+        client = CotClient(api_key=self.SECRET, sleep_seconds=0.0)
+        client.session = _FakeSession([_LeakyJson(), _LeakyJson()])
+
+        rows, error = client.get_report("ES", "2026-01-01", "2026-01-07")
+
+        captured = capsys.readouterr()
+        assert rows == []
+        assert error is not None
+        assert self.SECRET not in error
+        assert self.SECRET not in captured.err
+
+
+class TestInvalidJsonContract:
+    def test_invalid_json_returns_empty_rows_and_error(self):
+        client = CotClient(api_key="fake", sleep_seconds=0.0)
+        client.session = _FakeSession([_BadJsonResponse(), _BadJsonResponse()])
+
+        rows, error = client.get_report("ES", "2026-01-01", "2026-01-07")
+
+        assert rows == []
+        assert error is not None
+        assert "invalid JSON response" in error
+
+    def test_invalid_json_retries_then_succeeds(self):
+        client = CotClient(api_key="fake", sleep_seconds=0.0)
+        client.session = _FakeSession(
+            [_BadJsonResponse(), _FakeResponse([make_row("2026-07-07", 10, 5)])]
+        )
+
+        rows, error = client.get_report("ES", "2026-01-01", "2026-07-07")
+
+        assert error is None
+        assert len(rows) == 1
+        assert len(client.session.calls) == 2
+
+    def test_retry_after_http_error_does_not_disable_later_retries(self):
+        client = CotClient(api_key="fake", sleep_seconds=0.0)
+        client.session = _FakeSession(
+            [
+                _BadJsonResponse(),
+                _FakeResponse({}, status_code=500),
+                _BadJsonResponse(),
+                _FakeResponse([make_row("2026-07-07", 10, 5)]),
+            ]
+        )
+
+        rows, error = client.get_report("ES", "2026-01-01", "2026-07-07")
+        assert rows == [] and error is not None
+
+        rows, error = client.get_report("ES", "2026-01-01", "2026-07-07")
+        assert error is None
+        assert len(rows) == 1
+
+    def test_retry_after_request_exception_does_not_disable_later_retries(self):
+        client = CotClient(api_key="fake", sleep_seconds=0.0)
+        client.session = _SequenceSession(
+            {
+                "ES": [
+                    _BadJsonResponse(),
+                    requests.ConnectionError("boom"),
+                    _BadJsonResponse(),
+                    _FakeResponse([make_row("2026-07-07", 10, 5)]),
+                ]
+            }
+        )
+
+        rows, error = client.get_report("ES", "2026-01-01", "2026-07-07")
+        assert rows == [] and error is not None
+
+        rows, error = client.get_report("ES", "2026-01-01", "2026-07-07")
+        assert error is None
+        assert len(rows) == 1
+
+    def test_market_list_invalid_json_raises_runtime_error(self):
+        client = CotClient(api_key="fake", sleep_seconds=0.0)
+        client.session = _FakeSession([_BadJsonResponse(), _BadJsonResponse()])
+        with pytest.raises(RuntimeError, match="invalid JSON response"):
+            client.get_market_list()
+
+    def test_collect_results_continues_after_one_market_bad_json(self):
+        from screen_cot_crowding import collect_results
+
+        as_of = date(2026, 7, 7)
+        rows = [
+            make_row((as_of - timedelta(weeks=i)).strftime("%Y-%m-%d"), 100 + i, 50 + i)
+            for i in range(6)
+        ]
+        client = CotClient(api_key="fake", sleep_seconds=0.0)
+        client.session = _SequenceSession(
+            {
+                "ES": [_BadJsonResponse(), _BadJsonResponse()],
+                "NQ": [_FakeResponse(rows)],
+            }
+        )
+        args = default_args(symbols="ES,NQ", lookback_weeks=4, short_lookback_weeks=2)
+
+        results, universe, _mode = collect_results(args, client)
+
+        assert universe == ["ES", "NQ"]
+        by_symbol = {r["symbol"]: r for r in results}
+        assert by_symbol["ES"]["status"] == "skipped"
+        assert "invalid JSON response" in by_symbol["ES"]["reason"]
+        assert "NQ" in by_symbol

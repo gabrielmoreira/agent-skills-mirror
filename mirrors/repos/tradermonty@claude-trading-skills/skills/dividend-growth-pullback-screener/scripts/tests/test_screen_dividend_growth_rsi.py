@@ -190,7 +190,14 @@ def test_fmp_decimal_roe_and_margin_are_converted_to_percent(monkeypatch):
     client.get_dividend_history.return_value = [{}]
     client.get_historical_prices.return_value = [{"close": 100}] * 30
     client.get_income_statement.return_value = [{}]
-    client.get_balance_sheet.return_value = [{}]
+    client.get_balance_sheet.return_value = [
+        {
+            "totalDebt": 10,
+            "totalStockholdersEquity": 100,
+            "totalCurrentAssets": 100,
+            "totalCurrentLiabilities": 20,
+        }
+    ]
     client.get_cash_flow.return_value = [{}]
     client.get_key_metrics.return_value = [{"roe": 0.25, "netProfitMargin": 0.125}]
 
@@ -205,6 +212,12 @@ def test_fmp_decimal_roe_and_margin_are_converted_to_percent(monkeypatch):
     analyzer.calculate_payout_ratios.return_value = {
         "payout_ratio": 50.0,
         "fcf_payout_ratio": 60.0,
+        "sustainable": True,
+        "fcf_amount": 100.0,
+        "fcf_status": "POSITIVE",
+        "fcf_coverage_status": "COVERED",
+        "sustainability_basis": "EARNINGS_AND_FCF",
+        "sustainability_note": "Coverage confirmed.",
     }
     analyzer.calculate_composite_score.return_value = 80.0
 
@@ -220,3 +233,133 @@ def test_fmp_decimal_roe_and_margin_are_converted_to_percent(monkeypatch):
 
     assert result["roe"] == 25.0
     assert result["profit_margin"] == 12.5
+
+
+@pytest.mark.parametrize(
+    "fcf,status,coverage,sustainable",
+    [
+        (100, "POSITIVE", "COVERED", True),
+        (20, "POSITIVE", "AT_LIMIT", False),
+        (10, "POSITIVE", "INSUFFICIENT_FCF", False),
+        (0, "ZERO", "ZERO_FCF", False),
+        (-20, "NEGATIVE", "NEGATIVE_FCF", False),
+        (None, "MISSING_DATA", "MISSING_DATA", False),
+        (float("nan"), "MISSING_DATA", "MISSING_DATA", False),
+        (float("inf"), "MISSING_DATA", "MISSING_DATA", False),
+        (True, "MISSING_DATA", "MISSING_DATA", False),
+        ("100", "MISSING_DATA", "MISSING_DATA", False),
+    ],
+)
+def test_cash_flow_coverage_states(fcf, status, coverage, sustainable):
+    analyzer = _load_script().StockAnalyzer
+    result = analyzer.calculate_payout_ratios(
+        [{"netIncome": 100}], [{"freeCashFlow": fcf, "dividendsPaid": -20}]
+    )
+    assert result["fcf_status"] == status
+    assert result["fcf_coverage_status"] == coverage
+    assert result["sustainable"] is sustainable
+    assert result["sustainability_note"]
+
+
+@pytest.mark.parametrize(
+    "profile,expected",
+    [
+        ({"sector": "Real Estate", "industry": "Real Estate Services"}, False),
+        ({"industry": "Non-REIT Real Estate"}, False),
+        ({"industry": None}, False),
+        ({"industry": "REIT - Retail"}, True),
+        ({"industry": "Real Estate Investment Trust"}, True),
+        ({"isReit": True}, True),
+        ({"isReit": "true"}, False),
+    ],
+)
+def test_explicit_reit_identification(profile, expected):
+    assert _load_script().StockAnalyzer.is_reit(profile) is expected
+
+
+@pytest.mark.parametrize("dividends,expected", [(79.999, True), (80, False), (80.001, False)])
+def test_unrounded_earnings_and_ffo_threshold(dividends, expected):
+    analyzer = _load_script().StockAnalyzer
+    cf = [
+        {
+            "netIncome": 50,
+            "depreciationAndAmortization": 50,
+            "dividendsPaid": -dividends,
+            "freeCashFlow": 200,
+        }
+    ]
+    assert analyzer.calculate_payout_ratios([{"netIncome": 100}], cf)["sustainable"] is expected
+    assert analyzer.calculate_payout_ratios([], cf, is_reit=True)["sustainable"] is expected
+
+
+@pytest.mark.parametrize(
+    "cf",
+    [
+        {},
+        {"netIncome": 100},
+        {"depreciationAndAmortization": 100},
+        {"netIncome": float("inf"), "depreciationAndAmortization": 20},
+        {"netIncome": True, "depreciationAndAmortization": 20},
+    ],
+)
+def test_incomplete_ffo_is_not_confirmed(cf):
+    cf = dict(cf, dividendsPaid=-20, freeCashFlow=100)
+    result = _load_script().StockAnalyzer.calculate_payout_ratios([], [cf], is_reit=True)
+    assert result["sustainable"] is False
+    assert result["payout_ratio"] is None
+
+
+@pytest.mark.parametrize("dividends", [None, True, float("nan"), 0])
+def test_missing_invalid_or_zero_dividends_are_not_confirmed(dividends):
+    result = _load_script().StockAnalyzer.calculate_payout_ratios(
+        [{"netIncome": 100}], [{"freeCashFlow": 100, "dividendsPaid": dividends}]
+    )
+    assert result["sustainable"] is False
+
+
+@pytest.mark.parametrize("fallback", [None, True, float("nan"), float("inf"), -0.2, 0.2])
+def test_metrics_fallback_cannot_confirm_missing_coverage(monkeypatch, tmp_path, fallback):
+    mod = _load_script()
+    client = MagicMock()
+    client.rate_limit_reached = False
+    client.screen_stocks.return_value = [
+        {"symbol": "TEST", "companyName": "Test Inc", "price": 100, "sector": "Tech"}
+    ]
+    client.get_dividend_history.return_value = [{}]
+    client.get_historical_prices.return_value = [{"close": 100}] * 30
+    client.get_income_statement.return_value = [{}]
+    client.get_balance_sheet.return_value = [
+        {
+            "totalDebt": 10,
+            "totalStockholdersEquity": 100,
+            "totalCurrentAssets": 100,
+            "totalCurrentLiabilities": 20,
+        }
+    ]
+    client.get_cash_flow.return_value = [{"dividendsPaid": -20}]
+    client.get_key_metrics.return_value = [{"payoutRatio": fallback}]
+    monkeypatch.setattr(mod, "FMPClient", MagicMock(return_value=client))
+    monkeypatch.setattr(
+        mod.StockAnalyzer, "analyze_dividend_growth", staticmethod(lambda _: (15.0, True, 2.0, 5))
+    )
+    monkeypatch.setattr(
+        mod.StockAnalyzer,
+        "analyze_growth_metrics",
+        staticmethod(lambda *_: {"revenue_cagr_3y": 1.0, "eps_cagr_3y": 1.0}),
+    )
+    monkeypatch.setattr(
+        mod,
+        "RSICalculator",
+        MagicMock(return_value=MagicMock(calculate_rsi=MagicMock(return_value=30.0))),
+    )
+    result = mod.screen_dividend_growth_pullbacks("test-key")[0]
+    assert result["dividend_sustainable"] is False
+    assert result["fcf_status"] == "MISSING_DATA"
+    assert result["fcf_coverage_status"] == "MISSING_DATA"
+    assert result["payout_ratio"] == (20.0 if fallback == 0.2 else None)
+    report = tmp_path / "report.md"
+    mod.generate_markdown_report(
+        [result], {"dividend_yield_min": 1.5, "dividend_cagr_min": 12, "rsi_max": 40}, str(report)
+    )
+    assert result["sustainability_note"] in report.read_text()
+    assert "Sustainability confirmed: No" in report.read_text()

@@ -147,7 +147,7 @@ Grok の場合、名前は文字またはアンダースコアで始まり、文
 | Codex | `~/.codex/config.toml` | `.codex/config.toml` | `mcp_servers` |
 | Cursor | `~/.cursor/mcp.json` | `.cursor/mcp.json` | `mcpServers` |
 | VS Code | User `mcp.json`（下記） | `.vscode/mcp.json` | `servers` |
-| OpenCode | `~/.config/opencode/opencode.json` | `opencode.json` | `mcp` |
+| OpenCode | `~/.config/opencode/opencode.json` | `opencode.json` | `mcp`。インポートは OpenCode 2 の `mcp.servers` も読み込みます |
 | Kilo Code | `~/.config/kilo/kilo.jsonc` | `kilo.jsonc` | `mcp` |
 | Grok CLI | `~/.grok/config.toml` | `.grok/config.toml` | `mcp_servers` |
 | Antigravity (AGY) | `~/.gemini/config/mcp_config.json` | `.agents/mcp_config.json` | `mcpServers` |
@@ -170,7 +170,7 @@ Grok の場合、名前は文字またはアンダースコアで始まり、文
 JSON エントリは、そのファイル自体のインデントに合わせて 1 行に 1 フィールドで書き込まれます。Skillshare が所有しているにもかかわらず 1 行にまとまっているエントリは `update` として報告され、改めてレイアウトされて書き込まれます。Skillshare が所有していないエントリや、手動でフォーマットされたエントリは、そのレイアウトを保持します。
 
 ダッシュボードは、現在の scope とホストのプラットフォームで利用可能な送信先のみを提供します。各サーバーは 1 行として表示され、名前の下に送信先のクライアントがチップで並びます。右側のカウントボタンからそのサーバーの全クライアント一覧を開けます。Global 専用のクライアントは project mode では選択できません。
-右側の **Sync** ボックスには、まだ書き込まれていない変更が一覧表示されます。クライアントにチェックを入れるだけでは source のみが編集されます。**Sync MCP** はそれらの変更を一覧表示し、確認後に MCP の設定ファイルだけを書き込み、それぞれのバックアップを保存します。同じボックスの区切り線の下では、サーバーがあれば **チェック** で[サーバーをチェック](#check-servers-before-an-agent-starts-them)でき、**バックアップと復元** でそれらのバックアップを参照できます。その下の **Agents** には、このマシン上で検出されたクライアントが一覧表示されます。クライアントの MCP ファイルが存在するか、そのクライアントが設定を保存するフォルダが存在すれば「検出済み」と見なされるため、MCP ファイルがまだない新規インストールでも表示されます。project mode では、project が MCP ファイルを持っているか、そのクライアントが global で検出されている場合に一覧表示されます。
+右側の **Sync** ボックスには、まだ書き込まれていない変更が一覧表示されます。クライアントにチェックを入れるだけでは source のみが編集されます。**Sync MCP** はそれらの変更を一覧表示し、確認後に MCP の設定ファイルだけを書き込み、それぞれのバックアップを保存します。同じボックスの区切り線の下では、サーバーがあれば **チェック** で[サーバーをチェック](#check-servers-before-an-agent-starts-them)でき、**バックアップと復元** でそれらのバックアップを参照できます。その下の **Agents** には、このマシン上で検出されたクライアントが一覧表示されます。クライアントの MCP ファイルが存在するか、そのクライアントが設定を保存するフォルダが存在すれば「検出済み」と見なされるため、MCP ファイルがまだない新規インストールでも表示されます。project mode では、project が MCP ファイルを持っているか、そのクライアントが global で検出されている場合に一覧表示されます。検出された各クライアントには MCP ファイル名が表示され、**Copy path** でフルパスをコピーできます。ファイルが存在すると、**Open in editor** で skill の **Open in editor** と同じエディターで開けます。エディターはダッシュボードを実行しているマシン上で起動するため、このボタンはブラウザも同じマシン上（`localhost` または SSH ポートフォワーディング経由）で開いているときだけ表示され、LAN アドレスやリバースプロキシ経由では表示されません。
 
 追加のクライアント詳細:
 
@@ -275,14 +275,14 @@ Agent は自身の global MCP ファイルと project のファイルを合わ�
 | クライアント | 対応 | Skillshare が書き込む内容 |
 |---|---|---|
 | Claude Code | Yes | `~/.claude.json`: この project の `disabledMcpServers` リストにその名前を追加 |
-| OpenCode | Yes | `opencode.json`: `"NAME": {"enabled": false}` |
+| OpenCode | Yes | `opencode.json`: `"NAME": {"type": "local", "command": ["EXECUTABLE"], "enabled": false}`。リモートサーバーの場合は URL。下記参照 |
 | Kilo Code | Yes | `kilo.jsonc`: `"NAME": {"enabled": false}` |
 | Pi | Yes（Pi 1.0.1 以降） | `.pi/mcp.json`: `"NAME": {"enabled": false}`、下記参照 |
 | Oh My Pi | Yes | `.omp/mcp.json`: `"NAME": {"enabled": false}` が同名のユーザーエントリを隠す |
 | Codex | No | 下記参照 |
 | その他すべてのクライアント | No | 選択するとエラー。何も書き込まれない |
 
-書き込まれるのはスイッチのみです。OpenCode、Kilo Code、Pi は global エントリのコマンドまたは URL をそのまま保持します。OMP は名前の重複排除の前に無効化された project エントリを除外するため、同名のユーザーエントリは接続できません。他のクライアントが拒否されるのは、global エントリ全体を project 側のものに置き換えてしまうか、project ファイルを持たないため、スイッチだけを書き込むとオフにするどころかサーバーを壊してしまうからです。
+書き込まれるのはスイッチのみです（OpenCode を除く）。Kilo Code、Pi は global エントリのコマンドまたは URL をそのまま保持します。OMP は名前の重複排除の前に無効化された project エントリを除外するため、同名のユーザーエントリは接続できません。他のクライアントが拒否されるのは、global エントリ全体を project 側のものに置き換えてしまうか、project ファイルを持たないため、スイッチだけを書き込むとオフにするどころかサーバーを壊してしまうからです。
 
 Codex が拒否されるのは別の理由によります。Codex は `.codex/config.toml` を global ファイルの上にフィールド単位でマージするため、
 global config がそのサーバーを定義しているマシンでは `enabled = false` 単体でも機能します。しかしそれを定義していないマシンでは、マージされたエントリに
@@ -310,6 +310,11 @@ mcp:
       disabled: true
       targets: [opencode, kilocode]
 ```
+
+OpenCode 2 は global サーバーを同名の project エントリで置き換え、`type` と `command` または `url` を持たないエントリを破棄します。そのためスイッチだけではサーバーはオンのままです。`mcp.projects` の global config がそのサーバーを定義している場合、Skillshare はその type と実行ファイル名、または URL のスキームとホストだけを `"enabled": false` と並べて書き込みます。OpenCode 1 も同じエントリを読み込みます。args、env、headers、実行ファイルのディレクトリ、URL のパスとクエリはコミットされる可能性のある project ファイルに書き込まれません。すでにこれらを持つスイッチは、後でサーバーが global config から外れてもそのまま保持されます。
+
+- OpenCode でサーバーを再びオンにすると、project ファイルのエントリが global のものを置き換えるため、実行ファイル名または URL のオリジンだけで起動します。代わりに `mcp.projects` のプロジェクトから `disabled` エントリを削除して sync してください。
+- project モードの場合、または global config がサーバーを定義していない場合、Skillshare が書き込めるのは `{"enabled": false}` だけです。OpenCode 1 はこれをマージしますが、OpenCode 2 は無視し、sync がその旨を表示します。その場合は OpenCode の global config でサーバーをオフにしてください。
 
 ### Claude Code
 

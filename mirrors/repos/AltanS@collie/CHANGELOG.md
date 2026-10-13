@@ -5,7 +5,52 @@ This file tracks all notable changes to Collie, ordered newest version first. Th
 `### Added`, `### Changed`, `### Fixed`, `### Packaging` and `### Docs`, in that order and only
 where there is content, and every bullet opens with a short bold lead sentence, which is the line
 the GitHub Release page prints. Older versions carry a single flat list. Every entry links to its commit and credits the contributor where there is one. The
-`## [Unreleased]
+`## [Unreleased]` section contains merged work waiting for release. The release
+commit renames this heading to `## [x.y.z] - YYYY-MM-DD`, adds the commit hashes, and adds a new
+empty `## [Unreleased]` section above it. The newest numbered `## [x.y.z]` heading (excluding the
+Unreleased heading) **must** match the `version` field in `herdr-plugin.toml`, `package.json`,
+and `web/package.json`, which `scripts/check-version.sh` checks. See [`CLAUDE.md`](./CLAUDE.md) →
+*Versioning* for the bump policy.
+
+## Upgrading
+
+**Already on 1.x?** Run `collie update`, or run
+`herdr plugin action invoke update --plugin herdr.collie`. Check the result with
+`bin/collie version` (or `herdr plugin action invoke version --plugin herdr.collie`). It shows the
+newest tag. The phone PWA updates itself within about a minute; no reload needed.
+Running a crew? Update the lead first; members follow on their own. Details:
+`docs/crew.md` → *Updating from 1.7.0*.
+
+## [Unreleased]
+
+## [1.20.2] - 2026-10-12
+
+### Fixed
+
+- **Messages and slash commands reach OmO again, and pi's pickers show in Chat.** Since 1.20.1 Collie refused every send to an OmO pane on a default install, because OmO prints its last status row with no colour, and it refused a `/` command while OmO's completion list was open. Both now send. The `/model`, `/tree` and `/resume` pickers of OmO and stock pi show the Escape card in Chat, and Collie no longer types into them. When OmO's side panel runs beside the editor on a wide fullscreen pane, Collie reads the editor without the panel's text; a question beside the panel shows the Escape card instead of buttons. Thanks @welldoingk (#416, #412). ([6b5e9f80](https://github.com/AltanS/collie/commit/6b5e9f80))
+- **A crew peer's update now checks which build came back.** A peer with no standby door is checked by its TLS certificate, which names no build, so a restart that brought the old build back up passed as the update. The bridge now records its build in its runtime marker, and the update compares it as it does on every other machine. Thanks @dannon (#415). ([b516c112](https://github.com/AltanS/collie/commit/b516c112))
+- **pi, Oh My Pi and Codex bookkeeping rows are known rows in the journal reader.** pi's session name row, Oh My Pi's title rows and Codex's context-compaction row draw nothing, and the harness canary no longer reports them as unknown. Thanks @GGGODLIN (#418). ([fa25d76e](https://github.com/AltanS/collie/commit/fa25d76e), [d54fa890](https://github.com/AltanS/collie/commit/d54fa890))
+- **Codex 0.159 keeps its input box after the first reply.** Once a thread has a title, Codex paints the space before a status-row separator in the previous field's colour, so the status row was refused and every later send was blocked. Thanks @GGGODLIN (#419). ([703644a6](https://github.com/AltanS/collie/commit/703644a6))
+- **An Antigravity draft with a pasted rule line stays sendable.** A ──── line in the draft was read as the input box's top border, so the send was refused. Thanks @GGGODLIN (#419). ([ed9b941c](https://github.com/AltanS/collie/commit/ed9b941c))
+- **Oh My Pi 18.10 sends multi-line messages again.** It paints a draft's later lines under the prompt row, where they were read as autocomplete, so every multi-line send stalled and a blank line hid the input box. Thanks @GGGODLIN (#419). ([bd1cc7c5](https://github.com/AltanS/collie/commit/bd1cc7c5), [8b8a2199](https://github.com/AltanS/collie/commit/8b8a2199))
+- **A Muse draft with an indented line stays sendable.** A line that began with spaces was read as a torn frame, so the input box disappeared and the send was refused. Thanks @GGGODLIN (#419). ([1c0aa1e1](https://github.com/AltanS/collie/commit/1c0aa1e1))
+- **The unread-dialog card no longer flashes when Codex, Grok or Muse starts or exits.** The card now also needs the agent's own dialog on screen. On Grok it had offered to send ctrl+c to the shell left behind. Thanks @GGGODLIN (#419). ([e29d24d3](https://github.com/AltanS/collie/commit/e29d24d3))
+- **Claude Code's dialogs show their buttons again in a named session.** Claude Code 2.1.296 draws a closing rule with the session name under the questions of its question dialog (one question, several, pick-many and the review page), under `/config` and under `/resume`. Collie read each of those as a dialog it cannot read, and the phone offered only Esc. Collie now takes that one rule off before it reads the screen, and only when a key-hint footer sits right above it. The permission, plan and `/effort` dialogs draw no such rule and were not affected. ([e0a97ecd](https://github.com/AltanS/collie/commit/e0a97ecd))
+- **Status marks carry a shape, not only a colour.** Needs you is a triangle, working a half-filled circle that turns only on the pane you watch, done a filled circle, idle a ring, unknown a dashed ring, and an unread reply a square. The dashboard, the summary line, the workspace headings, the pane strip and the pane header now read on a small phone and to a colour-blind eye, and the old fade on the working mark is gone. Thanks @Spirit597 (#420). ([37b7198b](https://github.com/AltanS/collie/commit/37b7198b))
+
+## [1.20.1] - 2026-10-12
+
+### Added
+
+- **Questions from pi and OmO show as buttons in Chat.** This works when the question screen prints a key hint at the bottom, such as `↑↓ navigate • Enter to select` or OmO's `1-9 select`. Collie reads that hint, not the extension's name. A tap moves the pointer, reads it back and only then presses Enter, or sends the digit OmO prints. Tested with pi's own `question` and `questionnaire` examples on pi 0.87.1 and 1.1.0, and with OmO's built-in ask. Each page of a multi-question dialog gets buttons, and a complete Submit page gets Submit and Cancel. Pick-many questions, typed answers and screens without such a hint stay in the terminal view, with a card whose Escape button closes them. Thanks @welldoingk and @raffaelenatale (#412, #397). ([95b8e4c2](https://github.com/AltanS/collie/commit/95b8e4c2))
+
+### Changed
+
+- **Messages to a pi pane use the guarded send.** Collie types the message, reads pi's editor back, and presses Enter only when the text matches. When Collie cannot read the editor, it types nothing and Chat says so; a second tap sends anyway, still with the read-back check. ([e55ed47d](https://github.com/AltanS/collie/commit/e55ed47d))
+
+### Fixed
+
+- **A crew peer's update no longer rolls back on a check it cannot pass.** A peer with no standby door serves only mutual TLS, so the plain-HTTP health check failed and every update rolled back. The check now passes when a bridge that booted after the restart is alive and holds the port with this machine's own TLS certificate. It cannot name the build, as the plain-HTTP check does. `collie status` shows that address as the crew link. The update runs the check of the version being replaced, so a peer still on an older version installs this release once with `curl -fsSL https://colliepwa.dev/install.sh | COLLIE_TAG=v1.20.1 sh` and then `collie restart`. Thanks @theluckystrike and @dwm8 (#411, #410). ([eae150d5](https://github.com/AltanS/collie/commit/eae150d5))
 
 ## [1.20.0] - 2026-10-11
 

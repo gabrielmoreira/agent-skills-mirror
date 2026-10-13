@@ -161,7 +161,7 @@ def prompt_rows(lab):
         for kind, tag, body in items:
             if kind != "prompt":
                 continue
-            m = "Microsoft 365 Copilot web" if tag == "Microsoft 365 Copilot web" else next((v for k, v in _LOG_MODE.items() if k in tag), None)
+            m = tag if tag.endswith("Copilot web") else next((v for k, v in _LOG_MODE.items() if k in tag), None)
             if m is None:  # follow-ups and options run in the mode of the prompt before them
                 m = rows[-1]["mode"] if rows and rows[-1]["step"] == i else _LOG_MODE.get(mode_next or mode, "Allow editing")
             rows.append(dict(step=i, letter=LETTERS[len(rows)], tag=tag, mode=m, text=unwrap(body)))

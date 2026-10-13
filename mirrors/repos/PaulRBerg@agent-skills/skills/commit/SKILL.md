@@ -34,11 +34,12 @@ Arguments: `$ARGUMENTS`
 - `--push`: request a push after commit. Otherwise push only when standing instructions authorize it.
 - `--rebase`: with `--push`, let `ai-commit` rebase a behind branch onto its fetched upstream before the push. Pass it
   with every authorized push unless the user excludes it.
-- `--close <issue_numbers>`: append one `Closes #N` trailer per positive decimal issue number. Accept comma- or
-  space-separated input.
-- `--finding <finding_ids>`: append one `Finding-ID: <id>` trailer per ledger finding this commit fixes. Accept comma-
-  or space-separated input. Also infer a finding from context when this session's commit fixes a specific ledger
-  finding. Never include or resolve findings the commit does not actually fix.
+- `--close <issue_numbers>`: pass one `ai-commit commit --close <N>` per positive decimal issue number. Accept comma- or
+  space-separated input. `ai-commit` writes the `Closes #N` lines.
+- `--finding <finding_ids>`: pass one `ai-commit commit --finding <id>` per ledger finding this commit fixes. Accept
+  comma- or space-separated input. Also infer a finding from context when this session's commit fixes a specific ledger
+  finding. `ai-commit` writes the `Finding-ID: <id>` trailer and resolves the finding after the commit. Never include or
+  resolve findings the commit does not actually fix.
 - `--squash`: replace every branch commit after the merge base with one commit that carries the net branch diff. The
   helper finds the merge base with the resolved default branch. Squash mode requires a clean tree and index and an
   attached non-default branch. It conflicts with `--all`, `--staged`, and `--push`.
@@ -47,8 +48,26 @@ Arguments: `$ARGUMENTS`
   positional verb or category keyword overrides the inferred verb. Quoted positional text overrides the inferred
   description or subject.
 
-If the requested operation is only to push a clean branch that is already ahead, skip preparation and run
-`ai-commit push --rebase`.
+If the requested operation is only to push a clean branch that is already ahead, skip preparation. Check the push
+destination below, then run `ai-commit push --rebase`.
+
+### Push Destination
+
+`ai-commit` pushes to the configured upstream: `branch.<name>.remote` and `branch.<name>.merge`. The remote can be a
+named remote or a URL. If the upstream branch has a different name, `branch.<name>.pushRemote` must equal
+`branch.<name>.remote`. `gh pr checkout` writes this configuration for a PR that lets maintainers push.
+
+When you work on an existing PR, get its head repository and branch from `gh pr view` before you commit or push. A push
+to another branch does not update the PR. If the upstream does not match the PR head, correct the branch configuration:
+
+```bash
+git config branch.<branch>.remote '<head-remote-or-url>'
+git config branch.<branch>.merge 'refs/heads/<head-branch>'
+git config branch.<branch>.pushRemote '<head-remote-or-url>'
+```
+
+Then push with `ai-commit`. Do not push manually. Do not force-push. If `ai-commit` refuses the destination, report its
+error. Before you report completion, read the PR again and verify that its head SHA matches the pushed commit.
 
 ## Squash Mode
 
@@ -94,6 +113,11 @@ ai-commit prepare [--all | --staged] [--natural | --conventional] --diff full \
   session or preparation evidence. Use `--no-auto-baseline` only when every selected file's entire delta is attributable
   to the authorized task. Preserve exclusions for mixed ownership or uncertain attribution.
 
+When preparation lists `unclaimed paths`, this session's active ai-coord claim does not cover them. Before committing,
+decide per path: if the change is this session's authorized work, acquire the missing scope with `ai-coord start`. If it
+is another agent's work, discard the transaction and prepare again without that path. Never commit a path you cannot
+attribute.
+
 Preparation pins the exact tree and delta under the printed transaction ID without changing the shared index. Keep that
 ID. The later commit reuses the transaction instead of recomputing intended content from the mutable worktree or shared
 index. It applies that immutable delta to the locked current branch and fails safely if intervening branch movement
@@ -110,15 +134,14 @@ the message.
   separate Conventional or Natural reference.
 - Apply positional overrides, detect breaking changes, infer scope or context from the code, and include a body only
   when it adds material rationale.
-- Add `Closes #N` trailers from `--close` and from transcript issue references only when this commit actually resolves
-  them. De-duplicate issue numbers.
-- Add one `Finding-ID: <id>` trailer per finding supplied by `--finding` or inferred from context that this commit
-  actually fixes. De-duplicate finding IDs.
-- Append the exact `Agent-Session:` line from the preparation trailer section when present. `ai-commit` has already
-  validated it. Do not synthesize or repair a missing or malformed trailer.
+- Collect the issue numbers from `--close` and from transcript issue references that this commit actually resolves.
+  Collect the finding IDs from `--finding` and from context. Pass them as step 4 flags. Do not write `Closes`,
+  `Finding-ID`, or `Agent-Session` lines into a `-m` value. `ai-commit` appends the `Closes` paragraph and the trailer
+  block, including the validated preparation trailer. Do not synthesize or repair a missing trailer.
 
-Compose one subject paragraph, an optional body paragraph, and one final trailer paragraph containing all `Closes`,
-`Finding-ID`, and `Agent-Session` lines.
+Compose one subject paragraph and an optional body paragraph. Pass a trailer paragraph yourself only for trailers
+`ai-commit` does not generate, such as `Co-authored-by:` in squash mode. `ai-commit` merges its trailers into that
+paragraph.
 
 `ai-commit` receives every `-m` value verbatim and rejects a literal `\\n`. Write real line breaks inside the quoted
 argument, as in the step 4 example.
@@ -128,20 +151,20 @@ argument, as in the step 4 example.
 Run:
 
 ```bash
-ai-commit commit <transaction-id> -m '<subject>' [-m '<body>'] [-m '<trailers>'] [--push --rebase]
+ai-commit commit <transaction-id> -m '<subject>' [-m '<body>'] [--close <N>]... [--finding <id>]... [--push --rebase]
 ```
 
 For example, a two-item body is one `-m` argument containing a physical newline:
 
 ```bash
 ai-commit commit <transaction-id> -m '<subject>' -m '- first material change
-- second material change' [-m '<trailers>'] [--push --rebase]
+- second material change' --close 42 --finding 873d2a01bb9722f8 [--push --rebase]
 ```
 
-Append `--push --rebase` when a push is explicitly requested or authorized by standing instructions. `ai-commit` then
-rebases a behind branch onto its fetched upstream only when no Git operation is in progress and the working tree and
-index are clean. It aborts a rebase that stops. The same command handles default, `--all`, and `--staged` transactions.
-Never stage or commit them with direct Git commands.
+Append `--push --rebase` when a push is authorized and the Push Destination check passes. `ai-commit` then rebases a
+behind branch onto its fetched upstream only when no Git operation is in progress and the working tree and index are
+clean. It aborts a rebase that stops. The same command handles default, `--all`, and `--staged` transactions. Never
+stage or commit them with direct Git commands.
 
 Transactions are idempotent. After an interruption, lock race, or retryable exit, retry the same transaction ID and
 message arguments. For those retryable failures, do not prepare a replacement from newer mutable state. A replay
@@ -154,9 +177,10 @@ immutable retry cannot repair content pinned in a failed snapshot. Existing task
 Read [references/failure-recovery.md](references/failure-recovery.md) before superseding a failed preparation or adding
 `--no-verify` or `--no-gpg-sign`. Bypass flags are explicit per-attempt recovery options, not first-attempt defaults.
 
-After `COMMITTED <transaction-id> <commit-oid>`, resolve every included finding with
-`ai-coord finding resolve '<id>' --as fixed --commit '<commit-oid>'`. The OID is a 12-character abbreviation. Pass it
-as-is.
+`--finding` resolves each finding with `ai-coord finding resolve --as fixed` after the commit and any push, so no
+separate resolve command follows a `FINDING_RESOLVED` line. After `FINDING_UNRESOLVED <id>` with exit `3`, the commit
+and push stand. Replay the same command once. If it fails again, report the stderr reason and run the
+`ai-coord finding resolve` command it names.
 
 ## 5. Completion and Receipt
 
@@ -165,6 +189,8 @@ Keep the receipt compact and forward its outcome lines without decoration:
 - `COMMITTED <transaction-id> <commit-oid>` proves commit creation or idempotent recovery. Without push authorization,
   it is completion.
 - `HOOK_ADDED <path>` identifies content introduced by a hook outside the prepared path set. Disclose every such line.
+- `FINDING_RESOLVED <id>` proves the ledger finding is resolved with the commit OID. `FINDING_UNRESOLVED <id>` means the
+  commit stands but the ledger still shows the finding open. Follow the step 4 replay rule.
 - `REBASED <branch> <count>` discloses that `ai-commit` rebased the branch onto `<count>` upstream commits before the
   push. In the commit workflow, an `INTEGRATED` line follows it.
 - `PUSHED <branch>` or `PUSHED_NEW <branch>` proves propagation and completes push-authorized or push-only work.

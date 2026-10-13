@@ -72,6 +72,8 @@ Confidence: 0.xx · Source: [model name / assistant estimate]
 **Flip fact:** [the one unknown; who can answer it by when]
 **Record line:** `[date] [release] → [option] (p=0.xx, conf=0.xx) · overruled by: [none / name, reason]`
 
+End every output with a short **Assumptions and gaps** block: two to four bullets naming what was assumed because the input did not say, and what missing information would most change this output. If nothing was assumed and nothing was missing, say so in one line instead.
+
 ## Quality Checks
 - [ ] Every state field is filled from evidence or marked `unknown` — no invented test numbers
 - [ ] The three options are used exactly as defined; no fourth option invented mid-meeting

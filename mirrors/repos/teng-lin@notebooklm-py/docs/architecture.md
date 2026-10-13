@@ -1148,6 +1148,7 @@ ADR-0033 constrains consolidation; and ADR-0034 defines the current storage obje
 | [`_browser/browser_capture.py`](../src/notebooklm/_browser/browser_capture.py) | **One deep module for the browser launch→navigate→capture→filter→heal→persist core** (ADR-0033 sanctioned merge — absorbed `browser_state_validation.py` and `login_wait_trace.py`), lazy `playwright`; shared by the interactive `_app/login_browser.py` flow and the layer-3 headless re-auth layer (ADR-0021/ADR-0036). Both capture arms construct `RemintWriteRequest` and consume `ProfileStore.replace_from_remint() -> ReplaceResult` directly. Both capture arms require a committed app landing with a URL-routable `SID`; anonymous same-host pages fail before replacing saved authentication. Interactive login briefly settles cookies, then offers one Google sign-in continuation for an anonymous app landing. The exported SID must route to both the configured RPC root and the final browser URL; missing PSIDTS still permits a capture with a best-effort heal warning. `run_cdp_capture` is an alternative credential source: attach to an operator-pointed already-running Chrome over CDP (`connect_over_cdp`, disconnect-only teardown) using the SAME landing classification + cookie-domain allowlist. Absorbed sections: (1) **login-wait DEBUG tracing** — `log_observed_navigations` logs each main-frame navigation observed during the five-minute interactive wait at DEBUG so `notebooklm -vv login` is self-diagnosing when a login never lands; inert unless DEBUG is enabled (no listener attached) and it swallows every listener exception, so it can never destabilise the wait. Redaction goes through its own `trace_url`, which keeps **only** scheme + host — deliberately stricter than `extraction._safe_url` (which preserves the path outside a Google-OAuth allowlist), because this traces arbitrary SSO redirects where a federated IdP can carry a one-time assertion in the path. The two redactors are **kept distinct on purpose**. (2) **captured-state heal** — `heal_captured_state`, a best-effort in-memory PSIDTS heal for Playwright-captured state that preserves cookie attributes, returns `(state, error)` and never raises, so a failed heal cannot discard a completed sign-in. `browser_launch_errors.py` stays a separate leaf for cohesion — a channel registry plus a pure classifier, testable without a browser. |
 | [`_browser/navigation_errors.py`](../src/notebooklm/_browser/navigation_errors.py) | Transport-neutral leaf for `browser_capture`: classifies a Playwright navigation failure from its message. `navigation_error_code` extracts the `net::ERR_*` token (anchored, so it cannot return arbitrary text after a stray `net::`) — used to log a failure without logging the credential-bearing URL Playwright embeds in it. |
 | [`_browser/browser_launch_errors.py`](../src/notebooklm/_browser/browser_launch_errors.py) | Transport-neutral leaf for `browser_capture`: the `CHANNEL_BROWSERS` channel registry plus `classify_launch_failure`, which maps a Playwright launch failure to actionable help or to `None` so the original exception propagates. |
+| [`_browser/playwright_event_loop.py`](../src/notebooklm/_browser/playwright_event_loop.py) | Leaf for `browser_capture`: `windows_playwright_event_loop` swaps a caller-installed `WindowsSelectorEventLoopPolicy` for the default while Playwright's sync API starts its driver subprocess (#89); a no-op for any other policy, off Windows, and on Python 3.16+. |
 | [`_browser/headless_reauth.py`](../src/notebooklm/_browser/headless_reauth.py) | Layer-3 browser recovery implementation. It maps its browser-specific result onto `_auth.recovery_rungs`, resolves explicit storage paths to their own persistent browser profile, and remains opt-in/local-unattended-only. |
 | [`_browser/oauth_token.py`](../src/notebooklm/_browser/oauth_token.py) | Visible EmbeddedSetup browser capture for the single-use OAuth cookie, returning only a token string or canonical `MasterTokenError`. |
 | [`_auth/recovery_rungs.py`](../src/notebooklm/_auth/recovery_rungs.py) | Neutral process-level registry and closed outcome for the optional blocking L3 implementation. The public auth facade installs a lazy default; recovery reads only this leaf and never imports browser implementation code. |
@@ -1293,7 +1294,7 @@ The cross-command helpers form a small internal CLI stack:
 
 | Module | Role |
 |--------|------|
-| [`cli/runtime.py`](../src/notebooklm/cli/runtime.py) | Leaf runtime helpers: root `--quiet` lookup and the single `asyncio.run(...)` bridge for sync Click handlers. |
+| [`cli/runtime.py`](../src/notebooklm/cli/runtime.py) | Leaf runtime helpers: root `--quiet` lookup and the single `asyncio.run(...)` bridge for sync Click handlers. On Windows the bridge honours `NOTEBOOKLM_WINDOWS_EVENT_LOOP` by passing a loop factory to `asyncio.Runner` on Python 3.11+, leaving the global event-loop policy untouched; Python 3.10 has no loop factory, so there it sets the policy for the duration of each run and then restores it (#2485). |
 | [`cli/auth_runtime.py`](../src/notebooklm/cli/auth_runtime.py) | Shared auth bootstrap, command-body error wrapping, and optional opened-client workflow helper. |
 | [`cli/master_token_login.py`](../src/notebooklm/cli/master_token_login.py) | Command driver for `notebooklm login --master-token[-refresh]`: resolves paths and renders the outcome over the public `master_token_bootstrap` / `master_token_remint` / `assert_account_writable` adapters. Coordination lives in `_auth/master_token_bootstrap.py`; the CLI-side OAuth adapter delegates interactive capture through the lazy `auth.py` capability and scrubs credential-bearing arguments from failure frames (ADR-0023/ADR-0036). |
 | [`cli/services/auth_refresh.py`](../src/notebooklm/cli/services/auth_refresh.py) | Pure re-export of `notebooklm.auth.bootstrap_missing_storage_from_master_token` for `auth refresh`'s missing-storage preflight. `_auth/master_token_bootstrap.py` owns the four-state machine; `_auth/master_token.py` owns the v0.x enum-to-bool collapse. |
@@ -2048,6 +2049,7 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_notebook_metadata.py` | Transport-neutral notebook metadata protocols and composition service; no concrete RPC/source-listing dependency |
 | `_url_utils.py`, `urls.py` | URL parsing/validation internals and the public URL helper facade |
 | `_version_check.py` | Dynamic client-side version deprecation guard |
+| `_windows_asyncio.py` | Version-gated backport of CPython 3.15's selector-transport write fix (#2485); installed by the root CLI group only when `NOTEBOOKLM_WINDOWS_EVENT_LOOP=selector` selects that loop on Windows |
 | `_version_info.py` | Human-facing `version_string()` — package version + short git commit (embedded by `hatch_build.py` at build time, or live `git` from a checkout) |
 | `_chat.py` | Abstract `ChatAPI`, shared chat orchestration, and its bounded recently-deleted-conversation tracker; `delete_conversation` records the id under the conversation lock so a concurrent null-conversation ask can recover the server's real post-POST conversation id (#1875) |
 | `_web/transport/middleware/chain.py` | Constructs the middleware chain in the canonical ADR-0009 order |
@@ -2076,6 +2078,7 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_browser/browser_capture.py` | One deep browser launch→capture→filter→heal→persist implementation, lazy Playwright; depends downward on typed `_auth` storage/policy owners |
 | `_browser/navigation_errors.py` | Pure `net::ERR_*` and navigation-race/failure classification leaf |
 | `_browser/browser_launch_errors.py` | Pure browser-channel registry and launch-failure triage leaf |
+| `_browser/playwright_event_loop.py` | Windows guard that keeps Playwright's driver off a caller-installed selector event-loop policy |
 | `_browser/headless_reauth.py` | Opt-in layer-3 browser recovery implementation behind `_auth.recovery_rungs` |
 | `_browser/oauth_token.py` | Visible EmbeddedSetup OAuth-cookie capture implementation |
 | `_auth/recovery_rungs.py` | Neutral process registry + closed outcome for the optional blocking L3 implementation; keeps recovery independent of browser code |
@@ -2138,6 +2141,7 @@ src/notebooklm/
 ├── _url_utils.py                # URL validation helpers
 ├── _version_check.py            # Deprecation version guard
 ├── _version_info.py             # version_string(): version + short git commit
+├── _windows_asyncio.py          # Windows CLI: backport of CPython's selector-transport write fix (#2485)
 ├── _redact.py                   # Transport-neutral secret/home-path/file-link scrubber (redact(msg, max_length)); shared chokepoint under both mcp/_errors.py and server/_errors.py
 ├── _app/                        # Transport-neutral business-logic layer (CLI/MCP/HTTP adapters share it)
 │   ├── android_profiles.py      # Cookie-free Android client construction for isolated profile adapters
@@ -2452,6 +2456,7 @@ src/notebooklm/
 │   ├── browser_capture.py       # Browser launch→capture→filter→heal→persist core; lazy Playwright
 │   ├── browser_launch_errors.py # Channel registry + launch-failure triage
 │   ├── navigation_errors.py     # Pure navigation-race/failure classification
+│   ├── playwright_event_loop.py # Windows guard: keep Playwright off a selector policy
 │   ├── headless_reauth.py       # Opt-in L3 implementation behind the neutral auth rung
 │   └── oauth_token.py           # Visible EmbeddedSetup OAuth-cookie capture
 ├── _types/                      # Dataclass implementation package re-exported by types.py

@@ -50,6 +50,9 @@ REPO = find_repo(HERE)
 LABS = os.path.join(REPO, "labs")
 os.makedirs(LABS, exist_ok=True)
 
+# Labs whose steps include prompts for a web chat (Copilot on the web) as well as for Excel
+WEB_LABS = {6, 8}
+
 # ---- collect labs from every data_domainN.py, in domain order
 labs = []
 for path in sorted(glob.glob(os.path.join(HERE, "data_domain[0-9]*.py"))):
@@ -251,7 +254,7 @@ def build_pdf(lab, topic, path):
             S += [KeepTogether(block[:lead])] + block[lead:]
 
     S.append(Paragraph("Sample Prompts", ST["h2"]))
-    S.append(P(("Use the app labelled for each prompt (or adapt it). " if n == 8 else "Use these prompts in the Copilot pane (or adapt them). ")
+    S.append(P(("Use the app labelled for each prompt (or adapt it). " if n in WEB_LABS else "Use these prompts in the Copilot pane (or adapt them). ")
                + "Name the table and columns, state the output, and "
                "always verify the result. The same prompts are in sample-prompts.txt in this lab folder."))
     url = f"{C.PROMPTS_PAGE}#lab-{n}"
@@ -282,7 +285,7 @@ def build_pdf(lab, topic, path):
 def build_prompts_txt(lab):
     out = [f"{C.TITLE} ({C.COURSE_CODE}) — Lab {lab['num']}: {lab['title']}",
            ("Sample prompts: use the app labelled in each step. Copy one at a time, adapt it, and verify every result."
-            if lab["num"] == 8 else "Sample prompts for Copilot in Excel. Copy one at a time, adapt it, and verify every result."),
+            if lab["num"] in WEB_LABS else "Sample prompts for Copilot in Excel. Copy one at a time, adapt it, and verify every result."),
            f"Prompts web page (one-click Copy): {C.PROMPTS_PAGE}#lab-{lab['num']}", ""]
     for i, (lbl, pr) in enumerate(lab.get("sample_prompts", []), 1):
         out += [f"[{i}] {lbl}", pr, ""]
@@ -301,8 +304,8 @@ def fill_prompt_log(path, lab):
     if "Prompt_Log" not in wb.sheetnames:
         return
     ws = wb["Prompt_Log"]
-    if lab["num"] == 8:
-        ws.cell(row=1, column=2, value="App / mode (Excel or Microsoft 365 Copilot web)")
+    if lab["num"] in WEB_LABS:
+        ws.cell(row=1, column=2, value="App / mode (Excel or Copilot web)")
     rows = [(f"{r['step']} · {r['letter']}", r["mode"], r["text"]) for r in prompt_rows(lab)]
     rows += [(f"Extra {i}", "Any", pr) for i, (_lbl, pr) in enumerate(lab.get("sample_prompts", []), 1)]
     top = Alignment(wrap_text=True, vertical="top")

@@ -15,9 +15,20 @@ COPIED (a profile pointing at an npx cache directory breaks on the next run),
 and a profile needs BOTH a dependency and a `dsh.profile.bundles` entry — `pnpm
 add` writes only the first.
 
-**Version**: 0.4.7 · **Tests**: 116 · **Runtime deps**: none · **Build step**: none
+**Version**: 0.5.0 · **Tests**: see current test output · **Runtime deps**: none · **Build step**: none
 
 ---
+
+## Current contract — 0.5.0
+
+Supports dsh 0.2.0-rc.2 and 0.2.1-alpha.2. Historical 0.1.x verification below describes previous releases, not current compatibility.
+
+- Settings owns forms, not business configuration: strong/worker/roles/team are volatile Config references. The Loader commits them and dispatches `loader/volatile-update`; CCG serializes matrix replacement. `internal/config` rejects invalid role matrices before persistence.
+- Forms and revisions belong to the actual Loader entry id. Writes target that profile's `cordis.patch.yml`; old home settings imports are owned by dsh. CCG uses optional settings.configure with its own fiber and keeps ordinary Config fields intact.
+- Browser services come from `dsh-client-ui-renderer`; the card is a `settings.plugins.tab` entry under Settings / Built-in plugins. Tool view and composer dock stay on their official slots.
+- `src/subagent.js` bridges rc2 start/startContinuable and alpha startActivation. Panels use caller delivery and dispose the exact receipt after settlement or cancellation. Teams use parent delivery and preserve childId. Alpha has no report tool: final answers arrive automatically; early updates use send_message to the direct parent.
+- Identity/pruning uses listChildren; live activity uses listDescendants filtered to direct child rows. Never prune ownership from diagnostic or recursive activity rows.
+- The installer uses link: to its durable copied source, avoiding stale pnpm file: snapshots; it never points into npx cache. Reinstall after updating the parent package. Test against isolated official npm installs; do not replace the checkout's node_modules symlink to a user's existing profile.
 
 ## What it is
 

@@ -45,7 +45,7 @@ When activated:
 - Provide the standard disclaimer on first activation only:
   "This is an AI perspective based on {name}'s public statements and documented thinking patterns. It does not represent their actual views."
 - After the first response, do not repeat the disclaimer
-- If the user says "exit" or "退出", switch back to normal mode
+- If the user says "exit" (or the equivalent in the user's language), switch back to normal mode
 
 ---
 

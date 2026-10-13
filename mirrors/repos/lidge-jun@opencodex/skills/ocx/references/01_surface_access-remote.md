@@ -8,7 +8,51 @@
 Use these declarations to choose a task, then check its flags and authority before execution.
 Non-mutating probes may still contact providers, consume quota or refresh caches.
 
-Declared capabilities: 28.
+Declared capabilities: 32.
+
+### `ocx link probe`
+
+Usage: `ocx link probe <alias> [--json]`
+
+Probe an SSH host fingerprint and OpenCodex version without trusting it.
+
+State-changing: yes.
+
+| Method | Route |
+|---|---|
+| POST | `/api/link/probe` |
+
+| Flag | Value | Meaning |
+|---|---|---|
+| `--json` | boolean | Emit alias, fingerprint, key type and version as JSON. |
+
+JSON mode: `payload`.
+
+- Requires loopback admin authority on the Home. Stores only a temporary pending offer; does not persist host trust or issue a link key.
+
+### `ocx link add`
+
+Usage: `ocx link add <alias> [--expect-fingerprint SHA256:…] [--json]`
+
+Connect an SSH Child to this Home after confirming its fingerprint.
+
+State-changing: yes.
+
+| Method | Route |
+|---|---|
+| POST | `/api/link/probe` |
+| POST | `/api/link/confirm-host` |
+| POST | `/api/link/apply` |
+
+| Flag | Value | Meaning |
+|---|---|---|
+| `--expect-fingerprint` | string | Exact SHA256 host fingerprint; required without an interactive TTY. |
+| `--json` | boolean | Emit the verified link result as JSON. |
+
+JSON mode: `payload`.
+
+- Requires loopback admin authority on the Home. Without a fingerprint, requires a TTY and explicit yes after showing the offered fingerprint. Never prints the link key.
+- Preflights bound Child restart support and curl, connects, restarts once and verifies a fresh authenticated catalog relay before success. Post-connect failures can leave Child config; run ocx disconnect and ocx restart there before retrying.
 
 ### `ocx link port`
 
@@ -96,6 +140,29 @@ JSON mode: `envelope`.
 - Ordinary revoke always emits {linkId} JSON; forced revoke has human output or a JSON cleanup receipt. Already-revoked link_not_found is idempotent success.
 - Ordinary revoke retains its no-body and idempotent behavior. Forced success reports remoteCleanup:skipped from invocation intent; already-missing link reports unverified. Neither proves the remote client disconnected.
 - If forced cleanup was needed, run ocx disconnect on the remote client. No new enrollment, SSH trust or credential action is implied.
+
+### `ocx link reconnect`
+
+Usage: `ocx link reconnect --link-id <id> [--json]`
+
+Restart a Home-initiated link's SSH tunnel now.
+
+State-changing: yes.
+
+| Method | Route |
+|---|---|
+| POST | `/api/link/{id}/reconnect` |
+
+| Flag | Value | Meaning |
+|---|---|---|
+| `--link-id` | string | Home-initiated link id whose tunnel to restart. |
+| `--json` | boolean | Emit the restarted link id as JSON. |
+
+JSON mode: `envelope`.
+
+- Requires a valid link ID and loopback admin authority. Stops the current ssh child, clears any backoff or failed state and starts a fresh attempt; read ocx link status for the outcome.
+- A Child-initiated link is refused with link_not_home_initiated: its own computer owns and retries that tunnel.
+- Always emits {linkId} JSON.
 
 ### `ocx remote-workspace pair`
 
@@ -270,6 +337,28 @@ JSON mode: `payload`.
 
 - A bare invocation reads and never writes.
 - A setting flag changes the operator's config; run it only when the operator asks for that change.
+
+### `ocx hub disable`
+
+Usage: `ocx hub disable [--revoke-clients --client-key <id> ...] [--json]`
+
+Return a hub to standalone in one validated config write.
+
+State-changing: yes.
+
+Drives no management route.
+
+| Flag | Value | Meaning |
+|---|---|---|
+| `--revoke-clients` | boolean | Revoke only explicitly selected saved client key IDs. |
+| `--client-key` | string | Exact saved key ID to revoke; repeatable, requires --revoke-clients. |
+| `--json` | boolean | Emit the result and restart guidance as JSON. |
+
+JSON mode: `envelope`.
+
+- Removes hub, unauthenticatedLoopbackListener, runtimeRole and hostname atomically after validation; non-hub roles refuse without changes.
+- Existing keys have no verified client origin. Names never select keys; --revoke-clients requires exact --client-key IDs when keys exist. Unselected keys remain.
+- Prints only safe key metadata, never plaintext keys or pending rotations. Restart advice is informational; the running proxy and external publishing are unchanged.
 
 ### `ocx access key`
 

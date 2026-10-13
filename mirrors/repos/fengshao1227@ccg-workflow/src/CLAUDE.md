@@ -354,3 +354,12 @@ defineBuildConfig({
 7. **⚠ `require()` 在这个包里是运行时炸弹，且 TypeScript 不会拦**（v3.6.4，#161）：`dist/cli.mjs` 是 ESM（`emitCJS: false`）且没有 `createRequire` shim，但 `@types/node` 无论模块制式都声明了 `require`，所以 `tsc` 全绿、unbuild 原样透传，`ReferenceError` 留到运行时。`doctor` 的 `execSafe()` 正是把它包在 `try/catch` 里 —— **被吞掉的 ReferenceError 和「程序没装」长得一模一样**，于是一个装好的 binary 被报成 Not found，全平台，重装无解。现由 `esm-only.test.ts` 静态拦截。同理，`__dirname`/`__filename` 只能自己从 `import.meta.url` 推导（本仓库三处都是对的）。
 
 8. **`DSH_HOME` 必须被安装器读取**（v3.6.4）：harness 自己就是靠这个环境变量指向别的 home。安装器若只认 `~/.dsh`，对设了该变量的用户就会**报告成功却装错地方** —— 没有任何报错，只是插件永远不出现。`defaultDshHome()` 是唯一入口，四处默认值全走它。
+
+
+## v3.7.0 Native Skills / Doctor
+
+- `utils/skill-manager.ts` + `skill-manager-files.ts`: target-scoped immutable source snapshots, native entry facades, ownership manifest, serialized mutation and rollback. Claude native root is `~/.claude/skills`; Codex is `~/.agents/skills`; stores are separate hidden `.ccg-skills` directories.
+- `commands/skills.ts`: catalog/list/install/update/remove and menu selection; normal Claude selection marks the existing config native and refreshes owned Hook data/rule blocks.
+- `utils/skill-activation.ts`: patches only the installed new Hook's routing data line and managed rule block; customized bodies remain. Native frontmatter names use the ccg- namespace. Resource paths bind to the canonical source base; scripts retain complete shared dependencies and module boundaries.
+- `commands/init.ts`: explicit --skills wins, otherwise the native manifest is authoritative unless compatibility mode was explicitly selected. Installation errors exit nonzero before MCP/API continuation.
+- `commands/doctor.ts` + `utils/doctor-checks.ts`: schemaVersion 1 JSON report, actual mode, selected backend versions including review routes, Hook handlers and native skill integrity. These checks never establish paid vendor API E2E.

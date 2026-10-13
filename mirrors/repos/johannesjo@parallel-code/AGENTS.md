@@ -35,8 +35,9 @@ When committing, use conventional commit messages, such as `fix(terminal): resto
 
 ### UI design
 
-- Reserve visual intensity for urgency. Filled or tinted backgrounds, accent or status colours, and strong borders signal something that needs attention now, such as failures, blocking questions, or conflicts. Routine actions, including primary ones such as Finish, stay neutral and use muted text with a subtle border. They can gain emphasis on hover. Showing state is an exception: a pressed toggle or a brief success confirmation may use accent or success colour.
+- Reserve visual intensity for urgency. Filled or tinted backgrounds, accent or status colours, and strong borders signal something that needs attention now, such as failures, blocking questions, or conflicts. Routine actions stay neutral: no accent fill, a plain border. A dialog's primary action, such as Finish, is marked by full-strength text, not colour, so it never looks quieter than Cancel or other secondary actions beside it. Routine actions can gain emphasis on hover. Showing state is an exception: a pressed toggle or a brief success confirmation may use accent or success colour.
 - Dense areas such as task headers already contain status text and badges. Don't add another attention-seeking element; use a label, placement, or spacing to make an action discoverable.
+- Content must not jump. Focus, hover, typing, or a state change should not move surrounding content. Reserve space for elements that come and go, such as hints, badges, and errors (for example, toggle `visibility` or `opacity` rather than `display`), or overlay them. Accept layout shift only when it is unavoidable, such as new content arriving.
 
 ### IPC changes
 

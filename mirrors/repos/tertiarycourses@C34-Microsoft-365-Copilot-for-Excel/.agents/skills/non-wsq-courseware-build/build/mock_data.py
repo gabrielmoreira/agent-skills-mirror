@@ -11,7 +11,7 @@ expected answers quoted in each lab's "Test it" step are reproducible.
 import os
 import random
 import statistics
-from datetime import date, time, timedelta
+from datetime import date, timedelta
 
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
@@ -594,10 +594,6 @@ PLANS = [("Payroll Only", 1800), ("Payroll + HR Admin", 3600), ("Full HR Outsour
 CHANNELS = ["Referral", "Accounting Partners", "LinkedIn Ads", "Events", "Website"]
 CHANNEL_SPEND = {"Referral": 6500, "Accounting Partners": 19000, "LinkedIn Ads": 30000, "Events": 23000, "Website": 11000}
 CHANNEL_W = [22, 26, 22, 14, 16]
-BUDGET_ROLES = [("Payroll Manager", 1, 9800), ("Senior Payroll Specialist", 3, 6200), ("Payroll Specialist", 6, 4500),
-                ("HR Administrator", 4, 3900), ("Client Success Lead", 2, 7100), ("Compliance Officer", 1, 6800),
-                ("Systems Analyst", 2, 6400), ("Payroll Associate", 5, 3300)]
-CPF_RATE = 0.17
 
 
 def _lab5():
@@ -642,48 +638,28 @@ def _lab5():
         c["id"] = f"CL-{i:04d}"
         crow.append([c["id"], c["sign"], c["channel"], c["plan"], emp, c["fee"],
                      "Churned" if c["churn"] else "Active", c["churn"]])
+    active_by_plan = {p: sum(1 for c in clients if c["plan"] == p and c["churn"] is None) for p, _fee in PLANS}
     h1 = [r for r in month_rows if r[0] >= date(2026, 1, 1)]
-    new_h1 = sum(r[3] for r in h1)
-    spend_h1 = sum(r[8] for r in h1)
-    end = month_rows[-1]
-    arpa = end[6] / end[5]
-    gm_h1 = statistics.mean(r[7] for r in h1)
-    churn_m = statistics.mean(r[4] / r[2] for r in h1)
-    cac = spend_h1 / new_h1
-    ltv = arpa * gm_h1 / churn_m
     by_ch = {}
     for ch in CHANNELS:
         sp = sum(r[2] for r in spend_rows if r[1] == ch and r[0] >= date(2026, 1, 1))
         nw = sum(1 for c in clients if c["channel"] == ch and c["sign"] >= date(2026, 1, 1))
-        by_ch[ch] = dict(spend=sp, new=nw, cac=round(sp / nw) if nw else None)
-    # FY2027 headcount budget model with three planted errors for @check-model
-    brow, hard_row, eleven_row = [], 3, 6
-    for r, (role, hc, sal) in enumerate(BUDGET_ROLES, 2):
-        brow.append([role, hc, sal, CPF_RATE])
-    correct = [hc * sal * 12 * (1 + CPF_RATE) for _r, hc, sal in BUDGET_ROLES]
-    stale = int(round(BUDGET_ROLES[hard_row - 2][1] * (BUDGET_ROLES[hard_row - 2][2] - 400) * 12 * (1 + CPF_RATE), -2))
-    shown = list(correct)
-    shown[hard_row - 2] = stale
-    shown[eleven_row - 2] = BUDGET_ROLES[eleven_row - 2][1] * BUDGET_ROLES[eleven_row - 2][2] * 11 * (1 + CPF_RATE)
-    reported = sum(shown[:-1])                 # total row stops one row short
+        by_ch[ch] = dict(spend=sp, new=nw)
+    end = month_rows[-1]
     exp = dict(
-        months=len(month_rows), clients=len(clients), active_end=end[5], mrr_end=end[6], new_h1=new_h1,
-        churned_h1=sum(r[4] for r in h1), spend_h1=spend_h1, cac=round(cac), arpa=round(arpa),
-        gm_h1=round(gm_h1 * 100, 1), churn_m=round(churn_m * 100, 2), ltv=round(ltv), ltv_cac=round(ltv / cac, 1),
-        payback=round(cac / (arpa * gm_h1), 1), by_channel=by_ch,
-        best_channel=min((c for c in by_ch if by_ch[c]["cac"]), key=lambda c: by_ch[c]["cac"]),
-        worst_channel=max((c for c in by_ch if by_ch[c]["cac"]), key=lambda c: by_ch[c]["cac"]),
-        mrr_jan25=month_rows[0][6],
-        budget_correct=round(sum(correct)), budget_reported=round(reported),
-        hard_cell=f"E{hard_row}", eleven_cell=f"E{eleven_row}", total_cell=f"E{len(BUDGET_ROLES) + 2}",
-        hard_role=BUDGET_ROLES[hard_row - 2][0], eleven_role=BUDGET_ROLES[eleven_row - 2][0],
-        last_role=BUDGET_ROLES[-1][0],
+        months=len(month_rows), clients=len(clients), active_end=end[5], mrr_end=end[6], mrr_jan25=month_rows[0][6],
+        new_all=sum(r[3] for r in month_rows), churned_all=sum(r[4] for r in month_rows),
+        new_h1=sum(r[3] for r in h1), churned_h1=sum(r[4] for r in h1), spend_h1=sum(r[8] for r in h1),
+        gm_min=round(min(r[7] for r in month_rows) * 100, 1), gm_max=round(max(r[7] for r in month_rows) * 100, 1),
+        by_channel=by_ch, top_channel=max(by_ch, key=lambda c: by_ch[c]["spend"]),
+        low_channel=min(by_ch, key=lambda c: by_ch[c]["spend"]),
+        active_by_plan=active_by_plan, top_plan=max(active_by_plan, key=active_by_plan.get),
     )
-    return month_rows, crow, spend_rows, brow, (hard_row, stale, eleven_row), exp
+    return month_rows, crow, spend_rows, exp
 
 
 def build_lab5(folder):
-    month_rows, crow, spend_rows, brow, (hard_row, stale, eleven_row), _ = _lab5()
+    month_rows, crow, spend_rows, _ = _lab5()
     wb = Workbook()
     ws = wb.active
     ws.title = "Client_Months"
@@ -696,180 +672,130 @@ def build_lab5(folder):
     ws3 = wb.create_sheet("Marketing_Spend")
     _write_rows(ws3, ["Month", "Channel", "Spend"], spend_rows, "tblSpend", {"Month": "mmm-yyyy", "Spend": '"S$"#,##0'},
                 {"Channel": 20})
-    ws4 = wb.create_sheet("Headcount_Budget")
-    hdr = ["Role", "Headcount", "Monthly_Salary", "Employer_CPF_Rate", "Annual_Cost"]
-    for c, h in enumerate(hdr, 1):
-        ws4.cell(row=1, column=c, value=h).font = HEADER_FONT
-        ws4.cell(row=1, column=c).fill = HEADER_FILL
-    last = len(brow) + 1
-    for r, row in enumerate(brow, 2):
-        for c, v in enumerate(row, 1):
-            ws4.cell(row=r, column=c, value=v)
-        ws4.cell(row=r, column=3).number_format = '"S$"#,##0'
-        ws4.cell(row=r, column=4).number_format = "0%"
-        if r == hard_row:
-            ws4.cell(row=r, column=5, value=stale)                        # hardcoded override
-        elif r == eleven_row:
-            ws4.cell(row=r, column=5, value=f"=B{r}*C{r}*11*(1+D{r})")      # wrong month count
-        else:
-            ws4.cell(row=r, column=5, value=f"=B{r}*C{r}*12*(1+D{r})")
-        ws4.cell(row=r, column=5).number_format = '"S$"#,##0'
-    tot = last + 1
-    ws4.cell(row=tot, column=1, value="Total FY2027 cost").font = Font(bold=True)
-    ws4.cell(row=tot, column=2, value=f"=SUM(B2:B{last})")
-    ws4.cell(row=tot, column=5, value=f"=SUM(E2:E{last - 1})")             # misses the last role
-    ws4.cell(row=tot, column=5).number_format = '"S$"#,##0'
-    ws4.cell(row=tot, column=5).font = Font(bold=True)
-    for col, w in zip("ABCDE", (28, 12, 16, 18, 16)):
-        ws4.column_dimensions[col].width = w
-    _about_sheet(wb, "HR Outsourcing Clients and FY2027 Headcount Budget",
+    _about_sheet(wb, "HR Outsourcing Clients and Growth",
                  "Purpose: BrightPath's HR-outsourcing business sells monthly payroll and HR services to client "
-                 "companies. Use it in Lab 5 to try Copilot's built-in skills: @chart-design for charts, @unit-economics "
-                 "for customer economics, @check-model to audit the Headcount_Budget model and @theme-design to style "
-                 "the result.",
+                 "companies. Use it in Lab 5 to try Copilot's built-in visual skills: @chart-design to plot charts from "
+                 "a prompt and @theme-design to give them one consistent look.",
                  [("tblClientMonths", "Table", "One row per month, Jan 2025 - Jun 2026: clients at start, new, churned, "
                    "clients at end, MRR (monthly recurring revenue), gross margin % and sales & marketing spend."),
                   ("tblClients", "Table", "One row per client: sign date, acquisition channel, plan, employees served, "
                    "monthly fee, Active or Churned, churn date."),
                   ("tblSpend", "Table", "Sales and marketing spend by month and channel."),
-                  ("Headcount_Budget", "Model", "FY2027 cost model for the Payroll Services team: Annual_Cost = "
-                   "Headcount x Monthly_Salary x 12 x (1 + Employer_CPF_Rate). It contains mistakes to find."),
-                  ("Definitions", "Rule", "H1 2026 = Jan-Jun 2026. CAC = sales & marketing spend / new clients. "
-                   "ARPA = MRR / active clients at Jun 2026. Monthly churn = churned / clients at start of month, "
-                   "averaged over H1 2026. LTV = ARPA x gross margin / monthly churn. Payback (months) = CAC / "
-                   "(ARPA x gross margin).")])
+                  ("Definitions", "Rule", "H1 2026 = Jan-Jun 2026. MRR = the monthly fees of all clients active at the end "
+                   "of the month. Active clients = clients with Status Active (Clients_End in the latest month). "
+                   "Churned = clients lost in the month.")])
     _prompt_log_sheet(wb)
     return [_save(wb, folder, "BrightPath_HR_Outsourcing_Finance.xlsx")]
 
 
-# =========================================================================== LAB 6 (custom skill: calendar)
-INTERVIEWERS = [r[1] for r in RECRUITERS]
-ROOMS = ["Orchid Room", "Lotus Room"]
+# =========================================================================== LAB 6 (custom skill: Pareto chart)
+# 500 job postings in 16 job categories. The counts are fixed (and all different) so the Pareto order is unambiguous
+# and the 80% point is easy to verify: the long tail is deliberate.
+JOB_CATEGORIES = [
+    ("Customer Service", 145), ("Software Engineering", 95), ("Administration", 65), ("Sales & Business Development", 50),
+    ("Accounting & Finance", 35), ("Nursing & Healthcare", 25), ("Logistics & Warehouse", 19), ("IT Support", 15),
+    ("Data & Analytics", 12), ("Human Resources", 10), ("Marketing", 8), ("Manufacturing Engineering", 7),
+    ("Retail Operations", 6), ("Legal & Compliance", 4), ("Project Management", 3), ("Procurement", 1),
+]
+_ALL = list(SECTORS)
+CATEGORY_SECTORS = {
+    "Customer Service": ["Banking & Finance", "Retail & F&B", "Healthcare", "Technology", "Logistics"],
+    "Software Engineering": ["Technology", "Technology", "Banking & Finance"],
+    "Administration": _ALL,
+    "Sales & Business Development": ["Technology", "Banking & Finance", "Retail & F&B", "Manufacturing"],
+    "Accounting & Finance": ["Banking & Finance", "Banking & Finance", "Manufacturing", "Retail & F&B"],
+    "Nursing & Healthcare": ["Healthcare"],
+    "Logistics & Warehouse": ["Logistics", "Logistics", "Retail & F&B", "Manufacturing"],
+    "IT Support": ["Technology", "Technology", "Banking & Finance", "Healthcare"],
+    "Data & Analytics": ["Technology", "Banking & Finance"],
+    "Human Resources": _ALL,
+    "Marketing": ["Retail & F&B", "Technology"],
+    "Manufacturing Engineering": ["Manufacturing"],
+    "Retail Operations": ["Retail & F&B"],
+    "Legal & Compliance": ["Banking & Finance", "Healthcare"],
+    "Project Management": ["Technology", "Manufacturing", "Logistics"],
+    "Procurement": ["Manufacturing", "Logistics"],
+}
 
 
 def _lab6():
-    rng = random.Random(3416)
-    roles = [(s, t) for s in SECTORS for (t, _e, _b) in ROLES[s]]
-    weeks = [date(2026, 7, 6), date(2026, 7, 13)]
-    rows = []
+    assert sum(n for _c, n in JOB_CATEGORIES) == 500
+    for seed in range(3416, 3516):                  # first seed whose Client_Sector counts are all different, with a clear leader
+        rng = random.Random(seed)
+        cats = [c for c, n in JOB_CATEGORIES for _ in range(n)]
+        rng.shuffle(cats)
+        rows = []
+        for cat in cats:
+            rows.append([None, _rand_date(rng, date(2026, 1, 5), date(2026, 6, 26)), cat,
+                         rng.choice(CATEGORY_SECTORS[cat]), rng.choices(["Permanent", "Contract", "Temp"], [55, 30, 15])[0],
+                         rng.choices(["Filled", "Open", "Closed"], [52, 33, 15])[0],
+                         rng.choices([1, 2, 3, 4, 5], [50, 25, 12, 8, 5])[0]])
+        sec = {}
+        for r in rows:
+            sec[r[3]] = sec.get(r[3], 0) + 1
+        counts = sorted(sec.values(), reverse=True)
+        if len(set(counts)) == len(counts) and counts[0] - counts[1] >= 10:
+            break
+    rows.sort(key=lambda r: (r[1], r[2]))
+    for i, r in enumerate(rows, 1):
+        r[0] = f"JOB-{i:04d}"
+    headers = ["Job_ID", "Posted_Date", "Job_Category", "Client_Sector", "Employment_Type", "Status", "Openings"]
 
-    def overlaps(a, b):
-        return a["date"] == b["date"] and a["start"] < b["end"] and b["start"] < a["end"]
+    def pareto(counts, threshold=0.8):
+        total = sum(n for _k, n in counts)
+        cum, out, n_reach = 0, [], None
+        for i, (k, n) in enumerate(counts, 1):
+            cum += n
+            out.append((k, n, round(n / total * 100, 1), round(cum / total * 100, 1)))
+            if n_reach is None and cum / total >= threshold:
+                n_reach = i
+        return out, n_reach
 
-    for w, n in zip(weeks, (20, 18)):
-        placed = 0
-        while placed < n:
-            d = w + timedelta(days=rng.randint(0, 4))
-            slot = rng.randint(0, 15)                     # 09:00 ... 16:30
-            dur = rng.choice([30, 45, 60, 60])
-            start = 9 * 60 + slot * 30
-            mode = rng.choices(["Onsite", "Video"], [45, 55])[0]
-            iv = dict(date=d, start=start, end=start + dur, dur=dur, who=rng.choice(INTERVIEWERS), mode=mode,
-                      room=rng.choice(ROOMS) if mode == "Onsite" else "Teams")
-            if iv["end"] > 18 * 60:
-                continue
-            if any(overlaps(iv, x) and (x["who"] == iv["who"] or (iv["mode"] == "Onsite" and x["room"] == iv["room"]))
-                   for x in rows):
-                continue
-            sector, title = rng.choice(roles)
-            iv.update(sector=sector, role=title, client=rng.choice(CLIENTS[sector]))
-            rows.append(iv)
-            placed += 1
-    # Planted clashes in week 1, one per day: Tue and Thu interviewer double-bookings, Wed room double-booking.
-    def free(who, d, st, en, room=None):
-        return not any(x["date"] == d and st < x["end"] and x["start"] < en and
-                       (x["who"] == who or (room and x["mode"] == "Onsite" and x["room"] == room)) for x in rows)
-
-    def add(base, **kw):
-        sector, title = rng.choice(roles)
-        iv = dict(base, **kw)
-        iv.update(sector=sector, role=title, client=rng.choice(CLIENTS[sector]))
-        rows.append(iv)
-
-    for day, kind in ((1, "Interviewer"), (2, "Room"), (3, "Interviewer")):
-        d = weeks[0] + timedelta(days=day)
-        if kind == "Interviewer":
-            base = next(x for x in rows if x["date"] == d and x["dur"] >= 45)
-            add(base, start=base["start"] + 15, end=base["start"] + 45, dur=30, mode="Video", room="Teams")
-        else:
-            base = next((x for x in rows if x["date"] == d and x["mode"] == "Onsite"), None)
-            if base is None:
-                base = next(x for x in rows if x["date"] == d)
-                base.update(mode="Onsite", room=ROOMS[0])
-            other = next(w for w in INTERVIEWERS if free(w, d, base["start"], base["start"] + 30))
-            add(base, who=other, end=base["start"] + 30, dur=30, mode="Onsite", room=base["room"])
-    rows.sort(key=lambda x: (x["date"], x["start"], x["who"]))
-    out = []
-    for i, x in enumerate(rows, 1):
-        x["id"] = f"INT-{i:03d}"
-        out.append([x["id"], f"CAND-{rng.randint(1000, 1999)}", x["role"], x["client"], x["who"], x["date"],
-                    time(x["start"] // 60, x["start"] % 60), x["dur"], x["mode"], x["room"]])
-    headers = ["Interview_ID", "Candidate_Ref", "Role", "Client", "Interviewer", "Interview_Date", "Start_Time",
-               "Duration_Min", "Mode", "Room"]
-    w1 = [x for x in rows if x["date"] < weeks[1]]
-    w2 = [x for x in rows if x["date"] >= weeks[1]]
-    by_day = {}
-    for x in w1:
-        k = x["date"].strftime("%a %d %b")
-        by_day[k] = by_day.get(k, 0) + 1
-    by_day = dict(sorted(by_day.items(), key=lambda kv: datetime_key(kv[0])))
-    who1 = {}
-    for x in w1:
-        who1[x["who"]] = who1.get(x["who"], 0) + 1
+    cat_counts = [(c, sum(1 for r in rows if r[2] == c)) for c, _n in JOB_CATEGORIES]
+    cat_counts.sort(key=lambda kv: -kv[1])
+    cat_table, n80 = pareto(cat_counts)
+    sec_counts = sorted(sec.items(), key=lambda kv: -kv[1])
+    sec_table, sec_n80 = pareto(sec_counts)
+    small = [(k, n) for k, n, share, _c in cat_table if share < 2.0]
     exp = dict(
-        rows=len(rows), w1=len(w1), w2=len(w2), by_day=by_day,
-        busiest=max(who1, key=who1.get), busiest_n=max(who1.values()),
-        w1_hours=round(sum(x["dur"] for x in w1) / 60, 2), w1_video=sum(1 for x in w1 if x["mode"] == "Video"),
-        clashes=_scan_clashes(w1), w2_clashes=len(_scan_clashes(w2)),
+        rows=len(rows), categories=len(cat_counts), by_cat=cat_table, top_cat=cat_table[0][0], top_n=cat_table[0][1],
+        top_share=cat_table[0][2], top3_share=cat_table[2][3], n80=n80, cum80=cat_table[n80 - 1][3],
+        last80=cat_table[n80 - 1][0], vital=[c[0] for c in cat_table[:n80]],
+        by_sector=sec_table, top_sector=sec_table[0][0], top_sector_n=sec_table[0][1], top_sector_share=sec_table[0][2],
+        sector_n80=sec_n80, sector_cum80=sec_table[sec_n80 - 1][3], sectors=len(sec_table),
+        small_n=len(small), small_total=sum(n for _k, n in small), small_share=round(sum(n for _k, n in small) / len(rows) * 100, 1),
+        first_date=min(r[1] for r in rows), last_date=max(r[1] for r in rows),
     )
-    return headers, out, exp
-
-
-def _scan_clashes(rows):
-    """Every overlapping pair that shares an Interviewer, or an Onsite Room."""
-    out = []
-    for i, a in enumerate(rows):
-        for b in rows[i + 1:]:
-            if a["date"] != b["date"] or not (a["start"] < b["end"] and b["start"] < a["end"]):
-                continue
-            first, second = sorted((a, b), key=lambda x: x["id"])
-            if a["who"] == b["who"]:
-                out.append(("Interviewer", first["id"], second["id"], a["who"], a["date"].strftime("%a %d %b")))
-            if a["mode"] == b["mode"] == "Onsite" and a["room"] == b["room"]:
-                out.append(("Room", first["id"], second["id"], a["room"], a["date"].strftime("%a %d %b")))
-    return sorted(out, key=lambda c: c[1])
-
-
-def datetime_key(label):
-    return date(2026, 7, int(label.split()[1]))
+    return headers, rows, exp
 
 
 def build_lab6(folder):
     headers, rows, _ = _lab6()
     wb = Workbook()
     ws = wb.active
-    ws.title = "Interviews"
-    _write_rows(ws, headers, rows, "tblInterviews", {"Start_Time": "hh:mm"}, {"Role": 26, "Client": 22, "Interviewer": 16})
-    _about_sheet(wb, "Interview Schedule (6 - 17 July 2026)",
-                 "Purpose: one row per candidate interview booked by BrightPath recruiters for two weeks in July 2026. "
-                 "Use it in Lab 6 to build a custom Copilot skill, interview-calendar, that turns this list into a weekly "
-                 "calendar and flags clashes. Candidate names are not stored - only a reference.",
-                 [("Interview_ID", "Text", "Unique key (INT-001 ...)."),
-                  ("Candidate_Ref", "Text", "Pseudonymised candidate reference."),
-                  ("Role / Client", "Text", "Job and hiring client."),
-                  ("Interviewer", "Text", "BrightPath recruiter running the interview."),
-                  ("Interview_Date / Start_Time", "Date / hh:mm", "When the interview starts (24-hour clock)."),
-                  ("Duration_Min", "Minutes", "30, 45 or 60."),
-                  ("Mode / Room", "Text", "Onsite interviews use the Orchid Room or Lotus Room; Video interviews use Teams."),
-                  ("Clash rule", "Rule", "A clash is two interviews that overlap in time with the same Interviewer, or "
-                   "two Onsite interviews that overlap in the same Room.")])
+    ws.title = "Job_Postings"
+    _write_rows(ws, headers, rows, "tblJobs", None, {"Job_Category": 30, "Client_Sector": 20, "Employment_Type": 17})
+    _about_sheet(wb, "Job Postings, Jan - Jun 2026",
+                 "Purpose: one row per job posting BrightPath received from clients between January and June 2026 - 500 "
+                 "postings in 16 job categories. Use it in Lab 6 to build a custom Copilot skill, pareto-chart, that plots a "
+                 "Pareto chart of any category column, and to use that skill on Job_Category and Client_Sector.",
+                 [("tblJobs", "Table", "One row per job posting."),
+                  ("Job_ID", "Text", "Unique key (JOB-0001 ...)."),
+                  ("Posted_Date", "Date", "When the client posted the job to BrightPath."),
+                  ("Job_Category", "Text", "One of 16 job categories, e.g. Customer Service. The column you will plot."),
+                  ("Client_Sector", "Text", "The hiring client's sector (6 values)."),
+                  ("Employment_Type", "Text", "Permanent, Contract or Temp."),
+                  ("Status", "Text", "Filled, Open or Closed."),
+                  ("Openings", "Number", "Positions the client wants to fill (1 to 5)."),
+                  ("Pareto chart", "Rule", "Columns = the count of each category, sorted high to low, a different colour "
+                   "for each column. Line = cumulative % of the total on a secondary axis from 0% to 100%.")])
     _prompt_log_sheet(wb)
-    # Open on the data: Copilot reads the active sheet first, so lead with tblInterviews, not the notes.
-    wb.move_sheet("Interviews", offset=-wb.sheetnames.index("Interviews"))
-    wb.active = wb["Interviews"]
+    # Open on the data: Copilot reads the active sheet first, so lead with tblJobs, not the notes.
+    wb.move_sheet("Job_Postings", offset=-wb.sheetnames.index("Job_Postings"))
+    wb.active = wb["Job_Postings"]
     for ws in wb.worksheets:
-        ws.sheet_view.tabSelected = ws.title == "Interviews"
-    return [_save(wb, folder, "BrightPath_Interview_Schedule.xlsx")]
+        ws.sheet_view.tabSelected = ws.title == "Job_Postings"
+    return [_save(wb, folder, "BrightPath_Job_Postings.xlsx")]
 
 
 # =========================================================================== LAB 7 (interactive recruitment dashboard)
@@ -1068,7 +994,7 @@ _BUILDERS = {1: build_lab1, 2: build_lab2, 3: build_lab3, 4: build_lab4,
              5: build_lab5, 6: build_lab6, 7: build_lab7, 8: build_lab8}
 
 EXPECTED = {1: _lab1()[2], 2: _lab2()[2], 3: _lab3()[3], 4: _lab4()[3],
-            5: _lab5()[5], 6: _lab6()[2], 7: _lab7()[3], 8: _lab8()[3]}
+            5: _lab5()[3], 6: _lab6()[2], 7: _lab7()[3], 8: _lab8()[3]}
 
 
 def build_lab_data(num, folder):

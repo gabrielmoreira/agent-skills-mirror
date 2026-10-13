@@ -1,0 +1,1 @@
+cache/repos/github.com/PostHog@posthog/frontend/src/layout/navigation-3000/sidepanel/AGENTS.md

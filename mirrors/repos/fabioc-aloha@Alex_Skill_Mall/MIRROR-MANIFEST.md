@@ -57,12 +57,12 @@ Mirror of `fabioc-aloha/Alex_Skill_Mall` — 26 default patterns, 15 followed pa
 - `scoring/TRUST-AUDIT.md`
 - `sources/SOURCES.md`
 - `catalog/stores/plugin-mall.md`
+- `catalog/stores/ai-research-skills.md`
 - `catalog/stores/antigravity-awesome-skills.md`
 - `catalog/stores/awesome-copilot.md`
 - `catalog/stores/buildwithclaude.md`
 - `catalog/stores/claude-code-plugins-plus-skills.md`
 - `catalog/stores/daymade-claude-code-skills.md`
-- `catalog/stores/designer-skills.md`
 - `catalog/stores/dotnet-skills.md`
 - `catalog/stores/expo-skills.md`
 - `catalog/stores/google-skills.md`
@@ -802,12 +802,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 727 | ✓ | [`test/fixtures/pre-migration/visual-storytelling/README.md`](test/fixtures/pre-migration/visual-storytelling/README.md) |
 | 728 | ✓ | [`test/fixtures/pre-migration/visual-storytelling/SKILL.md`](test/fixtures/pre-migration/visual-storytelling/SKILL.md) |
 | 729 | → | [`catalog/INDEX.md`](catalog/INDEX.md) |
-| 730 | → | [`catalog/stores/antigravity-awesome-skills.md`](catalog/stores/antigravity-awesome-skills.md) |
-| 731 | → | [`catalog/stores/awesome-copilot.md`](catalog/stores/awesome-copilot.md) |
-| 732 | → | [`catalog/stores/buildwithclaude.md`](catalog/stores/buildwithclaude.md) |
-| 733 | → | [`catalog/stores/claude-code-plugins-plus-skills.md`](catalog/stores/claude-code-plugins-plus-skills.md) |
-| 734 | → | [`catalog/stores/daymade-claude-code-skills.md`](catalog/stores/daymade-claude-code-skills.md) |
-| 735 | → | [`catalog/stores/designer-skills.md`](catalog/stores/designer-skills.md) |
+| 730 | → | [`catalog/stores/ai-research-skills.md`](catalog/stores/ai-research-skills.md) |
+| 731 | → | [`catalog/stores/antigravity-awesome-skills.md`](catalog/stores/antigravity-awesome-skills.md) |
+| 732 | → | [`catalog/stores/awesome-copilot.md`](catalog/stores/awesome-copilot.md) |
+| 733 | → | [`catalog/stores/buildwithclaude.md`](catalog/stores/buildwithclaude.md) |
+| 734 | → | [`catalog/stores/claude-code-plugins-plus-skills.md`](catalog/stores/claude-code-plugins-plus-skills.md) |
+| 735 | → | [`catalog/stores/daymade-claude-code-skills.md`](catalog/stores/daymade-claude-code-skills.md) |
 | 736 | → | [`catalog/stores/dotnet-skills.md`](catalog/stores/dotnet-skills.md) |
 | 737 | → | [`catalog/stores/expo-skills.md`](catalog/stores/expo-skills.md) |
 | 738 | → | [`catalog/stores/google-skills.md`](catalog/stores/google-skills.md) |

@@ -41,7 +41,7 @@ TUI rule: formatting fns take `&mut impl Write`, never stdout directly. Never mi
 
 Library crates don't carry the `claw-` prefix. Binary crates do (except legacy `rusty-claude-cli`).
 
-Workspace version is `0.1.3`, `publish = false`, MIT license.
+Workspace version is `0.1.4`, `publish = false`, MIT license.
 
 No rust-toolchain file, no MSRV. CI pins `dtolnay/rust-toolchain@stable`.
 

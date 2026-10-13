@@ -15,6 +15,19 @@ TinyMCP owns MCP framing, protocol state, callbacks, and HTTP admission through 
 - Provide two transports: newline-delimited JSON-RPC over stdio, and Axum-based Streamable HTTP + SSE with session-id and protocol-version handshakes and optional bearer auth.
 - Capture client provenance from `initialize` `clientInfo.name` into a per-session `source_type` (e.g. `mcp:claude-desktop`) used for audit attribution.
 
+## Session lifetime and cleanup
+
+Each host session serializes request handling and owns any pending host callback.
+If a request is cancelled, the adapter cancels the matching module operation
+and joins its callback before returning. Retries after a lost module reply
+reuse the operation identity and completed callback reply.
+
+For Streamable HTTP, the host asks TinyMCP to validate and apply DELETE first.
+Only an accepted DELETE terminally closes the local session: the host rejects
+new work, aborts and joins a running callback, then removes the session from
+its table. A rejected DELETE leaves the session available for later requests.
+Process shutdown closes the module sessions and drains their callbacks.
+
 ## Key files
 
 | File | Role |

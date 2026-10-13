@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rorkai/app-store-connect-cli-skills` — 26 default patterns, 0 followed patterns, 33 file(s) materialized.
+Mirror of `rorkai/app-store-connect-cli-skills` — 26 default patterns, 0 followed patterns, 36 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rorkai/app-store-connect-cli-skills` — 26 default patterns, 0 follo
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 33 |
+| Files         | 36 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,29 +69,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`skills/asc-cli-usage/SKILL.md`](skills/asc-cli-usage/SKILL.md) |
 | 9 | ✓ | [`skills/asc-crash-triage/SKILL.md`](skills/asc-crash-triage/SKILL.md) |
 | 10 | ✓ | [`skills/asc-id-resolver/SKILL.md`](skills/asc-id-resolver/SKILL.md) |
-| 11 | ✓ | [`skills/asc-localize-metadata/SKILL.md`](skills/asc-localize-metadata/SKILL.md) |
-| 12 | ✓ | [`skills/asc-metadata-sync/SKILL.md`](skills/asc-metadata-sync/SKILL.md) |
-| 13 | ✓ | [`skills/asc-notarization/SKILL.md`](skills/asc-notarization/SKILL.md) |
-| 14 | ✓ | [`skills/asc-ppp-pricing/SKILL.md`](skills/asc-ppp-pricing/SKILL.md) |
-| 15 | ✓ | [`skills/asc-release-flow/references/multi-item-submissions.md`](skills/asc-release-flow/references/multi-item-submissions.md) |
-| 16 | ✓ | [`skills/asc-release-flow/SKILL.md`](skills/asc-release-flow/SKILL.md) |
-| 17 | ✓ | [`skills/asc-revenuecat-catalog-sync/examples.md`](skills/asc-revenuecat-catalog-sync/examples.md) |
-| 18 | ✓ | [`skills/asc-revenuecat-catalog-sync/references.md`](skills/asc-revenuecat-catalog-sync/references.md) |
-| 19 | ✓ | [`skills/asc-revenuecat-catalog-sync/SKILL.md`](skills/asc-revenuecat-catalog-sync/SKILL.md) |
-| 20 | ✓ | [`skills/asc-screenshot-resize/SKILL.md`](skills/asc-screenshot-resize/SKILL.md) |
-| 21 | ✓ | [`skills/asc-shots-pipeline/SKILL.md`](skills/asc-shots-pipeline/SKILL.md) |
-| 22 | ✓ | [`skills/asc-signing-setup/SKILL.md`](skills/asc-signing-setup/SKILL.md) |
-| 23 | ✓ | [`skills/asc-submission-health/references/app-privacy.md`](skills/asc-submission-health/references/app-privacy.md) |
-| 24 | ✓ | [`skills/asc-submission-health/references/digital-goods.md`](skills/asc-submission-health/references/digital-goods.md) |
-| 25 | ✓ | [`skills/asc-submission-health/references/readiness-repairs.md`](skills/asc-submission-health/references/readiness-repairs.md) |
-| 26 | ✓ | [`skills/asc-submission-health/SKILL.md`](skills/asc-submission-health/SKILL.md) |
-| 27 | ✓ | [`skills/asc-subscription-localization/SKILL.md`](skills/asc-subscription-localization/SKILL.md) |
-| 28 | ✓ | [`skills/asc-testflight-orchestration/SKILL.md`](skills/asc-testflight-orchestration/SKILL.md) |
-| 29 | ✓ | [`skills/asc-wall-submit/SKILL.md`](skills/asc-wall-submit/SKILL.md) |
-| 30 | ✓ | [`skills/asc-whats-new-writer/references/release_notes_guidelines.md`](skills/asc-whats-new-writer/references/release_notes_guidelines.md) |
-| 31 | ✓ | [`skills/asc-whats-new-writer/SKILL.md`](skills/asc-whats-new-writer/SKILL.md) |
-| 32 | ✓ | [`skills/asc-workflow/SKILL.md`](skills/asc-workflow/SKILL.md) |
-| 33 | ✓ | [`skills/asc-xcode-build/SKILL.md`](skills/asc-xcode-build/SKILL.md) |
+| 11 | ✓ | [`skills/asc-in-app-events/SKILL.md`](skills/asc-in-app-events/SKILL.md) |
+| 12 | ✓ | [`skills/asc-localize-metadata/SKILL.md`](skills/asc-localize-metadata/SKILL.md) |
+| 13 | ✓ | [`skills/asc-metadata-sync/references/asset-library.md`](skills/asc-metadata-sync/references/asset-library.md) |
+| 14 | ✓ | [`skills/asc-metadata-sync/SKILL.md`](skills/asc-metadata-sync/SKILL.md) |
+| 15 | ✓ | [`skills/asc-notarization/SKILL.md`](skills/asc-notarization/SKILL.md) |
+| 16 | ✓ | [`skills/asc-ppp-pricing/SKILL.md`](skills/asc-ppp-pricing/SKILL.md) |
+| 17 | ✓ | [`skills/asc-release-flow/references/multi-item-submissions.md`](skills/asc-release-flow/references/multi-item-submissions.md) |
+| 18 | ✓ | [`skills/asc-release-flow/SKILL.md`](skills/asc-release-flow/SKILL.md) |
+| 19 | ✓ | [`skills/asc-revenuecat-catalog-sync/examples.md`](skills/asc-revenuecat-catalog-sync/examples.md) |
+| 20 | ✓ | [`skills/asc-revenuecat-catalog-sync/references.md`](skills/asc-revenuecat-catalog-sync/references.md) |
+| 21 | ✓ | [`skills/asc-revenuecat-catalog-sync/SKILL.md`](skills/asc-revenuecat-catalog-sync/SKILL.md) |
+| 22 | ✓ | [`skills/asc-screenshot-resize/SKILL.md`](skills/asc-screenshot-resize/SKILL.md) |
+| 23 | ✓ | [`skills/asc-shots-pipeline/SKILL.md`](skills/asc-shots-pipeline/SKILL.md) |
+| 24 | ✓ | [`skills/asc-signing-setup/SKILL.md`](skills/asc-signing-setup/SKILL.md) |
+| 25 | ✓ | [`skills/asc-submission-health/references/app-privacy.md`](skills/asc-submission-health/references/app-privacy.md) |
+| 26 | ✓ | [`skills/asc-submission-health/references/digital-goods.md`](skills/asc-submission-health/references/digital-goods.md) |
+| 27 | ✓ | [`skills/asc-submission-health/references/readiness-repairs.md`](skills/asc-submission-health/references/readiness-repairs.md) |
+| 28 | ✓ | [`skills/asc-submission-health/SKILL.md`](skills/asc-submission-health/SKILL.md) |
+| 29 | ✓ | [`skills/asc-subscription-localization/SKILL.md`](skills/asc-subscription-localization/SKILL.md) |
+| 30 | ✓ | [`skills/asc-testflight-orchestration/SKILL.md`](skills/asc-testflight-orchestration/SKILL.md) |
+| 31 | ✓ | [`skills/asc-wall-submit/SKILL.md`](skills/asc-wall-submit/SKILL.md) |
+| 32 | ✓ | [`skills/asc-whats-new-writer/references/release_notes_guidelines.md`](skills/asc-whats-new-writer/references/release_notes_guidelines.md) |
+| 33 | ✓ | [`skills/asc-whats-new-writer/SKILL.md`](skills/asc-whats-new-writer/SKILL.md) |
+| 34 | ✓ | [`skills/asc-workflow/SKILL.md`](skills/asc-workflow/SKILL.md) |
+| 35 | ✓ | [`skills/asc-xcode-build/references/portable-ios.md`](skills/asc-xcode-build/references/portable-ios.md) |
+| 36 | ✓ | [`skills/asc-xcode-build/SKILL.md`](skills/asc-xcode-build/SKILL.md) |
 
 ---
 

@@ -1,20 +1,16 @@
 ---
-description: Generate structured video transcripts from local files or video URLs using Gemini Files API. Use when a GitHub or Linear tracker item, comment, or attachment includes a screen recording, .mov, .mp4, or tracker-hosted video and you need a <video-transcripts> block instead of hand-written notes.
-disable-model-invocation: true
 name: video-transcripts
-metadata:
-  skiller:
-    source: .agents/rules/video-transcripts.mdc
+description: "Transcribe a supplied local or linked video with Gemini Files API when its contents are needed as evidence."
 ---
 
 # Video Transcripts
 
 ## Quick Start
 
-Run the helper once per relevant video:
+Run the helper once per relevant video. `<skill>` is this skill's directory:
 
 ```bash
-bash .agents/skills/video-transcripts/scripts/generate_video_transcript.sh \
+bash <skill>/scripts/generate_video_transcript.sh \
   "https://uploads.linear.app/.../screen-recording.mov" \
   --title "PDF preview hyperlinks trigger leave-page modal"
 ```
@@ -22,15 +18,23 @@ bash .agents/skills/video-transcripts/scripts/generate_video_transcript.sh \
 Or for a GitHub attachment:
 
 ```bash
-bash .agents/skills/video-transcripts/scripts/generate_video_transcript.sh \
+bash <skill>/scripts/generate_video_transcript.sh \
   "https://github.com/user-attachments/assets/..." \
   --title "Slash menu loses selection after confirm"
+```
+
+Or for a Screencastify watch page:
+
+```bash
+bash <skill>/scripts/generate_video_transcript.sh \
+  "https://app.screencastify.com/watch/..." \
+  --title "Bulk send expands filtered recipients"
 ```
 
 Or for a local file:
 
 ```bash
-bash .agents/skills/video-transcripts/scripts/generate_video_transcript.sh \
+bash <skill>/scripts/generate_video_transcript.sh \
   "/absolute/path/to/video.mov" \
   --title "Preview hyperlink exits workflow"
 ```
@@ -42,6 +46,7 @@ For auth-gated Linear uploads, the helper automatically retries with cookies fro
 - A GitHub or Linear issue, PR, or comment includes a screen recording.
 - An attachment URL points to `uploads.linear.app`.
 - An attachment URL points to a GitHub attachment or private GitHub asset host.
+- A tracker links to a public Screencastify watch page.
 - You need timeline-style transcript lines, not a vague summary.
 - You want the result in this exact XML shape:
 
@@ -55,32 +60,33 @@ For auth-gated Linear uploads, the helper automatically retries with cookies fro
 
 ## Workflow
 
+Tracker comments and replies require explicit message authority. Prepare or
+return the transcript locally when publication is not authorized. Cache location
+and reuse rules below do not grant permission to post.
+
 1. Run the helper once for each relevant video.
 2. Give each run a short, bug-focused `--title`.
 3. For tracked work, the canonical shared cache should live in the tracker next to the evidence it describes.
 4. If the video is in the issue or PR body, use a top-level tracker comment.
 5. If the video is in a Linear comment, post the transcript cache as a reply to that specific comment.
 6. If the video is in a GitHub issue or PR comment, use one dedicated top-level cache comment for that source comment's video set. GitHub has no replies, so keep cache comments separated by source container instead of merging unrelated comment videos together.
-7. Cache comment or reply body should be XML only:
+7. Cache comment or reply body should start with a transcript source link, then
+   the timestamp lines:
 
 ````md
-```xml
-<video-transcripts>
-<video-transcript
-  source-key="https://tracker-hosted-video/<stable-path-without-query>"
->
+[[Transcript](link to video or comment if not available)]
 [00:00] (...)
-</video-transcript>
-</video-transcripts>
-```
 ````
 
-8. Keep the raw XML exactly as returned if it already matches the XML contract.
-9. If there are multiple videos in the same source container, combine the returned `<video-transcript ...>` blocks under a single `<video-transcripts>` wrapper in that cache comment or reply.
+8. When caching helper XML, strip the `<video-transcripts>` and
+   `<video-transcript ...>` wrapper lines and paste only timestamp lines after
+   the source link.
+9. If there are multiple videos in the same source container, repeat the
+   `[[Transcript](...)]` source link plus timestamp lines for each video.
 10. Do not hand-write or paraphrase video behavior when the helper can run. Use the actual transcript output.
-11. `source-key` is the normalized stable identifier for the media. For signed tracker-hosted URLs like `uploads.linear.app`, strip the query string so a new signature does not invalidate an otherwise valid cache entry.
-12. Do not add decorative metadata like `title` to cached `<video-transcript>` entries unless a later workflow truly needs it.
-13. Keep the cache body pure XML. Do not prepend markers, prose, or YAML.
+11. Link `[[Transcript](...)]` to the video URL when available. If the video URL is not available or is unstable, link to the source comment that contains the video.
+12. For signed tracker-hosted URLs like `uploads.linear.app`, strip the query string so a new signature does not invalidate an otherwise valid cache entry. For Screencastify, cache against the stable `https://app.screencastify.com/watch/<id>` URL, not the signed `dash-assets` HLS URLs.
+13. Do not add decorative metadata like `title` to cached transcript entries unless a later workflow truly needs it.
 14. Before re-transcribing for tracked work, match cache entries by source container first:
     - one cache comment for issue or PR body videos
     - one Linear reply per comment containing video(s)
@@ -109,13 +115,13 @@ For Gemini 3 models, the helper forces minimal thinking so output budget goes to
 Override with:
 
 ```bash
-VIDEO_TRANSCRIPTS_MODEL=gemini-3-flash-preview bash .agents/skills/video-transcripts/scripts/generate_video_transcript.sh ...
+VIDEO_TRANSCRIPTS_MODEL=gemini-3-flash-preview bash <skill>/scripts/generate_video_transcript.sh ...
 ```
 
 Or:
 
 ```bash
-bash .agents/skills/video-transcripts/scripts/generate_video_transcript.sh ... \
+bash <skill>/scripts/generate_video_transcript.sh ... \
   --model gemini-2.5-flash
 ```
 
@@ -124,6 +130,8 @@ bash .agents/skills/video-transcripts/scripts/generate_video_transcript.sh ... \
 - The helper accepts a local file path or remote URL.
 - For `uploads.linear.app` URLs, it first tries `LINEAR_COOKIE_HEADER`, then `LINEAR_COOKIES_DB`, then falls back to the local Linear desktop cookie store at `~/Library/Application Support/Linear/Cookies`.
 - For GitHub asset URLs, it first tries `GITHUB_TOKEN`, then `GH_TOKEN`, then `gh auth token`, then falls back to an unauthenticated download.
+- For Screencastify watch URLs, it calls `https://umbrella.svc.screencastify.com/api/umbrellaService/watch/<id>`, resolves the signed HLS manifest, rewrites child playlists so segments keep the signature, and remuxes the recording with `ffmpeg`.
+- Screencastify URL support requires `ffmpeg`.
 - It looks for `GEMINI_API_KEY`, then `GOOGLE_API_KEY`.
 - If neither is set, it tries `~/.bash_profile` before failing.
 - Use `--debug-dir <dir>` when you want request and response artifacts saved.

@@ -60,6 +60,8 @@ Walk the lease specifically for: **auto-renewal traps** (notice window; what sil
 
 End the artifact with, verbatim: *"This is a plain-language reading, not legal/financial advice — laws vary by jurisdiction; confirm anything load-bearing with a qualified professional."*
 
+End every output with a short **Assumptions and gaps** block: two to four bullets naming what was assumed because the input did not say, and what missing information would most change this output. If nothing was assumed and nothing was missing, say so in one line instead.
+
 ## Quality Checks
 
 - [ ] Every red flag quotes the actual lease language — section number or verbatim text

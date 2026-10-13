@@ -12,14 +12,17 @@ repository model.
 - `src/commit.rs` runs configured validation without the shared index lock, then locks the shared index, re-verifies the
   branch head, runs hooks/signing, CAS-updates refs, and reconciles the shared index.
 - `src/push.rs` implements fetch-first, no-integration pushes.
+- `src/coord.rs` is the only `ai-coord` subprocess boundary: bounded advisory `baseline`, `scope`, and `trailer` reads,
+  and the explicit `finding resolve` call that `commit --finding` requests.
 - `src/state.rs` owns atomic journal records, receipts, retention, and transaction refs.
 - `src/git.rs` is the only subprocess boundary for Git operations.
 
 ## Invariants
 
 - `prepare` must never mutate the worktree, shared index, branch ref, or user configuration.
-- Automatic stale-dirt baselines are advisory. Malformed output or an unavailable/failing `ai-coord` must not fail
-  preparation. Explicit exclusions win by path. Staged capture never consults ambient coordination state.
+- Automatic stale-dirt baselines and the unclaimed-path disclosure are advisory. Malformed output or an
+  unavailable/failing `ai-coord` must not fail preparation. Explicit exclusions win by path. Staged capture never
+  consults ambient coordination state.
 
   Preparation skips and discloses an automatic baseline whose path is in neither HEAD nor the worktree. Any other
   automatic baseline failure names its ai-coord origin and the `--no-auto-baseline`/`--exclude-baseline` overrides.
@@ -99,7 +102,8 @@ ai-commit prepare [--all|--staged] [--natural|--conventional]
                   [--no-auto-baseline]
                   [--porcelain] -- [paths...]
 ai-commit validate <transaction-id>
-ai-commit commit <transaction-id> -m <message>... [--push] [--rebase]
+ai-commit commit <transaction-id> -m <message>... [--close <issue>]...
+                  [--finding <id>]... [--push] [--rebase]
                   [--no-verify] [--no-gpg-sign]
 ai-commit push [--rebase]
 ai-commit show <transaction-id>
@@ -115,6 +119,21 @@ ai-commit commit <transaction-id> -m 'docs: record constraints' -m '- describe t
 - document the approval gate'
 ```
 
+`commit` owns the trailer paragraph. It appends one `Finding-ID: <id>` line per `--finding` value and then the
+`Agent-Session:` line that preparation captured. When the last `-m` paragraph already consists of `Token: value` lines,
+such as `Co-authored-by:`, those lines merge into it so Git and GitHub still see one trailer block. Otherwise it appends
+a new final paragraph. `Closes #N` is not a Git trailer, so the `--close` lines form their own paragraph before the
+trailer block. Each `--close` value must be a positive decimal issue number and each `--finding` value an ASCII ID made
+of letters, digits, `-`, `_`, or `.`. Repeated values collapse to one line. A generated line that already appears
+verbatim in the message is not repeated, so passing the trailer by hand remains harmless.
+
+After the commit and any requested push, `commit --finding` runs
+`ai-coord finding resolve <id> --as fixed --commit <full-oid>` once per finding and prints `FINDING_RESOLVED <id>` or
+`FINDING_UNRESOLVED <id>`. A resolution failure never undoes the commit or push. It exits `3` with stderr naming each
+failed ID and the manual command. Replaying the same `commit` command, with the same `--finding` values, returns the
+retained receipt and resolves again. `ai-coord` updates the evidence in place when the finding is already fixed. Finding
+IDs live only in the command line, not in the journal, so a replay without `--finding` resolves nothing.
+
 Preparation rejects repository operation states and detached HEADs. Named unborn branches are supported. For those
 branches, preparation uses Git's empty tree and commit creates a transactional parentless root commit. Default mode
 requires explicit paths. `--all` captures the complete worktree/index result. `--staged` copies the current index
@@ -125,6 +144,11 @@ discarded. Prepared journals do not age out. ai-commit retains terminal receipts
 available, `ai-coord trailer` contributes one validated `Agent-Session:` line to the preparation evidence. In default
 and `--all` modes, `prepare` also asks `ai-coord baseline` for stale-dirt baselines. In those modes, it automatically
 excludes the pre-existing portions of those files.
+
+In default and `--all` modes, `prepare` also asks `ai-coord scope` for this session's active claim. When the claim
+exists, every prepared path outside it is disclosed as `UNCLAIMED<tab>path` (ordinary output: `unclaimed paths`). An
+exact scope covers only its path. A recursive scope covers its directory tree. No active claim, no `ai-coord`, or full
+coverage prints nothing. The disclosure never changes the prepared tree or the exit status.
 
 Explicit `--exclude-baseline` values take precedence for the same path. Use `--no-auto-baseline` to disable ambient
 discovery while retaining explicit exclusions. `--staged` always skips discovery because it captures the index exactly.
@@ -227,8 +251,9 @@ discard it.
 
 `prepare --porcelain` emits stable TSV records. Tabs, newlines, carriage returns, and backslashes inside fields are
 backslash-escaped. Outcome records use `PREPARED`, `VALIDATED`, `VALIDATION_SKIPPED`, `COMMITTED`, `INTEGRATED`,
-`SUPERSEDED`, `REBASED`, `PUSHED`, `PUSHED_NEW`, `BEHIND`, `HOOK_ADDED`, and `DISCARDED`. Each automatically applied
-exclusion is disclosed as `AUTO_BASELINE<tab>path<tab>oid`. The ordinary output lists the same pairs under
+`SUPERSEDED`, `REBASED`, `PUSHED`, `PUSHED_NEW`, `BEHIND`, `HOOK_ADDED`, `FINDING_RESOLVED`, `FINDING_UNRESOLVED`, and
+`DISCARDED`. Each prepared path outside the active claim is disclosed as `UNCLAIMED<tab>path`. Each automatically
+applied exclusion is disclosed as `AUTO_BASELINE<tab>path<tab>oid`. The ordinary output lists the same pairs under
 `auto-applied baselines`. Each skipped automatic baseline is disclosed as `AUTO_BASELINE_SKIPPED<tab>path<tab>oid`.
 
 Receipts and retryable diagnostics print a fixed 12-character commit OID abbreviation. `show` and the transaction
@@ -244,9 +269,17 @@ prints `INTEGRATED <transaction-id> <head-oid>` and then pushes. When HEAD lacks
 discards or re-prepares the transaction.
 
 Exit status `0` means success or an idempotent replay, `2` means invalid invocation or configuration, and `3` means the
-repository was left safe but needs a retry or reconciliation. Other Git, hook, signing, and push failures return `1`.
-Pushes always fetch and compare first. Without `--rebase`, they never pull, merge, or rebase. A behind branch prints
-`BEHIND <branch> <count>` and exits `3`.
+repository was left safe but needs a retry or reconciliation, including a commit whose finding resolution failed. Other
+Git, hook, signing, and push failures return `1`. Pushes always fetch and compare first. Without `--rebase`, they never
+pull, merge, or rebase. A behind branch prints `BEHIND <branch> <count>` and exits `3`.
+
+The push destination is the configured upstream, `branch.<name>.remote` and `branch.<name>.merge`. The remote can be a
+URL, such as the fork URL that `gh pr checkout` writes. For a URL remote, ai-commit fetches the upstream branch and
+compares against the fetched OID from `git fetch --porcelain`, because no remote-tracking ref exists. ai-commit pushes
+to a differently named upstream branch only when `branch.<name>.pushRemote` equals `branch.<name>.remote`, as for a PR
+checkout. Otherwise ai-commit refuses the push with exit `2`, so a branch that only tracks `origin/main` never moves
+`main`. Only a branch without a configured remote falls back to `origin`, with `--set-upstream` and the local branch
+name.
 
 With `--rebase` (`push --rebase`, or `commit --push --rebase`), a behind branch is rebased onto its fetched upstream
 before the push attempt, under two conditions: no Git operation is in progress, and `git status` reports a clean working

@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [19.5.0] - 2026-10-12 - "Design Systems, Token Discipline And Verified Sources"
+
+> Adds **10** reviewed skills for native iOS and frontend UI work, design-system documentation, screenshot-to-UI matching, UI state coverage, token-lean coding-agent habits, terse Cockney delivery, timestamped YouTube and podcast quote research, official statistics lookups, and a digest-pinned progressive-headshot studio; it also refreshes Jet Browser to v0.9.0 and ships the Core-first product homepage with guided discovery and collections. Ships **2,687** skills.
+
+A catalog release for Claude Code, Cursor, Codex CLI, Gemini CLI, and related AI coding assistants. It includes the protected maintainer batch merged after `19.4.0`, with existing installation interfaces preserved.
+
+### Start here
+
+- Install: `npx agentic-awesome-skills@19.5.0`
+- [Choose your tool](README.md#choose-your-tool)
+- [Best skills by tool](README.md#best-skills-by-tool)
+- [Bundles](docs/users/bundles.md)
+- [Workflows](docs/users/workflows.md)
+
+### Added
+
+- **build-ui** - a step-by-step UI workflow: read the project, follow the plan that fits the job (new screen, dashboard, polish, simplify, review), then render, fix and check again at phone and desktop widths. `risk: safe`, MIT, official source [uxkin/agent](https://github.com/uxkin/agent).
+- **ios-screens** - build iPhone screens that feel native: tab bars and navigation stacks, sheets and detents, safe areas, Dynamic Type, dark mode, permissions, paywalls and empty states, checked on small and large iPhones. `risk: safe`, MIT, official source [uxkin/agent](https://github.com/uxkin/agent).
+- **write-design-md** - write or update a project's DESIGN.md from the colors, type scale, spacing, shapes and components it really uses, with agent-facing rules so new screens match and near-duplicates are surfaced as open questions. `risk: safe`, MIT, official source [uxkin/agent](https://github.com/uxkin/agent).
+- **ui-from-screenshot** - turn a screenshot or mockup into matching UI built from the project's own components, compare the rendered result side by side with the image, and fix the differences. `risk: safe`, MIT, official source [uxkin/agent](https://github.com/uxkin/agent).
+- **ui-states** - design and build the states generated UI usually forgets: first use, empty, loading, partial, error, offline, validation, permission, success, long content and busy actions. `risk: safe`, MIT, official source [uxkin/agent](https://github.com/uxkin/agent).
+- **arcmira-find-quotes** - search indexed YouTube and podcast transcripts for quotes, speakers and clip boundaries, then cite the episode, date and timestamped source link through an existing authorized Arcmira connection. `risk: safe`, Apache-2.0, official source [arcmira/mcp](https://github.com/arcmira/mcp).
+- **tokenleak** - token-lean working rules for coding agents: locate before reading, compute instead of reading data, bound command output, never re-read, batch independent calls, and prefer diffs over whole files, without trading away verification. `risk: safe`, MIT, official source [Pazificateur69/tokenleak](https://github.com/Pazificateur69/tokenleak).
+- **cockney** - a cheeky Cockney coding mode that returns terse replies and the smallest correct change, and switches back to plain English for security and destructive-action warnings. `risk: safe`, MIT, community source [Kadajett/cockney](https://github.com/Kadajett/cockney).
+- **invokely-statistics** - find official statistical figures, series, comparisons and place rankings through the Invokely MCP server and report each value with its indicator, period, unit and source citation. `risk: safe`, MIT, community source [estevecastells/awesome-copilot](https://github.com/estevecastells/awesome-copilot).
+- **ai-headshot-studio** - install and use the official AI Headshot Generator package, pinned by digest, for paid hosted work on the Beatra service, with self-update disabled before first use and an approval per paid call. `risk: critical`, MIT-0, official source [beatra-ai/ai-headshot-generator-skill](https://github.com/beatra-ai/ai-headshot-generator-skill).
+
+### Changed
+
+- **jet-browser** - refresh the skill to v0.9.0 (commit `b086730`): the published manifest now carries native `linux/amd64` and `linux/arm64` images, so the ARM guidance and every pinned source or release link were updated to the new tag. `risk: safe` is preserved.
+
+### Site and catalog
+
+- Core is the product homepage, with guided discovery, skill collections, shared-shortlist review for team adoption and clearer information pages; informational routes are accepted by the SEO verifier and sitemap.
+
+### Credits
+
+- **@UXKIN** for `build-ui`, `ios-screens`, `write-design-md`, `ui-from-screenshot` and `ui-states`
+- **@zealous1** for `arcmira-find-quotes`
+- **@Pazificateur69** for `tokenleak`
+- **@Kadajett** for `cockney`
+- **@estevecastells** for `invokely-statistics`
+- **@beatra-ai** for `ai-headshot-studio`
+- **@IRONICBo** for the Jet Browser v0.9.0 refresh
+
 ## [19.4.0] - 2026-10-11 - "Prompt Handoffs And Cost-Gated Scaling"
 
 > Adds **2** reviewed skills for turning a rough request into a clear prompt for another agent and for proving a data/AI workflow end to end on a tiny sample before scaling; it also refreshes the Datacircle LinkedIn lookup skill with the Fetchin provider, corrects the OrcaPromptVault artifact wording, and ships guided discovery, collections and a Core overview on the hosted catalog. Ships **2,677** skills.

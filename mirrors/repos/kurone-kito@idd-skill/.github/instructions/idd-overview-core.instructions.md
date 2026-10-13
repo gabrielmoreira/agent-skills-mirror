@@ -108,6 +108,18 @@ marker being authored by a trusted actor, and the GitHub server
 Repository-local actor policy and any forced-handoff settings live in
 `docs/customization.md`.
 
+## Payload-served placeholders
+
+When these instructions are read from the installed payload rather than
+from the repository's own copy, a placeholder written as `{{placeholder}}`
+means the value of its mapped effective-policy field: the "Policy field"
+column of the "Final placeholder meanings" table in
+`docs/onboarding/placeholders.md` (`idd-template/docs/onboarding/placeholders.md`
+in the source checkout). The `REPO_NAME` placeholder is the repository part of the
+`origin` slug, or the main worktree root's basename when there is no
+`github.com` origin. If a mapped field resolves to nothing in every policy
+tier, stop and report the missing field instead of guessing.
+
 ## Claim-state parsing
 
 To determine the current active claim, parse issue comments
@@ -216,13 +228,14 @@ force-push a pushed/shared branch;
 
 Out of scope, explicitly **not** blocked:
 
-- B1 setup commands on the primary worktree's `main` (per the B1
-  Anti-patterns rule, which requires keeping primary HEAD on `main`).
+- B1 setup commands on the primary worktree's `{default-branch}` (per the B1
+  Anti-patterns rule, which requires keeping primary HEAD on
+  `{default-branch}`).
 - A1.5 roadmap-audit coordination operations (claims whose `branch:`
   starts with `roadmap-audit/`).
 - F4 post-merge cleanup (F4 itself removes the sibling worktree;
-  subsequent local `main` updates run from the primary worktree by
-  design).
+  subsequent local `{development-branch}` updates run from the primary
+  worktree by design).
 - [Operator-present release](idd-resume.instructions.md#operator-present-release)
   steps 1-2 (pre-claim for the resuming session; the issue's own
   active claim is untouched until step 2).

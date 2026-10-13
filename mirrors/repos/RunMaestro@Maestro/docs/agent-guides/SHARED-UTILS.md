@@ -663,7 +663,7 @@ Document ids are always reconciled against the batch store's `documentList`, NOT
 
 ## Model Tiers & Effort (`src/shared/modelTiers.ts` - Both)
 
-One vocabulary (`low | medium | high`) for two independent axes: which model runs the turn (**tier**) and how hard it thinks (**effort**). The levels are ladder POSITIONS, not literal provider values - Claude's ceiling is `max`, Codex's floor is `minimal`.
+One vocabulary (`low | medium | high`) for two independent axes: which model runs the turn (**tier**) and how hard it thinks (**effort**). The levels are ladder POSITIONS, not literal provider values - Claude's ceiling is `max`, Codex's is `xhigh`.
 
 | Function / Constant                   | Signature                                           | Purpose                                                                               |
 | ------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------- |

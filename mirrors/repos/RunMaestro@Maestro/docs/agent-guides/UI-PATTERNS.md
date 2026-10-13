@@ -1372,6 +1372,8 @@ flashCopiedToClipboard(value, 'Session ID Copied'); // custom title
 
 **Always** prefer `flashCopiedToClipboard` for clipboard-success acks so wording, color, and duration stay consistent across the app.
 
+Clipboard acknowledgments and their dismissal are application-owned. Do not keep modal-local copied state or reset timers: the modal can close while a clipboard write or its feedback is pending. Let the shared Center Flash store own the feedback lifetime.
+
 ### Firing a flash (external - `maestro-cli`)
 
 ```bash

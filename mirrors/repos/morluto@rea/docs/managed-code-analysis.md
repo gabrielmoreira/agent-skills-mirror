@@ -26,6 +26,61 @@ current tool set.
 The canonical tool inventory is the
 [build-generated catalog](mcp-contracts.md#generated-catalog).
 
+## Inspect an assembly
+
+```bash
+rea inspect-managed-artifact /absolute/path/Assembly.dll --json
+rea inspect-managed-members /absolute/path/Assembly.dll --json
+```
+
+Use the artifact result to identify the assembly and its metadata coverage.
+Member results retain build-local tokens, signatures, CIL bodies, and decoded
+relationships. Use an exact reported `full_name` with `--type` when a focused
+inspection is needed; see [selected member inspection](#selected-member-inspection).
+Compare separate builds with [member comparison](#member-comparison), preserving
+their paths, digests, and selection scope.
+
+### Metadata overview and retained rows
+
+The existing CLI and omitted/complete MCP detail return complete metadata
+inventories. For identity and classification questions, select
+`inspect_managed_artifact` with
+`{"path":"/absolute/path/Assembly.dll","detail":"summary"}` on the first call.
+This keeps the complete source in the session and returns a distinct linked
+`inspect_analysis_view` overview with complete PE/CLI, classification and its
+evidence, metadata status, module/MVID, assembly, frameworks, returned-row counts,
+coverage/issues and limitations. No assembly is loaded or executed.
+
+Use `normalized_result.parent_evidence_id` to page original rows:
+
+```json
+{
+  "source": {
+    "kind": "retained-evidence",
+    "evidence_id": "<parent_evidence_id>"
+  },
+  "view": {
+    "kind": "managed",
+    "collection": "attributes",
+    "offset": 0,
+    "limit": 16
+  }
+}
+```
+
+Collections are `references`, `resources` and `attributes`; rows retain their
+original values, nulls, order, metadata tokens and offsets. Pages retain source
+metadata status and coverage. Exhaustion covers the returned parent collection,
+not all possible metadata, and empty rows under partial/unavailable metadata do
+not establish absence. Tokens are build-local and require the recorded artifact
+SHA-256 and known module MVID for cross-observation matching.
+
+Retained views do not repeat the parser or require the source file to remain
+available. Portable views use the authenticated original Evidence inline,
+including the existing `inspect-analysis-view` CLI. Session record lifetime and
+export/import semantics remain unchanged. A server without Evidence retention
+rejects selected summary before analysis; complete delivery remains available.
+
 ## Shipped scope
 
 The canonical parser admits PE/CLI bytes and their metadata/CIL without loading
@@ -52,6 +107,12 @@ CIL decoding, and projected inspection records have a separate conservative
 64 MiB representation budget; shared heap strings are cached, but repeated
 output occurrences still consume that budget. These are inspection resource
 policies, not PE format limits or a hard bound on total V8 heap use.
+
+Path-based member comparison uses the same per-input snapshot policy and
+inspects its two selected paths sequentially, retaining each inspection rather
+than both full byte snapshots. The limit therefore remains a per-file resource
+admission rule, not an aggregate comparison limit. Comparison Evidence keeps
+the caller-selected paths as its parameters and artifact locations.
 
 Input overflow returns a resource constraint. Decode or projection overflow
 reports `resource-limit` with unavailable or partial coverage; omitted facts do
@@ -88,19 +149,39 @@ assembly. Older member Evidence without `selection` remains readable.
 
 ## Analysis objective
 
-REA's managed-code track is intended to answer five different questions without
-collapsing them:
+Start by identifying the artifact with `inspect_managed_artifact`, then inspect
+its types and CIL with `inspect_managed_members`. Use [member comparison](#member-comparison)
+for another build, and [managed/native boundary rules](#managednative-boundary-rules)
+when matching declared native calls to supplied native Evidence. Static inspection
+does not load or execute the assembly. Reconstructed structure and unresolved
+native/runtime questions retain their own authority and coverage.
 
-1. What exact artifact and managed deployment form is this?
-2. What do its admitted metadata and CIL bytes state?
-3. What source-like or behavioral structure can be reconstructed or inferred?
-4. Which findings survive an exact-build check or a cross-build structural
-   comparison?
-5. Which remaining questions require native analysis or runtime evidence that
-   static inspection cannot supply?
+## Member comparison
 
-The ordinary workflow ends at question four. Static analysis never loads or
-executes the target.
+Names and semantic labels do not establish durable member identity. Comparison
+preserves observed differences, structural inferences, and unknowns separately.
+
+Cross-version matching first prefers exact CIL/signature identity. When that
+does not match, it pairs an exact declared type, method name, and raw signature
+before trying structural body shape. The exact-signature key uses names only
+as part of that full tuple; names alone never select a pair. Duplicate tuples
+remain ambiguous rather than being paired by token order. Fields follow the
+same exact tiers. The raw signature is exact whether or not REA decoded it, so
+undecoded signatures pair by that tuple too, but they never enter structural
+rounds. An unmatched member is therefore reported as `unknown`, not added or
+removed, when its own signature was not decoded or when the other side has an
+unpaired member, one-sided or ambiguous, with the same declared type and name
+whose signature was not decoded.
+
+For a matched method, an unavailable or partial body makes body-shape facets
+unknown while preserving observed signature differences. Structural identity
+compares normalized signatures, the limited decoded-CIL tuple fingerprint,
+constants, and bounded shape context. It reports all candidates at the winning
+score and remains ambiguous when the evidence does not distinguish them. The
+digest does not itself remap metadata tokens.
+
+Tokens are always remapped through observed structure. A caller cannot carry
+`0x06001234` into a new MVID and assume it names the same method.
 
 ## NativeAOT metadata recovery
 
@@ -122,23 +203,37 @@ lists supported OS/architecture targets and deployment limitations, while its
 [native library guide](https://learn.microsoft.com/en-us/dotnet/core/deploying/native-aot/libraries)
 describes exported shared-library entry points.
 
-REA supports an optional headless adapter for the Ghidra NativeAOT analyzer.
-Supply a locally built `REA_GHIDRA_NATIVEAOT_JAR`; REA does not install the
-extension or its toolchain. The verified boundary is .NET 8.0.22 RTR 9.1,
-x86-64 ELF and native Windows PE targets analyzed on Linux x64 with Ghidra
-12.1.4 and JDK 21. Other layouts, architectures, and hosts are unsupported.
-See [NativeAOT recovery](ghidra-nativeaot.md) for build/configuration, recovered
-metadata, derived-memory provenance, and the real verification lane.
+REA offers a built-in read-only snapshot parser for x64 PE/RTR 9.1 metadata and
+an optional Linux headless Ghidra adapter for annotations and broader recovery.
+The adapter requires a locally built `REA_GHIDRA_NATIVEAOT_JAR`; REA does not
+install it or its toolchain. The [NativeAOT guide](ghidra-nativeaot.md) defines
+these routes, their layout/host restrictions, derived-memory provenance, and
+verification coverage.
 
 REA's experimental Windows Ghidra boundary admits native x86 and x86-64 PE
 applications and DLLs for static analysis. This does not establish Windows
 NativeAOT metadata-recovery coverage.
 
 For NativeAOT analysis, preserve the selected native artifact's path and digest
-and report recovered type data as provider observations. Linking those types
+and report recovered type data with its returned provenance. Linking those types
 to native function addresses requires verified
 provider evidence; names or vtable similarity alone do not prove that a native
 function implements a specific managed method.
+
+## Managed/native boundary rules
+
+`verify_managed_native_boundaries` compares declared P/Invoke module and entry
+point identities with supplied native export or function evidence. Name/module
+matches establish declaration links; they do not establish that a call executed.
+
+Metadata tokens are not native addresses. Native body mapping for C++/CLI,
+ReadyToRun, NativeAOT, and IL2CPP requires separately verified format and provider
+support. The managed static tools do not recover those mappings. The optional
+[Ghidra NativeAOT extension](ghidra-nativeaot.md) has its own supported boundary.
+
+Declared import inventory supports a bounded positive claim. Its absence does
+not exclude dynamic resolution, generated code, protected code, native helpers,
+or server-side behavior.
 
 ## Evidence record shape
 
@@ -222,48 +317,6 @@ For example, a decoded `nop; ret` body serializes exactly as
 `5e5fad7741cb44bca3a4f045546b7449990da343f612f5f34c0ca30e9eee0636`.
 This vector specifies the tuple order, `null` handling, absence of whitespace,
 UTF-8 encoding, and lowercase hexadecimal output.
-
-## Member comparison
-
-Names and semantic labels do not establish durable member identity. Comparison
-preserves observed differences, structural inferences, and unknowns separately.
-
-Cross-version matching first prefers exact CIL/signature identity. When that
-does not match, it pairs an exact declared type, method name, and raw signature
-before trying structural body shape. The exact-signature key uses names only
-as part of that full tuple; names alone never select a pair. Duplicate tuples
-remain ambiguous rather than being paired by token order. Fields follow the
-same exact tiers. The raw signature is exact whether or not REA decoded it, so
-undecoded signatures pair by that tuple too, but they never enter structural
-rounds. An unmatched member is therefore reported as `unknown`, not added or
-removed, when its own signature was not decoded or when the other side has an
-unpaired member, one-sided or ambiguous, with the same declared type and name
-whose signature was not decoded.
-
-For a matched method, an unavailable or partial body makes body-shape facets
-unknown while preserving observed signature differences. Structural identity
-compares normalized signatures, the limited decoded-CIL tuple fingerprint,
-constants, and bounded shape context. It reports all candidates at the winning
-score and remains ambiguous when the evidence does not distinguish them. The
-digest does not itself remap metadata tokens.
-
-Tokens are always remapped through observed structure. A caller cannot carry
-`0x06001234` into a new MVID and assume it names the same method.
-
-## Managed/native boundary rules
-
-`verify_managed_native_boundaries` compares declared P/Invoke module and entry
-point identities with supplied native export or function evidence. Name/module
-matches establish declaration links; they do not establish that a call executed.
-
-Metadata tokens are not native addresses. Native body mapping for C++/CLI,
-ReadyToRun, NativeAOT, and IL2CPP requires separately verified format and provider
-support. The managed static tools do not recover those mappings. The optional
-[Ghidra NativeAOT extension](ghidra-nativeaot.md) has its own supported boundary.
-
-Declared import inventory supports a bounded positive claim. Its absence does
-not exclude dynamic resolution, generated code, protected code, native helpers,
-or server-side behavior.
 
 ## Tool and packaging boundary
 

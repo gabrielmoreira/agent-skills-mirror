@@ -36,7 +36,8 @@ commits, pushes, and publishes the result after validation.
    - Write `skills/<cli-skill>/references/version.txt` with exactly the requested semver and one trailing newline.
 4. For `chromium-browser`, complete these steps even when the installed version has not changed:
    - Confirm `skills/chromium-browser/SKILL.md` exists.
-   - Read `~/.local/libexec/mcp/chrome-devtools.sh` without changing it. You may read its chezmoi source for context.
+   - Read `~/.agents/skills/chromium-browser/scripts/chrome-devtools-mcp.sh` without changing it. Use
+     `skills/chromium-browser/scripts/chrome-devtools-mcp.sh` in this checkout as its catalog source.
    - Verify the wrapper's installed executable version through package metadata or its `--version` output. Never start
      the MCP server for this check.
    - Inspect official stable Chrome DevTools MCP release notes and tagged documentation. Compare them with the installed

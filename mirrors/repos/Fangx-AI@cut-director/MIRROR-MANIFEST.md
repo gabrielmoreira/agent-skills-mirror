@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Fangx-AI/cut-director` — 26 default patterns, 28 followed patterns, 30 file(s) materialized.
+Mirror of `Fangx-AI/cut-director` — 26 default patterns, 2 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `Fangx-AI/cut-director` — 26 default patterns, 28 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 28 |
-| Files         | 30 |
+| Followed pats | 2 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,34 +51,8 @@ Mirror of `Fangx-AI/cut-director` — 26 default patterns, 28 followed patterns,
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `PROMPT-LIBRARY.md`
-- `references/prompt-012-semantic-audio-accent.md`
-- `references/prompt-013-incremental-payoff.md`
-- `references/prompt-014-matched-before-after.md`
-- `references/prompt-015-demo-relay.md`
-- `references/prompt-variants.md`
-- `references/compatibility.md`
-- `references/prompt-010-three-stage-count-hook.md`
-- `references/prompt-011-task-board-progression.md`
-- `README.md`
-- `PROMPTS.md`
-- `VISUAL-GALLERY.md`
-- `references/user-guide.md`
-- `CONTRIBUTING.md`
-- `CHANGELOG.md`
-- `TRADEMARKS.md`
-- `THIRD_PARTY_NOTICES.md`
-- `assets/prompt-examples/source/README.md`
-- `tests/forward-results.md`
-- `references/prompt-001-gesture-logo-pop.md`
-- `references/prompt-002-split-screen-explainer.md`
-- `references/prompt-003-brand-mode-comparison.md`
-- `references/prompt-004-top-chapter-progress-rail.md`
-- `references/prompt-005-diagonal-card-waterfall.md`
-- `references/prompt-006-editable-three-card-flip.md`
-- `references/prompt-007-hd-page-focus-lock.md`
-- `references/prompt-008-real-image-deck-hero.md`
-- `references/prompt-009-input-feedback-result.md`
+- `references/cut.md`
+- `references/subtitles.md`
 
 ## File Index
 
@@ -88,34 +62,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`agents/openai.yaml`](agents/openai.yaml) |
 | 2 | ✓ | [`SKILL.md`](SKILL.md) |
-| 3 | → | [`assets/prompt-examples/source/README.md`](assets/prompt-examples/source/README.md) |
-| 4 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 5 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 6 | → | [`PROMPT-LIBRARY.md`](PROMPT-LIBRARY.md) |
-| 7 | → | [`PROMPTS.md`](PROMPTS.md) |
-| 8 | → | [`README.md`](README.md) |
-| 9 | → | [`references/compatibility.md`](references/compatibility.md) |
-| 10 | → | [`references/prompt-001-gesture-logo-pop.md`](references/prompt-001-gesture-logo-pop.md) |
-| 11 | → | [`references/prompt-002-split-screen-explainer.md`](references/prompt-002-split-screen-explainer.md) |
-| 12 | → | [`references/prompt-003-brand-mode-comparison.md`](references/prompt-003-brand-mode-comparison.md) |
-| 13 | → | [`references/prompt-004-top-chapter-progress-rail.md`](references/prompt-004-top-chapter-progress-rail.md) |
-| 14 | → | [`references/prompt-005-diagonal-card-waterfall.md`](references/prompt-005-diagonal-card-waterfall.md) |
-| 15 | → | [`references/prompt-006-editable-three-card-flip.md`](references/prompt-006-editable-three-card-flip.md) |
-| 16 | → | [`references/prompt-007-hd-page-focus-lock.md`](references/prompt-007-hd-page-focus-lock.md) |
-| 17 | → | [`references/prompt-008-real-image-deck-hero.md`](references/prompt-008-real-image-deck-hero.md) |
-| 18 | → | [`references/prompt-009-input-feedback-result.md`](references/prompt-009-input-feedback-result.md) |
-| 19 | → | [`references/prompt-010-three-stage-count-hook.md`](references/prompt-010-three-stage-count-hook.md) |
-| 20 | → | [`references/prompt-011-task-board-progression.md`](references/prompt-011-task-board-progression.md) |
-| 21 | → | [`references/prompt-012-semantic-audio-accent.md`](references/prompt-012-semantic-audio-accent.md) |
-| 22 | → | [`references/prompt-013-incremental-payoff.md`](references/prompt-013-incremental-payoff.md) |
-| 23 | → | [`references/prompt-014-matched-before-after.md`](references/prompt-014-matched-before-after.md) |
-| 24 | → | [`references/prompt-015-demo-relay.md`](references/prompt-015-demo-relay.md) |
-| 25 | → | [`references/prompt-variants.md`](references/prompt-variants.md) |
-| 26 | → | [`references/user-guide.md`](references/user-guide.md) |
-| 27 | → | [`tests/forward-results.md`](tests/forward-results.md) |
-| 28 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
-| 29 | → | [`TRADEMARKS.md`](TRADEMARKS.md) |
-| 30 | → | [`VISUAL-GALLERY.md`](VISUAL-GALLERY.md) |
+| 3 | → | [`references/cut.md`](references/cut.md) |
+| 4 | → | [`references/subtitles.md`](references/subtitles.md) |
 
 ---
 

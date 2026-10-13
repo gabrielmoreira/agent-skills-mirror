@@ -624,6 +624,27 @@ They share its privileges and crash domain.
 - Do not enable the `modules` feature directly on the unconditional
   `tinybus` dependency. Forward it from OpenHuman's own feature.
 
+Module sources (`OPENHUMAN_MODULE_SOURCE`, `[modules] source`; details in
+`crates/openhuman-core/src/modules/README.md`, "Module source"):
+
+- `release` is the registry-pinned, digest-checked GitHub artifact. CI and
+  shipped builds use `release` only; never document or configure `linked` or
+  `source` for CI or production.
+- `linked` (in-process factory) and `source` (a locally built artifact from the
+  gitlink) are local development and local tests only.
+- Iterate with `scripts/modules/build.mjs`, check the pin with
+  `scripts/modules/pin-status.mjs` before pushing, and release and re-pin with
+  `scripts/modules/release-and-repin.mjs`.
+
+`[components]` (`config.toml`, `OPENHUMAN_COMPONENT_<NAME>=0|1`) holds one bool
+per tiny dependency, all default true. It resolves to a `ComponentSet` that only
+narrows the host's `DomainSet`, `ServiceSet` and `ToolGroups`, and takes effect
+on the next core start. It adds no Cargo gate. A disabled component's module is
+never downloaded, mapped or registered (`ModuleState::Disabled`,
+`LoadError::Disabled`), its tools are not registered, its RPC namespace answers
+`COMPONENT_DISABLED:<name>`, and `about_app` marks its capabilities `disabled`.
+See `gitbooks/developing/components.md`.
+
 Memory uses `tinymemory-api` as its contract. `memory::api` is a selective
 re-export of the wire surface, not a place to copy or widen the whole crate.
 Pass source scope and self-echo exclusions explicitly because task-local state

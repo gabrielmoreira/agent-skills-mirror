@@ -14,7 +14,8 @@ repo, they almost always want to **mod a game**, or to learn how a game was modd
 
 ## Tools
 - **`bin/um`** is the Python CLI, and it sets itself up with `uv`.
-  - Put it on PATH: `export PATH="$PWD/bin:$PATH"`, or install it anywhere with
+  - Put it on PATH: `export PATH="$PWD/bin:$PATH"` (from Windows cmd or PowerShell, add `bin` to PATH and
+    `bin\um.cmd` runs it), or install it anywhere with
     `uv tool install git+https://github.com/rehan-remade/universal-modder`.
   - Every group has `--help`:
     - `scan`: installed games, engine, anti-cheat, loaders, saves, routes
@@ -36,7 +37,8 @@ repo, they almost always want to **mod a game**, or to learn how a game was modd
   `skills/`, then copy it over; a test fails while the copies differ.
 - **Engine playbooks:** `skills/mod-any-game/references/engines/`.
 - **Worked examples:** `examples/terraria-tmodloader`, `examples/aoe2-de-civ`,
-  `examples/minecraft-gta5-passthrough`, `examples/outer-wilds-portal-gun`.
+  `examples/minecraft-gta5-passthrough`, `examples/outer-wilds-portal-gun`, `examples/mindustry-homing`,
+  `examples/cities-skylines-city-dashboard`.
 
 ## Rules (full reasoning in `skills/mod-any-game/references/safety.md`)
 - **What you can mod:** any game the user owns: single-player, multiplayer, or servers the user hosts.

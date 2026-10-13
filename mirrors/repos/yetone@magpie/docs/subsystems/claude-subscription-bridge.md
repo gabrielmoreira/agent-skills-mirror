@@ -58,6 +58,15 @@ started a new Claude Code told the whole conversation (#1546).
 A run started anew is told the whole conversation in one user message
 (`renderClaudePrompt`), a prefix the prompt cache has never seen, so the
 conversation is written to the cache again and its images are sent again.
+That message holds the history in blocks of `historyChunk` messages, and
+magpie's one mark (Claude Code keeps three of Anthropic's four) is on the
+last whole block, else on the caller's instructions: a later run started
+anew for the same conversation within the hour reads the history up to an
+earlier run's mark, found within Anthropic's 20-block lookback. A
+conversation with no history (no reply that calls no tool, as a sub-agent's
+loop of tool calls that Claude Code's AgentSummary asks a summary of) has
+its every message but the last chunked instead. The turn to answer after a
+history is not chunked, and image blocks count toward the lookback.
 A turn that goes on in the run that had the last one is told only the
 messages since (`renderClaudeTurn`), and Anthropic reads the rest from the
 cache.
@@ -96,6 +105,43 @@ exit status and the end of its stderr (`endedBefore`), as one that ends
 before it reads its input is (`whyEnded`). The tool-results path and
 `resume` already start a new run when the one they found has ended.
 
+## A side question after a reply (#1638)
+
+After each turn Claude Code 2.1.290 asks its prompt suggestion: the
+conversation so far, with the turn's system prompt, tools and thinking so
+it shares the cache, and one more user message, "[SUGGESTION MODE: …",
+with no system message after it. Its request goes on from the turn's
+reply like a next turn, so `resume` gives it the conversation's run, and
+the run waited at the suggestion's reply. The user's real next turn then
+found no run and was told the whole conversation in a new Claude Code
+(the reporter's 41 messages, 88k tokens written to the cache, minutes
+after the last reply, with nothing in the log).
+
+`ended` now keeps, beside the run's new key, the key it went on from
+(`behindKey`) and the uuid of the turn that took it there (`behindTurn`).
+A turn that finds no run under its own key takes one whose `behindKey` is
+its key, rewinds it to `behindTurn` (as `letGo` does) and tells it only
+the turn's messages ("taken back from the side question it answered
+since"). The run is marked `rewound`, so it isn't shelved. A run that
+can't be rewound is let go and the turn told whole to a new run, as
+before. Tried with the real 2.1.290 client in `-p --prompt-suggestions`
+and the real 2.1.290 as the run, against a local mock of Anthropic: one
+run for the whole session, and the turn after each suggestion went on
+from the reply before it. Other side requests that go on from the
+conversation (extract_memories, away_summary, /btw) take the same path;
+they weren't tried.
+
+A turn after a reply that starts a new run logs why none waited
+(`whyNoRun`, "claude: no run waits for this turn: …"): its run went on
+with a turn this one doesn't follow, waits under another key (the model,
+settings, system prompt or tools differ), waits at an earlier turn, is
+busy with another request, ended (how long ago, and why: `endWhy`, set by
+`abortFor`, kept in `b.lost` by conversation), or no run here has had the
+conversation. Tool results that find no run waiting add what became of
+the run that made the calls ("the run that made the calls ended …",
+`whyCallsLost`, from `b.lostCalls`, which `removeRun` fills with the calls
+the run waited on and the results it was last handed).
+
 ## A turn the client gives up on (`letGo`, #780, #1365)
 
 When the client goes away mid-reply, a run resumed for the turn is told to
@@ -113,7 +159,15 @@ ended, and that request was told the whole conversation in a new run.
 Claude Code 2.1.295 rewinds past a tool round mid-reply (tried against a
 local mock of Anthropic). A run started anew for the turn has nothing to
 rewind to and is still ended; so is one with a call still in the client's
-hands (`pending`).
+hands (`pending`). Rewinding it to its first message would leave nothing,
+and its results were already handed over its MCP calls, so the results
+sent again go to a new run told the whole conversation (#1638's first
+case: a 499, then "tool results no run waiting" and 17 messages told).
+Keeping its cache would mean taking it back to Claude Code's own
+tool_result message and telling the results again as text, which wasn't
+done: the reporter's requests aren't known, and a fork that took the
+lead's calls (`claimResume`) looks the same from here. The log now says
+which run ended and why.
 
 ### One key per waiting run
 
@@ -263,6 +317,50 @@ there and gets a run started anew (`answeredElsewhere` in the log). It is
 never refused: Claude Code doesn't retry a 409, and the agent that sent it
 stops (ylorn on Discord).
 
+## The user's words beside tool results (#872, #1878)
+
+A user message can hold tool results and, after them, text blocks of the
+user's: Claude Code's AgentSummary asks for its sub-agent's progress label
+that way ("Describe your most recent action in 3-5 words. Do not use
+tools.", JinJieBeWater), a fork its directive, and an older Claude Code a
+message sent while a tool ran (#872). The words are the user's, and both
+ways a run is told them keep them apart from the tool's output:
+
+- **A run told the messages as text** (`renderParts`, for a run started
+  anew and for a resumed turn): a text or file part after a tool result in
+  the same message closes the result, `[end of tool result id=…]`, and is
+  marked `[user message]`. Before, it ran on after the tool's last line
+  (`SOURCE_LAST_LINEDescribe your…`), and the model read it as tool output
+  and went on with the task. A result followed by nothing, or by another
+  result, is told as before.
+- **Results that go on in their run** (`match`, `continueWith`): `match`
+  no longer adds the words to the last result's text, which made them part
+  of the MCP result. `saidWithResults` takes them, and `continueWith`
+  writes them to Claude Code's input as a user message (`queue`) before it
+  hands the results over, and waits for Claude Code's `command_lifecycle`
+  "queued" for that message's uuid (at most `queuedWait`, 2s; a version
+  that doesn't say goes on after it). Claude Code then tells its model the
+  message with the result, as one the user sent while it worked ("The user
+  sent a new message while you were working: …"), within the turn. Tried
+  with the real Claude Code 2.1.296 against a local mock of Anthropic: the
+  next request holds the tool's output, then that reminder, and the turn
+  ends with one `result`. Handed over after the results, a message could
+  come after the model's reply and start a turn of its own.
+
+Where the result ends is said by the message's parts alone. A tool whose
+output says "Do not use tools." has it told as its output, inside the
+result. The words of a message that holds images (pi-ai's "Attached
+image(s) from tool result:" over Chat, #1382) still go with the result
+before them, with the images.
+
+A request with words beside the results still takes the run waiting on
+the calls when it comes first (`claimResume`). An AgentSummary that does
+is answered in the sub-agent's run, and the sub-agent's own next request
+then gets a run started anew, as any request after another answered the
+calls does. Starting such a request anew instead would tell the whole
+conversation to a new run, a prefix the cache has never seen (#1716,
+#1717), for every message sent mid-turn.
+
 ## The account's allowance on the reply (#1257)
 
 Claude Code tells a run's account allowance in its stream-json
@@ -288,7 +386,7 @@ carries none.
 
 ```sh
 go test -tags nogui ./internal/claudecode/ -count=1
-go test -tags nogui ./internal/gateway/ -run 'ClaudeSubscriptionRunsTheDownloaded|ClaudeSubscriptionWithoutClaudeCode|ClaudeRewritten|LostMedia|ImagesTakenOut|RunLetGoWhenTheClientRewrote|ClaudeSessionTempFiles|ClaudeLetGo|ClaudeSessionFiles|ClaudeOldSessions|ClaudeSubscriptionReplySaysTheAllowance|ClaudeAllowanceHeaders|ClaudeForksAnsweringTheLeadsCalls|ClaudeTurnGivenUpOn|ClaudeToolResultsGivenUpOn|ClaudePromptMarksEarlierTurns|ClaudeUnloadableSession|ClaudeEndedRunSaysWhy|ClaudeIdle' -count=1
+go test -tags nogui ./internal/gateway/ -run 'ClaudeSubscriptionRunsTheDownloaded|ClaudeSubscriptionWithoutClaudeCode|ClaudeRewritten|LostMedia|ImagesTakenOut|RunLetGoWhenTheClientRewrote|ClaudeSessionTempFiles|ClaudeLetGo|ClaudeSessionFiles|ClaudeOldSessions|ClaudeSubscriptionReplySaysTheAllowance|ClaudeAllowanceHeaders|ClaudeForksAnsweringTheLeadsCalls|ClaudeTurnGivenUpOn|ClaudeToolResultsGivenUpOn|ClaudePromptMarksEarlierTurns|ClaudeHistoryCachedAcrossNewRuns|ClaudeUnloadableSession|ClaudeEndedRunSaysWhy|ClaudeIdle|ClaudeSideQuestion|ClaudeNoRunSaysWhy|ClaudeToolResultsNoRunSaysWhy|ClaudePromptToldUserText|ClaudePromptKeepsInstructions|ClaudeToolResultsGoOnWithTheUsersWords|ClaudeToolResultsKeepInstructions|ToolResultKeepsUserTextSentMidTurn' -count=1
 ```
 
 `claude_rewritten_test.go` has a case for each relaxation and one for each

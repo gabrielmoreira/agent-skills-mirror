@@ -138,6 +138,33 @@ checks that `crates/openhuman-app/Cargo.toml` forwards exactly that set.
 Turning a gate off drops real code and, for some gates, whole native dependencies. For measured binary sizes and RSS across a few feature recipes,
 see [Performance](performance.md).
 
+## Local module development
+
+Loadable modules (`documents`, `voice`, `mcp`, and so on) come from pinned,
+digest-checked GitHub releases by default. That is the only source CI and
+shipped builds use. To iterate on a module in `vendor/<submodule>` without
+releasing it, switch the source locally:
+
+```bash
+# Build the module from its gitlink and print the environment for it
+eval "$(node scripts/modules/build.mjs tinydocs --print-env)"
+OPENHUMAN_MODULE_SOURCE=source ./target/debug/openhuman-core serve
+
+# Or link it into the CLI (non-product feature)
+OPENHUMAN_MODULE_SOURCE=linked cargo run -p openhuman-cli --features linked-modules -- serve
+
+# Before pushing: is the gitlink ahead of the registry pin?
+node scripts/modules/pin-status.mjs
+
+# Release the module and re-pin the registry (asks before publishing)
+node scripts/modules/release-and-repin.mjs tinydocs --bump patch
+```
+
+`OPENHUMAN_MODULE_SOURCE_<ID>` overrides one module. If a `linked` or `source`
+module is unavailable the core falls back to the release and logs a warning;
+`modules.list` shows which source each module is served from. Details:
+[Loadable modules](loadable-modules.md).
+
 ## 4. macOS prerequisites
 
 Install:

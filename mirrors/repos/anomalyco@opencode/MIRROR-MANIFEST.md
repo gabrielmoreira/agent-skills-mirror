@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 69 file(s) materialized.
+Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 70 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 69 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 69 |
+| Files         | 70 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -120,15 +120,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 58 | ✓ | [`packages/web/README.md`](packages/web/README.md) |
 | 59 | ✓ | [`script/ast-grep/effect-simplifications/README.md`](script/ast-grep/effect-simplifications/README.md) |
 | 60 | ✓ | [`sdks/vscode/README.md`](sdks/vscode/README.md) |
-| 61 | ✓ | [`services/files/README.md`](services/files/README.md) |
-| 62 | ✓ | [`services/README.md`](services/README.md) |
-| 63 | ✓ | [`services/update/README.md`](services/update/README.md) |
-| 64 | ✓ | [`services/www/AGENTS.md`](services/www/AGENTS.md) |
-| 65 | ✓ | [`services/www/README.md`](services/www/README.md) |
-| 66 | ✓ | [`services/www/src/docs/AGENTS.md`](services/www/src/docs/AGENTS.md) |
-| 67 | ✓ | [`specs/v2/README.md`](specs/v2/README.md) |
-| 68 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 69 | → | [`README.md`](README.md) |
+| 61 | ✓ | [`services/changelog/README.md`](services/changelog/README.md) |
+| 62 | ✓ | [`services/files/README.md`](services/files/README.md) |
+| 63 | ✓ | [`services/README.md`](services/README.md) |
+| 64 | ✓ | [`services/update/README.md`](services/update/README.md) |
+| 65 | ✓ | [`services/www/AGENTS.md`](services/www/AGENTS.md) |
+| 66 | ✓ | [`services/www/README.md`](services/www/README.md) |
+| 67 | ✓ | [`services/www/src/docs/AGENTS.md`](services/www/src/docs/AGENTS.md) |
+| 68 | ✓ | [`specs/v2/README.md`](specs/v2/README.md) |
+| 69 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 70 | → | [`README.md`](README.md) |
 
 ---
 

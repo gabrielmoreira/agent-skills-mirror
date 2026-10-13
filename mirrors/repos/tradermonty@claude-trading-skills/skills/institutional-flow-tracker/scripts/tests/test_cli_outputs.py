@@ -4,8 +4,14 @@ import json
 import sys
 
 import analyze_single_stock as single
+import analyze_single_stock as single_mod
 import pytest
 import requests
+import track_institutional_flow as flow_mod
+
+# The vendored class object bound in the script modules (issue #495).
+FMPClient = single_mod.FMPClient
+assert FMPClient is flow_mod.FMPClient
 import track_institutional_flow as flow
 
 
@@ -36,7 +42,9 @@ def offline(monkeypatch):
     monkeypatch.delenv("FMP_API_KEY", raising=False)
     monkeypatch.setattr(flow, "current_quarter", lambda _: (2026, 1))
     monkeypatch.setattr(single, "current_quarter", lambda _: (2026, 1))
-    monkeypatch.setattr(flow.time, "sleep", lambda _: None)
+    # Issue #495: the former fixed sleep is gone (pacing lives in the vendored
+    # client); neutralize the client's own 0.3s inter-call delay for offline tests.
+    monkeypatch.setattr(flow.FMPClient, "RATE_LIMIT_DELAY", 0.0)
 
 
 @pytest.mark.parametrize("module,arguments", [(flow, []), (single, ["test"])])
@@ -46,8 +54,9 @@ def test_missing_key_exits_without_provider_or_files(
     def forbidden(*args, **kwargs):
         pytest.fail("Missing-key CLI reached provider boundary")
 
-    cls = flow.InstitutionalFlowTracker if module is flow else single.SingleStockAnalyzer
-    monkeypatch.setattr(cls, "_get", forbidden)
+    # Issue #495: transport moved to the vendored client; the gate patches
+    # the client-level request entry point instead of the script's _get.
+    monkeypatch.setattr(FMPClient, "_institutional_get", forbidden)
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(sys, "argv", [module.__file__, *arguments])
     with pytest.raises(SystemExit) as exc:
@@ -101,7 +110,7 @@ def test_screen_cli_persists_filtered_ranked_json_and_markdown(monkeypatch, tmp_
         assert path.endswith("extract-analytics/holder")
         return []
 
-    monkeypatch.setattr(flow.InstitutionalFlowTracker, "_get", provider)
+    monkeypatch.setattr(FMPClient, "_institutional_get", provider)
     reports = tmp_path / "reports"
     monkeypatch.setattr(
         sys,
@@ -160,7 +169,7 @@ def test_empty_screen_cli_writes_empty_json_without_markdown(monkeypatch, tmp_pa
         calls.append(path)
         return []
 
-    monkeypatch.setattr(flow.InstitutionalFlowTracker, "_get", provider)
+    monkeypatch.setattr(FMPClient, "_institutional_get", provider)
     monkeypatch.setattr(
         sys,
         "argv",
@@ -207,7 +216,7 @@ def test_single_stock_cli_report_or_insufficient_history(
         assert path.endswith("extract-analytics/holder")
         return []
 
-    monkeypatch.setattr(single.SingleStockAnalyzer, "_get", provider)
+    monkeypatch.setattr(FMPClient, "_institutional_get", provider)
     monkeypatch.setattr(
         sys,
         "argv",

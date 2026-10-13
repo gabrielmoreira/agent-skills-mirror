@@ -67,6 +67,7 @@ These backends have distinct account contracts. Compatible inference APIs do not
 | `kimi` | Account / [kimiOpenPlatform](../../src/services/apiAdapters/kimiOpenPlatform/) | Kimi China: separate accounts, credentials and CNY balances from Global. Shares implementation with Global, not account identity; neither type is Kimi Code. | [China console](https://platform.kimi.com/) · [Regional boundaries](../../src/services/kimiOpenPlatform/deployments.ts) |
 | `kimi-global` | Account / [kimiOpenPlatform](../../src/services/apiAdapters/kimiOpenPlatform/) | Kimi Global: separate accounts, credentials and USD balances from China. Region changes must not silently reuse the other region's credentials. | [Global console](https://platform.kimi.ai/) · [Regional boundaries](../../src/services/kimiOpenPlatform/deployments.ts) |
 | `grsai` | Account / [grsai](../../src/services/apiAdapters/grsai/) | Provider-owned REST backend, not a New API derivative. `grsai.com` and `grsai.ai` share an account service; console API and inference origins have separate roles. | [Console](https://grsai.com/) · [Alternate console](https://grsai.ai/) · [Protocol owner](../../src/services/apiService/grsai/) |
+| `cubence` | Account / [cubence](../../src/services/apiAdapters/cubence/) | Hosted cookie-authenticated account service with stored credit, today's usage, native keys and invitation aff. | [Website](https://cubence.com/) · [Documentation](https://docs.cubence.com/en/docs) |
 
 ### Managed-only backend types
 
@@ -107,6 +108,7 @@ Update the owner of the information when its contract changes:
 | Reusable integration procedures | The relevant integration skill reference; shared module invariants belong in the module's existing README |
 | Deployment observations, versions, build hashes, sample rewards and live validation results | The current task's spec and evidence index; raw captures remain local under the [evidence workflow](../../.agents/skills/add-site-integration/references/evidence-and-validation.md) |
 | User actions, supported features and limitations | The relevant public feature/usage page; update affected translations together |
+| Public site / gateway / tool support matrices and root READMEs | [docs/docs/supported-sites.md](../docs/supported-sites.md) and [supported-export-tools.md](../docs/supported-export-tools.md) across all locales (`zh`, `en`, `ja`), plus root `README.md`, `README_CN.md`, and `README_JA.md`. Update these synchronously whenever integrations change |
 
 Keep source comments when external evidence determines authentication, endpoint selection, unsupported capabilities, compatibility boundaries, secret handling or deliberate non-fallback behavior. Record the source and the specific constraint; do not narrate implementation already clear from local types and tests.
 
@@ -150,8 +152,11 @@ Sub2API: `/api/v1/auth/me` returns `{user}`, native key APIs use
   `share_type:public`, and a single explicit `share_group_id`. The site defaults
   to 10 USD; Hub defaults new keys to unlimited, with no selected group. Separate PATCH routes `/:id/quota`,
   `/:id/share-group`, and `/:id/status` change only those fields. Names cannot be
-  edited and expiry/IP/model limits are not native fields. Compare a fresh
-  inventory baseline before editing, then read back writes and deletion.
+  edited and expiry/IP/model limits are not native fields. Editors retain the
+  accepted native record and PATCH only changed fields. Changed submissions read
+  one fresh native record before dispatch to reject same-field conflicts and
+  preserve unrelated remote edits; unchanged submissions skip that read. Successful
+  write and deletion acknowledgments are authoritative; uncertain writes are not replayed.
   Hosted writes reject an unadapted extension Origin with an empty HTTP 403.
   Chromium direct transport supplies the site Origin and a fixed Cookie snapshot
   through scoped DNR rules with `credentials:omit` and redirects disabled (real
@@ -214,6 +219,19 @@ Dahl (`dahl`) has a dedicated Cookie account adapter at `https://inference.dahl.
 - **Keys:** creation starts at zero tokens with an optional name. Secrets are recoverable, so creation does not recommend vault storage and offers a direct Allocate continuation. Rename, Allocate, Return and Revoke are independent actions. Funding accepts whole-token K/M input, 25%/50%/Max, source-balance validation and transfer previews. Direction, amount and the accepted key baseline survive submission; stale balances stop before POST, and uncertain dispatch is never blindly replayed. Revocation returns remaining credit and retains the website's revoked record.
 - **Names:** save locally before background synchronization. Names are scoped by origin, UUID and browser profile; a verified matching website page synchronizes `dahl_key_labels` in both directions. Without one, edits remain pending. The website needs a reload to display changed labels. Locks and revision checks preserve newer edits; malformed reads do not acknowledge removals.
 - **Other features:** today statistics, check-in, referrals, redemption, announcements and admin management are unavailable. The maintained live runner creates and cleans up its own key when mutation testing is selected, and redacts credentials in generated review evidence.
+
+## FoxCode account contract
+
+FoxCode (`foxcode`) is an account-only Cookie adapter at `https://foxcode.rjj.cc`, with a dedicated adapter family and CUID identities. Its Nuxt `success/data` envelopes do not establish New API or Sub2API compatibility.
+
+- **Authentication:** `/api/auth/me` verifies the live string account ID. Each operation captures the HttpOnly `auth_token` session for identity, writes and readback; mismatched identities stop before mutations. Inference keys are not console credentials. No verified ordinary console token or refresh contract is advertised. Login expiry requires returning to `/auth/login`.
+- **Origins:** only `foxcode.rjj.cc` is a console/storage alias. Public `api_endpoint_config` selects the inference origin for runtime keys; the observed primary is `https://code1.newcli.com`, with `code2.newcli.com` and `dm-fox.rjj.cc` alternatives. Console credentials stay on the console origin. OpenAI consumers use `/v1`; Anthropic consumers use the inference root.
+- **Credit and plans:** native monetary quotas use 1,000,000 units per USD. Active `NEVER` plans contribute purchased credit; resetting active plans supply the separate subscription allowance. Expired history and combined dashboard quota are not purchased balances. Recent usage records do not establish calendar-day totals. Per-call rows do not turn call counts into tokens, and channel-scaled spending is not substituted for missing base cost.
+- **Native keys:** paginated `/api/keys` supplies full edit baselines and recoverable plaintext secrets. Creation and editing support name, optional description, required channel, and unlimited or USD quota; editing also supports status and preserves unrestricted access for existing keys with no channel binding. Creation still requires a channel, and restricted keys cannot be unbound. There is no verified single-key detail GET. Editors retain accepted native records; PATCH sends changed fields only, preserving untouched server fields without claiming fresh conflict detection. Successful PATCH acknowledgments merge submitted changes (or validate the returned native record); DELETE can succeed without `data` and needs no inventory readback. Uncertain writes are not replayed. Canonical channel identities drive runtime groups and pricing, while native aliases remain edit values. Missing or masked secrets cannot be exported as runtime credentials. Unknown channels do not imply unrestricted model access.
+- **Models and prices:** `model_square_config` binds model lists to channels; `/api/model-pricing` publishes token USD/M and per-call prices. Channel quota multipliers apply to the price estimate. Missing prices, unknown pricing fields or complex group overrides explicitly produce unavailable prices. Personal discounts and unverified billing tiers are not reconstructed. Runtime key catalog discovery uses the native binding rather than probing a paid inference request.
+- **Other features:** dashboard announcements retain upstream ID and publication time with local read state. `/api/user/referral` yields `/auth/register?aff=<encoded-code>`. Redemption navigates to `/redeem` without automated grants. No verified check-in method or admin gateway capability is advertised.
+
+Run `pnpm e2e:cdp:foxcode -- --isolate` against the current-worktree build. `--mutate` creates, edits and deletes one owned key, without inference or monetary writes. An optional `FOXCODE_SESSION_FILE` accepts a verified identity and only origin-scoped authorized cookies. Raw local screenshots and protocol evidence live outside Git under `.scratch/foxcode-adaptation/evidence/`.
 
 ## Gateway presentation order
 

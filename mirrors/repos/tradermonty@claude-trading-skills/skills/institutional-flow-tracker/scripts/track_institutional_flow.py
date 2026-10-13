@@ -25,14 +25,9 @@ import datetime
 import json
 import os
 import sys
-import time
 from typing import Optional
 
-try:
-    import requests
-except ImportError:
-    print("Error: 'requests' library not installed. Install with: pip install requests")
-    sys.exit(1)
+from fmp_client import FMPClient
 
 # Add scripts directory to path for data_quality import
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -46,57 +41,33 @@ from data_quality import (
     quarter_end_date,
 )
 
-STABLE_URL = "https://financialmodelingprep.com/stable"
-
 
 class InstitutionalFlowTracker:
-    """Track institutional ownership changes across stocks"""
+    """Track institutional ownership changes across stocks.
+
+    HTTP/auth/retry live in the vendored ``fmp_client.py`` (generated,
+    Issue #495). The client sends the apikey via header, so the key never
+    appears in a URL — including any URL embedded in a raised exception
+    message (the same guarantee the hand-rolled ``_get`` documented).
+    """
 
     def __init__(self, api_key: str, as_of: Optional[datetime.date] = None):
         self.api_key = api_key
-        self.base_url = STABLE_URL
+        self._fmp = FMPClient(api_key=api_key)
         self._as_of = as_of or datetime.date.today()
         # Cache of the most recent quarter that has filed 13F data, so we don't
         # re-probe the lag window for every symbol.
         self._latest_yq: Optional[tuple[int, int]] = None
 
-    def _get(self, path: str, **params) -> Optional[object]:
-        """GET a /stable endpoint, returning parsed JSON or None.
-
-        The API key is sent via header (not query string) so it never appears
-        in a URL — including any URL embedded in a raised exception message.
-        """
-        try:
-            response = requests.get(
-                f"{self.base_url}/{path}",
-                params=params,
-                headers={"apikey": self.api_key},
-                timeout=30,
-            )
-            response.raise_for_status()
-            return response.json()
-        except requests.exceptions.RequestException as e:
-            print(f"Error fetching {path}: {e}", file=sys.stderr)
-            return None
-
     def get_company_screener(
         self, market_cap_min: int = 1000000000, limit: int = 100
     ) -> list[dict]:
         """Get list of stocks meeting market cap criteria (/stable company-screener)."""
-        data = self._get("company-screener", marketCapMoreThan=market_cap_min, limit=limit)
-        return data if isinstance(data, list) else []
+        return self._fmp.get_company_screener(market_cap_min=market_cap_min, limit=limit)
 
     def get_ownership_summary(self, symbol: str, year: int, quarter: int) -> Optional[dict]:
         """Get the aggregate 13F positions summary for one symbol/quarter."""
-        data = self._get(
-            "institutional-ownership/symbol-positions-summary",
-            symbol=symbol,
-            year=year,
-            quarter=quarter,
-        )
-        if isinstance(data, list) and data:
-            return data[0]
-        return None
+        return self._fmp.get_13f_summary(symbol, year, quarter)
 
     def latest_summary(
         self, symbol: str, max_lookback: int = 5
@@ -126,13 +97,7 @@ class InstitutionalFlowTracker:
         Reads page 0 of extract-analytics/holder, which the feed returns sorted
         by position size. Returns compact {name, shares, change, ...} records.
         """
-        rows = self._get(
-            "institutional-ownership/extract-analytics/holder",
-            symbol=symbol,
-            year=year,
-            quarter=quarter,
-            page=0,
-        )
+        rows = self._fmp.get_institutional_holders(symbol, year, quarter, page=0)
         if not isinstance(rows, list):
             return []
         return [normalize_holder(r) for r in rows[:limit]]
@@ -256,8 +221,9 @@ class InstitutionalFlowTracker:
             if i % 10 == 0:
                 print(f"Progress: {i}/{len(stocks)} stocks analyzed...")
 
-            # Rate limiting: max 5 requests per second
-            time.sleep(0.2)
+            # Rate limiting lives in the vendored client (0.3s between any
+            # two FMP calls, Issue #495); the former fixed per-symbol sleep
+            # is redundant and removed.
 
             metrics = self.calculate_ownership_metrics(symbol, company_name, market_cap)
 

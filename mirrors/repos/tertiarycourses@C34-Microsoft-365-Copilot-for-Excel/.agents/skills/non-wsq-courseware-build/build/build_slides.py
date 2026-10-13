@@ -739,6 +739,12 @@ _dl=flow_h("Access Course Materials",[
 # Course-page URL as a wide caption (kept out of the narrow chips so it never wraps mid-token)
 txt(_dl,Inches(0.85),Inches(6.5),Inches(11.6),Inches(0.4),
     [[(f"Course page:  {getattr(C,'COURSE_PAGE','www.tertiarycourses.com.sg')}",15,_acc(BLUE),True)]],align=PP_ALIGN.CENTER)
+# Optional classroom sign-in accounts (course_data.TRAINING_ACCOUNTS).
+_acct=getattr(C,"TRAINING_ACCOUNTS",None)
+if _acct:
+    cards3(_acct.get("title","Training Accounts"),
+           [(CARD_COLORS[i%3],h,b) for i,(h,b) in enumerate(_acct["cards"])],
+           kicker=_acct.get("kicker","CLASSROOM ACCESS"),size=16)
 # Lesson plan overview — derived entirely from course_data (day themes + the
 # topic→lab mapping) so it can never drift from the LP or the labs.
 def _lab_range(acts):

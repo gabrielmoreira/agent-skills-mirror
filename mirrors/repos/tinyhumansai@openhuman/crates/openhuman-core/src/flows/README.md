@@ -27,8 +27,8 @@ tools.
           persist              |  |
                                v  v
    store.rs / draft_store.rs       tinyflows engine (vendor/tinyflows)
-   (tinyflows_sqlite, under              |
-    <workspace>/flows)                   | capability traits
+   (FlowCatalogDocuments on the           |
+    storage ports)                       | capability traits
                                          v
                               tinyflows/caps  (agent, llm, tools,
                               http, code, memory, state store)
@@ -233,18 +233,21 @@ so the digest subscriber, `flows_delete`, the `memory` node adapter
 (`tinyflows::memory_adapter::OpenHumanMemory`) and the agent tools all tag the
 same way.
 
-### On a storage backend
+### Storage
 
-With a storage backend configured (`OPENHUMAN_STORAGE_URL` / `[storage] url`,
-see `crate::storage`), the catalog (`store.rs`), drafts (`draft_store.rs`),
-per-flow state and the run checkpointer move off `flows/flows.db`,
-`flows/drafts/` and `flows/checkpoints.db` onto the document port, in the
-acting agent's scope: `tinyflows_drivers::catalog::FlowCatalogDocuments`,
-`FlowStateDocuments` (through `tinyflows/state.rs`'s `FlowState`, which the
-engine's `StateStore` and the dedup settlement share) and
-`DriverCheckpointer`. When the scope cannot be resolved (SaaS mode with no
-acting agent) flow state fails every call rather than falling back to the
-local file.
+The catalog (`store.rs`), drafts (`draft_store.rs`), per-flow state and the run
+checkpointer are on the document port, in the acting agent's scope:
+`tinyflows_drivers::catalog::FlowCatalogDocuments`, `FlowStateDocuments`
+(through `tinyflows/state.rs`'s `FlowState`, which the engine's `StateStore`
+and the dedup settlement share) and `DriverCheckpointer`. tinyflows has no
+SQLite store of its own any more, so there is one path whatever the storage URL
+says: the installed backend, else a SQLite document database of the catalog's own
+(`<workspace>/flows/catalog.db`). The files tinyflows used to write
+(`flows/flows.db`, `flows/drafts/`, `flows/checkpoints.db`) are imported
+read-only once, at boot for an installed backend (`storage::import::tinyflows`)
+and on first use otherwise, and are never written again. When the scope cannot
+be resolved (SaaS mode with no acting agent) flow state fails every call rather
+than falling back to a shared bucket.
 
 ## Layout
 
@@ -255,8 +258,8 @@ Top level:
 | `mod.rs` | Module declarations and re-exports: model types from `tinyflows_catalog`, node contracts, store helpers for the seam, flow-memory helpers. |
 | [`ops.rs`](./ops.rs), `ops/` | Business operations returning `Outcome<T>`. See the table below. |
 | [`schemas.rs`](./schemas.rs), `schemas/`, [`schemas_handlers.rs`](./schemas_handlers.rs) | Controller schemas (split into `builder_schemas.rs`, `definition_schemas.rs`, `draft_schemas.rs`, `run_schemas.rs`) and thin handlers that load config, read params and call `ops::flows_*`. |
-| [`store.rs`](./store.rs) | Binds `tinyflows_sqlite::flows` to `<workspace_dir>/flows`. Every function only substitutes the directory; anything else in a body is host policy leaking into persistence. |
-| `draft_store.rs` | Same binding for `tinyflows_sqlite::drafts`. |
+| [`store.rs`](./store.rs) | Binds `FlowCatalogDocuments` to this host's storage (`scoped`, `documents`). Every function only substitutes the catalog; anything else in a body is host policy leaking into persistence. |
+| `draft_store.rs` | Same binding for the catalog's drafts. |
 | [`bus.rs`](./bus.rs), `bus/` | The three subscribers: `trigger.rs`, `run_digest.rs`, `dedup_commit.rs`. |
 | [`tools.rs`](./tools.rs) | `ProposeWorkflowTool` (`propose_workflow`) and `RunFlowTool` (`run_flow`). |
 | [`builder_tools.rs`](./builder_tools.rs), `builder_tools/` | The 22 `workflow_builder` tools, split by role: `draft_revise.rs`, `draft_edit.rs`, `draft_validate.rs`, `flow_reads.rs`, `run_control.rs`, `persistence.rs`, `connection_reads.rs`, `catalog_search.rs`, `tool_contract.rs`, `kind_reads.rs`, `dry_run.rs`. |
@@ -324,8 +327,8 @@ Agent tools: `core`'s [`tools/ops.rs`](../tools/ops.rs) adds 27 flows tools to t
 - `vendor/tinyflows` (tinyflows repo) owns the workflow model, migration,
   validation, compilation, and the run engine with its in-crate state-graph
   runtime. `tinyflows-catalog` owns the saved-flow types and registries,
-  `tinyflows-sqlite` owns the schema and SQL for flows, drafts and checkpoints,
-  and `tinyflows-copilot` owns the authoring manual and pure text heuristics.
+  `tinyflows-drivers` owns the document layout for flows, drafts, runs and
+  checkpoints, and `tinyflows-copilot` owns the authoring manual and pure text heuristics.
   Fix engine and storage behavior there, not here.
 - `cron/` owns scheduling. This domain only arms and removes `JobType::Flow`
   jobs; the scheduler publishes `DomainEvent::FlowScheduleTick`.
@@ -362,8 +365,9 @@ Agent tools: `core`'s [`tools/ops.rs`](../tools/ops.rs) adds 27 flows tools to t
 
 Tests sit beside their modules as `*_tests.rs` files ([`ops_tests.rs`](./ops_tests.rs),
 [`bus_tests.rs`](./bus_tests.rs), [`schemas_tests.rs`](./schemas_tests.rs), the builder tool and agent prompt tests,
-and the seam's own suite under `tinyflows/`). `store.rs` has no test
-attachment; the store's behavior is covered in `tinyflows-sqlite`.
+and the seam's own suite under `tinyflows/`). `store.rs`'s tests cover the
+storage resolution and the import of the legacy files; the catalog's behavior is
+covered in `tinyflows-drivers`.
 
 ```bash
 cargo test -p openhuman flows::

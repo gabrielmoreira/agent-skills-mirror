@@ -370,6 +370,6 @@ If user requested specific filters, note at top:
 - API key errors: Clear user guidance for obtaining free key
 - Rate limits (429): Suggest waiting or upgrading FMP tier; re-run the script after the wait
 - Restricted endpoint (402): Script raises a clear error — the FMP subscription tier lacks access to this endpoint; direct the user to upgrade at https://financialmodelingprep.com/. Do not fall back to the legacy v3 endpoint (retired 2025-08-31, returns 403).
-- Network failures: Check connection and re-run; no automatic retry or cache in the script
+- Network failures: surface the clear ``Network error: ...`` message and re-run; single 429 retry, timeouts, and per-call rate limiting are handled by the vendored generated `fmp_client.py` (Issue #495)
 - Genuine 404: The script now raises an error instead of silently returning an empty list — investigate rather than assuming zero events.
 - Invalid dates: Validation with helpful error messages

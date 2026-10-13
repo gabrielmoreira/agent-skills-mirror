@@ -27,6 +27,17 @@ before binding a task after restart. It waits at most 10 seconds by default
 stops on cancellation or transport shutdown. It sends no commands and never
 retries dispatched work. Hosts must recheck task/account authority after waiting.
 
+For an advisory-enabled peer, trusted hosts can call
+`NativeSocketBrowserTarget.setProtectionOwner(opaqueOwnerOrNull)` after profile
+registration and every account transition. `onProfileRegistered(listener)` notifies
+the host after each registration, including a current connection when subscribed.
+The receipt's `isCurrent()` must be checked again after asynchronous account reads;
+a disconnect, replacement, unsubscribe or stop invalidates it. Registration itself
+is not account authentication. This is not a model browser action.
+Disconnect retires the extension's account context; reconnection does not restore
+it automatically. The receipt counts updated/unavailable tabs. It grants no task
+permission and does not override blacklist rules. Missing capability rejects.
+
 `NativeTaskActuator` composes the core task journal with this transport. The host
 supplies task lookup, reviewed page policy, durable binding revisions, protected
 value resolution, outcome verification and redacted evidence storage. It checks

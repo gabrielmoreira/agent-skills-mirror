@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mohitagw15856/pm-claude-skills` — 26 default patterns, 15 followed patterns, 3151 file(s) materialized.
+Mirror of `mohitagw15856/pm-claude-skills` — 26 default patterns, 16 followed patterns, 3152 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `mohitagw15856/pm-claude-skills` — 26 default patterns, 15 followed 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 15 |
-| Files         | 3151 |
+| Followed pats | 16 |
+| Files         | 3152 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -58,6 +58,7 @@ Mirror of `mohitagw15856/pm-claude-skills` — 26 default patterns, 15 followed 
 - `REPO-MAP.md`
 - `.github/PULL_REQUEST_TEMPLATE.md`
 - `COMMUNITY-SKILLS.md`
+- `evals/README.md`
 - `docs/AUTHORING-DEPTH.md`
 - `docs/craft/product-decisions.md`
 - `docs/DEPRECATION.md`
@@ -3218,12 +3219,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3143 | → | [`docs/DEPRECATION.md`](docs/DEPRECATION.md) |
 | 3144 | → | [`docs/FOUNDATION.md`](docs/FOUNDATION.md) |
 | 3145 | → | [`docs/prose-style.md`](docs/prose-style.md) |
-| 3146 | → | [`output-styles/plain-honest-prose.md`](output-styles/plain-honest-prose.md) |
-| 3147 | → | [`REPO-MAP.md`](REPO-MAP.md) |
-| 3148 | → | [`SECURITY.md`](SECURITY.md) |
-| 3149 | → | [`SKILL-AUTHORING-STANDARD.md`](SKILL-AUTHORING-STANDARD.md) |
-| 3150 | → | [`SKILLSPEC.md`](SKILLSPEC.md) |
-| 3151 | → | [`TIERS.md`](TIERS.md) |
+| 3146 | → | [`evals/README.md`](evals/README.md) |
+| 3147 | → | [`output-styles/plain-honest-prose.md`](output-styles/plain-honest-prose.md) |
+| 3148 | → | [`REPO-MAP.md`](REPO-MAP.md) |
+| 3149 | → | [`SECURITY.md`](SECURITY.md) |
+| 3150 | → | [`SKILL-AUTHORING-STANDARD.md`](SKILL-AUTHORING-STANDARD.md) |
+| 3151 | → | [`SKILLSPEC.md`](SKILLSPEC.md) |
+| 3152 | → | [`TIERS.md`](TIERS.md) |
 
 ---
 

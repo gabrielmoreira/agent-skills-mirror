@@ -216,9 +216,9 @@ Recurring work belongs to the `cron` domain (with `scheduler_gate`), not to skil
 
 ## AI and tool protocol (MCP)
 
-OpenHuman implements the Model Context Protocol on both sides of the connection. As a client, the core browses Smithery and the official MCP registry, connects servers a user declares in `mcp.json`, and surfaces their tools to agents through the same tool registry native tools use; see [MCP registry](architecture/mcp-registry.md). As a server, `openhuman-core mcp` exposes OpenHuman's own tools over stdio or HTTP so external MCP hosts such as Claude Desktop, Cursor, and Zed can call them; see [MCP server](mcp-server.md).
+OpenHuman implements the Model Context Protocol on both sides of the connection. As a client, the core browses registries, connects servers declared in `mcp.json`, and offers their tools through the native tool registry; see [MCP registry](architecture/mcp-registry.md). As a server, `openhuman-core mcp` exposes OpenHuman's curated tools over stdio or Streamable HTTP; see [MCP server](mcp-server.md).
 
-Every remote tool definition, whether coming in through a connected server or served out to a host, passes a prompt-injection scan before it reaches a model. Tool execution itself runs through the same Tool Registry as native tools: native Rust handlers or shell commands using the host toolchain, gated by `SecurityPolicy` and the active sandbox backend.
+MCP protocol, transport, registry, and server-session behavior run inside the TinyMCP TinyBus module. OpenHuman links the `tinymcp-bus` contract and keeps product configuration, credentials, proxy policy, approvals, prompt-injection admission, and typed host callbacks. Its configured module client keeps object paths private and retains lifecycle receipts across cancellation or lost replies. For HTTP DELETE, the host drains and joins an in-flight callback only after the module accepts the close; a rejected DELETE leaves the session available. This keeps product policy in the host while protocol state and transport behavior remain module-owned.
 
 ## Memory
 

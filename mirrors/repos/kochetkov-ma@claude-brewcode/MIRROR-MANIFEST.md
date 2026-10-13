@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kochetkov-ma/claude-brewcode` — 26 default patterns, 5 followed patterns, 72 file(s) materialized.
+Mirror of `kochetkov-ma/claude-brewcode` — 26 default patterns, 5 followed patterns, 64 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kochetkov-ma/claude-brewcode` — 26 default patterns, 5 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 72 |
+| Files         | 64 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -122,19 +122,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 57 | ✓ | [`skills/brewpage-publish/LICENSE`](skills/brewpage-publish/LICENSE) |
 | 58 | ✓ | [`skills/brewpage-publish/README.md`](skills/brewpage-publish/README.md) |
 | 59 | ✓ | [`skills/brewpage-publish/SKILL.md`](skills/brewpage-publish/SKILL.md) |
-| 60 | ✓ | [`skills/memory-optimize/LICENSE`](skills/memory-optimize/LICENSE) |
-| 61 | ✓ | [`skills/memory-optimize/README.md`](skills/memory-optimize/README.md) |
-| 62 | ✓ | [`skills/memory-optimize/references/memory-guide.md`](skills/memory-optimize/references/memory-guide.md) |
-| 63 | ✓ | [`skills/memory-optimize/SKILL.md`](skills/memory-optimize/SKILL.md) |
-| 64 | ✓ | [`skills/text-optimizer/LICENSE`](skills/text-optimizer/LICENSE) |
-| 65 | ✓ | [`skills/text-optimizer/README.md`](skills/text-optimizer/README.md) |
-| 66 | ✓ | [`skills/text-optimizer/references/rules-review.md`](skills/text-optimizer/references/rules-review.md) |
-| 67 | ✓ | [`skills/text-optimizer/SKILL.md`](skills/text-optimizer/SKILL.md) |
-| 68 | → | [`.codex/rules/avoid.md`](.codex/rules/avoid.md) |
-| 69 | → | [`.codex/rules/best-practice.md`](.codex/rules/best-practice.md) |
-| 70 | → | [`.codex/rules/docker-best-practice.md`](.codex/rules/docker-best-practice.md) |
-| 71 | → | [`.codex/rules/docs-workflow.md`](.codex/rules/docs-workflow.md) |
-| 72 | → | [`.codex/rules/semble-first.md`](.codex/rules/semble-first.md) |
+| 60 | → | [`.codex/rules/avoid.md`](.codex/rules/avoid.md) |
+| 61 | → | [`.codex/rules/best-practice.md`](.codex/rules/best-practice.md) |
+| 62 | → | [`.codex/rules/docker-best-practice.md`](.codex/rules/docker-best-practice.md) |
+| 63 | → | [`.codex/rules/docs-workflow.md`](.codex/rules/docs-workflow.md) |
+| 64 | → | [`.codex/rules/semble-first.md`](.codex/rules/semble-first.md) |
 
 ---
 

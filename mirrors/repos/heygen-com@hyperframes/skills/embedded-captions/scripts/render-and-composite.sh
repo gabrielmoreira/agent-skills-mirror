@@ -105,9 +105,14 @@ if [[ -f "$PROJECT/plan.json" && -d "$PROJECT/frames_fg" ]]; then
     # must NOT trip set -e (it silently killed the whole render on fresh projects).
     if [[ -z "$verdict_at" ]] && grep -qE '\[v2\].*word-fail' "$OCC_LOG" 2>/dev/null; then verdict_at=$SECONDS; fi
     # verdict printed but still alive 8s later → native (sharp) teardown hang; or no
-    # verdict after 150s → measure/analysis stuck. Either way: kill + read verdict.
+    # verdict after 150s → measure/analysis stuck, which cannot count as a pass.
     if { [[ -n "$verdict_at" ]] && (( SECONDS - verdict_at > 8 )); } || (( SECONDS - occ_t0 > 150 )); then
       kill -9 "$OCC_PID" 2>/dev/null
+      if [[ -z "$verdict_at" ]]; then
+        OCC_RC=3
+        echo "[render] occlusion gate timed out before its verdict — killed; analysis incomplete (rc=3)" >&2
+        break
+      fi
       if grep -q 'cap(s) FAIL' "$OCC_LOG"; then OCC_RC=2; else OCC_RC=0; fi
       echo "[render] occlusion gate hung after verdict (sharp teardown) — killed zombie; verdict rc=$OCC_RC" >&2
       break

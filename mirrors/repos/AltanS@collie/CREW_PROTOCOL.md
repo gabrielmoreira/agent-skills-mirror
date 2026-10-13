@@ -2342,6 +2342,12 @@ every reader reads its one copy.
 **Still nothing crosses the wire.** The marker is a local diagnostic file, mode 0600 beside the trust
 store, and no route reads it or reports it.
 
+The marker also records the build (`crewVersion`, the bare string §5's hello carries), written at boot
+with the rest of the boot half. `collie update` reads it to check a peer with no standby door: that
+peer is reached by its TLS certificate, which names no build, so the update compares the marker's
+build as it does on every other machine. A marker from a bridge that predates the field has no build
+and reads as it did before.
+
 ### 18.10 `lead_conflict` — a named answer when a peer follows a different lead *(added 2026-08-20)*
 
 **Before this amendment** a lead dialling a peer that follows someone else got either a TLS refusal

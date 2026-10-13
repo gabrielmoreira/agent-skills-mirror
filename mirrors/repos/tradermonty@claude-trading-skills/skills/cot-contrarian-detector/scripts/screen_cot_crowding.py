@@ -42,7 +42,6 @@ import json
 import os
 import re
 import sys
-import time
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -64,9 +63,7 @@ from cot_index import (
 SKILL_NAME = "cot-contrarian-detector"
 SCHEMA_VERSION = "1.0"
 
-STABLE_BASE = "https://financialmodelingprep.com/stable"
-LIST_URL = f"{STABLE_BASE}/commitment-of-traders-list"
-REPORT_URL = f"{STABLE_BASE}/commitment-of-traders-report"
+from fmp_client import FMPClient  # noqa: E402  (vendored, generated client)
 
 # Curated liquid/representative subset across the 65 markets FMP's COT list
 # covers (indices, rates, FX, metals, energy, one crypto future). Verified
@@ -142,60 +139,23 @@ def get_api_key(cli_key: str | None) -> str | None:
     return api_key
 
 
-def _request_with_backoff(
-    session: requests.Session,
-    url: str,
-    params: dict[str, Any],
-    max_retries: int = 4,
-    base_delay: float = 1.0,
-) -> tuple[Any, str | None]:
-    """GET JSON with exponential backoff retry on 429 / 5xx.
+class CotClient(FMPClient):
+    """FMP COT client over the vendored generated client (Issue #495).
 
-    Returns (data, None) on success or (None, error_message) after exhausting
-    retries (or immediately for non-retryable 4xx errors).
+    Keeps the CLI-facing contract of the former hand-rolled ``CotClient``
+    while transport/auth/retry/rate limiting move into the vendored
+    ``fmp_client.py``:
+
+    - ``(data, error)`` results via the ``cot_reports`` extension
+      (``get_market_list`` raises, ``get_report`` returns the tuple).
+    - Header auth (deliberate change from query-param): the apikey never
+      appears in a URL; error strings still pass through the script-level
+      ``_redact`` (value + pattern layers) before reaching stderr, skip
+      reasons, or reports.
+    - ``sleep_seconds`` is kept as the former CLI flag and applied by
+      overriding ``RATE_LIMIT_DELAY`` on the instance (the generated core
+      reads the class constant at call time; the template stays untouched).
     """
-    # `params` already carries the real key (CotClient._get sets
-    # params["apikey"]), so reuse it as the value-based redaction secret
-    # for every error path below rather than threading a separate argument.
-    secret = params.get("apikey") if isinstance(params, dict) else None
-    delay = base_delay
-    error = "unknown error"
-    for attempt in range(max_retries + 1):
-        try:
-            response = session.get(url, params=params, timeout=30)
-        except requests.exceptions.RequestException as exc:
-            # str(exc) embeds the full request URL (e.g. urllib3's
-            # "Max retries exceeded with url: ...?apikey=...") — redact
-            # before this can reach stderr or a returned error string.
-            error = _redact(f"request exception: {exc}", secret=secret)
-        else:
-            if response.status_code == 200:
-                try:
-                    return response.json(), None
-                except ValueError as exc:
-                    error = _redact(f"invalid JSON response: {exc}", secret=secret)
-            elif response.status_code == 429 or response.status_code >= 500:
-                error = f"HTTP {response.status_code}"
-            else:
-                # response.text is the response BODY, not the request URL,
-                # but redact defensively in case an API echoes the request
-                # back in a validation-error message.
-                return None, _redact(
-                    f"HTTP {response.status_code}: {response.text[:200]}", secret=secret
-                )
-
-        if attempt < max_retries:
-            print(
-                f"WARN: {error}; retrying in {delay:.1f}s (attempt {attempt + 1}/{max_retries})",
-                file=sys.stderr,
-            )
-            time.sleep(delay)
-            delay *= 2
-    return None, error
-
-
-class CotClient:
-    """Thin client for the FMP stable COT endpoints with rate limiting."""
 
     def __init__(self, api_key: str, sleep_seconds: float = 0.25):
         if requests is None:
@@ -204,38 +164,15 @@ class CotClient:
                 file=sys.stderr,
             )
             sys.exit(1)
-        self.api_key = api_key
+        super().__init__(api_key=api_key)
         self.sleep_seconds = sleep_seconds
-        self.session = requests.Session()
-        self.last_call_time = 0.0
-        self.api_calls_made = 0
+        self.RATE_LIMIT_DELAY = sleep_seconds
 
-    def _get(self, url: str, params: dict[str, Any]) -> tuple[Any, str | None]:
-        elapsed = time.time() - self.last_call_time
-        if elapsed < self.sleep_seconds:
-            time.sleep(self.sleep_seconds - elapsed)
-        request_params = dict(params)
-        request_params["apikey"] = self.api_key
-        data, error = _request_with_backoff(self.session, url, request_params)
-        self.last_call_time = time.time()
-        self.api_calls_made += 1
-        return data, error
-
-    def get_market_list(self) -> list[dict[str, Any]]:
-        """Fetch the list of all COT-covered markets: [{"symbol","name"}, ...]."""
-        data, error = self._get(LIST_URL, {})
-        if error:
-            raise RuntimeError(f"Failed to fetch COT market list: {error}")
-        return data if isinstance(data, list) else []
-
-    def get_report(
-        self, symbol: str, from_date: str, to_date: str
-    ) -> tuple[list[dict[str, Any]], str | None]:
-        """Fetch raw legacy-format COT report rows for one symbol in [from, to]."""
-        data, error = self._get(REPORT_URL, {"symbol": symbol, "from": from_date, "to": to_date})
-        if error:
-            return [], error
-        return data if isinstance(data, list) else [], None
+    # Back-compat notes for pinned tests: ``client.session`` and
+    # ``client.api_calls_made`` come from the generated client.
+    def get_report(self, symbol: str, from_date: str, to_date: str):
+        data, error = super().get_report(symbol, from_date, to_date)
+        return data, _redact(error, secret=self.api_key)
 
 
 def parse_symbols_arg(raw: str) -> list[str]:

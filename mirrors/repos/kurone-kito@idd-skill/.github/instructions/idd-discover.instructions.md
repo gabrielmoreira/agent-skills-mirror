@@ -182,7 +182,7 @@ A1 ↔ A0-O or A4 ↔ A0-O loop).
 Search all open issues in the repository. Collect every issue that does
 NOT contain an `idd-skill-roadmap-id` marker (not itself
 a roadmap) or an `idd-skill-blocked-by` marker, AND
-otherwise passes A3's own readiness bullets (the same five criteria A3
+otherwise passes A3's own readiness bullets (the same six criteria A3
 lists; do not re-derive them here).
 
 Apply the configured policy before passing A0-O candidates to A3.5:
@@ -364,15 +364,17 @@ execution leaves from **each** open root (`sourceRoots` provenance).
 `--all-roadmaps` emits only this **raw** ranked union; it does not run
 A1.5. Once per `--all-roadmaps` re-enumeration, audit each root via A1.5
 **before** adding its leaves (re-enumerate with `--refresh-cache` after
-close/link). Drop a root that itself has a blocked-by-human or
+close/link). A root marked `a15AuditRequired: true` (zero open leaves;
+observed 2026-10-11, issue `#4037`) adds no leaves: audit it before any
+A0-O exit under trigger (a) or (b), then re-enumerate with
+`--a15-audited <n>`. Drop a root that itself has a blocked-by-human or
 needs-decision label, or whose A1.5 outcome is a non-autonomous-gap;
 descendant blockers still continue to A2. Omit a leaf whose
 `sourceRoots` are all dropped. Do not invoke A0-O / trigger (d) for a
 dropped root; continue auditing remaining roots. Close only after A1.5's
 written checks, not helper `ready: true`. Any other A1.5 outcome that
-continues to A2 still unions that root.
-Then rank as in A4 Step 2. Score is advisory — A3/A4/A4.5/A5 still run
-on the selected candidate.
+continues to A2 still unions that root. Then rank as in A4 Step 2. Score
+is advisory — A3/A4/A4.5/A5 still run on the selected candidate.
 
 ## A3 — Filter to ready-to-start
 
@@ -398,6 +400,10 @@ From A2, keep only issues that satisfy **all** of the following:
   blocked if that issue is open, if no issue matches (fail-safe — a
   migration integrity problem such as a typo, deleted issue, or
   incomplete migration), or if any matching issue is open.
+- Defer-source origin: a body with a
+  `<!-- idd-skill-authoring-defer-source: ... -->` marker
+  is blocked while its single `Refs #NNN` origin issue is open; a missing,
+  ambiguous, or unresolvable origin also blocks (issue #4065).
 - No external human coordination or prose-only
   runtime/production-observation precondition ("confirmed in
   production", "observed live", "runtime-observation"; issue #2467)
@@ -704,13 +710,3 @@ discover phase:
 an active roadmap** — those belong in the roadmap's task list as
 `- [ ] #NNN` entries. `blocked-by` is only for a separate, prior
 roadmap that must close first (see A3's diagnostic above for the deadlock this prevents).
-
-## Scope invariant (summary)
-
-Do not widen issue-selection scope beyond A2's query allowlist (A0-T,
-A0-O, A1, A1.5, A3, A4.5) or a same-run operator opt-in per A3 step 5
-(never inferred from standing instructions). An explicit target
-authorizes only that issue, except when A0-T step 2 classifies it as a
-roadmap node: then it authorizes normal selection scoped to that
-roadmap's own descendants only, never an unrelated orphan issue (A0-O
-stays excluded, per A0-T step 2).

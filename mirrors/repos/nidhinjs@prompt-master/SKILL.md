@@ -1,6 +1,6 @@
 ---
 name: prompt-master
-version: 1.8.0
+version: 1.8.2
 description: Generates optimized prompts for AI tools. Activates only when the user explicitly asks to write, fix, improve, or adapt a prompt for a specific AI tool (LLM, Cursor, Midjourney, image AI, video AI, coding agents, etc.). Does not activate for general conversation, coding tasks, document writing, or other non-prompt-engineering work.
 ---
 
@@ -76,9 +76,9 @@ Model names, defaults, controls, and availability change quickly. When the user 
 
 ---
 
-**Claude (claude.ai, Claude API, Claude 5 / current Claude models)**
+**Claude (claude.ai, Claude API, Claude 5.x / current Claude models)**
 
-Do not assume one universal Claude default. When unsure, start with **Claude Opus 5** (`claude-opus-5`) for complex agentic coding and enterprise work. Use **Claude Fable 5** (`claude-fable-5`) for the highest-capability long-running agents, **Claude Sonnet 5** (`claude-sonnet-5`) for speed plus frontier intelligence, and **Claude Haiku 4.5** for fast, economical workloads. Ask which model only when the distinction changes the prompt.
+Do not assume one universal Claude default. When unsure, start with **Claude Opus 5.5** (`claude-opus-5-5`) for complex agentic coding and enterprise work. Use **Claude Fable 5.1** (`claude-fable-5-1`) for the highest-capability long-running agents, **Claude Sonnet 5.5** (`claude-sonnet-5-5`) for speed plus frontier intelligence, and **Claude Haiku 4.5** (`claude-haiku-4-5-20251001`) for fast, economical workloads. Ask which model only when the distinction changes the prompt. Treat Fable 5 / Opus 5 / Sonnet 5 (earlier 5.x releases) as the same family: the guidance below applies to them too.
 
 *Durable across current Claude models:*
 - Be clear and direct. State the desired output, constraints, and scope explicitly; explain why when the reason affects judgment.
@@ -89,16 +89,16 @@ Do not assume one universal Claude default. When unsure, start with **Claude Opu
 - Current Claude 5 models use adaptive thinking and an effort control. Do not hardcode manual thinking budgets; recommend an effort level only when the user controls API or harness settings.
 - Use Template M for complex or agentic tasks.
 
-*Fable 5:*
-- Fable 5 is optimized for the hardest long-horizon autonomous work. Give it a complete outcome-focused specification, explicit action boundaries, and infrastructure suitable for long asynchronous runs.
+*Fable 5.1 (and Fable 5):*
+- Fable 5.1 is optimized for the hardest long-horizon autonomous work. Give it a complete outcome-focused specification, explicit action boundaries, and infrastructure suitable for long asynchronous runs.
 - Ground every long-run progress claim in actual tool results. Delegate independent workstreams to subagents when useful and establish interval-based verification for long builds; cap concurrency or spend when cost matters.
 
-*Opus 5:*
-- Opus 5 is the recommended starting point for complex agentic coding and enterprise work. Keep scope tight: "Deliver what was asked. Do not add features, refactors, or abstractions beyond the task."
-- Opus 5 already self-verifies strongly. Avoid redundant "double-check everything" instructions and verifier subagents for routine work; delegate only genuinely independent, sizeable tracks.
+*Opus 5.5 (and Opus 5):*
+- Opus 5.5 is the recommended starting point for complex agentic coding and enterprise work. Keep scope tight: "Deliver what was asked. Do not add features, refactors, or abstractions beyond the task."
+- Opus 5.5 already self-verifies strongly. Avoid redundant "double-check everything" instructions and verifier subagents for routine work; delegate only genuinely independent, sizeable tracks.
 
-*Sonnet 5:*
-- Sonnet 5 follows instructions literally, especially at lower effort. State when a rule applies to every item or section.
+*Sonnet 5.5 (and Sonnet 5):*
+- Sonnet 5.5 follows instructions literally, especially at lower effort. State when a rule applies to every item or section.
 - Raise effort for difficult multi-step work rather than compensating with elaborate reasoning prompts. Use explicit style and design direction instead of non-default sampling parameters.
 
 *Claude 4.8 and earlier selectable models:*
@@ -206,7 +206,7 @@ Do not assume one universal Claude default. When unsure, start with **Claude Opu
 - Do not assume the Claude Code model. Apply the matching current Claude route above; when model-specific behavior matters, ask which model is selected.
 - Front-load intent, relevant paths, constraints, acceptance criteria, and verification commands. Explicitly request tool use when inspection is required.
 - Current Fable/Opus models can over-scope and delegate readily. Add "Only make changes directly requested" and reserve subagents for independent, sizeable investigation or implementation tracks.
-- Do not force a separate verifier on Opus 5 for routine work; request concrete tests and tool-backed evidence instead. For long Fable 5 runs, require progress claims to cite actual tool results.
+- Do not force a separate verifier on Opus 5.5 for routine work; request concrete tests and tool-backed evidence instead. For long Fable 5.1 runs, require progress claims to cite actual tool results.
 - Always scope to specific files and directories — never give a global instruction without a path anchor
 - Human review triggers required: "Stop and ask before deleting any file, adding any dependency, or affecting the database schema"
 - For complex tasks, use Template M. It handles scope, criteria, action boundaries, and progress evidence in one structured block.

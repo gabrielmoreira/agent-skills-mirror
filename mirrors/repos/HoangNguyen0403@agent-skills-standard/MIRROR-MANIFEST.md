@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `HoangNguyen0403/agent-skills-standard` — 26 default patterns, 37 followed patterns, 2173 file(s) materialized.
+Mirror of `HoangNguyen0403/agent-skills-standard` — 26 default patterns, 37 followed patterns, 2174 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `HoangNguyen0403/agent-skills-standard` — 26 default patterns, 37 fo
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 37 |
-| Files         | 2173 |
+| Files         | 2174 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -2231,43 +2231,44 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2134 | ✓ | [`skills/typescript/typescript-tooling/evals/evals.json`](skills/typescript/typescript-tooling/evals/evals.json) |
 | 2135 | ✓ | [`skills/typescript/typescript-tooling/references/REFERENCE.md`](skills/typescript/typescript-tooling/references/REFERENCE.md) |
 | 2136 | ✓ | [`skills/typescript/typescript-tooling/SKILL.md`](skills/typescript/typescript-tooling/SKILL.md) |
-| 2137 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 2138 | → | [`benchmark-report.md`](benchmark-report.md) |
-| 2139 | → | [`benchmarks/archive/v1.10.0.md`](benchmarks/archive/v1.10.0.md) |
-| 2140 | → | [`benchmarks/archive/v1.10.1.md`](benchmarks/archive/v1.10.1.md) |
-| 2141 | → | [`benchmarks/archive/v1.10.3.md`](benchmarks/archive/v1.10.3.md) |
-| 2142 | → | [`benchmarks/archive/v1.7.2.md`](benchmarks/archive/v1.7.2.md) |
-| 2143 | → | [`benchmarks/archive/v1.7.3.md`](benchmarks/archive/v1.7.3.md) |
-| 2144 | → | [`benchmarks/archive/v1.8.0.md`](benchmarks/archive/v1.8.0.md) |
-| 2145 | → | [`benchmarks/archive/v1.9.0.md`](benchmarks/archive/v1.9.0.md) |
-| 2146 | → | [`benchmarks/archive/v1.9.1.md`](benchmarks/archive/v1.9.1.md) |
-| 2147 | → | [`benchmarks/archive/v1.9.2.md`](benchmarks/archive/v1.9.2.md) |
-| 2148 | → | [`benchmarks/archive/v1.9.3.md`](benchmarks/archive/v1.9.3.md) |
-| 2149 | → | [`benchmarks/archive/v2.0.0.md`](benchmarks/archive/v2.0.0.md) |
-| 2150 | → | [`benchmarks/archive/v2.0.1.md`](benchmarks/archive/v2.0.1.md) |
-| 2151 | → | [`benchmarks/archive/v2.1.0.md`](benchmarks/archive/v2.1.0.md) |
-| 2152 | → | [`benchmarks/archive/v2.1.1.md`](benchmarks/archive/v2.1.1.md) |
-| 2153 | → | [`benchmarks/archive/v2.1.2.md`](benchmarks/archive/v2.1.2.md) |
-| 2154 | → | [`benchmarks/archive/v2.2.0.md`](benchmarks/archive/v2.2.0.md) |
-| 2155 | → | [`benchmarks/archive/v2.2.2.md`](benchmarks/archive/v2.2.2.md) |
-| 2156 | → | [`benchmarks/archive/v2.3.0.md`](benchmarks/archive/v2.3.0.md) |
-| 2157 | → | [`benchmarks/archive/v2.4.0.md`](benchmarks/archive/v2.4.0.md) |
-| 2158 | → | [`benchmarks/archive/v2.4.1.md`](benchmarks/archive/v2.4.1.md) |
-| 2159 | → | [`benchmarks/archive/v2.4.6.md`](benchmarks/archive/v2.4.6.md) |
-| 2160 | → | [`benchmarks/archive/v2.4.7.md`](benchmarks/archive/v2.4.7.md) |
-| 2161 | → | [`benchmarks/archive/v2.6.0.md`](benchmarks/archive/v2.6.0.md) |
-| 2162 | → | [`benchmarks/archive/v2.6.1.md`](benchmarks/archive/v2.6.1.md) |
-| 2163 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 2164 | → | [`cli/ARCHITECTURE.md`](cli/ARCHITECTURE.md) |
-| 2165 | → | [`docs/agent-capabilities.md`](docs/agent-capabilities.md) |
-| 2166 | → | [`docs/EVALS.md`](docs/EVALS.md) |
-| 2167 | → | [`docs/getting-started-product-owner.md`](docs/getting-started-product-owner.md) |
-| 2168 | → | [`docs/mcp-integration-guide.md`](docs/mcp-integration-guide.md) |
-| 2169 | → | [`docs/sdlc-workflow-quick-reference.md`](docs/sdlc-workflow-quick-reference.md) |
-| 2170 | → | [`docs/SECURITY.md`](docs/SECURITY.md) |
-| 2171 | → | [`docs/ui-automation-drivers.md`](docs/ui-automation-drivers.md) |
-| 2172 | → | [`evals-report.md`](evals-report.md) |
-| 2173 | → | [`README.md`](README.md) |
+| 2137 | ✓ | [`website/README.md`](website/README.md) |
+| 2138 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 2139 | → | [`benchmark-report.md`](benchmark-report.md) |
+| 2140 | → | [`benchmarks/archive/v1.10.0.md`](benchmarks/archive/v1.10.0.md) |
+| 2141 | → | [`benchmarks/archive/v1.10.1.md`](benchmarks/archive/v1.10.1.md) |
+| 2142 | → | [`benchmarks/archive/v1.10.3.md`](benchmarks/archive/v1.10.3.md) |
+| 2143 | → | [`benchmarks/archive/v1.7.2.md`](benchmarks/archive/v1.7.2.md) |
+| 2144 | → | [`benchmarks/archive/v1.7.3.md`](benchmarks/archive/v1.7.3.md) |
+| 2145 | → | [`benchmarks/archive/v1.8.0.md`](benchmarks/archive/v1.8.0.md) |
+| 2146 | → | [`benchmarks/archive/v1.9.0.md`](benchmarks/archive/v1.9.0.md) |
+| 2147 | → | [`benchmarks/archive/v1.9.1.md`](benchmarks/archive/v1.9.1.md) |
+| 2148 | → | [`benchmarks/archive/v1.9.2.md`](benchmarks/archive/v1.9.2.md) |
+| 2149 | → | [`benchmarks/archive/v1.9.3.md`](benchmarks/archive/v1.9.3.md) |
+| 2150 | → | [`benchmarks/archive/v2.0.0.md`](benchmarks/archive/v2.0.0.md) |
+| 2151 | → | [`benchmarks/archive/v2.0.1.md`](benchmarks/archive/v2.0.1.md) |
+| 2152 | → | [`benchmarks/archive/v2.1.0.md`](benchmarks/archive/v2.1.0.md) |
+| 2153 | → | [`benchmarks/archive/v2.1.1.md`](benchmarks/archive/v2.1.1.md) |
+| 2154 | → | [`benchmarks/archive/v2.1.2.md`](benchmarks/archive/v2.1.2.md) |
+| 2155 | → | [`benchmarks/archive/v2.2.0.md`](benchmarks/archive/v2.2.0.md) |
+| 2156 | → | [`benchmarks/archive/v2.2.2.md`](benchmarks/archive/v2.2.2.md) |
+| 2157 | → | [`benchmarks/archive/v2.3.0.md`](benchmarks/archive/v2.3.0.md) |
+| 2158 | → | [`benchmarks/archive/v2.4.0.md`](benchmarks/archive/v2.4.0.md) |
+| 2159 | → | [`benchmarks/archive/v2.4.1.md`](benchmarks/archive/v2.4.1.md) |
+| 2160 | → | [`benchmarks/archive/v2.4.6.md`](benchmarks/archive/v2.4.6.md) |
+| 2161 | → | [`benchmarks/archive/v2.4.7.md`](benchmarks/archive/v2.4.7.md) |
+| 2162 | → | [`benchmarks/archive/v2.6.0.md`](benchmarks/archive/v2.6.0.md) |
+| 2163 | → | [`benchmarks/archive/v2.6.1.md`](benchmarks/archive/v2.6.1.md) |
+| 2164 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 2165 | → | [`cli/ARCHITECTURE.md`](cli/ARCHITECTURE.md) |
+| 2166 | → | [`docs/agent-capabilities.md`](docs/agent-capabilities.md) |
+| 2167 | → | [`docs/EVALS.md`](docs/EVALS.md) |
+| 2168 | → | [`docs/getting-started-product-owner.md`](docs/getting-started-product-owner.md) |
+| 2169 | → | [`docs/mcp-integration-guide.md`](docs/mcp-integration-guide.md) |
+| 2170 | → | [`docs/sdlc-workflow-quick-reference.md`](docs/sdlc-workflow-quick-reference.md) |
+| 2171 | → | [`docs/SECURITY.md`](docs/SECURITY.md) |
+| 2172 | → | [`docs/ui-automation-drivers.md`](docs/ui-automation-drivers.md) |
+| 2173 | → | [`evals-report.md`](evals-report.md) |
+| 2174 | → | [`README.md`](README.md) |
 
 ---
 

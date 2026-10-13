@@ -34,17 +34,19 @@ Prefer a finish line that compares against something the loop did not write - an
 
 ## Checking the Fence
 
-The pre-launch record names the starting commit by its full SHA, never by a branch name, because a branch moves. At launch it also records, for every fence entry that `git ls-files --error-unmatch <path>` reports as untracked and every entry outside the repository, the entry's sha256; for every fenced submodule, its commit from `git -C <sub> rev-parse HEAD`; for every pattern entry recorded as absent, the matches present at launch; and, where the test runner can list its collected tests without running them, that list.
+The pre-launch record names the starting commit by its full SHA, never by a branch name, because a branch moves. At launch it also records, for every fence entry that `git ls-files --error-unmatch <path>` reports as untracked and every entry outside the repository, the entry's sha256; for every fenced submodule, its commit from `git -C <sub> rev-parse HEAD`; for every pattern entry recorded as absent, the matches present at launch; where the test runner can list its collected tests without running them, that list; and the tests reported as skipped by a launch run of the test command the acceptance checks run.
 
 At judging time, run these steps from the repository root, in order:
 
 1. **Resolve the start.** Use the recorded SHA. After a rebase, the start is the rebased copy of the most recent approved re-anchor commit, or the new base when there is none; record the old SHA beside the new one.
 2. **List tracked changes.** Run `git -c core.quotePath=false diff --no-renames --name-status <start-sha>`. It compares the working tree, staged and unstaged edits included, against the start; `--no-renames` reports a moved file as a deletion plus an addition, so a renamed test still shows its old path, and `core.quotePath=false` prints non-ASCII paths as they are written in the fence.
-3. **List untracked files.** Run `git -c core.quotePath=false ls-files --others --exclude-standard`. Ignored files do not appear here, which is why step 5 exists.
+3. **List untracked files.** Run `git -c core.quotePath=false ls-files --others --exclude-standard`. That listing hides every file `.gitignore`, `.git/info/exclude`, or `core.excludesFile` excludes, so also run `git -c core.quotePath=false ls-files --others -- <fenced dirs>`, without `--exclude-standard`: under the fenced directories it lists excluded files too, whichever rule hides them. A line ending in `/` there is a nested repository; read the files inside it as well.
 4. **Match against the fence.** An entry matches a path equal to it or below it by whole path components, so `tests` covers `tests/a.py` and not `tests_old/a.py`; a pattern entry matches that file name at any depth under its root. A fenced path with any status other than `A` fails.
 5. **Check absent entries directly.** For every entry recorded as absent at the start, run `test -e <path>`; for a pattern entry, list its matches under the root with `find` and compare against the matches recorded at launch. Any new match fails, gitignored or not.
 6. **Check hashed and submodule entries.** Recompute the sha256 of each hashed entry, and for each fenced submodule compare `git -C <sub> rev-parse HEAD` with the recorded commit and require `git -C <sub> status --porcelain` to print nothing. Any difference fails.
-7. **Read the additions.** Read every added or untracked file under a fenced directory; one that patches, skips, or reconfigures an existing check fails. Where a collected-test list was recorded, list again: a test present at the start that is no longer collected, or now reports skipped, fails.
+7. **Read the additions.** Read every added or untracked file under a fenced directory, from both listings in step 3; one that patches, skips, or reconfigures an existing check fails. Ignored build output such as `__pycache__/*.pyc` also appears there: list it rather than read it, and a compiled or generated file with no matching tracked source fails. Where a collected-test list was recorded, list again: a test present at the start that is no longer collected fails. Skip status comes from the acceptance run's own output, never from a collection-only listing, which runs no test and so cannot show a skip decided at run time: a test that run reports as skipped fails unless the record lists it as skipped at launch.
+
+`test -e`, `find`, and a sha256 tool such as `sha256sum` or `shasum -a 256` are the POSIX shell forms. In PowerShell the equivalents are `Test-Path`, `Get-ChildItem -Recurse -Force`, and `Get-FileHash -Algorithm SHA256`.
 
 The iteration fails, whatever the acceptance check returned, when any step fails.
 
@@ -82,7 +84,7 @@ Walk the design through each item before the first iteration. A direct loop invo
 
 ## What the Review Produces
 
-A short pre-launch record kept with the loop's success criteria: the start SHA and any re-anchors with their approvals; the finish-line command and its expected result, or the recurring stop condition; how each item's acceptance check is chosen; the fence list with its absent-at-start and pattern entries, the sha256 of every entry untracked at launch or outside the repository, each fenced submodule's commit, and any collected-test list; who judges; the retry cap; whether the loop is self-modifying and where its approval point sits; and each failure-check item marked clear, repaired, or open.
+A short pre-launch record kept with the loop's success criteria: the start SHA and any re-anchors with their approvals; the finish-line command and its expected result, or the recurring stop condition; how each item's acceptance check is chosen; the fence list with its absent-at-start and pattern entries, the sha256 of every entry untracked at launch or outside the repository, each fenced submodule's commit, and any collected-test list and skipped-at-launch list; who judges; the retry cap; whether the loop is self-modifying and where its approval point sits; and each failure-check item marked clear, repaired, or open.
 
 The record is prepared design, not an observed run. A clear check is not evidence the loop works, and no schema validates a fence or a judge assignment today; the review is a discipline the loop keeps in its own state, stated here so a reader does not assume enforcement exists.
 

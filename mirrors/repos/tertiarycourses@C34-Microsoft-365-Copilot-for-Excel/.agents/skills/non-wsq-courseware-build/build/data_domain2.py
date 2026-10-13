@@ -1,4 +1,4 @@
-"""Topic 2 labs for C34: Skills and Rules (BrightPath client orders, finance and interview data)."""
+"""Topic 2 labs for C34: Skills and Rules (BrightPath client orders, HR-outsourcing growth and job-posting data)."""
 
 from mock_data import EXPECTED, STATUSES, REGIONS
 from data_domain1 import _LOG, _SETUP_STEP
@@ -35,34 +35,34 @@ Format every new data range as an Excel table named tbl + the sheet name without
 Use XLOOKUP for lookups and return "Not found" when there is no match.
 Never merge cells."""
 
-SKILL_CALENDAR = """---
-name: interview-calendar
-description: Use when I ask for an interview calendar, an interview schedule or interview clashes for a week. Builds a Monday-to-Friday calendar from the interviews table and flags double-bookings.
+SKILL_PARETO = """---
+name: pareto-chart
+description: Use when I ask for a Pareto chart, an 80/20 analysis or the vital few categories in a table column. Counts each category, sorts them from highest to lowest and draws a combo chart with a different colour for every column and a cumulative % line.
 ---
 
-# Interview calendar
+# Pareto chart
 
-Turn the list of interviews into a weekly calendar that a recruiter can read at a glance, and flag clashes.
+Show which few categories account for most of the total: a sorted count of every category, a cumulative % line, and a different colour for every column.
 
 ## Input
-- The interviews table (tblInterviews) with Interview_ID, Role, Interviewer, Interview_Date, Start_Time, Duration_Min, Mode and Room.
-- A week start date (a Monday). If I do not give one, ask me for it before you start.
+- A table and one category column in it, for example tblJobs and Job_Category. If I do not say which, ask me before you start.
+- Optional: a threshold. The default is 80%.
 
 ## Steps
-1. Never change tblInterviews or any existing sheet.
-2. Create a new sheet named Cal_<week start as yyyy-mm-dd>, e.g. Cal_2026-07-06. If it already exists, replace its contents.
-3. In A1 write "Interview calendar - week of <week start as dd mmm yyyy>". In A2 write "Created by Copilot".
-4. Build the grid from row 4: column A holds 30-minute time slots from 09:00 to 17:30; columns B to F are Monday to Friday, with the date in each header.
-5. Place every interview of that week in each slot it covers (an interview of 60 minutes fills two slots). Show "Interviewer - Role (Mode)". If two interviews share a slot, show both, separated by " | ".
-6. Colour Onsite interviews light blue and Video interviews light green.
-7. Find clashes: two interviews on the same date that overlap in time AND have the same Interviewer, or are both Onsite in the same Room. Colour those calendar cells red.
-8. Below the grid, add a table Clashes with Type (Interviewer or Room), Interview_ID 1, Interview_ID 2, Who or Room, Date and Time. If there are none, write "No clashes this week".
-9. Next to it, add a Summary table: interviews per day, interviews per Interviewer and the week total.
-10. Freeze the header row and time column, set column widths so the text is readable, and do not merge cells.
+1. Never change the source table or unrelated sheets. You may replace only the matching Pareto_<column name> output sheet when rerunning this skill.
+2. Create a new sheet named Pareto_<column name>, e.g. Pareto_Job_Category. If it already exists, replace its contents.
+3. In A1 write "Pareto chart - <column name> in <table name>". In A2 write "Created by Copilot".
+4. From A4 build a summary table with the headers Category, Count, Share %, Cumulative %. List every distinct value of the column once, sorted by Count from highest to lowest. Use formulas that read the source table so the summary updates when rows are added. Format Share % and Cumulative % as % with 1 decimal.
+5. Add a Total row under the table. The Count total must equal the number of rows in the source table.
+6. Create one combo chart from the summary: Count as columns on the primary axis and Cumulative % as a line with markers on a secondary axis fixed from 0% to 100%.
+7. Give every column its own colour (vary colours by point, or set each point separately) from a palette of clearly different colours. Make the cumulative line dark grey. Never use one colour for all the columns.
+8. Format the chart cleanly: white background, no border, shadow or gradient, data labels on the columns, no legend, axis titles "Count" and "Cumulative %", and category labels that are easy to read. The title states the finding, for example "<n> of <m> categories make up <x>% of the total".
+9. Place the chart to the right of the summary table, starting at column G and about 18 rows high. Freeze the header row and do not merge cells.
+10. Under the table, add "Vital few": the categories needed to reach the threshold and their combined share.
 
 ## Check before you finish
-- The number of interviews placed equals the number of rows in tblInterviews for that week.
-- Report the week total, the busiest day and every clash in your reply.
+- The Count total equals the number of rows in the source table.
+- Report in your reply: the number of rows, the number of categories, the top category with its count and share, and how many categories reach the threshold.
 """
 
 
@@ -231,30 +231,32 @@ DOMAIN2 = [
     dict(
         num=5,
         topic=2,
-        title="Analyse HR-Outsourcing Finances with Built-in Skills",
-        theme="Built-in Skills: Visual & Finance",
+        title="Plot and Style Client Growth Charts with Built-in Visual Skills",
+        theme="Built-in Skills: Visual Design",
         duration=40,
         objective=(
-            "LO2: find, enable and call Copilot's built-in skills - chart-design, unit-economics, check-model and "
-            "theme-design - and verify what each skill produces"
+            "LO2: find, enable and call Copilot's built-in visual skills - chart-design and theme-design - to plot charts "
+            "from a prompt and style them as one set, and verify what each skill produces"
         ),
         goal=(
-            "Use four built-in skills to chart BrightPath's recurring revenue, calculate client unit economics, audit a "
-            "headcount budget model and style the results - then prove the numbers."
+            "Use @chart-design to plot four charts of BrightPath's HR-outsourcing growth, polish them as a set, then use "
+            "@theme-design to give the whole sheet one professional look - and prove the numbers behind every chart."
         ),
-        workflow=["Manage skills", "@chart-design", "@unit-economics", "@check-model", "@theme-design"],
+        workflow=["Manage skills", "@chart-design: plot", "@chart-design: polish", "Check the numbers", "@theme-design"],
         desc=(
-            "BrightPath's HR-outsourcing business sells monthly payroll and HR services to client companies. Finance wants "
-            "to know whether winning clients pays off and whether next year's headcount budget is right. You will switch on "
-            "skills in Manage plugins & skills, call them with @, and let each one do a specialist job: @chart-design builds "
-            "the revenue chart, @unit-economics works out CAC, LTV and payback, @check-model finds the errors in the budget "
-            "model, and @theme-design styles the workbook. A Checks sheet proves every headline number."
+            "BrightPath's HR-outsourcing business sells monthly payroll and HR services to client companies, and "
+            "leadership wants four clear charts of how it is growing. You will switch on the built-in visual skills in "
+            "Manage plugins & skills, then call @chart-design to plot each chart - it picks the chart type and formats it "
+            "using the Excel design team's guidance - and place all four in a 2 x 2 grid on a new Charts sheet. You will "
+            "polish the set, ask Copilot for a Checks sheet that proves the numbers behind the charts, and finish with "
+            "@theme-design to give the sheet one coordinated theme."
         ),
         build=(
-            "BrightPath_HR_Outsourcing_Finance.xlsx with a skill-designed MRR chart, a Unit_Economics sheet, a corrected "
-            "Headcount_Budget, a Checks sheet that agrees with the skills, and a consistent theme"
+            "BrightPath_HR_Outsourcing_Finance.xlsx with a Charts sheet of four skill-designed charts in a 2 x 2 grid (MRR "
+            "and clients, new vs churned clients, H1 2026 spend by channel, active clients by plan), a Checks sheet that "
+            "agrees with the charts, and one consistent theme"
         ),
-        services="Excel · Copilot (Allow editing, Plan, Chat only) · @chart-design · @unit-economics · @check-model · @theme-design",
+        services="Excel · Copilot (Allow editing, Chat only) · Manage plugins & skills · @chart-design · @theme-design",
         data_files=["data/BrightPath_HR_Outsourcing_Finance.xlsx"],
         prerequisites=[
             "Lab 4 completed: you know how rules guide Copilot inside one workbook.",
@@ -263,106 +265,105 @@ DOMAIN2 = [
         steps=[
             (
                 _SETUP_STEP.format(file="BrightPath_HR_Outsourcing_Finance.xlsx")
-                + " Read the Definitions row on About_This_Data - you will hold the finance skill to these.",
-                "Tables : tblClientMonths (18 months) | tblClients | tblSpend | Headcount_Budget (cost model)\n"
-                "H1 2026 = Jan-Jun 2026\n"
-                "CAC     = sales & marketing spend / new clients\n"
-                "ARPA    = MRR / active clients at Jun 2026\n"
-                "LTV     = ARPA x gross margin / monthly churn\n"
-                "Payback = CAC / (ARPA x gross margin), in months",
+                + " The workbook holds data only: you will create every chart with a prompt, in a 2 x 2 grid on a new "
+                "Charts sheet. Read the Definitions row on About_This_Data first.",
+                f"Tables : tblClientMonths (18 months) | tblClients ({E5['clients']} clients) | tblSpend (spend by month and channel)\n"
+                "H1 2026 : Jan-Jun 2026\n"
+                "Chart 1 : MRR and active clients by month   -> Charts!A1:H18\n"
+                "Chart 2 : new vs churned clients by month   -> Charts!J1:Q18\n"
+                "Chart 3 : H1 2026 spend by Channel          -> Charts!A20:H37\n"
+                "Chart 4 : active clients by Plan, Jun 2026  -> Charts!J20:Q37",
             ),
             (
-                "Turn on the skills. In the Copilot pane select Settings (...) > Manage plugins & skills. Open the Finance "
-                "folder and turn on unit-economics and check-model. Open the Visualisation folder and turn on chart-design (it is "
-                "off by default). Leave every other skill as it is. Close the dialog, type @ in the prompt box and confirm all "
-                "three are listed. theme-design (Step 7) sits in a Formatting folder that is still rolling out - if you have no "
-                "Formatting folder, skip it; Step 7 shows what to do.",
+                "Turn on the skills. In the Copilot pane select Settings (...) > Manage plugins & skills. Open the "
+                "Visualisation folder and turn on chart-design (it is off by default). Open the Formatting folder and turn "
+                "on theme-design - if you have no Formatting folder yet, skip it; Step 7 shows what to do. Leave every other "
+                "skill as it is. Close the dialog, type @ in the prompt box and confirm chart-design is listed. Then ask "
+                "Copilot which skills fit this job.",
                 "Where         : Settings (...) > Manage plugins & skills - turn on only these\n"
-                "Finance       : unit-economics, check-model\n"
                 "Visualisation : chart-design (off by default)\n"
                 "Formatting    : theme-design - only if this folder is shown\n"
                 "Call a skill  : type @ and its name, e.g. @chart-design\n\n"
                 "CHAT ONLY:\n"
-                "Which of your skills would help me analyse client acquisition cost and churn in this workbook, and\n"
-                "which would help me audit the Headcount_Budget sheet? Do not change anything.",
+                "Which of your skills would help me choose the right chart for this data and style the finished\n"
+                "sheet? Do not change anything.",
             ),
             (
-                "Call @chart-design (Visualisation) in Allow editing. It chooses and formats the chart using the Excel design "
-                f"team's guidance. Check the values: MRR grows from {_money(E5['mrr_jan25'])} in Jan 2025 to "
+                "Call @chart-design in Allow editing. It chooses and formats the chart using the Excel design team's "
+                "guidance. Your prompt says where the chart goes and how it should look, because the default placement and "
+                f"style are rarely what you want. Check the values: MRR grows from {_money(E5['mrr_jan25'])} in Jan 2025 to "
                 f"{_money(E5['mrr_end'])} in Jun 2026, with {E5['active_end']} active clients at the end.",
                 "ALLOW EDITING:\n"
-                "@chart-design Create a combo chart on a new sheet Charts from tblClientMonths: MRR as columns and\n"
-                "Clients_End as a line on a secondary axis, Jan 2025 to Jun 2026.\n\n"
-                "FOLLOW-UP:\n"
-                "@chart-design Improve this chart for a leadership slide: a title that states the finding, axis titles\n"
-                "with units, and a data label on the last month only.",
+                "@chart-design On a new sheet named Charts, create a combo chart from tblClientMonths, placed over A1:H18,\n"
+                "with MRR as columns and Clients_End as a line on a secondary axis, Jan 2025 to Jun 2026.\n"
+                "Format it cleanly: white background, no border or effects, axis titles with units, and a title that\n"
+                "states the finding.",
             ),
             (
-                "Call the finance skill @unit-economics in Plan mode, so you can review its approach before it builds. Check that "
-                "the plan uses H1 2026 and the About_This_Data definitions; reply with corrections if not, then approve and "
-                "select Done.",
-                "PLAN MODE:\n"
-                "@unit-economics Analyse the unit economics of BrightPath's HR-outsourcing clients for H1 2026 using\n"
-                "tblClientMonths, tblClients and tblSpend. Use the definitions on About_This_Data. Put the results on a\n"
-                "new sheet Unit_Economics: CAC, ARPA, gross margin, monthly churn, LTV, LTV:CAC and payback months, plus\n"
-                "CAC by Channel. List your assumptions.",
+                "Add the other three charts, one prompt each, in the same clean style. For chart 2 let the skill recommend "
+                f"the chart type. Check: {E5['new_all']} clients were won and {E5['churned_all']} churned over the 18 months; "
+                f"{E5['top_channel']} took the most H1 2026 spend ({_money(E5['by_channel'][E5['top_channel']]['spend'])}) and "
+                f"{E5['low_channel']} the least ({_money(E5['by_channel'][E5['low_channel']]['spend'])}); in Jun 2026 "
+                + ", ".join(f"{p} has {n}" for p, n in sorted(E5["active_by_plan"].items(), key=lambda kv: -kv[1]))
+                + " active clients.",
+                "ALLOW EDITING:\n"
+                "@chart-design Recommend the best chart for new vs churned clients by month, then create it on the\n"
+                "Charts sheet over J1:Q18 in the same clean style as the first chart.\n\n"
+                "ALLOW EDITING:\n"
+                "@chart-design Chart the sales and marketing spend for each Channel in H1 2026 (Jan-Jun) from tblSpend\n"
+                "as bars, longest first, on the Charts sheet over A20:H37 in the same clean style.\n\n"
+                "ALLOW EDITING:\n"
+                "@chart-design Show how many active clients each Plan has in Jun 2026 from tblClients, as the chart\n"
+                "type you think suits it best, on the Charts sheet over J20:Q37 in the same clean style.",
             ),
             (
-                "Never trust a skill's numbers without a check. Ask Copilot to add these independent formulas, then compare them "
-                "with the Unit_Economics sheet. If they differ, ask the skill to show its calculation and use the definition.",
+                "Polish the four charts as one set with a single call. If one chart is not what you wanted, select Undo and "
+                "ask again for that chart only.",
+                "ALLOW EDITING:\n"
+                "@chart-design Review the four charts on the Charts sheet so they read as one set: a title that states\n"
+                "the finding on each, the same fonts and axis style, data labels only where they help, and all four the\n"
+                "same size.",
+            ),
+            (
+                "Never trust a chart without a check. Ask Copilot to add a Checks sheet with formulas, then compare each "
+                "value with its chart. If a chart differs, ask the skill which table and filter it used, and fix the chart: "
+                "the Checks sheet is the reference.",
                 "CHECK (Allow editing):\n"
-                "Create a sheet named Checks. Enter these labels and formulas exactly as written, then tell me each result:\n"
-                "A1 New clients H1      B1 =SUMIFS(tblClientMonths[New_Clients],tblClientMonths[Month],\">=\"&DATE(2026,1,1))\n"
-                "A2 S&M spend H1        B2 =SUMIFS(tblClientMonths[Sales_Marketing_Spend],tblClientMonths[Month],\">=\"&DATE(2026,1,1))\n"
-                "A3 CAC                 B3 =B2/B1\n"
-                "A4 ARPA                B4 =INDEX(tblClientMonths[MRR],18)/INDEX(tblClientMonths[Clients_End],18)\n"
-                "A5 Gross margin        B5 =AVERAGEIFS(tblClientMonths[Gross_Margin_Pct],tblClientMonths[Month],\">=\"&DATE(2026,1,1))\n"
-                "A6 Monthly churn       B6 =AVERAGE(FILTER(tblClientMonths[Churned_Clients]/tblClientMonths[Clients_Start],tblClientMonths[Month]>=DATE(2026,1,1)))\n"
-                "A7 LTV                 B7 =B4*B5/B6\n"
-                "A8 LTV to CAC          B8 =B7/B3\n"
-                "A9 Payback months      B9 =B3/(B4*B5)\n\n"
+                "Add a Checks sheet with formulas that give the MRR and active clients in Jun 2026, the total new and\n"
+                "churned clients over the 18 months, the H1 2026 spend for each Channel, and the active clients for each\n"
+                "Plan, so I can check the four charts.",
+            ),
+            (
+                "Style the workbook with @theme-design (Formatting). It applies one coordinated theme - colours, fonts and "
+                "formats - to cells, tables and charts. Then steer it with a follow-up prompt. If theme-design is not in your "
+                "@ list, your account does not have it yet: delete @theme-design and run the prompt as it is. If your "
+                "organisation has set up a brand kit, try @brandkit instead. Then log your prompts.",
+                "ALLOW EDITING:\n"
+                "@theme-design Apply one clean, professional theme to the Charts and Checks sheets and all four charts.\n\n"
                 "FOLLOW-UP:\n"
-                "Compare Checks!B3:B9 with the Unit_Economics sheet. Show any value that differs and why.",
-            ),
-            (
-                "Audit a model with @check-model. Ask for the findings first in Chat only, read them, then switch to Allow editing "
-                f"and ask for the fixes. It should find three problems: a typed number in {E5['hard_cell']}, an 11-month formula "
-                f"in {E5['eleven_cell']} and a total in {E5['total_cell']} that misses the last role.",
-                "CHAT ONLY:\n"
-                "@check-model Audit the Headcount_Budget sheet: look for typed numbers in formula columns, formulas that\n"
-                "differ from their neighbours, and totals that miss rows. List each issue with its cell, what is wrong and\n"
-                "the fix. Do not change anything yet.\n\n"
-                "ALLOW EDITING:\n"
-                "Fix the issues you found on Headcount_Budget and tell me the new Total FY2027 cost.",
-            ),
-            (
-                "Style the workbook with @theme-design (Formatting). It applies one coordinated theme to cells, tables and charts. "
-                "If theme-design is not in your @ list, your account does not have it yet: delete @theme-design and run the rest "
-                "of the prompt as it is. If your organisation has set up a brand kit, try @brandkit instead. Then log your prompts.",
-                "ALLOW EDITING:\n"
-                "@theme-design Apply one clean, professional theme to the Charts, Unit_Economics, Checks and\n"
-                "Headcount_Budget sheets.\n\n" + _LOG,
+                "@theme-design Use navy #1F4E79 and teal #2A9D8F as the main colours, and keep every chart readable.\n\n"
+                + _LOG,
             ),
         ],
         sample_prompts=[
-            ("Find skills", "Which skills do you have for charts, formatting and finance? When would I use each one?"),
+            ("Find skills", "Which skills do you have for charts and formatting? When would I use each one?"),
             ("Chart skill", "@chart-design Recommend the best chart for new vs churned clients by month, then create it."),
-            ("Finance skill", "@unit-economics Compare CAC and payback months by acquisition Channel for H1 2026."),
-            ("Audit skill", "@check-model Check this sheet for hardcoded numbers, broken formulas and totals that miss rows."),
+            ("Chart skill", "@chart-design Chart the sales and marketing spend for each Channel in H1 2026 as bars, longest first."),
             ("Style skill", "@theme-design Apply a coordinated theme to this workbook."),
+            ("Colours", "@theme-design Use navy #1F4E79 and teal #2A9D8F as the main colours on every chart."),
             ("Brand skill", "@brandkit Apply our organisation's brand colours and fonts to the charts."),
-            ("Explain", "Explain how you calculated LTV, step by step, with the cells you used."),
-            ("Question", "Which acquisition channel has the lowest CAC in H1 2026, and how many clients did it bring?"),
+            ("Explain", "Explain why you chose this chart type for this data, and which other chart types would also work."),
+            ("Question", "Which acquisition channel took the most sales and marketing spend in H1 2026, and how much was it?"),
         ],
         test=(
-            f"Checks: new clients in H1 2026 = {E5['new_h1']}, S&M spend = {_money(E5['spend_h1'])}, CAC = "
-            f"{_money(E5['cac'])}, ARPA = {_money(E5['arpa'])}, gross margin = {E5['gm_h1']}%, monthly churn = "
-            f"{E5['churn_m']}%, LTV = about {_money(E5['ltv'])}, LTV:CAC = {E5['ltv_cac']} and payback = {E5['payback']} "
-            f"months. {E5['best_channel']} has the lowest CAC ({_money(E5['by_channel'][E5['best_channel']]['cac'])}) and "
-            f"{E5['worst_channel']} the highest ({_money(E5['by_channel'][E5['worst_channel']]['cac'])}). @check-model found "
-            f"{E5['hard_cell']} ({E5['hard_role']}, typed number), {E5['eleven_cell']} ({E5['eleven_role']}, 11 months) and "
-            f"{E5['total_cell']} (total misses {E5['last_role']}); after the fixes the total rises from "
-            f"{_money(E5['budget_reported'])} to {_money(E5['budget_correct'])}."
+            f"The Charts sheet holds four charts in a 2 x 2 grid in one clean style. MRR grows from {_money(E5['mrr_jan25'])} "
+            f"(Jan 2025) to {_money(E5['mrr_end'])} (Jun 2026) while active clients end at {E5['active_end']}. Over the 18 months "
+            f"{E5['new_all']} clients were won and {E5['churned_all']} churned. H1 2026 spend by channel runs from "
+            f"{E5['top_channel']} ({_money(E5['by_channel'][E5['top_channel']]['spend'])}) down to {E5['low_channel']} "
+            f"({_money(E5['by_channel'][E5['low_channel']]['spend'])}), {_money(E5['spend_h1'])} in all. Active clients by plan: "
+            + ", ".join(f"{p} {n}" for p, n in sorted(E5["active_by_plan"].items(), key=lambda kv: -kv[1]))
+            + f" ({E5['active_end']} in total). The Checks sheet agrees with every chart, and @theme-design gave the sheets one "
+            "consistent theme."
         ),
         checkpoint="Keep the workbook in work-c34. Lab 6 needs your OneDrive for one thing only: custom skills are stored there.",
         troubleshooting=[
@@ -375,159 +376,224 @@ DOMAIN2 = [
                 "Turn it on in Manage plugins & skills, or type its full name: an @mention works even when the skill is off.",
             ),
             (
-                "The skill's CAC or LTV differs from Checks.",
-                "Skills use their own defaults. Ask: 'Use the definitions on About_This_Data and recalculate CAC and LTV.'",
+                "The chart is in the wrong place or has a border or glow.",
+                "Ask: 'Move this chart to the Charts sheet over A1:H18 (use that chart's range), use a white background and "
+                "remove the border and effects.'",
             ),
             (
-                "@check-model changes the sheet straight away.",
-                "You were in Allow editing. Select Undo, switch to Chat only and ask for the findings first.",
+                "@chart-design builds a different chart type from the one I wanted.",
+                "The skill recommends, your words decide. Name the type in the prompt, e.g. 'as bars, longest first'.",
+            ),
+            (
+                "@theme-design is not in my list.",
+                "Your account may not have the Formatting folder yet. Ask without the skill: 'Apply one consistent colour "
+                "theme and font to the Charts and Checks sheets and all four charts.'",
+            ),
+            (
+                "A chart value differs from the Checks sheet.",
+                "Ask: 'Which table, columns and filter did this chart use?' Then fix the chart's data; the Checks sheet is the reference.",
             ),
         ],
         challenge=(
-            "Ask @unit-economics for a client cohort table by Sign_Date quarter showing how many clients from each cohort are "
-            "still active. Check one cohort with COUNTIFS on tblClients."
+            "Ask @chart-design for a fifth chart: monthly gross margin % as a line with the axis starting at 40%. Then use "
+            "@theme-design so it matches the other four, and check one month's value on Client_Months."
         ),
-        reflection="Which skill saved you the most time, and which of its numbers would you not have trusted without the Checks sheet?",
+        reflection="Which chart did the skill choose differently from the one you would have drawn, and was it better? What did the theme change that a prompt alone did not?",
     ),
     # ------------------------------------------------------------------ LAB 6
     dict(
         num=6,
         topic=2,
-        title="Use Copilot to Build a Custom Interview-Calendar Skill",
-        theme="Custom Skills: Calendar",
+        title="Use Copilot to Build a Custom Pareto-Chart Skill",
+        theme="Custom Skills: Pareto Chart",
         duration=45,
         objective=(
-            "LO2: use Copilot to write a custom SKILL.md, save it in the OneDrive skills folder, call it with @, and improve it "
-            "so a weekly task runs from a one-line prompt"
+            "LO2: use Copilot on the web to write a custom SKILL.md, upload it to the OneDrive skills folder, install it in "
+            "Excel and call it with @ to plot a Pareto chart from a one-line prompt"
         ),
         goal=(
-            "Create an interview-calendar skill that turns BrightPath's interview list into a weekly calendar with clashes "
-            "flagged - and reuse it for the next week with one short prompt."
+            "Create a pareto-chart skill that turns any category column into a Pareto chart - a different colour for each "
+            "bar and a cumulative % line - and use it to plot BrightPath's 500 job postings by job category."
         ),
-        workflow=["Skills folder", "Copilot writes SKILL.md", "Save & refresh", "@interview-calendar", "Reuse & improve"],
+        workflow=["Draft on the web", "Save SKILL.md", "Upload to OneDrive", "Install in Excel", "@pareto-chart"],
         desc=(
-            "Every Friday a BrightPath coordinator turns next week's interview bookings into a calendar and hunts for "
-            "double-bookings. That is a repeatable recipe, so it should be a skill. You will open the sample calendar skill in "
-            "your OneDrive skills folder, ask Copilot to write a new SKILL.md for interview-calendar, save it in its own folder, "
-            "refresh the skills list and call it with @. The same one-line prompt then builds the next week's calendar."
+            "BrightPath received 500 job postings from clients in H1 2026, spread over 16 job categories. Which few "
+            "categories make up most of the work? A Pareto chart answers that: bars sorted from highest to lowest and a "
+            "cumulative % line that shows where the 'vital few' end. Excel's built-in Pareto chart paints every bar the same "
+            "colour, so you will write a custom skill instead. You will ask Copilot on the web to write the pareto-chart "
+            "SKILL.md, save it, upload it to your OneDrive skills folder, install it in Excel and call it with @ to plot the "
+            "job categories - then reuse it on another column and improve it."
         ),
         build=(
-            "An interview-calendar skill in your OneDrive skills folder, and BrightPath_Interview_Schedule.xlsx with "
-            "Cal_2026-07-06 and Cal_2026-07-13 calendar sheets, each with clashes flagged and a summary"
+            "A pareto-chart skill in your OneDrive skills folder, and BrightPath_Job_Postings.xlsx with a Pareto_Job_Category "
+            "sheet and a Pareto_Client_Sector sheet - each a summary table and a Pareto chart with a different colour for every "
+            "bar - plus a Checks sheet"
         ),
-        services="Excel · Copilot (Chat only, Allow editing) · Manage plugins & skills · OneDrive skills folder · SKILL.md",
-        data_files=["data/BrightPath_Interview_Schedule.xlsx"],
-        extra_files=[("skills/interview-calendar/SKILL.md", SKILL_CALENDAR,
+        services="Microsoft 365 Copilot web (https://copilot.cloud.microsoft/) to draft the skill · OneDrive skills folder · Excel Copilot (Chat only, Allow editing) · SKILL.md",
+        data_files=["data/BrightPath_Job_Postings.xlsx"],
+        extra_files=[("skills/pareto-chart/SKILL.md", SKILL_PARETO,
                       "ready-made skill to upload if you run short of time")],
         prerequisites=[
             "Lab 5 completed: you can find, enable and @mention skills.",
-            "Access to your OneDrive in a browser (custom skills are stored in a OneDrive folder).",
-            "This lab folder's data workbook and skills/interview-calendar/SKILL.md (fallback).",
+            "Access to https://copilot.cloud.microsoft/ with the same work account used in Excel and OneDrive, and to your OneDrive in a browser (custom skills are stored there).",
+            "This lab folder's data workbook and skills/pareto-chart/SKILL.md (fallback).",
         ],
         steps=[
             (
-                _SETUP_STEP.format(file="BrightPath_Interview_Schedule.xlsx")
-                + " The workbook stays local; only the skill file goes in OneDrive (Step 2).",
-                "Table  : tblInterviews (41 interviews, 6-17 July 2026)\n"
-                "Week 1 : Mon 6 July - Fri 10 July 2026\n"
-                "Week 2 : Mon 13 July - Fri 17 July 2026\n"
-                "Clash  : same Interviewer overlapping, or two Onsite interviews in the same Room overlapping",
+                _SETUP_STEP.format(file="BrightPath_Job_Postings.xlsx")
+                + " The workbook stays local; only the skill file goes in OneDrive (Steps 4-5).",
+                f"Table   : tblJobs ({E6['rows']} job postings, Jan-Jun 2026)\n"
+                "Columns : Job_ID, Posted_Date, Job_Category (16 values), Client_Sector (6 values), Employment_Type, "
+                "Status, Openings\n"
+                "Pareto  : columns = jobs per category, highest to lowest, a different colour for each column;\n"
+                "          line = cumulative % of all jobs, 0% to 100% on a secondary axis",
             ),
             (
-                "Create your skills folder. In the Copilot pane select Settings (...) > Manage plugins & skills > Custom skills and "
-                "turn the Custom skills switch on. Then select Add in OneDrive (in some versions: Create OneDrive folder, then Open "
-                "skills folder). OneDrive opens a folder named skills, usually under Documents > Copilot > Microsoft Excel. Open the sample calendar skill folder (e.g. make-calendar.example) and read its "
-                "SKILL.md: a front matter block between --- lines, then plain-English steps.",
-                "Folder      : skills/<skill-name>/   (folder name = the skill name, lower case with hyphens)\n"
-                "File        : SKILL.md\n"
-                "Front matter: name (the skill name) and description (when Copilot should use it)\n"
-                "Body        : the steps Copilot follows - plain English, no code needed",
+                "Draft the skill in Microsoft 365 Copilot on the web. Open https://copilot.cloud.microsoft/ in your browser and sign "
+                "in with the same work account used in Excel and OneDrive. Start a new chat and paste the prompt below. The "
+                "web chat cannot see your workbook, "
+                "so the prompt describes the table, the chart and the colours. Read the reply: it must start with --- and "
+                "include name: pareto-chart, a description that says when to use the skill, and numbered steps that give "
+                "every column a different colour. Ask for corrections in this chat until you are happy.",
+                "PROMPT (Microsoft 365 Copilot web):\n"
+                "Write a complete SKILL.md for a Copilot in Excel skill named pareto-chart.\n"
+                "Return reusable skill instructions only; do not draw a chart or claim to see my workbook in this chat.\n"
+                "Start with YAML front matter containing name: pareto-chart and a description.\n"
+                "Description: Use when I ask for a Pareto chart, an 80/20 analysis or the vital few categories in a table column.\n"
+                "When the skill runs in Excel I will name a table and a category column, for example tblJobs and\n"
+                "Job_Category. If I do not, it must ask me.\n"
+                "Steps:\n"
+                "1) Never change the source table or unrelated sheets. You may replace only the matching Pareto_<column name> output sheet when rerunning this skill.\n"
+                "2) Create a sheet named Pareto_<column name>; if it already exists, replace only its contents.\n"
+                "Build a summary table: Category, Count, Share %,\n"
+                "Cumulative %, sorted by Count from highest to lowest. Use formulas that read the source table so it\n"
+                "updates when rows are added, and add a Total row.\n"
+                "3) Create one combo chart from the summary: Count as columns and Cumulative % as a line with markers on\n"
+                "a secondary axis from 0% to 100%.\n"
+                "4) Give every column a different colour. Never use one colour for all the columns. Make the line dark grey.\n"
+                "5) Format the chart cleanly: white background, no border or effects, data labels on the columns, axis\n"
+                "titles, no legend, and a title that states the finding, for example \"6 of 16 categories make up 83%\n"
+                "of the total\".\n"
+                "6) Place the chart to the right of the summary table, starting at column G.\n"
+                "7) Under the table, list the vital few: the categories needed to reach 80% and their combined share.\n"
+                "8) Check that the Count total equals the number of rows in the source table, and report the row count,\n"
+                "the number of categories, the top category and how many categories reach 80%.\n"
+                "Return only the full SKILL.md text, starting with the --- front matter, without code fences or commentary.",
             ),
             (
-                "Let Copilot write the skill. In Excel, choose Chat only and send the prompt below. Read the reply: it should start "
-                "with --- name: interview-calendar, have a description that says when to use it, and list clear steps. Ask for "
-                "changes until you are happy.",
-                "CHAT ONLY:\n"
-                "Write a Copilot in Excel custom skill as a complete SKILL.md file.\n"
-                "Name: interview-calendar\n"
-                "Description: Use when I ask for an interview calendar, schedule or clashes for a week.\n"
-                "The skill must:\n"
-                "1) Read tblInterviews (Interview_ID, Role, Interviewer, Interview_Date, Start_Time, Duration_Min, Mode, Room).\n"
-                "2) Ask for the week start date (a Monday) if I do not give one.\n"
-                "3) Create a sheet Cal_<yyyy-mm-dd> with Monday to Friday as columns and 30-minute rows from 09:00 to 17:30.\n"
-                "4) In each slot show Interviewer - Role (Mode); colour Onsite light blue and Video light green.\n"
-                "5) Flag clashes: overlapping interviews with the same Interviewer, or Onsite interviews in the same Room.\n"
-                "   Colour them red and list them in a Clashes table under the calendar.\n"
-                "6) Add a summary of interviews per day and per Interviewer.\n"
-                "7) Never change tblInterviews.\n"
-                "Return only the SKILL.md text, starting with the --- front matter.",
+                "Save the reply as a plain-text file named SKILL.md. Select the whole reply and copy it - if it sits in a code "
+                "block, copy only the text inside, with no ``` lines. Windows: open Notepad, paste, choose File > Save as, set "
+                "Save as type to All files, type SKILL.md as the file name, set Encoding to UTF-8 and save it in work-c34. "
+                "Mac: open TextEdit, choose Format > Make Plain Text, paste, choose File > Save, type SKILL.md as the name, "
+                "untick 'If no extension is provided, use .txt' and save it in work-c34. Check the file is called SKILL.md, "
+                "not SKILL.md.txt, and that its first line is ---.",
+                "File   : work-c34/SKILL.md (plain text)\n"
+                "Line 1 : ---\n"
+                "Line 2 : name: pareto-chart\n"
+                "Check  : no ``` lines and no text before the first ---\n"
+                "Short of time? Use skills/pareto-chart/SKILL.md from this lab folder instead.",
             ),
             (
-                "Save the skill. Copy Copilot's reply into a plain-text editor (Notepad, or TextEdit in plain-text mode) and save "
-                "it as SKILL.md. In the OneDrive skills folder select New > Folder, name it interview-calendar, open it and Upload "
-                "SKILL.md. Short of time? Upload skills/interview-calendar/SKILL.md from this lab folder instead.",
-                "OneDrive : .../skills/interview-calendar/SKILL.md\n"
-                "Check    : the folder name and the name: line are both exactly interview-calendar\n"
-                "Check    : the file is called SKILL.md (not SKILL.md.txt)",
+                "Open your OneDrive skills folder from Excel. In Excel open the Copilot pane and select Settings (...) > "
+                "Manage plugins & skills > Custom skills. Turn the Custom skills switch on, then select Add in OneDrive (in "
+                "some versions: Create OneDrive folder, then Open skills folder). Your browser opens OneDrive at the skills "
+                "folder, usually Documents > Copilot > Microsoft Excel > skills. A sample folder such as make-calendar.example "
+                "shows the layout: one folder per skill.",
+                "Excel    : Copilot pane > Settings (...) > Manage plugins & skills > Custom skills\n"
+                "Switch   : Custom skills = On\n"
+                "Then     : Add in OneDrive (or Create OneDrive folder, then Open skills folder)\n"
+                "OneDrive : Documents > Copilot > Microsoft Excel > skills",
             ),
             (
-                "Make Excel see the new skill: Settings (...) > Manage plugins & skills > Custom skills, check the Custom skills "
-                "switch is on and select Refresh (the round arrow). Wait until the list loads, then turn interview-calendar on. Close the dialog and type @inter in the prompt box - the skill should appear.",
-                "",
+                "Create the skill's folder and upload SKILL.md. In the OneDrive skills folder select Create or upload > Folder, "
+                "name it pareto-chart (lower case, with a hyphen) and select Create. Open the new folder, select Create or "
+                "upload > Files upload, choose SKILL.md from work-c34 and select Open. When the upload finishes, SKILL.md is "
+                "listed inside the pareto-chart folder.",
+                "OneDrive : Documents > Copilot > Microsoft Excel > skills > pareto-chart > SKILL.md\n"
+                "Check    : folder name = the name: line = pareto-chart (lower case, hyphen, no spaces)\n"
+                "Check    : the file is called SKILL.md and sits directly inside the pareto-chart folder",
             ),
             (
-                "Run the skill in Allow editing with a one-line prompt. First check that the title bar shows "
-                "BrightPath_Interview_Schedule: the skill is available in every workbook, but it only works where tblInterviews "
-                "exists. When it finishes, inspect the calendar and select Done. "
-                "Then ask Copilot to add the check formula and compare it with the number of interviews on the calendar.",
+                "Install the skill in Excel. Go back to Excel: Copilot pane > Settings (...) > Manage plugins & skills > Custom "
+                "skills. Check the Custom skills switch is on and select Refresh (the round arrow). Wait until the list loads, "
+                "then turn pareto-chart on. Close the dialog, click the Copilot prompt box and type @pare - pareto-chart should "
+                "appear in the list. If it does not, wait a minute and select Refresh again.",
+                "Excel : Copilot pane > Settings (...) > Manage plugins & skills > Custom skills > Refresh\n"
+                "Then  : turn pareto-chart on, close the dialog and type @pare in the prompt box\n"
+                "Check : pareto-chart appears in the list",
+            ),
+            (
+                "Use the skill. First check that the title bar shows BrightPath_Job_Postings: a skill is available in every "
+                "workbook, but it only works where its table exists. Choose Allow editing and send the one-line prompt. Copilot "
+                "should create a sheet Pareto_Job_Category with a summary table and a combo chart beside it: columns from "
+                f"{E6['top_cat']} ({E6['top_n']}) down to {E6['by_cat'][-1][0]} ({E6['by_cat'][-1][1]}), a different colour for "
+                f"each column, and a cumulative % line that passes 80% at category {E6['n80']}. Inspect it and select Done. Then "
+                "ask Copilot to add a Checks sheet so you can compare the numbers.",
                 "ALLOW EDITING:\n"
-                "@interview-calendar Build the calendar for the week starting Monday 6 July 2026.\n\n"
+                "@pareto-chart Plot a Pareto chart of Job_Category in tblJobs.\n\n"
                 "CHECK (Allow editing):\n"
-                "In an empty cell to the right of the calendar, add this formula and tell me whether it matches the\n"
-                "number of interviews on the calendar:\n"
-                "=COUNTIFS(tblInterviews[Interview_Date],\">=\"&DATE(2026,7,6),tblInterviews[Interview_Date],\"<=\"&DATE(2026,7,10))",
+                "Add a Checks sheet with formulas that count all the jobs, the Customer Service jobs and the number of\n"
+                "job categories, so I can check the Pareto chart.",
             ),
             (
-                "Reuse it. This is the point of a skill: next week's calendar needs only the skill name and a date. Week 2 has no "
-                "clashes - check the skill says so.",
+                "Reuse it. This is the point of a skill: a different column needs only its name. Run it on Client_Sector, then "
+                "ask Copilot which job categories make up the vital few.",
                 "ALLOW EDITING:\n"
-                "@interview-calendar Week starting 13 July 2026.",
+                "@pareto-chart Plot a Pareto chart of Client_Sector in tblJobs.\n\n"
+                "CHAT ONLY:\n"
+                "Which job categories together make up 80% of the postings? Give their combined share.",
             ),
             (
-                "Improve the skill. Ask Copilot to update the file, save it over SKILL.md in OneDrive, select Refresh in Custom "
-                "skills and rerun week 1. A skill is a living recipe: improve it whenever you correct Copilot twice. Log your prompts.",
-                "CHAT ONLY:\n"
-                "Update the interview-calendar SKILL.md so the summary also shows total interview hours per Interviewer,\n"
-                "and the reply lists the busiest day. Return the full updated file.\n\n" + _LOG,
+                "Improve the skill. A skill is a living recipe: improve it whenever you correct Copilot twice. Go back to the "
+                "web chat, send the prompt below, then paste your current SKILL.md under it. Save the reply as SKILL.md as in "
+                "Step 3. In OneDrive open the pareto-chart folder, select Create or upload > Files upload, choose the new "
+                "SKILL.md and select Replace when OneDrive asks. In Excel select Custom skills > Refresh and rerun the skill "
+                f"on Job_Category: the chart now shows a dashed 80% line and one Other column that groups the {E6['small_n']} "
+                f"categories under 2% ({E6['small_total']} postings, {E6['small_share']}%). Finally log your prompts - fill in "
+                "the two web-chat rows yourself, because Excel Copilot cannot see the web chat.",
+                "PROMPT (Microsoft 365 Copilot web):\n"
+                "I will paste my current pareto-chart SKILL.md below. Update it so the chart also shows a dashed 80%\n"
+                "reference line and groups any category with less than 2% share into one Other column at the end.\n"
+                "Preserve its front matter and numbered steps. Return the full file without code fences. If I have not\n"
+                "pasted the file, ask me for it first.\n\n"
+                "ALLOW EDITING:\n"
+                "@pareto-chart Plot a Pareto chart of Job_Category in tblJobs.\n\n"
+                "LOG (Allow editing):\n"
+                "In Prompt_Log, leave the web-chat rows (Step 2 / Prompt A and Step 9 / Prompt F) unchanged. For each Excel\n"
+                "prompt I ran, fill in What Copilot did and How I verified, and set Decision to Keep. Do not invent\n"
+                "results for web prompts. I will tell you any row to change to Revise or Undo.",
             ),
         ],
         sample_prompts=[
-            ("Write a skill", "Write a SKILL.md for a skill named weekly-recruiter-report that summarises interviews by Interviewer and Client for a given week, with a small bar chart."),
-            ("Explain a skill", "Read this SKILL.md and tell me what Copilot will do, step by step, and anything that is unclear."),
-            ("Call a skill", "@interview-calendar Build the calendar for the week starting Monday 6 July 2026."),
-            ("Reuse", "@interview-calendar Week starting 13 July 2026."),
-            ("Clash check", "List every interview clash in tblInterviews for 6-10 July 2026 with both Interview_IDs."),
-            ("Improve", "Update the skill so Video interviews show the Teams icon text [Teams] and the calendar prints on one A4 page."),
-            ("Question", "Which interviewer has the most interviews in the week of 6 July, and on which day?"),
+            ("Write a skill · Microsoft 365 Copilot web", "In the web chat at https://copilot.cloud.microsoft/, use the complete Step 2 prompt below to draft pareto-chart. It describes the table, columns and chart because the web chat cannot see your workbook."),
+            ("Call the skill", "@pareto-chart Plot a Pareto chart of Job_Category in tblJobs."),
+            ("Reuse", "@pareto-chart Plot a Pareto chart of Client_Sector in tblJobs."),
+            ("Check", "Add a Checks sheet with formulas that count all the jobs and the Customer Service jobs, so I can check the Pareto chart."),
+            ("Vital few", "Which job categories together make up 80% of the postings? Show their combined share."),
+            ("Explain", "Explain in plain English how to read this Pareto chart: what the columns, the line and the 80% point tell me."),
+            ("Improve the skill · Microsoft 365 Copilot web", "I will paste my current pareto-chart SKILL.md below. Update it so the chart also shows a dashed 80% reference line and groups any category with less than 2% share into one Other column. Preserve its front matter and numbered steps. Return the full file without code fences. If I have not pasted the file, ask me for it first."),
         ],
         test=(
-            f"Week of 6 July: {E6['w1']} interviews ("
-            + ", ".join(f"{k} {v}" for k, v in E6["by_day"].items())
-            + f"), {E6['w1_hours']:g} interview hours, {E6['w1_video']} by video; the COUNTIFS check returns {E6['w1']}. The "
-            f"skill flags {len(E6['clashes'])} clashes: "
-            + "; ".join(f"{c[1]} and {c[2]} ({c[0].lower()} clash: {c[3]}, {c[4]})" for c in E6["clashes"])
-            + f". {E6['busiest']} has the most interviews ({E6['busiest_n']}). Week of 13 July: {E6['w2']} interviews and no "
-            "clashes. The skill appears when you type @ and tblInterviews is unchanged."
+            f"tblJobs has {E6['rows']} rows and {E6['categories']} job categories, and the skill appears when you type @ in Excel. "
+            f"Pareto_Job_Category lists {E6['top_cat']} first ({E6['top_n']} jobs, {E6['top_share']}%) down to "
+            f"{E6['by_cat'][-1][0]} ({E6['by_cat'][-1][1]}); the cumulative % first passes 80% at category {E6['n80']} "
+            f"({E6['last80']}, {E6['cum80']}%), so {E6['n80']} of {E6['categories']} categories make up {E6['cum80']}% of the "
+            f"postings, and the top 3 make up {E6['top3_share']}%. Every column is a different colour and the line runs from "
+            f"0% to 100% on a secondary axis. The Checks sheet shows {E6['rows']} jobs, {E6['top_n']} {E6['top_cat']} jobs and "
+            f"{E6['categories']} categories. Pareto_Client_Sector starts with {E6['top_sector']} ({E6['top_sector_n']} jobs, "
+            f"{E6['top_sector_share']}%) and reaches 80% at sector {E6['sector_n80']} ({E6['sector_cum80']}%). After the improved "
+            f"skill, the {E6['small_n']} categories under 2% are grouped into Other ({E6['small_total']} jobs, "
+            f"{E6['small_share']}%) and tblJobs is unchanged."
         ),
         checkpoint=(
-            "Keep the skill: it stays in your OneDrive and works in any workbook with an interviews table. Topic 3 uses "
-            "rules and skills to build dashboards."
+            "Keep the skill: it stays in your OneDrive and works in any workbook with a table and a category column. Topic 3 "
+            "uses rules and skills to build dashboards."
         ),
         troubleshooting=[
             (
                 "The skill does not appear after Refresh.",
-                "The folder name must match the name: line exactly (lower case, hyphens) and the file must be SKILL.md inside "
-                "that folder. Select Refresh again.",
+                "The folder name must match the name: line exactly (lower case, hyphens) and the file must be SKILL.md "
+                "directly inside that folder. Select Refresh again and turn pareto-chart on.",
             ),
             (
                 "There is no Add in OneDrive or Create OneDrive folder button.",
@@ -535,28 +601,39 @@ DOMAIN2 = [
                 "read the format, and run the same steps as a normal prompt instead.",
             ),
             (
-                "Copilot says tblInterviews is not present in this workbook.",
-                "The skill ran in another lab's workbook. Open BrightPath_Interview_Schedule.xlsx and send the prompt again "
-                "from its Copilot pane.",
+                "Copilot says tblJobs is not present in this workbook.",
+                "The skill ran in another lab's workbook. Open BrightPath_Job_Postings.xlsx and send the prompt again from "
+                "its Copilot pane.",
             ),
             (
-                "The calendar misses a clash.",
-                "Ask: 'Check again for overlapping interviews with the same Interviewer or the same Onsite Room on each day.' "
-                "Then add that wording to the skill's steps.",
+                "The web chat draws a chart or asks me to upload my workbook instead of writing SKILL.md.",
+                "Paste the full Step 2 prompt again. It asks for reusable skill instructions only; the workbook is used later "
+                "in Excel, so nothing needs uploading.",
             ),
             (
-                "The file saved as SKILL.md.txt or with formatting.",
-                "Save as plain text with the exact name SKILL.md. In TextEdit choose Format > Make Plain Text first.",
+                "The file saved as SKILL.md.txt, or it contains ``` lines.",
+                "Save as plain text with the exact name SKILL.md (Windows: Save as type All files; Mac: Format > Make Plain "
+                "Text) and delete any ``` lines before the first ---.",
+            ),
+            (
+                "All the columns are the same colour.",
+                "Ask: 'Give every column a different colour and keep the cumulative line dark grey.' Then add that sentence "
+                "to the skill's steps, save, refresh and rerun.",
+            ),
+            (
+                "The cumulative % line looks flat.",
+                "It is on the same axis as the columns. Ask: 'Move Cumulative % to a secondary axis from 0% to 100%.' Then "
+                "add that to the skill's steps.",
             ),
         ],
         challenge=(
-            "Ask Copilot to write a second skill, weekly-recruiter-report, that summarises interviews by Interviewer and Client "
-            "for a given week with a small bar chart. Save it, refresh and call it."
+            "Ask Copilot in Excel to create mock data of 500 rows for another question - for example helpdesk tickets with "
+            "12 issue categories, as a table named tblTickets. Run @pareto-chart on the Issue_Category column and name the "
+            "vital few."
         ),
-        reflection="Which weekly or monthly task in your own job would make the best first custom skill, and what would its description say?",
+        reflection="Which report in your own job is really a Pareto question - a long list where a few causes matter most - and what would the skill's description say?",
     ),
 ]
-
 # Test-it checklist: (what to check, expected result).
 _CHECKS = {
     4: [
@@ -568,20 +645,20 @@ _CHECKS = {
         (f"Sample {_S['id']}", f"{_S['hours']} h x S${_S['rate']} = {_money(_S['value'])} vs budget {_money(_S['budget'])} - Over_Budget Yes"),
     ],
     5: [
-        ("New clients and spend, H1 2026", f"{E5['new_h1']} clients; {_money(E5['spend_h1'])}"),
-        ("CAC and ARPA", f"{_money(E5['cac'])}; {_money(E5['arpa'])}"),
-        ("Margin and monthly churn", f"{E5['gm_h1']}%; {E5['churn_m']}%"),
-        ("LTV, LTV:CAC, payback", f"About {_money(E5['ltv'])}; {E5['ltv_cac']}; {E5['payback']} months"),
-        ("CAC by channel", f"Lowest {E5['best_channel']} {_money(E5['by_channel'][E5['best_channel']]['cac'])}; highest {E5['worst_channel']} {_money(E5['by_channel'][E5['worst_channel']]['cac'])}"),
-        ("@check-model fixes", f"{E5['hard_cell']}, {E5['eleven_cell']}, {E5['total_cell']}: total {_money(E5['budget_reported'])} -> {_money(E5['budget_correct'])}"),
+        ("MRR and active clients, Jun 2026", f"{_money(E5['mrr_end'])}; {E5['active_end']} clients (Jan 2025 MRR {_money(E5['mrr_jan25'])})"),
+        ("New and churned clients, 18 months", f"{E5['new_all']} new; {E5['churned_all']} churned"),
+        ("H1 2026 spend, longest and shortest bar", f"{E5['top_channel']} {_money(E5['by_channel'][E5['top_channel']]['spend'])}; {E5['low_channel']} {_money(E5['by_channel'][E5['low_channel']]['spend'])}"),
+        ("H1 2026 spend, all channels", _money(E5["spend_h1"])),
+        ("Active clients by plan", " + ".join(str(n) for _p, n in sorted(E5["active_by_plan"].items(), key=lambda kv: -kv[1])) + f" = {E5['active_end']}"),
+        ("Charts sheet", "Four charts in a 2 x 2 grid, one clean style, one theme"),
     ],
     6: [
-        ("Week of 6 July", f"{E6['w1']} interviews = the COUNTIFS check"),
-        ("By day", ", ".join(f"{k.split()[0]} {v}" for k, v in E6["by_day"].items())),
-        ("Clashes flagged", "; ".join(f"{c[1]}/{c[2]} {c[3]}" for c in E6["clashes"])),
-        ("Busiest interviewer", f"{E6['busiest']} ({E6['busiest_n']} interviews)"),
-        ("Week of 13 July", f"{E6['w2']} interviews, no clashes"),
-        ("Skill", "interview-calendar appears when you type @ and runs from a one-line prompt"),
+        ("Top category", f"{E6['top_cat']}: {E6['top_n']} of {E6['rows']} jobs ({E6['top_share']}%); {E6['categories']} categories in all"),
+        ("Vital few", f"{E6['n80']} of {E6['categories']} categories reach {E6['cum80']}% (80% is passed at {E6['last80']})"),
+        ("Pareto chart", "Columns high to low, a different colour for each, cumulative % line 0-100% on a secondary axis"),
+        ("Client_Sector Pareto", f"{E6['top_sector']} first ({E6['top_sector_n']} jobs, {E6['top_sector_share']}%); {E6['sector_n80']} sectors reach {E6['sector_cum80']}%"),
+        ("Improved skill", f"{E6['small_n']} categories under 2% grouped into Other ({E6['small_total']} jobs, {E6['small_share']}%)"),
+        ("Skill", "pareto-chart appears when you type @ and runs from a one-line prompt"),
     ],
 }
 for _a in DOMAIN2:

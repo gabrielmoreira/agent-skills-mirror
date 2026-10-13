@@ -154,6 +154,8 @@ legacy-vs-disaggregated report distinction (this skill uses the legacy
 report's non-commercial = large-speculator fields), and a glossary of the FMP
 COT API field names consumed by `scripts/cot_index.py`.
 
+Vendored client: `scripts/fmp_client.py` (generated) owns FMP transport — rate limiting, single 429 retry, header auth (the key never appears in a URL), and apikey redaction on `(data, error)` results (Issue #495).
+
 ### When to Load References
 - **First use / explaining the methodology:** Load
   `references/shapiro-methodology.md`

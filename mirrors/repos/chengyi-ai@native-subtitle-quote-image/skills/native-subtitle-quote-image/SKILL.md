@@ -96,6 +96,7 @@ python3 -m pip install -r "<SKILL_DIR>/requirements.txt"
 - 脚本字幕模式可用 `--frame-top` / `--frame-bottom` 仅裁去不需要的源画面区域，默认保留全帧。先预览边界，不能裁掉人物关键部位；`--band-center` 相对裁切后的画面。
 - `natural` 不与 `--aspect` / `--hero-fraction` 合用；70% 主图验收只适用于脚本固定布局。两种布局都不得非等比拉伸。
 - 选源优先多机位、景别有变化的视频；固定单机位（大师课、网课式录制）是高风险素材，六张主图容易几乎一样。确需使用时可传 `--hero-zoom 1.0,0.9,0.95`（`render` 与 `render-script`）：逗号分隔的每卡主图缩放系数，范围 0.8–1.0，按卡循环，默认不启用且输出不变。它只裁掉更多主图画面再放大，不改字幕条、文字、条间距和 `--six-line-card` 几何；原生模式的裁切窗口不进入字幕条。源清晰度不足时主图会更模糊，不等于真实清晰度提升。`render-script` 只出一张图，取第一个系数。
+- 缓解手机上的拥挤感可选 `--strip-gap N`（条间黑色呼吸缝，0–8px，默认 0）与 `--hero-divider line`（主图与字幕条之间插入 2px 细分隔线，默认 none），`render` 与 `render-script` 均支持。二者只新增背景像素，不覆盖或重绘任何画面，原生字幕仍只经历整图统一缩放；脚本固定画布总尺寸不变，字幕条相应变矮；与 `--six-line-card` 不兼容（固定几何）。
 
 ```bash
 python3 "<SKILL_DIR>/scripts/native_subtitle_stitch.py" render-script VIDEO \
@@ -235,6 +236,8 @@ python3 "<SKILL_DIR>/scripts/native_subtitle_stitch.py" render-script VIDEO \
 - `--speaker-prefix none`（默认）不画前缀；`on-change` 只在换人时画，推荐用于问答；`every` 每句都画，画面较挤，只在用户要求时用。
 - 启用前缀时每句都必须有 `speaker`；前缀比台词小一号、用强调色，字号不随台词缩小，台词放不下时只缩台词。
 - 说话人名称同样要核对：确认不了身份时写“主持人”“嘉宾”等角色，不猜人名。单人独白不用前缀。
+
+**可选金句强调（仅脚本模式）**：`--emphasize-line last`（最后一句）或 `--emphasize-line N`（从 1 起算）给一句台词加暖色、加粗描边和轻微半透明底衬；也可在 `script.json` 某句写 `"emphasis": true`。默认不启用，输出不变；行号越界会报错。仍属后期绘制，需按脚本模式标注；原生模式不支持，不得重绘原字幕。图内不绘制卡片小标题，本 Skill 无此功能。
 
 脚本会尝试 macOS、Windows 和 Linux 常见 CJK 字体；台词含谚文时优先尝试韩文字体（macOS AppleSDGothicNeo、Windows Malgun Gothic），`--font` 始终最优先。无法自动找到时，用 `--font /path/to/font.ttc` 指定已获授权的字体。需要调整字幕条在原帧中的垂直采样位置时，使用 `--band-center`；不要把它当作行距参数。
 

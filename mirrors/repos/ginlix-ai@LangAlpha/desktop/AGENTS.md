@@ -167,7 +167,7 @@ edition's output directory and refuses a parent holding several.
 | `src/policy.js` | what the shell decides: entry URL, where a navigation belongs. **Pure** — it may not write the store or open anything |
 | `src/origins.js` | what counts as ours: **by origin, never by path** |
 | `src/oauth.js` | system-browser OAuth, intercepted (below) |
-| `src/deeplink.js` | `langalpha://` scheme, for magic links clicked with the app closed and integration logins the browser hands back |
+| `src/deeplink.js` | `langalpha://` scheme, for magic links clicked with the app closed and integration logins and installs the browser hands back |
 | `src/preload.js` | the renderer bridge: version, platform, `capabilities`, `setTheme`, `openExternal`, `savePdf` |
 | `src/pdf.js` | renders the calling window to a PDF the user picks a home for; allowlists the options the page may set |
 | `src/downloads.js` | gives a download a visible ending, since a frameless window has no download shelf |
@@ -278,7 +278,7 @@ a code the user had just authorized.
 
 ## Links through the scheme
 
-The registered scheme carries two kinds of link, told apart before any window is picked:
+The registered scheme carries three kinds of link, told apart before any window is picked:
 
 - **Everything else** lands on `/callback` on whichever of our origins the main window
   shows, with the whole query: a magic link or email confirmation, often clicked with
@@ -295,6 +295,15 @@ The registered scheme carries two kinds of link, told apart before any window is
   `will-navigate`. An edition with no console ignores it rather than handing a
   provider's code to `/callback`. Pages detect it as `integration-login` in the
   bridge's `capabilities`.
+- **`<scheme>://integrations/install/<name>/callback`** is an integration install the
+  console started in the app and the system browser finished, handled as a login is:
+  that path on the console origin, the same refusals, the same window, and never
+  `/callback`. It carries only `team`, `team_name` and `error`. Pages detect it as
+  `integration-install`.
+
+Only an edition that can finish these two advertises them, and it advertises both or
+neither (main passes `--langalpha-integration-returns=1` when there is a console; the
+OSS edition has none, so it passes the switch empty and the list is empty).
 
 A launch that a link started opens only that link's window. `attach` delivers the queued
 link before the entry opens, and opening the entry as well would cover it, or load

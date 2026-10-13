@@ -78,7 +78,9 @@ claimed worktree act on the whole bundle. There is no bundle-specific form and `
 
 Baselines, touched paths, and hook cleanliness remain current-claim-local. A bundle baseline from an unclaimed root must
 fail. `ai-coord baseline` is a stable machine contract consisting of one normalized repository-relative `path<TAB>oid`
-record per line, or empty output when no baselines exist.
+record per line, or empty output when no baselines exist. `ai-coord scope` is the matching contract for the active
+claim: one sorted `path<TAB>exact|recursive` record per scope, or empty output when this session has no active claim in
+the current worktree. `ai-commit prepare` reads it to disclose prepared paths outside the claim.
 
 `ai-coord touched` is a best-effort cross-check of normalized repository-relative paths observed in this session's
 file-mutating post-tool payloads. Its stable output is one path per line, with a leading `!TRUNCATED` record when its
@@ -137,8 +139,8 @@ this session's own unnamed draft.
 `draft`, `start`, `bundle draft`, `bundle start`, `wait`, `done`, `recommend send`, `recommend respond`, and
 `recommend withdraw` exit 64 when the caller looks like a delegate of the owning session rather than that session
 itself. A subagent must never invoke these lifecycle or mutation commands and should expect the delegate-lifecycle error
-if it does. `status`, `touched`, `inbox`, `msg`, `finding`, `baseline`, `trailer`, `name`, `recommend list`, and
-`recommend show` remain delegate-safe.
+if it does. `status`, `touched`, `inbox`, `msg`, `finding`, `baseline`, `scope`, `trailer`, `name`, `recommend list`,
+and `recommend show` remain delegate-safe.
 
 ## Upstream documentation
 
@@ -175,8 +177,8 @@ observation is the first `start`, `wait`, `done`, or `status` that inspects the 
 
 Each `(client, session_id)` owns at most one logical work item, with one or more repository claims. Ordinary `draft` and
 `start` accept current-worktree paths and can update only a one-claim item. They never silently append or move a claim.
-`baseline` and `touched` select the current physical Git worktree's claim. `wait` and `done` may be run from any claimed
-worktree and act on the whole logical item.
+`baseline`, `scope`, and `touched` select the current physical Git worktree's claim. `wait` and `done` may be run from
+any claimed worktree and act on the whole logical item.
 
 For Codex, the session ID is the live session-tree root. CLI commands prefer `CODEX_SESSION_ID` and fall back to the
 legacy `CODEX_THREAD_ID`. Subagents and persistent forks share that root's coordination identity and work. Transcript
@@ -651,7 +653,7 @@ This rule is enforced: `draft`, `start`, `bundle draft`, `bundle start`, `wait`,
 that should hold its claims — either an `AI_COORD_CLIENT`/`AI_COORD_SESSION_ID` override that resolves to a different
 host identity, or a Codex subagent whose `CODEX_SESSION_ID` and `CODEX_THREAD_ID` disagree while the ledger records an
 active delegate for that root. `status`, `touched`, `inbox`, `msg`, `recommend list`, `recommend show`, `finding`,
-`baseline`, `trailer`, and `name` remain available to delegates.
+`baseline`, `scope`, `trailer`, and `name` remain available to delegates.
 
 This detects only those two rules. A Claude subagent inherits its parent's `CLAUDE_CODE_SESSION_ID` with no
 distinguishing environment signal, so the guard cannot tell it apart from its parent and never rejects it. Claude

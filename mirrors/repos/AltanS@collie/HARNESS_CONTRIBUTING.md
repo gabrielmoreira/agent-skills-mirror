@@ -129,7 +129,9 @@ modals is up. No input box is also what a shell prompt looks like while your age
 and Herdr reports the agent in both windows, so without it the card can flash over the shell. When
 declared, the card needs it to answer `true`. Claude's answer is "one of the last six non-blank rows
 names a key"; omp's is stricter, a footer row at the tail whose last hint is its own way out, in the six
-spellings it prints. Pin yours against the card's allow-list test (`unread-dialog.test.ts`).
+spellings it prints. Codex's is a row that names `esc`; Grok's is a `Key:verb │ Key:verb` footer;
+Muse's is its own bottom rule and statusline. Pin yours against the card's allow-list test
+(`unread-dialog.test.ts`).
 
 ### The fail-closed contract (non-negotiable)
 

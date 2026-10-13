@@ -13,30 +13,21 @@ _LOG = ("Fills in your Prompt_Log: for each prompt you ran, what Copilot did and
 EXPLAIN = {
     1: {
         "A": "Turns the raw Applications data into an Excel table named tblApplications, so every later prompt can "
-             "refer to it by name. Copilot reports the columns and rows so you can confirm nothing was lost.",
-        "B": "Asks Copilot to describe the data before you analyse it: what a row is, each column's type, the row "
-             "count, the date range and the Stage and Source values. Chat only, so nothing changes.",
-        "C": "Looks for data-quality problems - duplicate Application_IDs and misspelt Source labels - and counts "
-             "each. It only reports; nothing is fixed yet.",
-        "D": "Copilot shows its plan first, then highlights duplicate IDs in orange and adds a cleaned Source_Clean "
-             "column. The original values stay untouched.",
-        "E": "Checks whether each duplicate is a true copy or two different applications sharing an ID, with the "
-             "row numbers of both.",
-        "F": "Highlights in yellow the Source cells the cleanup changed and lists their IDs, so you can see exactly "
-             "what was fixed.",
-        "G": "Confirms the cleanup worked: no 'Linked In', no trailing spaces, and the table still has 242 rows.",
-        "H": "Copilot's answer: applications, hires and hire rate by source, sorted by hires. You verify it with "
-             "formulas in the next prompt.",
-        "I": "Adds two COUNTIFS formulas on a Checks sheet so you can verify Copilot's hire counts with formulas "
-             "you can see.",
-        "J": "Asks the same question in a new chat with a different model. If the answers differ, the formulas on "
-             "Checks decide which is right.",
-        "K": "Highlights every hired candidate's row in light green so the hires stand out.",
-        "L": "Sorts the table by interview score (highest first), then by days in the pipeline (shortest first).",
-        "M": "Filters the table to Technology candidates at the Interview stage.",
-        "N": "Asks how many rows the filter shows. Compare it with the count Excel shows at the bottom of the window.",
-        "O": "Clears every filter and confirms all 242 rows are back, so later steps see the full data.",
-        "P": _LOG,
+             "refer to it by name. Copilot reports the rows and columns so you can confirm nothing was lost.",
+        "B": "Asks Copilot to describe the data before you analyse it: what a row is, the date range and the Stage "
+             "and Source values. Chat only, so nothing changes.",
+        "C": "Asks Copilot to look for problems - repeated IDs and Source names spelt more than one way. It only "
+             "reports; nothing is fixed yet.",
+        "D": "Plan mode: Copilot shows its steps first, then highlights the repeated IDs in orange and adds a tidied "
+             "Source_Clean column. The original Source column stays as it was.",
+        "E": "Copilot's answer: applications, hires and hire rate for each source. The next prompt checks it.",
+        "F": "Copilot writes the check formulas for you on a Checks sheet, so you can confirm its hire counts without "
+             "typing a formula. Send prompt E again with a different model and compare both answers with this sheet.",
+        "G": "Highlights every hired candidate's row in light green so the hires stand out.",
+        "H": "Sorts the table by interview score, highest first.",
+        "I": "Filters the table to Technology candidates at the Interview stage and asks how many there are. Compare "
+             "with the count at the bottom of the Excel window.",
+        "J": _LOG,
     },
     2: {
         "A": "Adds a Recruiter_Name column that looks up each requisition's recruiter in tblRecruiters with "
@@ -103,32 +94,40 @@ EXPLAIN = {
         "I": _LOG,
     },
     5: {
-        "A": "Asks Copilot which of its built-in skills fit this job: the finance analysis and the model audit. "
-             "Chat only.",
-        "B": "Uses the chart-design skill to create a combo chart: MRR as columns and client count as a line on a "
-             "second axis.",
-        "C": "Uses chart-design again to polish the chart for a leadership slide: a finding-style title, axis "
-             "titles and one data label.",
-        "D": "The unit-economics skill plans, then calculates CAC, ARPA, margin, churn, LTV, LTV:CAC and payback on "
-             "a new sheet and lists its assumptions. Review the plan before you approve it.",
-        "E": "Builds independent check formulas for each unit-economics measure, so you can verify the skill's "
-             "numbers.",
-        "F": "Compares the check formulas with the Unit_Economics sheet and explains any difference.",
-        "G": "Uses the check-model skill to audit Headcount_Budget for typed numbers, inconsistent formulas and "
-             "totals that miss rows. It only reports.",
-        "H": "Fixes the issues the audit found and gives the corrected FY2027 total cost.",
-        "I": "Uses the theme-design skill to give the four sheets one consistent, professional look.",
+        "A": "Asks Copilot which of its skills suit charting and styling, so you know what to call. Chat only - "
+             "nothing changes.",
+        "B": "Uses the chart-design skill to build a combo chart on a new Charts sheet: MRR as columns and client "
+             "count as a line on a second axis. Your prompt sets the position (A1:H18) and a clean style.",
+        "C": "Chart-design recommends a chart type for new vs churned clients, then draws it next to the first chart.",
+        "D": "Totals each channel's H1 2026 spend and draws bars, longest first, so the biggest spender is obvious.",
+        "E": "Counts the active clients on each plan in June 2026 and draws the chart type the skill thinks suits it "
+             "best.",
+        "F": "One more chart-design call to make the four charts read as a set: finding-style titles, matching fonts "
+             "and axes, the same size.",
+        "G": "Copilot writes the check formulas for you on a Checks sheet, so each chart can be compared with a "
+             "number you can see - without typing a formula.",
+        "H": "Uses the theme-design skill to give the sheets and charts one coordinated set of colours, fonts and "
+             "formats.",
+        "I": "Steers the theme with your own colours - navy and teal - while keeping every chart readable. A prompt "
+             "can direct a skill.",
         "J": _LOG,
     },
     6: {
-        "A": "Copilot writes a complete SKILL.md for an interview-calendar skill: read tblInterviews, build a "
-             "weekly calendar, flag clashes and summarise. Chat only - you save the text as the skill file.",
-        "B": "Runs your new skill to build the interview calendar for the week of 6 July 2026.",
-        "C": "Adds a COUNTIFS of that week's interviews. It must match the number of interviews on the calendar.",
-        "D": "Runs the skill again for another week with a short prompt, to show it is reusable.",
-        "E": "Updates the skill so the summary also shows interview hours per interviewer and the reply names the "
-             "busiest day.",
-        "F": _LOG,
+        "A": "Microsoft 365 Copilot on the web (https://copilot.cloud.microsoft/) writes the complete pareto-chart SKILL.md from the table, "
+             "chart and colour instructions. Save the returned text, upload it to OneDrive and install it in Excel. "
+             "No workbook upload is needed to draft the skill.",
+        "B": "Runs your new skill: a Pareto_Job_Category sheet with the count, share and cumulative % of each "
+             "category, and a combo chart with a different colour for every column.",
+        "C": "Copilot writes check formulas on a Checks sheet - total jobs, Customer Service jobs and the number of "
+             "categories - to compare with the chart.",
+        "D": "The same skill on a different column: a Pareto chart of Client_Sector from one short prompt.",
+        "E": "Chat only: reads the Pareto summary and names the categories that reach 80% - the 'vital few' - with "
+             "their combined share.",
+        "F": "Copilot on the web updates the skill: a dashed 80% line, and one Other column for categories under 2%. "
+             "You paste your current SKILL.md under the prompt.",
+        "G": "Runs the improved skill again on Job_Category, to see the 80% line and the Other column.",
+        "H": "Logs the Excel prompts and leaves the two web-chat rows (A and F) for you to fill in by hand. Excel "
+             "cannot see the web conversation.",
     },
     7: {
         "A": "Writes the dashboard rules into .Rules - KPI definitions, layout and colours - so every later prompt "
@@ -177,7 +176,7 @@ _TBL = "tbl...[Column] is a structured reference: the whole column of that Excel
 
 FORMULAS = {
     1: {
-        "I": ("Formulas explained", [
+        "F": ("The formulas Copilot should write", [
             ('=COUNTIFS(tblApplications[Stage],"Hired")',
              "Counts the rows whose Stage is exactly \"Hired\" - the total number of hires. " + _TBL),
             ('=COUNTIFS(tblApplications[Source_Clean],"LinkedIn",tblApplications[Stage],"Hired")',
@@ -257,28 +256,33 @@ FORMULAS = {
         ]),
     },
     5: {
-        "E": ("Formulas explained", [
-            ('=SUMIFS(tblClientMonths[New_Clients],tblClientMonths[Month],">="&DATE(2026,1,1))',
-             "New clients won from January 2026 on (H1 2026). B2 does the same for sales & marketing spend."),
-            ("=B2/B1", "CAC (customer acquisition cost) = H1 spend / H1 new clients."),
-            ("=INDEX(tblClientMonths[MRR],18)/INDEX(tblClientMonths[Clients_End],18)",
-             "INDEX(column, 18) picks row 18 = June 2026, the latest month. Monthly revenue / clients = ARPA, the "
-             "average revenue per account per month."),
-            ('=AVERAGEIFS(tblClientMonths[Gross_Margin_Pct],tblClientMonths[Month],">="&DATE(2026,1,1))',
-             "Average gross margin % over H1 2026."),
-            ("=AVERAGE(FILTER(tblClientMonths[Churned_Clients]/tblClientMonths[Clients_Start],tblClientMonths[Month]>=DATE(2026,1,1)))",
-             "Churned / clients at start gives each month's churn rate; FILTER keeps only 2026 months; AVERAGE "
-             "gives the average monthly churn."),
-            ("=B4*B5/B6", "LTV (lifetime value) = ARPA x gross margin / monthly churn - the profit one client brings over their life."),
-            ("=B7/B3", "LTV to CAC: how many times a client pays back what it cost to win them (3 or more is healthy)."),
-            ("=B3/(B4*B5)", "Payback months = CAC / monthly gross profit per client."),
+        "G": ("The formulas Copilot should write", [
+            ("=INDEX(tblClientMonths[MRR],18)",
+             "INDEX(column, 18) picks row 18 = June 2026, the latest month. Clients_End works the same way."),
+            ("=SUM(tblClientMonths[New_Clients])",
+             "Adds the clients won in all 18 months. Churned_Clients works the same way."),
+            ('=SUMIFS(tblSpend[Spend],tblSpend[Channel],"LinkedIn Ads",tblSpend[Month],">="&DATE(2026,1,1))',
+             "Adds Spend for one channel from 1 Jan 2026 (H1 2026). \">=\"&DATE(2026,1,1) joins an operator to a date so "
+             "SUMIFS can compare dates. Copilot writes one formula per channel."),
+            ('=COUNTIFS(tblClients[Plan],"Full HR Outsourcing",tblClients[Status],"Active")',
+             "Counts the clients on one plan whose Status is Active. Copilot writes one formula per plan."),
         ]),
     },
     6: {
-        "C": ("Formulas explained", [
-            ('=COUNTIFS(tblInterviews[Interview_Date],">="&DATE(2026,7,6),tblInterviews[Interview_Date],"<="&DATE(2026,7,10))',
-             "Counts interviews dated on or after Mon 6 July AND on or before Fri 10 July 2026 - using the same "
-             "column twice gives a date range. It should equal the number of interviews on the calendar (23)."),
+        "B": ("What the skill's summary table does", [
+            ("=COUNTIFS(tblJobs[Job_Category],A5)",
+             "Counts the rows of tblJobs whose Job_Category equals the category named in A5. It reads the table, so "
+             "the chart updates when you add rows."),
+            ("=SUM($B$5:B5)/SUM($B$5:$B$20)",
+             "A running total of Count divided by the grand total: the cumulative % that draws the line. $ locks the "
+             "start of the range, so the total grows one row at a time."),
+        ]),
+        "C": ("The formulas Copilot should write", [
+            ("=ROWS(tblJobs[Job_ID])", "Counts the rows of tblJobs - the number of jobs."),
+            ('=COUNTIFS(tblJobs[Job_Category],"Customer Service")',
+             "Counts the rows whose Job_Category is exactly Customer Service - the tallest column."),
+            ("=COUNTA(UNIQUE(tblJobs[Job_Category]))",
+             "UNIQUE lists each category once; COUNTA counts that list - the number of columns on the chart."),
         ]),
     },
     7: {
@@ -315,15 +319,12 @@ FORMULAS = {
 # same order as the lab's sample_prompts. Formulas are what Copilot typically writes.
 SAMPLE_EXPLAIN = {
     1: [
-        "Chat only: Copilot reads the table and reports what a row is, each column's type, the row count and the "
-        "date range. Nothing in the sheet changes.",
-        "Reports duplicate IDs and Source values that are not on the canonical list, so you see the problems before "
-        "fixing anything.",
-        "Plan mode: Copilot lists its steps and waits. You approve or correct the plan before any cell changes.",
-        "Writes e.g. =SUBSTITUTE(TRIM([@Source]),\"Linked In\",\"LinkedIn\"): TRIM removes extra spaces, SUBSTITUTE "
-        "fixes the spelling. The original Source stays as it was.",
-        "Counts applications and hires (Stage = \"Hired\") for each Source_Clean value; hire rate = hires / "
-        "applications. Check it with COUNTIFS.",
+        "Copilot reads the whole table and sums it up in five short points - a quick first look before you dig in.",
+        "Counts the applications for each sector and names the top one (Technology).",
+        "Counts the candidates at the Offer stage for each recruiter, so you see whose candidates are closest to a hire.",
+        "Colours the rows with the top interview score so the strongest candidates stand out.",
+        "Copilot looks for patterns - e.g. which sources or sectors convert best - and backs each one with numbers "
+        "you can check.",
     ],
     2: [
         "Writes e.g. =XLOOKUP([@Recruiter_ID], tblRecruiters[Recruiter_ID], tblRecruiters[Recruiter_Name], "
@@ -359,23 +360,20 @@ SAMPLE_EXPLAIN = {
         "Delivered_Value: =[@Hours_Logged]*[@Rate], hours x rate.",
     ],
     5: [
-        "Chat only: Copilot lists the skills you can call - Formatting, Visualization and Finance - and when each "
-        "one helps.",
-        "Calls the chart-design skill: it picks a suitable chart type, then builds and formats the chart.",
-        "Calls the unit-economics skill: CAC = spend / new clients and payback = CAC / (ARPA x gross margin), for each "
-        "channel. Check against your Checks sheet.",
-        "Calls the check-model skill to audit the sheet: typed numbers where formulas should be, formulas unlike their "
-        "neighbours, totals that miss rows.",
-        "Calls the theme-design skill: one coordinated set of colours and fonts for cells, tables and charts.",
+        "Chat only: Copilot lists the skills for charts and formatting and says when each one helps.",
+        "Chart-design picks a chart type that compares the two series month by month, then draws it.",
+        "Totals the H1 2026 spend of each channel and draws bars, longest first - LinkedIn Ads (S$191,590) leads.",
+        "Calls theme-design: one coordinated set of colours, fonts and formats for cells, tables and charts.",
+        "Directs the theme with your own colours - navy for the main series, teal for comparisons.",
     ],
     6: [
-        "Copilot writes the whole SKILL.md: a name and description at the top, then the steps. You save it in your "
-        "OneDrive skills folder.",
-        "Copilot reads a skill file and explains its steps in plain English - a quick review before you save or run it.",
-        "Runs your custom skill from one line: it builds the Monday-to-Friday calendar and flags clashes.",
-        "The same skill for a new week - no need to repeat the instructions.",
-        "Finds overlapping interviews with the same interviewer, or onsite interviews in the same room, and lists "
-        "both IDs.",
+        "Copilot on the web writes the whole pareto-chart SKILL.md. You save it and upload it to the OneDrive skills "
+        "folder.",
+        "Runs your skill: sorted counts, a cumulative % line and a different colour for each column - Customer "
+        "Service (145 jobs) leads.",
+        "The same skill on another column - no need to repeat the instructions.",
+        "Copilot writes the check formulas: 500 jobs in all and 145 Customer Service jobs - they must match the chart.",
+        "Adds up the shares until 80% is passed: the first six categories make up 83.0%.",
     ],
     7: [
         "Plan mode: Copilot proposes the dashboard - KPI cards, charts, slicers - using the definitions in .Rules, "
