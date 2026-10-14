@@ -11,8 +11,8 @@ ELF `EM_RISCV` (243) is retained as the provider-neutral `riscv` family. The
 target also retains the raw ELF declarations that decide a lane: class, byte
 order, `e_type`, and `e_flags`. Recognition does not mean every provider or
 RISC-V variant is supported. Existing PE, managed and Mach-O architecture sets
-are unchanged, and caller-supplied headerless raw-binary entry still accepts only
-its existing four families.
+are unchanged. Headerless inputs use the separate [raw-binary admission
+boundary](raw-binary.md); raw RISC-V images are not supported.
 
 The Ghidra lane admits little-endian ELF32 and ELF64 `ET_EXEC` images that
 declare `EF_RISCV_FLOAT_ABI_DOUBLE` in `e_flags`, with no `EF_RISCV_RVE`,
@@ -22,16 +22,16 @@ header declarations, not proof that every instruction conforms to that ISA.
 Provider selection returns the specific unsupported constraint rather than
 guessing a compatible profile:
 
-| Declaration                                     | Outcome                                                                     |
-| ----------------------------------------------- | --------------------------------------------------------------------------- |
-| Little-endian ELF64 `ET_EXEC`, double-float ABI | admitted, `RISCV:LE:64:default` + `gcc`                                     |
-| Little-endian ELF32 `ET_EXEC`, double-float ABI | admitted, `RISCV:LE:32:default` + `gcc`                                     |
-| Big-endian                                      | refused; Ghidra 12.1.4 ships no big-endian RISC-V language                  |
-| `ET_REL`, `ET_DYN`, other `e_type`              | refused with the declared value                                             |
-| `EF_RISCV_RVE`                                  | refused; the embedded 15-register ABI needs its own processor specification |
-| `EF_RISCV_TSO`                                  | refused; the total-store-order memory model is unverified here              |
-| Soft, single, or quad float ABI                 | refused; the pinned generic compiler specification models double-float      |
-| Reserved or newer `e_flags` bits                | refused with the offending bits named                                       |
+| Declaration                                     | Outcome                                                                                  |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Little-endian ELF64 `ET_EXEC`, double-float ABI | admitted, `RISCV:LE:64:default` + `gcc`                                                  |
+| Little-endian ELF32 `ET_EXEC`, double-float ABI | admitted, `RISCV:LE:32:default` + `gcc`                                                  |
+| Big-endian                                      | refused; Ghidra 12.1.4 ships no big-endian RISC-V language                               |
+| `ET_REL`, `ET_DYN`, other `e_type`              | refused with the declared value                                                          |
+| `EF_RISCV_RVE`                                  | refused; the embedded 16-register profile (x0–x15) needs its own processor specification |
+| `EF_RISCV_TSO`                                  | refused; the total-store-order memory model is unverified here                           |
+| Soft, single, or quad float ABI                 | refused; the pinned generic compiler specification models double-float                   |
+| Reserved or newer `e_flags` bits                | refused with the offending bits named                                                    |
 
 `e_type` is the only load-shape declaration this lane reads. A fixed-address
 `ET_EXEC` declaration does **not** establish static linkage: `PT_INTERP` and

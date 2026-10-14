@@ -1,6 +1,7 @@
 ---
 name: "omh-wiki"
 description: "[omh] Scattered knowledge needing a wiki: wiki construction blueprints and retained knowledge capture with destination-aware external knowledge connection guidance. Use when the user says: wiki, project wiki, build a wiki, start a wiki, organize my notes, external knowledge store, knowledge base, Obsidian."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, knowledge]
@@ -56,7 +57,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use to design a wiki someone can start today - model, skeleton, conventions, seed pages, and maintenance sized to a personal, small-group, team, or organization audience - and to capture durable knowledge into markdown vaults, Obsidian, Notion, Google Drive/Docs, databases, or local folders.
 

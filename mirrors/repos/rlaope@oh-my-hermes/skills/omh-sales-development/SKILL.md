@@ -1,6 +1,8 @@
 ---
 name: "omh-sales-development"
 description: "[omh] Prospect or account worth pursuing: turn an account or market opportunity into a focused discovery, qualification, and next-step brief. Use when the user says: sales discovery, account plan, outbound messaging, 영업 발굴, 고객사 계획, 아웃바운드 메시지."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, strategy]
@@ -8,6 +10,7 @@ metadata:
     phase: sales-development
     role: operator
     quality_tier: decision-gated
+    related_skills: [omh-decide, omh-sales-pipeline-review, omh-content-operator, omh-apps, ulw-research]
 ---
 
 # Sales Development
@@ -20,11 +23,11 @@ This is a Hermes-native `sales-development` workflow skill.
 
 ## Do Not Use When
 
-- The user needs a company-level positioning, market-entry, or strategic-options decision rather than account-level discovery; use `strategy-brief`.
-- The user supplies a CRM export or pipeline snapshot and needs portfolio health, aging, slipped deals, forecast calibration, or renewal-risk review; use `sales-pipeline-review`.
-- The user only wants a polished social post, newsletter, or one-off outbound-copy rewrite; use `content-operator`.
-- The user asks to send outreach, update Salesforce or HubSpot, create an opportunity, or book a meeting; use `connector-operator` with explicit recipient, object, and authority.
-- The request asks for current competitor or company evidence but supplies no source material; begin with `research` before presenting claims as observed.
+- The user needs a company-level positioning, market-entry, or strategic-options decision rather than account-level discovery; use `omh-decide`.
+- The user supplies a CRM export or pipeline snapshot and needs portfolio health, aging, slipped deals, forecast calibration, or renewal-risk review; use `omh-sales-pipeline-review`.
+- The user only wants a polished social post, newsletter, or one-off outbound-copy rewrite; use `omh-content-operator`.
+- The user asks to send outreach, update Salesforce or HubSpot, create an opportunity, or book a meeting; use `omh-apps` with explicit recipient, object, and authority.
+- The request asks for current competitor or company evidence but supplies no source material; begin with `ulw-research` before presenting claims as observed.
 
 ## Examples
 
@@ -53,11 +56,11 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+20 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+21 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when a seller or business-development owner needs account context, buyer hypotheses, qualification questions, value narrative, partner/outreach plan, and a non-executing next-step sequence.
 
@@ -126,4 +129,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

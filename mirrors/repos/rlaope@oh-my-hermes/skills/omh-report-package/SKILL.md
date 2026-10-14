@@ -1,6 +1,8 @@
 ---
 name: "omh-report-package"
 description: "[omh] Periodic report for executives: weekly/monthly reports, executive briefs, PPT-ready outlines, and upload packages. Use when the user says: report-package, report package, weekly report, monthly report, executive report, exec brief, leadership deck, status package."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, reporting]
@@ -8,6 +10,7 @@ metadata:
     phase: package-outline
     role: operator
     quality_tier: report-gated
+    related_skills: [omh-reliability-review]
 ---
 
 # Report Package
@@ -20,7 +23,7 @@ This is a Hermes-native `report-package` workflow skill.
 
 ## Do Not Use When
 
-- The user needs SLO, incident, or error-budget review; use `reliability-review`.
+- The user needs SLO, incident, or error-budget review; use `omh-reliability-review`.
 - The user asks for a live `.pptx` deck file rather than a PPT-ready outline.
 - The request is meeting minutes, scrum history, or action-item tracking.
 
@@ -53,9 +56,9 @@ Bad example:
 
 - Current lane: **Materials and visual summaries** (`design-orchestration`, `apple-design`, `design-quality-gate`, `award-bar-score`, `frontend`, `accessibility-audit`, `visual-qa`, `content-operator`, `+6 more`) - web, accessibility, visual QA, files, and packages.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when Hermes should turn supplied inputs into a report, executive brief, PPT-ready outline, or upload package without claiming presentation delivery.
 
@@ -74,6 +77,8 @@ Quality bar:
 - Name audience, reporting period, sections, supplied facts, assumptions, and missing data.
 - Keep report packaging independent from reliability review unless explicitly requested.
 - Export only Markdown/JSON outlines unless a separate presentation tool produces a binary deck.
+- On Hermes, that tool can be the bundled `powerpoint` skill, and a deck it builds counts as generated from its read-back (`pptx_read.py --outline`).
+- On Hermes, a render check taken from `pptx_render.py` counts only from a result reading `"rendered": true` whose images, rendered into a fresh directory, match `slide_count` and were each inspected; `"rendered": false` exits 0 yet leaves that check not observed, and a render observed another way still counts.
 
 Handoff policy:
 
@@ -119,4 +124,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

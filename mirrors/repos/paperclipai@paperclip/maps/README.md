@@ -62,7 +62,7 @@ the agent path, even when a legacy agent can call the REST endpoint directly.
 ## Companion file format
 
 Each `agent-access-map/<area>.md` has an H1, a relative link to its product file,
-review date and source commit, followed by one H2 backticked ID per product
+followed by one H2 backticked ID per product
 sub-feature. Each capability contains these fields:
 
 - **Review:** `baseline` or `operation-reviewed`.
@@ -90,14 +90,15 @@ Review: `operation-reviewed`.
 ### `create`
 
 API: `present` — POST /api/companies/{companyId}/routines.
-Agent access: `partial` — agent REST and CLI routine create; default native
-mutation binding missing, and call_api blocks routine mutations.
+Agent access: `available` — agent REST, CLI routine create and native call_api
+under the enabled rollout and active-run/mode gates.
 Policy: same company; assigneeAgentId must be the calling agent; cite the
 routine authorization and native API policy sources.
 Evidence: `source-only` — reviewed commit and source links; no live proof.
 Verification: `not-run` — create an owned routine; reject assignment to another
 agent; inspect saved configuration, attribution and retry behavior.
-Gaps: default native create path; verify using the real permitted agent context.
+Gaps: verify ownership and responsible-user resolution with a permitted agent
+context; source presence alone does not qualify this operation.
 ```
 
 ## Keeping the maps synchronized
@@ -105,7 +106,7 @@ Gaps: default native create path; verify using the real permitted agent context.
 When a change adds/removes a capability or changes its behavior, API, permission,
 tool binding, CLI support, or work mode, update the affected companion and product
 recipe as appropriate in the same change. Preserve IDs across renames where the
-capability is unchanged; update both indexes and cross-links together. An API-only
+capability is unchanged; update the affected cross-links together. Indexes discover recipes automatically. An API-only
 change may update the companion without rewriting unchanged user instructions.
 
 [maintain-verification-skill](../.agents/skills/maintain-verification-skill/SKILL.md)
@@ -121,7 +122,7 @@ Run the structural check after map changes:
 node scripts/check-maps.mjs
 ```
 
-It checks paired areas/IDs, indexes, required fields, and local references. It
+It checks paired areas/IDs, navigation metadata, required fields, and local references. It
 does not certify endpoint authorization, production bindings, operation
 completeness, or live behavior. Source audits must check those against the
 existing API and tool contracts; avoid a second schema catalog or runtime.
@@ -132,4 +133,21 @@ allowed result and relevant denial (another company/private resource, wrong
 owner, missing grant, invalid run, restricted mode or resolver). Mutations also
 need persisted state/attribution and retry behavior. Capture evidence using the
 [existing artifact workflow](../doc/AGENT-ARTIFACTS.md); keep executed run results
-separate from product-map `coverage.json`, which records documentation scope.
+separate from generated `maps/generated/coverage.json`, which lists page references.
+
+## Local authorship and generated indexes
+
+Change only the recipes, access contracts and stories whose behavior or intent
+changed. Feature recipes own navigation metadata; stories own small
+`parameters.paperclip` annotations. Do not register entries or refresh counts in
+shared READMEs, inventories, fingerprints or review journals.
+
+`node scripts/storybook-catalog.mjs` validates and generates aggregate navigation,
+Storybook data, verification routes and the page inventory. All outputs live in
+ignored `maps/generated/`, `ui/storybook/generated/`, and the ignored Storybook
+`preview.tsx` wrapper. Start/build and UI typechecking generate their own inputs.
+A clean merged checkout therefore assembles both branches' changes automatically.
+
+Git provides history and diffs. PRs, issues and CI artifacts retain review/run
+evidence for the named revision. Capability associations do not create whole-file
+review dependencies. Keep durable scenario limits in the affected recipe or story.

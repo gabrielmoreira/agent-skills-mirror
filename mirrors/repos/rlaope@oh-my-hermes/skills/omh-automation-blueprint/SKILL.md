@@ -1,6 +1,8 @@
 ---
 name: "omh-automation-blueprint"
 description: "[omh] Recurring Hermes job on a schedule (cron, digests): design recurring Hermes operations with schedule, delivery, silence policy, context chain, and prepared-vs-observed status. Use when the user says: automation-blueprint, scheduled ops, scheduled operation, scheduled operations, automation blueprint, cron blueprint, cron-ready, recurring ops."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operations]
@@ -8,6 +10,7 @@ metadata:
     phase: scheduled-ops-blueprint
     role: operator
     quality_tier: ops-blueprint-gated
+    related_skills: [omh-lifecycle-growth, omh-report-package, omh-materials-package, omh-reliability-review]
 ---
 
 # Automation Blueprint
@@ -16,21 +19,22 @@ This is a Hermes-native `automation-blueprint` workflow skill.
 
 ## Why This Exists
 
-`automation-blueprint` exists so Hermes can make recurring operational work feel native and scheduled without OMH becoming a hidden cron runner, transport bot, source retriever, or executor.
+`automation-blueprint` exists so a recurring request reaches Hermes' own Automation Blueprints and cron with the decisions they leave open (overlap, missed run, retry, backfill, failure pause, silence) settled first, without OMH becoming a hidden cron runner, transport bot, source retriever, or executor.
 
 ## Do Not Use When
 
-- An undecided lifecycle journey or growth experiment needs audience, consent, and measurement design before any schedule; use `lifecycle-growth` first.
-- The user needs a one-off report or deck; use `report-package` or `materials-package`.
-- The user asks to review incident metrics once; use `reliability-review`.
+- An undecided lifecycle journey or growth experiment needs audience, consent, and measurement design before any schedule; use `omh-lifecycle-growth` first.
+- The user needs a one-off report or deck; use `omh-report-package` or `omh-materials-package`.
+- The user asks to review incident metrics once; use `omh-reliability-review`.
 - The user needs actual code changes; prepare a selected executor/runtime handoff after the blueprint or plan is accepted.
+- The person is inside Hermes' own /blueprint setup for one of its catalog automations; answer the questions that flow asks and let it create the job instead of preparing a second blueprint.
 
 ## Examples
 
 Good example:
 
 - Prompt: automation-blueprint every weekday run an uptime check and send a Slack digest only if status changes.
-- Expected behavior: Prepare hermes_ops_blueprint/v1 with schedule intent, Slack delivery policy, silence rule, research/report skills, missing evidence, and next confirmation.
+- Expected behavior: Draft prepared_native_blueprint/v1 with schedule intent, Slack delivery, a `[SILENT]` reply for unchanged runs, research/report skills, missing evidence, and the next confirmation.
 - Why: The request is recurring, delivery-shaped, and must stay prepared until host automation and gateway delivery are observed.
 
 Bad example:
@@ -52,11 +56,11 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+39 more`) - schedules, status, health, and ops review.
+- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+40 more`) - schedules, status, health, and ops review.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when Hermes should turn a natural recurring/cron-like request into a scheduled ops blueprint without claiming host automation, platform delivery, source retrieval, or no-agent execution.
 
@@ -76,6 +80,9 @@ Quality bar:
 - Name cadence/timezone uncertainty, delivery target, silence/no-change rule, selected skills, and context chain.
 - When the recurring work is saved, say it is paused and name what activation needs: explicit overlap, missed-run, retry, backfill, and failure-pause decisions, an approval reference, and an observer from the approved runtime surface.
 - Before activation, say what the policy does when a prior run is still active, when a window is missed, and when failures repeat; after a safety pause, report the applied policy and that resuming needs a policy revision.
+- Project the prepared native blueprint onto Hermes' own fields: the `metadata.hermes.blueprint` block (schedule, deliver, prompt, no_agent) and the matching `cronjob_manage` create call when `cronjob_manage` is in your tool list or tool_search finds it, otherwise give the user the equivalent `hermes cron create` command; report-on-change is a `[SILENT]` final reply. A model pin is the user's to set: the block's own `model` and `provider` keys, `hermes cron create` or `hermes cron edit` with `--model` and `--provider`, or `pinned=true` only on the user's explicit request where `cronjob_manage` offers it.
+- Map overlap, missed-run, retry, backfill, and failure-pause onto what Hermes cron does natively and say which choices it cannot honour, so nobody is asked for a policy the runtime ignores; the map is in `references/recurring-surface-choice.md`.
+- After activation, read status from Hermes, not from the blueprint: `cronjob_manage` list (state, last_status, next_run_at), `hermes cron runs`, and open `hermes cron incidents` (detected or alerted).
 - Expose whether a no-agent watchdog is a candidate without claiming it exists or ran.
 - List host automation, gateway delivery, source retrieval, and no-agent execution as not evidence until observed.
 
@@ -92,7 +99,7 @@ Required inputs:
 
 Expected outputs:
 
-- hermes_ops_blueprint/v1 projection
+- prepared_native_blueprint/v1 projection
 - recurring_surface_comparison/v1 naming the recommended surface and why the other three lost
 - hermes_recurring_intent/v1 paused lifecycle record when the user wants the recurring work saved
 - schedule/delivery/silence confirmation needs
@@ -101,7 +108,7 @@ Expected outputs:
 
 Artifact expectations:
 
-- hermes_ops_blueprint/v1 under .omh/hermes-ops/blueprints when a wrapper or CLI records it
+- prepared_native_blueprint/v1 under .omh/hermes-ops/blueprints when a wrapper or CLI records it
 - recurring_surface_comparison/v1 with the recommended surface among cron, heartbeat, loop, and native goal, its stop condition, and a per-surface reason the other three were not chosen
 - hermes_recurring_intent/v1 under .omh/hermes-ops/recurring-intents when the user asks to save the recurring work
 
@@ -112,6 +119,7 @@ Safety rules:
 - A saved recurring intent is paused; never report that an occurrence ran without a runtime run reference recorded against that exact intent revision.
 - A prepared failure policy is not enforcement: OMH never starts, skips, queues, retries, or backfills an occurrence, and a policy decision is not proof the runtime honoured it.
 - Route later coding, material generation, or report delivery into separate accepted handoffs when needed.
+- OMH creates, pauses, and removes no cron job: activation is the user's or Hermes' (`/blueprint`, an accepted Suggested Cron Job, a `cronjob_manage` create the user asked for in this conversation, or a `hermes cron create` the user runs), and a job Hermes lists is observed status, not proof that a run delivered.
 
 ## Runtime Evidence
 
@@ -129,4 +137,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

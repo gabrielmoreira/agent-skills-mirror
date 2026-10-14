@@ -1,6 +1,8 @@
 ---
 name: "omh-agent-ops-review"
 description: "[omh] AI agent progress for managers: help managers inspect AI-agent progress, blockers, quality gates, and throughput levers. Use when the user says: agent-ops-review, agent ops review, agent productivity, operator productivity, manager view, quality dashboard, throughput review, agent work quality."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operator]
@@ -51,11 +53,11 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+39 more`) - schedules, status, health, and ops review.
+- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+40 more`) - schedules, status, health, and ops review.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when Hermes should explain AI-agent work: quality gates, progress, blockers, next actions, and throughput.
 
@@ -126,4 +128,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

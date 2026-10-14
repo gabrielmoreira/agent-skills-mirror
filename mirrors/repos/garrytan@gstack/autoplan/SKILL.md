@@ -707,14 +707,12 @@ Re-run: copy RESTORE_PATH's bytes to SOURCE_PLAN, then /autoplan.
 
 - Read CLAUDE.md, TODOS.md, git log -30, git diff against the base branch --stat
 - Discover design docs: `~/.claude/skills/gstack/bin/gstack-design-doc-find "$SLUG" "$BRANCH"` (prints the doc path, or nothing)
-- Detect UI scope: grep the plan for view/rendering terms (component, screen, form,
-  button, modal, layout, dashboard, sidebar, nav, dialog). Require 2+ matches, excluding
-  false positives ("page" alone, "UI" in acronyms).
 - Use init's full-input `scope`. For changed input or semantic enabling flags, rerun:
 ```bash
 bun "<SNAPSHOT_TOOL>" scope "<ACTIVE_PLAN>"
 ```
-  Use returned `dxRequired` (initially `scope.dxRequired`); record its input hash and matched
+  UI scope is returned `uiRequired`: a rendered file path or a UI term next to a visual
+  noun (`uiEvidence`); bare UI words never add Design. Use returned `dxRequired` (initially `scope.dxRequired`); record its input hash and matched
   terms. The threshold is 2+ term matches (occurrences, not distinct terms). Also enable DX when the
   product is a developer tool (developers install, integrate or build on it) or an AI agent is
   the primary user: add `--developer-tool` or `--agent-primary`. These flags only enable DX; no

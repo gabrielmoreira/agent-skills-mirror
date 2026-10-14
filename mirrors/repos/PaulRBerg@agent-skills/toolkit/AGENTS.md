@@ -24,13 +24,19 @@ catalog root). Run focused tests while iterating, then the complete affected gat
 | Coordination dashboard                        | `just coord-dashboard-check` |
 | Shared workspace wiring or Rust/app contracts | `just check`                 |
 
-`just rust-check` checks formatting, Clippy with warnings denied, tests, and builds for the locked Rust workspace. The
-dashboard gate checks lint, formatting, types, tests, and the production build. UI changes also need the owning
-package's rendered verification. `just check` runs both gates. None of these checks installs CLI binaries.
-Documentation-only edits follow the root formatting and factual-verification rules.
+`just rust-check` checks formatting, Clippy with warnings denied, tests, builds, and platform-specific installation
+tests for the locked Rust workspace. Installation tests use mock commands and do not install binaries. The dashboard
+gate checks lint, formatting, types, tests, and the production build. UI changes also need the owning package's rendered
+verification. `just check` runs both gates. None of these checks installs CLI binaries. Documentation-only edits follow
+the root formatting and factual-verification rules.
+
+In Linux containers, preserve Git repository metadata and use an init process, such as Docker's `--init` option. The
+ignore-rule fixtures require repository metadata. Process-group tests require orphaned child processes to be reaped.
 
 ## Compatibility and safety
 
+- Maintain macOS and Linux support for `ai-commit`, `ai-coord`, `ai-handoff`, and `ai-skillet`. Keep `ai-notify`
+  macOS-only. The installation recipe selects supported packages and restarts an existing launchd service only on macOS.
 - Preserve each tool's documented command, output, and persisted-data contracts. Do not add compatibility paths,
   migrations, aliases, or dual formats unless explicitly requested. Reject incompatible persisted versions with
   actionable errors.

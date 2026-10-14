@@ -48,7 +48,7 @@ The loop does not create a root row for the goal and hang the iterations under i
 
 ## Todo and Closing
 
-One `omh_todo` item per open board row, its text the row title plus the last observed status, updated from the readback pass and from nothing else. A row that reaches `done` closes its item; a row that is `blocked` carries the block reason as the item's `blocked_reason`.
+One item per open board row in the plan's one checklist tool (`todo_list`, which OMH mirrors, or `omh_todo`; never both), its text the row title plus the last observed status, updated from the readback pass and from nothing else. A row that reaches `done` closes its item; a row that is `blocked` carries the block reason as the item's `blocked_reason`, recorded with `omh_todo`.
 
 The loop closes in the main session. A verifier `done` is `worker reported done` until this session re-runs the verification where the workspace is reachable, and the goal closes only through the loop's own completion gate. A board row is never goal completion evidence.
 

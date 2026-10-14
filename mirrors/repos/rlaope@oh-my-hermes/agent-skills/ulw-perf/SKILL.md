@@ -1,6 +1,7 @@
 ---
 name: "ulw-perf"
 description: "[omh] Software slowness, memory leaks, or cost spikes: find where a system is actually slow, leaking, or expensive across runtime, memory, token cost, storage, rendering, inference, CI, and query domains, then fix one measured hot path at a time behind a regression budget. Use when the user says: ultraperf, ulw-perf, performance audit, performance bottleneck, find the bottleneck, profile the hot path, memory leak investigation, token cost hotspot."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, optimization]
@@ -21,8 +22,8 @@ This is an OMH `ultraperf` workflow skill, projected for Agent Skills hosts (Cla
 ## Do Not Use When
 
 - Metric, baseline, budget, and benchmark command are already declared for one measurable goal; use `performance-goal`.
-- The ask is to judge code quality, structure, or correctness rather than measured cost; use `code-review`.
-- The ask is to score model or agent output quality on a task suite; use `agent-evaluation`.
+- The ask is to judge code quality, structure, or correctness rather than measured cost; use `omh-code-review`.
+- The ask is to score model or agent output quality on a task suite; use `omh-agent-evaluation`.
 - The request is a settings-only change, one bounded edit that is explicitly low-risk and has a direct owner and verification path, or one already-identified slow query or hotspot fix; handle it directly instead of opening a performance loop.
 
 ## Examples
@@ -54,7 +55,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when performance problems are suspected but not yet localized, or when several cost hotspots across domains need a measured inspect-and-fix loop.
 

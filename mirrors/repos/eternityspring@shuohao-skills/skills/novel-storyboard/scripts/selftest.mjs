@@ -695,6 +695,11 @@ ok(validateStoryboard({}).some((p) => p.includes('source')), '缺 source 报出�
 ok(validateStoryboard({ source: 'x', episodes: [] }).some((p) => p.includes('episodes')), '空 episodes 报出来');
 {
   const doc = clone(FIXTURE);
+  doc.aspectRatio = '1:1';
+  ok(validateStoryboard(doc, CTX).some((p) => p.includes('aspectRatio')), '正式画幅只接受 16:9 或 9:16');
+}
+{
+  const doc = clone(FIXTURE);
   doc.episodes[0].segments[0] = { id: 'E01-01' };
   const problems = validateStoryboard(doc, CTX);
   ok(problems.some((p) => p.includes('sceneIndex')), '缺 sceneIndex 报出来');
@@ -718,12 +723,15 @@ ok(validateStoryboard({ source: 'x', episodes: [] }).some((p) => p.includes('epi
 
 const seeded = seedFromScript(SCRIPT);
 eq(seeded.source, '渡口', 'seed 带剧名');
+eq(seeded.aspectRatio, '16:9', 'seed 默认写入正式横屏画幅');
 eq(seeded.episodes.length, 6, 'seed 全六集');
 eq(seeded.episodes[0].segments.length, 0, 'segments 留空给模型切');
 eq(seeded.episodes[0].seedScenes.length, 2, '工作底稿带两场');
 eq(seeded.episodes[0].seedScenes[0].beats.length, 13, '底稿带全部节拍');
 ok(seeded.episodes[0].seedScenes[0].beats[0].seconds > 0, '每拍带秒数');
 eq(seedFromScript(SCRIPT, [2, 3]).episodes.map((e) => e.ep).join(','), '2,3', '--eps 区间过滤');
+eq(seedFromScript(SCRIPT, null, '9:16').aspectRatio, '9:16', '--aspect 写入正式竖屏画幅');
+ok((() => { try { seedFromScript(SCRIPT, null, '1:1'); return false; } catch (e) { return /aspectRatio/.test(e.message); } })(), 'seed 拒绝不支持的画幅');
 eq(seedFromScript({}).episodes.length, 0, '空剧本不崩');
 
 /* ---------------- slug / 枚举 ---------------- */
@@ -797,6 +805,33 @@ ok(html.includes('老周'), 'html 里 ID 换成名字');
   ok(!withImg.includes('class="frame ph fcell"'), '图出全时不再走整宽提示词卡');
   ok(withImg.includes('class="subs"'), '图出全时保留子分镜条');
   ok(withImg.includes('class="subf"'), '子分镜条用小缩略图');
+}
+// 分镜图位跟着正式画幅走；旧 _meta 和 frame 尾缀只保留为兼容路径
+{
+  const styleOf = (h) => h.match(/<style>[\s\S]*?<\/style>/)[0];
+  ok(html.includes('.frame{width:100%;aspect-ratio:16/9;') && !html.includes('aspect-ratio:9/16'), '默认横屏：分镜图位 16:9，不插竖屏样式');
+  const defaulted = clone(FIXTURE);
+  delete defaulted.aspectRatio;
+  ok(styleOf(renderHtml(defaulted, CTX)) === styleOf(html), '省略正式画幅时默认 16:9，样式逐字节不变');
+  const port = clone(FIXTURE);
+  port.aspectRatio = '9:16';
+  const ph = renderHtml(port, { ...CTX, image: (kind, rel) => rel });
+  ok(ph.includes('.frame,.subf{aspect-ratio:9/16}'), 'aspectRatio=9:16：主图与子分镜条图位改 9:16');
+  ok(ph.includes('img.frame{width:min(100%,300px)'), '竖屏主图收窄，不撑成一屏多高');
+  ok(ph.includes('.bimg{width:100%;aspect-ratio:16/9;'), '场景设定图仍是 16:9，不跟剧的画幅走');
+  port._meta = { orientation: 'landscape' };
+  ok(renderHtml(port, CTX).includes('aspect-ratio:9/16'), '正式 aspectRatio 比旧 _meta.orientation 优先');
+  const legacy = clone(FIXTURE);
+  delete legacy.aspectRatio;
+  legacy._meta = { orientation: 'V' };
+  ok(renderHtml(legacy, CTX).includes('aspect-ratio:9/16'), '旧 _meta.orientation 的简写 v 仍兼容为竖屏');
+  // 样例的 frame 本身不带画幅标签（画幅由下游定），这里照下游应用的写法在末尾贴 `, 9:16`
+  const tail = clone(FIXTURE);
+  delete tail.aspectRatio;
+  for (const ep of tail.episodes) for (const s of ep.segments) for (const c of s.cuts) c.frame = `${c.frame ?? ''}, 9:16`;
+  ok(renderHtml(tail, CTX).includes('aspect-ratio:9/16'), '没记 _meta 时按 frame 末尾的 9:16 标签认竖屏');
+  tail._meta = { orientation: 'landscape' };
+  ok(!renderHtml(tail, CTX).includes('aspect-ratio:9/16'), '_meta.orientation 比 frame 标签优先');
 }
 // 病灶横幅
 {

@@ -1,6 +1,8 @@
 ---
 name: "omh-ai-slop-cleaner"
 description: "[omh] Messy or AI-generated code to clean up: delete AI-generated slop, dead code, and duplication while observable behavior stays identical. Use when the user says: ai-slop-cleaner, cleanup, deslop, refactor, risky, behavior-preserving refactor, risk analysis, refactor workflow."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, maintenance]
@@ -8,6 +10,7 @@ metadata:
     phase: cleanup
     role: handoff-guide
     quality_tier: regression-gated
+    related_skills: [ulw-work, omh-refactor-plan, ulw-plan, omh-code-review, omh-failure-signal-audit, simplify-code]
 ---
 
 # Ai Slop Cleaner
@@ -20,9 +23,10 @@ This is a Hermes-native `ai-slop-cleaner` workflow skill.
 
 ## Do Not Use When
 
-- The goal is new or changed behavior rather than removing existing code; a plain refactor, feature, or fix request belongs to `ultrawork`.
-- The cleanup would change architecture or module boundaries and needs its execution shaped into phases first; use `refactor-plan`, or `ralplan` when the direction itself is still contested.
-- The user wants code judged for bugs or merge readiness with no drafted slop removal to inspect; use `code-review` for a bug-first review and `failure-signal-audit` for swallowed failures.
+- The goal is new or changed behavior rather than removing existing code; a plain refactor, feature, or fix request belongs to `ulw-work`.
+- The cleanup would change architecture or module boundaries and needs its execution shaped into phases first; use `omh-refactor-plan`, or `ulw-plan` when the direction itself is still contested.
+- The user wants code judged for bugs or merge readiness with no drafted slop removal to inspect; use `omh-code-review` for a bug-first review and `omh-failure-signal-audit` for swallowed failures.
+- The user asks to simplify their own recent changes, a commit, or the staged diff with a reuse, quality, and efficiency pass rather than a behavior-locked removal of existing code; load Hermes' bundled `simplify-code` skill for that instead of this one.
 
 ## Examples
 
@@ -55,9 +59,9 @@ Bad example:
 
 - Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when the goal is removing existing low-quality, duplicated, or AI-generated code and the observable behavior must not change; lock behavior with tests before and after the edits.
 
@@ -83,7 +87,7 @@ Quality bar:
 - When the cleanup target is UI code, load `omh-ai-slop-cleaner/references/ui-review-checklist.md`; its items are review prompts a stated rationale closes, not bans.
 - Prefer deletion, reuse, and boundary repair over new abstractions.
 - Rerun verification after cleanup before claiming behavior is preserved, and close with the four-part report: changed files, simplifications, behavior lock, remaining risks.
-- Close every run with `omh runtime record --skill ai-slop-cleaner --harness coding-handling --status completed` (or `failed` / `blocked`): a cleanup run carries changed files, simplifications, and remaining risks in `--outputs-summary` and the behavior lock in `--verification-summary`; a review-mode run carries the ship or no_ship verdict and the finding count per priority in `--outputs-summary`. A caller that says the cleaner ran cites that record, and without one the pass is not_observed.
+- Close every run with `omh runtime record --skill ai-slop-cleaner --harness coding-handling --status completed` (or `failed` / `blocked`), adding `--goal <goal_id> --cleanup-outcome passed|skipped|reverted` when the pass serves a goal: a cleanup run carries changed files, simplifications, and remaining risks in `--outputs-summary` and the behavior lock in `--verification-summary`; a review-mode run carries the ship or no_ship verdict and the finding count per priority in `--outputs-summary`. A caller that says the cleaner ran cites that record, and without one the pass is not_observed. A goal carrying AC-SLOP completes only after `omh goal checkpoint --goal <goal_id> --summary <outcome> --criterion AC-SLOP --evidence-ref run:<run_id>` cites a `completed` record; a failed or blocked run never satisfies it, so a decided skip is `--status completed --cleanup-outcome skipped`. One accepted record covers the goal, and `skipped` and `reverted` are reported as recorded, never as passed.
 
 Handoff policy:
 
@@ -142,4 +146,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

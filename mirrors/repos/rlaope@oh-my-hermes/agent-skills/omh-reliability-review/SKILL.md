@@ -1,6 +1,7 @@
 ---
 name: "omh-reliability-review"
 description: "[omh] Postmortem for an outage or SLO miss: postmortems, SLOs, error budgets, incident follow-ups, and service reliability evidence. Use when the user says: reliability-review, reliability review, incident review, incident postmortem, postmortem, post-mortem, slo review, slo."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, reliability]
@@ -23,7 +24,7 @@ This is an OMH `reliability-review` workflow skill, projected for Agent Skills h
 - The user only needs a generic status report or leadership deck.
 - No service, incident, SLO, metric, or reliability source boundary is available.
 - The request is implementation of remediation rather than review of reliability evidence.
-- The incident is still open and the user needs severity declared, a commander assigned, a running timeline, and recovery verified; use `live-incident-response` and review it once it is closed.
+- The incident is still open and the user needs severity declared, a commander assigned, a running timeline, and recovery verified; use `omh-live-incident-response` and review it once it is closed.
 
 ## Examples
 
@@ -52,7 +53,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes should review incident notes, SLOs, error budgets, or service reliability evidence while keeping remediation and closure claims observed.
 

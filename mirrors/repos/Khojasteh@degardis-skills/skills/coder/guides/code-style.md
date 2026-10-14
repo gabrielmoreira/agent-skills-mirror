@@ -1,0 +1,28 @@
+---
+title: Code style and idioms
+applicability:
+- When the work writes or changes source code
+x-claim-provenance:
+- claim: Consistency within a project matters more than consistency with a general style guide, and consistency within one module or function matters most; consistency with surrounding code that also breaks a guideline, and compatibility with older language versions that lack a recommended feature, are reasons to depart from the guideline.
+  source: https://peps.python.org/pep-0008/#a-foolish-consistency-is-the-hobgoblin-of-little-minds
+- claim: Consistency applies most heavily locally, per file or tightly related set of interfaces, and does not justify an old style without weighing a newer one or the codebase's tendency to converge on newer styles.
+  source: https://google.github.io/styleguide/cppguide.html#Goals
+- claim: On matters of style the project's style guide is the authority; a purely style point it does not cover should be consistent with what is there, and where there is no previous style the author's choice stands; design choices are almost never a pure style issue.
+  source: https://google.github.io/eng-practices/review/reviewer/standard.html#principles
+- claim: Where a style guide only recommends, new code follows it unless the local inconsistency would be too confusing, and where no rule applies new code stays consistent with the existing code; major style changes such as reformatting a whole file go in a change of their own, since mixing them in hides what changed and complicates merges and rollbacks.
+  source: https://google.github.io/eng-practices/review/reviewer/looking-for.html#style
+- claim: A .NET analyzer rule at suggestion severity appears only as a build message and an IDE suggestion, and one at silent severity is not shown, though for a code-style rule Visual Studio still generates code in its style.
+  source: https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/configuration-options#severity-level
+  scope: page dated 2026-02-13
+- claim: .NET code-style analysis is disabled on command-line builds by default and runs there only when EnforceCodeStyleInBuild is set and the rule is configured as a warning or error, while a few rules apply only in Visual Studio.
+  source: https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/overview#code-style-analysis
+  scope: page dated 2025-11-05
+- claim: Black's line-range formatting may rewrite lines outside the requested ranges for multi-line statements.
+  source: https://black.readthedocs.io/en/stable/usage_and_configuration/the_basics.html#line-ranges
+---
+
+Code the work writes or changes takes the style the project already uses: layout, bracing, naming, ordering, and the choice among language constructs that behave the same, such as whether a single-statement branch gets a block, how a collection is built, or whether a local's type is written out. These choices change no behavior, so the project's practice is what decides them: code in another style leaves the project with two, which its maintainers read past and later edits copy or undo. A convention binds whether or not a tool enforces it. Where the candidate constructs differ in behavior, cost, or failure handling, the choice is a design or correctness decision rather than one of style.
+
+A rule the project requires decides what it covers, whether an adopted formatter, linter, or analyzer enforces it or a style guide the project keeps states it as required. A recommendation in that guide is followed unless the code around the change consistently does otherwise. A rule an adopted compiler, linter, or analyzer reports below the severity the build fails on is such a recommendation when the project configured it, and one the project configured to report nothing can still name the form it prefers. A default build may print none of these, as when a tool shows suggestions only in an editor or runs some rules only when a build option enables them, so obtain the diagnostics raised on the code the change writes from the tooling that reports them. A diagnostic the project did not configure decides nothing by itself: it is a lead to a defect the change may have introduced, or to a form the code around the change may already use. Where no rule or recommendation covers a choice, the code nearest the change decides: its file before its module or package, and its module before the rest of the project, since tests, generated code, and older areas can keep conventions of their own. Where that code mixes forms, follow the one the project is moving toward, as its newer code consistently shows, or else the one that predominates there. A construct is available only when every language version the project supports offers it, and available is not adopted: it replaces the form the code around the change uses only when the project is already moving to it or the request asks for that change. Where the project shows no practice for a choice at all, as in a new product, the first form the work chooses becomes the practice the rest of its code follows.
+
+Style governs the code the change writes. An adopted formatter runs only as far as the project keeps its code formatted with it. Keep the smallest formatting change its rules require for each edited construct, including rewrites of surrounding lines: reverting those rewrites can leave the edited code out of the required style. Unrelated restyling hides the change in its diff and complicates merging or reverting it, so reformatting beyond those required rewrites belongs in a change of its own, made only when asked for. Before completion, compare the code the final diff adds with the code around it and with the diagnostics reported on it.

@@ -84,7 +84,7 @@ The pattern owns semantic primitives and its tighter budget; the type owns layou
 
 | If you're showing… | Use | Reference |
 |---|---|---|
-| Components + connections in one system snapshot | **Architecture** | [type-architecture.md](references/type-architecture.md) |
+| Components + connections in one snapshot; nested admin vs traffic scopes | **Architecture** | [type-architecture.md](references/type-architecture.md) |
 | Structural change between synchronized Before / After topologies, with a Changes ledger | **Architecture delta** | [type-architecture-delta.md](references/type-architecture-delta.md) |
 | Legacy IT landscape by phase or department; shows the *before* state | **IT current-state** | [type-it-state.md](references/type-it-state.md) |
 | Decision logic with branches | **Flowchart** | [type-flowchart.md](references/type-flowchart.md) |

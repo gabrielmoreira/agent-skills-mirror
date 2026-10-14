@@ -79,6 +79,6 @@ onboarding persistence, host approval, adapter behavior, and controller/tool
 compatibility.
 
 - [Parent Web3 module](../README.md)
-- [Wallet product guide](../../../../../gitbooks/features/wallet.md)
+- [Wallet product guide](../../../../../docs/gitbooks/en/features/wallet.md)
 - [TinyWallet source](../../../../../vendor/tinywallet/README.md)
-- [Loadable modules](../../../../../gitbooks/developing/loadable-modules.md)
+- [Loadable modules](../../../../../docs/gitbooks/en/developing/loadable-modules.md)

@@ -12,7 +12,7 @@ Strategy Discovery is the single entry point for two questions: **what strategie
 
 It supersedes the earlier closed-registry attempt. That design attached boolean scenario tags (works in bear markets: yes/no) to a curated list. This skill replaces tags with **per-regime evidence rows**: every claim that a strategy works in a regime must come from a computed, reproducible backtest stored as evidence, never from curation or inference.
 
-The three query tools are read-only: they never register, mutate, or delete strategies. To add or change strategies, use the `strategy-dev-manager` and `alpha-zoo` workflows — Strategy Discovery only reports what those workflows have produced. The fourth tool, `refresh_strategy_evidence`, is the single write in the surface: it rebuilds ONLY the disposable evidence cache from local backtest run artifacts (see Populating & Refreshing Evidence and Composition Guarantee).
+The three query tools are read-only: they never register, mutate, or delete strategies. To add or change strategies, use the `strategy-dev-manager` and `alpha-zoo` workflows — Strategy Discovery only reports what those workflows have produced. The fourth tool, `refresh_strategy_evidence`, writes only the disposable cache: it rebuilds ONLY the disposable evidence cache from local backtest run artifacts (see Populating & Refreshing Evidence and Composition Guarantee).
 
 ## When to Use
 
@@ -24,7 +24,7 @@ Decision tree for routing user requests:
 - User asks to **populate or refresh the evidence cache** ("turn my backtest runs into evidence", "the evidence is stale, refresh it") → `refresh_strategy_evidence(manifest_path=...)` — this rebuilds the disposable cache from run artifacts; it is NOT strategy creation or registration
 - User asks to **create, backtest, or register** a strategy → this is NOT this skill; route to `strategy-generate` / `strategy-dev-manager` / `alpha-zoo`
 
-The access path is the three read tools (`list_strategies`, `query_strategies`, `get_strategy_evidence`) plus one cache-refresh tool (`refresh_strategy_evidence`), available through the agent registry and the MCP server under the same names. The only CLI surface is `vibe-trading strategy-evidence refresh --manifest <path>`, which runs the same refresh as the tool; queries stay with the agent tools. Do not invent flags or subcommands beyond that.
+The access path is the three read tools (`list_strategies`, `query_strategies`, `get_strategy_evidence`) plus one cache-refresh tool (`refresh_strategy_evidence`), available through the agent registry and the MCP server under the same names. CLI: `vibe-trading strategy-evidence refresh --manifest <path> [--scope strategies]` runs the same refresh as the tool. `vibe-trading strategy-evidence adapt --strategy-id sdm:<id> --name <child> --universe <description> --config <json-path>` prepares an adaptation; queries stay with the agent tools. Do not invent flags or subcommands beyond that.
 
 ## Tools
 
@@ -210,3 +210,10 @@ An empty result is an answer, not an error: it means "no computed evidence exist
 - **Refresh tool writes only the disposable cache**: `refresh_strategy_evidence` rebuilds the facade-owned evidence cache DB from local run artifacts, and nothing else. It never writes to the Alpha Zoo registry, the SDM store, or the run artifacts it reads; no network, no credentials, no broker paths.
 - **Cache is disposable**: the evidence cache DB is owned by the facade, deletable, and rebuildable from run artifacts plus the two authoritative sources. Its location can be overridden with the `VIBE_TRADING_STRATEGY_DISCOVERY_DB_PATH` environment variable; unset means the default location.
 - **No other state**: no network calls, no writes outside the cache, no side effects on the registries it reads.
+
+
+## Description-driven adaptation
+
+`adapt_strategy` accepts `(strategy_id, name, universe, config, position_sizing?)` and is the fifth tool and writes a new SDM child plus an immutable input/run binding. It requires adequate, fresh evidence belonging to the parent and refuses disabled/decayed parents. Read the parent's description and regime definitions with `get_strategy_evidence` first. Only name, universe and optional sizing change; the signal/entry/exit descriptions remain fixed. The child starts unvalidated with no metrics or inherited sign-off.
+
+Load `strategy-generate` and follow its adaptation workflow: generate the child's code in the assigned run, backtest, then `refresh_strategy_evidence(..., scope="strategies")`. This replaces only successful named strategies, not the whole cache. No background model call or live trading is started by preparation. REST preparation is `POST /api/strategy-adaptations`; `POST /api/strategy-adaptations/evidence` performs scoped refresh. The Web welcome screen offers “Adapt a registered strategy”.

@@ -1,44 +1,41 @@
 ---
 name: bevy-spatial-queries
-description: "Docs-first stub for Bevy spatial queries. Godot counterpart: godot-raycasting-queries. Not a full port. Keywords: Bevy, raycast, shapecast, picking, physics query, gaps."
+description: "Bevy ECS skill for spatial queries. Keywords: Bevy, raycast, shapecast, picking, physics query."
 ---
 
-# Bevy spatial queries (docs-first stub)
-
-Not a full port. Casts, overlaps, and physics picking wait on a solver. No crate was chosen.
+# Bevy spatial queries
 
 ## When to use
 
-Load this when a design needs line of sight, a volume overlap, a ground probe, or a mouse pick, and you need the gap list. Screen-to-2D-world mapping that does not hit a collider is a camera helper, not a physics query.
+Load this when a design needs line of sight, a volume overlap, a ground probe, or a mouse pick. Screen-to-2D-world mapping that does not hit a collider is a camera helper, not a physics query.
 
 ## ECS shape
 
-- **Components** would own query origin, direction, and a mask once a solver defines them. This pass does not name those types.
+- **Components** would own query origin, direction, and a mask once a solver defines them. Check the solver docs before naming those types.
 - **Resources** would own a physics world. None was opened.
 - **Systems** would run the query after the solver step. Order that with `.chain()` on the ECS page. The clock is `Fixed` / `FixedMain` from `bevy::time`, which is not a query API.
-- **Camera-only pick (opened elsewhere):** `Camera::viewport_to_world_2d` with `GlobalTransform` maps a viewport position to a 2D world position. That is not an intersection test. See bevy-camera-systems.
+- **Camera-only pick:** `Camera::viewport_to_world_2d` with `GlobalTransform` maps a viewport position to a 2D world position. That is not an intersection test. See bevy-camera-systems.
 
-## Godot idea to Bevy idiom
+## Coming from Godot
 
-| Idea | Bevy idiom (idea only) |
+| Godot idea | Bevy idiom |
 | --- | --- |
-| Ray or shape cast | Unverified until a solver page is opened. Route the gap to bevy-physics-2d or bevy-physics-3d |
-| Mouse position in 2D world | `viewport_to_world_2d` on a `Camera` (bevy-camera-systems). Collider hit is still a gap |
+| Ray or shape cast | Check bevy-physics-2d or bevy-physics-3d before naming a cast API. |
+| Mouse position in 2D world | `viewport_to_world_2d` on a `Camera` (bevy-camera-systems). A collider hit belongs with the physics skills once you choose a solver. |
 | Exclude the caster | Unverified. Do not copy Godot RID exclude lists |
-| Field-of-view fan | Design data on components. No sensor API was opened |
+| Field-of-view fan | Design data on components. Check the docs for a sensor API before writing one. |
 
-## Gaps
+## Scope
 
-- The opened `bevy` 0.20.0 feature list has no physics-engine feature, so there is no ray, shape, point, or sweep query to cite.
-- Third-party plugins may be added with `add_plugins`. This pass did not open a query API on any physics crate.
+- The `bevy` 0.20.0 feature list has no physics-engine feature, so there is no ray, shape, point, or sweep query to cite.
+- Third-party plugins may be added with `add_plugins`. Check a physics crate's own docs before naming a query API.
 - Piercing casts, reflection from normals, and ground volumes are unverified.
-
 
 ## Expert Knowledge Delta
 
-Library target in prose: **Bevy 0.20.0**. Lattice URLs stay unversioned.
+Target: **Bevy 0.20+**.
 
-Opened canon only: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. This file does not invent their struct APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
+Core ECS types: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. See `bevy-events-messaging` for their APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
 
 ### Who owns state
 
@@ -61,22 +58,19 @@ Borrow rule: two systems that both mutably query the same component must be orde
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API this skill did not open | A Gaps row | A fabricated crate (solver, navmesh module, net, XR) |
+| An API outside the documented set | Check the official docs first | A made-up crate or API |
 
-Load `references/a-gate-notes.md` for the same table plus the gap rule.
+Load [references/ecs-ownership.md](spatial-queries-ecs-ownership.md) for the ownership table.
 
 ## NEVER
 
-- Do not put `/0.20.0/` in lattice URLs. WHY: permalinks stay on `latest`. The 0.20.0 pin belongs in prose once.
+- Do not pin `/0.20.0/` in docs URLs. WHY: links stay on `latest`; the 0.20 target is stated once in prose.
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
-- Do not invent a physics, navigation, networking, or XR crate here. WHY: those rows are gaps, blocked, or revisit.
+- Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot ray, shape-cast, or direct-space-state types. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Avian, Rapier, or any other named physics crate as the chosen solver. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No invented `intersect_ray` or mask APIs. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Creation Station content. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No umbrella skill over Godot and Bevy. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- Do not mark this row `ported`. It is `docs_mapped`. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Godot ray, shape-cast, or direct-space-state types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No Avian, Rapier, or any other named physics crate as the chosen solver. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No invented `intersect_ray` or mask APIs. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
@@ -94,16 +88,16 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](../SKILL.md) - ECS ownership.
-- [bevy-camera-systems](camera-systems.md) - Viewport to 2D world, without a hit test.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership.
+- [bevy-camera-systems](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-camera-systems/SKILL.md) - Viewport to 2D world, without a hit test.
 
 #### Complements
-- [bevy-physics-2d](physics-2d.md) - 2D solver gap.
-- [bevy-physics-3d](physics-3d.md) - 3D solver gap.
-- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) - Godot counterpart. Source idea only.
+- [bevy-physics-2d](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-physics-2d/SKILL.md) - 2D physics and solver choice.
+- [bevy-physics-3d](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-physics-3d/SKILL.md) - 3D physics and solver choice.
+- [godot-raycasting-queries](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-raycasting-queries/SKILL.md) - Equivalent Godot skill.
 
 #### Downstream / consumers
-- [bevy-ai-navigation](ai-navigation.md) - Sensors stay a gap until queries exist.
+- [bevy-ai-navigation](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ai-navigation/SKILL.md) - Sensors that need a cast.
 
 #### Master
-- [bevy-master](../SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

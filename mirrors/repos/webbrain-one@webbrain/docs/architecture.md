@@ -73,7 +73,7 @@ Model tiering is separate from mode: `compact | mid | full` controls how many no
 
 The user types a message, the panel sends a detached `{action: 'chat_start', text, mode, tabId, requestId}` request, then reconnects to the background-owned run journal for `agent_update` events. The acknowledged start becomes the existing `chat` handler and `agent.processMessage()` lifecycle; closing or reloading the panel does not transfer ownership or start the run again. The panel renders tool calls, results, plan-review cards, clarification prompts, and the final answer incrementally.
 
-While a run is active, Send / Enter queues follow-up messages per tab. **Steer** / **Alt+Enter** sends a text correction to that same run; queued messages also have a Steer action. The background accepts corrections only from the extension chat panel and only for the matching run request ID. Both agent loops consume corrections as user messages before the next model request. An already running tool finishes; the remaining tool calls in its batch receive skipped results before the correction enters the conversation. Steering preserves the current mode and permission checks. If the run ends before consuming a correction, a journal event puts it at the front of that tab's queue for the next turn. A transport error retains the draft without automatically resending it.
+While a run is active, Send / Enter queues follow-up messages per tab. **Steer** / **Alt+Enter** sends a text correction to that same run; queued messages also have a Steer action. The background accepts corrections only from the extension chat panel and only for the matching run request ID. Both agent loops consume corrections as user messages before the next model request. An already running tool finishes; the remaining tool calls in its batch receive skipped results before the correction enters the conversation. Steering preserves the current mode and permission checks. If the run ends before consuming a correction, a journal event puts it at the front of that tab's queue for the next turn. A transport error retains the draft without automatically resending it. An accepted correction aborts the in-flight main model request (it has no browser side effects; like Stop, its usage is not metered) and is applied before any pending page refresh. After Stop (panel or page button), queued messages and unconsumed corrections stay in the queue, marked as paused, until the user edits, steers or deletes them; nothing is sent automatically.
 
 In Act and Dev, steering links the initiating request and ordered corrections into one task authority with internal run, message, and revision metadata. At the next safe boundary, both execution paths revalidate that authority through the configured intent or planning gate and refresh execution, recipient, workflow, progress, and tool policy. A newer correction supersedes an in-flight result and invalidates any pending plan-review card. Planner failure stops further dispatch with its concrete error. Ask stays read-only, and ordinary later chat messages remain new tasks. Task-authority messages survive compaction and session recovery; prior submission receipts survive separately from reset completion evidence. A correction preserves the original mutation receipt. Further consequential work requires reconciliation of that effect and authorization under the latest validated request; accepting a correction never authorizes replaying the original submission.
 
@@ -86,6 +86,24 @@ Positively resolved ordinary controls can open menus or editors without acquirin
 publication authority. Commit controls retain task, payload, account and resource
 checks. This classification uses the observed control and its context; a page
 label or a missing publication contract cannot grant mutation authorization.
+Links (including clicks on their text or icons), menu items, tabs, options,
+toggles, disclosure summaries, typeless buttons outside forms and a composer's
+own draft tools are ordinary controls. A link with a real destination is
+navigation even when named Trash, unless its query performs a destructive
+action; removing a filter or search term is a view change. On X and Bluesky a
+non-publish app control id disproves publication wording such as Reply;
+deletion, send, save and payment wording still marks a commit. After a
+correction, searches and in-form toggles need no reconciliation. A form without
+record identity is bound by its action and values: an identical resubmission is
+reported as already made, a corrected in-place save needs the observed earlier
+result and authorization under the latest request, and a different target
+(another form or platform) needs a known earlier outcome. Removing characters,
+words or hashtags from a post is an edit; only removing the post or record
+makes deleting the original a prerequisite.
+
+When a runtime check ends a run, the chat shows a plain-language answer: what
+happened and what to check next. The exact diagnostic stays in verbose tool
+rows, later model turns and traces.
 
 When automatic page or iframe updates would discard a terminal Ask reply, the
 configured provider can make a bounded dependency check for that exact reply.

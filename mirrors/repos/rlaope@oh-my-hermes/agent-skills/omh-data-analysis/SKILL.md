@@ -1,6 +1,7 @@
 ---
 name: "omh-data-analysis"
 description: "[omh] Dataset or table to analyze: scope supplied data with provenance, causal-claim, and hallucination guards. Use when the user says: data-analysis, data analysis, dataset analysis, csv analysis, json analysis, log analysis, table analysis, analyze csv."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, analysis]
@@ -53,7 +54,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes should prepare supplied structured, unstructured, or mixed data analysis without unsupported numeric or causal claims.
 

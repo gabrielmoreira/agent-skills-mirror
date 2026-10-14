@@ -433,6 +433,15 @@ rate limit. Bounded by `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts
 `budgetMs`) in **Settings → Resilience**. It never waits on `quota_exhausted`
 (locked until midnight) or auth/not-found reasons.
 
+The same gate covers the pre-dispatch case (#16319): when every target of a
+combo is skipped before any attempt is made because its model sits in a short
+transient lockout, the zero-attempt path waits the lock out under the same
+ceilings and re-dispatches, instead of answering a hint-less
+`503 ALL_TARGETS_SKIPPED`. When no wait is allowed (ceiling, attempt or budget
+exhausted, or the feature off), the terminal response upgrades to
+`429 rate_limit_error` carrying `retry_after` / `reset_at` from the earliest
+transient lock expiry; quota, auth and not-found locks keep the hint-less 503.
+
 ---
 
 ## 5. Request Queue Admission Control (v3.8.49 · issue #6593)

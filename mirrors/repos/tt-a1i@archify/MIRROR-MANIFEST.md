@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tt-a1i/archify` — 26 default patterns, 7 followed patterns, 12 file(s) materialized.
+Mirror of `tt-a1i/archify` — 26 default patterns, 7 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tt-a1i/archify` — 26 default patterns, 7 followed patterns, 12 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 7 |
-| Files         | 12 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,18 +65,41 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/skills/archify-review/SKILL.md`](.agents/skills/archify-review/SKILL.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`archify/references/architecture-layout-repair.md`](archify/references/architecture-layout-repair.md) |
-| 4 | ✓ | [`archify/SKILL.md`](archify/SKILL.md) |
-| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 7 | → | [`archify/references/authoring-contract.md`](archify/references/authoring-contract.md) |
-| 8 | → | [`archify/references/delivery-contract.md`](archify/references/delivery-contract.md) |
-| 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 10 | → | [`REVIEWING.md`](REVIEWING.md) |
-| 11 | → | [`SECURITY.md`](SECURITY.md) |
-| 12 | → | [`viewer/README.md`](viewer/README.md) |
+| 1 | ✓ | [`.agents/README.md`](.agents/README.md) |
+| 2 | ✓ | [`.agents/skills/archify-review/SKILL.md`](.agents/skills/archify-review/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/archify-tuning/references/experiment-design.md`](.agents/skills/archify-tuning/references/experiment-design.md) |
+| 4 | ✓ | [`.agents/skills/archify-tuning/references/trace-export.md`](.agents/skills/archify-tuning/references/trace-export.md) |
+| 5 | ✓ | [`.agents/skills/archify-tuning/references/trace-signals.md`](.agents/skills/archify-tuning/references/trace-signals.md) |
+| 6 | ✓ | [`.agents/skills/archify-tuning/scripts/collect.mjs`](.agents/skills/archify-tuning/scripts/collect.mjs) |
+| 7 | ✓ | [`.agents/skills/archify-tuning/scripts/lib.mjs`](.agents/skills/archify-tuning/scripts/lib.mjs) |
+| 8 | ✓ | [`.agents/skills/archify-tuning/scripts/replay.mjs`](.agents/skills/archify-tuning/scripts/replay.mjs) |
+| 9 | ✓ | [`.agents/skills/archify-tuning/scripts/round.mjs`](.agents/skills/archify-tuning/scripts/round.mjs) |
+| 10 | ✓ | [`.agents/skills/archify-tuning/scripts/shots.mjs`](.agents/skills/archify-tuning/scripts/shots.mjs) |
+| 11 | ✓ | [`.agents/skills/archify-tuning/SKILL.md`](.agents/skills/archify-tuning/SKILL.md) |
+| 12 | ✓ | [`.agents/skills/simplify-codebase/agents/openai.yaml`](.agents/skills/simplify-codebase/agents/openai.yaml) |
+| 13 | ✓ | [`.agents/skills/simplify-codebase/LICENSE`](.agents/skills/simplify-codebase/LICENSE) |
+| 14 | ✓ | [`.agents/skills/simplify-codebase/references/boundaries-and-lifecycle.md`](.agents/skills/simplify-codebase/references/boundaries-and-lifecycle.md) |
+| 15 | ✓ | [`.agents/skills/simplify-codebase/references/decision-records.md`](.agents/skills/simplify-codebase/references/decision-records.md) |
+| 16 | ✓ | [`.agents/skills/simplify-codebase/references/execution-and-recovery.md`](.agents/skills/simplify-codebase/references/execution-and-recovery.md) |
+| 17 | ✓ | [`.agents/skills/simplify-codebase/references/integrating-findings.md`](.agents/skills/simplify-codebase/references/integrating-findings.md) |
+| 18 | ✓ | [`.agents/skills/simplify-codebase/references/investigation.md`](.agents/skills/simplify-codebase/references/investigation.md) |
+| 19 | ✓ | [`.agents/skills/simplify-codebase/SKILL.md`](.agents/skills/simplify-codebase/SKILL.md) |
+| 20 | ✓ | [`.agents/skills/test-value/agents/openai.yaml`](.agents/skills/test-value/agents/openai.yaml) |
+| 21 | ✓ | [`.agents/skills/test-value/LICENSE`](.agents/skills/test-value/LICENSE) |
+| 22 | ✓ | [`.agents/skills/test-value/references/audit.md`](.agents/skills/test-value/references/audit.md) |
+| 23 | ✓ | [`.agents/skills/test-value/references/decision-examples.md`](.agents/skills/test-value/references/decision-examples.md) |
+| 24 | ✓ | [`.agents/skills/test-value/SKILL.md`](.agents/skills/test-value/SKILL.md) |
+| 25 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 26 | ✓ | [`archify/references/architecture-layout-repair.md`](archify/references/architecture-layout-repair.md) |
+| 27 | ✓ | [`archify/SKILL.md`](archify/SKILL.md) |
+| 28 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 29 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 30 | → | [`archify/references/authoring-contract.md`](archify/references/authoring-contract.md) |
+| 31 | → | [`archify/references/delivery-contract.md`](archify/references/delivery-contract.md) |
+| 32 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 33 | → | [`REVIEWING.md`](REVIEWING.md) |
+| 34 | → | [`SECURITY.md`](SECURITY.md) |
+| 35 | → | [`viewer/README.md`](viewer/README.md) |
 
 ---
 

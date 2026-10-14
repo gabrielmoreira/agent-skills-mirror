@@ -1,6 +1,8 @@
 ---
 name: "omh-morning-brief"
 description: "[omh] Mail and calendar brief configuration: morning brief SETUP (one-time) - connects mail and calendar MCP with read-and-draft-only scope and diff approval; produces the configuration, not the daily brief itself. Use when the user says: morning-brief, morning brief, connect my email for a morning brief, set up morning brief, configure morning brief, connect mail for morning brief, connect calendar for morning brief, set up my morning brief."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, hermes-setup]
@@ -51,11 +53,11 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+39 more`) - schedules, status, health, and ops review.
+- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+40 more`) - schedules, status, health, and ops review.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when the user wants Hermes to connect mail and calendar access for an on-demand morning brief, following the shared prerequisite-check, diagnose, guide, diff-approved apply, and verify contract.
 
@@ -77,6 +79,7 @@ Quality bar:
 - Diff-approved apply: show the config or `.env` diff with redacted placeholders; apply only after the user explicitly approves.
 - Verify: confirm applicable items using non-secret metadata, never secret values.
 - Keep the read/draft-only access boundary — never enable Send permission — as a hard constraint on every apply step, not an optional recommendation.
+- When `manage_connections` is in your tool list or tool_search finds it, connect mail and calendar through it rather than a hand-written MCP config diff (`connect` for a hosted account, `install` or `authorize` for a catalog MCP server), and take each app's answer as given: `skipped` means continue with the surface that is connected or ask in chat, never calling it again on your own; when its result does not name the granted access, the read-and-draft-only check stays `not_observed` until the user confirms the account's access.
 
 Handoff policy:
 
@@ -102,6 +105,7 @@ Safety rules:
 - Configure mail and calendar MCP access as read and draft only; never enable Send permission, even if the user asks — drafts stay for the user to send themselves.
 - Use Hermes-native secure entry or user-side OAuth/app-password setup, never chat; disclose authorized storage without exposing secrets.
 - Do not treat a prepared connection as an observed brief; only report a brief after the connection is verified.
+- The bundled `google-workspace` OAuth setup requests `gmail.send` and `gmail.modify` on every run, and its setup script accepts no `--services` flag to narrow the request, though that skill's own instructions show one; Google's consent screen lets the user untick a permission and the script then keeps only what was granted. Never apply that path as this skill's connection, and when the user connects it themselves, report `gmail.send` and `gmail.modify` as granted unless the setup script's `--check` lists them among the missing scopes, never as read-and-draft-only on the strength of the request.
 
 ## Runtime Evidence
 
@@ -119,4 +123,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

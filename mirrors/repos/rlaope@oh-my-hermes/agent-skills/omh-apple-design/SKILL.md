@@ -1,6 +1,7 @@
 ---
 name: "omh-apple-design"
 description: "[omh] Designing or reviewing an iOS, macOS, or Apple-style UI: prepare native Apple UI or Apple marketing product-visual direction, review, and improvement briefs with evidence-backed remediation handoffs. Use when the user says: apple-design, apple design, apple ui design, apple hig, human interface guidelines, ios design guidelines, macos app design, apple-inspired web."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, materials]
@@ -20,7 +21,7 @@ This is an OMH `apple-design` workflow skill, projected for Agent Skills hosts (
 
 ## Do Not Use When
 
-- The request is generic frontend design, accessibility, screenshot QA, image-card work, or material guidance without an Apple-specific phrase or explicit `apple-design` invocation; use the existing specialist lane.
+- The request is generic frontend design, accessibility, screenshot QA, image-card work, or material guidance without an Apple-specific phrase or explicit `omh-apple-design` invocation; use the existing specialist lane.
 - The message concerns Apple fruit, stock, support, a glass database, material science, or unrelated Swift/macOS discussion.
 - The user needs a conformance, accessibility PASS, or visual PASS claim without supplied and observed evidence.
 
@@ -51,7 +52,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when an iOS, iPadOS, macOS, Apple-inspired web surface, or explicit Apple-style product visual needs an Apple-aware direction, evidence-backed review, or improvement brief before implementation or visual verification.
 

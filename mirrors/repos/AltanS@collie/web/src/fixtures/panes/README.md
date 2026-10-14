@@ -76,7 +76,7 @@ host, key or token remains; `/tmp/pi110-lab/work` is the stock pi sandbox.
 | `pi--omo-v5130-panel-running.txt` | The running turn's labelled rule running into the panel | composer, cropped, unbound |
 | `pi--omo-v5130-panel-slash-model.txt` | `/model` typed beside the panel | composer, cropped, unbound |
 | `pi--omo-v5130-panel-phantom.txt` | Clean rules, the panel's path beside an empty `❯` | composer, cropped, no draft |
-| `pi--omo-v5130-panel-question.txt` | OmO's ask beside the panel | Escape card, not lifted |
+| `pi--omo-v5130-panel-question.txt` | OmO's ask beside the panel | lifts, a tap sends the digit, bound to columns 0 to 91 |
 | `pi--omo-v5130-panel-picker-tree.txt` | 40 rows, `/tree` with the panel beside its header | Escape card |
 | `pi--v110-stock-picker-resume.txt` | Stock pi 1.1.0 `/resume` picker | Escape card |
 | `pi--v110-stock-picker-tree.txt` | Stock pi 1.1.0 `/tree` picker | Escape card |
@@ -1060,6 +1060,9 @@ before and after the change: 608 captures, no reading moved).
 | `claude-lab--ask-single-named-v2296--w82.txt`, `claude-lab--ask-single-v2296--w82.txt` | One question, Red / Blue; rows `Type something.` and `Chat about this`. Lifts `prompt-select` |
 | `claude-lab--ask-multi-named-v2296--w82.txt`, `claude-lab--ask-multi-v2296--w82.txt` | One pick-many question, three checkbox rows and a Submit row. Lifts `multi-select` |
 | `claude-lab--ask-wizard-named-v2296--w82.txt`, `claude-lab--ask-wizard-v2296--w82.txt` | Two questions, first step. Lifts `wizard` |
+| `claude-lab--ask-single-named-v2296--w40.txt`, `claude-lab--ask-single-v2296--w40.txt` | The same single question at 40 columns, footer `Enter to select · ↑/↓ to navigate · Esc` over `to cancel`. Lifts `prompt-select` |
+| `claude-lab--ask-multi-named-v2296--w40.txt`, `claude-lab--ask-multi-v2296--w40.txt` | The same pick-many question at 40 columns, footer wrapped the same way. Lifts `multi-select` |
+| `claude-lab--ask-wizard-named-v2296--w40.txt`, `claude-lab--ask-wizard-v2296--w40.txt` | The same two-question first step at 40 columns, footer `Enter to select · Tab/Arrow keys to` over `navigate · Esc to cancel`. Lifts `wizard` |
 | `claude-lab--ask-wizard-review-named-v2296--w{40,82}.txt`, `claude-lab--ask-wizard-review-v2296--w{40,82}.txt` | The review step with no answer given. Lifts `wizard` (phase `review`) |
 | `claude-lab--menu-config-panel-named-v2296--w{40,82}.txt`, `claude-lab--menu-config-panel-v2296--w{40,82}.txt` | `/config`, footer wrapped over two rows at 40 columns. Lifts `menu` |
 | `claude-lab--menu-resume-picker-named-v2296--w82.txt`, `claude-lab--menu-resume-picker-v2296--w82.txt`, `claude-lab--menu-resume-picker-named-v2296--w40.txt` | `/resume` with one saved session (82) and two (40, no unnamed twin). Lifts `prompt-select` |
@@ -1068,11 +1071,14 @@ before and after the change: 608 captures, no reading moved).
 
 - No fixture of the named permission, plan and `/effort` screens: they were read live and carry no
   rule, and the Bash/Edit/plan reading did not change on 2.1.296.
-- At 40 columns the select footer wraps (`Enter to select · ↑/↓ to navigate · Esc` over `to cancel`).
-  The single-question and pick-many dialogs read as the unread-dialog card in a session of either
-  kind, and the wizard's question step reads as a generic `menu`. That is older than 2.1.296 and the
-  closing rule did not cause it; the pairs are not in the corpus because their `prompt-select`,
-  `multi-select` and `wizard` readings are not what the screen shows.
+- At 40 columns the select footer wraps over two rows (`Enter to select · ↑/↓ to navigate · Esc` over
+  `to cancel`; the wizard's reads `Enter to select · Tab/Arrow keys to` over `navigate · Esc to cancel`).
+  Before the fix for issue 422 the single-question and pick-many dialogs read as the unread-dialog card in a session of
+  either kind, and the wizard's question step read as a generic `menu`, because every grammar anchors on
+  the LAST row being the footer. `classifyFooter` now claims a wrapped group of rows that
+  `readKeyHintFooter` reads as one block and whose joined text names `Enter to select`
+  (`wrappedSelectFooter` in `claude/markers.ts`), and the grammars measure the options to the group's
+  first row (`selectFooterStart`). The 40-column captures of all three are in the table above (issue 422).
 - The auto-mode offer that a fresh config shows once (`Make auto mode your default permission mode?`,
   `Yes, set auto mode as my default permission mode` / `No, keep manual mode`) lifts nothing and gets
   no unread-dialog card either: it names no key and carries no numbered `❯` row, so `modalOnScreen`
@@ -1681,6 +1687,29 @@ as the one the canary ran. No username, hostname or session id is in any file.
 | `omp--v18-10-draft-blank-line.txt` | `Reply with only OK.`, a blank line, then `A paragraph after a blank line.`: a blank row, then a gutter row | `idle` |
 | `omp--v18-10-draft-indented.txt` | `Reply with only OK.` and two lines indented four more spaces past the gutter | `idle` |
 
+## OMP 18.10 Ask controls (captured 2026-10-13, oh-my-pi `omp` v18.10.3, throwaway Herdr pane)
+
+Real ANSI captures from neutral synthetic Ask calls, read with `herdr pane read <pane> --source
+recent --format ansi --raw`. Only the dialog from `╭─ Ask` through its bottom border is retained;
+the surrounding transcript and host/session metadata were removed. CRLF was normalised to LF,
+with a final newline; SGR runs and row padding are retained. No work conversation is included.
+The active batch tab is distinguished by its background/bold styling, not its text.
+
+| Fixture | Captured state | Columns |
+|---|---|---|
+| `omp--v18-10-ask-single.txt` | Pick a colour; Red/Blue/Other; new `Alt+H hide` footer | 119 |
+| `omp--v18-10-ask-batch.txt` | Location/Alternative/Confirm/Submit tabs; first question, Above pointed | 119 |
+| `omp--v18-10-ask-batch-moved.txt` | Same first question after Down, Below pointed | 119 |
+| `omp--v18-10-ask-batch-second.txt` | Enter saved Below and advanced to Alternative | 119 |
+| `omp--v18-10-ask-batch-third.txt` | Enter saved Above and advanced to Confirm | 217 |
+| `omp--v18-10-ask-batch-review.txt` | Below/Above/Separate recorded; Submit active; arrows scroll | 217 |
+| `omp--v18-10-ask-long.txt` | Question truncated at four rows, description at two; `Ctrl+O expand` | 217 |
+| `omp--v18-10-ask-long-expanded.txt` | After Ctrl+O, full question and description; `Ctrl+O collapse` | 217 |
+| `omp--v18-10-ask-revisited.txt` | Answered Above then navigated back; saved `◉` and live pointer | 217 |
+
+The desktop resized between the second and third batch steps; each capture keeps its actual width.
+Choreography, live browser evidence and unsupported shapes: `lib/harness/omp/ASK_NOTES.md`.
+
 ## Lessons already encoded here (don't re-learn them)
 
 - **Match on parsed text, not raw bytes**: SGR codes sit *between* glyphs (`❯` and `1.` are in
@@ -1796,6 +1825,15 @@ signature.
 | `muse--tasks-popup.txt` | Background-tasks popup between the bottom rule and the statusline: `main · ↓ to select` header + one `└ ◆ … running … 24s` task row, bare `❯` above. The box stays live under it (probed: typing lands in the box), so the tail walk steps over the popup and no card draws. Captured 2026-09-26 on Muse Code 1.4.0; the same shape confirmed on 1.3.0-R3401.1 | `idle` |
 | `muse--tasks-popup-draft.txt` | Same popup with `qq` in the box: the header drops its hint (bare `main`). The draft reads verbatim above the popup | `idle` |
 | `muse--tasks-popup-approval.txt` | An `ls -la /tmp` approval with the popup under it: the approval still lifts (digit-alone keys), and the ticking elapsed stays out of the signature | `blocked` |
+| `muse--ask-season.txt` | Muse Code 1.4.7, single question. The pointer is `⟩` (U+27E9) where 1.3.0 drew `›` (#424) | `blocked` |
+| `muse--ask-toppings-147.txt` | Muse Code 1.4.7, multi-select with the `⟩` pointer (#424) | `blocked` |
+| `muse--ask-toppings-147-moved.txt` | Same 1.4.7 multi-select with `⟩` on option 2 (#424) | `blocked` |
+| `muse--ask-multi-q1.txt` | Muse Code 1.4.7, page 1 of a two-question dialog, with the new progress row (#424) | `blocked` |
+| `muse--ask-multi-q2.txt` | Page 2 of the same dialog, `⟩` on option 1 (#424) | `blocked` |
+| `muse--ask-multi-review.txt` | The review screen that closes the dialog, `⟩ Submit answers` (#424) | `blocked` |
+| `muse--approval-ls-147.txt` | Muse Code 1.4.7 `ls` approval, `⟩` on option 1 (#424) | `blocked` |
+| `muse--approval-date-147.txt` | Muse Code 1.4.7 `date` approval, `⟩` on option 2 (#424) | `blocked` |
+| `muse--trust-prompt-147.txt` | Muse Code 1.4.7 workspace trust prompt (#424) | `blocked` |
 
 **Nothing was approved blindly.** The one approved command was `ls -la` on the
 empty sandbox (output verified); the trust prompt covered a throwaway `/tmp`
@@ -1905,3 +1943,23 @@ The last seven rows were captured on opencode 1.18.34, the rest of this corpus o
 `idle`, not `blocked`, under the question dialogs probed in round two (see "Round two" in
 `QUESTION_NOTES.md`). Each of the seven was checked for user and host names, home paths, tokens and
 session ids and holds only probe strings and the model name.
+
+## Claude Code box table with a VS16 emoji (captured 2026-10-13, Claude Code 2.1.296, herdr 0.9.0, sandbox pane)
+
+One `format:ansi` read of a sandbox Claude asked to echo a markdown table, cut to the reply's eleven
+rows (the `⏺` row through the bottom border); the rows above and the input box, statusline and
+footer below are left out. CRLF line ends as read.
+
+| file | what's on screen | read as |
+|---|---|---|
+| `claude--box-table-vs16-emoji.txt` | Claude's box table, three columns, a CJK cell in two rows. Row `build` holds `⚠️ warn` (U+26A0 U+FE0F), row `tests` holds `⚠ plain` (U+26A0 alone), plus `✅` and `❌`. Every row is 33 columns as Claude pads it: `⚠️` takes two columns, bare `⚠` one | one table, rows 0 to 10 |
+
+Before `clusterWidth` gave a VS16 cluster two columns, the `build` row measured 32 and the table split
+into rows 0 to 2 and 4 to 10. Checked for user and host names, home paths, tokens and session ids:
+the rows hold only the probe table.
+
+## Shell box table with VS16 emoji (captured 2026-10-12, Herdr 0.9.3, PR 417)
+
+| Fixture | State / what's in it | Herdr status |
+|---|---|---|
+| `shell--box-table-vs16-emoji.txt` | A box table printed by a script in a plain shell pane (no agent), with `⚠️` (U+26A0 U+FE0F), `❤️` (U+2764 U+FE0F) and both in one boxed row. Herdr's own cursor position report after each sample says it draws each of these two columns wide, a bare `⚠` or `❤` one, and `a`, `é`, `→`, `€` followed by U+FE0F one. So every wall after an emoji stands at the anchor's column. `table-run.test.ts` pins one run over rows 2..9. `read --source visible --format ansi --raw`, cut to the heading line and the table, CRLF as read. Synthetic content, nothing to scrub | `idle` |

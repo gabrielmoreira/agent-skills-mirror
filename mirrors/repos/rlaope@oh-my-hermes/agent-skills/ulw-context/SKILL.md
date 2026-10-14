@@ -1,6 +1,7 @@
 ---
 name: "ulw-context"
 description: "[omh] Repository vocabulary unclear or inconsistent: project terminology alignment workflow: look up, capture, correct, and align the words a repository uses before planning or handoff. Use when the user says: ulw-context, project terminology alignment, review project terms, align project terminology, terminology this project uses."
+license: MIT
 compatibility: "Requires the omh CLI on PATH (pip install oh-my-hermes)."
 metadata:
   hermes:
@@ -22,11 +23,11 @@ This is an OMH `context` workflow skill, projected for Agent Skills hosts (Claud
 ## Do Not Use When
 
 - A safe one-term definition or source lookup can be answered directly; use the read-only lookup mode and do not enter the full context interview.
-- The request is broad ambiguity with no project-language conflict; use `deep-interview`.
-- The unresolved decision is empirical and a cheap isolated experiment can answer it; use `decision-prototype` and keep the frontier for the rest.
-- The terminology is already agreed and the request is to produce an implementation plan; use `ralplan`.
-- The user wants to capture or curate general retained memory rather than repository terminology; use `memory-new` or `memory-sync`.
-- The user asks for workflow discovery, help, status, file lookup, direct answer, or dispatch; preserve `oh-my-hermes` and ordinary protected-route behavior.
+- The request is broad ambiguity with no project-language conflict; use `ulw-interview`.
+- The unresolved decision is empirical and a cheap isolated experiment can answer it; use `omh-decision-prototype` and keep the frontier for the rest.
+- The terminology is already agreed and the request is to produce an implementation plan; use `ulw-plan`.
+- The user wants to capture or curate general retained memory rather than repository terminology; use `omh-memory-new` or `omh-memory-sync`.
+- The user asks for workflow discovery, help, status, file lookup, direct answer, or dispatch; preserve `omh-routing` and ordinary protected-route behavior.
 
 ## Examples
 
@@ -60,7 +61,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when repository-specific language is unclear, inconsistent, or blocking shared understanding; keep read-only lookup direct and use a dependency-ready decision frontier only for unresolved terminology or product decisions.
 

@@ -60,5 +60,5 @@ instead of registering them as disabled.
 ## Further reading
 
 - [Parent module README](../README.md)
-- [Agent harness architecture](../../../../../gitbooks/developing/architecture/agent-harness.md)
-- [Native tools](../../../../../gitbooks/features/native-tools/README.md)
+- [Agent harness architecture](../../../../../docs/gitbooks/en/developing/architecture/agent-harness.md)
+- [Native tools](../../../../../docs/gitbooks/en/features/native-tools/README.md)

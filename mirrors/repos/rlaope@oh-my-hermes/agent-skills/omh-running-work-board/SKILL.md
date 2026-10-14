@@ -1,6 +1,7 @@
 ---
 name: "omh-running-work-board"
 description: "[omh] Live view of running coding units: showing which coding units are running right now, on which runtime and model, with observed tokens and elapsed time. Use when the user says: running-work-board, running work board, which units are running, what models are running, 지금 뭐 돌고 있어, 뭐가 돌고 있어, 어떤 모델로 돌고 있어, 실행 중인 작업 보여줘."
+license: MIT
 compatibility: "Requires the omh CLI on PATH (pip install oh-my-hermes)."
 metadata:
   hermes:
@@ -45,16 +46,18 @@ Bad example:
 - Token counts and session references are observed values or the literal unknown, never estimates.
 - Elapsed time for an unfinished unit comes from its start marker, which cannot prove the unit is still alive.
 - The board is labelled observed activity, not result, verification, review, CI, or merge evidence.
+- On Hermes, `delegate_task` children and kanban workers of this conversation come from `omh_hud` (its `subagents` rows and `kanban` block, read from Hermes' own records) beside the OMH units, each labelled by source; `/agents` is the person's own Hermes list of running agents and tasks.
 
 ## Recovery Notes
 
 - If no units are found, say so plainly rather than implying nothing ever ran.
+- If `omh_hud` is not available, say delegate children and kanban workers were not read rather than implying none are running.
 - If a marker is stale because a process died, report it as observed-start-without-end instead of claiming the unit is running.
 - If tokens are unknown for a runtime with no structured output, say the runtime does not report them.
 
 
 
-## Use When
+## When to Use
 
 Use when the user asks what coding work is running right now -- which unit, which runtime, which model, how long, how many tokens -- rather than asking to start, plan, or review work.
 
@@ -75,11 +78,13 @@ Quality bar:
 Required inputs:
 
 - local coding artifacts
+- on Hermes, this conversation's `omh_hud` rows
 
 Expected outputs:
 
 - per-unit runtime and model
 - observed tokens and elapsed
+- on Hermes, delegate children and kanban workers, labelled by source
 - explicit unknowns
 
 Artifact expectations:

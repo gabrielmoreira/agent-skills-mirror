@@ -12,7 +12,7 @@ Everything is a function, a trigger, or worker state on the iii engine. There is
 
 ## Retrieval model
 
-Recall is hybrid: BM25 keyword search plus vector similarity plus graph expansion over linked concepts. The default install needs no API key because embeddings run on-device and BM25 needs none. An LLM provider only adds richer summaries and auto-injection, both opt-in.
+Recall combines BM25 keyword search with configured vector similarity and graph expansion. A clean installation without an embedding provider uses BM25 without an API key. Set `EMBEDDING_PROVIDER=local` to enable on-device embeddings, which may download a model, or configure a remote provider. LLM compression and summaries require a configured provider and their relevant options.
 
 ## Storage and lifecycle
 

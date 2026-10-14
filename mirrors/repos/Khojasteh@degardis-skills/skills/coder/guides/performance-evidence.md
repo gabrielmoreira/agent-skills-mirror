@@ -1,8 +1,7 @@
 ---
 title: Performance evidence
 applicability:
-- When a performance or resource-cost measure is part of the requested outcome
-- When a claim states an effect on a performance or resource-cost measure
+- When a result of the work depends on a performance or resource-cost measure
 ---
 
 Define the metric, workload, scale, environment, configuration, sample method, natural variation, and every existing budget, service objective, or contractual limit before measuring. Capacity and tail behavior require offered load and concurrency to be stated; a single-operation timing cannot establish them.

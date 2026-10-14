@@ -1,6 +1,7 @@
 ---
 name: "omh-refactor-plan"
 description: "[omh] Decided cross-module refactor to phase: refactor planning - turn a decided boundary-changing refactor into a phased plan - reconnaissance, contracts-first phase order, per-phase verification and rollback, a files table, and an explicit approval gate before any edit. Use when the user says: refactor-plan, refactor plan, plan this refactor, plan the refactor, refactor planning, refactor phases, phased refactor, refactor in phases."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -20,10 +21,10 @@ This is an OMH `refactor-plan` workflow skill, projected for Agent Skills hosts 
 
 ## Do Not Use When
 
-- The refactor's direction is still contested or the goal itself needs consensus planning; use `ralplan`.
-- The work is deletion-first cleanup with no boundary changes; use `ai-slop-cleaner`.
-- The plan is done and the claim is that work is complete; use `verification-gate` for the evidence close.
-- The version bump carries a security advisory, a CVE, or a leaked secret; use `security-event-response`, which owns containment and closure.
+- The refactor's direction is still contested or the goal itself needs consensus planning; use `ulw-plan`.
+- The work is deletion-first cleanup with no boundary changes; use `omh-ai-slop-cleaner`.
+- The plan is done and the claim is that work is complete; use `omh-verification-gate` for the evidence close.
+- The version bump carries a security advisory, a CVE, or a leaked secret; use `omh-security-event-response`, which owns containment and closure.
 
 ## Examples
 
@@ -55,7 +56,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when a refactor that crosses module boundaries is already decided and needs its execution shaped: which files move in which phase, what verifies each phase, and where each phase rolls back to - before anything is edited.
 

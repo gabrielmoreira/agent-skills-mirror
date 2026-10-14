@@ -1,6 +1,8 @@
 ---
 name: "omh-jev-action-check"
 description: "[omh] Risky command screened by Jev: Jev action check before a risky command: secrets, outbound sends, blast radius; can only add a hold. Use when the user says: jev-action-check, jev action check, ask jev if this command is safe, jev risk check."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]
@@ -8,6 +10,7 @@ metadata:
     phase: jev-action-check
     role: reviewer
     quality_tier: evidence-gated
+    related_skills: [omh-security-safety-review, omh-terminal]
     requires_tools: [omh_jev_ask]
 ---
 
@@ -15,7 +18,7 @@ metadata:
 
 Required: the command, working directory, and stated task. Output: hold, refuse_recommended, or no_extra_hold with its rule.
 
-Read `omh-routing/references/jev-rail.md` before the first ask: consent, what leaves the machine, limits, and non-answer statuses. Prepared OMH routing is not execution or approval. Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+Read `skill_view(name='omh-routing', file_path='references/jev-rail.md')` before the first ask: consent, what leaves the machine, limits, and non-answer statuses. Prepared OMH routing is not execution or approval. Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
 Contract: `references/full-contract.md`. Preset: `references/preset.md`.
 

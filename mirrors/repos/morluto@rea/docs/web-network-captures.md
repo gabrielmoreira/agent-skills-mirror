@@ -224,6 +224,22 @@ are 0 and 50. The view groups request lines by method, WHATWG URL origin and
 path template, sorted by origin, template and method. Query strings, fragments,
 credentials, headers and bodies are not copied into groups.
 
+Select `include_query_parameter_names: true` in the view to include distinct
+observed query names per group. The default and explicit `false` omit the
+`query_parameter_names` field. Selected groups include an array of
+`{name, record_ordinals}` entries, sorted by Unicode code point; each name's
+ordinals follow the parent's selected record order and occur once per record.
+For `/products?category=books&page=1` and
+`/products?category=games&sort=price`, names are `category`, `page` and `sort`.
+Query values and fragments are not copied into this inventory.
+
+Names use WHATWG `URLSearchParams` form-query decoding: literal `+` becomes
+space, `%2B` becomes `+`, percent escapes decode as UTF-8, and empty names are
+retained. Empty query pairs are ignored. Original URLs stay in parent Evidence;
+name decoding does not normalize the recorded paths used for grouping.
+The inventory describes observed names, without inferring required parameters,
+value types or a complete API schema. Sensitive-parent refusals still apply.
+
 | Rule       | Exact segment format                                 | Placeholder  |
 | ---------- | ---------------------------------------------------- | ------------ |
 | `numeric`  | ASCII digits only                                    | `{numeric}`  |
@@ -269,13 +285,16 @@ and validation scratch by walking the parent without cloning it. Inline requests
 borrow the Evidence value through CLI/MCP envelope validation; the application
 admits the entire portable envelope before authenticated parsing or hashing.
 The envelope clone, hash scratch and capture clone stay charged during grouping.
-Temporary URL/path/MIME work and retained state must
+Temporary URL/path/MIME/query work and retained state must
 fit together within a 96 MiB projection representation budget. A whole group or
 merge is admitted before allocating its retained sets, map entries or array
 values. Fixed group storage, distinct text, exclusions and limitations count as
 well as matched segments. Per-record reservations are released after each
 record; repeated values do not accumulate another retained charge. Only the
 requested page is materialized as output groups.
+Opt-in query projection reserves parser tuples and the per-record name set
+before decoding, then admits distinct retained names and source ordinals before
+changing a group. Repeated names within a request retain that ordinal once.
 
 The representation budget uses conservative storage and worst-case JSON-escaping
 allowances; it is not an enforced V8 heap or process-memory limit. It is separate

@@ -1,6 +1,7 @@
 ---
 name: "omh-app-debugging"
 description: "[omh] Application code misbehaves -- a wrong value, a flaky test, a lost update: reproduce it first, form competing hypotheses, discriminate them with the cheapest observation, and only then fix the demonstrated root cause. Use when the user says: app-debugging, app debugging, application debugging, root cause, root-cause, find the root cause, root cause analysis, flaky test."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, verification]
@@ -25,10 +26,10 @@ This is an OMH `app-debugging` workflow skill, projected for Agent Skills hosts 
 
 ## Do Not Use When
 
-- The fault is a crash, memory corruption, or core dump in a compiled native binary that needs a debugger session; use `native-debugging`.
-- The build, compile, or CI job fails the same way on every run; use `build-failure-triage`.
-- The subject is an agent or workflow run that misbehaved rather than the application code; use `agent-debug`.
-- The cause is already demonstrated and the request is to judge whether the fix is proven; use `verification-gate`.
+- The fault is a crash, memory corruption, or core dump in a compiled native binary that needs a debugger session; use `omh-native-debugging`.
+- The build, compile, or CI job fails the same way on every run; use `omh-build-failure-triage`.
+- The subject is an agent or workflow run that misbehaved rather than the application code; use `omh-agent-debug`.
+- The cause is already demonstrated and the request is to judge whether the fix is proven; use `omh-verification-gate`.
 
 ## Examples
 
@@ -59,7 +60,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when application code -- a Python, TypeScript, Go, or JVM service, library, or test -- behaves wrongly and the cause is unknown: a wrong value, an intermittent or order-dependent test, a race or lost update, or a bug that moves when observed. The work is a demonstrated root cause: an observed reproduction, competing hypotheses, the cheapest observation that separates them, and only then a fix.
 

@@ -1,6 +1,7 @@
 ---
 name: "omh-agent-instructions"
 description: "[omh] Agent instruction file for a repo -- AGENTS.md, CLAUDE.md, a Cursor rule: write or update what an agent cannot derive from the code, inside a marked region, with every command verified or marked unverified and no counts that drift. Use when the user says: agent-instructions, agents.md, claude.md, gemini.md, copilot-instructions.md, .cursorrules, cursor rules, cursor rule."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -25,10 +26,10 @@ This is an OMH `agent-instructions` workflow skill, projected for Agent Skills h
 
 ## Do Not Use When
 
-- The ask is distilling repeated lessons into reviewed rule candidates; use `rules-distill`.
-- The ask is a reading path through the codebase for a new engineer; use `codebase-onboarding`.
-- The ask is project terminology alignment -- reviewing the terms this project uses and correcting inconsistent vocabulary; use `context`.
-- The ask is user-facing product documentation; use `product-docs`.
+- The ask is distilling repeated lessons into reviewed rule candidates; use `omh-rules-distill`.
+- The ask is a reading path through the codebase for a new engineer; use `omh-codebase-onboarding`.
+- The ask is project terminology alignment -- reviewing the terms this project uses and correcting inconsistent vocabulary; use `ulw-context`.
+- The ask is user-facing product documentation; use `omh-docs`.
 
 ## Examples
 
@@ -59,7 +60,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when the repository's agent instruction file is being written or kept current: AGENTS.md, CLAUDE.md, GEMINI.md, a Cursor rule, or a Copilot instructions file. The output is the build and test commands each marked verified or unverified, the generated-file map with its regenerate command and gate, the byte-exact gates, and the pitfalls that cost time, written inside a marker-delimited region so hand-written sections survive.
 

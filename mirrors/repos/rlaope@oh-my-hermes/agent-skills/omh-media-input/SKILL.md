@@ -1,6 +1,7 @@
 ---
 name: "omh-media-input"
 description: "[omh] Audio, video, or screenshot to process: user-sent media - audio, video, YouTube links, screenshots, receipts, OCR, meeting recordings, transcripts, timestamps, and clip summaries, gated for source, permission, and hallucination risk. Use when the user says: media-input-operator, media input operator, media input, audio transcription, audio transcript, transcribe audio, transcribe this audio, meeting recording."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, media]
@@ -53,7 +54,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes should prepare or supervise audio/video transcript, YouTube/video summary, OCR, screenshot text extraction, receipt image parsing, or timestamped media extraction work without claiming media access, download, transcription, OCR output, or factual summary evidence.
 

@@ -23,7 +23,6 @@ RPC or agent install tool.
 | [`bus.rs`](./bus.rs) / tests | Logs lifecycle events for observability. |
 | [`tools.rs`](./tools.rs) / tests | Maps module-provided registry tool specs to OpenHuman permissions and dispatch. |
 | [`action_tool.rs`](./action_tool.rs) / tests | Builds deferred installed-server action tools and rechecks admission before execution. |
-| [`helpers.rs`](./helpers.rs) | Product identifier validation, workspace config selection, and environment-key injection. |
 | [`stub.rs`](./stub.rs) | Empty/no-op registry facade when the `mcp` feature is disabled. |
 
 ## Behavior and boundaries

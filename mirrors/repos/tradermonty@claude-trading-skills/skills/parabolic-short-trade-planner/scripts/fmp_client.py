@@ -260,7 +260,8 @@ class FMPClient:
                     self.rate_limit_reached = True
                     return None
             else:
-                msg = self._redact_secret(f"HTTP {response.status_code} - {response.text[:200]}")
+                body = self._redact_secret(response.text)[:200]
+                msg = self._redact_secret(f"HTTP {response.status_code} - {body}")
                 self._last_error = msg
                 if not quiet:
                     print(
@@ -425,7 +426,10 @@ class FMPClient:
                 if row.get("Symbol")
             ]
         except (requests.exceptions.RequestException, csv.Error, KeyError) as e:
-            print(f"ERROR: constituents CSV fallback failed: {e}", file=sys.stderr)
+            print(
+                self._redact_secret(f"ERROR: constituents CSV fallback failed: {e}"),
+                file=sys.stderr,
+            )
             return None
         return data or None
 

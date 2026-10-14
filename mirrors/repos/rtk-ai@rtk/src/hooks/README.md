@@ -72,17 +72,26 @@ All file operations use atomic writes (tempfile + rename) to prevent corruption 
 RTK enforces a permission precedence that matches Claude Code's least-privilege default:
 
 ```
-Deny > Ask > Allow (explicit) > Default (ask)
+Deny > Defer > Ask > Allow (explicit) > Default (ask)
 ```
 
 Rules are loaded from all Claude Code `settings.json` files (project + global, including `.local` variants). Only `Bash(...)` rules are extracted; other scopes (Read, Write) are ignored.
 
 Quoted `sh -c`, `bash -c`, `zsh -c` and `fish -c` scripts add a
 second command-parsing boundary. RTK checks deny rules against both the outer
-wrapper and the parsed inner segments. A wrapper rewrite is never auto-allowed:
-its strongest RTK verdict is `Ask`. Ask-capable hosts prompt, while other
-hosts retain their existing native permission flow. Unsupported or ambiguous
-wrapper syntax is left unchanged for the host to evaluate.
+wrapper and the parsed inner segments, including a wrapper behind a prefix the
+rewrite strips (`env bash -c '…'`, `timeout 5 sh -c '…'`, a configured
+`transparent_prefixes` entry — `registry::shell_wrapper_positions`). A shell
+name that is merely an argument (`grep -rn bash -c src`) is not a wrapper. A
+deny rule matching an inner segment yields `Defer`: RTK neither rewrites nor
+decides, so the host sees the command exactly as typed.
+A wrapper at the start of a segment is never auto-allowed: its strongest RTK
+verdict is `Ask`. A wrapper behind a prefix is only checked for deny rules and
+otherwise keeps the outer command's verdict, as on master. Ask-capable hosts
+prompt, while other hosts retain their existing native permission flow.
+Unsupported or ambiguous wrapper syntax is left unchanged for the host to
+evaluate. Line continuations are joined before the check, as the rewrite joins
+them.
 
 | Verdict | Trigger | rewrite_cmd exit | Hook behavior |
 |---------|---------|-----------------|---------------|
@@ -90,6 +99,7 @@ wrapper syntax is left unchanged for the host to evaluate.
 | Ask | `permissions.ask` rule matched | 3 | Rewrite + let host tool prompt user |
 | Allow | `permissions.allow` rule matched | 0 | Rewrite + auto-allow |
 | Default | No rule matched | 3 | Rewrite + let host tool prompt user |
+| Defer | `permissions.deny` rule matched inside a shell wrapper | 1 | Passthrough — command runs as without RTK |
 
 A delegate that shells out to `rtk rewrite` and applies its own exec policy to
 the result can set `RTK_REWRITE_HOST=<agent>` on that subprocess. For an agent

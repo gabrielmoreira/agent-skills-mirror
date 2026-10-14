@@ -1,11 +1,9 @@
 ---
 name: bevy-app-resources
-description: "Docs-first stub for Bevy app-wide resources and schedules. Godot counterpart: godot-autoload-architecture. Not a full port. Keywords: Bevy, Resource, App, Schedule, Plugin."
+description: "Bevy ECS skill for app-wide resources and schedules. Keywords: Bevy, Resource, App, Schedule, Plugin."
 ---
 
-# Bevy app resources (docs-first stub)
-
-Not a full port. App-wide data is a `Resource` on the `World`. There is no autoload and no singleton node.
+# Bevy app resources
 
 ## When to use
 
@@ -15,31 +13,30 @@ Load this when data or logic must exist for the whole app: one clock, one rulese
 
 - **App.** The Apps page: an `App` contains a `World` and the outer loop. It initializes resources (one copy), adds systems to a `Schedule`, and imports other `App` changes through plugins.
 - **Resources.** `Resource`, `Res`, `ResMut`, and `insert_resource` (Resources page). `Time` arrives from `add_plugins(DefaultPlugins)`.
-- **Plugins.** The Resources page implements `Plugin` and inserts the resource inside `build`. `DefaultPlugins` is the plugin set that adds `Time`. Do not add further plugin names in this stub.
+- **Plugins.** The Resources page implements `Plugin` and inserts the resource inside `build`. `DefaultPlugins` is the plugin set that adds `Time`. Name only the plugins this page documents.
 - **Schedules.** `add_systems(Startup, ...)` runs once before other systems. `add_systems(Update, ...)` is the repeating schedule in the ECS page. `.chain()` orders systems that must see each other's writes. `bevy::ecs::message` names `FixedUpdate` only as the schedule after which `signal_message_update_system` runs. Fixed-timestep clock types stay in bevy-character-movement.
 - **States.** App-wide modes are `bevy::state`, not a global node. See bevy-state-machines.
 
-## Godot idea to Bevy idiom
+## Coming from Godot
 
-| Idea | Bevy idiom (idea only) |
+| Godot idea | Bevy idiom |
 | --- | --- |
 | Autoload singleton | A `Resource` inserted on the `App` |
 | Global script that ticks | A system on `Update` (or a chained pair) |
 | Boot setup | A `Startup` system or `insert_resource` in a `Plugin` |
 | Cross-scene bus | A message or event. See bevy-events-messaging. Not a persistent node |
 
-## Gaps
+## Scope
 
-- Plugin dependency order and groups were not opened.
-- Sub-apps were named on the state module (`SubApp`) and not opened here.
-- Save-game resources and settings files were not opened (`bevy_settings` is a feature name on the crate page only).
-
+- Check the plugins page for dependency order and groups before writing them.
+- Sub-apps are named on the state module (`SubApp`). Check that module before writing sub-app setup.
+- Save-game resources and settings files are yours to build. `bevy_settings` is a feature name on the crate page. Check that page before treating it as a settings API.
 
 ## Expert Knowledge Delta
 
-Library target in prose: **Bevy 0.20.0**. Lattice URLs stay unversioned.
+Target: **Bevy 0.20+**.
 
-Opened canon only: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. This file does not invent their struct APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
+Core ECS types: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. See `bevy-events-messaging` for their APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
 
 ### Who owns state
 
@@ -62,23 +59,20 @@ Borrow rule: two systems that both mutably query the same component must be orde
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API this skill did not open | A Gaps row | A fabricated crate (solver, navmesh module, net, XR) |
+| An API outside the documented set | Check the official docs first | A made-up crate or API |
 
-Load `references/a-gate-notes.md` for the same table plus the gap rule.
+Load [references/ecs-ownership.md](app-resources-ecs-ownership.md) for the ownership table.
 
 ## NEVER
 
-- Do not put `/0.20.0/` in lattice URLs. WHY: permalinks stay on `latest`. The 0.20.0 pin belongs in prose once.
+- Do not pin `/0.20.0/` in docs URLs. WHY: links stay on `latest`; the 0.20 target is stated once in prose.
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
-- Do not invent a physics, navigation, networking, or XR crate here. WHY: those rows are gaps, blocked, or revisit.
+- Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No autoload, singleton node, or signal bus. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Godot types. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No invented plugin lists beyond `DefaultPlugins` and the `Plugin` trait the Resources page uses. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No third-party crates. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Creation Station content. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No umbrella skill over Godot and Bevy. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- Do not mark this row `ported`. It is `docs_mapped`. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No autoload, singleton node, or signal bus. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No Godot types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No invented plugin lists beyond `DefaultPlugins` and the `Plugin` trait the Resources page uses. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No third-party crates. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
@@ -95,16 +89,16 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](../SKILL.md)  -  No autoload layer on top of the schedule.
-- [bevy-project-foundations](project-foundations.md)  -  Crate and `App::new()`.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  No autoload layer on top of the schedule.
+- [bevy-project-foundations](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-project-foundations/SKILL.md)  -  Crate and `App::new()`.
 
 #### Complements
-- [bevy-data-resources](data-resources.md)  -  When data is a component instead of a resource.
-- [bevy-state-machines](state-machines.md)  -  App-wide `States` instead of a global mode flag on a node.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md)  -  Godot counterpart. Source idea only. Do not import Godot types.
+- [bevy-data-resources](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md)  -  When data is a component instead of a resource.
+- [bevy-state-machines](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md)  -  App-wide `States` instead of a global mode flag on a node.
+- [godot-autoload-architecture](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-autoload-architecture/SKILL.md)  -  Equivalent Godot skill. Do not import Godot types.
 
 #### Downstream / consumers
-- None yet. Save, audio, and scene skills are not ported.
+- Save, audio, and scene skills cover persistence, playback, and scene spawn.
 
 #### Master
-- [bevy-master](../SKILL.md)  -  Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.

@@ -1,6 +1,7 @@
 ---
 name: "omh-design-quality-gate"
 description: "[omh] Deliverable demands premium polish: enforce superior content, design, layout, publishing, and visual QA gates. Use when the user says: design-quality-gate, design quality gate, ui ux pro max, design pro max, frontend pro max, visual qa pro, premium design, high quality design."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, materials]
@@ -20,9 +21,9 @@ This is an OMH `design-quality-gate` workflow skill, projected for Agent Skills 
 
 ## Do Not Use When
 
-- Basic image prompt card only; use `img-summary`.
-- The artifact is a throwaway probe whose quality is irrelevant to the decision it answers; use `decision-prototype`.
-- Ordinary file packaging/export plan only; use `materials-package` or `deliverable-package`.
+- Basic image prompt card only; use `omh-image-cards`.
+- The artifact is a throwaway probe whose quality is irrelevant to the decision it answers; use `omh-decision-prototype`.
+- Ordinary file packaging/export plan only; use `omh-materials-package` or `omh-deliverable-package`.
 - Pure backend, CLI, data, or text-only research with no visual surface.
 - The user asks to claim deployment, export, publication, or visual QA without evidence.
 
@@ -55,7 +56,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when web UI, decks, PDFs, posters, or visual packages must beat ordinary output on content, taste, layout, accessibility, and render QA.
 

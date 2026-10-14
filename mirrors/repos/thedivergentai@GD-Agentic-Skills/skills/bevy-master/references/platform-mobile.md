@@ -1,42 +1,39 @@
 ---
 name: bevy-platform-mobile
-description: "Docs-first stub for Bevy mobile. Godot counterpart: godot-platform-mobile. Keywords: Bevy, mobile, android, touch, ASTC, gestures."
+description: "Bevy ECS skill for mobile. Keywords: Bevy, mobile, android, touch, ASTC, gestures."
 ---
 
-# Bevy mobile platform (docs-first stub)
-
-Not a full port. Docs-first stub. Godot counterpart: godot-platform-mobile.
+# Bevy mobile platform
 
 ## When to use
 
-Load this when targeting touch devices. Safe-area and store-listing steps were not opened. XR is not this skill.
+Load this when targeting touch devices. Check the platform docs for safe-area and store-listing steps before writing them. XR is a separate topic.
 
 ## ECS shape
 
 - **Input features:** `touch` (enabled by bevy_window) and `gestures` (enabled by bevy_window).
 - **Android:** `android-game-activity` is the default Android activity. `android-native-activity` is marked legacy.
-- **Textures:** `compressed_image_saver` mentions ASTC for mobile via an environment variable. The variable name's behavior was not opened beyond that blurb.
-- **Log:** `bevy::log` says it configures platform log handlers including Android. Handler setup was not opened.
+- **Textures:** `compressed_image_saver` mentions ASTC for mobile via an environment variable. Check that feature's docs for the variable's behavior beyond that blurb.
+- **Log:** `bevy::log` says it configures platform log handlers including Android. Check that page for handler setup before writing it.
 
-## Godot idea to Bevy idiom
+## Coming from Godot
 
-| Idea | Bevy idiom (idea only) |
+| Godot idea | Bevy idiom |
 | --- | --- |
-| Touch | The touch feature. Button mapping was not opened. See bevy-input-handling for keyboard and mouse. |
+| Touch | The touch feature. Check the input docs for button mapping before writing it. See bevy-input-handling for keyboard and mouse. |
 | Android activity | android-game-activity feature. |
 | Safe area | Unverified. No safe-area type was on the window page summary. |
 
-## Gaps
+## Scope
 
-- iOS-specific features were not named in the opened feature list except `ScreenEdge` on the window page, which documents a winit iOS screen-edge correspondence. Rules were not opened.
-- Store packaging, permissions, and safe-area insets were not opened.
-
+- The feature list names `ScreenEdge` on the window page, which documents a winit iOS screen-edge correspondence. Check that page for the rules before writing them.
+- Check the platform docs for store packaging, permissions, and safe-area insets before writing them.
 
 ## Expert Knowledge Delta
 
-Library target in prose: **Bevy 0.20.0**. Lattice URLs stay unversioned.
+Target: **Bevy 0.20+**.
 
-Opened canon only: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. This file does not invent their struct APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
+Core ECS types: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. See `bevy-events-messaging` for their APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
 
 ### Who owns state
 
@@ -59,23 +56,20 @@ Borrow rule: two systems that both mutably query the same component must be orde
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API this skill did not open | A Gaps row | A fabricated crate (solver, navmesh module, net, XR) |
+| An API outside the documented set | Check the official docs first | A made-up crate or API |
 
-Load `references/a-gate-notes.md` for the same table plus the gap rule.
+Load [references/ecs-ownership.md](platform-mobile-ecs-ownership.md) for the ownership table.
 
 ## NEVER
 
-- Do not put `/0.20.0/` in lattice URLs. WHY: permalinks stay on `latest`. The 0.20.0 pin belongs in prose once.
+- Do not pin `/0.20.0/` in docs URLs. WHY: links stay on `latest`; the 0.20 target is stated once in prose.
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
-- Do not invent a physics, navigation, networking, or XR crate here. WHY: those rows are gaps, blocked, or revisit.
+- Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot touch-screen or safe-margin project settings. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Godot touch-screen or safe-margin project settings. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
-- No Godot types in Bevy code. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No invented APIs or unnamed third-party crates as the chosen solver. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Creation Station content. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No umbrella skill over Godot and Bevy. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- Do not mark this row `ported`. It is `docs_mapped`. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Godot types in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No invented APIs or unnamed third-party crates as the chosen solver. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
@@ -83,27 +77,27 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 
 ### Official Documentation
 - [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - Unversioned API index. Feature list opened for 0.20.0.
+- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
 - [Plugins](https://bevy.org/learn/quick-start/getting-started/plugins/) - `Plugin`, `DefaultPlugins`, `MinimalPlugins`, and `add_plugins`.
-- [bevy::window](https://docs.rs/bevy/latest/bevy/window/index.html) - `ScreenEdge` mentions winit iOS. Touch events were not listed as their own struct in the opened summary.
+- [bevy::window](https://docs.rs/bevy/latest/bevy/window/index.html) - `ScreenEdge` mentions winit iOS. Check that page before treating touch events as their own struct.
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](../SKILL.md) - Hub and schedules.
-- [bevy-ecs-composition](ecs-composition.md) - Components and systems.
-- [bevy-input-handling](input-handling.md) - Other devices.
-- [bevy-platform-desktop](platform-desktop.md) - Window shell.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
+- [bevy-input-handling](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Other devices.
+- [bevy-platform-desktop](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-platform-desktop/SKILL.md) - Window shell.
 
 #### Complements
-- [bevy-adapt-desktop-to-mobile](adapt-desktop-to-mobile.md) - Layout and input adapt.
-- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) - Godot counterpart. Source idea only.
+- [bevy-adapt-desktop-to-mobile](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-adapt-desktop-to-mobile/SKILL.md) - Layout and input adapt.
+- [godot-platform-mobile](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-platform-mobile/SKILL.md) - Equivalent Godot skill.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](../SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

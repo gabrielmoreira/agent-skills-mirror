@@ -69,6 +69,6 @@ dependency admission checks in [`../host.rs`](../host.rs) run.
 ## Further reading
 
 - [Parent module (`modules`)](../README.md)
-- [Loadable modules](../../../../../gitbooks/developing/loadable-modules.md)
+- [Loadable modules](../../../../../docs/gitbooks/en/developing/loadable-modules.md)
 - [tinybus submodule](../../../../../vendor/tinybus/README.md)
-- [Architecture overview](../../../../../gitbooks/developing/architecture.md)
+- [Architecture overview](../../../../../docs/gitbooks/en/developing/architecture.md)

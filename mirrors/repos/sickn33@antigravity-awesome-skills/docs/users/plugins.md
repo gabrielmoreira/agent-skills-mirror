@@ -199,3 +199,7 @@ The hosted [specialized plugin landing page](https://aaskills.tech/plugins) is t
 - [Specialized Plugin Roadmap](specialized-plugin-roadmap.md)
 - [Usage](usage.md)
 - [AAS Agent & MCP Builder submission dossier](../plugin-submissions/aas-agent-mcp-builder/)
+
+## Consolidated offer
+
+Use the [plugin migration guide](plugin-migration.md) for replacements of overlapping historical packs. Retired IDs are activation lookup aliases, not duplicate marketplace plugins or automatic host migrations.

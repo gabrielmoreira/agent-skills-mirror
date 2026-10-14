@@ -12,8 +12,8 @@ Use these checklists to create, rename, delete, or shelve skills owned by this r
 
 1. Scaffold `skills/<name>/` with `SKILL.md` and `agents/openai.yaml`. Set frontmatter per `@skill-authoring`, including
    field order, invocation control, `metadata.install-targets`, and `skill-dependencies`.
-2. Do not use the `skill-writing` catalog skill for this. It scaffolds project skills in **other** repos, not this
-   repo's own catalog.
+2. Do not use the project-local scaffolding in `agents-brain create-skill` for this catalog. Its catalog guard routes
+   creation here to this repository-owned lifecycle.
 3. Add a row to the skills table in `README.md`.
 4. Run `just skill-check` (SKILL.md invocation fields match `agents/openai.yaml`, README skill table, and dependencies).
 5. Publish via `@publish-skills`.

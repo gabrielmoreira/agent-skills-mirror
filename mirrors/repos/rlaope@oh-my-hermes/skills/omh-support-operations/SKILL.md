@@ -1,6 +1,8 @@
 ---
 name: "omh-support-operations"
 description: "[omh] Support ticket your team must answer or escalate: turn a support case into a clear customer reply, severity path, and owned next step. Use when the user says: support escalation, customer support reply, ticket triage, 고객 지원 에스컬레이션, 고객 답변 초안, 지원 티켓 분류."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, triage]
@@ -8,6 +10,7 @@ metadata:
     phase: support-operations
     role: operator
     quality_tier: triage-gated
+    related_skills: [omh-feedback-triage, omh-content-operator, omh-apps, omh-live-incident-response, omh-reliability-review]
 ---
 
 # Support Operations
@@ -20,11 +23,11 @@ This is a Hermes-native `support-operations` workflow skill.
 
 ## Do Not Use When
 
-- The request clusters a backlog of customer signals to find product patterns or roadmap candidates; use `feedback-triage`.
-- The user only needs a generic, non-support marketing or email rewrite with no case, severity, or escalation context; use `content-operator`.
-- The request asks to send a reply, change ticket priority or status, issue a refund, modify an account, or update a helpdesk; use `connector-operator` with an explicit target and observed result.
-- The request is an incident that is still open, needing severity declared, a commander assigned, and a running timeline rather than a support-case response; use `live-incident-response`.
-- The request is a closed incident's postmortem or reliability evidence rather than a support-case response; use `reliability-review`.
+- The request clusters a backlog of customer signals to find product patterns or roadmap candidates; use `omh-feedback-triage`.
+- The user only needs a generic, non-support marketing or email rewrite with no case, severity, or escalation context; use `omh-content-operator`.
+- The request asks to send a reply, change ticket priority or status, issue a refund, modify an account, or update a helpdesk; use `omh-apps` with an explicit target and observed result.
+- The request is an incident that is still open, needing severity declared, a commander assigned, and a running timeline rather than a support-case response; use `omh-live-incident-response`.
+- The request is a closed incident's postmortem or reliability evidence rather than a support-case response; use `omh-reliability-review`.
 
 ## Examples
 
@@ -53,11 +56,11 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+20 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+21 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when one or a bounded set of support contacts needs response drafting, urgency classification, incident/escalation routing, and follow-up ownership.
 
@@ -130,4 +133,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

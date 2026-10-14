@@ -8,7 +8,7 @@ Read:
 
 - all files under `knowledge/research/raw/`
 - `knowledge/research/merged/summary.md`
-- `references/celebrity_budget_unfriendly_framework.md`
+- `prompts/celebrity/budget_unfriendly/framework.md`
 
 Write the audit to `knowledge/research/reviews/research_audit.md`.
 

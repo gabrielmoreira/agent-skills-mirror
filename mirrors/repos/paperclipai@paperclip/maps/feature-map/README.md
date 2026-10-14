@@ -9,92 +9,16 @@ The sibling [agent access map](../agent-access-map/README.md) records APIs,
 agent entry points and permission boundaries for the same capability IDs.
 Follow the [shared map contract](../README.md) when maintaining either map.
 
-## Features
+## Browse features
 
-The map is organized by user capability, not by source file. It covers **35 feature
-families** across the product, CLI, and operator workflows, checked against source
-on 2026-10-12. Experimental and developer-only surfaces are labeled explicitly.
-Each recipe includes sub-features, current entry points, automated evidence,
-manual verification steps, and gotchas.
+Open the [published Storybook guide](https://d1p6rlowie26tp.cloudfront.net/storybook/branches/master/?path=/story/overview-storybook-guide--coverage-guide)
+for the assembled feature and capability index. The Markdown recipes in this
+directory are the authored source. Each has a same-named agent-access companion.
 
-### Getting started and access
-
-| Feature | What it covers |
-| --- | --- |
-| [Onboarding and first work](./onboarding.md) | Instance setup, company wizard, first agent and task. |
-| [Login, invitations, and access](./access.md) | Sessions, bootstrap, membership, roles, and CLI authorization. |
-| [Companies and portability](./companies.md) | Company switching/settings, archival, package import/export. |
-
-### Tasks and conversations
-
-| Feature | What it covers |
-| --- | --- |
-| [Task creation and lifecycle](./tasks.md) | Creation, assignment, lists, properties, comments, and completion. |
-| [Delegation, dependencies, and signoff](./task-coordination.md) | Child work, prerequisites, reviewers, and task-tree controls. |
-| [Inbox, decisions, and search](./inbox-search.md) | Personal triage, decision queues, unread/blocked views, and search. |
-| [Agent conversations and project handoff](./agent-chat.md) | Persistent conversations, discovery, handoff, and gated board chat. |
-| [Questions and approvals](./questions-and-approvals.md) | Question/plan responses, formal approvals, and app-tool review. |
-| [Steering and queued messages](./steering.md) | Follow-ups, queue edits, interruption, and pause/resume. |
-| [Documents, attachments, and work products](./documents-artifacts.md) | Versioned documents, annotations, files, outputs, and artifact library. |
-
-### Agents and reusable capabilities
-
-| Feature | What it covers |
-| --- | --- |
-| [Hiring, configuration, and organization](./agents.md) | Agent identity, instructions, reporting lines, lifecycle, and built-ins. |
-| [Runs, harnesses, and model accounts](./runs-adapters.md) | Adapter/model setup, account validation, transcripts, and run history. |
-| [Skills and Skill Studio](./skills.md) | Discovery, sources, authoring, revisions, tests, and agent policies. |
-| [Team packages and installation](./teams.md) | Catalog preview/install via CLI/API; catalog UI availability called out. |
-
-### Projects and execution
-
-| Feature | What it covers |
-| --- | --- |
-| [Projects and repositories](./projects.md) | Project lifecycle, task context, repository configuration, and defaults. |
-| [Goals and work alignment](./goals.md) | Goal hierarchy, ownership, status, and project/task context. |
-| [Workspaces, services, and files](./workspaces.md) | Provisioning, task bindings, services/logs, Git/files, and closure. |
-| [Execution environments](./execution-environments.md) | Local, SSH, sandbox providers, target probes, and custom images. |
-| [Recovery](./recovery.md) | Stopped work, workspace repair, bounded continuation, and reconnect. |
-
-### Apps, channels, and extensions
-
-| Feature | What it covers |
-| --- | --- |
-| [Connection setup](./connection-setup.md) | Catalog, MCP links, task requests, authentication, and setup resumption. |
-| [App access and action permissions](./app-permissions.md) | Agent grants, off/ask/allowed actions, discovery, tests, and revocation. |
-| [External chat and email](./chat-channels.md) | Provider-specific identity, threads, files, delivery, and endpoint upkeep. |
-| [Tool gateways and access profiles](./gateways-profiles.md) | Tool exposure, client configuration, tokens, profiles, and activity. |
-| [Secrets and proposals](./secrets.md) | Company/user credentials, grants, proposals, and vault import. |
-| [Plugins](./plugins.md) | Installation/configuration, contributed pages/tools, and lifecycle. |
-
-### Automation and structured work
-
-| Feature | What it covers |
-| --- | --- |
-| [Routines, schedules, and triggers](./routines.md) | Definitions, variables, scheduled/webhook/manual runs, and history. |
-| [Pipelines, review queues, and learnings](./pipelines.md) | Experimental stages, automation, items, review, and learning records. |
-| [Cases](./cases.md) | Experimental structured fields, relationships, revisions, and task links. |
-| [Status cards](./status-cards.md) | Experimental summaries, watched work, refresh history, and settings. |
-
-### Oversight and operation
-
-| Feature | What it covers |
-| --- | --- |
-| [Costs and budgets](./budgets-costs.md) | Spend reports, scoped limits, incidents, hard stops, and resumption. |
-| [Dashboards and audit trails](./activity.md) | Company health, live work, activity, runs, routines, and timeline. |
-| [Navigation, profile, and announcements](./navigation-preferences.md) | Sidebar state, favorites/recents, personal identity, and dismissals. |
-| [Instance operations](./instance-operations.md) | Installation, updates, service health, configuration, and backups. |
-| [CLI/API and local worktrees](./cli-operations.md) | Explicit context, resource commands, outputs, runs, and isolated instances. |
-
-### Contributor surfaces
-
-| Feature | What it covers |
-| --- | --- |
-| [Developer previews and diagnostic labs](./developer-labs.md) | Design examples, interaction fixtures, performance checks; not production acceptance. |
-
-These are verification instructions, not a claim that every journey passed a live
-test. A component test proves its component; a scripted provider proves that
-fixture integration. Record executed results separately from the map.
+Run `node scripts/storybook-catalog.mjs` to generate local navigation in
+`maps/generated/feature-map.md`, `maps/generated/agent-access-map.md`, and the
+Storybook guide. A new recipe is discovered automatically; do not register it in
+this README or maintain counts here.
 
 ## Before driving a journey
 
@@ -142,40 +66,46 @@ For Paperclip-assigned work, attach evidence through the
 
 ## Inventory and remaining depth
 
-[The UI coverage inventory](./coverage.json) accounts for every non-test TSX
-module under `ui/src/pages`, including supporting panels, legacy variants, and
-labs. Every product area now links to concrete recipes. **Partial** means the
-area still has the named variant or workflow gaps; **unmapped** is reserved for
-an area with no recipe. These statuses describe documentation, not runtime health.
-
-The page inventory is a source snapshot dated 2026-10-05. The map also
-includes entry points hosted inside other modules (pipeline Review Queue and
-Learnings, task documents, onboarding), CLI-only operations, and operator work.
-The team recipe explicitly distinguishes the current CLI/API path from catalog
-UI components without a current top-level route. Refer to [route registration](../../ui/src/App.tsx)
-and the [CLI registry](../../cli/src/index.ts) when changing reachability.
-
-Remaining depth includes complete provider/auth/attachment matrices, every
-harness/model/environment capability combination, third-party plugin features,
-and every role/error/mobile/legacy-shell permutation. The recipes name relevant
-gaps instead of equating source presence with a working user journey. The index
-can include capabilities that do not add a page file.
+The generated `maps/generated/coverage.json` lists the current non-test TSX page
+modules and the recipes that directly reference each one. An unreferenced module
+is a documentation candidate, not proof that its feature is absent or untested.
+Remaining workflow limits live in each recipe. Inventory and example associations
+describe documentation scope, not runtime health.
 
 ## Maintaining the reference
 
 The map documents user journeys. It does not execute them automatically;
-`coverage.json` records documentation scope rather than live test health.
+generated inventories record documentation scope rather than live test health.
 
 When maintaining a recipe, compare its entry points and expected results with
 the current source. Check that linked tests still exercise the stated behavior
-and that local references still exist. Refresh the inventory snapshot when it
-helps explain the current product. Keep the same-named agent access companion
+and that local references still exist. Keep the same-named agent access companion
 and stable sub-feature IDs aligned when behavior or access changes. Source-only
 access inventory remains distinct from live verification. Run
 `node scripts/check-maps.mjs` after map edits for structural/reference checks;
 follow the shared contract for the source and behavioral checks it cannot perform.
 
-Each recipe starts with an H1 and a user-visible description, then exactly:
+Each recipe starts with a small frontmatter navigation record, then an H1:
+
+```markdown
+---
+navigation: {"section":"Tasks and conversations","sectionOrder":20,"order":10}
+---
+```
+
+The H1 supplies the feature title, and the first paragraph supplies its summary.
+Orders are local to the section; leave gaps for additions. Equal orders use the
+stable filename as a tie-breaker. Keep a section's name/order consistent across
+its recipes. A new feature or capability needs only its recipe and companion.
+
+Optional `### Storybook verification` guidance lives inside the recipe's Gotchas
+section. Each level-four heading contains a backtick-quoted capability key and
+has `Scope` (`ui`, `cli`, or `browser`),
+`Storybook`, `Production`, and `Sources` fields. These are verification instructions
+and intentional scope limits, not run results or a required story for every API.
+The generated gap report combines this guidance with current story associations.
+
+After frontmatter, each recipe starts with an H1 and a user-visible description, then exactly:
 
 1. **Sub-features** — stable backticked IDs and observable behavior/states.
 2. **How to get to it (user POV)** — one H3 backticked entry-point ID per surface.

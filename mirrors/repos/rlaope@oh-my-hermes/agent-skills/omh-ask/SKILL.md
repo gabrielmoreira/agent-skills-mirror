@@ -1,6 +1,7 @@
 ---
 name: "omh-ask"
 description: "[omh] Outside AI critique wanted: consulting an external advisor when configured. Use when the user says: ask, external advisor, ask claude, ask gemini, consult claude, consult gemini, opinion from claude, opinion from gemini."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]
@@ -16,13 +17,13 @@ This is an OMH `ask` workflow skill, projected for Agent Skills hosts (Claude Co
 
 ## Why This Exists
 
-`ask` exists to keep `review` work explicit, evidence-backed, and inside the Hermes/executor boundary instead of relying on ad hoc chat narration.
+`ask` exists to put one outside model's critique beside the agent's own answer when the user wants it, as advice the agent weighs in the open rather than a verdict it adopts, from the advisor the user named or configured and never from a default one.
 
 ## Do Not Use When
 
 - The request is casual chat, a status-only acknowledgement, or another workflow has stronger routing evidence.
 - The user needs implementation, review, CI, merge, or external publishing evidence that has not been delegated or observed.
-- The user wants typed yes/no, pick-one, or scored probabilities from Jev over supplied text; use `jev-ask`.
+- The user wants typed yes/no, pick-one, or scored probabilities from Jev over supplied text; use `omh-jev-ask`.
 
 ## Examples
 
@@ -51,7 +52,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use only when an external advisor is configured and would materially improve the answer.
 
@@ -66,8 +67,8 @@ Reasoning demand: `standard`
 
 Quality bar:
 
-- Name the workflow target, constraints, validation evidence, and stop condition.
-- Separate Hermes guidance from executor or wrapper behavior unless evidence proves the step happened.
+- Before consulting, name the question, why an outside answer could change yours, and the advisor the user named or configured; with none configured, say so and answer without one.
+- Report the advice as one input: which points you accept, which you reject and why, and none of it as a verdict, a review, or a verified fact.
 
 Required inputs:
 

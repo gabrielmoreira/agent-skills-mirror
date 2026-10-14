@@ -1,6 +1,7 @@
 ---
 name: "omh-live-incident-response"
 description: "[omh] Production is down or an incident is open: command an incident that is still open -- severity as declared live state, commander and roles, an append-only timeline, a recorded temporary mitigation, verified recovery, and the customer notice. Use when the user says: live-incident-response, live incident response, incident response, active incident, ongoing incident, open incident, incident open, incident commander."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, reliability]
@@ -20,11 +21,11 @@ This is an OMH `live-incident-response` workflow skill, projected for Agent Skil
 
 ## Do Not Use When
 
-- The incident is over and the request is the postmortem, the SLO or error-budget consequence, or remediation follow-up; use `reliability-review`.
-- The request is one customer's support case needing a reply, a severity opinion, and an escalation path, with no incident declared; use `support-operations`.
-- The request is a release being rolled out and watched -- deploy checklist, health signals, rollback criteria -- and nothing has been declared broken; use `deploy-and-monitor`.
-- The request is to send the page, publish the status-page update, or deliver the customer notice; use `connector-operator`, which records a send as observed only on a returned result.
-- The request asks whether a release is ready across rollout, rollback, and observability, before anything broke; use `production-audit`.
+- The incident is over and the request is the postmortem, the SLO or error-budget consequence, or remediation follow-up; use `omh-reliability-review`.
+- The request is one customer's support case needing a reply, a severity opinion, and an escalation path, with no incident declared; use `omh-support-operations`.
+- The request is a release being rolled out and watched -- deploy checklist, health signals, rollback criteria -- and nothing has been declared broken; use `omh-deploy-and-monitor`.
+- The request is to send the page, publish the status-page update, or deliver the customer notice; use `omh-apps`, which records a send as observed only on a returned result.
+- The request asks whether a release is ready across rollout, rollback, and observability, before anything broke; use `omh-production-audit`.
 
 ## Examples
 
@@ -58,7 +59,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when an incident is open right now and the user needs it commanded: severity declared as live state, a commander and the other roles assigned, an append-only timeline kept, a temporary mitigation recorded as temporary, recovery verified against a named signal, and the customer notice drafted. The incident is still running; once it is closed the work is a review.
 

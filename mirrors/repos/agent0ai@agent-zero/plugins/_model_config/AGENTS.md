@@ -33,11 +33,14 @@
 - Show `Use separate Vision Model` immediately below `Supports Vision` while Main vision is enabled, not inside Advanced Settings; describe the disabled state as using Main's native vision.
 - In model overviews, render the effective Vision Model as a text-only `Vision override / Provider / Model` child aligned with Main's provider column, not as an icon-bearing peer row.
 - Changing a model provider in the settings UI must clear `api_base` and `kwargs` because both may be provider-specific.
+- Chat, Vision, and Utility Additional parameters expose `a0_prompt_cache_mode` overrides through existing kwargs; keep cache-mode help out of embedding fields. The shared transport validates and strips this control.
 - Repair provider-specific model-config aliases at the model-config read/build boundary; keep provider-specific repairs out of provider-agnostic core wrappers such as `models.py`.
-- The `Agent.read_prompt/end` Anthropic hook adapts only the two bundled thoughts instructions in main/communication/solving prompt results when the effective main provider or model name contains `anthropic` (case-insensitive, including OpenRouter). Keep prompt files, JSON fields, history, custom wording, and other models unchanged; standalone communication reads must match main-prompt rendering for native protocol projection. Verify with `tests/test_anthropic_thoughts_prompt.py`.
+- The `Agent.read_prompt/end` Anthropic hook adapts only the two bundled thoughts instructions in main/communication/solving prompt results when the effective main provider or model name contains `anthropic`, or the model name contains `claude` (case-insensitive, regardless of provider). Keep prompt files, JSON fields, history, custom wording, and other models unchanged; standalone communication reads must match main-prompt rendering for native protocol projection. Verify with `tests/test_anthropic_thoughts_prompt.py`.
 - `modelConfig.createPresetEditor()` owns local preset drafts, row actions, and stable UI-only row keys so deletion or renaming cannot rebind nested model fields.
+- Presets may change outside the editor, so the `open_modal_before` hook reloads them before every preset-editor open, including `/presets`, and resolves the chat's active preset unless `openPresetEditor()` pinned one.
 - The preset editor maps each model provider's API-key field to the shared API-key store; saving the editor persists dirty keys separately and never writes secrets into preset YAML.
 - The compact chat selector label combines the effective preset with only the leaf name of its main model; utility and provider text stay out of the closed selector.
+- Preset and agent-profile menus cap their height to the space above the selector on opening and window resize, keeping the full scroll track inside the viewport. Overflow submenus retain the shared `x-overflow` positioning limits.
 - The compact selector strip exposes `model-context-strip-end` after the agent
   profile selector so adjacent bundled controls can stay plugin-owned.
 - The selector strip uses the shared `x-overflow` directive for built-in and plugin controls. Its root must remain shrinkable; overflow entries open the original selector panels and retain their Alpine state. The profile avatar uses `data-overflow-icon` so its color, initials, or image also appear in overflow.
@@ -51,6 +54,12 @@
 - Concurrent agent-profile catalog loads for the same chat share one request;
   across chats, only the newest request may replace selector state or finish
   its loading lifecycle.
+- Snapshot-triggered profile and preset refreshes run independently of chat
+  rendering and of each other. Only the latest refresh for the selected chat
+  may apply selector state; older completions must not clear a newer loading flag.
+- Ignore refreshes for unselected chats before advancing the request sequence.
+  Pending preset/profile saves keep their original chat target; preset save or
+  clear results may update the selector only while that chat is selected.
 - Preset editor reset actions must remove the user override through the preset API and refresh the open draft from bundled defaults.
 - Preset rename, delete, and reset actions must repair scoped config and durable/live chat references; removed definitions fall back to `Default`.
 - Save/reset embedding comparisons use the matching before/after preset snapshots, including Default inheritance. Do not reload the collection per preset or persist a cross-request cache for this comparison.
@@ -58,6 +67,7 @@
 - Venice migration applies chat-only kwargs to chat slots and removes them from embedding slots without discarding embedding-specific kwargs.
 - On every startup after migration, short-circuit when `usr/plugins/_model_config/presets.yaml` exists. Only a missing collection may fetch `agent0ai/a0-presets`; parse remote and plugin-local fallback YAML through the same validator, strip secrets before persistence, and persist `mode_presets_fallback.yaml` when download or validation fails.
 - Model-name catalogs open below the input from either a field click or the embedded magnifier. Discard asynchronous results if their provider, API base, model draft, or query changed while the request was pending.
+- Keep the model-search magnifier and loading spinner in the same grid cell by targeting the button's `x-icon` children.
 - Additional parameter drafts retain plain-string compatibility but reject malformed JSON-shaped values and invalid KEY=VALUE lines with a standard notification. Reparse every preset slot before saving presets or API keys; invalid drafts stay editable and never silently save stale kwargs. Save errors identify the preset and model slot even when that draft is no longer selected.
 
 ## Work Guidance

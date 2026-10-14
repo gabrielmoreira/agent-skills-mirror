@@ -22,6 +22,7 @@ skillshare mcp list --json
 skillshare mcp check
 skillshare mcp check docs --json --no-dns
 skillshare mcp check --live --timeout 30s
+skillshare mcp check docs --live --accept-tools
 skillshare mcp remove docs --sync
 skillshare mcp remove docs --keep-files
 skillshare mcp restore BACKUP_ID --dry-run
@@ -52,6 +53,7 @@ skillshare sync --all
 | `--no-dns` | `check` で使用。リモートサーバーのホスト名の名前解決をスキップする。[下記](#check-servers-before-an-agent-starts-them)を参照 |
 | `--live` | `check` で使用。各ローカルサーバーの起動と各リモートサーバーの呼び出しも行う。[下記](#probe-servers-live)を参照 |
 | `--timeout DURATION` | `check --live` で使用。各サーバーのプローブの制限時間(`30s` など)。デフォルトは `10s` |
+| `--accept-tools` | `check --live` で使用。プローブした各サーバーが一覧にしたツール定義を新しいベースラインとして記録する。[下記](#pin-tool-definitions)を参照 |
 | `--http ADDR` | `serve` で使用。stdio の代わりに `ADDR` で Streamable HTTP を待ち受ける。[下記](#serve-skills-over-mcp)を参照 |
 | `--tls-cert FILE`, `--tls-key FILE` | `serve --http` で使用。この PEM 証明書と鍵で HTTPS を提供する。ループバック以外では必須 |
 | `--check` | `serve` で使用。スキップされる Skill とその理由を一覧表示し、提供せずに終了する |
@@ -170,7 +172,7 @@ Grok の場合、名前は文字またはアンダースコアで始まり、文
 JSON エントリは、そのファイル自体のインデントに合わせて 1 行に 1 フィールドで書き込まれます。Skillshare が所有しているにもかかわらず 1 行にまとまっているエントリは `update` として報告され、改めてレイアウトされて書き込まれます。Skillshare が所有していないエントリや、手動でフォーマットされたエントリは、そのレイアウトを保持します。
 
 ダッシュボードは、現在の scope とホストのプラットフォームで利用可能な送信先のみを提供します。各サーバーは 1 行として表示され、名前の下に送信先のクライアントがチップで並びます。右側のカウントボタンからそのサーバーの全クライアント一覧を開けます。Global 専用のクライアントは project mode では選択できません。
-右側の **Sync** ボックスには、まだ書き込まれていない変更が一覧表示されます。クライアントにチェックを入れるだけでは source のみが編集されます。**Sync MCP** はそれらの変更を一覧表示し、確認後に MCP の設定ファイルだけを書き込み、それぞれのバックアップを保存します。同じボックスの区切り線の下では、サーバーがあれば **チェック** で[サーバーをチェック](#check-servers-before-an-agent-starts-them)でき、**バックアップと復元** でそれらのバックアップを参照できます。その下の **Agents** には、このマシン上で検出されたクライアントが一覧表示されます。クライアントの MCP ファイルが存在するか、そのクライアントが設定を保存するフォルダが存在すれば「検出済み」と見なされるため、MCP ファイルがまだない新規インストールでも表示されます。project mode では、project が MCP ファイルを持っているか、そのクライアントが global で検出されている場合に一覧表示されます。検出された各クライアントには MCP ファイル名が表示され、**Copy path** でフルパスをコピーできます。ファイルが存在すると、**Open in editor** で skill の **Open in editor** と同じエディターで開けます。エディターはダッシュボードを実行しているマシン上で起動するため、このボタンはブラウザも同じマシン上（`localhost` または SSH ポートフォワーディング経由）で開いているときだけ表示され、LAN アドレスやリバースプロキシ経由では表示されません。
+右側の **Sync** ボックスには、まだ書き込まれていない変更が一覧表示されます。クライアントにチェックを入れるだけでは source のみが編集されます。**Sync MCP** はそれらの変更を一覧表示し、確認後に MCP の設定ファイルだけを書き込み、それぞれのバックアップを保存します。同じボックスの区切り線の下では、サーバーがあれば **チェック** で[サーバーをチェック](#check-servers-before-an-agent-starts-them)でき、**バックアップと復元** でそれらのバックアップを参照できます。その下の **Agents** には、このマシン上で検出されたクライアントが一覧表示されます。クライアントの MCP ファイルが存在するか、そのクライアントが設定を保存するフォルダが存在すれば「検出済み」と見なされるため、MCP ファイルがまだない新規インストールでも表示されます。project mode では、project が MCP ファイルを持っているか、そのクライアントが global で検出されている場合に一覧表示されます。検出された各クライアントには MCP ファイル名が表示され、**Copy path** でフルパスをコピーできます。ファイルが存在すると、**Open in editor** で skill の **Open in editor** と同じエディターで開けます。**Open folder** はファイルを含むフォルダを、クライアントがまだファイルを書いていなければ存在する最も近いフォルダを、ファイルマネージャー（Finder、エクスプローラー、Linux では既定のハンドラー）で開くので、`$EDITOR` を設定しなくても好きなプログラムでファイルを開けます。どちらもダッシュボードを実行しているマシン上で起動するため、これらのボタンはブラウザも同じマシン上（`localhost` または SSH ポートフォワーディング経由）で開いているときだけ表示され、LAN アドレスやリバースプロキシ経由では表示されません。
 
 追加のクライアント詳細:
 
@@ -371,7 +373,7 @@ mcp:
   servers:
     context7:
       command: npx
-      args: ["-y", "@upstash/context7-mcp"]
+      args: ["-y", "@upstash/context7-mcp@4.4.1"]
       targets: [claude, opencode]
   projects:
     ~/work/project01:
@@ -442,6 +444,7 @@ global mode では、ダッシュボードに **プロジェクト** ページ�
   project ごとのスイッチを持たないものがある場合、その行にはサーバーがそこでは引き続き読み込まれることが
   表示されます。project のものとは異なる独自の `targets` を持つエントリには **プロジェクトに合わせる** が
   表示され、`targets` なしでそのエントリを保存し直します。
+- タブ右側の **Agents** には、この project の Agent、project 専用サーバーの送信先 Agent、ファイルがすでに project にあるその他の Agent が、ファイル名と **Copy path** 付きで表示されます。**Open folder** と **Open in editor** は MCP ページと同じように動作します。
 - タブの Sync ボックスにある **Sync MCP** は MCP の計画全体を書き込み、そのうち何件の変更がこの project の外に
   あるかを表示します。project ページの上部にある **Sync project** は、この project の skills、agents、MCP だけを
   書き込みます。
@@ -484,6 +487,8 @@ HTTP リクエストの送信、コマンドの実行、ファイルの書き込
 |---|---|
 | `env`、`headers`、`bearerToken` 内の `fromEnv` 変数が未設定または空 | error |
 | ローカルサーバーの `command` が `PATH` 上に見つからない(先頭の `~/` は展開される) | error |
+| ローカルサーバーが `npx`、`uvx`、`pipx run`、`docker run`、`podman run` で実行するパッケージに正確なバージョンがない（未指定、`latest`、`next` などの dist-tag、`^1.2` などの範囲、`==1.*` のワイルドカード。npx の各 `--package` と uvx の `--with` も含む）、またはイメージにタグがない、または `latest` | warning |
+| ローカルサーバーのイメージにタグはあるが `@sha256:` ダイジェストがなく、タグが移動しうる | info |
 | リモートサーバーのホストが DNS で解決できない(制限は 3 秒。`--no-dns` でスキップ) | warning |
 | Agent のルールがサーバーを拒否する(Claude Code が予約している名前など) | error |
 | Agent のエントリが source と競合する(`sync mcp --dry-run` と同様) | error |
@@ -532,9 +537,9 @@ HTTP リクエストの送信、コマンドの実行、ファイルの書き込
 }
 ```
 
-`check` は `env`、`command`、`url`、`dns`、`client-rule`、`sync`、`targets`、`tools`、`live` のいずれかです。
+`check` は `env`、`command`、`pin`、`url`、`dns`、`client-rule`、`sync`、`targets`、`tools`、`tool-change`、`live` のいずれかです。
 `target` は Agent またはアカウントを示し、指摘がサーバー自体に関するものである場合は空になります。
-`subject` は `env`、`command`、`dns` の指摘では変数、コマンド、ホストを、成功した `live` プローブでは
+`subject` は `env`、`command`、`pin`、`dns` の指摘では変数、コマンド、パッケージ、イメージ、ホストを、成功した `live` プローブでは
 サーバーが報告した名前を、`live` のサインイン warning ではリソースメタデータ URL を示し、それ以外では省略されます。
 `project` はサーバーの `mcp.projects` ルートを絶対パスで示し(先頭の `~` は展開される)、global サーバーでは
 省略されます。`summary` は、project のサーバーも含め、レポート内のすべてのサーバーを集計します。
@@ -580,11 +585,15 @@ error になります。
 | リモートサーバーがサインインを必要とする (HTTP 401) | warning |
 | コマンドを起動できなかった、早期に終了した、または時間内に応答しなかった | error |
 | プロトコルエラー、未対応のプロトコルバージョン、またはその他の HTTP ステータス | error |
+| サーバーに対する最初の成功したプローブ: ツール定義が 固定される | info |
+| ツールの description または入力スキーマが 固定内容と異なる、または 固定されていないツールをサーバーが一覧にした | warning |
+| 固定されたツールが一覧に含まれなくなった | info |
 
 ローカルサーバーが失敗した場合、メッセージの末尾にその stderr が最大 5 行付きます。`env`、`headers`、
 `bearerToken` の値はすべてのメッセージから取り除かれます。4 文字未満の値はそのまま残ります。値は書かれた
 とおりに渡されます。Skillshare は Pi の `!command` の値を実行せず、`piOptions` も読みません。終了コードは
-同じ規則に従い、error が 1 件でもあれば 1 です。`--live` はファイルも操作ログのエントリも書き込みません。
+同じ規則に従い、error が 1 件でもあれば 1 です。`--live` は設定ファイルも操作ログのエントリも書き込みません。
+書き込むのは state ディレクトリの[ツール定義の固定](#pin-tool-definitions)だけです。
 
 `--json` を指定すると、応答したサーバーには `live` オブジェクトも付きます:
 
@@ -606,6 +615,38 @@ error になります。
 1 か所だけで、サーバーダイアログの[ツールセクション](#tool-policy-dashboard)にある **ツールを読み込む** です。
 これはダイアログの現在の入力内容でサーバーを一度起動してツールを一覧にします。`--json` では、`live` に `toolNames`
 （`tools/list` が返した名前）も含まれます。
+
+### ツール定義を固定する {#pin-tool-definitions}
+
+サーバーは、あなたが確認した後でツールの説明や受け付ける入力を変更できます。Agent はそれを確認なしに
+そのまま利用します。そこで `--live` は、サーバーが初めて応答したときに各ツールを固定し、以降のプローブを
+その固定内容と比較します。
+
+- **固定されるもの。** ツールごとに、`name`、`description`、`inputSchema` に対する SHA-256 ハッシュを 1 つ
+  保存します。ハッシュは正規化した JSON から計算するため、キーの順序や空白は影響しません。ハッシュは
+  スコープ（global、`mcp.projects` の root、または `-p` が選ぶプロジェクト）とサーバー名ごとに、Skillshare の
+  state ディレクトリの `mcp/tool-pins.json`（`state.json` の隣）に保存されます。description やスキーマの
+  テキストは保存されません。
+- **最初のプローブ。** ベースラインを記録し、check `tool-change` の `info` の指摘を 1 件出します。warning は
+  ありません。
+- **以降のプローブ。** description や入力スキーマが変わったツール、固定以降に追加されたツールには、それぞれ
+  ツール名を列挙した `tool-change` の `warning` が付きます。一覧に含まれなくなったツールは `info` です。
+  ベースラインはそのまま残るため、受け入れるまで同じ warning が出続けます。warning で終了コードが 1 に
+  なることはありません。
+- **受け入れ。** ツールを確認してから `skillshare mcp check docs --live --accept-tools` を実行します。
+  プローブした選択済みのサーバーはそれぞれ、今回一覧にした内容を新しいベースラインとして記録し、変更・
+  追加・削除されたツールを `info` の指摘が列挙します。`--live` なしの `--accept-tools` は error です。
+  受け入れるたびに、受け入れたサーバーとともに操作ログ（`skillshare log`）に記録されます。
+  名前はグローバルと各 `mcp.projects` root にある同名のサーバーをすべて選び、そのすべてが受け入れられる
+  ため、レポートに並ぶものをそれぞれ確認してください。読み取れない `tool-pins.json`（新しいバージョンが
+  書いたものを含む）は、プローブした各サーバーの warning になり、他のサーバーの固定を含む可能性があるため
+  `--accept-tools` でも書き換えません。固定し直すにはファイルを移動してください。
+
+`--live` なしでは 固定内容の読み取りも書き込みも行いません。編集したサーバー（別のコマンドや別の URL）や、
+削除してから追加し直したサーバーは、同じ名前のまま 固定内容を引き継ぎます。ツールが正当に変わった場合は、
+新しい定義を一度受け入れてください。
+`GET /api/mcp/check?live=1`（ダッシュボードの **チェック** ボタンが呼ぶエンドポイントで、
+ボタンは `live` を付けません）も 固定内容と比較を行いますが、受け入れはできません。
 
 ## サーバーの管理をやめる {#stop-managing-a-server}
 
@@ -744,7 +785,8 @@ npx @modelcontextprotocol/inspector --cli skillshare mcp serve --method skills/l
   （[microsoft/vscode#336232](https://github.com/microsoft/vscode/issues/336232)）。
   そのため、VS Code に同期されたヘッダーと `bearerToken` の参照は、それが修正されるまで解決されないままサーバーに届きます。
 - ローカルの操作記録は Skillshare の state ディレクトリの `mcp/` 配下にあります。
-  `state.json`、書き込み中の `pending.json`、そして `backups/`（Agent ファイルごとに最新 20 件）です。この
+  `state.json`、書き込み中の `pending.json`、`tool-pins.json`（`mcp check --live` の
+  [ツール定義の固定](#pin-tool-definitions)）、そして `backups/`（Agent ファイルごとに最新 20 件）です。この
   ディレクトリをポータブルなマニフェストとして共有しないでください。
 
 

@@ -1,6 +1,7 @@
 ---
 name: "omh-model-finetuning"
 description: "[omh] Fine-tuning a model on your own data -- SFT, DPO, RLVR or a LoRA adapter: decide first whether prompting or retrieval already closes the gap, choose the method from the data you have, and promote a checkpoint only when it beats the untuned baseline on a held-out eval. Use when the user says: model-finetuning, model finetuning, model fine-tuning, fine-tune a model, fine-tune the model, fine tune a model, fine tune the model, fine-tune."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -25,10 +26,10 @@ This is an OMH `model-finetuning` workflow skill, projected for Agent Skills hos
 
 ## Do Not Use When
 
-- The ask is onboarding a new model generation into OMH's routing, calibration, or pricing; use `model-optimization`.
-- The ask is serving an existing model behind an endpoint or benchmarking that endpoint; use `inference-serving`.
-- The ask is building an application on top of a hosted model -- RAG, structured output, prompt versions; use `llm-app-dev`.
-- The ask is learning from an OMH run, a missed route, or a skill improvement candidate; use `workflow-learning`.
+- The ask is onboarding a new model generation into OMH's routing, calibration, or pricing; use `omh-model-optimization`.
+- The ask is serving an existing model behind an endpoint or benchmarking that endpoint; use `omh-inference-serving`.
+- The ask is building an application on top of a hosted model -- RAG, structured output, prompt versions; use `omh-llm-app-dev`.
+- The ask is learning from an OMH run, a missed route, or a skill improvement candidate; use `omh-workflow-learning`.
 
 ## Examples
 
@@ -59,7 +60,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when someone wants to fine-tune a model on their own data, or is deciding whether to: supervised fine-tuning (SFT), preference tuning (DPO), reinforcement learning from verifiable rewards (RLVR), or a LoRA adapter. The output is a decision on whether to train at all, the method chosen from the data available, a training data plan with a held-out split, a comparison against the untuned baseline, and a checkpoint promotion gate; OMH trains nothing and runs no eval.
 

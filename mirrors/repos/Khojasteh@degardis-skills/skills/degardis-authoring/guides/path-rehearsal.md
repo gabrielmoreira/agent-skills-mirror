@@ -4,9 +4,9 @@ applicability:
 - When the work depends on what the child agent derives on a source's generated paths
 ---
 
-Keep the recorded cases in re-readable working state. For final source, close the [[guide:obligation-ledger]], the [[guide:construct-agreements]], and these cases, each separately, against the exact generated state after the last edit and before claiming completion.
+Keep the recorded cases in re-readable working state.
 
-Build recorded cases from the obligation ledger and affected decision surface. Cover:
+Build recorded cases from the [[guide:obligation-ledger]] and affected decision surface. Cover:
 
 - every affected request class and materially distinct initial state;
 - every outcome of each discriminator;

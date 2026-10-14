@@ -29,13 +29,17 @@ id, or an importance score. If nothing comes back, say so.
 ## Workflow
 
 1. Call `memory_smart_search` with the user's text as `query` and `limit: 10`.
-   Pass `project` when the user scopes to a specific repo.
+   Pass `project` when the user scopes to a specific repo and `agentId` when
+   they request one agent's history.
    Use `targetLayer: "memory"` for explicitly saved knowledge, or
    `targetLayer: "observation"` for captured activity. Omit it for mixed search.
-2. Group results by session. Records carry a provenance channel (`user`, `agent`,
-   `tool`, `import`, `shared`); when results conflict, prefer `user` over `agent`
-   inference, and flag `shared` records as another teammate's write.
-3. For each observation show its type, title, and narrative.
+2. Search results are compact. Before quoting full content or describing
+   provenance, call `memory_smart_search` with the selected IDs as a
+   comma-separated `expandIds` string and the same project, agent, and layer
+   filters. If expansion fails or the record is no longer available, report
+   that limitation; a title alone is not the full fact.
+3. Group expanded observations by session and show the returned type, title,
+   and narrative. Include provenance only when the response supplies it.
 4. Lead with the high-signal observations (importance >= 7).
 5. With `memory_recall`, inspect `matched_count`, `excluded_by_budget`, and
    `content_truncated` before treating an empty or shortened response as absent
@@ -67,4 +71,4 @@ or `auth rotation`."
 
 ## Troubleshooting
 
-See ../_shared/TROUBLESHOOTING.md if `memory_smart_search` is not available.
+See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) if `memory_smart_search` is not available.

@@ -74,6 +74,6 @@ existing one, and reuse [`common/`](common/) for mocks.
 
 ## Further reading
 
-- [`gitbooks/developing/embedding.md`](../../../gitbooks/developing/embedding.md): embedding the core in another product.
-- [`gitbooks/developing/testing-strategy.md`](../../../gitbooks/developing/testing-strategy.md): testing strategy.
+- [`docs/gitbooks/en/developing/embedding.md`](../../../docs/gitbooks/en/developing/embedding.md): embedding the core in another product.
+- [`docs/gitbooks/en/developing/testing-strategy.md`](../../../docs/gitbooks/en/developing/testing-strategy.md): testing strategy.
 - [`crates/openhuman-embed/README.md`](../README.md): the openhuman-embed crate README.

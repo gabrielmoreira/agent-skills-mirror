@@ -60,4 +60,4 @@ not host-side accounting or protocol interpretation.
 - [Parent Web3 module](../README.md)
 - [Wallet host adapter](../wallet/README.md)
 - [TinyWallet source](../../../../../vendor/tinywallet/README.md)
-- [Loadable modules](../../../../../gitbooks/developing/loadable-modules.md)
+- [Loadable modules](../../../../../docs/gitbooks/en/developing/loadable-modules.md)

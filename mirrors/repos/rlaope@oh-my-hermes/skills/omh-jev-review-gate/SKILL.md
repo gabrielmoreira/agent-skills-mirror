@@ -1,6 +1,8 @@
 ---
 name: "omh-jev-review-gate"
 description: "[omh] Wants Jev risk flags on a diff under review: Jev review flags for a diff: auth, tests, migration risk, severity; flags only, never approves a merge. Use when the user says: jev-review-gate, jev review gate, ask jev to review this diff."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]
@@ -8,6 +10,7 @@ metadata:
     phase: jev-review-gate
     role: reviewer
     quality_tier: evidence-gated
+    related_skills: [omh-code-review, omh-verification-gate, omh-security-safety-review]
     requires_tools: [omh_jev_ask]
 ---
 
@@ -15,7 +18,7 @@ metadata:
 
 Required: one file's diff per ask. Output: `review_flags/v1` advisory flags and severity; never an approval.
 
-Read `omh-routing/references/jev-rail.md` before the first ask: consent, what leaves the machine, limits, and non-answer statuses. Prepared OMH routing is not execution or approval. Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+Read `skill_view(name='omh-routing', file_path='references/jev-rail.md')` before the first ask: consent, what leaves the machine, limits, and non-answer statuses. Prepared OMH routing is not execution or approval. Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
 Contract: `references/full-contract.md`. Preset: `references/preset.md`.
 

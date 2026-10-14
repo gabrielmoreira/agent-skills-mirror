@@ -3328,6 +3328,12 @@ def _main(
     # datacenter IPs (see lib/youtube_yt.py for details).
     if config.get("LAST30DAYS_YOUTUBE_SSH_HOST") and "LAST30DAYS_YOUTUBE_SSH_HOST" not in os.environ:
         os.environ["LAST30DAYS_YOUTUBE_SSH_HOST"] = config["LAST30DAYS_YOUTUBE_SSH_HOST"]
+    # Surface YOUTUBE_PROXY / YT_PROXY so youtube_yt can read them without a
+    # config dependency. Shell-set values take precedence over .env values.
+    if config.get("YOUTUBE_PROXY") and "YOUTUBE_PROXY" not in os.environ:
+        os.environ["YOUTUBE_PROXY"] = config["YOUTUBE_PROXY"]
+    if config.get("YT_PROXY") and "YT_PROXY" not in os.environ:
+        os.environ["YT_PROXY"] = config["YT_PROXY"]
 
     if args.preflight:
         requested_sources = resolve_requested_sources(args.search, config)

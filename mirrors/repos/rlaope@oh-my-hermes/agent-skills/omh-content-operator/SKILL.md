@@ -1,6 +1,7 @@
 ---
 name: "omh-content-operator"
 description: "[omh] Product or company copy to publish or rewrite: scope publish-ready writing, rewriting, summarization, translation, release-note, newsletter, customer-copy, social-copy, README-copy, and email-draft work with audience, tone, style, source, review, and hallucination gates. Use when the user says: content-operator, content operator, content workflow, writing workflow, publish-ready writing, publish ready writing, release notes, release note draft."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, content]
@@ -53,7 +54,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes should prepare or supervise quality-controlled content creation or transformation without claiming source access, fact verification, stakeholder approval, publishing, sending, file export, or delivery.
 

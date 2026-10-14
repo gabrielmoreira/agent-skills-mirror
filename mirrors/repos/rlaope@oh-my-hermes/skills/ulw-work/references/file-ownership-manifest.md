@@ -89,6 +89,17 @@ comparison rather than the intent.
 - A declared file nobody touched is usually harmless and occasionally the tell
   that a stream stopped early.
 
+## When each lane has its own worktree
+
+Hermes' `delegation.worktree_isolation` gives every delegated lane a git
+worktree and branch of its own (`references/native-delegation.md`). That stops
+two lanes writing into one checkout at the same time. It does not make an
+overlap safe: the two edits now meet at the merge instead of in the working
+tree, and a clean merge of them is the same silent defect. Write the manifest
+exactly as strictly, and run the comparison above per lane against that lane's
+branch plus anything its worktree still holds uncommitted, which is where its
+changes are, before merging any of them.
+
 ## Reporting
 
 A parallel split earns its coordination cost only when the lanes are genuinely

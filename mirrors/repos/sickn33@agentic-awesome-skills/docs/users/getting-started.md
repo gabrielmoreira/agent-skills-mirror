@@ -238,3 +238,7 @@ Need a tool-specific starting point first?
 2. [Browse the Bundles](bundles.md)
 3. [See Real-World Examples](../contributors/examples.md)
 4. [Contribute a Skill](../../CONTRIBUTING.md)
+
+## Moving from a retired plugin pack
+
+Consult the [plugin migration guide](plugin-migration.md), install and verify the replacement through your host, then disable the old pack to avoid duplicate activation. The activation helper recognizes former bundle IDs; the marketplace does not redirect them automatically. Use the guide matching your published release.

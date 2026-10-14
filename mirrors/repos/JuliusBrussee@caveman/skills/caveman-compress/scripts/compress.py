@@ -625,9 +625,15 @@ def call_opencode_cli(prompt: str) -> str:
             "OPENCODE_CONFIG_CONTENT must be a strict JSON object (no comments or "
             "trailing commas) so compress can add its tool-deny rule; fix or unset it."
         )
+    agents = config.get("agent") or {}
+    if not isinstance(agents, dict):
+        raise RuntimeError(
+            'OPENCODE_CONFIG_CONTENT "agent" must be a JSON object so compress '
+            "can add its tool-deny agent; fix or unset it."
+        )
     config["permission"] = OPENCODE_PERMISSION_DENY
     config["agent"] = {
-        **(config.get("agent") or {}),
+        **agents,
         OPENCODE_AGENT: {"permission": OPENCODE_PERMISSION_DENY},
     }
     env = {**os.environ, "OPENCODE_CONFIG_CONTENT": json.dumps(config)}

@@ -128,8 +128,8 @@ Many domains consume `AuthService` / session helpers / Composio-direct key, incl
 ## Further reading
 
 - [Parent module (`security`)](../README.md)
-- [OS keyring and secret storage](../../../../../gitbooks/features/os-keyring-and-secret-storage.md)
-- [Security architecture](../../../../../gitbooks/developing/architecture/security.md)
+- [OS keyring and secret storage](../../../../../docs/gitbooks/en/features/os-keyring-and-secret-storage.md)
+- [Security architecture](../../../../../docs/gitbooks/en/developing/architecture/security.md)
 
 `channel_credential_provider` owns the persisted `channel:<id>:<mode>` namespace.
 Managed login and channel setup use it through the host facade so existing

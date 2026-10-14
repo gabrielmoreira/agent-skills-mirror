@@ -43,7 +43,7 @@ Each flag is independent. Presets:
 Individual services still honor their own runtime gates inside
 `runtime/services.rs` regardless of `ServiceSet` selection: `cron` checks
 `config.cron.enabled`; `channels` returns early on
-`OPENHUMAN_DISABLE_CHANNEL_LISTENERS=1` or when
+`OPENHUMAN_DISABLE_CHANNEL_LISTENERS=1` (also folded into `[components].channels`) or when
 `config.channels_config.has_listening_integrations()` is false; `login_gated`
 (`spawn_login_gated_services`) defers the login-gated services until a user
 session exists on disk. `ServiceSet` picks *whether a service is spawned at
@@ -247,5 +247,5 @@ host an agent turn must set:
 
 - [../README.md](../README.md): the rest of `core/`, covering dispatch,
   registry, event bus, transport, and CLI.
-- [Embedding OpenHuman](../../../../../gitbooks/developing/embedding.md)
-- [Deep architecture reference](../../../../../gitbooks/developing/architecture.md)
+- [Embedding OpenHuman](../../../../../docs/gitbooks/en/developing/embedding.md)
+- [Deep architecture reference](../../../../../docs/gitbooks/en/developing/architecture.md)

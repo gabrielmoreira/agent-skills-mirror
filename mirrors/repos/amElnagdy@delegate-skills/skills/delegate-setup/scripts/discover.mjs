@@ -386,7 +386,8 @@ function readEntries(dir) {
 function probeUsage(impl) {
   const probe = impl.usageProbe;
   if (!probe) return null;
-  const base = (probe.envDir && process.env[probe.envDir]) || join(homedir(), probe.homeSubdir);
+  const envDir = probe.envDir && process.env[probe.envDir];
+  const base = envDir ? join(envDir, probe.envSubdir || "") : join(homedir(), probe.homeSubdir);
   try {
     if (!statSync(base).isDirectory()) return null;
   } catch {

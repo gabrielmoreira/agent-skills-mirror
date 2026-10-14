@@ -1,6 +1,7 @@
 ---
 name: "omh-design-orchestration"
 description: "[omh] Entire product design problem to delegate: prepare a bounded design direction, existing-lane composition, and executor-neutral handoff. Use when the user says: design-orchestration, design orchestration, design ownership, handle this product design, take on the design, デザインを任せる, デザイン全体を任せ, プロダクトデザインを任せ."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, materials]
@@ -20,10 +21,10 @@ This is an OMH `design-orchestration` workflow skill, projected for Agent Skills
 
 ## Do Not Use When
 
-- The request is directly about premium multi-format quality or publishing; use `design-quality-gate`.
-- The request is directly about frontend implementation, layout, responsive behavior, or a design system; use `frontend`.
-- The request is directly about WCAG, keyboard, screen-reader, or semantic accessibility; use `accessibility-audit`.
-- The request is directly about screenshots, visual regression, pixel diff, rendered layout, or a verdict; use `visual-qa`.
+- The request is directly about premium multi-format quality or publishing; use `omh-design-quality-gate`.
+- The request is directly about frontend implementation, layout, responsive behavior, or a design system; use `omh-frontend`.
+- The request is directly about WCAG, keyboard, screen-reader, or semantic accessibility; use `omh-accessibility-audit`.
+- The request is directly about screenshots, visual regression, pixel diff, rendered layout, or a verdict; use `omh-visual-qa`.
 
 ## Examples
 
@@ -52,7 +53,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes should take broad ownership of a design problem before a narrower quality, frontend, accessibility, or visual-QA lane is known.
 

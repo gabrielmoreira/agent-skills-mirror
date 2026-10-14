@@ -1,6 +1,8 @@
 ---
 name: "omh-refactor-plan"
 description: "[omh] Decided cross-module refactor to phase: refactor planning - turn a decided boundary-changing refactor into a phased plan - reconnaissance, contracts-first phase order, per-phase verification and rollback, a files table, and an explicit approval gate before any edit. Use when the user says: refactor-plan, refactor plan, plan this refactor, plan the refactor, refactor planning, refactor phases, phased refactor, refactor in phases."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -8,6 +10,7 @@ metadata:
     phase: refactor-plan
     role: planner
     quality_tier: plan-gated
+    related_skills: [ulw-plan, omh-ai-slop-cleaner, omh-verification-gate, omh-security-event-response]
 ---
 
 # Refactor Plan
@@ -20,10 +23,10 @@ This is a Hermes-native `refactor-plan` workflow skill.
 
 ## Do Not Use When
 
-- The refactor's direction is still contested or the goal itself needs consensus planning; use `ralplan`.
-- The work is deletion-first cleanup with no boundary changes; use `ai-slop-cleaner`.
-- The plan is done and the claim is that work is complete; use `verification-gate` for the evidence close.
-- The version bump carries a security advisory, a CVE, or a leaked secret; use `security-event-response`, which owns containment and closure.
+- The refactor's direction is still contested or the goal itself needs consensus planning; use `ulw-plan`.
+- The work is deletion-first cleanup with no boundary changes; use `omh-ai-slop-cleaner`.
+- The plan is done and the claim is that work is complete; use `omh-verification-gate` for the evidence close.
+- The version bump carries a security advisory, a CVE, or a leaked secret; use `omh-security-event-response`, which owns containment and closure.
 
 ## Examples
 
@@ -57,9 +60,9 @@ Bad example:
 
 - Current lane: **Intent -> plan** (`oh-my-hermes`, `meta-router`, `deep-interview`, `context`, `plan`, `ralplan`, `adversarial-consensus`, `codebase-onboarding`, `+8 more`) - clarify, plan, ship, or loop goals.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when a refactor that crosses module boundaries is already decided and needs its execution shaped: which files move in which phase, what verifies each phase, and where each phase rolls back to - before anything is edited.
 
@@ -122,4 +125,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

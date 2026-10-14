@@ -34,11 +34,26 @@ Publication lifecycle projections retain an immutable producer-lineage reference
 (fence, revision, and claim generation) from the admitted protocol-v2 publication
 in existing `projection_json`. Producer and publication revision counters are
 independent: the reference, never their numerical coincidence, connects the two
-journeys after queue-item deletion. Audit and Bay share that observational
+journeys after queue-item deletion. Audit uses that observational
 resolution; physical receipts and terminal telemetry remain on the publication
 fence. A missing or conflicting link cannot complete another producer revision.
 This approved JSON extension adds no SQL table or column, grants no publication
 authority, and does not infer links for historical tupleless reports.
+
+On startup the queue removes the retired Bay telemetry tables, command-journey
+mapping, and pending-telemetry index. Repository projection indexes remain in
+place to preserve existing query ordering. StatusStore deletes its two retired
+Bay history keys. The existing `bay_telemetry_pending`
+column stays inert: dropping it would rewrite all retained lifecycle rows on
+replicated storage while blocking startup. Its default still covers inserts;
+no application reads or updates it. These idempotent schema operations replace
+request-time pruning of the dead command mapping; no historical JSON backfill,
+table rewrite, or database vacuum runs. The lifecycle audit still uses the
+`exact_review_lifecycle_projection_bay` ordering index. Canonical lifecycle
+projections continue to own admission, receipts, acknowledgements, and audit
+history; older projection JSON remains readable without its former Bay and
+inline-proof markers. Direct and batch publication-outcome telemetry continues
+to back recent durable publication events.
 
 Report readers share one anchored leading-front-matter parser. A unique header
 value remains authoritative when report prose or a valid fenced example quotes
@@ -71,6 +86,10 @@ record shape and observer-only projection are unchanged.
 from R2. Exact and batch review publishers pass the reviewed item numbers to
 read only their open/closed reports, plans, and decision packets. Those focused
 reads do not depend on repository-wide snapshots or journal exports.
+Explicit ledger/assets hydration streams one R2 listing page into its staging
+tree at a time; descriptor memory does not grow with the entire prefix. It still
+downloads the complete requested trees and replaces local trees only after all
+pages and downloads succeed. This is not a retention or pruning operation.
 Jobs that need operational Git state receive a sparse checkout containing only
 the retained paths above. Canonical-only lanes set `hydrate-git-state: "false"`
 and never mint or use a state-repository token.
@@ -111,8 +130,8 @@ lease decision. Completion and terminal-run reconciliation use that saved
 authority for source-drift requeues, even if ingress has replaced the current
 decision. Recovery preserves the old target, fence, and revision's terminal
 fact; it does not manufacture router, acknowledgement, or review-result receipts.
-OpenClaw Bay needs no schema or UI change: its existing observer-only projection
-shows the requeue disposition without inventing review success or failure.
+The queue activity projection shows the requeue disposition without inventing
+review success or failure.
 
 Every review revision of an item comes from the durable per-item counter that
 re-review commands already used. A completed queue row is deleted, but its

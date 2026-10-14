@@ -6,7 +6,7 @@ implement is [`../specs/agent-runtime-upstream-boundary.md`](../specs/agent-runt
 
 A plan here exists because the work spans OpenHuman and one or more vendored
 submodules and cannot be owned accurately by a single source directory. Durable
-architecture belongs in [`gitbooks/developing/architecture/`](../../gitbooks/developing/architecture/README.md) and in the
+architecture belongs in [`docs/gitbooks/en/developing/architecture/`](../../docs/gitbooks/en/developing/architecture/README.md) and in the
 beside-code `crates/openhuman-core/src/<domain>/README.md` (see [`crates/README.md`](../../crates/README.md)), not here.
 
 ## Status, verified 2026-10-07
@@ -22,7 +22,7 @@ because several of those lines no longer hold.
 | [`migrate-agent-orchestration-to-tinyagents.md`](./migrate-agent-orchestration-to-tinyagents.md) | **Landed except O6.** `tinyagents-orchestration/src/` holds `subagent/`, `teams/` and `workflow/`; there is no `parallel/`. |
 | [`migrate-agent-runtime-to-tinyagents.md`](./migrate-agent-runtime-to-tinyagents.md) | **Live.** Tasks 4, 10 and 11 are outstanding: 25 `task_local!` declarations remain in the core, and `agent/tinyagents/harness_assembly.rs` and `agent/tinyagents/turn_runner.rs` both still exist with live callers. |
 | [`migrate-agent-runtime-waves.md`](./migrate-agent-runtime-waves.md) | **Live.** Gate 4 is unmet: [`scripts/ci/agent-runtime-boundary-baseline.json`](../../scripts/ci/agent-runtime-boundary-baseline.json) is still checked in, with 213 baselined violations, and the gate requires it deleted. |
-| [`jev-tool-search-baseline.md`](./jev-tool-search-baseline.md) | **Not a plan.** A dated measurement report (2026-09-22) for `tool_search` ranking. It is linked from the root [`README.md`](../../README.md), [`crates/openhuman-tinyhumans/src/jev/README.md`](../../crates/openhuman-tinyhumans/src/jev/README.md) and [`gitbooks/developing/jev.md`](../../gitbooks/developing/jev.md), so its path is a contract; leave it where it is. |
+| [`jev-tool-search-baseline.md`](./jev-tool-search-baseline.md) | **Not a plan.** A dated measurement report (2026-09-22) for `tool_search` ranking. It is linked from the root [`README.md`](../../README.md), [`crates/openhuman-tinyhumans/src/jev/README.md`](../../crates/openhuman-tinyhumans/src/jev/README.md) and [`docs/gitbooks/en/developing/jev.md`](../../docs/gitbooks/en/developing/jev.md), so its path is a contract; leave it where it is. |
 
 Delete the four landed plans, and the spec with them, once Task 4, Tasks 10 and
 11, Gate 4 and O6 are closed. Until then they are the record of what was moved
@@ -51,6 +51,6 @@ python3 -c "import json;print(len(json.load(open('scripts/ci/agent-runtime-bound
 
 ## Further reading
 
-- [Agent harness](../../gitbooks/developing/architecture/agent-harness.md) and the [`agent` domain](../../crates/openhuman-core/src/agent/README.md).
+- [Agent harness](../../docs/gitbooks/en/developing/architecture/agent-harness.md) and the [`agent` domain](../../crates/openhuman-core/src/agent/README.md).
 - [`vendor/tinyagents/`](../../vendor/tinyagents) and its repo, [tinyhumansai/tinyagents](https://github.com/tinyhumansai/tinyagents).
 - [`AGENTS.md`](../../AGENTS.md) for the submodule ownership rules these plans follow.

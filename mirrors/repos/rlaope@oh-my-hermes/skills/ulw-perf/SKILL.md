@@ -1,6 +1,8 @@
 ---
 name: "ulw-perf"
 description: "[omh] Software slowness, memory leaks, or cost spikes: find where a system is actually slow, leaking, or expensive across runtime, memory, token cost, storage, rendering, inference, CI, and query domains, then fix one measured hot path at a time behind a regression budget. Use when the user says: ultraperf, ulw-perf, performance audit, performance bottleneck, find the bottleneck, profile the hot path, memory leak investigation, token cost hotspot."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, optimization]
@@ -8,6 +10,7 @@ metadata:
     phase: measured-optimization-loop
     role: tracker
     quality_tier: measurement-gated
+    related_skills: [omh-code-review, omh-agent-evaluation]
 ---
 
 # Ultraperf
@@ -21,8 +24,8 @@ This is a Hermes-native `ultraperf` workflow skill.
 ## Do Not Use When
 
 - Metric, baseline, budget, and benchmark command are already declared for one measurable goal; use `performance-goal`.
-- The ask is to judge code quality, structure, or correctness rather than measured cost; use `code-review`.
-- The ask is to score model or agent output quality on a task suite; use `agent-evaluation`.
+- The ask is to judge code quality, structure, or correctness rather than measured cost; use `omh-code-review`.
+- The ask is to score model or agent output quality on a task suite; use `omh-agent-evaluation`.
 - The request is a settings-only change, one bounded edit that is explicitly low-risk and has a direct owner and verification path, or one already-identified slow query or hotspot fix; handle it directly instead of opening a performance loop.
 
 ## Examples
@@ -56,9 +59,9 @@ Bad example:
 
 - Current lane: **Intent -> plan** (`oh-my-hermes`, `meta-router`, `deep-interview`, `context`, `plan`, `ralplan`, `adversarial-consensus`, `codebase-onboarding`, `+8 more`) - clarify, plan, ship, or loop goals.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when performance problems are suspected but not yet localized, or when several cost hotspots across domains need a measured inspect-and-fix loop.
 
@@ -131,4 +134,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

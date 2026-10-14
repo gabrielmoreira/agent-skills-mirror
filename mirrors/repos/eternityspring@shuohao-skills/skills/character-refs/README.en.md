@@ -92,7 +92,7 @@ node scripts/character-refs.mjs render out/阿禾/asset.json --out out/character
 node scripts/selftest.mjs
 ```
 
-230 assertions, no model calls, no quota. The Qwen and GPT Image adapters are checked against local mock servers; the full pipeline runs end to end with a custom command that produces blank white images.
+233 assertions, no model calls, no quota. The Qwen and GPT Image adapters are checked against local mock servers; the full pipeline runs end to end with a custom command that produces blank white images.
 
 ## Known limitations
 

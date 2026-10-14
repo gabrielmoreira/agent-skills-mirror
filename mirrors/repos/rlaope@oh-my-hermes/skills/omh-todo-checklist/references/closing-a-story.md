@@ -19,7 +19,7 @@ lets a reader infer the first has claimed a merge nobody observed.
 | Source | Held where | Read these | What it supplies |
 | --- | --- | --- | --- |
 | Plan record (`omh_todo/v1` item) | durable record, read with `omh runtime todo show` | `state`, `phase`, `blocked_reason` | what was done, which stage it belonged to, and what was skipped with its reason |
-| Verification gate (`verification-gate`) | optional durable model declaration, read with `omh_todo action=recall`; absent unless recorded | `observed_check_results/v1`, `claim_verdict/v1` | command, source, exit status, summary, scope, and freshness for each check that ran, plus which checks are missing or failed |
+| Verification gate (`verification-gate`) | optional durable model declaration, read with `omh_todo action=recall`; absent unless recorded | `observed_check_results/v1`, `claim_verdict/v1` | command, source, exit status, summary, scope, freshness, and origin for each check that ran (`origin` on a failing check only), plus which checks are missing or failed |
 | Review (`code-review`) | optional durable model declaration, read with `omh_todo action=recall`; absent unless recorded | `ranked findings per axis` | what a reader misses unless someone tells them |
 | QA (`ultraqa`) | optional durable model declaration, read with `omh_todo action=recall`; absent unless recorded | `pass/fail evidence` | what nobody thought of the first time |
 
@@ -38,8 +38,9 @@ accepted points, not every brainstormed idea. Stop or analysis-only instructions
 and intervening topic changes outrank an old plan. An unrelated story, modal or
 book is not a continuation request merely because the same words occur.
 
-For multi-turn work, declare just the accepted items with `omh_todo action=set`,
-then `action=checkpoint`, `accepted=true`, short `rejected` summaries and the
+For multi-turn work, declare just the accepted items in the plan's one
+checklist tool (`todo_list`, which OMH mirrors, or `omh_todo action=set`; never
+both; `omh_todo` when the plan carries `plan_stage`), then `omh_todo action=checkpoint`, `accepted=true`, short `rejected` summaries and the
 exact revision/worktree and environment fingerprints. This freezes scope; it
 does not approve an edit or change `plan_stage`. Read `action=show` before
 replacing an existing plan. The code-story template remains optional.

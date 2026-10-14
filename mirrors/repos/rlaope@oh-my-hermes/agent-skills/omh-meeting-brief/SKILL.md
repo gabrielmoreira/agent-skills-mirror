@@ -1,6 +1,7 @@
 ---
 name: "omh-meeting-brief"
 description: "[omh] Upcoming work meeting that lacks an agenda: agenda, prompts, decisions, and record template. Use when the user says: meeting-brief, meeting brief, meeting agenda, agenda, discussion prompts, decisions needed, record template, meeting topics."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, meeting]
@@ -51,7 +52,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes should prepare a meeting agenda, discussion prompts, decision points, and a record template.
 
@@ -69,6 +70,7 @@ Quality bar:
 - Turn context into agenda topics, prompts, decisions needed, and a record template.
 - Keep prep distinct from actual meeting minutes or accepted decisions.
 - Identify missing context that would change the meeting structure.
+- Give the record template's action-item rows outcome, owner, due date, dependency, acceptance condition, and source columns, each marked unknown until the meeting record fills it.
 
 Required inputs:
 

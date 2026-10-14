@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `modelcontextprotocol/typescript-sdk` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `modelcontextprotocol/typescript-sdk` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `modelcontextprotocol/typescript-sdk` — 26 default patterns, 0 follo
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,7 +60,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`test/e2e/CLAUDE.md`](test/e2e/CLAUDE.md) |
+| 2 | ✓ | [`skills/mcp-typescript-sdk-upgrade-to-v2/references/auth.md`](skills/mcp-typescript-sdk-upgrade-to-v2/references/auth.md) |
+| 3 | ✓ | [`skills/mcp-typescript-sdk-upgrade-to-v2/references/behavioral-changes.md`](skills/mcp-typescript-sdk-upgrade-to-v2/references/behavioral-changes.md) |
+| 4 | ✓ | [`skills/mcp-typescript-sdk-upgrade-to-v2/references/enhancements.md`](skills/mcp-typescript-sdk-upgrade-to-v2/references/enhancements.md) |
+| 5 | ✓ | [`skills/mcp-typescript-sdk-upgrade-to-v2/references/errors.md`](skills/mcp-typescript-sdk-upgrade-to-v2/references/errors.md) |
+| 6 | ✓ | [`skills/mcp-typescript-sdk-upgrade-to-v2/references/http-headers.md`](skills/mcp-typescript-sdk-upgrade-to-v2/references/http-headers.md) |
+| 7 | ✓ | [`skills/mcp-typescript-sdk-upgrade-to-v2/references/imports-transports.md`](skills/mcp-typescript-sdk-upgrade-to-v2/references/imports-transports.md) |
+| 8 | ✓ | [`skills/mcp-typescript-sdk-upgrade-to-v2/references/packaging-runtime.md`](skills/mcp-typescript-sdk-upgrade-to-v2/references/packaging-runtime.md) |
+| 9 | ✓ | [`skills/mcp-typescript-sdk-upgrade-to-v2/references/protocol-ctx.md`](skills/mcp-typescript-sdk-upgrade-to-v2/references/protocol-ctx.md) |
+| 10 | ✓ | [`skills/mcp-typescript-sdk-upgrade-to-v2/references/server-registration.md`](skills/mcp-typescript-sdk-upgrade-to-v2/references/server-registration.md) |
+| 11 | ✓ | [`skills/mcp-typescript-sdk-upgrade-to-v2/references/types-schemas.md`](skills/mcp-typescript-sdk-upgrade-to-v2/references/types-schemas.md) |
+| 12 | ✓ | [`skills/mcp-typescript-sdk-upgrade-to-v2/references/unchanged-apis.md`](skills/mcp-typescript-sdk-upgrade-to-v2/references/unchanged-apis.md) |
+| 13 | ✓ | [`skills/mcp-typescript-sdk-upgrade-to-v2/SKILL.md`](skills/mcp-typescript-sdk-upgrade-to-v2/SKILL.md) |
+| 14 | ✓ | [`test/e2e/CLAUDE.md`](test/e2e/CLAUDE.md) |
 
 ---
 

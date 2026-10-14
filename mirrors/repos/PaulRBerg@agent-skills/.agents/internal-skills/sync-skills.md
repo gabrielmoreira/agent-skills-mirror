@@ -96,14 +96,14 @@ failure. An unknown harness selects Codex before prerequisite checks. There is n
 Files:
 
 - `skills/skill-harmonization/SKILL.md`
-- `skills/skill-writing/SKILL.md`
-- `skills/skill-writing/references/writing-great-skills.md`
+- `skills/agents-brain/references/create-skill.md`
+- `skills/agents-brain/references/writing-great-skills.md`
 
 Wherever a consumer declares an ai-skillet minimum version, keep it at `1.0.0+`. Each consumer must invoke its
 ai-skillet subcommand directly:
 
 - `skill-harmonization` uses `map`, plus optional `doctor` evidence.
-- `skill-writing` uses `doctor`.
+- `agents-brain create-skill` uses `doctor`.
 
 Do not use a retired Python, uv, ripgrep, helper-resolution, wrapper, or fallback path. `toolkit/skillet/` and the
 workspace version in `toolkit/Cargo.toml` are the producer whose contract the `1.0.0+` minimum tracks.

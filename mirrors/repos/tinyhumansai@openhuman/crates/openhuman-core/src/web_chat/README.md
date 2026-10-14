@@ -98,7 +98,7 @@ subscriber all listen to.
 6. While the turn runs, `spawn_progress_bridge` turns each `AgentProgress`
    event into `WebChannelEvent`s (`text_delta`, `thinking_delta`,
    `tool_call`, `tool_result`, `chat_interim`, `turn_cost`, sub-agent events
-   and so on), mirrors turn state into `threads::turn_state::TurnStateStore`,
+   and so on), mirrors turn state into the `TurnStates` port,
    and emits an `inference_heartbeat` every `INFERENCE_HEARTBEAT_SECS` (20 s)
    so a long silent prefill does not trip the frontend's roughly 120 s
    silence timeout (#4270). Sub-agent arms live in
@@ -342,6 +342,6 @@ pnpm debug rust web_chat
 
 ## Further reading
 
-- [Chat](../../../../gitbooks/features/chat.md)
-- [Agent harness architecture](../../../../gitbooks/developing/architecture/agent-harness.md)
-- [Frontend architecture](../../../../gitbooks/developing/architecture/frontend.md)
+- [Chat](../../../../docs/gitbooks/en/features/chat.md)
+- [Agent harness architecture](../../../../docs/gitbooks/en/developing/architecture/agent-harness.md)
+- [Frontend architecture](../../../../docs/gitbooks/en/developing/architecture/frontend.md)

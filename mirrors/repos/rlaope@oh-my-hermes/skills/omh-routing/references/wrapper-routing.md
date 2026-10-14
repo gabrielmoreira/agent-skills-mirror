@@ -81,7 +81,7 @@ When a handoff is expected to produce more than one commit, plan the commits bef
 
 A commit plan is preparation. Commits, review, CI, and merge stay separately observed.
 
-## Large Output And Context Safety
+## Context Safety For Large Output
 
 Wrappers must keep raw Codex JSONL, tool output, process logs, and oversized
 executor notes out of Hermes chat context. Use `omh chat codex-progress` or the

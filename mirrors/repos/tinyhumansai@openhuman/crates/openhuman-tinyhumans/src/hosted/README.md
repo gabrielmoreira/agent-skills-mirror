@@ -181,4 +181,4 @@ cargo test -p openhuman-tinyhumans hosted::
 - [`crates/openhuman-tinyhumans/src/hosted/referral/README.md`](referral/README.md): the referral module README.
 - [`crates/openhuman-tinyhumans/src/hosted/team/README.md`](team/README.md): the team module README.
 - [`crates/openhuman-tinyhumans/src/hosted/webhooks/README.md`](webhooks/README.md): the webhooks module README.
-- [`gitbooks/developing/tinyhumans-api-key.md`](../../../../gitbooks/developing/tinyhumans-api-key.md): running on a TinyHumans API key.
+- [`docs/gitbooks/en/developing/tinyhumans-api-key.md`](../../../../docs/gitbooks/en/developing/tinyhumans-api-key.md): running on a TinyHumans API key.

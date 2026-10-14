@@ -1,6 +1,7 @@
 ---
 name: "omh-ops-observability-card"
 description: "[omh] Tracking cost, tokens, latency, or service health: prepare an operations command-board for wrapper-safe token, cost, latency, run history, queue, failure-mode, external metric-provider, and service-quality evidence boundaries. Use when the user says: ops-observability-card, observability card, operations command board, ops command board, service quality board, service quality, external metric provider, metric provider."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, observability]
@@ -16,13 +17,13 @@ This is an OMH `ops-observability-card` workflow skill, projected for Agent Skil
 
 ## Why This Exists
 
-`ops-observability-card` exists so Hermes users can ask for this workflow in chat and get a structured, checkable answer instead of an improvised one.
+`ops-observability-card` exists so service, loop, and automation operations get one board where each cost, latency, token, failure-mode, and metric-provider figure is marked observed or prepared, instead of an improvised dashboard.
 
 ## Do Not Use When
 
-- The request is already handled by a narrower explicit skill with stronger evidence.
-- The user asks OMH to secretly run external platforms, connectors, schedulers, file exports, or runtime agents.
-- The only safe answer is to ask for missing authority, credentials, target, or observed evidence first.
+- The user asks what their own Hermes conversation has used or cost; Hermes' /usage shows this session's tokens and context, /insights estimates cost across recent sessions, and the omh_run_summary tool relays this conversation's recorded tokens and cost.
+- The user wants one run's timing and context-budget report; use `omh-run-efficiency`.
+- The user asks OMH to sign in to a metric provider, billing console, or dashboard and pull live figures; the card reads only supplied payloads and Hermes' own records.
 
 ## Examples
 
@@ -51,7 +52,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when automation, loops, gateway work, executor handoffs, or service operations need a safe command-board for cost, latency, token, history, failure-mode, supplied metric-provider, and service-quality visibility.
 
@@ -72,6 +73,7 @@ Quality bar:
 - When advising what to record per model call, require the five answers - which model, how long, how many tokens in and out, whether it succeeded, and why it failed - with streaming calls adding time-to-first-token; the attribute tiers live in `omh-agent-ops-review/references/instrumentation-ladder.md`.
 - Aggregate cost at the four levels - per call, per agent run, per session, per user - and name the budget threshold each level checks against before recommending any optimization signal.
 - Never recommend logging raw prompts, responses, or secret values into telemetry; counts, lengths, hashes, and key-set booleans carry the signal without the leak.
+- On Hermes, a conversation's token and cost figures come from the cost receipt `omh_run_summary` returns, which keeps Hermes' own accounting apart from executor-reported fanout units and names each cost's basis, and the person's `/insights` gives Hermes' estimated cost across recent sessions. A conversation with no recorded tokens is not_observed, never zero, and provider billing stays not_observed.
 
 Required inputs:
 

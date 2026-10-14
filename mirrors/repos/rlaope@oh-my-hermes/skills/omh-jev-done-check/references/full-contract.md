@@ -11,8 +11,8 @@ holds the workflow-specific detail without copying those shared rails.
 
 ## Do Not Use When
 
-- The user wants release evidence collected and recorded; use `verification-gate`.
-- A loop is deciding whether to stop; stop rules read record fields and belong to `loop`.
+- The user wants release evidence collected and recorded; use `omh-verification-gate`.
+- A loop is deciding whether to stop; stop rules read record fields and belong to `ulw-loop`.
 
 ## Examples
 
@@ -39,7 +39,7 @@ Bad example:
 - If the tool returns `consent_not_observed`, nothing was sent; offer the ask in one line naming what would be sent and wait for the user to reply `ask jev`.
 - If the tool refuses `credential_like_content`, remove the secret-looking text from `state` rather than redacting it silently, and tell the user what was removed.
 
-## Use When
+## When to Use
 
 Use before claiming a task complete, when the user asks Jev to test each completion claim against observed output rather than the agent's own summary.
 

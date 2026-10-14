@@ -104,9 +104,13 @@ Drop a `*.motion.json` sidecar next to the composition (matching the html basena
 npx hyperframes snapshot                       # 5 key frames as PNG
 npx hyperframes snapshot ./my-project          # specific project
 npx hyperframes snapshot --frames 10           # evenly-spaced N frames
+npx hyperframes snapshot --range 3:5 --frames 8 # 8 frames within root-timeline seconds 3–5
+npx hyperframes snapshot --composition intro --frames 8 # 8 frames within this data-composition-id
 ```
 
-Captures still PNGs from the composition for visual diffing, thumbnails, or attaching to a PR. Faster than rendering a video when you only need a few hero frames. Output lands in the project's snapshots directory. Not deprecated: it remains the standalone capture utility, while `check --snapshots` covers the gate's needs (overview frames annotated with labeled finding boxes, plus `finding-NN-<code>.png` crops for every error finding with a bbox).
+Still PNGs. Each run writes `.hyperframes/artifacts/snapshots/<id>/` unless `--output` is set. `snapshot` is the standalone capture; `check --snapshots` is the gate.
+
+One of `--at`, `--range START:END` (seconds), or `--composition <data-composition-id>` (not a CSS selector). `--frames` defaults to 5. Range and composition sample just before the end and add no extra end frame; `--at` adds one unless `--no-end`.
 
 ### Zooming into a reported finding
 

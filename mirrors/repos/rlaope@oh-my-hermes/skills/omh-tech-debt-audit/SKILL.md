@@ -1,6 +1,8 @@
 ---
 name: "omh-tech-debt-audit"
 description: "[omh] Accumulated tech debt to rank: build the severity-by-effort debt ledger from observed repo evidence - orient, audit the named dimensions with file:line citations, rank fixes and quick wins - and reconcile RESOLVED/NEW/CARRIED against the previous ledger on rerun. Use when the user says: tech-debt-audit, tech debt, tech debt audit, technical debt, technical debt audit, tech debt ledger, debt ledger, audit our tech debt."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, maintenance]
@@ -8,6 +10,7 @@ metadata:
     phase: tech-debt-audit
     role: reviewer
     quality_tier: finding-evidence-gated
+    related_skills: [omh-code-review, omh-ai-slop-cleaner, omh-refactor-plan, omh-production-audit]
 ---
 
 # Tech Debt Audit
@@ -20,10 +23,10 @@ This is a Hermes-native `tech-debt-audit` workflow skill.
 
 ## Do Not Use When
 
-- The target is one diff, PR, or claim rather than the codebase's accumulated state; use `code-review`.
-- The user wants the debt removed now, behavior preserved; use `ai-slop-cleaner` for deletion-first cleanup.
-- A boundary-changing fix from the ledger needs its execution shaped into phases; use `refactor-plan`.
-- The question is release risk for a specific deploy rather than source quality; use `production-audit`.
+- The target is one diff, PR, or claim rather than the codebase's accumulated state; use `omh-code-review`.
+- The user wants the debt removed now, behavior preserved; use `omh-ai-slop-cleaner` for deletion-first cleanup.
+- A boundary-changing fix from the ledger needs its execution shaped into phases; use `omh-refactor-plan`.
+- The question is release risk for a specific deploy rather than source quality; use `omh-production-audit`.
 
 ## Examples
 
@@ -56,9 +59,9 @@ Bad example:
 
 - Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when the codebase's accumulated debt should be measured and ranked as a ledger - findings with file:line, severity, and effort, quick wins separated from big fixes - rather than judged as a diff or cleaned up on the spot.
 
@@ -119,4 +122,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

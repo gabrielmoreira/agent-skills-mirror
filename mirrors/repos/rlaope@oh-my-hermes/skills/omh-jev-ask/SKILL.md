@@ -1,6 +1,8 @@
 ---
 name: "omh-jev-ask"
 description: "[omh] User named Jev for yes/no or pick-one probabilities: Jev ask: typed yes/no, pick-one, or scored questions to Jev with your own key; returns probabilities, never prose. Use when the user says: jev-ask, ask jev, jev question, jev score."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, gateway]
@@ -8,6 +10,7 @@ metadata:
     phase: jev-ask
     role: guide
     quality_tier: evidence-gated
+    related_skills: [omh-ask, omh-decide, omh-model-setup]
     requires_tools: [omh_jev_ask]
 ---
 
@@ -15,7 +18,7 @@ metadata:
 
 Required: text to judge and independent typed questions. Output: Jev's probabilities, served model, and cost, or a non-answer status.
 
-Read `omh-routing/references/jev-rail.md` before the first ask: consent, what leaves the machine, limits, and non-answer statuses. Prepared OMH routing is not execution or approval. Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+Read `skill_view(name='omh-routing', file_path='references/jev-rail.md')` before the first ask: consent, what leaves the machine, limits, and non-answer statuses. Prepared OMH routing is not execution or approval. Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
 Contract: `references/full-contract.md`.
 

@@ -61,7 +61,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.skillshare/skills/skillshare-changelog/SKILL.md`](.skillshare/skills/skillshare-changelog/SKILL.md) |
 | 2 | ✓ | [`.skillshare/skills/skillshare-cli-e2e-test/SKILL.md`](.skillshare/skills/skillshare-cli-e2e-test/SKILL.md) |
-| 3 | ✓ | [`.skillshare/skills/skillshare-codebase-audit/SKILL.md`](.skillshare/skills/skillshare-codebase-audit/SKILL.md) |
+| 3 | ✓ | [`.skillshare/skills/skillshare-code-review/SKILL.md`](.skillshare/skills/skillshare-code-review/SKILL.md) |
 | 4 | ✓ | [`.skillshare/skills/skillshare-devcontainer/SKILL.md`](.skillshare/skills/skillshare-devcontainer/SKILL.md) |
 | 5 | ✓ | [`.skillshare/skills/skillshare-implement-feature/SKILL.md`](.skillshare/skills/skillshare-implement-feature/SKILL.md) |
 | 6 | ✓ | [`.skillshare/skills/skillshare-release/SKILL.md`](.skillshare/skills/skillshare-release/SKILL.md) |

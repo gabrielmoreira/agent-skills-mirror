@@ -1,6 +1,8 @@
 ---
 name: "omh-codegraph-refresh"
 description: "[omh] Outdated code index or codemap: refresh local code intelligence, summarize repo structure, and prepare task-scoped codegraph handoff context without overclaiming execution. Use when the user says: codegraph-refresh, codegraph refresh, refresh codegraph, update codegraph, codegraph stale, stale codegraph, codegraph handoff, codegraph summary."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -8,6 +10,7 @@ metadata:
     phase: codegraph-refresh
     role: planner
     quality_tier: codegraph-gated
+    related_skills: [omh-codebase-onboarding, ulw-work, omh-frontend, omh-design-quality-gate, omh-visual-qa]
 ---
 
 # Codegraph Refresh
@@ -20,9 +23,9 @@ This is a Hermes-native `codegraph-refresh` workflow skill.
 
 ## Do Not Use When
 
-- The user needs a narrative first-read tour of an unfamiliar repo; use `codebase-onboarding`.
-- The user already has accepted implementation criteria and wants code changes; use `ultrawork` or a coding handoff.
-- The user asks for visual, frontend, or rendered UI QA; use `frontend`, `design-quality-gate`, or `visual-qa`.
+- The user needs a narrative first-read tour of an unfamiliar repo; use `omh-codebase-onboarding`.
+- The user already has accepted implementation criteria and wants code changes; use `ulw-work` or a coding handoff.
+- The user asks for visual, frontend, or rendered UI QA; use `omh-frontend`, `omh-design-quality-gate`, or `omh-visual-qa`.
 
 ## Examples
 
@@ -55,9 +58,9 @@ Bad example:
 
 - Current lane: **Intent -> plan** (`oh-my-hermes`, `meta-router`, `deep-interview`, `context`, `plan`, `ralplan`, `adversarial-consensus`, `codebase-onboarding`, `+8 more`) - clarify, plan, ship, or loop goals.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when Hermes should refresh or summarize local repo code intelligence before planning, handoff, review, or implementation.
 
@@ -114,7 +117,7 @@ Safety rules:
 
 ## Structural Code Search
 
-When the target is a syntactic shape rather than a string, load `omh-routing/references/structural-code-search.md` before searching. If ast-grep is not on PATH, use grep/ripgrep exactly as today. Cap exploration to a few bounded, targeted queries before reading a full file, escalate to a wider query only when a bounded pass finds nothing or stays ambiguous, and stop once the target is found.
+When the target is a syntactic shape rather than a string, load `skill_view(name='omh-routing', file_path='references/structural-code-search.md')` before searching. If ast-grep is not on PATH, use grep/ripgrep exactly as today. Cap exploration to a few bounded, targeted queries before reading a full file, escalate to a wider query only when a bounded pass finds nothing or stays ambiguous, and stop once the target is found.
 
 ## Runtime Evidence
 
@@ -132,4 +135,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

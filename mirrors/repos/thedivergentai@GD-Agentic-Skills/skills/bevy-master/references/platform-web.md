@@ -1,11 +1,9 @@
 ---
 name: bevy-platform-web
-description: "Docs-first stub for Bevy web and Wasm. Godot counterpart: godot-platform-web. Keywords: Bevy, wasm, web, webgl2, webgpu, browser."
+description: "Bevy ECS skill for web and Wasm. Keywords: Bevy, wasm, web, webgl2, webgpu, browser."
 ---
 
-# Bevy web platform (docs-first stub)
-
-Not a full port. Docs-first stub. Godot counterpart: godot-platform-web.
+# Bevy web platform
 
 ## When to use
 
@@ -16,27 +14,26 @@ Load this when the same app should run in a browser. Packaging pipelines are not
 - **Features opened:** `web` (browser APIs, wasm32 only), `webgl2` (limitations so Wasm can use WebGL2), `webgpu` (overrides webgl2; Wasm with WebGPU only).
 - **Asset note:** `http` and `https` features enable remote asset download and warn about security. `web_asset_cache` caches downloads and currently never invalidates entries.
 - **Clipboard:** `clipboard_image` says it is not supported on WASM.
-- **Window:** the same `Window` component still describes the canvas window. DOM integration was not opened.
+- **Window:** the same `Window` component still describes the canvas window. Check the window docs for DOM integration before writing it.
 
-## Godot idea to Bevy idiom
+## Coming from Godot
 
-| Idea | Bevy idiom (idea only) |
+| Godot idea | Bevy idiom |
 | --- | --- |
-| HTML5 export | A wasm32 build with the web feature. Toolchain steps were not opened. |
+| HTML5 export | A wasm32 build with the web feature. Check the platform docs for toolchain steps before writing them. |
 | WebGL vs WebGPU | webgl2 versus webgpu features. They conflict as documented. |
 | Remote assets | http or https features. Security warning is on the feature list. |
 
-## Gaps
+## Scope
 
-- wasm-bindgen, trunk, or other bundler steps were not opened. Do not invent commands.
-- Canvas sizing hooks were not opened.
-
+- Check the web docs for wasm-bindgen, trunk, or other bundler steps before writing commands.
+- Check the window docs for canvas sizing hooks before writing them.
 
 ## Expert Knowledge Delta
 
-Library target in prose: **Bevy 0.20.0**. Lattice URLs stay unversioned.
+Target: **Bevy 0.20+**.
 
-Opened canon only: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. This file does not invent their struct APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
+Core ECS types: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. See `bevy-events-messaging` for their APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
 
 ### Who owns state
 
@@ -59,23 +56,20 @@ Borrow rule: two systems that both mutably query the same component must be orde
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API this skill did not open | A Gaps row | A fabricated crate (solver, navmesh module, net, XR) |
+| An API outside the documented set | Check the official docs first | A made-up crate or API |
 
-Load `references/a-gate-notes.md` for the same table plus the gap rule.
+Load [references/ecs-ownership.md](platform-web-ecs-ownership.md) for the ownership table.
 
 ## NEVER
 
-- Do not put `/0.20.0/` in lattice URLs. WHY: permalinks stay on `latest`. The 0.20.0 pin belongs in prose once.
+- Do not pin `/0.20.0/` in docs URLs. WHY: links stay on `latest`; the 0.20 target is stated once in prose.
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
-- Do not invent a physics, navigation, networking, or XR crate here. WHY: those rows are gaps, blocked, or revisit.
+- Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot HTML5 export preset names. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Godot HTML5 export preset names. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
-- No Godot types in Bevy code. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No invented APIs or unnamed third-party crates as the chosen solver. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Creation Station content. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No umbrella skill over Godot and Bevy. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- Do not mark this row `ported`. It is `docs_mapped`. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Godot types in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No invented APIs or unnamed third-party crates as the chosen solver. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
@@ -83,7 +77,7 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 
 ### Official Documentation
 - [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - Unversioned API index. Feature list opened for 0.20.0.
+- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
@@ -92,15 +86,15 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](../SKILL.md) - Hub and schedules.
-- [bevy-ecs-composition](ecs-composition.md) - Components and systems.
-- [bevy-platform-desktop](platform-desktop.md) - Window component shared with desktop.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
+- [bevy-platform-desktop](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-platform-desktop/SKILL.md) - Window component shared with desktop.
 
 #### Complements
-- [godot-platform-web](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-web/SKILL.md) - Godot counterpart. Source idea only.
+- [godot-platform-web](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-platform-web/SKILL.md) - Equivalent Godot skill.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](../SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

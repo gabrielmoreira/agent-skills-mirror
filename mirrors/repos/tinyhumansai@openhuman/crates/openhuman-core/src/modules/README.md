@@ -213,7 +213,7 @@ cold download never stalls other tasks. Later launches re-verify the cached
 artifact from disk instead of downloading again.
 
 A panic inside the loader is reported as an error carrying
-`crate::tools::status::MODULE_FAULT_MARKER` and "restart the app to try
+`tinytools::status::MODULE_FAULT_MARKER` and "restart the app to try
 again", rather than unwinding into whoever was waiting.
 
 ### Bundled archives
@@ -264,7 +264,7 @@ that configuration, never in an ordinary method call or an RPC reply.
 a record whose component is off with `LoadError::Disabled` before any claim,
 download or `dlopen`; `modules.list` reports `ModuleState::Disabled`; boot skips
 the module and `search_path::load_enabled` leaves its search-path artifact
-unopened. See [components](../../../../gitbooks/developing/components.md).
+unopened. See [components](../../../../docs/gitbooks/en/developing/components.md).
 
 ### Boot
 
@@ -304,14 +304,14 @@ download, its `dlopen`, or its resident memory.
 | [`computer.rs`](computer.rs) | `tinycomputer` | `status` for the Computer settings page: lifecycle state, configured routes, and optionally what the module reports through `Describe`. |
 | [`browser.rs`](browser.rs) | `tinycomputer` | `BrowserClient` for the `Browser*` members, over the desktop proxy, plus the shared website policy: "Allow all" (the list's `*`) lets the browser open any public site, private and local addresses still refused. |
 | [`browser_task.rs`](browser_task.rs) | `tinycomputer` | Browser tasks over `StartTask` / `AwaitTask` / `ContinueTask`: `start`, `wait`, `resume`, `cancel`, `report`. The host keeps the policy (surfaces, origins, action budget, approvals) and sends Browser Control's Chrome path, and in persistent mode its profile folder, with every task, read from the settings each time. A refusal or failure that says Chrome is missing, or that its path names no Chrome, tells the agent where the user sets that path. |
-| [`browser_profile.rs`](browser_profile.rs) | `tinycomputer` | Whether a running Chrome holds the persistent profile folder, by the lock Chrome keeps there (`SingletonLock`, or `lockfile` on Windows). Chrome lets one browser at a time use a profile, so a task waits up to 5 s for one closing on it, then runs in a fresh profile. A browser of this process claims the folder before it starts, as Chrome locks it only once started, so two starting together never both take it. |
+| [`profile_claim.rs`](profile_claim.rs) | `tinycomputer` | Host adapter over `BrowserClaimProfile` / `BrowserReleaseProfile`: sends the configured persistent profile folder with the wait (5 s for a task, 1 s for a session) and applies the outcome, a claimed folder or a fresh profile. Chrome's lock detection, the wait and the claim bookkeeping live in the module. |
 | [`browser_task_report.rs`](browser_task_report.rs) | `tinycomputer` | What is kept when a task stops: a content-free log summary, and with tracing on the full report under `<workspace>/state/computer/tasks/`. |
-| [`browser_sites.rs`](browser_sites.rs), [`browser_sites/store.rs`](browser_sites/store.rs) | `tinycomputer` | Per-site memory of plans and elements learned by finished tasks, in `<workspace>/state/computer/sites/<site>.json`, with 30-day expiry. Fed back on `StartTask`; never reaches the agent's memory or prompts. |
+| [`site_memory_host.rs`](site_memory_host.rs) | `tinycomputer` | Host side of `SiteMemoryHost`: stores the per-site memory the module keeps (plans and elements learned by finished tasks) in `<workspace>/state/computer/sites/<site>.json`, sweeps files unchanged for 30 days, refuses saves while learning is off, and bumps a forget epoch so a task running when its site was forgotten cannot write it back. The module applies the reuse rules and calls Load/Save from `StartTask` onward; never reaches the agent's memory or prompts. |
 | [`connectors.rs`](connectors.rs) | `tinyconnectors` | `proxy`, `call`, `call_stateless`, `call_bare`, `reconcile_route_if_loaded`. Builds the route configuration (signed-in backend or the user's own Composio key) and reconciles it on every call so sign-out reaches the module. |
 | [`search/mod.rs`](search/mod.rs) | `tinysearch` | `module_config` from the host's resolved search policy, and `configured_tool_specs` computed synchronously from that same configuration. |
 | [`search/proxy.rs`](search/proxy.rs) | `tinysearch` | Lazy load, private reinitialization on configuration change, and serialized `list_tools` / `execute_tool`; `refresh_loaded` after settings saves and credential changes. |
 | [`tokenjuice_host.rs`](tokenjuice_host.rs) | `tinyjuice` | The reverse direction: an `MlHost` object the host serves at the contract's `ML_HOST_NAME` / `ML_HOST_PATH` for the module's tool-less summary model call. |
-| [`storage_host.rs`](storage_host.rs), [`storage_grants.rs`](storage_grants.rs) | every module | The reverse direction for storage: serves `ai.tinyhumans.tinystorage.Storage` (objects `Documents`, `Streams`, `Blobs`, `Secrets` at `/ai/tinyhumans/tinystorage/<Object>`) from the installed storage backend. The caller is the broker-authenticated sender mapped to a registry module id; its scope is `module:<id>@<base>` (a profile's is `<profile>~module:<id>`, under the profile's lease fence); its authority is the `StorageGrant` the build declares for it (`storage_grants::declared`, empty today, so no module has storage until it declares some). The host alone runs `ensure_collection`. Every call is audited (module, scope, object, op, target, outcome; no payload). Blob streams and watches answer `unsupported` until a per-module stream and signal route exists. |
+| [`storage_host.rs`](storage_host.rs), [`storage_host_linked.rs`](storage_host_linked.rs), [`storage_grants.rs`](storage_grants.rs), [`storage_import_tinymcp.rs`](storage_import_tinymcp.rs) | every module | The reverse direction for storage: serves `ai.tinyhumans.tinystorage.Storage` (objects `Documents`, `Streams`, `Blobs`, `Secrets` at `/ai/tinyhumans/tinystorage/<Object>`) from the installed storage backend. The caller is the broker-authenticated sender mapped to a registry module id; its scope is `module:<id>@<base>` (a profile's is `<profile>~module:<id>`, under the profile's lease fence); its authority is the `StorageGrant` the build declares for it (`storage_grants::declared`; `tinymcp`, `tinychannels`, `tinyconnectors`, `tinywallet`, `tinybox` and `tinyjuice` declare one in `storage_grant_<module>.rs`, any other module has no storage). The host alone runs `ensure_collection`. Every call is audited (module, scope, object, op, target, outcome; no payload). Blob streams and watches answer `unsupported` until a per-module stream and signal route exists (that needs tinybus's peer-bound `accept_stream_from` and unicast `emit_to`, which arrive with the tinybus 0.1.5 move, #7781). `storage_host_cdylib_tests.rs` proves the refusals (another module's collections, another scope, an undeclared collection, the inline blob cap, `PutStream`/`GetStream`/`WatchOpen`) against a real loaded cdylib, `tests/fixtures/storage_probe_module`, built on demand into `target/storage-probe` (or taken from `OPENHUMAN_STORAGE_PROBE_MODULE`). The objects are served by a *linked* module (`storage_host_linked.rs`, admitted with `attach_linked_with_config`) because the broker delivers the confidential `Secrets` route only to an attested recipient, which the host's own client connection is not. `storage_import_tinymcp.rs` is the one-time read-only import of tinymcp's legacy `mcp_clients.db` / `mcp_audit.db` into the module's scope, run before the module opens a data directory. The same shape (`storage_import_support.rs`: scope, host-only marker, write-if-absent) imports `tinyconnectors`' preference JSON files and trigger JSONL archive, `tinywallet`'s x402 `payments.jsonl`, `tinybox`'s jail `index.json` and `tinyjuice`'s `.tokenjuice/ccr` files (`storage_import_tinyconnectors.rs`, `_tinywallet.rs`, `_tinybox.rs`, `_tinyjuice.rs`), each once per directory from the host call that precedes the module's first use. |
 
 `tinybox.rs` supplies the pre-core gateway client.
 `channel_controller.rs` invokes TinyChannels' confidential controller member for
@@ -477,15 +477,15 @@ need a real module load a local build through `[[modules.overrides]]` or
 `OPENHUMAN_MODULE_SOURCE`;
 `scripts/test-rust-with-mock.sh` and CI build the pinned submodules.
 
-See also `gitbooks/developing/performance.md` for how on-demand modules keep a
+See also `docs/gitbooks/en/developing/performance.md` for how on-demand modules keep a
 minimal build small.
 
 ## Further reading
 
 - [Module sources and `[components]` (AGENTS.md)](../../../../AGENTS.md)
-- [Loadable modules](../../../../gitbooks/developing/loadable-modules.md)
+- [Loadable modules](../../../../docs/gitbooks/en/developing/loadable-modules.md)
 - [tinybus submodule](../../../../vendor/tinybus/README.md)
-- [Architecture overview](../../../../gitbooks/developing/architecture.md)
+- [Architecture overview](../../../../docs/gitbooks/en/developing/architecture.md)
 
 The connector host consumes verified release v0.14.0 (contract 1.13). The
 argument/default/filter/classification and trigger-archive adapters call bus
@@ -493,3 +493,7 @@ members; no normal or build edge reaches `tinyconnectors` or its sync library.
 Provider messages remain product output, while terminal bus reports contain
 only the module/version/stage/platform/reason vocabulary. Credential-bearing
 configuration and direct reads use attested confidential calls.
+
+## `[components] computer`
+
+`computer = false` is a ceiling over TinyComputer: desktop and browser tools are not registered, `ensure_loaded("tinycomputer")` refuses, `AccessibilityClient` (Globe hotkey, permissions, paste) answers `COMPONENT_DISABLED:computer`, and the `desktop.*` and `modules.browser_*` / `modules.computer_status` RPC methods answer `COMPONENT_DISABLED`. Effective desktop control is the flag AND the local consent file (`desktop::control::ops::enabled`); the flag never grants consent.

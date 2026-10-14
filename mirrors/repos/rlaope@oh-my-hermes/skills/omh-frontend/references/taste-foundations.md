@@ -8,7 +8,7 @@ failure this reference exists to prevent.
 ## Name one primary direction
 
 Taste directions pull in different directions; blending them by accident
-produces mud. Name ONE primary direction in `DESIGN.md` section 1. An
+produces mud. Name ONE primary direction in the `DESIGN.md` Overview. An
 element genuinely borrowed from another direction is allowed — named there
 with its reason — so a hybrid brief (a premium marketing shell over an
 operational product) stays expressible without dissolving into no direction
@@ -32,9 +32,9 @@ at all.
 ## Style presets are rule sets, not adjectives
 
 When a brief names a style - "neobrutalism", "glassy", "Swiss" - write it
-into `DESIGN.md` as concrete rules a reviewer can check against a screenshot.
-A style name with no rules is the same unactionable negation as "make it
-modern".
+into the `DESIGN.md` Do's and Don'ts as concrete rules a reviewer can check
+against a screenshot. A style name with no rules is the same unactionable
+negation as "make it modern".
 
 **Neobrutalism**, as a worked example:
 
@@ -109,10 +109,10 @@ An override is actionable only when it carries concrete values:
   CJK stack when the audience needs one;
 - the geometry that travels with them: radius, border weight, spacing base.
 
-Those land in `DESIGN.md` sections 2 and 3 before implementation starts. When
-the direction arrives as negations only, convert it into tokens and state them
-back — a named palette and stack the user can reject is a decision; "less
-AI-looking" is not.
+Those land in `DESIGN.md` as `colors:`, `typography:`, `rounded:`, and
+`spacing:` tokens before implementation starts. When the direction arrives as
+negations only, convert it into tokens and state them back — a named palette
+and stack the user can reject is a decision; "less AI-looking" is not.
 
 ## Review prompts — not bans
 

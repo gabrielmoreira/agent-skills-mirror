@@ -16,13 +16,13 @@ After wiring, restart the host or run its MCP reload (for example `/mcp` in Clau
 
 ## Workflow
 
-1. Detect the calling agent. If unknown, default to `claude-code`.
+1. Detect the calling agent. If unknown, ask which host to configure before changing files.
 2. Run `agentmemory connect <name>` using a name from the table in REFERENCE.md.
-3. Verify: the host should show the full tool set with a server running. Only 7 tools means the MCP shim could not reach a server (see ../_shared/TROUBLESHOOTING.md).
+3. Read the command result: an adapter that prints manual setup instructions has not completed installation. Restart the configured host, inspect its actual tool inventory, and perform an authorized save/recall check. A native memory provider and an MCP connection are separate surfaces (see [TROUBLESHOOTING.md](TROUBLESHOOTING.md)).
 
 ## Notes
 
-- The action skills (remember, recall, and the rest) are installed separately with `npx skills add rohitg00/agentmemory`. `connect` makes tools available; skills teach the agent when to use them.
+- Skills install separately: `npx skills@1.7.1 add rohitg00/agentmemory --agent hermes-agent --skill '*'` or use `--agent openclaw`. Choose the intended host; add `--global` only for a user-wide installation. Verify skill discovery and read a skill's local support file in that host.
 - Windows: use WSL2. Native Windows runs the server but `connect` is not supported there.
 
 ## See also

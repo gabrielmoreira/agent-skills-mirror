@@ -1,11 +1,9 @@
 ---
 name: bevy-character-movement
-description: "Docs-first stub for Bevy character movement. Godot counterpart: godot-characterbody-2d. Not a full port. Keywords: Bevy, movement, ECS, fixed timestep."
+description: "Bevy ECS skill for character movement. Keywords: Bevy, movement, ECS, fixed timestep."
 ---
 
-# Bevy character movement (docs-first stub)
-
-Not a full port. No Rust crate in this phase.
+# Bevy character movement
 
 ## When to use
 
@@ -18,27 +16,26 @@ Load this when a Bevy app needs a player or actor that moves in discrete steps (
 - **Systems** read intent and write velocity or position. Register them on the fixed schedule, not on a per-node physics callback.
 - **Schedule:** `run_fixed_main_schedule` runs `FixedMain` from virtual time (`bevy::time` 0.20.0). Order dependent systems with `.chain()` (ECS page). Do not paste a Godot physics-process function.
 
-## Godot idea to Bevy idiom
+## Coming from Godot
 
-| Idea | Bevy idiom (idea only) |
+| Godot idea | Bevy idiom |
 | --- | --- |
 | Body that you move yourself | Entity with movement components and a system |
 | Step that should stay stable when frame time changes | System on the fixed timestep (`Fixed` / `FixedMain`) |
 | Coyote time, jump buffer | Timer data on the entity or a small resource, consumed by the movement system |
-| Collision response | Not in this stub. See bevy-physics-3d gaps |
+| Collision response | Collision response belongs on bevy-physics-3d. |
 
-## Gaps
+## Scope
 
-- No verified character-controller type in the `bevy` 0.20.0 crate docs opened for this pass. The feature list has no physics solver.
+- Check the `bevy` 0.20.0 crate docs for a character-controller type before writing one. The feature list has no physics solver.
 - Do not call `move_and_slide`, `_physics_process`, or `CharacterBody2D`.
 - Ground detection, shape casts, and collision layers are unverified. Do not invent query APIs.
 
-
 ## Expert Knowledge Delta
 
-Library target in prose: **Bevy 0.20.0**. Lattice URLs stay unversioned.
+Target: **Bevy 0.20+**.
 
-Opened canon only: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. This file does not invent their struct APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
+Core ECS types: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. See `bevy-events-messaging` for their APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
 
 ### Who owns state
 
@@ -61,16 +58,16 @@ Borrow rule: two systems that both mutably query the same component must be orde
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API this skill did not open | A Gaps row | A fabricated crate (solver, navmesh module, net, XR) |
+| An API outside the documented set | Check the official docs first | A made-up crate or API |
 
-Load `references/a-gate-notes.md` for the same table plus the gap rule.
+Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownership table.
 
 ## NEVER
 
-- Do not put `/0.20.0/` in lattice URLs. WHY: permalinks stay on `latest`. The 0.20.0 pin belongs in prose once.
+- Do not pin `/0.20.0/` in docs URLs. WHY: links stay on `latest`; the 0.20 target is stated once in prose.
 - Do not step locomotion on raw `Update` when the step must stay stable. WHY: `bevy::time` documents `Fixed` and `run_fixed_main_schedule` (`FixedMain`) for a fixed clock.
 - Do not call `move_and_slide`, `_physics_process`, or `CharacterBody2D`. WHY: those are Godot types. This skill only owns ECS movement data.
-- Do not invent a character-controller or shape-cast API. WHY: no verified controller type was opened in the `bevy` crate docs for this pass.
+- Do not invent a character-controller or shape-cast API. Check the `bevy` crate docs for a controller type before writing one.
 - Do not mutably query the same movement component from two unordered systems. WHY: systems run in parallel unless `.chain()` orders them.
 
 ## Reference
@@ -87,14 +84,14 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-master/SKILL.md)  -  ECS ownership, schedules, and which Bevy skill to load.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  ECS ownership, schedules, and which Bevy skill to load.
 
 #### Complements
-- [bevy-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-physics-3d/SKILL.md)  -  Collision and solver gaps. Player motion stays in this stub.
-- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md)  -  Godot counterpart. Source idea only. Do not import Godot types.
+- [bevy-physics-3d](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-physics-3d/SKILL.md)  -  Collision and physics solvers. Player motion stays in this skill.
+- [godot-characterbody-2d](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-characterbody-2d/SKILL.md)  -  Equivalent Godot skill. Do not import Godot types.
 
 #### Downstream / consumers
-- None yet. Genre skills are not ported.
+- Genre skills cover loop and encounter design.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.

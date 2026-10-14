@@ -1,6 +1,8 @@
 ---
 name: "omh-frontend"
 description: "[omh] Building or polishing a web or terminal UI: prepare design-system-driven web and terminal (TUI) UI creation, redesign, polish, accessibility, performance, and visual QA handoffs. Use when the user says: frontend, front-end, front end, frontend skill, in the frontend, on the frontend, to the frontend, web ui."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, materials]
@@ -8,6 +10,7 @@ metadata:
     phase: frontend-design
     role: operator
     quality_tier: frontend-design-gated
+    related_skills: [omh-design-quality-gate, omh-decision-prototype, omh-materials-package, omh-deliverable-package, omh-image-cards, omh-visual-qa]
 ---
 
 # Frontend
@@ -20,11 +23,11 @@ This is a Hermes-native `frontend` workflow skill.
 
 ## Do Not Use When
 
-- The user needs a broad premium-quality gate across web, deck, PDF, poster, or publishing outputs; use `design-quality-gate`.
-- The user wants a disposable wireframe or mocked interaction to settle one interaction question before planning; use `decision-prototype`.
-- The user only needs a file, deck, PDF, spreadsheet, HWP, or attachment package; use `materials-package` or `deliverable-package`.
-- The user only needs an image card or infographic prompt; use `img-summary`.
-- The user asks to mark a UI as visually passed without fresh rendered evidence; use `visual-qa` and keep PASS blocked until observed.
+- The user needs a broad premium-quality gate across web, deck, PDF, poster, or publishing outputs; use `omh-design-quality-gate`.
+- The user wants a disposable wireframe or mocked interaction to settle one interaction question before planning; use `omh-decision-prototype`.
+- The user only needs a file, deck, PDF, spreadsheet, HWP, or attachment package; use `omh-materials-package` or `omh-deliverable-package`.
+- The user only needs an image card or infographic prompt; use `omh-image-cards`.
+- The user asks to mark a UI as visually passed without fresh rendered evidence; use `omh-visual-qa` and keep PASS blocked until observed.
 
 ## Examples
 
@@ -59,9 +62,9 @@ Bad example:
 
 - Current lane: **Materials and visual summaries** (`design-orchestration`, `apple-design`, `design-quality-gate`, `award-bar-score`, `frontend`, `accessibility-audit`, `visual-qa`, `content-operator`, `+6 more`) - web, accessibility, visual QA, files, and packages.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when Hermes should shape or improve a web/frontend or terminal (TUI) surface before implementation: layout, design system, responsive states, accessibility, performance, motion, and anti-generic visual quality.
 
@@ -82,7 +85,7 @@ Quality bar:
 - Name the model's own default aesthetic before inheriting it — the editorial prior of cream grounds, serif display faces, and muted terracotta accents suits editorial, portfolio, and hospitality briefs and is a failure mode on dashboards, developer tools, fintech, and data-dense UIs. Treat a generic negation ("don't make it look AI", "make it minimal") as unactionable: an override counts only when it carries concrete tokens, a hex palette and a typeface stack recorded in DESIGN.md. Run the review prompts in `references/taste-foundations.md` over framework blue, glass and gradient surfaces, default UI typefaces, bounce easing, blanket shadows, eyebrow/title/description stuffing, uniform column grids, and CJK body under the 14px Korean floor.
 - When the target surface is a terminal UI (TUI), load `references/tui-craft.md` and hold the same bar there: default widgets are scaffolding, not finished UI; borders spent sparingly with spacing and a muted-color ladder doing the hierarchy; one named terminal aesthetic; verification rendered at 80x24 and 120x40 minimum with the pasted output as the screenshot-equivalent.
 - Use references and domain fit to avoid generic AI-looking frontend output; when the user supplies a visual reference, load `references/reference-token-extraction.md` and extract tokens into the contract instead of eyeballing.
-- Prepare a concrete design-system contract before implementation handoff: load `references/design-system-contract.md` and write DESIGN.md before the first component — no component code before the contract exists.
+- Prepare a concrete design-system contract before implementation handoff: load `references/design-system-contract.md` and write DESIGN.md before the first component — no component code before the contract exists. A new DESIGN.md is Google's DESIGN.md format (YAML token front matter, its sections in its order) plus OMH's own sections; a file in OMH's earlier numbered layout stays valid and is converted only when the user asks. When Hermes' bundled `design-md` skill is available, author, lint, diff, or export a file in the format through it, never a file in the earlier layout; lint is evidence only from a run that executed, otherwise `not_observed`.
 - Query the local design reference data before fixing tokens: `omh design data --kind palette|font|ux --context <product context>` returns curated palettes, font stacks with CJK notes, and UX guidelines offline. Those rows inform DESIGN.md; the contract, not the query, still gates the code.
 - Scroll-driven motion is a decision with a bill: load `references/scroll-motion-libraries.md`, take the native path (CSS `scroll-behavior`, scroll-driven animations, `IntersectionObserver`, scroll-snap) unless one interpolated scroll position feeds several consumers, and when a library is chosen (Lenis is the reviewed record) name its reduced-motion branch, anchors, nested scroll, teardown, and INP budget in the contract.
 - Copied component source is the project's to fix: before adopting from a shadcn-style registry, load `references/component-registry-adoption.md` (license, dependencies, reduced motion, ARIA, keyboard/touch, token mapping, one hero effect per view). Theme charts through tokens, not config literals: load `references/chart-styling.md`.
@@ -166,4 +169,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

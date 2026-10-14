@@ -1,6 +1,7 @@
 ---
 name: "omh-internal-audit"
 description: "[omh] Testing an internal control -- SOX, ICFR or ITGC: define the population and the sample, name the evidence that proves each item, re-perform the control, and grade any deficiency from stated likelihood, magnitude and compensating-control criteria, never by assertion. Use when the user says: internal-audit, internal audit, internal control, internal controls, internal control audit, control testing, test of controls, tests of controls."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]
@@ -25,10 +26,10 @@ This is an OMH `internal-audit` workflow skill, projected for Agent Skills hosts
 
 ## Do Not Use When
 
-- The ask is the month's figures, a budget variance, or the close itself; use `finance-analysis`.
-- The ask is reading a contract or a regulation for legal risk; use `legal-compliance-review`.
-- The ask is whether a service is ready to launch; use `production-audit`.
-- The ask is ranking a codebase's debt; use `tech-debt-audit`.
+- The ask is the month's figures, a budget variance, or the close itself; use `omh-finance-analysis`.
+- The ask is reading a contract or a regulation for legal risk; use `omh-legal-compliance-review`.
+- The ask is whether a service is ready to launch; use `omh-production-audit`.
+- The ask is ranking a codebase's debt; use `omh-tech-debt-audit`.
 
 ## Examples
 
@@ -59,7 +60,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when an internal control is being tested or a control failure graded: SOX or ICFR testing, IT general controls, a control owner's evidence, a sample of transactions, re-performing a reconciliation or an approval, or deciding whether a deficiency is a significant deficiency or a material weakness. The output is the control and its population, the sample design, the evidence per item, the re-performance record, and a severity grade derived from stated criteria; OMH reads no ledger and tests nothing itself.
 

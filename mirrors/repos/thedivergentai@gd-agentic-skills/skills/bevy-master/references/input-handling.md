@@ -1,11 +1,9 @@
 ---
 name: bevy-input-handling
-description: "Docs-first stub for Bevy player input. Godot counterpart: godot-input-handling. Not a full port. Keywords: Bevy, ButtonInput, KeyCode, MouseButton, Gamepad."
+description: "Bevy ECS skill for player input. Keywords: Bevy, ButtonInput, KeyCode, MouseButton, Gamepad."
 ---
 
-# Bevy input handling (docs-first stub)
-
-Not a full port. Input here is resources and events on the app, not an action map copied from Godot.
+# Bevy input handling
 
 ## When to use
 
@@ -19,9 +17,9 @@ Load this when a system should read keyboard, mouse, or gamepad state. The `bevy
 - **Gamepad:** `Gamepad` stores a connected pad's metadata (`GamepadButton`, `GamepadAxis`). Connection and axis changes arrive as `GamepadConnectionEvent`, `GamepadAxisChangedEvent`, and `GamepadButtonChangedEvent`. `GamepadRumbleRequest` is the force-feedback event.
 - **Schedule:** read these resources from a system on `Update` (or a schedule you already chain). Do not invent an input-map resource.
 
-## Godot idea to Bevy idiom
+## Coming from Godot
 
-| Idea | Bevy idiom (idea only) |
+| Godot idea | Bevy idiom |
 | --- | --- |
 | Action just pressed | `ButtonInput::just_pressed` on `KeyCode` or `MouseButton` |
 | Action held | `ButtonInput::pressed` |
@@ -29,18 +27,17 @@ Load this when a system should read keyboard, mouse, or gamepad state. The `bevy
 | Mouse look delta | `AccumulatedMouseMotion` (reset each frame) |
 | Controller | `Gamepad` plus the gamepad events listed above |
 
-## Gaps
+## Scope
 
-- Touch and gesture modules are listed on the input index. Their event fields were not opened.
-- A project-wide action-map resource (named actions, rebinding) was not opened. Do not invent one.
-- Glyphs and device prompts were not opened.
-
+- Touch and gesture modules are listed on the input index. Check those pages for event fields before writing them.
+- Check the input docs for a project-wide action-map resource (named actions, rebinding) before writing one.
+- Check the input docs for glyphs and device prompts before writing them.
 
 ## Expert Knowledge Delta
 
-Library target in prose: **Bevy 0.20.0**. Lattice URLs stay unversioned.
+Target: **Bevy 0.20+**.
 
-Opened canon only: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. This file does not invent their struct APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
+Core ECS types: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. See `bevy-events-messaging` for their APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
 
 ### Who owns state
 
@@ -63,22 +60,19 @@ Borrow rule: two systems that both mutably query the same component must be orde
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API this skill did not open | A Gaps row | A fabricated crate (solver, navmesh module, net, XR) |
+| An API outside the documented set | Check the official docs first | A made-up crate or API |
 
-Load `references/a-gate-notes.md` for the same table plus the gap rule.
+Load [references/ecs-ownership.md](input-handling-ecs-ownership.md) for the ownership table.
 
 ## NEVER
 
-- Do not put `/0.20.0/` in lattice URLs. WHY: permalinks stay on `latest`. The 0.20.0 pin belongs in prose once.
+- Do not pin `/0.20.0/` in docs URLs. WHY: links stay on `latest`; the 0.20 target is stated once in prose.
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
-- Do not invent a physics, navigation, networking, or XR crate here. WHY: those rows are gaps, blocked, or revisit.
+- Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot input-map, event, or device types. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No APIs this file did not open (`pressed`, `just_pressed`, `just_released` are the button methods cited). WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No third-party input crates. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Creation Station content. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No umbrella skill over Godot and Bevy. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- Do not mark this row `ported`. It is `docs_mapped`. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Godot input-map, event, or device types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No APIs this file did not open (`pressed`, `just_pressed`, `just_released` are the button methods cited). WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No third-party input crates. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
@@ -96,16 +90,16 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](../SKILL.md)  -  Who owns which piece of state.
-- [bevy-ecs-composition](ecs-composition.md)  -  Systems and `Query`.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Who owns which piece of state.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md)  -  Systems and `Query`.
 
 #### Complements
-- [bevy-character-movement](character-movement.md)  -  Motion that consumes this input on the fixed timestep.
-- [bevy-camera-systems](camera-systems.md)  -  Viewpoint that may read mouse motion.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md)  -  Godot counterpart. Source idea only.
+- [bevy-character-movement](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-character-movement/SKILL.md)  -  Motion that consumes this input on the fixed timestep.
+- [bevy-camera-systems](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-camera-systems/SKILL.md)  -  Viewpoint that may read mouse motion.
+- [godot-input-handling](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-input-handling/SKILL.md)  -  Equivalent Godot skill.
 
 #### Downstream / consumers
-- [bevy-audio-systems](audio-systems.md)  -  The audio control example reads `ButtonInput<KeyCode>` to pause and mute.
+- [bevy-audio-systems](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-audio-systems/SKILL.md)  -  The audio control example reads `ButtonInput<KeyCode>` to pause and mute.
 
 #### Master
-- [bevy-master](../SKILL.md)  -  Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.

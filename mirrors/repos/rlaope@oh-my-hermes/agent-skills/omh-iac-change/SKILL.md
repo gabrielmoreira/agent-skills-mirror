@@ -1,6 +1,7 @@
 ---
 name: "omh-iac-change"
 description: "[omh] Infrastructure-as-code change -- Terraform, OpenTofu, Pulumi, a Kubernetes manifest, a Helm chart: read the drift, the blast radius and the cost delta from the saved plan, then stage the apply behind a health gate with a rollback per stage. Use when the user says: iac-change, iac change, infrastructure as code, infrastructure-as-code, terraform plan, terraform apply, terraform state, terraform drift."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -25,10 +26,10 @@ This is an OMH `iac-change` workflow skill, projected for Agent Skills hosts (Cl
 
 ## Do Not Use When
 
-- The ask is shipping a new version of the application and watching its health signals after the deploy; use `deploy-and-monitor`.
-- The ask is deciding a versioned release -- what goes in, its tag, or its canary -- rather than changing declared infrastructure; use `release-cut`.
-- The ask is choosing and deploying a model-serving engine; use `inference-serving`.
-- Production is down or degraded right now and the ask is command of the incident; use `live-incident-response`.
+- The ask is shipping a new version of the application and watching its health signals after the deploy; use `omh-deploy-and-monitor`.
+- The ask is deciding a versioned release -- what goes in, its tag, or its canary -- rather than changing declared infrastructure; use `omh-release-cut`.
+- The ask is choosing and deploying a model-serving engine; use `omh-inference-serving`.
+- Production is down or degraded right now and the ask is command of the incident; use `omh-live-incident-response`.
 
 ## Examples
 
@@ -59,7 +60,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when a change to declared infrastructure is about to be applied or has drifted: a Terraform, OpenTofu, Pulumi or CloudFormation plan, a Kubernetes manifest or kustomization, or a Helm chart or values change. The output is the drift between state and reality, the blast radius and cost delta read from the saved plan, and a staged apply where every stage has a health gate and a rollback; OMH applies nothing.
 

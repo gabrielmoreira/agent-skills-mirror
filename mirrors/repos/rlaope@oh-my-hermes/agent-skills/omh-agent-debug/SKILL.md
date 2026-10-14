@@ -1,6 +1,7 @@
 ---
 name: "omh-agent-debug"
 description: "[omh] Agent is stuck, looping, or drifting: capture a stuck, looping, drifting, or repeatedly failing agent run, diagnose the likely failure pattern, and prepare the smallest safe recovery action. Use when the user says: agent-debug, agent debug, agent debugging, agent introspection, agent self-debug, self-debug, self debugging, looping agent."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operations]
@@ -52,7 +53,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when an agent run is stuck, looping on tools, burning tokens without progress, drifting from the objective, losing context, or failing on recoverable environment/tool assumptions.
 

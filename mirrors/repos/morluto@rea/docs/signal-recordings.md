@@ -106,3 +106,37 @@ One decode is admitted at a time, including acquisition and cleanup. Excess
 requests receive a retryable capacity error before acquiring another file or
 worker. Shutdown closes admission and drains accepted work; failed cleanup
 remains owned and retryable.
+
+## Discover decoders before choosing settings
+
+`inspect_signal_decoders` / `inspect-signal-decoders` queries the **installed**
+sigrok catalog without opening a recording or scanning devices:
+
+```sh
+rea inspect-signal-decoders --query uart
+rea inspect-signal-decoders --decoder uart --query baud
+rea inspect-signal-decoders --decoder i2c --offset 0 --limit 50
+```
+
+Omit `decoder` to search decoder IDs and names. Supply one exact decoder ID to
+read its literal help, including required/optional channels, options, annotation
+classes and documentation. `query` is a case-insensitive literal substring;
+matching help retains original one-based line numbers. Empty query selects all.
+`offset` skips matches; `limit` defaults to 50. MCP `limit: null` or CLI `--all`
+returns all remaining matches; CLI `--all` and `--limit` conflict.
+The window reports examined, matching and returned records and `has_more`.
+A filtered empty page is not evidence that the installation has no decoders.
+
+Discovery refuses more than 65,535 line separators before constructing record
+objects (65,536-line representation budget), in addition to the 4 MiB output cap.
+Exceeding that budget is a resource failure with captured output. Returned text
+is copied so a retained page does not keep the complete producer output alive.
+
+Discovery shares decoding's owned process, admission slot, resource limits,
+cleanup retries and Evidence delivery. It records the executable and limiter
+identities, version banner and warnings. Failed version checks and malformed
+producer output preserve diagnostics. Help is producer text, not an independently
+validated parameter schema. Each request probes again; it does not cache or claim
+stable pages across installation changes. Libraries/decoder modules remain
+trusted and are not fully fingerprinted. Catalog output includes a SHA-256 of
+its executable, not a digest of the complete installation.

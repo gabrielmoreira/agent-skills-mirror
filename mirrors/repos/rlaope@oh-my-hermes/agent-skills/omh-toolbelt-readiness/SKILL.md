@@ -1,6 +1,7 @@
 ---
 name: "omh-toolbelt-readiness"
 description: "[omh] Which tools and credentials a workflow needs: inventory which MCP servers, CLIs, APIs, credentials, and connectors a workflow needs; use external-connector-readiness to assess one named integration and executor-runtime-readiness to choose the coding owner. Use when the user says: toolbelt-readiness, mcp readiness, tool readiness, plugin readiness, connector readiness, needed mcp, api credential, missing cli."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, tools]
@@ -16,13 +17,13 @@ This is an OMH `toolbelt-readiness` workflow skill, projected for Agent Skills h
 
 ## Why This Exists
 
-`toolbelt-readiness` exists so Hermes users can ask for this workflow in chat and get a structured, checkable answer instead of an improvised one.
+`toolbelt-readiness` exists so the tools, CLIs, credentials, and connectors a workflow needs are listed as present, missing, optional, or unsafe before the work starts, instead of failing midway on a tool nobody checked.
 
 ## Do Not Use When
 
-- The request is already handled by a narrower explicit skill with stronger evidence.
-- The user asks OMH to secretly run external platforms, connectors, schedulers, file exports, or runtime agents.
-- The only safe answer is to ask for missing authority, credentials, target, or observed evidence first.
+- One named integration needs assessing end to end before adoption; use `omh-external-connector-readiness`.
+- The question is which coding owner should run the work; use `omh-executor-runtime-readiness`.
+- The user wants a tool installed, a credential validated, or a connector called now; the card names that step and who runs it, and performs none of them.
 
 ## Examples
 
@@ -51,7 +52,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when a workflow depends on MCP, CLI, API credentials, or connectors and Hermes must show installed, missing, optional, and unsafe tools.
 
@@ -69,6 +70,7 @@ Quality bar:
 - Name the user-facing workflow objective, required context, next action, and stop condition.
 - Separate prepared guidance from observed platform, runtime, connector, file, memory, or delivery evidence.
 - Expose missing tools, credentials, targets, or observations as user-visible gaps.
+- On Hermes, count a native tool as present when it is in your tool list or tool_search finds it: a tool deferred behind tool_search is reached through `tool_call` and is never listed as missing, and a Hermes version number never decides presence. Present is not authorized or working.
 
 Required inputs:
 

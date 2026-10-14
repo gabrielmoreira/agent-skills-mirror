@@ -1,6 +1,7 @@
 ---
 name: "omh-codebase-onboarding"
 description: "[omh] Unfamiliar repository needing a guided tour: create a repo map, reading path, glossary, risk map, and first-task runway for unfamiliar codebases. Use when the user says: codebase-onboarding, codebase onboarding, repo onboarding, repository onboarding, codebase tour, code tour, new repo orientation, understand this repo."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -20,9 +21,9 @@ This is an OMH `codebase-onboarding` workflow skill, projected for Agent Skills 
 
 ## Do Not Use When
 
-- The user already named a concrete implementation task and acceptance criteria; use `ultrawork` or `idea-to-deploy`.
-- The user needs a whole-workspace capability inventory; use `workspace-audit`.
-- The user wants a code diff review; use `code-review`.
+- The user already named a concrete implementation task and acceptance criteria; use `ulw-work` or `omh-idea-to-deploy`.
+- The user needs a whole-workspace capability inventory; use `omh-workspace-audit`.
+- The user wants a code diff review; use `omh-code-review`.
 
 ## Examples
 
@@ -51,7 +52,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes should help an operator or coding executor understand an unfamiliar repository before planning implementation.
 

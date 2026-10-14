@@ -1,6 +1,7 @@
 ---
 name: "omh-operating-rhythm"
 description: "[omh] Team minutes, retros, and decision history to keep: meeting minutes, scrum/sprint records, retros, decisions, and follow-up history. Use when the user says: operating-rhythm, operating rhythm, meeting minutes, meeting history, scrum record, sprint planning, sprint review, sprint retrospective."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operations]
@@ -20,8 +21,8 @@ This is an OMH `operating-rhythm` workflow skill, projected for Agent Skills hos
 
 ## Do Not Use When
 
-- The user only needs a one-off meeting agenda before the meeting; use `meeting-brief`.
-- The request is a weekly status/risk summary rather than cadence history; use `ops-review`.
+- The user only needs a one-off meeting agenda before the meeting; use `omh-meeting-brief`.
+- The request is a weekly status/risk summary rather than cadence history; use `omh-ops-review`.
 - The user asks for report packaging, PPT outline, or reliability evidence review.
 
 ## Examples
@@ -51,7 +52,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes should prepare or maintain recurring operating records such as meetings, scrums, sprint plans, retrospectives, decisions, and follow-ups.
 
@@ -69,6 +70,8 @@ Quality bar:
 - Name cadence, audience, time window, known notes, and missing evidence before producing a record.
 - Separate agenda/templates from observed minutes, decisions, and action items.
 - Record follow-up ownership only when supplied or explicitly mark it unknown.
+- Record each action item with its outcome, owner, due date, dependency, acceptance condition, and source reference, marking an owner or date the notes do not state as unknown, and keep a proposal that was discussed but not decided out of the decision log.
+- On Hermes, when the bundled `meeting-action-items` skill is available, it may pull decisions, owners, and actions out of the supplied notes; its list is a reading of those notes, so every item keeps its source reference and stays unaccepted until the notes or the owner confirm it, and a ticket or message it drafts is reported as published only after the user approved it and it was read back.
 
 Required inputs:
 

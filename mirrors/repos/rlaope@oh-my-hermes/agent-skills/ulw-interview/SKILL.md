@@ -1,6 +1,7 @@
 ---
 name: "ulw-interview"
 description: "[omh] Vague, underspecified request: one-question-at-a-time clarification. Use when the user says: deep-interview, interview me, clarify, feature shaping, ambiguous product request, one question, 要件を詰めて, 曖昧な要求."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, clarification]
@@ -23,8 +24,8 @@ This is an OMH `deep-interview` workflow skill, projected for Agent Skills hosts
 - The request already has concrete scope, acceptance criteria, and verification commands.
 - The missing information is discoverable from the repository or local artifacts without asking the user.
 - The user asked for immediate read-only analysis and the ambiguity does not change the answer.
-- The ambiguity is specifically repository terminology or project-language alignment; use `context` and its direct-lookup/frontier boundary.
-- The open question is answerable by a small reversible experiment rather than another interview round; use `decision-prototype`.
+- The ambiguity is specifically repository terminology or project-language alignment; use `ulw-context` and its direct-lookup/frontier boundary.
+- The open question is answerable by a small reversible experiment rather than another interview round; use `omh-decision-prototype`.
 
 ## Examples
 
@@ -53,7 +54,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use before planning or execution when requirements are materially ambiguous.
 

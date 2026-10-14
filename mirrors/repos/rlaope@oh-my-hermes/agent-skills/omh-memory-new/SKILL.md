@@ -1,6 +1,7 @@
 ---
 name: "omh-memory-new"
 description: "[omh] Project fact to remember across future sessions: capture one bounded durable project or product memory candidate through explicit remember, refuse, or defer review; for existing Hermes memory use omh-memory-sync, and for a past decision use decision-recall. Use when the user says: memory-new, new memory, project memory, product memory, remember this project, remember this product, do not save, do not save this token."
+license: MIT
 compatibility: "Requires the omh CLI on PATH (pip install oh-my-hermes)."
 metadata:
   hermes:
@@ -52,7 +53,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when the user wants to assess one new project, product, or context fact for OMH-local memory. Capture a clear durable fact directly, or refuse or defer it.
 

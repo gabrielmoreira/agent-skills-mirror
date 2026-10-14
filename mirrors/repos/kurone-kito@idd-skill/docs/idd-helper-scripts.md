@@ -778,6 +778,14 @@ in this preamble, since the fallback differs per helper.
   (referenced in
   [kurone-kito/idd-skill#2243](https://github.com/kurone-kito/idd-skill/issues/2243);
   see its `--help` for the fetch-scope and staleness details)
+  Default-on (not opt-in): excludes the `providerOutage.declarationTarget`
+  issue, bucketed under `filtered.provider_outage_target`, and the
+  `issueAuthoring.journalIssue` issue when that reference names this
+  repository, bucketed under `filtered.authoring_journal_target` (issue
+  `#4115`). The journal is excluded by number, and its scan covers open
+  issues only, so a closed journal is reported only by the per-issue mode of
+  `discover-readiness-check.mjs`. A reference to another repository is
+  ignored.
   Default-on (not opt-in): excludes a defer-source follow-up, a body with an
   `<!-- {prefix}-authoring-defer-source: ... -->` marker, while its single
   `Refs` origin issue is open, bucketed under
@@ -1159,6 +1167,38 @@ in this preamble, since the fallback differs per helper.
     --current-repo owner/repo --issue 123 \
     --cleanup-evidence-file sweep.json
   ```
+
+- `scripts/publish-authoring-hold.mjs` (`idd-publish-authoring-hold`,
+  issues #4127 and #4171) publishes one drafted orphan issue under the
+  issue-authoring hold, running the authoring contract's New-issue
+  ownership steps in order. It refuses `--shape child` (exit `2`),
+  requires `--review-result <path>` (a JSON object with
+  `"completed": true`; any `findings` entry must be `fixed` or
+  `rejected`), and stops with the `blocked-by-human` outcome (exit `2`)
+  when `issueAuthoring.journalIssue` is unset or unverifiable. It then
+  puts the `authoring-publication` line first in the body, lints that
+  exact body with `audit-authored-issue.mjs --new-issue` and looks up
+  the authoring and bucket labels. Without `--apply` it renders the
+  pending publication-intent record through `post-idd-marker.mjs`'s dry
+  run and prints the plan (exit `0`), with no trust or permission
+  check. With `--apply`, and only when the authenticated login is listed
+  in the repository policy file's `trustedMarkerActors` (no flag or
+  environment variable replaces that list) and has Write, Maintain or
+  Admin permission (a `[bot]` login skips the permission read), it
+  creates a missing label, posts the pending record, creates the issue
+  with its labels, attaches the issue to the record, posts the owner
+  marker, checks provenance, and posts `state=member` (exit `0`). A
+  refusal before the create exits `1`; a failure after it prints a
+  recovery hold and exits `1`. A failed marker post counts as unsent
+  (`"nothingSent": true`; a retry is permitted only before the create)
+  only when
+  `post-idd-marker.mjs`'s error envelope reports `notDispatched` or HTTP
+  status 401, 404 or 422; any other failure reports the journal as
+  `uncertain: replay the journal` (an owner marker reports
+  `"ownerMarker": "uncertain"`), and an uncertain pending record stops
+  before the create. Every policy value comes from the repository policy
+  file only, and `--marker-prefix` is required when the issue or the
+  journal is in another repository.
 
 - `scripts/review-disposition-verify.mjs` for read-only E7 disposition
   marker presence verification across PATH A and PATH B items
@@ -1763,6 +1803,13 @@ node scripts/discover-readiness-check.mjs --swarm-floor <N>
   or out-of-range `N` is a **hard error**, not a silent coercion to the
   default floor — otherwise a typo (e.g. `--swarm-floor 50`) would quietly
   answer at floor 3 and be misread as "floor-50 work exists."
+- **Durable-record exclusion** (issue `#4115`, default-on): the
+  `providerOutage.declarationTarget` issue and the `issueAuthoring.journalIssue`
+  issue (when it names this repository) are never `ready`. Each is excluded by
+  number before any GitHub read and listed in `filteredOut` with the reason
+  `provider_outage_target` or `authoring_journal_target`. The per-issue mode
+  reports a named durable record the same way, and the `--swarm-floor`
+  `eligible` set never contains one.
 - **Boundary**: read-only and advisory — selecting the next issue still runs
   the A3/A4/A4.5/A5 gates. Optional flags: `--owner` / `--repo` / `--policy`
   / `--now`.
@@ -2288,6 +2335,11 @@ properties: `notDispatched: true` and `loadControl` (`outcome`
 duplicate re-read or retry. After an earlier ambiguous failure it stops
 posting and runs only its existing final duplicate check, and the error it
 then throws is the earlier failure, never a claim that nothing was sent.
+A 401, 404 or 422 is handled the same way (#4171): on the first attempt
+it is rethrown with its status (nothing landed), and on a later attempt
+it stops the retries and goes through that final duplicate check, so the
+error's status never reads as "nothing was sent" after a post that may
+have landed.
 The disposition apply loop and the live-status digest repair writes skip
 their reconciliation for a refusal, and the traversal and comment reads
 rethrow it instead of rebuilding a retryable error. No new automatic
@@ -2384,6 +2436,43 @@ node scripts/idd-effective-config.mjs [--key <dotted.path>] [--no-user-global]
   a user-global `human-gated` mode cannot authorize a handoff.
 - **`--policy`**: an omitted `--policy` reads the layered policy. An explicit
   path, even the default string, reads only that file.
+
+## E10 same-family recurrence (kurone-kito/idd-skill#4129)
+
+`scripts/e10-recurrence.mjs` counts the E10 no-progress hold
+(`idd-review-fix.instructions.md`) from finding fingerprints instead of
+judgement. It is read-only and never writes, claims, or posts.
+
+```sh
+node scripts/e10-recurrence.mjs --passes <file.json> [--hold-after <n>]
+```
+
+- **Input**: `{"passes": [[record, ...], ...]}`, oldest pass first. Each
+  record is `{file, rule, construct, severity, disposition}`.
+  `disposition` is `Accepted` or `Rejected`; only Accepted records count,
+  and only they must carry a non-empty `file` and `construct`, a
+  `severity` of `low`, `medium`, or `high` in any letter case, and a
+  `rule` from the closed
+  list in `idd-review-triage.instructions.md` E5 (`correctness`,
+  `safety`, `tests`, `docs`, `consistency`, `style`). A record outside
+  that contract, or a file with no pass at all, exits `1` (`usage`) with
+  an `errors` array on stdout.
+- **Count**: the fingerprint is `file`, `rule`, and `construct`, with
+  `file` and `construct` trimmed. The
+  chain ends at the latest pass, counts its first pass, and extends
+  backward while each pass's non-empty Accepted set is a subset (proper
+  or equal) of the prior pass's set.
+- **Verdict**: an empty latest set gives `e11`. A chain shorter than
+  `--hold-after` (default: the effective
+  `critiqueLoop.e10NoProgressHoldAfter`) gives `continue`. Otherwise
+  each fingerprint of the latest pass is a recurring family with the
+  highest severity seen in the chain: Low takes `defer` and Medium or
+  High takes `stop`. Any `stop` makes the verdict `hold`; otherwise it is
+  `defer`.
+- **Output**: `verdict`, `passCount`, `chainLength`, `holdAfter`,
+  `recurring` (each family with its `severity` and `disposition`), and
+  `holdText`, a line naming every recurring family for the hold comment
+  or the defer follow-up.
 
 ## Helper Runtime Profiles
 
@@ -2923,6 +3012,31 @@ The adopted helper boundaries are intentionally narrow:
   so repeat notices from the same bot at the same HEAD stay
   byte-distinguishable (#1482); it is a human-readable disambiguator only
   and plays no part in gate recognition or pairing.
+- **Which bot comments it handles (#4122)**: the readiness gate's set
+  (`isGateAdvisoryBotLogin`): the known review bots (CodeRabbit, Codex,
+  Copilot) plus every configured `advisoryBotLogins` entry, so a known
+  bot left out of a custom list is still handled. Every comment of that
+  set that the helper does not plan is listed in `skipped` with a
+  reason; none is dropped silently, as happened on
+  kurone-kito/setup.ubuntu PR 204, where the gate listed two bot
+  comments and the helper printed empty lists.
+- **Skip reasons**: `already-dispositioned`,
+  `coderabbit-review-in-progress`,
+  `summary-resolved-no-actionable-comments`, `codex-review-running` (a
+  Codex status row for the current HEAD that is not Completed, Failed
+  included), `codex-no-result-for-head` (a Codex status table with no
+  row for the current HEAD, an unparseable table or no table, or a Codex
+  no-find result for an older HEAD), and `unrecognized-notice-body`
+  (any other handled comment, for example a CodeRabbit acknowledgement
+  or a regular Copilot or Codex comment). A `codex-no-result-for-head`
+  comment is reported, not dispositioned, because Codex can still add a
+  row for the current HEAD; the manual E4 `**Rejected**` stays its
+  route. The helper does not track that manual reply, so it keeps
+  reporting the comment after one is posted: check `pre-merge-readiness`
+  `dispositionEvidence.missingRegularComments` before replying. An
+  `unrecognized-notice-body` entry for a comment the gate does not list
+  (one it already paired through its generic pairing) is expected and
+  harmless.
 - **Idempotent**: per advisory bot, existing trusted
   `isNonReviewNoticeDisposition` comments naming that bot already cover
   that many of its notices, so a re-run posts nothing new.
@@ -5326,12 +5440,13 @@ still fails closed:
 - Command: `node scripts/advisory-wait-state.mjs --pr <pr-number>`
 - Stable contract:
   [`advisory-wait-state.schema.json`][advisory-wait-state-schema]
-- Stable fields consumed by the instructions: `prHeadSha`,
-  `lastCopilotCommit`, `copilotPending`,
-  `copilotPendingCoversHead`, `outcome`, `f3Outcome`,
-  `earliestSameHeadAt`, `requestMarkerCount`, `requestCap`,
-  `pendingWindowMinutes`, `settledWindowMinutes`,
-  `pollIntervalMinutes`, `capExhaustedRoute`, and
+- Schema-required fields: `protocolVersion`, `prHeadSha`, `lastCopilotCommit`,
+  `copilotPending`, `copilotPendingCoversHead`, `outcome`, `f3Outcome`,
+  `secondaryBotLogin`, `secondaryBotLogins`, `secondaryRequestLogins`,
+  `secondaryRequestNeeded`, `now`, `requestCap`, `pendingWindowMinutes`,
+  `settledWindowMinutes`, `pollIntervalMinutes`, `capExhaustedRoute`,
+  `elapsedMinutes`, `sameHeadMarkerPresent`, `sameHeadRequestMarkerPresent`,
+  `earliestSameHeadAt`, `sameHeadMarkerCount`, `requestMarkerCount`,
   `trustedMarkerSummary`
 - Optional `--claim-id <id> --agent-id <id>` (kurone-kito/idd-skill#1572):
   when both are supplied, binds two independent, claim/HEAD-scoped
@@ -5620,6 +5735,25 @@ to post it is the consuming track's job.
   passes, live-coverage cases already handled by #2549, and all other
   non-qualifying holds remain withheld. Each promotion records its
   `originalHoldReason`.
+- Reports superseded rows (kurone-kito/idd-skill#4113). Each instance carries
+  `supersededBy`: the check-run id of the same workflow run's latest row,
+  when that row proves the instance belongs to an earlier attempt of the run
+  and the latest row passes; otherwise `null`. The latest row is always a
+  `pass` classification of the same run, never the instance itself. A
+  superseded non-pass instance is counted in `counts.superseded` instead of
+  its classification bucket, so `counts.rerunEligible` covers only rows a
+  plan can still act on and the buckets still sum to `counts.total`. A
+  superseded `pass` instance stays in `counts.pass`. Superseded instances are
+  counted in neither `counts.rerunEligible` nor `counts.rerunBudgetHeld`. The
+  counts are reporting only and change no classification. A superseded row is
+  excluded from the live-coverage recovery plan (kurone-kito/idd-skill#4150).
+  A superseded row in the `awaiting-fresh-review`,
+  `bot-gated-skip`, or `unresolved` classification no longer produces its
+  outstanding-state note, because it moves to the `superseded` bucket. The
+  stderr summary adds one line for the superseded non-pass rows, in the form
+  `N instance(s) superseded by a later attempt of the same run (check run X)`;
+  a superseded pass prints nothing, and stdout still carries only the JSON
+  plan.
 - Without `--apply`, it never calls `gh run rerun` (or any other mutating
   command) itself. Pass `--apply` (#1766) to execute the printed plan:
   it reruns each rerun-eligible instance in order (recovery-refresh
@@ -5736,6 +5870,15 @@ reflexively as any other CLI option.
   success output, when the watermark it is about to post already covers
   comments/threads that were never actually dispositioned, and stays
   silent for the courtesy-ack flag case above
+- Readiness hints (kurone-kito/idd-skill#4098): `pre-merge-readiness`
+  adds a `hint` to a `disposition-evidence` blocker only while no review
+  watermark exists for the claim, because without one the disposition
+  results have no snapshot boundary and a resolved thread can block that
+  a watermark would clear. The `review-currency` blocker gets a `hint`
+  when its comparison reason is `newer-activity`, since that activity may
+  be the operator's own comment. Both hints name the fresh-watermark step
+  (E1 Step 1, then E1 Step 2 for the current head). They are diagnostic
+  only: `detail`, counts, and routes do not change.
 - Embedded CodeRabbit findings (kurone-kito/idd-skill#3341): the
   snapshot also emits `embeddedFindings`, one object per
   `COMMENTED` review whose author login is `coderabbitai` or
@@ -5891,6 +6034,18 @@ reflexively as any other CLI option.
   the courtesy-ack convergence rule, not a re-posted reply) and on
   `incomplete-thread-comments`, and it never changes `route`, `reason`, or any
   count. It mirrors `missingRegularComments[].hint`
+- Disposition-evidence `hint` on the `dispositionEvidence` object
+  (kurone-kito/idd-skill#4163; observed 2026-10-13 on
+  kurone-kito/idd-skill#4153, kurone-kito/idd-skill#4151, and
+  kurone-kito/idd-skill#4154): present only when the missing regular comments
+  form the same set as the bot summaries or non-review notices that the
+  `disposition-non-review-notices` helper would record, with no missing thread
+  or human comment. It names that helper run with `--apply`, the same claim,
+  owner, repo, and trusted-login inputs the readiness run used, the advisory
+  login inputs it used (the two default review bots when none is configured),
+  and then a re-run of readiness. It is omitted when the claim, owner, repo, or
+  trusted-login input is missing or an IDD-agent login is not trusted, and it
+  never changes `route`, `reason`, or any count.
 - **Secondary-bot settlement is fail-closed** (#3261). When
   `advisoryWait.secondaryQuietWindow`/`secondaryBotLogin(s)` are
   configured, `secondaryQuietWindow` only shortens to the short settled
@@ -6103,6 +6258,16 @@ reflexively as any other CLI option.
   `DIRTY`. Observed on PR `#4077` (issue `#4071`, head `58688f7fc`): the head
   was `DIRTY`, no `lint`, `idd-doctor`, or `pnpm-boundary` run was created,
   and the readiness blocker gave no cause.
+- `review-currency` blocker hint (kurone-kito/idd-skill#4124): when the
+  comparison reason is `same-timestamp-count-growth` (the live item count
+  is higher than the watermark's count, and no newer non-ack-only activity
+  is recorded), the `review-currency` entry in `blockers[]` carries an
+  optional `hint` naming the next step: take a fresh snapshot (E1 Step 1),
+  record a fresh watermark for the current head (E1 Step 2), continue
+  through E1 Step 3, the E2 critique pass, and E3 (follow its route), then
+  re-run readiness. The hint is diagnostic only; `gate`, `detail`, the
+  route, and the reason are unchanged. Observed on `kurone-kito/setup.ubuntu`
+  PR `#204` (2026-10-08), where the blocker gave no next step.
 - Authoritative phase role: the live `pre-merge-readiness` run on the
   current HEAD is the **authoritative source for the final-merge CI and
   activity fields** at F2/F3. The `review-activity-snapshot` helper builds
@@ -6693,7 +6858,7 @@ first (August) form -- every review generated from 2026-09-04 onward
 parsed as `suppressedCount: 0` regardless of its real content.
 `classifyCopilotReviewBody` (a leaf module, `copilot-review-body.mts`,
 importing only `markdown-code.mts`'s code-region stripper)
-recognizes four shapes, reported as the new `review.bodyShape` field
+recognizes five shapes, reported as the new `review.bodyShape` field
 alongside `suppressedCount`:
 
 - `overview-v2`: the body carries the `<!-- ccr-overview-v2 -->` marker
@@ -6721,6 +6886,15 @@ alongside `suppressedCount`:
   `resolveLatestCopilotReviewClause`'s own output in practice, since that
   function already excludes an error-bodied review before selecting the
   absolute-latest one (unchanged, `#3015`).
+- `decline-no-reviewable-files`: Copilot's exact "wasn't able to review
+  any files" notice (`#4142`, observed on `kurone-kito/dotfiles#609`),
+  matched by whole-body equality after the `#3015` normalization. It is a
+  terminal decline for the head it names, not a review.
+  `findLastCopilotReviewCommit` never counts it as coverage, and
+  `findLastCopilotDeclineCommit` reports it separately, so
+  `advisory-wait-state` and the convergence and readiness gates reach
+  `COPILOT_UNAVAILABLE` at once, with no recovery marker and no window
+  wait.
 - `unrecognized`: none of the above, including an absent/empty body.
 
 **Fail-closed on an unrecognized shape (kurone-kito/idd-skill#3258,
@@ -6730,7 +6904,10 @@ override (below) additionally requires `review.bodyShape` to be
 anything other than `unrecognized`, unless a trusted `review-ack`
 already covers the review -- so a review body this gate cannot parse at
 all no longer silently converges. The verdict's `reasons` entry and the
-review-ack next action both name `bodyShape: unrecognized` explicitly.
+review-ack next action both name `bodyShape: unrecognized` explicitly. The
+`decline-no-reviewable-files` shape is held the same way, with its own
+reason and review-ack next action, so it never converges on its own
+(`#4142`).
 A configured non-Copilot `primaryBotLogin` (the `external-bot` review
 policy, `#2137`) has no known body shapes at all -- a reply-only review
 from such a bot can legitimately have an empty body -- so this rule
@@ -6777,7 +6954,9 @@ matchesHead
           && every citation-bearing suppressed item has its own stamped
              disposition))
   && (primaryBotLogin is not the Copilot default
-      || bodyShape !== 'unrecognized' || hasValidReviewAck)
+      || ((bodyShape !== 'unrecognized'
+           && bodyShape !== 'decline-no-reviewable-files')
+          || hasValidReviewAck))
 ```
 
 The `itemCount` half is bound to the LATEST review specifically
@@ -6899,6 +7078,48 @@ from F2 on a non-zero `--assert` exit:
 Fail closed the same way mid-poll or if the verdict JSON is missing or
 unusable: treat the carve-out as not applicable / stop and post a hold,
 same as `AW4`/`AW5`.
+
+### E5 deferred-findings bundle
+
+- Preferred command when helper runtime is enabled:
+
+  ```sh
+  idd-review-defer-bundle --origin-issue <n> --pr <n> --title '<text>' \
+    --items-file <path> [--policy <path>]
+  ```
+
+- Source repository equivalent: `node scripts/review-defer-bundle.mjs`
+  with the same flags.
+- Flags: `--origin-issue` (the issue the findings belong to, rendered as
+  the `Refs` line), `--pr` (the pull request they were deferred from),
+  and `--title` (the follow-up issue title) are required. `--items-file`
+  is required and holds a JSON array of deferred findings, each with
+  `title`, `threadUrl`, `finding`, `acceptance`, and `path`.
+- Policy: `--policy` names the repository policy file whose
+  `markerPrefix` labels the footer and defer-source markers. Without it,
+  `.github/idd/config.json` is read from the current directory, so run
+  the helper from the repository root. An absent file or a missing field
+  falls back to `idd-skill`. An explicit `--policy` path that is missing
+  or malformed is a usage error, never a silent fallback. So are a
+  malformed default file, an empty `--policy` value, and a
+  `markerPrefix` that is empty or not a string. (Unlike
+  `publish-authoring-hold`, an empty `--policy` is not treated as absent.)
+- Output: one JSON object on stdout:
+
+  ```json
+  {
+    "title": "...",
+    "body": "...",
+    "lint": { "passed": true, "failures": [] }
+  }
+  ```
+
+- Exit codes: `0` when `lint.passed` is true. `1` for a usage error
+  (a missing or unknown flag, an unreadable or malformed items or policy
+  file, or an input that the renderer rejects) and for a body that fails
+  the authored-issue lint; the JSON is still printed in the lint case.
+- Network-free boundary: the helper never calls the GitHub API and never
+  creates an issue. The caller files the rendered title and body.
 
 ### E7 disposition verification
 
@@ -7295,8 +7516,9 @@ same as `AW4`/`AW5`.
   helper; not distributed via the package-manager / ephemeral-npx
   profiles (it is a maintainer-run sweep, never an adopter-facing
   step in the phase instructions).
-- A **manually-invoked**, read-only detector (no schedule, no mutation). It
-  scans MERGED PRs and surfaces feedback that was left unattended at merge:
+- A **manually-invoked**, read-only detector (no schedule, no mutation by the
+  helper itself). It scans MERGED PRs and surfaces feedback that was left
+  unattended at merge:
   - **Window selector**: `--since <ISO8601>` and/or `--days <N>`, or
     `--pr <n>` (repeatable) / `--prs <n1,n2,...>`; `--limit <N>` caps the
     `--since`/`--days` enumeration. When both `--since` and `--days` are
@@ -7382,19 +7604,70 @@ same as `AW4`/`AW5`.
     signal. Each finding carries an `advisoryBot` flag (`isKnownReviewBot` or a
     configured `advisoryBotLogins` author) so the operator can prioritize human
     feedback over capricious advisory-bot noise.
+  - **Open and ready** (kurone-kito/idd-skill#4162): a date-window run
+    (`--since`/`--days`, or neither `--pr` nor `--prs`) also checks every
+    OPEN pull request with the in-process `pre-merge-readiness` collector
+    and lists in `openReadyPrs` the ones that report `ready: true`, each
+    with `openedAt` and `ageHours`, so an idle merge step shows up here. On
+    2026-10-13 kurone-kito/idd-skill#4148 and kurone-kito/idd-skill#4149
+    sat open with `ready: true` and no blockers, and no session ran their
+    merge step. Not-ready pull requests are left out (run
+    `pre-merge-readiness` on one to see its blockers), and so is one whose
+    merge state would not pass F1: only `CLEAN`, or `BEHIND` when the base
+    does not require an up-to-date head, with `mergeable` resolved to
+    `MERGEABLE`, is listed, so a conflicting, blocked, unstable,
+    still-computing, or draft head is not.
+    A pull request that closes no issue is checked with `--claimless`;
+    otherwise each same-repository closing issue is tried as
+    `--claim-issue`, with no `--claim-id`. Each check also receives this
+    run's `--trusted-marker-logins`, `--advisory-bot-logins`, and
+    `--idd-agent-logins` values when they are given. Readiness still
+    requires an active claim on that issue, so a pull request whose claim
+    was released reads as not ready and is not listed. A pull request that
+    closes an issue but merges out of loop under a valid out-of-loop marker
+    is not tried with `--claimless`, so it is not listed either. A pull
+    request whose readiness check fails, or whose closing references
+    include any entry that is not an issue in this repository (unreadable,
+    foreign, or malformed, even next to a readable one), is listed in
+    `openReadyUncheckedPrs` with a `reason`; a non-zero
+    `summary.openReadyUncheckedCount` means the section is incomplete. An
+    explicit `--pr`/`--prs` run skips this section and reports it as
+    `null`. The exported `renderOpenReadySection` renders the
+    section as Markdown for the weekly summary body: a heading, then one
+    bullet per ready pull request with its age, or a single line when none
+    is ready. Nothing calls it yet: the `--issue-body` weekly summary body
+    below does not include this section.
 - JSON output keys: `sweepWindow`, `trustedMarkerActors`,
   `advisoryBotLogins`, `iddAgentLogins`, `primaryBotLogin`, `prs` (each
   entry has `number`, `mergedAt`, `mergeCommit`, `unresolvedThreads`, and
-  `unaddressedComments`),
+  `unaddressedComments`), `openReadyPrs` (`number`, `title`, `url`,
+  `openedAt`, `ageHours`), `openReadyUncheckedPrs` (`number`, `reason`),
   and `summary` (`prCount`, `flaggedPrCount`, `unresolvedThreadCount`,
-  `unaddressedCommentCount`).
+  `unaddressedCommentCount`, `openPrCount`, `openReadyPrCount`,
+  `openReadyUncheckedCount`).
 - Read-only boundary: the helper performs no minimization, no posting, and no
-  issue creation. **Handoff**: the JSON is the input an operator hands to the
-  issue-authoring skill, which re-verifies each candidate against current
-  `{development-branch}` (reuse-first / not-already-fixed) and drafts
-  follow-up issues bucketed by readiness. The helper does deterministic
-  detection; the judgment-heavy re-verification, drafting, and publish stay
-  operator-gated.
+  issue creation. The open-and-ready section never merges, claims, or posts:
+  the merge stays with the session that holds the claim. **Handoff**: the
+  JSON is the input an operator hands to the issue-authoring skill, which
+  re-verifies each candidate against current `{development-branch}`
+  (reuse-first / not-already-fixed) and drafts follow-up issues bucketed by
+  readiness. The helper does deterministic detection; the judgment-heavy
+  re-verification, drafting, and publish stay operator-gated.
+- **Weekly summary body** (issue `#4161`): `--issue-body` prints the summary
+  issue body as Markdown instead of the JSON, rendered from the same scan by
+  `renderWeeklySweepIssueBody`. The body carries only numbers, dates, and
+  counts, never comment text. It names each flagged pull request as `PR <n>`,
+  so it adds no cross-reference event. It states the run date (UTC) and, when
+  nothing is open, how many pull requests were checked. It notes when the
+  enumeration reached its `--limit` cap. The manual workflow
+  `.github/workflows/merged-pr-feedback-sweep.yml` (`workflow_dispatch` only)
+  runs this helper with `--days 7 --limit 500 --issue-body` and creates or
+  edits the one open issue titled `Merged-PR feedback sweep (weekly)`. It
+  refuses to write when the open-issue listing is full or when more than one
+  open issue carries that title. That workflow is the only writer, and it
+  writes only that issue.
+  The weekly body does not include the open-and-ready section; that
+  section is in the JSON output only.
 - **Operator runbook**: this helper is a **manual spot-check audit**, not a
   phase step — its absence from the executable phase instruction files is
   by design, not an oversight.
@@ -7943,6 +8216,26 @@ retrying further.
 Observed hanging with no output for an extended, unbounded period on
 2026-09-10 (issue #2844 / PR #2870, commit `7be8acc9`, later confirmed
 unsigned).
+
+### Scripted-rebase hazards
+
+`idd-pr-submit.instructions.md`'s D3.5 step 7 rewords a stray
+commit-message close with a scripted reword or rebase. Two settings can
+break that script. `rebase.abbreviateCommands=true` can make a
+non-interactive todo list use `p`/`r` instead of `pick`/`reword`; check
+`git config --get rebase.abbreviateCommands` or match both forms.
+Disable `rebase.updateRefs` process-wide so an inner rebase launched by
+a signing wrapper cannot move a safety backup or sibling branch:
+
+```sh
+GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=rebase.updateRefs \
+GIT_CONFIG_VALUE_0=false GIT_SEQUENCE_EDITOR='...' git rebase -i ...
+```
+
+An outer `-c rebase.updateRefs=false` may not reach that subprocess.
+These hazards were observed while recovering
+[PR #3431](https://github.com/kurone-kito/idd-skill/pull/3431) for
+issue #3285; the field report is tracked in issue #3552.
 
 ## Dead-export audit (kurone-kito/idd-skill#3478)
 

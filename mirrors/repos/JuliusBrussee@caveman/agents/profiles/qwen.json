@@ -6,7 +6,7 @@
   "homepage": "https://github.com/QwenLM/qwen-code",
   "binary_names": ["qwen"],
   "args": ["--extensions=none"],
-  "install": "npm i -g @qwen-code/qwen-code@0.25.0",
+  "install": "npm i -g @qwen-code/qwen-code@0.25.1",
   "wire_protocol": "openai-chat",
   "injection": {
     "method": "config-file",
@@ -128,10 +128,10 @@
     }
   },
   "attribution": { "header": "X-Cave-Agent" },
-  "tested_agent_version": "0.25.0",
+  "tested_agent_version": "0.25.1",
   "injection_completeness": "declarative",
-  "last_verified_at": "2026-10-06",
-  "verified_by": "local pinned-binary probe (@qwen-code/qwen-code 0.25.0 on Node 24.16.0, agents/probe-installed.mjs) plus route check: the real binary, launched with the CLI buildWrapEnv overlay, sent POST /w/qwen/v1/chat/completions (X-Cave-Agent: qwen, model gpt-5.5) to a loopback recorder",
+  "last_verified_at": "2026-10-12",
+  "verified_by": "local pinned-binary probe (@qwen-code/qwen-code 0.25.1 on Node 22.22.0, agents/probe-installed.mjs: --version and --help both exit 0) plus config_overlay acceptance: unwrapped, 0.25.1 refuses a non-interactive run with \"No auth type is selected\"; launched through the CLI buildWrapEnv overlay that refusal is gone, so it read security.auth from the injected system-settings. The outbound POST was NOT re-observed at 0.25.1 — the wrapped non-interactive run did not produce a model request against a loopback recorder in this container — so the route claim stands only at 0.25.0, where it was observed as POST /w/qwen/v1/chat/completions (X-Cave-Agent: qwen, model gpt-5.5)",
   "fallback": "generic-env",
   "maintainer": null
 }

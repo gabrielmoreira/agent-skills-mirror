@@ -1179,7 +1179,7 @@ For a sanity check before the full render, capture a single frame at a
 specific timestamp:
 
 ```bash
-npx hyperframes snapshot public --at 5    # → public/snapshots/frame-00-at-5s.png (a single --at ignores --out)
+npx hyperframes snapshot public --at 5    # → public/.hyperframes/artifacts/snapshots/<id>/frame-00-at-5s.png (a single --at ignores --out)
 ```
 
 ### 11. Report Results

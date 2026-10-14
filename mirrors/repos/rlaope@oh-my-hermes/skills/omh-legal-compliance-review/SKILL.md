@@ -1,6 +1,8 @@
 ---
 name: "omh-legal-compliance-review"
 description: "[omh] Business contract, NDA, or policy with legal risk: surface contract and compliance risks, questions, and escalation points before a legal decision or action. Use when the user says: contract review, contract liability clause, regulatory analysis, compliance review, contract redline, redline the contract, negotiation preparation, negotiation strategy."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]
@@ -8,6 +10,7 @@ metadata:
     phase: legal-compliance-review
     role: reviewer
     quality_tier: review-gated
+    related_skills: [omh-security-safety-review, omh-content-operator, omh-apps, omh-data-share-review]
 ---
 
 # Legal Compliance Review
@@ -21,9 +24,10 @@ This is a Hermes-native `legal-compliance-review` workflow skill.
 ## Do Not Use When
 
 - The user needs a final jurisdiction-specific legal opinion, legal representation, or authoritative filing decision; prepare the issue and counsel brief instead.
-- The review is about code, secrets, permissions, prompt injection, dependencies, or unsafe tool behavior; use `security-safety-review`.
-- The request is a plain-language rewrite without a legal-risk review objective; use `content-operator`.
-- The user asks to sign, accept, submit, file, publish, or change a policy or contract in an external system; use `connector-operator` only after explicit authority.
+- The review is about code, secrets, permissions, prompt injection, dependencies, or unsafe tool behavior; use `omh-security-safety-review`.
+- The request is a plain-language rewrite without a legal-risk review objective; use `omh-content-operator`.
+- The user asks to sign, accept, submit, file, publish, or change a policy or contract in an external system; use `omh-apps` only after explicit authority.
+- Redact the PII in the file itself and scan it before sending it, once sharing it is cleared; use `omh-data-share-review`.
 
 ## Examples
 
@@ -52,11 +56,11 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+20 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+21 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when supplied contract, policy, product, process, or regulatory context needs a scoped issue matrix, assumptions, and counsel/escalation brief.
 
@@ -129,4 +133,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

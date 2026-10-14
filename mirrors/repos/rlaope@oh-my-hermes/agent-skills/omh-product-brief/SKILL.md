@@ -1,6 +1,7 @@
 ---
 name: "omh-product-brief"
 description: "[omh] PRD or roadmap priorities to decide: turn product evidence into a decision-ready PRD, prioritization frame, and roadmap brief. Use when the user says: product requirements document, PRD, roadmap prioritization, 제품 요구사항 문서, 제품 기획서, 로드맵 우선순위."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -20,12 +21,12 @@ This is an OMH `product-brief` workflow skill, projected for Agent Skills hosts 
 
 ## Do Not Use When
 
-- The input is unprocessed feedback, bug reports, or feature asks that first need clustering and evidence boundaries; use `feedback-triage`.
-- The product evidence is unvalidated, synthetic, or a founder belief and the problem gate has not returned validated; use `product-discovery-validation` before a PRD.
-- The input is a growth hypothesis that still needs an experiment and readout before it becomes a product requirement; use `lifecycle-growth`.
-- The user needs a company or product strategy decision across high-level options rather than a requirements or roadmap artifact; use `strategy-brief`.
-- The request is an accepted, code-ready change with repository constraints and verification needs; use `ralplan` or `ultrawork` rather than recreating a PRD.
-- The user asks to create or update Jira, Linear, Aha!, or a roadmap system directly; use `connector-operator` with explicit target, approval, and observed evidence.
+- The input is unprocessed feedback, bug reports, or feature asks that first need clustering and evidence boundaries; use `omh-feedback-triage`.
+- The product evidence is unvalidated, synthetic, or a founder belief and the problem gate has not returned validated; use `omh-product-discovery-validation` before a PRD.
+- The input is a growth hypothesis that still needs an experiment and readout before it becomes a product requirement; use `omh-lifecycle-growth`.
+- The user needs a company or product strategy decision across high-level options rather than a requirements or roadmap artifact; use `omh-decide`.
+- The request is an accepted, code-ready change with repository constraints and verification needs; use `ulw-plan` or `ulw-work` rather than recreating a PRD.
+- The user asks to create or update Jira, Linear, Aha!, or a roadmap system directly; use `omh-apps` with explicit target, approval, and observed evidence.
 
 ## Examples
 
@@ -54,7 +55,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when a product owner needs a problem frame, user/outcome definition, PRD, prioritization/roadmap options, dependencies, acceptance shape, and decision record before delivery planning.
 

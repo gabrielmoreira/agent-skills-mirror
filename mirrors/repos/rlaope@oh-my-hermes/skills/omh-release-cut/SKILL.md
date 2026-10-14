@@ -1,6 +1,8 @@
 ---
 name: "omh-release-cut"
 description: "[omh] Shipping a versioned release -- tag it, stage it behind a canary, or roll back the last deploy: decide what goes in, the version, the rollout stages, and a rollback with its trigger and exact command before it is needed. Use when the user says: release-cut, release cut, cut a release, cut the release, cut a new release, tag a release, tag the release, release candidate."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -8,6 +10,7 @@ metadata:
     phase: release-cut
     role: planner
     quality_tier: rollback-trigger-gated
+    related_skills: [omh-deploy-and-monitor, omh-live-incident-response, omh-production-audit, omh-commit-pr-authoring, omh-mobile-release]
 ---
 
 # Release Cut
@@ -25,11 +28,11 @@ This is a Hermes-native `release-cut` workflow skill.
 
 ## Do Not Use When
 
-- The rollout is already running and the ask is watching its health signals and post-deploy status; use `deploy-and-monitor`.
-- Production is down or degraded and the work is commanding the incident; use `live-incident-response`.
-- The ask is a readiness audit across observability, security, and operations before launch; use `production-audit`.
-- The ask is drafting the commit message or the pull request description for a change; use `commit-pr-authoring`.
-- The app ships through the App Store or Google Play -- signing, a TestFlight or Play testing-track beta, a phased release, a store hotfix; use `mobile-release`.
+- The rollout is already running and the ask is watching its health signals and post-deploy status; use `omh-deploy-and-monitor`.
+- Production is down or degraded and the work is commanding the incident; use `omh-live-incident-response`.
+- The ask is a readiness audit across observability, security, and operations before launch; use `omh-production-audit`.
+- The ask is drafting the commit message or the pull request description for a change; use `omh-commit-pr-authoring`.
+- The app ships through the App Store or Google Play -- signing, a TestFlight or Play testing-track beta, a phased release, a store hotfix; use `omh-mobile-release`.
 
 ## Examples
 
@@ -62,9 +65,9 @@ Bad example:
 
 - Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when a release is being decided or undone: what goes into it, its version, how it is tagged and published, how it rolls out in stages behind a canary, or rolling back a deploy that already shipped. The output is a release plan whose rollback has a named trigger and the exact command that performs it; OMH prepares, and the host or CI executes.
 
@@ -138,4 +141,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

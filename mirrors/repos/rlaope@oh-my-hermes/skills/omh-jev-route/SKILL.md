@@ -1,6 +1,8 @@
 ---
 name: "omh-jev-route"
 description: "[omh] Undecided OMH route handed to Jev: Jev route pick: answer an OMH route question about which workflow fits, recorded without re-routing. Use when the user says: jev-route, ask jev which workflow, jev pick the workflow."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, gateway]
@@ -8,6 +10,7 @@ metadata:
     phase: jev-route
     role: guide
     quality_tier: evidence-gated
+    related_skills: [omh-model-setup]
     requires_tools: [omh_jev_ask]
 ---
 
@@ -15,7 +18,7 @@ metadata:
 
 Required: an undecidable route's `route_question` block and the user's message. Output: Jev's pick as a clarification and a recorded answer.
 
-Read `omh-routing/references/jev-rail.md` before the first ask: consent, what leaves the machine, limits, and non-answer statuses. Prepared OMH routing is not execution or approval. Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+Read `skill_view(name='omh-routing', file_path='references/jev-rail.md')` before the first ask: consent, what leaves the machine, limits, and non-answer statuses. Prepared OMH routing is not execution or approval. Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
 Contract: `references/full-contract.md`.
 

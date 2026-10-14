@@ -238,7 +238,8 @@ class FMPClient:
                     self.rate_limit_reached = True
                     return None
             else:
-                msg = self._redact_secret(f"HTTP {response.status_code} - {response.text[:200]}")
+                body = self._redact_secret(response.text)[:200]
+                msg = self._redact_secret(f"HTTP {response.status_code} - {body}")
                 self._last_error = msg
                 if not quiet:
                     print(

@@ -1,6 +1,7 @@
 ---
 name: "omh-mobile-release"
 description: "[omh] Releasing an iOS or Android app through the stores -- signing, the privacy manifest, a TestFlight or Play beta, a staged rollout, a hotfix: prepare each gate the store enforces, and plan the halt and the next build before the rollout starts, because a store release cannot be rolled back. Use when the user says: mobile-release, mobile release, mobile app release, ios release, android release, app store release, app store submission, submit to the app store."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -25,10 +26,10 @@ This is an OMH `mobile-release` workflow skill, projected for Agent Skills hosts
 
 ## Do Not Use When
 
-- The ask is a versioned release of a service or library -- what goes in, the tag, a canary, the rollback command; use `release-cut`.
-- A web or backend deploy is already out and the ask is watching its health; use `deploy-and-monitor`.
-- The ask is a readiness audit across observability, security, and operations before launch; use `production-audit`.
-- The app crashes or misbehaves and the ask is finding the cause in the code; use `app-debugging`.
+- The ask is a versioned release of a service or library -- what goes in, the tag, a canary, the rollback command; use `omh-release-cut`.
+- A web or backend deploy is already out and the ask is watching its health; use `omh-deploy-and-monitor`.
+- The ask is a readiness audit across observability, security, and operations before launch; use `omh-production-audit`.
+- The app crashes or misbehaves and the ask is finding the cause in the code; use `omh-app-debugging`.
 
 ## Examples
 
@@ -59,7 +60,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when an iOS or Android app is being released through the App Store or Google Play: code signing and provisioning, the iOS privacy manifest or the Play data safety form, a TestFlight or Play testing-track beta, a phased or staged rollout, or a hotfix for a build already in users' hands. The output is the signing plan, the privacy declaration check, the beta plan, the staged rollout with its halt thresholds, and the hotfix plan; OMH builds, signs, uploads and submits nothing.
 

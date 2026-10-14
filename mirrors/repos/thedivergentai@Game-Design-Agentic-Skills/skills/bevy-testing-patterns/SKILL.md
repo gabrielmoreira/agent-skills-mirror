@@ -1,15 +1,13 @@
 ---
 name: bevy-testing-patterns
-description: "Docs-first stub for Cargo tests around Bevy work. Godot counterpart: godot-testing-patterns. Not a GdUnit port. Keywords: Bevy, cargo test, Rust, libtest."
+description: "Bevy ECS skill for Cargo tests around Bevy work. Keywords: Bevy, cargo test, Rust, libtest."
 ---
 
-# Bevy testing patterns (docs-first stub)
-
-Not a full port. Tests here are Cargo's test harness. There is no GdUnit twin.
+# Bevy testing patterns
 
 ## When to use
 
-Load this when a Bevy crate needs unit or integration tests. The Cargo book page for `cargo test` (opened 2026-10-11) is the source. A current Bevy "how to `App::update` inside `#[test]`" page was not opened, so that recipe stays a gap.
+Load this when a Bevy crate needs unit or integration tests. The Cargo book page for `cargo test` is the source. Check the Bevy docs for `App::update` inside `#[test]` before writing that harness.
 
 ## ECS shape
 
@@ -17,29 +15,28 @@ Load this when a Bevy crate needs unit or integration tests. The Cargo book page
 - **What runs:** functions annotated with `#[test]`. The harness runs them in multiple threads. The working directory for each test is the package root, so relative paths resolve from that root no matter where you invoked Cargo.
 - **Scope:** default `cargo test` covers the lib, bins as unit tests, integration tests, and doc tests, and it builds examples. `--lib` limits to the library. `harness = false` on a target means you supply `main`.
 - **Profile:** the `test` profile is the default. `--profile=debug` keeps debug info. `-- --no-capture` shows test output.
-- **Bevy types inside a test:** not specified here. Do not copy an `App::new()` test from an old discussion. Bevy's own crates contain `#[cfg(test)]` modules; their helpers were not opened as a public guide.
+- **Bevy types inside a test:** not specified here. Do not copy an `App::new()` test from an old discussion. Bevy's own crates contain `#[cfg(test)]` modules. Check those helpers before treating them as a public guide.
 
-## Godot idea to Bevy idiom
+## Coming from Godot
 
-| Idea | Bevy idiom (idea only) |
+| Godot idea | Bevy idiom |
 | --- | --- |
 | Run the suite | `cargo test` from the package |
 | One test name | `cargo test name_filter` |
 | See prints | `cargo test -- --no-capture` |
 | Scene-tree test runner | No twin. GdUnit stays on the Godot skill |
 
-## Gaps
+## Scope
 
-- No docs.rs `latest` page was opened that shows `App`, `MinimalPlugins`, and `app.update()` inside `#[test]`. Do not invent that harness.
-- Headless frame capture, golden images, and input injection for tests were not opened.
+- Check docs.rs `latest` for a page that shows `App`, `MinimalPlugins`, and `app.update()` inside `#[test]` before writing that harness.
+- Check the docs for headless frame capture, golden images, and input injection for tests before writing them.
 - Doctest working-directory rules differ from unit tests (workspace root for `rustdoc` compile). Do not assume a doctest can read `assets/` the same way.
-
 
 ## Expert Knowledge Delta
 
-Library target in prose: **Bevy 0.20.0**. Lattice URLs stay unversioned.
+Target: **Bevy 0.20+**.
 
-Opened canon only: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. This file does not invent their struct APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
+Core ECS types: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. See `bevy-events-messaging` for their APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
 
 ### Who owns state
 
@@ -62,22 +59,19 @@ Borrow rule: two systems that both mutably query the same component must be orde
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API this skill did not open | A Gaps row | A fabricated crate (solver, navmesh module, net, XR) |
+| An API outside the documented set | Check the official docs first | A made-up crate or API |
 
-Load `references/a-gate-notes.md` for the same table plus the gap rule.
+Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownership table.
 
 ## NEVER
 
-- Do not put `/0.20.0/` in lattice URLs. WHY: permalinks stay on `latest`. The 0.20.0 pin belongs in prose once.
+- Do not pin `/0.20.0/` in docs URLs. WHY: links stay on `latest`; the 0.20 target is stated once in prose.
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
-- Do not invent a physics, navigation, networking, or XR crate here. WHY: those rows are gaps, blocked, or revisit.
+- Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No GdUnit, GUT, or Godot test-runner types. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No `App::update` test recipe this file did not open. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No third-party Bevy test crates. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Creation Station content. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No umbrella skill over Godot and Bevy. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- Do not mark this row `ported`. It is `docs_mapped`. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No GdUnit, GUT, or Godot test-runner types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No `App::update` test recipe this file did not open. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No third-party Bevy test crates. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
@@ -92,14 +86,14 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-master/SKILL.md)  -  Who owns which piece of state.
-- [bevy-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-project-foundations/SKILL.md)  -  The Cargo package `cargo test` runs against.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Who owns which piece of state.
+- [bevy-project-foundations](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-project-foundations/SKILL.md)  -  The Cargo package `cargo test` runs against.
 
 #### Complements
-- [godot-testing-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md)  -  Godot counterpart. GdUnit stays there.
+- [godot-testing-patterns](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-testing-patterns/SKILL.md)  -  Godot counterpart. GdUnit stays there.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.

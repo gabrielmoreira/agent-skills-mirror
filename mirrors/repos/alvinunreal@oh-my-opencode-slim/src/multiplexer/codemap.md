@@ -283,6 +283,10 @@ the cwd. Herdr, kitty, and WezTerm always set their native cwd flags.
   `OPENCODE_PASSWORD` (v2 remote) or only `OPENCODE_SERVER_PASSWORD` plus any
   `OPENCODE_SERVER_USERNAME` (v1). Linux and a POSIX shell are required;
   otherwise no pane, with a once-per-process `viewer-secret` diagnostic.
+- Close: Ctrl+C via `send-text`, then `kill-pane`. A failed `kill-pane` counts
+  as closed only on WezTerm's `no such pane N` error (`isAlreadyClosed`); any
+  other failure keeps the pane tracked, because the CLI also exits 1 on
+  transport/protocol errors while the pane still exists.
 - No FR-8 sweep: the CLI cannot set pane titles and the viewer replaces them.
 
 ### cmux-tui Implementation

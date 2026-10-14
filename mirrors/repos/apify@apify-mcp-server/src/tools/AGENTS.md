@@ -79,7 +79,7 @@ direct actor tools, `search-actors`, `fetch-actor-details`) is mode-agnostic.
 - **Validate inputs with Zod**; no ad-hoc shape checks. AJV + Zod already validate
   before a tool runs — don't re-check the same constraint inside the tool body.
 - **Reference tool names via the `HELPER_TOOLS` `as const` object**, never hardcoded strings
-  (exception: integration tests).
+  (exception: the integration suite, `tests/integration/` and the shared `tests/test_kit/` cases and helpers, which hardcode them so a renamed tool fails).
 - Keep a new tool mode-agnostic unless it is genuinely a widget variant.
 
 **Storage tool description skeleton** (`storage/`, all 8 tools): lead sentence stating what the tool
@@ -104,8 +104,9 @@ renders it per session — so never name a tool there; put the guidance in `buil
 auto-injects the `get-actor-run` it names.
 
 Result text (`summary` / `nextStep` in `content[1]`) has no `hasTool`, but it does have a per-session
-gate: `InternalToolArgs.loadedToolNames` (see `suggestTool` in `storage/storage_helpers.ts`). Name a
-tool there only through that gate, or when it is the calling tool itself (the "call it again with the
+gate: `InternalToolArgs.loadedToolNames`. A `nextStep` that names a sibling tool goes through
+`resolveSiblingNextStep` in `storage/storage_helpers.ts`. Name a tool there only through that gate,
+or when it is the calling tool itself (the "call it again with the
 next offset" pagination hint); otherwise leave the cross-tool guidance to the gated description.
 An `AUTO_INJECTED_TOOLS` member is no exception — the injection is conditional on `call-actor`, an
 Actor tool, or `get-actor-run` being loaded, so a session that loaded only `abort-actor-run` gets

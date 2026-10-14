@@ -1,6 +1,8 @@
 ---
 name: "omh-codebase-uml"
 description: "[omh] Architecture picture of a codebase: turn a repository into one readable, interface-level PlantUML architecture picture - packages or modules, the public symbols other units actually import, bounded import edges - and get it rendered to a single PNG a chat surface can show. Use when the user says: codebase-uml, codebase uml, uml, plantuml, uml diagram, class diagram, package diagram, module diagram."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -8,6 +10,7 @@ metadata:
     phase: codebase-uml
     role: planner
     quality_tier: codegraph-gated
+    related_skills: [omh-codegraph-refresh, omh-codebase-onboarding, omh-image-cards, architecture-diagram]
 ---
 
 # Codebase Uml
@@ -20,9 +23,10 @@ This is a Hermes-native `codebase-uml` workflow skill.
 
 ## Do Not Use When
 
-- The user wants the local code index refreshed or a task-scoped handoff pack, not a picture; use `codegraph-refresh`.
-- The user wants a narrative first-read tour, reading path, or glossary; use `codebase-onboarding`.
-- The user wants a summary card, thumbnail, or explainer image of a PR, meeting, or release rather than a structural diagram; use `img-summary`.
+- The user wants the local code index refreshed or a task-scoped handoff pack, not a picture; use `omh-codegraph-refresh`.
+- The user wants a narrative first-read tour, reading path, or glossary; use `omh-codebase-onboarding`.
+- The user wants a summary card, thumbnail, or explainer image of a PR, meeting, or release rather than a structural diagram; use `omh-image-cards`.
+- The user describes a system, cloud, or infrastructure architecture in words and wants it drawn as a styled diagram, with no repository to read the structure from; load Hermes' bundled `architecture-diagram` skill instead of this one.
 
 ## Examples
 
@@ -55,9 +59,9 @@ Bad example:
 
 - Current lane: **Intent -> plan** (`oh-my-hermes`, `meta-router`, `deep-interview`, `context`, `plan`, `ralplan`, `adversarial-consensus`, `codebase-onboarding`, `+8 more`) - clarify, plan, ship, or loop goals.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when the user wants to see the shape of a codebase as one picture - a package, module, or focused-area diagram they can drop into Slack, Discord, a PR, or a doc - rather than a prose tour or a refreshed code index.
 
@@ -123,4 +127,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

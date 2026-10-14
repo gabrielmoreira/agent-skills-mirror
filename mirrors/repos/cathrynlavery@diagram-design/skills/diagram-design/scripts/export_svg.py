@@ -29,7 +29,7 @@ import re
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Iterator
 
 GOOGLE_FONTS_IMPORT = (
     "@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1"
@@ -101,6 +101,13 @@ STYLE_BLOCK_RE = re.compile(r"<style\b[^>]*>(.*?)</style\s*>", re.IGNORECASE | r
 SVG_TAG_RE = re.compile(
     r"<svg(?=[\s/>])(?:[^>\"']|\"[^\"]*\"|'[^']*')*>|</svg\s*>", re.IGNORECASE
 )
+# Consume every tag, including quoted attributes, before checking whether it
+# changes the namespace of a style. Tag-looking attribute values are literal.
+HTML_TOKEN_RE = re.compile(
+    r"<!--.*?(?:-->|$)|<!\[CDATA\[.*?(?:\]\]>|$)|"
+    r"<(?P<close>/)?(?P<tag>[A-Za-z][^\s/>]*)"
+    r"(?:[^>\"']|\"[^\"]*\"|'[^']*')*>", re.IGNORECASE | re.DOTALL
+)
 CDATA_SECTION_RE = re.compile(r"<!\[CDATA\[(.*?)\]\]>", re.DOTALL)
 # Each alternative starts on a different character, and a comment cannot run
 # past its first "*/", so a failed match backtracks linearly, not
@@ -123,14 +130,60 @@ def slug_for(path: Path) -> str:
     return slug
 
 
+def html_tokens(source: str) -> Iterator[tuple[re.Match[str], bool, int, int]]:
+    """Yield markup with its SVG context and any opaque text body boundaries.
+
+    HTML text elements consume through their end tag without interpreting the
+    contents as markup. SVG title/desc remain HTML integration points instead.
+    """
+    contexts: list[str] = []
+    pos = 0
+    while token := HTML_TOKEN_RE.search(source, pos):
+        name = (token.group("tag") or "").lower()
+        in_svg = bool(contexts and contexts[-1] == "svg")
+        body_end = end = token.end()
+        self_closing = token.group(0).endswith("/>")
+        text_element = name in {"script", "style"} or (
+            not in_svg and name in {"textarea", "title", "xmp", "iframe", "noembed", "noframes", "noscript", "plaintext"}
+        )
+        if name and not token.group("close") and text_element and not (in_svg and self_closing):
+            closing = (None if name == "plaintext" else re.compile(
+                r"</" + name + r"(?=[\s/>])(?:[^>\"']|\"[^\"]*\"|'[^']*')*>",
+                re.IGNORECASE,
+            ).search(source, end))
+            body_end = closing.start() if closing else len(source)
+            end = closing.end() if closing else len(source)
+        elif name in {"svg", "foreignobject", "desc", "title"}:
+            if token.group("close"):
+                for index in range(len(contexts) - 1, -1, -1):
+                    if contexts[index] == name:
+                        del contexts[index:]
+                        break
+            elif not self_closing and (name == "svg" or in_svg):
+                contexts.append(name)
+        yield token, in_svg, body_end, end
+        pos = end
+
+
 def mask_opaque_html(source: str, *, styles: bool = False) -> str:
-    tags = "script|style"
-    pattern = re.compile(r"<!\[CDATA\[.*?\]\]>|<!--.*?-->|<(?P<raw>" + tags + r")\b[^>]*>.*?</(?P=raw)\s*>", re.IGNORECASE | re.DOTALL)
-    def mask(match: re.Match[str]) -> str:
-        if not styles and (match.group("raw") or "").lower() == "style":
-            return match.group(0)
-        return " " * len(match.group(0))
-    return pattern.sub(mask, source)
+    out: list[str] = []
+    pos = 0
+    for token, _, _, end in html_tokens(source):
+        out.append(source[pos:token.start()])
+        name = (token.group("tag") or "").lower()
+        if not name or (end > token.end() and (styles or name != "style")):
+            out.append(" " * (end - token.start()))
+        else:
+            # Keep tag names and boundaries, but do not expose markup-looking
+            # quoted attribute values to consumers of the masked source.
+            suffix = "/>" if token.group(0).endswith("/>") else ">"
+            attr_start = token.end("tag")
+            out.append(source[token.start():attr_start])
+            out.append(" " * (token.end() - len(suffix) - attr_start) + suffix)
+            out.append(source[token.end():end])
+        pos = end
+    out.append(source[pos:])
+    return "".join(out)
 
 
 def extract_first_svg(html: str) -> str:
@@ -371,8 +424,39 @@ def set_root_id(svg: str, root_id: str) -> str:
     return f"<{name}{attrs}{end}>" + svg[opening.end():]
 
 
+def selector_list_parts(selector: str) -> list[str]:
+    """Split only selector-list commas, preserving quoted and escaped literals."""
+    parts: list[str] = []
+    start = 0
+    depth = 0
+    quote = ""
+    pos = 0
+    while pos < len(selector):
+        char = selector[pos]
+        if char == "\\":
+            escape = css_escape(selector, pos)
+            if escape:
+                pos = escape[1]
+                continue
+        if quote:
+            if char == quote:
+                quote = ""
+        elif char in "\"'":
+            quote = char
+        elif char in "([":
+            depth += 1
+        elif char in ")]":
+            depth -= 1
+        elif char == "," and depth == 0:
+            parts.append(selector[start:pos])
+            start = pos + 1
+        pos += 1
+    parts.append(selector[start:])
+    return parts
+
+
 def is_chrome_selector(selector: str) -> bool:
-    parts = [part.strip() for part in selector.split(",") if part.strip()]
+    parts = [part.strip() for part in selector_list_parts(selector) if part.strip()]
     if not parts:
         return True
     return all(
@@ -460,7 +544,7 @@ def root_bound_compound(selector: str, root_id: str) -> bool:
 
 def scope_selector(selector: str, root_id: str) -> str:
     scoped: list[str] = []
-    for part in selector.split(","):
+    for part in selector_list_parts(selector):
         part = part.strip()
         if not part:
             continue
@@ -488,7 +572,7 @@ def scope_selector(selector: str, root_id: str) -> str:
 
 def body_inherited_css(selector: str, body: str, root_id: str) -> str:
     """Bind `color` / `font-family` from a dropped `body` rule to the SVG root."""
-    parts = [part.strip().lower() for part in selector.split(",")]
+    parts = [part.strip().lower() for part in selector_list_parts(selector)]
     if "body" not in parts:
         return ""
     declarations = [
@@ -542,7 +626,14 @@ def retarget_root_selector(selector: str, original_id: str, root_id: str) -> str
 def diagram_css_from_html(html: str, root_id: str, original_root_id: str = "") -> str:
     """Filter page <style> rules down to diagram rules, scoped under root_id."""
     kept: list[str] = []
-    for block in STYLE_BLOCK_RE.findall(mask_opaque_html(html)):
+    for token, in_svg, body_end, _ in html_tokens(html):
+        if (token.group("tag") or "").lower() != "style" or token.group("close"):
+            continue
+        block = html[token.end():body_end]
+        # foreignObject/desc/title children are HTML; a nested svg re-enters
+        # SVG. CDATA-looking strings in HTML styles must remain literal.
+        if in_svg:
+            block = CDATA_SECTION_RE.sub(lambda match: match.group(1), block)
         # A comment before a rule would otherwise become part of its selector
         # (`/* Tokens */ :root` is not recognised as `:root`).
         block = CSS_COMMENT_RE.sub("", block)
@@ -550,9 +641,9 @@ def diagram_css_from_html(html: str, root_id: str, original_root_id: str = "") -
             selector = match.group(1).strip()
             if original_root_id:
                 selector = retarget_root_selector(selector, original_root_id, root_id)
-            # Retarget before collapsing whitespace: a hex escape consumes one
-            # terminator, so a second space may be the descendant combinator.
-            selector = " ".join(selector.split())
+            # Preserve quoted whitespace and CSS escape terminators: a second
+            # space after a hex escape can be a descendant combinator.
+            selector = selector.strip()
             body = match.group(2).strip()
             if not selector or not body:
                 continue
@@ -658,10 +749,35 @@ def namespace_defs_ids(svg: str, prefix: str) -> str:
     Only tags, comments and <style> blocks are rewritten; visible text keeps
     its wording. ID selectors in <style> rules follow the renamed IDs.
     """
-    ids = find_defs_ids(svg)
+    # Match opaque regions in one pass: a comment opener inside CDATA is text.
+    live_svg = re.sub(r"<!\[CDATA\[.*?\]\]>|<!--.*?-->", "", svg, flags=re.DOTALL)
+    commented_defs_tags = {"marker", "pattern", "lineargradient", "radialgradient", "filter", "clippath", "mask", "symbol"}
+
+    def markup_ids(markup: str, allowed: set[str] | None = None) -> set[str]:
+        found: set[str] = set()
+        for tag in START_TAG_RE.finditer(markup):
+            if allowed is not None and tag.group(1).lower() not in allowed:
+                continue
+            for attribute in TAG_ATTR_RE.finditer(tag.group(2)):
+                _, name, _, quoted = attribute.groups()
+                if name == "id" and quoted is not None and quoted[0] in "\"'":
+                    found.add(decode_xml_references(quoted[1:-1]))
+        return found
+
+    live_defs_tags = {kind.lower() for kind in DEFS_ID_TAGS}
+    live_ids = set().union(*(markup_ids(block, live_defs_tags)
+        for block in re.findall(r"<defs\b[^>]*>(.*?)</defs>", live_svg, re.IGNORECASE | re.DOTALL)))
+    commented_ids = set().union(*(markup_ids(comment, commented_defs_tags)
+        for comment in re.findall(r"<!--.*?-->", svg, re.DOTALL)))
+    # An optional commented definition must not redirect references to a live
+    # element whose ID is left unchanged, even if both happen to use one name.
+    unrenamed_live_ids = markup_ids(live_svg) - live_ids
+    live_reference_ids = live_ids | (commented_ids - unrenamed_live_ids)
+    ids = live_ids | commented_ids
     if not ids:
         return svg
     replacements = {old: html_entities.escape(f"{prefix}-{old}", quote=True) for old in ids}
+    live_replacements = {old: replacements[old] for old in live_reference_ids}
     url_ref = re.compile(
         r"(?i:url)\(\s*(?P<quote>[\"']|&quot;|&apos;|)\s*#\s*"
         r"(?P<ident>.*?)\s*(?P=quote)\s*\)", re.DOTALL,
@@ -674,29 +790,35 @@ def namespace_defs_ids(svg: str, prefix: str) -> str:
     def rewrite_raw_url(match: re.Match[str]) -> str:
         # CSS text with XML references already resolved (or CDATA, which has
         # none): compare and write the ID unescaped; the caller escapes.
-        if match.group("ident") not in ids:
+        if match.group("ident") not in live_reference_ids:
             return match.group(0)
         return f"url({match.group('quote')}#{prefix}-{match.group('ident')}{match.group('quote')})"
 
-    def rewrite_url(match: re.Match[str]) -> str:
-        new = replacements.get(decode_xml_references(match.group("ident")))
+    def rewrite_url(match: re.Match[str], commented: bool = False) -> str:
+        mapping = replacements if commented else live_replacements
+        new = mapping.get(decode_xml_references(match.group("ident")))
         if new is None:
             return match.group(0)
         return f"url({match.group('quote')}#{new}{match.group('quote')})"
 
-    def rewrite_tag(tag: re.Match[str]) -> str:
+    def rewrite_tag(tag: re.Match[str], commented: bool = False) -> str:
+        mapping = replacements if commented else live_replacements
+
         def attribute(match: re.Match[str]) -> str:
             space, name, equals, quoted = match.groups()
             if quoted is None or quoted[0] not in "\"'":
                 return match.group(0)
             raw = quoted[1:-1]
             value = decode_xml_references(raw)
-            if name == "id" and value in replacements:
+            if name == "id" and value in replacements and (
+                tag.group(1).lower() in commented_defs_tags if commented
+                else value in live_ids and tag.group(1).lower() in live_defs_tags
+            ):
                 raw = replacements[value]
-            elif name.lower() in {"href", "xlink:href"} and value.startswith("#") and value[1:] in replacements:
-                raw = "#" + replacements[value[1:]]
+            elif name.lower() in {"href", "xlink:href"} and value.startswith("#") and value[1:] in mapping:
+                raw = "#" + mapping[value[1:]]
             else:
-                raw = url_ref.sub(rewrite_url, raw)
+                raw = url_ref.sub(lambda reference: rewrite_url(reference, commented), raw)
             return space + name + equals + quoted[0] + raw + quoted[-1]
 
         name, attrs, end = tag.groups()
@@ -709,7 +831,7 @@ def namespace_defs_ids(svg: str, prefix: str) -> str:
     def rewrite_comment_token(match: re.Match[str]) -> str:
         token = match.group(0)
         tag = START_TAG_RE.fullmatch(token)
-        return rewrite_tag(tag) if tag is not None else rewrite_url(url_ref.fullmatch(token))
+        return rewrite_tag(tag, commented=True) if tag is not None else rewrite_url(url_ref.fullmatch(token), commented=True)
 
     def retarget_style_selectors(region: str) -> str:
         # IDs are already decoded once, so CSS selectors compare against the
@@ -719,7 +841,7 @@ def namespace_defs_ids(svg: str, prefix: str) -> str:
             return url_ref.sub(rewrite_url, region)
 
         def retarget(css: str) -> str:
-            for old in sorted(ids, key=len, reverse=True):
+            for old in sorted(live_reference_ids, key=len, reverse=True):
                 escaped_new = "".join(
                     char if char.isalnum() or char in "_-" or ord(char) >= 128
                     else f"\\{ord(char):x} " if ord(char) < 32 or ord(char) == 127
@@ -781,7 +903,11 @@ def _decoded_css_property_text(style: str) -> str:
 
 def _css_paint_may_target_descendants(selector: str, children: list[ET.Element]) -> bool:
     """Exclude provably unrelated simple selectors; preserve unknown CSS cascades."""
-    for branch in selector.split(","):
+    for branch in selector_list_parts(selector):
+        # A hex escape's whitespace terminator belongs to its identifier.
+        # Keep escaped branches conservative before splitting combinators.
+        if "\\" in branch:
+            return True
         terminal = re.split(r"[\s>+~]+", branch.strip())[-1]
         # Unsupported selectors remain conservative, including escaped names,
         # attribute selectors and pseudo-classes that can affect descendant paint.

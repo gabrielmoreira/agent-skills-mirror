@@ -239,6 +239,6 @@ Run them with `cargo test -p openhuman threads::` or
 
 ## Further reading
 
-- [Chat](../../../../gitbooks/features/chat.md)
-- [Agent harness architecture](../../../../gitbooks/developing/architecture/agent-harness.md)
-- [Frontend architecture](../../../../gitbooks/developing/architecture/frontend.md)
+- [Chat](../../../../docs/gitbooks/en/features/chat.md)
+- [Agent harness architecture](../../../../docs/gitbooks/en/developing/architecture/agent-harness.md)
+- [Frontend architecture](../../../../docs/gitbooks/en/developing/architecture/frontend.md)

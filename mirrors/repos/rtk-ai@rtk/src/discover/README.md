@@ -43,13 +43,13 @@ When a hook sends `cargo fmt --all && cargo test 2>&1 | tail -20`:
 
 ## Shared Lexer Toolkit
 
-`lexer.rs` is layer 1 of RTK's command parsing (raw string → quote/operator-aware tokens and words) — layer 2, already-split argv → flags/values, is `core/arg_tokenizer.rs`. It's not private to this module: `hooks/permissions.rs`, `hooks/mod.rs`, and `main.rs`'s `rtk proxy` all build on it instead of re-scanning commands themselves.
+`lexer.rs` is layer 1 of RTK's command parsing (raw string → quote/operator-aware tokens and words) — layer 2, already-split argv → flags/values, is `core/arg_tokenizer.rs`. It's not private to this module: `hooks/permissions.rs`, `hooks/mod.rs`, and `main.rs`'s `rtk bypass` all build on it instead of re-scanning commands themselves.
 
 | Function | Purpose | Used outside `discover/` by |
 |---|---|---|
 | `tokenize(cmd)` | Full shell-syntax tokens: quotes, escapes, operators, pipes, redirects, shellisms | — |
 | `tokenize_with_newlines(cmd)` | Like `tokenize`, plus a `\n` `Operator` token per unquoted newline (a lone `\r` stays glued to its word, matching real bash) | — |
-| `shell_split(cmd)` | Quote-aware split into argv-ready words (quotes stripped, escapes resolved) | `hooks/mod.rs::is_claude_hook_command`, `main.rs`'s `rtk proxy '...'` |
+| `shell_split(cmd)` | Quote-aware split into argv-ready words (quotes stripped, escapes resolved) | `hooks/mod.rs::is_claude_hook_command`, `main.rs`'s `rtk bypass '...'` |
 | `split_for_permissions(cmd)` | Segments a compound command for the **permission gate** — deliberately the most conservative of three segmenters (see its doc comment for the full comparison table) | `hooks/permissions.rs::check_command_with_rules` |
 | `split_on_operators(cmd, stop_at_pipe)` | Segments for classification only — not safe for permission/security decisions | `registry.rs::split_command_chain` |
 | `contains_unattestable_construct(cmd)` | True for command/process substitution, quoting the lexer reads differently from bash (`$'\''`), or a file-target redirect — constructs the permission gate can't decompose and must never auto-allow | `hooks/permissions.rs::check_command_with_rules` |

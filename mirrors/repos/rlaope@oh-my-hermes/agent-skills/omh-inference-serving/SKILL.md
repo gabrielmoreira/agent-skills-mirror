@@ -1,6 +1,7 @@
 ---
 name: "omh-inference-serving"
 description: "[omh] Self-hosted LLM serving on GPUs: choose the serving engine and quantization from decision tables, prepare deployment as an idempotent runbook with observed-only verification, and measure the endpoint with the standard TTFT/TPOT/goodput protocol. Use when the user says: inference-serving, inference serving, serve this model, serve the model, model serving, serving endpoint, vllm, llama.cpp."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operations]
@@ -20,10 +21,10 @@ This is an OMH `inference-serving` workflow skill, projected for Agent Skills ho
 
 ## Do Not Use When
 
-- A new model generation needs recognition, calibration, routing, and pricing onboarding; use `model-optimization`.
-- The user wants their own machine's model routing or providers configured; use `model-setup`.
-- The question is whether a coding runtime/executor can run at all; use `executor-runtime-readiness`.
-- The goal is application or system performance rather than the serving endpoint itself; use `ultraperf`.
+- A new model generation needs recognition, calibration, routing, and pricing onboarding; use `omh-model-optimization`.
+- The user wants their own machine's model routing or providers configured; use `omh-model-setup`.
+- The question is whether a coding runtime/executor can run at all; use `omh-executor-runtime-readiness`.
+- The goal is application or system performance rather than the serving endpoint itself; use `ulw-perf`.
 
 ## Examples
 
@@ -54,7 +55,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when a model needs to be served - engine and quantization chosen, docker or Kubernetes deployment prepared as a gated runbook, or the endpoint measured with the TTFT/TPOT/ITL/goodput protocol - and the user wants the process, not an ad-hoc command guess.
 

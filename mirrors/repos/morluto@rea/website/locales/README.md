@@ -113,12 +113,16 @@ translated fragments.
 
 ## Language coverage and initial translations
 
-`languages.json` lists the same editions as the root README, with native names,
+`languages.json` lists the same editions as the English root README and the translations in `docs/readme/`, with native names,
 standard language tags and text direction. English keeps its existing routes;
 other editions use a language prefix such as `/ja/` or `/pt-BR/`. Arabic and
 Persian use right-to-left page layouts; code and numeric demos remain left to
 right. The two Notes target applications and the downloadable source archive
 remain the original investigation inputs.
+
+Greek (`el`) has a translated README and a partially translated website catalog.
+Incomplete website pages use the labeled English fallback until their required
+messages are translated and reviewed.
 
 The first catalogs started with machine-assisted drafts. They include editorial
 corrections to navigation, prompts and technical terminology. Traditional Chinese
@@ -131,7 +135,7 @@ the page and language you checked; a screenshot can help explain a layout issue.
 PO catalogs have source references, reviewer comments and explicit pending
 translations. They can be edited locally and can later be connected to Weblate
 without replacing the site's translation format. This keeps one authored layout
-and a small offline build instead of maintaining nineteen HTML trees.
+and a small offline build instead of maintaining separate HTML trees.
 
 See [GNU gettext's PO format](https://www.gnu.org/software/gettext/manual/html_node/PO-File-Entries.html),
 [Weblate's translation workflows](https://docs.weblate.org/en/latest/workflows.html)

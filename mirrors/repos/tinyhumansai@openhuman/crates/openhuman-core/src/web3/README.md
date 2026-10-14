@@ -118,6 +118,6 @@ node scripts/ci/check-module-boundaries.mjs
 
 ## Further reading
 
-- [Wallet](../../../../gitbooks/features/wallet.md)
+- [Wallet](../../../../docs/gitbooks/en/features/wallet.md)
 - [TinyWallet](../../../../vendor/tinywallet/README.md)
-- [Loadable modules](../../../../gitbooks/developing/loadable-modules.md)
+- [Loadable modules](../../../../docs/gitbooks/en/developing/loadable-modules.md)

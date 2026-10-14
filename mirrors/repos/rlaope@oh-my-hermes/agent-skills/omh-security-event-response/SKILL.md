@@ -1,6 +1,7 @@
 ---
 name: "omh-security-event-response"
 description: "[omh] Security event on the code already shipped -- a CVE in a dependency, a secret committed to the repo, a license question, an advisory: triage reachability and severity, contain in order, and never close a leaked secret before its rotation is observed. Use when the user says: security-event-response, security event response, cve, triage this cve, cve in our dependency, cve in a dependency, security advisory, dependabot alert."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]
@@ -25,11 +26,11 @@ This is an OMH `security-event-response` workflow skill, projected for Agent Ski
 
 ## Do Not Use When
 
-- Nothing has happened yet and the ask is a review of prompts, tools, or permissions before execution; use `security-safety-review`, which also owns a planned rotation with no exposure.
-- The subject is a design's assets, trust boundaries, and attack scenarios; use `application-threat-model`.
-- A dependency moves to a new version as routine maintenance with no advisory or leak attached, such as a dependabot bump; use `refactor-plan`.
-- The question is a contract, a privacy obligation, or legal advice beyond a dependency's declared terms; use `legal-compliance-review`.
-- Production is down or degraded right now and the ask is command of the incident; use `live-incident-response`.
+- Nothing has happened yet and the ask is a review of prompts, tools, or permissions before execution; use `omh-security-safety-review`, which also owns a planned rotation with no exposure.
+- The subject is a design's assets, trust boundaries, and attack scenarios; use `omh-application-threat-model`.
+- A dependency moves to a new version as routine maintenance with no advisory or leak attached, such as a dependabot bump; use `omh-refactor-plan`.
+- The question is a contract, a privacy obligation, or legal advice beyond a dependency's declared terms; use `omh-legal-compliance-review`.
+- Production is down or degraded right now and the ask is command of the incident; use `omh-live-incident-response`.
 
 ## Examples
 
@@ -60,7 +61,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when a security event has already happened to code that exists: a CVE or advisory in a dependency, a secret or credential committed or pushed, a dependency whose license may not fit the product, or an advisory that forces a major version. The output is reachability, a severity call, containment steps in order, and what must be observed before the event closes; OMH never scans, never contacts a registry, and rotates nothing.
 

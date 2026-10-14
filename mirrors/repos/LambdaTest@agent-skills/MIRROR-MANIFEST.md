@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `LambdaTest/agent-skills` — 26 default patterns, 0 followed patterns, 73 file(s) materialized.
+Mirror of `LambdaTest/agent-skills` — 26 default patterns, 0 followed patterns, 74 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `LambdaTest/agent-skills` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 73 |
+| Files         | 74 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -117,21 +117,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 56 | ✓ | [`pytest-skill/SKILL.md`](pytest-skill/SKILL.md) |
 | 57 | ✓ | [`reqnroll-skill/SKILL.md`](reqnroll-skill/SKILL.md) |
 | 58 | ✓ | [`robot-framework-skill/SKILL.md`](robot-framework-skill/SKILL.md) |
-| 59 | ✓ | [`rspec-skill/SKILL.md`](rspec-skill/SKILL.md) |
-| 60 | ✓ | [`selenide-skill/SKILL.md`](selenide-skill/SKILL.md) |
-| 61 | ✓ | [`selenium-skill/SKILL.md`](selenium-skill/SKILL.md) |
-| 62 | ✓ | [`serenity-bdd-skill/SKILL.md`](serenity-bdd-skill/SKILL.md) |
-| 63 | ✓ | [`smartui-skill/SKILL.md`](smartui-skill/SKILL.md) |
-| 64 | ✓ | [`specflow-skill/SKILL.md`](specflow-skill/SKILL.md) |
-| 65 | ✓ | [`test-framework-migration-skill/SKILL.md`](test-framework-migration-skill/SKILL.md) |
-| 66 | ✓ | [`testcafe-skill/SKILL.md`](testcafe-skill/SKILL.md) |
-| 67 | ✓ | [`testng-skill/SKILL.md`](testng-skill/SKILL.md) |
-| 68 | ✓ | [`testunit-skill/SKILL.md`](testunit-skill/SKILL.md) |
-| 69 | ✓ | [`unittest-skill/SKILL.md`](unittest-skill/SKILL.md) |
-| 70 | ✓ | [`vitest-skill/SKILL.md`](vitest-skill/SKILL.md) |
-| 71 | ✓ | [`webdriverio-skill/SKILL.md`](webdriverio-skill/SKILL.md) |
-| 72 | ✓ | [`xcuitest-skill/SKILL.md`](xcuitest-skill/SKILL.md) |
-| 73 | ✓ | [`xunit-skill/SKILL.md`](xunit-skill/SKILL.md) |
+| 59 | ✓ | [`rook-skill/SKILL.md`](rook-skill/SKILL.md) |
+| 60 | ✓ | [`rspec-skill/SKILL.md`](rspec-skill/SKILL.md) |
+| 61 | ✓ | [`selenide-skill/SKILL.md`](selenide-skill/SKILL.md) |
+| 62 | ✓ | [`selenium-skill/SKILL.md`](selenium-skill/SKILL.md) |
+| 63 | ✓ | [`serenity-bdd-skill/SKILL.md`](serenity-bdd-skill/SKILL.md) |
+| 64 | ✓ | [`smartui-skill/SKILL.md`](smartui-skill/SKILL.md) |
+| 65 | ✓ | [`specflow-skill/SKILL.md`](specflow-skill/SKILL.md) |
+| 66 | ✓ | [`test-framework-migration-skill/SKILL.md`](test-framework-migration-skill/SKILL.md) |
+| 67 | ✓ | [`testcafe-skill/SKILL.md`](testcafe-skill/SKILL.md) |
+| 68 | ✓ | [`testng-skill/SKILL.md`](testng-skill/SKILL.md) |
+| 69 | ✓ | [`testunit-skill/SKILL.md`](testunit-skill/SKILL.md) |
+| 70 | ✓ | [`unittest-skill/SKILL.md`](unittest-skill/SKILL.md) |
+| 71 | ✓ | [`vitest-skill/SKILL.md`](vitest-skill/SKILL.md) |
+| 72 | ✓ | [`webdriverio-skill/SKILL.md`](webdriverio-skill/SKILL.md) |
+| 73 | ✓ | [`xcuitest-skill/SKILL.md`](xcuitest-skill/SKILL.md) |
+| 74 | ✓ | [`xunit-skill/SKILL.md`](xunit-skill/SKILL.md) |
 
 ---
 

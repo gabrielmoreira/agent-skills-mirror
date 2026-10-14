@@ -1,6 +1,7 @@
 ---
 name: "omh-jit-learn"
 description: "[omh] Blocked on a project by a knowledge gap: just-in-time learning workflow: select and confirm an immediate learning target, research credible sources, and prepare an application-first brief without popularity ranking. Use when the user says: jit-learn, learn next, learn now, blocker-specific learning target, highest-leverage learning target, immediate learning payoff, immediately applicable learning brief, source-backed learning brief."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, research]
@@ -20,11 +21,11 @@ This is an OMH `jit-learn` workflow skill, projected for Agent Skills hosts (Cla
 
 ## Do Not Use When
 
-- The user asks OMH to learn from workflow outcomes, missed routes, or evaluation traces; use `workflow-learning`.
-- The learning goal is already chosen and the user wants a multi-week syllabus, instructional sequence, or assessment plan; use `curriculum-design`.
-- The user supplied a paper, PDF, arXiv entry, or excerpt and wants it explained; use `paper-learning`.
-- The requested output is a typed source candidate inventory or acquisition status rather than a fitted learning brief; use `source-finder`.
-- The research question and target are already scoped and the user wants current facts, citations, or source synthesis rather than choosing what to learn; use `research`.
+- The user asks OMH to learn from workflow outcomes, missed routes, or evaluation traces; use `omh-workflow-learning`.
+- The learning goal is already chosen and the user wants a multi-week syllabus, instructional sequence, or assessment plan; use `omh-curriculum-design`.
+- The user supplied a paper, PDF, arXiv entry, or excerpt and wants it explained; use `omh-paper-learning`.
+- The requested output is a typed source candidate inventory or acquisition status rather than a fitted learning brief; use `omh-source-finder`.
+- The research question and target are already scoped and the user wants current facts, citations, or source synthesis rather than choosing what to learn; use `ulw-research`.
 
 ## Examples
 
@@ -58,7 +59,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when selecting the highest-leverage immediate learning target for an active blocker before preparing a source-backed Markdown brief for direct application.
 

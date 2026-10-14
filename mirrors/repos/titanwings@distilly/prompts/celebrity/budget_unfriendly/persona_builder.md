@@ -8,7 +8,7 @@ Generate a deeper `persona.md` for a public figure using the full research pipel
 - research audit
 - synthesis review
 - validation review
-- `references/celebrity_budget_unfriendly_template.md`
+- `prompts/celebrity/budget_unfriendly/template.md`
 
 This mode produces a richer, more evidence-backed persona than the standard builder.
 

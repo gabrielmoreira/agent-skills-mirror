@@ -7,6 +7,10 @@ This passive runtime surface is distinct from the target-free static
 workflow. Static analysis reads a local ASAR or extracted directory without
 executing application code. Passive observation inspects an existing Electron
 page. The results keep static inferences and runtime observations distinct.
+Packaged fuse state is a separate static read:
+[`inspect_electron_fuses`](electron-fuses.md) reports whether this binary will
+honor Inspector flags, `ELECTRON_RUN_AS_NODE`, embedded ASAR integrity, and
+`app.asar`-only loading.
 Use the separate
 [`reconcile_javascript_runtime`](javascript-runtime-reconciliation.md) workflow
 when both Evidence sets already exist.

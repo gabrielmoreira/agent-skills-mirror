@@ -126,5 +126,5 @@ No `store.rs`. The only durable side effect is the **MCP write-audit log**, writ
 ## Further reading
 
 - [Parent module README](../README.md)
-- [MCP server](../../../../../gitbooks/developing/mcp-server.md)
-- [MCP servers and skills](../../../../../gitbooks/features/integrations/mcp-and-skills.md)
+- [MCP server](../../../../../docs/gitbooks/en/developing/mcp-server.md)
+- [MCP servers and skills](../../../../../docs/gitbooks/en/features/integrations/mcp-and-skills.md)

@@ -175,22 +175,28 @@ number keeps the same concurrency lane when the merged close event changes
 `github.ref` to the base branch. Closed events skip classification and the final
 gate; open PRs retain the same required jobs and cancellation failures.
 
-A trusted `pull_request_target: closed` job additionally cancels remaining runs
+A trusted `pull_request_target` cleanup handles closed and synchronize events.
+Closed events cancel remaining runs
 of this workflow, using job-local `actions: write` without checking out PR code.
 It verifies the current closed PR, source repository/branch and close time;
 it preserves reopened PRs, another open PR on that branch, newer runs and
 foreign repositories. A missing run-to-PR association requires the exact closed
 head. After ordinary cancellation, it uses GitHub's force-cancel endpoint for
-nonterminal `always()` aggregates. The cleanup needs one short runner job;
+nonterminal `always()` aggregates. Before either cancellation stage it rereads
+both the target PR and open PRs sharing its source branch; a new sibling or
+unavailable lookup prevents the effect. A fresh retry can resume after the
+branch is no longer shared. The cleanup needs one short runner job;
 it releases obsolete capacity rather than reserving release capacity or
 providing a GitHub shared-pool priority guarantee.
 
 PR 关闭或合并后，以 PR 编号维持原并发 lane，关闭事件跳过分类与最终门；开放
-PR 的必需检查及取消失败规则不变。来自目标分支的可信 `pull_request_target:
-closed` 清理任务仅自身持有 `actions: write`，不检出 PR 代码。它核验当前关闭
+PR 的必需检查及取消失败规则不变。来自目标分支的可信 `pull_request_target`
+清理任务处理 closed 与 synchronize 事件（更新规则见下方共享分片说明），仅自身持有 `actions: write`，不检出 PR 代码。它核验当前关闭
 状态、源仓库/分支与关闭时间，保留重开的 PR、同源分支上的其他开放 PR、更新
 运行及其他仓库；缺少 PR 关联时只处理确切关闭 head。普通取消后仍未结束的
-`always()` 汇总使用强制取消 API。清理需要一个短 runner 任务；这会释放过期
+`always()` 汇总使用强制取消 API。普通及强制取消前都重读目标 PR 和同源分支的
+开放 PR；新出现的共享分支 PR 或读取失败会阻止副作用，分支不再共享后可重新
+触发清理。清理需要一个短 runner 任务；这会释放过期
 容量，不等于为发布预留容量或设置 GitHub 共享池优先级。
 
 The [job exemption policy](ci-impact-selection.md) additionally permits pure
@@ -603,6 +609,11 @@ individual shards. Relative coverage paths make reports portable across runners.
 Each shard has a 60-minute job ceiling for setup, the full partition and report
 upload; individual test deadlines stay unchanged. Verbose progress names failed
 cases before the suite finishes, so an interrupted run retains their identities.
+An explicitly loaded CI observer also streams pytest-owned phase durations from
+the xdist controller. Read the downloaded log with
+`node scripts/ci/pytest_timing.ts JOB_LOG`; incomplete evidence remains incomplete
+and does not replace JUnit, coverage or the required gate. See the
+[timing observation boundary](ci-impact-selection.md#four-complete-python-shards).
 The reusable Sonar workflow consumes that same run's XML and never reruns
 pytest or reads cross-run artifacts. Missing Sonar tokens still skip analysis
 successfully; test jobs receive no Sonar secret. The trigger is the union of
@@ -615,9 +626,53 @@ Linux 全套测试分到四台 hosted runner，每台保留两个 xdist worker�
 合并后再执行原有 19.6% 门槛；不要求单个分片达到全套覆盖率。coverage 使用相对路径，
 每个分片的作业上限为 60 分钟，覆盖环境准备、完整分片和报告上传；单项测试超时
 保持不变。详细进度在套件结束前就记录失败用例名称，运行中断后仍可定位这些用例。
+CI 同时在 xdist controller 流式记录 pytest 原生 phase 耗时。下载日志后用
+`node scripts/ci/pytest_timing.ts JOB_LOG` 回读；不完整证据保持不完整，不能替代
+JUnit、coverage 或必过门禁。归属与测量边界见
+[分片耗时记录](ci-impact-selection.md#four-complete-python-shards)。
 Sonar 只复用同一次 run 的 XML，不重复测试、不跨 run 取产物。缺少 token 仍成功跳过
 Sonar，测试 job 不接收 Sonar secret。触发范围取原有两套 workflow 的并集；纯前端
 PR 使用前述豁免，Sonar 配置变更仍全量运行，包括没有 token 的 fork。
+
+Full Python shards share four repository-wide job concurrency groups, one per
+`matrix.shard`, across PR, main, merge-queue and manual runs carrying this
+workflow version. Each group admits one running job and uses `queue: max`
+to retain up to 100 pending jobs instead of replacing another current
+candidate. Workflow-level cancellation requests retirement of the same PR's
+obsolete head. Trusted base-branch cleanup on `synchronize` also retires its
+remaining obsolete runs, including `always()` aggregates that survive ordinary
+cancellation. It requires the event's current head, exact PR association, source
+repository and branch, and rechecks the current head before ordinary and force
+cancellation. It preserves another open PR sharing that branch. Current-head
+runs, unassociated open-PR runs and ordinary required gate predicates remain
+unchanged: cancelled, skipped or incomplete dependencies cannot become a green
+aggregate. This adds one short trusted cleanup job per update without checkout,
+PR-code execution or new permissions on qualification jobs. Older workflow
+versions on the base branch retain only closed-event cleanup. Queue overflow, cancellation and missing coverage remain failures of
+the required gate; collection, four partitions, two workers, reports and the
+coverage floor stay unchanged. Contributors can wait longer for a shard during
+overlapping full runs. This limits long-shard occupancy to four runners; it
+does not reserve release capacity or prioritize releases over other jobs or
+repositories in the organization's shared hosted pool. Older workflow versions
+do not participate. Roll back by removing this job-level concurrency block,
+retaining workflow-level cancellation and the required gate. See GitHub's
+[concurrency queue contract](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency).
+
+全量 Python 分片按 `matrix.shard` 共用四个仓库级 job concurrency 组，适用于
+携带本版 workflow 的 PR、main、merge queue 和手动运行。每组允许一个运行中 job，
+用 `queue: max` 保留至多 100 个等待 job，不替换其他有效候选。workflow 级取消
+请求清退同 PR 的旧 head；可信 base 分支的 `synchronize` 清理还会取消遗留
+旧 run，包括普通取消后仍继续的 `always()` 汇总。清理要求事件中的当前 head、
+精确 PR 关联、源仓库和分支，在普通及强制取消前重新读取 head；同分支另一 open
+PR、当前 head 和无关联 run 均被保护。必过汇总条件不变，取消、跳过或缺失依赖
+不能变绿。每次更新增加一个短清理 job，不 checkout 或执行 PR 代码，不增加普通
+验证 job 的权限；base 分支旧版 workflow 仍只清理 closed 事件。队列溢出、取消
+和缺失 coverage 仍不能通过必需检查。
+完整 collection、四分片、双 worker、报告和覆盖率门槛保持不变；重叠的全量运行
+会增加贡献者等待分片的时间。此限制只把长分片占用约束到四台 runner，不预留发布
+容量，也不保证发布优先于组织共享 hosted 池中的其他 job 或仓库。旧版 workflow
+不参与该限制。回退时移除此 job 的 concurrency 块，保留 workflow 级取消和必需
+检查；队列行为遵循上述 GitHub 官方契约。
 
 Reproduce one shard locally with `uv run --extra test python -m pytest -v -n 2 --splits 4 --group 1
 --splitting-algorithm least_duration --cov=loopx`. Omit the split arguments to
@@ -763,6 +818,35 @@ agent what to do and how to request the omitted detail.
 完整诊断包保留为显式 drill-down。只有默认路径仍能告诉 agent 下一步做什么、以及
 如何请求被省略细节时，字段才能移出默认热路径。
 
+The default `quota should-run` CLI preserves the complete
+`vision_continuation_audit` once, including judge identity, evidence requirements,
+research/writeback instructions, and done/continue conditions. Only identical
+copies in the same response reference that owner; differing channel rules remain
+inline. This restores rules previously omitted by the default projection;
+`--include-detail vision` still returns the full inline audit. The existing
+40,000-character fixture budget remains unchanged: the same workload measures
+30,697 characters before repair and 33,205 after repair, with 56,401 in detail.
+These are JSON fixture measurements, not token costs or model-behavior evidence.
+
+The complete emitted-CLI qualification is a separate workload: the original
+36-Todo / 12-run vision case measures 45,313 lossy / 48,418 complete characters.
+Its 46,000 ceiling becomes 50,000 after checking all affected modes and preserving
+every decision clause. The [interface contract](../reference/contracts/interface-budget-contract.md)
+records that tradeoff and the independently attributed Turn/raw-quota failures,
+metrics, headroom and platform limits; the 40,000 fixture above stays unchanged.
+
+默认 `quota should-run` CLI 完整保留一份 `vision_continuation_audit`，包括 judge
+身份、证据要求、研究／回写指令及 done/continue 条件；仅同一响应内完全相同的
+副本引用该 owner，不同 channel 的规则仍内联。这恢复了默认投影此前省略的规则；
+`--include-detail vision` 仍返回完整内联 audit。原有 40,000 字符 fixture 预算不变，
+同一负载修复前／后为 30,697／33,205 字符，详情为 56,401 字符。这是 JSON fixture
+测量，不代表 token 成本或模型行为证据。
+
+完整 CLI 输出是另一负载：原 36 Todo／12 run vision 场景为有损 45,313／完整
+48,418 字符；保留全部决策义务并核对受影响模式后，46,000 展示上限调至 50,000。
+接口合同记录取舍及独立归因的 Turn／raw quota 原失败、指标、余量和平台限制；
+上述 40,000 字符夹具保持不变。
+
 ### Roadmap-Aligned Optimization
 
 For recurring command, recovery or retrieval costs, use the existing
@@ -844,6 +928,56 @@ change. Historical thresholds do not freeze a regression budget. This history is
 not a waived regression or a frozen SLO pass. An unchanged base failure must be
 attributed before it is distinguished from a new candidate regression.
 
+The matched qualification (`82b118229` main / `399d1bdd9` merged candidate)
+retains admitted work context, exact selected Todo text and acceptance, ordered
+required reads, captured scheduler decisions and complete registry/runtime
+command routes. All 96 Linux character and line measurements match; prose and
+routed commands match after excluding generated clock and receipt metadata.
+Windows has 93 equal measurements and three bootstrap JSON rows two characters
+smaller on the candidate, with unchanged routes, shapes and action signatures.
+These are unchanged upstream presentation failures, not new candidate growth.
+
+The complete matrix measures Windows maxima of 21,796 / 579 lines for small
+quota JSON, 35,771 / 836 for crowded quota, 45,578 / 834 for crowded diagnosis,
+14,848 / 375 for multi-Agent planning, 14,449 / 365 for transaction detail,
+13,055 / 53 for compact heartbeat and 11,381 / 279 for the multi-subagent Turn
+Envelope. Small Markdown work/read context reaches 8,434 / 134 for quota and
+3,701 / 90 for the envelope; cold quota Markdown reaches 8,508 / 134. The
+separate real-vision fixture measures 41,564 JSON characters, and crowded Turn
+planning with vision reaches 17,236. Preserve those caller clauses and routes
+rather than removing current work, acceptance or independently runnable actions.
+
+Only the exceeded presentation ceilings change (characters / lines):
+
+| Surface and format | Previous ceiling | Qualified ceiling |
+| --- | --- | --- |
+| Diagnosis JSON, small / crowded | 21,000 / 470; 45,000 / 850 | 22,500 / 500; 47,000 / 850 |
+| Quota JSON, small / crowded | 20,000 / 520; 35,000 / 830 | 23,000 / 620; 37,000 / 880 |
+| Quota Markdown, small / crowded / multi-Agent | 6,700 / 72; 7,800 / 78; 7,000 / 75 | 9,000 / 150; 7,800 / 90; 7,000 / 85 |
+| Turn plan JSON, small / crowded / multi-Agent | 12,000 / 320; 16,000 / 420; 12,000 / 320 | 14,000 / 360; 18,000 / 470; 16,000 / 400 |
+| Turn plan Markdown, small / multi-Agent | 300 / 12 | 650 / 12 |
+| Transaction detail JSON | 13,000 / 360 | 15,500 / 400 |
+| Compact heartbeat JSON | 13,000 / 58 | 14,000 / 58 |
+| Turn Envelope JSON / Markdown | 9,000 / 250; 650 / 20 | 12,000 / 300; 4,000 / 100 |
+| Cold quota Markdown, scheduler / other selectors | 6,700 / 72; 7,800 / 78 | 9,000 / 150 |
+| Separate real-vision quota JSON fixture | 41,000 characters | 43,000 characters |
+
+Per-Todo and fixed growth remain unchanged: quota growth is 13,847 Linux /
+13,975 Windows against 35*300 + 6,000; planning is 4,198 / 3,475 against
+35*60 + 4,700; diagnosis is 23,601 / 23,881 against 35*520 + 7,000.
+Bootstrap duplication, semantic/parity assertions and unaffected ceilings stay
+active. The production Turn Envelope's 8,192-byte performance diagnostic and
+its overflow warning remain unchanged. Linux crowded-plan, multi-Agent-plan
+and multi-subagent envelopes still measure 10,631 / 9,256 / 9,176 compact UTF-8
+bytes and report `within_budget=false` with `turn_envelope_budget_exceeded`;
+these unchanged warnings are not a green performance SLO. This diagnostic is
+never admission or execution authority. The repair grants no execution quota,
+spending or provider permissions and does not rewrite original failures as passes.
+
+本轮依据相同 main/候选和完整矩阵保留当前工作、验收、必读项及完整命令路由，
+仅修正已超过的展示回归预算。时钟与生成回执元数据不作逐字节一致声明；每 Todo
+和固定增长、重复度、生产性能诊断及执行配额边界不变，原失败仍按失败记录保留。
+
 Classify the limit by its owning contract before deciding how to repair a
 failure. This applies to output size/structure and latency regression budgets;
 it does not grant execution quota, spending, or provider authority.
@@ -894,37 +1028,57 @@ it does not grant execution quota, spending, or provider authority.
    or promotion thresholds stay fixed for that result; revised thresholds belong
    to a new qualification, never a relabeled historical pass.
 
-The fixed public CLI matrix at `2244b96f1e2e5c90bef43ae4c140c0994bfcc07a`
-and the settled-Turn cadence candidate exposed stale absolute ceilings on both
-revisions. The 96-row comparison retained 1/36/18 Todos and 1/12/12 history
-records, full command paths, enabled multi-subagent and blocking-gate cases.
-Quota's selected-Todo source carries current requirements, read freshness,
-before-work ordering and unavailable-source recovery; Turn transports that
-same context, and diagnose serves both selected and Goal-array consumers.
-Retain these caller contracts while calibrating the existing regression limits:
+The latest qualification pins true main `e47e4507a` and merged candidate
+`3955d1c8b` on the same public fixture, with explicit per-probe source imports.
+It retains 1/36/18 Todos, 1/12/12 history records, complete command routes,
+enabled multi-subagent and blocking-gate cases. All 96 character and line
+measurements match on each platform. Complete Linux consumer strings match
+apart from generated clock, receipt and source-decision hash metadata; raw
+output is not asserted byte-identical.
 
-| Output / 输出 | Same base/head measurement / 同口径测量 | Revised ceiling / 新上限 |
-| --- | --- | --- |
-| Quota small JSON / Markdown | 21,871 / 8,690 chars; 579 / 134 lines | 22,000 / 9,000 chars; 600 / 140 lines |
-| Quota crowded JSON / Markdown | 35,710 / 7,772 chars; 836 / 84 lines | 36,000 / 7,800 chars; 850 / 90 lines |
-| Quota explicit-detail Markdown | 8,760 chars; 134 lines | 9,000 chars; 140 lines |
-| Turn small / crowded / multi-agent JSON | 12,060 / 16,250 / 14,098 chars | 12,500 / 17,000 / 14,500 chars |
-| Crowded quota / Turn JSON with Agent vision | 41,503 / 16,679 chars; 939 / 427 lines | 42,000 / 17,000 chars; Turn 440 lines |
-| Turn transaction detail JSON | 13,688 chars | 14,000 chars |
-| TurnEnvelope JSON / enabled multi-subagent / Markdown | 10,498 / 11,426 / 3,949 chars; 255 / 279 / 90 lines | 12,000 JSON / 4,100 Markdown chars; 300 / 95 lines |
-| Diagnose small / crowded JSON | 21,521 / 45,122 chars | 22,000 / 46,000 chars |
+Retain the selected-Todo source and requirements, read freshness, before-work
+ordering and unavailable-source recovery. Long lanes still replan before
+continuing, use evidence-linked vision authoring, retain existing runnable
+work when appropriate and choose a reasonable in-scope next step or explain
+why none remains. Current preference instructions belong to participating
+hooks. These obligations and complete registry/runtime routes are retained;
+no lossless deletion of them is demonstrated by the size failures.
 
-Only exceeded character/line guards change; semantic, duplication, per-Todo and
-fixed-growth assertions retain their existing limits. Headroom is bounded by
-the frozen workload, not a universal percentage. This calibration changes
-output regression guards, leaving execution quota, envelope wire limits and
-frozen experiment/promotion criteria with their existing owners. The original
-failures remain failures under the old ceilings; rerun the complete matrix and
-affected semantic tests under the revised contract.
+The original Linux 151 tests, enforced matrix and true-main differential pass
+under the accepted main ceilings. Windows records three failures / 148 passes
+in the original suite; complete measurement exposes five over-limit rows plus
+the separate Agent-vision case. The same main costs fail there too. Calibrate
+only these six presentation lanes, preserving the original failed result:
 
-同一冻结负载在主干和候选上均超出旧回归预算；保留当前任务原文、读取时序、
-新鲜度、恢复和停止条件，并按上表校准已有输出检查。增长、语义及去重检查仍独立
-生效；此调整不授予执行额度，也不改写历史实验或验收结果。
+| Output | Previous chars / lines | Windows chars / lines | Revised chars / lines |
+| --- | --- | --- | --- |
+| Turn small JSON | 12,500 / 320 | 13,467 / 335 | 14,000 / 350 |
+| Turn multi-Agent JSON | 14,500 / 370 | 14,982 / 375 | 15,500 / 390 |
+| Turn crowded JSON with Agent vision | 17,000 / 440 | 17,371 / 444 | 18,000 / 460 |
+| Turn small Markdown | 300 / 12 | 565 / 10 | 600 / 12 |
+| Compact heartbeat JSON | 13,000 / 58 | 13,055 / 53 | 13,500 / 58 |
+| Turn transaction detail JSON | 14,000 / 360 | 14,584 / 365 | 15,000 / 380 |
+
+Only these character/line guards change. Same-workload Linux observations are
+12,044 / 296 small Turn JSON, 14,082 / 357 multi-Agent, 16,242 / 416 crowded,
+145 / 6 small Markdown, 12,779 / 53 compact heartbeat and 13,672 / 348
+transaction detail. Platform rendering needs bounded headroom; fixtures,
+semantic and bootstrap repetition checks, and all per-Todo/fixed-growth limits
+stay active. Measured Linux quota / Turn / diagnose growth is
+13,847 / 4,198 / 23,601 against 16,500 / 6,800 / 25,200 respectively.
+
+The production 8,192-byte performance diagnostic retains its own boundary.
+Linux crowded/multi-Agent Turn envelopes measure 10,766 / 9,391 UTF-8 bytes;
+plain envelope, transaction detail and multi-subagent measure
+8,544 / 8,539 / 9,312. They still report `within_budget=false` and
+`turn_envelope_budget_exceeded`; small Turn and blocking-user-gate remain
+within at 8,057 / 6,045. These warnings are not a green performance SLO or
+admission authority. This calibration grants no execution quota, spending or
+provider permission and does not rewrite frozen experiment/promotion results.
+
+本轮固定真实 main/候选和同一负载，逐条保留当前任务、读取时序、新鲜度、恢复、
+继续前 replan、证据关联及合理下一步要求。仅调整 Windows 同样在 main 上超限的
+六处展示预算；增长、重复度、生产性能诊断及执行权限边界不变，原失败保留。
 
 1. **同口径测量。** 记录 base/head、负载、指标和测量边界。紧凑 JSON 字符、UTF-8
    字节、嵌套键数、真实 stdout 和 token 不可互换。延迟要保留样本窗口、负载和

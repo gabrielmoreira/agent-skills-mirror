@@ -30,7 +30,7 @@ every panel boxed, so no panel leads.
 ## Name one terminal aesthetic
 
 As with web taste directions, blending terminal aesthetics by accident
-produces mud. Name ONE in `DESIGN.md` section 1 and execute it
+produces mud. Name ONE in the `DESIGN.md` Overview and execute it
 consistently across every screen, prompt, help line, and empty state:
 
 - **Minimal utility** — quiet monochrome plus one accent; density and

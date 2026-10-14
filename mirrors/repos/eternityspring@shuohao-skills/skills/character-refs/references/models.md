@@ -56,7 +56,7 @@ node scripts/character-refs.mjs config --model custom:mine
 
 | 占位符 | 值 |
 | --- | --- |
-| `{prompt}` / `{negative}` | 提示词 / 反向词正文 |
+| `{prompt}` / `{negative}` | 提示词 / 反向词正文；Windows 命令行会把换行折成空格，需要保留换行时使用下面的文件占位符 |
 | `{prompt_file}` / `{negative_file}` | 写好的文本文件路径（长提示词使用这个更稳） |
 | `{refs}` | 参考图路径，空格分隔；锚点没有参考图时为空 |
 | `{ref1}` `{ref2}` `{ref3}` | 单张参考图，没有就是空字符串 |

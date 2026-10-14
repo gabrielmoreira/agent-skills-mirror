@@ -1,6 +1,8 @@
 ---
 name: "omh-memory-sync"
 description: "[omh] Outdated or wrong Hermes memory entries: English-canonical Hermes memory-review guidance: inspect USER.md and MEMORY.md claims and prepare a native write diff without invoking, applying, or observing a native write; for a new fact use memory-new, and for a past decision use decision-recall. Use when the user says: memory-sync, memory curation, memory review, memory inspect, memory check, memory update, context cleanup, curate memory."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, memory]
@@ -8,6 +10,7 @@ metadata:
     phase: curation-review
     role: memory-keeper
     quality_tier: workflow-surface-gated
+    related_skills: [omh-memory-new, omh-decision-recall, omh-external-connector-readiness]
 ---
 
 # Memory Sync
@@ -16,13 +19,13 @@ This is a Hermes-native `memory-sync` workflow skill.
 
 ## Why This Exists
 
-`memory-sync` exists so Hermes users can ask for this workflow in chat and get a structured, checkable answer instead of an improvised one.
+`memory-sync` exists because Hermes' memory files are small, capped, and written by more than one hand -- the model, Hermes' own background review, and the person -- so a stale or wrong entry rides in every prompt until someone checks it: this review walks the entries with the person one claim at a time, prepares one diff they approve, and reports only the write Hermes itself returns.
 
 ## Do Not Use When
 
-- The request is already handled by a narrower explicit skill with stronger evidence.
-- The user asks OMH to secretly run external platforms, connectors, schedulers, file exports, or runtime agents.
-- The only safe answer is to ask for missing authority, credentials, target, or observed evidence first.
+- The user states a new fact to remember; capture it with `omh-memory-new`.
+- The user asks what was decided or rejected before; use `omh-decision-recall`.
+- The user wants a memory provider enabled, switched, paused, or removed; use `omh-external-connector-readiness`, which owns the provider slot.
 
 ## Examples
 
@@ -53,11 +56,12 @@ Bad example:
 
 - Current lane: **Retained knowledge** (`memory-new`, `memory-sync`, `decision-recall`, `wiki`) - memory, rejected alternatives, wiki notes, retrieval, and staleness.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
 ## English-Canonical Interview Protocol
 
 - **Inventory (목록)** - Call `omh_memory` with `action="status"` for the entry inventory: per-file counts, per-entry index and size, headroom, and entries with no OMH record. It returns counts and hashes, never entry text.
+- **Pending writes (대기)** - Also list the memory writes Hermes is holding for approval: one JSON record per write under `pending/memory/` in the active profile's Hermes home, carrying `id`, `action`, `summary`, `origin`, and `created_at`. `/memory pending` shows the same list and tags `[auto]` a write whose `origin` is `background_review`, one Hermes' own background review proposed. Read the directory whatever `memory.write_approval` says now, since a record stays there until the person decides it. A pending write is not in `MEMORY.md` or `USER.md` yet: review it as a proposal, never as a remembered claim, and leave approving or rejecting it to the person (`/memory approve <id>` or `/memory reject <id>`).
 - **Claim extraction (추출)** - Break the `USER.md` and `MEMORY.md` material into claims; quote only observed claims and never invent provenance.
 - **Provenance (출처)** - Ask for the source class and distinguish Hermes-native, provider, and vector material as `not_omh_reviewed`. A provider posture's `input_fidelity_summary.readiness` is literal: only `complete_observed` rests on an observed complete receipt (`docs/MEMORY-SYNC-FIDELITY.md`).
 - **Target (대상)** - Review existing native-memory claims only; route a new project/product fact to `memory-new`.
@@ -68,10 +72,10 @@ Bad example:
 - **Source recovery (출처 회수)** - A whole wrong source is not a record-by-record review. Enumerate it with `omh memory sources --source <label>` (a read; it quarantines nothing), then follow `references/source-recovery.md`.
 - **Review (검토)** - Prioritize stale, conflicting, duplicate, and overgeneralized claims. Offer keep, revise, or archive; never call an archive a removal.
 - **Attention (주의)** - For a reviewed OMH-local record, keep/archive is an attention tier: `active` leads the working context, `reference` stays recallable behind it, `archive` leaves default recall. Preview with `omh memory attention <record-id> --tier <tier>`, name which records stay in or leave the working context, then add `--apply` only after the user agrees. The preview writes nothing.
-- **Diff (차이)** - Prepare one concise native write diff with before/after claims and counts. Caps: MEMORY.md about 2,200 characters, USER.md about 1,375 characters.
-- **Move to OMH** - A durable entry the user agrees belongs in OMH, you capture yourself with `omh_memory` and `action="capture"` (one bounded summary per fact; never hand the user a CLI step), and the diff shrinks its Hermes entry to a short pointer line. The capture result is OMH-local evidence only; the Hermes side changes only through the native write below.
+- **Diff (차이)** - Prepare one concise native write diff with before/after claims and counts. Caps: use each file's `cap` and `cap_source` from the inventory; Hermes reads them from `memory.memory_char_limit` and `memory.user_char_limit` and falls back to 2,200 characters for MEMORY.md and 1,375 characters for USER.md.
+- **Move to OMH** - A durable entry the user agrees belongs in OMH, you capture yourself with `omh_memory` and `action="capture"` (one bounded summary per fact; never hand the user a CLI step), and the diff shrinks its Hermes entry to a short pointer line. The capture result is OMH-local evidence only; the Hermes side changes only through the native write below. Hermes' `write_approval` gates only Hermes' own memory and skill writes, never this capture: OMH's own policy approves a safe capture at once (`approved_auto_safe`), and a capture waits for review only when its result names a `review_reason`.
 - **Native-write boundary (쓰기)** - OMH prepares guidance and a native write diff only; no OMH surface invokes, applies, or observes a `MEMORY.md`/`USER.md` write.
-- **Apply after approval (적용)** - Per-entry answers feed the diff without approving it. Ask for one explicit approval of the assembled diff, then apply the approved entries yourself through the Hermes-native memory tool that owns these files and report what the write observably changed; an approved diff left unapplied while the tool is available fails the interview. Without the tool, report the approved diff and stop; never edit the files directly. The OMH artifact stays `memory_curation_review/v1` metadata either way; the native write is Hermes's own act and never becomes OMH mutation evidence.
+- **Apply after approval (적용)** - Per-entry answers feed the diff without approving it. Ask for one explicit approval of the assembled diff, then apply the approved entries yourself through the Hermes-native memory tool that owns these files and report what the write observably changed; an approved diff left unapplied while the tool is available fails the interview. Without the tool, report the approved diff and stop; never edit the files directly. When the native write returns `staged: true` with a `pending_id`, nothing was saved even though `success` is true: Hermes' own write approval, the user's setting, is holding it, so report it as staged and waiting for the person's `/memory approve <id>`, never as an applied write, and do not repeat the write. When Hermes asks the person before the write and they decline, the error result saved nothing: report that entry as declined and do not retry it. The OMH artifact stays `memory_curation_review/v1` metadata either way; the native write is Hermes's own act and never becomes OMH mutation evidence.
 
 ## Open Records
 
@@ -101,7 +105,7 @@ Ranking limits: pins guarantee inclusion but never override expiry, scope, persp
 
 Normal users talk to Hermes in natural language; `omh memory ...` commands are agent/operator references.
 
-## Use When
+## When to Use
 
 Use when existing Hermes USER.md, MEMORY.md, or accumulated skill memories need an English-canonical, claim-by-claim review. It prepares native write guidance only; no OMH surface invokes, applies, or observes a native write — a user-approved diff is applied by Hermes's own native memory tool. Do not use for new project or product candidates.
 
@@ -151,6 +155,7 @@ Safety rules:
 - Keep English as the canonical protocol; Korean routing triggers and concise Korean help labels remain available.
 - Quote claims only when observed, do not invent provenance, and keep the prepared native diff separate from any native write.
 - A memory_provider_posture/v1 block arrives as not_omh_reviewed context and a next-action handoff; it imports no provider record into OMH review and authorizes no native-memory mutation.
+- A write Hermes holds in `pending/memory/` is the person's to decide: OMH never approves, rejects, edits, or deletes one, and never proposes turning `memory.write_approval` on or off.
 
 ## Runtime Evidence
 
@@ -168,4 +173,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

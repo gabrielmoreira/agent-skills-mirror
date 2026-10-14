@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `browseros-ai/BrowserOS` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `browseros-ai/BrowserOS` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `browseros-ai/BrowserOS` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,11 +66,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`packages/browseros-agent/.agents/skills/ai-sdk/SKILL.md`](packages/browseros-agent/.agents/skills/ai-sdk/SKILL.md) |
 | 6 | ✓ | [`packages/browseros-agent/.claude/skills/test-ui/SKILL.md`](packages/browseros-agent/.claude/skills/test-ui/SKILL.md) |
 | 7 | ✓ | [`packages/browseros-agent/apps/app/CLAUDE.md`](packages/browseros-agent/apps/app/CLAUDE.md) |
-| 8 | ✓ | [`packages/browseros-agent/apps/cli/CLAUDE.md`](packages/browseros-agent/apps/cli/CLAUDE.md) |
-| 9 | ✓ | [`packages/browseros-agent/apps/server/CLAUDE.md`](packages/browseros-agent/apps/server/CLAUDE.md) |
-| 10 | ✓ | [`packages/browseros-agent/CLAUDE.md`](packages/browseros-agent/CLAUDE.md) |
-| 11 | ✓ | [`packages/browseros-agent/resources/skills/browserclaw/SKILL.md`](packages/browseros-agent/resources/skills/browserclaw/SKILL.md) |
-| 12 | ✓ | [`skills/browseros-neo/SKILL.md`](skills/browseros-neo/SKILL.md) |
+| 8 | ✓ | [`packages/browseros-agent/apps/server/CLAUDE.md`](packages/browseros-agent/apps/server/CLAUDE.md) |
+| 9 | ✓ | [`packages/browseros-agent/CLAUDE.md`](packages/browseros-agent/CLAUDE.md) |
+| 10 | ✓ | [`packages/browseros-agent/resources/skills/browserclaw/SKILL.md`](packages/browseros-agent/resources/skills/browserclaw/SKILL.md) |
+| 11 | ✓ | [`skills/browseros-neo/SKILL.md`](skills/browseros-neo/SKILL.md) |
 
 ---
 

@@ -1,6 +1,8 @@
 ---
 name: "omh-code-review"
 description: "[omh] Pull request or changes to vet: bug-first review with evidence. Use when the user says: code-review, review, audit, find bugs, release gate, claim audit, evidence audit, README claim."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]
@@ -8,6 +10,7 @@ metadata:
     phase: critique
     role: reviewer
     quality_tier: finding-evidence-gated
+    related_skills: [sdlc-review, requesting-code-review]
 ---
 
 # Code Review
@@ -23,6 +26,8 @@ This is a Hermes-native `code-review` workflow skill.
 - The user asks to implement the fix rather than review existing code or claims.
 - There is no diff, file set, claim, artifact, or expected behavior to review.
 - The request is broad product critique, strategy, or planning rather than code or evidence review.
+- A kanban review worker needs its card's transition decided: Hermes' bundled `sdlc-review` owns approve, request-changes, and escalate there, and this skill only supplies the findings that decision cites.
+- The user wants their own uncommitted changes checked before a commit or push, with a security scan, quality gates, and fixes applied in place; load Hermes' bundled `requesting-code-review` skill for that pre-commit pass instead of this one.
 
 ## Examples
 
@@ -52,7 +57,7 @@ Bad example:
 - If no diff, file set, PR, or artifact is available, inspect the requested target or ask one target question before reviewing.
 - If tests fail or are missing, cite the exact command gap and do not approve the change as verified.
 - If independent review evidence is unavailable, say so directly instead of implying a second reviewer passed it.
-- To dispatch a reviewer rather than write the findings yourself, load `omh-code-review/references/review-dispatch.md`; it carries the base-SHA rule and the implementer status contract.
+- To dispatch a reviewer rather than write the findings yourself, load `omh-code-review/references/review-dispatch.md`; it carries the base-SHA rule, the findings schema the return is checked against, and the implementer status contract.
 - When findings arrive for work you own, load `omh-code-review/references/review-response.md` before changing anything.
 - For maintainability judgement calls, load `omh-code-review/references/smell-baseline.md`; it names the twelve baseline smells with their fixes and the repo-standards-override rule.
 - When one bug-first pass is not enough, load `omh-code-review/references/review-lenses.md` and run the five lenses separately; the verification-gap lens asks whether anything would go red if the changed behavior broke.
@@ -61,9 +66,9 @@ Bad example:
 
 - Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use for review-shaped requests; findings come first and must cite concrete evidence.
 
@@ -88,6 +93,7 @@ Quality bar:
 - Review on two axes and report them side by side, never re-ranked against each other: the correctness/risk axis judges the code as it is, and the spec axis judges the diff against the dispatch's Claim and Requirements pointer. A clean diff that does not do what was asked is a spec-axis finding; when no Claim or spec pointer was supplied, report the spec axis as `not_assessed` with that reason instead of staying silent.
 - Judge maintainability findings against the named baseline in `omh-code-review/references/smell-baseline.md`: a baseline smell is a judgement call to argue from evidence, never an automatic finding, and the reviewed repository's own standards override the baseline wherever they conflict.
 - Close with two lists beside the verdict: what was checked and found clean, and what could not be assessed with the reason. An absent finding is evidence only when the closing says the surface was actually checked.
+- Hermes handles two parts of a review itself; load `omh-code-review/references/native-review-contract.md` for both. When `delegate_task` is in your tool list or tool_search finds it, pass the findings schema as the reviewer task's `output_schema`. The host validates the return, but its `schema_valid` record reaches you only when the call returns its results in the same turn; a result that arrives later as a completion message carries none, so check that summary against the schema yourself and never read `completed` as validated. A return that fails the contract is `not_observed`, never a pass. Inside a kanban review worker, `no_ship` becomes the request-changes transition that `sdlc-review` makes.
 - When the reviewed work ran in a Hermes session, cite `session_file_activity/v1` (`omh quality-evidence file-activity --hermes-session <id> --json`) to scope which workspace files its read_file, write_file, and patch calls touched, with the outcome Hermes recorded; it is file lineage, never file-content, diff, test, review, CI, or merge evidence.
 - For native `omh_todo` checkpoints, load the todo-checklist closing recipe; `record` then `recall` this review declaration. Stored declarations are not proof.
 
@@ -136,4 +142,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

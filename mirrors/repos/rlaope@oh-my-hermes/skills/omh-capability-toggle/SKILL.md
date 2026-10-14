@@ -1,6 +1,8 @@
 ---
 name: "omh-capability-toggle"
 description: "[omh] Tailoring enabled OMH families: turning one OMH capability family on or off so an install can be tailored instead of taken whole. Use when the user says: capability-toggle, capability policy, disable memory, enable memory, disable coding orchestration, disable a capability family, enable a capability family, 메모리 기능 꺼줘."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operator]
@@ -23,6 +25,7 @@ This is a Hermes-native `capability-toggle` workflow skill.
 - The user wants to run the workflow a family owns rather than change whether that family is offered.
 - The user is asking to build an on/off switch inside their own product.
 - The user wants OMH removed entirely, which is the uninstall path rather than a capability policy change.
+- The user wants one skill hidden on one messaging platform or everywhere; that is Hermes' own hermes skills config, an interactive command the person runs in a terminal, and OMH writes no Hermes config.
 
 ## Examples
 
@@ -53,11 +56,11 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+39 more`) - schedules, status, health, and ops review.
+- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+40 more`) - schedules, status, health, and ops review.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when the user wants to turn an OMH capability family on or off -- memory, coding delegation, research, planning, materials, or operations -- rather than uninstall OMH or run the workflow that family owns.
 
@@ -110,4 +113,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

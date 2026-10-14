@@ -1,6 +1,8 @@
 ---
 name: "omh-long-document-reading"
 description: "[omh] Huge PDF or document to read in full: read a very large PDF, contract, manual, or report through Hermes in page-anchored ranges with a coverage ledger. Use when the user says: long-document-reading, long document reading, summarize this pdf, read this pdf, process this pdf, go through this pdf, summarize this document, read this document."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, research]
@@ -8,6 +10,7 @@ metadata:
     phase: long-document-reading
     role: researcher
     quality_tier: long-document-gated
+    related_skills: [omh-paper-learning, omh-materials-package, omh-media-input, omh-source-finder]
 ---
 
 # Long Document Reading
@@ -20,10 +23,10 @@ This is a Hermes-native `long-document-reading` workflow skill.
 
 ## Do Not Use When
 
-- The document is a research paper and the user wants it explained by level; use `paper-learning`.
-- The request asks to convert, export, split into a new file, compare two PDFs, or extract tables into CSV; use `materials-package`.
-- The input is an image, screenshot, receipt, audio, or video rather than a document; use `media-input-operator`.
-- The user is still looking for the document or its download link; use `source-finder`.
+- The document is a research paper and the user wants it explained by level; use `omh-paper-learning`.
+- The request asks to convert, export, split into a new file, compare two PDFs, or extract tables into CSV; use `omh-materials-package`.
+- The input is an image, screenshot, receipt, audio, or video rather than a document; use `omh-media-input`.
+- The user is still looking for the document or its download link; use `omh-source-finder`.
 - The document fits one read (under about 60 pages of prose); read it directly and answer.
 
 ## Examples
@@ -58,11 +61,11 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+20 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+21 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when Hermes must read a supplied document that does not fit one read: a contract, manual, annual report, specification, or any PDF past about 60 pages. The skill plans page ranges sized to the `read_file` budget, keeps a page-anchored chunk ledger with covered / next / missing state, and delegates ranges when there are more than 4, so a compacted or resumed session continues instead of restarting.
 
@@ -87,7 +90,7 @@ Quality bar:
 
 Handoff policy:
 
-Keep document reading in Hermes: `read_file`, the built-in `pdf` skill scripts, `delegate_task` range children, and `vision_analyze` for scanned pages. Route file export to `materials-package`, paper tutoring to `paper-learning`, and source acquisition to `source-finder`.
+Keep document reading in Hermes: `read_file`, the built-in `pdf` skill scripts, `delegate_task` range children, and `vision_analyze` for scanned pages. Route file export to `omh-materials-package`, paper tutoring to `omh-paper-learning`, and source acquisition to `omh-source-finder`.
 
 Required inputs:
 
@@ -155,4 +158,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

@@ -1,6 +1,8 @@
 ---
 name: "omh-lifecycle-growth"
 description: "[omh] Churn or weak activation among users: turn an observed onboarding, activation, retention, re-engagement, referral, or monetization problem into one consent-safe in-app journey or growth experiment plan with a bounded readout and an explicit decision. Use when the user says: lifecycle-growth, lifecycle growth, lifecycle marketing, lifecycle messaging, in-app journey, in-app message campaign, onboarding journey, onboarding nudge."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, strategy]
@@ -8,6 +10,7 @@ metadata:
     phase: lifecycle-growth
     role: operator
     quality_tier: decision-gated
+    related_skills: [omh-content-operator, omh-data-analysis, omh-automation-blueprint, omh-apps, omh-product-brief]
 ---
 
 # Lifecycle Growth
@@ -16,9 +19,9 @@ Required: lifecycle objective, audience/events, consent, budget, and owner. Outp
 
 **HOLD:** Missing inputs or failed contract gates. Prepared OMH routing is not execution or approval. **Completion:** Follow the full-contract checklist.
 
-Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-Agent/operator: `omh runtime workflow-artifact lifecycle-growth build --input <json-file-or->` builds bounded metadata only. Shared operator reference: `omh-routing/references/workflow-artifacts.md`.
+Agent/operator: `omh runtime workflow-artifact lifecycle-growth build --input <json-file-or->` builds bounded metadata only. Shared operator reference: `skill_view(name='omh-routing', file_path='references/workflow-artifacts.md')`.
 
 Contract: `references/full-contract.md`. Procedure: `references/procedure.md`.
 

@@ -74,6 +74,6 @@ directly in the capability.
 
 ## Further reading
 
-- [`gitbooks/developing/architecture/tauri-shell.md`](../../../gitbooks/developing/architecture/tauri-shell.md): the Tauri shell.
-- [`gitbooks/developing/architecture/security.md`](../../../gitbooks/developing/architecture/security.md): security.
+- [`docs/gitbooks/en/developing/architecture/tauri-shell.md`](../../../docs/gitbooks/en/developing/architecture/tauri-shell.md): the Tauri shell.
+- [`docs/gitbooks/en/developing/architecture/security.md`](../../../docs/gitbooks/en/developing/architecture/security.md): security.
 - [`crates/openhuman-app/README.md`](../README.md): the openhuman-app crate README.

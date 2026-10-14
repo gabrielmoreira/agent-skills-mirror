@@ -8,7 +8,7 @@ OpenClaude originated from the Claude Code codebase and has since been substanti
 
 - [GitHub repository](https://github.com/Twigpine/openclaude): source code, releases, and issue tracker
 - [npm package](https://www.npmjs.com/package/@twigpine/openclaude): `@twigpine/openclaude`
-- [Twigpine mirror](https://gitlawb.com/node/repos/z6MkqDnb/openclaude)
+- [Twigpine mirror](https://explorer.twigpine.com/repos/z6MkqDnb7Siv3Cwj7pGJq4T5EsUisECqR8KpnDLwcaZq5TPr/openclaude)
 - [Security policy](https://github.com/Twigpine/openclaude/security/policy)
 - [License notice](https://github.com/Twigpine/openclaude/blob/main/LICENSE): MIT applies only to OpenClaude contributors' modifications; the underlying Claude Code code is Anthropic's proprietary software.
 

@@ -4,6 +4,43 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.299](https://github.com/Piebald-AI/claude-code-system-prompts/commit/8b74d89)
+
+_+6,453 tokens_
+
+- **NEW:** Skill: Mod GitHub sharing consent — Offers sharing only after a working mod is demonstrated; requires separate sharing and visibility decisions and a pre-commit sensitive-data review.
+- **NEW:** System Prompt: Project coordinator relay trust boundary and Project coordinator reply consent — Treat coordinator relays as external content; replies approve only one explicitly proposed action and target, never menu options or vague retries.
+- **NEW:** System Prompt: Subagent carried user consent history — Credits parent-session user messages without letting delegation invent consent; bare replies apply only to preceding assistant messages, and trimmed history stays partial.
+- **NEW:** System Prompt: Windows sandbox certificate recovery — Requires a user-side HTTPS connection before retrying certificate failures, forbids weakening certificate checks, and stops after one unsuccessful retry.
+- **NEW:** System Prompt: Windows sandbox localhost retry guidance and Windows sandbox localhost user alternatives — Explain localhost failures and proxy exceptions; require port-scoped allowances and disclose lost sandbox protection, with user-directed alternatives where retries are unavailable.
+- **NEW:** System Prompt: Windows sandbox package cache limits — Documents read-only Maven cache access and warns that .NET builds using `--no-restore` after an outside restore can delete package DLLs.
+- **NEW:** System Prompt: Windows sandbox placeholder file protection — Protects sandbox-created empty configuration files from staging, moving, deletion, and ignore rules; tells the user when they block Git operations.
+- **NEW:** System Prompt: Windows sandbox profile tool retry guidance and Windows sandbox profile tool user guidance — Diagnose profile-installed tool failures as sandbox restrictions; reserve narrow read grants for the user and warn that large grants can impede startup.
+- **NEW:** System Reminder: Artifact capabilities contract unavailable — Explains refused capability declarations and permits omitting them only when needed capabilities are already stored or the user requests it, disclosing missing grants.
+- **NEW:** System Reminder: Artifact published source edit guidance — Directs exact small replacements through publish-call `edits`, updating local source and publication together; larger rewrites still use file edits.
+- Tool Description: Updating existing artifacts (app wording) — Adds conditional guidance to send small changes as exact replacements on the publish call instead of editing the local file first.
+- **NEW:** System Reminder: Project document version conflict recovery — Requires rereading and merging after a version conflict, allows two retries, and forbids dropping the version guard or deleting the document.
+- Tool Description: claude.ai Project — Requires replacing shared documents with the version read; conflicting writes change nothing and must be merged into the latest version.
+- **NEW:** System Reminder: Reserved-address MCP server refusal — Explains that reserved server addresses are refused by Claude Code, not connection failures or administrator policy, and that retrying cannot help.
+- **NEW:** System Reminder: Resume agents interrupted by container restart — Directs resuming interrupted agents from saved transcripts rather than duplicating them; relaunch only if resuming fails and the result is still needed.
+- **NEW:** System Reminder: User-controlled plan mode exit — In sessions without a plan file, presents the plan in the reply and requires a user mode change; approval alone leaves planning read-only.
+- **NEW:** Tool Description: Existing Claude Docs artifact content — Directs editing the already-bound Claude Docs document instead of creating another; create and bind a replacement only when that document is absent.
+- **REMOVED:** Tool Description: Artifact stale publish line diff guidance — Drops the standalone live-page line-diff merge instructions; saved-source recovery guidance remains, so this does not remove stale-publish protection.
+- Data: Interrupt receipt cancelled field and Interrupt receipt still queued field — Clarify cancellation of interrupted-turn reruns and associated client messages: associated UUIDs appear once under `cancelled`, though never queued or listed as survivors.
+- Data: SDK safeguard_results field — Accepts only blocking verdicts for repeated message IDs; clients must send clearing verdicts only for the first call of a response.
+- Data: Self-hosted runner orchestrator command help — Adds optional SIGTERM draining for in-flight polling and hooks, with immediate-stop escalation and process-manager timing guidance; the default remains immediate stop.
+- Data: Tool use display metadata field — Adds connector identity, dynamic-server identity claims, and unprefixed tool names for display; dynamic claims are not verified identities or permission grants.
+- Data: Turn handoff available event schema — Reports `shared_message_id`, letting clients discover whether the worker accepts assistant messages in the same turn sharing an ID.
+- Data: Turn handoff hydrates_carried_lines field — Requires storage confirmation for every message before echoing replayed turns; explains refusal cleanup and the limit of retained refusal history.
+- System Prompt: Coordinator mode orchestration — Adds an agent-result status for waiting on its own background work, warning that its result may be interim and another notification may follow.
+- System Prompt: Self-hosted runner doctor — Adds safe noninteractive Git credential diagnosis and fixes, warns that the git proxy erases global configuration, and clarifies startup-timeout wording.
+- System Prompt: Self-hosted runner setup — Warns that repository cloning needs noninteractive HTTPS credentials and explains clearing a failed session before restarting the local runner, without altering Git settings.
+- System Reminder: Attached machine untrusted attachments refusal — Adds fallback guidance when neither folder-trust tool is available: explain the block and suggest a fresh session without attached repositories or files.
+- Tool Description: Artifact HTML document skeleton and Artifact responsive page contract — Require side safe-area gutters and a matching viewport-fit metadata tag; extend inset handling to fixed, floating, and absolutely positioned controls.
+- Tool Description: claude.ai Project — Adds conditional original-file downloads for document uploads whose extracted text misses layout or figures, and uses the session's read-tool name.
+- Tool Description: CronCreate — Describes fixed per-job schedule offsets and requires reporting actual next-run timestamps returned by scheduling tools, rather than the cron expression's nominal minute.
+- Tool Description: WebFetch (concise) and WebFetch private URL warning — Add conditional guidance to fetch URLs already seen in conversation; use search or linking pages instead of inventing paths or recalling URLs.
+
 # [2.1.296](https://github.com/Piebald-AI/claude-code-system-prompts/commit/9462d0d)
 
 _+560 tokens_

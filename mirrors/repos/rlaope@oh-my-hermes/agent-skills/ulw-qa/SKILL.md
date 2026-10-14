@@ -1,6 +1,7 @@
 ---
 name: "ulw-qa"
 description: "[omh] Hostile scenario testing: adversarial QA and fix loops. Use when the user says: ultraqa, adversarial qa, hostile scenarios, e2e qa, real-world qa, qa scenario, release qa, 敵対的QA."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, verification]
@@ -16,12 +17,12 @@ This is an OMH `ultraqa` workflow skill, projected for Agent Skills hosts (Claud
 
 ## Why This Exists
 
-`ultraqa` exists to keep `verification` work explicit, evidence-backed, and inside the host/executor boundary instead of relying on ad hoc chat narration.
+`ultraqa` exists because behavior that passes its own tests can still fail under inputs and conditions nobody wrote down: it turns the changed behavior and known risks into hostile scenarios, records each one's observed pass or fail apart from any proposed fix, and hands fixes to the selected coding executor.
 
 ## Do Not Use When
 
-- The request is casual chat, a status-only acknowledgement, or another workflow has stronger routing evidence.
-- The user needs implementation, review, CI, merge, or external publishing evidence that has not been delegated or observed.
+- Judging whether a rendered page, image, or terminal frame looks right across viewports and states; use `omh-visual-qa`.
+- Confirming that a finished change meets its acceptance criteria with the smallest proving check, when no hostile scenarios are wanted; use `omh-verification-gate`.
 
 ## Examples
 
@@ -50,7 +51,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when the task needs adversarial test scenarios, verification, and fix loops.
 
@@ -73,6 +74,8 @@ Quality bar:
 - Report pass/fail evidence separately from proposed fixes.
 - Delegate code mutations discovered by QA to the selected coding executor.
 - Read actual host/executor evidence before claiming build, verification, review, documentation, or PR-preparation results.
+- On a web app, run hostile scenarios against the target the user named (local or staging unless stated); a scenario that would submit, buy, send, or delete on a live surface waits for the user's approval.
+- Read the browser console after every navigation and interaction, and keep a failing scenario's screenshot and console errors as its observed evidence.
 
 Required inputs:
 

@@ -1,12 +1,12 @@
 ---
 name: chainlink-data-streams-skill
-description: "Help developers build with Chainlink Data Streams, including credentials guidance, report decoding, REST and WebSocket report retrieval with official Go/Rust/TypeScript SDKs, High Availability streaming, on-chain report verification, real-time frontend displays, report schema guidance, SQLite persistence, and timestamp lookback. Use this skill whenever the user mentions Chainlink Data Streams, Streams Direct, Data Streams reports, report schemas, report decoding, data-streams-sdk, or real-time low-latency market data from Chainlink."
+description: "Helps developers retrieve Chainlink Data Streams reports over REST and WebSocket, including report schemas. A price-feed consumer that uses AggregatorV3Interface or latestRoundData goes to chainlink-data-feeds-skill. Reports, REST, WebSocket, and report schemas stay here. It also applies to credentials, report decoding, official Go, Rust, and TypeScript SDKs, high-availability streaming, on-chain report verification, and timestamp lookback."
 license: MIT
 compatibility: Designed for AI agents that implement https://agentskills.io/specification, including Claude Code, Cursor Composer, and Codex-style workflows.
-allowed-tools: Read WebFetch Write Edit Bash
+allowed-tools: Read WebFetch Write Edit Bash(npm:*)
 metadata:
   purpose: Chainlink Data Streams developer assistance and reference
-  version: "0.0.5"
+  version: "0.0.7"
   mcp-server: "@upstash/context7-mcp"
 ---
 
@@ -66,11 +66,14 @@ Include every named item and artifact kind (command template, unsigned transacti
 
 ## Freshness Policy
 
-1. Embedded references first; most conceptual/integration work needs no fetch.
-2. Fetch the smallest [official source](references/official-sources.md) for a missing/freshness-sensitive fact.
-3. If incomplete, fall back to Context7 (`@upstash/context7-mcp`).
-4. Never improvise: name the unverified URL and re-check; attribute gaps to official docs, not this skill.
-5. MCP/live tools never bypass write/mainnet, credential, or non-custodial boundaries.
+1. Use this skill's references first. Most conceptual work needs no fetch.
+2. If [official-sources.md](references/official-sources.md) names the page, fetch that page's `.md` URL.
+3. If it does not, fetch `https://docs.chain.link/data-streams/llms.txt`, pick one page, and fetch that page's `.md` URL.
+4. Fetch `https://docs.chain.link/data-streams/llms-full.txt` only when the question is broad and no one page covers it.
+5. Use Context7 only when the `.md` fetch fails, the page is empty, or the page has under 1,000 useful characters and does not answer. Ask for the missing fact only.
+6. Stop when the page answers. Fetch at most three pages. Prefer the `.md` URL. Use `Accept: text/markdown` on the normal page URL only when the tool cannot open the `.md` URL and can set that header.
+7. Never improvise: name the unverified URL and re-check. Attribute gaps to official docs, not this skill.
+8. MCP and live tools never bypass write, mainnet, credential, or non-custodial boundaries.
 
 ## Data Streams Invariants
 

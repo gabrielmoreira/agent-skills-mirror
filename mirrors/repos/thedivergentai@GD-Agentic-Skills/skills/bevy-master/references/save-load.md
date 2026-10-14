@@ -1,15 +1,13 @@
 ---
 name: bevy-save-load
-description: "Docs-first stub for Bevy persistence boundaries. Godot counterpart: godot-save-load-systems. Not a full port. Keywords: Bevy, save, Resource, Scene, AssetServer, gaps."
+description: "Bevy ECS skill for persistence boundaries. Keywords: Bevy, save, Resource, Scene, AssetServer."
 ---
 
-# Bevy save and load (docs-first stub)
-
-Not a full port. This file records what was opened and what was not. There is no Bevy save-slot API in the pages below.
+# Bevy save and load
 
 ## When to use
 
-Load this when a design asks to persist player progress. Route asset and scene spawning to `bevy-asset-scenes`. Keep save bytes as an explicit gap until a current page names the format.
+Load this when a design asks to persist player progress. Route asset and scene spawning to `bevy-asset-scenes`. Keep save bytes as data you serialize yourself until a current docs page names a format.
 
 ## ECS shape
 
@@ -17,26 +15,25 @@ Load this when a design asks to persist player progress. Route asset and scene s
 - **What was checked and rejected:** `https://docs.rs/bevy/latest/bevy/scene/struct.DynamicScene.html` returned 404 on 2026-10-11. The live scene index documents `Scene` and `bsn!`, not a save-file serializer. Do not call `DynamicScene::serialize` from this skill.
 - **Schedule:** no save system is specified here. Do not invent a filesystem write inside `Update`.
 
-## Godot idea to Bevy idiom
+## Coming from Godot
 
-| Idea | Bevy idiom (idea only) |
+| Godot idea | Bevy idiom |
 | --- | --- |
 | Resource file for designer data | An asset `Handle`, or a `Resource` you own in code |
 | Packed scene instance | `Scene` spawn on `bevy-asset-scenes` |
-| Player save slot | Not opened. Leave it as data you have not serialized yet |
+| Player save slot | Leave it as data you have not serialized yet. Check the docs before naming a slot format. |
 
-## Gaps
+## Scope
 
-- No save path, slot index, version field, or RON/JSON writer was opened on docs.rs `latest`.
+- Check docs.rs `latest` for a save path, slot index, version field, or RON/JSON writer before writing one.
 - Scene spawn is not a save game. Do not treat `bsn!` as a user save.
-- Wasm has no general filesystem story on the pages opened for this batch. Do not invent one.
-
+- Wasm has no general filesystem story on the docs pages for this skill. Do not invent one.
 
 ## Expert Knowledge Delta
 
-Library target in prose: **Bevy 0.20.0**. Lattice URLs stay unversioned.
+Target: **Bevy 0.20+**.
 
-Opened canon only: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. This file does not invent their struct APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
+Core ECS types: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. See `bevy-events-messaging` for their APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
 
 ### Who owns state
 
@@ -59,22 +56,19 @@ Borrow rule: two systems that both mutably query the same component must be orde
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API this skill did not open | A Gaps row | A fabricated crate (solver, navmesh module, net, XR) |
+| An API outside the documented set | Check the official docs first | A made-up crate or API |
 
-Load `references/a-gate-notes.md` for the same table plus the gap rule.
+Load [references/ecs-ownership.md](save-load-ecs-ownership.md) for the ownership table.
 
 ## NEVER
 
-- Do not put `/0.20.0/` in lattice URLs. WHY: permalinks stay on `latest`. The 0.20.0 pin belongs in prose once.
+- Do not pin `/0.20.0/` in docs URLs. WHY: links stay on `latest`; the 0.20 target is stated once in prose.
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
-- Do not invent a physics, navigation, networking, or XR crate here. WHY: those rows are gaps, blocked, or revisit.
+- Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot `Resource`, `FileAccess`, or config-file types. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No `DynamicScene` or scene-file writer this file's opened pages do not list. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No third-party save crates. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Creation Station content. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No umbrella skill over Godot and Bevy. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- Do not mark this row `ported`. It is `docs_mapped` because the gap was checked against live docs. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Godot `Resource`, `FileAccess`, or config-file types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No `DynamicScene` or scene-file writer this file does not list. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No third-party save crates. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
@@ -91,15 +85,15 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](../SKILL.md)  -  Who owns which piece of state.
-- [bevy-data-resources](data-resources.md)  -  `Resource` versus `Component`.
-- [bevy-asset-scenes](asset-scenes.md)  -  Loading content. Not a save slot.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Who owns which piece of state.
+- [bevy-data-resources](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md)  -  `Resource` versus `Component`.
+- [bevy-asset-scenes](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-asset-scenes/SKILL.md)  -  Loading content. Not a save slot.
 
 #### Complements
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md)  -  Godot counterpart. Source idea only.
+- [godot-save-load-systems](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-save-load-systems/SKILL.md)  -  Equivalent Godot skill.
 
 #### Downstream / consumers
 - None until a save format is opened.
 
 #### Master
-- [bevy-master](../SKILL.md)  -  Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.

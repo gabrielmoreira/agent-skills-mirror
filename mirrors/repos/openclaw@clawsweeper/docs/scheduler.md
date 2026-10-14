@@ -19,7 +19,6 @@ The global worker budget comes from `config/automation-limits.json`; see
 [Automation Limits](limits.md) for the derived lane limits and GitHub variable
 overrides.
 
-
 Exact-review completion sends `review_failure_reason` for every diagnostics
 manifest with `failure.stage: agent_input_scan` and `retryable: false`, using
 `failure.reason_code` verbatim. The accepted scanner reasons are
@@ -44,7 +43,7 @@ the live head, base, draft state, and body identity before dispatch takes its
 lease snapshot. This state has no timed retry. Existing parked-item
 reconciliation recovers changed head, base, or body
 identity and removes closed targets; an explicit maintainer re-review can retry
-unchanged source. The failure remains visible in lifecycle and Bay status.
+unchanged source. The failure remains visible in lifecycle audit.
 Terminal input-scanner refusals instead retain the existing queue item as
 `scanner_refused`, for both issues and PRs. Automatic events, source changes,
 close/reopen, and failed-shard recovery cannot release this hold. It has no
@@ -67,9 +66,8 @@ remain supported, but a broad sweep is not an explicit retry of every hold.
 The hold applies to newly observed terminal refusals; previously deleted rows
 are not reconstructed. Deploy Worker enforcement before relying on updated
 producer routing. Already-running direct shards from older workflow revisions
-remain a rollout limitation. Bay uses the terminal failure lifecycle rather
-than displaying the retained hold as active review work; queue reason counts
-remain visible and the public surface remains observer-only.
+remain a rollout limitation. Queue reason counts remain visible and the public
+surface remains observer-only.
 
 Native
 blob-fetch transport failures, including the hydration deadline killing a Git
@@ -87,8 +85,6 @@ failed-shard recovery remains queued until publication settles or parks. Its
 request is preserved because it may refer to a newer source. Explicit re-reviews, source
 changes, and publication source-drift or artifact-retention recovery retain their
 normal admission paths.
-Bay continues to show the publication as the item's current work until that
-handoff releases the deferred recovery.
 
 ClawSweeper has three issue/PR scheduler paths:
 
@@ -116,9 +112,12 @@ and runtime packaging rules.
 Shell calls to the control plane in `review-plan.yml`, `sweep.yml`,
 `exact-review-reconcile-run.yml`, and `exact-review-dead-letter-reconcile.yml` use
 `scripts/control-plane-curl.sh`. Each request retries connection failures and
-HTTP 5xx up to four attempts. A valid `Retry-After` delay (seconds or HTTP-date)
-is capped at 60 seconds; otherwise the waits are 2, 4, and 8 seconds. Each
-attempt emits a notice. The helper preserves the caller's final curl exit code,
+HTTP 5xx up to six attempts with at most 62 seconds of total backoff, which
+outlasts the 15-30 second window in which a Worker deploy or Durable Object
+reset fails control-plane calls. The waits are 2, 4, 8, 16, and 32 seconds; a
+valid `Retry-After` delay (seconds or HTTP-date) replaces the next wait, is
+capped at 60 seconds, and draws from the same budget, so the next failure after
+the budget is spent is final. Each attempt emits a notice. The helper preserves the caller's final curl exit code,
 HTTP status output, and body handling. HTTP 4xx responses are not retried;
 callers retain their explicit lease-conflict, supersession, and deployment-skew handling.
 This includes enqueue, claims, review/status heartbeats, completion, lifecycle
@@ -241,8 +240,26 @@ Responses are cancelled before retry. An acknowledged write whose response
 cleanup fails is reported separately and is never replayed. Retry diagnostics
 include the attempt, status or transport category, and delay; upstream response
 bodies are not logged. Exhaustion remains a failed workflow. This improves
-completeness of the existing review-observability data used by OpenClaw Bay;
-its schema, observer-only UI, and mutation boundaries do not change.
+completeness of the existing review-observability data without changing its
+schema or mutation boundaries.
+
+Run telemetry retains its 30-day window; physical cleanup runs at most once
+per five minutes per queue instance rather than scanning the history on every
+write or dashboard poll. Delivery receipt counts stay exact while reusing the
+previous count and reading only newly appended rowids; deletion discards that
+count before rowids can be reused. Terminal command receipts retain their
+existing cutoff and use the outcome/time index. State-writer acquire retries
+still refresh queued ticket liveness, but do not rewrite timestamps already
+set by admission or lease acquisition.
+
+Maintainer-authored and `maintainer`-labeled items require an explicit review
+request. Automatic intake, scheduled selection, claimed reviews, and hosted
+publication apply this policy; a source-drift retry does not inherit the
+original command's opt-in. Existing autofix/automerge labels remain opt-ins.
+The target dispatcher and direct webhook share a single reminder identity per
+item, posted only when opened or ready for review. Edits, pushes, and sweeps do
+not post reminders. Request reviews only when needed, after completing work and
+validation; agents must not automatically repeat requests.
 
 ## Workflow
 
@@ -308,7 +325,10 @@ on every warm fetch, so deleted or moved tags cannot survive in the checkout.
 A non-fast-forward branch update rebuilds the cache so its old history cannot
 retain tags outside the current branch. A failed or partial restore is discarded,
 a failed cache fetch rebuilds the cache, and a failed local clone falls back to a clean clone without
-saving. The pinned Codex source cache is keyed by the Codex version pinned in the
+saving. Each network clone or fetch stops after `CLAWSWEEPER_REVIEW_TARGET_CHECKOUT_TIMEOUT_MS`
+(default 30 minutes, at most 120) and its git process group is killed. Local clones from the cache
+are not under that deadline. Git's `http.lowSpeedLimit` stays at its default so a quiet tip-blob
+negotiation is not aborted before the deadline. The pinned Codex source cache is keyed by the Codex version pinned in the
 target checkout and is saved once per version.
 
 The receiver workflow is `.github/workflows/sweep.yml`.
@@ -375,6 +395,11 @@ whose event was coalesced or skipped is normally reconciled within about
 cadence backstop, not a hard wall-clock guarantee during platform outages.
 OpenClaw Bay is unaffected: queue schemas, telemetry observations, and public
 observer data contracts do not change.
+
+The retired Bay telemetry materializer is not a queue wake source. Lifecycle
+receipt handlers persist their canonical facts without replaying Bay history,
+and alarms schedule only queue, batch, source-authority, command-intake, and
+credential-circuit work. Publication outcome telemetry remains independent.
 
 Queue-completion failures remain visible separately from Codex or content
 failures, using the logical generation result and typed deferral rather than

@@ -21,7 +21,7 @@ manual.
 | Set up a development checkout                       | [Contributing](../CONTRIBUTING.md)            | [Local run](../README.md#local-run)                 |
 | Understand review and scheduling                    | [Scheduler](scheduler.md)                     | [Automation limits](limits.md)                      |
 | Add or operate a target repository                  | [Target repositories](target-repositories.md) | [Target dispatcher](target-dispatcher.md)           |
-| Inspect production without mutation                 | [Live dashboard](live-dashboard.md)           | [OpenClaw Bay](openclaw-bay-demo.md)                |
+| Inspect production without mutation                 | [Live dashboard](live-dashboard.md)           | [Public observer API](public-api.md)                |
 | Inspect observer routes and configuration ownership | [Public observer API](public-api.md)          | [Operator configuration](operator-configuration.md) |
 | Prepare proof for a change                          | [Contributing](../CONTRIBUTING.md)            | [Agent instructions](../AGENTS.md)                  |
 | Review a local committed range                      | [Local branch review](commit-sweeper.md)      | `pnpm local-review -- --base origin/main`           |
@@ -59,6 +59,8 @@ everything else requires human comparison with current main.
   boundaries
 - [Issue review advisory labels](work-lane.md) — active; structured review labels
 - [Review cache](review-cache.md) — active; reusable review-state contract
+- [Local review preflight summary](portable-review-receipt.md) — proposed
+  local-range export; bounded advisory PR-body handoff
 - [GitHub webhook read model](github-webhook-read-model.md) — active; signed
   ingress, App subscriptions, snapshot freshness, and safety boundary
 
@@ -88,7 +90,6 @@ everything else requires human comparison with current main.
   telemetry
 - [GitHub publication egress telemetry](github-egress-telemetry.md) — active;
   wire denominator, credential attribution, completeness, and retention
-- [OpenClaw Bay](openclaw-bay-demo.md) — active; public six-lane visualization
 - [Triage dashboard](triage-dashboard.md) — active; cached issue triage
 - [PR proof triage](pr-proof-triage-dashboard.md) — active; maintainer proof
   inspection
@@ -103,8 +104,6 @@ everything else requires human comparison with current main.
 - [PR review comments](pr-review-comments.md) — active; review-thread handling
 - [Related issue discovery](related-issue-discovery.md) — active; duplicate and
   adjacent-report context
-- [Live proof](live-proof.md) — active inline review proof; retired post-review
-  attachments are ignored without rewriting historical records
 
 `docs/proof/**` contains inspectable artifacts for specific changes. Those
 files support their recorded claim but do not override current runbooks.
@@ -150,8 +149,8 @@ Review the relevant pages in the same change when any of these surfaces move:
   apply membership: target-repository and dispatcher docs
 - exact-review queue schema, retry classification, publication capacity,
   batching, direct publication, or state writing: scheduler, limits, dashboard,
-  Bay, and queue runbooks
-- dashboard route, projection, or public-field changes: dashboard and Bay docs
+  and queue runbooks
+- dashboard route, projection, or public-field changes: dashboard docs
 - publication GitHub request paths, credential selection, or egress fields:
   GitHub egress telemetry and public API docs
 - mutation, close, proof, repair, or merge policy changes: policy pages,

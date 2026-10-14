@@ -273,6 +273,7 @@ of taking a second round trip or trusting a value the caller guessed.
 | Auto Run panel: progress                                                 | `auto-run-status -a <agent>`                                                                     |
 | Auto Run: save as a playbook (documents must sit in the Auto Run folder) | `auto-run --save-as <name> <docs...>` (read back with `playbook <id> --dry-run`)                 |
 | Auto Run panel: Change folder                                            | `auto-run-folder <path> -a <agent>`                                                              |
+| Thought Stream: Steer Auto Run (send a note, cancel one, read replies)   | `steer-auto-run send <note> -a <agent>`, `steer-auto-run list`, `steer-auto-run cancel <id>`     |
 | Playbook Exchange: browse, README, install                               | `marketplace list`, `marketplace show <id>`, `marketplace import`                                |
 
 ## Open gaps

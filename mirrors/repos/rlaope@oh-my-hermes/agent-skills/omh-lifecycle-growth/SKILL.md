@@ -1,6 +1,7 @@
 ---
 name: "omh-lifecycle-growth"
 description: "[omh] Churn or weak activation among users: turn an observed onboarding, activation, retention, re-engagement, referral, or monetization problem into one consent-safe in-app journey or growth experiment plan with a bounded readout and an explicit decision. Use when the user says: lifecycle-growth, lifecycle growth, lifecycle marketing, lifecycle messaging, in-app journey, in-app message campaign, onboarding journey, onboarding nudge."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, strategy]
@@ -20,11 +21,11 @@ This is an OMH `lifecycle-growth` workflow skill, projected for Agent Skills hos
 
 ## Do Not Use When
 
-- The user only wants a one-off message, email, banner, or push copy rewrite with no audience, experiment, or decision; use `content-operator`.
-- The user wants generic exploration or calculation over a supplied cohort, retention, conversion, or segment table with no journey or experiment to design; use `data-analysis`.
-- The user wants a recurring schedule, cron, or digest cadence for an already-decided operation rather than a lifecycle intervention; use `automation-blueprint`.
-- The user asks to send a message, change a feature flag, create a segment, or start an experiment in a provider now; use `connector-operator` with explicit authorization and observed results.
-- The user needs a PRD, prioritization frame, or roadmap for a product change rather than a journey or experiment; use `product-brief`.
+- The user only wants a one-off message, email, banner, or push copy rewrite with no audience, experiment, or decision; use `omh-content-operator`.
+- The user wants generic exploration or calculation over a supplied cohort, retention, conversion, or segment table with no journey or experiment to design; use `omh-data-analysis`.
+- The user wants a recurring schedule, cron, or digest cadence for an already-decided operation rather than a lifecycle intervention; use `omh-automation-blueprint`.
+- The user asks to send a message, change a feature flag, create a segment, or start an experiment in a provider now; use `omh-apps` with explicit authorization and observed results.
+- The user needs a PRD, prioritization frame, or roadmap for a product change rather than a journey or experiment; use `omh-product-brief`.
 
 ## Examples
 
@@ -54,7 +55,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when a product or growth owner wants to improve a lifecycle stage and needs the target behavior, eligible audience, safety policy, experiment design, launch/rollback gates, measurement readout, and ship/rollback/review/insufficient_data decision assembled as one evidence-bounded plan.
 

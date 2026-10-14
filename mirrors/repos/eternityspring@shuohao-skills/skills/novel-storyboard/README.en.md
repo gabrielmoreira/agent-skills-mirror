@@ -78,7 +78,7 @@ A single-page, 1600px-wide review document. Reports render with a Chinese UI by 
 
 - **KPI band**: segments / cuts with average length / total vs target / generation batches / segments carrying dialogue
 - **Cut rhythm strip** (the signature chart): one band per episode, **thick separators = segment boundaries (one generation each)**, slice width = cut duration share, color depth = shot size; click a slice to jump to its segment card
-- **Segment cards**: the master frame in 16:9 (an honest prompt placeholder when not generated), a sub-frame strip, then a **50/50 split**: cut rows on the left (start mark · seconds · size · camera · recipe · picture summary **auto-derived from the claimed script beats**), and an H3 prompt panel on the right — one shot per line, with one-click copy
+- **Segment cards**: the master frame follows the top-level `aspectRatio` contract (`16:9` by default, `9:16` for a vertical board; legacy `_meta.orientation` and frame-tail tags remain compatibility fallbacks) (an honest prompt placeholder when not generated), a sub-frame strip, then a **50/50 split**: cut rows on the left (start mark · seconds · size · camera · recipe · picture summary **auto-derived from the claimed script beats**), and an H3 prompt panel on the right — one shot per line, with one-click copy
 - **Generation batch list**: segments sharing a scene + lighting state form one batch around one environment reference image
 - **Audio alignment list**: every dialogue line mapped to **segment#cut** — the worklist for placing TTS audio, fully computed
 - **Quality gates** panel + header badge + **Export JSON** (downloads `storyboard.json` verbatim)
@@ -94,15 +94,15 @@ novel-script     → script.json     (the drama: scenes, beats, lines)
 novel-storyboard → storyboard.json (how to shoot: segments, cuts, frames, H3 prompts)
 ```
 
-`seed <script.json> --eps 1-3` deterministically expands each scene's beat list (numbers, per-beat seconds, speakers) as the cutting worksheet. `validate --script` is mandatory; `--outline` / `--cast` enable the name ban, `--art` gets scene names and sheet thumbnails into the report. Each frame ships a prompt plus the reference manifest naming the upstream sheets it must be built from; generation happens downstream. The H3 prompt plus the frame set goes straight to MiniMax H3.
+`seed <script.json> --eps 1-3 --aspect 16:9` deterministically expands each scene's beat list (numbers, per-beat seconds, speakers) as the cutting worksheet and writes the official top-level `aspectRatio`; accepted values are `16:9` and `9:16`, with `16:9` as the default. `validate --script` is mandatory; `--outline` / `--cast` enable the name ban, `--art` gets scene names and sheet thumbnails into the report. Each frame ships a prompt plus the reference manifest naming the upstream sheets it must be built from; generation happens downstream. The H3 prompt plus the frame set goes straight to MiniMax H3.
 
 ## CLI
 
 ```bash
-node scripts/novel-storyboard.mjs seed script.json --eps 1
+node scripts/novel-storyboard.mjs seed script.json --eps 1 --aspect 16:9
 node scripts/novel-storyboard.mjs validate sb.json --script script.json --outline outline.json --cast cast.json
 node scripts/novel-storyboard.mjs checkup sb.json --script script.json
-node scripts/novel-storyboard.mjs validate sb.json --script script.json --shots /path/to/cards   # optional: the 17th gate
+node scripts/novel-storyboard.mjs validate sb.json --script script.json --shots /path/to/cards   # optional: the 18th gate
 node scripts/novel-storyboard.mjs render sb.json --html --script script.json --outline outline.json --art art.json > storyboard-report.html
 node scripts/novel-storyboard.mjs render sb.json --html --lang en --script script.json --outline outline.json --art art.json > storyboard-report.html   # English report UI
 node scripts/novel-storyboard.mjs export sb.json --script script.json   # per-segment folders: f1..fN.png + prompt.md
@@ -122,7 +122,7 @@ node scripts/novel-storyboard.mjs export sb.json --script script.json   # per-se
 node scripts/selftest.mjs
 ```
 
-323 assertions — beat expansion, H3 skeleton derivation, Seedance assembly, stats and batching, gate-defeating cases, recipe-card parsing and mounting, seed, rendering (both report UI languages), H3 and Seedance export. No model calls, runs in about a second.
+336 assertions — beat expansion, H3 skeleton derivation, Seedance assembly, stats and batching, gate-defeating cases, recipe-card parsing and mounting, seed, rendering (both report UI languages, frame-slot aspect), H3 and Seedance export. No model calls, runs in about a second.
 
 The bundled example (`examples/渡口-storyboard.json`) is a complete episode-1 storyboard — 10 segments, 34 cuts claiming all 35 script beats at ~3.5s per cut, 119s against a 120s target, 2 generation batches, every segment carrying a fully audited H3 prompt.
 

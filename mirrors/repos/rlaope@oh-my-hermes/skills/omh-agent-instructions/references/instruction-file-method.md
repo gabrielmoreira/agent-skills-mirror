@@ -6,13 +6,18 @@ Load this while writing or updating an agent instruction file. OMH prepares the 
 
 | File | Read by | Note |
 | --- | --- | --- |
-| `AGENTS.md` | Codex, and most agents that follow the open format | nested files apply to their directory; the closest file wins |
+| `AGENTS.md` | Codex, Hermes Agent, and most agents that follow the open format | nested files apply to their directory; the closest file wins |
 | `CLAUDE.md` | Claude Code | may point at `AGENTS.md` instead of repeating it |
 | `GEMINI.md` | Gemini CLI | |
 | `.cursor/rules/*.mdc`, `.cursorrules` | Cursor | rules carry their own globs |
 | `.github/copilot-instructions.md` | GitHub Copilot | |
+| `.hermes.md`, `HERMES.md` | Hermes Agent | the nearest one between the working directory and the repository root |
 
-When several exist, keep one source and point the others at it, so two files cannot disagree.
+When several exist, keep one source and point the others at it, so two files cannot disagree. A pointer works only for a reader that follows it, so check how each reader loads before choosing which file holds the text:
+
+- **Hermes Agent loads one project file type per session.** It takes the first type that has a non-empty file and reads no other: `.hermes.md` or `HERMES.md`, the nearest from the working directory up to the repository root; then `AGENTS.md`; then `CLAUDE.md`, in the working directory only; then `.cursorrules` with `.cursor/rules/*.mdc`, in the working directory only. Outside a repository it looks in the working directory alone. It follows no pointer written inside the file it loaded, so a `.hermes.md` that only points elsewhere is all Hermes reads, and `CLAUDE.md` reaches Hermes only where neither of the first two types exists. In a repository Hermes works in, keep the text in `AGENTS.md`, make `CLAUDE.md` and the rest pointers, and add no `.hermes.md`.
+- **Hermes Agent reads every `AGENTS.md` on that path.** Each directory from the repository root down to the working directory adds its own file, root first, and a file identical to one already read is skipped, so a nested file adds to the root file rather than replacing it.
+- **An `AGENTS.override.md` replaces the `AGENTS.md` beside it** for Hermes Agent, in that one directory. It is usually untracked, so an edit to the committed `AGENTS.md` there changes nothing for a session that finds the override. The inventory lists every override, and a drift check reads the override rather than the committed file.
 
 ## 2. The marked region
 

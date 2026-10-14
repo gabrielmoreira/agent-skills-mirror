@@ -7,7 +7,7 @@
 
 Input is a JSON spec file:
 {
-  "map": "area.jpg",                         # output of tiles.py fetch (needs the same-name .json next to it)
+  "map": "area.jpg",                         # required: output of tiles.py fetch (needs the same-name .json next to it)
   "crop": [x0, y0, x1, y1],                  # optional, crop in original-image pixels
   "width": 1280,                             # output width
   "camera": [lat, lon],
@@ -16,6 +16,11 @@ Input is a JSON spec file:
   "lines":  [{"from": [lat, lon], "bearing": 47, "length_m": 75, "color": "#00ffff"}],
   "panels": [{"image": "sv1.jpg", "caption": "Street view: same road, looking northeast"}]
 }
+
+All coordinates are WGS84, and the map must be WGS84-aligned imagery as tiles.py fetches it. A GCJ-02 mosaic
+(Amap and other Chinese road maps) shifts every mark by several hundred meters in China; use tiles.py imagery
+instead. Convert GCJ-02 input coordinates to WGS84 with geo.py convert --from gcj --to wgs. Paths are relative
+to the spec file.
 
 Example: evidence.py spec.json --out evidence.jpg
 """
@@ -35,7 +40,49 @@ from baidu_pano import _font  # noqa: E402
 from tiles import Mosaic  # noqa: E402
 
 
+# required keys of each list item in the spec
+ITEM_KEYS = {"labels": ("at", "text"), "lines": ("from", "bearing", "length_m"), "panels": ("image",)}
+
+
+def check_spec(spec: dict, base: Path) -> list[str]:
+    """Problems that would otherwise surface as a bare KeyError or FileNotFoundError mid-drawing."""
+    if not isinstance(spec, dict):
+        return ["the spec must be a JSON object"]
+    errs = []
+    if "map" not in spec:
+        errs.append("missing 'map': the tiles.py fetch mosaic to draw on")
+    elif not isinstance(spec["map"], str) or not spec["map"].strip():
+        errs.append("'map' must be a non-empty path string")
+    else:
+        map_path = base / spec["map"]
+        if not map_path.is_file():
+            errs.append(f"map not found: {map_path}")
+        if not map_path.with_suffix(".json").is_file():
+            errs.append(f"map has no georeference: {map_path.with_suffix('.json')} is missing (tiles.py fetch writes it next to the image)")
+    for key, need in ITEM_KEYS.items():
+        items = spec.get(key, [])
+        if not isinstance(items, list):
+            errs.append(f"'{key}' must be a JSON array")
+            continue
+        for i, item in enumerate(items):
+            if not isinstance(item, dict):
+                errs.append(f"{key}[{i}] must be a JSON object")
+                continue
+            miss = [k for k in need if k not in item]
+            if miss:
+                errs.append(f"{key}[{i}] is missing {', '.join(repr(k) for k in miss)}")
+            if key == "panels" and "image" in item:
+                if not isinstance(item["image"], str) or not item["image"].strip():
+                    errs.append(f"panels[{i}] 'image' must be a non-empty path string")
+                elif not (base / item["image"]).is_file():
+                    errs.append(f"panels[{i}] image not found: {base / item['image']}")
+    return errs
+
+
 def build(spec: dict, base: Path, out: Path) -> None:
+    errs = check_spec(spec, base)
+    if errs:
+        sys.exit("bad spec:\n  " + "\n  ".join(errs) + "\nspec format: evidence.py --help")
     map_path = base / spec["map"]
     m = Mosaic(map_path)
     im = Image.open(map_path).convert("RGBA")

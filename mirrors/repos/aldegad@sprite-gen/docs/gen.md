@@ -1,6 +1,6 @@
 # `sprite-gen gen` — provider-backed image generation (engine SSoT)
 
-> Owns: `sprite-gen gen` / `gen-set`: providers, default resolution, transparency strategy per provider, the billed knobs (`--quality`, `--resolution`), row usage · Index: [docs/README.md](README.md)
+> Owns: `sprite-gen gen` / `gen-set`: providers, default resolution, transparency strategy per provider, the billed knobs (`--quality`, `--resolution`), when a refused provider request is sent again (every direct provider call), row usage · Index: [docs/README.md](README.md)
 
 Generation is a first-class engine module (`sprite_gen/gen/`), not an external
 skill. One call = a prompt (+ optional reference images) → one **verified** PNG on
@@ -87,7 +87,8 @@ precedence even when `XAI_API_KEY` is set. Only an absent login file permits the
 API key (console credits); an invalid, expired or rejected login never does. See
 [authentication and expiry](video.md#setup--pick-one-credential)
 for setup; the video modes (last-frame pin, references, `video-extend`, `video-edit`) are in [video.md](video.md#modes--which-flags-call-what). No Grok executable is needed during generation with a valid credential.
-No agent, credential fallback or automatic retry is started on failure.
+No agent or credential fallback is started on failure; a refusal xAI documents as a request not
+taken (429) is sent again, nothing else is ([a refused request sent again](#a-refused-request-sent-again)).
 
 New images use `/v1/images/generations`; one reference uses `/v1/images/edits`
 with `image`, two to five use `images` in input order. A single-reference edit
@@ -112,9 +113,11 @@ API contracts: [image generation](https://docs.x.ai/developers/model-capabilitie
 No `codex` CLI, no browser sign-in, no subprocess: the whole credential is
 `OPENAI_API_KEY`, read from the environment at call time and never written
 anywhere. Unset, the run stops naming the variable and where to get a key; set but
-empty, it says so. It never falls back to the codex ChatGPT login, to another key,
-or to a retry — and see [subscription first](#subscription-first--openai-is-named-or-it-does-not-run)
-for why nothing routes here on its own.
+empty, it says so. It never falls back to the codex ChatGPT login or to another key;
+a refusal OpenAI documents as a request not taken is sent again, nothing else is
+([a refused request sent again](#a-refused-request-sent-again)) — and see
+[subscription first](#subscription-first--openai-is-named-or-it-does-not-run) for why
+nothing routes here on its own.
 
 The default model is `gpt-image-2.5-flare`; `--model` selects another gpt-image
 model. New images use `POST /v1/images/generations` (JSON); attaching `--ref` uses
@@ -184,6 +187,40 @@ it, so whatever the images endpoints send is what the report holds.
 
 API contract: [OpenAI Images](https://developers.openai.com/api/images/) (field names
 and enums confirmed there 2026-09-20).
+
+## A refused request sent again
+
+One rule for every direct provider call — the OpenAI and Grok image calls here, the
+facing check, the clip request and polls of the video verbs (docs/video.md), and the
+Anthropic transport of `pixel-draw` (docs/pixel-draw.md) — in `sprite_gen/gen/retry.py`:
+
+- **A POST is sent again only when its provider documents the answer as a request it
+  did not take.** That request made nothing, so asking again buys nothing twice. What
+  the providers say, read 2026-10-13:
+
+  | Provider | Sent again | Not sent again |
+  |---|---|---|
+  | OpenAI ([error codes](https://developers.openai.com/api/docs/guides/error-codes), [rate limits](https://developers.openai.com/api/docs/guides/rate-limits)) | 429 "Rate limit reached for requests" and `slow_down`; 503 `server_is_overloaded` — the two its SDKs retry | 500 "The server had an error while processing your request"; the billing 429s (`credit_balance_exhausted`, `organization_spend_limit_exceeded`, `project_spend_limit_exceeded`, `organization_usage_limit_exceeded`, type `insufficient_quota`): "Don't retry quota, billing, or other errors that require you to take action" |
+  | xAI ([debugging](https://docs.x.ai/developers/debugging), [rate limits](https://docs.x.ai/developers/rate-limits)) | 429 "You are sending requests too frequently and have reached the rate limit" | everything else — it documents no 5xx |
+  | Anthropic ([errors](https://platform.claude.com/docs/en/api/errors), [rate limits](https://platform.claude.com/docs/en/api/rate-limits)) | 429 `rate_limit_error`; 529 `overloaded_error`; 500 `api_error` ("Retry the request with exponential backoff") | 504 `timeout_error` "The request timed out while processing"; the spend-cap 429 (`error.details.error_code: enforced_spend_limit_reached`, no `retry-after`), which "fails until access resumes"; 502, 503 |
+
+- **The wait** is the answer's `retry-after` when the run waits that long (at most
+  120 s; a longer one is not waited out early — the request is not sent again), else
+  the doubling wait the video polls wait by: 8 s, then 16 s. **Twice at most**, each
+  said on stderr, the status in plain digits:
+  `[gen] openai refused the request (429 rate_limit_exceeded); nothing was made — asking again in 8s (1 of 2)`.
+  A refusal still there after that ends the call as any refusal does, its line saying
+  `sent 3 times, no provider fallback` where it says `no retry or provider fallback`.
+- **A request that got no answer it could read is never sent again** — the connection
+  broke, it timed out, or the answer broke on the way, a refusal whose body broke
+  included (`xai.error_body`: a refusal's status alone is not an answer read whole).
+  The server may have taken it.
+- **A GET buys nothing**, so one answered 429, 500, 502, 503, 504 or 529 is asked again
+  after the same doubling wait: the video polls for as long as their poll timeout lets
+  them (docs/video.md), the reads of a Message Batch twice.
+
+`video-set` runs each clip once: a 429 is sent again inside `sprite-gen video`, and a
+second run on top would make every one of its POSTs a second retry loop.
 
 ## CLI
 
@@ -325,7 +362,9 @@ strategy it can execute, and `--alpha-mode auto` (the default) follows it:
   refused after the paid call: `alpha.decontam` records `{"requested": …, "skipped":
   …}` and stderr says so (a warning for `palette`, which demands the pass). The check
   is the counts, not the rounded percentages: a raw with a single alpha-0 pixel is
-  `ambiguous`, reported as `0.0`.
+  `ambiguous`, reported as `0.0`. The judgment of the alpha band is one function,
+  `chroma.alpha_verdict`: [`pixel-draw`](pixel-draw.md#gates)'s G3 asks it of every frame
+  it drew (a sprite or icon frame must be `real-alpha`, a tile `no-alpha`).
   Measured 2026-10-04 (codex `image_gen`, subscription, one transparent front still as
   the reference, three takes per arm): with the step down's prompt (no transparency
   request, no key colour), a transparent (RGBA) reference came back with real alpha

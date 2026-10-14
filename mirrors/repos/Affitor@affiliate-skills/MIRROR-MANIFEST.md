@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Affitor/affiliate-skills` — 26 default patterns, 0 followed patterns, 117 file(s) materialized.
+Mirror of `Affitor/affiliate-skills` — 26 default patterns, 0 followed patterns, 119 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Affitor/affiliate-skills` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 117 |
+| Files         | 119 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -168,14 +168,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 107 | ✓ | [`skills/research/competitor-spy/LICENSE.txt`](skills/research/competitor-spy/LICENSE.txt) |
 | 108 | ✓ | [`skills/research/competitor-spy/SKILL.md`](skills/research/competitor-spy/SKILL.md) |
 | 109 | ✓ | [`skills/research/content-angle-ranker/SKILL.md`](skills/research/content-angle-ranker/SKILL.md) |
-| 110 | ✓ | [`skills/research/monopoly-niche-finder/SKILL.md`](skills/research/monopoly-niche-finder/SKILL.md) |
-| 111 | ✓ | [`skills/research/niche-opportunity-finder/LICENSE.txt`](skills/research/niche-opportunity-finder/LICENSE.txt) |
-| 112 | ✓ | [`skills/research/niche-opportunity-finder/SKILL.md`](skills/research/niche-opportunity-finder/SKILL.md) |
-| 113 | ✓ | [`skills/research/purple-cow-audit/SKILL.md`](skills/research/purple-cow-audit/SKILL.md) |
-| 114 | ✓ | [`skills/research/submit-program/SKILL.md`](skills/research/submit-program/SKILL.md) |
-| 115 | ✓ | [`skills/research/traffic-analyzer/SKILL.md`](skills/research/traffic-analyzer/SKILL.md) |
-| 116 | ✓ | [`skills/research/trending-content-scout/SKILL.md`](skills/research/trending-content-scout/SKILL.md) |
-| 117 | ✓ | [`template/SKILL.md`](template/SKILL.md) |
+| 110 | ✓ | [`skills/research/find-and-verify-affiliate-program/LICENSE.txt`](skills/research/find-and-verify-affiliate-program/LICENSE.txt) |
+| 111 | ✓ | [`skills/research/find-and-verify-affiliate-program/SKILL.md`](skills/research/find-and-verify-affiliate-program/SKILL.md) |
+| 112 | ✓ | [`skills/research/monopoly-niche-finder/SKILL.md`](skills/research/monopoly-niche-finder/SKILL.md) |
+| 113 | ✓ | [`skills/research/niche-opportunity-finder/LICENSE.txt`](skills/research/niche-opportunity-finder/LICENSE.txt) |
+| 114 | ✓ | [`skills/research/niche-opportunity-finder/SKILL.md`](skills/research/niche-opportunity-finder/SKILL.md) |
+| 115 | ✓ | [`skills/research/purple-cow-audit/SKILL.md`](skills/research/purple-cow-audit/SKILL.md) |
+| 116 | ✓ | [`skills/research/submit-program/SKILL.md`](skills/research/submit-program/SKILL.md) |
+| 117 | ✓ | [`skills/research/traffic-analyzer/SKILL.md`](skills/research/traffic-analyzer/SKILL.md) |
+| 118 | ✓ | [`skills/research/trending-content-scout/SKILL.md`](skills/research/trending-content-scout/SKILL.md) |
+| 119 | ✓ | [`template/SKILL.md`](template/SKILL.md) |
 
 ---
 

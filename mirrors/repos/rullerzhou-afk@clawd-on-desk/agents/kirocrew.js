@@ -34,6 +34,7 @@ module.exports = {
   capabilities: {
     httpHook: false,
     permissionApproval: false,
+    mobilePermissionObservation: false,
     // The gateway has an explicit end-of-turn event (Stop) but no distinct
     // session-end lifecycle moment exposed to hooks, so sessionEnd stays false.
     sessionEnd: false,

@@ -1,6 +1,6 @@
 # Run Contract — pipeline stages · run-dir folder tree · curation-view display (SSoT)
 
-> Owns: The atlas pipeline's normative contract: stages, the run-dir folder tree, curation-view display, atomic extract, concurrency scope · Index: [docs/README.md](README.md)
+> Owns: The atlas pipeline's normative contract: stages, a flag against the file that holds the same key (every verb), the run-dir folder tree, curation-view display, atomic extract, concurrency scope · Index: [docs/README.md](README.md)
 
 > Status: **contract** (normative). This doc is the single source of truth for
 > three things every sprite-gen run must satisfy so that **any agent who serves a
@@ -56,6 +56,15 @@ canonical files, not hidden imports.
 | Inverse / import | `unpack_atlas_run.py` | finished atlas **or** `--pngs-dir` | curator-ready run dir (§4) |
 | Export stills | `export_curated_pngs.py` | curated `frames/` | named PNGs under `curated/` |
 | Chroma guard | `scripts/dev/check_visible_magenta.py` | screenshot | leakage warning |
+
+**A flag and the file that holds the same key.** A key given both as a flag and in the file a
+verb reads with its flags — `prepare --request` / `--request-json`, `pixel-draw --spec` — takes
+the flag, and one stderr line names every flag the file also set:
+`[prepare] --style, --cell-size given both as a flag and in --request-json: the flag wins`. A
+value the file holds is never replaced in silence, and no verb answers this question another
+way (`gen.base.flags_over_spec`). For `prepare` a flag replaces a cell measure however the
+request spelled it (`--cell-size`, `--cell-width` and `--cell-height` the width and height
+whether the request said `size`, `width` or `cell_width`; `--safe-margin` both margins).
 
 The happy path is `prepare -> gen -> extract -> compose`, followed by delivery and an optional curation view. Curation is opened only when requested or enabled in saved defaults; edits are composed again for export. Stage internals (chroma removal, connected
 components, pixel-unfake path, the `.sprite-gen.lock` single-writer rule, the

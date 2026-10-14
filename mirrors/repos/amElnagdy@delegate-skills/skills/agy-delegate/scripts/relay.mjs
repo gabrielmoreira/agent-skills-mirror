@@ -74,7 +74,14 @@
  *                           plus a 60s grace). On expiry the agy process tree is killed and
  *                           result.json gets status "timeout". Set it explicitly when agy
  *                           may hang past its own print timeout.
- *   --add-dir <dir>         Add an extra workspace directory. Repeatable.
+ *   --stall-timeout <dur>   Opt-in stall watchdog, h/m/s like 5m (default: off). If agy.log
+ *                           gains no new `streamGenerateContent` line for this long, the agy
+ *                           process tree is killed and result.json gets status "stalled".
+ *                           The clock starts at launch and restarts on every generation call.
+ *                           Set it above your longest expected tool step (a long test run
+ *                           makes no generation calls). Keys on agy's own log format, which
+ *                           agy does not document as stable.
+ *   --add-dir <dir>        Add an extra workspace directory. Repeatable.
  *   --out-dir <dir>         Where to write run artifacts (default: a fresh dir under
  *                           the system temp dir, so the repo under review stays clean).
  *   -h, --help              Show this help.
@@ -87,19 +94,20 @@
  * Exit codes: a pre-run usage error (bad/missing args, empty brief) exits 2
  * before any run and writes no result file; a missing `agy` binary exits 127;
  * otherwise the exit code mirrors Antigravity's own, except that an exit-zero
- * permission denial or silent write-dispatch no-op is forced to exit 1.
+ * permission denial, silent no-op, or abandoned background tasks without edits is forced to exit 1.
  * If the child dies on a signal, the exit code is 128 plus the signal number and
  * `result.json` records the signal.
  * Once the brief validates, `result.json` is written on every outcome -
  * completed, failed, timeout (the relay watchdog fired after explicit --timeout,
- * or after --print-timeout plus 60s grace), aborted (the relay itself was killed
- * and forwarded the kill to agy), or agy_unavailable. An orchestrator that polls for the
+ * or after --print-timeout plus 60s grace), stalled (--stall-timeout passed with
+ * no generation call in agy.log; the tree may hold usable work), aborted (the
+ * relay itself was killed and forwarded the kill to agy), or agy_unavailable. An orchestrator that polls for the
  * file must therefore also treat a non-zero exit with no file as a usage error.
  */
 
 import {spawn, execFileSync, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdirSync, writeFileSync, renameSync, readFileSync, readlinkSync, lstatSync, existsSync, appendFileSync, realpathSync } from "node:fs";
+import { mkdirSync, writeFileSync, renameSync, readFileSync, readlinkSync, lstatSync, existsSync, appendFileSync, realpathSync, openSync, fstatSync, readSync, closeSync } from "node:fs";
 import {join, resolve, basename, dirname, relative, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import { constants, tmpdir } from "node:os";
@@ -109,6 +117,8 @@ const DEFAULT_PRINT_TIMEOUT = "30m";
 const MAX_TIMER_MS = 2_147_483_647;
 const MAX_TIMER_DURATION = "596h31m23s";
 const VERSION_PROBE_TIMEOUT_MS = 10_000;
+// agy logs one of these per model request; a healthy run emits them steadily between tool steps.
+const GENERATION_MARKER = "streamGenerateContent";
 
 const IMPLEMENTER_KEY = "agy";
 
@@ -171,6 +181,7 @@ function parseArgs(argv) {
     dangerouslySkipPermissions: false,
     printTimeout: DEFAULT_PRINT_TIMEOUT,
     timeout: null,
+    stallTimeout: null,
     addDirs: [],
     outDir: null,
   };
@@ -205,6 +216,7 @@ function parseArgs(argv) {
         break;
       case "--print-timeout": opts.printTimeout = next(); break;
       case "--timeout": opts.timeout = next(); flagged.add("timeout"); break;
+      case "--stall-timeout": opts.stallTimeout = next(); break;
       case "--add-dir": opts.addDirs.push(next()); break;
       case "--out-dir": opts.outDir = resolve(next()); break;
       default:
@@ -229,6 +241,9 @@ function parseArgs(argv) {
     if (milliseconds === null || milliseconds <= 0 || milliseconds > MAX_TIMER_MS) {
       fail(`--timeout "${opts.timeout}" must be an h/m/s duration from 1s through ${MAX_TIMER_DURATION}`);
     }
+  }
+  if (opts.stallTimeout !== null && parseDuration(opts.stallTimeout) === null) {
+    fail(`--stall-timeout "${opts.stallTimeout}" must be an h/m/s duration from 1s through ${MAX_TIMER_DURATION}`);
   }
   const printTimeoutMs = parseDuration(opts.printTimeout);
   if (printTimeoutMs === null || printTimeoutMs <= 0 || printTimeoutMs + 60_000 > MAX_TIMER_MS) {
@@ -507,6 +522,44 @@ function parseIdsFromLog(logPath) {
   };
 }
 
+// Returns a poll function: true when agy.log gained a generation line since the last poll.
+// Reads only the new bytes; a carry of marker-length-minus-one bytes catches a marker split
+// across reads without ever counting the same one twice.
+function makeGenerationWatch(logPath) {
+  const buffer = Buffer.alloc(64 * 1024);
+  let offset = 0;
+  let carry = "";
+  return () => {
+    let fd;
+    try {
+      fd = openSync(logPath, "r");
+    } catch {
+      return false; // agy has not created the log yet
+    }
+    try {
+      const size = fstatSync(fd).size;
+      if (size < offset) {
+        offset = 0;
+        carry = "";
+      }
+      let found = false;
+      while (offset < size) {
+        const read = readSync(fd, buffer, 0, Math.min(buffer.length, size - offset), offset);
+        if (read <= 0) break;
+        offset += read;
+        const text = carry + buffer.toString("latin1", 0, read);
+        if (text.includes(GENERATION_MARKER)) found = true;
+        carry = text.slice(-(GENERATION_MARKER.length - 1));
+      }
+      return found;
+    } catch {
+      return false;
+    } finally {
+      closeSync(fd);
+    }
+  };
+}
+
 function makeResultWriter(opts, version, run) {
   return (extra) => {
     const ids = parseIdsFromLog(run.logPath);
@@ -518,6 +571,7 @@ function makeResultWriter(opts, version, run) {
       workdir: opts.cd,
       model: opts.model,
       effort: opts.effort,
+      stallTimeout: opts.stallTimeout,
       project: opts.project,
       sandbox: opts.sandbox,
       readOnly: opts.readOnly,
@@ -569,7 +623,7 @@ function reportVersionTimeout(writeResult, run, timeoutMs, error) {
   process.exit(result.exitCode);
 }
 
-function dispatchToAgy(opts, brief, run, writeResult, watchdogMs) {
+function dispatchToAgy(opts, brief, run, writeResult, watchdogMs, stallMs) {
   const relayArtifacts = [run.briefPath, run.finalPath, run.logPath, run.stderrPath, run.resultPath];
   const beforeState = gitWorktreeFingerprint(opts.cd, relayArtifacts);
   const argv = buildArgv(opts, brief, run);
@@ -586,9 +640,14 @@ function dispatchToAgy(opts, brief, run, writeResult, watchdogMs) {
   const stderrTail = [];
   let settled = false;
   let watchdogFired = false;
+  let stallFired = false;
+  let stallPoll = null;
   let sigkillTimer = null;
-  const watchdogTimer = setTimeout(() => {
-    watchdogFired = true;
+  const stopStallWatch = () => {
+    if (stallPoll) clearInterval(stallPoll);
+    stallPoll = null;
+  };
+  const terminate = () => {
     child.once("exit", () => {
       child.stdout.destroy();
       child.stderr.destroy();
@@ -597,7 +656,31 @@ function dispatchToAgy(opts, brief, run, writeResult, watchdogMs) {
     sigkillTimer = setTimeout(() => {
       if (!settled) killChild(child, "SIGKILL");
     }, 10_000);
+  };
+  const watchdogTimer = setTimeout(() => {
+    watchdogFired = true;
+    stopStallWatch();
+    terminate();
   }, watchdogMs);
+
+  // The wall-clock watchdog cannot tell a stalled run from a slow one: after a dropped
+  // stream agy can keep re-running auth and model-discovery handshakes, so the process
+  // stays alive and agy.log keeps growing while no model request is ever made again.
+  // Opt-in, because it keys on agy's log format rather than a documented contract.
+  if (stallMs !== null) {
+    const sawGeneration = makeGenerationWatch(run.logPath);
+    let lastGeneration = Date.now();
+    stallPoll = setInterval(() => {
+      if (sawGeneration()) {
+        lastGeneration = Date.now();
+      } else if (Date.now() - lastGeneration >= stallMs) {
+        stallFired = true;
+        stopStallWatch();
+        clearTimeout(watchdogTimer);
+        terminate();
+      }
+    }, Math.min(5_000, Math.max(250, Math.floor(stallMs / 4))));
+  }
 
   // The relay's own death must still produce a result: without this, a kill from the
   // orchestrator's side (its command timeout, a stopped task, a closed terminal) writes
@@ -608,6 +691,7 @@ function dispatchToAgy(opts, brief, run, writeResult, watchdogMs) {
       if (settled) return;
       settled = true;
       clearTimeout(watchdogTimer);
+      stopStallWatch();
       if (sigkillTimer) clearTimeout(sigkillTimer);
       const finalMessage = stdout.trim();
       if (finalMessage) writeFileSync(run.finalPath, finalMessage, "utf8");
@@ -668,7 +752,8 @@ function dispatchToAgy(opts, brief, run, writeResult, watchdogMs) {
   child.once("exit", () => {
     // The implementer already exited. Leaving the watchdog armed lets a drain that
     // overlaps the remaining budget fire, set watchdogFired, and report timeout.
-    if (!watchdogFired) {
+    stopStallWatch();
+    if (!watchdogFired && !stallFired) {
       clearTimeout(watchdogTimer);
       if (sigkillTimer) clearTimeout(sigkillTimer);
     }
@@ -684,6 +769,7 @@ function dispatchToAgy(opts, brief, run, writeResult, watchdogMs) {
     if (settled) return;
     settled = true;
     clearTimeout(watchdogTimer);
+    stopStallWatch();
     if (sigkillTimer) clearTimeout(sigkillTimer);
     const finalMessage = stdout.trim();
     if (finalMessage) writeFileSync(run.finalPath, finalMessage, "utf8");
@@ -706,10 +792,12 @@ function dispatchToAgy(opts, brief, run, writeResult, watchdogMs) {
     if (settled) return;
     settled = true;
     clearTimeout(watchdogTimer);
+    stopStallWatch();
     if (sigkillTimer) clearTimeout(sigkillTimer);
     // a descendant that ignored SIGTERM must not outlive the timeout report: once the
     // parent is down, sweep the group (no-op where taskkill already felled the tree)
-    if (watchdogFired) killChild(child, "SIGKILL");
+    const killedByRelay = watchdogFired || stallFired;
+    if (killedByRelay) killChild(child, "SIGKILL");
     const finalMessage = stdout.trim();
     if (finalMessage) writeFileSync(run.finalPath, finalMessage, "utf8");
     const touchedFiles = gitTouchedFiles(opts.cd);
@@ -722,19 +810,23 @@ function dispatchToAgy(opts, brief, run, writeResult, watchdogMs) {
     const worktreeChanged = beforeState !== null && afterState !== null && beforeState !== afterState;
     const readOnlyViolation = readOnlyVerdict(opts, beforeState, afterState);
     const silentNoop = code === 0 && !finalMessage && !worktreeChanged;
+    const abandonedBackground = code === 0 && !opts.readOnly && beforeState !== null && afterState === beforeState &&
+      /terminating\s+\d+\s+background task\(s\) on exit/i.test(stderr);
     // A timed-out run is failed even if agy handles SIGTERM by exiting 0 -
     // orchestrators key off status and the relay exit code.
-    const succeeded = code === 0 && !watchdogFired && !permissionDenied && !silentNoop;
+    const succeeded = code === 0 && !killedByRelay && !permissionDenied && !silentNoop && !abandonedBackground;
     const mapped = code ?? (constants.signals[signal] ? 128 + constants.signals[signal] : 1);
     const result = writeResult({
-      status: succeeded ? "completed" : watchdogFired ? "timeout" : "failed",
+      status: succeeded ? "completed" : stallFired ? "stalled" : watchdogFired ? "timeout" : "failed",
       exitCode: succeeded ? 0 : mapped === 0 ? 1 : mapped,
       signal: signal ?? null,
       finalMessage,
       touchedFiles,
       readOnlyViolation,
       ...(!succeeded || !finalMessage ? { stderrTail: diagnostics } : {}),
-      ...(watchdogFired
+      ...(stallFired
+        ? { error: `agy logged no ${GENERATION_MARKER} call for --stall-timeout ${opts.stallTimeout}; killed by the relay stall watchdog — the working tree may hold nearly finished work, inspect it before re-dispatching` }
+        : watchdogFired
         ? {
             error: opts.timeout !== null
               ? `agy did not finish within --timeout ${opts.timeout}; killed by the relay watchdog`
@@ -744,7 +836,9 @@ function dispatchToAgy(opts, brief, run, writeResult, watchdogMs) {
           ? { error: `Antigravity auto-denied the ${permissionDenied[1]} permission because headless --print cannot prompt; ask the human whether to re-dispatch with --dangerously-skip-permissions and treat that run as full access` }
           : silentNoop
             ? { error: "agy exited 0 without a final message or observable working-tree changes; the relay cannot confirm this dispatch completed" }
-            : {}),
+            : abandonedBackground
+              ? { error: "agy exited 0 after ending its turn with background task(s) still pending and no observable working-tree changes; the relay cannot confirm this dispatch completed" }
+              : {}),
     });
     printSummary(result, run.resultPath);
     process.exit(result.exitCode);
@@ -785,7 +879,8 @@ function main() {
     return;
   }
 
-  dispatchToAgy(opts, brief, run, writeResult, watchdogMs);
+  const stallMs = opts.stallTimeout !== null ? parseDuration(opts.stallTimeout) : null;
+  dispatchToAgy(opts, brief, run, writeResult, watchdogMs, stallMs);
 }
 
 function printSummary(result, resultPath) {

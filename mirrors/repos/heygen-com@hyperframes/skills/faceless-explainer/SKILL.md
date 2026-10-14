@@ -191,7 +191,7 @@ Inject transitions, run checks, pause for review, then render.
 
 `npx hyperframes snapshot --at <frame-midpoints>`
 
-`snapshot` stitches the captured frames into one contact sheet (`snapshots/contact-sheet.jpg`). Glance at it; if nothing is obviously broken, move on — don't linger here.
+`snapshot` stitches the captured frames into one contact sheet (`.hyperframes/artifacts/snapshots/<id>/contact-sheet.jpg`; the command prints the path). Glance at it; if nothing is obviously broken, move on — don't linger here.
 
 If a command fails, surface stderr and stop — don't pile on recovery commands. Fix it yourself: the cheapest safe edit to `compositions/frames/NN-*.html`, then rerun the failed check.
 

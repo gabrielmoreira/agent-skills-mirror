@@ -1,6 +1,7 @@
 ---
 name: "omh-workspace-audit"
 description: "[omh] Workspace setup inventory and gaps: map repository, skill, prompt, plugin, MCP, hook, config, and runtime surfaces before strengthening or operating OMH. Use when the user says: workspace-audit, workspace audit, repo surface audit, repository surface audit, workspace surface audit, repo inventory, surface inventory, skill inventory."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operations]
@@ -21,8 +22,8 @@ This is an OMH `workspace-audit` workflow skill, projected for Agent Skills host
 ## Do Not Use When
 
 - The user already named a concrete implementation task with files and acceptance criteria; use the coding handoff or delivery workflow.
-- The request is local OMH installation health only; use `doctor`.
-- The request is a source acquisition or current web lookup; use `source-finder` or `research`.
+- The request is local OMH installation health only; use `omh-doctor`.
+- The request is a source acquisition or current web lookup; use `omh-source-finder` or `ulw-research`.
 
 ## Examples
 
@@ -51,7 +52,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes should inspect the local repo/workspace/operator surface and produce a safe inventory, risk map, and gap list before planning, routing, or feature strengthening.
 

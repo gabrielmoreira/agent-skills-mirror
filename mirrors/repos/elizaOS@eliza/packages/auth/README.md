@@ -141,3 +141,20 @@ format. A renderer field, personal agent ID, decoded JWT subject or credential
 fingerprint is not a verified Cloud owner. The optional native
 `VerifiedAccountCredentialStore` provides encrypted whole-record compare-and-exchange;
 hosts still need to wire it to their private process protocol and lifecycle.
+
+## Optional Blooio phone-code delivery
+
+Twilio Verify remains the default when its existing environment is configured.
+To select Blooio explicitly for ordinary phone codes, set `SMS_PROVIDER=blooio`,
+`BLOOIO_API_KEY`, and an owned E.164 sender in `BLOOIO_FROM_NUMBER` on the login
+server. Neither value is inferred from an agent, webhook, account, or another
+provider. Missing Blooio configuration fails validation; delivery failure does
+not fall back to Twilio.
+
+Blooio only delivers the text. `PhoneAuth` still creates six-digit codes and
+retains its existing purpose-and-phone hash, five-minute expiry, atomic one-use
+verification, and send/verify abuse guards. Provider acceptance is not proof
+that the recipient received the code. No webhook, agent history, model call,
+new login token, or database migration is added. Real delivery and Cloud account
+continuity still require separate testing with the existing authorized key and
+sender after review.

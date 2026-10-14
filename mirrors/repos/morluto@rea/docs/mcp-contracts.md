@@ -21,6 +21,57 @@ directly to `compare_functions`, and `inspect_artifact` Evidence to
 `compare_artifacts`. Use `get_evidence_bundle` when the task needs broader
 retained session history or an explicit bundle for transfer.
 
+Artifact inventories declare `coverage.scope` (`root` or `container-entries`)
+and `coverage.status` (`complete` or `unknown`) independently of diagnostic
+wording. Comparison requires matching scopes, complete graph members and complete
+traversal coverage before concluding equality. A fully observed root without
+container children can be `unchanged`; its scope notice stays in `limitations`
+without creating a gap. Content and executable metadata changes still produce
+root deltas. Missing graph members yield `truncated`; unknown traversal coverage
+or unavailable occurrence hashes retain uncertainty. Integrity mismatches remain
+contradictions. Static artifact equality does not establish unchanged runtime
+behavior.
+
+Exhausted traversals with deliberately omitted filesystem entries retain
+`unknown` coverage and identify each omitted path/type in `limitations`; FIFO,
+socket and device entries are not opened. Case-distinct archive members remain
+separate observations. Their case-insensitive materialization diagnostic does
+not reduce traversal coverage when both spellings were read.
+
+Current output also retains `coverage_status` (`complete` or `partial`) for existing clients, derived from the scoped traversal status. The owning parser normalizes retained `coverage_status` records to scoped coverage and rejects conflicting declarations.
+
+The coverage field is optional when reading older retained Evidence. The owning
+inventory parser recognizes historical REA scope notices for compatibility;
+unfamiliar legacy limitations remain conservative. Typed records do not derive
+coverage from limitation text. Pages from one inventory must carry the same
+coverage declaration.
+
+Function dossiers can declare per-facet coverage in the optional
+`normalized_result.facet_availability` map. Each supplied facet is either
+`{ "available": true }` or `{ "available": false, "reason": "..." }`.
+Supported keys are `pseudocode`, `assembly`, `comments`, `callers`, `callees`,
+`references`, `strings_names`, and `cfg`. Availability describes whether that
+facet was observed, not whether its collection contains any entries.
+
+`compare_functions` keeps a dimension `unknown` with null counts when either
+side declares a required facet unavailable. An empty legacy facet without a
+coverage declaration is also unknown. A producer that actually observed an
+empty facet can declare it available so observed absence remains comparable.
+Call comparison additionally retains the Evidence relationship coverage
+checks. Ghidra and Hopper declare their observed dossier facets and complete
+provider-observed caller/callee sets, including empty sets. Missing decompiler
+output remains unavailable; complete call coverage does not claim every runtime
+target. Hopper's unavailable reference-kind metadata and reported unresolved
+calls still prevent equality conclusions for those dimensions. Analysis profiles
+version these declarations so older snapshots are not reused as current results.
+IDA declares the facets its selected adapter cannot provide; an empty
+unsupported array does not prove observed absence.
+Evidence and bundle imports reject unsupported fields in their envelopes,
+identities, manifests and other fixed metadata before authentication. Imports
+leave retained session state unchanged when validation fails. Keep application
+metadata in the supported JSON payloads (`parameters`, `raw_result`,
+`normalized_result`, or analysis-profile parameters), where keys are preserved.
+
 Tool execution failures return `isError: true` and the complete canonical
 `{ "error": ... }` diagnostic as JSON in text `content`. Read that diagnostic
 for the error code, target details, partial observations, and remediation.
@@ -45,7 +96,7 @@ unresolved relationship reads. Cancellation remains a tool error.
 REA prepares complete MCP results within the pinned stdio client's 10 MiB
 receive-buffer budget, including both text and structured representations and
 room for the JSON-RPC envelope. Tool errors carry only their text
-representation, so only that text counts against the budget. Response budget settings are captured at startup;
+representation and `isError` flag, so only those count against the budget. Response budget settings are captured at startup;
 restart or recreate the server to apply changes. If a result cannot fit, REA returns
 `resource_constraint` with `details.resource: "transport"` before constructing
 a document-sized string. Analysis Evidence remains complete in the current
@@ -141,8 +192,9 @@ after target content was read.
 
 ## Retained application Evidence inputs
 
-`analyze_javascript_application`, `inspect_binary_layout`, `inspect_artifact`, and
-`inspect_wasm_artifact` accept `detail`:
+`analyze_javascript_application`, `inspect_binary_layout`, `inspect_artifact`,
+`inspect_wasm_artifact`, `inspect_macho`, and `decode_interface_builder`
+accept `detail`:
 `complete` (default) returns the complete analysis Evidence; `summary` records
 that complete Evidence in the session and returns the derived
 `inspect_analysis_view` summary Evidence instead. Its
@@ -212,6 +264,30 @@ attempting oversized delivery, and returns the same summary with an exact
 `parent_evidence_id` for later export or facet reads. Delivery detail does not
 reach WABT or change the original source Evidence ID.
 
+Completed `inspect_macho` Evidence supports a summary and
+`view: {kind: "macho", facet: "exports", offset: 0, limit: 64}`. Facets are
+`entrypoints`, `architectures`, `build_metadata`, `load_commands`,
+`dependencies`, `imports`, `exports`, `segments`, and `provenance`; pages return
+the original rows. The summary keeps the selected slice, header fields and UUID,
+and replaces each collection with its returned count, reported total and
+`exhaustive` flag. Each page repeats the paged collection's `source_total` and
+`source_exhaustive`; exhausting a non-exhaustive collection does not establish
+that unreturned symbols are absent. Large frameworks return megabytes of
+symbols (Electron Framework: 2.5 MB of imports and exports, 3.3 KB as a
+summary), so select `detail: "summary"` on the first call. Delivery detail
+never reaches the native tools or changes the source Evidence ID.
+
+Completed `decode_interface_builder` Evidence supports a summary and
+`view: {kind: "interface-builder", collection: "nodes", offset: 0, limit: 64}`.
+Collections are `documents`, `nodes`, `edges`, and `coverage`; for nodes and
+edges an optional `document` keeps rows whose evidence names that exact decoded
+`relative_path`, and an undecoded path is refused. The summary keeps every
+decoded document, the provider, node-kind, edge-relation and coverage-status
+counts, and whether the decoded graph is incomplete. Each page repeats
+`source_truncated`. A complete app graph often exceeds the default MCP response
+budget (XLD.app: 6.7 MB), so select `detail: "summary"` on the first call.
+Delivery detail never reaches the decoder or changes the source Evidence ID.
+
 `trace_application_feature`, `trace_javascript_semantics`,
 `compare_application_versions`, `compare_source_to_bundle`, and
 `compare_javascript_export_shapes` accept complete inline application Evidence
@@ -238,9 +314,11 @@ Evidence remain complete inline, and both input forms pass the same semantic,
 identity, authority, and provenance checks without running the producer again.
 
 References belong to the current connection's Evidence ledger. Opening another
-target preserves retained records; `close_binary` clears them, even when no
-binary is active. A fresh connection has its own ledger. A missing reference
-reports its exact ID and `details.reason: "missing"`; the server cannot infer
+target or restarting the current target preserves retained records, including
+when provider cleanup fails; records remain available for export and retry.
+`close_binary` clears them, even when no binary is active. A fresh connection
+has its own ledger. A missing reference reports its exact ID and
+`details.reason: "missing"`; the server cannot infer
 whether it was never recorded, cleared, or retained by another connection.
 Supply complete inline Evidence, repeat its producer, or import an exported
 Evidence bundle before referencing that imported record. Export a bundle before
@@ -439,6 +517,7 @@ These deadlines have different owners:
 | MCP initialize       | The client bounds transport/REA connection startup, before any target query.                                                                                                                                                        |
 | Hopper startup       | REA allows 120,000 ms by default; `REA_HOPPER_STARTUP_TIMEOUT_MS` accepts decimal integers from 1–2,147,483,647 ms. Invalid values fail configuration validation. Startup failure is reported by the first provider query.          |
 | Ghidra startup       | REA allows 330,000 ms by default; `REA_GHIDRA_STARTUP_TIMEOUT_MS` accepts decimal integers from 1–2,147,483,647 ms. Invalid supplied values fail configuration validation. Startup failure is reported by the first provider query. |
+| Darwin swiftc helper | REA allows 120,000 ms by default for ownership-helper compilation; `REA_SWIFTC_COMPILE_TIMEOUT_MS` accepts decimal integers from 1–2,147,483,647 ms. Invalid values fail configuration validation.                                  |
 | Individual tool call | The client bounds its wait, including cold engine startup. The pinned client SDK 2.3.1 defaults to 60,000 ms and can cancel earlier than REA's startup deadline.                                                                    |
 
 For an already connected client using the pinned SDK, request options are the
@@ -569,8 +648,12 @@ failures for such entries name this cause and the operation to rerun with
 
 Advertised input and output schemas contain no reachable recursive references.
 Schemas share repeated definitions through schema-local references while
-preserving complete nested fields and validation rules. Input properties retain
-their descriptions and literal examples.
+preserving complete nested fields and validation rules. Input schemas whose
+shared definitions would exhaust a client's declaration-rendering reference
+budget (Pi 1.1.0 code-mode shares 32 reference expansions across an input and
+renders every later reference as `unknown`) are re-projected without shared
+definitions, so every advertised field renders with complete structure.
+Input properties retain their descriptions and literal examples.
 
 When a host forwards input schemas to the model, their examples consume context.
 REA's advertised examples therefore never copy complete producer Evidence.
@@ -600,7 +683,13 @@ advertised input schema within a 13,312-byte budget, measured to sit below
 Moonshot's observed cap (community measurements: a 13.7 KB schema is accepted
 while a ~15 KB one is rejected). The setting is read at startup; restart the
 server to apply changes, as with `REA_MCP_MAX_RESPONSE_BYTES`. The default
-value `full` keeps the complete advertisement unchanged.
+value `full` keeps the complete advertisement unchanged. Compact presentation
+also reduces schemas whose expanded JSON tree exceeds ten levels, the limit
+reported by strict-depth MCP clients in [#2813](https://github.com/morluto/rea/issues/2813).
+WorkBuddy/CodeBuddy gateways have also rejected full REA catalogs with an
+opaque `11133` error while accepting the compact profile
+([#2999](https://github.com/morluto/rea/issues/2999)); compatibility depends on
+the selected gateway and model.
 
 The compact profile renders the same tool set, output schemas, annotations,
 and canonical server-side validation. It changes only the advertised input
@@ -617,7 +706,7 @@ JSON Schema:
   objects or arrays.
 - The few schemas whose validation structure alone exceeds the budget
   (`compare_web_captures`, `build_reconstruction_obligation_ledger`,
-  `evaluate_reconstruction_coverage`, `project_managed_application_graph`,
+  `evaluate_reconstruction_coverage`,
   `compare_application_versions`, `capture_browser_scenario`) are advertised
   in a reduced form: property names, reference-resolved types (including union
   alternatives), first-level guidance, and the root's required-field constraints,
@@ -625,10 +714,12 @@ JSON Schema:
   canonical schema still rejects malformed calls server-side, so callers
   following the reduced advertisement receive the canonical typed error
   instead of silent acceptance.
+- Schemas deeper than ten nodes use the same reduced projection, with
+  root-property names, types, guidance, and required fields retained. The
+  server continues to enforce the full canonical input contract.
 
 Boundary tests pin every advertised compact schema to the budget, keep them
-valid JSON Schema that still accepts every canonical example, and hold the
-set of six reduced presentations as contracts evolve. Client verification
+valid JSON Schema that still accepts every canonical example. Client verification
 also checks provider-facing sizes and canonical examples after conversion by
 the actual Kimi Code CLI; local captures do not establish Moonshot acceptance.
 
@@ -640,6 +731,30 @@ catalog refreshes and equivalent tool outputs; changing the schema changes its
 identity. Explicit schema IDs and relative external reference bases are
 preserved. This keeps every tool and validation rule in discovery and does not
 change the SDK's catalog invalidation or availability checks.
+
+Some stdio hosts reject a complete `tools/list` frame before they load any
+tools. The opt-in `REA_MCP_OUTPUT_SCHEMA_PROFILE=off` setting omits `outputSchema`
+from the advertised catalog for hosts with a small frame limit (the measured
+pi-web-ui failure and catalog breakdown are in [#2512](https://github.com/morluto/rea/issues/2512)).
+The default `full` profile is unchanged. With `off`, REA validates successful
+structured results against the same named canonical tool contract before
+delivery; it still returns complete `structuredContent` and text results.
+Only client-side schema discovery and validation are omitted, so hosts using
+this profile should rely on REA's validation and retain their usual response
+size limits.
+
+### Function comparison limitations
+
+`compare_functions` compares the `pseudocode` and `assembly` dimensions as
+exact provider text. A `changed` status establishes a textual difference, not a
+behavior change. Addresses and generated names are not normalized, so relocated
+labels can change these dimensions while `cfg` remains unchanged. Both text
+dimensions carry this limitation inline. Numeric constants remain part of the
+exact comparison. Reconstruction verification and static/runtime correlation
+retain limitations from the selected dimension; an overall function claim
+includes all dimension limitations. Equal CFGs establish only equal observed
+block sizes and successor relationships. Text from different provider
+identities remains unknown.
 
 ### Comparison input shapes
 

@@ -1,6 +1,8 @@
 ---
 name: "omh-context-budget-review"
 description: "[omh] Context window or token budget at risk: plan compact context, token/cost budgets, summarization checkpoints, and overflow recovery before long agent work. Use when the user says: context-budget-review, context budget review, context budget, token budget review, token budget, prompt budget, prompt caching, prompt cache."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, observability]
@@ -8,6 +10,7 @@ metadata:
     phase: context-budget-review
     role: tracker
     quality_tier: context-budget-gated
+    related_skills: [ulw-loop]
 ---
 
 # Context Budget Review
@@ -20,8 +23,8 @@ This is a Hermes-native `context-budget-review` workflow skill.
 
 ## Do Not Use When
 
-- The user asks for live token/cost telemetry; use `ops-observability-card`.
-- The user asks to continue a loopable goal; use `loop` unless budget planning is the explicit blocker.
+- The user asks only what this Hermes session has used or cost so far; Hermes' /usage shows this session's tokens and context, /insights estimates cost across recent sessions, and the omh_run_summary tool relays this conversation's recorded tokens and cost.
+- The user asks to continue a loopable goal; use `ulw-loop` unless budget planning is the explicit blocker.
 - The task is a short one-step answer with no meaningful context risk.
 
 ## Examples
@@ -51,11 +54,11 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+39 more`) - schedules, status, health, and ops review.
+- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+40 more`) - schedules, status, health, and ops review.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use before long-running research, coding, review, or multi-agent work when context, token, cost, or summary drift could break quality.
 
@@ -77,6 +80,8 @@ Quality bar:
 - Use bounded copy while preserving the full objective and evidence gaps.
 - Count the must-keep pack by item class, so a replaced pack reports which class lost entries instead of only that a digest moved; a pack that recorded no classes reports the comparison unavailable and never reports zero items.
 - Keep prompt-prefix placement cache-stable: fixed section order, volatile bytes never above the fold, mid-run changes as appended messages never system-prompt mutations — load `references/cache-placement.md` for the placement rules.
+- On Hermes, bind the summarization checkpoint to Hermes' own compaction: render the must-keep classes as one short focus topic and hand the person `/compress <focus>` to run when the checkpoint is due. OMH never compresses, and a compaction is observed only from Hermes' own reply to that command.
+- On Hermes, offer `/compress --preview <focus>` only in the classic CLI or on a messaging platform, never when the surface is unknown, and count it as a preview only when the reply says `Preview — no changes made.`: a modern TUI whose `/compress` does not parse the flag compresses for real with the flag in its focus. Context occupancy is the person's `/usage` reading when shared, otherwise an estimate.
 
 Handoff policy:
 
@@ -134,4 +139,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

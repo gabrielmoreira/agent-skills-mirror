@@ -32,6 +32,7 @@ A row is `observed` only when a run record exists. "It should pass", "CI will ru
 - `Not-tested:` lists every `not_observed` row with its reason. An empty `Not-tested:` is a claim that nothing was skipped; write it only when that is true.
 - A checkbox in a PR template is checked only for an `observed` row.
 - CI state, review state, and merge state are stated only when observed; otherwise say which of them has not happened yet.
+- A subject prefix that claims a state (`[verified]`, `[reviewed]`, `[tested]`) is one more projection. It needs two things: the recent log uses that prefix, and the ledger holds the `observed` row it claims, which for a review is the reviewer's own verdict, not the author's. Missing either, leave it off. It is never a default, and a prefix on an earlier commit says nothing about this one.
 
 ## 4. Subject and body
 
@@ -48,3 +49,11 @@ A row is `observed` only when a run record exists. "It should pass", "CI will ru
 | Evidence trailers | `Tested:`, `Not-tested:` | projected from the ledger, never written freehand |
 
 Never add attribution lines the repository forbids, and never put credentials, tokens, private URLs, or raw transcripts in either text.
+
+## 6. What the commit covers
+
+The draft ends with the list of paths the message describes, read from the diff it was written against. Whoever records the commit stages those paths by name.
+
+- Never write or recommend `git add -A` or `git add .`. Either one stages every dirty file in the tree, so a file the user was editing for another reason lands in a commit whose message never mentions it.
+- A path that is dirty and not on the list is reported as left out, with the reason; it is not staged to make the tree clean.
+- A generated file belongs on the list beside the source that produced it, or the commit records half of one change.

@@ -1,7 +1,7 @@
 ---
 title: Construct agreements
 applicability:
-- When the work depends on whether a source's constructs agree with one another
+- When the work depends on a decision about what Degardis source contains
 ---
 
 Treat agreements among constructs as their own surface, kept in re-readable working state. Generate this surface wherever one construct's correctness depends on another, including every field or kind exposed by the effective format, and at least:

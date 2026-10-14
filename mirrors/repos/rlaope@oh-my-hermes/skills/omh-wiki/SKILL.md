@@ -1,6 +1,8 @@
 ---
 name: "omh-wiki"
 description: "[omh] Scattered knowledge needing a wiki: wiki construction blueprints and retained knowledge capture with destination-aware external knowledge connection guidance. Use when the user says: wiki, project wiki, build a wiki, start a wiki, organize my notes, external knowledge store, knowledge base, Obsidian."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, knowledge]
@@ -8,6 +10,7 @@ metadata:
     phase: design-and-capture
     role: memory-keeper
     quality_tier: knowledge-gated
+    related_skills: [llm-wiki]
 ---
 
 # Wiki
@@ -22,6 +25,7 @@ This is a Hermes-native `wiki` workflow skill.
 
 - The request is casual chat, a status-only acknowledgement, or another workflow has stronger routing evidence.
 - The user needs implementation, review, CI, merge, or external publishing evidence that has not been delegated or observed.
+- The user wants the agent to ingest sources into, query, or lint an interlinked markdown knowledge base it maintains itself in the Karpathy LLM Wiki pattern; load Hermes' bundled `llm-wiki` skill instead of this one.
 
 ## Examples
 
@@ -58,7 +62,7 @@ Bad example:
 
 - Current lane: **Retained knowledge** (`memory-new`, `memory-sync`, `decision-recall`, `wiki`) - memory, rejected alternatives, wiki notes, retrieval, and staleness.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
 ## Design Interview
 
@@ -72,9 +76,9 @@ When work finishes, the capture for the next reader is three artifacts: a deep g
 
 ## Boundary
 
-A `wiki_blueprint/v1` is prepared design context, not evidence that a store was created, written to, or migrated. OMH does not host the wiki; the user's own store does.
+A `wiki_blueprint/v1` is a prepared design artifact, not evidence that a store was created, written to, or migrated. OMH does not host the wiki; the user's own store does.
 
-## Use When
+## When to Use
 
 Use to design a wiki someone can start today - model, skeleton, conventions, seed pages, and maintenance sized to a personal, small-group, team, or organization audience - and to capture durable knowledge into markdown vaults, Obsidian, Notion, Google Drive/Docs, databases, or local folders.
 
@@ -144,4 +148,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

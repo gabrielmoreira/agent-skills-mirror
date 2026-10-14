@@ -1,6 +1,7 @@
 ---
 name: "omh-decision-prototype"
 description: "[omh] Uncertain technical choice for a spike: bounded decision prototype workflow: resolve one uncertain interaction, API, performance, or integration choice with a disposable, isolated experiment whose observed result feeds planning. Use when the user says: decision-prototype, decision prototype, prototype this uncertain choice before planning, prototype before planning, prototype the uncertain choice, run a small spike, small spike, spike solution."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -20,13 +21,13 @@ This is an OMH `decision-prototype` workflow skill, projected for Agent Skills h
 
 ## Do Not Use When
 
-- $context is the explicit-only route for a repository terminology or product decision frontier (`context`); preference or policy decisions that behavior cannot test stay with `deep-interview`.
-- $context is the explicit-only route for unresolved repository terminology or project language (`context`); hand only an empirical decision here.
-- The decision is already made and the request is an implementation plan with acceptance criteria; use `ralplan` and consume the decision receipt there.
-- The user wants the feature built, reviewed, or shipped rather than one question answered; use `ultrawork` after an accepted plan.
-- The request is UI creation, redesign, or polish of a real surface rather than a throwaway wireframe that answers one interaction question; use `frontend`.
-- The request is a premium content, layout, or visual quality gate on deliverables; use `design-quality-gate`.
-- The uncertainty is whether customers have the problem or would adopt the solution, which needs customer evidence rather than a technical or interaction spike; use `product-discovery-validation`.
+- $context is the explicit-only route for a repository terminology or product decision frontier (`ulw-context`); preference or policy decisions that behavior cannot test stay with `ulw-interview`.
+- $context is the explicit-only route for unresolved repository terminology or project language (`ulw-context`); hand only an empirical decision here.
+- The decision is already made and the request is an implementation plan with acceptance criteria; use `ulw-plan` and consume the decision receipt there.
+- The user wants the feature built, reviewed, or shipped rather than one question answered; use `ulw-work` after an accepted plan.
+- The request is UI creation, redesign, or polish of a real surface rather than a throwaway wireframe that answers one interaction question; use `omh-frontend`.
+- The request is a premium content, layout, or visual quality gate on deliverables; use `omh-design-quality-gate`.
+- The uncertainty is whether customers have the problem or would adopt the solution, which needs customer evidence rather than a technical or interaction spike; use `omh-product-discovery-validation`.
 - The request needs QA certification, production-readiness evidence, or a performance baseline for release; prototype results do not generalize beyond their declared fixture and environment.
 
 ## Examples
@@ -64,7 +65,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when discussion cannot settle one interaction, API, performance, or integration choice and a cheap reversible experiment can answer it before planning; refuse unbounded or multi-feature experiments and ask for or derive one falsifiable decision question.
 

@@ -35,4 +35,4 @@ belong to TinyChannels.
 - [Operation tests](./ops_tests.rs)
 - [Schema tests](./schemas_tests.rs)
 - [Channels overview](../README.md)
-- [Messaging channels](../../../../../gitbooks/features/channels.md)
+- [Messaging channels](../../../../../docs/gitbooks/en/features/channels.md)

@@ -1,6 +1,7 @@
 ---
 name: "omh-codegraph-refresh"
 description: "[omh] Outdated code index or codemap: refresh local code intelligence, summarize repo structure, and prepare task-scoped codegraph handoff context without overclaiming execution. Use when the user says: codegraph-refresh, codegraph refresh, refresh codegraph, update codegraph, codegraph stale, stale codegraph, codegraph handoff, codegraph summary."
+license: MIT
 compatibility: "Requires the omh CLI on PATH (pip install oh-my-hermes)."
 metadata:
   hermes:
@@ -21,9 +22,9 @@ This is an OMH `codegraph-refresh` workflow skill, projected for Agent Skills ho
 
 ## Do Not Use When
 
-- The user needs a narrative first-read tour of an unfamiliar repo; use `codebase-onboarding`.
-- The user already has accepted implementation criteria and wants code changes; use `ultrawork` or a coding handoff.
-- The user asks for visual, frontend, or rendered UI QA; use `frontend`, `design-quality-gate`, or `visual-qa`.
+- The user needs a narrative first-read tour of an unfamiliar repo; use `omh-codebase-onboarding`.
+- The user already has accepted implementation criteria and wants code changes; use `ulw-work` or a coding handoff.
+- The user asks for visual, frontend, or rendered UI QA; use `omh-frontend`, `omh-design-quality-gate`, or `omh-visual-qa`.
 
 ## Examples
 
@@ -54,7 +55,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes should refresh or summarize local repo code intelligence before planning, handoff, review, or implementation.
 

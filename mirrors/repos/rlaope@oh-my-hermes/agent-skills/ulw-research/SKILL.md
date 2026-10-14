@@ -1,6 +1,7 @@
 ---
 name: "ulw-research"
 description: "[omh] Deep dive before a decision: deep research engine - grounding for specs and decisions: study open-source reference implementations with pinned refs, gather live web evidence with citation discipline, verify contested claims, and distill a decision-grounding dossier that planning consumes; for a decision brief use research-brief, for upstream guidance use web-research. Use when the user says: research plan, literature review, research literature, review recent papers, deep research, deep-research, exhaustive research, saturation research."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, research]
@@ -18,16 +19,20 @@ This is an OMH `research` workflow skill, projected for Agent Skills hosts (Clau
 
 `research` exists to make the host a careful research engine: it routes research demands to source-backed evidence gathering - from live web citations to studied reference implementations - verifies contested claims, and distills decision-grounding output so planning starts from evidence instead of guesses.
 
+## First Steps
+
+- When Hermes' bundled `grounded-citations` skill is available, set the citation ledger up before the first retrieval: choose one ledger file for the run, have the parent reset it once (`sources.py --ledger <path> reset`), and put the script's absolute path and that ledger path in every delegated lane's brief. No lane resets it.
+
 ## Do Not Use When
 
-- The user asks for a full plan-to-PR delivery cycle; use `ultrawork` (its `delivery_boundary` capability) or a planning workflow after research instead.
+- The user asks for a full plan-to-PR delivery cycle; use `ulw-work` (its `delivery_boundary` capability) or a planning workflow after research instead.
 - The request is purely local repo inspection with no external, current, citation, or source-comparison need.
-- The study target is this repository itself rather than external references; use `codebase-onboarding`.
+- The study target is this repository itself rather than external references; use `omh-codebase-onboarding`.
 - The user needs coding execution, review, CI, or merge evidence rather than research synthesis.
-- The requested output is a typed candidate list or acquisition status without factual synthesis; use `source-finder`.
-- The user needs a market, customer, or pricing decision brief with evidence-versus-inference treatment; use `research-brief`.
-- The user asks for recurring monitoring, a source inbox, or Scout/Analyst/Briefer operations; use `research-department`.
-- One cited retrieval round settles the question and no reference implementation needs reading; use `web-research`.
+- The requested output is a typed candidate list or acquisition status without factual synthesis; use `omh-source-finder`.
+- The user needs a market, customer, or pricing decision brief with evidence-versus-inference treatment; use `omh-research-brief`.
+- The user asks for recurring monitoring, a source inbox, or Scout/Analyst/Briefer operations; use `omh-research-department`.
+- One cited retrieval round settles the question and no reference implementation needs reading; use `omh-web-research`.
 
 ## Examples
 
@@ -48,6 +53,7 @@ Bad example:
 - The research question, source boundaries, recency assumptions, and confidence level are named.
 - Observed sources, inference, synthesis, and unresolved retrieval gaps are separated.
 - Follow-up planning or handoff uses the research summary without calling it execution evidence.
+- When a human briefing was written, the citation check is reported from an observed ledger verify run that cited at least one source, or as `not_observed`; it never stands in for the contested-claim gate.
 
 ## Recovery Notes
 
@@ -61,7 +67,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use for research before planning, deciding, or handoff - from current web evidence and citations to exhaustive grounding with studied reference implementations and verified contested claims.
 
@@ -84,6 +90,7 @@ Quality bar:
 - Revise the search plan when new evidence exposes a gap or contradiction instead of stopping at the first pass.
 - Gate contested claims: require at least two independent source domains, one counter-search for disconfirming evidence, and a primary source, or move the claim to the unresolved annex.
 - Separate direct evidence, citation links, retrieval dates, inference, confidence, and residual uncertainty.
+- When Hermes' bundled `grounded-citations` skill is available, load it and register every source in its ledger when it is retrieved (`scripts/sources.py add`). Use one ledger file for the run, passed as `--ledger <path>` before the subcommand on every call, never the profile-wide default that another run can reset; the parent resets that file once before the first wave and no lane resets it, so an id names the same source in every lane's findings. A delegated lane gets terminal, file, and web tools by default and cannot load the skill, so its brief carries the script's absolute path and the ledger path. When a human briefing is written, report the exit status of `sources.py verify <draft>` as the observed citation check - `0` is a pass and any other status is not, and `--evidence` also fails a draft whose cited source carries no verbatim quote - or report `not_observed` when no run happened or when the `info: stats:` line of an exit `0` reads `0 distinct source(s) cited`, which means the run checked nothing. It is a citation check, not fact verification, and it never stands in for the contested-claim gate. Without the skill, keep each source's URL and retrieval date in the research notes and report the citation check as `not_observed`.
 - Name retrieval gaps when Hermes or the wrapper cannot access the web.
 - For AI or usability research, separate target-user/task assumptions, measured or reported usability dimensions, and generalizability limits from the evidence.
 - Decompose the question into orthogonal research axes and disambiguate named entities before any deep reading.

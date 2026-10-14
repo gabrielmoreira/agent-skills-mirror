@@ -1,6 +1,8 @@
 ---
 name: "omh-agent-board"
 description: "[omh] Coordinating several agents or profiles: coordinate multiple Hermes profiles or agents with task, handoff, heartbeat, blocker, and completion states. Use when the user says: agent-board, agent board, kanban, multi-agent, multi agent, multi agent board, multiple hermes agents, multiple hermes profiles."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, agent-coordination]
@@ -8,6 +10,7 @@ metadata:
     phase: board-status
     role: tracker
     quality_tier: workflow-surface-gated
+    related_skills: [sdlc-review]
 ---
 
 # Agent Board
@@ -24,6 +27,7 @@ This is a Hermes-native `agent-board` workflow skill.
 - The user asks OMH to secretly run external platforms, connectors, schedulers, file exports, or runtime agents.
 - The only safe answer is to ask for missing authority, credentials, target, or observed evidence first.
 - A multi-lane implementation of an accepted plan is ultrawork, which prepares its durable lanes through this board.
+- The turn is a Kanban worker that the review dispatcher started on a review-lane task to verify a review-requested handoff; that worker loads Hermes' bundled `sdlc-review` skill, not this one.
 
 ## Examples
 
@@ -54,11 +58,11 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+39 more`) - schedules, status, health, and ops review.
+- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+40 more`) - schedules, status, health, and ops review.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when multiple Hermes profiles, agents, or targets need a board-shaped status contract for collaborative work.
 
@@ -122,4 +126,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

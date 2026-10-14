@@ -50,7 +50,7 @@ A row in `review` is a request (the observed fact is `review_requested`), and a 
 - One `kanban_list` per turn boundary scoped by `assignee` or `status`, one `kanban_show` per row that changed, no polling.
 - Each probe's `result` is the worker's report, bounded and labelled by the readback pass, and quoted as such in the closing brief: `probe <title> reported: <result>`. The main session never restates a probe result as its own observation.
 - Pass/fail evidence stays separate from proposed fixes, as the in-session QA discipline already requires; the fixer row is a proposed fix until it is re-verified.
-- One `omh_todo` item per open row, updated from the readback pass and from nothing else.
+- One item per open row in the plan's one checklist tool (`todo_list` or `omh_todo`, never both), updated from the readback pass and from nothing else.
 
 ## Cleanup
 

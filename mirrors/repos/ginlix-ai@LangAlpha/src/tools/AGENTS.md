@@ -132,8 +132,8 @@ belongs there once. If it follows from what *this* tool returns, it belongs here
 Returns:
     A task ID immediately, not the subagent's work.
 
-Keep working; the report arrives through TaskOutput once the task is named
-in a completion notification.
+You are notified when the task finishes. TaskOutput then returns its
+result.
 ```
 
 **Placement differs by surface, and on the MCP side it is not cosmetic.**

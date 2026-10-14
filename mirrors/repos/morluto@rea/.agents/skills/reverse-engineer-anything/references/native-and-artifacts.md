@@ -11,6 +11,18 @@ unparsed module-text line. A missing record is an unknown, not proof of a
 non-Go binary; observed metadata does not authenticate its claims. Function,
 source and type recovery remain a separate native-analysis question.
 
+## Rust dependency metadata
+
+Use `inspect_rust_binary` for an explicit local ELF, PE, or thin Mach-O when
+the question concerns the cargo-auditable crate list embedded in `.dep-v0`
+(Mach-O: `__DATA,.dep-v0`). No `open_binary`, Rust installation, or target
+execution is required. The CLI equivalent is `inspect-rust-binary PATH`.
+Preserve artifact SHA-256, package order, dependency indices, and the section
+file range. A missing section is null metadata, not proof the binary has no
+dependencies. An omitted package kind stays null. A rustc commit hash is
+inferred from a read-only `/rustc/<40-hex>/` path and does not by itself
+identify the compiler. See [Rust binaries](https://github.com/morluto/rea/blob/main/docs/rust-binaries.md).
+
 ## SQLite snapshots
 
 Use `inspect_sqlite_database` with an explicit local database snapshot for its
@@ -83,6 +95,14 @@ names, the native API record, and value-flow summaries. Pseudocode offsets and l
 code units; use the returned `next_offset` for continuation. Provider limitations
 and unavailable facts remain explicit; the complete parent Evidence is retained.
 
+`inspect_macho` on a large framework returns megabytes of imports and exports.
+Select `detail: "summary"` for slice identity, UUID and per-collection counts,
+then page rows with `view: {kind: "macho", facet: "exports", offset: 0, limit: 64}`
+and `normalized_result.parent_evidence_id`. Facets are entrypoints,
+architectures, build_metadata, load_commands, dependencies, imports, exports,
+segments and provenance. `source_exhaustive: false` means unreturned symbols
+may exist.
+
 To see which functions or Objective-C methods a Mach-O actually calls in one
 run, use `observe_native_calls` with explicit breakpoints and a bounded
 `duration_ms`/`max_events`. It launches a new process under LLDB, so the target
@@ -110,6 +130,8 @@ For an admitted DOS MZ target, use `inspect_native_load_image` to check measured
 loaded bytes, file mappings, relocations and the entry against the immutable
 snapshot. Keep `mismatch` and `unsupported` explicit. Verified import covers the
 reported static image, not runtime DOS or PC-98 hardware behavior.
+
+For Ghidra decompilation, `procedure_pseudo_code` also accepts `procedure: "file-offset:0x..."`; CLI `rea decompile <path> --file-offset=0x... --provider ghidra` resolves the source byte offset internally. An unresolved 0x-prefixed numeric procedure selector also falls back to a unique file mapping. Existing symbols and analysis addresses win; multiple mappings fail as ambiguous. Preserve the returned file-offset and address locations and raw selection observations. ELF virtual addresses are distinct from file offsets; never assume an arbitrary offset plus image base is an analysis address.
 
 Use `read_bytes` for initialized analysis memory and `address_to_file_offset` to
 anchor one observed address to original file bytes. Loader fixups can change a
@@ -165,7 +187,9 @@ additional evidence only when the provider accepts and matches them.
 REA has a built-in read-only snapshot parser for x64 PE targets with .NET 8 RTR
 9.1 metadata. An optional headless Ghidra adapter adds database annotations and
 broader metadata recovery on Linux; it requires an explicitly configured
-NativeAOT JAR. These are separate routes. See the
+NativeAOT JAR. These are separate routes. The built-in parser also runs on
+Windows Ghidra P0; read frozen literals from its report, because
+`search_strings` does not include them. See the
 [NativeAOT guide](https://github.com/morluto/rea/blob/main/docs/ghidra-nativeaot.md)
 for setup, supported layouts, and host restrictions. Preserve binary identity
 and distinguish derived metadata from Ghidra database observations. Recovered
@@ -194,8 +218,9 @@ every executable in the bundle. It also lists missing or weak loads and earlier
 `architecture`. System paths stay undetermined because the dyld shared cache
 provides them.
 
-Use `extract_artifact` when materialized files are needed. It takes no arguments
-and materializes all regular files into a fresh temporary directory chosen by
+Use `extract_artifact` when materialized files are needed. It extracts the active
+target and accepts optional `integrity_policy`; see the [MCP contracts](https://github.com/morluto/rea/blob/main/docs/mcp-contracts.md).
+It materializes all regular files into a fresh temporary directory chosen by
 REA. Symlinks and encrypted entries are inventory facts, not extractable files.
 The result reports the materialized directory; callers do not choose the
 destination. No separate permission grant is needed.
@@ -213,10 +238,13 @@ context. PSP/stack/device state remains unmodeled. See [DOS guide](https://githu
 
 For other headerless images (embedded firmware without ELF/Mach-O/PE/MZ
 headers), open with `format: "raw-binary"`, `architecture` (`x86`, `x86_64`,
-`arm`, or `arm64`), and `entry_point` (`0x` hex). File offset 0 is mapped at
+`arm`, `arm64`, or `6502`), and `entry_point` (`0x` hex). File offset 0 is mapped at
 that address. Hopper and IDA refuse this interpretation; Ghidra uses
 `BinaryLoader` with a little-endian generic language. Big-endian, Thumb-only,
-and Cortex-M variants are unsupported. See [raw binary guide](https://github.com/morluto/rea/blob/main/docs/raw-binary.md).
+and Cortex-M variants are unsupported. `6502` selects NMOS 6502; the entry and
+complete file mapping must fit within `0x0000..0xffff`. 65C02, 65816, cartridge
+containers, bank switching, and mapper semantics are unsupported. Windows
+Ghidra P0 admits raw images only for `6502`. See [raw binary guide](https://github.com/morluto/rea/blob/main/docs/raw-binary.md).
 
 ### Function annotations in Ghidra
 
@@ -233,3 +261,9 @@ resolution is explicit; missing references and size mismatch remain visible.
 Other payloads are opaque, and this operation does not decode images or simulate
 Windows resource loading. Consult the budgets and supported tree profile in
 [offline binary diagnostics](https://github.com/morluto/rea/blob/main/docs/binary-diagnostics.md).
+
+For exact core-module import/export differences, use `compare_wasm_interfaces`
+with two complete inspection Evidence records (or current-session retained
+references) and explicit scope. Preserve unknown types/duplicate names; static
+interface equality is not runtime compatibility. CLI accepts complete inline
+Evidence in `rea compare-wasm-interfaces input.json --json`.

@@ -150,5 +150,5 @@ event.
 ## Further reading
 
 - [Parent module README](../README.md)
-- [Agent harness architecture](../../../../../gitbooks/developing/architecture/agent-harness.md)
-- [Chat](../../../../../gitbooks/features/chat.md)
+- [Agent harness architecture](../../../../../docs/gitbooks/en/developing/architecture/agent-harness.md)
+- [Chat](../../../../../docs/gitbooks/en/features/chat.md)

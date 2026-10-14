@@ -2,15 +2,16 @@
 
 This repo is a [Skills CLI](https://github.com/vercel-labs/skills) package of **delegation skills** —
 skills that let an orchestrating agent drive a separate CLI coding agent as an implementer, then review
-and land the result. Seventeen implementer skills ship today: `claude-delegate` (Claude Code),
+and land the result. Eighteen implementer skills ship today: `claude-delegate` (Claude Code),
 `cline-delegate` (Cline CLI), `codex-delegate` (OpenAI Codex), `opencode-delegate` (OpenCode),
 `agy-delegate` (Google Antigravity), `grok-delegate` (Grok Build), `kimi-delegate` (Kimi Code),
+`muse-delegate` (Muse Code),
 `qoder-delegate` (Qoder CLI), `vibe-delegate` (Mistral Vibe), `cursor-delegate` (Cursor Agent CLI),
 `pi-delegate` (Pi CLI), `omp-delegate` (Oh My Pi), `aider-delegate` (Aider), `copilot-delegate` (GitHub Copilot CLI),
 `warp-delegate` (Warp Agent CLI), `zcode-delegate` (Z.AI ZCode), and `commandcode-delegate` (Command Code); siblings like
 `gemini-delegate` can be added
-later without renaming the repo. One **utility** skill
-ships alongside them: `delegate-setup` (configure fleet lanes — setup only, never dispatches).
+later without renaming the repo. Two **utility** skills ship alongside them: `delegate-setup` (configure fleet lanes — setup only,
+never dispatches) and `codex-background` (Codex waiting boundary around registered existing relays).
 
 ## Vocabulary
 
@@ -21,7 +22,7 @@ jargon. Use these terms; don't invent synonyms.
 | --- | --- | --- |
 | **delegate** / **delegation** | the activity, and this skill family | "relay" (as the activity), "hand-off", "offload" |
 | **orchestrator** | the driving agent (Claude Code, …) | "controller", "driver" |
-| **implementer** | the separate agent (Claude, Cline, Codex, OpenCode, Antigravity, Grok, Kimi, Qoder, Vibe, Cursor, Pi, Oh My Pi, Aider, Copilot, Warp, ZCode, Command Code) | "worker", "sub-agent", "executor" |
+| **implementer** | the separate agent (Claude, Cline, Codex, OpenCode, Antigravity, Grok, Kimi, Muse, Qoder, Vibe, Cursor, Pi, Oh My Pi, Aider, Copilot, Warp, ZCode, Command Code) | "worker", "sub-agent", "executor" |
 | **brief** | the self-contained task spec sent to the implementer | "task file", "the prompt", "the spec" |
 | **gates** | the project's test/lint/build commands | "checks", "CI" |
 | **dispatch** | sending the brief to the implementer | "fire off", "kick off" |
@@ -30,9 +31,10 @@ jargon. Use these terms; don't invent synonyms.
 | **lane** | a named fleet binding: implementer + optional dials (`model`, `effort` / `variant`, …) | "route", "profile" |
 | **fleet** | the user's set of lanes (which CLI handles which kind of work) | — |
 | **setup skill** / `delegate-setup` | utility that discovers CLIs and writes the lane map after approval | a `*-delegate` skill |
-| `exec`, `sandbox`, `resume`, `session` | Codex's own terms — use verbatim | don't paraphrase them |
+| `exec`, `sandbox`, `resume`, `session`, `subagents` | Codex's own terms — use verbatim | don't paraphrase them; never use `subagents` as a generic synonym for implementer |
 | `-p` / `--print`, `--yolo` (`--dangerously-skip-permissions`), `--permission-mode` (`standard`/`plan`/`auto-accept`), `--tools-all`, `--resume`, `--continue`, `--effort`, `--max-turns` | Command Code's own terms — use verbatim when discussing `cmd` | never say Command Code has a sandbox, or a write-capable mode between withheld-tools and `--yolo`: `--permission-mode auto-accept` and `--tools-all` do not enable edits headlessly. Never call the binary "the cmd shell" |
 | `run`, `agent` (`build`/`plan`), `session` | OpenCode's own terms — use verbatim | "sandbox" (OpenCode has no sandbox enum; autonomy is the agent) |
+| `exec`, `sandbox`, `--json`, `--prompt-file`, `--session-id`, `--disable-approval`, `--disable-write`, `--disable-shell`, `--trust-workspace`, `--user-input-auto-resolve`, `--reasoning-effort`, `--provider` (`echo`/`meta`) | Muse's own terms — use verbatim when discussing `muse` | never call `--yolo` the default or a permission mode; `muse resume` is TUI-only and is never invoked; `--provider` is relay-only, not a fleet dial |
 | `project`, `conversation`, `model`, `permissions`, `sandbox`, `TUI`, `tasks`, `subagents` | Antigravity's own terms — use verbatim when discussing `agy` | don't use `subagents` as a generic synonym for implementer |
 | `session`, `sandbox` (`workspace`/`read-only`/`off`), `permission-mode`, `effort`, `streaming-json` | Grok Build's own terms — use verbatim when discussing `grok` | don't paraphrase them |
 | `session`, `--continue`, `model alias`, `auto permission mode`, `plan mode`, `--yolo` | Kimi Code's own terms — use verbatim when discussing `kimi` | don't paraphrase them |
@@ -54,7 +56,7 @@ version-neutral) everywhere except the README's "Verification status" list, wher
 version a run was made against is what makes the claim checkable; and claims that can't be verified
 ("verified" without a run → hedge or cut). Every
 CLI flag, field, and command in the docs must match the installed implementer CLI (`claude` /
-`cline` / `codex` / `opencode` / `agy` / `grok` / `kimi` / `qodercli` / `vibe` / `cursor-agent` / `pi` /
+`cline` / `codex` / `opencode` / `agy` / `grok` / `kimi` / `muse` / `qodercli` / `vibe` / `cursor-agent` / `pi` /
 `aider` / `copilot` / `oz` / `omp` / `zcode` / `cmd`) and the skill's `relay.mjs`.
 
 ## Conventions
@@ -62,10 +64,11 @@ CLI flag, field, and command in the docs must match the installed implementer CL
 - **One skill per directory** under `skills/<name>/`, each with a `SKILL.md` plus optional
   `references/` and `scripts/`. Implementer skills are named `<cli>-delegate` (the verb is the repo;
   the target agent is the skill name), mirroring `guard-skills` → `clean-code-guard`.
-- **Utility skills** (today: `delegate-setup`) are the exception to the implementer shape: they are
+- **Utility skills** (`delegate-setup` and `codex-background`) are the exception to the implementer shape: they are
   not `<cli>-delegate`, they do not ship `scripts/relay.mjs` or the four brief/dispatch/review/queue
-  references, and they never dispatch coding work. They still use Node built-ins only, no network of
-  their own, no credentials, no telemetry. Document any new utility in `CONTRIBUTING.md` and register
+  references. `delegate-setup` never dispatches coding work; `codex-background` hosts existing
+  registered relays without replacing implementer behavior. Their JavaScript uses Node built-ins only; background ownership also uses the bundled
+  OS helpers described below. No network of their own, credentials, or telemetry. Document any new utility in `CONTRIBUTING.md` and register
   it in `skills.sh.json` and the smoke suite's utility carve-out.
 - **`SKILL.md` frontmatter:** `name` (must equal the directory), `description`, and optionally
   `license`, `compatibility`, `metadata.version`, `allowed-tools`. The **`description` is the only
@@ -81,8 +84,16 @@ CLI flag, field, and command in the docs must match the installed implementer CL
   when needed.
 - **Executables:** keep them minimal and inspectable. Each `*-delegate` skill has one
   `scripts/relay.mjs`. Utility skills may ship other scripts (e.g. `discover.mjs`, `config.mjs`) under
-  the same trust line: Node built-ins only, no dependencies, no network calls of their own, no
-  credentials, no telemetry. The README's trust section must stay accurate.
+  the same trust line: JavaScript uses Node built-ins only, no package dependencies, no network calls of their own, no
+  credentials, no telemetry. codex-background uses a provider-independent ownership supervisor:
+  a bundled C subreaper compiled with /usr/bin/cc on Linux and an inbox PowerShell/C# helper
+  calling kernel job APIs on Windows. Other hosts fail setup explicitly. No
+  external packages, global policy changes, executable discovery or stale-PID adoption.
+  Its `bootstrap.mjs` (run by the user or by Codex on first use) is the only script that writes outside
+  the skill: `$CODEX_HOME/config.toml` (managed block plus the `code_mode` namespace entry, backed up
+  first) and `$CODEX_HOME/codex-background/`. It registers only `<key>-delegate` siblings found in the
+  installed skills directory — no PATH scan — and its tests use temporary homes only.
+  The README's trust section must stay accurate.
 
 ## Before publishing a change
 
@@ -97,14 +108,17 @@ CLI flag, field, and command in the docs must match the installed implementer CL
   The `claude` and `cursor-agent` launches serialize a pre-joined
   command string through the shell on win32 for the same shim reason; `agy`, `kimi`, current
   `qodercli`, `vibe`, `aider`, `oz`, and `omp` installs use native binaries (pip puts a real `aider.exe` in
-  Scripts, so that launch needs no `shell:true`). The `oz` launch must never gain a shell on any
+  Scripts, so that launch needs no `shell:true`). `muse` is a bash launcher that execs a native
+  binary (upstream's launcher is Darwin/Linux only) and is still registered in the Windows contract
+  matrix as a compiled fake; never give `muse exec` a shell — the brief is `--prompt-file` and
+  `--workspace` is an argv value. The `oz` launch must never gain a shell on any
   platform: `oz agent run` takes the brief as its `--prompt` argv value (its `-f/--file` config path
   does not satisfy the required prompt group), and a shell would reinterpret that text. `zcode` is resolved rather than assumed — `--zcode-path`/`ZCODE_CLI`, then PATH, then the
   desktop app's bundled `zcode.cjs` — so it takes `shell:true` only when it resolved to a
   `.cmd`/`.bat` shim, never for a `node <bundle>` launch. Each changed
   launch still needs its own Windows smoke before claiming support. Upstream Vibe works on Windows
   but officially supports and targets UNIX; this repository's native Windows Cline stdin launch and
-  Vibe relay launch are unverified.
+  Vibe relay launch are unverified. Muse's upstream launcher is UNIX-only.
 - Keep the README's "Verification status" honest — claim only what's been run.
 
 ## Local Claude Code config

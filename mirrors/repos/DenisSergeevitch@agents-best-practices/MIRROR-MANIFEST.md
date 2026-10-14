@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `DenisSergeevitch/agents-best-practices` — 26 default patterns, 24 followed patterns, 25 file(s) materialized.
+Mirror of `DenisSergeevitch/agents-best-practices` — 26 default patterns, 25 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `DenisSergeevitch/agents-best-practices` — 26 default patterns, 24 f
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 24 |
-| Files         | 25 |
+| Followed pats | 25 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,6 +54,7 @@ Mirror of `DenisSergeevitch/agents-best-practices` — 26 default patterns, 24 f
 - `references/mvp-agent-blueprint.md`
 - `references/hardware-agents.md`
 - `references/environment-adaptive-tools.md`
+- `references/realtime-voice-agents.md`
 - `references/always-on-agents.md`
 - `references/self-refining-recursive-harnesses.md`
 - `references/adaptive-agent-teams.md`
@@ -99,14 +100,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | → | [`references/planning-and-goals.md`](references/planning-and-goals.md) |
 | 16 | → | [`references/prompt-caching-and-cost.md`](references/prompt-caching-and-cost.md) |
 | 17 | → | [`references/provider-api-patterns.md`](references/provider-api-patterns.md) |
-| 18 | → | [`references/security-observability.md`](references/security-observability.md) |
-| 19 | → | [`references/self-refining-recursive-harnesses.md`](references/self-refining-recursive-harnesses.md) |
-| 20 | → | [`references/skills-and-connectors.md`](references/skills-and-connectors.md) |
-| 21 | → | [`references/source-links.md`](references/source-links.md) |
-| 22 | → | [`references/speculative-tool-execution.md`](references/speculative-tool-execution.md) |
-| 23 | → | [`references/system-prompts-instructions.md`](references/system-prompts-instructions.md) |
-| 24 | → | [`references/tools-and-permissions.md`](references/tools-and-permissions.md) |
-| 25 | → | [`references/workflow-orchestration.md`](references/workflow-orchestration.md) |
+| 18 | → | [`references/realtime-voice-agents.md`](references/realtime-voice-agents.md) |
+| 19 | → | [`references/security-observability.md`](references/security-observability.md) |
+| 20 | → | [`references/self-refining-recursive-harnesses.md`](references/self-refining-recursive-harnesses.md) |
+| 21 | → | [`references/skills-and-connectors.md`](references/skills-and-connectors.md) |
+| 22 | → | [`references/source-links.md`](references/source-links.md) |
+| 23 | → | [`references/speculative-tool-execution.md`](references/speculative-tool-execution.md) |
+| 24 | → | [`references/system-prompts-instructions.md`](references/system-prompts-instructions.md) |
+| 25 | → | [`references/tools-and-permissions.md`](references/tools-and-permissions.md) |
+| 26 | → | [`references/workflow-orchestration.md`](references/workflow-orchestration.md) |
 
 ---
 

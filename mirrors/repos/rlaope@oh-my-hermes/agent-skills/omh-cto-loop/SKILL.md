@@ -1,6 +1,7 @@
 ---
 name: "omh-cto-loop"
 description: "[omh] Engineering leadership over roadmap and risk: roadmap, PM, technical tradeoffs, risk, delivery, release, and follow-up operating cadence. Use when the user says: cto-loop, cto loop, cto, cto pm, pm dev qa security ops, roadmap technical tradeoffs, technical tradeoff, delivery risk."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, leadership]
@@ -20,7 +21,7 @@ This is an OMH `cto-loop` workflow skill, projected for Agent Skills hosts (Clau
 
 ## Do Not Use When
 
-- The request is a settings-only change, one bounded edit that is explicitly low-risk and has a direct owner and verification path, or a direct answer/diagnosis; handle it directly or use `strategy-brief` for a decision brief instead of starting a leadership operating loop.
+- The request is a settings-only change, one bounded edit that is explicitly low-risk and has a direct owner and verification path, or a direct answer/diagnosis; handle it directly or use `omh-decide` for a decision brief instead of starting a leadership operating loop.
 
 ## Examples
 
@@ -49,7 +50,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes should run a leadership-style operating loop that turns signals into roadmap decisions, technical tradeoffs, delivery risk, release readiness, and explicit follow-up handoffs.
 

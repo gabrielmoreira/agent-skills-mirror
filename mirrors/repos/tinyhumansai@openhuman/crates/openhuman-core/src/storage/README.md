@@ -6,23 +6,25 @@ ports, vendored through `vendor/tinyagents/vendor/tinystoragedrivers`.
 
 One URL picks it: `OPENHUMAN_STORAGE_URL`, else `[storage] url` in
 `config.toml` (`config::StorageConfig`), else the default,
-`sqlite:<workspace_dir>` (`storage::config`).
+`sqlite:<workspace_dir>/storage` (`storage::config`). Every host opens that URL
+at startup and installs it (`install_for_url`), and every store, the session
+store included, reads from it. There is no second layout: what older installs
+wrote (the per-domain `.db` files, JSONL transcripts and turn-state JSON) is
+imported once, read-only, by `import/`. The `classic` opt-out is retired; the
+value is read as unset, with a warning.
 
-The default installs no process-wide backend. `sessions.db` and
-`graph_checkpoints.db` keep serving their own SQLite files as they always have,
-so nothing is migrated or duplicated. Cron jobs and the flow catalog are on the
-ports whatever the URL says (tinyflows has no SQLite store of its own): with no
-backend installed they use SQLite document databases of their own
-(`cron/schedule.db`, `flows/catalog.db`), importing the old `jobs.db`,
-`flows.db`, `checkpoints.db` and `drafts/` on first use. The small stores (approvals, devices, notifications, task
-sources) keep their rows as document tables inside their existing `.db` file
-(`approval/approval.db`, `devices/devices.db`, `notifications/notifications.db`,
-`task_sources/sources.db`): the first call in a process opens it with the
-SQLite driver and `storage::local` imports the rows of the old tables, then
-renames them to `_legacy_<name>` and keeps them for one release. The legacy
-code paths stay for reading old data during that import, for builds without
-`storage-sqlite`, for SaaS, and for the opt-out: `OPENHUMAN_STORAGE_URL=classic`
-(or `[storage] url = "classic"`) keeps the pure legacy tables untouched.
+The default belongs to the **workspace**, so a different workspace is a
+different database. When a different user signs in, `rebind::rebind` (called
+first by `rebind_after_credential_change`) re-resolves the URL for the new
+workspace, opens its backend, points the session store (`ReboundSessionStores`)
+and the process slot at it together, then runs the importers over the new
+workspace. An explicit URL names one backend for every user and is never
+replaced; a failed reopen is an error and leaves the previous backend in place.
+
+With no backend installed (a unit test, an embedder that skipped the host
+boot, a SaaS core with no URL) a store opens the **same default** for its own
+workspace on first use (`local::backend_for`), once per workspace for the life
+of the process, so no store has a file-shaped implementation of its own.
 
 | URL | Driver | Cargo feature |
 | --- | --- | --- |
@@ -38,15 +40,22 @@ on.
 
 ## Legacy import
 
-`import/` copies the four small stores' legacy SQLite files into an installed
-backend once, read-only (see the module doc and the architecture page). The
+`import/` copies the legacy files into an installed backend once, read-only
+(see the module doc and the architecture page): the four small stores'
+SQLite files, the tinyflows stores, and the sessions. The
 core calls `import::run` from `bootstrap_core_runtime` before any domain store
-opens; `run_with` takes an explicit backend for tests. The tinyflows stores (cron
+opens, and `rebind::rebind` calls `run_all` for a newly bound workspace;
+`run_with` takes an explicit backend for tests. The tinyflows stores (cron
 jobs with their runs and policies, the flow catalog with its drafts, and flow
 checkpoints) are copied by `import::tinyflows` with `tinyflows-import`, which
 keeps ids, writes only what is absent and reads copies of the files; a build
-without the `flows` gate imports no cron jobs. Sessions are not imported here:
-their format belongs to TinyAgents.
+without the `flows` gate imports no cron jobs. Sessions (`import::sessions`) go
+through TinyAgents' `legacy` importer, which owns those formats: the run ledger
+from a `VACUUM INTO` snapshot of `session_db/sessions.db`, each
+`session_raw` transcript into the scope of the agent its stem names (matched
+against the known definitions, else the default agent), and the turn-state
+JSON into the default agent. Each importer keeps a marker per workspace, so a
+record deleted afterwards is not resurrected from the untouched legacy file.
 
 ## Entry points
 
@@ -64,6 +73,9 @@ their format belongs to TinyAgents.
   that driver is atomic across processes (MongoDB, SQLite), which a
   clustered node's leases need. Memory and file drivers coordinate only
   within one process.
+- `blob_sweep`: reclaims expired blobs (`StorageBackend::sweep_expired_blobs`)
+  for `local` and each known agent scope every hour, spawned with the cron
+  service (`core::runtime::services`). SaaS profile scopes are not swept yet.
 - `fence` / `fenced_backend`: lease-epoch write fencing (see
   [Write fencing](#write-fencing)).
 - `scope_for_profile(profile_id)`: the scope a SaaS profile's records live
@@ -207,8 +219,8 @@ without fencing).
 - The session store: `openhuman_rpc::session_store::install_for_host` opens
   the configured backend before boot and installs `DriverSessionStores`
   over it. See that module's README.
-- Domain stores that switch to the document port when a backend is
-  installed, each in a `store_documents.rs` beside its SQLite `store.rs`:
+- Domain stores on the document port, each in a `store_documents.rs` (the
+  legacy SQLite reader lives in its `store_import.rs`):
   approvals (`security::approval`), paired devices (`security::devices`),
   notifications (`desktop::notifications`) and task sources
   (`integrations::task_sources`).

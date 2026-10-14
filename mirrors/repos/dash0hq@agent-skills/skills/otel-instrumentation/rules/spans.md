@@ -387,13 +387,14 @@ Verify this rule in integration tests — see [testing trace data](#no-parentles
 ### No orphan spans
 <!-- Instrumentation Score: SPA-002 (Normal) -->
 
-Every span with a `parent_span_id` must have a corresponding parent span in the trace.
-Orphan spans indicate broken context propagation or instrumentation gaps, and result in fragmented, misleading trace views.
+Verify that every parent expected in the capture is present.
+Account for explicitly known, accepted remote parents outside the capture, including upstream parents that were never exported.
+Apply this distinction to both single-service and multi-service captures; an unexplained missing parent indicates broken context propagation or an instrumentation gap.
 
 Common causes:
 - Parent span was dropped by sampling while child span was retained
 - Context propagation headers were not forwarded between services
-- Parent span ended before child span was created (timing issue)
+- Parent span has not finished or has not been exported when the capture is inspected
 
 Verify this rule in integration tests — see [testing trace data](#no-orphan-spans-1).
 
@@ -501,17 +502,20 @@ If you sample in the Collector, materialize metrics from spans *before* the samp
 
 Treat trace shape — spans, their parent-child relations, kinds, status codes, and attributes — as a functional requirement.
 Use an in-memory span exporter in integration tests to capture spans produced by the code under test and assert the rules from this file.
+The examples below use [JavaScript SDK 2.x APIs](https://github.com/open-telemetry/opentelemetry-js/blob/main/doc/upgrade-to-2.x.md): configure processors in the provider constructor and read parents through `parentSpanContext`.
 
 ### Test setup
 
 ```typescript
-import { SpanKind } from '@opentelemetry/api';
-import { InMemorySpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
+import { SpanKind, type SpanContext } from '@opentelemetry/api';
+import { AlwaysOnSampler, InMemorySpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
 
 const exporter = new InMemorySpanExporter();
-const provider = new NodeTracerProvider();
-provider.addSpanProcessor(new SimpleSpanProcessor(exporter));
+const provider = new NodeTracerProvider({
+  sampler: new AlwaysOnSampler(),
+  spanProcessors: [new SimpleSpanProcessor(exporter)],
+});
 provider.register();
 
 // Call between tests to reset captured spans
@@ -533,7 +537,7 @@ A failure means code is making outbound calls without a wrapping `SERVER` or `IN
 ```typescript
 function assertNoParentlessOutboundSpans() {
   const parentless = getSpans().filter(
-    (s) => (s.kind === SpanKind.CLIENT || s.kind === SpanKind.PRODUCER) && !s.parentSpanId,
+    (s) => (s.kind === SpanKind.CLIENT || s.kind === SpanKind.PRODUCER) && !s.parentSpanContext,
   );
   if (parentless.length > 0) {
     const names = parentless.map((s) => s.name).join(', ');
@@ -544,14 +548,22 @@ function assertNoParentlessOutboundSpans() {
 
 ### No orphan spans
 
-Assert that every span with a `parentSpanId` has a corresponding parent in the trace.
-A failure indicates broken context propagation or a parent span that ended or was sampled out.
+Assert that every span with a `parentSpanContext` has a corresponding parent in the same trace, unless that parent is explicitly known to be outside the capture.
+Supply accepted remote parent contexts separately only when their spans are outside the captured scope or were never exported upstream.
+Do not exempt a missing parent that the capture is expected to contain.
+Finish all expected spans, then flush the tracer provider before asserting, so an unfinished parent is not mistaken for missing context.
 
 ```typescript
-function assertNoOrphanSpans() {
+function assertNoOrphanSpans(remoteParents: SpanContext[] = []) {
   const spans = getSpans();
-  const spanIds = new Set(spans.map((s) => s.spanContext().spanId));
-  const orphans = spans.filter((s) => s.parentSpanId && !spanIds.has(s.parentSpanId));
+  const key = (ctx: SpanContext) => `${ctx.traceId}:${ctx.spanId}`;
+  const parents = new Set([
+    ...spans.map((s) => key(s.spanContext())),
+    ...remoteParents.map(key),
+  ]);
+  const orphans = spans.filter(
+    (s) => s.parentSpanContext && !parents.has(key(s.parentSpanContext)),
+  );
   if (orphans.length > 0) {
     const names = orphans.map((s) => s.name).join(', ');
     throw new Error(`Orphan spans detected (parent not found): ${names}`);

@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 70 file(s) materialized.
+Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 86 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 70 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 70 |
+| Files         | 86 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -107,29 +107,45 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 45 | ✓ | [`packages/plugin/README.md`](packages/plugin/README.md) |
 | 46 | ✓ | [`packages/plugin/src/effect/README.md`](packages/plugin/src/effect/README.md) |
 | 47 | ✓ | [`packages/plugin/src/README.md`](packages/plugin/src/README.md) |
-| 48 | ✓ | [`packages/schema/AGENTS.md`](packages/schema/AGENTS.md) |
-| 49 | ✓ | [`packages/sdk/README.md`](packages/sdk/README.md) |
-| 50 | ✓ | [`packages/session-ui/AGENTS.md`](packages/session-ui/AGENTS.md) |
-| 51 | ✓ | [`packages/session-ui/performance/highlighting/README.md`](packages/session-ui/performance/highlighting/README.md) |
-| 52 | ✓ | [`packages/session-ui/performance/markdown-lifetime/README.md`](packages/session-ui/performance/markdown-lifetime/README.md) |
-| 53 | ✓ | [`packages/stats/AGENTS.md`](packages/stats/AGENTS.md) |
-| 54 | ✓ | [`packages/stats/README.md`](packages/stats/README.md) |
-| 55 | ✓ | [`packages/storybook/playwright/README.md`](packages/storybook/playwright/README.md) |
-| 56 | ✓ | [`packages/tui/AGENTS.md`](packages/tui/AGENTS.md) |
-| 57 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
-| 58 | ✓ | [`packages/web/README.md`](packages/web/README.md) |
-| 59 | ✓ | [`script/ast-grep/effect-simplifications/README.md`](script/ast-grep/effect-simplifications/README.md) |
-| 60 | ✓ | [`sdks/vscode/README.md`](sdks/vscode/README.md) |
-| 61 | ✓ | [`services/changelog/README.md`](services/changelog/README.md) |
-| 62 | ✓ | [`services/files/README.md`](services/files/README.md) |
-| 63 | ✓ | [`services/README.md`](services/README.md) |
-| 64 | ✓ | [`services/update/README.md`](services/update/README.md) |
-| 65 | ✓ | [`services/www/AGENTS.md`](services/www/AGENTS.md) |
-| 66 | ✓ | [`services/www/README.md`](services/www/README.md) |
-| 67 | ✓ | [`services/www/src/docs/AGENTS.md`](services/www/src/docs/AGENTS.md) |
-| 68 | ✓ | [`specs/v2/README.md`](specs/v2/README.md) |
-| 69 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 70 | → | [`README.md`](README.md) |
+| 48 | ✓ | [`packages/plugins/figma/README.md`](packages/plugins/figma/README.md) |
+| 49 | ✓ | [`packages/plugins/figma/skills/figma-code-connect/SKILL.md`](packages/plugins/figma/skills/figma-code-connect/SKILL.md) |
+| 50 | ✓ | [`packages/plugins/figma/skills/figma-create-new-file/SKILL.md`](packages/plugins/figma/skills/figma-create-new-file/SKILL.md) |
+| 51 | ✓ | [`packages/plugins/figma/skills/figma-design-to-code/SKILL.md`](packages/plugins/figma/skills/figma-design-to-code/SKILL.md) |
+| 52 | ✓ | [`packages/plugins/figma/skills/figma-generate-design/SKILL.md`](packages/plugins/figma/skills/figma-generate-design/SKILL.md) |
+| 53 | ✓ | [`packages/plugins/figma/skills/figma-generate-diagram/SKILL.md`](packages/plugins/figma/skills/figma-generate-diagram/SKILL.md) |
+| 54 | ✓ | [`packages/plugins/figma/skills/figma-generate-library/SKILL.md`](packages/plugins/figma/skills/figma-generate-library/SKILL.md) |
+| 55 | ✓ | [`packages/plugins/figma/skills/figma-generative-plugins/SKILL.md`](packages/plugins/figma/skills/figma-generative-plugins/SKILL.md) |
+| 56 | ✓ | [`packages/plugins/figma/skills/figma-implement-motion/SKILL.md`](packages/plugins/figma/skills/figma-implement-motion/SKILL.md) |
+| 57 | ✓ | [`packages/plugins/figma/skills/figma-shaders/SKILL.md`](packages/plugins/figma/skills/figma-shaders/SKILL.md) |
+| 58 | ✓ | [`packages/plugins/figma/skills/figma-swiftui/SKILL.md`](packages/plugins/figma/skills/figma-swiftui/SKILL.md) |
+| 59 | ✓ | [`packages/plugins/figma/skills/figma-use-figjam/SKILL.md`](packages/plugins/figma/skills/figma-use-figjam/SKILL.md) |
+| 60 | ✓ | [`packages/plugins/figma/skills/figma-use-motion/SKILL.md`](packages/plugins/figma/skills/figma-use-motion/SKILL.md) |
+| 61 | ✓ | [`packages/plugins/figma/skills/figma-use-slides/SKILL.md`](packages/plugins/figma/skills/figma-use-slides/SKILL.md) |
+| 62 | ✓ | [`packages/plugins/figma/skills/figma-use/SKILL.md`](packages/plugins/figma/skills/figma-use/SKILL.md) |
+| 63 | ✓ | [`packages/plugins/README.md`](packages/plugins/README.md) |
+| 64 | ✓ | [`packages/schema/AGENTS.md`](packages/schema/AGENTS.md) |
+| 65 | ✓ | [`packages/sdk/README.md`](packages/sdk/README.md) |
+| 66 | ✓ | [`packages/session-ui/AGENTS.md`](packages/session-ui/AGENTS.md) |
+| 67 | ✓ | [`packages/session-ui/performance/highlighting/README.md`](packages/session-ui/performance/highlighting/README.md) |
+| 68 | ✓ | [`packages/session-ui/performance/markdown-lifetime/README.md`](packages/session-ui/performance/markdown-lifetime/README.md) |
+| 69 | ✓ | [`packages/stats/AGENTS.md`](packages/stats/AGENTS.md) |
+| 70 | ✓ | [`packages/stats/README.md`](packages/stats/README.md) |
+| 71 | ✓ | [`packages/storybook/playwright/README.md`](packages/storybook/playwright/README.md) |
+| 72 | ✓ | [`packages/tui/AGENTS.md`](packages/tui/AGENTS.md) |
+| 73 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
+| 74 | ✓ | [`packages/web/README.md`](packages/web/README.md) |
+| 75 | ✓ | [`script/ast-grep/effect-simplifications/README.md`](script/ast-grep/effect-simplifications/README.md) |
+| 76 | ✓ | [`sdks/vscode/README.md`](sdks/vscode/README.md) |
+| 77 | ✓ | [`services/changelog/README.md`](services/changelog/README.md) |
+| 78 | ✓ | [`services/files/README.md`](services/files/README.md) |
+| 79 | ✓ | [`services/README.md`](services/README.md) |
+| 80 | ✓ | [`services/update/README.md`](services/update/README.md) |
+| 81 | ✓ | [`services/www/AGENTS.md`](services/www/AGENTS.md) |
+| 82 | ✓ | [`services/www/README.md`](services/www/README.md) |
+| 83 | ✓ | [`services/www/src/docs/AGENTS.md`](services/www/src/docs/AGENTS.md) |
+| 84 | ✓ | [`specs/v2/README.md`](specs/v2/README.md) |
+| 85 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 86 | → | [`README.md`](README.md) |
 
 ---
 

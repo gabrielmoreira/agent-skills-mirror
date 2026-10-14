@@ -1,6 +1,7 @@
 ---
 name: "omh-native-debugging"
 description: "[omh] Native program crashes or corrupts memory: prepare hypothesis-driven debugging of native binaries and instruct the executor to drive a DAP debugger instead of printf. Use when the user says: native-debugging, native debugging, native binary, segfault, segmentation fault, core dump, stack corruption, memory corruption."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, verification]
@@ -20,11 +21,11 @@ This is an OMH `native-debugging` workflow skill, projected for Agent Skills hos
 
 ## Do Not Use When
 
-- The failure is a build or CI failure rather than a runtime fault in a binary; use `build-failure-triage`.
-- The subject is an agent or workflow misbehaving rather than a native binary; use `agent-debug`.
-- The wrong result, flaky test, or lost update is in application code such as a Python or TypeScript service and needs its root cause reproduced; use `app-debugging`.
-- The change is Rust source work whose risk is `unsafe` or UB discipline; use `rust`.
-- The request is to judge whether a fix is verified rather than to find the fault; use `verification-gate`.
+- The failure is a build or CI failure rather than a runtime fault in a binary; use `omh-build-failure-triage`.
+- The subject is an agent or workflow misbehaving rather than a native binary; use `omh-agent-debug`.
+- The wrong result, flaky test, or lost update is in application code such as a Python or TypeScript service and needs its root cause reproduced; use `omh-app-debugging`.
+- The change is Rust source work whose risk is `unsafe` or UB discipline; use `omh-rust`.
+- The request is to judge whether a fix is verified rather than to find the fault; use `omh-verification-gate`.
 
 ## Examples
 
@@ -55,7 +56,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes should prepare low-level debugging of a native binary, crash, or memory fault: competing hypotheses, the distinguishing observation for each, and a DAP-driven evidence plan for the executor.
 

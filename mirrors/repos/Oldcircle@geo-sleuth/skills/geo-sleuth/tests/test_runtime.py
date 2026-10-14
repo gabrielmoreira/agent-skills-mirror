@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["pillow", "numpy"]
+# dependencies = ["pillow", "numpy", "pyyaml"]
 # ///
 """Offline runtime regressions. Run: uv run skills/geo-sleuth/tests/test_runtime.py"""
 from __future__ import annotations
@@ -24,11 +24,15 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import AsyncMock, patch
 
+import yaml
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import _net
 import _browser
+import _device
 import baidu_pano
 import doctor
+import evidence
 import gsv
 import osm
 import poi
@@ -75,7 +79,8 @@ class NetworkTests(unittest.TestCase):
         with patch.dict(os.environ, {"GEO_PROXY": "http://chosen:8080", "https_proxy": "http://old:8080", "NO_PROXY": "*"}, clear=True):
             _net.model_proxy_env()
             self.assertEqual(os.environ["HTTPS_PROXY"], "http://chosen:8080")
-            self.assertNotIn("https_proxy", os.environ)
+            if os.name != "nt":   # Windows environment variable names are case-insensitive
+                self.assertNotIn("https_proxy", os.environ)
             self.assertNotIn("NO_PROXY", os.environ)
             _net.model_proxy_env("direct")
             self.assertNotIn("HTTPS_PROXY", os.environ)
@@ -341,7 +346,7 @@ class CoverageTests(unittest.TestCase):
         with patch.object(Path, "read_text", read), patch.object(gsv, "_curl", return_value=good) as fetch:
             self.assertEqual(gsv.tile_panos(7, 7, None, self.cache), [(self.PID, 51.44, 5.47)])
         self.assertEqual(fetch.call_count, 1)
-        self.assertEqual(gsv._coverage_rows(cached.read_text()), gsv._coverage_rows(good.decode()))
+        self.assertEqual(gsv._coverage_rows(cached.read_text(encoding="utf-8")), gsv._coverage_rows(good.decode()))
 
     def test_shared_coverage_tile_uses_one_fetch(self):
         for stale in (False, True):
@@ -459,6 +464,138 @@ class FontTests(unittest.TestCase):
 
         with patch.dict(os.environ, {}, clear=True),                 patch.object(baidu_pano.ImageFont, "truetype", side_effect=fake_truetype):
             self.assertEqual(baidu_pano._font(16), "C:/Windows/Fonts/simhei.ttf")
+
+
+class SkillMetadataTests(unittest.TestCase):
+    def test_frontmatter_meets_agent_skills_spec(self):
+        root = Path(__file__).resolve().parents[1]
+        m = re.match(r"---\n(.*?)\n---\n", (root / "SKILL.md").read_text(encoding="utf-8"), re.S)
+        self.assertIsNotNone(m, "frontmatter must open and close with --- lines")
+        meta = yaml.safe_load(m.group(1))                  # strict parser: a ': ' inside the description breaks it
+        self.assertIsInstance(meta, dict)
+        self.assertEqual(meta["name"], root.name)
+        self.assertIsInstance(meta["description"], str)
+        self.assertTrue(meta["description"].strip())
+        self.assertLessEqual(len(meta["description"]), 1024)   # https://agentskills.io/specification
+
+
+class EvidenceSpecTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.base = Path(self.tmp.name)
+        (self.base / "area.jpg").write_bytes(b"jpg")
+        (self.base / "area.json").write_text("{}", encoding="utf-8")
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_missing_map_is_named_instead_of_key_error(self):
+        with self.assertRaises(SystemExit) as e:
+            evidence.build({"camera": [1, 2]}, self.base, self.base / "out.jpg")
+        self.assertIn("missing 'map'", str(e.exception.code))
+
+    def test_map_without_georeference(self):
+        (self.base / "area.json").unlink()
+        self.assertIn("no georeference", evidence.check_spec({"map": "area.jpg"}, self.base)[0])
+
+    def test_item_keys_and_panel_images(self):
+        errs = evidence.check_spec({"map": "area.jpg", "labels": [{"at": [1, 2]}], "lines": [{"from": [1, 2], "bearing": 3}],
+                                    "panels": [{"image": "sv1.jpg"}]}, self.base)
+        self.assertEqual(len(errs), 3)
+        self.assertIn("labels[0] is missing 'text'", errs[0])
+        self.assertIn("lines[0] is missing 'length_m'", errs[1])
+        self.assertIn("panels[0] image not found", errs[2])
+
+    def test_valid_spec(self):
+        self.assertEqual(evidence.check_spec({"map": "area.jpg", "labels": [{"at": [1, 2], "text": "x"}]}, self.base), [])
+
+    def test_invalid_path_and_item_types_are_named(self):
+        cases = [
+            ([], "JSON object"),
+            *[({"map": value}, "'map'") for value in (None, 7, "")],
+            *[({"map": "area.jpg", key: value}, repr(key))
+              for key, value in (("labels", None), ("labels", {}), ("lines", "bad"), ("panels", None))],
+            *[({"map": "area.jpg", key: [value]}, f"{key}[0]")
+              for key, value in (("labels", None), ("labels", "at text"), ("lines", 3))],
+            ({"map": "area.jpg", "panels": [{"image": None}]}, "panels[0]"),
+        ]
+        for spec, expected in cases:
+            with self.subTest(spec=spec):
+                self.assertTrue(any(expected in error for error in evidence.check_spec(spec, self.base)))
+
+    def test_missing_files_are_reported_together(self):
+        errors = evidence.check_spec({"map": "missing.jpg", "panels": [{"image": "missing-panel.jpg"}]}, self.base)
+        self.assertEqual(len(errors), 3)
+        self.assertIn("map not found", errors[0])
+        self.assertIn("no georeference", errors[1])
+        self.assertIn("panels[0] image not found", errors[2])
+
+    def test_invalid_spec_cli_exits_without_traceback(self):
+        spec_path = self.base / "bad.json"
+        spec_path.write_text(json.dumps({"map": None, "labels": None, "panels": [{"image": None}]}), encoding="utf-8")
+        out = self.base / "out.jpg"
+        result = subprocess.run([sys.executable, str(Path(evidence.__file__)), str(spec_path), "--out", str(out)],
+                                capture_output=True, text=True, encoding="utf-8")
+        self.assertEqual(result.returncode, 1)
+        for expected in ("'map'", "'labels'", "panels[0]", "evidence.py --help"):
+            self.assertIn(expected, result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+        self.assertFalse(out.exists())
+
+
+class DeviceTests(unittest.TestCase):
+    @staticmethod
+    def _torch(cuda=False, mps=False):
+        return SimpleNamespace(__version__="2.0.0+test",
+                               cuda=SimpleNamespace(is_available=lambda: cuda),
+                               backends=SimpleNamespace(mps=SimpleNamespace(is_available=lambda: mps)))
+
+    def _pick(self, value=None, **have):
+        env = {} if value is None else {"GEO_DEVICE": value}
+        with patch.dict(os.environ, env, clear=True):
+            return _device.torch_device(self._torch(**have))
+
+    def _exit_message(self, value, **have):
+        with self.assertRaises(SystemExit) as caught:
+            self._pick(value, **have)
+        message = str(caught.exception.code)
+        self.assertEqual(len(message.splitlines()), 1)
+        self.assertIn("torch 2.0.0+test", message)
+        return message
+
+    def test_auto_selection_order(self):
+        self.assertEqual(self._pick(cuda=True, mps=True), "cuda")
+        self.assertEqual(self._pick(cuda=True), "cuda")
+        self.assertEqual(self._pick(mps=True), "mps")
+        self.assertEqual(self._pick(), "cpu")
+        self.assertEqual(self._pick("", cuda=True), "cuda")
+
+    def test_explicit_override(self):
+        self.assertEqual(self._pick("cpu", cuda=True, mps=True), "cpu")
+        self.assertEqual(self._pick("cuda", cuda=True, mps=True), "cuda")
+        self.assertEqual(self._pick("mps", cuda=True, mps=True), "mps")
+        self.assertEqual(self._pick(" CUDA ", cuda=True), "cuda")
+
+    def test_invalid_value_exits_with_one_line(self):
+        for value in ("gpu", "cuda:0", "auto"):
+            message = self._exit_message(value, cuda=True)
+            self.assertIn(repr(value), message)
+            self.assertIn("cpu, cuda, mps", message)
+
+    def test_unavailable_device_exits_instead_of_falling_back(self):
+        message = self._exit_message("cuda", mps=True)
+        self.assertIn("GEO_DEVICE=cuda", message)
+        self.assertIn("cuda=False, mps=True", message)
+        message = self._exit_message("mps", cuda=True)
+        self.assertIn("GEO_DEVICE=mps", message)
+        self.assertIn("cuda=True, mps=False", message)
+
+    def test_both_model_scripts_use_the_shared_helper(self):
+        scripts = Path(_device.__file__).parent
+        for name in ("match.py", "sat_scan.py"):
+            text = (scripts / name).read_text(encoding="utf-8")
+            self.assertIn("self.dev = torch_device(torch)", text)
+            self.assertNotIn("mps.is_available", text)
 
 
 if __name__ == "__main__":

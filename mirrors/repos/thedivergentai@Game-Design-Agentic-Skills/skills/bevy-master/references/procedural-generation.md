@@ -1,46 +1,43 @@
 ---
 name: bevy-procedural-generation
-description: "Docs-first stub for Bevy procedural generation. Godot counterpart: godot-procedural-generation. Not a full port. Keywords: Bevy, procedural, seed, dungeon, terrain, ECS, gaps."
+description: "Bevy ECS skill for procedural generation. Keywords: Bevy, procedural, seed, dungeon, terrain, ECS."
 ---
 
-# Bevy procedural generation (docs-first stub)
-
-Not a full port. Seeded layout is your data and systems. No noise crate, tile API, or worker-pool API was opened.
+# Bevy procedural generation
 
 ## When to use
 
-Load this when a level, loot table, or map should be reproducible from a seed, and you need the ECS shape plus the gap list. Spawning the finished layout uses `Commands` on `Startup` or a later schedule you already use. Saving the seed is a bevy-save-load concern, and that skill still has no save format.
+Load this when a level, loot table, or map should be reproducible from a seed, and you need the ECS shape. Spawning the finished layout uses `Commands` on `Startup` or a later schedule you already use. Saving the seed belongs on bevy-save-load.
 
 ## ECS shape
 
 - **Components:** cell, room, or prop facts you define. The ECS page shows plain `Component` structs and `commands.spawn`.
 - **Resources:** one seed and a generator state you own as a `Resource` (see bevy-data-resources). Do not invent a Bevy RNG type.
 - **Systems:** fill the resource on `Startup`, then spawn entities from that data. Use `.chain()` so spawn sees the finished grid.
-- **Schedule:** `Startup` for a one-shot map. A streaming map is a later system on `Update`. No background-thread API was opened, so generation in this stub stays on the main schedules.
+- **Schedule:** `Startup` for a one-shot map. A streaming map is a later system on `Update`. Check the docs for a background-thread API before leaving the main schedules.
 
-## Godot idea to Bevy idiom
+## Coming from Godot
 
-| Idea | Bevy idiom (idea only) |
+| Godot idea | Bevy idiom |
 | --- | --- |
 | Seeded run | A `Resource` holding a seed you define |
 | Chunk or dungeon grid | Your components, spawned with `Commands` |
-| Noise, BSP, walk, collapse | Algorithm names from the Godot skill are ideas only. No Bevy function was opened |
+| Noise, BSP, walk, collapse | Algorithm names from the Godot skill are ideas only. Check the docs.rs crate index before treating them as Bevy functions. |
 | Tile write | No tile API here. Wait for a later tile skill |
-| Nav bake after generation | Gap on bevy-navigation |
+| Nav bake after generation | Nav bake after generation belongs on bevy-navigation. |
 
-## Gaps
+## Scope
 
-- No noise, RNG, or constraint-solver module was opened on docs.rs `bevy` `latest`.
-- Worker threads and off-main-thread spawn were not opened. Do not invent a pool type.
+- Check docs.rs `bevy` `latest` for a noise, RNG, or constraint-solver module before writing one.
+- Check the docs for worker threads and off-main-thread spawn before writing a pool type.
 - The assets catalog was not used to pick a generation plugin.
 - Large-grid batching and navigation rebake are unverified.
 
-
 ## Expert Knowledge Delta
 
-Library target in prose: **Bevy 0.20.0**. Lattice URLs stay unversioned.
+Target: **Bevy 0.20+**.
 
-Opened canon only: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. This file does not invent their struct APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
+Core ECS types: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. See `bevy-events-messaging` for their APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
 
 ### Who owns state
 
@@ -63,22 +60,19 @@ Borrow rule: two systems that both mutably query the same component must be orde
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API this skill did not open | A Gaps row | A fabricated crate (solver, navmesh module, net, XR) |
+| An API outside the documented set | Check the official docs first | A made-up crate or API |
 
-Load `references/a-gate-notes.md` for the same table plus the gap rule.
+Load [references/ecs-ownership.md](procedural-generation-ecs-ownership.md) for the ownership table.
 
 ## NEVER
 
-- Do not put `/0.20.0/` in lattice URLs. WHY: permalinks stay on `latest`. The 0.20.0 pin belongs in prose once.
+- Do not pin `/0.20.0/` in docs URLs. WHY: links stay on `latest`; the 0.20 target is stated once in prose.
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
-- Do not invent a physics, navigation, networking, or XR crate here. WHY: those rows are gaps, blocked, or revisit.
+- Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot noise, tile, or thread-pool types. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No invented noise, wave-function, or chunk APIs. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No named third-party generation crate as the chosen tool. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Creation Station content. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No umbrella skill over Godot and Bevy. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- Do not mark this row `ported`. It is `docs_mapped`. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Godot noise, tile, or thread-pool types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No invented noise, wave-function, or chunk APIs. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No named third-party generation crate as the chosen tool. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
@@ -95,18 +89,18 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](../SKILL.md) - ECS ownership.
-- [bevy-data-resources](data-resources.md) - `Resource` versus `Component`.
-- [bevy-ecs-composition](ecs-composition.md) - Spawn tuples and `.chain()`.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership.
+- [bevy-data-resources](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md) - `Resource` versus `Component`.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Spawn tuples and `.chain()`.
 
 #### Complements
-- [bevy-asset-scenes](asset-scenes.md) - Spawn a scene asset. Not a generator.
-- [bevy-save-load](save-load.md) - Seed persistence is still a format gap.
-- [bevy-navigation](ai-navigation.md) - No bake after a generated map.
-- [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) - Godot counterpart. Source idea only.
+- [bevy-asset-scenes](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-asset-scenes/SKILL.md) - Spawn a scene asset. Not a generator.
+- [bevy-save-load](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-save-load/SKILL.md) - Seed persistence.
+- [bevy-navigation](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-navigation/SKILL.md) - No bake after a generated map.
+- [godot-procedural-generation](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-procedural-generation/SKILL.md) - Equivalent Godot skill.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](../SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

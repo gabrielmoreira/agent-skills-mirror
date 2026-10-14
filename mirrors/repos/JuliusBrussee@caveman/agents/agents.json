@@ -64,10 +64,10 @@
       "attribution": {
         "header": "x-cave-agent"
       },
-      "tested_agent_version": "2.1.291",
+      "tested_agent_version": "2.1.296",
       "injection_completeness": "builder-assisted",
-      "last_verified_at": "2026-10-06",
-      "verified_by": "local pinned-binary probe (claude 2.1.291 on Node 22.22.2, agents/probe-installed.mjs)",
+      "last_verified_at": "2026-10-10",
+      "verified_by": "local pinned-binary probe (claude 2.1.296 on Node 22.22.0, agents/probe-installed.mjs); route probe: ANTHROPIC_BASE_URL redirection observed reaching POST /v1/messages?beta=true",
       "fallback": "generic-env",
       "maintainer": null
     },
@@ -101,10 +101,10 @@
       "attribution": {
         "header": "x-cave-agent"
       },
-      "tested_agent_version": "0.160.1",
+      "tested_agent_version": "0.162.1",
       "injection_completeness": "code-only",
-      "last_verified_at": "2026-10-06",
-      "verified_by": "local pinned-binary probe (codex 0.160.1 on Node 24.16.0, agents/probe-installed.mjs)",
+      "last_verified_at": "2026-10-10",
+      "verified_by": "local pinned-binary probe (codex 0.162.1 on Node 22.22.0, agents/probe-installed.mjs)",
       "fallback": "generic-env",
       "maintainer": null
     },
@@ -133,10 +133,10 @@
       "attribution": {
         "header": "x-cave-agent"
       },
-      "tested_agent_version": "0.62.0",
+      "tested_agent_version": "0.63.0",
       "injection_completeness": "declarative",
-      "last_verified_at": "2026-10-03",
-      "verified_by": "local pinned-binary probe (gemini 0.62.0 on Node 24.16.0, agents/probe-installed.mjs)",
+      "last_verified_at": "2026-10-07",
+      "verified_by": "local pinned-binary probe (gemini 0.63.0 on Node 22.22.0, agents/probe-installed.mjs); route probe: GOOGLE_GEMINI_BASE_URL redirection observed reaching POST /v1beta/models/{model}:streamGenerateContent",
       "fallback": "generic-env",
       "maintainer": null
     },
@@ -186,7 +186,7 @@
         "kilocode"
       ],
       "args": [],
-      "install": "npm install -g @kilocode/cli@7.8.3",
+      "install": "npm install -g @kilocode/cli@7.8.8",
       "wire_protocol": "openai-chat",
       "injection": {
         "method": "config-env-content",
@@ -272,10 +272,10 @@
       "attribution": {
         "header": "X-Cave-Agent"
       },
-      "tested_agent_version": "7.8.3",
+      "tested_agent_version": "7.8.8",
       "injection_completeness": "declarative",
-      "last_verified_at": "2026-10-03",
-      "verified_by": "local pinned-binary probe (kilo 7.8.3 on Node 24.16.0, agents/probe-installed.mjs)",
+      "last_verified_at": "2026-10-08",
+      "verified_by": "local pinned-binary route probe (kilo 7.8.8 on Node 22.22.0, agents/probe-installed.mjs); KILO_CONFIG_CONTENT overlay accepted and applied — POST /v1/chat/completions observed at the injected baseURL carrying X-Cave-Agent: kilo",
       "fallback": "generic-env",
       "maintainer": null
     },
@@ -427,10 +427,10 @@
       "attribution": {
         "header": "X-Cave-Agent"
       },
-      "tested_agent_version": "1.18.34",
+      "tested_agent_version": "1.19.0",
       "injection_completeness": "declarative",
-      "last_verified_at": "2026-10-03",
-      "verified_by": "local pinned-binary probe (opencode 1.18.34 on Node 24.16.0, agents/probe-installed.mjs)",
+      "last_verified_at": "2026-10-11",
+      "verified_by": "local pinned-binary probe (opencode 1.19.0 on Node 22.22.0, agents/probe-installed.mjs); route probe: this profile's own config_content.local overlay loaded and POST /v1/responses reached the injected baseURL carrying X-Cave-Agent: opencode, run completed (exit 0)",
       "fallback": "generic-env",
       "maintainer": null
     },
@@ -474,7 +474,7 @@
       "args": [
         "--extensions=none"
       ],
-      "install": "npm i -g @qwen-code/qwen-code@0.25.0",
+      "install": "npm i -g @qwen-code/qwen-code@0.25.1",
       "wire_protocol": "openai-chat",
       "injection": {
         "method": "config-file",
@@ -720,10 +720,10 @@
       "attribution": {
         "header": "X-Cave-Agent"
       },
-      "tested_agent_version": "0.25.0",
+      "tested_agent_version": "0.25.1",
       "injection_completeness": "declarative",
-      "last_verified_at": "2026-10-06",
-      "verified_by": "local pinned-binary probe (@qwen-code/qwen-code 0.25.0 on Node 24.16.0, agents/probe-installed.mjs) plus route check: the real binary, launched with the CLI buildWrapEnv overlay, sent POST /w/qwen/v1/chat/completions (X-Cave-Agent: qwen, model gpt-5.5) to a loopback recorder",
+      "last_verified_at": "2026-10-12",
+      "verified_by": "local pinned-binary probe (@qwen-code/qwen-code 0.25.1 on Node 22.22.0, agents/probe-installed.mjs: --version and --help both exit 0) plus config_overlay acceptance: unwrapped, 0.25.1 refuses a non-interactive run with \"No auth type is selected\"; launched through the CLI buildWrapEnv overlay that refusal is gone, so it read security.auth from the injected system-settings. The outbound POST was NOT re-observed at 0.25.1 — the wrapped non-interactive run did not produce a model request against a loopback recorder in this container — so the route claim stands only at 0.25.0, where it was observed as POST /w/qwen/v1/chat/completions (X-Cave-Agent: qwen, model gpt-5.5)",
       "fallback": "generic-env",
       "maintainer": null
     }

@@ -22,6 +22,17 @@ The CLI prints the placement and reason; copy that line into the report. Use
 `--local` only when the user asks for local. `--daytona` requires Daytona. Never
 switch lanes to turn a red Daytona run green.
 
+Know what each placement runs before reading a verdict:
+
+- Daytona (the default when the `daytona` CLI is logged in) builds
+  `OPENWORK_EVAL_REF`, which defaults to `dev`, not your working tree. To test a
+  branch, push it and export `OPENWORK_EVAL_REF=$(git rev-parse HEAD)`; add
+  `--strict-ref` so a mismatch fails instead of warning.
+- `--local` runs your working tree. A spec whose world uses `appWeb` stays in
+  headless Chrome. A spec whose world uses `desktop` (`seed.desktop`, `app()`)
+  opens an Electron window that takes focus on this computer; run those on
+  Daytona unless the user asks for a local window.
+
 ## Run the core journey
 
 The test every PR runs. Its world is a Freestyle VM, so this needs only the

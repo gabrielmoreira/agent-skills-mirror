@@ -1,6 +1,7 @@
 ---
 name: "omh-source-finder"
 description: "[omh] Gathering candidate papers, datasets, or repos: source candidate inventory - prepare typed source candidates and acquisition status before downstream work; use ulw-research to fetch and cite them, or research-brief to turn them into a decision-ready brief. Use when the user says: source-finder, source finder, source acquisition, source intake, find papers and datasets, find datasets and repos, find papers, find arxiv link."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, research]
@@ -20,13 +21,13 @@ This is an OMH `source-finder` workflow skill, projected for Agent Skills hosts 
 
 ## Do Not Use When
 
-- The requested output is factual findings, comparison, or a summary rather than a typed candidate inventory and acquisition status; use `research`.
-- The user needs a business decision brief with evidence-versus-inference treatment; use `research-brief`.
-- The user asks for current citations, fact-finding, or source-backed synthesis; use `research`.
-- The user supplies a paper/PDF/arXiv/DOI/excerpt and wants explanation; use `paper-learning`.
-- The user asks for recurring monitoring, source inbox, or Scout/Analyst/Briefer operations; use `research-department`.
-- The user asks to export, convert, render, package, or attach a file; use `materials-package` or `deliverable-package`.
-- The user asks for an image card or visual summary; use `img-summary`.
+- The requested output is factual findings, comparison, or a summary rather than a typed candidate inventory and acquisition status; use `ulw-research`.
+- The user needs a business decision brief with evidence-versus-inference treatment; use `omh-research-brief`.
+- The user asks for current citations, fact-finding, or source-backed synthesis; use `ulw-research`.
+- The user supplies a paper/PDF/arXiv/DOI/excerpt and wants explanation; use `omh-paper-learning`.
+- The user asks for recurring monitoring, source inbox, or Scout/Analyst/Briefer operations; use `omh-research-department`.
+- The user asks to export, convert, render, package, or attach a file; use `omh-materials-package` or `omh-deliverable-package`.
+- The user asks for an image card or visual summary; use `omh-image-cards`.
 
 ## Examples
 
@@ -58,7 +59,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when the requested output is a typed source candidate inventory and acquisition status across papers, web links, datasets, GitHub repositories, public presentations, docs/specs, or unknown source material before choosing paper-learning, research, research-brief, research-department, materials-package, or an ultrawork delivery cycle.
 
@@ -77,6 +78,7 @@ Quality bar:
 - Record acquisition state from: candidate_prepared, link_observed, download_link_prepared, download_observed, file_hash_recorded, text_extraction_observed, license_checked, verification_observed, downstream_selected.
 - Separate candidate preparation, observed link, observed download, file hash, text extraction, license check, verification, and downstream selection.
 - Attach observation provenance before treating any acquisition state as evidence.
+- For `paper` candidates, when Hermes' bundled `arxiv` skill is available, search through it - by topic, author, category, or paper id - and record each entry it returns as `link_observed` with `hermes_tool` provenance. A search result is an observed link and nothing more: download, text extraction, and verification stay unclaimed until their own run is observed. Without the skill, a paper candidate stays `candidate_prepared` until a link is observed another way.
 - Vary search angles across official docs, academic work, implementations, datasets, and criticism until each requested source kind has candidates or another angle change adds nothing new.
 - Recommend the next downstream workflow without pretending that downstream work already ran.
 

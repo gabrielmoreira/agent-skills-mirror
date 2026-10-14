@@ -53,6 +53,6 @@ Long-running CI commands (the coverage lanes) go through
 ## Further reading
 
 - [`scripts/README.md`](../README.md), the map of the rest of `scripts/`.
-- [Testing strategy](../../gitbooks/developing/testing-strategy.md) for how the coverage gate fits the test layers.
-- [Loadable modules](../../gitbooks/developing/loadable-modules.md), which the module-pin gates protect.
+- [Testing strategy](../../docs/gitbooks/en/developing/testing-strategy.md) for how the coverage gate fits the test layers.
+- [Loadable modules](../../docs/gitbooks/en/developing/loadable-modules.md), which the module-pin gates protect.
 - [`AGENTS.md`](../../AGENTS.md) for the layout and feature-forwarding rules these scripts enforce.

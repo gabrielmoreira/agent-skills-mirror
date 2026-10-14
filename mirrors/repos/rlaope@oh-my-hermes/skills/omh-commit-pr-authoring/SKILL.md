@@ -1,6 +1,8 @@
 ---
 name: "omh-commit-pr-authoring"
 description: "[omh] Commit message or pull-request body to write for a change: draft it in the repository's own convention, with `Tested:` listing only commands observed to run and everything prepared but not run under `Not-tested:`. Use when the user says: commit-pr-authoring, commit message, commit messages, write the commit message, draft the commit message, commit body, squash message, pr body."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, verification]
@@ -8,6 +10,7 @@ metadata:
     phase: commit-pr-authoring
     role: reviewer
     quality_tier: evidence-ledger-gated
+    related_skills: [omh-code-review, omh-github-event-ops, omh-github-issue-intake, omh-content-operator]
 ---
 
 # Commit Pr Authoring
@@ -25,10 +28,10 @@ This is a Hermes-native `commit-pr-authoring` workflow skill.
 
 ## Do Not Use When
 
-- The request is to find defects in the diff or judge whether the change is ready; use `code-review`.
-- The request routes an incoming pull-request, issue, or CI webhook event; use `github-event-ops`.
-- The request turns a chat report into a GitHub issue; use `github-issue-intake`.
-- The request is release notes or product copy for readers outside the repository; use `content-operator`.
+- The request is to find defects in the diff or judge whether the change is ready; use `omh-code-review`.
+- The request routes an incoming pull-request, issue, or CI webhook event; use `omh-github-event-ops`.
+- The request turns a chat report into a GitHub issue; use `omh-github-issue-intake`.
+- The request is release notes or product copy for readers outside the repository; use `omh-content-operator`.
 
 ## Examples
 
@@ -49,6 +52,7 @@ Bad example:
 - The convention read names the template and log sample it drew from.
 - Every `Tested:` entry maps to an observed ledger row with its exit status.
 - Every prepared, skipped, or unobserved command is under `Not-tested:` with its reason.
+- The draft lists the paths to stage, and any state-claiming subject prefix maps to an observed ledger row.
 - Nothing was committed, pushed, or opened by OMH.
 
 ## Recovery Notes
@@ -60,9 +64,9 @@ Bad example:
 
 - Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when a change is ready to record and the user wants its commit message or pull-request body written: the repository's template and recent log read first, the subject and body in that convention, the trailers the repo requires, and a `Tested:` line that lists only commands observed to run, with everything prepared but not run under `Not-tested:`. OMH prepares the text; the commit, the push, and the PR are the user's or the executor's.
 
@@ -108,11 +112,14 @@ Artifact expectations:
 - repo_convention_read/v1 names the template path, the subject shape and trailers seen in the recent log, and the sign-off rule, or says which of them was not found
 - evidence_ledger/v1 lists every command with observed or not_observed; observed carries the exit status and where it was seen
 - commit_message_draft/v1 and pr_body_draft/v1 take `Tested:` and the validation section only from observed ledger rows
+- commit_message_draft/v1 lists the paths the commit covers, so whoever records it stages those paths and nothing else
 
 Safety rules:
 
 - List a command under `Tested:` only when the evidence ledger records it as observed; a command that was prepared, planned, or described as passing without a run record goes under `Not-tested:`, whatever the wording says.
 - Never commit, amend, push, or open the PR; OMH prepares the text and the user or the executor records it.
+- Name the paths a commit covers and have them staged by path; never write or recommend `git add -A` or `git add .`, which sweeps unrelated dirty files into the commit.
+- A subject prefix that claims a state, such as `[verified]`, `[reviewed]`, or `[tested]`, is a projection of the evidence ledger: write it only when the repository's log uses that prefix and the ledger holds the observed row it claims, never as a default.
 - Read the repository's own template and recent log before drafting; impose no convention the repository does not use.
 - Do not claim CI, review, or merge state in the text unless it was observed, and name what was not.
 - Never put credentials, tokens, private URLs, or raw transcripts into a commit message or PR body.
@@ -127,4 +134,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

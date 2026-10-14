@@ -3,7 +3,7 @@
 > **Start here** for a guided tour of how RTK works end-to-end.
 >
 > - [CONTRIBUTING.md](../../CONTRIBUTING.md) — Design philosophy, PR process, branch naming, testing requirements
-> - [ARCHITECTURE.md](ARCHITECTURE.md) — Deep reference: filtering taxonomy, performance benchmarks, architecture decisions
+> - [ARCHITECTURE.md](ARCHITECTURE.md) — Deep reference: filtering taxonomy, performance targets, architecture decisions
 > - Each folder has its own `README.md` with implementation details and file descriptions
 
 ---
@@ -12,7 +12,7 @@
 
 LLM-powered coding agents (Claude Code, Copilot, Cursor, etc.) consume tokens for every CLI command output they process. Most command outputs contain boilerplate, progress bars, ANSI escape codes, and verbose formatting that wastes tokens without providing actionable information.
 
-RTK sits between the agent and the CLI, filtering outputs to keep only what matters. This cuts 60-90% of the bash output per command, reducing costs and increasing effective context window utilization. RTK is a single Rust binary with no runtime dependencies beyond the compiled binary itself, adding less than 10ms overhead per command.
+RTK sits between the agent and the CLI, filtering outputs to keep only what matters. This reduces the bash output per command, reducing costs and increasing effective context window utilization. RTK is a single Rust binary with no runtime dependencies beyond the compiled binary itself, adding less than 10ms overhead per command.
 
 Every percentage below measures **bash output**, which is one contributor to input tokens, themselves only part of a bill that also counts output tokens. RTK ships no tokenizer (`src/core/tracking.rs` estimates `bytes / 4`), so the ratios are reliable but the absolute token counts are approximate.
 
@@ -152,7 +152,7 @@ rewrite_compound(cmd, excluded)                    [src/discover/registry.rs]
   |  Pipe (|) → keep intermediate stages raw
   |             rewrite a pipeline-safe final stage, or the
   |             producer when its rule allows it and all
-  |             consumers are display-only (#3171)
+  |             consumers are display-only
   |  Stderr pipe (|&) → keep the complete pipeline raw
   |  Shellism (&) → rewrite both sides (background)
   |
@@ -356,7 +356,7 @@ RTK supports the following LLM agents through hook integrations:
 
 ### Rust Filters (cmds/**)
 
-Compiled filter modules for complex transformations, cutting 60-95% of the bash output.
+Compiled filter modules for complex transformations.
 
 > **Details**: [`src/cmds/README.md`](../../src/cmds/README.md) and each ecosystem subdirectory README.
 

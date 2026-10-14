@@ -7,7 +7,7 @@ can have (calling an LLM, running an agent, making an HTTP request, running
 code, calling a tool, reading/writing state, resolving a sub-workflow,
 recalling/writing memory) is a trait the engine declares and this module
 implements. See
-[`gitbooks/developing/architecture/flows-on-tinyagents.md`](../../../../../gitbooks/developing/architecture/flows-on-tinyagents.md)
+[`docs/gitbooks/en/developing/architecture/flows-on-tinyagents.md`](../../../../../docs/gitbooks/en/developing/architecture/flows-on-tinyagents.md)
 for the engine's own model (trigger model, run state shape, the two-gate
 security model); this README covers only the host seam.
 
@@ -81,7 +81,7 @@ security model); this README covers only the host seam.
 ## Security model
 
 The contract is spelled out in
-[flows-on-tinyagents.md § The security model: two gates](../../../../../gitbooks/developing/architecture/flows-on-tinyagents.md#the-security-model-two-gates);
+[flows-on-tinyagents.md § The security model: two gates](../../../../../docs/gitbooks/en/developing/architecture/flows-on-tinyagents.md#the-security-model-two-gates);
 this module holds the outer gate. `tier.rs` consults the user's autonomy
 tier for each acting node's `CommandClass` and forces an `ApprovalGate`
 round-trip on `Prompt`, even when the saved flow's own `require_approval` is
@@ -111,5 +111,5 @@ above.
 ## Further reading
 
 - [Parent module README](../README.md)
-- [Workflows](../../../../../gitbooks/features/workflows.md)
+- [Workflows](../../../../../docs/gitbooks/en/features/workflows.md)
 - [tinyflows](../../../../../vendor/tinyflows/README.md)

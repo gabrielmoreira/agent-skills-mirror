@@ -1,6 +1,6 @@
 ---
 title: Database
-description: Database setup, schema overview, and migration guide for SQLite and PostgreSQL backends.
+description: Persistence selection and database setup for files, SQLite, and PostgreSQL.
 category: reference
 area: database
 audience: [developer, operator]
@@ -11,12 +11,78 @@ sidebar:
 
 Archon supports two database backends: **SQLite** (default, zero setup) and **PostgreSQL** (optional, for cloud/advanced deployments). The database backend is selected automatically based on whether the `DATABASE_URL` environment variable is set.
 
+## File storage for CLI workflows
+
+Database storage remains the default. For a CLI-only install, opt into file storage in
+`~/.archon/config.yaml` (or `$ARCHON_HOME/config.yaml`):
+
+```yaml
+store: files
+```
+
+Use `store: database` or remove the key to return to database storage. `DATABASE_URL`
+together with `store: files` is refused because it selects two stores. Switching stores
+starts a separate, empty history; Archon does not import existing data. Returning to the
+previous store reveals its existing history again.
+
+File storage supports workflow runs, approval, resume, events, node sessions, codebases
+and isolation records without creating `archon.db`. It stores records under
+`$ARCHON_HOME/store`:
+
+```text
+head.json                format version and commit sequence
+intent.json              pending commit, present during writes or crash recovery
+feed-index.json          derived latest event commit per run, rebuilt from logs when missing
+runs/<id>/log.jsonl       append-only run records, events and event retractions
+runs/<id>/run.json        derived snapshot, rebuilt when missing or behind the log
+archived-runs/<id>/log.jsonl  retained feed log after run deletion
+runs/<id>/node-sessions.json
+node-sessions/<hash>.json
+host/codebases.json       project records with per-project envVars
+host/isolation.json      isolation records
+```
+
+Every write uses one store-wide lock and a recoverable intent. The next writer or a
+reader that sees an intent redoes the committed operation exactly once. A torn final
+log line is ignored by readers and truncated only under the lock by the next writer.
+Committed lines are never rewritten; cancellation recovery appends event retractions.
+File-store run IDs are unique for the store's lifetime: creating a run with an ID
+already held by a live or archived run fails, including caller-reserved IDs.
+
+Run cleanup transfers a terminal run's log to `archived-runs` before removing its
+current-state directory. The event feed reads its derived index to find changed
+runs, then reads their live or archived logs. Writers update the index
+under the same lock before publishing the head; a missing or stale index is rebuilt
+from the logs.
+
+Use a local filesystem that supports hard links. Network filesystems are unsupported.
+The lock records its host, PID and process instance. Archon breaks it only when its owner
+is provably gone. A live or unprovable owner produces `FileStoreLockHeldError` with the
+owner and path. Inspect the named process before manually removing a lock. A stranded
+`lock.break` needs operator inspection; time alone never proves ownership has ended.
+
+The intent and file synchronization protect against process crashes. Power-loss durability
+is limited by the platform's `fsync` guarantees; macOS does not force drive caches with
+`fsync`, and Windows does not support directory `fsync` through this API.
+
+The server refuses file storage because its routes read SQL. Trigger admission is also
+refused until file-backed admission is implemented. Provider concurrency caps
+(`concurrency.providers`) require `store: database` and fail at startup.
+Per-user GitHub identity (`GITHUB_APP_ID` with `TOKEN_ENCRYPTION_KEY`) fails at startup under
+file storage, because files hold no user tokens and a run would otherwise use the shared
+token. A GitHub App without `TOKEN_ENCRYPTION_KEY` works. Per-user provider credential
+mode does not prevent selecting file storage. Stored per-user provider credentials are refused during run preflight,
+before creating a worktree. Environment credentials and the provider's own login work
+normally. State documents (`archon state`) are not stored in files; the command requires
+database storage, and `workflow cleanup` has no state revisions to prune. Other SQL-only
+CLI commands, including user and stored credential management, require database storage.
+
 ## SQLite (Default - No Setup Required)
 
-Simply **omit the `DATABASE_URL` variable** from your `.env` file. The app will automatically:
+With `store: database` (the default), **omit `DATABASE_URL`** from your `.env` file. The app will automatically:
 - Create a SQLite database at `~/.archon/archon.db`
 - Initialize the schema on first run
-- Use this database for all operations
+- Use this database for operations with `store: database`
 
 **Pros:**
 - Zero configuration required
@@ -107,7 +173,7 @@ The tables defined in `migrations/000_combined.sql` are prefixed with `remote_ag
 
 - **`remote_agent_workflow_runs`** - Workflow execution tracking
   - Tracks active workflows per conversation
-  - Locks concurrent execution per `working_path`: a second dispatch on a path with an active run (status `pending`/`running`/`paused`) is auto-cancelled with an actionable message. Stale `pending` rows older than 5 minutes are treated as orphaned and ignored. A `workflow:` sub-run shares its parent's checkout unless the node declares `isolation: worktree`, so the path-lock excludes both the run's ancestor chain and its descendants (via `parent_run_id`) — a child never contends with its own parent. Siblings are **not** excluded.
+  - Locks concurrent execution per `working_path`: a second dispatch on a path with an active run (status `pending`/`running`/`paused`) is auto-cancelled with an actionable message. Stale `pending` rows older than 5 minutes are treated as orphaned and ignored. A `workflow:` sub-run shares its parent's checkout unless the node declares `isolation: worktree`, so the path-lock excludes both the run's ancestor chain and its descendants (via `parent_run_id`) — a child never contends with its own parent. Children of the same `fan_out` node share the checkout by design, so the lock also excludes them, their descendants, and the fan-out siblings of each ancestor; each such pair is recorded as `workflow.checkout_shared` events. Other runs on the path, including children of a different node, still contend.
   - Stores workflow state, step progress, and parent conversation linkage
   - Nullable `user_id` records which user triggered the run
   - Nullable `parent_run_id` (#2121 Phase 2) — self-referential FK (`ON DELETE SET NULL`) linking a `workflow:` sub-run to the run that spawned it; null for top-level runs. Makes the run tree walkable (`findChildRuns`/`getRunAncestry`) for the abandon cascade and cost roll-up.
@@ -117,7 +183,11 @@ The tables defined in `migrations/000_combined.sql` are prefixed with `remote_ag
   - Records step transitions, artifacts, and errors per workflow run
   - Every provider event a workflow node streams, as `provider_event` rows: the engine envelope (`attemptId`, `seq`, `observedAt`, `event`) in `data`, the node in `step_name`. The same envelope is a `provider_event` line in the run's JSONL log. `GET /api/workflows/runs/{runId}/provider-events` serves them; the run-detail route leaves them out
   - Enables workflow run detail views and debugging
+  - On PostgreSQL, `event_order` follows commit order: a row committed later always has a higher value. A deferred constraint trigger (`archon_workflow_event_order`) assigns it at commit while holding an advisory lock, so committing event writers draw values one at a time. Both SQL dialects retain the committed head in `remote_agent_workflow_event_sequence`, so event or run deletion never moves it backwards. PostgreSQL draws from its non-reusing sequence; SQLite increments the high-water row under its single writer
   - Indexed on `created_at` (`idx_workflow_events_created_at`) for the dashboard event poller's cross-run tail. On PostgreSQL an `AFTER INSERT` trigger (`archon_workflow_event_notify`) calls `pg_notify('archon_dashboard_event', …)` so runs started out of process (the `archon` CLI / `--detach`) stream live to the console; on SQLite the poller picks them up within its interval. The trigger is Postgres-only and best-effort (a role without `CREATE TRIGGER` degrades to poll-only, not a boot failure).
+  - A `BEFORE DELETE` trigger copies each deleted row into `remote_agent_workflow_event_archive`, which has the same columns and no run foreign keys, so cursors saved before a deletion can still read the payload. Schema apply adds any column the events table gains to the archive as well
+
+- **`remote_agent_workflow_event_sequence`** - Single-row high-water mark of committed `event_order` values; it never moves backwards when events or runs are deleted
 
 - **`remote_agent_messages`** - Conversation message history
   - Persists user and assistant messages with timestamps
@@ -166,9 +236,18 @@ The tables defined in `migrations/000_combined.sql` are prefixed with `remote_ag
   - `tiers` / `aliases` are JSON-as-TEXT; folded into model resolution as the highest-precedence layer. `default_model` pins the user's direct-chat model (written atomically with `default_provider`; applied only when the effective chat provider matches — workflows still resolve the `large` tier). Resolution follows the **acting user**: workflow runs use the run starter; chat turns use the message **sender** (the conversation creator's row is only a fallback when no sender identity resolves)
   - Editable via the console "Just me" scope, `archon ai … --scope user`, or `/api/auth/me/ai-prefs*`
 
+- **`remote_agent_web_push_subscriptions`** - Browsers opted in to run-attention Web Push
+  - One row per browser endpoint (`UNIQUE(endpoint)`), owned by the user who enabled it and cascaded on user deletion; only that owner can delete it
+  - Stores the endpoint and its encryption keys; every row on the install receives notices, and the attention router removes rows the push service reports as expired (404/410)
+
 - **`remote_agent_schema_version`** - Diagnostic schema vintage
   - Records the Archon build that created the database and the build that last applied its schema
   - A single row (`id = 1`); databases predating this table retain an unknown creation version
+
+- **`remote_agent_state_revisions`** - Durable project JSON documents and their audit history
+  - Primary key: `(project_key, name, revision)`; optimistic writes append a revision
+  - Full JSON value (up to 64 KiB), operation, writer identity or run/node, and creation time
+  - SQL `NULL` value is a tombstone; run IDs have no foreign key so run cleanup preserves state
 
 - **`remote_agent_start_receipts`** - Source delivery receipts
   - Records source instance, delivery ID, content digest, timestamps, and matching outcome
@@ -177,6 +256,7 @@ The tables defined in `migrations/000_combined.sql` are prefixed with `remote_ag
 - **`remote_agent_start_receipt_bindings`** - Per-binding preparation state for a source receipt
   - Keyed by `(receipt_id, binding_id)`; deleted with the owning receipt
   - Tracks binding revision, host, intent, preparation status, owner, and error
+  - `event_input_names` lists which of the intent's inputs came from the source event; preparation passes those only to a workflow that declares them
 
 - **`remote_agent_resource_slots`** - Keyed resource capacity
   - Stores capacity per `resource_key` for workflow and provider-attempt admission
@@ -247,3 +327,9 @@ from the CLI or the server, runs it headless and records no conversation history
 Schema upgrades preserve shipped columns and older writers. Older binaries can
 open and write the upgraded database, but may display the compatibility anchor
 when reading an origin-free run.
+
+## Store event feed
+
+Every workflow store exposes `getWorkflowEventHead()` and `readWorkflowEventsAfter(cursor, { limit, eventTypes? })`. The feed covers all runs in commit order. A page carries each event with its opaque cursor and a `next` cursor that also advances past rows excluded by the type filter. Pass cursors back unchanged; only the issuing store interprets them. A malformed cursor or one from a different store kind throws `WorkflowEventCursorError`.
+
+Start at the head to follow new commits, or resume from a cursor saved by an earlier read. This feed observes committed events; it does not report retractions or undo deliveries when fan-out recovery or cleanup removes events. Earlier cursors can still read those payloads: SQL deletion triggers retain them in a feed archive without run foreign keys, and the file store retains deleted run logs. Feed history has no expiry and is retained for the store's lifetime. `getWorkflowRun` and `listWorkflowEvents` remain the current state of record. File-store reads at the head are cheap; reads with new commits use the derived feed index to select run logs.

@@ -1,11 +1,9 @@
 ---
 name: bevy-ecs-composition
-description: "Docs-first stub for Bevy entity composition. Godot counterpart: godot-composition. Not a full port. Keywords: Bevy, ECS, Component, Query, systems."
+description: "Bevy ECS skill for entity composition. Keywords: Bevy, ECS, Component, Query, systems."
 ---
 
-# Bevy ECS composition (docs-first stub)
-
-Not a full port. Composition here is entities, components, and systems. It is not a node tree.
+# Bevy ECS composition
 
 ## When to use
 
@@ -18,30 +16,29 @@ Load this when gameplay data should be split across small components and systems
 - **Systems** are functions. `Query<&Name, With<Person>>` reads names on entities that also have `Person`. `Query<&mut Name, With<Person>>` writes. Register with `add_systems`.
 - **Schedule:** `Startup` runs once. `Update` runs afterward. Systems run in parallel unless you call `.chain()`. The page chains `update_people` before `greet_people` and leaves an unrelated system outside the chain.
 
-A `Bundle` trait page was not opened. Use the tuple spawn the ECS page shows. Do not invent a bundle macro.
+Use the tuple spawn the ECS page shows. Check the ECS docs for a `Bundle` trait before writing a bundle macro.
 
-## Godot idea to Bevy idiom
+## Coming from Godot
 
-| Idea | Bevy idiom (idea only) |
+| Godot idea | Bevy idiom |
 | --- | --- |
 | Has-a parts on one object | Several `Component` structs on one entity |
 | Behavior script | A system function over a `Query` |
 | Spawn at start | `Commands` in a `Startup` system |
 | Ordered steps | `.chain()` on the systems that depend on each other |
-| Parent/child scene tree | Not opened. Do not invent a hierarchy API |
+| Parent/child scene tree | Check the hierarchy docs before writing a parent/child API. |
 
-## Gaps
+## Scope
 
-- Parent-child hierarchy, required-component derives, and bundle helper traits were not opened.
-- Change detection and system sets were not opened. Order that matters uses `.chain()` only.
-- Editor composition and Control-tree apps stay on the Godot composition-apps skill (`n_a_godot_only`).
-
+- Check the ECS docs for parent-child hierarchy, required-component derives, and bundle helper traits before writing them.
+- Check the ECS docs for change detection and system sets before writing them. Order that matters uses `.chain()` only.
+- Editor composition and Control-tree apps stay on the Godot composition-apps skill.
 
 ## Expert Knowledge Delta
 
-Library target in prose: **Bevy 0.20.0**. Lattice URLs stay unversioned.
+Target: **Bevy 0.20+**.
 
-Opened canon only: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. This file does not invent their struct APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
+Core ECS types: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. See `bevy-events-messaging` for their APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
 
 ### Who owns state
 
@@ -64,22 +61,19 @@ Borrow rule: two systems that both mutably query the same component must be orde
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API this skill did not open | A Gaps row | A fabricated crate (solver, navmesh module, net, XR) |
+| An API outside the documented set | Check the official docs first | A made-up crate or API |
 
-Load `references/a-gate-notes.md` for the same table plus the gap rule.
+Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownership table.
 
 ## NEVER
 
-- Do not put `/0.20.0/` in lattice URLs. WHY: permalinks stay on `latest`. The 0.20.0 pin belongs in prose once.
+- Do not pin `/0.20.0/` in docs URLs. WHY: links stay on `latest`; the 0.20 target is stated once in prose.
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
-- Do not invent a physics, navigation, networking, or XR crate here. WHY: those rows are gaps, blocked, or revisit.
+- Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot node, scene, or component-script types. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No `Bundle` API that this file did not open. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No third-party crates. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Creation Station content. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No umbrella skill over Godot and Bevy. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- Do not mark this row `ported`. It is `docs_mapped`. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Godot node, scene, or component-script types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No `Bundle` API that this file did not open. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No third-party crates. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
@@ -95,16 +89,16 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-master/SKILL.md)  -  Who owns which piece of state.
-- [bevy-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-project-foundations/SKILL.md)  -  Crate and `App` shell.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Who owns which piece of state.
+- [bevy-project-foundations](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-project-foundations/SKILL.md)  -  Crate and `App` shell.
 
 #### Complements
-- [bevy-data-resources](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-data-resources/SKILL.md)  -  App-wide data that should not be a component.
-- [bevy-events-messaging](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-events-messaging/SKILL.md)  -  Cross-system notices that are not a shared component.
-- [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md)  -  Godot counterpart. Source idea only. Do not import Godot types.
+- [bevy-data-resources](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md)  -  App-wide data that should not be a component.
+- [bevy-events-messaging](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-events-messaging/SKILL.md)  -  Cross-system notices that are not a shared component.
+- [godot-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-composition/SKILL.md)  -  Equivalent Godot skill. Do not import Godot types.
 
 #### Downstream / consumers
-- [bevy-character-movement](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-character-movement/SKILL.md)  -  Movement components and systems on the fixed timestep.
+- [bevy-character-movement](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-character-movement/SKILL.md)  -  Movement components and systems on the fixed timestep.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.

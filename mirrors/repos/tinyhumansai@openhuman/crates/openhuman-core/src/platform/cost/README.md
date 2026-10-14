@@ -135,5 +135,5 @@ Before every model call, the agent's budget gate (`OpenHumanBudgetGate::acquire`
 ## Further reading
 
 - [Parent module (`platform`)](../README.md)
-- [Billing and usage](../../../../../gitbooks/features/billing-and-usage.md)
-- [Platform and availability](../../../../../gitbooks/features/platform.md)
+- [Billing and usage](../../../../../docs/gitbooks/en/features/billing-and-usage.md)
+- [Platform and availability](../../../../../docs/gitbooks/en/features/platform.md)

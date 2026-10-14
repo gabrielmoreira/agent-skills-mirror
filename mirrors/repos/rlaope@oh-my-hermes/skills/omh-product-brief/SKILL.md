@@ -1,6 +1,8 @@
 ---
 name: "omh-product-brief"
 description: "[omh] PRD or roadmap priorities to decide: turn product evidence into a decision-ready PRD, prioritization frame, and roadmap brief. Use when the user says: product requirements document, PRD, roadmap prioritization, 제품 요구사항 문서, 제품 기획서, 로드맵 우선순위."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -8,6 +10,7 @@ metadata:
     phase: product-brief
     role: planner
     quality_tier: planning-gated
+    related_skills: [omh-feedback-triage, omh-product-discovery-validation, omh-lifecycle-growth, omh-decide, ulw-plan, ulw-work, omh-apps]
 ---
 
 # Product Brief
@@ -20,12 +23,12 @@ This is a Hermes-native `product-brief` workflow skill.
 
 ## Do Not Use When
 
-- The input is unprocessed feedback, bug reports, or feature asks that first need clustering and evidence boundaries; use `feedback-triage`.
-- The product evidence is unvalidated, synthetic, or a founder belief and the problem gate has not returned validated; use `product-discovery-validation` before a PRD.
-- The input is a growth hypothesis that still needs an experiment and readout before it becomes a product requirement; use `lifecycle-growth`.
-- The user needs a company or product strategy decision across high-level options rather than a requirements or roadmap artifact; use `strategy-brief`.
-- The request is an accepted, code-ready change with repository constraints and verification needs; use `ralplan` or `ultrawork` rather than recreating a PRD.
-- The user asks to create or update Jira, Linear, Aha!, or a roadmap system directly; use `connector-operator` with explicit target, approval, and observed evidence.
+- The input is unprocessed feedback, bug reports, or feature asks that first need clustering and evidence boundaries; use `omh-feedback-triage`.
+- The product evidence is unvalidated, synthetic, or a founder belief and the problem gate has not returned validated; use `omh-product-discovery-validation` before a PRD.
+- The input is a growth hypothesis that still needs an experiment and readout before it becomes a product requirement; use `omh-lifecycle-growth`.
+- The user needs a company or product strategy decision across high-level options rather than a requirements or roadmap artifact; use `omh-decide`.
+- The request is an accepted, code-ready change with repository constraints and verification needs; use `ulw-plan` or `ulw-work` rather than recreating a PRD.
+- The user asks to create or update Jira, Linear, Aha!, or a roadmap system directly; use `omh-apps` with explicit target, approval, and observed evidence.
 
 ## Examples
 
@@ -56,9 +59,9 @@ Bad example:
 
 - Current lane: **Intent -> plan** (`oh-my-hermes`, `meta-router`, `deep-interview`, `context`, `plan`, `ralplan`, `adversarial-consensus`, `codebase-onboarding`, `+8 more`) - clarify, plan, ship, or loop goals.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when a product owner needs a problem frame, user/outcome definition, PRD, prioritization/roadmap options, dependencies, acceptance shape, and decision record before delivery planning.
 
@@ -125,4 +128,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

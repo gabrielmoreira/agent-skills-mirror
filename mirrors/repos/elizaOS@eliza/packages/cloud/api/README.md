@@ -36,6 +36,49 @@ native configuration. Retain the existing S256 grant, inactive exchange, durable
 receipt acknowledgment, self-revocation and account recovery contracts. `cloud:user`
 is the existing broad user/organization capability, not a narrower permission claim.
 
+## Subscription grant codes and entitlements
+
+Grant codes are Cloud-native, not Stripe promotion codes. A redeemed code gives
+the organization its plan (default Plus for 183 days) through the existing
+entitlement and monthly allowance tables, then reverts. One grant per
+organization per code family. An effective paid subscription keeps precedence:
+a grant redeemed during a paid plan runs at the same time and serves only after
+the paid plan stops serving (lapse, cancellation or expiry) inside the grant
+window. The redeem response says so with `grant.paidPlanTakesPrecedence`.
+
+- `POST /api/v1/subscription/redeem` with `{code, idempotencyKey}`, using an API
+  key or a session. Replays return the original grant. Unknown, expired,
+  disabled and used-up codes return one generic 400. Limited per credential
+  (own counter) and per IP. Codes are 16 Crockford base32 characters; O reads
+  as 0 and I/L as 1.
+- `GET /api/v1/subscription/entitlement` returns `{entitlement}`, a 30-minute
+  ES256 JWS (`typ` `eliza-entitlement+jwt`, `aud` `eliza-alpha-phone`). It
+  never expires after the plan window it reports.
+- `GET /api/v1/subscription/entitlement-keys` (public, cached 60 s) returns the
+  current, previous and next public keys. Both entitlement routes return 503
+  until the `ELIZA_ENTITLEMENT_*` secrets are set; redeem needs
+  `ELIZA_SUBSCRIPTION_GRANT_CODE_PEPPER`.
+- Key rotation: set `ELIZA_ENTITLEMENT_NEXT_*` and wait over 60 s; then sign
+  with the new key, move the old public key to `ELIZA_ENTITLEMENT_PREVIOUS_*`
+  and clear `NEXT`; clear `PREVIOUS` after 30 minutes.
+- Inference refusals: a subscriber whose current allowance is spent gets 402
+  `insufficient_quota` with `code: "allowance_exhausted"` and `resetsAt`
+  (402, not 429, keeps existing OpenAI-style clients). 429 bodies add
+  `retryAfterSeconds`.
+
+Scripts (same `DATABASE_URL` and pepper as the target environment; apply
+migration `0542_subscription_grant_codes` first):
+
+- Mint: `bun --conditions=eliza-source packages/cloud/scripts/admin/mint-subscription-grant-codes.ts --count N`.
+  Codes print once; only HMACs are stored.
+- Revoke: `bun --conditions=eliza-source packages/cloud/scripts/admin/revoke-subscription-grants.ts --reason "..." --code XXXX-XXXX-XXXX-XXXX`
+  (or `--grant-id`). Service stops at once; `--code` also disables the code.
+- Staging: mint with the `Cloud staging mint grant codes` workflow, which seals
+  the codes to your public key (see `packages/cloud/scripts/README.md`).
+
+Grant rows are retained billing records. Deleting the redeeming user clears
+`user_id`; an organization keeps its grant rows like its paid allowance history.
+
 ## Pending plan-change discovery
 
 `GET /api/v1/subscriptions/plan-change/commands?limit=...` rediscovers the current

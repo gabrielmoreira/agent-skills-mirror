@@ -60,6 +60,14 @@ Keep source-observed behavior separate from this skill's stronger guidance:
 
 Canonical additions: [per-request routing](agentic-loop.md#per-request-model-routing), [runtime configuration events](architecture.md#runtime-instruction-and-tool-configuration-events), and [economic warming](prompt-caching-and-cost.md#economic-cache-warming). Reuse instruction hierarchy, context preservation, tool permissions, adapter compatibility, and [focused evals](evals.md#routing-configuration-and-warming-evals) by link rather than creating another architecture profile.
 
+## Application performance optimization case study
+
+- Dated source: [How we made claude.ai 3x faster in two weeks](https://claude.dev/blog/how-we-made-claude-ai-faster/), Raymond Wang, Sam Attard, and Issac G., published September 23, 2026; inspected October 6, 2026.
+- The authors describe lab proxies checked against wall-clock latency, rejection of flaky or non-correlating benchmarks, CI ceilings lowered after improvements, and post-deployment field reads deciding whether to retain a change. They report human steering and approval of every shipped change.
+- The reported comparison uses August 13 versus August 27 real-user p75 measurements of application journeys. It does not measure harness overhead or isolate the effect of the agent from human work and concurrent changes.
+
+This is a first-party engineering account without linked benchmark code, raw telemetry, or a pinned implementation commit. Numerical gains, benchmark determinism, synthetic frame-stepping results, and incident counts remain author-reported. The [performance eval contract](evals.md#performance-optimization-and-regression-ratchets) adds our provider-neutral requirements for measurement provenance, versioned baselines, reviewed evaluator changes, and production acceptance; these are stronger guidance, not verified implementation claims. Reuse the existing feedback, tracing, permission, and workflow owners.
+
 ## Pi Durable task and conversation runtime
 
 - Launch article: [Pi Durable](https://earendil.com/posts/pi-durable/), October 1, 2026. The article describes an experimental framework alongside the coding-agent release.
@@ -102,6 +110,54 @@ Keep these limitations separate from stronger generic guidance:
 Payload fingerprint conflict checks, deployment fencing, authority revalidation, complete external-effect/billing reconciliation, and deletion-generation guards in this skill are proposed stronger requirements, not implementation guarantees inferred from these sources.
 
 Canonical guidance lives in [always-on agents](always-on-agents.md) and [context and compaction](context-memory-compaction.md). Reuse the existing instruction hierarchy, tool permissions, goals/budgets, security/observability, and evaluation owners by link; source-specific storage settings and experimental APIs remain in this intake.
+
+## Scheduled collection and delivery bookkeeping
+
+- Lance Martin and CJ Avilla, [Building effective agent automations](https://claude.dev/blog/building-effective-agent-automations/), published October 8, 2026; article and linked implementation rechecked October 13, 2026.
+- Reference implementation: [Claude Quickstarts daily brief at `9ec32b91df50b0d4906cae64b13c6298055ff40d`](https://github.com/anthropics/claude-quickstarts/tree/9ec32b91df50b0d4906cae64b13c6298055ff40d/managed-agents/daily-brief), committed October 7, 2026. Inspected the [agent instructions](https://github.com/anthropics/claude-quickstarts/blob/9ec32b91df50b0d4906cae64b13c6298055ff40d/managed-agents/daily-brief/agents/daily-brief/agent.md), [deployment](https://github.com/anthropics/claude-quickstarts/blob/9ec32b91df50b0d4906cae64b13c6298055ff40d/managed-agents/daily-brief/agents/daily-brief/deployment.md), README, environment and memory-store configuration, credential setup, and inspection utilities. No runtime was deployed or source code executed; the inspected quickstart contains no deterministic collector/delivery implementation or corresponding tests.
+
+This is a composition of incremental collection, partial-result reporting, and external-effect bookkeeping, not a new model, training method, or autonomy level. The useful delta is their monitoring-specific relationship; generic scheduling, memory, permissions, budgets, and retries already have owners.
+
+Source-observed limits:
+
+- Bookmarks, failed-read coverage, live-status checks, receipt-before-bookkeeping, and uncertain-send handling are prompt instructions. Pagination, complete scan boundaries, timestamp ties, late updates, and per-repository checkpoint semantics are unspecified; the requested ten-minute overlap conflicts with the literal Slack `oldest=bookmark` instruction.
+- Publication checks Slack's response body for `ok` and a message timestamp, but the quickstart supplies no atomic bookkeeping or concurrent-run exclusion. Its quiet branch asks for a posted status/message ID despite sending nothing; duplicate-title bookkeeping is unclear.
+- Read-only preferences and mutable state are deployment configuration. The default shared Slack token can write in joined source channels, as the README warns; destination-only and dry-run no-post behavior remain prompt constraints. GitHub read-only access depends on the supplied token's actual rights.
+- A per-run cap can pause a session and appear as silence; see [scheduled deployment budgets](https://platform.claude.com/docs/en/managed-agents/scheduled-deployments#set-a-budget-on-each-run). The quickstart includes manual inspection, not an independent scheduled watchdog.
+
+The [recurring collection contract](always-on-agents.md#recurring-collection-and-delivery-bookkeeping) and its [failure probes](evals.md#always-on-and-durable-runtime-evals) are stronger provider-neutral guidance, not guarantees demonstrated by this sample. Reuse existing transaction, external-effect, provenance, permission, and observability owners by link.
+
+## Realtime voice agents
+
+Primary documentation and implementation inspected October 13, 2026. These sources support the [voice architecture profile](realtime-voice-agents.md) and [provider adapter distinctions](provider-api-patterns.md#realtime-voice-adapters); the profile combines established voice/media and harness mechanisms, not a new model, training method, or autonomy level.
+
+- Architecture comparison: OpenAI [Voice agents](https://developers.openai.com/api/docs/guides/voice-agents), covering delegated full duplex, native speech-to-speech, chained STT/agent/TTS, and separate task, audio, timing, and reliability evaluation.
+- Current model pages: [GPT-Realtime-2.1](https://developers.openai.com/api/docs/models/gpt-realtime-2.1) and [2.1 Mini](https://developers.openai.com/api/docs/models/gpt-realtime-2.1-mini) are reasoning voice models with tool use and 128k context; [GPT-Live 1](https://developers.openai.com/api/docs/models/gpt-live-1) listens while speaking and delegates reasoning/tools to a separate backend. This does not support a blanket claim that voice models cannot reason or always require a second model.
+- Realtime protocol: [starter](https://developers.openai.com/api/docs/guides/realtime), [VAD](https://developers.openai.com/api/docs/guides/realtime-vad), [interruption/truncation](https://developers.openai.com/api/docs/guides/realtime-conversations#interruption-and-truncation), and terminal [response.done schema](https://developers.openai.com/api/reference/resources/realtime/server-events#response.done).
+- Live protocol: [getting started](https://developers.openai.com/api/docs/guides/live), [delegation and tools](https://developers.openai.com/api/docs/guides/live-delegation), [session/transcript lifecycle](https://developers.openai.com/api/docs/guides/live-conversations), [prompting](https://developers.openai.com/api/docs/guides/live-prompting), and [migration](https://developers.openai.com/api/docs/guides/live-migration).
+- Output checks and controls: [server-side controls](https://developers.openai.com/api/docs/guides/voice-server-controls?api=live), especially [checking speech before playback](https://developers.openai.com/api/docs/guides/voice-server-controls?api=live#check-speech-before-playback). Concurrent transcript checks cannot retract audio already played; buffering adds latency and withheld speech can remain in model context.
+
+Documentation version boundaries:
+
+- The Realtime starter uses `gpt-realtime-2.1`, while [voice prompting](https://developers.openai.com/api/docs/guides/voice-prompting) still labels its guidance Realtime 2 / 2.0 and describes `gpt-realtime-2` as the leading model. Its reasoning-level enumeration is not proof of compatibility with every newer model; verify the selected model/API before adopting settings.
+- The conversation guide mentions `response.cancelled`, whereas the current server schema specifies terminal `response.done` with status. Preserve this discrepancy rather than copying guide prose into an event contract.
+- Live transcript/delegation events and context acknowledgments are not conventional completed turns, execution results, or playback receipts. The exact event/limit distinctions belong in [provider adapters](provider-api-patterns.md#realtime-voice-adapters); model-managed compaction does not make conversation history an authoritative business record.
+
+Pinned implementation: [OpenAI Codex at `7e9c061ceb388c67097acac069d6b7f8a60e5011`](https://github.com/openai/codex/tree/7e9c061ceb388c67097acac069d6b7f8a60e5011). Source-observed evidence:
+
+- The supplied [handoff routing path](https://github.com/openai/codex/blob/7e9c061ceb388c67097acac069d6b7f8a60e5011/codex-rs/core/src/realtime_conversation.rs#L1797-L1819) routes text into the main session before publishing the raw event. That receipt log deliberately omits routed text because it can contain spoken prompts or workspace secrets.
+- The [front-agent prompt](https://github.com/openai/codex/blob/7e9c061ceb388c67097acac069d6b7f8a60e5011/codex-rs/prompts/templates/realtime/backend_prompt.md#L13-L51) separates conversational presentation from execution and steers ongoing backend work. Its refusal suppression and elevation of backend output are product policy, not provider-neutral instruction-authority or security rules.
+- The [admission gate](https://github.com/openai/codex/blob/7e9c061ceb388c67097acac069d6b7f8a60e5011/codex-rs/core/src/realtime_conversation.rs#L136-L165) serializes routing against retirement; the [response queue](https://github.com/openai/codex/blob/7e9c061ceb388c67097acac069d6b7f8a60e5011/codex-rs/core/src/realtime_conversation.rs#L421-L473) coalesces response creation while generation is active. These are lifecycle controls, not proof of end-to-end exactly-once work or audible delivery.
+- [Audio ingress](https://github.com/openai/codex/blob/7e9c061ceb388c67097acac069d6b7f8a60e5011/codex-rs/core/src/realtime_conversation.rs#L858-L883) can drop a frame on a full queue while returning success. [Native playback](https://github.com/openai/codex/blob/7e9c061ceb388c67097acac069d6b7f8a60e5011/codex-rs/voice-host/src/playback.rs#L81-L107) can consume an overdue chunk without enqueuing it. Successful submission/consumption therefore does not prove speech was played.
+- The [interruption handler](https://github.com/openai/codex/blob/7e9c061ceb388c67097acac069d6b7f8a60e5011/codex-rs/core/src/realtime_conversation.rs#L2590-L2624) truncates using [accumulated received-audio duration](https://github.com/openai/codex/blob/7e9c061ceb388c67097acac069d6b7f8a60e5011/codex-rs/core/src/realtime_conversation.rs#L2752-L2792), not a confirmed speaker cursor. The profile's provenance-bearing playback cursor is proposed stronger guidance.
+- Product [model literals](https://github.com/openai/codex/blob/7e9c061ceb388c67097acac069d6b7f8a60e5011/codex-rs/core/src/realtime_conversation.rs#L112-L113) are `gpt-realtime-1.5` and `gpt-live-1-codex`; [version selection](https://github.com/openai/codex/blob/7e9c061ceb388c67097acac069d6b7f8a60e5011/codex-rs/core/src/realtime_conversation.rs#L1587-L1600) does not establish current public API availability. The [V2 parser](https://github.com/openai/codex/blob/7e9c061ceb388c67097acac069d6b7f8a60e5011/codex-rs/codex-api/src/endpoint/realtime_websocket/protocol_v2.rs#L65-L76) also logs unsupported payloads; the payload-free handoff receipt is not global log redaction.
+
+Independent voice-system evidence, checked on the same date:
+
+- LiveKit [turn management](https://docs.livekit.io/agents/logic/turns/) distinguishes endpointing, interruption decisions, and false-interruption recovery; its realtime-mode section explains that most framework interruption options do not apply when the model owns server-side detection. [Tuning guidance](https://docs.livekit.io/agents/logic/turns/tuning/) separates detection, interruption, preemptive generation, and audio preprocessing. Its default timings are implementation settings, not portable thresholds.
+- Pipecat's published [output-transport source](https://reference-server.pipecat.ai/en/stable/_modules/pipecat/transports/base_output.html) shows interruption-specific queue/task handling that preserves explicitly uninterruptible output and clears unwanted audio/resampler residue. This is a dated inspection of a moving `stable` source page, not a pinned release or runtime reproduction.
+
+No model calls, live latency/accuracy benchmarks, device commissioning, or Codex test execution were performed for this intake. Documentation describes supported behavior; inspected code provides implementation evidence, not measured conversation quality. Reuse existing tool permissions, task recovery, context/compaction, and evaluation methodology by link; keep detailed voice cases in [evals](evals.md).
 
 ## OpenAI
 
@@ -273,6 +329,7 @@ Canonical guidance lives in [the public-board communication section](skills-and-
 - Use Agent Skills links for format, metadata, progressive disclosure, descriptions, and skill evals.
 - Use the harness bug report for dated incident examples and troubleshooting prompts, not verified implementation behavior or portable performance claims.
 - Use empirical coding-harness research for conditional component-selection evidence; preserve the tested scope and bundled-intervention caveats rather than turning reported averages into universal defaults.
+- Use the [performance case study](#application-performance-optimization-case-study) for measurement-driven optimization practice, with its author-reported and application-performance scope preserved.
 - Use OpenAI links for API implementation patterns, function calling, hosted tools, guardrails, sandboxes, prompt caching, response-style APIs, and harness engineering practices.
 - Use Anthropic links for simple agent patterns, context engineering, tool ergonomics, long-running harnesses, agent evals, MCP execution patterns, and skill architecture.
 - Use MCP links for wire-level server and tool discovery, typed catalogues, authorization, catalogue caching and change signals, and connector design. The protocol does not by itself verify semantic suitability, establish trust, or grant execution authority.

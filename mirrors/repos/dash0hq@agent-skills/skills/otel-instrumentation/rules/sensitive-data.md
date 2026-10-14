@@ -209,8 +209,6 @@ Use a custom `SpanProcessor` to intercept and sanitize spans before they are exp
 The `onEnd` method receives every finished span, including those created by auto-instrumentation.
 
 ```javascript
-import { SpanProcessor } from '@opentelemetry/sdk-trace-base';
-
 const SENSITIVE_ATTRIBUTES = [
   'http.request.header.authorization',
   'http.request.header.cookie',
@@ -244,16 +242,20 @@ class SensitiveDataRedactingSpanProcessor {
 }
 ```
 
-Register the processor on the tracer provider **before** the export processor so it runs on every span:
+Register the processor on the tracer provider **before** the export processor so it runs on every span.
+Configure these processors on the application’s existing SDK or provider; do not register a second provider after a zero-code auto-instrumentation hook has already initialized one.
 
 ```javascript
 import { NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
 import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 
-const provider = new NodeTracerProvider();
-provider.addSpanProcessor(new SensitiveDataRedactingSpanProcessor());
-provider.addSpanProcessor(new BatchSpanProcessor(new OTLPTraceExporter()));
+const provider = new NodeTracerProvider({
+  spanProcessors: [
+    new SensitiveDataRedactingSpanProcessor(),
+    new BatchSpanProcessor(new OTLPTraceExporter()),
+  ],
+});
 provider.register();
 ```
 

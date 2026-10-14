@@ -22,6 +22,7 @@ skillshare mcp list --json
 skillshare mcp check
 skillshare mcp check docs --json --no-dns
 skillshare mcp check --live --timeout 30s
+skillshare mcp check docs --live --accept-tools
 skillshare mcp remove docs --sync
 skillshare mcp remove docs --keep-files
 skillshare mcp restore BACKUP_ID --dry-run
@@ -52,6 +53,7 @@ skillshare sync --all
 | `--no-dns` | 与 `check` 一起使用：跳过远程 server 的主机名解析。参见[下文](#check-servers-before-an-agent-starts-them) |
 | `--live` | 与 `check` 一起使用：还会启动每个本地 server，并调用每个远程 server。参见[下文](#probe-servers-live) |
 | `--timeout DURATION` | 与 `check --live` 一起使用：每个 server 探测的时间限制，例如 `30s`；默认 `10s` |
+| `--accept-tools` | 与 `check --live` 一起使用：把每个已探测 server 列出的工具定义记录为新的基线。参见[下文](#pin-tool-definitions) |
 | `--http ADDR` | 与 `serve` 一起使用：在 `ADDR` 上以 Streamable HTTP 监听，而不使用 stdio。参见[下文](#serve-skills-over-mcp) |
 | `--tls-cert FILE`, `--tls-key FILE` | 与 `serve --http` 一起使用：以这个 PEM 证书和私钥提供 HTTPS；监听非 loopback 地址时必须提供 |
 | `--check` | 与 `serve` 一起使用：列出会被跳过的 skill 及原因，然后退出，不提供服务 |
@@ -216,9 +218,11 @@ client 的 MCP 文件存在，或该 client 用于保存设置的文件夹存在
 已检测到，因此即使是全新安装、还没有 MCP 文件，也仍会出现在列表中。在 project mode 下，
 当项目拥有自己的 MCP 文件，或该 client 在全局范围内被检测到时，就会列出该 client。
 每个检测到的 client 会显示其 MCP 文件名，**Copy path** 会复制完整路径。文件存在后，
-**Open in editor** 会用与 skill 的 **Open in editor** 相同的编辑器打开它。编辑器在运行
-dashboard 的机器上启动，所以只有当浏览器也在那台机器上打开（通过 `localhost` 或 SSH
-端口转发）时才会显示这个按钮，通过局域网地址或反向代理访问时不会显示。
+**Open in editor** 会用与 skill 的 **Open in editor** 相同的编辑器打开它。**Open folder**
+会用文件管理器（Finder、文件资源管理器，Linux 上为默认处理程序）打开文件所在的文件夹；
+client 还没写入文件时，打开最近一个已存在的文件夹。这样不必设置 `$EDITOR` 也能用任意程序
+打开文件。两者都在运行 dashboard 的机器上启动，所以只有当浏览器也在那台机器上打开（通过
+`localhost` 或 SSH 端口转发）时才会显示这些按钮，通过局域网地址或反向代理访问时不会显示。
 
 其他 client 细节：
 
@@ -475,7 +479,7 @@ mcp:
   servers:
     context7:
       command: npx
-      args: ["-y", "@upstash/context7-mcp"]
+      args: ["-y", "@upstash/context7-mcp@4.4.1"]
       targets: [claude, opencode]
   projects:
     ~/work/project01:
@@ -548,6 +552,8 @@ mcp:
   按项目的开关，该行会说明这个 server 在那里仍会加载。如果某个条目列出了自己的
   `targets`，且与项目的 targets 不同，就会出现 **改成与项目一致**：它会把该条目重新保存为
   不带 `targets` 的形式。
+- 标签页右侧的 **Agents** 列表显示该 project 的 Agent、project 专属服务器发往的 Agent，
+  以及文件已在 project 中的其他 Agent，附带文件名和 **Copy path**。**Open folder** 和 **Open in editor** 与 MCP 页面相同。
 - 该标签页 Sync 框中的 **Sync MCP** 会写入整个 MCP 计划，并说明其中有多少更改
   位于此项目之外。项目页面顶部的 **Sync project** 只写入此项目的 skills、agents 和 MCP。
 - **默认值** 位于 **MCP** 标签页底部，用于编辑 `mcp.targets`。
@@ -588,6 +594,8 @@ skillshare mcp check --no-dns
 |---|---|
 | `env`、`headers` 或 `bearerToken` 中的 `fromEnv` 变量未设置或为空 | error |
 | 在 `PATH` 上找不到本地 server 的 `command`（开头的 `~/` 会被展开） | error |
+| 本地 server 用 `npx`、`uvx`、`pipx run`、`docker run` 或 `podman run` 运行的包没有确切版本（未指定、`latest`、`next` 之类的 dist-tag、`^1.2` 之类的范围或 `==1.*` 通配符，包括 npx 的每个 `--package` 和 uvx 的 `--with`），或镜像没有标签或为 `latest` | warning |
+| 本地 server 的镜像有 tag 但没有 `@sha256:` digest，tag 可能被移动 | info |
 | 远程 server 的主机无法通过 DNS 解析（限时 3 秒；用 `--no-dns` 跳过） | warning |
 | 某个 Agent 的规则拒绝该 server，例如 Claude Code 保留的名称 | error |
 | 某个 Agent 的条目与 source 冲突，与 `sync mcp --dry-run` 相同 | error |
@@ -635,9 +643,9 @@ skillshare mcp check --no-dns
 }
 ```
 
-`check` 是 `env`、`command`、`url`、`dns`、`client-rule`、`sync`、`targets`、`tools` 或 `live` 之一。
+`check` 是 `env`、`command`、`pin`、`url`、`dns`、`client-rule`、`sync`、`targets`、`tools`、`tool-change` 或 `live` 之一。
 `target` 表示 Agent 或账户；当该发现针对的是 server 本身时为空。
-`subject` 在 `env`、`command` 和 `dns` 发现中表示变量、命令或主机；在成功的 `live` 探测中表示
+`subject` 在 `env`、`command`、`pin` 和 `dns` 发现中表示变量、命令、包、镜像或主机；在成功的 `live` 探测中表示
 server 报告的名称；在 `live` 登录 warning 中表示资源元数据 URL；其他情况下省略。
 `project` 是该 server 所在的 `mcp.projects` 根目录，以绝对路径表示（开头的 `~` 会被展开）；
 global server 则省略此字段。`summary` 统计报告中的每个 server，包括项目 server。
@@ -680,11 +688,14 @@ skillshare mcp check docs --live --timeout 30s --json
 | 远程 server 需要登录（HTTP 401） | warning |
 | 命令无法启动、提前退出，或未及时响应 | error |
 | 协议错误、不支持的协议版本，或其他任何 HTTP 状态 | error |
+| server 的首次成功探测：它的工具定义被固定（pin） | info |
+| 某个工具的 description 或输入 schema 与固定值不同，或 server 列出了未被固定的工具 | warning |
+| 已固定的工具不再被列出 | info |
 
 本地 server 失败时，消息末尾会附上其 stderr 的最多五行。`env`、`headers` 和 `bearerToken`
 的值会从每条消息中移除；短于四个字符的值保持原样。值按写入的原样传递：Skillshare 永远不会
 运行 Pi 的 `!command` 值，也不读取 `piOptions`。退出码遵循同样的规则，发现任何 error 时为 1。
-`--live` 不写入任何文件，也不写入操作日志条目。
+`--live` 不写入任何配置文件，也不写入操作日志条目；它只在 state 目录中保存[工具固定值](#pin-tool-definitions)。
 
 使用 `--json` 时，已响应的 server 还会有一个 `live` 对象：
 
@@ -705,6 +716,32 @@ skillshare mcp check docs --live --timeout 30s --json
 仪表盘的 **检查** 按钮只运行静态检查。仪表盘只在一个地方探测 server：server 对话框
 [工具区块](#tool-policy-dashboard)中的 **加载工具**，它会按对话框当前的字段启动 server
 一次，列出它的工具。使用 `--json` 时，`live` 还包含 `toolNames`，即 `tools/list` 返回的名称。
+
+### 固定工具定义 {#pin-tool-definitions}
+
+server 可能在你审阅之后修改某个工具的描述或它接受的输入，而 Agent 会不加询问地照做。因此 `--live` 会在
+server 第一次响应时固定（pin）每个工具，并把之后每次探测都与该固定值比较。
+
+- **固定的内容。** 每个工具一个 SHA-256 哈希，覆盖它的 `name`、`description` 和 `inputSchema`，
+  按规范化 JSON 计算：键的顺序和空白不影响结果。哈希按范围（global、`mcp.projects` root，或 `-p` 选定
+  的 project）和 server 名称保存在 Skillshare state 目录的 `mcp/tool-pins.json` 中，位于 `state.json`
+  旁边。不会保存 description 或 schema 的文本。
+- **首次探测。** 记录基线，并由一条 check 为 `tool-change` 的 `info` 发现说明。没有 warning。
+- **之后的探测。** description 或输入 schema 发生变化的工具，以及固定之后新增的工具，各得到一条列出工具
+  名称的 `tool-change` `warning`。不再被列出的工具是 `info`。基线保持不变，因此在你接受之前同样的 warning
+  会一直出现。warning 不会使退出码变为 1。
+- **接受。** 审阅这些工具后，运行 `skillshare mcp check docs --live --accept-tools`。每个被探测的已选
+  server 会把它现在列出的内容记录为基线，并由一条 `info` 发现列出被更改、新增或移除的工具。
+  不带 `--live` 使用 `--accept-tools` 是 error。每次接受都会连同被接受的 server 记录到操作日志
+  （`skillshare log`）。名称会选中全局和每个 `mcp.projects` root 中的同名
+  server，并全部接受，所以请逐一审阅报告列出的每一个。无法读取的 `tool-pins.json`（包括较新版本写入的）
+  会在每个被探测的 server 上产生 warning，而且因为它可能含有其他 server 的固定，连 `--accept-tools`
+  也不会改写它；要重新固定，请把文件移走。
+
+不带 `--live` 时既不读取也不写入固定值。你编辑过的 server（换了命令或 URL），或删除后再添加的 server，
+会以同一名称保留它的固定值：如果它的工具确实有变化，接受一次新定义即可。
+`GET /api/mcp/check?live=1`（仪表盘 **检查** 按钮调用的端点，按钮不会发送 `live`）
+也会固定并比较，但不能接受。
 
 ## 停止管理某个 server {#stop-managing-a-server}
 
@@ -864,7 +901,8 @@ npx @modelcontextprotocol/inspector --cli skillshare mcp serve --method skills/l
   因此同步到 VS Code 的 header 和 `bearerToken` 引用在该问题修复之前，
   到达 server 时都是未解析的原始文本。
 - 本地操作记录保存在 Skillshare state 目录下的 `mcp/` 中：
-  `state.json`、写入期间的 `pending.json`，以及 `backups/`（每个
+  `state.json`、写入期间的 `pending.json`、`tool-pins.json`（`mcp check --live` 的
+  [工具固定值](#pin-tool-definitions)），以及 `backups/`（每个
   Agent 文件保留最新的 20 份）。请勿将此
   目录作为可移植的清单来共享。
 

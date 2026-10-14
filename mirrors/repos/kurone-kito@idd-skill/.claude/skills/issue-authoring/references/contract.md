@@ -831,7 +831,10 @@ the section parsing to zero paths -- heading missing or present but
 empty -- disqualifies it from `ready`, unless it also carries an
 `authoring-bucket: needs-decision`/`blocked-by-human` marker or a
 suitability score of `1` (`audit-authored-issue`'s
-`candidate-files-not-empty` check).
+`candidate-files-not-empty` check). A child with an `S` or `M` effort
+hint must also stay within the
+[over-scope split threshold](#effort-hint)
+(`effort-candidate-file-limit`).
 
 - List each candidate file path inside backticks, one path (or one
   bullet) per line — for example `` - `src/scripts/idd-onboard.mts` ``.
@@ -987,6 +990,68 @@ Observed incidents:
   issue holds a recorded decision whose premise its own reproduction
   contradicts, and the marker the decision names is absent from the source.
 
+### Destructive operations
+
+A drafted change that deletes a file, overwrites an existing file,
+removes a tree recursively, records ownership of a file, or writes to a
+path that could be a link gives each such operation an acceptance
+criterion for each of the six cases below, or names the guard that makes
+the case impossible. The completed-draft critique checklist asks the
+reviewer to check this; `audit-authored-issue` does not.
+
+1. **Ownership.** A file that the tool did not create is never recorded
+   as the tool's own, even when its content matches what the tool would
+   write. Pre-existing content that the tool did not create is left alone.
+2. **User edits.** A file that the user edited, or added beside the
+   managed files, survives the operation. The operation refuses, instead
+   of removing it, and a refusal removes nothing.
+3. **Overwrite.** The operation does not replace an existing file that it
+   does not own. An overwrite the operator wants is named in the body's
+   open questions for operator approval.
+4. **Links.** Each existing component of the target path below the root is checked
+   with a no-follow stat before the first write or removal. A path component that
+   does not exist yet is created only after every existing component above it
+   has been checked. The write itself uses a no-follow open for the final
+   component, so a write to a final-component link is refused, and a removal
+   of a final-component link removes the link without following it. A write to
+   a file with more than one hard link is refused, because a no-follow stat
+   cannot show that another name for the same file lies outside the root;
+   removing one of its names leaves the others in place. If the
+   platform cannot close the window that remains between a check and the act,
+   the body states that window as an open risk for the operator to accept.
+5. **Recursive removal.** A recursive removal finds every path it would remove
+   with no-follow stats before it removes anything, and it does not descend
+   through a symlink. It removes the link itself, and it refuses, removing
+   nothing, when any path it would remove lies outside the root.
+6. **Root containment.** Nothing outside the root is written or removed. The
+   root is the directory the operation is given to work under, such as the
+   data directory an install writes into. This holds even through a link that
+   the tool created itself. A write or removal whose path has a symlinked
+   parent component below the root is refused, not followed: each such
+   component is found with a no-follow stat before the write or removal runs,
+   and a refusal removes nothing. A removal of a final-component link removes
+   the link itself, as item 4 says. This covers a non-recursive removal as
+   well as a recursive one.
+
+In cases 4 to 6, anything that a no-follow check cannot settle is an open risk
+that the body names for the operator to accept. Examples are the resolution of
+the root itself when the root is a link, a link above the root, and the window
+between a check and the act, which item 4 describes. The refusals in items 4
+to 6 take precedence, so the open risk applies only where no item refuses the
+case.
+
+Observed incident:
+
+- Observed 2026-10-12 to 2026-10-13, PR `kurone-kito/idd-skill#4073`, closed
+  without merging, for issue `kurone-kito/idd-skill#3825`: the issue's
+  acceptance criteria said nothing about these cases, and review then found
+  an uninstall that deleted a file the user had added or edited inside the
+  payload (case 2, review thread), a byte-identical file that predated the
+  install and was recorded as installer-owned (case 1, comment 4249375122),
+  and managed data paths that followed a symlink component, so writes
+  resolved outside the data root (cases 4 and 6, comment 4249375009). Cases
+  3 and 5 have no observed incident yet; they are preventive.
+
 ## Drafted issue prose language
 
 A drafted issue's human-readable prose sections — `## Background` (or
@@ -1122,6 +1187,18 @@ instructions.
   earlier step has changed state, the observable outcome and the next action; a
   draft that cannot state that outcome is revised before the mechanical gate,
   and if it still cannot after revision, it goes to needs-decision.
+- a finding whose claim is identical to a `previously rejected:` string's
+  claim (wording may differ), in the same `draftSection`, is reported as a
+  repeat candidate that quotes that string, not as a new finding; the reviewer
+  does not decide that the rejection still holds, and the author applies the repeat
+  test (see
+  [Carry-forward of rejected findings](#carry-forward-of-rejected-findings))
+- a draft that deletes, overwrites, recursively removes, records ownership of
+  a file, or writes to a path that could be a link gives each such operation
+  an acceptance criterion for each of the six cases under
+  [Destructive operations](#destructive-operations), or names the guard that
+  makes the case impossible; the reviewer flags a destructive operation whose
+  criteria leave a case unanswered
 
 ### Resolver
 
@@ -1208,6 +1285,8 @@ itself may be empty, and no other field is allowed at either level. The packet
 stays the bounded set defined above: it never carries the whole conversation
 or unbounded work instructions. The shape is published as the
 [issue-authoring review input schema][issue-authoring-review-input-schema].
+The `evidence` array may also carry `previously rejected:` strings, which
+the [carry-forward rule](#carry-forward-of-rejected-findings) adds.
 
 **Output.** The command writes free-form findings to stdout, read the same way
 a subagent's critique response is read; no machine-readable output schema is
@@ -1228,6 +1307,77 @@ candidate files, dependency edges, roadmap task-list or relationship
 wiring, scope or the proposed change, or the readiness bucket.
 Wording-only edits do not start another review. The body that enters
 the linter is the reviewed body plus those wording-only edits.
+
+A disposition for a repeat of a rejected finding follows the
+[carry-forward rule](#carry-forward-of-rejected-findings): it cites the
+ledger entry and re-reads that entry's evidence against the repository as it
+stands now.
+
+### Carry-forward of rejected findings
+
+Each round gives a fresh reviewer only the packet, so the reviewer cannot
+see how an earlier round dispositioned a finding. Without a record, a claim
+that an earlier round rejected is raised again in a later round, often with
+different wording. Observed 2026-10-13 in one drafting session (recorded in
+issue `#4101`): the pin list for the policy audit was flagged in two rounds,
+and the recovery path for an empty handle in three rounds, each time with
+different wording, at about 100,000 reviewer tokens per round.
+
+**Ledger.** During a drafting session, keep a findings ledger in the session
+scratchpad, one JSON file per draft, named for that draft: its issue number
+once one exists, or, before then, a token that no other draft uses, such as a
+freshly generated UUID. When the draft gets its issue number, rename the file
+to that number and keep every entry. No two drafts or concurrent workers share
+a ledger file. The ledger is never written to the repository or to a marker.
+Each entry has these members: `claim` (one sentence), `draftSection` (the
+heading the finding concerns), `round`, `draftVersion` (the draft revision the
+finding was raised against, counted from 1; recorded for audit only),
+`disposition` (`fixed`, `rejected`, or `deferred`), `evidence` (required for
+`rejected`: a file and line, or a read-only command and its output), and
+`decidedAt`. If the scratchpad is lost, for example after a restart, the
+ledger is empty and the review runs as it does without one. Record an entry
+for every finding as soon as its disposition is decided, before the next
+review round. A later disposition of the same finding updates that entry.
+
+**Packet.** For each `rejected` entry that has evidence, add one string to the
+packet's existing `evidence` array, in every review mode:
+`previously rejected: <claim> (draftSection: <heading>; evidence: <evidence>)`.
+Keep each string to one line, shortening longer evidence to the line that
+decides it. Do not add a field. The packet keeps its five fields, so the
+input schema does not change. Only these strings are added to the packet
+from the ledger.
+
+**Reviewer.** The checklist item above applies. A reviewer reports a finding
+whose claim is identical to a `previously rejected:` string's claim, in the
+same `draftSection`, as a repeat candidate that quotes that string. The
+reviewer does not decide that the rejection still holds, and does not judge
+whether the finding brings new information: the author applies the repeat test
+to each reported repeat candidate.
+
+**Repeat test.** A finding is a repeat only when its claim is identical to the
+entry's claim, meaning the same substantive claim with wording ignored, and it
+is in the same `draftSection`. A finding with a different claim, or only a
+related topic in that section, is new. A finding that brings information the
+earlier rejection did not address is new, even when its claim is identical to
+an entry's claim. The author applies this test to each reported repeat
+candidate.
+
+**Author.** For each reported repeat candidate, first apply the repeat test.
+Only a finding that passes it is a repeat. Then re-read the entry's evidence
+against the repository as it stands now: the file and line, or the cited
+read-only command re-run. If the evidence still holds, confirm that the
+finding brings nothing the earlier rejection did not address, then record a
+fresh disposition that cites the entry. The earlier disposition alone is not
+proof. If the evidence changed, or the finding brings new information, the
+finding reopens as a new finding.
+
+**Carry-forward limits.**
+
+- A rejected entry without evidence is not carried forward.
+- A fixed entry is never carried forward; the revised draft is checked
+  against its claim again.
+- A deferred entry stays open until the author decides, and a draft with an
+  open deferred entry is not published.
 
 ## Mechanical pre-publish gate
 
@@ -1258,8 +1408,11 @@ still passes), the equivalent one-directional check for
 `authoring-bucket: needs-decision` and the configured
 `needsDecisionLabelName` label, markerPrefix consistency across every
 authoring marker, the declared shape's required section headings, the
-roadmap-id/blocked-by dependency-marker rules, and visible/hidden line
-agreement for the suitability and effort footers — so a weak model does
+roadmap-id/blocked-by dependency-marker rules, visible/hidden line
+agreement for the suitability and effort footers, and a child's
+candidate-file count against the
+[over-scope split threshold](#effort-hint) for its `S`/`M` effort hint
+(`effort-candidate-file-limit`) — so a weak model does
 not have to hold every rule in its head at once while drafting.
 It also checks every live defer-source comment against the shared
 defined-value set and requires its single `Refs` origin. For
@@ -1548,6 +1701,29 @@ likely bundles multiple intents. Return to
 [Decompose and Draft](#2-decompose-and-draft) and split at intent level
 instead of publishing one oversized issue labeled `L`.
 
+**Over-scope split threshold.** A child draft whose effort hint is `S`
+or `M` must not list more candidate files than its row below allows.
+Split an over-threshold draft into a held roadmap with children before
+publication, so no loop session claims an oversized issue. The count is
+the number of distinct paths the `## Candidate files` parser extracts
+(see [Candidate files format](#candidate-files-format)), so keep notes
+out of backticks. A body that is already the product of a split is
+exempt when it carries a plain-text `Split out of #<n>` line (not inside
+backticks or an HTML comment). The exemption is self-asserted, so a
+reviewer confirms the referenced issue is the real parent. The rule
+checks only the child shape, and only when a coherent hidden effort
+marker is present (a draft with no effort footer is not checked); it
+also checks a human-bucket child audited without `--expect-bucket`.
+`audit-authored-issue`'s
+`effort-candidate-file-limit` check enforces this table, which is the
+single source of the values.
+
+| Effort | Maximum candidate files |
+| ------ | ----------------------- |
+| `S`    | 3                       |
+| `M`    | 8                       |
+| `L`    | not checked             |
+
 The hint is recorded as a **footer at the end of the issue body** — a
 visible line paired with a hidden, prefix-aware machine marker, beside
 the autopilot-suitability footer:
@@ -1575,7 +1751,9 @@ Binding rules:
   optional desync rules and **before** the lowest-issue-number tie-break.
   It never skips, gates, crosses a score band, or bypasses the A4.5/A5
   gates, and a large (`L`) issue stays fully claimable when it is the only
-  ready work.
+  ready work. This applies to Discover selection; the one publish-time
+  exception is the
+  [over-scope split threshold](#effort-hint) lint for `S`/`M` children.
 - **Fail-safe on absence.** A missing, non-`S|M|L`, or conflicting
   marker means "no effort hint": it sorts as the neutral middle, as-if
   `M`, per `idd-discover.instructions.md` A4 Step 2. Pre-existing issues
@@ -1690,7 +1868,22 @@ only approval boundary.
   capability-checked create-with-label operation that creates the issue with
   the authoring label atomically and carries an exact hidden publication token
   for target, anchor, set, and session. If the target runtime cannot provide
-  that operation, stop before creation. Before the create, generate the
+  that operation, stop before creation. For a standalone orphan, the
+  publication capability is `idd-publish-authoring-hold` (`node
+  scripts/publish-authoring-hold.mjs` in this source repository). It runs
+  the steps below in order, from the journal check to `state=member`. It
+  takes `--review-result <path>`: a JSON object with `"completed": true`,
+  whose optional `findings` entries must each be `fixed` or `rejected`. It
+  is a dry run without `--apply`, and it refuses `--shape child` for now.
+  It never retries, closes, or appends `cleanup` or `abandoned`: any failure
+  after the create stops at a recovery hold with the record at `pending`, or
+  reported as uncertain (replay the journal) when a record may have been
+  posted but could not be verified. Its `retry` report field is advice to
+  the operator only. A failed marker post counts as unsent
+  only when `post-idd-marker`'s error envelope reports `notDispatched` or
+  HTTP status 401, 404 or 422; every other failure is uncertain, and an
+  uncertain pending record stops before the create.
+  Before the create, generate the
   opaque `target` id and token for both markers below -- the new issue's
   own number is not yet known. `anchor` in **both** markers depends on
   the new issue's role in the set, not on a blanket "not yet known"

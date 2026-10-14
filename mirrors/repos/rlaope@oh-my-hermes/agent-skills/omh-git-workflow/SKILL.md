@@ -1,6 +1,7 @@
 ---
 name: "omh-git-workflow"
 description: "[omh] Git branch in trouble -- a merge conflict, a commit that broke something, history to repair: plan the resolution, the bisect, or the rewrite, name what is already pushed first, and force-push only with `--force-with-lease`. Use when the user says: git-workflow, git workflow, merge conflict, merge conflicts, rebase conflict, resolve the conflict, resolve this conflict, conflict markers."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, verification]
@@ -25,10 +26,10 @@ This is an OMH `git-workflow` workflow skill, projected for Agent Skills hosts (
 
 ## Do Not Use When
 
-- The request is to write the commit message or the PR body for a finished change; use `commit-pr-authoring`.
-- The request is to find defects in a diff before merging it; use `code-review`.
-- The build or CI job fails and the question is why; use `build-failure-triage`.
-- The request is a code change to deliver rather than branch or history repair; use `ultrawork`.
+- The request is to write the commit message or the PR body for a finished change; use `omh-commit-pr-authoring`.
+- The request is to find defects in a diff before merging it; use `omh-code-review`.
+- The build or CI job fails and the question is why; use `omh-build-failure-triage`.
+- The request is a code change to deliver rather than branch or history repair; use `ulw-work`.
 
 ## Examples
 
@@ -59,7 +60,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when a git branch needs repair rather than new code: a merge or rebase conflict to resolve, a regression to bisect to the commit that introduced it, or history to rewrite, squash, recover, or rebase -- including a stack of branches. The work is a plan that names what is already pushed, what each step rewrites, and how to get back.
 

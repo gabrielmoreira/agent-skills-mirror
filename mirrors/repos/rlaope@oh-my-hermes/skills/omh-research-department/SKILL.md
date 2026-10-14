@@ -1,6 +1,8 @@
 ---
 name: "omh-research-department"
 description: "[omh] Recurring market or topic research: research operations department - coordinate Scout, Analyst, and Briefer work with source-inbox and status boundaries; for one decision brief use research-brief, and for typed candidates before research starts use source-finder. Use when the user says: research-department, research department, research ops department, research operations department, scout analyst briefer, scout analyst brief, daily research department, competitor research department."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, research]
@@ -8,6 +10,7 @@ metadata:
     phase: research-department
     role: researcher
     quality_tier: research-ops-gated
+    related_skills: [ulw-research, omh-research-brief, omh-automation-blueprint, competitor-news-monitor, arxiv]
 ---
 
 # Research Department
@@ -20,10 +23,12 @@ This is a Hermes-native `research-department` workflow skill.
 
 ## Do Not Use When
 
-- The user only needs a one-off current-source lookup; use `research`.
-- The user only needs a one-off business synthesis; use `research-brief`.
-- The request is pure scheduling with no source collection or synthesis; use `automation-blueprint`.
+- The user only needs a one-off current-source lookup; use `ulw-research`.
+- The user only needs a one-off business synthesis; use `omh-research-brief`.
+- The request is pure scheduling with no source collection or synthesis; use `omh-automation-blueprint`.
 - The user asks for coding implementation; prepare a selected executor/runtime handoff after the research plan is accepted.
+- The request is one news watch over named companies, or a scheduled run of a watch that already exists, with no knowledge store, synthesis tool, or briefing lanes to set up, and Hermes' bundled `competitor-news-monitor` skill is available; load that skill.
+- The user wants a one-off paper search by topic, author, category, or paper id rather than a recurring paper review, and Hermes' bundled `arxiv` skill is available; load that skill.
 
 ## Examples
 
@@ -52,11 +57,11 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+20 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+21 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when Hermes should turn an ongoing or recurring research request into a prepared Scout -> Analyst -> Briefer workflow with source inbox, knowledge-store and synthesis-tool readiness, and briefing status without claiming research execution.
 
@@ -76,10 +81,16 @@ Quality bar:
 - Map Scout, Analyst, and Briefer lanes to concrete OMH skills and source inbox buckets.
 - Expose collected, synthesized, briefed, conflict, and verification counts as status, not execution proof.
 - List required evidence before claiming retrieval, synthesis, storage, delivery, or verification.
+- Inside the Scout lane, when the watch area is a set of named companies and Hermes' bundled `competitor-news-monitor` skill is available, run the watch through that skill; when the user names no knowledge store and the bundled `llm-wiki` skill is available, offer it as the store.
+- A schedule stays a prepared job description in the plan and OMH creates no job. In a Hermes session the job is created with the `cronjob_manage` tool, and it counts as created only from that tool's observed result or a cron listing.
+- For a recurring watch, write the watchlist and the materiality threshold down once, before the first run, and reuse them unchanged: what is watched and what is worth reporting change only by a recorded edit, so one candidate is accepted or rejected the same way on every run.
+- Report coverage source by source on every run. A source the run could not read is unknown coverage for that period and is named as a gap; it is never reported as a quiet period or as nothing new.
+- Keep one cutoff per source and move it only for a source the run covered. A source that failed keeps its earlier cutoff, so the next run reads the missed window instead of skipping it.
+- Count by the underlying event, not by article or URL: reprints, rewrites, and link variants of one announcement are one finding, and an independent second source stays attached to it as corroboration.
 
 Handoff policy:
 
-Keep the research operating model in Hermes. Map Scout to `research`/`source-finder`, Analyst to `research-brief`/`web-research`, and Briefer to `report-package` or meeting/report workflows. Record retrieval, synthesis-tool output, knowledge-store writes, delivery, and verification only from observed evidence.
+Keep the research operating model in Hermes. Map Scout to `ulw-research`/`omh-web-research`, Analyst to `omh-research-brief`/`omh-web-research`, and Briefer to `omh-report-package` or meeting/report workflows. Record retrieval, synthesis-tool output, knowledge-store writes, delivery, and verification only from observed evidence.
 
 Required inputs:
 
@@ -123,4 +134,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

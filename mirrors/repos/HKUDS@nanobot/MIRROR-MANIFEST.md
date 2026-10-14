@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HKUDS/nanobot` — 26 default patterns, 11 followed patterns, 26 file(s) materialized.
+Mirror of `HKUDS/nanobot` — 26 default patterns, 11 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `HKUDS/nanobot` — 26 default patterns, 11 followed patterns, 26 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 11 |
-| Files         | 26 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,17 +84,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`nanobot/skills/update-setup/SKILL.md`](nanobot/skills/update-setup/SKILL.md) |
 | 14 | ✓ | [`nanobot/skills/weather/SKILL.md`](nanobot/skills/weather/SKILL.md) |
 | 15 | ✓ | [`nanobot/templates/AGENTS.md`](nanobot/templates/AGENTS.md) |
-| 16 | → | [`.agent/copywriting.md`](.agent/copywriting.md) |
-| 17 | → | [`.agent/design.md`](.agent/design.md) |
-| 18 | → | [`.agent/gotchas.md`](.agent/gotchas.md) |
-| 19 | → | [`.agent/review-guide.md`](.agent/review-guide.md) |
-| 20 | → | [`.agent/security.md`](.agent/security.md) |
-| 21 | → | [`.agent/simplify.md`](.agent/simplify.md) |
-| 22 | → | [`.agent/workflow.md`](.agent/workflow.md) |
-| 23 | → | [`COMMUNICATION.md`](COMMUNICATION.md) |
-| 24 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 25 | → | [`docs/releasing.md`](docs/releasing.md) |
-| 26 | → | [`webui/README.md`](webui/README.md) |
+| 16 | ✓ | [`webui/COMPONENTS.md`](webui/COMPONENTS.md) |
+| 17 | → | [`.agent/copywriting.md`](.agent/copywriting.md) |
+| 18 | → | [`.agent/design.md`](.agent/design.md) |
+| 19 | → | [`.agent/gotchas.md`](.agent/gotchas.md) |
+| 20 | → | [`.agent/review-guide.md`](.agent/review-guide.md) |
+| 21 | → | [`.agent/security.md`](.agent/security.md) |
+| 22 | → | [`.agent/simplify.md`](.agent/simplify.md) |
+| 23 | → | [`.agent/workflow.md`](.agent/workflow.md) |
+| 24 | → | [`COMMUNICATION.md`](COMMUNICATION.md) |
+| 25 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 26 | → | [`docs/releasing.md`](docs/releasing.md) |
+| 27 | → | [`webui/README.md`](webui/README.md) |
 
 ---
 

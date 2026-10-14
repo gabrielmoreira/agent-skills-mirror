@@ -1,6 +1,7 @@
 ---
 name: "omh-idea-to-deploy"
 description: "[omh] App idea headed for launch: shape an app idea into decisions, delivery handoff, verification, release, and monitoring status. Use when the user says: idea-to-deploy, idea to deploy, from idea to deploy, plan to deploy, idea to launch, ship this idea, ship this feature, launch this feature."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, delivery]
@@ -20,7 +21,7 @@ This is an OMH `idea-to-deploy` workflow skill, projected for Agent Skills hosts
 
 ## Do Not Use When
 
-- The task is already a concrete repo change whose stopping point is one PR-ready cycle, not product or release operations; use `ultrawork`.
+- The task is already a concrete repo change whose stopping point is one PR-ready cycle, not product or release operations; use `ulw-work`.
 - The request is a settings-only change, one bounded edit that is explicitly low-risk and has a direct owner and verification path, or a direct answer/diagnosis; handle it directly instead of opening a product delivery loop.
 
 ## Examples
@@ -50,7 +51,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes should carry a product or app idea through shaping, decision gates, plan acceptance, executor handoff, verification, release readiness, deploy, and monitoring boundaries, including a fresh or empty repository that needs the greenfield bootstrap pass (git, license, README, agent context file, CI skeleton) before delivery work starts.
 

@@ -1,6 +1,8 @@
 ---
 name: "omh-web-research"
 description: "[omh] Current technical or business fact to cite from web: web lookup lane - settle a current-facts question in one cited retrieval round with retrieval dates and source-quality notes; for pre-spec grounding across reference implementations use `research`. Use when the user says: web-research, web research, web search, search the web, internet search, look up, look up sources, latest sources."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, research]
@@ -8,6 +10,7 @@ metadata:
     phase: web-evidence
     role: researcher
     quality_tier: source-gated
+    related_skills: [ulw-research, omh-source-finder, omh-research-brief, omh-research-department, omh-websearch-setup, omh-codebase-onboarding, grounded-citations, arxiv]
 ---
 
 # Web Research
@@ -20,12 +23,14 @@ This is a Hermes-native `web-research` workflow skill.
 
 ## Do Not Use When
 
-- The decision needs reference-implementation study, a declared depth budget, or a decision-grounding dossier; use `research`.
-- The output is a typed candidate inventory and acquisition status rather than an answer; use `source-finder`.
-- The ask is a market, competitor, pricing, or customer decision brief; use `research-brief`.
-- The user wants recurring monitoring, a source inbox, or Scout/Analyst/Briefer operations; use `research-department`.
-- The user wants to configure or cheapen web search itself, such as a scraper API key or an auxiliary extract model; use `websearch-setup`.
-- The study target is this repository rather than the open web; use `codebase-onboarding`.
+- The decision needs reference-implementation study, a declared depth budget, or a decision-grounding dossier; use `ulw-research`.
+- The output is a typed candidate inventory and acquisition status rather than an answer; use `omh-source-finder`.
+- The ask is a market, competitor, pricing, or customer decision brief; use `omh-research-brief`.
+- The user wants recurring monitoring, a source inbox, or Scout/Analyst/Briefer operations; use `omh-research-department`.
+- The user wants to configure or cheapen web search itself, such as a provider API key or a search or extract backend or tier; use `omh-websearch-setup`.
+- The study target is this repository rather than the open web; use `omh-codebase-onboarding`.
+- The request is only citation bookkeeping on a draft that already exists - renumbering, rebuilding the Sources block, or checking cited ids against the ledger - with nothing new to retrieve, and Hermes' bundled `grounded-citations` skill is available; load that skill.
+- The answer is an arXiv paper list or one paper's entry - a search by topic, author, category, or paper id - and Hermes' bundled `arxiv` skill is available; load that skill.
 
 ## Examples
 
@@ -46,9 +51,11 @@ Bad example:
 - The research question, source boundaries, recency assumptions, and confidence level are named.
 - Observed sources, inference, synthesis, and unresolved retrieval gaps are separated.
 - Follow-up planning or handoff uses the research summary without calling it execution evidence.
+- The citation check is reported from an observed ledger verify run that cited at least one source, or as `not_observed`; it is never reported as fact verification.
 
 ## Recovery Notes
 
+- If a source fails with HTTP 403, HTTP 429, a paywall, or a WAF or bot wall, load Hermes' `blocked-page-recovery` skill once for that source when it is available and never retry the same URL in a loop; cite an archive or cached copy it returns as a dated historical capture, never as the live page. If the skill is unavailable, recovery fails, or the source needs a login or payment, name the retrieval gap with that reason.
 - If the web is unreachable, name the retrieval gap and stop rather than substituting recalled facts.
 - If no archive access exists or the capture provider's paid authority is exhausted, record a temporal retrieval gap with no network action and keep the as-of claim in the annex; never substitute the current page for it.
 - If sources conflict, present both with their retrieval dates and say which one is primary.
@@ -56,11 +63,11 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+20 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+21 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when the answer depends on current external facts that one round of cited web retrieval can settle, with no reference-implementation study and no declared depth budget.
 
@@ -80,6 +87,8 @@ Quality bar:
 - Cite the source behind each claim and mark it official, practitioner, or unattributed.
 - Cross-check a contested claim against a second independent domain, or state that it stays unverified.
 - Keep historical-capture evidence and live-page evidence as two typed surfaces for a point-in-time or then-versus-now question; capture time, publication time, and retrieval time are independent clocks and none substitutes for another.
+- When Hermes' bundled `grounded-citations` skill is available, load it and register each source in its ledger when it is retrieved (`scripts/sources.py add`), before any prose is written; cite a source only by the id the ledger gave it, written `[n]`. Keep the run's ledger in a file of its own, passed as `--ledger <path>` before the subcommand on every call: the default ledger is shared by the whole profile, and another run's reset rebinds its ids. Mark background that rests on model knowledge `[unverified]` instead of citing it: the marker is for background the answer does not rest on and never carries the answer, and a contested claim with a single source keeps its citation and is stated as uncorroborated. The ledger id sits beside the source class and the retrieval date and replaces neither. Without the skill, list each source when it is retrieved and cite it at the claim it supports.
+- When that ledger is in use, report the citation check from a run, or as `not_observed`: the exit status of `sources.py verify <draft>` is the observed check - `0` is a pass and any other status is not - and `verify --evidence` also fails a draft whose cited source carries no verbatim quote. An exit `0` whose `info: stats:` line reads `0 distinct source(s) cited` checked nothing and is reported as `not_observed`, and so is an answer given only in chat: `verify` reads a draft file and exits `2` without one, so write the answer to a file first when the check matters. The run compares cited ids and the Sources block with the ledger; it does not test whether a claim is true, so a passing citation check is never reported as fact verification. Without the ledger the citation check is `not_observed`.
 - Stop at the answer: one retrieval round settles a lookup, and an expanding lead list means the request belongs to `research`.
 - Report what retrieval did not yield rather than closing the gap from recall.
 
@@ -132,4 +141,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

@@ -1,11 +1,9 @@
 ---
 name: bevy-events-messaging
-description: "Docs-first stub for Bevy messages and observers. Godot counterpart: godot-signal-architecture. Not a full port. Keywords: Bevy, Message, Event, Observer."
+description: "Bevy ECS skill for messages and observers. Keywords: Bevy, Message, Event, Observer."
 ---
 
-# Bevy events and messaging (docs-first stub)
-
-Not a full port. Two opened mechanisms: buffered messages, and events that run observers immediately. Neither is a signal bus.
+# Bevy events and messaging
 
 ## When to use
 
@@ -13,32 +11,31 @@ Load this when one system should notice that something happened without storing 
 
 ## ECS shape
 
-- **Messages (pull).** `bevy::ecs::message` 0.20.0 defines the `Message` trait as a buffered message for pull-based handling. `MessageWriter` writes. `MessageReader` reads and tracks what it already saw. `Messages` holds what occurred within the last two `Messages::update` calls. `message_update_system` calls `Messages::update` on registered messages. `signal_message_update_system` signals that update after `FixedUpdate` systems. Registration helpers on `App` were not opened. Do not invent an `add_message` name.
+- **Messages (pull).** `bevy::ecs::message` 0.20.0 defines the `Message` trait as a buffered message for pull-based handling. `MessageWriter` writes. `MessageReader` reads and tracks what it already saw. `Messages` holds what occurred within the last two `Messages::update` calls. `message_update_system` calls `Messages::update` on registered messages. `signal_message_update_system` signals that update after `FixedUpdate` systems. Check the `App` docs for message registration helpers before writing a method name.
 - **Events (push).** The `Event` trait page: derive `Event`, add an observer, trigger. The sample uses `World::trigger` and `world.add_observer` with `On<Speak>`. `Commands::trigger` is also named. Observers run immediately inside the trigger call. `Event::Trigger` defaults to `GlobalTrigger` for derived events.
-- **Observers.** `bevy::ecs::observer`: an `Observer` is a component that holds a system. `On` is the system parameter that processes the event. `EntityEvent` is the page's pointer for events that target one entity. The entity-event trait page was not opened.
+- **Observers.** `bevy::ecs::observer`: an `Observer` is a component that holds a system. `On` is the system parameter that processes the event. `EntityEvent` is the page's pointer for events that target one entity. Check that trait page for method names before writing them.
 - **State transitions.** `bevy::state` documents `StateTransitionEvent<S>` when state `S` changes. That type lives with states. See bevy-state-machines.
 
-## Godot idea to Bevy idiom
+## Coming from Godot
 
-| Idea | Bevy idiom (idea only) |
+| Godot idea | Bevy idiom |
 | --- | --- |
 | Something happened; readers poll later | A `Message` plus `MessageWriter` / `MessageReader` |
 | Something happened; listeners run now | An `Event` plus an `Observer` (`On<...>`) and `trigger` |
-| Notice on one entity | `EntityEvent` (trait page not opened; do not invent methods) |
+| Notice on one entity | `EntityEvent`. Check the trait page for methods before writing them. |
 | Global signal singleton | Not this. Use a message type or a global event |
 
-## Gaps
+## Scope
 
-- `App` methods that register a message type were not opened.
-- `EntityEvent` methods, entity-targeted trigger helpers, and observer run-condition helpers were not opened beyond the module index names.
-- Ordering between `message_update_system` and gameplay systems was not opened beyond the `FixedUpdate` signal function name.
-
+- Check the `App` docs for methods that register a message type before writing them.
+- Check the observer module for `EntityEvent` methods, entity-targeted trigger helpers, and observer run-condition helpers beyond the module index names.
+- Check the message docs for ordering between `message_update_system` and gameplay systems beyond the `FixedUpdate` signal function name.
 
 ## Expert Knowledge Delta
 
-Library target in prose: **Bevy 0.20.0**. Lattice URLs stay unversioned.
+Target: **Bevy 0.20+**.
 
-Opened canon only: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. This file does not invent their struct APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
+Core ECS types: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. See `bevy-events-messaging` for their APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
 
 ### Who owns state
 
@@ -61,22 +58,19 @@ Borrow rule: two systems that both mutably query the same component must be orde
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API this skill did not open | A Gaps row | A fabricated crate (solver, navmesh module, net, XR) |
+| An API outside the documented set | Check the official docs first | A made-up crate or API |
 
-Load `references/a-gate-notes.md` for the same table plus the gap rule.
+Load [references/ecs-ownership.md](events-messaging-ecs-ownership.md) for the ownership table.
 
 ## NEVER
 
-- Do not put `/0.20.0/` in lattice URLs. WHY: permalinks stay on `latest`. The 0.20.0 pin belongs in prose once.
+- Do not pin `/0.20.0/` in docs URLs. WHY: links stay on `latest`; the 0.20 target is stated once in prose.
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
-- Do not invent a physics, navigation, networking, or XR crate here. WHY: those rows are gaps, blocked, or revisit.
+- Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot signal types or a signal bus autoload. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No invented message-registration or trigger methods. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No third-party crates. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Creation Station content. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No umbrella skill over Godot and Bevy. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- Do not mark this row `ported`. It is `docs_mapped`. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Godot signal types or a signal bus autoload. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No invented message-registration or trigger methods. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No third-party crates. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
@@ -93,15 +87,15 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](../SKILL.md)  -  ECS ownership before adding a notice channel.
-- [bevy-ecs-composition](ecs-composition.md)  -  Systems that write or read the notice.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  ECS ownership before adding a notice channel.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md)  -  Systems that write or read the notice.
 
 #### Complements
-- [bevy-state-machines](state-machines.md)  -  `StateTransitionEvent` for app-wide state changes.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md)  -  Godot counterpart. Source idea only. Do not import Godot types.
+- [bevy-state-machines](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md)  -  `StateTransitionEvent` for app-wide state changes.
+- [godot-signal-architecture](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-signal-architecture/SKILL.md)  -  Equivalent Godot skill. Do not import Godot types.
 
 #### Downstream / consumers
-- None yet. Gameplay skills are not ported.
+- Gameplay skills cover combat, abilities, and similar loops.
 
 #### Master
-- [bevy-master](../SKILL.md)  -  Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.

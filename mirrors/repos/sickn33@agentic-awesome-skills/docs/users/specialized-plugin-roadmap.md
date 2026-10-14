@@ -1,6 +1,10 @@
 # Specialized Plugins: scope and review
 
-The repository currently defines **21 specialized plugins**, each with 5–10 skills. These are curated instruction bundles for concrete jobs. They do not install service accounts, browsers, cloud infrastructure or authenticated connectors, and they do not require every included framework to be used on every task.
+The repository currently defines **21 specialized plugins**, each kept within 5–20 distinct skills. These are curated instruction bundles for concrete jobs. They do not install service accounts, browsers, cloud infrastructure or authenticated connectors, and they do not require every included framework to be used on every task.
+
+## Coverage expansion — 2026-10-13
+
+The refreshed compositions contain 6–13 skills, with additions chosen for missing workflows rather than equal counts. The catalog inventory covered 2,687 entries; the manual content review covered the selected addition cohort and repaired trees, not every skill in the library. Existing plugin IDs and members remain stable. See the [review and before/after composition](../maintainers/specialized-plugin-expansion-review-2026-10-13.md) for all additions, excluded candidates and verification scope.
 
 ## Canonical definitions
 
@@ -12,7 +16,7 @@ The repository currently defines **21 specialized plugins**, each with 5–10 sk
 
 The source definitions, generated plugin manifests and published release are separate states. Updating this shortlist does not publish a release or update installed copies. See the [plugin installation guide](plugins.md).
 
-## Reviewed product scope — 2026-09-05
+## Historical product scope — 2026-09-05
 
 This pass checked the 21 compositions against the current 2,113-entry catalog and sharpened their descriptions, starter briefs and adjacent-product boundaries. It is an editorial and packaging review, not proof that every included procedure has been executed successfully in every environment. The internal tier labels are historical prioritization, not reliability grades.
 

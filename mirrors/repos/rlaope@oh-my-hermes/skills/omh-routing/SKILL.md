@@ -1,6 +1,8 @@
 ---
 name: "omh-routing"
 description: "[omh] Choosing among OMH skills for a request: router guidance for using oh-my-hermes workflow skills inside Hermes Agent."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, router]

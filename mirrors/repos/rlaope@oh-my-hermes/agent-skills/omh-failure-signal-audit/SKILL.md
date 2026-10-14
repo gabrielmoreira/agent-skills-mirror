@@ -1,6 +1,7 @@
 ---
 name: "omh-failure-signal-audit"
 description: "[omh] Hidden or swallowed errors suspected: find swallowed errors, unsafe fallbacks, hidden UI/runtime failures, and missing propagation before they become false green status. Use when the user says: failure-signal-audit, failure signal audit, silent failure, silent failures, silent failure hunter, swallowed error, swallowed errors, empty catch."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]
@@ -53,7 +54,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes should audit code, frontend/browser behavior, agent traces, or runtime reports for failures that were swallowed, downgraded, hidden by fallbacks, or reported as green without enough evidence.
 

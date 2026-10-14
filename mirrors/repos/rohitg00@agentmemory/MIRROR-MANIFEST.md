@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rohitg00/agentmemory` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `rohitg00/agentmemory` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rohitg00/agentmemory` — 26 default patterns, 0 followed patterns, 1
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 19 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,24 +60,42 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`plugin/skills/agentmemory-agents/SKILL.md`](plugin/skills/agentmemory-agents/SKILL.md) |
-| 3 | ✓ | [`plugin/skills/agentmemory-architecture/SKILL.md`](plugin/skills/agentmemory-architecture/SKILL.md) |
-| 4 | ✓ | [`plugin/skills/agentmemory-config/SKILL.md`](plugin/skills/agentmemory-config/SKILL.md) |
-| 5 | ✓ | [`plugin/skills/agentmemory-hooks/SKILL.md`](plugin/skills/agentmemory-hooks/SKILL.md) |
-| 6 | ✓ | [`plugin/skills/agentmemory-mcp-tools/SKILL.md`](plugin/skills/agentmemory-mcp-tools/SKILL.md) |
-| 7 | ✓ | [`plugin/skills/agentmemory-rest-api/SKILL.md`](plugin/skills/agentmemory-rest-api/SKILL.md) |
-| 8 | ✓ | [`plugin/skills/commit-context/SKILL.md`](plugin/skills/commit-context/SKILL.md) |
-| 9 | ✓ | [`plugin/skills/commit-history/SKILL.md`](plugin/skills/commit-history/SKILL.md) |
-| 10 | ✓ | [`plugin/skills/forget/SKILL.md`](plugin/skills/forget/SKILL.md) |
-| 11 | ✓ | [`plugin/skills/handoff/SKILL.md`](plugin/skills/handoff/SKILL.md) |
-| 12 | ✓ | [`plugin/skills/lesson/SKILL.md`](plugin/skills/lesson/SKILL.md) |
-| 13 | ✓ | [`plugin/skills/memory-discipline/SKILL.md`](plugin/skills/memory-discipline/SKILL.md) |
-| 14 | ✓ | [`plugin/skills/recall/SKILL.md`](plugin/skills/recall/SKILL.md) |
-| 15 | ✓ | [`plugin/skills/recap/SKILL.md`](plugin/skills/recap/SKILL.md) |
-| 16 | ✓ | [`plugin/skills/remember/SKILL.md`](plugin/skills/remember/SKILL.md) |
-| 17 | ✓ | [`plugin/skills/session-history/SKILL.md`](plugin/skills/session-history/SKILL.md) |
-| 18 | ✓ | [`plugin/skills/write-agentmemory-skill/SKILL.md`](plugin/skills/write-agentmemory-skill/SKILL.md) |
-| 19 | ✓ | [`website/app/llms.txt/route.ts`](website/app/llms.txt/route.ts) |
+| 2 | ✓ | [`plugin/skills/_shared/TROUBLESHOOTING.md`](plugin/skills/_shared/TROUBLESHOOTING.md) |
+| 3 | ✓ | [`plugin/skills/agentmemory-agents/SKILL.md`](plugin/skills/agentmemory-agents/SKILL.md) |
+| 4 | ✓ | [`plugin/skills/agentmemory-agents/TROUBLESHOOTING.md`](plugin/skills/agentmemory-agents/TROUBLESHOOTING.md) |
+| 5 | ✓ | [`plugin/skills/agentmemory-architecture/SKILL.md`](plugin/skills/agentmemory-architecture/SKILL.md) |
+| 6 | ✓ | [`plugin/skills/agentmemory-architecture/TROUBLESHOOTING.md`](plugin/skills/agentmemory-architecture/TROUBLESHOOTING.md) |
+| 7 | ✓ | [`plugin/skills/agentmemory-config/SKILL.md`](plugin/skills/agentmemory-config/SKILL.md) |
+| 8 | ✓ | [`plugin/skills/agentmemory-config/TROUBLESHOOTING.md`](plugin/skills/agentmemory-config/TROUBLESHOOTING.md) |
+| 9 | ✓ | [`plugin/skills/agentmemory-hooks/SKILL.md`](plugin/skills/agentmemory-hooks/SKILL.md) |
+| 10 | ✓ | [`plugin/skills/agentmemory-hooks/TROUBLESHOOTING.md`](plugin/skills/agentmemory-hooks/TROUBLESHOOTING.md) |
+| 11 | ✓ | [`plugin/skills/agentmemory-mcp-tools/SKILL.md`](plugin/skills/agentmemory-mcp-tools/SKILL.md) |
+| 12 | ✓ | [`plugin/skills/agentmemory-mcp-tools/TROUBLESHOOTING.md`](plugin/skills/agentmemory-mcp-tools/TROUBLESHOOTING.md) |
+| 13 | ✓ | [`plugin/skills/agentmemory-rest-api/SKILL.md`](plugin/skills/agentmemory-rest-api/SKILL.md) |
+| 14 | ✓ | [`plugin/skills/agentmemory-rest-api/TROUBLESHOOTING.md`](plugin/skills/agentmemory-rest-api/TROUBLESHOOTING.md) |
+| 15 | ✓ | [`plugin/skills/commit-context/SKILL.md`](plugin/skills/commit-context/SKILL.md) |
+| 16 | ✓ | [`plugin/skills/commit-context/TROUBLESHOOTING.md`](plugin/skills/commit-context/TROUBLESHOOTING.md) |
+| 17 | ✓ | [`plugin/skills/commit-history/SKILL.md`](plugin/skills/commit-history/SKILL.md) |
+| 18 | ✓ | [`plugin/skills/commit-history/TROUBLESHOOTING.md`](plugin/skills/commit-history/TROUBLESHOOTING.md) |
+| 19 | ✓ | [`plugin/skills/forget/SKILL.md`](plugin/skills/forget/SKILL.md) |
+| 20 | ✓ | [`plugin/skills/forget/TROUBLESHOOTING.md`](plugin/skills/forget/TROUBLESHOOTING.md) |
+| 21 | ✓ | [`plugin/skills/handoff/SKILL.md`](plugin/skills/handoff/SKILL.md) |
+| 22 | ✓ | [`plugin/skills/handoff/TROUBLESHOOTING.md`](plugin/skills/handoff/TROUBLESHOOTING.md) |
+| 23 | ✓ | [`plugin/skills/lesson/SKILL.md`](plugin/skills/lesson/SKILL.md) |
+| 24 | ✓ | [`plugin/skills/lesson/TROUBLESHOOTING.md`](plugin/skills/lesson/TROUBLESHOOTING.md) |
+| 25 | ✓ | [`plugin/skills/memory-discipline/SKILL.md`](plugin/skills/memory-discipline/SKILL.md) |
+| 26 | ✓ | [`plugin/skills/memory-discipline/TROUBLESHOOTING.md`](plugin/skills/memory-discipline/TROUBLESHOOTING.md) |
+| 27 | ✓ | [`plugin/skills/recall/SKILL.md`](plugin/skills/recall/SKILL.md) |
+| 28 | ✓ | [`plugin/skills/recall/TROUBLESHOOTING.md`](plugin/skills/recall/TROUBLESHOOTING.md) |
+| 29 | ✓ | [`plugin/skills/recap/SKILL.md`](plugin/skills/recap/SKILL.md) |
+| 30 | ✓ | [`plugin/skills/recap/TROUBLESHOOTING.md`](plugin/skills/recap/TROUBLESHOOTING.md) |
+| 31 | ✓ | [`plugin/skills/remember/SKILL.md`](plugin/skills/remember/SKILL.md) |
+| 32 | ✓ | [`plugin/skills/remember/TROUBLESHOOTING.md`](plugin/skills/remember/TROUBLESHOOTING.md) |
+| 33 | ✓ | [`plugin/skills/session-history/SKILL.md`](plugin/skills/session-history/SKILL.md) |
+| 34 | ✓ | [`plugin/skills/session-history/TROUBLESHOOTING.md`](plugin/skills/session-history/TROUBLESHOOTING.md) |
+| 35 | ✓ | [`plugin/skills/write-agentmemory-skill/SKILL.md`](plugin/skills/write-agentmemory-skill/SKILL.md) |
+| 36 | ✓ | [`plugin/skills/write-agentmemory-skill/TROUBLESHOOTING.md`](plugin/skills/write-agentmemory-skill/TROUBLESHOOTING.md) |
+| 37 | ✓ | [`website/app/llms.txt/route.ts`](website/app/llms.txt/route.ts) |
 
 ---
 

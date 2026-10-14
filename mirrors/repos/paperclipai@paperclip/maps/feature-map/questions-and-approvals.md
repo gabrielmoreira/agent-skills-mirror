@@ -1,3 +1,7 @@
+---
+navigation: {"section":"Tasks and conversations","sectionOrder":20,"order":50}
+---
+
 # Questions and approvals
 
 People answer an agent's questions and decide requests without losing the task's
@@ -182,3 +186,7 @@ unless its actual provider journey was driven.
   sharing UI. A watchdog cannot acquire board authority by resolving a card.
 - An answer to an old question can queue behind a successor run; it does not
   automatically steer that run. See [steering](./steering.md).
+
+### Documentation scope: Formal governance approvals
+
+Formal board decisions and signoff have recipes; every approval payload/type and actor/host error permutation is not enumerated.

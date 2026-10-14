@@ -12,7 +12,7 @@ holds the workflow-specific detail without copying those shared rails.
 ## Do Not Use When
 
 - The route was already decided; there is no route question to answer.
-- The user is choosing a model or provider rather than a workflow; use `model-setup`.
+- The user is choosing a model or provider rather than a workflow; use `omh-model-setup`.
 - The host model is recording its own pick; recording a main_model answer needs no ask.
 
 ## Examples
@@ -40,7 +40,7 @@ Bad example:
 - If the tool returns `consent_not_observed`, nothing was sent; offer the ask in one line naming what would be sent and wait for the user to reply `ask jev`.
 - If the tool refuses `credential_like_content`, remove the secret-looking text from `state` rather than redacting it silently, and tell the user what was removed.
 
-## Use When
+## When to Use
 
 Use when an OMH route came back undecidable with a `route_question` block, the answerer ladder lists `omh_jev_ask`, and the user asks Jev to pick the workflow.
 

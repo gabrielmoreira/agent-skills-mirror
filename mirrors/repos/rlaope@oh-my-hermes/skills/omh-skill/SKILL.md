@@ -1,6 +1,8 @@
 ---
 name: "omh-skill"
 description: "[omh] Installing, removing, or editing skills: managing local skills. Use when the user says: skill, skills, manage skills."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operator]
@@ -8,6 +10,7 @@ metadata:
     phase: skill-management
     role: tracker
     quality_tier: evidence-gated
+    related_skills: [omh-capability-toggle, omh-skill-scout, omh-skill-health, hermes-agent-skill-authoring]
 ---
 
 # Skill
@@ -16,45 +19,47 @@ This is a Hermes-native `skill` workflow skill.
 
 ## Why This Exists
 
-`skill` exists to keep `operator` work explicit, evidence-backed, and inside the Hermes/executor boundary instead of relying on ad hoc chat narration.
+`skill` exists to route listing, reading, searching, installing, and editing skills to Hermes' own skill tools and commands, and to keep OMH-managed skills, whose bodies OMH generates, out of hand edits.
 
 ## Do Not Use When
 
-- The request is casual chat, a status-only acknowledgement, or another workflow has stronger routing evidence.
-- The user needs implementation, review, CI, merge, or external publishing evidence that has not been delegated or observed.
+- The user wants an OMH capability family turned on or off; use `omh-capability-toggle`.
+- The user wants a public skill found and vetted before installing it; use `omh-skill-scout`.
+- The user wants skill health checked: stale surfaces, failure patterns, or pending amendments; use `omh-skill-health`.
+- The user is writing or editing a skill that ships in the hermes-agent repository itself rather than a local one; load Hermes' bundled `hermes-agent-skill-authoring` skill instead of this one.
 
 ## Examples
 
 Good example:
 
-- Prompt: $skill list installed OMH skills and show the catalog metadata for each workflow.
-- Expected behavior: Manage or inspect the skill catalog without claiming runtime execution or external evidence.
-- Why: The request is operator skill management, not a user workflow run.
+- Prompt: which skills do I have, and add one for our release checklist
+- Expected behavior: List with `skills_list`, read close matches with `skill_view`, create the new skill with `skill_manage` under a name of the person's own, and report it from the tool result.
+- Why: Listing and creating a person's own skill are Hermes' native skill tools' job.
 
 Bad example:
 
-- Prompt: skill: treat casual chat or unaccepted work as if this workflow already produced verified results.
-- Expected behavior: Ask a clarification question or route to a narrower workflow instead of forcing `skill`.
-- Why: The request lacks the required inputs or would overclaim work that Hermes did not observe.
+- Prompt: skill: patch omh-plan's SKILL.md with skill_manage so it asks fewer questions
+- Expected behavior: Decline the in-place edit and offer a separately named skill or an OMH catalog change instead.
+- Why: An OMH-managed body is generated from OMH's catalog, so the patch would not carry into the next generation.
 
 ## Completion Checklist
 
-- The local command, managed path, config surface, and state artifact inspected are named.
-- Blocking issues, warnings, and optional surfaces are separated.
-- The next repair action is explicit and does not claim a reload or runtime observation.
+- Every listed or read skill came from `skills_list` or `skill_view`, not a guessed path.
+- Each create, edit, or delete is reported from `skill_manage`'s result, and no OMH-managed skill was edited.
+- Search, install, uninstall, and hiding are named as the person's own `hermes skills` commands.
 
 ## Recovery Notes
 
-- If a managed path or config key is missing, route to setup/update repair instead of editing hidden state.
-- If a reload or plugin load was not observed, keep the diagnostic result as local health evidence only.
+- If `skill_manage` is absent from this session, give the person the exact change instead of writing the skill through another tool.
+- If the person wants an OMH-managed skill changed, offer a separately named companion skill or an OMH catalog change, never an in-place edit.
 
 ## Workflow Lane
 
-- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+39 more`) - schedules, status, health, and ops review.
+- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+40 more`) - schedules, status, health, and ops review.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use for local skill listing, search, add, remove, or edit tasks.
 
@@ -70,8 +75,10 @@ Reasoning demand: `light`
 
 Quality bar:
 
-- Name the workflow target, constraints, validation evidence, and stop condition.
-- Separate Hermes guidance from executor or wrapper behavior unless evidence proves the step happened.
+- Read skills with Hermes' own tools: `skills_list` to list them and `skill_view` to read a skill or one of its files.
+- Create, edit, or delete a skill of the person's own with `skill_manage` when `skill_manage` is in your tool list or tool_search finds it; otherwise hand the person the exact change.
+- Registry search, install, removal of a hub-installed skill, and per-platform hiding are the person's own `hermes skills search`, `install`, `uninstall`, and `config` in a terminal, with `/skills search` and `/skills install` in a CLI or TUI session.
+- Never edit or delete an OMH-managed skill (an `omh-*` or `ulw-*` name) with `skill_manage`: OMH generates its body from its catalog, so the change does not carry into the next generation; put the lesson in a separately named skill instead.
 
 Handoff policy:
 
@@ -93,8 +100,8 @@ Artifact expectations:
 
 Safety rules:
 
-- Do not imply hidden Hermes runtime behavior.
-- Use the smallest verification that can prove the claim.
+- Write no Hermes config: hiding, enabling, or installing a skill is the person's own command.
+- Report a skill changed only from `skill_manage`'s result or a re-read with `skill_view`.
 
 ## Runtime Evidence
 
@@ -112,4 +119,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

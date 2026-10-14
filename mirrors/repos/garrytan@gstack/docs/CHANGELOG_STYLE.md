@@ -125,6 +125,15 @@ sentence: "Version bump for branch-ahead discipline. No user-facing changes yet.
 there. Do not pad. Do not explain the plan that will ship eventually. Do not narrate
 the branch's history. When real work lands, the entry will replace this at /ship time.
 
+### Raising the supported minimum (`capy/support.env`)
+
+Release stamping can also raise `GSTACK_MIN_REVISION` in `capy/support.env`.
+Every Capy machine below it is fast-forwarded at its next session start, so
+raise it only for install-honesty or security fixes, and set it at stamp time
+to the VERSION being released. It never exceeds VERSION
+(test/capy-skill-wrapper.test.ts pins this). Details:
+[capy-install.md](capy-install.md#raising-the-supported-minimum).
+
 ## Entry format
 
 ### Release-summary format (every `## [X.Y.Z]` entry)

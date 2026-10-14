@@ -77,4 +77,4 @@ Consumed in-process across the codebase (discoverable via `grep scheduler_gate`)
 ## Further reading
 
 - [Parent module README](../README.md)
-- [Cron and scheduling](../../../../../gitbooks/features/native-tools/cron.md)
+- [Cron and scheduling](../../../../../docs/gitbooks/en/features/native-tools/cron.md)

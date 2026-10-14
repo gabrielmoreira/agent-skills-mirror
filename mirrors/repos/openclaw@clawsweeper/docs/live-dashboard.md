@@ -16,23 +16,20 @@ page (also the Worker and hydration-client default), bounded by 2 MiB of source
 content and 4 MiB of serialized entries. Large-record pages stop early and resume
 from the last returned record; the existing first-record progress exception
 remains. See [canonical record export limits](limits.md#canonical-record-export).
-This changes hydration request volume only; OpenClaw Bay's observer projection
-and public data contract are unaffected.
 
 The live dashboard is observer-only. ClawSweeper still owns review, repair,
 apply, merge, comments, labels, and all GitHub mutations. The Cloudflare Worker
-reads GitHub workflow state, projects it into closed status and Bay views, and
+reads GitHub workflow state, projects it into closed status views, and
 optionally accepts signed status events from workflows. The one identity
 exception is a bounded reference sample containing canonical repository and
 issue or pull-request numbers from the explicit verified-public
-`PUBLIC_BAY_REPOS` allowlist. Bay and Overview use that same sample for cards
+`PUBLIC_BAY_REPOS` allowlist. Overview uses that sample for cards
 and search; clicking a card opens a local blade with the closed stage/source,
 canonical repository and issue/PR links, and, when available, canonical GitHub
 run/job links plus fixed action-step categories and states. Public responses
 still exclude workflow, item, and step titles, raw or source URLs, queries, raw
 failure keys and payloads, internal opaque keys, credentials, tokens, private
 or non-allowlisted repositories, and per-job diagnostic text.
-
 
 Queue transport failures keep the fixed public `exact_review_queue_unavailable`
 response. Server logs for `exact_review_queue_request_failed` retain only the
@@ -77,7 +74,7 @@ GitHub secret into a temporary Wrangler config as the Worker `INGEST_TOKEN`.
 The smoke test waits for the expected deployment revision and a successful
 exact-review queue response within the same default 180-second readiness budget. It then
 verifies the signed review-admission capability contract, queue schema,
-unsigned-request rejection, Bay policy, and assets. An exact-revision smoke run
+unsigned-request rejection, and Overview rendering. An exact-revision smoke run
 requires the existing `CLAWSWEEPER_WEBHOOK_SECRET`; it sends a signed empty JSON
 object without following redirects and validates scheduled pacing, replay, and
 manual publication policy. A valid disabled manual-publication policy passes.
@@ -86,8 +83,8 @@ signed check as skipped. A persistently unavailable queue still fails readiness.
 
 A status contract failure keeps its original error and nonzero smoke exit, with
 one bounded diagnostic summary: projection completeness, freshness, cache state,
-Bay tide classification, and validated numeric tide, diagnostic count, and fetch
-duration. It excludes response text, timestamps, and diagnostic error messages.
+validated numeric diagnostic count, and fetch duration. It excludes response
+text, timestamps, and diagnostic error messages.
 These are observed fields; an unavailable projection does not identify which
 upstream request or cache entry caused it. The smoke adds no status retry.
 
@@ -157,21 +154,22 @@ Workflow health uses bounded GitHub run/job polling exclusively. The retired
 workflow-source setting is no longer read. Workflow read-model reads, repairs,
 and missing-subscription warnings are not part of dashboard health, even when
 the shared webhook signing secret is configured. Snapshot and job-cache TTLs,
-pagination, freshness, genuine GitHub errors, and the public Bay contract are
+pagination, freshness, genuine GitHub errors, and the public status contract are
 unchanged.
-
 
 ## Operator dashboard pages
 
-The operator dashboard (Overview, Throughput, Quality, Queue, Coverage,
-Repositories) is a static Astro site in `dashboard-site/`. The `Dashboard site`
+The operator dashboard at `/` (Overview, Throughput, Quality, Queue, Operations,
+Coverage, Repositories) is a static Astro site in `dashboard-site/`. The `Dashboard site`
 workflow (`.github/workflows/dashboard-site.yml`) rebuilds it every 15 minutes
 and publishes it to the Cloudflare Pages project `clawsweeper-dashboard`
-(`https://clawsweeper-dashboard.pages.dev`). A data refresh never redeploys
-this Worker, so webhooks, the queue Durable Object and `/api/*` are not
-restarted by it.
+(`https://clawsweeper-dashboard.pages.dev`). This Worker serves those page
+paths and their assets from Pages for GET and HEAD (`dashboard/dashboard-site.ts`;
+override the origin with `DASHBOARD_SITE_ORIGIN`). A data refresh never
+redeploys this Worker, so webhooks, the queue Durable Object and `/api/*` are
+not restarted by it.
 
-Each build reads three sources:
+Each build reads four sources:
 
 - the corpus aggregate (totals, decisions, quality, closes, per-repository
   counts), cached in the workflow state. It is rebuilt only when the workflow is
@@ -188,31 +186,192 @@ Each build reads three sources:
   (a full export on 2026-10-12 failed 26 review runs in 14 minutes), so run it at
   a quiet hour. Until the first such run, scheduled builds skip with a notice;
 - the public `/api/exact-review-queue` and `/api/review-coverage` responses;
+- the public 7-day `/api/health-history` samples and the 24-hour and 7-day
+  `/api/apply-observability` summaries, for the Operations page. Samples are
+  reduced to hourly points (counter growth between consecutive 5-minute samples;
+  a counter reset or a sample gap leaves that step out) and to handoff incidents
+  (degraded or stalled runs of 10 minutes or more; shorter runs count as blips;
+  an idle or healthy sample ends a run). The healthy share counts only observed
+  samples, and a value the APIs do not report shows as unavailable, never as
+  zero. The apply figures cover only the scheduled close sweep
+  (`apply-existing`), not closes made right after a review;
 - GitHub Actions run history for this repository, kept as per-hour buckets in
   the workflow cache. Each run rereads from three hours before its last
   refresh, so a late or failed build leaves no gap; a missing cache
   bootstraps two days with the ClawSweeper app token, and the window then
-  grows to 30 days.
+  grows to 30 days. A manual run with `backfill_days` fills older days of sweep
+  history: success/failure counts from the API's per-conclusion totals, and
+  review-run durations from a sample of about 600 runs per day (the newest 100 in each
+  4-hour slice). About 20 requests per day, on this repository's
+  `GITHUB_TOKEN`, never the app token, whose rate limit production reviews
+  share.
+
+Open pages check for a newer build every five minutes and when the tab becomes
+visible, and reload when one is published. The header shows both the build time
+and the review-corpus time. A page warns when its build is more than an hour old
+(the refresh has stopped) or when the corpus is more than a day old (it updates
+only with `refresh_corpus`). Unknown paths return the site's 404 page with
+status 404. Pull requests that touch `dashboard-site/` build the site from
+`dashboard-site/fixtures/dashboard.json`, without secrets or publishing.
 
 The site shows no report bodies, author identities or free-text concerns.
 Local preview: in `dashboard-site/`, install dependencies, run
 `dashboard-site/scripts/build-data.ts` with `GITHUB_TOKEN`, `--records <records dir>` and
 `--state <state dir>`, then start the Astro dev server.
 
+## Review usage metrics
 
-## What It Shows
+`POST /internal/exact-review/review-usage` accepts schema-1 review-attempt
+summaries signed over the exact request body with `CLAWSWEEPER_WEBHOOK_SECRET`
+in `x-clawsweeper-exact-review-signature` (`sha256=<hex HMAC>`). The Worker
+validates the payload and writes one Analytics Engine point directly to
+`REVIEW_USAGE`, dataset `clawsweeper_review_usage`; it does not access either
+Durable Object. A valid write returns 202, malformed or invalid data returns
+400, invalid signatures return 401, and an absent dataset binding returns 503
+with `review_usage_unconfigured`. No model name, prompt, response, or raw error
+is stored. This private operator dataset adds no public API or browser
+integration.
+
+The payload contains `schema: 1`, `target_repo`, positive `item_number`,
+`item_kind` (`issue` or `pull_request`), decimal-string `run_id` from
+`GITHUB_RUN_ID`, positive numeric `run_attempt`, optional `trigger_lane`,
+`service_tier`, and `reasoning_effort`, `outcome` (`ok`, `failed`, or `timeout`),
+nonnegative integer `duration_ms`, and `usage`. Repository owner/name are
+bounded to 39/100 ASCII characters, optional labels to 64 ASCII letters,
+digits, underscores, dots, or hyphens, and run IDs to 32 digits. Unknown fields,
+including model names, are rejected. `usage` is either null or a complete
+object containing the nonnegative safe integer token counts listed below.
+Unavailable or incomplete usage remains null rather than being inferred.
+A measured zero remains distinct from missing usage.
+
+The source-to-ingest flow has two separate steps:
+
+1. The review runtime synchronously appends token-only review-attempt records to the JSONL
+   file named by `CLAWSWEEPER_REVIEW_USAGE_PATH`, configured in the workflow as
+   `${{ runner.temp }}/clawsweeper-review-usage.jsonl`. Records contain the bounded
+   metadata above and the five token counters below (or null usage), never turn
+   counts, prompts, responses, or model names. The append completes before a
+   failure or timeout can exit the review process. The review step receives neither
+   `CLAWSWEEPER_WEBHOOK_SECRET` nor `EXACT_REVIEW_QUEUE_URL`.
+2. Immediately after review, the trusted `Submit review usage` workflow step runs
+   with `if: always()` and `continue-on-error: true`. If the file exists,
+   `node dist/review-usage-submit.js "$CLAWSWEEPER_REVIEW_USAGE_PATH"` validates
+   its records and submits signed requests using `EXACT_REVIEW_QUEUE_URL` and
+   `CLAWSWEEPER_WEBHOOK_SECRET`, which are scoped to this trusted step. Collection
+   and submission are best effort and do not change the review result.
+
+Review output handling is unchanged. Usage comes from
+`$CODEX_HOME/sessions/YYYY/MM/DD/rollout-*.jsonl`: the last
+`event_msg` / `token_count` event's `info.total_token_usage` is cumulative per
+session, so only that total is used and separate session files are summed.
+Files must have modification times within the captured review-process start/end
+window. The hosted setup isolates `CODEX_HOME` by run ID/attempt, and each review
+process reviews items sequentially. The reader scans backward in 64 KiB chunks
+to find each session's latest token count. Missing homes/files, unreadable
+or changing files, malformed usage, and files larger than 64 MiB produce null
+usage rather than a partial sum.
+
+`REVIEW_USAGE_LAYOUT` in [`dashboard/review-usage.ts`](../dashboard/review-usage.ts)
+is the canonical source of the ordered tuples used by the writer. Analytics
+Engine positions are one-based within each tuple:
+
+| Columns             | Ordered values                                                                                                                                                                                        |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `index1`            | `target_repo`                                                                                                                                                                                         |
+| `blob1`–`blob8`     | `target_repo`, `item_kind`, `outcome`, `trigger_lane` (default empty), `service_tier` (default `standard`, including empty input), `reasoning_effort` (default empty), `run_id`, string `item_number` |
+| `double1`–`double7` | `input_tokens`, `cached_input_tokens`, `cache_write_input_tokens`, `output_tokens`, `reasoning_output_tokens`, `duration_ms`, `usage_present` (1 when available, otherwise 0)                         |
+
+Null usage writes zero into the five token columns but preserves duration and
+sets `double7` to 0. `input_tokens` includes cached reads and cache writes;
+`output_tokens` includes reasoning output. Neither subset should be counted
+twice. Run attempt is validated in the payload but is not a separate dataset
+column. Points represent review attempts, not unique issues or PRs; the route
+does not deduplicate repeated submissions.
+
+### Querying daily tokens and estimated cost
+
+Use the [Analytics Engine SQL API](https://developers.cloudflare.com/analytics/analytics-engine/sql-api/)
+with an operator token permitted to read account analytics:
+
+```bash
+curl "https://api.cloudflare.com/client/v4/accounts/91b59577e757131d68d55a471fe32aca/analytics_engine/sql" \
+  -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+  --data-binary @review-usage.sql
+```
+
+Save this query as `review-usage.sql`. Multiply sums by `_sample_interval` to
+account for Analytics Engine sampling. The estimate uses $2/M uncached input,
+$0.10/M cached input, $2.50/M cache writes, and $10/M output tokens:
+
+```sql
+SELECT
+  toStartOfInterval(timestamp, INTERVAL '1' DAY) AS day,
+  blob1 AS repo,
+  sum(_sample_interval) AS reviews,
+  sum(double7 * _sample_interval) AS reviews_with_usage,
+  sum(double1 * _sample_interval) AS input_tokens,
+  sum(double2 * _sample_interval) AS cached_input_tokens,
+  sum(double3 * _sample_interval) AS cache_write_input_tokens,
+  sum(double4 * _sample_interval) AS output_tokens,
+  sum(double5 * _sample_interval) AS reasoning_output_tokens,
+  sum(((double1 - double2 - double3) * 2
+       + double2 * 0.10 + double3 * 2.50 + double4 * 10)
+      * _sample_interval) / 1000000 AS estimated_usd
+FROM clawsweeper_review_usage
+WHERE timestamp >= NOW() - INTERVAL '30' DAY
+GROUP BY day, repo
+ORDER BY day, repo
+```
+
+This is a reference-price estimate, not an invoice: service-tier adjustments
+and the **greater-than-272K per-request surcharge are not included**. These are
+review sums, so they cannot determine whether an individual request crossed
+that threshold. Missing usage contributes no token cost; compare
+`reviews_with_usage` against `reviews` before interpreting totals.
+
+### Per-review duration and average tokens by lane/repository
+
+This includes failed and timed-out attempts in duration percentiles. Average
+tokens use only attempts with available usage. Groups without any available
+usage are omitted. The blank lane means no lane was provided, not an inferred
+workflow lane.
+
+```sql
+SELECT
+  blob1 AS repo,
+  blob4 AS lane,
+  sum(_sample_interval) AS reviews,
+  sum(double7 * _sample_interval) AS reviews_with_usage,
+  quantileExactWeighted(0.50)(double6, _sample_interval) AS duration_p50_ms,
+  quantileExactWeighted(0.95)(double6, _sample_interval) AS duration_p95_ms,
+  sum(double1 * _sample_interval)
+    / sum(double7 * _sample_interval) AS avg_input_tokens,
+  sum(double4 * _sample_interval)
+    / sum(double7 * _sample_interval) AS avg_output_tokens,
+  sum((double1 + double4) * _sample_interval)
+    / sum(double7 * _sample_interval) AS avg_total_tokens
+FROM clawsweeper_review_usage
+WHERE timestamp >= NOW() - INTERVAL '30' DAY
+GROUP BY repo, lane
+HAVING sum(double7 * _sample_interval) > 0
+ORDER BY repo, lane
+```
+
+See the [sampling guidance](https://developers.cloudflare.com/analytics/analytics-engine/sampling/)
+and [weighted aggregate functions](https://developers.cloudflare.com/analytics/analytics-engine/sql-reference/aggregate-functions/)
+for interpreting approximate aggregates.
+
+## What the status API shows
 
 - bounded active-work counts and closed workflow, worker, status, stage, and
   outcome categories; arbitrary titles, targets, source links, keys, and job
   text are omitted
-- six aggregate Bay stages from arrival through repair, split into disjoint
+- six aggregate activity stages from arrival through repair, split into disjoint
   queued and live counts only when both producer censuses are complete, plus a
-  bounded verified-public repository/item/action reference sample used by Bay
-  and Overview cards, search, overflow lists, and client-side public-reference
+  bounded verified-public repository/item/action reference sample used by
+  Overview cards, search, overflow lists, and client-side public-reference
   blades; sampled queue and live references may additionally carry one
   validated queue-start or public action-start clock with its closed kind
-- durable lifecycle inventory and six closed lane counts plus at most 24
-  minimal cards for verified-public repository/item references
 - a budget-sized capacity rail plus aggregate counts for review, commit, assist,
   and other worker classes
 - queued and waiting run counts
@@ -247,30 +406,17 @@ Local preview: in `dashboard-site/`, install dependencies, run
 - exact-review queue backlog, retry-ready backlog, target-admissible backlog,
   fixed backoff and parked reason counts, handoff health, and pressure from the
   current durable queue snapshot
-- normal direct-review journeys in the Bay Kanban and one-hour timing metric by
-  default, with a presentation-only switch to include the retired automatic
-  proof/legacy-batch path for historical comparison. Modern inline proof stays
-  within normal end-to-end review timing; the legacy toggle is not a proof-used
-  filter. The chart has a rolling-hour UTC axis, minutes scale, and bucket-wide
-  hover/focus/tap detail; missing buckets remain gaps
-- collapsed retained lifecycle inventory below queue telemetry: latest recorded
-  state of all retained records, not live backlog, event totals or a day/week
-  view. Beach/time filters do not apply; records and target revisions are
-  distinct units, and at most 24 records are sampled across lanes
 
 The Worker fetches job details only for the bounded active-run set, limits that
 GitHub fanout to 12 concurrent requests, and caches each run's jobs for 60
 seconds. It separately samples up to 40 recent completed worker runs with
-twenty-way fanout and caches error/recovery telemetry for 120 seconds. That leaves
-enough distinct completed-item evidence to drive a 20-outcome tide despite
-repeated targets or excluded runs while still bounding telemetry pressure.
-This bounds
+twenty-way fanout and caches error/recovery telemetry for 120 seconds. This bounds
 telemetry pressure independently of the 128-worker fleet budget. Worker details
 paginate up to 300 jobs per workflow run so retained large matrix runs contribute to a
 complete internal census. Titles, job names, raw URLs, opaque target keys, and
 raw errors are removed before the status snapshot is persisted or returned.
 Only the allowlisted canonical repository/item reference tuple and a validated
-action descriptor are retained for the bounded Bay sample. The action
+action descriptor are retained for the bounded Overview sample. The action
 descriptor contains canonical repository/run/job identifiers, a canonical
 start time, and closed step kind/status/conclusion values; raw step names and
 URLs are discarded. If the census is incomplete, the public activity projection
@@ -278,11 +424,9 @@ fails closed instead of presenting partial counts as complete.
 
 Automatic issue-build lifecycle events are retained privately for seven days so
 completed and blocked work can be reconciled after the worker leaves the active
-Actions set. The public lifecycle and recent-publication routes revalidate that
-state into bounded inventory, lane, bucket, and outcome counts. Lifecycle may
-also return at most 24 minimal cards filtered to `PUBLIC_BAY_REPOS`; it never
-returns private repositories, revision identifiers, target keys, facts, titles,
-raw URLs, or failure detail.
+Actions set. The public recent-publication route revalidates that state into
+bounded outcome counts without returning private repositories, revision
+identifiers, target keys, facts, titles, raw URLs, or failure detail.
 
 Status responses use stale-while-revalidate delivery. After the 20-second fresh
 window expires, the Worker immediately returns the last good snapshot, marks it
@@ -305,6 +449,11 @@ Run-level observer writes validate and retain the first terminal tuple per run
 attempt without reading queue items or rescheduling work. Their existing 30-day
 retention cleanup runs on telemetry writes and queue status computation; actual
 queue and auxiliary work retain ownership of alarm scheduling.
+
+The removed Bay observer no longer materializes lifecycle events, tides, or
+StatusStore journey/terminal snapshots. Recent durable publication events still
+use direct and batch outcome telemetry, and Overview still uses the shared
+`bay_projection` queue sample. Neither read path requires Bay telemetry writes.
 
 - `/api/review-observability` returns the four closed review lanes and global
   health, completeness, run counts, item counts, and timestamps for a normalized
@@ -454,7 +603,7 @@ Cache transport failures retain generated trace IDs and the existing
 `github_etag_cache_confirm` endpoint labels, under `github_etag_cache_*` log
 events. Each shard's binding-only `GET /stats` returns its trailing 24-hour
 `telemetry` counters; no public cache-stats route is added. The public
-`/api/exact-review-queue` payload and Bay's observer contract are unchanged.
+`/api/exact-review-queue` payload is unchanged.
 After deployment, compare queue canceled invocations and bare 5xx rates against
 the pre-deploy window, and confirm etag requests are served by `GithubEtagCache`.
 
@@ -531,8 +680,7 @@ hold: an organic webhook event such as `unlocked` or `synchronize`, an explicit
 command, or a manual review. The periodic terminal check removes closed and
 head-advanced targets, and the parked-review reconciler recovers a row whose
 source identity changed (for example an unlock or a `size: accepted-large`
-label). Command reviews and PRs without a pinned head are never held. Bay keeps
-the item's completed lifecycle card instead of showing the hold as active work.
+label). Command reviews and PRs without a pinned head are never held.
 
 `review_runaway_health` is the companion alert for any self-feeding loop the
 breaker does not stop, such as a command continuation. The queue records each
@@ -588,68 +736,31 @@ the public response uses an unavailable/unknown aggregate and a bounded
 
 The object memoizes its private stats response for 10 seconds by default
 (`EXACT_REVIEW_STATS_CACHE_MS`; set `0` to disable). Concurrent polls with the
-same Bay sample parameters share the computation and its original `generated_at`.
+same public sample parameters share the computation and its original `generated_at`.
 Queue mutations and auxiliary SQLite writes invalidate the memo; a missing or
 overdue alarm also bypasses it so polling still repairs the queue heartbeat.
 Only completed snapshots whose mutation generation and storage change counter
 remain unchanged are memoized; polls waiting on invalidated work recompute.
 This only bounds observation freshness: the public projection's fields and
-meaning, admission, publication fences, and Bay behavior are unchanged.
+meaning, admission, and publication fences are unchanged.
 
 The composed status response retains the dedicated closed queue projection
 through every cache and store read. Its parked-reason counts, including
 `source_incompatible` and the aggregate `unknown` bucket, must survive together
 with the parked total. Dropping a reason during a second generic sanitation pass
-makes a valid queue appear malformed on the next read and hides Bay's live cards
-and timing. The dedicated projector remains the privacy boundary; no private
+makes a valid queue appear malformed on the next read and hides Overview's
+public references. The dedicated projector remains the privacy boundary; no private
 queue fields or mutation controls are exposed.
-
-The object's lifecycle Bay response has a 30-second TTL-only memo
-(`EXACT_REVIEW_LIFECYCLE_BAY_CACHE_MS`; set `0` to disable). Production explicitly
-sets `EXACT_REVIEW_LIFECYCLE_BAY_CACHE_MS = "30000"`. Ordinary lifecycle, queue,
-and auxiliary writes do not invalidate it: this public, observer-only,
-closed-aggregate surface accepts staleness up to the TTL. Concurrent reads for
-the same normalized repository scope share one in-flight computation and its
-original `generated_at`. Only completed work enters the memo; disabling it
-resets pending work so an older computation cannot restore the cache. The stats
-memo retains its separate write-invalidation rules for admission diagnostics.
 
 Producer and publication fences have independent revision counters. For newly
 admitted protocol-v2 publications, the lifecycle projection keeps an immutable
-producer fence/revision/generation link in its existing JSON. Audit and Bay use
+producer fence/revision/generation link in its existing JSON. Audit uses
 that exact link to display publication completion on the corresponding producer
 journey after the queue item is removed. Missing or conflicting lineage fails
 closed; an older publication cannot complete a later producer revision. Physical
 receipts and terminal telemetry remain on the publication fence, so replay does
-not emit a second producer completion. The private link is not serialized by the
-public endpoint; Bay's public fields and observer-only controls remain unchanged.
-
-The outer `/api/durable-lifecycle-bay` route caches the sanitized response for
-30 seconds at the edge, keyed by origin and verified-public repository scope.
-After expiry it serves a stale copy while coalescing one background refresh per
-scope per isolate, as the status route does. Both cache buckets are capped by
-the original snapshot's 60-second maximum age; neither layer renews
-`generated_at`. An unavailable or malformed background refresh leaves an
-existing complete stale snapshot untouched until that original age expires,
-then the route fails closed until a complete refresh replaces both buckets.
-Without a background execution context, an expired fresh entry is refreshed
-synchronously. Edge caches are local to each colo, so cross-colo misses can
-still reach the object; its TTL memo absorbs those reads. Bay's public field
-set, freshness contract, and observer-only boundary are unchanged.
-
-An uncached Bay build still scans every retained projection in the requested
-repositories (all repositories for an unscoped internal request). A derived index
-on the existing repository/target/fence/revision fields streams each repository
-in journey order without sorting retained projection JSON; the primary identity
-index serves unscoped reads. The older v2 index remains available for readers
-that explicitly select it during rollback. No stored record or authority fields
-change. The scan has no seven-day cutoff: seven-day telemetry retention and 30-day Bay event retention
-belong to separate telemetry tables. Each row's full `projection_json` passes
-through the existing parser and integrity validation, without a per-row
-parsed-object cache. This preserves malformed-data handling and avoids the
-extra SQL JSON validation, extraction, and serialization of the compact cursor.
-The remaining full-history scan is not a constant-size aggregate query; adding
-persisted counters requires a separate backfill and writer-compatibility change.
+not emit a second producer completion. The private link is not serialized by
+public endpoints.
 
 For capacity displays, `/api/exact-review-queue` also exposes compatible
 `lanes.review` and `lanes.publication` objects. Each lane reports its own
@@ -993,7 +1104,7 @@ is not completion proof. Check the exact original receipt, available matching
 queue cleanup evidence, and preservation of later commands. Do not force a
 driver dispatch. On timeout, redirect, malformed response, or error, stop and
 inspect the exact operation; never blindly retry or substitute a new operation
-ID. Bay remains observer-only and uses the unchanged lifecycle projections.
+ID.
 
 `POST /internal/exact-review/reconcile` backstop accepts at most 32 exact run IDs
 and intersects them with currently claimed leases. The Worker checks those IDs
@@ -1015,25 +1126,24 @@ has drained naturally. The dashboard deployment smoke test must still observe
 HTTP 401 from an unsigned reconciliation request; HTTP 404 means the old Worker
 is serving that route.
 
-## Exhausted command review records in Bay
+## Exhausted command review records
 
-Repair & attention counts retained exception records alongside live repair
-activity, not running repair workers alone. Its
+The queue activity projection counts retained exception records alongside live
+repair activity, not running repair workers alone. Its
 public references may carry the bounded `queue_disposition` values
 `parked_exhausted`, `parked`, or `retry_scheduled`. `parked_exhausted` is reserved
 for exhausted review attempts; dispatch-rejected work uses neutral `parked`
-attention even after its recovery budget ends, because no review may have run. Both the server and browser
-sanitizers retain only these values, and only for queue references. Exhausted
-records show operator attention instead of an increasing queued-worker clock;
-the sampled header separates live references from queue/attention records.
+attention even after its recovery budget ends, because no review may have run.
+The public sanitizer retains only these values, and only for queue references.
+Exhausted records show operator attention instead of an increasing queued-worker clock.
 This remains an observer-only surface with the existing public repository
 allowlist and sampling/freshness limits.
 
 Terminal scanner holds retain a `scanner_refused` queue reason count, but do
-not contribute an active or waiting Bay review card. The failed review remains
+not contribute an active or waiting review card. The failed review remains
 in the existing terminal lifecycle projection. A fresh explicit retry or an
 intentional scanner-policy epoch change is required; ordinary source changes
-do not revive it. Bay exposes no release control.
+do not revive it. Overview exposes no release control.
 
 The queue's globally bounded parked-terminal check also observes exhausted
 command producers. An eligible still-open exhausted review may receive a
@@ -1061,8 +1171,8 @@ Closed failed commands retain a failure acknowledgement, not a fabricated
 successful review. Ordinary reconciliation now includes command exclusions
 in its bounded skip-reason accounting.
 
-The current stopped-review, source-fenced acknowledgement and Bay proof uses
-real local Worker/SQLite/HTTP and Chromium; see
+The stopped-review and source-fenced acknowledgement proof uses
+real local Worker/SQLite/HTTP; see
 `docs/proof/review-failure-attention/README.md`.
 
 Parked-command finalizers reserve status-write ownership while their receipt is
@@ -1070,9 +1180,6 @@ looked up, then re-fence immediately before the status PATCH. A successor may be
 recorded but cannot dispatch through that owned write window; ownership is
 released after a successful bounded PATCH or expires under the acknowledgement
 lease. The opted-in finalizer does not prune duplicate comments during lookup.
-When only the live-activity census is unavailable, Bay still retains verified
-queue dispositions from its bounded queue projection and labels the live count
-as unavailable rather than zero.
 
 When a parked-command target reopens after acknowledgement authorization, the
 queue atomically cancels the unobserved closure plan in its existing terminal
@@ -1087,7 +1194,7 @@ obligations parked: it is neither a verified receipt nor a missing/locked
 comment skip, and does not authorize generic deletion or finalizer dispatch.
 An already-planned parked-command driver is deferred with its original fence
 rather than superseded or discarded, so eligibility can recover safely. Such
-auxiliary drivers never replace their exhausted producer in the canonical Bay
+auxiliary drivers never replace their exhausted producer in the canonical
 queue projection; actual workflow activity remains a separate live overlay.
 Claimed parked-command writes also re-probe hosted/public eligibility before
 target credentials and after the target read. Revocation defers the original

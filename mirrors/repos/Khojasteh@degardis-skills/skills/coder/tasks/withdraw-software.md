@@ -20,6 +20,7 @@ guides:
 - documentation-work
 - source-comments
 - documentation-evidence
+- code-style
 - structural-cost
 - structural-transformations
 - abstraction-boundaries

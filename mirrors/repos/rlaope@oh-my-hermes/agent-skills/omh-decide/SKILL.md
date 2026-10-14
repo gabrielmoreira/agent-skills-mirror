@@ -1,6 +1,7 @@
 ---
 name: "omh-decide"
 description: "[omh] Team or business decision between options: tradeoffs, a recommendation, and a decision note you can act on. Use when the user says: strategy-brief, strategy brief, strategy memo, product strategy, strategic options, decision note, leadership strategy, next strategy."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, strategy]
@@ -20,9 +21,9 @@ This is an OMH `strategy-brief` workflow skill, projected for Agent Skills hosts
 
 ## Do Not Use When
 
-- The strategic question is whether an early idea's customer problem and segment are real, and no validated discovery receipt exists yet; use `product-discovery-validation`.
-- The question is how to run a hiring process — scorecards, interview loops, candidate comparison — rather than whether to hire at all; use `people-ops`.
-- The user wants Jev's typed probabilities for a yes/no, pick-one, or scored question over supplied text rather than tradeoffs and a recommendation; use `jev-ask`.
+- The strategic question is whether an early idea's customer problem and segment are real, and no validated discovery receipt exists yet; use `omh-product-discovery-validation`.
+- The question is how to run a hiring process — scorecards, interview loops, candidate comparison — rather than whether to hire at all; use `omh-people-ops`.
+- The user wants Jev's typed probabilities for a yes/no, pick-one, or scored question over supplied text rather than tradeoffs and a recommendation; use `omh-jev-ask`.
 
 ## Examples
 
@@ -51,7 +52,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes should turn goals and evidence into options, tradeoffs, recommendations, and a decision-ready brief.
 

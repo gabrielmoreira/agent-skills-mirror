@@ -93,6 +93,10 @@ needs-decision, blocked-by-human, and out-of-scope.
    `issueAuthoring.adversarialReview.waitCeiling`
    (default `PT20M`) using the caller's own wait and cleanup, and do
    not wrap the command in a timeout utility. Dispose of every finding.
+   Keep a findings ledger in the session scratchpad, never in the
+   repository, and send each `rejected` finding that has evidence as a
+   `previously rejected:` string in the packet's `evidence` array
+   ([carry-forward rule](references/contract.md#carry-forward-of-rejected-findings)).
    Review the revised draft again before the linter whenever that
    revision changes more than wording, including acceptance criteria,
    candidate files, dependency edges, roadmap task-list or relationship
@@ -185,7 +189,10 @@ needs-decision, blocked-by-human, and out-of-scope.
      that applies the authoring label atomically and carries an exact hidden
      publication token for target, anchor, set, and session; if that operation
      is unavailable, stop before creating the issue — never intentionally
-     create an unlabeled issue
+     create an unlabeled issue. For a standalone orphan, that command is
+     `idd-publish-authoring-hold` (`node scripts/publish-authoring-hold.mjs`
+     in this source repository); see its `--help` and the contract's
+     "New-issue ownership" section
    - the hidden publication token is this exact HTML-first body line.
      `anchor` reuses the opaque `target` value only when this new issue
      is itself the set anchor (self-reference); for a non-anchor child,
@@ -355,6 +362,11 @@ needs-decision, blocked-by-human, and out-of-scope.
 
 - Preserve low-readiness work in stable buckets instead of dropping it.
 - Keep acceptance criteria explicitly verifiable.
+- For a draft that deletes, overwrites, recursively removes, records file
+  ownership, or writes through a possible link, give each such operation a
+  criterion for each case in
+  [Destructive operations](references/contract.md#destructive-operations), or
+  name the guard that makes the case impossible.
 - Keep human-dependent setup, review, and approval work isolated from
   ready execution issues whenever possible.
 - Link every active child issue from its roadmap body.

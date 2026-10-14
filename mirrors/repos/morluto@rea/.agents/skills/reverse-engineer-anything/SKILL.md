@@ -2,7 +2,7 @@
 name: reverse-engineer-anything
 description: Reverse engineer native, managed, Electron/JavaScript, packaged, firmware, and browser targets with REA. Use shipped-artifact or requested runtime evidence to explain features, compare versions, decompile code, or guide a reconstruction. Skip REA for ordinary source-repository architecture analysis.
 metadata:
-  version: "41"
+  version: "42"
 ---
 
 # REA
@@ -31,6 +31,49 @@ Diagnose the observed blocker, continue useful supported work, and resume the
 original task after repair. Client approval, shell PATH, registration and engine
 availability have different remedies; avoid repeating setup for all of them.
 
+1. Diagnose without changing REA or client configuration. `npx` may download
+   the package and write to npm's cache. For Codex, run
+   `npx -y rea-agents@latest doctor --client codex --json`. Substitute the current
+   supported client: `claude_code`, `claude_desktop`, `codex`, `cursor`,
+   `gemini_cli`, `windsurf`, `devin`, `opencode`, `antigravity`, `copilot_cli`,
+   `commandcode`, `vscode`, `grok_build`, `omp`, or `grok_bot`. `grok_bot` has no local
+   file registration: doctor reports the Grok Bot chat step, and setup does not
+   write `mcp.json`. If the client is unknown, use `doctor --json` and
+   inspect its registration results before choosing a setup scope.
+2. Distinguish the reason. Missing, malformed, or stale registration needs a
+   scoped configuration repair. An aligned registration with no tools in the
+   active session needs a restart/reconnection; doctor cannot prove that the
+   current agent has connected. A missing provider affects only tasks requiring
+   that provider: static JavaScript inspection needs neither Hopper nor Ghidra,
+   and Android inspection has separate bring-your-own JADX/Java prerequisites.
+3. For a configuration repair, prepare the read-only plan:
+   `npx -y rea-agents@latest setup --client codex --dry-run --json`.
+   Use the current client's ID, show its exact proposed paths, backups, and
+   changes, and obtain approval before setup writes configuration or installs
+   Hopper. Setup normally installs the matching bundled skill too; include that
+   replacement in the reviewed plan. After approval, apply the same scope with
+   `npx -y rea-agents@latest setup --client codex --yes`. Add `--install-hopper`
+   only if that separate installation was needed and explicitly approved.
+4. Restart/reconnect the affected agent. Verify that REA tools actually appear
+   in the session, then resume the original investigation. If they remain
+   absent, inspect the client's MCP launch error rather than repeating setup.
+
+REA setup never installs or upgrades Node.js, npm, Homebrew, Java, Ghidra, IDA,
+JADX, Binwalk, or Unblob. Use existing prerequisites; do not install unrelated
+software to repair
+MCP registration. For an unsupported client, use manual stdio registration
+with a version-pinned `rea-agents` package or continue through the CLI.
+
+A concrete CLI fallback for an operator-supplied JavaScript tree or ASAR is:
+
+```bash
+npx -y rea-agents@latest analyze-javascript-application /absolute/path/to/app --json
+```
+
+No MCP registration or native engine is required. Read the returned Evidence,
+graph, limitations, and unknowns with the same care as an MCP result; the CLI
+returns the Evidence record directly. This fallback does not establish that
+MCP is configured. Native CLI tasks still require their selected engine.
 Prefer an existing `rea` CLI. When none is installed and REA package acquisition
 is within the authorized scope, use `npx -y rea-agents@latest` in its place.
 Configuration repair starts with a read-only setup plan; show paths, backups and
@@ -61,6 +104,10 @@ explicit path or endpoint and do not need it.
   consult the NativeAOT workflow in `references/native-and-artifacts.md` for
   optional metadata recovery and its supported host/layout boundary.
 - User-owned browser page already open: `list_browser_targets`.
+- Browser action the agent must perform (click, type, navigate):
+  `capture_browser_scenario` with declared actions. See
+  [runtime observation](references/runtime-observation.md) for connect/launch
+  and the focused follow-up browser tools.
 - Fiddler Everywhere traffic or a native `.saz` capture: read the
   [Fiddler workflow](references/runtime-observation.md#fiddler-everywhere-traffic-debugging).
   Inspect saved SAZ with `inspect_web_network_capture` and `format: "saz"`;
@@ -75,7 +122,10 @@ explicit path or endpoint and do not need it.
   pages; select one trace, stream ID and direction for contribution/range pages.
   Facts retain all-recorded-events-before-selection scope. Other qlog layouts
   and PCAP correlation are unsupported.
-- User-owned Electron runtime already open: `list_electron_targets`.
+- User-owned Electron runtime already open: `list_electron_targets`. Before an electron-main Inspector attempt, check packaged fuses with `inspect_electron_fuses`; disabled `EnableNodeCliInspectArguments` means the app ignores `--inspect`.
+- Packet-field discovery: `inspect_packet_fields` searches installed protocols
+  and field names/types before choosing fields for `inspect_packet_capture`.
+  Query/page the relevant records; registrations do not establish observed traffic.
 - Recorded packet captures: `inspect_packet_capture` with selected TShark fields,
   display filters and decode-as rules. Requires Linux, util-linux prlimit and `REA_TSHARK_COMMAND`; see
   [capture guide](https://github.com/morluto/rea/blob/main/docs/packet-captures.md).
@@ -83,6 +133,15 @@ explicit path or endpoint and do not need it.
   frames; use `match_offset` / `match_limit` for later pages, or explicit null
   limit for complete matching output. Preserve the source digest across pages.
   This does not perform live capture.
+  For address/DNS/SNI/protocol summaries use `inspect_pcap_capture` with MCP
+  detail summary, then retained kind pcap pages. Requires Wireshark 4.x tshark
+  and capinfos, with Linux prlimit or Windows Job Objects; see
+  [packet summaries](https://github.com/morluto/rea/blob/main/docs/pcap-analysis.md).
+  Select an exact DNS question for address pages; page exhaustion does not prove
+  network completeness. This reads recordings and does not acquire traffic.
+- Decoder discovery: `inspect_signal_decoders` searches installed decoder IDs
+  or selected decoder help, including channels and options. Query and page the
+  relevant details before choosing settings; this does not scan hardware.
 - Recorded logic/signal traces: `decode_signal_recording` with explicit decoder,
   channel and protocol settings. On Linux with util-linux prlimit, supply sigrok-cli 0.7.2 through
   `REA_SIGROK_COMMAND`; see [recording guide](https://github.com/morluto/rea/blob/main/docs/signal-recordings.md).
@@ -110,6 +169,14 @@ explicit path or endpoint and do not need it.
   absent metadata does not prove a binary is not Go, and unparsed text records
   remain explicit. See the
   [Go binary guide](https://github.com/morluto/rea/blob/main/docs/go-binaries.md).
+- Embedded cargo-auditable Rust dependency metadata: `inspect_rust_binary`
+  with the explicit local ELF, PE, or thin Mach-O file. This built-in
+  target-free inspection requires no Rust installation or disassembler. Preserve
+  package order, dependency indices, and the section file range. A missing
+  `.dep-v0` section is null metadata, not proof the binary has no dependencies.
+  A rustc commit hash is an inference from a read-only `/rustc/<40-hex>/` path.
+  See the
+  [Rust binary guide](https://github.com/morluto/rea/blob/main/docs/rust-binaries.md).
 
 - Explicit local SQLite database snapshot: `inspect_sqlite_database`. Inspect
   with Node.js 24.x >=24.15 or 26+ providing native SQLite limits. Read schema
@@ -260,7 +327,8 @@ as complete while required questions remain open.
   [references/javascript-applications.md](references/javascript-applications.md)
 - Android APK declarations, classes, methods, and static references:
   [references/android-applications.md](references/android-applications.md)
-- Passive browser/Electron observation and static/runtime reconciliation:
+- Browser/Electron observation (passive and scenario) and static/runtime
+  reconciliation:
   [references/runtime-observation.md](references/runtime-observation.md)
 - Evidence paging, comparisons, residual unknowns, and verification:
   [references/evidence-workflows.md](references/evidence-workflows.md)

@@ -1,6 +1,8 @@
 ---
 name: "omh-verification-gate"
 description: "[omh] Proof a change is done before merge: define and record build, lint, typecheck, test, security, docs, generated-output, and CI evidence before completion or merge. Use when the user says: verification-gate, verification gate, quality gate, release gate, test gate, build lint test, lint typecheck tests, verify before merge."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, verification]
@@ -8,6 +10,7 @@ metadata:
     phase: verification-gate
     role: reviewer
     quality_tier: verification-gated
+    related_skills: [omh-visual-qa, omh-production-audit, omh-code-review]
 ---
 
 # Verification Gate
@@ -20,9 +23,9 @@ This is a Hermes-native `verification-gate` workflow skill.
 
 ## Do Not Use When
 
-- The user asks for visual render QA; use `visual-qa`.
-- The user asks for production release readiness beyond verification commands; use `production-audit`.
-- The user wants a bug-first code review of a diff; use `code-review`.
+- The user asks for visual render QA; use `omh-visual-qa`.
+- The user asks for production release readiness beyond verification commands; use `omh-production-audit`.
+- The user wants a bug-first code review of a diff; use `omh-code-review`.
 
 ## Examples
 
@@ -53,9 +56,9 @@ Bad example:
 
 - Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when Hermes must turn a change, PR, release, or claim into a concrete evidence checklist and PASS/HOLD/BLOCK verdict.
 
@@ -73,10 +76,11 @@ Quality bar:
 
 - Tie every completion claim to the smallest check that proves it, then broaden for shared surfaces.
 - When a diff touches a declared generated path, name its source of truth and regeneration command before the edit rather than after a byte gate rejects it; a diff touching a generator and its output together is the correct shape, not a violation — load `references/generated-artifact-provenance.md` for the declaration and reporting rules.
-- Record every field the `observed_check_results/v1` artifact expectation below names, for each observed result; a field left out is a gap in the record, not a shorter record.
+- Record every field the `observed_check_results/v1` artifact expectation below names, for each observed result (`origin` on a failing check only); a field left out is a gap in the record, not a shorter record.
 - For native `omh_todo` checkpoints, load the todo-checklist closing recipe; `record` then `recall` this verification declaration. Stored declarations are not proof.
 - When the change answers to a written spec, plan, or issue, load `references/requirement-coverage-map.md` and map requirement to task to evidence under stable ids before claiming coverage.
-- Return PASS only when required checks pass and stale or missing evidence is resolved.
+- Give each failing check an `origin`: `introduced` when the same command passes at the merge-base or the failure points at a line the diff added or changed; `pre_existing` only when an observed run of the same command fails the same way at the merge-base in a clean detached worktree (`git worktree add --detach <dir> <merge-base>`, removed afterwards), never by stashing or checking out the tree the user is working in; otherwise `unknown`. An observed merge-base run outranks a diff-line reading: a check that fails the same way at the merge-base is `pre_existing` even when its failure points at a line the diff changed. Name the proof beside the origin: a merge-base run is an observation, a diff-line reading is an inference.
+- Return PASS only when required checks pass and stale or missing evidence is resolved; PASS never stands beside a failing required check, whatever its origin. A required check that fails `pre_existing` is HOLD worded as not charged to the change, naming the merge-base run that proves it, and only when the failing run's scope still covered the change: a failure that stopped the check before it exercised the change, such as a collection or import error, leaves that check as missing evidence. `unknown` is HOLD with the merge-base run named as the missing evidence.
 - Keep fixes, reruns, review, CI, and merge as separate observed states.
 
 Handoff policy:
@@ -103,8 +107,8 @@ Expected outputs:
 Artifact expectations:
 
 - verification_matrix/v1 covering build, lint, typecheck, unit/integration/e2e tests, generated docs, static/security checks, diff hygiene, and CI/DCO when applicable
-- observed_check_results/v1 with command (verbatim, not a description of it), source (this checkout, a CI job, or an operator report), exit status, summary (what the output said), scope (what that run covered, since a narrower run proves less), and freshness (when it ran, and whether the tree has moved since)
-- claim_verdict/v1 with PASS, HOLD, or BLOCK and exact missing or failed checks
+- observed_check_results/v1 with command (verbatim, not a description of it), source (this checkout, a CI job, or an operator report), exit status, summary (what the output said), scope (what that run covered, since a narrower run proves less), freshness (when it ran, and whether the tree has moved since), and origin (for a failing check: introduced, pre_existing, or unknown)
+- claim_verdict/v1 with PASS, HOLD, or BLOCK and exact missing or failed checks, each failed one with its origin
 - generated_artifact_provenance/v1 with one row per touched generated path: the source of truth that produces it, the regeneration command, and the drift gate that catches it, or the single state `map_not_declared` when the repository declares no generated-artifact map
 
 Safety rules:
@@ -133,4 +137,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

@@ -1,6 +1,7 @@
 ---
 name: "omh-product-discovery-validation"
 description: "[omh] Unvalidated early product idea: test whether a customer problem, segment, and business hypothesis deserve product investment, ending in kill, pivot, persevere, or inconclusive before any PRD. Use when the user says: product-discovery-validation, product discovery validation, product discovery, customer discovery, customer discovery plan, zero to one validation, validate the problem before building, problem solution interview."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -20,12 +21,12 @@ This is an OMH `product-discovery-validation` workflow skill, projected for Agen
 
 ## Do Not Use When
 
-- The user needs market, competitor, pricing, or customer research on named sources without a discovery decision to make; use `research-brief`.
-- The user is clarifying their own request, requirements, or preferences rather than testing a customer problem with external people; use `deep-interview`.
-- The user needs a company or product strategy decision across existing options with evidence already in hand; use `strategy-brief`.
-- The problem, segment, and evidence are already validated and accepted and the user wants a PRD or prioritization; use `product-brief`.
-- An accepted product brief and plan exist and the user wants implementation, QA, and release gates; use `idea-to-deploy`.
-- The user has one falsifiable technical or empirical question a disposable prototype can answer; use `decision-prototype`.
+- The user needs market, competitor, pricing, or customer research on named sources without a discovery decision to make; use `omh-research-brief`.
+- The user is clarifying their own request, requirements, or preferences rather than testing a customer problem with external people; use `ulw-interview`.
+- The user needs a company or product strategy decision across existing options with evidence already in hand; use `omh-decide`.
+- The problem, segment, and evidence are already validated and accepted and the user wants a PRD or prioritization; use `omh-product-brief`.
+- An accepted product brief and plan exist and the user wants implementation, QA, and release gates; use `omh-idea-to-deploy`.
+- The user has one falsifiable technical or empirical question a disposable prototype can answer; use `omh-decision-prototype`.
 
 ## Examples
 
@@ -58,7 +59,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when a founder or product owner brings an early idea and needs the problem, segment, value proposition, and business hypothesis framed, evidence-typed, and tested to an explicit discovery decision before a PRD, prototype, or delivery plan exists.
 

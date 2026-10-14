@@ -130,9 +130,9 @@ concrete instance of each gap above, observed in its source.
 
 ## Named motion profiles
 
-Define motion once, as named profiles in `DESIGN.md` section 6, instead of
-per-component values. Each profile fixes four numbers: stagger, duration,
-easing, and travel distance.
+Define motion once, as named profiles in the `DESIGN.md` Motion &
+Interaction section, instead of per-component values. Each profile fixes
+four numbers: stagger, duration, easing, and travel distance.
 
 - **Calm** - long durations, small travel, gentle ease-out, little or no
   stagger. Product UI and reading surfaces.

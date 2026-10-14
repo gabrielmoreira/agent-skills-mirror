@@ -1,15 +1,15 @@
 ---
 name: bevy-master
-description: "Bevy ECS hub for this library. Routes the docs-first Bevy domain skills. Use when starting a Bevy game, choosing ECS boundaries, or picking a Bevy skill. The parity matrix is the routing table. Keywords: Bevy, ECS, bevy-master, A-gate."
+description: "Bevy ECS hub for Bevy 0.20+. Use when starting a Bevy game, choosing ECS boundaries, or picking a Bevy skill. Keywords: Bevy, ECS, bevy-master, schedules, plugins."
 ---
 
 # Bevy Master: ECS hub
 
-Docs-first hub for the Bevy library (A-gate depth, not a Phase-1 flood lock). Peer of the Godot hub, not a parent of it. The living matrix is the routing table. This file does not claim a full port of the Godot library. Networking stays blocked until 2026-11-11. XR stays revisit until 2026-11-11.
+ECS hub for Bevy 0.20+. Start here to set up a Bevy app, decide which components, resources, and systems own each piece of state, and load the right Bevy skill for the job.
 
 ## Library target
 
-Bevy stable pinned in this file's Reference on the implement date: **0.20.0** (crates.io, 2026-10-08; docs.rs `bevy` 0.20.0). Version hops do not live in this hub.
+Target: **Bevy 0.20+** (tested against 0.20.0).
 
 ## Who owns what (ECS)
 
@@ -21,13 +21,13 @@ For every piece of state, name:
 
 Schedules replace a scene tree. Do not add an autoload, a signal bus, or a Node layer cake.
 
-The Quick Start ECS page (opened 2026-10-11) defines entities, components (`Component`), systems as functions, `Query`, `Commands`, `Startup`, and `Update`, plus `.chain()` for order. Messages, observers, resources, and app states are opened in the Batch B skills. See those files before calling a type.
+The Quick Start ECS page defines entities, components (`Component`), systems as functions, `Query`, `Commands`, `Startup`, and `Update`, plus `.chain()` for order. Messages, observers, resources, and app states are covered in their own skills. See those files before calling a type.
 
-## Decision matrix
+## Routing
 
 | Scenario | Route |
 | --- | --- |
-| New Bevy app, ECS boundaries, which skill to load | This hub, then the matrix |
+| New Bevy app, ECS boundaries, which skill to load | This hub, then the module directory below |
 | New crate, Cargo features, feature folders | [bevy-project-foundations](references/project-foundations.md) |
 | Entity composition, components, systems | [bevy-ecs-composition](references/ecs-composition.md) |
 | Messages, events, observers | [bevy-events-messaging](references/events-messaging.md) |
@@ -36,45 +36,40 @@ The Quick Start ECS page (opened 2026-10-11) defines entities, components (`Comp
 | App-wide resources and schedules | [bevy-app-resources](references/app-resources.md) |
 | Character movement | [bevy-character-movement](references/character-movement.md) |
 | 3D physics | [bevy-physics-3d](references/physics-3d.md) |
-| 2D physics | [bevy-physics-2d](references/physics-2d.md) (gap: no solver crate) |
-| Ray, overlap, or physics pick | [bevy-spatial-queries](references/spatial-queries.md) (gap: same solver) |
-| Navigation mesh or path data | [bevy-navigation](references/ai-navigation.md) (gap: no nav module) |
+| 2D physics | [bevy-physics-2d](references/physics-2d.md) |
+| Ray, overlap, or physics pick | [bevy-spatial-queries](references/spatial-queries.md) |
+| Navigation mesh or path data | [bevy-navigation](references/ai-navigation.md) |
 | Chase, patrol, retarget | [bevy-ai-navigation](references/ai-navigation.md) |
 | Seeded level or loot layout | [bevy-procedural-generation](references/procedural-generation.md) |
 | Keyboard, mouse, gamepad | [bevy-input-handling](references/input-handling.md) |
 | 2D or 3D camera entity | [bevy-camera-systems](references/camera-systems.md) |
 | Play or control a clip | [bevy-audio-systems](references/audio-systems.md) |
 | Load assets or spawn a scene | [bevy-asset-scenes](references/asset-scenes.md) |
-| Player save slot | [bevy-save-load](references/save-load.md) (gap: no save format opened) |
+| Player save slot | [bevy-save-load](references/save-load.md) |
 | Logs and frame diagnostics | [bevy-debugging-profiling](references/debugging-profiling.md) |
 | Parallelism, fixed step, handle lifetime | [bevy-performance](references/performance.md) |
 | `cargo test` | [bevy-testing-patterns](references/testing-patterns.md) |
-| Clips, blend graphs, sprites, lights, materials, UI, or a genre loop | Module directory below. Gaps stay in each skill |
-| Godot language, version hops, CLI, or project audit | Stay on the Godot skill (`n_a_godot_only` in the matrix) |
-| Networking or a dedicated server | Blocked until 2026-11-11. No Bevy skill |
-| Console certification | `n_a_godot_only`. No Bevy skill |
-| XR / VR | `revisit` until 2026-11-11. No XR module was opened |
+| Clips, blend graphs, sprites, lights, materials, UI, or a genre loop | Module directory below |
 
 ## When not to spawn an entity
 
-Data that is not simulated can be a plain Rust struct or a resource. The Quick Start treats resources as app-wide data (resources page linked from the same guide; this pass opened plugins and ECS, not the resources page body). Do not copy a Godot Object / RefCounted / Resource / Node table into Bevy.
+Data that is not simulated can be a plain Rust struct or a resource. The Quick Start treats resources as app-wide data. Check the resources page for field names before writing them. Do not copy a Godot Object / RefCounted / Resource / Node table into Bevy.
 
 ## Workflows
 
-**(a) App scaffold.** `App::new()`, plugins, schedules, and states. The plugins page documents `Plugin`, `DefaultPlugins`, `MinimalPlugins`, and `add_plugins`. The `bevy` 0.20.0 crate docs list a `bevy_state` feature ("built in global state machines"). This pass did not open the state API. Do not invent a plugin list beyond `DefaultPlugins` / `MinimalPlugins`.
+**(a) App scaffold.** `App::new()`, plugins, schedules, and states. The plugins page documents `Plugin`, `DefaultPlugins`, `MinimalPlugins`, and `add_plugins`. The `bevy` 0.20.0 crate docs list a `bevy_state` feature ("built in global state machines"). Check the state docs for the state API before writing it. Do not invent a plugin list beyond `DefaultPlugins` / `MinimalPlugins`.
 
 **(b) Entity.** Components plus systems. Movement belongs on a fixed timestep. `bevy::time` 0.20.0 documents `Fixed` ("fixed timestep game clock") and `run_fixed_main_schedule` (`FixedMain`). Do not invent a schedule label beyond those names.
 
 **(c) Data.** Components and resources. Not `.tres` files.
 
-**(d) Performance.** The ECS page states systems run in parallel by default when they can, and `.chain()` forces order. Frame-time diagnostics and handle lifetimes are on `bevy-performance`. No numeric budget is copied here; the opened pages do not give one.
-
+**(d) Performance.** The ECS page states systems run in parallel by default when they can, and `.chain()` forces order. Frame-time diagnostics and handle lifetimes are on `bevy-performance`. No numeric budget is stated on those pages.
 
 ## Expert Knowledge Delta
 
-Library target in prose: **Bevy 0.20.0**. Lattice URLs stay unversioned.
+Target: **Bevy 0.20+**.
 
-Opened canon only: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. This file does not invent their struct APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
+Core ECS types: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. See `bevy-events-messaging` for their APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
 
 ### Who owns state
 
@@ -97,28 +92,24 @@ Borrow rule: two systems that both mutably query the same component must be orde
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API this skill did not open | A Gaps row | A fabricated crate (solver, navmesh module, net, XR) |
+| An API outside the documented set | Check the official docs first | A made-up crate or API |
 
-Load `references/a-gate-notes.md` for the same table plus the gap rule.
+Load [references/ecs-ownership.md](references/2d-animation-ecs-ownership.md) for the ownership table.
 
 ## NEVER
 
-- Do not put `/0.20.0/` in lattice URLs. WHY: permalinks stay on `latest`. The 0.20.0 pin belongs in prose once.
+- Do not pin `/0.20.0/` in docs URLs. WHY: links stay on `latest`; the 0.20 target is stated once in prose.
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
-- Do not invent a physics, navigation, networking, or XR crate here. WHY: those rows are gaps, blocked, or revisit.
+- Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No umbrella skill over Godot and Bevy. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Godot or gdext type imports in Bevy code. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No GDScript line-translate. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No APIs that this file did not open. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Coil or Ouroboros UI. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Creation Station content. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No deleting Godot skills. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- Do not mark any row `ported`. These stubs are `docs_mapped`. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Godot or gdext type imports in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No GDScript line-translate. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No APIs that this file did not open. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No Coil or Ouroboros UI. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Module directory
 
-Domain skills (docs-first):
+Domain skills:
 
 - [bevy-project-foundations](references/project-foundations.md)
 - [bevy-ecs-composition](references/ecs-composition.md)
@@ -214,11 +205,9 @@ Genre routers:
 - [bevy-genre-sports](references/genre-sports.md)
 - [bevy-genre-stealth](references/genre-stealth.md)
 
-No file: console (`n_a_godot_only`), XR (`revisit` 2026-11-11), export packaging (`n_a_godot_only`), networking and net-heavy genres (`blocked` until 2026-11-11). The matrix is the full list.
 
 ## Reference
 
-Living matrix: [parity-matrix.md](references/parity-matrix.md) (full inventory).
 
 docs.rs links use the unversioned `latest` permalink (same role as Godot `/en/stable/`). The library pin above stays **0.20.0**.
 
@@ -240,7 +229,7 @@ docs.rs links use the unversioned `latest` permalink (same role as Godot `/en/st
 - None. This hub is the Bevy entry point.
 
 #### Complements
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md)  -  Peer hub for Godot. Language, version hops, CLI, and project audit stay there (`n_a_godot_only` in the matrix).
+- [godot-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-master/SKILL.md)  -  Godot hub.
 
 #### Downstream / consumers
 - [bevy-project-foundations](references/project-foundations.md)  -  Crate, Cargo features, and layout habits.
@@ -251,16 +240,16 @@ docs.rs links use the unversioned `latest` permalink (same role as Godot `/en/st
 - [bevy-app-resources](references/app-resources.md)  -  App-wide resources and `Startup` / `Update`.
 - [bevy-character-movement](references/character-movement.md)  -  Player and actor motion on the fixed timestep.
 - [bevy-physics-3d](references/physics-3d.md)  -  Simulated 3D bodies once a solver crate is verified.
-- [bevy-physics-2d](references/physics-2d.md)  -  Simulated 2D bodies. Same solver gap.
+- [bevy-physics-2d](references/physics-2d.md)  -  Simulated 2D bodies.
 - [bevy-spatial-queries](references/spatial-queries.md)  -  Casts and overlaps. Solver still unpicked.
-- [bevy-navigation](references/ai-navigation.md)  -  Path data gap. No nav module opened.
+- [bevy-navigation](references/ai-navigation.md)  -  Path data.
 - [bevy-ai-navigation](references/ai-navigation.md)  -  Chase and patrol policy.
 - [bevy-procedural-generation](references/procedural-generation.md)  -  Seed resource and spawn. No noise API.
 - [bevy-input-handling](references/input-handling.md)  -  `ButtonInput`, mouse, and gamepad.
 - [bevy-camera-systems](references/camera-systems.md)  -  `Camera2d` and `Camera3d`.
 - [bevy-audio-systems](references/audio-systems.md)  -  `AudioPlayer` and `AudioSink`.
 - [bevy-asset-scenes](references/asset-scenes.md)  -  `AssetServer` and `spawn_scene`.
-- [bevy-save-load](references/save-load.md)  -  Save-slot gap. Scene spawn is not a save.
+- [bevy-save-load](references/save-load.md)  -  Player save slots. Scene spawn is not a save.
 - [bevy-debugging-profiling](references/debugging-profiling.md)  -  `LogPlugin` and diagnostics plugins.
 - [bevy-performance](references/performance.md)  -  Parallel systems, fixed step, handle lifetimes.
 - [bevy-testing-patterns](references/testing-patterns.md)  -  `cargo test`. Not GdUnit.
@@ -268,10 +257,10 @@ docs.rs links use the unversioned `latest` permalink (same role as Godot `/en/st
 #### Master
 - This file. Do not route Bevy work through a parent that also owns Godot.
 
-Cipher rule titles only: Godot is source of truth; blockers on blocked and `n_a_godot_only` rows; runtime gameplay is Rust; do not pull Godot types into Bevy crates.
+Cipher rule titles only: runtime gameplay is Rust; do not pull Godot types into Bevy crates.
 
-## Gaps
+## Scope
 
-- Resources, states, messages, and observers: opened for the Batch B skills. Call only the types those skills cite. `App` state-installation method names are still unopened.
+- Resources, states, messages, and observers live in their own skills. Call only the types those skills cite. Check the `App` docs for state-installation method names before writing them.
 - The getting-started snippet still shows `bevy = "0.19"` while crates.io latest is 0.20.0. Pin **0.20.0** from crates.io and docs.rs, not from that stale snippet.
 - docs.rs feature examples on the 0.20.0 page still show `version = "0.18"` in one sample. That sample is not the pin.

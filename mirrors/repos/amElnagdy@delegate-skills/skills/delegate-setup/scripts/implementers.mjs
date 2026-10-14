@@ -35,6 +35,7 @@
  *     | { static: readonly string[] },
  *   usageProbe: null | {
  *     envDir?: string,
+ *     envSubdir?: string,
  *     homeSubdir: string,
  *     path: readonly string[],
  *     entry: "file"|"dir"|"any",
@@ -204,6 +205,30 @@ export const IMPLEMENTERS = Object.freeze([
       match: /^session_/,
     },
     supports: ["model", "timeout"],
+    winShell: false,
+  },
+  {
+    key: "muse",
+    skill: "muse-delegate",
+    binary: "muse",
+    versionArgs: ["--version"],
+    // No status command that is safe to parse; `muse login` / META_API_KEY are the
+    // documented auth paths, and auth.json must not be opened.
+    authProbe: null,
+    modelProbe: null,
+    // sessions/<yyyy>/<mm>/<dd>/<id>/ — one directory per session; session.jsonl
+    // inside is conversation content and is never opened. XDG_DATA_HOME selects
+    // the store root; an absent store reports unknown, never legacy usage.
+    usageProbe: {
+      envDir: "XDG_DATA_HOME",
+      envSubdir: "muse",
+      homeSubdir: ".local/share/muse",
+      path: ["sessions", "*", "*", "*"],
+      entry: "dir",
+      match: /./,
+    },
+    // --provider echo|meta is relay-only, not a fleet dial.
+    supports: ["model", "effort", "timeout", "readOnly"],
     winShell: false,
   },
   {
@@ -394,6 +419,7 @@ export const CLAUDE_EFFORT = Object.freeze(["low", "medium", "high", "xhigh", "m
 export const AGY_EFFORT = Object.freeze(["low", "medium", "high"]);
 export const COPILOT_EFFORT = Object.freeze(["low", "medium", "high", "xhigh", "max"]);
 export const OMP_THINKING = Object.freeze(["off", "auto", "minimal", "low", "medium", "high", "xhigh", "max"]);
+export const MUSE_EFFORT = Object.freeze(["none", "minimal", "low", "medium", "high", "xhigh", "max", "ultra"]);
 export const CODEX_SANDBOX = Object.freeze(["read-only", "workspace-write", "danger-full-access"]);
 export const GROK_SANDBOX = Object.freeze(["workspace", "read-only", "off"]);
 export const QODER_PERMISSION = Object.freeze([

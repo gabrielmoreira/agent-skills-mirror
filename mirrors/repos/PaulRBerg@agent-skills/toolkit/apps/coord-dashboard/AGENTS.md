@@ -47,6 +47,8 @@ Coordination, Findings, and Messages tabs. The Findings badge and default Unreso
 handed-off findings. Triaging is an independent overlay, not another finding state.
 
 Render full message history directly in the Messages tab with 25 messages per page. Keep search and filters in the tab.
+The Coordination tab shows the five latest messages in a sticky right-hand preview. Its button focuses the Messages tab,
+and `activateOnFocus` selects that tab and updates the URL.
 
 ## Handoffs
 

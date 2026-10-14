@@ -1,6 +1,8 @@
 ---
 name: "ulw-maestro"
 description: "[omh] Coding owner already chosen, handoff pending: prepares the handoff for the coding agent you already chose, composing its prompt from that agent's own installed skills; never selects the owner and never executes the work itself. Use when the user says: ulw-maestro, coding handoff, prepare the handoff, prepare a coding handoff, hand off the coding work, external executor handoff, handoff prompt, delegation prompt."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, execution]
@@ -8,6 +10,7 @@ metadata:
     phase: external-handoff
     role: handoff-guide
     quality_tier: handoff-gated
+    related_skills: [omh-executor-runtime-readiness, ulw-work, claude-code, codex, opencode]
 ---
 
 # Maestro
@@ -23,8 +26,9 @@ This is a Hermes-native `maestro` workflow skill.
 - No coding owner is chosen yet for this run; the Hermes harness stays the default and this engine never picks one.
 - The request is a concept question about maestro, prepared handoffs, or a coding-agent name, or a filename that happens to contain one -- answer directly instead.
 - The user wants advice on which coding owner to pick -- ask, don't compose.
-- The user is asking whether an owner CAN run right now -- use `executor-runtime-readiness` instead.
-- The request is lane-splitting or a full delivery cycle rather than one lane's handoff -- use `ultrawork`, which enters this engine for lanes with an external owner.
+- The user is asking whether an owner CAN run right now -- use `omh-executor-runtime-readiness` instead.
+- The request is lane-splitting or a full delivery cycle rather than one lane's handoff -- use `ulw-work`, which enters this engine for lanes with an external owner.
+- The user wants a coding task handed straight to the Claude Code, Codex, or opencode CLI in the terminal, with no prompt composed from that CLI's own installed skills -- load Hermes' bundled `claude-code`, `codex`, or `opencode` skill instead of this one.
 
 ## Examples
 
@@ -58,9 +62,9 @@ Bad example:
 
 - Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use once a lane's coding owner is an explicit external CLI and the work needs a prompt composed from that CLI's own installed skills, its readiness and permission checked, and its session captured for steering.
 
@@ -90,7 +94,7 @@ Quality bar:
 - The fanout-dispatch bridge -- `omh coding fanout dispatch` for a multi-unit split, or `omh coding run` for one unit -- is the only executing surface, explicit per invocation, and it never merges; preparing, composing, or showing a prompt is never dispatch, and a dispatch receipt is never review, CI, or merge evidence.
 - To carry the files the Hermes session already touched into the handoff, cite `session_file_activity/v1` (`omh quality-evidence file-activity --hermes-session <id> --json`): the workspace files its read_file, write_file, and patch calls named, with the outcome Hermes recorded -- never file-content, diff, test, review, CI, or merge evidence.
 - Capture the executor's session id at dispatch (`--output-format json` -> `session_id` for Claude Code, `--json` -> `thread_id` for Codex) and carry it into every status line; a missing id is reported as unsteerable, never silently attached.
-- Observe to a terminal state: after dispatch, poll `omh coding fanout status --fanout-id <fanout-id> --json` about every 60 seconds until the roster's own `all_units_terminal` is true, and read `stuck_units` on every poll rather than scanning the rows yourself. Per unit, `terminal` is the answer and `unit_state` is why -- a `lifecycle_state` of `unit_verification_observed` or `integration_ready`, or a recorded `failure_diagnostic`, is what makes a finished unit terminal -- with `last_event_age_seconds` the time since that unit's last observed output, `progress.seconds_since_new_output` the time since its output last grew, and `capacity.next_action` the reason a refused unit was refused. A unit that is `progress_stalled`, `awaiting_input`, `account_limit`, `permission_blocked`, or `data_missing` needs intervention NOW, not more waiting: a live process with no new evidence is not progress, and re-running under the same account, the same credentials, or the same missing objects repeats the failure exactly. Never end a turn on "waiting for the worker" while a unit sits in one of those states. `all_units_terminal` is also false when the roster is empty and when a unit has neither a marker nor a summary row, so give the loop a wall clock of its own: a unit whose `unit_state` is still `unknown` after about ten minutes is a missing record to chase, not a unit to keep waiting on, and a poll loop with no bound is the stall it was meant to catch.
+- Observe to a terminal state with ONE bounded watcher, never a status poll in your own turns: after dispatch, start `omh coding fanout status --fanout-id <fanout-id> --wait --timeout 600` once -- when `terminal` is in your tool list or tool_search finds it, as `terminal(command=..., background=true, notify=true)`, otherwise in the foreground. Then do independent work or end the turn, unless the spawn result says this session cannot receive the completion: then wait on that process the way the result names before ending the turn. It re-reads the roster itself and its exit code says why it stopped: 3 when the roster's own `stuck_units` names a unit, 0 when `all_units_terminal` is true and every unit is `verified`, 1 when all are terminal and one is not, 65 when they all verified but the journal had unreadable lines (a unit may be missing from the roster), 124 when the timeout passed first. Any other code means the watcher itself did not finish (an error, a crash, or a kill). On any exit, read the roster once with `omh coding fanout status --fanout-id <fanout-id> --json` and act on the units it names; after a code the watcher did not choose, start a fresh watcher only if units are still running. Per unit, `terminal` is the answer and `unit_state` is why -- a `lifecycle_state` of `unit_verification_observed` or `integration_ready`, or a recorded `failure_diagnostic`, is what makes a finished unit terminal -- with `last_event_age_seconds` the time since that unit's last observed output, `progress.seconds_since_new_output` the time since its output last grew, and `capacity.next_action` the reason a refused unit was refused. A unit that is `progress_stalled`, `awaiting_input`, `account_limit`, `permission_blocked`, or `data_missing` needs intervention NOW, not more waiting: a live process with no new evidence is not progress, and re-running under the same account, the same credentials, or the same missing objects repeats the failure exactly. Never end a turn on "waiting for the worker" while a unit sits in one of those states; exit 3 is that moment. `all_units_terminal` is also false when the roster is empty and when a unit has neither a marker nor a summary row, which is why the watcher has a deadline: on exit 124 a unit whose `unit_state` is still `unknown` is a missing record to chase, not a unit to keep waiting on, only a unit still `running` gets a fresh watcher, and a wait with no bound is the stall it was meant to catch.
 - A finished dispatch is an event to act on in the same turn, not a status to report: verify that unit's result, record the outcome on the plan (done, or blocked with its reason), then run the recovery or start the next item. Never announce a continuation that has not actually started -- a closing sentence promising the next step, with no dispatch and no plan change in the same turn, is the failure this rule exists for.
 - Write every steering delta as more than a restated brief: name the changed constraint, the new evidence, the required action, and whether the verification target moved.
 - A mid-run user message is an interjection, not a stop: answer it briefly and, in the same reply, continue the run — re-read the phase todo when one is active and dispatch or advance the next pending step, or name the armed wait it is waiting on -- handle, bound completion signal, deadline -- instead of re-reading status. Only the user's explicit stop or cancel, or the engine's own completion gate, ends the run; when the interjection changes scope, say so and update the declared plan or todo instead of silently abandoning it. A mid-run message is the latest steering for the active task, not automatically a replacement objective: it replaces the objective when the user says so and steers the current one otherwise.
@@ -156,4 +160,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

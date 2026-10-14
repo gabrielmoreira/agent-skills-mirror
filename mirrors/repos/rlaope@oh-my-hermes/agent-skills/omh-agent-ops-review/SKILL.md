@@ -1,6 +1,7 @@
 ---
 name: "omh-agent-ops-review"
 description: "[omh] AI agent progress for managers: help managers inspect AI-agent progress, blockers, quality gates, and throughput levers. Use when the user says: agent-ops-review, agent ops review, agent productivity, operator productivity, manager view, quality dashboard, throughput review, agent work quality."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operator]
@@ -51,7 +52,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes should explain AI-agent work: quality gates, progress, blockers, next actions, and throughput.
 

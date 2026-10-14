@@ -530,3 +530,7 @@ Check the provenance metadata and subtree instructions in `skills/<skill-id>/SKI
 - Explore `@skill-creator` to make your own skills
 
 **Still confused?** [Open a discussion](https://github.com/sickn33/agentic-awesome-skills/discussions) and we'll help you out! 🙌
+
+## Why is my old plugin pack no longer listed?
+
+Overlapping packs are consolidated into one destination per job. See the [replacement table](plugin-migration.md). Your installed copy is not deleted automatically: install and verify its replacement before disabling the old pack. Old IDs remain activation lookup aliases, not installable duplicate plugins. Source changes reach installations in the next published release.

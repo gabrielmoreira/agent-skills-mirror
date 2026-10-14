@@ -130,7 +130,7 @@ Dashboard targets are configured separately with `TARGET_REPOS` in
 does not enable any of those surfaces.
 
 `PUBLIC_BAY_REPOS` is a separate public-output allowlist for the minimal
-repository/item reference cards shown by OpenClaw Bay and Overview. Add a
+repository/item reference cards shown by Overview. Add a
 repository only after confirming that it is public and intended to be visible
 on the unauthenticated dashboard. The Worker treats an absent or malformed
 allowlist as empty. Membership does not authorize titles, URLs, queries,
@@ -146,8 +146,7 @@ without a TypeScript change. It is intentionally narrow:
 - denied repositories are rejected
 - scheduled fanout is public-only unless a private state publication path exists
 - auto-close policy comes from that owner fallback
-- `live_test` configuration and its post-review executor are retired; inline
-  review proof uses the current lease-scoped proof capabilities instead
+- `live_test` configuration and its post-review executor are retired
 - generic `openclaw/*` issues can auto-close only for
   `implemented_on_main`; PRs can auto-close for `implemented_on_main` or
   age-gated `mostly_implemented_on_main`

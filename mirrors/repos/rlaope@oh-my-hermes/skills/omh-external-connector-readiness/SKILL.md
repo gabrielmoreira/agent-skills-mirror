@@ -1,6 +1,8 @@
 ---
 name: "omh-external-connector-readiness"
 description: "[omh] Evaluating a plugin, connector, or API for adoption: external connector readiness - assess whether a named plugin, connector, API, data provider, or multimodal route is safe, affordable, fresh, and observable; use executor-runtime-readiness for coding-owner choice and toolbelt-readiness for missing capability inventory. Use when the user says: external-connector-readiness, external connector readiness, connector readiness matrix, plugin readiness matrix, provider readiness, api readiness, connector adoption, external plugin adoption."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, connector]
@@ -8,6 +10,7 @@ metadata:
     phase: connector-readiness
     role: guide
     quality_tier: workflow-surface-gated
+    related_skills: [omh-executor-runtime-readiness, omh-toolbelt-readiness, omh-live-info, omh-apps]
 ---
 
 # External Connector Readiness
@@ -16,13 +19,13 @@ This is a Hermes-native `external-connector-readiness` workflow skill.
 
 ## Why This Exists
 
-`external-connector-readiness` exists so Hermes users can ask for this workflow in chat and get a structured, checkable answer instead of an improvised one.
+`external-connector-readiness` exists because adopting a plugin, connector, API, or memory provider changes what the agent can reach, spend, and remember, and a host's install-time scan or a vendor's docs answer only part of that: it scores capability, auth, cost, freshness, safety, and fallback for each candidate, and reports a trial only from what was observed.
 
 ## Do Not Use When
 
-- The request is already handled by a narrower explicit skill with stronger evidence.
-- The user asks OMH to secretly run external platforms, connectors, schedulers, file exports, or runtime agents.
-- The only safe answer is to ask for missing authority, credentials, target, or observed evidence first.
+- Choosing which coding owner runs a task; use `omh-executor-runtime-readiness`.
+- Finding which tool, credential, or install is missing for work already chosen; use `omh-toolbelt-readiness`.
+- A read-only live lookup or an external write through a connector already adopted; use `omh-live-info` or `omh-apps`.
 
 ## Examples
 
@@ -47,6 +50,7 @@ Bad example:
 - For a memory provider, disabling it, removing its local cache, deleting its remote memory, deleting the account, and switching away are reported as distinct operations with distinct postconditions.
 - Unknown deletion, isolation, or write semantics block automatic writes and irreversible adoption instead of resolving to an OMH or Hermes default.
 - For a realtime voice connector, keep turn integrity, latency, fallback, interruption, and spoken tool safety separate; report unsupported or unobserved dimensions as hold or block rather than as a pass.
+- On Hermes, record its install-time scans as observed evidence beside the card, never in place of it: `hermes plugins install` scans a plugin before installing it (`safe`, `caution`, or `dangerous`, and a `dangerous` verdict is refused even with `--force`), and an MCP server started through `npx`, `uvx`, or `pipx` is checked against OSV malware advisories and refused on a match with an error that reads `MCP server '<name>': BLOCKED: ...`. A scan counts only when its output was seen: the plugin scan does not run with `plugins.scan_on_install` off, and the OSV check covers known malware only and lets the server start when its lookup fails, so a quiet install or launch is not a clean result.
 
 ## Recovery Notes
 
@@ -58,11 +62,11 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+39 more`) - schedules, status, health, and ops review.
+- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+40 more`) - schedules, status, health, and ops review.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use before adopting, enabling, or routing an external plugin/connector/API when Hermes must compare capability, auth, cost, modality, freshness, safety, fallback, and observable trial evidence. Use it for an optional memory provider too, where enabling, switching, pausing, or removing it also needs identity scope, automatic hooks, retention, deletion, export, and switching answered before adoption.
 
@@ -129,7 +133,8 @@ Safety rules:
 - Do not claim connector, gateway, runtime, file generation, memory mutation, or host automation evidence from prepared guidance.
 - A hook registration or lifecycle callback is an observation point only; it never grants write or synchronization authority.
 - Documentation and open package code declare a contract; neither establishes a hosted service's storage, retention, cost, or deletion postcondition.
-- A memory provider stays optional: an unknown or unavailable provider never becomes a required default and never makes OMH memory unusable.
+- A memory provider stays optional: an unknown or unavailable provider never becomes a required default.
+- On Hermes, the memory provider is one slot: Hermes runs its built-in memory and no more than one external provider, the one `memory.provider` names, so adopting another provider (honcho or mem0, for example) where that key reads `omh` displaces OMH's provider. OMH's per-turn recall and dreaming reminders then stop, and the `omh_memory` tool stays registered but refuses to recall or write records (`session_lens_unavailable`), because the session lens it reads comes from the provider. State that displacement in the posture before adoption, and keep the switch a proposed `memory.provider` diff the user applies.
 - A realtime voice verdict comes only from a supplied realtime_voice_trial_receipt/v1. OMH opens no microphone, call, room, socket, or provider session, installs no connector, downloads no voice model, and authorizes no tool from a receipt.
 - A synthetic voice fixture never proves the intended room, microphone, network, or telephony path, and a fallback path succeeding is never success for the requested voice stack, provider, or model.
 - Generic connector, voice-input, and media-input records are not realtime voice readiness; a turn that lost its onset, split, merged, dispatched twice, truncated, or replayed after audible output blocks the verdict rather than reporting latency.
@@ -152,4 +157,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

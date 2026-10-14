@@ -1,6 +1,8 @@
 ---
 name: "omh-docs"
 description: "[omh] Explaining OMH itself: current-source-first documentation for OMH itself: product identity, public capability catalog, model routing, local state, and long-term memory. Use when the user says: product-docs, OMH documentation, oh-my-hermes documentation, what is OMH, what is oh-my-hermes, how does OMH work, OMH capability catalog, OMH skill catalog."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, research]
@@ -8,6 +10,7 @@ metadata:
     phase: product-documentation
     role: researcher
     quality_tier: source-gated
+    related_skills: [omh-doctor, omh-skill, omh-model-setup]
 ---
 
 # OMH Docs
@@ -95,7 +98,7 @@ before mutation unless that separate action is authorized.
 - Current lane: **Research and company ops**. Stay read-only and return to the
   router when the request belongs to another workflow.
 - Shared product, routing, compatibility, and evidence rules:
-  `omh-routing/references/skill-common-rail.md`.
+  `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
 ## Completion Checklist
 

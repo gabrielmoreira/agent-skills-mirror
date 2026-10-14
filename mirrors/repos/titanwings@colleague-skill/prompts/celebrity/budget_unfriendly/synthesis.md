@@ -6,7 +6,7 @@ Read:
 
 - the six-track research notes
 - `knowledge/research/reviews/research_audit.md`
-- `references/celebrity_budget_unfriendly_framework.md`
+- `prompts/celebrity/budget_unfriendly/framework.md`
 
 Build a synthesis review that separates:
 

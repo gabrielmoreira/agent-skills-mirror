@@ -29,7 +29,7 @@ sprite-gen background-tile --source frontage.png --axis x --period 512 --overlap
 
 The report measures the join against ordinary interior differences, including alpha and colour over light/dark backgrounds. It records the selected seam and source crop. A numerical join score does not prove that architecture or silhouettes repeat convincingly: inspect at least two adjacent copies. The tool does not invent missing roofs, perspective or scenery.
 
-Python APIs: `make_tile(image, period, *, axis="x", overlap=32)` and `inspect_tile(image, axis="x")` in `sprite_gen.background.tile`. The former returns the image and report; the latter only measures.
+Python APIs: `make_tile(image, period, *, axis="x", overlap=32)` and `inspect_tile(image, axis="x")` in `sprite_gen.background.tile`. The former returns the image and report; the latter only measures. `inspect_tile` is the one measure of a tile's join: [`pixel-draw`](pixel-draw.md#gates)'s G4 tile seam asks it of a drawn tile along x and along y and warns where it says `needs-review`.
 
 ## Shared asset input
 

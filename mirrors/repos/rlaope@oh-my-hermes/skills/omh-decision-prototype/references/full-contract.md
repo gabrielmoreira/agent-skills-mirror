@@ -11,14 +11,15 @@ holds the workflow-specific detail without copying those shared rails.
 
 ## Do Not Use When
 
-- $context is the explicit-only route for a repository terminology or product decision frontier (`context`); preference or policy decisions that behavior cannot test stay with `deep-interview`.
-- $context is the explicit-only route for unresolved repository terminology or project language (`context`); hand only an empirical decision here.
-- The decision is already made and the request is an implementation plan with acceptance criteria; use `ralplan` and consume the decision receipt there.
-- The user wants the feature built, reviewed, or shipped rather than one question answered; use `ultrawork` after an accepted plan.
-- The request is UI creation, redesign, or polish of a real surface rather than a throwaway wireframe that answers one interaction question; use `frontend`.
-- The request is a premium content, layout, or visual quality gate on deliverables; use `design-quality-gate`.
-- The uncertainty is whether customers have the problem or would adopt the solution, which needs customer evidence rather than a technical or interaction spike; use `product-discovery-validation`.
+- $context is the explicit-only route for a repository terminology or product decision frontier (`ulw-context`); preference or policy decisions that behavior cannot test stay with `ulw-interview`.
+- $context is the explicit-only route for unresolved repository terminology or project language (`ulw-context`); hand only an empirical decision here.
+- The decision is already made and the request is an implementation plan with acceptance criteria; use `ulw-plan` and consume the decision receipt there.
+- The user wants the feature built, reviewed, or shipped rather than one question answered; use `ulw-work` after an accepted plan.
+- The request is UI creation, redesign, or polish of a real surface rather than a throwaway wireframe that answers one interaction question; use `omh-frontend`.
+- The request is a premium content, layout, or visual quality gate on deliverables; use `omh-design-quality-gate`.
+- The uncertainty is whether customers have the problem or would adopt the solution, which needs customer evidence rather than a technical or interaction spike; use `omh-product-discovery-validation`.
 - The request needs QA certification, production-readiness evidence, or a performance baseline for release; prototype results do not generalize beyond their declared fixture and environment.
+- The user wants an idea's feasibility probed across several questions with throwaway spikes, with no single decision for a plan to consume; load Hermes' bundled `spike` skill instead of this one.
 
 ## Examples
 
@@ -53,7 +54,7 @@ Bad example:
 - If cleanup fails, keep the artifact at its last observed cleanup state, name the residual scratch identity, and never report `discarded`.
 - If the user asks to ship the prototype, summarize the receipt and route to `ralplan`; promotion needs an accepted plan and its own implementation handoff.
 
-## Use When
+## When to Use
 
 Use when discussion cannot settle one interaction, API, performance, or integration choice and a cheap reversible experiment can answer it before planning; refuse unbounded or multi-feature experiments and ask for or derive one falsifiable decision question.
 
@@ -77,7 +78,7 @@ Quality bar:
 
 Handoff policy:
 
-Keep the decision question, hypothesis, budget, scratch boundary, measurement method, and decision receipt in Hermes. When a selected executor or runtime (Codex, Claude Code, Hermes runtime/handoff, or a generic executor) will run the experiment, prepare an executor-neutral handoff with exact commands and expected observations; it stays `prepared_not_observed` until observed outputs exist. A prototype result is decision grounding only: promotion into production requires a separate accepted `ralplan` plan and its own implementation handoff.
+Keep the decision question, hypothesis, budget, scratch boundary, measurement method, and decision receipt in Hermes. When a selected executor or runtime (Codex, Claude Code, Hermes runtime/handoff, or a generic executor) will run the experiment, prepare an executor-neutral handoff with exact commands and expected observations; it stays `prepared_not_observed` until observed outputs exist. A prototype result is decision grounding only: promotion into production requires a separate accepted `ulw-plan` plan and its own implementation handoff.
 
 Required inputs:
 

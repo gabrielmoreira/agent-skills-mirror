@@ -2,6 +2,11 @@
 title: Structural transformation safeguards
 applicability:
 - When a structural transformation is meant to preserve observable behavior
+x-claim-provenance:
+- claim: A flag argument is defined by what it does, telling the function to carry out a different operation depending on its value, rather than by its type.
+  source: https://martinfowler.com/bliki/FlagArgument.html
+- claim: Remove Flag Argument, also called Replace Parameter with Explicit Methods, applies to a function that dispatches on a string argument naming the operation.
+  source: https://refactoring.com/catalog/removeFlagArgument.html
 ---
 
 Establish the observable contract and a preservation baseline before editing. A characterization test is valid only for behavior established as intended.
@@ -10,7 +15,7 @@ Generate and challenge candidate target structures before selecting a transforma
 
 For each transformation, state the structural cost it removes, the precondition that makes the operation valid, the observable behavior and compatibility it must preserve, the evidence sensitive to that behavior, and the signal that would make the operation the wrong choice. Common, non-exhaustive safeguards include:
 
-- **Extract an operation** only when its inputs, outputs, effects, failure behavior, and name form one meaningful operation or decision whose name clarifies the caller. Preserve evaluation order, captures, mutation, side effects, exceptions, and asynchronous behavior; read the caller afterward and reject an extraction that did not improve it, needs control flags or an incoherent parameter list, or creates a navigation chain of one-line operations.
+- **Extract an operation** only when its inputs, outputs, effects, failure behavior, and name form one meaningful operation or decision whose name clarifies the caller. Preserve evaluation order, captures, mutation, side effects, exceptions, and asynchronous behavior; read the caller afterward and reject an extraction that did not improve it, needs control flags, a selector of any type to switch it among behaviors, or an incoherent parameter list, or creates a navigation chain of one-line operations.
 - **Split a class or unit** only around a cohesive concept whose responsibilities vary independently or obscure the original purpose. Define ownership, lifetime, visibility, and communication, and verify construction, serialization, dependency injection, cleanup, and public behavior. Reject a data-and-delegation shell or a split whose parts must still be understood and changed together.
 - **Move responsibility** only toward the cohesive owner of the knowledge or state it uses, where the current placement creates knowledge leakage, repeated policy, or an unstable dependency direction. Preserve call order, visibility, ownership, lifetime, transaction, and serialization boundaries; update every caller and reject a move that merely satisfies a layer diagram, reverses a dependency, creates a cycle, or accumulates unrelated responsibilities.
 - **Inline indirection** only after establishing that it owns no independent policy, variation, reuse, test seam, or compatibility purpose. Close callers, overrides, registrations, doubles, and dynamic references; preserve evaluation, errors, lifetime, visibility, and every real trust, I/O, process, platform, or volatility boundary.

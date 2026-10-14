@@ -67,6 +67,6 @@ None of its own. The domain is stateless: it reads the backend credential throug
 
 ## Further reading
 
-- [`gitbooks/developing/tinyhumans-api-key.md`](../../../../../gitbooks/developing/tinyhumans-api-key.md): running on a TinyHumans API key.
+- [`docs/gitbooks/en/developing/tinyhumans-api-key.md`](../../../../../docs/gitbooks/en/developing/tinyhumans-api-key.md): running on a TinyHumans API key.
 - [`crates/openhuman-tinyhumans/src/hosted/README.md`](../README.md): hosted proxies.
 - [`vendor/tinyhumans-sdk/README.md`](../../../../../vendor/tinyhumans-sdk/README.md): tinyhumans-sdk.

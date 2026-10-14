@@ -1,6 +1,8 @@
 ---
 name: "omh-frontend-refactor"
 description: "[omh] Oversized or tangled UI component: behavior-preserving refactor of UI code - preview the full change plan first, apply as a second explicit step, and work impact-ordered from state architecture down to naming polish. Use when the user says: frontend-refactor, front-refactor, frontend refactor, refactor this component, refactor the component, refactor my component, component refactor, react refactor."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, maintenance]
@@ -8,6 +10,7 @@ metadata:
     phase: frontend-refactor
     role: handoff-guide
     quality_tier: behavior-lock-gated
+    related_skills: [omh-ai-slop-cleaner, omh-frontend, omh-code-review, omh-refactor-plan, ulw-plan]
 ---
 
 # Frontend Refactor
@@ -20,10 +23,10 @@ This is a Hermes-native `frontend-refactor` workflow skill.
 
 ## Do Not Use When
 
-- The target is not UI code, or the smell is generic slop, duplication, or dead code outside a component tree; use `ai-slop-cleaner`.
-- The user wants new UI built or redesigned rather than restructured; use `frontend`.
-- The user wants findings and a verdict without changing the code; use `code-review`.
-- The restructuring crosses module boundaries or changes architecture beyond the component tree; use `refactor-plan` for the phased execution shape, or `ralplan` first when the direction itself is still contested.
+- The target is not UI code, or the smell is generic slop, duplication, or dead code outside a component tree; use `omh-ai-slop-cleaner`.
+- The user wants new UI built or redesigned rather than restructured; use `omh-frontend`.
+- The user wants findings and a verdict without changing the code; use `omh-code-review`.
+- The restructuring crosses module boundaries or changes architecture beyond the component tree; use `omh-refactor-plan` for the phased execution shape, or `ulw-plan` first when the direction itself is still contested.
 
 ## Examples
 
@@ -56,9 +59,9 @@ Bad example:
 
 - Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when existing UI code needs restructuring without behavior change - an oversized component, boolean-flag state, effect chains, prop drilling - and the user wants a previewed, pass-ordered refactor plan rather than a new build or a verdict-only review.
 
@@ -138,4 +141,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

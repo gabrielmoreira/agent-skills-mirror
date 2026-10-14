@@ -282,9 +282,14 @@ suffix. Utility calls such as `useUtils().invoice.list.fetch()`, `useQueries`,
 and links whose callee was renamed by a minifier are not recognized.
 
 Each recovered bundle module retains the exact factory-source digest. A complete
-bounded AST also receives a `babel-ast-v1` structural fingerprint that ignores
+bounded AST also receives a `babel-ast-v2` structural fingerprint that ignores
 ordinary identifier names while retaining syntax, literals, operators, object
-keys, and member properties. If fingerprint construction reaches its structural
+keys, and member properties. Computed member identifiers retain their access
+syntax without treating a local variable's spelling as a fixed property; template
+literal contents remain part of the fingerprint. Version comparison keeps the
+algorithm in its matching key, so retained `babel-ast-v1` fingerprints cannot match
+these new fingerprints. Re-analyze both snapshots to compare their new structure.
+If fingerprint construction reaches its structural
 bound, the fingerprint is unavailable and its status is `truncated`; a bounded
 prefix is never presented as a complete stable fingerprint.
 
@@ -619,3 +624,11 @@ Unresolved HTML references retain their declaration, source range, and resolutio
 reason in the renderer observations.
 HTML script source ranges follow the HTML parser across LF, CRLF, and bare CR
 line endings, preserving UTF-16 columns.
+Inline JavaScript in local HTML, meaning classic or module `<script>` bodies
+without a `src` attribute, is not analyzed. Each HTML file that has one gets an
+unknown `parse-html-inline-scripts` scope with the exact body count and the
+script type and source range of the first 100 bodies; beyond that, coverage is
+truncated under the `html_inline_script_locations_per_file` limit, and the
+scope's evidence counts the omitted locations. The graph names the
+file and up to 10 starting lines in its limitations, and coverage is partial. Import maps, speculation rules, data blocks, and blank
+bodies are not JavaScript and are not reported.

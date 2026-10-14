@@ -25,5 +25,5 @@ Implement provider transport, contract declarations and registration in the cano
 ## Further reading
 
 - [Parent module README](../README.md)
-- [Messaging channels](../../../../../gitbooks/features/channels.md)
+- [Messaging channels](../../../../../docs/gitbooks/en/features/channels.md)
 - [tinychannels](../../../../../vendor/tinychannels/README.md)

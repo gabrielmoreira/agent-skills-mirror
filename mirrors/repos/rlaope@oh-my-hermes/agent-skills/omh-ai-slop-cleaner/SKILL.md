@@ -1,6 +1,7 @@
 ---
 name: "omh-ai-slop-cleaner"
 description: "[omh] Messy or AI-generated code to clean up: delete AI-generated slop, dead code, and duplication while observable behavior stays identical. Use when the user says: ai-slop-cleaner, cleanup, deslop, refactor, risky, behavior-preserving refactor, risk analysis, refactor workflow."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, maintenance]
@@ -20,9 +21,9 @@ This is an OMH `ai-slop-cleaner` workflow skill, projected for Agent Skills host
 
 ## Do Not Use When
 
-- The goal is new or changed behavior rather than removing existing code; a plain refactor, feature, or fix request belongs to `ultrawork`.
-- The cleanup would change architecture or module boundaries and needs its execution shaped into phases first; use `refactor-plan`, or `ralplan` when the direction itself is still contested.
-- The user wants code judged for bugs or merge readiness with no drafted slop removal to inspect; use `code-review` for a bug-first review and `failure-signal-audit` for swallowed failures.
+- The goal is new or changed behavior rather than removing existing code; a plain refactor, feature, or fix request belongs to `ulw-work`.
+- The cleanup would change architecture or module boundaries and needs its execution shaped into phases first; use `omh-refactor-plan`, or `ulw-plan` when the direction itself is still contested.
+- The user wants code judged for bugs or merge readiness with no drafted slop removal to inspect; use `omh-code-review` for a bug-first review and `omh-failure-signal-audit` for swallowed failures.
 
 ## Examples
 
@@ -53,7 +54,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when the goal is removing existing low-quality, duplicated, or AI-generated code and the observable behavior must not change; lock behavior with tests before and after the edits.
 
@@ -78,7 +79,7 @@ Quality bar:
 - When the cleanup target is UI code, load `omh-ai-slop-cleaner/references/ui-review-checklist.md`; its items are review prompts a stated rationale closes, not bans.
 - Prefer deletion, reuse, and boundary repair over new abstractions.
 - Rerun verification after cleanup before claiming behavior is preserved, and close with the four-part report: changed files, simplifications, behavior lock, remaining risks.
-- Close every run with `omh runtime record --skill ai-slop-cleaner --harness coding-handling --status completed` (or `failed` / `blocked`): a cleanup run carries changed files, simplifications, and remaining risks in `--outputs-summary` and the behavior lock in `--verification-summary`; a review-mode run carries the ship or no_ship verdict and the finding count per priority in `--outputs-summary`. A caller that says the cleaner ran cites that record, and without one the pass is not_observed.
+- Close every run with `omh runtime record --skill ai-slop-cleaner --harness coding-handling --status completed` (or `failed` / `blocked`), adding `--goal <goal_id> --cleanup-outcome passed|skipped|reverted` when the pass serves a goal: a cleanup run carries changed files, simplifications, and remaining risks in `--outputs-summary` and the behavior lock in `--verification-summary`; a review-mode run carries the ship or no_ship verdict and the finding count per priority in `--outputs-summary`. A caller that says the cleaner ran cites that record, and without one the pass is not_observed. A goal carrying AC-SLOP completes only after `omh goal checkpoint --goal <goal_id> --summary <outcome> --criterion AC-SLOP --evidence-ref run:<run_id>` cites a `completed` record; a failed or blocked run never satisfies it, so a decided skip is `--status completed --cleanup-outcome skipped`. One accepted record covers the goal, and `skipped` and `reverted` are reported as recorded, never as passed.
 
 Required inputs:
 

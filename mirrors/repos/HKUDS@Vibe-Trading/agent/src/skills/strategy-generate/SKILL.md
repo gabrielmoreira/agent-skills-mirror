@@ -16,6 +16,14 @@ category: strategy
 
 **You only need to write `signal_engine.py` and `config.json`. The `backtest` tool automatically handles data loading and backtest execution.**
 
+## Adapting a registered strategy
+
+1. Read `get_strategy_evidence(strategy_id="sdm:...")` for the parent's description and computed regime definitions. A stale, disabled, decayed or inadequately evidenced parent cannot be adapted.
+2. Call `adapt_strategy(strategy_id=..., name=..., universe=..., config=...)` with explicit codes and date window. Only name, universe and optional position sizing may change. Signal definition, entry and exit rules remain the parent's. Missing inputs require a question, never a fabricated metric or threshold.
+3. Use the returned assigned `run_dir` and seeded `config.json`. Generate the child's `code/signal_engine.py` from its description using the contract below; never copy a parent run's metrics. Preserve the bound codes, dates and `strategy_adaptation` metadata. Record model provenance through the normal write tool.
+4. Call `backtest(run_dir=...)`, inspect its artifacts, then `refresh_strategy_evidence(runs=[{"strategy_id": "sdm:<child>", "run_dir": "<assigned>"}], scope="strategies")`. This updates only successful named strategies and preserves the parent's evidence. Refresh refuses a different run or changed config/code/results against the run card.
+5. Read the child's evidence and report its actual quality, cost and decay warnings. A successful backtest is not adequate regime evidence or independent approval. An unchanged mathematical signal can legitimately generate identical code for another universe; hashes establish provenance, not semantic correctness of generated Python.
+
 ## Requirements Parsing
 
 Extract the following from the user's description:
@@ -158,6 +166,7 @@ Self-check after writing `signal_engine.py`:
 - `rebalance_tolerance`: drift band around the target, as a fraction of it, used only under `"rebalance"`. A resize executes once the held weight has moved further than this from its target; a **changed** target breaches any sane band on its own, so target changes always execute. Default `0.0` means no band, and then the resize test is decided by the slippage width alone — measured on a constant 20% target over 60 bars, `0.0` produced 60 fills, `0.02` produced 12, and `0.05` produced 5 while the weight never left 0.21. Use `rebalance_mask`, not tolerance, to express a strategy's execution cadence. `0.05` is a reasonable starting point, not a recommendation with evidence behind it — it is your modelling choice and the report records the value the run used.
 - `initial_cash`: default 1,000,000
 - `commission`: default 0.1%
+- `hk_lot_sizes`: optional, Hong Kong only — `{"00700.HK": 100, "02800.HK": 500}`. HK board lots are set per issuer, so without this table every HK order is rounded to 100 shares and a name whose real lot is smaller than its target trades zero times. Codes match with or without leading zeros. Every symbol with no configured lot size uses 100 shares and is listed under `lot_assumptions` in the metrics, including runs without a table. Reports must identify these as assumptions rather than verified exchange lots.
 - `validation`: optional statistical validation after backtest completes. Omit to skip. Example:
   ```json
   "validation": {

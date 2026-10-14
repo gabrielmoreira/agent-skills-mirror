@@ -25,6 +25,26 @@ The equivalent MCP methods are `identify_flutter_build` (with `path`) and
 arm64-v8a, then x86_64, then x86, then armeabi-v7a, then the remaining
 ABIs alphabetically).
 
+## Optional retained AOT delivery
+
+MCP `inspect_dart_aot` keeps complete output when `detail` is omitted or
+`"complete"`. Explicit `detail: "summary"` returns the selected target/ABI/library
+identity, all snapshot headers, structural coverage, string-pool coverage and
+original lower-bound counts without the string lists. It retains complete source
+Evidence and returns a distinct linked `inspect_analysis_view` summary. Analysis
+and the caller's ABI choice are unchanged; one-shot CLI output stays complete.
+
+Use `normalized_result.parent_evidence_id` as the retained source for
+`inspect_analysis_view`, with `view: {kind: "dart-aot", collection: "package_uris",
+offset: 0, limit: 64}`. Collections are `package_uris`, `dart_uris` and
+`class_like_tokens`. Pages preserve the original strings and order, selected ABI,
+library identity and source coverage. `returned_counts` describe producer-returned
+rows; counts ending in `_at_least` remain lower bounds. Exhausting a page sequence
+does not make a partial pool complete or turn byte-pattern tokens into typed
+classes/functions. Views do not reopen the APK. Original Evidence remains
+exportable under its existing session lifetime. Summary requires a retaining
+server; older servers keep the complete request after schema discovery.
+
 ## What the AOT inspection returns
 
 `inspect_dart_aot` reads one ABI's `libapp.so` in full and reports:
@@ -40,6 +60,10 @@ ABIs alphabetically).
   [Dart 2.14 layout](https://github.com/dart-lang/sdk/blob/2.14.0/runtime/vm/snapshot.h).
   Kind numbers vary across Dart releases; other values are preserved with
   partial coverage, without guessing their interpretation.
+  Address resolution examines every overlapping `PT_LOAD` interpretation,
+  including partial overlaps. Equivalent mappings are coalesced; conflicting
+  mappings leave affected symbols unresolved and qualify coverage. Dynamic
+  hash, symbol and string tables use the same mapping checks.
   A payload without exported snapshot symbols is refused rather
   than guessed at.
 - **The snapshot hash** from the header at the start of each exported data
@@ -113,8 +137,11 @@ ABIs alphabetically).
   `resource_constraint`.
 - **Engine notes.** Engine libraries are spooled into the owned root. ELF
   headers, note tables and note payloads share an 8 MiB metadata budget;
-  up to 64 distinct build IDs are retained. Exceeding either bound preserves
-  the candidates already examined and reports partial coverage.
+  up to 64 distinct build IDs and 1024 distinct nonempty note ranges are retained.
+  The range cap bounds bookkeeping and separate positional reads even for tiny
+  overlapping declarations. Exact duplicates share one read and empty ranges
+  consume no inventory slots. Exceeding a bound preserves the candidates examined
+  from retained ranges and reports partial coverage with `build_id: null`.
 - **Metadata and candidate capacity.** Both operations refuse duplicate
   relevant library paths. Inventory is limited to 32 ABIs and 1024 bytes per
   relevant library path, independently of compressed size. Identification
@@ -154,3 +181,9 @@ engine build-ids, no labeled Dart version (as expected for a release
 engine), and the Android clang toolchain line; a plain aapt2-built APK
 reports not-detected with complete coverage. The suite uses self-contained
 synthetic ELF images and scanner payloads; it does not read private local files.
+
+The Gallery workflow and all 147 focused Flutter tests also pass on macOS Sonoma
+14.8.9 x86-64 and Windows 11 x64 build 26300.9457 guests with Node 24.18.0,
+including the conflicting-load and note-range-limit CLI/MCP regressions. Windows
+verification runs under a non-administrator account. Verifiers use a shared
+temporary parent so each CLI/MCP process can own and release its own snapshots.

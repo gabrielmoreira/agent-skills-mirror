@@ -14,13 +14,17 @@ describe and review a change to a subsystem is in the
 | A change holds on the whole path. | Follow it from the user's input to the end result, through the callers, the state it changes and the side effects. One correct function doesn't make the whole operation correct. For example, an agent's model picks are saved under one id and read under another (#926). An update button doesn't update the binary that actually runs (#930). |
 | A fix reaches every sibling of the bug. | Grep for the same pattern: every agent, subcommand, guard of the same shape and caller of a changed predicate gets the fix in the same change. That includes the other branches of the same operation and the other messages that name the same endpoint or rule. On 2026-10-05 six fixes needed a second release because they covered only the case in the report. On 10-06 #933's Codex models followed an hour after its sign-in. On 10-07 cd8d64a9 (#1059) offered sub2api's balance URL in one hint, while the error shown after a failed balance read still names only new-api's. Pi's whole-file move of mcp.json had no backup until d40fee80 (#1097), though the merge branch beside it already had one. |
 | A change re-derives everything built on what it changes. | When a change alters a formula, a list, a layout breakpoint or the timing of an async step, find every caller, saved copy and test that assumed the old meaning, and run it. 12cba74a kept Zed's old clamp under a new max_tokens. 5d871723 (#860) moved the Requests page's columns to 1150px, and click-scroll was red on main for most of 10-07 (82a36a35). ee2588c2 added an immediate re-read, and the test's assertion about the state in between became a race on Linux CI (3e38bd76). |
+| A failed read, parse or hash means "unknown". | It never means "empty", "none" or "equal". Keep what was read before, copy a file that doesn't parse aside before writing over it, and fix the shared reader rather than writing a strict one beside it. A list that guards access (an allow list, a key limit) fails closed when its file can't be read. Test with the file unreadable. readLogins wrote a parse error back as "no accounts" (b363327d), and agent/stash.go had the same bug two days later (270b5257). On 10-12 7a9490638's IP allow list read an unreadable settings.json as an empty list and let every address in (7d9382db2). On 10-13 #2017's patch read an unreadable codex-autoreset.json as "no reset spent" (e297a8ab2). |
+| Another app's values come from that app. | When magpie writes another app's file or speaks for it, take each field's type and value from that app's own data, binary, merge code or docs, not only its field names. 84554e57 wrote updatedAt in milliseconds and hung Claude Desktop's skills page (#863). #966 guessed Codex's limit_reached, which #996 undid after reading ChatGPT.app. On 10-13 accc8c090 copied Claude Code's OAuth client names but sent its own redirect_uri (127.0.0.1, where Claude Code sends localhost); e0ecf0161 read the binary and fixed it. |
+| Nothing that can block runs under a lock its reader needs. | Never send on a channel or call anything that can block while holding a lock the receiver takes first. Set shared state before the handoff that lets another goroutine look at it, and a struct copied by value that holds a map is not a copy. A fake server's handler runs on many goroutines: guard what it records with a lock, and count only the calls the test makes, since background reads reach it too. A change that starts a goroutine or timer runs `-race` before it is pushed. 85fd35ab hung macOS -race CI (4fb8e887). 01e66e0f's marshal wrote into a shared map (15afd988). On 10-11 7cba316b9's turn-done timer read fields on its own goroutine and went red under -race (a2afc1828). On 10-13 TestKeptLoginStandsAtItsPlace's fake Codex appended from two goroutines (a75de4c21). |
 | Checks cover the edges the change touches. | For numbers, check the boundaries. For paths, check each platform (macOS, Linux, Windows). For concurrency, check races and stale state. Pick checks by risk. |
 
 ## Tests
 
 | Rule | What a reviewer looks at |
 | --- | --- |
-| A fix comes with a test that fails without it. | The reviewer puts the old code back and runs the test, and the test must fail. A PR description says what it failed with. |
+| A fix comes with a test that fails without it. | The reviewer puts the old code back and runs the test, and the test must fail. A PR description says what it failed with. A test named for a guarantee goes red when that guarantee is broken by hand: #1318's TestHistoryWriteHoldsNoWaiter passed with the waiter held (#1358). On 10-12 bbe8825c0's memo test passed with its eviction reversed (9dd5917a4), and on 10-13 e21b1dbc1's tests passed with is_error dropped (cc93b566e). |
+| A test never reaches the network. | A vendor's page or API is served from httptest, built from bytes saved from the real one. A package comes from a lock file, not a registry's latest. Break the change and watch where the test's requests go. 9755201b opened ChatGPT and hung on its Cloudflare challenge. On 10-11 a library test reached the real GitHub with the icon proxy off (f04792f9). On 10-13 TestPiPackage tested npm's latest pi that minute (f230fa23b), and plugin and cli tests waited 30s on the real models.dev (bde11c778). |
 | Tests use real inputs. | Fixtures look like real requests, real serialized output and real files on disk. That includes missing fields, empty values and defaults. |
 | Tests check behavior, not implementation. | Assert what the user or caller needs. Formatting changes and internal refactors shouldn't break a test, unless exact bytes are the requirement. |
 | A test that fails on `main` is a bug to fix now. | "Fails the same on origin/main" is not a baseline, and neither is "fails under the full run, passes alone". Fix it at its cause, or open an issue naming the cause, in a commit of its own, before shipping on top of it. From 10-05 to 10-07 dozens of commits shipped past red tests. Some were real bugs: a data race (a45b3e09), test order (bfe8bcaf), and click-scroll red since 5d871723 while dcbae2ef, 76d82528 and b2345078 shipped past it. Run `go test -race -count=20 -run X` before calling a Go test a flake. |
@@ -56,7 +60,15 @@ listed as not run, never left out.
    `syscall.Getsid`, which Linux's syscall package doesn't have, and
    bb8a3e30 and e7de897f shipped unformatted. In a chain of commands, set
    `set -o pipefail`, so that `go test | tail && git push` stops on a
-   failure.
+   failure. Run `./...`, not the packages you think you touched: the
+   repo's guard tests live in packages a change doesn't touch.
+   TestFolderVarsAreListed (internal/agent) fails when a new agent
+   variable isn't in `agentenv.Vars`, TestNoCommandBypassesProc
+   (internal/proc) when code calls `exec.Command` instead of
+   `proc.Command`, and an output format change breaks another package's
+   test that pinned the old text. On 10-13 four commits ran chosen
+   packages and turned main red this way: 6fa3109ea (494609866),
+   43d8a5633 (24146c031), 5617281f5 and cdb7b5ff7 (c6de0d2a5).
 4. **GUI tests in both engines.** A change to `internal/gui/assets` runs the
    Playwright tests it touches in Chromium and WebKit (`make test-ui`, or
    `BROWSER=webkit node --test …`). The suite must also pass in Chinese,
@@ -113,7 +125,16 @@ A release counts only when all of these hold:
 - That release is marked Latest, the highest version.
 
 Check `git tag` for the next free version first, because releases can be
-made from more than one place. A PR that only adds tests doesn't get a
+made from more than one place. `git fetch --tags` and check the commit
+isn't tagged already: on 10-12 two sessions tagged 396a6a3d4 a minute
+apart, and the lower v0.1.1192 became Latest. A tag is not a release:
+check the release exists with its 16 assets before naming the version to
+anyone, and file a release whose build failed instead of letting the next
+tag cover it. v0.1.1213 (hdiutil "Resource busy") and v0.1.1218 (notarising
+lost the network) were never published, and nobody noticed the first for
+1.5 hours (#1846). The same holds for a plugin version: `npm view
+<package>@<version> --prefer-online` before a mover's `min` or a reply
+names it. A PR that only adds tests doesn't get a
 release of its own.
 
 ## Reviewing a PR
@@ -179,3 +200,14 @@ sees, written as plain behavior: `gateway: a 429 that says the balance is
 spent is out of credit, not a rate limit`. Give the issue number or the
 reporter. The body says how it was verified, and which test fails without
 the change.
+
+The record of what was run is in the commit body, where a later review can
+read it: not in push notes, a chat or only on the PR. A large commit with
+no body can't be reviewed afterwards: 586f2bce changed 5133 lines with a
+subject only. On 10-12 fjrtdk's ea3d480ed (+237) and liubing's 1cd814004
+(+505) were applied with no record, and their review commits found real
+bugs in them (1f0ff81df, 9935119f1). On 10-13 3ccbe6bc1 (plugin runtime
+P0, 2137 lines) put its full-suite results in "the push notes"; it had
+left two GUI tests red, found by 2dcc51417 the same evening. When a
+community commit is applied without a body, the review commit says what
+was run against that author's code.

@@ -144,8 +144,7 @@ In order:
 9. The runtime commits the turn. `OpenHumanTranscriptCodec`
    ([`session_host/codec.rs`](./session_host/codec.rs)) converts between durable `TranscriptMessage`
    rows and model `Message`s. After the durable commit, the host publishes
-   `ConversationTurnCommitted` for memory ingest, optionally dual-writes
-   the legacy session format (`session_import::live`), and accounts usage
+   `ConversationTurnCommitted` for memory ingest and accounts usage
    against any active goal.
 10. `run_single_with_origin` publishes `AgentTurnCompleted` (or
     `AgentError`) and returns the final text.
@@ -219,13 +218,13 @@ coding workers, and background completion delivery. See
 
 ### Agent definitions, registry and prompts
 
-An `AgentDefinition` ([`harness/definition/`](./harness/definition/)) is an archetype: id, tier,
+An `AgentDefinition` ([`harness/host_definition.rs`](./harness/host_definition.rs), vocabulary in `tinyagents-definition`) is an archetype: id, tier,
 prompt source, model spec, `ToolScope`, `SandboxMode`, iteration policy and
 allowed sub-agents. Built-ins live in `registry/agents/<id>/` as an
 `agent.toml` plus `prompt.md` (orchestrator, planner, critic, summarizer,
 trigger_triage, trigger_reactor, vision_agent and others). Custom
 definitions are TOML files under `<workspace>/agents/*.toml`, with
-`~/.openhuman/agents/*.toml` as a fallback ([`harness/definition_loader.rs`](./harness/definition_loader.rs)).
+`~/.openhuman/agents/*.toml` as a fallback (`tinyagents_definition::DefinitionSet::load_dirs`, driven from [`harness/host_definition.rs`](./harness/host_definition.rs)).
 `AgentDefinitionRegistry` holds the merged set; `agent.reload_definitions`
 rebuilds it.
 
@@ -287,7 +286,7 @@ Turn execution:
 | [`cost.rs`](./cost.rs) | Per-turn token and cost accounting (`TurnCost`) |
 | [`message_convert.rs`](./message_convert.rs), [`messages.rs`](./messages.rs) | Conversions between `TranscriptMessage` rows and TinyAgents `Message`s; the `history_wire` adapter for host-owned files |
 | `attachments/`, [`multimodal.rs`](./multimodal.rs) | Durable user uploads and provider-side attachment resolution; legacy marker compatibility ([README](attachments/README.md)) |
-| [`host_runtime.rs`](./host_runtime.rs), [`platform_shell.rs`](./platform_shell.rs) | Native and Docker shell `RuntimeAdapter`s and the shared `cmd.exe` vs `sh` selection |
+| [`host_runtime.rs`](./host_runtime.rs) | Native and Docker shell `RuntimeAdapter`s; the shell flavor is the contract's `tinybox_bus::ShellFlavor` and execution is TinyBox's |
 | `session_store/` | Process-wide `SessionStoreProvider` slot for hosts with their own database |
 
 Delegation and coordination:
@@ -319,7 +318,7 @@ Persistence, setup and RPC:
 | --- | --- |
 | `artifacts/` | Agent-generated artifact storage and the `ai` RPC namespace ([README](artifacts/README.md)) |
 | `session_db/` | `run_ledger` RPC over `tinyagents_session::run_ledger` |
-| `session_import/` | One-time import of legacy session files and the optional live dual-write ([README](session_import/README.md)) |
+| `session_import/` | The `session_import.run` retry of the boot-time legacy-session import, and the agent's key-value store on each turn's `RunContext` ([README](session_import/README.md)) |
 | [`schemas.rs`](./schemas.rs) | The `agent` namespace controllers |
 
 ## Key types and entry points
@@ -343,7 +342,7 @@ Persistence, setup and RPC:
 - `AgentProgress` (`progress.rs`): turn, iteration, tool, text and thinking
   deltas, cost updates and the `Subagent*` family.
 - `AgentDefinition`, `AgentDefinitionRegistry`, `ToolScope`, `SandboxMode`
-  (`harness/definition/`): what an agent is.
+  (`harness/host_definition.rs` + `tinyagents-definition`): what an agent is.
 - `ParentExecutionContext` ([`harness/fork_context.rs`](./harness/fork_context.rs)): task-local parent
   state a sub-agent reads; `orchestration::parent_context::build_root_parent`
   builds one for runs with no parent turn.
@@ -441,12 +440,12 @@ Integration coverage is in [`tests/agent_harness_e2e.rs`](../../../../tests/agen
 `tests/in_process/agent_*.rs`, aggregated into the `in_process_all` target.
 
 Related docs:
-[agent harness architecture](../../../../gitbooks/developing/architecture/agent-harness.md),
-[agent observability](../../../../gitbooks/developing/agent-observability.md).
+[agent harness architecture](../../../../docs/gitbooks/en/developing/architecture/agent-harness.md),
+[agent observability](../../../../docs/gitbooks/en/developing/agent-observability.md).
 
 ## Further reading
 
 - [Parent module README](../../README.md)
-- [Deep architecture reference](../../../../gitbooks/developing/architecture.md)
-- [The orchestrator](../../../../gitbooks/features/orchestration.md)
+- [Deep architecture reference](../../../../docs/gitbooks/en/developing/architecture.md)
+- [The orchestrator](../../../../docs/gitbooks/en/features/orchestration.md)
 - [tinyagents](../../../../vendor/tinyagents/README.md)

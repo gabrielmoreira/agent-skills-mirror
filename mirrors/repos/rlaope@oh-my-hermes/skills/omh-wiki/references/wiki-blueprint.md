@@ -25,4 +25,4 @@ Route existing `USER.md`/`MEMORY.md` cleanup to `memory-sync`, new durable proje
 - `ecosystem_candidates` — upstream skills worth evaluating first, metadata only.
 - `missing_facts` — what the interview still needs; never guessed.
 
-A blueprint is prepared design context. It is not evidence that a store was created, written to, migrated, or that any page exists.
+A blueprint is a prepared design artifact. It is not evidence that a store was created, written to, migrated, or that any page exists.

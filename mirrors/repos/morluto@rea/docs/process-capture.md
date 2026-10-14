@@ -159,14 +159,30 @@ line. Stdout stays the final Evidence document:
 `cleanup`. `completed` counts collected terminal frames, process samples, and
 interaction events. `total` stays null; REA does not invent a unit total or a
 percentage. `message` reports elapsed time and those counts. The final line uses
-`phase` `cleanup`, sets `terminal` to true, and adds `disposition` (`exited`,
-`timeout`, `idle_timeout`, `cancelled`, or `failed`) plus the owned-process,
-renderer, and temporary-root cleanup states. Updates use the shared progress
-boundary and are limited to one intermediate line per 100 ms; the terminal line
-is always emitted. If a receiver is slow, intermediate observations are merged
-into the latest status, and stale live observations are discarded before final
-cleanup status. Progress never copies child output. Child output remains in the
-capture Evidence on stdout.
+`phase` `cleanup` and sets `terminal` to true. Its `message` also contains
+`disposition=<value>` (`exited`, `timeout`, `idle_timeout`, `cancelled`, or `failed`)
+and the `owned_process_group`, `terminal_renderer`, and `temporary_root` cleanup
+states as `key=value` text. These values are not separate JSON fields. For
+example, a completed capture can end with:
+
+```json
+{
+  "rea_progress": {
+    "phase": "cleanup",
+    "completed": 0,
+    "total": null,
+    "message": "elapsed_ms=2180 frames=0 samples=0 interactions=0 disposition=exited owned_process_group=cleaned terminal_renderer=cleaned temporary_root=cleaned",
+    "terminal": true,
+    "sequence": 13
+  }
+}
+```
+
+Updates use the shared progress boundary and are limited to one intermediate line
+per 100 ms; the terminal line is always emitted. If a receiver is slow,
+intermediate observations are merged into the latest status, and stale live
+observations are discarded before final cleanup status. Progress never copies
+child output. Child output remains in the capture Evidence on stdout.
 
 ### Scenario with interactions
 
@@ -380,6 +396,9 @@ Every capture requires `truncation_details`, with separate accounting for:
   When a directory exceeds that capacity, the retained subset follows filesystem
   enumeration order and is then sorted; it is explicitly incomplete and cannot
   establish that an omitted path is absent.
+  An unreadable directory is recorded in `enumeration_omissions` with its
+  root-aliased path and operating-system error code. Entries observed before
+  that directory remain available, while descendants beneath it stay unknown.
   Each retained regular file without a digest has an aliased path, size,
   remaining budget and reason: `file_bytes_budget`,
   `file_changed_or_short_read`, or `file_unavailable`. Its `system_code` is

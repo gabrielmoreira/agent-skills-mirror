@@ -7,7 +7,7 @@ argument-hint: "[prompt] [status|install|upgrade|enable|disable|uninstall|purge]
 allowed-tools: [Read, Edit, Glob, Grep, Bash, Agent, AskUserQuestion]
 model: opus
 ---
-<!-- brewcode-meta: version=6.5.1 content_version=6.5.0 generated_by=brewdoc:memory-sync-setup -->
+<!-- brewcode-meta: version=6.5.9 content_version=6.5.7 generated_by=brewdoc:memory-sync-setup -->
 
 # Memory Sync Generator (brewdoc:memory-sync-setup)
 
@@ -118,11 +118,18 @@ that output enriched with your own reads and STOPS. `upgrade` takes the drift li
 
 ### Mode: upgrade
 
+> **Scope (normative):** `upgrade` edits only this setup's owned paths: `.claude/skills/memory-sync/`. Any other change (application source, tests, docs, CI, mirrors, `CLAUDE.md`, rules, agents, other setups' files) is a defect to report, never to apply: the drift it finds there is the emitted `/memory-sync`'s job, run later by the user.
+
 Refresh against the current repo AND plugin version. Every hand-edit survives: no `emit`, no re-copy of a file
 that carries content, the stamp touched only through the metadata-only `restamp`.
 
 1. Run the `status` bash block above. `NOT INSTALLED` -> STOP (see Error Handling). `INSTALLED=parked` -> the
-   install is DISABLED, not broken: say so, offer `enable` and STOP.
+   install is DISABLED, not broken: say so, offer `enable` and STOP. Then snapshot the dirty-file state
+   (git repos; elsewhere `SCOPE n/a` and the rule is checked by hand) -- **EXECUTE** using Bash tool:
+   ```bash
+   ROOT="$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")"
+   bash "${CLAUDE_SKILL_DIR}/scripts/scope-guard.sh" snapshot "$ROOT" memory-sync-upgrade && echo "OK" || echo "FAILED"
+   ```
 2. With the drift list as worklist, run Phase 1 (re-scan) -> Phase 3 (targeted `Edit`s): re-enumerate the surface,
    refresh the batch / fact / invariant tables, ADD sections for memory layers the project gained. PRESERVE
    hand-edited sections: before REPLACING one that diverges from the template, show the diff and
@@ -143,7 +150,12 @@ that carries content, the stamp touched only through the metadata-only `restamp`
    `RESTAMPED:` / `REMOVED:` / `REF …` lines verbatim. `REF DIFFERS:` is a decision, not a failure -- `hard-sync.md`
    always differs (Phase 3 filled its two BLOCKs): diff against `${CLAUDE_SKILL_DIR}/references/<name>` and port
    real prose changes by hand, never by re-copying over filled tables.
-4. Phase 4 `validate`, then the Phase 5 report.
+4. Phase 4 `validate`, then the scope gate, then the Phase 5 report. **EXECUTE** using Bash tool:
+   ```bash
+   ROOT="$(git rev-parse --show-toplevel 2>/dev/null || echo "$PWD")"
+   bash "${CLAUDE_SKILL_DIR}/scripts/scope-guard.sh" check "$ROOT" memory-sync-upgrade .claude/skills/memory-sync/ && echo "✅ scope" || echo "❌ FAILED scope"
+   ```
+   > **STOP if ❌**: every `OUTSIDE <path>` line is a defect of this run, reported by path, never kept or committed.
 
 ### Mode: enable / disable
 
@@ -228,7 +240,7 @@ your reads, determine:
 | **VERIFY-ONLY surfaces** | `AGENTS.md` that is a SYMLINK into a projection dir (`.codex/**`) or sits inside vendor markers (`<!-- BEGIN:... -->`); any file another tool owns. Refs checked for RESOLUTION, content NEVER edited | `{BATCH_TABLE}` (VERIFY-ONLY column) |
 | **Memory dir** | `autoMemoryDirectory` in `.claude/settings*.json`, else `${CLAUDE_CONFIG_DIR:-~/.claude}/projects/<hash>/memory/` (active profile); in scope only on user confirmation (Phase 1.5) | `{MEMORY_DIR}` |
 | **Per-agent memory stores** | one store per agent, loaded only while its agent runs. ENUMERATE them (`find` / `ls` over the memory root and any configured per-agent store dir), never a hardcoded roster; note each store's INDEX file apart from its rows. Per-agent memory resolves against the session CWD, so a store is born wherever a session ran: RECORD the plausible session roots (task workspaces, module roots, anything a session would `cd` into) against the runtime/archived trees of the EXCLUDED table -- the emitted live/orphan call depends on it (`references/memory-guide.md` rule 5). Stores can exist while `{MEMORY_DIR}` is `none` | `{BATCH_TABLE}`, `{ENUMERATION_BASH}` |
-| **Exclusions** | `docs/**` (separate doc flow -- refs INTO it resolution-checked, contents never edited), ALL source code (read-only evidence), secrets dirs, task-board / operational state (`.claude/features/**`), build output, git-ignored scratch | `{EXCLUDED_TABLE}` |
+| **Exclusions** | `docs/**` (separate doc flow -- refs INTO it resolution-checked, contents never edited), ALL source code (read-only evidence), secrets dirs, task-board / operational state (`.claude/features/**`), build output, git-ignored scratch, run-artifact snapshots (`.claude/reports/**`), worktree checkouts (`.claude/worktrees/**`) | `{EXCLUDED_TABLE}` |
 | **Cited outside references** | git-TRACKED paths OUTSIDE the instruction tree that an ALWAYS-LOADED instruction file (no `paths:` gate) names and tells its reader to open. REACH-GATED, never excluded: editable only at `{REACH}` = `REFS`, resolution-checked at the `MEMORY` default; the emitted skill re-enumerates them per run | `{ENUMERATION_BASH}`, `{VERIFY_EXTRA}` |
 | **Default branch** | DERIVE: `git symbolic-ref --short refs/remotes/origin/HEAD`, else the branch CI checks out. NEVER hardcode `main`: repos promote from `staging`/`develop` too | `{DEFAULT_BRANCH}` |
 | **Git visibility** | `git ls-files -- .claude '*CLAUDE.md' '*AGENTS.md'` vs the same surface ON DISK, plus the `.gitignore` rules behind it. `git-ignored` OR `mixed` (some rows tracked, some not) -> `git status`/`git diff` can NEVER account for every memory edit, so VERIFY re-reads files directly | `{GIT_VISIBILITY}`, `{VERIFY_EXTRA}` |
@@ -275,7 +287,7 @@ export MEMORY_DIR="<resolved memory dir | none>"
 export GIT_VISIBILITY="<e.g. 'entire surface git-ignored (.gitignore:12-15) -- diffs never show memory edits' | 'mixed (12 tracked, 4 untracked) -- re-read directly' | 'tracked'>"
 export LANGUAGE_POLICY="<e.g. 'English everywhere; RU trigger aliases legal in .claude/agents/** + .claude/skills/** + CLAUDE.local.md'>"
 export FOCUS_EMPHASIS="<fine-tune emphasis | 'default ordering: facts > dedup > compression'>"
-export SURFACE_COUNTS="<e.g. '68 files: 5 root, 15 rules, 3 conventions, 26 agents, 18 skills, 1 local'>"
+export SURFACE_COUNTS="<the SURFACE_COUNTS= line scan printed, verbatim>"
 export TRACKER_NOTE="<e.g. '.claude/features/** owned by task-tracker + .claude/rules/tasks.md -- excluded' | 'no tracker'>"
 ```
 
@@ -292,7 +304,9 @@ frontmatter: `doc_type: llm` (bare enum), then quoted `version` (brewdoc plugin 
 `brewdoc/.claude-plugin/plugin.json`, never hardcoded), `content_version` (this generator's last-changed release,
 from its own stamp line), `generated_by: "brewdoc:memory-sync-setup"`, `last_updated` (emit date) and
 `surface_files` (e.g. `"38 files: 3 root, 5 nested CLAUDE.md, ..."`). `status`, `validate` and `upgrade` read
-them; `status` compares the leading integer of `surface_files` against a live re-count.
+them; `status` compares the leading integer of `surface_files` against a live re-count. `surface_files` is always the
+script's own count (`emit` and `restamp` re-derive it; an exported `SURFACE_COUNTS` fills only the body), and every
+count prunes `.claude/reports/**` and `.claude/worktrees/**`: snapshots and checkouts, never memory.
 
 > `disable-model-invocation` MUST NOT be set on the emitted skill: plain-prose invocation ("память устарела",
 > "sync memory") is a first-class path beside `/memory-sync [scope]`. `generate.sh restamp` strips it from legacy
@@ -340,7 +354,7 @@ bash "${CLAUDE_SKILL_DIR}/scripts/generate.sh" validate && echo "✅ validate" |
 > then re-run.
 
 Then assert by hand, since `validate` cannot resolve agent names: every agent the emitted skill spawns resolves to a
-real `<target>/.claude/agents/*.md` or a built-in (`Explore` / `Plan` / `general-purpose`); an invented
+real `<target>/.claude/agents/**/*.md` or a built-in (`Explore` / `Plan` / `general-purpose`); an invented
 `subagent_type` breaks the emitted skill at its first run.
 
 ### Phase 5 -- Report

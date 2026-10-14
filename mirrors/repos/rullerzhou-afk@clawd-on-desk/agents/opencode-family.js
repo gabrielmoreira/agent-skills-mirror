@@ -53,15 +53,15 @@ const OPENCODE_FAMILY = Object.freeze({
     managedMaterialization: true,
     // OpenCode 2.x (npm @opencode/cli) reads the renamed top-level `plugins`
     // key with a `{ id, setup }` object plugin API — the v1 function entry
-    // under `plugin` fails the v2 loader schema. Verified on 2.0.15
-    // (docs/investigations/opencode-v2-e1-evidence.md): v2 also tolerates the
-    // legacy `plugin` key (the v1 entry logs a load warning and stays inert).
-    // Upstream PR #1045 review: the v1 silent-drop of an unknown `plugins` key
-    // holds only from 1.18.16 (anomalyco/opencode#41312) — 1.18.15 and older
-    // REJECT the key outright. The installer therefore registers BOTH keys
-    // against the same generation only for a detected v2 host
-    // (hooks/opencode-host-detect.js): a 1.x host gets no `plugins` key (and
-    // leftover entries are swept), an unknown host never touches the key.
+    // under `plugin` fails the v2 loader schema. Earlier 2.0.x only logged a
+    // load warning for that entry (docs/investigations/opencode-v2-e1-evidence.md,
+    // probed on 2.0.15), but the loader got stricter: opencode 2.0.26 loads the
+    // legacy `plugin` key through the SAME strict loader and surfaces the
+    // failure as "Plugin failed: <path>" (id `-` in `opencode plugin list`).
+    // The installer therefore registers the v2 `plugins` key ALONE on a
+    // detected v2 host (hooks/opencode-host-detect.js) and sweeps any
+    // proven-owned v1 `plugin` entry; a 1.x host gets only the v1 key (and
+    // leftover v2 entries are swept), an unknown host never touches the v2 key.
     // `v2PluginDirName` is materialized as an extra single-file
     // entry directory inside the generation; `v2HookSource` is the wire
     // identity that routes v2 blocking permission POSTs; `v2PluginId` is the
@@ -127,6 +127,7 @@ const FAMILY_EVENT_MAP = Object.freeze({
 const FAMILY_CAPABILITIES = Object.freeze({
   httpHook: false,          // family permission goes via plugin event forward, not HTTP blocking
   permissionApproval: true, // Clawd bubble → host REST reply through the reverse bridge
+  mobilePermissionObservation: false,
   sessionEnd: true,
   subagent: false,          // Phase 3 will flip to true once subtask lifecycle verified
 });

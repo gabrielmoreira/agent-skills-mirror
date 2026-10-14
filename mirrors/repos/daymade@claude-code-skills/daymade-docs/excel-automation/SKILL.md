@@ -1,14 +1,28 @@
 ---
 name: excel-automation
 disable-model-invocation: true
-description: Create, parse, and control Excel files on macOS. Professional formatting with openpyxl, complex xlsm parsing with stdlib zipfile+xml for investment bank financial models, and Excel window control via AppleScript. Use when creating formatted Excel reports, parsing financial models that openpyxl cannot handle, or automating Excel on macOS.
+description: >-
+  Creates formatted Excel reports with openpyxl, parses complex xlsm financial
+  models with stdlib zipfile+xml when openpyxl fails, and controls Excel windows
+  on macOS via AppleScript. Reconstructs images or scans of paper forms as
+  editable XLSX files with printable layouts.
 ---
 
 # Excel Automation
 
 Create professional Excel files, parse complex financial models, and control Excel on macOS.
 
+For an image or scan of a paper form that needs editable cells and a printable
+layout, load [Printable forms](references/printable-forms.md) before creating the
+workbook. Follow the host's designated spreadsheet authoring tool; use the
+openpyxl examples below only when that tool is permitted.
+
 ## Quick Start
+
+Before a command brings Excel forward or changes its visible window, check user
+activity and other agents' occupancy. Use only foreground operations covered by
+the current task's authorization. If the surface is in use, occupancy is unknown,
+or unexpected input occurs, stop input and continue independent background work.
 
 ```bash
 # Create a formatted Excel report
@@ -24,8 +38,6 @@ timeout 5 osascript -e 'tell application "Microsoft Excel" to activate'
 ```
 
 ## Overview
-
-Three capabilities:
 
 | Capability | Tool | When to Use |
 |-----------|------|-------------|
@@ -52,6 +64,9 @@ Is the file simple (data export, no VBA, <1MB)?
 ## Creating Excel Files (openpyxl)
 
 ### Professional Color Convention (Investment Banking Standard)
+
+Apply these colors to financial reports using that convention. For a paper form,
+preserve its intended print appearance; do not add input colors by default.
 
 | Color | RGB Code | Meaning |
 |-------|----------|---------|
@@ -138,7 +153,7 @@ file.xlsx (ZIP archive)
 └── _rels/.rels
 ```
 
-### Sheet Name Resolution (Two-Step)
+### Sheet Name Resolution
 
 Sheet names in `workbook.xml` link to physical files via `_rels/workbook.xml.rels`:
 

@@ -240,6 +240,8 @@ The admin surface follows the house API pattern: Harbor exposes `/internal/*` (b
 
 **Flagship IdP:** Rowboat-managed orgs authenticate members with Rowboat accounts (the existing Supabase auth) as their IdP — one instance of the general contract, not a privileged path. A client already signed into a Rowboat account gets a near-one-click join on managed orgs; a free account is never a paid requirement. Self-hosted orgs bring their own IdP.
 
+**Leaving for good** *(added 2026-10-08, revised 2026-10-13)*: a person deleting their Rowboat account calls the apex once, and is deactivated in every org on the deployment — out of every shared space and refused at sign-in, but kept under their name, marked deactivated, so the conversations they were part of still read (the org owns its history, as in Slack). Their photo goes; it is personal data the history doesn't need. The account itself (login, billing) belongs to rowboatx-backend; Harbor only lets go of the person. Wire semantics: CONTRACT.md.
+
 **Latitude:** where Harbor incubates (an open package in the rowboat monorepo, per house TS/Hono conventions, is the pragmatic start; extraction to `rowboatlabs/harbor` with a one-command self-host path when third-party hosting is announced).
 
 ### Running more than one instance — **Deferred** *(added 2026-09-30)*
@@ -276,6 +278,8 @@ An asset has one live copy, held by the org. Members' Rowboats are windows onto 
 Spaces, assets, topics, and change-sets are all addressable by link. One link grammar works in wiki relative links, feed messages, activity rows, and cross-boundary mentions from private chats (§10).
 
 *Amended 2026-09-14 (PRs #1054, #1055, #1059):* people are addressable too — a member link (`/u/<memberId>`) opens the DM with them, and a message link lands in its thread. A **file is addressed by its id**, never by its path (§6). Inside message text a person is a mention token and another space is a `#space` token, so a link into another space resolves from anywhere. The grammar and its one parser are recorded in [CONTRACT.md](./CONTRACT.md), decision 3.
+
+*Amended 2026-10-13 (the web app):* a link is a pointer, not the place it opens, as Slack's are. Clicked inside a Rowboat app it opens there. Opened in a browser, the org's page launches the desktop app and offers the web app beside it, so someone without the app (an invitee, most often) still gets in. The links themselves did not change: they name the org by its address and everything under it by id, and the web app lives at its own address.
 
 ### Direct messages — **Decided** *(added 2026-09-07)*
 
@@ -327,7 +331,7 @@ Each space carries an **append-only log of change-sets**. An asset's current con
 
 **At the space grain there are two admin acts, as in Slack, and neither exists for a DM:**
 
-- **Archive is a space state.** An archived space refuses writes with a clear error, drops out of the sidebar, stays readable and searchable to its members, and — if open — still lists in the browser under archived. Unarchive flips it back. Two events on the space's own log. This is the act teams actually use, and the one to build first: it needs nothing new in storage.
+- **Archive is a space state.** An archived space refuses writes with a clear error, drops out of the sidebar, stays readable and searchable to its members, and — if open — still lists in the browser under archived. Unarchive flips it back. Two events on the space's own log. This is the act teams actually use, and the one to build first: it needs nothing new in storage. *Built 2026-10-13:* "writes" means everything that adds to the space or its membership — messages and their edits, reactions, polls, topics, files, rename, invites, adds and joins. Personal state (read marks, follows) and leaving still work, so nobody is trapped in an archived space. The server keeps archived spaces in every listing with the flag set; the sidebar and the browser's Archived section are the client's.
 - **Delete drops the space whole.** The space row goes and every row that hangs off it goes with it — the log, messages, files and their versions, memberships, read state, search rows. Blob bytes are removed only where no other space or org registry still references the same content. Every member gets the `space_removed` frame; links into the space from elsewhere go dead, as a Slack link to a deleted channel does. No undo, no grace period — Google-style trash (archived for a window, then purged) was considered and rejected for v1 as a third state plus a purge job. The client confirms by name.
 - **Mechanism, decided with it:** every space-keyed table carries a **foreign key to `spaces` with cascade on delete**, so deletion is one statement rather than a hand-written sweep that a new table silently escapes. (This closes the foreign-keys question left open by the 2026-09-18 code review.)
 

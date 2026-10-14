@@ -1,6 +1,8 @@
 ---
 name: "omh-git-workflow"
 description: "[omh] Git branch in trouble -- a merge conflict, a commit that broke something, history to repair: plan the resolution, the bisect, or the rewrite, name what is already pushed first, and force-push only with `--force-with-lease`. Use when the user says: git-workflow, git workflow, merge conflict, merge conflicts, rebase conflict, resolve the conflict, resolve this conflict, conflict markers."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, verification]
@@ -8,6 +10,7 @@ metadata:
     phase: git-repair
     role: reviewer
     quality_tier: history-safety-gated
+    related_skills: [omh-commit-pr-authoring, omh-code-review, omh-build-failure-triage, ulw-work]
 ---
 
 # Git Workflow
@@ -25,10 +28,10 @@ This is a Hermes-native `git-workflow` workflow skill.
 
 ## Do Not Use When
 
-- The request is to write the commit message or the PR body for a finished change; use `commit-pr-authoring`.
-- The request is to find defects in a diff before merging it; use `code-review`.
-- The build or CI job fails and the question is why; use `build-failure-triage`.
-- The request is a code change to deliver rather than branch or history repair; use `ultrawork`.
+- The request is to write the commit message or the PR body for a finished change; use `omh-commit-pr-authoring`.
+- The request is to find defects in a diff before merging it; use `omh-code-review`.
+- The build or CI job fails and the question is why; use `omh-build-failure-triage`.
+- The request is a code change to deliver rather than branch or history repair; use `ulw-work`.
 
 ## Examples
 
@@ -61,9 +64,9 @@ Bad example:
 
 - Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when a git branch needs repair rather than new code: a merge or rebase conflict to resolve, a regression to bisect to the commit that introduced it, or history to rewrite, squash, recover, or rebase -- including a stack of branches. The work is a plan that names what is already pushed, what each step rewrites, and how to get back.
 
@@ -132,4 +135,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

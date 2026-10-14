@@ -1,6 +1,6 @@
 # Degardis Authoring
 
-**Version:** `2.2.0` · **License:** [MIT](../../LICENSE) · [Changelog](CHANGELOG.md)
+**Version:** `2.3.0` · **License:** [MIT](../../LICENSE) · [Changelog](CHANGELOG.md)
 
 Turn a repeatable agent workflow into a skill that another agent can follow and that you can check before you release it.
 
@@ -52,12 +52,6 @@ Two practices support these checks:
 ## When this skill fits
 
 Use it to create or improve Degardis source, to understand why a skill handles the wrong requests or picks the wrong task, to check whether its instructions can be reached, or to package it. It also helps with skills written in other ways. It can tell you what such a skill instructs an agent to do, and what a session with it shows about how it behaves.
-
-Asking about a skill never leads to editing it. The agent reports any defect it finds, and fixes it only when you ask for the fix and allow the change. Saying that changes are acceptable isn't asking for one. If you ask for a change but don't allow the edit, you get a plan instead. The agent runs the scripts or tests of a skill it works on only with your permission, and keeps what they write in temporary locations.
-
-Judging how a skill was written needs its Degardis source. For an installed skill or a ZIP alone, the agent describes what it finds. It doesn't guess what was written, left out, or decided.
-
-Building and packaging are part of this skill. Installing a skill, replacing an installed copy, publishing, and releasing aren't. When you have a ZIP or built folder, use the collection's [installation guide](../../docs/installation.md).
 
 ## Example requests
 

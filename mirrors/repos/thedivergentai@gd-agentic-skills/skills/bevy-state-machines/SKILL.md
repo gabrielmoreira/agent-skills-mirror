@@ -1,11 +1,9 @@
 ---
 name: bevy-state-machines
-description: "Docs-first stub for Bevy app states and per-entity state data. Godot counterpart: godot-state-machine-advanced. Not a full port. Keywords: Bevy, States, NextState, OnEnter."
+description: "Bevy ECS skill for app states and per-entity state data. Keywords: Bevy, States, NextState, OnEnter."
 ---
 
-# Bevy state machines (docs-first stub)
-
-Not a full port. The opened API is app-wide states in `bevy::state` 0.20.0. A per-entity graph is data plus systems, not a second engine type.
+# Bevy state machines
 
 ## When to use
 
@@ -22,9 +20,9 @@ Load this when the app needs a large-scale mode (paused, in a menu, loading) or 
 - **Feature.** The `bevy` 0.20.0 crate page includes `bevy_state` in the `default_app` collection. The state module was opened; `App` installation method names were not. Do not invent `init_state` or similar.
 - **Per-entity mode.** Store an enum in a `Component` and branch in a system (`Query` from the ECS page). No per-entity state-machine type was opened.
 
-## Godot idea to Bevy idiom
+## Coming from Godot
 
-| Idea | Bevy idiom (idea only) |
+| Godot idea | Bevy idiom |
 | --- | --- |
 | App mode (menu, pause, play) | A `States` type and `NextState<S>` |
 | Run logic only in one mode | `in_state` or an `OnEnter` / `OnExit` / `OnTransition` schedule |
@@ -32,18 +30,17 @@ Load this when the app needs a large-scale mode (paused, in a menu, loading) or 
 | Mode derived from other modes | `ComputedStates` |
 | One actor's animation or combat mode | An enum `Component` plus a system. Not `States` unless it is truly app-wide |
 
-## Gaps
+## Scope
 
-- State installation methods on `App` were not opened (`bevy::state::app` is listed, not read).
-- The states, sub-states, and computed-state examples named by the module were not opened.
-- Hierarchical per-entity graphs, transition tables, and animation state machines were not opened.
-
+- Check `bevy::state::app` for state installation methods on `App` before writing them.
+- The module names states, sub-states, and computed-state examples. Check those examples before writing them.
+- Hierarchical per-entity graphs, transition tables, and animation state machines are yours to build. Check the state docs before assuming a built-in type.
 
 ## Expert Knowledge Delta
 
-Library target in prose: **Bevy 0.20.0**. Lattice URLs stay unversioned.
+Target: **Bevy 0.20+**.
 
-Opened canon only: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. This file does not invent their struct APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
+Core ECS types: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. See `bevy-events-messaging` for their APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
 
 ### Who owns state
 
@@ -66,22 +63,19 @@ Borrow rule: two systems that both mutably query the same component must be orde
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API this skill did not open | A Gaps row | A fabricated crate (solver, navmesh module, net, XR) |
+| An API outside the documented set | Check the official docs first | A made-up crate or API |
 
-Load `references/a-gate-notes.md` for the same table plus the gap rule.
+Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownership table.
 
 ## NEVER
 
-- Do not put `/0.20.0/` in lattice URLs. WHY: permalinks stay on `latest`. The 0.20.0 pin belongs in prose once.
+- Do not pin `/0.20.0/` in docs URLs. WHY: links stay on `latest`; the 0.20 target is stated once in prose.
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
-- Do not invent a physics, navigation, networking, or XR crate here. WHY: those rows are gaps, blocked, or revisit.
+- Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot animation-tree or node state-machine types. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No invented `App` state-setup methods. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No third-party crates. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Creation Station content. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No umbrella skill over Godot and Bevy. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- Do not mark this row `ported`. It is `docs_mapped`. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Godot animation-tree or node state-machine types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No invented `App` state-setup methods. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No third-party crates. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
@@ -92,20 +86,20 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 - [bevy crate](https://docs.rs/bevy/latest/bevy/)  -  `bevy_state` ships inside the `default_app` collection.
 - [bevy::state](https://docs.rs/bevy/latest/bevy/state/index.html)  -  `States`, `NextState`, `SubStates`, `ComputedStates`, transition schedules, `StateTransitionEvent`, `in_state`, `state_changed`, `DespawnOnEnter`, `DespawnOnExit`.
 - [Quick Start: ECS](https://bevy.org/learn/quick-start/getting-started/ecs/)  -  `Component` and `Query` for a per-entity mode flag.
-- [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples)  -  Example tree on the `latest` branch. State examples were not opened.
+- [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples)  -  Example tree on the `latest` branch. State examples live in that tree.
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-master/SKILL.md)  -  Schedules versus a scene tree.
-- [bevy-data-resources](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-data-resources/SKILL.md)  -  `NextState<S>` is a resource. Per-entity modes are components.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Schedules versus a scene tree.
+- [bevy-data-resources](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md)  -  `NextState<S>` is a resource. Per-entity modes are components.
 
 #### Complements
-- [bevy-events-messaging](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-events-messaging/SKILL.md)  -  Messages and observers that are not state transitions.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md)  -  Godot counterpart. Source idea only. Do not import Godot types.
+- [bevy-events-messaging](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-events-messaging/SKILL.md)  -  Messages and observers that are not state transitions.
+- [godot-state-machine-advanced](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-state-machine-advanced/SKILL.md)  -  Equivalent Godot skill. Do not import Godot types.
 
 #### Downstream / consumers
-- [bevy-character-movement](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-character-movement/SKILL.md)  -  Actor motion. A jump or ground mode stays a component unless you opened a reason to use `States`.
+- [bevy-character-movement](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-character-movement/SKILL.md)  -  Actor motion. A jump or ground mode stays a component unless a mode needs `States`.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.

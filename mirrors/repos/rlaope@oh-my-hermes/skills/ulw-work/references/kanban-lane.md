@@ -25,6 +25,8 @@ One `omh_agent_board` `prepare` per lane, with `coordination` set to `durable` a
 | `parents` | every dependency edge the lane consumes, declared on this create |
 | `max_runtime_seconds` | the lane's time budget, so a stuck worker ends instead of holding the row |
 | `model`, `provider` | the lane's route category from `omh_delegate_route`, when the category pins one |
+| `completion_contract` | where the lane publishes a pull request, as `OWNER/REPO` or the PR's exact URL; omitted for a lane that publishes none (see What the Board Enforces) |
+| `goal_mode`, `goal_max_turns` | `true` and a turn budget, for a builder whose `STOP WHEN` rarely lands in one worker turn (see What the Board Enforces) |
 
 The role is a contract, not an instruction. OMH fills the lane fields the role implies and refuses a create that contradicts them:
 
@@ -44,13 +46,13 @@ Then invoke the returned `native_action` through the ordinary Hermes tool loop. 
 
 ## Main Session Only
 
-`kanban_*` tools are visible only to a chat session whose profile enables the `kanban` toolset. `delegate_task` children never see them, so only the main session prepares board actions. A board worker is itself a main-style session and may run in-session `delegate_task` lanes, but it does not create further board rows: lanes nest to depth one, and a plan that needs deeper nesting is a plan that needs re-splitting.
+`kanban_*` tools are visible only to a chat session whose profile enables the `kanban` toolset. `delegate_task` children never see them, so only the main session prepares board actions. A board worker is itself a main-style session and may run in-session `delegate_task` lanes, but it does not create further board rows: lanes nest to depth one, and a plan that needs deeper nesting is a plan that needs re-splitting. A worker runs as a one-shot session, so a host that caps one-shot delegation refuses its `delegate_task` calls past that budget; `references/native-delegation.md` says what the worker does on that refusal.
 
 ## Readback Discipline
 
 - At most one `kanban_list` per turn boundary, scoped by `assignee` or `status`, never a polling loop.
 - One `kanban_show` per lane whose row changed state in that list.
-- One `omh_todo` item per board lane, updated from the readback pass and from nothing else; the item's text is the lane title plus the last observed status.
+- One item per board lane in the plan's one checklist tool (`todo_list` or `omh_todo`, never both), updated from the readback pass and from nothing else; the item's text is the lane title plus the last observed status.
 - Results arrive bounded and labelled by the readback pass. A `result` field is a worker's report, quoted as such; the parent never restates it as its own finding.
 
 The parent ends its turn after preparing lanes and re-enters on the next user turn or scheduled check. There is no wait, attach, retry, or amend verb for a board row: a row whose prompt was wrong is completed with a blocker summary and a new row is created with the corrected prompt.
@@ -79,6 +81,15 @@ The verifier's `parents` are the observed task ids from the two builder receipts
 ## Closing the Run
 
 The run closes in the main session, never in a worker. Read back once, confirm the verifier row is `done` with a `result` naming the command and its pass/fail output, re-run the integration verification in this session when the workspace is reachable, and record the run through `omh_run_summary`. A verifier row that is `done` without pasted output is `worker reported done` and the closing brief says so.
+
+## What the Board Enforces
+
+Three create fields and two worker transitions put part of a lane's contract on the board itself. What the board records for them is the host's record: one more piece of evidence beside OMH's own checks, never a replacement for them.
+
+- `completion_contract`. A lane that publishes a pull request declares where at create time: `OWNER/REPO`, or the exact PR URL. Its worker completes with `metadata.published_pr` naming the PR, and the board refuses `kanban_complete` until every check the repository requires has passed on that PR's current head commit. It reads those checks with the `gh` CLI on the machine that completes the card and records a `pr_acceptance` event, visible in `kanban_show`, listing each required check, its conclusion, and the head SHA. A repository with no required checks never satisfies the contract, so a lane there omits the field, as does a lane that publishes nothing. The event describes that head at that moment: the closing brief still reads the PR head again before it says a change landed, and a passed contract is neither review nor merge evidence.
+- `goal_mode` with `goal_max_turns`. After each turn a judge model decides from the worker's reply whether what the card's title and body ask for is met; while it is not and turns remain, the worker continues in that session, and spending the whole budget leaves the card blocked for a person. Use it for a builder whose `STOP WHEN` takes more than one turn; leave verifier and reviewer lanes single-run. The judge's agreement is a model's reading of the card, so the row is still `worker reported done`.
+- `kanban_request_review`. A builder whose work must be reviewed before it counts ends with this transition instead of `kanban_complete`, naming the reviewing profile in `reviewer`; its `STOP WHEN` says which of the two ends the lane. The card moves to the `review` column, which is not a block. Unless the operator turned review dispatch off, the dispatcher then opens a review run on the card with Hermes' bundled `sdlc-review` loaded beside the card's own skills, and that run either requests changes, which sends the card back to its builder, or completes it. A separate reviewer row still fits a review that spans several builders; it is ordinary work, and its `done` is not the review column's approval.
+- `kanban_schedule`. In a worker, when `kanban_schedule` is in your tool list or tool_search finds it, a lane that must wait for a time or an outside event parks its card with it and puts the wake condition in `reason`. The run ends and the card stops being dispatched, but nothing wakes it: the tool sets no timer, so the lane's `body` names who unblocks it. Without the tool, the worker blocks the card with the same reason (`kanban_block`). A `goal_mode` card cannot be parked: it blocks only with `kind` `dependency` or `needs_input`; give no goal mode to a lane that may wait on time.
 
 ## Provenance Words
 
@@ -115,7 +126,7 @@ Profile is the permission envelope; role is the per-task overlay stated as `lane
 | Main session | none (this chat) | none | planner and operator; prepares every row, owns the todo, closes the run |
 | Builder | `builder` | its upstream builders, if any | one per component |
 | Verifier | `verifier` | every builder | exactly one; runs the repository's real test or build command |
-| Reviewer | `reviewer` | the builders it reviews | findings first; a review claim is not merge evidence |
+| Reviewer | `reviewer` | the builders it reviews | findings first; a review claim is not merge evidence; one builder's review can go through `kanban_request_review` instead |
 | Docs | `docs` | the builders whose behaviour it documents | only when behaviour, setup, commands, or public claims changed |
 | QA probe | `qa` | the builders it probes | only for checks a unit suite cannot make from inside the code |
 

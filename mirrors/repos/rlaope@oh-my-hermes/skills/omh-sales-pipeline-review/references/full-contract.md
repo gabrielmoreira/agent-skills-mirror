@@ -11,12 +11,12 @@ holds the workflow-specific detail without copying those shared rails.
 
 ## Do Not Use When
 
-- The request is single-account discovery, qualification, buyer hypotheses, outreach drafting, or one opportunity's next step; use `sales-development`.
-- The user wants a weekly status, release-risk, or operating review with no sales stages, forecast categories, or deal records; use `ops-review`.
-- The user needs authoritative revenue, bookings, budget-variance, or close reporting rather than a pipeline scenario; use `finance-analysis`.
-- The user wants generic exploration or calculation on a supplied table with no stage, forecast, or deal-health semantics; use `data-analysis`.
-- The supplied material is qualitative customer feedback, call notes, or survey text rather than opportunity records; use `feedback-triage`.
-- The user asks to update Salesforce or HubSpot, store or sync CRM data, send alerts or outreach, or change an opportunity; use `connector-operator` with explicit object, field, and authority.
+- The request is single-account discovery, qualification, buyer hypotheses, outreach drafting, or one opportunity's next step; use `omh-sales-development`.
+- The user wants a weekly status, release-risk, or operating review with no sales stages, forecast categories, or deal records; use `omh-ops-review`.
+- The user needs authoritative revenue, bookings, budget-variance, or close reporting rather than a pipeline scenario; use `omh-finance-analysis`.
+- The user wants generic exploration or calculation on a supplied table with no stage, forecast, or deal-health semantics; use `omh-data-analysis`.
+- The supplied material is qualitative customer feedback, call notes, or survey text rather than opportunity records; use `omh-feedback-triage`.
+- The user asks to update Salesforce or HubSpot, store or sync CRM data, send alerts or outreach, or change an opportunity; use `omh-apps` with explicit object, field, and authority.
 
 ## Examples
 
@@ -44,7 +44,7 @@ Bad example:
 - If prior forecasts or outcomes are absent, keep calibration `unavailable`; if an annex has no supporting evidence, emit it as `unsupported` with the gap named rather than omitting it.
 - If a connector is unavailable, keep every CRM correction proposed and every alert or message unsent, and name the connector boundary as the next observable step.
 
-## Use When
+## When to Use
 
 Use when a sales leader or business owner supplies a bounded CRM export or pipeline snapshot and needs recurring portfolio review: evidence scope and freshness, stage and forecast definitions, movement and aging, stale or slipped deals, exit-criteria gaps, next-step quality, concentration, forecast scenarios and prior-forecast calibration, optional won/lost or renewal-risk learning, and an owned follow-up handoff.
 

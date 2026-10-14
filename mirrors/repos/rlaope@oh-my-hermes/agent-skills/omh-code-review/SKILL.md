@@ -1,6 +1,7 @@
 ---
 name: "omh-code-review"
 description: "[omh] Pull request or changes to vet: bug-first review with evidence. Use when the user says: code-review, review, audit, find bugs, release gate, claim audit, evidence audit, README claim."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]
@@ -52,14 +53,14 @@ Bad example:
 - If no diff, file set, PR, or artifact is available, inspect the requested target or ask one target question before reviewing.
 - If tests fail or are missing, cite the exact command gap and do not approve the change as verified.
 - If independent review evidence is unavailable, say so directly instead of implying a second reviewer passed it.
-- To dispatch a reviewer rather than write the findings yourself, load `omh-code-review/references/review-dispatch.md`; it carries the base-SHA rule and the implementer status contract.
+- To dispatch a reviewer rather than write the findings yourself, load `omh-code-review/references/review-dispatch.md`; it carries the base-SHA rule, the findings schema the return is checked against, and the implementer status contract.
 - When findings arrive for work you own, load `omh-code-review/references/review-response.md` before changing anything.
 - For maintainability judgement calls, load `omh-code-review/references/smell-baseline.md`; it names the twelve baseline smells with their fixes and the repo-standards-override rule.
 - When one bug-first pass is not enough, load `omh-code-review/references/review-lenses.md` and run the five lenses separately; the verification-gap lens asks whether anything would go red if the changed behavior broke.
 
 
 
-## Use When
+## When to Use
 
 Use for review-shaped requests; findings come first and must cite concrete evidence.
 

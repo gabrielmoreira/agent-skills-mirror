@@ -1,6 +1,7 @@
 ---
 name: "omh-paper-learning"
 description: "[omh] Paper or paper PDF to understand: explain a supplied paper or paper/PDF at a selected level while preserving full section coverage and source evidence boundaries. Use when the user says: paper-learning, paper learning, paper-explainer, paper explainer, paper explanation, explain this paper, explain this arxiv paper, paper walkthrough."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, research]
@@ -20,10 +21,10 @@ This is an OMH `paper-learning` workflow skill, projected for Agent Skills hosts
 
 ## Do Not Use When
 
-- The request asks to export, convert, render, or package a file; use `materials-package`.
-- The request asks for daily/weekly paper monitoring, digest, source inbox, or Scout/Analyst/Briefer operations; use `research-department`.
-- The request asks to find current papers or sources when no supplied paper exists; use `research`.
-- The request asks for a visual/image card; use `img-summary`.
+- The request asks to export, convert, render, or package a file; use `omh-materials-package`.
+- The request asks for daily/weekly paper monitoring, digest, source inbox, or Scout/Analyst/Briefer operations; use `omh-research-department`.
+- The request asks to find current papers or sources when no supplied paper exists; use `ulw-research`.
+- The request asks for a visual/image card; use `omh-image-cards`.
 - The request asks to implement or reproduce the paper's code; prepare a coding handoff only after a paper learning or reproduction plan is accepted.
 
 ## Examples
@@ -58,7 +59,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes should explain a supplied paper, arXiv entry, paper PDF, pasted excerpt, or extracted paper text at a selected level while keeping a coverage ledger instead of shrinking the paper into a lossy summary.
 
@@ -77,6 +78,8 @@ Quality bar:
 - Record source_state as one of: metadata_only, excerpt_text_observed, file_text_extraction_observed, full_text_observed, unknown_or_missing.
 - Preserve the coverage policy `coverage_preserving_not_lossy_summary` through a section-by-section ledger.
 - Explain by chunks when the source is long; keep each chunk linked to coverage_ledger status.
+- Set source_state from how the paper was acquired, not from the request. An entry that Hermes' bundled `arxiv` skill returned (search or id lookup) is `metadata_only` until paper text is read. Text that the bundled `pdf` skill's `pdf_read.py <file> --text` run returned is `file_text_extraction_observed` for the pages that came back with text, and a page that came back empty is listed as missing. Without those skills, the state is whatever the supplied text supports.
+- For a paper past one read budget, when the `long-document-reading` skill is available, take the chunks from its page ranges - its page-count probe and page-anchored extraction - instead of a second chunking scheme, and map each covered range onto the coverage ledger's sections; without it, plan numbered page ranges before reading.
 - List missing sections and not-observed claims before presenting the explanation as complete.
 
 Required inputs:

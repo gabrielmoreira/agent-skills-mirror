@@ -8,7 +8,7 @@
 
 - `left-sidebar.html` and `sidebar-store.js` own sidebar shell and shared state.
 - `top-section/` owns header and quick actions.
-- `chats/` owns chat list UI and state; `chat-tree.html` is the shared parent/parallel-child row.
+- `chats/` owns chat list UI and state; `chat-tree.html` is the shared parent/subagent row for direct and parallel delegation.
 - `tasks/` owns task list UI and state; `task-row.html` is the shared scheduler row.
 - `bottom/` owns lower sidebar controls and preferences panel.
 
@@ -20,7 +20,7 @@
 - The shared chat tree recurses through every subordinate level, mounting children only while expanded. Selecting or restoring a descendant expands all ancestors in both list views.
 - Child indentation uses `--spacing-md` + `--spacing-xs` for the first two child levels, tapers at the third, and stops increasing after it, preserving room for titles and actions in narrow sidebars.
 - Chat tree expand/collapse controls use a parent-only leading slot, with right/down chevrons for collapsed/expanded state. Use spacing tokens for compact rows and the additional child indentation without consuming normal chat row text margin.
-- A restored selected parent chat with children auto-expands once during context hydration unless the user has already toggled it.
+- A selected chat with children auto-expands once during context hydration at every depth, including a selected subagent that delegates again, unless the user has already toggled it.
 - The Tasks list is reserved for scheduler-backed task contexts and must not be used for chat-bound parallel children.
 - Running parent and child chats share the chat-list working-bubble animation; keep it scoped away from task and connection-status indicators.
 - Chat and task lists reclaim the same part of the sidebar's left content inset so their project bubbles align, while their section headers retain the standard sidebar inset.
@@ -32,6 +32,7 @@
 - Cancelling the Load Chat file chooser resolves without calling `chat_load` or showing a success/error notification.
 - `sidebar-row-actions-menu` owns plugin-contributed row-menu actions; list-order plugins register stable sort and divider callbacks through the sidebar store instead of patching chat/task stores or injecting row DOM.
 - `sidebar-chats-list-view` and `sidebar-tasks-list-view` host plugin list presentations. A row-list extension may expose `hasView()` to hide the default list; both presentations reuse the core row components and their inherited `context`/`task` scopes.
+- List-view callbacks belong to their mounted extensions, not store initialization. Use `unregisterRowListExtension(kind, name)` on unmount to restore the default list and remove only the departing extension's sorting and dividers.
 - `chats.newChat(projectName)` passes an explicit project choice to `chat_create`; omitted project names retain inheritance behavior, and an empty name explicitly creates a chat without a project.
 - Bottom version information shows its commit timestamp in UTC without a timezone suffix and remains on one line.
 - Avoid text or controls overflowing fixed sidebar widths.

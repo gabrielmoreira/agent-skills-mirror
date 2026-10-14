@@ -16,7 +16,7 @@ Two hosts drive it:
 
 - `openhuman-core run --mode saas --saas-config <file>`: the JSON-RPC server
   behind a trusted gateway (`openhuman-rpc`'s `saas_gateway`). See
-  [SaaS profiles](../../../../gitbooks/developing/saas-profiles.md) for
+  [SaaS profiles](../../../../docs/gitbooks/en/developing/saas-profiles.md) for
   deploying it.
 - `openhuman_embed::ProfileRuntime`: the same host in-process, without the
   gateway (`crates/openhuman-embed/src/profiles.rs`).

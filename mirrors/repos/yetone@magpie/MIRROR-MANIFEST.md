@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `yetone/magpie` — 26 default patterns, 4 followed patterns, 15 file(s) materialized.
+Mirror of `yetone/magpie` — 26 default patterns, 4 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `yetone/magpie` — 26 default patterns, 4 followed patterns, 15 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 15 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,12 +71,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`docs/subsystems/gateway-sessions.md`](docs/subsystems/gateway-sessions.md) |
 | 8 | ✓ | [`docs/subsystems/gui-shell.md`](docs/subsystems/gui-shell.md) |
 | 9 | ✓ | [`docs/subsystems/library.md`](docs/subsystems/library.md) |
-| 10 | ✓ | [`docs/subsystems/provider-plugins.md`](docs/subsystems/provider-plugins.md) |
-| 11 | ✓ | [`docs/subsystems/providers-accounts.md`](docs/subsystems/providers-accounts.md) |
-| 12 | → | [`docs/code-standards.md`](docs/code-standards.md) |
-| 13 | → | [`docs/contributors.md`](docs/contributors.md) |
-| 14 | → | [`docs/subsystems/README.md`](docs/subsystems/README.md) |
-| 15 | → | [`LESSONS.md`](LESSONS.md) |
+| 10 | ✓ | [`docs/subsystems/plugin-runtime.md`](docs/subsystems/plugin-runtime.md) |
+| 11 | ✓ | [`docs/subsystems/provider-plugins.md`](docs/subsystems/provider-plugins.md) |
+| 12 | ✓ | [`docs/subsystems/providers-accounts.md`](docs/subsystems/providers-accounts.md) |
+| 13 | ✓ | [`docs/subsystems/sync-backup.md`](docs/subsystems/sync-backup.md) |
+| 14 | → | [`docs/code-standards.md`](docs/code-standards.md) |
+| 15 | → | [`docs/contributors.md`](docs/contributors.md) |
+| 16 | → | [`docs/subsystems/README.md`](docs/subsystems/README.md) |
+| 17 | → | [`LESSONS.md`](LESSONS.md) |
 
 ---
 

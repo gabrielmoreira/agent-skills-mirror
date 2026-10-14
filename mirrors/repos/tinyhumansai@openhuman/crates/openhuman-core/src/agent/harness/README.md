@@ -39,7 +39,7 @@ used here (not defined here) by [`fork_context.rs`](./fork_context.rs).
 
 | Module | Role |
 | --- | --- |
-| `definition*.rs`, [`builtin_definitions.rs`](./builtin_definitions.rs), [`definition_loader.rs`](./definition_loader.rs) | `AgentDefinition`/`AgentDefinitionRegistry`/`SandboxMode`/`ToolScope`/`PromptSource`/`ModelSpec`; loads built-ins from `crate::agent::registry::agents` and user TOML from the workspace/home `agents/` directory. |
+| [`host_definition.rs`](./host_definition.rs), [`builtin_definitions.rs`](./builtin_definitions.rs) | The host side of agent definitions: `AgentExt` (prompt omissions, TokenJuice profile, MCP flag, prompt builder) over `tinyagents_definition::AgentDefinition<X>`, plus `AgentDefinitionRegistry` (a `DefinitionSet<AgentExt>` with the process/context singleton) and user-definition path resolution. The vocabulary (`ModelSpec`, `ToolScope`, `SandboxMode`, `AgentTier`, `PromptSource`, ...) and the TOML directory loader live in `tinyagents-definition`. Built-ins come from `crate::agent::registry::agents`. |
 | `fork_context.rs` | Parent-handle context for direct host dispatch. `fork_context.rs` also carries the `RunQueue` handle (from `tinyagents_harness::run_queue`) down to a forked turn. |
 | `graph.rs` | `run_channel_turn_via_graph` (`pub(crate)`): the channel/CLI turn graph, thin over `run_turn_via_tinyagents_shared`; called by the `agent.run_turn` native-bus handler in [`agent/bus.rs`](../bus.rs). |
 | `artifact_offload/` | The `outputs/` / `workspace/` convention under `action_dir`: prompt half (`contract.rs`) and host policy half (`policy.rs`); mechanics (thresholds, path resolution, pointer rendering, the writer) live in `tinyagents_harness::artifacts` and are re-exported here. |
@@ -58,7 +58,7 @@ What `harness/mod.rs` actually re-exports:
   `with_parent_context`, `AgentContextPreparedSource`):
   parent runtime context for spawned tools.
 Sandbox policy lives on the explicit host operation context. Briefing task
-recency belongs to `integrations/composio/task_recency_context.rs`.
+recency belongs to ``OpenHumanRunExt` (agent/tinyagents/host/run_context.rs)`.
 - `artifact_offload::{...}`: reached only via the `artifact_offload::` path
   (see Notes), never flattened into `harness::`.
 
@@ -79,7 +79,7 @@ turn lifecycle are in `../session_host/`; `run_subagent`,
   p-format). This crate is a test-only dependency of `harness/`; the parsers
   are not called from production code here.
 - `crate::agent::registry::agents`: built-in agent archetype TOML/prompt
-  bundles loaded by `definition_loader`/`builtin_definitions`.
+  bundles loaded by `tinyagents_definition` (user TOML) and `builtin_definitions`.
 - `crate::security::SecurityPolicy`: workspace containment policy plumbed
   into `artifact_offload::new_artifact_offload`.
 - `tinymemory-api`: provenance classification and untrusted-context wrapping,
@@ -126,9 +126,9 @@ turn lifecycle are in `../session_host/`; `run_subagent`,
   live under `harness/session/`. That code has moved to `../session_host/`;
   this README describes only what remains in `harness/` today.
 
-Related: [`gitbooks/developing/architecture/agent-harness.md`](../../../../../gitbooks/developing/architecture/agent-harness.md).
+Related: [`docs/gitbooks/en/developing/architecture/agent-harness.md`](../../../../../docs/gitbooks/en/developing/architecture/agent-harness.md).
 
 ## Further reading
 
 - [Parent module README](../README.md)
-- [The orchestrator](../../../../../gitbooks/features/orchestration.md)
+- [The orchestrator](../../../../../docs/gitbooks/en/features/orchestration.md)

@@ -51,7 +51,7 @@ pnpm run dev
 
 ## Process safety
 
-Never signal a pid you did not spawn. Signal a held `ChildProcess` before it exits (its group only then); never a pid from a file, `ps` or stdout, a `?? <n>` fallback or literal `0`/`1`/`-1`. Gate: `ok/no-sentinel-signal-target`.
+Never signal a pid you did not spawn. Signal a held `ChildProcess` before it exits (its group only then); never a pid from a file, `ps` or stdout, a `?? <n>` fallback or literal `0`/`1`/`-1`. Two acts in the maintainers' gate tooling, which this repository does not carry, go further, and nothing else does: the lifeline watcher the guard of each gate step forks into the step's process group may run `kill -s KILL 0`, which ends the group it belongs to; and after the step's first process exits, its supervisor may still signal the step's group while that lifeline, a live member, holds the group. Gate: `ok/no-sentinel-signal-target`.
 
 ## Comment policy
 
@@ -79,7 +79,7 @@ Shell scripts are declared in scope by `no-comments.config.jsonc`, but the sweep
 ## Public Mirror Rules
 
 - This repo is generated from an allowlist. Do not rely on hidden source-only folders being present.
-- Public PRs are reviewed by maintainers and accepted changes sync back here automatically. A PR may close rather than show as merged; that is expected for this mirror.
+- Maintainers review public PRs that are small fixes or link an accepted issue; others may be closed without review (see the Pull requests section of `CONTRIBUTING.md`). A detailed issue is the preferred contribution. Accepted changes sync back here automatically. A PR may close rather than show as merged; that is expected for this mirror.
 - Top-level public docs such as `README.md`, `CONTRIBUTING.md`, and `AGENTS.md` are overlay files. Keep them public-safe and standalone.
 - Do not add secrets, private customer context, internal-only specs, local paths, or generated debug artifacts.
 - Keep dependency updates paired with `pnpm-lock.yaml`. Run `pnpm run notices` when third-party notices may change.

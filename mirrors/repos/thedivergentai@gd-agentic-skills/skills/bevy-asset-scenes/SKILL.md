@@ -1,11 +1,9 @@
 ---
 name: bevy-asset-scenes
-description: "Docs-first stub for Bevy assets and scene spawning. Godot counterpart: godot-scene-management. Not a full port. Keywords: Bevy, AssetServer, Handle, Scene, bsn, spawn_scene."
+description: "Bevy ECS skill for assets and scene spawning. Keywords: Bevy, AssetServer, Handle, Scene, bsn, spawn_scene."
 ---
 
-# Bevy asset scenes (docs-first stub)
-
-Not a full port. Levels are assets plus a `Scene` you spawn. They are not a packed Godot scene tree.
+# Bevy asset scenes
 
 ## When to use
 
@@ -19,9 +17,9 @@ Load this when content comes from disk or a scene description should spawn entit
 - **Scenes:** `bevy::scene` describes a `Scene` (entity, components, children, assets), built with the `bsn!` macro. `World::spawn_scene` and `Commands::spawn_scene` spawn immediately and error if asset dependencies are not loaded. `World::queue_spawn_scene` and `Commands::queue_spawn_scene` wait, then spawn in the `SpawnScene` schedule between `Update` and `PostUpdate`.
 - **Hierarchy in a scene:** `Children [ ... ]` inside `bsn!`. Separate sibling entities with `--`. `#Name` assigns a `Name` inside that macro's scope.
 
-## Godot idea to Bevy idiom
+## Coming from Godot
 
-| Idea | Bevy idiom (idea only) |
+| Godot idea | Bevy idiom |
 | --- | --- |
 | Load a file | `AssetServer::load` → `Handle` |
 | Wait until ready | `is_loaded_with_dependencies` before a state change |
@@ -29,19 +27,18 @@ Load this when content comes from disk or a scene description should spawn entit
 | Child nodes in that scene | `Children` inside `bsn!` |
 | Change one entity's mesh | Swap the `Handle` on the component that stores it |
 
-## Gaps
+## Scope
 
 - `.bsn` asset files are described as future on the scene page. Do not invent a file loader for them.
 - A `DynamicScene` type was not on docs.rs `latest` (the struct URL 404'd on 2026-10-11). Do not cite it.
 - Scene change as "free the old level, then spawn the next" is a design note. No level-switch API was opened.
-- Custom `AssetLoader` registration (`App::register_asset_loader`) was named, not opened as a worked example.
-
+- Custom `AssetLoader` registration is named as `App::register_asset_loader`. Check the asset docs for a worked example before writing one.
 
 ## Expert Knowledge Delta
 
-Library target in prose: **Bevy 0.20.0**. Lattice URLs stay unversioned.
+Target: **Bevy 0.20+**.
 
-Opened canon only: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. This file does not invent their struct APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
+Core ECS types: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. See `bevy-events-messaging` for their APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
 
 ### Who owns state
 
@@ -64,22 +61,19 @@ Borrow rule: two systems that both mutably query the same component must be orde
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API this skill did not open | A Gaps row | A fabricated crate (solver, navmesh module, net, XR) |
+| An API outside the documented set | Check the official docs first | A made-up crate or API |
 
-Load `references/a-gate-notes.md` for the same table plus the gap rule.
+Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownership table.
 
 ## NEVER
 
-- Do not put `/0.20.0/` in lattice URLs. WHY: permalinks stay on `latest`. The 0.20.0 pin belongs in prose once.
+- Do not pin `/0.20.0/` in docs URLs. WHY: links stay on `latest`; the 0.20 target is stated once in prose.
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
-- Do not invent a physics, navigation, networking, or XR crate here. WHY: those rows are gaps, blocked, or revisit.
+- Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot packed-scene, node, or resource-loader types. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No scene format this file did not open. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No third-party scene crates. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Creation Station content. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No umbrella skill over Godot and Bevy. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- Do not mark this row `ported`. It is `docs_mapped`. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Godot packed-scene, node, or resource-loader types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No scene format this file did not open. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No third-party scene crates. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
@@ -96,17 +90,17 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-master/SKILL.md)  -  Who owns which piece of state.
-- [bevy-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-project-foundations/SKILL.md)  -  Cargo features, including asset watcher flags.
-- [bevy-state-machines](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-state-machines/SKILL.md)  -  The asset page points at app states for load gates.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Who owns which piece of state.
+- [bevy-project-foundations](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-project-foundations/SKILL.md)  -  Cargo features, including asset watcher flags.
+- [bevy-state-machines](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md)  -  The asset page points at app states for load gates.
 
 #### Complements
-- [bevy-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-audio-systems/SKILL.md)  -  Clips loaded through `AssetServer`.
-- [bevy-save-load](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-save-load/SKILL.md)  -  Player saves are a separate gap from scene spawn.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md)  -  Godot counterpart. Source idea only.
+- [bevy-audio-systems](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-audio-systems/SKILL.md)  -  Clips loaded through `AssetServer`.
+- [bevy-save-load](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-save-load/SKILL.md)  -  Player saves, separate from scene spawn.
+- [godot-scene-management](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-scene-management/SKILL.md)  -  Equivalent Godot skill.
 
 #### Downstream / consumers
-- [bevy-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-camera-systems/SKILL.md)  -  Camera entities a scene may spawn.
+- [bevy-camera-systems](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-camera-systems/SKILL.md)  -  Camera entities a scene may spawn.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.

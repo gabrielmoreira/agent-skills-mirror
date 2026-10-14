@@ -42,6 +42,7 @@ module.exports = {
   capabilities: {
     httpHook: false,
     permissionApproval: true,
+    mobilePermissionObservation: true,
     // Official PermissionRequest is the real approval path.
     interactiveBubble: true,
     sessionEnd: true, // official SessionEnd fires on thread teardown; task_complete still marks individual turns done

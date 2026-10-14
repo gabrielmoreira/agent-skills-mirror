@@ -9,6 +9,10 @@ No device, root privilege, mount, emulation or execution of extracted programs
 is needed. Arbitrary firmware bytes do not pass native executable admission;
 select a returned ELF separately for supported Ghidra analysis.
 
+On Linux, Binwalk and Unblob run as REA-owned processes and require a
+procps-compatible `ps` on REA's `PATH`; see the shared
+[Linux process prerequisite](installation.md#linux-owned-process-prerequisite).
+
 ## Caller-supplied tools
 
 Provide existing tools using absolute executable paths, scoped to your shell:
@@ -103,6 +107,23 @@ build's source revision, so that field remains unknown.
   engine finished its configured extraction without those reported conditions;
   default skip rules and format coverage still apply. It does not establish
   complete firmware reconstruction.
+- `extraction_gaps` makes those conditions recoverable: a row identifies an
+  unextracted region or a failed task/stage. A chunk retains its identity and
+  byte range, plus its original-file range when it belongs to the selected input.
+  A multi-file stage retains its reported ID and handler with unknown byte ranges;
+  a standalone task failure keeps unavailable stage identity null. Rows retain exact dependency names from
+  the producer's missing-dependency reports; an accepted report with no names
+  remains a failure with unknown dependencies; no executable identity or specific installation step is inferred. Each row's `continuation_id`
+  references one instruction in `extraction_continuations`, so many regions
+  share recovery prose without losing any region identity. Instructions use
+  already configured capabilities where one exists. Every extraction rerun
+  requires a fresh absent `output_directory`, preserving the prior evidence.
+  Nested unknown chunks use `inspect_firmware_regions` on the actual published
+  child rather than repeating the same extraction with unchanged handlers.
+  Inspection requires separately configured Binwalk (`REA_BINWALK_COMMAND`);
+  without it, the inspection step is unavailable and the region remains unexamined. A listed gap does not
+  mean the target is corrupt or that a retained region is empty; REA installs
+  nothing.
 - The destination must be absent, absolute, with an existing parent. Publication
   uses exclusive, symlink-resistant writes and durable digest readback. Existing
   destinations are never overwritten. This is not an atomic directory rename:
@@ -166,6 +187,12 @@ override with `REA_FIRMWARE_PYTHON` / `REA_FIRMWARE_CC`. The independent oracle
 records gzip offset/length and extracted file hashes. Real verification checks
 CLI/MCP, full-file and selected-range extraction, unknown chunks, depth limits,
 content parity and unchanged source bytes. No binary fixture is committed.
+
+The optional missing-extractor lane asserts dependency names and the owning
+handler in `extraction_gaps`. Those assertions must be run against the pinned
+Unblob release to establish real-provider coverage; synthetic producer fixtures
+alone do not verify Unblob's report nesting or stage identities. The gap ownership
+claims remain unverified against real Unblob until that lane runs.
 
 Additional lanes are explicit, so the base lane stays small:
 

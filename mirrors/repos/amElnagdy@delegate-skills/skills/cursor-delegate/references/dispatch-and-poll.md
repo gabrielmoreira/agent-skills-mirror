@@ -60,11 +60,12 @@ inside the worktree can make the artifacts appear there:
 
 `result.json` fields:
 
-- `schema`, `tool` (`"cursor-agent"`), `status` (`completed` | `failed` | `timeout` | `aborted` |
-  `cursor_agent_unavailable`), `exitCode`, and `signal` (`null` unless the child died on a signal).
+- `schema`, `tool` (`"cursor-agent"`), `status` (`completed` | `failed` | `timeout` | `stalled` |
+  `aborted` | `cursor_agent_unavailable`), `exitCode`, and `signal` (`null` unless the child died on a signal).
 - `workdir`, `model` (the requested name or `null`), `resolvedModel` (the model Cursor actually
   served, from its init event), `permissionMode` (the mode Cursor reported applying), `readOnly`,
   `force`, `sandbox` (the requested value or `null`, not a claim about what Cursor applied),
+  `stallTimeout` (the `--stall-timeout` you passed, or `null`),
   `resumed`, `cursorAgentVersion`, `sessionId`, `startedAt`, and `finishedAt`.
 - `briefPath`, `finalPath`, `eventsPath`, and `stderrPath`.
 - `finalMessage` — the `result` field of Cursor's closing event; when the run died before emitting
@@ -78,8 +79,9 @@ inside the worktree can make the artifacts appear there:
 - `usage` — Cursor's token-usage object from the closing result event, or `null` if no result event
   supplied one.
 - `stderrTail` — the last 20 non-empty stderr lines on any run that did not complete (`failed`,
-  `timeout`, `aborted`), except a launch failure, which reports `failed` with no `stderrTail`.
-- `error` — present for launch failures, when the relay watchdog fires (`timeout`), on an `aborted`
+  `timeout`, `stalled`, `aborted`), except a launch failure, which reports `failed` with no `stderrTail`.
+- `error` — present for launch failures, when the relay watchdog fires (`timeout`) or the stall
+  watchdog fires (`stalled`), on an `aborted`
   run, and when Cursor's own result event carries `is_error: true`.
 
 ## Waiting for completion
@@ -115,6 +117,14 @@ A pre-run usage error exits 2 and writes no result. A missing `cursor-agent` exi
   `cursor-agent did not finish within --timeout <dur>; killed by the relay watchdog`. Increase
   `--timeout` or split the task. The relay sends SIGTERM, waits 10 seconds, then sends SIGKILL if
   needed (on Windows a single process-tree kill).
+- **`status: "stalled"`:** `--stall-timeout` was passed and cursor-agent emitted nothing for that
+  long while no tool call was in flight; the relay killed it the same way as `timeout`. Observed on
+  Linux with `cursor-agent` 2026.10.01-e373342 (`composer-2.5`): after finishing its edits and gates
+  the agent emitted `thinking` `completed`, then never streamed its final message and never exited,
+  so without this the run sat until `--timeout`. The clock restarts on every stdout/stderr chunk and
+  pauses between a `tool_call` `started` and its `completed` (a long test run streams nothing in
+  between), so a slow command does not trip it. Inspect the working tree, then resume the session
+  (`--session <id>`) with a delta brief asking it to finish and report.
 - **Empty `finalMessage`:** inspect `touchedFiles` and the diff. Add a
   `<structured_output_contract>` to the next brief to require a closing report.
 - **Every command Cursor runs is rejected with "Hook blocked with message: … eval: … syntax error

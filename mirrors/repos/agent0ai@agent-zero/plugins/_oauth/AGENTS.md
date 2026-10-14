@@ -17,16 +17,17 @@
 - `helpers/routes.py` owns local OAuth callback and OpenAI-compatible proxy routes mounted by the route bootstrap extension.
 - `webui/config.html` and `webui/oauth-config-store.js` own the OAuth Connections settings UI.
 - `extensions/python/_functions/models/get_api_key/end/` owns the dummy API-key extension used by OAuth model providers.
-- `tests/test_oauth_*.py` own provider contract, security, static UI, and compatibility regressions.
+- `tests/test_oauth_*.py` and `tests/test_oauth_reconnect.mjs` own provider contract, security, UI, and compatibility regressions.
 
 ## Local Contracts
 
 - Core model code such as `models.py` must stay provider-agnostic. Do not add Codex, GitHub Copilot, Gemini, xAI, or other OAuth provider knowledge outside plugin-owned config or plugin hooks.
-- Ship the tested Codex client version in `default_config.yaml` for upstream version headers and catalog discovery without an installed CLI. Existing saved plugin settings take precedence; this default does not migrate blank or explicit overrides.
+- Keep the Codex client version explicitly pinned in `default_config.yaml` and update the pin with each adopted version (currently `0.160.1`) for upstream version headers and catalog discovery without an installed CLI. Existing saved plugin settings take precedence; this default does not migrate blank or explicit overrides. A blank override probes `codex --version` and omits the version if no CLI is available; it does not discover new releases.
 - Add OAuth model providers in `_oauth/conf/model_providers.yaml`, not `_model_config/provider_metadata.yaml`.
 - Provider cards and model slot actions must be driven by backend provider status. Do not reintroduce hardcoded frontend provider lists or fallback provider catalogs.
 - OAuth account surfaces in settings, discovery, and onboarding must use the provider registry/status summary rather than Codex-only frontend state.
 - OAuth settings pending-auth controls such as device codes, manual callback input, and provider setup fields must render inline under the relevant provider row, not as a detached section below all providers.
+- Device challenge codes use a selectable standalone box and an accessible copy button, reusing the shared clipboard and button-feedback helpers: successful copies briefly show a green checkmark and retain OAuth notifications.
 - OAuth device-code polling must honor provider `interval`, `expires_at`, and `slow_down` updates; do not poll immediately or keep a stale fixed interval after a provider asks the client to slow down.
 - OAuth settings model slots must keep provider choice editable per slot, list only connected OAuth account providers, and persist the selected provider IDs into `chat_model.provider` and `utility_model.provider`.
 - When exactly one OAuth provider is connected, use it as an unsaved default only for empty slots or slots already using that provider. A different saved provider must keep the explicit `Choose connected provider` prompt until the user opts into the switch.
@@ -69,10 +70,13 @@
 - Treat Gemini API OAuth as a Google Cloud OAuth-client flow. Do not conflate it with Antigravity, Gemini Code Assist, Gemini CLI, Google AI Pro, or Google AI Ultra subscription quota.
 - Treat Claude Code subscription auth and Antigravity product auth as non-connectable unless their vendors provide an explicit third-party provider contract.
 - Keep user-facing errors safe: report setup or tier restrictions without exposing tokens, callback secrets, or raw auth payloads.
+- Codex refresh-token rejection raises a safe `reconnect_required` HTTP 401, marks the private auth file, and sends one actionable notification per failed connection. Marked credentials must not refresh again until successful sign-in replaces them or disconnect clears them; transient upstream failures must not mark credentials. Status retains account metadata and exposes `reconnect_required`.
+- Codex Reconnect reuses device sign-in without deleting stored credentials or model choices. Pending device controls remain visible for connected accounts; only successful sign-in replaces tokens and clears the reconnect marker.
 
 ## Verification
 
 - Run `pytest tests/test_oauth_*.py` after backend provider, route, token, or UI contract changes.
+- Run `node tests/test_oauth_reconnect.mjs` after changing reconnect, pending-auth controls, or cancellation.
 - Run `pytest tests/test_plugin_scan_prompt.py` after plugin structure, extension, or docs changes.
 - Run onboarding or model-config tests when provider metadata, `api_key_mode`, or model-provider config changes.
 - Run `git diff --check` before committing.

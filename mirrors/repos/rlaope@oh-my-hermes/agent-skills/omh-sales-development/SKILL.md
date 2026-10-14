@@ -1,6 +1,7 @@
 ---
 name: "omh-sales-development"
 description: "[omh] Prospect or account worth pursuing: turn an account or market opportunity into a focused discovery, qualification, and next-step brief. Use when the user says: sales discovery, account plan, outbound messaging, 영업 발굴, 고객사 계획, 아웃바운드 메시지."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, strategy]
@@ -20,11 +21,11 @@ This is an OMH `sales-development` workflow skill, projected for Agent Skills ho
 
 ## Do Not Use When
 
-- The user needs a company-level positioning, market-entry, or strategic-options decision rather than account-level discovery; use `strategy-brief`.
-- The user supplies a CRM export or pipeline snapshot and needs portfolio health, aging, slipped deals, forecast calibration, or renewal-risk review; use `sales-pipeline-review`.
-- The user only wants a polished social post, newsletter, or one-off outbound-copy rewrite; use `content-operator`.
-- The user asks to send outreach, update Salesforce or HubSpot, create an opportunity, or book a meeting; use `connector-operator` with explicit recipient, object, and authority.
-- The request asks for current competitor or company evidence but supplies no source material; begin with `research` before presenting claims as observed.
+- The user needs a company-level positioning, market-entry, or strategic-options decision rather than account-level discovery; use `omh-decide`.
+- The user supplies a CRM export or pipeline snapshot and needs portfolio health, aging, slipped deals, forecast calibration, or renewal-risk review; use `omh-sales-pipeline-review`.
+- The user only wants a polished social post, newsletter, or one-off outbound-copy rewrite; use `omh-content-operator`.
+- The user asks to send outreach, update Salesforce or HubSpot, create an opportunity, or book a meeting; use `omh-apps` with explicit recipient, object, and authority.
+- The request asks for current competitor or company evidence but supplies no source material; begin with `ulw-research` before presenting claims as observed.
 
 ## Examples
 
@@ -53,7 +54,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when a seller or business-development owner needs account context, buyer hypotheses, qualification questions, value narrative, partner/outreach plan, and a non-executing next-step sequence.
 

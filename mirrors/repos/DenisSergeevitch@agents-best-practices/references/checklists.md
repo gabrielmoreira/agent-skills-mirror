@@ -48,6 +48,26 @@
 - [ ] Context/model/configuration changes, missed deadlines, and cancellation invalidate scheduled and in-flight work.
 - [ ] Successful, failed, aborted, late, and unknown refresh outcomes are accounted for; requested cancellation is not proof of no charge.
 
+## Realtime voice agent checklist
+
+- [ ] The [voice profile](realtime-voice-agents.md) specifies native/chained speech, duplex/turn behavior, and in-session/delegated execution independently.
+- [ ] A narrow useful voice MVP and simpler baseline are defined; optional backend orchestration and durable recovery are justified when used.
+- [ ] One effective response-admission policy owns automatic/manual triggers and duplicate suppression.
+- [ ] Input evidence retains source, correlation, provisional/revised status when available, and current intent revision.
+- [ ] Recognition uncertainty and critical-entity clarification obey the existing permission and confirmation policy.
+- [ ] Session/media epochs, response/segment IDs, and playback-cursor provenance distinguish generated, queued, and observed output.
+- [ ] Interruption separately resolves playback, speech generation, conversation repair, and backend work disposition.
+- [ ] Queued obsolete audio is fenced; retained context does not presume unheard output was delivered.
+- [ ] Corrections invalidate obsolete result/confirmation eligibility before speech or apply-time action.
+- [ ] A work bridge, when used, preserves task/revision identity, context watermark, acceptance, and terminal outcome.
+- [ ] Progress speech, silence, and success claims match verified application state.
+- [ ] Audio queue duration and age limits, deadlines, overflow policy, and loss accounting are explicit.
+- [ ] Close/reconnect behavior fences old-session events and preserves the declared backend lifetime without blind effect retry.
+- [ ] Preplayback checks, when required, bind to current eligible audio; late checks cannot release canceled segments.
+- [ ] Voice context reduction preserves active intent, work/authority state, and playback evidence through the existing owners.
+- [ ] Useful-answer and acknowledgment timing are separate; interruption timing and clock domains are defined.
+- [ ] [Voice evals](evals.md#realtime-voice-agent-evals) pass under target acoustic/device conditions with task-state and audible-output gates scored independently.
+
 ## Hardware agent and board deployment checklist
 
 - [ ] Inference location and dependencies on a running host are explicit.
@@ -282,6 +302,10 @@ Use [adaptive agent teams](adaptive-agent-teams.md) for the contracts and [adapt
 - [ ] Snapshot attachment, delivery/replay cursor types, overflow/gap recovery, count/byte limits, and active-callback cleanup are tested.
 - [ ] Concurrent compaction pins its range, preserves the new tail, rejects stale publication, and accounts for stale/unknown attempts.
 - [ ] Takeover fences stale writers; wakeups revalidate authority and stop under goal/deadline/budget rules.
+- [ ] Recurring collectors pass the [collection contract](always-on-agents.md#recurring-collection-and-delivery-bookkeeping): per-partition checkpoints, initialization/query changes, pagination, cutoff, ties, and late updates are explicit.
+- [ ] Every partition has complete/partial/failed coverage; failed/partial reads preserve its last complete checkpoint and expose omissions.
+- [ ] Confirmed delivery alone adds delivered-item entries; collection advancement without confirmed delivery or permitted suppression atomically retains pending candidates, and unknown sends reconcile before retry.
+- [ ] Suppression has a policy reason and no fabricated receipt; incomplete sources, held/unknown delivery, budget pauses, and missing runs remain distinguishable from healthy empty reads.
 - [ ] Crash-window, cancellation, fork, migration, observer, and compaction probes pass with unresolved effects and data-loss exposure reported.
 
 ## Self-refining recursive harness checklist
@@ -358,6 +382,10 @@ Use [evals.md](evals.md) for evaluation strategy, trace grading, adversarial cas
 - [ ] Quality, safety, completed-task cost, first useful UI, and end-to-end latency gate model/configuration selection.
 - [ ] Component comparisons state tested budget/configuration scope, distinguish overflow and early failure from efficiency, and use mutation evidence separately from judged phases.
 - [ ] Alternative action profiles meet equivalent host-control and verification requirements or are explicitly reported as bundled interventions.
+- [ ] Performance targets identify journey boundaries, evaluator-owned measurements, clock domains, and versioned workload/environment records.
+- [ ] Benchmark proxies are repeatable and have evidence of representative latency improvement; simulated timing is labeled separately from physical-device results.
+- [ ] Regression thresholds use declared trial aggregation and tolerance; candidate optimizations cannot weaken the evaluator or silently reset baselines.
+- [ ] Deployed gains pass the [performance acceptance contract](evals.md#performance-optimization-and-regression-ratchets) before thresholds tighten; quality, safety, and cost constraints still pass.
 
 ## Minimal provider-neutral implementation path
 

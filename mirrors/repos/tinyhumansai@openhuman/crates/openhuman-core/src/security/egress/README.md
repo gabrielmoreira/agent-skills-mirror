@@ -80,6 +80,6 @@ Both `enforce_egress` and `local_only_tool_block` read the live mode via
 ## Further reading
 
 - [Parent module (`security`)](../README.md)
-- [Privacy mode](../../../../../gitbooks/features/privacy-mode.md)
-- [Privacy and security](../../../../../gitbooks/features/privacy-and-security.md)
-- [Security architecture](../../../../../gitbooks/developing/architecture/security.md)
+- [Privacy mode](../../../../../docs/gitbooks/en/features/privacy-mode.md)
+- [Privacy and security](../../../../../docs/gitbooks/en/features/privacy-and-security.md)
+- [Security architecture](../../../../../docs/gitbooks/en/developing/architecture/security.md)

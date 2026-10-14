@@ -11,9 +11,9 @@ holds the workflow-specific detail without copying those shared rails.
 
 ## Do Not Use When
 
-- The user wants a generative second opinion from Claude, Gemini, or another advisor; use `ask`.
-- The user is choosing between strategic options and wants tradeoffs and a recommendation; use `strategy-brief`.
-- The user wants Jev as a chat or coding model; that is a model setting, and Jev writes no text; use `model-setup`.
+- The user wants a generative second opinion from Claude, Gemini, or another advisor; use `omh-ask`.
+- The user is choosing between strategic options and wants tradeoffs and a recommendation; use `omh-decide`.
+- The user wants Jev as a chat or coding model; that is a model setting, and Jev writes no text; use `omh-model-setup`.
 - The user is writing application code that calls TypeSafe; point at the vendor's own SDK documentation rather than calling the tool.
 
 ## Examples
@@ -42,7 +42,7 @@ Bad example:
 - If the tool returns `consent_not_observed`, nothing was sent; offer the ask in one line naming what would be sent and wait for the user to reply `ask jev`.
 - If the tool refuses `credential_like_content`, remove the secret-looking text from `state` rather than redacting it silently, and tell the user what was removed.
 
-## Use When
+## When to Use
 
 Use when the user asks Jev a typed question about supplied text -- whether it does something, which of named options fits, or how it rates on an ordered scale -- or wants help writing such questions.
 

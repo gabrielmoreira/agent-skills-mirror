@@ -621,6 +621,11 @@ def _trim_subqueries_for_depth(
     # Operator-supplied --plan is a contract: keep per-subquery sources.
     if depth != "quick" and not honor_plan_sources:
         expanded_sources = _default_sources_for_intent(intent, available_sources)
+        # Explicit --search sources are a user override: intent routing must not drop them.
+        expanded_sources += [
+            source for source in available_sources
+            if source in (requested_sources or []) and source not in expanded_sources
+        ]
         return [
             schema.SubQuery(
                 label=subquery.label,

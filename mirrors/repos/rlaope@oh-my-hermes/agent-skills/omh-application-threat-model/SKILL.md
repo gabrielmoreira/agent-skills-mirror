@@ -1,6 +1,7 @@
 ---
 name: "omh-application-threat-model"
 description: "[omh] Attack paths into an operated system: turn a system's components and data flows into assets, trust boundaries, attack scenarios, controls, and the security test that proves each control holds. Use when the user says: application-threat-model, application threat model, threat model, threat modeling, threat modelling, threat modeling session, threat modeling workshop, security threat model."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]
@@ -20,11 +21,11 @@ This is an OMH `application-threat-model` workflow skill, projected for Agent Sk
 
 ## Do Not Use When
 
-- The subject is the agent's own prompts, tools, files, credentials, dependencies, or destructive actions; use `security-safety-review`, which maps that runtime surface.
-- The user wants defects found in a diff or a file; use `code-review`.
-- The user asks whether a release is ready across rollout, rollback, and observability; use `production-audit`.
-- The user asks which commands prove a merge is safe; use `verification-gate`.
-- The user asks for a contractual or regulatory obligation rather than an attacker; use `legal-compliance-review`.
+- The subject is the agent's own prompts, tools, files, credentials, dependencies, or destructive actions; use `omh-security-safety-review`, which maps that runtime surface.
+- The user wants defects found in a diff or a file; use `omh-code-review`.
+- The user asks whether a release is ready across rollout, rollback, and observability; use `omh-production-audit`.
+- The user asks which commands prove a merge is safe; use `omh-verification-gate`.
+- The user asks for a contractual or regulatory obligation rather than an attacker; use `omh-legal-compliance-review`.
 
 ## Examples
 
@@ -57,7 +58,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes must model the security of an application, service, or deployed system the user operates: which assets are worth taking, where trust changes hands, how an attacker reaches each asset, which control stops them, and which security test fails when that control is removed. The subject is the modeled system, never the agent's own runtime.
 

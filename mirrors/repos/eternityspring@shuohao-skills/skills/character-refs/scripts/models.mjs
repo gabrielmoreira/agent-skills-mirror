@@ -8,6 +8,17 @@ import { homedir, tmpdir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+const IS_WIN = process.platform === 'win32';
+
+/** 在本机 shell 里运行一条用户配置的命令；显式指定解释器，避免 shell:true 再做一层字符串解析。 */
+export function runShell(cmd, opts = {}, platform = process.platform) {
+  if (platform === 'win32') {
+    const comspec = opts.env?.ComSpec || process.env.ComSpec || 'cmd.exe';
+    return spawnSync(comspec, ['/d', '/s', '/c', `"${cmd}"`], { ...opts, windowsVerbatimArguments: true });
+  }
+  return spawnSync('sh', ['-c', cmd], opts);
+}
+
 export const SKILL_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 /** 配置放在 skill 安装目录（install.sh 是软链，重装不会冲掉）；文件名带 .local，不进版本控制。 */
 export const CONFIG_PATH = process.env.CHARACTER_REFS_CONFIG || join(SKILL_DIR, 'config.local.json');   // 环境变量只给自测用
@@ -176,12 +187,15 @@ export async function qwenGenerate(job, cfg) {
 export function findCodex(explicit = null) {
   if (explicit) return explicit;
   const home = homedir();
-  const which = spawnSync('sh', ['-c', 'command -v codex'], { encoding: 'utf8' }).stdout.trim();
-  const cands = [which, `${home}/.npm-global/bin/codex`, `${home}/.local/bin/codex`, '/opt/homebrew/bin/codex', '/usr/local/bin/codex'];
+  // Windows 的 where.exe 可能同时返回 .cmd / .exe 多行；直接调用，不把固定查询再交给 shell。
+  const discovered = IS_WIN
+    ? (spawnSync('where.exe', ['codex'], { encoding: 'utf8' }).stdout ?? '').split(/\r?\n/).map((s) => s.trim()).filter(Boolean)
+    : [(spawnSync('sh', ['-c', 'command -v codex'], { encoding: 'utf8' }).stdout ?? '').trim()].filter(Boolean);
+  const cands = [...discovered, `${home}/.npm-global/bin/codex`, `${home}/.local/bin/codex`, '/opt/homebrew/bin/codex', '/usr/local/bin/codex'];
   let best = null, bestN = -1;
   for (const c of new Set(cands.filter(Boolean))) {
     if (!existsSync(c)) continue;
-    const v = spawnSync(c, ['--version'], { encoding: 'utf8', env: { ...process.env, NODE_OPTIONS: '' } }).stdout?.match(/(\d+)\.(\d+)\.(\d+)/);
+    const v = runProgram(c, ['--version'], { encoding: 'utf8', env: { ...process.env, NODE_OPTIONS: '' } }).stdout?.match(/(\d+)\.(\d+)\.(\d+)/);
     if (!v) continue;
     const n = +v[1] * 1e6 + +v[2] * 1e3 + +v[3];
     if (n > bestN) { bestN = n; best = c; }  // 机器上可能装了多个，旧版会直接报 requires a newer version
@@ -206,7 +220,7 @@ export function codexGenerate(job, cfg) {
   try {
     const args = ['exec', '--skip-git-repo-check', '--sandbox', 'workspace-write', ...job.refs.flatMap((f) => ['-i', resolve(f)]), '-'];
     // 父进程的 NODE_OPTIONS 会被 codex 继承，指向已删除的预加载文件时它会在启动阶段崩
-    const r = spawnSync(bin, args, { cwd: dir, input: codexStdin(job), encoding: 'utf8', timeout: 15 * 60_000, env: { ...process.env, NODE_OPTIONS: '' }, maxBuffer: 64 * 2 ** 20 });
+    const r = runProgram(bin, args, { cwd: dir, input: codexStdin(job), encoding: 'utf8', timeout: 15 * 60_000, env: { ...process.env, NODE_OPTIONS: '' }, maxBuffer: 64 * 2 ** 20 });
     const out = join(dir, 'out.png');
     if (existsSync(out)) return readFileSync(out);
     const log = `${r.stdout ?? ''}\n${r.stderr ?? ''}`;
@@ -264,11 +278,36 @@ export async function openaiGenerate(job, cfg) {
 /* ------------------------------------------------------------------ */
 /* 自定义命令模板                                                        */
 /* ------------------------------------------------------------------ */
-const shq = (s) => `'${String(s).replace(/'/g, `'\\''`)}'`;
+
+const CMD_META = /([()\][%!^"`<>&|;, *?])/g;
+
+/** 把一个值安全地放进本机 shell 的单个参数，模型提示词也不能逃出参数边界。 */
+export function quoteShellArg(value, platform = process.platform) {
+  const s = String(value);
+  if (platform !== 'win32') return `'${s.replace(/'/g, `'\\''`)}'`;
+  if (s.includes('\0')) throw new Error('Windows shell 参数不能包含 NUL 字符');
+
+  // cmd.exe 先解析元字符，再把双引号参数交给 Windows 程序；反斜杠与引号要按两层规则转义。
+  // CR/LF 不能安全放进 /c 命令行；需要保留换行的提示词应使用 {prompt_file}。
+  let arg = s.replace(/\r\n?|\n/g, ' ').replace(/(?=(\\+?)?)\1"/g, '$1$1\\"').replace(/(?=(\\+?)?)\1$/, '$1$1');
+  arg = `"${arg}"`;
+  return arg.replace(CMD_META, '^$1');
+}
+
+/** .cmd / .bat 不能直接 CreateProcess；只对这两类入口走 cmd.exe，其余程序仍按参数数组执行。 */
+function runProgram(command, args, opts = {}) {
+  if (IS_WIN && /\.(?:cmd|bat)$/i.test(command)) {
+    const escapedCommand = String(command).replace(CMD_META, '^$1');
+    const line = [escapedCommand, ...args.map((arg) => quoteShellArg(arg, 'win32'))].join(' ');
+    return runShell(line, opts, 'win32');
+  }
+  return spawnSync(command, args, opts);
+}
 
 /** 占位符：{prompt_file} {negative_file} {prompt} {negative} {refs} {ref1} {ref2} {ref3} {out} {width} {height} {ratio} {seed}，全部已加引号。 */
-export function fillTemplate(cmd, vars) {
-  return cmd.replace(/\{(\w+)\}/g, (m, k) => (k === 'refs' ? vars.refs.map(shq).join(' ') : k in vars ? shq(vars[k]) : m));
+export function fillTemplate(cmd, vars, platform = process.platform) {
+  const quote = (value) => quoteShellArg(value, platform);
+  return cmd.replace(/\{(\w+)\}/g, (m, k) => (k === 'refs' ? vars.refs.map(quote).join(' ') : k in vars ? quote(vars[k]) : m));
 }
 
 export function customGenerate(job, cfg, name) {
@@ -282,7 +321,7 @@ export function customGenerate(job, cfg, name) {
       out: join(dir, 'out.png'), width, height, ratio: job.ratio, seed: job.seed ?? '' };
     writeFileSync(vars.prompt_file, job.text);
     writeFileSync(vars.negative_file, job.negative);
-    const r = spawnSync('sh', ['-c', fillTemplate(spec.cmd, vars)], { encoding: 'utf8', timeout: 20 * 60_000 });
+    const r = runShell(fillTemplate(spec.cmd, vars), { encoding: 'utf8', timeout: 20 * 60_000 });
     if (!existsSync(vars.out)) throw new Error(`自定义模型 ${name} 没有写出 {out}（退出码 ${r.status}）：${(r.stderr ?? '').trim().slice(0, 300)}`);
     return readFileSync(vars.out);
   } finally {

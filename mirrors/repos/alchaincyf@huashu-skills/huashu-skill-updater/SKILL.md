@@ -1,6 +1,6 @@
 ---
 name: huashu-skill-updater
-description: 检查并更新花叔系 skills。当用户说「检查skill更新」「更新花叔的skill」「skill是不是最新的」时触发；当会话中用到任何花叔系 skill（huashu-* / nuwa / darwin / freud / seedance / tramstop / dukou 等），且其安装目录里的 .huashu-skill-meta.json 的 last_checked 距今超过 30 天（或 git 安装的超过 30 天未 fetch）时，也应主动触发一次检查。
+description: 检查并更新花叔系 skills。用户说「检查skill更新」「更新花叔的skill」「skill是不是最新的」时触发。按各仓库的版本标签判断有没有新版本，只提示，是否更新由用户决定。
 ---
 
 # huashu-skill-updater — 花叔系 Skill 更新检查
@@ -13,9 +13,11 @@ description: 检查并更新花叔系 skills。当用户说「检查skill更新�
 python3 ~/.claude/skills/huashu-skill-updater/scripts/check_updates.py
 ```
 
-脚本会扫描 skills 目录下所有花叔系 skill（识别标准：目录带 `.git` 且 origin 指向 alchaincyf，或存在 `.huashu-skill-meta.json`），逐个对比远程仓库最新 commit，输出「已最新 / 有更新 / 无法判断」三态报告。有更新时 exit code 为 1，方便接 cron。
+脚本会扫描 skills 目录下所有花叔系 skill（识别标准：目录带 `.git` 且 origin 指向 alchaincyf，或存在 `.huashu-skill-meta.json`），输出「已最新 / 有更新 / 无法判断」三态报告。有更新时 exit code 为 1，方便接 cron。
 
-检查完成后（无论有无更新）加 `--mark-checked` 再跑一次，或直接一步到位：
+怎么算「有新版本」：git 安装的 skill，比较 SKILL.md 开头 `metadata.version` 和远程仓库最大的 `vX.Y.Z` 标签。作者只在实质更新（新能力、行为变化、修 bug）时打标签，改错字、改 README 不打，所以不会因为小改动反复提醒。检查只读取远程标签，不下载文件、不上传数据。复制安装的 skill 没有版本号，仍按来源仓库的 commit 比较。
+
+加 `--mark-checked` 会在联网成功后刷新各 skill 的检查日期（联网失败不刷新）：
 
 ```bash
 python3 ~/.claude/skills/huashu-skill-updater/scripts/check_updates.py --mark-checked
@@ -48,7 +50,7 @@ rm -rf ~/.claude/skills/<名字> && cp -r /tmp/huashu-skills-update/<名字> ~/.
 }
 ```
 
-git clone 安装的 skill 不需要这个文件，`.git` 本身就是元数据。另外每个独立仓库 skill 的 SKILL.md 末尾自带「版本自检」段：agent 使用该 skill 时读目录里的 `.last-update-check`（一行日期），30 天内检查过就静默跳过，到期才联网对比一次。`check_updates.py --mark-checked` 会同时刷新这个文件，避免刚全量检查完又被单个 skill 的自检重复提醒。
+git clone 安装的 skill 不需要这个文件，`.git` 本身就是元数据。另外每个独立仓库 skill 的 SKILL.md 末尾自带「版本检查」段：agent 使用该 skill 时读目录里的 `.last-update-check`（一行日期加结果，如 `2026-10-13 ok`），上次成功不足 30 天、上次失败不足 7 天就跳过，到期才读一次远程版本标签；用户把内容改成 `off` 就永久不检查。`check_updates.py --mark-checked` 联网成功后会同时刷新这个文件，避免刚全量检查完又被单个 skill 重复提醒。
 
 ## 每月定期检查
 
@@ -65,5 +67,5 @@ git clone 安装的 skill 不需要这个文件，`.git` 本身就是元数据�
 
 1. 触发本 skill 后先跑 `check_updates.py`，把报告翻译成人话给用户：哪些最新、哪些落后几个 commit、更新命令是什么。
 2. 不要不问就更新——列出有更新的 skill，让用户决定更新哪些（用户明确说「全部更新」除外）。
-3. 会话中用到某个花叔系 skill 时，顺手看一眼它目录里的 `.huashu-skill-meta.json`（或 `.git` 的 FETCH_HEAD mtime）：超过 30 天没检查就在完成当前任务后提一句「这个 skill 30 天没检查更新了，要不要看看」，不要打断当前任务。
+3. 单个 skill 的到期检查由它自己的「版本检查」段负责，本 skill 不重复提醒。
 4. skills 目录不在 `~/.claude/skills/` 时（项目级安装、其他 agent），用 `--skills-dir` 指定。

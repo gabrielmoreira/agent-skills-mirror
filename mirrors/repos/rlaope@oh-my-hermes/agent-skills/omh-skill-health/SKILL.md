@@ -1,6 +1,7 @@
 ---
 name: "omh-skill-health"
 description: "[omh] OMH skill portfolio health overview: prepare a metadata-only OMH skill portfolio dashboard with stale surfaces, observed failure signals, pending amendments, and top actions. Use when the user says: skill-health, skill health, skill portfolio health, skill dashboard, skill health dashboard, skill failure pattern dashboard, skill failure patterns, pending skill amendments."
+license: MIT
 compatibility: "Requires the omh CLI on PATH (pip install oh-my-hermes)."
 metadata:
   hermes:
@@ -17,13 +18,13 @@ This is an OMH `skill-health` workflow skill, projected for Agent Skills hosts (
 
 ## Why This Exists
 
-`skill-health` exists so Hermes users can ask for this workflow in chat and get a structured, checkable answer instead of an improvised one.
+`skill-health` exists because a skill portfolio drifts in ways no single run shows -- a managed skill changed in place, an authoring finding nobody fixed, an update waiting on its hub -- and use counts measure none of that: it gathers the observed signals into one card with an owner lane and a safe next action for each, and changes nothing itself.
 
 ## Do Not Use When
 
-- The request is already handled by a narrower explicit skill with stronger evidence.
-- The user asks OMH to secretly run external platforms, connectors, schedulers, file exports, or runtime agents.
-- The only safe answer is to ask for missing authority, credentials, target, or observed evidence first.
+- OMH setup, install, or a skill that does not load; use `omh-doctor`.
+- One run that missed a route or went wrong; use `omh-workflow-learning`.
+- Finding a new skill to adopt; use `omh-skill-scout`.
 
 ## Examples
 
@@ -44,6 +45,9 @@ Bad example:
 - Dashboard scope, source surfaces, stale/duplicate criteria, and stop condition are explicit.
 - Install/setup health is routed to doctor; catalog operations are routed to skill; failure retrospectives are routed to workflow-learning.
 - No skill, prompt, doc, memory, or model behavior is claimed changed until a reviewed implementation records evidence.
+- Never present use, view, or load counts, `.usage.json` included, as a health, prune, archive, or retire signal: a rarely used skill is not an unhealthy one, and no health card recommends removing, archiving, or pruning a skill for being used little.
+- On Hermes, read the skill audit ledger read-only (that skill's entries in `skills/.curator_ledger.jsonl` under the active profile's Hermes home, or `hermes curator ledger --skill <name> --limit <n>`, which lists only the 20 newest by default): an entry against an `omh-*` skill means Hermes changed that managed copy outside OMH, so it may no longer match its generated body; report it as drift with the entry's `action` and `actor` (`agent`, `user`, or `curator`, which covers Hermes' curator and its background review). An empty ledger is unknown, not clean, because `skills.ledger: false` turns it off.
+- On Hermes, record an authoring finding only from the `lint_warnings` a `skill_manage` write returned, which are advisory and never proof a skill works; only some writes return them (an `edit` never does), so a write without them is not a clean lint. Record an available update for a hub-installed skill only from `hermes skills check` output that was seen; that hub request is Hermes' own, not OMH's.
 
 ## Recovery Notes
 
@@ -52,7 +56,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when operators need portfolio-level skill health without treating it as install repair, live execution success, or automatic skill mutation.
 

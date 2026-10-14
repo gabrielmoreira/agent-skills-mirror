@@ -1,6 +1,8 @@
 ---
 name: "omh-github-issue-intake"
 description: "[omh] Chat report that should become a GitHub issue: turn a public chat report into a confirmed, verified issue package. Use when the user says: github-issue-intake, github issue intake, issue intake, file this as an issue, file a github issue, open a github issue, create a github issue, submit a github issue."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, github-ops]
@@ -8,6 +10,7 @@ metadata:
     phase: issue-intake
     role: operator
     quality_tier: workflow-surface-gated
+    related_skills: [github]
 ---
 
 # Github Issue Intake
@@ -24,6 +27,7 @@ This is a Hermes-native `github-issue-intake` workflow skill.
 - The event concerns an already-existing issue, PR, review, or CI run; use github-event-ops instead.
 - The user wants implementation; coding stays a separate follow-up lane with its own maintainer authority.
 - The report describes a security vulnerability; redirect to the private SECURITY.md path.
+- The issue is already decided and the user only wants it filed or edited with the gh CLI, with no chat report to classify, question, or de-duplicate; load Hermes' bundled `github` skill instead of this one.
 
 ## Examples
 
@@ -52,11 +56,11 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+39 more`) - schedules, status, health, and ops review.
+- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+40 more`) - schedules, status, health, and ops review.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when a public chat report should become a new GitHub issue: classify it, ask at most three decision-changing questions, search duplicates, confirm the direction, and hand the scoped creation to an authorized connector.
 
@@ -140,4 +144,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

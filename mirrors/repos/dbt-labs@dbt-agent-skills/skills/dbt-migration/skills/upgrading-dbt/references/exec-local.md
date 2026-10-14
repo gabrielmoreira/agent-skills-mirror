@@ -202,6 +202,17 @@ uv run --with pyyaml python "$SKILL_DIR/scripts/tools.py" report --project-dir "
 Renders `target/dbt_migration_results.json` → `migration_report.md`, grouped by
 outcome.
 
+It also records the run's `outcome` in `target/dbt_migration_status.json`, which the
+VS Code extension reads to report how the run went. The script derives it from the
+same records the report is built from, so you write nothing extra and must not
+add it by hand. SKILL.md's **Run outcome** defines the object and its values.
+
+What is specific to this profile: the gate is `dbt parse` alone, so `compile`,
+`test` and `build` are always `not_run`, and `repair_attempts` and
+`jobs_to_flip_count` are `null`. Run `status-set --step parse` before `report`,
+because the gate result is read from that phase. Starting a new run with
+`status-init` clears it.
+
 ### `ask`
 Put the question to the user in chat and wait. Always `status-set` the current
 phase to `waiting_input` **before** asking, with a note saying what you asked.

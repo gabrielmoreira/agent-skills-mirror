@@ -4,7 +4,7 @@ description: Map of every agentmemory MCP tool, what each does, and its paramete
 user-invocable: false
 ---
 
-agentmemory exposes its full capability set as MCP tools. This skill is the index: it tells you which tool to reach for and where to find exact parameters.
+This skill indexes agentmemory's MCP tools. Use the connected server's tool inventory and schemas; a native memory provider may expose a smaller set under different names. Hermes and OpenClaw skills that need the full surface require a separate MCP connection to the running daemon.
 
 ## Quick start
 
@@ -15,7 +15,7 @@ Save then recall:
 
 ## Tool families
 
-- Capture: `memory_save`, `memory_observe` flows, `memory_compress_file`.
+- Capture: `memory_save`, `memory_compress_file`. Automatic observations use native hooks or `POST /agentmemory/observe`, not an MCP observation tool.
 - Retrieve: `memory_smart_search`, `memory_recall`, `memory_file_history`, `memory_timeline`, `memory_vision_search`.
 - Sessions and commits: `memory_sessions`, `memory_commits`, `memory_commit_lookup`.
 - Knowledge and graph: `memory_lesson_save`, `memory_lesson_recall`, `memory_graph_query`, `memory_relations`, `memory_patterns`, `memory_crystallize`.

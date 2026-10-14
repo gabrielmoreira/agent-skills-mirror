@@ -15,14 +15,18 @@
 ## Root Ownership
 
 - `agent.py` owns `Agent`, `AgentContext`, and loop data.
+- `Agent.hist_add_message` updates `AgentContext.last_message`, the activity timestamp used by snapshots and chat persistence; `created_at` remains unchanged. Context initialization preserves an explicitly supplied activity timestamp across greeting/history hooks.
 - `Agent.hist_add_ai_response` owns Responses-API state advancement: it calls `_remember_llm_result_state` internally. Model turns pass an `LLMResult`; omitted results and legacy positional string IDs use the non-LLM sentinel. Callers must not invoke `_remember_llm_result_state` manually.
-- Prepared local Responses input may project intact native history through `helpers/responses_history.py`; retain original Chat/fallback messages, current protocol/extras, summaries and masking. Durable capability metadata stores only a stable-prefix digest for eligibility.
+- Prepared local Responses input may project intact native history through `helpers/responses_history.py`; retain original Chat/fallback messages, current protocol/extras, summaries and masking. Durable capability metadata stores only a stable-prefix digest for eligibility; per-turn extras snapshots live separately in result metadata and count toward Responses history compression.
 - `Agent.call_chat_model_turn` builds native function tools only when the chat model's `a0_api_mode` selects Responses; Chat Completions turns pass an empty tool list and name map, since that transport drops them.
-- Native function calls use canonical call content for history and repeat comparison, even when accompanied by commentary. The canonical content passes through the normal history template/masking hook; provider output metadata remains intact.
+- Native function calls use canonical call content for history and combine public response text with calls for repeat comparison. The canonical history content passes through the normal history template/masking hook; provider output metadata remains intact.
 - `initialize.py` owns framework initialization.
 - `models.py` owns model-provider configuration and LiteLLM integration. `get_api_key_raw()` reads the stored key or key list for settings/editing; `get_api_key()` selects a runtime key and runs provider extension hooks.
+- Local sentence-transformers load only on an embedding cache miss, not when importing `models`. `run_ui.init_a0` starts deferred preload before chat restoration and returns a completion callback so its end hooks (including watchdog registration) overlap warmup. `run` invokes that callback, allowing up to ten additional seconds for preload before starting MCP and the job loop, then HTTP. Chat restoration and extension hooks are outside this wait limit. Timeout leaves preload running, so a first chat can still wait for an uncached model. Waiting is best-effort: timeout or task failure does not prevent HTTP startup. Initialization hooks may disable preload or suppress completion; disabled preload still allows MCP/jobs, while a skipped initializer skips them. `preload.py` constructs the configured local embedding model in a worker thread; it must not import unused speech runtimes or block the shared background event loop.
+- `models._merge_provider_defaults` merges YAML-declared `extra_body` defaults with legacy top-level values for those declared fields and explicit nested overrides, in that order; unrelated kwargs and original-provider API-key selection remain intact.
 - `models.apply_rate_limiter` skips token counting and returns no limiter when all request, input, and output limits are unset; any configured limit retains normal accounting.
 - `requirements.txt` includes HTTPX's SOCKS extra so framework clients support SOCKS proxy environment variables before plugin setup.
+- LiteLLM and OpenAI pins must remain compatible. Retain shared dependency security floors and verify upgrades with installed-SDK HTTP tests in `tests/test_litellm_sdk.py` using the framework runtime.
 - Native agent-turn response callbacks may receive a display-only commentary preview as their full text; legacy callbacks, accumulated model output, usage and native dispatch retain the original text and result metadata.
 - `run_ui.py` is the WebUI entry point.
 - `DockerfileLocal` must remain compatible with the contracts under `docker/`.
@@ -44,6 +48,7 @@
 - Copy live core-plugin changes back into tracked source under `plugins/`.
 - Develop new custom plugins under ignored `usr/plugins/`; tracked bundled plugins live under `plugins/`.
 - Use the framework runtime for backend and plugin-hook verification, not the separate agent execution runtime.
+- Dependency changes must cover both image installation declarations and existing self-updated instances. Use startup migrations for core dependencies and the owning installation hooks for plugin dependencies.
 
 ## Permissions
 

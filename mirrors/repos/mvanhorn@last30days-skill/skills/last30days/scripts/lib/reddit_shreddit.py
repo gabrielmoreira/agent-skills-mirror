@@ -98,7 +98,10 @@ def _svc_url(subreddit: str, post_id: str) -> str:
 
 
 def _attr(tag: str, name: str) -> str:
-    m = re.search(rf'\b{name}="([^"]*)"', tag)
+    # HTML attribute names are case-insensitive: the server partial emits
+    # ``thingId``, a DOM round-trip serializes it as ``thingid``. Match the name
+    # either way; the value keeps its case.
+    m = re.search(rf'\b{name}="([^"]*)"', tag, re.IGNORECASE)
     return _html.unescape(m.group(1)) if m else ""
 
 

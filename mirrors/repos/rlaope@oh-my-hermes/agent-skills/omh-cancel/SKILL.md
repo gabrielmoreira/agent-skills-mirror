@@ -1,6 +1,7 @@
 ---
 name: "omh-cancel"
 description: "[omh] Aborting an active workflow: ending active workflow state cleanly. Use when the user says: cancel, stop the workflow, abort the run, cancel the loop."
+license: MIT
 compatibility: "Requires the omh CLI on PATH (pip install oh-my-hermes)."
 metadata:
   hermes:
@@ -17,41 +18,42 @@ This is an OMH `cancel` workflow skill, projected for Agent Skills hosts (Claude
 
 ## Why This Exists
 
-`cancel` exists to keep `operator` work explicit, evidence-backed, and inside the Hermes/executor boundary instead of relying on ad hoc chat narration.
+`cancel` exists so a request to stop ends the right thing: OMH clears the state this session owns, and work the host owns stops through the person's own host command, so nothing reads as stopped before a record or the host's own reply says it is.
 
 ## Do Not Use When
 
-- The request is casual chat, a status-only acknowledgement, or another workflow has stronger routing evidence.
-- The user needs implementation, review, CI, merge, or external publishing evidence that has not been delegated or observed.
+- The workflow finished and its outcome should be kept; record it with omh state finish instead of clearing it.
+- The user wants to see what is still running rather than stop it; use `omh-running-work-board`.
+- The user means cancelling something in their own product or accounts, such as an order, a subscription, or a meeting, rather than OMH or host work.
 
 ## Examples
 
 Good example:
 
-- Prompt: cancel: handle a operator request that needs explicit evidence boundaries and a clear stop condition.
-- Expected behavior: Run `cancel` only after naming the target, evidence boundary, and stop condition.
-- Why: The request matches the catalog use case and keeps observed evidence separate from prepared guidance.
+- Prompt: cancel the loop and stop everything that is running
+- Expected behavior: Clear this session's OMH state with its own commands, name the host's stop commands (on Hermes, `/loop stop` and `/stop`) for the person to run, and report each OMH clear from its result and each host stop as requested.
+- Why: The request spans OMH state and host-owned work, which stop through different owners.
 
 Bad example:
 
-- Prompt: cancel: treat casual chat or unaccepted work as if this workflow already produced verified results.
-- Expected behavior: Ask a clarification question or route to a narrower workflow instead of forcing `cancel`.
-- Why: The request lacks the required inputs or would overclaim work that Hermes did not observe.
+- Prompt: cancel: kill the background processes yourself and say everything stopped
+- Expected behavior: Leave the processes to the person's own stop command (on Hermes, `/stop`), and report them stopped only after the host's own reply.
+- Why: OMH never ends a host process, and a requested stop is not an observed one.
 
 ## Completion Checklist
 
-- The local command, managed path, config surface, and state artifact inspected are named.
-- Blocking issues, warnings, and optional surfaces are separated.
-- The next repair action is explicit and does not claim a reload or runtime observation.
+- Every stopped item is named with its owner: OMH state or host work.
+- Each OMH clear cites its command result; each host stop stays requested until the host's reply is seen.
+- Nothing outside this session's own state was cleared, and no host process was ended by OMH.
 
 ## Recovery Notes
 
-- If a managed path or config key is missing, route to setup/update repair instead of editing hidden state.
-- If a reload or plugin load was not observed, keep the diagnostic result as local health evidence only.
+- If a session-bound clear is refused for a missing --session-ref, report the refusal rather than clearing without it.
+- If the host's reply to a stop never appears, keep the stop requested and ask the person what it said.
 
 
 
-## Use When
+## When to Use
 
 Use to cleanly end active adapted workflow state.
 
@@ -66,8 +68,10 @@ Reasoning demand: `light`
 
 Quality bar:
 
-- Name the workflow target, constraints, validation evidence, and stop condition.
-- Separate Hermes guidance from executor or wrapper behavior unless evidence proves the step happened.
+- Name each thing to stop and its owner: OMH state (workflow lifecycle, plan checklist, OMH goal) or host work (the running turn, background processes, delegations, a Hermes /loop or /goal).
+- Clear OMH state with its own commands: `omh state clear --workflow <name>` (`--session-ref` when session-bound), on Hermes `omh_todo action=clear`, and `omh goal cancel --goal <id>`; an OMH loop stops through its linked goal, and one without a goal has no cancel record.
+- Hand host work to the person's own stop command; on Hermes `/stop` (in a CLI or TUI session it ends every background process, and the classic CLI its background delegations too; on a messaging platform it interrupts the running turn rather than ending every background process), `/loop stop`, `/goal pause` or `/goal clear`, `/heartbeat clear`, `/pause` (all new work on a gateway).
+- Report an OMH clear as done only from its command result, and a host stop as requested until the host's own reply to it is seen.
 
 Required inputs:
 
@@ -85,8 +89,8 @@ Artifact expectations:
 
 Safety rules:
 
-- Do not imply hidden Hermes runtime behavior.
-- Use the smallest verification that can prove the claim.
+- Never end, kill, or signal a host process, background job, or delegation from this workflow, through the terminal or any other tool (on Hermes, `process_manage` included); that stop is the person's own host command.
+- Clear only what this session owns; another session's plan, workflow state, or goal stays as it is.
 
 ## Runtime Evidence
 

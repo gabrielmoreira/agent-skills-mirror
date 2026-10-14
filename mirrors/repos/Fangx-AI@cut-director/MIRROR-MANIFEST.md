@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Fangx-AI/cut-director` — 26 default patterns, 2 followed patterns, 4 file(s) materialized.
+Mirror of `Fangx-AI/cut-director` — 26 default patterns, 3 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `Fangx-AI/cut-director` — 26 default patterns, 2 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 4 |
+| Followed pats | 3 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `Fangx-AI/cut-director` — 26 default patterns, 2 followed patterns, 
 
 - `references/cut.md`
 - `references/subtitles.md`
+- `references/subtitle-styles.md`
 
 ## File Index
 
@@ -63,7 +64,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`agents/openai.yaml`](agents/openai.yaml) |
 | 2 | ✓ | [`SKILL.md`](SKILL.md) |
 | 3 | → | [`references/cut.md`](references/cut.md) |
-| 4 | → | [`references/subtitles.md`](references/subtitles.md) |
+| 4 | → | [`references/subtitle-styles.md`](references/subtitle-styles.md) |
+| 5 | → | [`references/subtitles.md`](references/subtitles.md) |
 
 ---
 

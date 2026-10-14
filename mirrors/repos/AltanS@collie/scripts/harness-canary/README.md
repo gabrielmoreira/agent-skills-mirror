@@ -1,10 +1,12 @@
 # The harness canary
 
-`bun run canary` starts claude, codex, opencode and pi in a Herdr session of its own, types drafts
+`bun run canary` starts claude, codex, opencode and pi, and grok, hermes, agy, omp and muse when `--agent`
+names them, in a Herdr session of its own, types drafts
 and a few real sends, and checks with Collie's own code what the phone would read and whether each
 send lands. It then reads the session each agent WROTE, with the bridge's own journal adapter, and
 fails on a row or content type the reader does not recognise. With `--dialogs` it also opens real
-dialogs and sends to a busy agent. Specs: M37/02, M37/03 and M41/05 in the workspace tracker.
+dialogs and sends to a busy agent, and with `--scenario options` it starts each New-sheet option once.
+Specs: M37/02, M37/03 and M41/05 in the workspace tracker.
 
 ```sh
 bun run canary                          # all four agents, the six default scenarios
@@ -12,6 +14,7 @@ bun run canary --dialogs                # plus dialogs and busy (more model turn
 bun run canary --agent claude,codex     # some agents
 bun run canary --scenario idle,drafts   # some scenarios, no model turns
 bun run canary --keep                   # leave the session up for a look
+bun run canary --agent claude,codex --scenario options   # each New-sheet option, started once
 bun run canary --record                 # write clean agents into the ledger
 bun run canary --readers /tmp/c1131     # judge with another checkout's readers
 ```
@@ -19,9 +22,37 @@ bun run canary --readers /tmp/c1131     # judge with another checkout's readers
 Exit 1 means a scenario failed. Captures and `summary.json` go to
 `/tmp/collie-canary/<run-id>/<agent>-<version>/`. They are never copied into `web/src/fixtures/`.
 
+grok, hermes, agy, omp and muse run only when `--agent` names them, because their sends spend each
+vendor's own quota. The `options` scenario is never part of a default run: it starts the agent once
+per option the New sheet offers (`bridge/launcher-recipes.ts`), with the line the bridge builds, and
+passes when Herdr shows the agent up, idle or asking a question first. It makes no model turn.
+
+### Another provider: `--via`
+
+```sh
+COLLIE_GROK_ROOT=/path/to/grok-home/sessions \
+  bun run canary --agent claude,grok --via /path/to/launchers
+```
+
+`--via DIR` starts an agent through `DIR/<agent>` when that file is executable, in place of the
+agent's own command word; the rest of the line stays the canary's. An agent with no launcher there
+starts as usual, and the log line says which. The version is read with the profile's own version
+command on PATH, not through the launcher: a launcher should change the provider and run the same
+installed agent, and the canary does not check that it does.
+
+A launcher is yours to write, outside this repo: it points the agent at another provider and ends
+in `exec <agent> "$@"`, so Herdr sees the agent itself. It covers the six default scenarios only;
+`dialogs`, `busy` and `options` start their own lines.
+
+A launcher that moves the agent's home (`GROK_HOME`, `PI_CODING_AGENT_DIR`, `HOME`) moves its log
+too. Point the journal at it with the bridge's own override for that agent, `COLLIE_GROK_ROOT`,
+`COLLIE_PI_ROOT` or `COLLIE_MUSE_ROOT` (a comma list), in the canary's environment.
+
 ## What it checks
 
-Six scenarios per agent. Only `sends` makes model turns: four per agent.
+Six scenarios per agent run by default; the seventh, `options`, runs only when `--scenario` names it, and
+grok, hermes, agy, omp and muse are the five opt-in agents that run only when `--agent` names them. Only
+`sends` makes model turns: four per agent.
 
 | id           | what the canary does                                          | what must hold                                         |
 | ------------ | ------------------------------------------------------------- | ------------------------------------------------------ |
@@ -97,7 +128,8 @@ text. What the phone makes of that screen is judged with Collie's readers only.
 
 `--record` writes an agent into `web/src/lib/harness/verified-versions.json` (spec M37/01) with
 `how: "canary"`, only after a run with no fail in which that agent reached every scenario. It
-refuses when `--readers` points at another checkout, and it never creates the ledger.
+refuses when `--readers` points at another checkout, and it never creates the ledger. An agent started
+through a `--via` launcher is not recorded: its version was read from PATH, not from the launcher.
 
 A passing `journal` scenario also writes the JOURNAL reader's own line, in that entry's `journal`
 block beside the screen reader's (spec M41/05). The two are recorded apart because they drift apart:

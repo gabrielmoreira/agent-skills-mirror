@@ -1,6 +1,7 @@
 ---
 name: "omh-adversarial-consensus"
 description: "[omh] Technical proposal facing adversarial scrutiny: independent perspectives attack a proposal, then distill into a bundle a separate planner consumes. Use when the user says: adversarial-consensus, adversarial planning, adversarial plan review, red team this plan, red-team this plan, red team the proposal, multi-perspective review, multiple perspectives."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -20,10 +21,10 @@ This is an OMH `adversarial-consensus` workflow skill, projected for Agent Skill
 
 ## Do Not Use When
 
-- The user wants the plan itself, with options, acceptance criteria, and verification commands; use `ralplan`, which this workflow feeds.
-- The request is still too ambiguous to state the proposal being attacked; use `deep-interview` first.
-- The user wants completed code reviewed for defects rather than a proposal attacked before it is built; use `code-review`.
-- The user wants hostile runtime scenarios against a built change; use `ultraqa`.
+- The user wants the plan itself, with options, acceptance criteria, and verification commands; use `ulw-plan`, which this workflow feeds.
+- The request is still too ambiguous to state the proposal being attacked; use `ulw-interview` first.
+- The user wants completed code reviewed for defects rather than a proposal attacked before it is built; use `omh-code-review`.
+- The user wants hostile runtime scenarios against a built change; use `ulw-qa`.
 - One perspective would do: a small local change with no contested decision does not earn three rounds.
 
 ## Examples
@@ -58,7 +59,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when a proposal, plan, or direction needs independent perspectives to attack it before a plan is written, and the distilled result is meant as input to planning rather than as the plan.
 

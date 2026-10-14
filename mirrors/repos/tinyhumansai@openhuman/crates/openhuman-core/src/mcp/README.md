@@ -9,8 +9,9 @@ points for the local MCP server.
 
 Host calls cross the module boundary through `tinymcp-bus`; the host does not
 link TinyMCP's implementation into the normal build graph. `module_client.rs`
-keeps one serialized module object per workspace and retains open/close
-receipts so cancellation and lost replies do not orphan lifecycle work.
+keeps one serialized module object per workspace. The receipt state machine and
+the client cache with its cleanup reservations are
+`tinymcp_bus::client_lifecycle`; the host only performs the bus calls.
 
 ## How it works
 
@@ -31,8 +32,8 @@ transport policy. Registry handlers and agent tools call module operations,
 then translate outcomes into OpenHuman RPC results and domain events.
 
 The configured object's bus path remains private to `module_client.rs`. Open
-and close operations keep transition receipts so retries can finish after a
-caller is cancelled or loses its reply. Calls that carry client credentials
+and close receipts are retained by `tinymcp_bus::client_lifecycle` so retries
+can finish after a caller is cancelled or loses its reply. Calls that carry client credentials
 use TinyBus confidential delivery.
 
 The local MCP server keeps its OpenHuman tool catalog, authorization policy,
@@ -47,8 +48,8 @@ session; a rejected DELETE leaves the host session intact.
 
 - `host.rs` builds `McpClientConfig`, resolves the product proxy, refuses
   credentialed plaintext non-loopback HTTP, and selects the OAuth callback URL.
-- `module_client.rs` owns workspace-scoped open, call, close, retry, and
-  shutdown receipt handling. It also adapts the bus interface to host callers.
+- `module_client.rs` drives the module-owned lifecycle (admission gate,
+  shutdown hook, bus calls) and adapts the bus interface to host callers.
 - `registry/` owns the product RPC schemas and outcomes, `mcp.json` editing,
   prompt-injection screening, permission/exposure mapping, and domain events.
   The module owns the catalogs, stores, connections, and supervisor.
@@ -90,6 +91,6 @@ the focused host tests with `cargo test -p openhuman --features modules,mcp
 mcp::`, and check that the normal graph does not include the implementation
 with `scripts/assert-shed.sh default tinymcp`.
 
-Further reading: [MCP registry](../../../../gitbooks/developing/architecture/mcp-registry.md),
-[MCP server](../../../../gitbooks/developing/mcp-server.md), and
+Further reading: [MCP registry](../../../../docs/gitbooks/en/developing/architecture/mcp-registry.md),
+[MCP server](../../../../docs/gitbooks/en/developing/mcp-server.md), and
 [`tinymcp`](../../../../vendor/tinymcp/README.md).

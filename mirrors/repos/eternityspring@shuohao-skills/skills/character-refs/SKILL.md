@@ -236,7 +236,7 @@ node {baseDir}/scripts/character-refs.mjs render <asset.json>... --out <输出�
 node {baseDir}/scripts/selftest.mjs
 ```
 
-230 项断言，不调模型、不花额度：PNG 标识读写、检查门、输入校验、多语言确认表与报告、画风预设与换画风、提示词、过期传导、出图适配器的请求格式（Qwen 与 GPT Image 使用本地假服务器）、
+233 项断言，不调模型、不花额度：PNG 标识读写、检查门、输入校验、多语言确认表与报告、画风预设与换画风、提示词、过期传导、出图适配器的请求格式（Qwen 与 GPT Image 使用本地假服务器）、
 以及使用自定义命令跑通的完整流程。改完脚本先跑这个。
 
 ## 自带样例

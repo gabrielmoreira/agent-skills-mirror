@@ -1,6 +1,8 @@
 ---
 name: "omh-award-bar-score"
 description: "[omh] Aiming for design-award quality: score a web surface against published design-award judging axes and name the binding constraint. Use when the user says: award-bar-score, award bar score, award winning, award-winning, award winning website, award-winning website, award winning design, award ready."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, materials]
@@ -8,6 +10,7 @@ metadata:
     phase: award-bar-score
     role: operator
     quality_tier: design-orchestration-gated
+    related_skills: [omh-design-quality-gate, omh-frontend, omh-accessibility-audit, omh-visual-qa]
 ---
 
 # Award Bar Score
@@ -20,10 +23,10 @@ This is a Hermes-native `award-bar-score` workflow skill.
 
 ## Do Not Use When
 
-- The request is broad premium quality across decks, PDFs, or posters; use `design-quality-gate`.
-- The request is frontend implementation, layout, or design-system work; use `frontend`.
-- The request is WCAG, keyboard, or screen-reader conformance; use `accessibility-audit`.
-- The request is a rendered capture or a pixel verdict; use `visual-qa`.
+- The request is broad premium quality across decks, PDFs, or posters; use `omh-design-quality-gate`.
+- The request is frontend implementation, layout, or design-system work; use `omh-frontend`.
+- The request is WCAG, keyboard, or screen-reader conformance; use `omh-accessibility-audit`.
+- The request is a rendered capture or a pixel verdict; use `omh-visual-qa`.
 - The award is a business, sales, or team award with no judged web surface.
 
 ## Examples
@@ -57,9 +60,9 @@ Bad example:
 
 - Current lane: **Materials and visual summaries** (`design-orchestration`, `apple-design`, `design-quality-gate`, `award-bar-score`, `frontend`, `accessibility-audit`, `visual-qa`, `content-operator`, `+6 more`) - web, accessibility, visual QA, files, and packages.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when a web surface must be judged against an external award bar: per-axis scores for UI, UX, and innovation, the weighted total against the published threshold, and the one axis holding the score down.
 
@@ -125,4 +128,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

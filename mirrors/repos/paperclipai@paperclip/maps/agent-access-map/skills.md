@@ -2,7 +2,9 @@
 
 Product map: [Skill discovery, authoring, and policy](../feature-map/skills.md).
 
-Review date: 2026-10-12. Source commit: `f981fa3cc10cb8663a87dec60345fbff46d54d0a`.
+Review date: 2026-10-12. Source commit: `58e16dbddfc9c8d0cf60867f9d9847f0feda055b`.
+Native REST transport reconciled in this change; see the
+[shared transport contract](README.md#native-rest-transport).
 
 This is a source-reviewed baseline of representative operations and known gaps.
 Each capability needs operation-level review before its entire scope can be
@@ -122,8 +124,8 @@ API: `present` — representative operation IDs:
 
 - `POST /api/companies/{companyId}/skills/{skillId}/test-runs`.
 
-Agent access: `partial` — Permitted agent REST; native read fallback for history; no
-dedicated CLI test command found.
+Agent access: `available` — Permitted agent REST / native `call_api` creation, control
+and history; no dedicated CLI test command found.
 
 Policy: Company skill policy by action/resource plus platform invariants; test execution
 additionally requires task-assignment authority.
@@ -137,5 +139,40 @@ credentials/run context; inspect its result and applicable persistence/attributi
 Assert the relevant denied actor, owner, company or mode from Policy. Review the
 remaining operations before qualifying the whole capability.
 
-Gaps: Native call_api rejects test-run creation/control while the route can authorize
-agents. No default native orchestration binding.
+Gaps: No dedicated native orchestration binding; generic REST calls retain
+skills.test policy, task-assignment authorization, responsible-user intersection and
+admitted skill-test JWT scope.
+
+Project-source API additions: GET `/api/companies/{companyId}/skill-sources/project-repositories`,
+POST `/api/companies/{companyId}/skill-sources/adopt-project` with `workspaceId`, and
+PATCH `/api/companies/{companyId}/skill-sources/{sourceId}/settings` with expected revision
+and update/connection preferences. Native API discovery uses the OpenAPI registration.
+
+Project-derived read/use permission follows current project authorization, with access
+through either originating project. File/version reads, source metadata, mutations,
+editable copies, tests and runtime delivery retain that boundary. Unattended refresh
+uses the revalidated setup identity and connection, not the requesting agent's token.
+These additions need actual permitted/denied agent-run acceptance; service tests alone
+are not live credential proof.
+
+Direct GitHub source imports share the project setup-identity boundary. API-key
+agents may import permitted public content, but their responsible-user field
+does not authorize unattended credential use. They need human connection repair
+for automatic refresh. Authenticated agent runs derive the setup person from
+the persisted active run. Legacy agent activity without a matching run cannot
+recover a refresh person. Route and database tests cover these distinctions;
+this addition makes no new live-provider acceptance claim.
+
+Initial project imports check skills.import before provider reads; denied jobs
+do not retry automatically. Deferred jobs remain durable behind per-project and
+company admission limits. Scheduled refresh compares immutable tree identity and
+uses a persistent work allowance; manual refresh still requires its existing
+policy/access checks. These limits grant no content or execution access.
+
+Agent repository setup preserves the active run's selected GitHub connection/grant
+IDs. Missing selections require human repair; the worker never searches the
+responsible person's other grants for an agent-created source.
+
+Initial automatic imports reserve company work credits before provider reads.
+Failures retain the reservation; completed jobs cannot replenish the queue's
+work allowance. Jobs remain durable and resume as company credits refill.

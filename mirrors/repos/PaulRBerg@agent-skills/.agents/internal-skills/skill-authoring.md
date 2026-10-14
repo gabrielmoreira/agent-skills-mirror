@@ -13,13 +13,13 @@ field semantics.
 
 ## STE Authoring and Review
 
-Before writing catalog-skill prose, read
-[the STE authoring profile](../../skills/skill-writing/references/asd-ste100.md) completely. Apply it to descriptions,
-body prose, references, examples, and agent-facing metadata descriptions. Complete its meaning and style review before
-finishing. Preserve obligation strength, technical precision, and protected literal content.
+Before writing catalog-skill prose, read [the STE authoring profile](../../skills/agents-brain/references/asd-ste100.md)
+completely. Apply it to descriptions, body prose, references, examples, and agent-facing metadata descriptions. Complete
+its meaning and style review before finishing. Preserve obligation strength, technical precision, and protected literal
+content.
 
-This requirement also applies when the repository catalog guard replaces the project-local `skill-writing` workflow. The
-profile does not establish official ASD dictionary compliance.
+This requirement also applies when the repository catalog guard replaces the project-local `agents-brain create-skill`
+workflow. The profile does not establish official ASD dictionary compliance.
 
 ## Portable Specification Cache
 
@@ -27,7 +27,7 @@ Before relying on portable Agent Skills rules, resolve the repository root. Then
 
 ```bash
 repo_root=$(git rev-parse --show-toplevel)
-spec_file=$("$repo_root/skills/skill-writing/scripts/fetch-agentskills-spec.sh")
+spec_file=$("$repo_root/skills/agents-brain/scripts/fetch-agentskills-spec.sh")
 ```
 
 Read the file at `$spec_file` completely. Use `--refresh` for explicitly latest or change-sensitive work, disputed

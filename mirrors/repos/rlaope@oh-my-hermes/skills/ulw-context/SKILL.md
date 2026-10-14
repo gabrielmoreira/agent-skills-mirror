@@ -1,6 +1,8 @@
 ---
 name: "ulw-context"
 description: "[omh] Repository vocabulary unclear or inconsistent: project terminology alignment workflow: look up, capture, correct, and align the words a repository uses before planning or handoff. Use when the user says: ulw-context, project terminology alignment, review project terms, align project terminology, terminology this project uses."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, clarification]
@@ -8,6 +10,7 @@ metadata:
     phase: terminology-alignment
     role: planner
     quality_tier: clarity-gated
+    related_skills: [ulw-interview, omh-decision-prototype, ulw-plan, omh-memory-new, omh-memory-sync, omh-routing]
 ---
 
 # Context
@@ -21,11 +24,11 @@ This is a Hermes-native `context` workflow skill.
 ## Do Not Use When
 
 - A safe one-term definition or source lookup can be answered directly; use the read-only lookup mode and do not enter the full context interview.
-- The request is broad ambiguity with no project-language conflict; use `deep-interview`.
-- The unresolved decision is empirical and a cheap isolated experiment can answer it; use `decision-prototype` and keep the frontier for the rest.
-- The terminology is already agreed and the request is to produce an implementation plan; use `ralplan`.
-- The user wants to capture or curate general retained memory rather than repository terminology; use `memory-new` or `memory-sync`.
-- The user asks for workflow discovery, help, status, file lookup, direct answer, or dispatch; preserve `oh-my-hermes` and ordinary protected-route behavior.
+- The request is broad ambiguity with no project-language conflict; use `ulw-interview`.
+- The unresolved decision is empirical and a cheap isolated experiment can answer it; use `omh-decision-prototype` and keep the frontier for the rest.
+- The terminology is already agreed and the request is to produce an implementation plan; use `ulw-plan`.
+- The user wants to capture or curate general retained memory rather than repository terminology; use `omh-memory-new` or `omh-memory-sync`.
+- The user asks for workflow discovery, help, status, file lookup, direct answer, or dispatch; preserve `omh-routing` and ordinary protected-route behavior.
 
 ## Examples
 
@@ -61,9 +64,9 @@ Bad example:
 
 - Current lane: **Intent -> plan** (`oh-my-hermes`, `meta-router`, `deep-interview`, `context`, `plan`, `ralplan`, `adversarial-consensus`, `codebase-onboarding`, `+8 more`) - clarify, plan, ship, or loop goals.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when repository-specific language is unclear, inconsistent, or blocking shared understanding; keep read-only lookup direct and use a dependency-ready decision frontier only for unresolved terminology or product decisions.
 
@@ -127,7 +130,7 @@ Safety rules:
 1. Classify the turn as a safe lookup, reviewed capture, terminology correction, unresolved decision frontier, or confirmed planning/handoff transition.
 2. For lookup, inspect the optional source and active reviewed profile on demand, answer directly, and name source/freshness status. File presence, profile match, or nomination is not proof that a model used the content.
 3. Before capture, show the exact machine-only projection and ask for confirmation. Staging creates pending candidates only; review and approval remain separate.
-4. Before interviewing, confirm frontier entry. Then present every currently dependency-ready decision in one numbered batch per round, using stable `D1`, `D2`, ... identifiers.
+4. Before interviewing, confirm frontier entry. Then present every currently dependency-ready decision in one numbered batch per round, using stable `D1`, `D2`, ... identifiers. When Hermes' `clarify` tool is present (in your tool list or tool search), the round header and each decision's evidence and tradeoff stay in your message and the batch goes through `clarify`: one `questions` entry per decision whose question text opens with its identifier, at most four `choices` with the recommendation first beside the real alternatives, no free-input row of your own, and no options in the question text. Decisions in one frontier have no prerequisite between them, so they share the call, and a batch past the tool's per-call limit continues in a second call in the same round; a dependent never joins its prerequisite, and an unanswered entry leaves its decision open. Without `clarify`, the numbered batch in your message is the fallback.
 5. The frontier is bounded at 6 rounds. Run a non-round consent check before Round 4. Lookup, research, entry consent, summary confirmation, and next-path consent do not consume rounds.
 6. Stop on the first matching condition: every reachable decision is resolved, deferred, or blocked; the user asks to stop or proceed; or the answer to Round 6 is recorded. Never emit Round 7.
 7. Omitted decisions stay open and recommendations require explicit acceptance. If round or decision identity cannot be recovered, close with a named recovery blocker instead of restarting.
@@ -151,4 +154,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

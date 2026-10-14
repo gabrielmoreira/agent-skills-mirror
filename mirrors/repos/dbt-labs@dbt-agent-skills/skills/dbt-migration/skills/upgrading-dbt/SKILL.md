@@ -223,6 +223,13 @@ forget; it is not exempt.
 The notes below are **placeholders**: substitute the real numbers for this
 project ("Read 34 models, 6 macros"), never the literal `<n>`.
 
+**Telemetry.** The platform profile also reports migration telemetry before every
+stop or give-up, when the verification gate exits, and at the end of the run. See
+its **Telemetry (platform only)** section. The local profile never calls
+`record_migration_event`. Its `report` operation records the run's `outcome` in
+the status file instead, and the VS Code extension sends the telemetry from that,
+so there is nothing for you to report on a local run.
+
 The shape is **detect everything → fix everything → verify once → re-detect**:
 
 | Step | Phase |
@@ -437,6 +444,10 @@ Failure → attribute the error to an issue, return to Step 5 or 6, then re-run
 this whole step from check 1. **Max 3 command-loop attempts**, then stop and let
 the report carry what is still unverified.
 
+Exception: a warehouse authentication or timeout failure that no issue explains is
+not something to repair. Stop the gate, do not loop, and name every command left
+unverified in the report.
+
 `status-set` → `parse` = `complete`, with a note that says which checks actually
 ran — `"dbt parse, compile, test, build all clean on 1.12"`, or
 `"dbt parse clean on 1.12; build not run"`, not just "passed". A reader must be
@@ -557,6 +568,55 @@ looked at) · `detected` (present, not yet resolved) · `handled-by-autofix` ·
 `advisory` (environment_change) · `skipped-not-present` · `failed`. A run that
 ends with anything still `pending` or `detected` is incomplete, and the report
 says so.
+
+### Run outcome — `outcome`
+
+Optional. On the platform, `gate` and `repair_attempts` are written when Step 7
+exits (so `gate_result` can be sent from them) and the rest is filled in when the
+run ends: at Step 9, or when a platform run stops early. The local profile writes
+it all at once, in `report`. It lives at the top level of the state file, next to `steps`:
+
+- local: `target/dbt_migration_status.json`, written by the `report` operation
+- platform: `target/dbt_migration.json`, next to `steps` and `issues`, written by you
+
+```json
+"outcome": {
+  "outcome": "completed_partial",
+  "reason": null,
+  "gate": { "parse": "passed", "compile": "passed", "test": "failed", "build": "not_run" },
+  "repair_attempts": 2,
+  "files_changed_count": 12,
+  "flags_pinned_count": 2,
+  "manual_actions_count": 3,
+  "jobs_to_flip_count": 1
+}
+```
+
+- `outcome`:
+  - `completed`: every check in this profile's gate passed (platform: `parse`,
+    `compile`, `test`, `build`; local: `parse`), and no issue is `manual-required`,
+    `failed` or still `detected`. Read `gate` to tell parse-only from fully verified.
+  - `completed_partial`: the run reached the report, but `completed` does not hold.
+    For example a gate check was `declined`, `failed` or did not run, or an issue
+    is still outstanding.
+  - `failed`: the run reached the report, but `parse` never passed.
+  - `gave_up`: a `run`-scope `gave_up` ended the run. Local runs never produce this.
+    A `gate`-scope `gave_up` does not end the run: it carries on to the report, and
+    the outcome is `failed` if `parse` never passed, else `completed_partial`.
+- `reason`: the `gave_up` reason, or `null`.
+- `gate`: one verdict per command, each `passed`, `failed`, `declined` or `not_run`.
+- `repair_attempts`: each parse retry plus each trip round the command loop; `0` if
+  nothing needed repairing.
+- `files_changed_count`: files changed across all issues.
+- `flags_pinned_count`: the number of `flag-set` issues.
+- `manual_actions_count`: every manual action the report lists. This includes
+  `advisory` issues, so it can be non-zero when `outcome` is `completed`.
+- `jobs_to_flip_count`: the environments and jobs the report says to flip.
+
+If the run ends before Step 7, `gate` is all `not_run` and `repair_attempts` is
+`0`. The counts reflect what was done before stopping (all `0` for a stop at
+preflight). The local profile writes `null` for `repair_attempts` and
+`jobs_to_flip_count`, which it cannot know.
 
 ### Job commands — `migration_jobs.json`
 

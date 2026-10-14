@@ -1,6 +1,8 @@
 ---
 name: "omh-llm-app-dev"
 description: "[omh] LLM-powered feature to build: LLM app development: prepare a build handoff for an LLM-powered feature with a pinned provider boundary, schema-first outputs, versioned prompt files, grounded retrieval, and an eval suite as a shipped deliverable. Use when the user says: llm-app-dev, llm app development, llm application development, build an llm app, build an llm feature, llm feature development, build a rag pipeline, rag pipeline."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, delivery]
@@ -8,6 +10,7 @@ metadata:
     phase: llm-app-dev
     role: operator
     quality_tier: delivery-gated
+    related_skills: [omh-agent-evaluation, omh-agent-debug, omh-context-budget-review, omh-security-safety-review, omh-model-finetuning]
 ---
 
 # Llm App Dev
@@ -20,12 +23,12 @@ This is a Hermes-native `llm-app-dev` workflow skill.
 
 ## Do Not Use When
 
-- The subject is comparing executors or agent harnesses - Codex against Claude Code against Hermes coding - rather than evaluating the product's own model calls; use `agent-evaluation`.
-- An agent run is already stuck, looping, or drifting and needs diagnosis; use `agent-debug`.
-- The subject is the harness's own context window, prompt caching, or token budget rather than the application being built; use `context-budget-review`.
-- The request is a prompt-injection, secret-handling, or dependency risk gate on work that already exists; use `security-safety-review`.
+- The subject is comparing executors or agent harnesses - Codex against Claude Code against Hermes coding - rather than evaluating the product's own model calls; use `omh-agent-evaluation`.
+- An agent run is already stuck, looping, or drifting and needs diagnosis; use `omh-agent-debug`.
+- The subject is the harness's own context window, prompt caching, or token budget rather than the application being built; use `omh-context-budget-review`.
+- The request is a prompt-injection, secret-handling, or dependency risk gate on work that already exists; use `omh-security-safety-review`.
 - The feature makes no model call - the LLM is only mentioned as the subject being discussed - so this is a direct answer, not a build handoff.
-- The ask is training the weights themselves on your own data -- SFT, DPO, RLVR, or a LoRA adapter; use `model-finetuning`.
+- The ask is training the weights themselves on your own data -- SFT, DPO, RLVR, or a LoRA adapter; use `omh-model-finetuning`.
 
 ## Examples
 
@@ -66,9 +69,9 @@ Bad example:
 
 - Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when the work is building or hardening an LLM-powered feature - provider calls, structured outputs, prompt files, retrieval grounding, a user-requested public-board communication path, or the eval suite that guards a prompt or model swap - and the request needs engineering discipline before a coding handoff.
 
@@ -142,4 +145,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

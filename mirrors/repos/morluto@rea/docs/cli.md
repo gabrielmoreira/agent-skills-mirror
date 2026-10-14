@@ -83,6 +83,18 @@ The shared CLI/MCP workflow reports compiler version, modules, replacements,
 build settings, original bytes and SHA-256. See [Go binaries](go-binaries.md)
 for supported containers and absent or malformed metadata.
 
+Inspect an embedded cargo-auditable Rust dependency list without installing
+Rust or configuring a disassembler:
+
+```bash
+rea inspect-rust-binary /absolute/path/to/program --json
+```
+
+The same workflow reports package names, versions, sources, the root package,
+dependency edges, and the section's file range. A missing `.dep-v0` section is
+null metadata, not proof that the binary has no dependencies. See
+[Rust binaries](rust-binaries.md).
+
 Configure [Hopper or Ghidra](installation.md#hopper), or the
 [IDA adapter](ida-provider.md), before analyzing a native target. Substitute
 your target, search text and function name or address in these examples:
@@ -174,7 +186,9 @@ rea analyze /absolute/path/to/program --provider ghidra --snapshot /absolute/pat
 rea analyze /absolute/path/to/program --provider ghidra --snapshot /absolute/path/to/analysis/program.json
 ```
 
-An exact CLI cache hit is read before starting a provider process.
+An exact CLI cache hit is normally read before starting a provider process.
+On Windows, Ghidra first admits the selected source through its native snapshot
+owner, so replay can start that provider.
 In MCP, `open_binary` accepts `snapshot_path` to import a snapshot atomically
 for its matching target; an MCP provider may still start before returning a
 cached result. `close_binary` accepts `snapshot_path` and optional
@@ -212,7 +226,35 @@ Import an older source tree to compare with the current artifact:
 
 ```bash
 rea import-reference-source /absolute/path/to/source
+rea import-reference-source /absolute/path/to/source --detail summary --outline-depth 2 --json
 ```
+
+The default (`--detail full`) returns the complete `HistoricalSourceGraph`.
+Choose `--detail summary` for a `HistoricalSourceSummary` of that same committed
+inventory: its `HistoricalSourceManifest` contains the full graph and root
+digests, with provenance, VCS facts, languages, manifest paths, entry and
+relationship counts, parse-failure counts, file/directory states, exclusions
+and limitations. The summary is a presentation view, not a graph accepted by
+source-to-bundle comparison; keep the full output for that workflow.
+
+`--outline-depth` requires `--detail summary` and accepts a nonnegative safe
+integer. Depth 1 shows root children, depth 2 (the default) also shows their
+children, and depth 0 omits all outline entries. Paths retain canonical Unicode
+code-point order. `outline.omitted_entry_count` counts only inventoried entries
+hidden by the chosen depth; it does not count unexamined children of excluded or
+unreadable directories, or change `inventory_state`. Exclusions and source
+limitations remain separate from this presentation omission.
+
+`file_sizes.known_bytes` is the exact sum of known inventoried file sizes as
+decimal text, so large sums cannot lose integer precision. Unknown sizes count
+in `file_sizes.unknown_file_count`; excluded or unexamined paths are not included
+in that total. A zero known-byte sum therefore does not establish an empty source
+tree. Full output retains individual file hashes, relationships and parse-failure
+diagnostics. Summary mode performs the same import and cleanup, then projects
+the committed result without rereading source files. It reduces the selected
+output, not the amount of source examined. A shallow tree or many exclusions can
+still produce a large summary; depth 0 removes the outline but preserves the
+other facts. No fixed output-size or runtime improvement is promised.
 
 The import records hashes and metadata for the supplied files, separately
 from observations of the current app. For a directory inside a Git checkout,
@@ -221,7 +263,12 @@ tree matches that commit remains unknown. It honors the source tree's `.gitignor
 and applies default exclusions for common generated and dependency paths such
 as `node_modules/`, `dist/`, and `*.log`. Pattern-based exclusions record the
 matched pattern and whether it came from project, default, caller, or sensitive
-path policy. Set `REA_REFERENCE_SECRET_PATTERNS_JSON` to a JSON array of ignore
+path policy. Links into excluded paths retain their internal target metadata;
+the exclusion explains why the target has no inventory entry, and the inventory
+remains partial. Exclusions record `entry_kind` when the importer observed it;
+older saved exclusions without that field have unknown kind. An excluded
+ancestor proves an internal descendant only when its kind is `directory`.
+Set `REA_REFERENCE_SECRET_PATTERNS_JSON` to a JSON array of ignore
 patterns when you want to mark selected paths as sensitive; those patterns are
 reported separately as configured-secret exclusions.
 
@@ -245,6 +292,7 @@ Choose the guide for the target and intended interaction:
 - [Browser observation](browser-observation.md): inspect a selected page through CDP.
 - [Browser scenarios](browser-scenario-contract.md): run declared interactions and capture their results.
 - [Electron observation](electron-observation.md): inspect an Electron renderer or capture an application scenario.
+- [Electron fuses](electron-fuses.md): read packaged fuse bytes before expecting `--inspect` to reach an Electron main process.
 - [Node/Electron Inspector](javascript-runtime-observation.md): record script locations and execution contexts.
 - [Process capture](process-capture.md): run an executable and compare terminal, exit and filesystem observations.
 

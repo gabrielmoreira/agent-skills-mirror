@@ -65,7 +65,7 @@ OMH emits no such ledger. It is the loop's own running record and a companion to
 
 Send full command output to a file. Bring only the declared metric line and any error lines into context. Read the whole log only when the status is `crash`.
 
-Context spent re-reading passing output is context not spent on the next attempt: a loop that pastes a green log every cycle exhausts its budget before it exhausts its ideas.
+Context spent re-reading a passing cycle's log is context not spent on the next attempt: a loop that pastes a green log every cycle exhausts its budget before it exhausts its ideas.
 
 ## Idea Exhaustion
 

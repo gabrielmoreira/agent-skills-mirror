@@ -179,7 +179,17 @@ Rules of thumb:
 - The world runs the code on the runtime it ships on. A spec that passes on
   the wrong runtime proves nothing (`run-tests` → Match the runtime).
 - Prefer `seed.appWeb` (headless Chrome, real app). Use `seed.desktop` only for
-  a native capability a browser cannot show, and say why in `nativeReason`.
+  a native capability a browser cannot show, and say why in `nativeReason`:
+  the titlebar and window controls, native menus and dialogs, `openwork://`
+  links and the OAuth hand-off, the built-in browser pane, the updater, quit
+  and relaunch, the desktop runtime's own settings, or packaged builds. A
+  desktop world opens a window on whoever runs it locally.
+- Signed in to a Den: `denForAppWeb` then `signedInAppWeb`
+  (`evals/worlds/signed-in-app-web.ts`) replace `seed.desktop({ den, as })`.
+- Extending a journey whose world uses `seed.desktop` for none of those
+  reasons? Move that world to `seed.appWeb` rather than adding to it. The app
+  in a browser routes by path, not hash: use `go()` and `probe.hash()`, which
+  handle both.
 - No `seed.evalIn` / `probe.eval` in new specs. If you need one, comment why.
 
 ## Use the testkit channels

@@ -1,6 +1,8 @@
 ---
 name: "omh-relational-db"
 description: "[omh] Database work on a relational store -- a slow query, an index to size, a migration on a big table, a lock taken during deploy, N+1 queries: plan it with the checks that prove it safe, and never call a migration ready without its lock behaviour and rollback. Use when the user says: relational-db, relational database, online migration, migration for a large table, lock-safe ddl, alter table, took a lock, table lock."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -8,6 +10,7 @@ metadata:
     phase: relational-db
     role: planner
     quality_tier: db-lock-and-rollback-gated
+    related_skills: [omh-backend, ulw-perf, omh-data-analysis, omh-deploy-and-monitor]
 ---
 
 # Relational Db
@@ -25,10 +28,10 @@ This is a Hermes-native `relational-db` workflow skill.
 
 ## Do Not Use When
 
-- The request is a service or API change whose storage part is one section of the contract; use `backend`, which owns schema_migration_plan/v1.
-- The request is an end-to-end performance goal across the whole system rather than one database; use `ultraperf`.
-- The request is analysis of the data itself -- trends, metrics, a report; use `data-analysis`.
-- The request is watching a release roll out with its health signals and rollback criteria; use `deploy-and-monitor`.
+- The request is a service or API change whose storage part is one section of the contract; use `omh-backend`, which owns schema_migration_plan/v1.
+- The request is an end-to-end performance goal across the whole system rather than one database; use `ulw-perf`.
+- The request is analysis of the data itself -- trends, metrics, a report; use `omh-data-analysis`.
+- The request is watching a release roll out with its health signals and rollback criteria; use `omh-deploy-and-monitor`.
 
 ## Examples
 
@@ -61,9 +64,9 @@ Bad example:
 
 - Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when the work is the database itself on a relational engine such as Postgres or MySQL: a slow query and the index that fixes it, an online migration on a large table, DDL that took or would take a lock during deploy, N+1 queries from an endpoint, or when to partition or shard. The output is a plan plus the checks that prove it safe to run; OMH never connects to a database.
 
@@ -139,4 +142,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

@@ -127,5 +127,5 @@ stored as JSON strings. With no backend configured (the desktop default)
 ## Further reading
 
 - [Parent module (`security`)](../README.md)
-- [Approval gate](../../../../../gitbooks/features/approval-gate.md)
-- [Security architecture](../../../../../gitbooks/developing/architecture/security.md)
+- [Approval gate](../../../../../docs/gitbooks/en/features/approval-gate.md)
+- [Security architecture](../../../../../docs/gitbooks/en/developing/architecture/security.md)

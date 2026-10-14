@@ -1,6 +1,7 @@
 ---
 name: "omh-backend"
 description: "[omh] Designing an API, server, or data-layer change: prepare server, API, and data-layer contracts — auth boundary, error paths, response shape, and schema/migration discipline — before implementation. Use when the user says: backend, back-end, back end, backend skill, server side, server-side, api design, api contract."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -20,12 +21,12 @@ This is an OMH `backend` workflow skill, projected for Agent Skills hosts (Claud
 
 ## Do Not Use When
 
-- The work is the database itself -- a slow query and the index that fixes it, DDL that locks a live table, N+1 queries, or when to partition or shard; use `relational-db`, which owns the lock behaviour and rollback of each statement.
-- The request is about web UI, layout, or a design system; use `frontend`.
-- The request is a security posture or threat review rather than a service design; use `security-safety-review`.
-- The request is to run or judge the verification of an already-built service; use `verification-gate`.
-- The request is a Rust-language change whose risk is compiler, ownership, or `unsafe` discipline; use `rust`.
-- The work is a batch or streaming job's rerun, backfill, duplicate rows, or a warehouse table's downstream readers; use `data-pipelines`.
+- The work is the database itself -- a slow query and the index that fixes it, DDL that locks a live table, N+1 queries, or when to partition or shard; use `omh-relational-db`, which owns the lock behaviour and rollback of each statement.
+- The request is about web UI, layout, or a design system; use `omh-frontend`.
+- The request is a security posture or threat review rather than a service design; use `omh-security-safety-review`.
+- The request is to run or judge the verification of an already-built service; use `omh-verification-gate`.
+- The request is a Rust-language change whose risk is compiler, ownership, or `unsafe` discipline; use `omh-rust`.
+- The work is a batch or streaming job's rerun, backfill, duplicate rows, or a warehouse table's downstream readers; use `omh-data-pipelines`.
 
 ## Examples
 
@@ -59,7 +60,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes should shape a server, API, or data-layer change before implementation: authentication boundary, contract error paths, response consistency, schema and migration discipline, and the per-stack reference the executor loads first.
 

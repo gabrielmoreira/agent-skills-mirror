@@ -1,8 +1,8 @@
 ---
 name: agents-best-practices
-description: "Use this skill when designing, generating an MVP blueprint for, auditing, troubleshooting, refactoring, or explaining an agentic harness for any domain. Covers provider-neutral agent architecture for OpenAI, Anthropic, and OpenAI-compatible APIs: agent loops, tool design, record provenance, interactive presentation, user-memory lifecycles, environment-adaptive tools, speculative tool execution, late-bound capabilities, permissions, system prompts, planning, goals, always-on agents and durable runtime, adaptive agent teams, context compaction, memory, skills, MCP/external connectors, public-board communications, hardware agents and board deployment, self-refining recursive harnesses, programmable context, continual refinement, observability, evals, prompt caching, agent-legible environments, feedback loops, and safety."
+description: "Use this skill when designing, generating an MVP blueprint for, auditing, troubleshooting, refactoring, or explaining an agentic harness for any domain. Covers provider-neutral agent architecture for OpenAI, Anthropic, and OpenAI-compatible APIs: agent loops, tool design, record provenance, interactive presentation, user-memory lifecycles, environment-adaptive tools, speculative tool execution, late-bound capabilities, permissions, system prompts, planning, goals, always-on agents and durable runtime, adaptive agent teams, context compaction, memory, skills, MCP/external connectors, public-board communications, realtime voice agents, hardware agents and board deployment, self-refining recursive harnesses, programmable context, continual refinement, observability, evals, prompt caching, agent-legible environments, feedback loops, and safety."
 metadata:
-  version: "1.13.0"
+  version: "1.16.0"
   scope: "provider-neutral-agent-harness"
   file_policy: "markdown-only"
 ---
@@ -55,14 +55,16 @@ Use this skill for prompts involving any of these intents:
 - design an agent for a partially known or changing environment using capability discovery, safe probing, runtime binding, schema verification, or drift invalidation;
 - reduce code-mode or programmatic-tool latency through speculative execution, partial-program analysis, futures, exact claim semantics, or cancellation of unused work;
 - create planning mode, workflow orchestration, goal mode, todo tracking, or long-running task behavior;
-- build an always-on agent service or durable session with accepted-input receipts, task ownership, application state, restart recovery, or reconnecting observers;
+- build an always-on agent service or durable session with accepted-input receipts, task ownership, application state, restart recovery, reconnecting observers, or recurring source collection and delivery bookkeeping;
 - design collaborating agent teams with distinct approaches, shared work awareness, finding exchange, or evidence-driven reassignment;
 - add context compaction, memory, retrieval, scoped instructions, or prompt hierarchies;
 - design a recursive language model (RLM), programmable-context runtime, self-refining or continual harness, retained child agents, or executable skills;
 - build or install a hardware/embedded agent, flash an agent to a board, preserve device identity during an update, or debug its resource and wake behavior;
+- design or debug voice agents, speech pipelines, realtime turn taking, interruptions, playback, or corrections during tool work;
 - attach Agent Skills, reusable workflows, MCP servers, external connectors, or tool search;
 - design agent communication through public boards with explicit public-audience disclosure, user approval, and outbound-data controls;
 - audit an existing agent for reliability, cost, prompt-cache hit rate, safety, latency, or observability;
+- improve measured harness or application performance using validated benchmark proxies, production acceptance, and regression ratchets;
 - troubleshoot partial streams, stalled turns, restart or cancellation races, duplicate actions, context-accounting errors, or telemetry overload;
 - create system prompts or developer instructions for a domain-specific agent;
 - make source-of-truth knowledge, validation signals, logs, metrics, or workflow state legible to an agent.
@@ -112,11 +114,19 @@ Use this mode when the useful tool catalogue, schemas, versions, or implementati
 
 Require a small trusted bootstrap interface, host-owned capability ledger, provenance-labeled descriptors, bounded read-only or isolated probes, opaque scope-and-version bindings, call-time permission checks, and drift invalidation. Discovery, generated code, and inferred schemas must never grant authority. Keep this post-MVP unless adapting to changing environments is the product's primary job; even then, establish a fixed read-only baseline first.
 
+## Realtime Voice Agent Mode
+
+For spoken interaction, read [realtime-voice-agents.md](references/realtime-voice-agents.md) with the tool and eval owners. Use it alongside MVP Builder Mode for a new voice agent or Troubleshooting Mode for an existing audio failure. Voice can be an MVP; independent backend orchestration and durable recovery are optional unless the selected architecture requires them.
+
+Return the media topology, interaction/turn policy, execution placement, input and playback evidence, interruption repair, correction/result freshness, and audible-versus-task acceptance criteria. Reuse existing authority and task contracts; do not assume speech interruption cancels work or audio capability implies weaker reasoning.
+
 ## Always-on Agent and Durable Runtime Mode
 
 Use this mode when the user requests an always-on service, recoverable sessions, accepted inputs during active work, durable task/application state, or observer reconnection. Read [always-on-agents.md](references/always-on-agents.md) with the loop, tool, context, security, and eval owners. Keep this post-MVP: measure a simpler request-scoped or resumable baseline first. Availability, persistence, inference activity, and authority are separate choices; ordinary always-on operation does not require recursion or self-refinement.
 
 Return the acceptance and commit boundary, input/control lanes, owned task lifecycle, document scope and fork policy, observation/reconnection contract, resident ownership, recovery, and aggregate limits. Reuse the existing goals, permissions, compaction, and child protocols; a durable submission receipt or idle generation is not proof of completed work.
+
+For recurring monitoring, use the [collection and delivery contract](references/always-on-agents.md#recurring-collection-and-delivery-bookkeeping) for per-source progress, explicit coverage gaps, and receipt-backed delivery state.
 
 ## Advanced Recursive and Continual Harness Mode
 
@@ -141,8 +151,9 @@ Require host-owned eligibility, permission at physical dispatch, isolated dispos
 - Read [mvp-agent-blueprint.md](references/mvp-agent-blueprint.md) first when the user asks to create a new domain-specific agent or MVP harness.
 - Read [coding-agents.md](references/coding-agents.md) when the requested agent reads, edits, tests, reviews, migrates, or opens changes against a software repository, including measured post-MVP action-interface selection.
 - Read [hardware-agents.md](references/hardware-agents.md) for embedded execution location, launcher-versus-firmware installation, resource-bounded transport, reset-safe state, wake behavior, rollback, and physical commissioning.
+- Read [realtime-voice-agents.md](references/realtime-voice-agents.md) for media/turn/playback lifecycles, interruption repair, continuous-input evidence, voice/execution bridges, correction freshness, and audio-specific acceptance.
 - Read [architecture.md](references/architecture.md) for the full harness model, component boundaries, and trusted runtime instruction/tool configuration events.
-- Read [always-on-agents.md](references/always-on-agents.md) for post-MVP service availability and durability boundaries, atomic local publication, accepted inputs/control lanes, owned tasks, application documents/forks, observer convergence, resident ownership, and recovery.
+- Read [always-on-agents.md](references/always-on-agents.md) for post-MVP service availability and durability boundaries, atomic local publication, accepted inputs/control lanes, owned tasks, application documents/forks, observer convergence, resident ownership, recovery, and recurring collection/delivery bookkeeping.
 - Read [agent-legibility-feedback-loops.md](references/agent-legibility-feedback-loops.md) for source-of-truth knowledge bases, agent-legible environments, validation loops, mechanical invariants, and recurring cleanup.
 - Read [agentic-loop.md](references/agentic-loop.md) for the provider-neutral loop, step budgets, retries, loop variants, and post-MVP per-request model routing.
 - Read [speculative-tool-execution.md](references/speculative-tool-execution.md) when an advanced code-mode or programmatic-tool harness should prelaunch eligible work during generation while retaining completed-program authority and occurrence-aware claiming.
@@ -158,7 +169,7 @@ Require host-owned eligibility, permission at physical dispatch, isolated dispos
 - Read [system-prompts-instructions.md](references/system-prompts-instructions.md) for system/developer/user instruction hierarchy and prompt templates.
 - Read [provider-api-patterns.md](references/provider-api-patterns.md) for OpenAI, Anthropic, and OpenAI-compatible API implementation patterns.
 - Read [security-observability.md](references/security-observability.md) for guardrails, threat models, approval records, trace design, symptom-based troubleshooting, launch safety gates, and incident response.
-- Read [evals.md](references/evals.md) for evaluation strategy, runtime-state fixtures, cross-capability cases, failure-aware component diagnostics across context budgets, safety trace invariants, model/configuration sweeps, routing/configuration/warming probes, and launch criteria.
+- Read [evals.md](references/evals.md) for evaluation strategy, runtime-state fixtures, cross-capability cases, failure-aware component diagnostics across context budgets, safety trace invariants, model/configuration sweeps, routing/configuration/warming probes, and launch criteria. For performance improvement, use its [measurement, proxy-validation, and regression-ratchet contract](references/evals.md#performance-optimization-and-regression-ratchets).
 - Read [checklists.md](references/checklists.md) for condensed implementation and audit checklists.
 - Read [source-links.md](references/source-links.md) for official links and provider-specific references.
 - Read [coverage-audit.md](references/coverage-audit.md) to verify the skill covers the requested harness topics.
@@ -185,9 +196,11 @@ When the user asks for architecture guidance, produce a concrete architecture, n
 15. **Advanced recursive/continual profile, when requested**: context handles, recursive unit, retained lifecycle, mutable state boundary, observed validation, promotion, and rollback.
 16. **Experimental speculative execution, when requested**: eligibility, exact claim identity, isolated state, waste budgets, cancellation evidence, and parity evaluation against speculation-off.
 17. **Adaptive agent teams, when requested**: distinct approach ownership, work-intent overlap and declared replication, communication dependence, versioned portfolio decisions, stale-result handling, and independently validated completion.
-18. **Always-on/durable runtime, when requested**: accepted-input and local-commit semantics, owned task completion, application-state fork policies, reconnecting observations, resident ownership, and restart recovery.
+18. **Always-on/durable runtime, when requested**: accepted-input and local-commit semantics, owned task completion, application-state fork policies, reconnecting observations, resident ownership, restart recovery, and recurring source coverage/collection/delivery state when applicable.
 
 For hardware requests, append the target/runtime inventory, installation route and exact write boundary, resource/deadline budget, preserved state and recovery plan, and evidence split between host checks and physical-board commissioning.
+
+For voice requests, append the conditional output contract in [Realtime Voice Agent Mode](#realtime-voice-agent-mode); use the profile for media details and the linked eval owner for acceptance cases.
 
 ## Non-negotiable principles
 

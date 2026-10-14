@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
+Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 followed patterns, 84 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 37 |
+| Files         | 84 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,43 +59,90 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/build-project/SKILL.md`](.claude/skills/build-project/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/check-understanding/SKILL.md`](.claude/skills/check-understanding/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/claude-certification/SKILL.md`](.claude/skills/claude-certification/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/course-guide/SKILL.md`](.claude/skills/course-guide/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/find-your-level/SKILL.md`](.claude/skills/find-your-level/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/learn-agent-skills/SKILL.md`](.claude/skills/learn-agent-skills/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/learn-mcp/SKILL.md`](.claude/skills/learn-mcp/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/learn/SKILL.md`](.claude/skills/learn/SKILL.md) |
-| 9 | ✓ | [`.claude/skills/mcpa-certification/SKILL.md`](.claude/skills/mcpa-certification/SKILL.md) |
-| 10 | ✓ | [`.claude/skills/start-learning/SKILL.md`](.claude/skills/start-learning/SKILL.md) |
-| 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 12 | ✓ | [`certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci/outputs/migration-review-skill/SKILL.md`](certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci/outputs/migration-review-skill/SKILL.md) |
-| 13 | ✓ | [`phases/13-tools-and-protocols/22-skills-and-agent-sdks/outputs/skill-contract-reviewer/SKILL.md`](phases/13-tools-and-protocols/22-skills-and-agent-sdks/outputs/skill-contract-reviewer/SKILL.md) |
-| 14 | ✓ | [`phases/13-tools-and-protocols/24-skill-discovery-and-progressive-disclosure/outputs/skill-catalog-builder/SKILL.md`](phases/13-tools-and-protocols/24-skill-discovery-and-progressive-disclosure/outputs/skill-catalog-builder/SKILL.md) |
-| 15 | ✓ | [`phases/13-tools-and-protocols/25-skill-invocation-and-routing/outputs/skill-invocation-router/SKILL.md`](phases/13-tools-and-protocols/25-skill-invocation-and-routing/outputs/skill-invocation-router/SKILL.md) |
-| 16 | ✓ | [`phases/13-tools-and-protocols/26-skill-permissions-sandboxes-and-trust/outputs/skill-safety-reviewer/SKILL.md`](phases/13-tools-and-protocols/26-skill-permissions-sandboxes-and-trust/outputs/skill-safety-reviewer/SKILL.md) |
-| 17 | ✓ | [`phases/13-tools-and-protocols/27-skill-evals-packaging-and-portability/outputs/skill-release-gate/SKILL.md`](phases/13-tools-and-protocols/27-skill-evals-packaging-and-portability/outputs/skill-release-gate/SKILL.md) |
-| 18 | ✓ | [`phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/AGENTS.md`](phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/AGENTS.md) |
-| 19 | ✓ | [`projects/skill-router/examples/skills/check-tests/SKILL.md`](projects/skill-router/examples/skills/check-tests/SKILL.md) |
-| 20 | ✓ | [`projects/skill-router/examples/skills/release-publish/SKILL.md`](projects/skill-router/examples/skills/release-publish/SKILL.md) |
-| 21 | ✓ | [`projects/skill-router/examples/skills/release-review/SKILL.md`](projects/skill-router/examples/skills/release-review/SKILL.md) |
-| 22 | ✓ | [`projects/skill-scanner/examples/benign/SKILL.md`](projects/skill-scanner/examples/benign/SKILL.md) |
-| 23 | ✓ | [`projects/skill-scanner/examples/reviewable/SKILL.md`](projects/skill-scanner/examples/reviewable/SKILL.md) |
-| 24 | ✓ | [`projects/skill-validator/examples/orchard-release/SKILL.md`](projects/skill-validator/examples/orchard-release/SKILL.md) |
-| 25 | ✓ | [`skills/build-project/SKILL.md`](skills/build-project/SKILL.md) |
-| 26 | ✓ | [`skills/check-understanding/SKILL.md`](skills/check-understanding/SKILL.md) |
-| 27 | ✓ | [`skills/claude-certification/agents/openai.yaml`](skills/claude-certification/agents/openai.yaml) |
-| 28 | ✓ | [`skills/claude-certification/SKILL.md`](skills/claude-certification/SKILL.md) |
-| 29 | ✓ | [`skills/course-guide/SKILL.md`](skills/course-guide/SKILL.md) |
-| 30 | ✓ | [`skills/find-your-level/references/answer-key.md`](skills/find-your-level/references/answer-key.md) |
-| 31 | ✓ | [`skills/find-your-level/SKILL.md`](skills/find-your-level/SKILL.md) |
-| 32 | ✓ | [`skills/learn-agent-skills/SKILL.md`](skills/learn-agent-skills/SKILL.md) |
-| 33 | ✓ | [`skills/learn-mcp/SKILL.md`](skills/learn-mcp/SKILL.md) |
-| 34 | ✓ | [`skills/learn/SKILL.md`](skills/learn/SKILL.md) |
-| 35 | ✓ | [`skills/mcpa-certification/agents/openai.yaml`](skills/mcpa-certification/agents/openai.yaml) |
-| 36 | ✓ | [`skills/mcpa-certification/SKILL.md`](skills/mcpa-certification/SKILL.md) |
-| 37 | ✓ | [`skills/start-learning/SKILL.md`](skills/start-learning/SKILL.md) |
+| 1 | ✓ | [`.claude/skills/blueprint-figure/SKILL.md`](.claude/skills/blueprint-figure/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/build-project/SKILL.md`](.claude/skills/build-project/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/check-understanding/SKILL.md`](.claude/skills/check-understanding/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/claude-certification/SKILL.md`](.claude/skills/claude-certification/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/course-guide/SKILL.md`](.claude/skills/course-guide/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/course-style/SKILL.md`](.claude/skills/course-style/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/find-your-level/SKILL.md`](.claude/skills/find-your-level/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/isometric-explainer/SKILL.md`](.claude/skills/isometric-explainer/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/learn-agent-skills/SKILL.md`](.claude/skills/learn-agent-skills/SKILL.md) |
+| 10 | ✓ | [`.claude/skills/learn-mcp/SKILL.md`](.claude/skills/learn-mcp/SKILL.md) |
+| 11 | ✓ | [`.claude/skills/learn/SKILL.md`](.claude/skills/learn/SKILL.md) |
+| 12 | ✓ | [`.claude/skills/mcpa-certification/SKILL.md`](.claude/skills/mcpa-certification/SKILL.md) |
+| 13 | ✓ | [`.claude/skills/motion-figure/SKILL.md`](.claude/skills/motion-figure/SKILL.md) |
+| 14 | ✓ | [`.claude/skills/start-learning/SKILL.md`](.claude/skills/start-learning/SKILL.md) |
+| 15 | ✓ | [`.claude/skills/write-manual/references/prose-rules.md`](.claude/skills/write-manual/references/prose-rules.md) |
+| 16 | ✓ | [`.claude/skills/write-manual/SKILL.md`](.claude/skills/write-manual/SKILL.md) |
+| 17 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 18 | ✓ | [`certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci/outputs/migration-review-skill/SKILL.md`](certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci/outputs/migration-review-skill/SKILL.md) |
+| 19 | ✓ | [`phases/13-tools-and-protocols/22-skills-and-agent-sdks/outputs/skill-contract-reviewer/SKILL.md`](phases/13-tools-and-protocols/22-skills-and-agent-sdks/outputs/skill-contract-reviewer/SKILL.md) |
+| 20 | ✓ | [`phases/13-tools-and-protocols/24-skill-discovery-and-progressive-disclosure/outputs/skill-catalog-builder/SKILL.md`](phases/13-tools-and-protocols/24-skill-discovery-and-progressive-disclosure/outputs/skill-catalog-builder/SKILL.md) |
+| 21 | ✓ | [`phases/13-tools-and-protocols/25-skill-invocation-and-routing/outputs/skill-invocation-router/SKILL.md`](phases/13-tools-and-protocols/25-skill-invocation-and-routing/outputs/skill-invocation-router/SKILL.md) |
+| 22 | ✓ | [`phases/13-tools-and-protocols/26-skill-permissions-sandboxes-and-trust/outputs/skill-safety-reviewer/SKILL.md`](phases/13-tools-and-protocols/26-skill-permissions-sandboxes-and-trust/outputs/skill-safety-reviewer/SKILL.md) |
+| 23 | ✓ | [`phases/13-tools-and-protocols/27-skill-evals-packaging-and-portability/outputs/skill-release-gate/SKILL.md`](phases/13-tools-and-protocols/27-skill-evals-packaging-and-portability/outputs/skill-release-gate/SKILL.md) |
+| 24 | ✓ | [`phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/AGENTS.md`](phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/AGENTS.md) |
+| 25 | ✓ | [`projects/skill-router/examples/skills/check-tests/SKILL.md`](projects/skill-router/examples/skills/check-tests/SKILL.md) |
+| 26 | ✓ | [`projects/skill-router/examples/skills/release-publish/SKILL.md`](projects/skill-router/examples/skills/release-publish/SKILL.md) |
+| 27 | ✓ | [`projects/skill-router/examples/skills/release-review/SKILL.md`](projects/skill-router/examples/skills/release-review/SKILL.md) |
+| 28 | ✓ | [`projects/skill-scanner/examples/benign/SKILL.md`](projects/skill-scanner/examples/benign/SKILL.md) |
+| 29 | ✓ | [`projects/skill-scanner/examples/reviewable/SKILL.md`](projects/skill-scanner/examples/reviewable/SKILL.md) |
+| 30 | ✓ | [`projects/skill-validator/examples/orchard-release/SKILL.md`](projects/skill-validator/examples/orchard-release/SKILL.md) |
+| 31 | ✓ | [`site/skills.md`](site/skills.md) |
+| 32 | ✓ | [`skills/blueprint-figure/references/checks.md`](skills/blueprint-figure/references/checks.md) |
+| 33 | ✓ | [`skills/blueprint-figure/references/grammar.md`](skills/blueprint-figure/references/grammar.md) |
+| 34 | ✓ | [`skills/blueprint-figure/references/kinds.md`](skills/blueprint-figure/references/kinds.md) |
+| 35 | ✓ | [`skills/blueprint-figure/SKILL.md`](skills/blueprint-figure/SKILL.md) |
+| 36 | ✓ | [`skills/blueprint-figure/templates/figure.mjs`](skills/blueprint-figure/templates/figure.mjs) |
+| 37 | ✓ | [`skills/build-project/SKILL.md`](skills/build-project/SKILL.md) |
+| 38 | ✓ | [`skills/check-understanding/SKILL.md`](skills/check-understanding/SKILL.md) |
+| 39 | ✓ | [`skills/claude-certification/agents/openai.yaml`](skills/claude-certification/agents/openai.yaml) |
+| 40 | ✓ | [`skills/claude-certification/SKILL.md`](skills/claude-certification/SKILL.md) |
+| 41 | ✓ | [`skills/course-guide/SKILL.md`](skills/course-guide/SKILL.md) |
+| 42 | ✓ | [`skills/course-style/references/accessibility.md`](skills/course-style/references/accessibility.md) |
+| 43 | ✓ | [`skills/course-style/references/labels-and-layout.md`](skills/course-style/references/labels-and-layout.md) |
+| 44 | ✓ | [`skills/course-style/references/plain-english.md`](skills/course-style/references/plain-english.md) |
+| 45 | ✓ | [`skills/course-style/references/tokens.md`](skills/course-style/references/tokens.md) |
+| 46 | ✓ | [`skills/course-style/references/typography.md`](skills/course-style/references/typography.md) |
+| 47 | ✓ | [`skills/course-style/SKILL.md`](skills/course-style/SKILL.md) |
+| 48 | ✓ | [`skills/find-your-level/references/answer-key.md`](skills/find-your-level/references/answer-key.md) |
+| 49 | ✓ | [`skills/find-your-level/SKILL.md`](skills/find-your-level/SKILL.md) |
+| 50 | ✓ | [`skills/isometric-explainer/kit/iso-kit.mjs`](skills/isometric-explainer/kit/iso-kit.mjs) |
+| 51 | ✓ | [`skills/isometric-explainer/kit/lathe.mjs`](skills/isometric-explainer/kit/lathe.mjs) |
+| 52 | ✓ | [`skills/isometric-explainer/kit/LICENSE`](skills/isometric-explainer/kit/LICENSE) |
+| 53 | ✓ | [`skills/isometric-explainer/kit/tube.mjs`](skills/isometric-explainer/kit/tube.mjs) |
+| 54 | ✓ | [`skills/isometric-explainer/references/concept.md`](skills/isometric-explainer/references/concept.md) |
+| 55 | ✓ | [`skills/isometric-explainer/references/geometry.md`](skills/isometric-explainer/references/geometry.md) |
+| 56 | ✓ | [`skills/isometric-explainer/references/live.md`](skills/isometric-explainer/references/live.md) |
+| 57 | ✓ | [`skills/isometric-explainer/references/state-model.md`](skills/isometric-explainer/references/state-model.md) |
+| 58 | ✓ | [`skills/isometric-explainer/references/verify.md`](skills/isometric-explainer/references/verify.md) |
+| 59 | ✓ | [`skills/isometric-explainer/SKILL.md`](skills/isometric-explainer/SKILL.md) |
+| 60 | ✓ | [`skills/isometric-explainer/templates/build.mjs`](skills/isometric-explainer/templates/build.mjs) |
+| 61 | ✓ | [`skills/isometric-explainer/templates/live.js`](skills/isometric-explainer/templates/live.js) |
+| 62 | ✓ | [`skills/isometric-explainer/templates/model.mjs`](skills/isometric-explainer/templates/model.mjs) |
+| 63 | ✓ | [`skills/isometric-explainer/templates/model.test.mjs`](skills/isometric-explainer/templates/model.test.mjs) |
+| 64 | ✓ | [`skills/learn-agent-skills/SKILL.md`](skills/learn-agent-skills/SKILL.md) |
+| 65 | ✓ | [`skills/learn-mcp/SKILL.md`](skills/learn-mcp/SKILL.md) |
+| 66 | ✓ | [`skills/learn/SKILL.md`](skills/learn/SKILL.md) |
+| 67 | ✓ | [`skills/mcpa-certification/agents/openai.yaml`](skills/mcpa-certification/agents/openai.yaml) |
+| 68 | ✓ | [`skills/mcpa-certification/SKILL.md`](skills/mcpa-certification/SKILL.md) |
+| 69 | ✓ | [`skills/motion-figure/references/dither-fields.md`](skills/motion-figure/references/dither-fields.md) |
+| 70 | ✓ | [`skills/motion-figure/references/mechanism-figures.md`](skills/motion-figure/references/mechanism-figures.md) |
+| 71 | ✓ | [`skills/motion-figure/references/smil-rules.md`](skills/motion-figure/references/smil-rules.md) |
+| 72 | ✓ | [`skills/motion-figure/references/tokens.md`](skills/motion-figure/references/tokens.md) |
+| 73 | ✓ | [`skills/motion-figure/references/toolkit.md`](skills/motion-figure/references/toolkit.md) |
+| 74 | ✓ | [`skills/motion-figure/SKILL.md`](skills/motion-figure/SKILL.md) |
+| 75 | ✓ | [`skills/motion-figure/templates/dither.js`](skills/motion-figure/templates/dither.js) |
+| 76 | ✓ | [`skills/motion-figure/templates/mechanism.html`](skills/motion-figure/templates/mechanism.html) |
+| 77 | ✓ | [`skills/start-learning/SKILL.md`](skills/start-learning/SKILL.md) |
+| 78 | ✓ | [`skills/write-manual/references/audit.md`](skills/write-manual/references/audit.md) |
+| 79 | ✓ | [`skills/write-manual/references/capture-kit.md`](skills/write-manual/references/capture-kit.md) |
+| 80 | ✓ | [`skills/write-manual/references/manual-json.md`](skills/write-manual/references/manual-json.md) |
+| 81 | ✓ | [`skills/write-manual/references/prose-rules.md`](skills/write-manual/references/prose-rules.md) |
+| 82 | ✓ | [`skills/write-manual/references/research-and-sources.md`](skills/write-manual/references/research-and-sources.md) |
+| 83 | ✓ | [`skills/write-manual/references/section-template.md`](skills/write-manual/references/section-template.md) |
+| 84 | ✓ | [`skills/write-manual/SKILL.md`](skills/write-manual/SKILL.md) |
 
 ---
 

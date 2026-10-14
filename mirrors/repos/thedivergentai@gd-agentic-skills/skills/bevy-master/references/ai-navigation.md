@@ -1,11 +1,9 @@
 ---
 name: bevy-ai-navigation
-description: "Docs-first stub for Bevy AI navigation policy. Godot counterpart: godot-ai-navigation. Not a full port. Keywords: Bevy, AI, chase, patrol, navigation, ECS, gaps."
+description: "Bevy ECS skill for AI navigation policy. Keywords: Bevy, AI, chase, patrol, navigation, ECS."
 ---
 
-# Bevy AI navigation (docs-first stub)
-
-Not a full port. This file routes movement decisions. It does not implement a navigation mesh.
+# Bevy AI navigation
 
 ## When to use
 
@@ -18,28 +16,27 @@ Load this when an actor must chase, patrol, or wait, and you need to see which B
 - **Systems:** read the mode and write a desired velocity or waypoint on `Update` or `Fixed`. Use `.chain()` so policy runs before movement. Do not name a Godot-style agent callback.
 - **Schedule:** `Fixed` / `FixedMain` when the result feeds the movement step.
 
-## Godot idea to Bevy idiom
+## Coming from Godot
 
-| Idea | Bevy idiom (idea only) |
+| Godot idea | Bevy idiom |
 | --- | --- |
 | Chase vs patrol | Enum component plus a system. Not a navigation agent |
-| Retarget throttle | Your timer resource or a fixed-step counter. No opened retarget API |
-| Crowd / avoidance | Gap on bevy-navigation. Do not invent radii |
-| Bake vs obstacle | Gap on bevy-navigation |
-| Line of sight | Gap on bevy-spatial-queries |
+| Retarget throttle | Your timer resource or a fixed-step counter. Check the navigation docs before assuming a retarget API. |
+| Crowd / avoidance | Crowd and avoidance belong on bevy-navigation. Check that skill before naming radii. |
+| Bake vs obstacle | Bake and obstacle handling belong on bevy-navigation. |
+| Line of sight | Line of sight belongs on bevy-spatial-queries. |
 
-## Gaps
+## Scope
 
 - No Bevy navigation module was opened, so node-agent versus server, bake, links, and layers have no Bevy names.
-- Sensors that need a cast are blocked on the same unpicked physics solver as bevy-physics-2d and bevy-physics-3d.
+- Sensors that need a cast belong with bevy-physics-2d and bevy-physics-3d once you choose a physics solver.
 - Formations and stuck recovery are design notes only.
-
 
 ## Expert Knowledge Delta
 
-Library target in prose: **Bevy 0.20.0**. Lattice URLs stay unversioned.
+Target: **Bevy 0.20+**.
 
-Opened canon only: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. This file does not invent their struct APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
+Core ECS types: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. See `bevy-events-messaging` for their APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
 
 ### Who owns state
 
@@ -62,22 +59,19 @@ Borrow rule: two systems that both mutably query the same component must be orde
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API this skill did not open | A Gaps row | A fabricated crate (solver, navmesh module, net, XR) |
+| An API outside the documented set | Check the official docs first | A made-up crate or API |
 
-Load `references/a-gate-notes.md` for the same table plus the gap rule.
+Load [references/ecs-ownership.md](ai-navigation-ecs-ownership.md) for the ownership table.
 
 ## NEVER
 
-- Do not put `/0.20.0/` in lattice URLs. WHY: permalinks stay on `latest`. The 0.20.0 pin belongs in prose once.
+- Do not pin `/0.20.0/` in docs URLs. WHY: links stay on `latest`; the 0.20 target is stated once in prose.
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
-- Do not invent a physics, navigation, networking, or XR crate here. WHY: those rows are gaps, blocked, or revisit.
+- Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot navigation agent or server types. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No named third-party navigation or physics crate. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No invented path, bake, or avoidance APIs. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Creation Station content. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No umbrella skill over Godot and Bevy. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- Do not mark this row `ported`. It is `docs_mapped`. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Godot navigation agent or server types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No named third-party navigation or physics crate. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No invented path, bake, or avoidance APIs. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
@@ -94,17 +88,17 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](../SKILL.md) - ECS ownership.
-- [bevy-navigation](ai-navigation.md) - Path and mesh gap.
-- [bevy-state-machines](state-machines.md) - Enum components for a mode flag.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership.
+- [bevy-navigation](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-navigation/SKILL.md) - Paths and navigation meshes.
+- [bevy-state-machines](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Enum components for a mode flag.
 
 #### Complements
-- [bevy-character-movement](character-movement.md) - Integrates a waypoint or velocity.
-- [bevy-spatial-queries](spatial-queries.md) - Sensor gap.
-- [godot-ai-navigation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ai-navigation/SKILL.md) - Godot counterpart. Source idea only.
+- [bevy-character-movement](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-character-movement/SKILL.md) - Integrates a waypoint or velocity.
+- [bevy-spatial-queries](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-spatial-queries/SKILL.md) - Sensors and spatial queries.
+- [godot-ai-navigation](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-ai-navigation/SKILL.md) - Equivalent Godot skill.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](../SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

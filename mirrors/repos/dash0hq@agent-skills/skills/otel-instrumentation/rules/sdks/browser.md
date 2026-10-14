@@ -135,16 +135,16 @@ import { getWebAutoInstrumentations } from '@opentelemetry/auto-instrumentations
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 
-const provider = new WebTracerProvider();
-
-provider.addSpanProcessor(
-  new BatchSpanProcessor(
-    new OTLPTraceExporter({
-      url: 'https://<OTLP_ENDPOINT>/v1/traces',
-      headers: { Authorization: 'Bearer YOUR_AUTH_TOKEN' },
-    }),
-  ),
-);
+const provider = new WebTracerProvider({
+  spanProcessors: [
+    new BatchSpanProcessor(
+      new OTLPTraceExporter({
+        url: 'https://<OTLP_ENDPOINT>/v1/traces',
+        headers: { Authorization: 'Bearer YOUR_AUTH_TOKEN' },
+      }),
+    ),
+  ],
+});
 
 provider.register();
 

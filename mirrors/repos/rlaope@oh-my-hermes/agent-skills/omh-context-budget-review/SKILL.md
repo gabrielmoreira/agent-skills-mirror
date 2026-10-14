@@ -1,6 +1,7 @@
 ---
 name: "omh-context-budget-review"
 description: "[omh] Context window or token budget at risk: plan compact context, token/cost budgets, summarization checkpoints, and overflow recovery before long agent work. Use when the user says: context-budget-review, context budget review, context budget, token budget review, token budget, prompt budget, prompt caching, prompt cache."
+license: MIT
 compatibility: "Requires the omh CLI on PATH (pip install oh-my-hermes)."
 metadata:
   hermes:
@@ -21,8 +22,8 @@ This is an OMH `context-budget-review` workflow skill, projected for Agent Skill
 
 ## Do Not Use When
 
-- The user asks for live token/cost telemetry; use `ops-observability-card`.
-- The user asks to continue a loopable goal; use `loop` unless budget planning is the explicit blocker.
+- The user asks only what this Hermes session has used or cost so far; Hermes' /usage shows this session's tokens and context, /insights estimates cost across recent sessions, and the omh_run_summary tool relays this conversation's recorded tokens and cost.
+- The user asks to continue a loopable goal; use `ulw-loop` unless budget planning is the explicit blocker.
 - The task is a short one-step answer with no meaningful context risk.
 
 ## Examples
@@ -52,7 +53,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use before long-running research, coding, review, or multi-agent work when context, token, cost, or summary drift could break quality.
 
@@ -73,6 +74,8 @@ Quality bar:
 - Use bounded copy while preserving the full objective and evidence gaps.
 - Count the must-keep pack by item class, so a replaced pack reports which class lost entries instead of only that a digest moved; a pack that recorded no classes reports the comparison unavailable and never reports zero items.
 - Keep prompt-prefix placement cache-stable: fixed section order, volatile bytes never above the fold, mid-run changes as appended messages never system-prompt mutations — load `references/cache-placement.md` for the placement rules.
+- On Hermes, bind the summarization checkpoint to Hermes' own compaction: render the must-keep classes as one short focus topic and hand the person `/compress <focus>` to run when the checkpoint is due. OMH never compresses, and a compaction is observed only from Hermes' own reply to that command.
+- On Hermes, offer `/compress --preview <focus>` only in the classic CLI or on a messaging platform, never when the surface is unknown, and count it as a preview only when the reply says `Preview — no changes made.`: a modern TUI whose `/compress` does not parse the flag compresses for real with the flag in its focus. Context occupancy is the person's `/usage` reading when shared, otherwise an estimate.
 
 Required inputs:
 

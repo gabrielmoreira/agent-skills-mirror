@@ -1,6 +1,7 @@
 ---
 name: "omh-plan"
 description: "[omh] Software feature or bugfix not yet planned: structured planning before execution. Use when the user says: plan, implementation plan, make a plan, write a plan, write the plan, task breakdown, safe feature, safely add a feature."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -16,7 +17,7 @@ This is an OMH `plan` workflow skill, projected for Agent Skills hosts (Claude C
 
 ## Why This Exists
 
-`plan` exists to keep `planning` work explicit, evidence-backed, and inside the Hermes/executor boundary instead of relying on ad hoc chat narration.
+`plan` exists so a feature or a fix gets its goals, non-goals, risks, acceptance criteria, and verification shape written down and accepted by the user before any code moves, with every step small enough to check and no implementation hidden inside the plan text.
 
 ## Do Not Use When
 
@@ -51,7 +52,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use for structured planning when implementation is not ready to start safely, including feature work that needs a safe plan before handoff.
 

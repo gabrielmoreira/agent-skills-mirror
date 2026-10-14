@@ -52,121 +52,6 @@ _For everyone. Install these first._
 
 ---
 
-## Security & Compliance
-
-### 🛡️ The "Security Engineer" Pack
-
-_For pentesting, auditing, and hardening._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`ethical-hacking-methodology`](../../skills/ethical-hacking-methodology/): Plan authorized security assessments with clear boundaries.
-- [`threat-modeling-expert`](../../skills/threat-modeling-expert/): Model threats with STRIDE, PASTA, and attack trees.
-- [`top-web-vulnerabilities`](../../skills/top-web-vulnerabilities/): OWASP-aligned vulnerability taxonomy.
-- [`burp-suite-testing`](../../skills/burp-suite-testing/): Web vulnerability scanning.
-- [`cloud-penetration-testing`](../../skills/cloud-penetration-testing/): AWS/Azure/GCP security.
-- [`linux-privilege-escalation`](../../skills/linux-privilege-escalation/): Advanced Linux security assessment.
-- [`vulnerability-scanner`](../../skills/vulnerability-scanner/): Advanced vulnerability analysis.
-- [`security-auditor`](../../skills/security-auditor/): Comprehensive security audits.
-
-### 🔐 The "Security Developer" Pack
-
-_For building secure applications._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`api-security-best-practices`](../../skills/api-security-best-practices/): Secure API design patterns.
-- [`auth-implementation-patterns`](../../skills/auth-implementation-patterns/): JWT, OAuth2, session management.
-- [`backend-security-coder`](../../skills/backend-security-coder/): Secure backend coding practices.
-- [`frontend-security-coder`](../../skills/frontend-security-coder/): XSS prevention and client-side security.
-- [`dependency-management-deps-audit`](../../skills/dependency-management-deps-audit/): Audit dependency vulnerabilities, licenses, and supply-chain risk.
-- [`cc-skill-security-review`](../../skills/cc-skill-security-review/): Security checklist for features.
-- [`pci-compliance`](../../skills/pci-compliance/): Payment card security standards.
-
-
----
-
-## 🌐 Web Development
-
-### 🌐 The "Web Wizard" Pack
-
-_For building modern, high-performance web apps._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`frontend-design`](../../skills/frontend-design/): UI guidelines and aesthetics.
-- [`tailwind-patterns`](../../skills/tailwind-patterns/): Tailwind CSS v4 styling patterns.
-- [`react-patterns`](../../skills/react-patterns/): Modern React patterns and principles.
-- [`react-best-practices`](../../skills/react-best-practices/): React & Next.js performance optimization.
-- [`nextjs-best-practices`](../../skills/nextjs-best-practices/): Next.js App Router patterns.
-- [`form-cro`](../../skills/form-cro/): Optimize your forms for conversion.
-- [`accessibility-compliance-accessibility-audit`](../../skills/accessibility-compliance-accessibility-audit/): Audit WCAG issues and plan concrete remediation.
-- [`seo-audit`](../../skills/seo-audit/): Get found on Google.
-
-### 🖌️ The "Web Designer" Pack
-
-_For pixel-perfect experiences._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`ui-ux-pro-max`](../../skills/ui-ux-pro-max/): Premium design systems and tokens.
-- [`frontend-design`](../../skills/frontend-design/): The base layer of aesthetics.
-- [`mobile-design`](../../skills/mobile-design/): Mobile-first design principles.
-- [`accessibility-compliance-accessibility-audit`](../../skills/accessibility-compliance-accessibility-audit/): Audit WCAG issues and plan concrete remediation.
-- [`canvas-design`](../../skills/canvas-design/): Static visuals and posters.
-- [`3d-web-experience`](../../skills/3d-web-experience/): Build immersive Three.js and React Three Fiber experiences.
-- [`scroll-experience`](../../skills/scroll-experience/): Immersive scroll-driven experiences.
-
-### ⚡ The "Full-Stack Developer" Pack
-
-_For end-to-end web application development._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`senior-fullstack`](../../skills/senior-fullstack/): Complete fullstack development guide.
-- [`frontend-developer`](../../skills/frontend-developer/): React 19+ and Next.js 15+ expertise.
-- [`backend-dev-guidelines`](../../skills/backend-dev-guidelines/): Node.js/Express/TypeScript patterns.
-- [`api-patterns`](../../skills/api-patterns/): REST vs GraphQL vs tRPC selection.
-- [`database-design`](../../skills/database-design/): Schema design and ORM selection.
-- [`auth-implementation-patterns`](../../skills/auth-implementation-patterns/): Design secure sessions, JWT, OAuth2, and authorization.
-- [`stripe-integration`](../../skills/stripe-integration/): Payments and subscriptions.
-- [`e2e-testing-patterns`](../../skills/e2e-testing-patterns/): Verify critical user journeys with reliable E2E tests.
-
-
----
-
-## 🤖 AI & Agents
-
-### 🤖 The "Agent Architect" Pack
-
-_For building AI systems and autonomous agents._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`prompt-engineering`](../../skills/prompt-engineering/): Design reliable instructions and prompt workflows.
-- [`ai-agents-architect`](../../skills/ai-agents-architect/): Design autonomous AI agents.
-- [`mcp-builder`](../../skills/mcp-builder/): Create your own MCP tools.
-- [`langgraph`](../../skills/langgraph/): Build stateful agent workflows.
-- [`rag-engineer`](../../skills/rag-engineer/): Build RAG systems with vector search.
-- [`agent-memory-systems`](../../skills/agent-memory-systems/): Design durable short- and long-term memory for agents.
-- [`agent-evaluation`](../../skills/agent-evaluation/): Test and benchmark your agents.
-
-### 🧠 The "LLM Application Developer" Pack
-
-_For building production LLM applications._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`llm-app-patterns`](../../skills/llm-app-patterns/): Production-ready LLM patterns.
-- [`rag-implementation`](../../skills/rag-implementation/): Retrieval-Augmented Generation.
-- [`prompt-caching`](../../skills/prompt-caching/): Cache strategies for LLM prompts.
-- [`context-window-management`](../../skills/context-window-management/): Manage LLM context efficiently.
-- [`langfuse`](../../skills/langfuse/): LLM observability and tracing.
-- [`llm-evaluation`](../../skills/llm-evaluation/): Measure LLM quality with automated and human evaluation.
-
-
----
-
 ## 🎮 Game Development
 
 ### 🎮 The "Indie Game Dev" Pack
@@ -188,32 +73,6 @@ _For building games with AI assistants._
 
 ## 🐍 Backend & Languages
 
-### 🐍 The "Python Pro" Pack
-
-_For backend heavyweights and data scientists._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`python-pro`](../../skills/python-pro/): Master Python 3.12+ with modern features.
-- [`python-patterns`](../../skills/python-patterns/): Idiomatic Python code.
-- [`fastapi-pro`](../../skills/fastapi-pro/): High-performance async APIs.
-- [`fastapi-templates`](../../skills/fastapi-templates/): Production-ready FastAPI projects.
-- [`django-pro`](../../skills/django-pro/): The battery-included framework.
-- [`python-testing-patterns`](../../skills/python-testing-patterns/): Comprehensive testing with pytest.
-- [`async-python-patterns`](../../skills/async-python-patterns/): Python asyncio mastery.
-
-### 🟦 The "TypeScript & JavaScript" Pack
-
-_For modern web development._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`typescript-expert`](../../skills/typescript-expert/): TypeScript mastery and advanced types.
-- [`javascript-pro`](../../skills/javascript-pro/): Modern JavaScript with ES6+.
-- [`react-best-practices`](../../skills/react-best-practices/): React performance optimization.
-- [`nodejs-best-practices`](../../skills/nodejs-best-practices/): Node.js development principles.
-- [`nextjs-app-router-patterns`](../../skills/nextjs-app-router-patterns/): Next.js 14+ App Router.
-
 ### 🦀 The "Systems Programming" Pack
 
 _For low-level and performance-critical code._
@@ -225,152 +84,6 @@ _For low-level and performance-critical code._
 - [`golang-pro`](../../skills/golang-pro/): Go development expertise.
 - [`memory-safety-patterns`](../../skills/memory-safety-patterns/): Memory-safe programming.
 - [`cpp-pro`](../../skills/cpp-pro/): Modern C++ development.
-
-
----
-
-## 🦄 Product & Business
-
-### 🦄 The "Startup Founder" Pack
-
-_For building products, not just code._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`product-manager-toolkit`](../../skills/product-manager-toolkit/): RICE prioritization, PRD templates.
-- [`competitive-landscape`](../../skills/competitive-landscape/): Competitor analysis.
-- [`pricing-strategy`](../../skills/pricing-strategy/): Design pricing, packaging, and value metrics.
-- [`competitor-alternatives`](../../skills/competitor-alternatives/): Create comparison pages.
-- [`launch-strategy`](../../skills/launch-strategy/): Product launch planning.
-- [`copywriting`](../../skills/copywriting/): Marketing copy that converts.
-- [`stripe-integration`](../../skills/stripe-integration/): Get paid from day one.
-
-### 📊 The "Business Analyst" Pack
-
-_For data-driven decision making._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`business-analyst`](../../skills/business-analyst/): AI-powered analytics and KPIs.
-- [`startup-metrics-framework`](../../skills/startup-metrics-framework/): SaaS metrics and unit economics.
-- [`startup-financial-modeling`](../../skills/startup-financial-modeling/): 3-5 year financial projections.
-- [`market-sizing-analysis`](../../skills/market-sizing-analysis/): TAM/SAM/SOM calculations.
-- [`kpi-dashboard-design`](../../skills/kpi-dashboard-design/): Effective KPI dashboards.
-
-### 📈 The "Marketing & Growth" Pack
-
-_For driving user acquisition and retention._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`content-strategy`](../../skills/content-strategy/): Plan content pillars, topic clusters, and an editorial roadmap.
-- [`content-creator`](../../skills/content-creator/): SEO-optimized marketing content.
-- [`seo-audit`](../../skills/seo-audit/): Technical SEO health checks.
-- [`programmatic-seo`](../../skills/programmatic-seo/): Create pages at scale.
-- [`analytics-tracking`](../../skills/analytics-tracking/): Set up GA4/PostHog correctly.
-- [`ab-test-setup`](../../skills/ab-test-setup/): Validated learning experiments.
-- [`email-sequence`](../../skills/email-sequence/): Automated email campaigns.
-
-
----
-
-## DevOps & Infrastructure
-
-### 🌧️ The "DevOps & Cloud" Pack
-
-_For infrastructure and scaling._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`environment-setup-guide`](../../skills/environment-setup-guide/): Standardize development environments for teams.
-- [`bash-linux`](../../skills/bash-linux/): Automate operational work safely from the shell.
-- [`docker-expert`](../../skills/docker-expert/): Master containers and multi-stage builds.
-- [`terraform-specialist`](../../skills/terraform-specialist/): Infrastructure as Code mastery.
-- [`kubernetes-architect`](../../skills/kubernetes-architect/): K8s architecture and GitOps.
-- [`aws-serverless`](../../skills/aws-serverless/): Serverless on AWS (Lambda, DynamoDB).
-- [`ci-cd-and-automation`](../../skills/ci-cd-and-automation/): Build CI/CD pipelines with automated quality gates.
-- [`deployment-procedures`](../../skills/deployment-procedures/): Apply safe rollout and rollback strategies.
-
-### 📊 The "Observability & Monitoring" Pack
-
-_For production reliability._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`observability-engineer`](../../skills/observability-engineer/): Comprehensive monitoring systems.
-- [`distributed-tracing`](../../skills/distributed-tracing/): Track requests across microservices.
-- [`slo-implementation`](../../skills/slo-implementation/): Service Level Objectives.
-- [`incident-responder`](../../skills/incident-responder/): Rapid incident response.
-- [`postmortem-writing`](../../skills/postmortem-writing/): Blameless postmortems.
-- [`performance-engineer`](../../skills/performance-engineer/): Application performance optimization.
-
-
----
-
-## 📊 Data & Analytics
-
-### 📊 The "Data & Analytics" Pack
-
-_For making sense of the numbers._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`analytics-tracking`](../../skills/analytics-tracking/): Set up GA4/PostHog correctly.
-- [`data-quality-frameworks`](../../skills/data-quality-frameworks/): Validate data with contracts, dbt tests, and quality monitoring.
-- [`sql-pro`](../../skills/sql-pro/): Modern SQL with cloud-native databases.
-- [`postgres-best-practices`](../../skills/postgres-best-practices/): Postgres optimization.
-- [`ab-test-setup`](../../skills/ab-test-setup/): Validated learning.
-- [`database-architect`](../../skills/database-architect/): Database design from scratch.
-- [`data-storytelling`](../../skills/data-storytelling/): Turn analysis into clear narratives and decisions.
-
-### 🔄 The "Data Engineering" Pack
-
-_For building data pipelines._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`data-engineer`](../../skills/data-engineer/): Data pipeline architecture.
-- [`airflow-dag-patterns`](../../skills/airflow-dag-patterns/): Apache Airflow DAGs.
-- [`dbt-transformation-patterns`](../../skills/dbt-transformation-patterns/): Analytics engineering.
-- [`data-quality-frameworks`](../../skills/data-quality-frameworks/): Validate pipelines with contracts, dbt tests, and quality monitoring.
-- [`vector-database-engineer`](../../skills/vector-database-engineer/): Vector databases for RAG.
-
-
----
-
-## 🎨 Creative & Content
-
-### 🎨 The "Creative Director" Pack
-
-_For visuals, content, and branding._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`canvas-design`](../../skills/canvas-design/): Generate posters and diagrams.
-- [`frontend-design`](../../skills/frontend-design/): UI aesthetics.
-- [`content-creator`](../../skills/content-creator/): SEO-optimized blog posts.
-- [`copy-editing`](../../skills/copy-editing/): Polish your prose.
-- [`algorithmic-art`](../../skills/algorithmic-art/): Code-generated masterpieces.
-- [`interactive-portfolio`](../../skills/interactive-portfolio/): Portfolios that land jobs.
-
-
----
-
-## 🐞 Quality Assurance
-
-### 🐞 The "QA & Testing" Pack
-
-_For breaking things before users do._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`test-driven-development`](../../skills/test-driven-development/): Red, Green, Refactor.
-- [`e2e-testing-patterns`](../../skills/e2e-testing-patterns/): Reliable E2E test suites.
-- [`browser-automation`](../../skills/browser-automation/): End-to-end testing with Playwright.
-- [`test-fixing`](../../skills/test-fixing/): Fix failing tests systematically.
-- [`systematic-debugging`](../../skills/systematic-debugging/): Diagnose failures from evidence instead of guesses.
-- [`code-review-checklist`](../../skills/code-review-checklist/): Catch bugs in PRs.
-- [`ci-cd-and-automation`](../../skills/ci-cd-and-automation/): Run automated test gates consistently in CI/CD.
 
 
 ---
@@ -393,6 +106,15 @@ _Frontend and full-stack developers shipping modern web apps._
 - [`form-cro`](../../skills/form-cro/): Improve form conversion and usability.
 - [`seo-audit`](../../skills/seo-audit/): Audit technical SEO and discoverability.
 - [`ui-a11y`](../../skills/ui-a11y/): Audit WCAG, contrast, focus, labels, motion, and semantic HTML.
+- [`build-ui`](../../skills/build-ui/): Implement the chosen UI from a concrete brief and existing project conventions.
+- [`ui-states`](../../skills/ui-states/): Design loading, empty, error and success states with accessible feedback.
+- [`frontend-api-integration-patterns`](../../skills/frontend-api-integration-patterns/): Connect client UI to APIs with explicit state, validation and error handling.
+- [`react-patterns`](../../skills/react-patterns/): Modern React patterns and principles.
+- [`nextjs-best-practices`](../../skills/nextjs-best-practices/): Next.js App Router patterns.
+- [`accessibility-compliance-accessibility-audit`](../../skills/accessibility-compliance-accessibility-audit/): Audit WCAG issues and plan concrete remediation.
+- [`typescript-expert`](../../skills/typescript-expert/): TypeScript mastery and advanced types.
+- [`javascript-pro`](../../skills/javascript-pro/): Modern JavaScript with ES6+.
+- [`nodejs-best-practices`](../../skills/nodejs-best-practices/): Node.js development principles.
 
 ### 🎨 The "AAS Product Design Studio" Plugin
 
@@ -410,6 +132,13 @@ _Builders who want richer UI, brand, portfolio, and visual product work._
 - [`interactive-portfolio`](../../skills/interactive-portfolio/): Create compelling interactive portfolios.
 - [`ui-a11y`](../../skills/ui-a11y/): Audit WCAG, contrast, focus, labels, motion, and semantic HTML.
 - [`ui-review`](../../skills/ui-review/): Review UI quality, usability, and product fit.
+- [`write-design-md`](../../skills/write-design-md/): Record visual decisions and reusable interface rules in a design document.
+- [`ui-from-screenshot`](../../skills/ui-from-screenshot/): Translate a supplied screenshot into an interface with explicit assumptions.
+- [`ui-states`](../../skills/ui-states/): Design loading, empty, error and success states with accessible feedback.
+- [`accessibility-compliance-accessibility-audit`](../../skills/accessibility-compliance-accessibility-audit/): Audit WCAG issues and plan concrete remediation.
+- [`content-creator`](../../skills/content-creator/): SEO-optimized blog posts.
+- [`copy-editing`](../../skills/copy-editing/): Polish your prose.
+- [`algorithmic-art`](../../skills/algorithmic-art/): Code-generated masterpieces.
 
 ### 🛡️ The "AAS Security Engineer" Plugin
 
@@ -427,6 +156,8 @@ _Authorized security testing, audit, and hardening teams._
 - [`vulnerability-scanner`](../../skills/vulnerability-scanner/): Analyze and validate vulnerability findings.
 - [`sast-configuration`](../../skills/sast-configuration/): Configure static application security testing.
 - [`web-security-testing`](../../skills/web-security-testing/): Test web application security defensively.
+- [`threat-modeling-expert`](../../skills/threat-modeling-expert/): Map trust boundaries, threats and mitigations before active assessment.
+- [`skill-security-audit`](../../skills/skill-security-audit/): Inspect agent skill instructions and bundled files for unsafe authority or data flows.
 
 ### 🔐 The "AAS Secure App Builder" Plugin
 
@@ -443,6 +174,9 @@ _Application developers who want security embedded while building features._
 - [`sast-configuration`](../../skills/sast-configuration/): Configure static application security testing.
 - [`secrets-management`](../../skills/secrets-management/): Manage application and CI/CD secrets with least privilege and rotation.
 - [`django-access-review`](../../skills/django-access-review/): Review Django access control and authorization behavior.
+- [`security-requirement-extraction`](../../skills/security-requirement-extraction/): Turn identified threats into testable security requirements.
+- [`threat-modeling-expert`](../../skills/threat-modeling-expert/): Map trust boundaries, threats and mitigations before active assessment.
+- [`dependency-management-deps-audit`](../../skills/dependency-management-deps-audit/): Audit dependency vulnerabilities, licenses, and supply-chain risk.
 
 ### 📄 The "AAS Documents & Presentations" Plugin
 
@@ -459,8 +193,10 @@ _Users creating, editing, converting, and automating office documents._
 - [`google-docs-automation`](../../skills/google-docs-automation/): Automate Google Docs creation and updates.
 - [`google-sheets-automation`](../../skills/google-sheets-automation/): Automate Google Sheets reads and writes.
 - [`google-slides-automation`](../../skills/google-slides-automation/): Automate Google Slides updates.
+- [`doc-coauthoring`](../../skills/doc-coauthoring/): Develop document structure through drafting and reader review.
+- [`copy-editing`](../../skills/copy-editing/): Edit supplied content for clarity, consistency and supported claims.
 
-### 📊 The "AAS Data Analytics" Plugin
+### 📊 The "AAS Data Analytics & Business Intelligence" Plugin
 
 _Operators, analysts, and builders working with product analytics, SQL, dashboards, and experiments._
 
@@ -476,6 +212,12 @@ _Operators, analysts, and builders working with product analytics, SQL, dashboar
 - [`kpi-dashboard-design`](../../skills/kpi-dashboard-design/): Design dashboards for decision-making.
 - [`ab-test-setup`](../../skills/ab-test-setup/): Plan and validate experiments.
 - [`business-analyst`](../../skills/business-analyst/): Analyze business context, requirements, and tradeoffs.
+- [`sql-optimization-patterns`](../../skills/sql-optimization-patterns/): Review analytical query performance without changing metric semantics.
+- [`data-storytelling`](../../skills/data-storytelling/): Explain verified analytical results with context, uncertainty and clear visuals.
+- [`database-architect`](../../skills/database-architect/): Database design from scratch.
+- [`startup-metrics-framework`](../../skills/startup-metrics-framework/): SaaS metrics and unit economics.
+- [`startup-financial-modeling`](../../skills/startup-financial-modeling/): 3-5 year financial projections.
+- [`market-sizing-analysis`](../../skills/market-sizing-analysis/): TAM/SAM/SOM calculations.
 
 ### 🤖 The "AAS Agent & MCP Builder" Plugin
 
@@ -493,6 +235,13 @@ _Developers building agentic apps, MCP tools, RAG systems, and evaluation loops.
 - [`langfuse`](../../skills/langfuse/): Trace, evaluate, and monitor LLM apps.
 - [`context-window-management`](../../skills/context-window-management/): Manage long context effectively.
 - [`prompt-engineering`](../../skills/prompt-engineering/): Design effective prompts and LLM interaction patterns.
+- [`skill-security-audit`](../../skills/skill-security-audit/): Inspect agent skill instructions and bundled files for unsafe authority or data flows.
+- [`agent-harness-fault-injection`](../../skills/agent-harness-fault-injection/): Exercise bounded agent failures with controlled fault scenarios.
+- [`agent-evaluation-reporting`](../../skills/agent-evaluation-reporting/): Report observed agent results, limitations and reproduction evidence.
+- [`agent-memory-systems`](../../skills/agent-memory-systems/): Design durable short- and long-term memory for agents.
+- [`rag-implementation`](../../skills/rag-implementation/): Retrieval-Augmented Generation.
+- [`prompt-caching`](../../skills/prompt-caching/): Cache strategies for LLM prompts.
+- [`llm-evaluation`](../../skills/llm-evaluation/): Measure LLM quality with automated and human evaluation.
 
 ### 🧪 The "AAS QA & Test Automation" Plugin
 
@@ -510,6 +259,10 @@ _Engineers and QA teams writing, debugging, and stabilizing test suites._
 - [`test-fixing`](../../skills/test-fixing/): Fix failing tests systematically.
 - [`code-review-checklist`](../../skills/code-review-checklist/): Catch common bugs in reviews.
 - [`screen-reader-testing`](../../skills/screen-reader-testing/): Test interfaces with screen-reader expectations.
+- [`testing-patterns`](../../skills/testing-patterns/): Write isolated unit tests and correctly await asynchronous outcomes.
+- [`api-contract-testing`](../../skills/api-contract-testing/): Test provider and consumer runtime contracts, invalid fixtures and version compatibility.
+- [`python-testing-patterns`](../../skills/python-testing-patterns/): Build Python fixtures, parametrized cases and async regression tests.
+- [`ci-cd-and-automation`](../../skills/ci-cd-and-automation/): Run automated test gates consistently in CI/CD.
 
 ### ☁️ The "AAS DevOps & Cloud" Plugin
 
@@ -527,6 +280,14 @@ _Teams shipping infrastructure, deployments, and operational workflows._
 - [`bash-linux`](../../skills/bash-linux/): Use Linux shell workflows effectively.
 - [`incident-responder`](../../skills/incident-responder/): Respond to incidents with clear procedure.
 - [`devops-troubleshooter`](../../skills/devops-troubleshooter/): Diagnose infrastructure and deployment issues.
+- [`secrets-management`](../../skills/secrets-management/): Plan least-privilege secret storage, access and rotation without exposing values.
+- [`ci-cd-and-automation`](../../skills/ci-cd-and-automation/): Build CI/CD pipelines with automated quality gates.
+- [`azd-deployment`](../../skills/azd-deployment/): Ship Azure apps with Azure Developer CLI workflows.
+- [`azure-functions`](../../skills/azure-functions/): Build serverless workloads with Azure Functions.
+- [`azure-ai-openai-dotnet`](../../skills/azure-ai-openai-dotnet/): Use Azure OpenAI from .NET applications.
+- [`azure-search-documents-py`](../../skills/azure-search-documents-py/): Build search, hybrid search, and indexing in Python.
+- [`azure-identity-py`](../../skills/azure-identity-py/): Handle Azure authentication flows in Python services.
+- [`azure-monitor-opentelemetry-ts`](../../skills/azure-monitor-opentelemetry-ts/): Add telemetry and tracing from TypeScript apps.
 
 
 ---
@@ -549,6 +310,13 @@ _Founders and growth teams creating content, SEO systems, experiments, and email
 - [`email-sequence`](../../skills/email-sequence/): Write automated email campaigns.
 - [`copywriting`](../../skills/copywriting/): Write conversion-focused copy.
 - [`schema-markup`](../../skills/schema-markup/): Add structured data for search visibility.
+- [`product-marketing-context`](../../skills/product-marketing-context/): Capture verified audience, product and positioning inputs for channel work.
+- [`copy-editing`](../../skills/copy-editing/): Edit supplied content for clarity, consistency and supported claims.
+- [`content-strategy`](../../skills/content-strategy/): Prioritize audience-relevant content and define an editorial plan.
+- [`seo-content-writer`](../../skills/seo-content-writer/): Produce search-aware content drafts with intent alignment.
+- [`seo-structure-architect`](../../skills/seo-structure-architect/): Improve hierarchy, internal links, and structure.
+- [`seo-cannibalization-detector`](../../skills/seo-cannibalization-detector/): Find overlapping pages competing for the same intent.
+- [`seo-content-auditor`](../../skills/seo-content-auditor/): Audit existing content quality and optimization gaps.
 
 ### ⚙️ The "AAS Automation Builder" Plugin
 
@@ -566,8 +334,18 @@ _Teams designing reliable automations across tools, data stores, and communicati
 - [`googlesheets-automation`](../../skills/googlesheets-automation/): Automate Google Sheets operations.
 - [`github-automation`](../../skills/github-automation/): Automate GitHub issues and repository work.
 - [`n8n-workflow-patterns`](../../skills/n8n-workflow-patterns/): Choose proven architectures for webhook, sync, scheduled, and AI-agent workflows.
+- [`api-integration`](../../skills/api-integration/): Design API adapters and authenticated webhook handling with explicit boundaries.
+- [`api-rate-limit-handler`](../../skills/api-rate-limit-handler/): Implement replay-safe bounded retries that respect provider wait hints.
+- [`browser-automation`](../../skills/browser-automation/): Automate workflows when a service has no suitable API.
+- [`hubspot-automation`](../../skills/hubspot-automation/): Automate contacts, companies, deals, and tickets.
+- [`sendgrid-automation`](../../skills/sendgrid-automation/): Automate email sends, contacts, and templates.
+- [`zendesk-automation`](../../skills/zendesk-automation/): Automate support tickets and reply workflows.
+- [`google-calendar-automation`](../../skills/google-calendar-automation/): Schedule events and manage availability.
+- [`outlook-calendar-automation`](../../skills/outlook-calendar-automation/): Automate Outlook meetings and invitations.
+- [`stripe-automation`](../../skills/stripe-automation/): Automate billing, invoices, and subscriptions.
+- [`shopify-automation`](../../skills/shopify-automation/): Automate products, orders, customers, and inventory.
 
-### 📡 The "AAS Observability IR" Plugin
+### 📡 The "AAS Observability & Incident Response" Plugin
 
 _Engineering teams monitoring systems, debugging production issues, and writing postmortems._
 
@@ -583,8 +361,10 @@ _Engineering teams monitoring systems, debugging production issues, and writing 
 - [`devops-troubleshooter`](../../skills/devops-troubleshooter/): Diagnose infrastructure and deployment issues.
 - [`postmortem-writing`](../../skills/postmortem-writing/): Write clear blameless postmortems.
 - [`langfuse`](../../skills/langfuse/): Trace, evaluate, and monitor LLM apps.
+- [`on-call-handoff-patterns`](../../skills/on-call-handoff-patterns/): Draft an evidence-based shift handoff with owners and unresolved risks.
+- [`ai-sre-incident-response`](../../skills/ai-sre-incident-response/): Investigate AI service incidents with latency, cost and fallback constraints.
 
-### 🐍 The "AAS Python API Builder" Plugin
+### 🐍 The "AAS Python Development" Plugin
 
 _Python developers building APIs, services, and tests._
 
@@ -600,6 +380,9 @@ _Python developers building APIs, services, and tests._
 - [`api-design-principles`](../../skills/api-design-principles/): Design clear and maintainable APIs.
 - [`pydantic-models-py`](../../skills/pydantic-models-py/): Design Pydantic models for Python APIs.
 - [`openapi-spec-generation`](../../skills/openapi-spec-generation/): Generate and maintain OpenAPI specifications.
+- [`api-security-best-practices`](../../skills/api-security-best-practices/): Apply authorization, validation and security checks to service boundaries.
+- [`sql-optimization-patterns`](../../skills/sql-optimization-patterns/): Review analytical query performance without changing metric semantics.
+- [`api-rate-limit-handler`](../../skills/api-rate-limit-handler/): Implement replay-safe bounded retries that respect provider wait hints.
 
 ### 📱 The "AAS Mobile App Builder" Plugin
 
@@ -617,38 +400,22 @@ _Mobile teams shipping Expo, React Native, Flutter, and iOS apps._
 - [`ios-developer`](../../skills/ios-developer/): Develop iOS apps with Swift.
 - [`app-store-optimization`](../../skills/app-store-optimization/): Improve App Store and Play Store visibility.
 - [`multi-platform-apps-multi-platform`](../../skills/multi-platform-apps-multi-platform/): Plan and build multi-platform app experiences.
+- [`ios-screens`](../../skills/ios-screens/): Build native iOS screens using the existing navigation and UI conventions.
+- [`frontend-api-integration-patterns`](../../skills/frontend-api-integration-patterns/): Connect client UI to APIs with explicit state, validation and error handling.
+- [`expo-tailwind-setup`](../../skills/expo-tailwind-setup/): Set up Tailwind and NativeWind in Expo apps.
+- [`hig-foundations`](../../skills/hig-foundations/): Learn the core Apple Human Interface Guidelines.
+- [`hig-patterns`](../../skills/hig-patterns/): Apply Apple interaction and UX patterns correctly.
+- [`hig-components-layout`](../../skills/hig-components-layout/): Use Apple layout and navigation components well.
+- [`hig-inputs`](../../skills/hig-inputs/): Design for gestures, keyboards, Pencil, focus, and controllers.
+- [`hig-components-system`](../../skills/hig-components-system/): Work with widgets, live activities, and system surfaces.
+- [`hig-platforms`](../../skills/hig-platforms/): Adapt experiences across Apple device families.
 
 
 ---
 
 ## 🔧 Specialized Packs
 
-### 📱 The "Mobile Developer" Pack
-
-_For iOS, Android, and cross-platform apps._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`mobile-developer`](../../skills/mobile-developer/): Cross-platform mobile development.
-- [`react-native-architecture`](../../skills/react-native-architecture/): React Native with Expo.
-- [`flutter-expert`](../../skills/flutter-expert/): Flutter multi-platform apps.
-- [`ios-developer`](../../skills/ios-developer/): iOS development with Swift.
-- [`app-store-optimization`](../../skills/app-store-optimization/): ASO for App Store and Play Store.
-
-### 🔗 The "Integration & APIs" Pack
-
-_For connecting services and building integrations._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`api-integration`](../../skills/api-integration/): Design service contracts, webhooks, and integration pipelines.
-- [`stripe-integration`](../../skills/stripe-integration/): Payments and subscriptions.
-- [`twilio-communications`](../../skills/twilio-communications/): SMS, voice, WhatsApp.
-- [`hubspot-integration`](../../skills/hubspot-integration/): CRM integration.
-- [`plaid-fintech`](../../skills/plaid-fintech/): Bank account linking and ACH.
-- [`algolia-search`](../../skills/algolia-search/): Search implementation.
-
-### 🎯 The "Architecture & Design" Pack
+### 🎯 The "Architecture & Domain Modeling" Plugin
 
 _For system design and technical decisions._
 
@@ -659,13 +426,6 @@ _For system design and technical decisions._
 - [`microservices-patterns`](../../skills/microservices-patterns/): Microservices architecture.
 - [`event-sourcing-architect`](../../skills/event-sourcing-architect/): Event sourcing and CQRS.
 - [`architecture-decision-records`](../../skills/architecture-decision-records/): Document technical decisions.
-
-### 🧱 The "DDD & Evented Architecture" Pack
-
-_For teams modeling complex domains and evolving toward evented systems._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
 - [`domain-driven-design`](../../skills/domain-driven-design/): Route DDD work from strategic modeling to implementation patterns.
 - [`ddd-strategic-design`](../../skills/ddd-strategic-design/): Subdomains, bounded contexts, and ubiquitous language.
 - [`ddd-context-mapping`](../../skills/ddd-context-mapping/): Cross-context integration and anti-corruption boundaries.
@@ -675,36 +435,7 @@ _For teams modeling complex domains and evolving toward evented systems._
 - [`saga-orchestration`](../../skills/saga-orchestration/): Cross-context long-running transaction coordination.
 - [`projection-patterns`](../../skills/projection-patterns/): Materialized read models from event streams.
 
-### 🤖 The "Automation Builder" Pack
-
-_For connecting tools and building repeatable automated workflows._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`workflow-automation`](../../skills/workflow-automation/): Design durable automation flows for AI and business systems.
-- [`mcp-builder`](../../skills/mcp-builder/): Create tool interfaces agents can use reliably.
-- [`browser-automation`](../../skills/browser-automation/): Automate workflows when a service has no suitable API.
-- [`make-automation`](../../skills/make-automation/): Build automations in Make/Integromat.
-- [`airtable-automation`](../../skills/airtable-automation/): Automate Airtable records, bases, and views.
-- [`notion-automation`](../../skills/notion-automation/): Automate Notion pages, databases, and blocks.
-- [`slack-automation`](../../skills/slack-automation/): Automate Slack messaging and channel workflows.
-- [`googlesheets-automation`](../../skills/googlesheets-automation/): Automate spreadsheet updates and data operations.
-
-### 💼 The "RevOps & CRM Automation" Pack
-
-_For revenue operations, support handoffs, and CRM-heavy automation._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`hubspot-automation`](../../skills/hubspot-automation/): Automate contacts, companies, deals, and tickets.
-- [`sendgrid-automation`](../../skills/sendgrid-automation/): Automate email sends, contacts, and templates.
-- [`zendesk-automation`](../../skills/zendesk-automation/): Automate support tickets and reply workflows.
-- [`google-calendar-automation`](../../skills/google-calendar-automation/): Schedule events and manage availability.
-- [`outlook-calendar-automation`](../../skills/outlook-calendar-automation/): Automate Outlook meetings and invitations.
-- [`stripe-automation`](../../skills/stripe-automation/): Automate billing, invoices, and subscriptions.
-- [`shopify-automation`](../../skills/shopify-automation/): Automate products, orders, customers, and inventory.
-
-### 💳 The "Commerce & Payments" Pack
+### 💳 The "Payments & Service Integrations" Plugin
 
 _For monetization, payments, and commerce workflows._
 
@@ -716,6 +447,8 @@ _For monetization, payments, and commerce workflows._
 - [`hubspot-integration`](../../skills/hubspot-integration/): Connect CRM data into product and revenue workflows.
 - [`algolia-search`](../../skills/algolia-search/): Add search and discovery to commerce experiences.
 - [`monetization`](../../skills/monetization/): Design pricing and monetization systems deliberately.
+- [`api-integration`](../../skills/api-integration/): Design service contracts, webhooks, and integration pipelines.
+- [`twilio-communications`](../../skills/twilio-communications/): SMS, voice, WhatsApp.
 
 ### 🏢 The "Odoo ERP" Pack
 
@@ -731,46 +464,6 @@ _For teams building or operating around Odoo-based business systems._
 - [`odoo-security-rules`](../../skills/odoo-security-rules/): Apply secure access controls and rule design.
 - [`odoo-docker-deployment`](../../skills/odoo-docker-deployment/): Deploy and run Odoo in Docker-based environments.
 
-### ☁️ The "Azure AI & Cloud" Pack
-
-_For building on Azure across cloud, AI, and platform services._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`azd-deployment`](../../skills/azd-deployment/): Ship Azure apps with Azure Developer CLI workflows.
-- [`azure-functions`](../../skills/azure-functions/): Build serverless workloads with Azure Functions.
-- [`azure-ai-openai-dotnet`](../../skills/azure-ai-openai-dotnet/): Use Azure OpenAI from .NET applications.
-- [`azure-search-documents-py`](../../skills/azure-search-documents-py/): Build search, hybrid search, and indexing in Python.
-- [`azure-identity-py`](../../skills/azure-identity-py/): Handle Azure authentication flows in Python services.
-- [`azure-monitor-opentelemetry-ts`](../../skills/azure-monitor-opentelemetry-ts/): Add telemetry and tracing from TypeScript apps.
-
-### 📲 The "Expo & React Native" Pack
-
-_For shipping mobile apps with Expo and React Native._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`react-native-architecture`](../../skills/react-native-architecture/): Structure production React Native apps well.
-- [`expo-api-routes`](../../skills/expo-api-routes/): Build API routes in Expo Router and EAS Hosting.
-- [`expo-dev-client`](../../skills/expo-dev-client/): Build and distribute Expo development clients.
-- [`expo-tailwind-setup`](../../skills/expo-tailwind-setup/): Set up Tailwind and NativeWind in Expo apps.
-- [`expo-cicd-workflows`](../../skills/expo-cicd-workflows/): Automate builds and releases with EAS workflows.
-- [`expo-deployment`](../../skills/expo-deployment/): Deploy Expo apps and manage release flow.
-- [`app-store-optimization`](../../skills/app-store-optimization/): Improve App Store and Play Store discoverability.
-
-### 🍎 The "Apple Platform Design" Pack
-
-_For teams designing native-feeling Apple platform experiences._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`hig-foundations`](../../skills/hig-foundations/): Learn the core Apple Human Interface Guidelines.
-- [`hig-patterns`](../../skills/hig-patterns/): Apply Apple interaction and UX patterns correctly.
-- [`hig-components-layout`](../../skills/hig-components-layout/): Use Apple layout and navigation components well.
-- [`hig-inputs`](../../skills/hig-inputs/): Design for gestures, keyboards, Pencil, focus, and controllers.
-- [`hig-components-system`](../../skills/hig-components-system/): Work with widgets, live activities, and system surfaces.
-- [`hig-platforms`](../../skills/hig-platforms/): Adapt experiences across Apple device families.
-
 ### 🧩 The "Makepad Builder" Pack
 
 _For building UI-heavy apps with the Makepad ecosystem._
@@ -783,35 +476,6 @@ _For building UI-heavy apps with the Makepad ecosystem._
 - [`makepad-event-action`](../../skills/makepad-event-action/): Wire interaction and event handling correctly.
 - [`makepad-shaders`](../../skills/makepad-shaders/): Create GPU-driven visual effects and custom drawing.
 - [`makepad-deployment`](../../skills/makepad-deployment/): Package and ship Makepad projects.
-
-### 🔎 The "SEO Specialist" Pack
-
-_For technical SEO, content structure, and search growth._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`seo-fundamentals`](../../skills/seo-fundamentals/): Build from sound SEO principles and search constraints.
-- [`seo-content-planner`](../../skills/seo-content-planner/): Plan clusters, calendars, and content gaps.
-- [`seo-content-writer`](../../skills/seo-content-writer/): Produce search-aware content drafts with intent alignment.
-- [`seo-structure-architect`](../../skills/seo-structure-architect/): Improve hierarchy, internal links, and structure.
-- [`seo-cannibalization-detector`](../../skills/seo-cannibalization-detector/): Find overlapping pages competing for the same intent.
-- [`seo-content-auditor`](../../skills/seo-content-auditor/): Audit existing content quality and optimization gaps.
-- [`schema-markup`](../../skills/schema-markup/): Add structured data to support richer search results.
-
-### 📄 The "Documents & Presentations" Pack
-
-_For document-heavy workflows, spreadsheets, PDFs, and presentations._
-
-**Plugin status:** Codex plugin-safe · Claude plugin-safe · Agent Plugins 1.0 portable
-
-- [`office-productivity`](../../skills/office-productivity/): Coordinate document, spreadsheet, and presentation workflows.
-- [`docx-official`](../../skills/docx-official/): Create and edit Word-compatible documents.
-- [`pptx-official`](../../skills/pptx-official/): Create and edit PowerPoint-compatible presentations.
-- [`xlsx-official`](../../skills/xlsx-official/): Create and analyze spreadsheet files with formulas and formatting.
-- [`pdf-official`](../../skills/pdf-official/): Extract, generate, and manipulate PDFs programmatically.
-- [`google-docs-automation`](../../skills/google-docs-automation/): Automate document creation and updates in Google Docs.
-- [`google-slides-automation`](../../skills/google-slides-automation/): Automate presentation updates in Google Slides.
-- [`google-sheets-automation`](../../skills/google-sheets-automation/): Automate reads and writes in Google Sheets.
 
 
 ---
@@ -867,8 +531,10 @@ _Design, frontend, QA, and product teams improving accessible user experiences._
 - [`ui-a11y`](../../skills/ui-a11y/): Audit WCAG, contrast, focus, labels, motion, and semantic HTML.
 - [`webapp-testing`](../../skills/webapp-testing/): Use webapp-testing in this workflow.
 - [`playwright-skill`](../../skills/playwright-skill/): Use playwright-skill in this workflow. _(manual setup)_
+- [`wcag-audit-patterns`](../../skills/wcag-audit-patterns/): Map accessibility findings to criteria and verify fixes manually and with tools.
+- [`ui-states`](../../skills/ui-states/): Design loading, empty, error and success states with accessible feedback.
 
-### 🔌 The "AAS API Platform Builder" Plugin
+### 🔌 The "AAS Backend & API Platform" Plugin
 
 _Backend and platform teams designing APIs, contracts, auth, security, load tests, and observability._
 
@@ -884,6 +550,15 @@ _Backend and platform teams designing APIs, contracts, auth, security, load test
 - [`backend-architect`](../../skills/backend-architect/): Architect backend services and platform boundaries.
 - [`k6-load-testing`](../../skills/k6-load-testing/): Run API and service load tests.
 - [`observability-engineer`](../../skills/observability-engineer/): Design monitoring and observability systems.
+- [`api-contract-testing`](../../skills/api-contract-testing/): Test provider and consumer runtime contracts, invalid fixtures and version compatibility.
+- [`api-rate-limit-handler`](../../skills/api-rate-limit-handler/): Implement replay-safe bounded retries that respect provider wait hints.
+- [`deprecation-and-migration`](../../skills/deprecation-and-migration/): Plan consumer migration and verified removal of obsolete API behavior.
+- [`senior-fullstack`](../../skills/senior-fullstack/): Complete fullstack development guide.
+- [`frontend-developer`](../../skills/frontend-developer/): React 19+ and Next.js 15+ expertise.
+- [`backend-dev-guidelines`](../../skills/backend-dev-guidelines/): Node.js/Express/TypeScript patterns.
+- [`database-design`](../../skills/database-design/): Schema design and ORM selection.
+- [`stripe-integration`](../../skills/stripe-integration/): Payments and subscriptions.
+- [`e2e-testing-patterns`](../../skills/e2e-testing-patterns/): Verify critical user journeys with reliable E2E tests.
 
 ### 💸 The "AAS SaaS Launch & Revenue" Plugin
 
@@ -901,6 +576,13 @@ _Founders and product teams launching, pricing, monetizing, measuring, and impro
 - [`referral-program`](../../skills/referral-program/): Design referral and growth loops.
 - [`email-sequence`](../../skills/email-sequence/): Write automated lifecycle email campaigns.
 - [`seo-audit`](../../skills/seo-audit/): Audit technical SEO and discoverability.
+- [`usage-based-pricing`](../../skills/usage-based-pricing/): Model usage meters, unit economics and cost limits with verified inputs.
+- [`onboarding-cro`](../../skills/onboarding-cro/): Review activation journeys while preserving verification and consent controls.
+- [`product-marketing-context`](../../skills/product-marketing-context/): Capture verified audience, product and positioning inputs for channel work.
+- [`product-manager-toolkit`](../../skills/product-manager-toolkit/): RICE prioritization, PRD templates.
+- [`competitive-landscape`](../../skills/competitive-landscape/): Competitor analysis.
+- [`competitor-alternatives`](../../skills/competitor-alternatives/): Create comparison pages.
+- [`copywriting`](../../skills/copywriting/): Marketing copy that converts.
 
 ### 🧠 The "AAS AI Product & Evaluation Ops" Plugin
 
@@ -918,6 +600,9 @@ _PMs, founders, and AI product teams defining, measuring, and improving AI featu
 - [`product-manager`](../../skills/product-manager/): Apply product management judgment and planning.
 - [`ab-test-setup`](../../skills/ab-test-setup/): Plan and validate experiments.
 - [`hugging-face-evaluation`](../../skills/hugging-face-evaluation/): Evaluate AI models and datasets with Hugging Face workflows.
+- [`advanced-evaluation`](../../skills/advanced-evaluation/): Design judge rubrics, position swaps and human-calibrated evaluation.
+- [`skill-security-audit`](../../skills/skill-security-audit/): Inspect agent skill instructions and bundled files for unsafe authority or data flows.
+- [`agent-evaluation-reporting`](../../skills/agent-evaluation-reporting/): Report observed agent results, limitations and reproduction evidence.
 
 
 ---
@@ -940,6 +625,7 @@ _Data and AI platform teams building pipelines, warehouses, transforms, embeddin
 - [`rag-engineer`](../../skills/rag-engineer/): Build retrieval-augmented generation systems.
 - [`sql-pro`](../../skills/sql-pro/): Query and model data with modern SQL.
 - [`data-quality-frameworks`](../../skills/data-quality-frameworks/): Implement data contracts, validation, dbt tests, and quality monitoring.
+- [`warehouse`](../../skills/warehouse/): Review read-only warehouse analysis for grain, privacy and provenance.
 
 ### 🧾 The "AAS Privacy & Compliance Engineering" Plugin
 
@@ -952,6 +638,7 @@ _Teams building privacy-aware and compliance-sensitive SaaS, AI, finance, and cl
 - [`pci-compliance`](../../skills/pci-compliance/): Handle payment security and PCI expectations.
 - [`fsi-compliance-checker`](../../skills/fsi-compliance-checker/): Check financial-services compliance requirements.
 - [`cc-skill-security-review`](../../skills/cc-skill-security-review/): Review features with a security checklist.
+- [`data-privacy-controls`](../../skills/data-privacy-controls/): Draft empty control registers with owners and unresolved policy decisions.
 
 ### 🌍 The "AAS Localization & International Growth" Plugin
 
@@ -969,6 +656,8 @@ _Growth, content, and product teams expanding sites and products across language
 - [`copywriting`](../../skills/copywriting/): Write conversion-focused copy.
 - [`analytics-tracking`](../../skills/analytics-tracking/): Set up reliable product analytics.
 - [`apify-market-research`](../../skills/apify-market-research/): Research markets and competitors with Apify workflows.
+- [`copy-editing`](../../skills/copy-editing/): Edit supplied content for clarity, consistency and supported claims.
+- [`seo-content-refresher`](../../skills/seo-content-refresher/): Refresh verified locale-specific claims without inventing freshness signals.
 
 ## 📚 How to Use Bundles
 
@@ -1062,4 +751,4 @@ Found a skill that should be in a bundle? Or want to create a new bundle? [Open 
 
 ---
 
-_Last updated: June 2026 | Total Skills: 2,687+ | Total Bundles: 58_
+_Last updated: June 2026 | Total Skills: 2,689+ | Total Bundles: 30_

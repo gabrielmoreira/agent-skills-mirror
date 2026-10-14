@@ -1,6 +1,8 @@
 ---
 name: "omh-files"
 description: "[omh] Folder cleanup, renames, or deletions: policy overlay for local file tasks - add path scoping and destructive-action gates after preferring native file tools for ordinary list, search, organize, copy, move, and rename actions. Use when the user says: workspace-file-operator, workspace file operator, file operator, file operation, file operations, filesystem task, filesystem operation, file system task."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, filesystem]
@@ -8,6 +10,7 @@ metadata:
     phase: file-task
     role: guide
     quality_tier: workflow-surface-gated
+    related_skills: [omh-materials-package, omh-deliverable-package]
 ---
 
 # Workspace File Operator
@@ -16,13 +19,12 @@ This is a Hermes-native `workspace-file-operator` workflow skill.
 
 ## Why This Exists
 
-`workspace-file-operator` exists so Hermes users can ask for this workflow in chat and get a structured, checkable answer instead of an improvised one.
+`workspace-file-operator` exists because a delete, overwrite, or bulk move often has no undo point: it scopes the path, confirms each destructive step, records beforehand whether a checkpoint covers the target (Hermes takes none unless checkpoints are on), and reports only what file evidence shows.
 
 ## Do Not Use When
 
-- The request is already handled by a narrower explicit skill with stronger evidence.
-- The user asks OMH to secretly run external platforms, connectors, schedulers, file exports, or runtime agents.
-- The only safe answer is to ask for missing authority, credentials, target, or observed evidence first.
+- An ordinary list, search, read, or one-file edit inside a known folder; use the native file tools directly.
+- The request converts files or produces a deck, PDF, or attachment; use `omh-materials-package` or `omh-deliverable-package`.
 
 ## Examples
 
@@ -41,7 +43,9 @@ Bad example:
 ## Completion Checklist
 
 - The path root, allowed file operations, excluded paths, destructive-operation policy, and stop condition are explicit.
-- Delete, overwrite, move, rename, permission change, archive mutation, upload, and download are gated or marked missing.
+- Delete, overwrite, move, rename, permission change, archive mutation, upload, and download are gated, or marked missing and not run.
+- With nobody to answer the confirmation (a scheduled job, a one-shot run, a webhook run), an irreversible or externally visible action is not run: it is handed to a person's turn and its confirmation is recorded as missing.
+- Checkpoint availability is recorded before any destructive step, and the confirmation gate holds either way; without an observed checkpoint covering the target, a reversible copy or a move to trash comes first.
 - Directory listings, file contents, hashes, diffs, and operation results are reported only from observed file evidence.
 
 ## Recovery Notes
@@ -49,14 +53,16 @@ Bad example:
 - If the target path or folder is missing, ask for the smallest path scope needed before preparing the operation.
 - If delete, overwrite, move, rename, chmod, or irreversible cleanup is requested, require an explicit confirmation gate.
 - If the request is file conversion, deck/PDF export, or attachment delivery, route to materials-package or deliverable-package instead.
+- On Hermes, when a checkpoint covers the change, the user's `/rollback` restores it and `/diff session` shows what the session changed since the checkpoint baseline; cite either only after the user runs it.
+- On Hermes, a write that its own file guards refuse or hold for approval (a sensitive system path, a protected instruction file) is that gate's outcome to record, `blocked` or the user's answer, never a write to retry through another tool.
 
 ## Workflow Lane
 
-- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+39 more`) - schedules, status, health, and ops review.
+- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+40 more`) - schedules, status, health, and ops review.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when Hermes should prepare or supervise local workspace/file-system operations such as listing, searching, organizing, copying, moving, renaming, archiving, or deleting files without claiming the operation ran.
 
@@ -102,7 +108,7 @@ Artifact expectations:
 - file_operation_scope/v1 with path root, allowed operations, excluded paths, and stop condition
 - file_observation_manifest/v1 only when directory listings, file stats, hashes, diffs, or operation output are observed
 - session_file_activity/v1 (`omh quality-evidence file-activity --hermes-session <id> --json`) cited in that manifest for which workspace files a Hermes session's read_file, write_file, and patch calls named and the outcome Hermes recorded; never as file-content, hash, diff, test, review, CI, or merge evidence
-- file_confirmation_gate/v1 for delete, overwrite, move, rename, chmod, archive mutation, or irreversible cleanup
+- file_confirmation_gate/v1 for delete, overwrite, move, rename, chmod, archive mutation, or irreversible cleanup, recording checkpoint availability before the step and keeping the confirmation either way: on Hermes, checkpoints are off unless the user turned them on (`checkpoints.enabled`, or a session started with the `--checkpoints` flag), and one covers only the directory Hermes snapshots for the step (for a terminal command, its working directory), minus its excludes (among them archives, media, logs, `.env` files, and dependency and build folders) and its limits (a file over the size cap, 10 MB by default, or a directory with more than 50,000 entries), so record `available` only when the user's `/rollback` lists checkpoints for a directory that holds the target and the target is not excluded or over a limit, `not_available` otherwise, and `not_observed` until then
 
 Safety rules:
 
@@ -125,4 +131,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

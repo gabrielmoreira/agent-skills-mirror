@@ -1,6 +1,8 @@
 ---
 name: "omh-jev-done-check"
 description: "[omh] Completion claim tested by Jev: Jev done check: does the gathered evidence support the completion claim? It can only object. Use when the user says: jev-done-check, jev done check, ask jev if this is done, jev evidence check."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]
@@ -8,6 +10,7 @@ metadata:
     phase: jev-done-check
     role: reviewer
     quality_tier: evidence-gated
+    related_skills: [omh-verification-gate, ulw-loop]
     requires_tools: [omh_jev_ask]
 ---
 
@@ -15,7 +18,7 @@ metadata:
 
 Required: each completion claim, observed evidence, and the goal. Output: objections per claim, or no_objection.
 
-Read `omh-routing/references/jev-rail.md` before the first ask: consent, what leaves the machine, limits, and non-answer statuses. Prepared OMH routing is not execution or approval. Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+Read `skill_view(name='omh-routing', file_path='references/jev-rail.md')` before the first ask: consent, what leaves the machine, limits, and non-answer statuses. Prepared OMH routing is not execution or approval. Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
 Contract: `references/full-contract.md`. Preset: `references/preset.md`.
 

@@ -7,6 +7,8 @@ Executable bytes remain unchanged.
 
 Use [installation](installation.md#ghidra) for supported hosts, prerequisites,
 configuration, startup deadlines, resource controls, and cleanup recovery.
+[Linux Ghidra launches](installation.md#linux-owned-process-prerequisite) also
+require a procps-compatible `ps` on REA's `PATH` for process ownership checks.
 [Windows P0](windows-ghidra-p0.md) has its own admission and lifecycle boundary;
 [NativeAOT observations](ghidra-nativeaot.md) include a built-in read-only PE
 snapshot parser and a separate optional annotation extension. Check the
@@ -41,6 +43,100 @@ does not prove text is absent. Both list and search Evidence carry this
 limitation. When an address is known, use `read_bytes` and `xrefs` to inspect
 bytes and references.
 
+## PE debug-symbol coverage
+
+The post-analysis handshake reports Ghidra's PDB Program Information attributes:
+the referenced file, GUID, hexadecimal age, legacy signature, version, and
+`PDB Loaded` state. Absent attributes remain null. PE Evidence carries a
+limitation when a PDB reference is present but Ghidra reports it as not loaded,
+or its load state is unknown. A bridge without this report leaves PDB coverage
+unknown. A reported loaded state is a Ghidra observation, not an independent
+PDB identity or complete symbol-coverage attestation, and retains an inline
+coverage caveat. Handshake PDB strings share a 4096 UTF-16-unit serialization
+budget (at most 24 KiB after JSON escaping); whole attributes that do not fit
+are omitted with an explicit resource limitation, rather than truncated.
+
+Original names and types may be missing even when auto-analysis completes.
+An empty name search does not establish that a function is absent; use
+`list_procedures` and address-based analysis to inspect recovered functions.
+REA imports a private executable copy and does not admit a caller-selected
+PDB companion. This reporting does not search symbol servers, copy a sibling
+PDB, or change analyzer settings.
+
+## Loaded addresses and file offsets
+
+`rea analyze <path> --provider ghidra --json` and MCP `binary_overview` report
+the observed loaded `image_base` in `normalized_result`. They retain each
+segment's reported `image_base` and `address_space`. A provider that does not
+report a base, or whose segments disagree, omits the overview field, following
+the existing contract on main. REA does not substitute zero or the first
+segment's address. All reported bases and address spaces remain visible in the
+complete segment inventory, including conflicting observations.
+
+`function` and most MCP procedure selectors use procedure names or
+provider analysis addresses. Ghidra `decompile` / MCP `procedure_pseudo_code`
+also accept source-file byte offsets. Existing symbols and analysis addresses
+take precedence; a `0x`-prefixed number that resolves to no procedure falls back
+to its observed source mapping. Use `--file-offset=0x...` on the CLI or
+`procedure: "file-offset:0x..."` through MCP to select file coordinates explicitly.
+Multiple mapping candidates fail as ambiguous rather than selecting a bank or
+address space. A successful conversion retains the file offset, mapped address
+and procedure entry in raw Evidence and `locations`.
+
+If an offset maps to loaded target bytes but no procedure starts at or contains
+the mapped address, the failure preserves both the original file offset and
+analysis address. This differs from an unmapped offset and does not recommend
+retrying the same offset syntax.
+If the function resolves but the backend fails or cancels decompilation, the
+failure retains the selector, mapped address and procedure entry without
+changing the backend failure code.
+
+Both mapping directions require a complete original `FileBytes` source whose
+SHA-256 matches the admitted target. Auxiliary files and partial source objects
+remain visible in the load-image inventory but do not establish offsets in the
+original target. Ghidra's object-local offsets are not silently treated as
+original-file coordinates. Original-source identity is checked once per source
+object per session; analysis-memory edits do not change the original bytes.
+
+ELF virtual addresses and file offsets are
+different coordinates. Ghidra can rebase a PIE ELF during import: in the
+source-owned verification fixture, ELF entry `0x1013` becomes Ghidra procedure
+`0x101013` with image base `0x100000`. That example is not a general conversion
+rule.
+
+Use `list_procedures` to select an observed procedure address. To relate file
+bytes to loaded memory, call MCP `inspect_native_load_image` or:
+
+```sh
+rea search <path> . --kind procedures --mode regex --provider ghidra --json
+rea inspect-native-load-image <path> --provider ghidra --json
+rea decompile <path> <observed-procedure-address> --provider ghidra --json
+rea decompile <path> --file-offset=0x1013 --provider ghidra --json
+rea address-to-file-offset <path> <observed-procedure-address> --provider ghidra --json
+```
+
+The load-image result preserves source-file indexes, file offsets, address
+spaces, and inclusive mapping ranges. Follow the mapping for the selected
+source file and region; adding `image_base` to an arbitrary file offset is not
+valid. For a linear byte-addressed, file-backed mapping, a file offset `F` in
+`[mapping.file_offset, mapping.file_offset + mapping.length)` maps to
+`mapping.start + (F - mapping.file_offset)` in the reported `address_space`.
+If several mappings cover the same file offset, keep those candidates distinct
+and select the procedure from the observed inventory. Uninitialized regions may
+have no file backing. ELF mappings are observed
+without independent format-specific load-image verification, as the result's
+status and limitations state.
+
+An unsuccessful numeric procedure lookup reports the current Ghidra image base
+and gives the CLI commands above alongside the corresponding MCP operations.
+Repeat any target-format, architecture, and entry-point options used to open the
+target. Other procedure operations keep their analysis-address semantics;
+file-offset fallback applies only to decompilation.
+
+Overview workflow revision 3 binds this output to snapshot identity. Older
+serialized overview Evidence remains readable; it is not replayed as a current
+overview merely because its source artifact is unchanged.
+
 ## Admitted function-analysis semantics
 
 | Concern                 | Ghidra contract                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
@@ -57,14 +153,18 @@ bytes and references.
 
 Function extents and instruction completeness refer to Ghidra's analyzed body.
 An inferred no-return call can terminate that body before subsequent bytes.
-Pseudocode, assembly, procedure info, instruction windows, and dossiers report
-observed terminal call sites in Evidence limitations, including resolved callee
-names, addresses, and FunctionManager flags when available. Instruction windows
-and dossiers also retain these warnings in their result limitations. An
-unresolved callee or unestablished terminal-flow basis remains explicit. These
-observations qualify the analysis; they do not prove that a no-return flag is
-incorrect or recover excluded code. Analysis profiles version this observation
-contract so older snapshots cannot replay unqualified results.
+Pseudocode, assembly, procedure info, instruction windows, callee and caller
+reads, and dossiers report observed terminal call sites in Evidence limitations,
+including resolved callee names, addresses, and FunctionManager flags when
+available. On x86-32, the same views also report the exact Borland/Delphi-style
+FS exception-registration pattern when its handler address falls outside the
+function body. This is a static registration observation; it does not establish
+handler execution or change the body. Instruction windows and dossiers also
+retain these warnings in their result limitations. An unresolved callee or
+unestablished terminal-flow basis remains explicit. These observations qualify
+the analysis; they do not prove that a no-return flag is incorrect or recover
+excluded code. Analysis profiles version this observation contract so older
+snapshots cannot replay unqualified results.
 
 On non-Windows hosts, the ephemeral import repair clears no-return flags on the
 known returning external ABI names `malloc`, `__tls_get_addr`, `memcpy`, `memset`,
@@ -94,7 +194,7 @@ host/provider acceptance run with only the host compiler.
 
 `npm run verify:ghidra:windows` checks source-owned native x86-64 PE applications;
 `-- --x86` selects x86 and `-- --dll` selects DLLs, and the flags can be combined.
-These lanes check all 25 read-only operations, target/snapshot/import SHA-256 linkage,
+These lanes check all 26 read-only operations, target/snapshot/import SHA-256 linkage,
 and project, endpoint, process, and runtime cleanup. The independent native
 lane checks DACLs, handle admission, cancellation, and Job Object lifecycle.
 `npm run verify:ghidra:windows:package` packs and installs REA into an isolated
@@ -103,3 +203,32 @@ It accepts the same architecture and DLL flags and verifies the selected PE role
 in the analysis profile.
 All lanes require matching native controls; package startup alone establishes
 only package compatibility.
+
+## Masked byte search
+
+`search_bytes` (`rea search-bytes PATH '48 8B ?? ?? 89' --provider ghidra`)
+searches initialized analyzed memory, including loader fixups. Supply hexadecimal
+byte pairs, with `??` for any byte. An optional equal-length hexadecimal `mask`
+selects bits: `pattern: "a0"`, `mask: "f0"` matches bytes from `a0` through `af`.
+Wildcards remain unconstrained even with an explicit mask. At least one bit
+must be constrained.
+
+Optional `start` and `end` addresses are inclusive and select one address space.
+A match must end at or before `end`, so `end` set inside a match excludes it.
+Without bounds, loaded memory blocks are eligible, in Ghidra address order.
+Blocks that are not loaded (file parts such as `.symtab`) and overlay blocks are
+listed in `searched.skipped_not_loaded` and are not searched; pass `start` or
+`end` in their address space to search them.
+Overlapping matches are included; matches never cross block boundaries.
+Each match reports its address, segment, unique source file offset (or null),
+and containing procedure (or null).
+
+Pages default to 100 matches and accept 1 to 1000. Pass `next_cursor` as `cursor`
+with the same target, profile, pattern, mask and bounds to continue. `complete`
+means no further matches remain. `searched.blocks` and `searched.bytes` describe
+the inclusive memory ranges examined for this page, including lookahead for the
+next match. Coverage can overlap between pages; do not sum it as unique memory.
+`searched.skipped_uninitialized` lists eligible uninitialized blocks on every
+page. These blocks are never searched. Cancellation returns a typed error,
+discards the active Ghidra database, and does not return a successful partial page.
+Hopper byte search remains unavailable until its implementation is verified.

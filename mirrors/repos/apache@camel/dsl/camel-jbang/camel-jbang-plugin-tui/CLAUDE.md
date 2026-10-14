@@ -1,0 +1,1 @@
+cache/repos/github.com/apache@camel/dsl/camel-jbang/camel-jbang-plugin-tui/AGENTS.md

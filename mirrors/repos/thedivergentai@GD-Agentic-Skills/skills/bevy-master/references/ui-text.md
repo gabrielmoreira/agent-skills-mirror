@@ -1,11 +1,9 @@
 ---
 name: bevy-ui-text
-description: "Docs-first stub for Bevy UI text. Godot counterpart: godot-ui-rich-text. Keywords: Bevy, text, UI, Text, bevy_text, Text2d."
+description: "Bevy ECS skill for UI text. Keywords: Bevy, text, UI, Text, bevy_text, Text2d."
 ---
 
-# Bevy UI text (docs-first stub)
-
-Not a full port. Docs-first stub. Godot counterpart: godot-ui-rich-text.
+# Bevy UI text
 
 ## When to use
 
@@ -16,27 +14,26 @@ Load this when a UI node or a 2D world label shows a string. Layout stays on bev
 - **UI:** the ui crate summary says spawn `Text` with `Node`.
 - **Feature:** `bevy_text` provides text functionality. `default_font` includes a default ASCII font.
 - **World text:** `Text2d` is on the sprite page, with `Text2dShadow`.
-- **Systems:** `update_text2d_layout` is named on the sprite page for 2D text. UI text layout systems were not opened by name.
+- **Systems:** `update_text2d_layout` is named on the sprite page for 2D text. Check the UI text docs for layout system names before writing them.
 
-## Godot idea to Bevy idiom
+## Coming from Godot
 
-| Idea | Bevy idiom (idea only) |
+| Godot idea | Bevy idiom |
 | --- | --- |
 | Label | Text on a UI node. |
 | World label | Text2d. |
 | Rich tags | Unverified. Do not invent BBCode. |
 
-## Gaps
+## Scope
 
-- The `bevy::text` module body was not opened. Font, span, and justification types are not named here.
-- Rich-text effects and inline images were not opened.
-
+- Check the `bevy::text` module for font, span, and justification types before writing them.
+- Check the text docs for rich-text effects and inline images before writing them.
 
 ## Expert Knowledge Delta
 
-Library target in prose: **Bevy 0.20.0**. Lattice URLs stay unversioned.
+Target: **Bevy 0.20+**.
 
-Opened canon only: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. This file does not invent their struct APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
+Core ECS types: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. See `bevy-events-messaging` for their APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
 
 ### Who owns state
 
@@ -59,23 +56,20 @@ Borrow rule: two systems that both mutably query the same component must be orde
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API this skill did not open | A Gaps row | A fabricated crate (solver, navmesh module, net, XR) |
+| An API outside the documented set | Check the official docs first | A made-up crate or API |
 
-Load `references/a-gate-notes.md` for the same table plus the gap rule.
+Load [references/ecs-ownership.md](ui-text-ecs-ownership.md) for the ownership table.
 
 ## NEVER
 
-- Do not put `/0.20.0/` in lattice URLs. WHY: permalinks stay on `latest`. The 0.20.0 pin belongs in prose once.
+- Do not pin `/0.20.0/` in docs URLs. WHY: links stay on `latest`; the 0.20 target is stated once in prose.
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
-- Do not invent a physics, navigation, networking, or XR crate here. WHY: those rows are gaps, blocked, or revisit.
+- Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot RichTextLabel or BBCode. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Godot RichTextLabel or BBCode. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
-- No Godot types in Bevy code. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No invented APIs or unnamed third-party crates as the chosen solver. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Creation Station content. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No umbrella skill over Godot and Bevy. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- Do not mark this row `ported`. It is `docs_mapped`. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Godot types in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No invented APIs or unnamed third-party crates as the chosen solver. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
@@ -83,28 +77,28 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 
 ### Official Documentation
 - [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - Unversioned API index. Feature list opened for 0.20.0.
+- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
 - [Plugins](https://bevy.org/learn/quick-start/getting-started/plugins/) - `Plugin`, `DefaultPlugins`, `MinimalPlugins`, and `add_plugins`.
 - [bevy::ui](https://docs.rs/bevy/latest/bevy/ui/index.html) - `Text` named in the crate summary.
 - [bevy::sprite](https://docs.rs/bevy/latest/bevy/sprite/index.html) - `Text2d`.
-- [bevy::text](https://docs.rs/bevy/latest/bevy/text/index.html) - Module exists via the `bevy_text` feature. Body not opened.
+- [bevy::text](https://docs.rs/bevy/latest/bevy/text/index.html) - Text module reference (`bevy_text`).
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](../SKILL.md) - Hub and schedules.
-- [bevy-ecs-composition](ecs-composition.md) - Components and systems.
-- [bevy-ui-layout](ui-layout.md) - The node that holds the text.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
+- [bevy-ui-layout](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ui-layout/SKILL.md) - The node that holds the text.
 
 #### Complements
-- [bevy-dialogue-system](dialogue-system.md) - Line strings.
-- [godot-ui-rich-text](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md) - Godot counterpart. Source idea only.
+- [bevy-dialogue-system](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-dialogue-system/SKILL.md) - Line strings.
+- [godot-ui-rich-text](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-ui-rich-text/SKILL.md) - Equivalent Godot skill.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](../SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

@@ -101,9 +101,9 @@ presentation, not read or write authority.
 
 The steward and Goal conversations share the same frontend activity view across task types. The reply shows the step in progress, such as "Reading notes.md". With the Codex executor, expand **Work steps** to follow each thought, read, search, command, tool call and file edit; a step's start and end share one row, failures show their exit code, and clicking a row reveals the full command, the changed files or the thinking text. Thinking text appears only when the model exposes it to the host (some models report only how long they thought). Command output, tool arguments and results, and file diffs are never shown; project paths read as relative paths, other local paths and credential-like values are hidden. A completed step means it ended, not that a check passed. Steps live only in the owner-only local session replay; the next LoopX Chat start after a Turn is more than 24 hours old clears them. Other executors keep **Recent activity** with the latest six observations; missing activity stays an honest waiting state. **Interrupt turn** targets that reply, preserves already visible text, and keeps the conversation available for continuation. A rejected interruption leaves the live reply visible; completion wins a race with interruption. This control does not stop the Goal. Attached hosts that do not expose interruption report that limitation.
 
-运行中可点击「调整本轮」，向原任务追加指令。当前支持原生 Codex 执行器；只有收到匹配的执行器回执后才显示已接收，这不代表调整后的任务已经完成。不支持的执行器、过期回合或无法确认的回执会保留草稿，不自动变成新任务。送达状态未知时，重试沿用同一请求编号，防止重复投递；执行器明确拒绝且确认未送达时，条件恢复后可用原文安全地重新发起。回合结束后，未发送的草稿仍可复制到输入框。草稿仅保存在当前页面，刷新前请自行保存。
+运行中可点击「调整本轮」，向原任务追加指令。当前支持原生 Codex 执行器；只有收到匹配的执行器回执后才显示已接收，这不代表调整后的任务已经完成。不支持的执行器、过期回合或无法确认的回执会保留草稿，不自动变成新任务。送达状态未知时，重试沿用同一请求编号，防止重复投递；执行器明确拒绝且确认未送达时，条件恢复后可用原文安全地重新发起。回合结束后，未发送的草稿仍可复制到输入框。「调整本轮」和普通会话输入框中的追加指令，在发送前必须将重试信息保存到当前标签页的浏览器存储并读回；刷新后恢复原请求身份，不自动发送。存储不可用时会提示尚未发送，草稿仅保留在当前页面；恢复存储后再重试。
 
-Use **Adjust turn** to add instructions to the running task. Native Codex executors currently support this control. A matching executor receipt confirms acceptance, not completion. Unsupported executors, expired turns and unconfirmed receipts retain the draft without starting another task. An unresolved delivery keeps the request identity on retry to prevent duplicates; a confirmed pre-delivery rejection allows the unchanged draft to start a new request after recovery. After the turn ends, copy an unsent draft to the composer. Drafts are page-local; save them before refreshing.
+Use **Adjust turn** to add instructions to the running task. Native Codex executors currently support this control. A matching executor receipt confirms acceptance, not completion. Unsupported executors, expired turns and unconfirmed receipts retain the draft without starting another task. An unresolved delivery keeps the request identity on retry to prevent duplicates; a confirmed pre-delivery rejection allows the unchanged draft to start a new request after recovery. After the turn ends, copy an unsent draft to the composer. Both **Adjust turn** and an ordinary conversation's in-turn composer save and read back retry information in tab-local browser storage before dispatch. Reload restores the original identity without sending. If storage is unavailable, the adjustment is not sent and its draft stays in the current page; restore storage before retrying.
 
 For API callers, `POST /api/chat/sessions/{session_id}/turns/{turn_id}/steer`
 accepts `message` (1–12000 characters) and a stable `client_ingress_id`.
@@ -158,25 +158,56 @@ loopx goal-lifecycle --goal-id <goal-id> --operation resume --actor-kind owner -
 
 ---
 
-### 创建 Goal 时选择已有工作目录 / Reuse a workspace when creating a Goal
+### 创建 Goal 时选择工作目录 / Choose a working directory when creating a Goal
 
-打开侧边栏的「创建 Goal」，填写目标和完成标准后，在「工作目录」中选择一个已有
-Goal，即可沿用它绑定的目录。检查配置并确认一次后，新的 Goal 在所选目录中创建；
-执行权限仍由表单中的权限选择与后端校验决定。对话草稿也可通过「修改」打开同一个表单。
+打开侧边栏的「创建 Goal」，填写目标和完成标准后，在「工作目录」中选择：
+
+- **Dashboard 工作区**：启动 Dashboard 时配置的目录（见下文），即使还没有 Goal 使用它；
+- **已有 Goal 的工作目录**：沿用该 Goal 绑定的目录；
+- **默认工作区**：由当前会话与连接配置解析。
+
+检查配置时，预览的「执行工作区」会写明目录名称、来源（Dashboard 工作区或与已有 Goal
+共用），以及是否为默认解析结果；确认后的 Goal 一定在预览所示目录中创建，执行权限仍由表单中的
+权限选择与后端校验决定。对话草稿也会显示同样的执行工作区，并可通过「修改」打开同一个表单改选。
 如果检查配置失败，目标文本与目录选择会保留供重试；失效或不可用的目录不会自动换成另一目录。
+预览只显示目录名称，不显示本机完整路径；同名目录（包括已有 Goal 的目录）会逐级附带上级目录名，直到可以区分。
 
-默认工作区继续由现有连接配置解析。这一入口支持沿用**已注册 Goal 的目录**，不提供任意
-本机路径输入或新目录接入；未连接的目录仍需先通过
-[项目连接流程](../guides/newcomer-command-path.md)接入。创建前检查预览中的工作区标识。
+要管理多个项目，可在启动时一次配置多个目录，之后每次创建 Goal 时分别选择：
 
-Open **Create Goal** in the sidebar, enter the objective and completion criteria, and select an
-existing Goal under **Working directory** to reuse its directory. Review and confirm once; the new
-Goal is created there under the selected execution permission and the existing backend checks.
-Conversational drafts reach the same form through **Edit**. A failed preview retains the text and
-selection for retry; unavailable selections do not silently redirect to another directory. The
-default still follows existing connection routing. This supports registered Goal workspaces, not
-arbitrary path entry or new-directory onboarding; connect a new project first and check the workspace
-reference in the creation preview.
+```bash
+loopx dashboard --scan-path ~/projects/app --scan-path ~/projects/docs-site
+```
+
+不在列表中的目录无法在页面上直接输入；请用 `--scan-path` 重新启动 Dashboard，或先通过
+[项目连接流程](../guides/newcomer-command-path.md)接入。选择目录不会增加执行权限。
+
+Open **Create Goal** in the sidebar, enter the objective and completion criteria, and choose a
+**Working directory**:
+
+- a **Dashboard workspace** — a directory the Dashboard was started with (below), even before any
+  Goal uses it;
+- an **existing Goal's directory** — reuse the directory that Goal is bound to;
+- the **default workspace** — resolved from the current conversation and connection routing.
+
+The review's **Workspace** field names the directory, where it comes from (a Dashboard workspace or
+shared with an existing Goal), and whether the default chose it. Confirming creates the Goal in
+exactly that directory, under the selected execution permission and the existing backend checks.
+Conversational drafts show the same field, and **Edit** opens the form to choose another directory.
+A failed preview retains the text and selection for retry; unavailable selections never silently
+redirect to another directory. The review shows directory names, not local paths; two directories
+with the same name, including existing Goals' directories, gain parent directory names until they
+read apart.
+
+To work on several projects, start the Dashboard once with each directory and pick one per Goal:
+
+```bash
+loopx dashboard --scan-path ~/projects/app --scan-path ~/projects/docs-site
+```
+
+Directories that are not listed cannot be typed into the page; restart the Dashboard with
+`--scan-path`, or connect the project first through the
+[project connection flow](../guides/newcomer-command-path.md). Choosing a directory does not expand
+execution permissions.
 
 ## 🎯 4. Goal 深度工作区
 

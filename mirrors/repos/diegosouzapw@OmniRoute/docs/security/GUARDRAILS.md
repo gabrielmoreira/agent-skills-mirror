@@ -86,6 +86,24 @@ Flow:
 Forced modes short-circuit **before** the auto heuristic runs; `auto` behavior
 is byte-identical to the pre-PR-1 guardrail.
 
+#### API-key scope (`visionBridgeKeyScope.ts`)
+
+When the caller's API key restricts `allowedConnections`, quota pools
+(`allowedQuotas`) or models (`allowedModels` / `blockedModels` /
+`modelAccessMode: "restricted"` / `disableNonPublicModels`), the bridge only
+picks reroute and describe models the key may use, on connections the key may
+use. The describe call then always goes through the OmniRoute self-loop with
+the `x-omniroute-self-loop-key-id` header, so the receiving chat request
+enforces that key's connection and model policy again. `enforceApiKeyPolicy()`
+honors that header only together with the self-loop bearer, so it can only
+narrow access, and an id that does not resolve is rejected.
+
+If no vision model is permitted for the key, the describe path steps aside and
+the request passes through unchanged, the same fail-open behavior as a disabled
+guardrail (meta `{ skipped: true, reason: "no_permitted_vision_model" }`).
+Requests without a key, and keys without these restrictions, behave exactly as
+before.
+
 #### Task-aware describe prompt (`modalityBridgeVisionTaskAware`)
 
 Default **true**. `composeVisionPrompt()` (`visionBridgeHelpers.ts`) appends

@@ -3,10 +3,10 @@
 OpenHuman is a React and Tauri v2 desktop assistant with an in-process Rust
 core. The core also exposes JSON-RPC and a CLI.
 
-Architecture: [overview](gitbooks/developing/architecture.md),
-[frontend](gitbooks/developing/architecture/frontend.md),
-[Tauri shell](gitbooks/developing/architecture/tauri-shell.md), and
-[agent harness](gitbooks/developing/architecture/agent-harness.md).
+Architecture: [overview](docs/gitbooks/en/developing/architecture.md),
+[frontend](docs/gitbooks/en/developing/architecture/frontend.md),
+[Tauri shell](docs/gitbooks/en/developing/architecture/tauri-shell.md), and
+[agent harness](docs/gitbooks/en/developing/architecture/agent-harness.md).
 
 ## Repository map
 
@@ -16,7 +16,7 @@ Architecture: [overview](gitbooks/developing/architecture.md),
 | `crates/openhuman-app/` | Thin desktop host; excluded from the root workspace, build with `--manifest-path crates/openhuman-app/Cargo.toml`. Depends on `openhuman-rpc` only and boots its in-process core with `openhuman_rpc::host::desktop` |
 | `crates/openhuman-core/` | Package `openhuman`: business domains under `src/<domain>/`, the controller contract, dispatch and auth under `src/core/` |
 | `crates/openhuman-core/src/<domain>/` | Flat business-domain modules (agent, memory, tools, security, channels, ...) |
-| `crates/openhuman-core/src/storage/` | The process's storage backend on the `tinystoragedrivers` ports: URL resolution (`OPENHUMAN_STORAGE_URL` / `[storage] url`), the install slot, agent scopes (`local` for the operator), and the base the domain stores build on. Features `storage-sqlite`, `storage-file`, `storage-mongodb`; see `gitbooks/developing/architecture/storage.md` |
+| `crates/openhuman-core/src/storage/` | The process's storage backend on the `tinystoragedrivers` ports: URL resolution (`OPENHUMAN_STORAGE_URL` / `[storage] url`), the install slot, agent scopes (`local` for the operator), and the base the domain stores build on. Features `storage-sqlite`, `storage-file`, `storage-mongodb`; see `docs/gitbooks/en/developing/architecture/storage.md` |
 | `crates/openhuman-core/src/core/` | CLI, controller contract (`Outcome`, schemas) and in-process dispatch, controller registry, event bus, runtime composition; no business logic and no JSON-RPC server |
 | `crates/openhuman-cli/` | The `openhuman-core` binary (`src/main.rs`, `openhuman_rpc::host::cli`), the ops bins (`src/bin/`: `openhuman-fleet`, `test-mcp-stub`), and every root `tests/*.rs` / `examples/*.rs` target. Normal dependency: `openhuman-rpc` only; the tests reach core, embed and tinyhumans through `[dev-dependencies]`. The benchmark bins live in the openhuman-benchmarks repository |
 | `crates/openhuman-embed/` | Library facade over the core (depends on core only): `Runtime`/`RuntimeBuilder` with host presets, `embed::process` (tokio runtime, logging, dotenv, master key, Sentry options), and the curated facades hosts use (`config`, `artifacts`, `chat_surface`, `modules`, `identity`). Its doc-hidden `__host` list is for tinyhumans and rpc only |
@@ -24,8 +24,8 @@ Architecture: [overview](gitbooks/developing/architecture.md),
 | `crates/openhuman-tinyhumans/` | The TinyHumans layer above embed (depends on embed only): SDK-backed backend transport, a `RuntimeBuilder` that boots connected, and the host-side login/session owner (login-token exchange, `/auth/me`, current-user cache, credential handoff) used by app and TUI |
 | `crates/openhuman-tui/` | Standalone terminal frontend; depends on `openhuman-rpc` only and boots with `openhuman_rpc::host::tui` |
 | `tests/` | Rust integration and JSON-RPC tests |
-| `gitbooks/` | Public product and contributor documentation |
-| `docs/` | Internal maintainer documentation |
+| `docs/gitbooks/` | Public product and contributor documentation, synced with GitBook (`en/` is canonical, `zh/` the translation) |
+| `docs/` | Everything else here is internal maintainer documentation |
 | `vendor/` | Recursive git submodules; root `Cargo.toml` `[patch]` tables point into this tree |
 
 Run commands from the repository root. The root package is a private pnpm
@@ -408,9 +408,9 @@ Additional rules:
 
 ## Tool, harness, and runtime boundaries
 
-Embed public API documentation: [Embedding](gitbooks/developing/embed/README.md),
-[concepts](gitbooks/developing/embed/concepts/README.md), and the source-generated
-[builder setters](gitbooks/developing/embed/builder-setters.md). Snippets come from
+Embed public API documentation: [Embedding](docs/gitbooks/en/developing/embed/README.md),
+[concepts](docs/gitbooks/en/developing/embed/concepts/README.md), and the source-generated
+[builder setters](docs/gitbooks/en/developing/embed/builder-setters.md). Snippets come from
 compiled examples; run `pnpm docs:generate` and `pnpm docs:check` after changing them.
 
 
@@ -643,7 +643,7 @@ on the next core start. It adds no Cargo gate. A disabled component's module is
 never downloaded, mapped or registered (`ModuleState::Disabled`,
 `LoadError::Disabled`), its tools are not registered, its RPC namespace answers
 `COMPONENT_DISABLED:<name>`, and `about_app` marks its capabilities `disabled`.
-See `gitbooks/developing/components.md`.
+See `docs/gitbooks/en/developing/components.md`.
 
 Memory uses `tinymemory-api` as its contract. `memory::api` is a selective
 re-export of the wire surface, not a place to copy or widen the whole crate.

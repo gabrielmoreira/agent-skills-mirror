@@ -31,7 +31,8 @@ surface is the explicit opt-in fanout dispatch bridge described under
 Implementation Boundaries — operator-invoked, local-only, fully observed,
 never hidden and never a default. The one sanctioned network call is the
 `omh_jev_ask` tool, also described there — user-requested per turn, never a
-default.
+default. The OMH TUI that bare `omh` opens is a terminal frontend over Hermes'
+own gateway, not an execution surface; its boundary is stated there too.
 
 ## Command Audience
 
@@ -164,6 +165,74 @@ PR without the chat history.
   client in `src/` and only `tools/jev_ask_tool.py` may import it. Third-party
   Jev plugins are still never called, and `omh doctor` still reads no
   credential value.
+- The OMH TUI is the frontend bare `omh` opens. `omh` runs the user's own
+  `hermes --tui` with `HERMES_TUI_DIR` pointing at OMH's packaged frontend, so
+  Hermes' launcher still resolves the profile, resume target, working
+  directory and session ownership, then starts OMH's frontend in place of its
+  own. That frontend spawns exactly one child, Hermes' `tui_gateway`, with the
+  interpreter and import path the launcher handed it, and speaks the
+  gateway's stdio JSON-RPC. It relays only what the person types. It never
+  answers an approval, clarify, sudo, or secret request on its own: Esc or
+  Ctrl+C declines, an approval decline is an explicit deny, allowing a
+  command takes the arrows and then Enter, and a request the gateway
+  withdraws (its own timeout, an interrupt) closes without an answer.
+  Leaving a session (`/new`, a switch) declines that session's open requests
+  and says so in the new transcript. Shift+Tab is the one key that changes
+  what Hermes asks. It may turn on Hermes' per-session yolo, the switch
+  Shift+Tab sets in Hermes' own TUI, which stops Hermes from sending approval
+  requests for that session; the TUI still answers none, because Hermes then
+  sends none. It does this only on the person's keypress, with a `config.set`
+  that names the session and an explicit value and never a `scope`, so it
+  never writes the global `approvals.mode` and never sets the switch for the
+  gateway process. Leaving a session it turned yolo on for, or whose yolo
+  call is still unanswered (`/new`, a switch, `/quit`, any exit), it first
+  sends that session an explicit off, since Hermes keeps yolo through
+  `session.close` for a session a messaging gateway started. The mode is
+  shown on the composer (both rules and the mode row, or the status line on
+  a short terminal) only once Hermes confirms it
+  for that session; when turning it on, an answer that confirms anything else
+  is a failure, followed by an explicit off, and accept is shown again if
+  Hermes does not confirm that off either; and `session.info` corrects
+  what is shown, so yolo that Hermes reports for its own reasons is shown
+  too, except that one saying approvals are on within 2 seconds of a
+  confirmed on is held until the next, keeping accept shown. Ctrl+T and
+  `/effort` set that session's reasoning effort through the same
+  session-scoped call. Plan mode is the frontend's own flag, also
+  turned on with Shift+Tab: while it is on, a prompt the person types goes to
+  Hermes as `/plan <text>`. While Hermes has approvals off on its own (an off
+  it confirmed did not end them, or they were off without the TUI turning
+  them on), Shift+Tab sends nothing and turns only plan mode on and off. A
+  steer (Ctrl+Enter, `/steer`) sends into the running turn only text the
+  person typed and sent that way; the TUI never steers on its own, and a
+  queued prompt is never turned into a steer. A steer Hermes does not take
+  waits in the TUI's own queue for the running turn to end, whatever the busy
+  mode, so it never interrupts that turn. The subagent views (the strip, the
+  list, one agent's log) are read-only:
+  `subagent.tail` is the only subagent call the TUI makes, it reads the tail
+  of the log the person opened, and the TUI never steers, interrupts or
+  answers for a subagent. Mouse reporting is on in two states only, a turn
+  running with agents named on the strip and the agent list open, and off in
+  every other and on every exit. A plain left click on an agent opens its
+  log, one on the list's `main` row leaves the list, and every other report
+  does nothing. A report that starts while reporting is on, or within 0.5 s
+  after it goes off, types nothing if it arrives whole within 0.8 s of its
+  first byte. If 300 ms pass after that byte without the next, the byte is
+  read as Esc, and the rest is dropped only if it arrives within 0.5 s after
+  that. One that starts later and is split right after its first or second
+  byte is read as keys. It never attaches to a session another runtime
+  owns: when the launcher sets `HERMES_TUI_GATEWAY_URL`, it exits and names
+  `hermes`. It writes no prompt
+  text, transcript, attachment, secret or server-request frame to disk or to
+  a log. The files it does write are metadata: the launcher's active-session
+  file (the session id), and what OMH's own HUD reader and model-chain picker
+  already write under the OMH home (the HUD fan-out cache and its lock, and
+  the chains `/omh-model` saves). The frontend opens no socket and makes no
+  network call, strips the sidecar and attach URLs from the gateway's
+  environment, and reaps the gateway when it exits, SIGTERM and SIGHUP
+  included. OMH itself still makes no
+  LLM call; every model call, and every other network call the gateway makes,
+  is Hermes'. This is a foreground terminal the person launched, not a
+  background runtime, a transport bot, or a third process bridge.
 - No Hermes core patching.
 - Runtime artifacts are local, deterministic, schema-versioned, and
   metadata-only by default.

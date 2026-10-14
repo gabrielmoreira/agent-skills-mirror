@@ -89,5 +89,5 @@ No `store.rs`. State is per-session and in-memory:
 ## Further reading
 
 - [Parent module README](../README.md)
-- [Agent harness architecture](../../../../../gitbooks/developing/architecture/agent-harness.md)
-- [Smart token compression](../../../../../gitbooks/features/token-compression.md)
+- [Agent harness architecture](../../../../../docs/gitbooks/en/developing/architecture/agent-harness.md)
+- [Smart token compression](../../../../../docs/gitbooks/en/features/token-compression.md)

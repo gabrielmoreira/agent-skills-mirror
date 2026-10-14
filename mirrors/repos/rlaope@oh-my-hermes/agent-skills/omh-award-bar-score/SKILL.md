@@ -1,6 +1,7 @@
 ---
 name: "omh-award-bar-score"
 description: "[omh] Aiming for design-award quality: score a web surface against published design-award judging axes and name the binding constraint. Use when the user says: award-bar-score, award bar score, award winning, award-winning, award winning website, award-winning website, award winning design, award ready."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, materials]
@@ -20,10 +21,10 @@ This is an OMH `award-bar-score` workflow skill, projected for Agent Skills host
 
 ## Do Not Use When
 
-- The request is broad premium quality across decks, PDFs, or posters; use `design-quality-gate`.
-- The request is frontend implementation, layout, or design-system work; use `frontend`.
-- The request is WCAG, keyboard, or screen-reader conformance; use `accessibility-audit`.
-- The request is a rendered capture or a pixel verdict; use `visual-qa`.
+- The request is broad premium quality across decks, PDFs, or posters; use `omh-design-quality-gate`.
+- The request is frontend implementation, layout, or design-system work; use `omh-frontend`.
+- The request is WCAG, keyboard, or screen-reader conformance; use `omh-accessibility-audit`.
+- The request is a rendered capture or a pixel verdict; use `omh-visual-qa`.
 - The award is a business, sales, or team award with no judged web surface.
 
 ## Examples
@@ -55,7 +56,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when a web surface must be judged against an external award bar: per-axis scores for UI, UX, and innovation, the weighted total against the published threshold, and the one axis holding the score down.
 

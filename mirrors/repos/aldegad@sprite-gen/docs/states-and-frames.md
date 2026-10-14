@@ -4,6 +4,23 @@
 
 > `SKILL.md` 허브에서 분리한 시나리오 상세. 요청할 상태(state) 목록과 프레임 수를 정할 때 이 문서를 따른다.
 
+## Video Path State Defaults
+
+Video path defaults apply strictly to the video path, independent of component-row simple states. Mode `once` executes a single action transitioning from an initial pose to a stable final pose, skipping return motion, with no seam gate or wrap correction. Mode `one-shot` executes a `rest -> action -> rest` cycle requiring seam closure.
+
+Six states automatically select `once` across `sprite-gen video-prompt`, `sprite-gen video-set`, and `sprite-gen video-loop --cycle auto`. Defaults for `idle`, `walk`, `run`, `jump`, and `attack` remain unchanged. Cyclic states (`idle`, `walk`, `run`, `talk`, `blink`, `breathe`) reject explicit `--cycle once`, but overrides allow `jump`, `attack`, or custom actions.
+
+Motion prompts request a 0.4 s hold. Anatomy is preserved across body plans (`quadruped`, `legless`). Headroom requires symmetric side margins for `death` and `hurt_hold`, overhead room for `cast` and `transform`, and descent room for `land`; border contact is refused. Candidate end pose geometry requires median end-window height <= 80% of initial height for `death` and `fall`, while other `once` states require changed geometry (conservative geometric screen; inspect semantic pose visually). Root displacement metadata is omitted. See [video-pipeline.md](video-pipeline.md) for gate and metadata details.
+
+| State | End Pose |
+|---|---|
+| `death` | lying prone on ground |
+| `fall` | grounded resting pose after downward drop |
+| `land` | low crouch after descent |
+| `cast` | raised implement or forward body in casting pose with no effects |
+| `hurt_hold` | held recoil |
+| `transform` | final changed form |
+
 ## Simple MVP Scope
 
 The default user promise is deliberately simple:

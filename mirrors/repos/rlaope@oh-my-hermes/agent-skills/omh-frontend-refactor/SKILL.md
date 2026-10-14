@@ -1,6 +1,7 @@
 ---
 name: "omh-frontend-refactor"
 description: "[omh] Oversized or tangled UI component: behavior-preserving refactor of UI code - preview the full change plan first, apply as a second explicit step, and work impact-ordered from state architecture down to naming polish. Use when the user says: frontend-refactor, front-refactor, frontend refactor, refactor this component, refactor the component, refactor my component, component refactor, react refactor."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, maintenance]
@@ -20,10 +21,10 @@ This is an OMH `frontend-refactor` workflow skill, projected for Agent Skills ho
 
 ## Do Not Use When
 
-- The target is not UI code, or the smell is generic slop, duplication, or dead code outside a component tree; use `ai-slop-cleaner`.
-- The user wants new UI built or redesigned rather than restructured; use `frontend`.
-- The user wants findings and a verdict without changing the code; use `code-review`.
-- The restructuring crosses module boundaries or changes architecture beyond the component tree; use `refactor-plan` for the phased execution shape, or `ralplan` first when the direction itself is still contested.
+- The target is not UI code, or the smell is generic slop, duplication, or dead code outside a component tree; use `omh-ai-slop-cleaner`.
+- The user wants new UI built or redesigned rather than restructured; use `omh-frontend`.
+- The user wants findings and a verdict without changing the code; use `omh-code-review`.
+- The restructuring crosses module boundaries or changes architecture beyond the component tree; use `omh-refactor-plan` for the phased execution shape, or `ulw-plan` first when the direction itself is still contested.
 
 ## Examples
 
@@ -54,7 +55,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when existing UI code needs restructuring without behavior change - an oversized component, boolean-flag state, effect chains, prop drilling - and the user wants a previewed, pass-ordered refactor plan rather than a new build or a verdict-only review.
 

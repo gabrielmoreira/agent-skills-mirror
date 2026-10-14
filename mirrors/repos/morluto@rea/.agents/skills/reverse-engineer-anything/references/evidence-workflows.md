@@ -65,3 +65,7 @@ Use `inspect_analysis_view` with `view: {kind: "api-surface"}` on retained
 method, origin and path template. Format matches are inferences, not handler
 identity or schemas. Group pages cite parent record ordinals; consult record
 coverage and exclusions before claiming completeness. No requests are replayed.
+When the connected schema advertises `include_query_parameter_names`, select
+it in the view for distinct observed names with original record ordinals. Query
+values are omitted; the names establish neither required parameters nor a
+complete server schema. Keep the original parent Evidence for exact URLs.

@@ -51,6 +51,13 @@
  *                           cursor-agent 2026.07.23 or newer.
  *   --timeout <dur>         Relay-side watchdog (default: 30m; h/m/s strings
  *                           like 90s, 45m, 2h). cursor-agent has no timeout flag.
+ *   --stall-timeout <dur>   Opt-in stall watchdog, h/m/s like 10m (default: off).
+ *                           If cursor-agent emits no output for this long while
+ *                           no tool call is in flight, the process tree is killed
+ *                           and result.json gets status "stalled". The clock
+ *                           pauses during a tool call (a long test run streams
+ *                           nothing until it completes), so only a silent agent
+ *                           turn counts.
  *   --out-dir <dir>         Where to write run artifacts (default: a fresh dir
  *                           under the system temp dir).
  *   -h, --help              Show this help.
@@ -69,7 +76,7 @@
  * dies on a signal, the exit code is 128 plus the signal number and
  * `result.json` records the signal. Once the brief validates, `result.json` is
  * written on every outcome — completed, failed, timeout (the --timeout
- * watchdog fired), aborted (the relay itself was killed and forwarded the kill
+ * watchdog fired), stalled (the --stall-timeout watchdog fired), aborted (the relay itself was killed and forwarded the kill
  * to cursor-agent), or cursor_agent_unavailable.
  */
 
@@ -208,6 +215,7 @@ function parseArgs(argv) {
     resumeLast: false,
     addDirs: [],
     timeout: DEFAULT_TIMEOUT,
+    stallTimeout: null,
     outDir: null,
   };
   for (let i = 0; i < argv.length; i += 1) {
@@ -235,6 +243,7 @@ function parseArgs(argv) {
       case "--resume-last": opts.resumeLast = true; break;
       case "--add-dir": opts.addDirs.push(next()); break;
       case "--timeout": opts.timeout = next(); flagged.add("timeout"); break;
+      case "--stall-timeout": opts.stallTimeout = next(); break;
       case "--out-dir": opts.outDir = resolve(next()); break;
       default:
         fail(`unknown option: ${arg}`);
@@ -265,6 +274,9 @@ function parseArgs(argv) {
   // malformed --timeout must fail loudly here — a silent 30m fallback would be wrong.
   if (parseDuration(opts.timeout) === null) {
     fail(`--timeout "${opts.timeout}" is invalid or too long; use a positive h/m/s duration no longer than about 24 days`);
+  }
+  if (opts.stallTimeout !== null && parseDuration(opts.stallTimeout) === null) {
+    fail(`--stall-timeout "${opts.stallTimeout}" is invalid or too long; use a positive h/m/s duration no longer than about 24 days`);
   }
   return opts;
 }
@@ -432,6 +444,7 @@ function makeResultWriter(opts, version, run) {
       model: opts.model,
       readOnly: opts.readOnly,
       force: opts.force && !opts.readOnly,
+      stallTimeout: opts.stallTimeout,
       sandbox: opts.sandbox,
       resumed: Boolean(opts.resumeLast || opts.session),
       cursorAgentVersion: version,
@@ -543,7 +556,18 @@ function dispatchToCursor(opts, brief, run, writeResult) {
   let resultIsError = false;
   const textChunks = [];
   const stderrTail = [];
+  // Stall clock: any output counts as activity, except that the clock pauses while a tool
+  // call is in flight — Cursor streams nothing between a tool's started and completed
+  // events, however long the command runs. A live cursor-agent that goes silent between
+  // turns (seen: after "thinking completed", before the final message, never exiting)
+  // is what this catches long before --timeout.
+  let lastActivity = Date.now();
+  const toolsInFlight = new Set();
   const scan = makeEventScanner((event) => {
+    if (event.type === "tool_call" && typeof event.call_id === "string") {
+      if (event.subtype === "started") toolsInFlight.add(event.call_id);
+      else if (event.subtype === "completed") toolsInFlight.delete(event.call_id);
+    }
     if (typeof event.session_id === "string") sessionId = event.session_id;
     if (event.type === "system" && event.subtype === "init") {
       if (typeof event.model === "string") resolvedModel = event.model;
@@ -573,11 +597,13 @@ function dispatchToCursor(opts, brief, run, writeResult) {
   const stderrDecoder = new StringDecoder("utf8");
 
   child.stdout.on("data", (chunk) => {
+    lastActivity = Date.now();
     appendFileSync(run.eventsPath, chunk);
     scan(stdoutDecoder.write(chunk));
   });
 
   child.stderr.on("data", (chunk) => {
+    lastActivity = Date.now();
     process.stderr.write(chunk);
     appendFileSync(run.stderrPath, chunk);
     const text = stderrDecoder.write(chunk);
@@ -599,7 +625,9 @@ function dispatchToCursor(opts, brief, run, writeResult) {
   let watchdogFired = false;
   let sigkillTimer = null;
   const timeoutMs = parseDuration(opts.timeout) ?? parseDuration(DEFAULT_TIMEOUT);
-  const watchdogTimer = setTimeout(() => {
+  let stallFired = false;
+  const fireWatchdog = () => {
+    if (watchdogFired || settled) return;
     watchdogFired = true;
     child.once("exit", () => {
       child.stdout.destroy();
@@ -609,7 +637,18 @@ function dispatchToCursor(opts, brief, run, writeResult) {
     sigkillTimer = setTimeout(() => {
       if (!settled) killChild(child, "SIGKILL");
     }, 10_000);
-  }, timeoutMs);
+  };
+  const watchdogTimer = setTimeout(fireWatchdog, timeoutMs);
+  const stallMs = opts.stallTimeout === null ? null : parseDuration(opts.stallTimeout);
+  const stallPoll = stallMs === null ? null : setInterval(() => {
+    if (watchdogFired || settled) return;
+    if (toolsInFlight.size > 0) {
+      lastActivity = Date.now();
+    } else if (Date.now() - lastActivity >= stallMs) {
+      stallFired = true;
+      fireWatchdog();
+    }
+  }, Math.min(5_000, Math.max(250, Math.floor(stallMs / 4))));
 
   // The relay's own death must still produce a result: without this, a kill from the
   // orchestrator's side (its command timeout, a stopped task, a closed terminal) writes
@@ -620,6 +659,7 @@ function dispatchToCursor(opts, brief, run, writeResult) {
       if (settled) return;
       settled = true;
       clearTimeout(watchdogTimer);
+    if (stallPoll) clearInterval(stallPoll);
       if (sigkillTimer) clearTimeout(sigkillTimer);
       const touched = gitTouchedFiles(opts.cd);
       const abortedFields = {
@@ -659,6 +699,7 @@ function dispatchToCursor(opts, brief, run, writeResult) {
     // overlaps the remaining budget fire, set watchdogFired, and report timeout.
     if (!watchdogFired) {
       clearTimeout(watchdogTimer);
+    if (stallPoll) clearInterval(stallPoll);
       if (sigkillTimer) clearTimeout(sigkillTimer);
     }
     const drain = setTimeout(() => {
@@ -673,6 +714,7 @@ function dispatchToCursor(opts, brief, run, writeResult) {
     if (settled) return;
     settled = true;
     clearTimeout(watchdogTimer);
+    if (stallPoll) clearInterval(stallPoll);
     if (sigkillTimer) clearTimeout(sigkillTimer);
     const touched = gitTouchedFiles(opts.cd);
     const result = writeResult({
@@ -696,6 +738,7 @@ function dispatchToCursor(opts, brief, run, writeResult) {
     if (settled) return;
     settled = true;
     clearTimeout(watchdogTimer);
+    if (stallPoll) clearInterval(stallPoll);
     if (sigkillTimer) clearTimeout(sigkillTimer);
     // a descendant that ignored SIGTERM must not outlive the timeout report: once the
     // parent is down, sweep the group (no-op where taskkill already felled the tree)
@@ -708,7 +751,7 @@ function dispatchToCursor(opts, brief, run, writeResult) {
     const exitCode = succeeded ? 0 : mapped === 0 ? 1 : mapped;
     const touched = gitTouchedFiles(opts.cd);
     const result = writeResult({
-      status: succeeded ? "completed" : watchdogFired ? "timeout" : "failed",
+      status: succeeded ? "completed" : stallFired ? "stalled" : watchdogFired ? "timeout" : "failed",
       exitCode,
       signal: signal ?? null,
       sessionId,
@@ -718,7 +761,8 @@ function dispatchToCursor(opts, brief, run, writeResult) {
       finalMessage: assembleFinal(),
       touchedFiles: touched,
       ...(succeeded ? {} : { stderrTail: stderrTail.slice(-20) }),
-      ...(watchdogFired ? { error: `cursor-agent did not finish within --timeout ${opts.timeout}; killed by the relay watchdog` } : {}),
+      ...(watchdogFired && !stallFired ? { error: `cursor-agent did not finish within --timeout ${opts.timeout}; killed by the relay watchdog` } : {}),
+      ...(stallFired ? { error: `cursor-agent produced no output for --stall-timeout ${opts.stallTimeout} with no tool call in flight; killed by the relay stall watchdog — inspect the working tree, then resume the session with a delta brief` } : {}),
       ...(resultIsError && !watchdogFired ? { error: "cursor-agent reported an error result (is_error: true in its result event)" } : {}),
     });
     printSummary(result, run.resultPath);
@@ -759,7 +803,7 @@ function printSummary(result, resultPath) {
   lines.push("");
   lines.push(`relay: ${result.status} (exit ${result.exitCode}${result.signal ? `, killed by ${result.signal}` : ""})  ·  cursor-agent ${result.cursorAgentVersion ?? "?"}`);
   if (result.signal === "SIGKILL" && result.status === "failed") lines.push("hint: the host killed the process (commonly the OOM killer or a supervisor timeout) — this is not a cursor-agent error; check host memory and re-dispatch, or split the task into smaller briefs.");
-  if (result.signal === "SIGTERM" && result.status === "failed") lines.push("hint: something outside the relay terminated cursor-agent (a supervisor, the session ending, or a manual kill) — when the relay itself does the killing it reports status \"timeout\" or \"aborted\" instead; inspect the working tree before re-dispatching.");
+  if (result.signal === "SIGTERM" && result.status === "failed") lines.push("hint: something outside the relay terminated cursor-agent (a supervisor, the session ending, or a manual kill) — when the relay itself does the killing it reports status \"timeout\", \"stalled\", or \"aborted\" instead; inspect the working tree before re-dispatching.");
   if (result.resumed) lines.push("mode: resumed an existing session");
   if (result.readOnly) lines.push("mode: read-only (plan)");
   if (result.resolvedModel) lines.push(`model: ${result.resolvedModel}${result.permissionMode ? `  ·  permission mode: ${result.permissionMode}` : ""}`);

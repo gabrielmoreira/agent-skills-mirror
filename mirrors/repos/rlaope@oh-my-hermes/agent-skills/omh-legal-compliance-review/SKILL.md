@@ -1,6 +1,7 @@
 ---
 name: "omh-legal-compliance-review"
 description: "[omh] Business contract, NDA, or policy with legal risk: surface contract and compliance risks, questions, and escalation points before a legal decision or action. Use when the user says: contract review, contract liability clause, regulatory analysis, compliance review, contract redline, redline the contract, negotiation preparation, negotiation strategy."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]
@@ -21,9 +22,10 @@ This is an OMH `legal-compliance-review` workflow skill, projected for Agent Ski
 ## Do Not Use When
 
 - The user needs a final jurisdiction-specific legal opinion, legal representation, or authoritative filing decision; prepare the issue and counsel brief instead.
-- The review is about code, secrets, permissions, prompt injection, dependencies, or unsafe tool behavior; use `security-safety-review`.
-- The request is a plain-language rewrite without a legal-risk review objective; use `content-operator`.
-- The user asks to sign, accept, submit, file, publish, or change a policy or contract in an external system; use `connector-operator` only after explicit authority.
+- The review is about code, secrets, permissions, prompt injection, dependencies, or unsafe tool behavior; use `omh-security-safety-review`.
+- The request is a plain-language rewrite without a legal-risk review objective; use `omh-content-operator`.
+- The user asks to sign, accept, submit, file, publish, or change a policy or contract in an external system; use `omh-apps` only after explicit authority.
+- Redact the PII in the file itself and scan it before sending it, once sharing it is cleared; use `omh-data-share-review`.
 
 ## Examples
 
@@ -52,7 +54,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when supplied contract, policy, product, process, or regulatory context needs a scoped issue matrix, assumptions, and counsel/escalation brief.
 

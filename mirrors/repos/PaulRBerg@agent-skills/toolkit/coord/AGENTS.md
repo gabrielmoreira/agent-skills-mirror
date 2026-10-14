@@ -94,8 +94,9 @@ Authoritative end cleanup releases the whole logical item.
 
 Residual ownership recorded by `done`, narrowing, or an observed unclaimed post-tool write is the owner's own work (no
 `stale-dirt` or baseline on reclaim) and is reclaimable only while the owner's session row exists. `reconcile_ended`
-releases attribution whose owner is gone so orphaned dirt degrades to the stale-dirt advisory instead of a permanent
-`residual` blocker. The detailed operator reference below is part of this document.
+releases attribution whose owner is gone. Arbitration releases attribution when a commit that touches the path lands
+after the attribution was recorded. After either release, the leftover dirt degrades to the stale-dirt advisory instead
+of a permanent `residual` blocker. The detailed operator reference below is part of this document.
 
 `recommend send`, `recommend respond`, and `recommend withdraw` are owning-agent-only. Delegates may safely use
 `recommend list` and `recommend show` for their shared parent. Recommendations are durable advisory records, not
@@ -384,8 +385,9 @@ A session that finishes with uncommitted dirt, narrows dirty paths out of its cl
 write to a dirty path outside every active claim retains residual ownership. It reclaims that dirt immediately as its
 own, without `stale-dirt` or baselines, while its session row exists. Other sessions are blocked by the named `residual`
 holder instead of settling unattributed dirt. Session end, confirmed process death, or supersession releases that
-attribution during the next process reconciliation, and the leftover edits become ordinary stale dirt. Bash writes are
-not observed and still settle as unattributed dirt.
+attribution during the next process reconciliation. A commit that touches the path after the attribution was recorded
+releases it during the next arbitration of that root. After either release, the leftover edits are ordinary stale dirt.
+Bash writes are not observed and still settle as unattributed dirt.
 
 `ai-coord touched` prints normalized repository-relative paths written by this session's observed post-tool events, one
 per line. `!TRUNCATED` is the first record when the bounded 1,000-path set dropped older observations. Collection is

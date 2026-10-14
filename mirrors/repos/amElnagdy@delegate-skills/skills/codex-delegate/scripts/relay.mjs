@@ -31,6 +31,26 @@
  *   --effort <level>        Reasoning effort, passed to Codex as
  *                           `-c model_reasoning_effort=<level>` (default: Codex's
  *                           own configured default).
+ *   --subagent-model <name> Default model for subagents Codex spawns during the run,
+ *                           passed as `-c agents.default_subagent_model=<name>`.
+ *   --subagent-effort <level>
+ *                           Default reasoning effort for those subagents, passed as
+ *                           `-c agents.default_subagent_reasoning_effort=<level>`.
+ *                           Without either, subagents follow Codex's own config. A model
+ *                           TOML reads as a number (e.g. 5.5) fails at startup; an
+ *                           unknown model or unsupported effort fails only the spawn, so
+ *                           the run can still exit 0. Pass them again on every resume:
+ *                           Codex does not carry them over.
+ *   --web-search <mode>     Codex's web search mode, passed as `-c web_search=<mode>`
+ *                           (Codex's modes: disabled | cached | indexed | live; default:
+ *                           Codex's own configured default). Search is a hosted tool, so
+ *                           it works under every sandbox, read-only included. Pass it
+ *                           again on every resume: Codex does not carry it over.
+ *   --network-access        Allow network access inside the workspace-write sandbox, passed
+ *                           to Codex as `-c sandbox_workspace_write.network_access=true`.
+ *                           Pass it again on every resume, with the sandbox named by
+ *                           --sandbox or a fleet lane: Codex does not carry it over.
+ *                           Rejected with a read-only sandbox, which Codex keeps offline.
  *   --sandbox <mode>        read-only | workspace-write | danger-full-access
  *                           (default: workspace-write).
  *   --read-only             Shortcut for --sandbox read-only (review/diagnosis, no edits).
@@ -100,6 +120,9 @@ const SAFE_ENV_NAME = /^[A-Za-z_][A-Za-z0-9_]*$/;
 // Model reaches cmd.exe on win32 (shell:true for the codex.cmd shim) — same shell-safe
 // family as grok/pi. Keep in lockstep with delegate-setup MODEL_TOKEN.shellSafe.
 const SAFE_MODEL = /^[A-Za-z0-9][A-Za-z0-9._:/-]*$/;
+// Effort and web search modes are Codex-owned enums that vary by version; the relay
+// checks only for a bare token, which also keeps them inert in cmd.exe on win32.
+const BARE_TOKEN = /^[a-z][a-z0-9-]*$/i;
 
 const IMPLEMENTER_KEY = "codex";
 
@@ -154,6 +177,10 @@ function parseArgs(argv) {
     cd: process.cwd(),
     model: null,
     effort: null,
+    subagentModel: null,
+    subagentEffort: null,
+    webSearch: null,
+    networkAccess: false,
     sandbox: "workspace-write",
     sandboxConfigured: false,
     resumeLast: false,
@@ -184,6 +211,10 @@ function parseArgs(argv) {
       case "--lane": opts.lane = next(); break;
       case "--model": opts.model = next(); flagged.add("model"); break;
       case "--effort": opts.effort = next(); flagged.add("effort"); break;
+      case "--subagent-model": opts.subagentModel = next(); break;
+      case "--subagent-effort": opts.subagentEffort = next(); break;
+      case "--web-search": opts.webSearch = next(); break;
+      case "--network-access": opts.networkAccess = true; break;
       case "--sandbox": opts.sandbox = next(); opts.sandboxConfigured = true; flagged.add("sandbox"); break;
       case "--read-only": opts.sandbox = "read-only"; opts.sandboxConfigured = true; flagged.add("sandbox"); flagged.add("readOnly"); break;
       case "--resume-last": opts.resumeLast = true; break;
@@ -202,11 +233,30 @@ function parseArgs(argv) {
   if (!SANDBOX_MODES.has(opts.sandbox)) {
     fail(`invalid --sandbox "${opts.sandbox}" (expected: ${[...SANDBOX_MODES].join(", ")})`);
   }
-  if (opts.effort !== null && !/^[a-z][a-z0-9-]*$/i.test(opts.effort)) {
+  // Codex ignores the workspace-write network key under read-only and the run stays
+  // offline without a word, so refuse the pair rather than record access that never happened.
+  if (opts.networkAccess && opts.sandbox === "read-only") {
+    fail("--network-access cannot be combined with a read-only sandbox: Codex keeps read-only offline");
+  }
+  // An unqualified resume runs under Codex's configured sandbox, which may be read-only
+  // and drop the override without a word; require the sandbox named so the record holds.
+  if (opts.networkAccess && (opts.session || opts.resumeLast) && !opts.sandboxConfigured) {
+    fail("--network-access on a resumed run needs the sandbox named by --sandbox (e.g. --sandbox workspace-write) or a fleet lane");
+  }
+  if (opts.effort !== null && !BARE_TOKEN.test(opts.effort)) {
     fail(`invalid --effort "${opts.effort}" (expected a non-empty bare token)`);
+  }
+  if (opts.webSearch !== null && !BARE_TOKEN.test(opts.webSearch)) {
+    fail(`invalid --web-search "${opts.webSearch}" (expected a non-empty bare token)`);
   }
   if (opts.model !== null && !SAFE_MODEL.test(opts.model)) {
     fail("--model contains unsupported characters (allowed: letters, digits, . _ : / -)");
+  }
+  if (opts.subagentModel !== null && !SAFE_MODEL.test(opts.subagentModel)) {
+    fail("--subagent-model contains unsupported characters (allowed: letters, digits, . _ : / -)");
+  }
+  if (opts.subagentEffort !== null && !BARE_TOKEN.test(opts.subagentEffort)) {
+    fail(`invalid --subagent-effort "${opts.subagentEffort}" (expected a non-empty bare token)`);
   }
   if (opts.keepEnv.length && !opts.cleanEnv) {
     fail("--keep-env requires --clean-env");
@@ -407,9 +457,14 @@ function buildArgv(opts, finalPath) {
     argv.push("-s", opts.sandbox);
   }
   if (opts.model) argv.push("-m", opts.model);
-  // `-c` is accepted by the resume subcommand, so the effort override applies to
-  // fresh and resumed runs alike.
+  // `-c` is accepted by the resume subcommand, so the effort, subagent, web search and network overrides
+  // apply to fresh and resumed runs alike. Keep every `-c` after `resume`: once one
+  // follows it, Codex drops any placed before it.
   if (opts.effort !== null) argv.push("-c", `model_reasoning_effort=${opts.effort}`);
+  if (opts.subagentModel !== null) argv.push("-c", `agents.default_subagent_model=${opts.subagentModel}`);
+  if (opts.subagentEffort !== null) argv.push("-c", `agents.default_subagent_reasoning_effort=${opts.subagentEffort}`);
+  if (opts.webSearch !== null) argv.push("-c", `web_search=${opts.webSearch}`);
+  if (opts.networkAccess) argv.push("-c", "sandbox_workspace_write.network_access=true");
   if (opts.skipGitRepoCheck) argv.push("--skip-git-repo-check");
   argv.push("-"); // read the prompt from stdin
   return argv;
@@ -470,6 +525,10 @@ function makeResultWriter(opts, version, run) {
       sandbox: !resuming || opts.sandboxConfigured ? opts.sandbox : "(Codex config on resume)",
       model: opts.model,
       effort: opts.effort,
+      subagentModel: opts.subagentModel,
+      subagentEffort: opts.subagentEffort,
+      webSearch: opts.webSearch,
+      networkAccess: opts.networkAccess,
       resumeLast: opts.resumeLast,
       session: opts.session,
       cleanEnv: opts.cleanEnv,
@@ -566,7 +625,8 @@ function dispatchToCodex(opts, brief, run, writeResult, env) {
   const argv = buildArgv(opts, run.finalPath);
   // shell:true on Windows so the codex.cmd shim resolves (see codexVersion). Safe:
   // the brief is fed via child.stdin below — never argv — and argv holds only
-  // sandbox enums, model names, the pattern-checked effort, and file paths.
+  // sandbox enums, model names (including subagents), pattern-checked efforts
+  // and web search modes, the fixed network override, and file paths.
   // detached on POSIX: the child leads a new process group so killChild can fell the whole tree
   const child = spawnShellLaunch("codex", argv, { cwd: opts.cd, stdio: ["pipe", "pipe", "pipe"], detached: process.platform !== "win32", env }, process.platform === "win32");
 

@@ -41,7 +41,7 @@ per-source skill.
 | alphavantage | US equities | Yes (`ALPHAVANTAGE_API_KEY`) | Unrestricted | data-routing |
 | tiingo | US equities | Yes (`TIINGO_API_KEY`) | Unrestricted | data-routing |
 | fmp | US equities | Yes (`FMP_API_KEY`) | Unrestricted | data-routing |
-| gildata | A-shares (Hundsun Juyuan commercial feed, forward-adjusted dailies) | Yes (`GILDATA_TOKEN` / Settings) | Gildata MCP API | data-routing |
+| gildata | A-shares (前复权 dailies), HK equities (raw), CN indices | Yes (`GILDATA_TOKEN` / Settings) | Gildata MCP API | data-routing |
 | qveris | Global multi-asset (paid, credits) | Yes (`QVERIS_API_KEY` / Settings) | QVeris API | qveris <!-- QVERIS-INTEGRATION --> |
 
 ## Capability → Tool Routing
@@ -69,6 +69,10 @@ is required only where listed (no key listed = free / no auth).
 | Market screen | `screen_market` | A-share | — |
 | Symbol search | `search_symbol` | A-share, US, HK, Canada, crypto/index/FX | — |
 | Macro / FRED series | `get_macro_series` | Macro (US/global) | `FRED_API_KEY` |
+| OTC fund NAV (场外基金净值) | `get_fund_nav` | CN off-exchange funds | `GILDATA_TOKEN` |
+| China macro / industry EDB (宏观行业) | `get_cn_macro_series` | CN macro/regional/industry | `GILDATA_TOKEN` |
+| CN announcements (公告检索) | `get_cn_announcements` | A-share / HK / fund | `GILDATA_TOKEN` |
+| Broker research (券商研报) | `search_broker_reports` | A-share / HK | `GILDATA_TOKEN` |
 | iWenCai NL search (问财) | `iwencai_search` | A-share | `VIBE_TRADING_IWENCAI_KEY` |
 
 Notes:
@@ -154,3 +158,18 @@ single source. Cross-check it:
   uncorroborated figure as established fact.
 
 This discipline is what separates analysis from aggregation.
+
+### Gildata research and OTC funds
+
+With a configured GILDATA_TOKEN, use the three srv-tool research tools for China
+macro observations, announcements and broker reports. Inspect the returned
+`api_names`; routing is vendor-selected. Rows retain vendor order and explicitly
+report truncation. Narrow the topic or date window to retrieve omitted records.
+When declaring a macro observation, reference its actual field, for example
+`call_id::rows[0].value`, and preserve the returned unit and date. Indicator codes
+are identifiers, not measurements.
+
+`get_fund_nav` reads OTC fund NAV history with an exact vendor-code match.
+Exchange-listed ETF/LOF prices still use the OHLCV loaders. Unit, accumulated and
+adjusted NAV are different measures; name the one actually reported. Missing NAV
+values remain missing. NAV rows never enter the OHLCV backtest loader.

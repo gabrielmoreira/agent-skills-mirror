@@ -2,11 +2,151 @@
 
 > 按里程碑记录各阶段交付内容。每次分支合回 main 时追加条目。
 
-## v0.3.227：macOS 正式签名与 Instagram 实验性来源（2026-10-06）
+## 未发布：TikTok 源后端缺口修复与前端展示面补全（issue #88）
+
+- README 中英文与项目首页突出 Instagram/TikTok 新来源，补齐首页首屏、搜索/分享摘要和连接指引；区分 Instagram 已发布、TikTok main 已合入待发版，保留默认关闭、代理要求及账号验收限制。
+
+- query inspiration 新增可选 `parallel` grounding 后端，通过免费匿名 Parallel Search MCP 获取标题、URL 与摘录；默认后端顺序不变，沿用现有网络策略、限时和失败回退。V2EX 正式 search 的外部召回白名单同步接纳 `parallel`，配置后 `site:v2ex.com/t` 召回同样可走该后端。
+
+- TikTok 首版合并收尾：同步主线 v0.3.228 与动态日期测试修复，保留发现推荐已验收、收藏暂缓的范围；非空账号画像/周期增量及 Firefox 安装验收转由 #295 跟踪。未发布新版本。
+
+- TikTok 全面复核：受测提交四项 CI 全绿（10316 passed），本地后端 426、手机 62、扩展 1814 项通过，真实发现/模型/推荐和桌面/手机展示续验通过。站内收藏按用户要求暂缓；非空真实画像/周期增量、Firefox 安装验收仍单列未完成，不宣称 full contract 通过。
+
+- TikTok 10 月 14 日已通过既有本地 reload 入口真正部署请求完成等待补丁，正式收藏仍未持久化；键盘入口请求 HTTP 200/业务状态 0 后刷新仍丢失，passport 会话验证有效，新安装包三 scope 均明确空态。补安装摘要与脱敏证据，非空画像/真实周期增量继续保留验收缺口。
+
+- TikTok 获准对另一条可播放视频执行单次收藏对照：即时金色书签在真正刷新后消失，本人收藏仍明确为空；补脱敏证据，原生持久化继续 FAIL，非空画像/真实周期增量继续 BLOCKED。既有修复 `12007157` 的四项 CI 已全绿，本轮未修改功能代码或部署扩展。
+
+- 按用户确认将 TikTok 网页历史改为可选：默认初始化和周期回拉只请求喜欢、收藏、关注，旧四范围任务不复用。修复正式 runtime 启动/热重载漏传 TikTok 来源开关导致周期任务不入队；补实际 runtime 周期/关闭回归和非空事件跨轮去重验证，真实空账号不合成画像。
+
+- TikTok 收藏时序修复：点击前被动观察原生请求，按钮乐观选中后等待请求完成再刷新，防止提前刷新打断请求；新文档持久化确认仍不可省略。回归已通过，真实网页请求业务成功但刷新未保存的问题仍保留为未通过验收。
+
+- TikTok 代理路由修复：默认 system 显式读取 macOS/环境代理，修复 libcurl 漏用系统代理、direct 继承环境代理及 custom 被 NO_PROXY 绕过；Web API、登录验证与封面统一适配。确认 Instagram/TikTok 网页操作沿用浏览器代理，后端设置不能替浏览器切换出口。
+
+- TikTok 10 月 13 日只读续验：保留首次正式收藏任务超时、只读诊断与恢复正式包复查均 empty/complete 的不同证据，未再执行上游写入；收藏持久化、非空画像及周期增量仍未完成真实验收。
+
+- TikTok 连续采集接收确认：页面先持久化恢复记录和指针再回复 task/scope ACK；后台不再把空返回当接收成功，缺失回执在原预算内重投同一只读 scope，避免导航或忙碌时静默丢任务。
+
+- TikTok 原生收藏实机续修：排除屏幕外预加载视频的按钮，优先点击唯一内层原生按钮，识别文字未更新的金色书签；TikTok 即时成功也必须刷新只读确认后才能入账，避免把乐观 UI 当作持久保存。已按具体视频授权执行真实请求，但刷新状态与账号收藏仍未确认持久化；非空画像/周期增量继续保留验收缺口。
+
+- TikTok 慢加载续修：原生收藏等待登录与内容共同就绪，不再把尚未加载的控件误报登出；延长已选中列表的内容等待。结果持久化后即释放采集锁，修复下一列表早于上一结果 ACK 到达时被忽略的问题。真实账号完整验收仍未通过，见 TikTok 验收台账。
+
+- TikTok 账号入口续修：兼容当前桌面页的三种显式空列表、设置页 session 身份和“通用”入口；内容脚本注册慢时有界重投。初始化不再复用普通 smoke、部分 scope 或失败结果。真实账号的完整四 scope、非空画像和站内收藏仍未全部通过，详见验收台账。
+
+- TikTok 账号采集续修：本人页标题与标签分阶段渲染时等待目标入口，避免提前报缺失；结果回传每次最多等待 10 秒，超时保留 FIFO 原文并允许下次重放，迟到 URL 解析不发送过期回调。真实喜欢页已选中，但列表与初始化/增量仍未通过验收。
+
+- TikTok 真实安装版验收补修：登录墙文字检测改为读取可见 `innerText`，避免 SSR/隐藏翻译脚本误报 `login_wall`；没有正向本人登录身份时仍拒绝采集；补上登录导航和本人资料标题的有界渲染等待，避免文档 complete 先于页面 hydration 时提前失败；兼容账号名位于 user-subtitle，并避免在本人页重复导航。
+
+- TikTok 真实环境验收补修：后端无 Cookie 启动后，扩展同步有效凭据会安全刷新发现客户端并挂载搜索，避免状态显示已登录但仍持有访客客户端；重复同步及 env 优先下的无效变更不触发重建。
+
+- TikTok full-source 验收修复：接通真实 bootstrap_profile 四 scope wire；限制本人列表、账号绑定与冻结预算；保留断网/超时 partial，整页导航恢复；普通 smoke 不写画像；收藏阻止 SPA 串视频。CLI 等待调整为 480 秒并同步后台标签页提示；补跨 Python/TypeScript 协议集成回归，账号真实 E2E 仍待浏览器连接恢复。
+
+- TikTok 验收全量回归补修：旧身份去重测试用运行时的新鲜发布日期验证时效证据成组保留，避免固定 2026-08-11 日期随时间过期导致失败；生产时效判断不变。
+
+- TikTok 契约澄清：passport 心跳用于发现凭据验证；账号任务依据浏览器 observed viewer 与后端账号边界，不将观察身份标成上游 verified。
+
+### 新增：TikTok full 升级收尾——契约测试反转与 audit 清零（2026-10-11）
+
+- `tests/test_tiktok_contract.py` 由「断言排除成立」整体改写为正向注册断言：`_PLATFORM_SOURCE_FIELDS` / 双 manifest content_scripts / `source_incremental_sync` 注册、native-save 不再是 local-only、guidedInit=true、dispatcher 任务标记与两阶段结果重投；契约登记的排除测试 `test_tiktok_engagement_danmaku_is_unavailable`（新建）与 `test_tiktok_media_deep_link_uses_https`（保留）精确存在并通过；移动端凭据排除保持正向「排除仍成立」。
+- audit `required_missing=0`：`extension.task` / `extension.background` 通过新增 canonical 路由键模块 `extension/src/content/tiktok/task-executor.ts`（re-export `tt/` 实现）并让 service-worker 经该路径引用类型而 PASS；`source-auth.capability-readiness` 通过 `_TIKTOK_CAPABILITY_AUTH_MODES`（discover=optional-credential，profile/bootstrap/incremental/native-save/cookie-sync=login-required）与 `auth_tiktok` 的 capabilities 投影 PASS；guided init 增加 tiktok profile 能力准入（未就绪时单独选择返回 `no_profile_signal_sources`，混合选择降级并保留公开发现）。
+- 文档同步：saved-sync / extension 模块的六平台表述更新为七平台（含 TikTok）；`tiktok.md` 补站内收藏与 capability 准入叙述；验收台账更新。
+- 同时收录并行落地的扩展侧提交：`8799b0aa`（tiktok-task-dispatcher + `content/tiktok.ts` / `tt/` DOM-only 采集管线）、`e65d7e21`（native-save executor 与 dispatcher 接线）、`0cb57594`（`ExtensionNativeSaveBroker` 注册与授权面，`TikTok Favorites` 目标）。
+
+### 新增：TikTok 接入 guided init 画像初始化（2026-10-11）
+
+- 解除排除：`_INIT_SOURCE_ORDER` 与 `init_prereqs._PLATFORM_SOURCE_FIELDS` 放行 tiktok，`web/shared/source-status.js` 的 `guidedInit` 翻为 `true`；setup / 桌面 / popup 的初始化来源清单由共享 roster 自动派生，setup 页补充 `tiktok_degraded` 文案。
+- CLI：`init` 新增 `--yes-tiktok` / `--no-tiktok`（`OPENBILICLAW_NO_TIKTOK=1` 优先于 `--yes-tiktok`），交互模式默认 N 并展示扩展 / 登录 / 焦点抢占准备清单；新增 `_enqueue_tiktok_bootstrap_task` / `_collect_tiktok_bootstrap_events`（默认等待 180 秒，`OPENBILICLAW_TIKTOK_BOOTSTRAP_WAIT_SECONDS` 可调），init 第 1 阶段在 Instagram 之后串行采集点赞 / 收藏 / 观看历史 / 关注。
+- 画像链：事件经 `_tiktok_events_to_history_items` 进入画像构建（`source_platform=tiktok`），`InitResult` 增加 `tiktok_events` / `tiktok_scope_counts` / `tiktok_status`；`degraded` 按部分完成上报（CLI 面板与 API `tiktok_degraded` reason）；`ok` 终态 seed 增量调度时钟。
+- 测试：`tests/test_tiktok_guided_init.py` 覆盖准入、CLI 选项、collect 全状态分支与 init 全流程事件进画像；weibo / instagram / github 的 roster-parity 测试更新为「init 名单覆盖全部 share 来源」。
+
+### 新增：TikTok 升级为 full 来源——后端浏览器任务基建（2026-10-11）
+
+- 新增 `sources/tiktok_tasks.py`：`TiktokTaskQueue`（独立 `tiktok_tasks` 表，镜像抖音的 single-flight claim / 15 分钟 stale lease / 每日预算）与 bootstrap 事件转换；scope 为 `tt_like` / `tt_collect` / `tt_history` / `tt_follow`（仓库首个观看历史类 scope），事件映射 like→like、collect→favorite、history→view、follow→follow，信号强度 0.85 / 1.0 / 0.35 / 0.6。
+- 五处注册同步完成：`task_result_protocol._TASK_TABLES`（两阶段 staged completion）、`source_bootstrap._BOOTSTRAP_TASK_TABLES` 与 `enqueue_tiktok_bootstrap` / `seed_guided_init_attempts`（`empty` 证据不足不 seed）、`bootstrap_state` 的 `tiktok_seen_item_keys`、`source_incremental_sync` 的 `SOURCE_ORDER` / `_TASK_SPECS` / `_SOURCE_CONFIG_ALIASES` / `_SOURCE_INTERVAL_FIELDS`。
+- 新增 `GET /api/sources/tiktok/next-task`（bodyless 204）、`POST /api/sources/tiktok/task-result`（partial/ok/degraded/empty/failed，完整两阶段 staged completion）与 `POST /api/sources/tiktok/kick`。
+- 配置面：`sources.tiktok.incremental_enabled`（默认 `false`）与 `scheduler.tiktok_incremental_hours`（缺省继承全局）落地 dataclass / TOML 解析 / 校验 / `PUT /api/config` / `config.example.toml`；`source_incremental_enabled` 总开关默认关闭不变。
+- guided init 接线（`_INIT_SOURCE_ORDER` / `_PLATFORM_SOURCE_FIELDS`）与扩展执行器属于后续步骤；`tests/test_tiktok_contract.py` 的旧排除断言按升级验收台账在后续步骤统一反转。
+
+### 修复：TikTok 来源交付验收（2026-10-04）
+
+- 修复插件来源关闭后无法重新开启：移除包裹启用框的卡片祖先 `aria-disabled`，保留停用卡片折叠限制；补执行真实状态同步函数的回归。
+- 同步 main 后修正 Instagram 测试的初始化名单假设（TikTok 不参与初始化），补齐十四来源架构图和存储别名文档，保持 TikTok 与抖音独立。
+- 2026-10-10 补齐已安装扩展自动 Cookie 同步、真实登录关键词搜索和配置模型评估证据；同步 main，保留 Instagram 与 TikTok 各自来源身份及网络语义。
+
+- 按现有接入规范纠正移动端凭据门：手机仅验推荐/本地保存，来源设置与凭据验证在桌面和 popup；补显式契约排除与回归，避免错误阻塞验收。
+
+- 真实完整后端验收发现并修复默认发现第二阶段漏传关键词及归因 ID 的问题；防止领取 science 后重新生成无关标签，补充真实策略回归。
+
+- 补齐作者/话题资料缺少 ID 的错误终态，禁止将未知响应记为成功空结果；完整 CI 基线后端 9970 项、引导浏览器 39 项通过，资料边界补丁再通过 157 项回归。
+- 修复 keyword claim 超预算、HTTP/业务失败伪装正常空、强制 Web 模式误回退与永久停用、feed 每次条数误用每日预算、匿名 inspiration 多词短语失效。
+- TikTok 封面增加逐跳 DoH 公网地址校验和 IP 固定，保留代理与 TLS 验证；签名器第三方说明纳入生成器，避免再生成时丢失。
+- formal/inspiration 共享持久请求时隙和限流冷却；补全收藏字段、只读 CLI smoke、双轨关键词测试、discovery-only 契约与验收记录；同步最新 main 的 Ollama 修复。
+- 真实模型 pipeline 已验证：4 条候选进入评估，3 条入池，1 条低分拒绝，768 维 embedding；登录搜索和安装版扩展证据单独记录，不能用公开取数代替。
+
+### 修复：TikTok 后端缺口（审计逐项）
+
+- **头图白名单**：`tiktokcdn.com` / `tiktokcdn-us.com` / `tiktokcdn-eu.com` 进入 image_cache 头图白名单，走 `[network]` 海外路由（与 i.ytimg.com 同构，不进 CN 直连名单）；真实 For-You 封面经代理抓取 200 实测通过。
+- **预算误报警**：`_warn_suspicious_budgets` 对等于官方默认值的字段豁免（TikTok 官方默认 `daily_feed_budget=3` / `daily_search_budget=3` 不再每次启动误报）；手写偏离默认的 1–4 值仍提醒。
+- **init 半状态**：`_INIT_SOURCE_ORDER` 移除 tiktok（guidedInit: false 的源不再能被手工 POST `/api/init` 置 enabled 却不采集信号）；tiktok-only 选择归一化为空并按 `no_sources_selected` 拒绝。
+- **CLI 入口**：`openbiliclaw discover --source tiktok` 走正式 `TiktokDiscoveryProducer`（`enabled_override` 旁路 daemon 总开关，镜像 douyin 分支）。
+- **inspiration 预览**：`TiktokPlatformSearchBackend` 接入 `build_platform_source_backends`（有 Cookie 走关键词搜索，访客走话题标签列表），`keyword-inspiration-preview --platforms tiktok` 真正可用。
+- **planner claim 语义**：search 策略挂载（有登录 Cookie）时 claim 的词原样喂 `tiktok_search`，`tiktok_tag` 退回常驻 tags + LLM 自生成；未挂载时维持 claim → tag 压缩。used/failed 标记跟随实际消费词的策略。
+- **native-save 误导状态**：tiktok 加入 local-only 名单，本地收藏落 `unsupported` / `local_only_source` 而非误导性"待升级重试"。
+- **latent URL 身份映射**：`_extract_content_id_from_url` 支持 `/@user/video/<id>` 与 `/photo/<id>` → 数字内容 id。
+- 回归锁补齐：`tiktok_tag.generate_tags` / `tiktok_search.generate_keywords` 登记进 core-memory opt-out 政策测试；`config.example.toml` TikTok 段头改为准确的「Web API 主后端 + yt-dlp 兜底」描述。
+
+### 功能：TikTok 前端展示面（issue #88）
+
+- **桌面设置页 TikTok 卡片**：照 YouTube 卡片补齐——启用开关、后端 mode（auto/web/ytdlp）、可选 Cookie（扩展同步 / 手动粘贴）、region / tz_name、tags / creators、四分支预算、节流、占比、「测试连接」（通用 verify 分发）与发布日期偏好；`SOURCE_ENABLE_SELECT_IDS` / `SOURCE_SHARE_INPUT_IDS` / `SOURCE_CARD_LABELS` / `DESKTOP_SOURCE_DATE_SLUGS` / `buildConfigUpdate` / 占比建议同步。修复保存配置丢 `scheduler.pool_source_shares.tiktok` 的回归点（Playwright E2E 钉死）。
+- **popup 平台归一修正**：`tiktok` 不再归并到 `douyin` 族（此前 TikTok 内容在 popup 显示为"抖音"）；`PLATFORM_DISPLAY_NAMES` 补 TikTok 条目。
+- **popup 设置页 TikTok 卡片**：照 YouTube 卡补齐启用、Cookie、mode、region / tz_name、tags / creators、预算、节流、占比与「测试连接」。
+- **展示一致性**：saved / history 平台名、view-models URL 推断与 `RUNTIME_TOPIC_LABEL_MAP`（tiktok_feed / tiktok_search / tiktok_tag / tiktok_user 中文标签）、saved-sync-core 别名与 host 推断、平台徽章色、推荐页静态过滤 tab 全部覆盖 tiktok。
+- **文档**：十二 → 十三计数修正（discovery / runtime / config / 架构图 / 商店 listing），清除「纯 yt-dlp 无登录态」过时描述，README 中英文平台清单补 TikTok，模块文档同步 planner claim 新语义与设置页卡片。
+
+### 功能：TikTok Web API 后端（访客身份 + 请求签名，issue #88）
+
+- 新增 TikTok Web API 后端（`sources/tiktok_web.py`）：以访客身份直连 TikTok Web API，请求经 vendored 纯 Python 签名（`sources/tiktok_sign.py`，Evil0ctal/Douyin_TikTok_Download_API，Apache-2.0）+ curl_cffi Chrome TLS 指纹发送；bootstrap 由匿名推荐流响应铸真实 msToken，绝不伪造。2026-10-03 实测访客身份打通推荐流 / 创作者列表 / 话题标签列表，关键词搜索被上游 gate（预留 client 方法，登录 Cookie 可解锁）。
+- 新增 `tiktok_feed` 匿名推荐流策略（默认 `daily_feed_budget=3`）；`tiktok_tag` / `tiktok_user` 支持 web 路径，由 `TiktokRouterClient` 按 `[sources.tiktok].mode`（`auto` / `web` / `ytdlp`，默认 `auto` = web 优先 + yt-dlp 回退）分发；新增可选登录 Cookie（`cookie_env` / `data/tiktok_cookie.json`），source-auth 契约改为可选凭据语义。
+- 新增默认依赖 `curl-cffi>=0.15`（Chrome TLS impersonation，与 yt-dlp 可选依赖同包兼容）。
+
+### 功能：TikTok 登录 Cookie 插件自动同步（issue #88）
+
+- 浏览器插件 `cookie-sync.ts` 覆盖 tiktok.com：检测到登录（sessionid / sessionid_ss / sid_tt）后把完整 Cookie jar 推送到统一凭据端点 `POST /api/sources/tiktok/credential`（结构校验 + passport 心跳 live probe，与设置页粘贴同一验证强度），落盘 `data/tiktok_cookie.json`；支持 `tiktok_cookie_sync_requested` runtime-stream 主动拉取、`cookies.onChanged` 按平台防抖与独立小时 alarm。访客身份下无 Cookie 是合法状态，未登录 / 登出时静默跳过。
+- manifest（Chrome / Firefox）host_permissions 增加 `*://*.tiktok.com/*`；桌面 dashboard 在 `tiktok_cookie_synced` 事件后刷新来源状态。
+
+### 功能：TikTok Cookie 探针、凭据写入门面、地区配置与搜索策略（issue #88）
+
+- **Cookie 主动探针**：新增 `probe_tiktok_login()`，调用 `/passport/token/beat/web/`（无签名、仅带 cookie 的会话心跳）验证可选登录 Cookie；`success` → verified，401/403 / 显式 error → failed，传输失败与风控空响应 → indeterminate。`VERIFY_ACTIONS["tiktok"]` 登记为 `live_probe`，契约在无 Cookie 时仍诚实报 `verify_method="none"`。
+- **凭据写入门面**：`CREDENTIAL_SPECS["tiktok"]` 开通 `POST /api/sources/tiktok/credential`（结构门 sessionid / sessionid_ss / sid_tt 至少其一 + live gate），`PUT /api/config` 粘贴同强度验证，落盘 `data/tiktok_cookie.json`。
+- **地区参数配置化**：`[sources.tiktok].region` / `tz_name`（默认 `JP` / `Asia/Tokyo`）注入访客身份 base params；空值回退默认。
+- **`tiktok_search` 搜索策略**（默认不启用）：仅当配置登录 Cookie 且 mode 允许 web 时挂载；planner 注入词原样使用（不做 hashtag 压缩），搜索响应混合卡片只收视频条目；`daily_search_budget` 默认 3。登录态抓取违反 TikTok ToS 有账号风险，文档与配置注释已明确。
+
+### 功能：新增 TikTok 内容源（yt-dlp 轻量后端，实验性，issue #88）
+
+- 新增 `[sources.tiktok]` 实验性内容源：`TiktokClient` 基于 yt-dlp 匿名读取 `tiktok:tag` 话题标签列表、`tiktok:user` 创作者视频列表与单视频元数据，不登录、不用 Cookie、不依赖浏览器扩展、不下载视频；yt-dlp 无 TikTok 搜索 extractor，关键词统一压缩为 hashtag。
+- 新增 `tiktok_tag` / `tiktok_user` discovery 策略与 `TiktokDiscoveryProducer`（镜像 YouTube producer：每日执行 ledger、节流、pool 缺口门、统一 candidate pipeline、关键词规划器 P1.7/P1.8 生命周期）；`[scheduler.pool_source_shares]` 增加 `tiktok` 配额。
+- `tiktok` 从 douyin 平台族别名拆分为独立平台族（`requires_overseas_network=True`），source-auth 契约按公开源接入（无需登录），API config / status / credentials 面同步覆盖。
+
+## v0.3.228：画像门控大幅降本与安装包信任修复（2026-10-13）
+
+- 修复 macOS 打包在 Apple stapler 抖动下无重试：`staple_macos_artifact` 的 staple/validate 此前单次调用即失败，而 Apple ticket-delivery 端点会间歇断连（v0.3.228 x64 连续三次 exit 68，公证本身已 Accepted）；现两个动作各自重试 3 次（10s/20s/30s 退避），与 hdiutil 创建路径一致。
+
+- 修复 macOS 桌面发布构建的 bge-m3 digest allowlist 漂移：macOS 任务此前下载 `ollama/releases/latest` 的 Ollama.app，新版客户端 pull 到的 manifest 多出一层嵌套 manifest blob（内容为引用同一 config/model/license 的包装清单，已核实），触发 `make_model_seed` 防漂移护栏失败；Windows 任务一直固定在 0.32.13 无此问题。现将 `release-desktop.yml` 与 `build-installers.yml` 的 macOS Ollama 统一定位到 v0.32.13，两平台客户端行为一致。
+
+- 修复 posture gate soul_rebuild 负载未按 spec 实现为 diff 摘要（#288）：`_gate_soul_rebuild` 的判定快照此前把完整兴趣列表逐字节传两遍（before + after），单条兴趣中四个 ISO 时间戳字段占 55% 字节却对判定无用，实测单次输入高达 13 万～15 万 tokens。现改为 `_interest_rebuild_diff()` 生成的 compact diff 摘要（added/removed/changed + 计数，条目仅保留 name/category/weight/evidence_count），与 spec 接入点③「rebuild diff 摘要过门控」一致；confirmed_hypotheses 触发源前后快照相同，diff 为空、信号由 context 承载。真实 provider 端到端实测单次输入 41,149 → 4,221 tokens（降约 90%），shadow 默认模式调用方零延迟不变。
+
+- 修复 Windows 安装包被 Kaspersky 查杀（#281）：移除打包流程中对随包 `ollama.exe` 及 `lib/ollama` runner 的 PE 子系统改写步骤（`release-desktop.yml` / `build-installers.yml`），并删除 `packaging/patch_pe_subsystem.py` 及其测试。该改写使 Ollama 官方 Authenticode 签名失效（`TRUST_E_BAD_DIGEST`），被杀软按「已签名但被篡改」报 `HEUR:Trojan.Win64.Generic`；上游 ollama 自 PR #8668 起已用 `CREATE_NO_WINDOW` 启动 runner，配合 supervisor 启动 `ollama serve` 时的 `CREATE_NO_WINDOW`，不再弹控制台窗口，无需改二进制。两个 workflow 在编译安装包前新增 `Get-AuthenticodeSignature` 验签门禁，随包 exe 签名失效即构建失败，防止同类回归。同时将 `packaging/openbiliclaw.spec` 的 UPX 压缩关闭（`upx=False`），避免本地构建产出更易被误报的 UPX 壳 bootloader。
+
+- 聊一聊按“允许有限追问，不能无限追问”的用户澄清标准完成真实多轮验收：桌面/移动 Web、HTTP/SSE、重启恢复与 CLI 共 20 次回复，未复现无休止追问；18 个 durable 回合全部完成。实测触发主备模型降级，可选尾问仍存在；不是单模型或四端真机全面保证，详见[验收记录](testing/2026-10-14-chat-followup-e2e.md)。
+
+- 聊一聊统一新旧入口与内置角色的收敛规则：明确需求直接回应，模糊但可做先给结果，普通需求默认最多澄清一轮；主动探索连续两轮提问后总结，用户想停或让系统决定时不再追问。口味探寻师移除执着深挖动机的指令，暂时偏好保留时间范围。规则在现有模型调用中生效，不增加分类调用或修改工具权限；为提示词约束，非硬计数器。真实模型仍偶发附加追问；早期“零附加问题”的严格样本未通过，后续按用户确认的“允许有限追问、必须收敛”标准完成验收，见[最新记录](testing/2026-10-14-chat-followup-e2e.md)。
 
 - 修复一条脏候选拖死整批评估（#284）：B 站简介等来源文本夹带 ASCII 控制字符时，`build_canonical_evaluation_batch` 的 wire 校验对整批抛错，重试烧完 50 次 `batch_eval_attempts` 后全批进 `failed_eval`。现新增 `_sanitize_wire_text()`，在构建 canonical 评估批的边界剥除 `\t \r \n` 之外的 C0 控制字符与 DEL、替换孤立代理项，清洗后为空的 tag 条目丢弃、整字段为空则省略；清洗只作用于发给 LLM 的 wire 副本，存储行保留原文，wire 校验器对 LLM 响应侧保持严格。已死信的历史候选由评估协调器启动时既有的 `revive_failed_eval_candidates` 自动复活，复活后经清洗即可正常评估。
 
-- 修复 Windows 安装包被 Kaspersky 查杀（#281）：移除打包流程中对随包 `ollama.exe` 及 `lib/ollama` runner 的 PE 子系统改写步骤（`release-desktop.yml` / `build-installers.yml`），并删除 `packaging/patch_pe_subsystem.py` 及其测试。该改写使 Ollama 官方 Authenticode 签名失效（`TRUST_E_BAD_DIGEST`），被杀软按「已签名但被篡改」报 `HEUR:Trojan.Win64.Generic`；上游 ollama 自 PR #8668 起已用 `CREATE_NO_WINDOW` 启动 runner，配合 supervisor 启动 `ollama serve` 时的 `CREATE_NO_WINDOW`，不再弹控制台窗口，无需改二进制。两个 workflow 在编译安装包前新增 `Get-AuthenticodeSignature` 验签门禁，随包 exe 签名失效即构建失败，防止同类回归。同时将 `packaging/openbiliclaw.spec` 的 UPX 压缩关闭（`upx=False`），避免本地构建产出更易被误报的 UPX 壳 bootloader。
+- 修复 `test_legacy_duplicate_keeps_selected_temporal_evidence_publication_as_one_group` 时间炸弹：测试硬编码 `published_at='2026-08-11'` 并断言迁移后 `pool_status='fresh'`，但该日期随现实时间越过 `current` 时效类 60 天 admission TTL（2026-10-10 起）后迁移正确重算为 `temporal_review_hold`，CI 开始失败。改为动态生成「7 天前」时间戳，测试意图（近期 current 证据 → fresh）与时间解耦。
+
+- v0.3.228 发布回执已归档：Chrome / Firefox AMO 已提交待审核，macOS arm64/Intel 与 Windows 安装包、双架构 Docker 镜像已发布；Gitee 源码同步，国内二进制镜像仍待上传。桌面标签因打包修复指向 `92d4f39f`（仅工作流/打包差异），详见 [发布记录](testing/2026-10-13-release-0.3.228.md)。
+
+## v0.3.227：macOS 正式签名与 Instagram 实验性来源（2026-10-06）
 
 - v0.3.227 发布回执已归档：Chrome / Firefox 已提交待审核，正式签名的 Mac 与 Safari 安装包、Windows 安装包和双架构 Docker 镜像已发布；Gitee 源码同步，国内二进制镜像仍待上传。详见 [发布记录](testing/2026-10-06-release-0.3.227.md)。
 

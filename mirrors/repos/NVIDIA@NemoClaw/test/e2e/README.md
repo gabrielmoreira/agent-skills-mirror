@@ -49,7 +49,8 @@ The install refuses package removals, preserving the runner's Docker and contain
   source commit. It reuses the reviewed native pasta, netavark, and aardvark-dns
   components. Select it with
   `jobs=portable-hermes-finalization`; the job selects Podman 5.7 regardless of
-  gateway-runtime inputs.
+  gateway-runtime inputs. The live scenario also runs the receipt-bound Hermes
+  build, registry publication, and OpenShell create transaction against those services.
 - `.github/workflows/podman-cpu-proof.yaml` publishes PR-only experimental runtime evidence.
 - `.github/workflows/sandbox-images.yaml` provides reusable sandbox-image build and test evidence.
   `.github/workflows/e2e.yaml` selects free-standing jobs, including `whatsapp-qr-compact` and `ollama-auth-proxy`.
@@ -606,10 +607,13 @@ still verify the authenticated request, policy denials, absence of MCP URLs, pro
 credentials from the registry, and restart, rebuild and cleanup outcomes.
 
 The `sandbox-operations` target owns live final-gateway cleanup on Docker and native Podman. It leaves one sandbox live after removing only its local registry entry, then requires a
-`destroy --cleanup-gateway` of the registered sandbox to preserve the gateway, report the live
-sandbox and recovery commands, and exit nonzero. After cleanup, it onboards and destroys one final
-sandbox,
+`destroy --cleanup-gateway` of the registered sandbox to preserve the gateway and report the live
+sandbox and recovery commands. CLI integration tests own the nonzero exit for that refusal.
+After cleanup, it onboards and destroys one final sandbox,
 requires the bounded command to finish, and proves both the sandbox and gateway runtime are absent.
+The survivor must reach OpenShell Ready before it is unregistered, and the gateway must still report
+connected after the preservation attempt. The OpenShell start exit, native health, and retained
+workspace marker prove the restart; the final install's successful exit proves its onboarding phase.
 The outer destroy command deadline is twice the CLI's heavy-operation deadline so the CLI can
 finish its own timeout, absence, and gateway checks. The survivor onboarding budget stays separate.
 Deterministic destroy tests own the exact 30-second retry schedule and delayed-list sequence.
@@ -649,6 +653,10 @@ List each additional source file or directory whose change requires the target.
 Changes to shared catalogue execution paths select every catalogue target.
 
 The `openclaw-inference-switch` target owns fresh custom-image route initialization.
+Its live `onboard --from` step exercises local Docker BuildKit and OpenShell image handoff;
+the successful onboard and authenticated baseline request require a ready sandbox from that image.
+The deterministic build, inspect, create-reference, and failed-build stop checks live in
+`test/onboarding/onboard-custom-dockerfile.test.ts`.
 Its fixture contains only a different baked model and stale limits.
 Custom Dockerfile onboarding uses the existing startup and pairing settlement checks before
 restarting the native gateway for the initial inference route, as external-image onboarding does.
@@ -1106,6 +1114,18 @@ registry remains the durable routing and credential-custody record, while the
 completed onboarding session remains unchanged as historical onboarding
 evidence. Deterministic startup and action tests own the corresponding launch
 environment and session non-rewrite checks.
+
+The native switch must restart the gateway to refresh provider credentials;
+the compatible fixture preserves its gateway process. The live lane requires
+successful probes that each identify one gateway PID before comparing its lifecycle.
+Support tests reject failed, empty, and ambiguous PID probes.
+
+The Hermes Slack lane accepts only correctly scoped OpenShell resolver
+placeholders for both Slack assignments in `.env` and for the API egress probes.
+The saved assignments must each match the currently injected generation.
+Support tests execute the file probe against absent, current, raw, stale, duplicate, mismatched,
+and malformed values. The live lane retains startup, policy, raw credential
+scans, both Slack API calls, and resource cleanup as required evidence.
 
 ## Native plugin and package lifecycle
 
@@ -1946,10 +1966,14 @@ Runs without a PR catalog require a trusted main base and managed-image publicat
 PR runs select the nearest fully successful publication on the trusted workflow commit's first-parent history.
 The publication must cover the PR base's latest reviewed image input.
 For that publication, the job binds the run ID, attempt, revision, cohort artifact ID, and artifact digest before it emits `managed_image_revision`.
-It validates the complete three-agent, two-architecture cohort artifact and the immutable Deep Agents Code base artifact from that workflow attempt.
+It validates the complete three-agent, two-architecture cohort artifact and the immutable Deep Agents Code base artifact from that publication attempt.
 `generate-matrix` runs first and selects whether publication is required.
 Stock-onboarding jobs still depend on publication, so incomplete publication creates no onboarding fanout.
 Direct `main` runs use the same publication workflow and artifact contract.
+
+Protected managed-image build jobs apply a separate rule to their reusable base receipt.
+The producer must be from the same workflow run and no later than the consumer attempt.
+Receipt verification remains bound to the producer attempt.
 
 The Deep Agents Code managed-image target uses the shared receipt check to verify its image digest, source revision, and cohort.
 Onboarding and fresh re-onboarding do not supply a base-image override.

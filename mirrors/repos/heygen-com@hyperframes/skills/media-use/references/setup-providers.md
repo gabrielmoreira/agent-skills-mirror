@@ -36,8 +36,8 @@ before resolving bgm/sfx/image/icon/voice/avatar-video; music and sound effects 
 a host app's own tools need none of it. Local tools are opt-in
 alternatives where they exist: mflux for image, Kokoro for voice, Parakeet for
 transcription, and LTX for local video generation. `resolve` spec-checks
-AVAILABLE RAM for those local ladders (`describeModelLadder`); the agent can
-see the ladder and override.
+AVAILABLE RAM for those local ladders inside the CLI (the image tiers are listed
+in `references/operations.md`).
 
 | Type      | Provider / path                                                                                                                                                               |
 | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -84,8 +84,7 @@ private, on-device path instead of or ahead of HeyGen for that type. Only
 | `npx hyperframes`  | Kokoro TTS (voice), Parakeet or whisper.cpp (transcribe), remove-background     | via the hyperframes CLI; Parakeet on macOS, Windows and glibc 2.32+ Linux: `npx hyperframes models install parakeet`; whisper.cpp is built on first use (Homebrew on macOS, else git+cmake) |
 
 The RAM-graded local-model shortlist + exact per-tier install/invoke lives in
-`scripts/lib/local-models.mjs` (the agent can read `describeModelLadder(cap, specs)`
-to see which model fits this machine). Without a tool on PATH, its provider
+the CLI's bundled media-use engine, not in the standalone skill. Without a tool on PATH, its provider
 prints a one-line diagnostic to stderr and resolve falls through where another
 provider exists (e.g. no `mflux` -> codex image upsell; no `parakeet-mlx` -> whisper.cpp).
 

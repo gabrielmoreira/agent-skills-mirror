@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `ModelEngine-Group/nexent` — 26 default patterns, 0 followed patterns, 73 file(s) materialized.
+Mirror of `ModelEngine-Group/nexent` — 26 default patterns, 0 followed patterns, 74 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ModelEngine-Group/nexent` — 26 default patterns, 0 followed pattern
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 73 |
+| Files         | 74 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -132,6 +132,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 71 | ✓ | [`doc/docs/en/integration/integration-in/skills.md`](doc/docs/en/integration/integration-in/skills.md) |
 | 72 | ✓ | [`doc/docs/zh/integration/integration-in/skills.md`](doc/docs/zh/integration/integration-in/skills.md) |
 | 73 | ✓ | [`test-e2e/infra/assets/skills/SKILL.md`](test-e2e/infra/assets/skills/SKILL.md) |
+| 74 | ✓ | [`test-e2e/infra/assets/tool-fastpath/skill/SKILL.md`](test-e2e/infra/assets/tool-fastpath/skill/SKILL.md) |
 
 ---
 

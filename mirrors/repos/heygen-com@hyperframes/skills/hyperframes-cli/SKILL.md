@@ -79,6 +79,9 @@ Static audits cannot catch every mount failure. When the project uses sub-compos
 
 ```bash
 npx hyperframes snapshot --at <t1>,<t2>,<t3>
+# For multiple samples within one scene or interval:
+npx hyperframes snapshot --composition <data-composition-id> --frames 8
+npx hyperframes snapshot --range 3:5 --frames 8
 ```
 
 Treat tiny unstyled content, canvas-sized icons, missing hero elements, or timeline-registration timeouts as render-blocking mount defects. See `hyperframes-core/references/sub-compositions.md` for the corresponding fixes.

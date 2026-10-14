@@ -7,9 +7,9 @@ drift when the theme changes, and the first to break in dark mode.
 
 ## Chart tokens
 
-Define the chart's tokens beside the rest of the palette in `DESIGN.md`
-section 2, under `:root` and redefined under the dark theme, never inline in a
-chart config:
+Define the chart's tokens beside the rest of the palette - `colors:` entries
+in `DESIGN.md`, then CSS variables under `:root` redefined under the dark
+theme - never inline in a chart config:
 
 - **Categorical** - `chart-1` .. `chart-N`, one hue per series, chosen to be
   distinguishable from each other and from the status colors.
@@ -76,7 +76,7 @@ library's.
 ## Designed states
 
 Loading, no-data, and error are states of the chart, designed like any other
-component state in `DESIGN.md` section 5:
+component state in the `DESIGN.md` Components section:
 
 - **Loading** - a skeleton that holds the chart's final dimensions, so the
   page does not shift when data arrives.

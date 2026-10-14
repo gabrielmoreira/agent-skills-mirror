@@ -9,11 +9,14 @@
 ```json
 {
   "source": "渡口",
+  "aspectRatio": "16:9",
   "promptLang": "zh",
   "params": { "maxSegmentSeconds": 15, "minCutSeconds": 2, "maxCutSeconds": 5, "maxOnScreen": 3, "tolerance": 0.15 },
   "episodes": [ { "ep": 1, "segments": [ ... ] } ]
 }
 ```
+
+`aspectRatio` 是分镜与下游出图共同遵守的正式画幅合同，只接受 `"16:9"` 或 `"9:16"`；可省略，默认 `"16:9"`。报告的主分镜图与子分镜条按它排版，下游生成的每张分镜图也必须使用同一画幅。旧数据里的 `_meta.orientation` 和 `frame` 末尾画幅标签只作兼容，不要在新数据里继续写。
 
 `promptLang` 可省略（**默认 `en`——官方规范口径**）：整条英文，台词在 `<d>[Chinese]` 里保留原文。设成 `zh` 可切整条中文（对齐指令、字段名、镜头标记都有中文版）——偏离官方推荐的备选项。**禁角色名不跟着语言变**：两种模式的 H3 正文都用通用身份。
 

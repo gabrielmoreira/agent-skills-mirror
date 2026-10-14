@@ -143,24 +143,27 @@ What happens, in order:
    classic model) and resolve the credential — all before any network call.
 2. `POST /v1/videos/generations` with `model`, `prompt`, `duration`, `resolution`,
    then `image.url` / `last_frame.url` / `reference_images[].url` as base64 data
-   URLs, optional `aspect_ratio` / `generate_audio`. A `401/403` names the
-   credential source and its fix; any reply without a `request_id` fails with the
-   API's own error text.
+   URLs, optional `aspect_ratio` / `generate_audio`. A `429` — xAI's rate limit, a
+   request it did not take — is sent again, twice at most, after 8 s and 16 s
+   ([a refused request sent again](gen.md#a-refused-request-sent-again)). A `401/403`
+   names the credential source and its fix; any other reply without a `request_id`
+   fails with the API's own error text.
 3. `GET /v1/videos/{request_id}` every 4 s until `status` is `done`. `failed`,
    `expired` or a non-2xx poll fails loudly — except a poll answered `429` or `500`,
-   `502`, `503`, `504`, or one that gets no answer it can read (the connection failed
+   `502`, `503`, `504`, `529`, or one that gets no answer it can read (the connection failed
    or timed out; the answer broke on the way — a body shorter than its
    `Content-Length`, a status line that is not one, a refusal's body cut the same way;
    or a `200` body that is not JSON): the request was accepted, so that poll is asked
    again on the same `request_id` (a new POST would buy the clip twice; a GET buys
    nothing), after a wait that doubles from 8 s up to 60 s while the polls fail and goes
-   back to 4 s on an answer. A `[video] poll N of generation <id> was refused (429);
+   back to 4 s on an answer — the doubling every direct provider call waits by
+   ([a refused request sent again](gen.md#a-refused-request-sent-again)). A `[video] poll N of generation <id> was refused (429);
    asking again in 8s` line — or `… got no answer (timed out); asking again in 8s`,
    the reason `IncompleteRead(10 bytes read, 190 more expected)` or `response was not
    valid JSON` for an answer it could not read — goes to stderr each time.
 
    The poll timeout (`SPRITE_GEN_VIDEO_TIMEOUT_SECONDS`, default 600) is the one time
-   limit of the accepted request. It counts from the POST's send and bounds the polls,
+   limit of the accepted request. It counts from the send of the POST xAI accepted and bounds the polls,
    their waits and the clip's downloads (step 4) alike:
 
    - Each poll reads only what is left of it. One whose answer stalls, or comes too
@@ -183,7 +186,7 @@ What happens, in order:
    a done poll that names no URL to download (none, an empty one, anything but an
    `http(s)://` string) is *unfinished* too. A download that gets no answer it can read
    (the connection refused or timed out, the body cut short of its `Content-Length`) or
-   that the clip's host refuses with `429`, `500`, `502`, `503` or `504` is downloaded
+   that the clip's host refuses with `429`, `500`, `502`, `503`, `504` or `529` is downloaded
    again, after 8 s and then 16 s — three downloads in all, within the poll timeout: each
    reads only what is left of it, so one that stalls or whose bytes come too slowly is
    cut when it comes (`timed out`), and one whose wait would reach it is not tried. A
@@ -358,9 +361,10 @@ transport's words in `reason`.
 ## Quotas and limits
 
 - Imagine quota is a weekly SuperGrok allowance; when it is exhausted the API
-  refuses the POST and the run fails with that message. A refused POST is never sent
-  again here — the provider may have taken it; only a poll of an accepted request is
-  asked again (step 3).
+  refuses the POST and the run fails with that message. A refused POST is sent again
+  only when xAI's answer is `429`, a request it did not take (step 2); any other refusal
+  is never sent again here — the provider may have taken it. A poll of an accepted
+  request is asked again (step 3).
 - A refused request or a failed poll names the provider's code after the status,
   `(HTTP 400) code=invalid_argument`, read from a top-level `code` or the `error`
   object. `invalid_argument` covers moderation and bad parameters alike, so it is

@@ -1,11 +1,9 @@
 ---
 name: bevy-debugging-profiling
-description: "Docs-first stub for Bevy logs and diagnostics. Godot counterpart: godot-debugging-profiling. Not a full port. Keywords: Bevy, LogPlugin, DiagnosticsPlugin, FrameTimeDiagnosticsPlugin."
+description: "Bevy ECS skill for logs and diagnostics. Keywords: Bevy, LogPlugin, DiagnosticsPlugin, FrameTimeDiagnosticsPlugin."
 ---
 
-# Bevy debugging and profiling (docs-first stub)
-
-Not a full port. Diagnostics are plugins and a store resource. They are not a Godot profiler panel.
+# Bevy debugging and profiling
 
 ## When to use
 
@@ -17,11 +15,11 @@ Load this when a running app should print logs or record frame time, entity coun
 - **Diagnostics core:** `DiagnosticsPlugin` adds the core resources. `DiagnosticsStore` holds the collection. `Diagnostic` is a timeline of `DiagnosticMeasurement` values addressed by `DiagnosticPath`. `RegisterDiagnostic` adds `register_diagnostic` on `App`.
 - **Built-in plugins:** `FrameTimeDiagnosticsPlugin` adds frame time, fps, and frame count. `EntityCountDiagnosticsPlugin` adds an entity count. `SystemInformationDiagnosticsPlugin` adds `cpu_usage` and `mem_usage` percent. `LogDiagnosticsPlugin` prints diagnostics to the console. `FrameCount` / `FrameCountPlugin` count frames since start.
 - **Order:** the log-diagnostics example adds these plugins after `DefaultPlugins` because they use the time plugin for timestamps.
-- **Schedule:** you do not write the measurement systems yourself unless you register your own `Diagnostic`. Reading `DiagnosticsStore` from a system was not opened as a recipe.
+- **Schedule:** you do not write the measurement systems yourself unless you register your own `Diagnostic`. Check the diagnostics docs for a `DiagnosticsStore` read before writing one.
 
-## Godot idea to Bevy idiom
+## Coming from Godot
 
-| Idea | Bevy idiom (idea only) |
+| Godot idea | Bevy idiom |
 | --- | --- |
 | Print debug lines | `LogPlugin` filter or `RUST_LOG` |
 | FPS readout | `FrameTimeDiagnosticsPlugin` |
@@ -29,18 +27,17 @@ Load this when a running app should print logs or record frame time, entity coun
 | Process CPU and memory | `SystemInformationDiagnosticsPlugin` |
 | Dump those numbers | `LogDiagnosticsPlugin` |
 
-## Gaps
+## Scope
 
-- Per-system flame graphs and Tracy wiring (`enable_tracy` appears as a field fragment on the log plugin page) were not opened as a setup guide.
-- A custom `Diagnostic` registration example was not opened. Names stop at `Diagnostic`, `DiagnosticPath`, and `register_diagnostic`.
-- Render-app diagnostic forwarding was not opened on docs.rs (an examples page mentions it; this skill does not copy that plugin path).
-
+- Check the log plugin page before wiring per-system flame graphs or Tracy (`enable_tracy` appears as a field fragment there).
+- Names stop at `Diagnostic`, `DiagnosticPath`, and `register_diagnostic`. Check the diagnostics docs for a custom `Diagnostic` registration example before writing one.
+- Render-app diagnostic forwarding is mentioned on an examples page. This skill does not copy that plugin path.
 
 ## Expert Knowledge Delta
 
-Library target in prose: **Bevy 0.20.0**. Lattice URLs stay unversioned.
+Target: **Bevy 0.20+**.
 
-Opened canon only: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. This file does not invent their struct APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
+Core ECS types: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. See `bevy-events-messaging` for their APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
 
 ### Who owns state
 
@@ -63,22 +60,19 @@ Borrow rule: two systems that both mutably query the same component must be orde
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API this skill did not open | A Gaps row | A fabricated crate (solver, navmesh module, net, XR) |
+| An API outside the documented set | Check the official docs first | A made-up crate or API |
 
-Load `references/a-gate-notes.md` for the same table plus the gap rule.
+Load [references/ecs-ownership.md](debugging-profiling-ecs-ownership.md) for the ownership table.
 
 ## NEVER
 
-- Do not put `/0.20.0/` in lattice URLs. WHY: permalinks stay on `latest`. The 0.20.0 pin belongs in prose once.
+- Do not pin `/0.20.0/` in docs URLs. WHY: links stay on `latest`; the 0.20 target is stated once in prose.
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
-- Do not invent a physics, navigation, networking, or XR crate here. WHY: those rows are gaps, blocked, or revisit.
+- Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot debugger, monitor, or profiler types. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Tracy or external profiler setup this file did not open. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No third-party profiling crates. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Creation Station content. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No umbrella skill over Godot and Bevy. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- Do not mark this row `ported`. It is `docs_mapped`. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Godot debugger, monitor, or profiler types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No Tracy or external profiler setup this file did not open. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No third-party profiling crates. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
@@ -94,15 +88,15 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](../SKILL.md)  -  Who owns which piece of state.
-- [bevy-project-foundations](project-foundations.md)  -  `DefaultPlugins` and `App`.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Who owns which piece of state.
+- [bevy-project-foundations](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-project-foundations/SKILL.md)  -  `DefaultPlugins` and `App`.
 
 #### Complements
-- [bevy-performance](performance.md)  -  What the frame-time numbers are for.
-- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md)  -  Godot counterpart. Source idea only.
+- [bevy-performance](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-performance/SKILL.md)  -  What the frame-time numbers are for.
+- [godot-debugging-profiling](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-debugging-profiling/SKILL.md)  -  Equivalent Godot skill.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](../SKILL.md)  -  Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.

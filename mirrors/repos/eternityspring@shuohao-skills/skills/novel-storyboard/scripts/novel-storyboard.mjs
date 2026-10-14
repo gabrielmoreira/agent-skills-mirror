@@ -808,6 +808,9 @@ export function validateStoryboard(board, ctx = {}) {
   if (!board || typeof board !== 'object') return ['storyboard.json 不是对象'];
 
   if (!String(board.source ?? '').trim()) p('缺少 source（剧名）');
+  if (board.aspectRatio != null && !ASPECT_RATIOS.has(board.aspectRatio)) {
+    p(`aspectRatio 只能是 16:9 或 9:16，实际是「${board.aspectRatio}」`);
+  }
   const eps = board.episodes;
   if (!Array.isArray(eps) || eps.length === 0) {
     p('episodes 为空');
@@ -852,7 +855,10 @@ export function validateStoryboard(board, ctx = {}) {
 /* seed — 从 script.json 确定性预填                                      */
 /* ------------------------------------------------------------------ */
 
-export function seedFromScript(script, epRange = null) {
+export function seedFromScript(script, epRange = null, aspectRatio = '16:9') {
+  if (!ASPECT_RATIOS.has(aspectRatio)) {
+    throw new Error(`aspectRatio 只能是 16:9 或 9:16，实际是「${aspectRatio}」`);
+  }
   const expanded = expandScript(script);
   const inRange = (n) => !epRange || (n >= epRange[0] && n <= epRange[1]);
   const episodes = [];
@@ -877,7 +883,7 @@ export function seedFromScript(script, epRange = null) {
       })),
     });
   }
-  return { source: script?.source ?? '', episodes };
+  return { source: script?.source ?? '', aspectRatio, episodes };
 }
 
 /* ------------------------------------------------------------------ */
@@ -1272,6 +1278,48 @@ function embedDoc(doc) {
   return JSON.stringify(doc).replace(/</g, '\\u003c');
 }
 
+/*
+ * 分镜图位的画幅。正式合同是 storyboard.json 顶层的 aspectRatio（9:16 / 16:9，见
+ * references/schema.md 与 references/frame.md）；图位要是写死 16:9，竖图就被 object-fit:cover
+ * 裁成一条横带——看报告的人会以为构图出了问题。认的顺序：
+ *   1. 顶层 `aspectRatio`——skill 自己的正式字段，最权威；
+ *   2. 顶层 `_meta.orientation`——旧版下游应用写入的数据，只作兼容；
+ *   3. 每切 frame 末尾的画幅标签，数多的那个——没有元数据的旧分镜仍然可以识别；
+ *   4. 都认不出就是 16:9。
+ * 只管分镜图：批次卡里的场景设定图（`.bimg`）一律按 16:9 出，不跟剧的画幅走。
+ */
+const ASPECT_RATIOS = new Set(['16:9', '9:16']);
+
+const ORIENTATION_TAG = {
+  portrait: '9:16', vertical: '9:16', v: '9:16', 竖: '9:16', 竖屏: '9:16', '9:16': '9:16',
+  landscape: '16:9', horizontal: '16:9', h: '16:9', 横: '16:9', 横屏: '16:9', '16:9': '16:9',
+};
+
+function boardAspect(board) {
+  if (ASPECT_RATIOS.has(board?.aspectRatio)) return board.aspectRatio;
+  const declared = ORIENTATION_TAG[String(board?._meta?.orientation ?? '').trim().toLowerCase()];
+  if (declared) return declared;
+  let portrait = 0;
+  let landscape = 0;
+  for (const ep of board?.episodes ?? []) {
+    for (const seg of ep.segments ?? []) {
+      for (const cut of seg.cuts ?? []) {
+        const f = String(cut.frame ?? '');
+        if (/(^|[\s,])9:16\s*$/.test(f)) portrait++;
+        else if (/(^|[\s,])16:9\s*$/.test(f)) landscape++;
+      }
+    }
+  }
+  return portrait > landscape ? '9:16' : '16:9';
+}
+
+// 竖屏才追加；横屏一个字节都不多，报告与改动前逐字节一致。主图收窄居中——
+// 整卡宽的 9:16 一张就有一屏多高，子分镜条四格竖缩略图照旧铺满
+const PORTRAIT_FRAME_CSS = `
+/* 竖屏 9:16：分镜图位跟着画幅改竖（场景设定图 .bimg 仍是 16:9） */
+.frame,.subf{aspect-ratio:9/16}
+img.frame{width:min(100%,300px);margin:0 auto}`;
+
 export function renderHtml(board, ctx = {}) {
   const lang = ctx.lang ?? board?.lang ?? 'zh';
   const t = tOf(lang);
@@ -1283,6 +1331,8 @@ export function renderHtml(board, ctx = {}) {
   const eps = board.episodes;
   const params = stats.params;
   const fmtMin = t.fmtMin;
+  // 分镜图位跟着这部剧的画幅走（见 boardAspect）；横屏不插任何东西
+  const frameAspectCss = boardAspect(board) === '9:16' ? PORTRAIT_FRAME_CSS : '';
 
   const SIZE_ALPHA = { 'extreme-wide': 0.25, wide: 0.4, medium: 0.58, close: 0.78, 'extreme-close': 1 };
 
@@ -1592,7 +1642,7 @@ a.chip:hover{border-color:var(--seal);color:var(--seal)}
 .ptab{font:500 11px/1 var(--sans);letter-spacing:.08em;color:var(--ink-3);background:none;border:0;
   border-bottom:1.5px solid transparent;padding:4px 6px;cursor:pointer}
 .ptab.on{color:var(--ink);border-bottom-color:var(--seal)}
-.ptab:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
+.ptab:focus-visible{outline:2px solid var(--seal);outline-offset:2px}${frameAspectCss}
 
 /* 03 generation batches */
 .batches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
@@ -1795,6 +1845,7 @@ document.querySelector('.expo').addEventListener('click', (e) => {
 const USAGE = `novel-storyboard.mjs — novel-storyboard skill 的确定性工具（分镜）
 
   seed <script.json> [--eps 1-3]              从剧本预填节拍工作底稿（打印到 stdout）
+         [--aspect 16:9|9:16]                 正式画幅字段（默认 16:9）
   validate <sb.json> --script <script.json>   校验；有违规逐条打印并 exit 1
            [--outline] [--cast] [--art]       outline/cast 查提示词人名；art 只管显示名字
            [--shots <卡片目录>]                挂载镜头配方卡库，开 shot-recipe 门（不给就跳过）
@@ -1874,15 +1925,16 @@ function main(argv) {
 
   if (cmd === 'seed') {
     const [path] = rest;
-    if (!path) throw new Error('用法：seed <script.json> [--eps 1-3]');
+    if (!path) throw new Error('使用方法：seed <script.json> [--eps 1-3] [--aspect 16:9|9:16]');
     const range = flag(rest, '--eps');
+    const aspectRatio = flag(rest, '--aspect', '16:9');
     let epRange = null;
     if (range) {
       const m = String(range).match(/^(\d+)-(\d+)$/) ?? String(range).match(/^(\d+)$/);
       if (!m) throw new Error('--eps 形如 3 或 1-6');
       epRange = m[2] ? [Number(m[1]), Number(m[2])] : [Number(m[1]), Number(m[1])];
     }
-    console.log(JSON.stringify(seedFromScript(readJson(path), epRange), null, 2));
+    console.log(JSON.stringify(seedFromScript(readJson(path), epRange, aspectRatio), null, 2));
     return;
   }
 

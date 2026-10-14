@@ -111,8 +111,8 @@ Re-exported from [`mod.rs`](./mod.rs):
 - [`crates/openhuman-core/src/cron/scheduler_gate/README.md`](../../cron/scheduler_gate/README.md): the LLM-permit
   gate the local arm waits on.
 - [Parent module README](../README.md)
-- [Triggers](../../../../../gitbooks/features/integrations/triggers.md)
-- [Agent harness architecture](../../../../../gitbooks/developing/architecture/agent-harness.md)
+- [Triggers](../../../../../docs/gitbooks/en/features/integrations/triggers.md)
+- [Agent harness architecture](../../../../../docs/gitbooks/en/developing/architecture/agent-harness.md)
 
 ## Tests
 

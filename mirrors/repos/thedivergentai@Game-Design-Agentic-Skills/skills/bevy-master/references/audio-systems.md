@@ -1,11 +1,9 @@
 ---
 name: bevy-audio-systems
-description: "Docs-first stub for Bevy audio playback. Godot counterpart: godot-audio-systems. Not a full port. Keywords: Bevy, AudioPlayer, AudioSink, PlaybackSettings, AssetServer."
+description: "Bevy ECS skill for audio playback. Keywords: Bevy, AudioPlayer, AudioSink, PlaybackSettings, AssetServer."
 ---
 
-# Bevy audio systems (docs-first stub)
-
-Not a full port. Sound is an entity with an `AudioPlayer` and a handle from `AssetServer`. Buses and Godot players are not mapped.
+# Bevy audio systems
 
 ## When to use
 
@@ -19,9 +17,9 @@ Load this when a clip should start, loop, pause, or change volume. `bevy::audio`
 - **Replay:** after a non-looping sound finishes and the sink is drained, that `AudioPlayer` cannot be reused. Remove the audio components and add them again.
 - **Schedule:** spawn on `Startup` or from a system that has `Res<AssetServer>` and `Commands`. Control systems in the example run where they read `ButtonInput<KeyCode>` and `Res<Time>`.
 
-## Godot idea to Bevy idiom
+## Coming from Godot
 
-| Idea | Bevy idiom (idea only) |
+| Godot idea | Bevy idiom |
 | --- | --- |
 | Play a file | `AudioPlayer::new` plus `AssetServer::load` |
 | Loop | `PlaybackSettings::LOOP` |
@@ -29,18 +27,17 @@ Load this when a clip should start, loop, pause, or change volume. `bevy::audio`
 | One-shot that should leave the world | `PlaybackMode::Despawn` or `Remove` |
 | Positional emitter | `PlaybackSettings` with `with_spatial(true)` and `SpatialAudioSink` |
 
-## Gaps
+## Scope
 
-- Bus graphs, music/sfx mixer layouts, and audio-area shapes were not opened.
-- Sample rates, supported file types, and the exact `AudioSource` type body were not opened beyond the `Handle` in `AudioPlayer::new`.
-- Removing `AudioSink` restarts an attached source (stated on the sink page). A full restart recipe was not opened.
-
+- Check the audio docs for bus graphs, music/sfx mixer layouts, and audio-area shapes before writing them.
+- Check the audio docs for sample rates, supported file types, and the `AudioSource` type beyond the `Handle` in `AudioPlayer::new`.
+- Removing `AudioSink` restarts an attached source (stated on the sink page). Check that page for a full restart recipe before writing one.
 
 ## Expert Knowledge Delta
 
-Library target in prose: **Bevy 0.20.0**. Lattice URLs stay unversioned.
+Target: **Bevy 0.20+**.
 
-Opened canon only: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. This file does not invent their struct APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
+Core ECS types: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. See `bevy-events-messaging` for their APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
 
 ### Who owns state
 
@@ -63,22 +60,19 @@ Borrow rule: two systems that both mutably query the same component must be orde
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API this skill did not open | A Gaps row | A fabricated crate (solver, navmesh module, net, XR) |
+| An API outside the documented set | Check the official docs first | A made-up crate or API |
 
-Load `references/a-gate-notes.md` for the same table plus the gap rule.
+Load [references/ecs-ownership.md](audio-systems-ecs-ownership.md) for the ownership table.
 
 ## NEVER
 
-- Do not put `/0.20.0/` in lattice URLs. WHY: permalinks stay on `latest`. The 0.20.0 pin belongs in prose once.
+- Do not pin `/0.20.0/` in docs URLs. WHY: links stay on `latest`; the 0.20 target is stated once in prose.
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
-- Do not invent a physics, navigation, networking, or XR crate here. WHY: those rows are gaps, blocked, or revisit.
+- Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot audio player, bus, or stream types. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No volume curves or mixer nodes this file did not open. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No third-party audio crates. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Creation Station content. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No umbrella skill over Godot and Bevy. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- Do not mark this row `ported`. It is `docs_mapped`. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Godot audio player, bus, or stream types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No volume curves or mixer nodes this file did not open. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No third-party audio crates. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
@@ -97,15 +91,15 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](../SKILL.md)  -  Who owns which piece of state.
-- [bevy-asset-scenes](asset-scenes.md)  -  `AssetServer` and `Handle`.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Who owns which piece of state.
+- [bevy-asset-scenes](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-asset-scenes/SKILL.md)  -  `AssetServer` and `Handle`.
 
 #### Complements
-- [bevy-input-handling](input-handling.md)  -  Keys the control example uses.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md)  -  Godot counterpart. Source idea only.
+- [bevy-input-handling](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md)  -  Keys the control example uses.
+- [godot-audio-systems](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-audio-systems/SKILL.md)  -  Equivalent Godot skill.
 
 #### Downstream / consumers
 - None yet. Genre skills that play stingers should route here when they exist.
 
 #### Master
-- [bevy-master](../SKILL.md)  -  Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.

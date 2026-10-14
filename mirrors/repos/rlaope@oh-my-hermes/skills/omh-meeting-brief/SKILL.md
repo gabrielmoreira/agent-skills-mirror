@@ -1,6 +1,8 @@
 ---
 name: "omh-meeting-brief"
 description: "[omh] Upcoming work meeting that lacks an agenda: agenda, prompts, decisions, and record template. Use when the user says: meeting-brief, meeting brief, meeting agenda, agenda, discussion prompts, decisions needed, record template, meeting topics."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, meeting]
@@ -8,6 +10,7 @@ metadata:
     phase: preparation
     role: operator
     quality_tier: facilitation-gated
+    related_skills: [meeting-action-items]
 ---
 
 # Meeting Brief
@@ -23,6 +26,7 @@ This is a Hermes-native `meeting-brief` workflow skill.
 - The user needs observed meeting minutes, decisions, or action items but has not provided notes.
 - The request is strategy synthesis without a meeting audience, agenda, or decision ceremony.
 - The follow-up is implementation work that already has accepted requirements and should become a plan or handoff.
+- The meeting already happened, its notes or transcript are in hand, and the user wants decisions, owners, follow-ups, or tickets drawn from them; load Hermes' bundled `meeting-action-items` skill instead of this one.
 
 ## Examples
 
@@ -51,11 +55,11 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+20 more`) - research, signals, ops, and briefings.
+- Current lane: **Research and company ops** (`product-docs`, `source-finder`, `web-research`, `research`, `model-optimization`, `inference-serving`, `model-finetuning`, `research-brief`, `+21 more`) - research, signals, ops, and briefings.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when Hermes should prepare a meeting agenda, discussion prompts, decision points, and a record template.
 
@@ -74,6 +78,7 @@ Quality bar:
 - Turn context into agenda topics, prompts, decisions needed, and a record template.
 - Keep prep distinct from actual meeting minutes or accepted decisions.
 - Identify missing context that would change the meeting structure.
+- Give the record template's action-item rows outcome, owner, due date, dependency, acceptance condition, and source columns, each marked unknown until the meeting record fills it.
 
 Handoff policy:
 
@@ -119,4 +124,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

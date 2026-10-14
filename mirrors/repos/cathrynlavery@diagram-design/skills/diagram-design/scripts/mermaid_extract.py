@@ -271,22 +271,28 @@ def load_blocks(path: Path) -> list[SourceBlock]:
     start: int | None = None
     fence = ""
     content: list[str] = []
+    capture = False
     for line_number, line in enumerate(lines, 1):
         if start is None:
-            match = re.match(r"^\s*(`{3,}|~{3,})\s*mermaid\s*$", line, re.I)
-            if match:
+            match = re.match(r"^\s*(`{3,}|~{3,})(.*)$", line)
+            if (match and not (match.group(1)[0] == "`" and "`" in match.group(2))
+                    and (match.group(2).strip().casefold() == "mermaid"
+                         or re.match(r"^ {0,3}[`~]", line))):
                 start = line_number + 1
                 fence = match.group(1)
+                capture = match.group(2).strip().casefold() == "mermaid"
                 content = []
             continue
-        if re.match(rf"^\s*{re.escape(fence[0])}{{{len(fence)},}}\s*$", line):
-            blocks.append(SourceBlock(len(blocks), "\n".join(content), start))
+        if (re.match(rf"^\s*{re.escape(fence[0])}{{{len(fence)},}}\s*$", line)
+                and (capture or re.match(r"^ {0,3}[`~]", line))):
+            if capture:
+                blocks.append(SourceBlock(len(blocks), "\n".join(content), start))
             start = None
             fence = ""
             content = []
-        else:
+        elif capture:
             content.append(line)
-    if start is not None:
+    if start is not None and capture:
         _fail(f"{path.name}: unterminated mermaid fence starting at line {start - 1}")
     if not blocks:
         _fail(f"{path.name}: no fenced mermaid block found")
@@ -847,7 +853,9 @@ def _parse_flowchart(
 def _parse_sequence(
     diagram: Diagram, lines: list[tuple[int, str]], header_position: int
 ) -> None:
-    fragment_stack: list[dict[str, Any]] = []
+    # None marks a visual-only rect block: its end must not close a semantic fragment.
+    fragment_stack: list[dict[str, Any] | None] = []
+    semantic_depth = 0
     participant_re = re.compile(
         r"^(?:create\s+)?(participant|actor)\s+"
         r"(?:\"([^\"]+)\"|'([^']+)'|([\w.:-]+))"
@@ -890,25 +898,30 @@ def _parse_sequence(
                 "actor" if kind == "actor" else "lifeline",
             )
             continue
+        if (re.match(r"^rect\s+", text, re.I) and message_re.match(text) is None
+                and re.match(r"^rect\s+(?:<<--?>>|--?>>|--?>|--?\)|--?x)", text, re.I) is None):
+            fragment_stack.append(None)
+            continue
         fragment = re.match(r"^(alt|opt|loop|par|critical|break)\b\s*(.*)$", text, re.I)
         if fragment:
             entry = {
                 "kind": fragment.group(1).casefold(),
                 "label": clean_label(fragment.group(2)),
                 "line": line_number,
-                "depth": len(fragment_stack),
+                "depth": semantic_depth,
                 "regions": [],
             }
             diagram.fragments.append(entry)
             fragment_stack.append(entry)
+            semantic_depth += 1
             continue
         region = re.match(r"^(else|and|option)\b\s*(.*)$", text, re.I)
-        if region and fragment_stack:
+        if region and fragment_stack and fragment_stack[-1] is not None:
             fragment_stack[-1]["regions"].append(clean_label(region.group(2)))
             continue
         if lowered == "end":
-            if fragment_stack:
-                fragment_stack.pop()
+            if fragment_stack and fragment_stack.pop() is not None:
+                semantic_depth -= 1
             continue
         if lowered.startswith(("activate ", "deactivate ", "+", "-")):
             continue

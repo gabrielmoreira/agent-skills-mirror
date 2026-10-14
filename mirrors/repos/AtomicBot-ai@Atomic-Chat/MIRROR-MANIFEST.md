@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 10 followed patterns, 443 file(s) materialized.
+Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 10 followed patterns, 447 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 10 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 10 |
-| Files         | 443 |
+| Files         | 447 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -465,52 +465,56 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 395 | ✓ | [`docs/decisions/2026-10-06-ship-vllm-as-the-second-managed-engine.md`](docs/decisions/2026-10-06-ship-vllm-as-the-second-managed-engine.md) |
 | 396 | ✓ | [`docs/decisions/2026-10-06-show-prismml-where-it-has-a-build-and-onboard-its-engine.md`](docs/decisions/2026-10-06-show-prismml-where-it-has-a-build-and-onboard-its-engine.md) |
 | 397 | ✓ | [`docs/decisions/2026-10-07-download-embedding-models-in-the-hub-and-serve-them-over-the-api.md`](docs/decisions/2026-10-07-download-embedding-models-in-the-hub-and-serve-them-over-the-api.md) |
-| 398 | ✓ | [`docs/decisions/2026-10-07-move-installed-media-engines-onto-the-fork-build-with-an-atomic-tag.md`](docs/decisions/2026-10-07-move-installed-media-engines-onto-the-fork-build-with-an-atomic-tag.md) |
-| 399 | ✓ | [`docs/decisions/2026-10-08-a-threads-chat-calls-back-into-the-page-mounted-now.md`](docs/decisions/2026-10-08-a-threads-chat-calls-back-into-the-page-mounted-now.md) |
-| 400 | ✓ | [`docs/decisions/2026-10-08-cite-documents-by-name-and-retrieve-one-query-per-fact.md`](docs/decisions/2026-10-08-cite-documents-by-name-and-retrieve-one-query-per-fact.md) |
-| 401 | ✓ | [`docs/decisions/2026-10-08-say-how-embedding-models-load-and-copy-runnable-examples.md`](docs/decisions/2026-10-08-say-how-embedding-models-load-and-copy-runnable-examples.md) |
-| 402 | ✓ | [`docs/decisions/2026-10-08-stop-closes-the-local-stream-connection-in-rust.md`](docs/decisions/2026-10-08-stop-closes-the-local-stream-connection-in-rust.md) |
-| 403 | ✓ | [`docs/decisions/2026-10-09-a-send-waits-for-web-search-that-is-still-connecting.md`](docs/decisions/2026-10-09-a-send-waits-for-web-search-that-is-still-connecting.md) |
-| 404 | ✓ | [`docs/decisions/2026-10-09-gate-releases-beside-the-builds-and-warm-caches-on-main.md`](docs/decisions/2026-10-09-gate-releases-beside-the-builds-and-warm-caches-on-main.md) |
-| 405 | ✓ | [`docs/decisions/2026-10-09-hide-the-cli-in-the-app.md`](docs/decisions/2026-10-09-hide-the-cli-in-the-app.md) |
-| 406 | ✓ | [`docs/decisions/2026-10-09-match-file-ids-by-name-and-tell-the-model-documents-are-attached.md`](docs/decisions/2026-10-09-match-file-ids-by-name-and-tell-the-model-documents-are-attached.md) |
-| 407 | ✓ | [`docs/decisions/2026-10-09-run-qwen-image-2-1-turbo-as-a-qwen-image-2-1-sibling.md`](docs/decisions/2026-10-09-run-qwen-image-2-1-turbo-as-a-qwen-image-2-1-sibling.md) |
-| 408 | ✓ | [`docs/README.md`](docs/README.md) |
-| 409 | ✓ | [`extensions/assistant-extension/README.md`](extensions/assistant-extension/README.md) |
-| 410 | ✓ | [`foundation-models-server/README.md`](foundation-models-server/README.md) |
-| 411 | ✓ | [`mlx-server/README.md`](mlx-server/README.md) |
-| 412 | ✓ | [`scripts/concurrent-demo/README.md`](scripts/concurrent-demo/README.md) |
-| 413 | ✓ | [`src-tauri/resources/agent-skills/apple-calendar/SKILL.md`](src-tauri/resources/agent-skills/apple-calendar/SKILL.md) |
-| 414 | ✓ | [`src-tauri/resources/agent-skills/apple-notes/SKILL.md`](src-tauri/resources/agent-skills/apple-notes/SKILL.md) |
-| 415 | ✓ | [`src-tauri/resources/agent-skills/apple-reminders/SKILL.md`](src-tauri/resources/agent-skills/apple-reminders/SKILL.md) |
-| 416 | ✓ | [`src-tauri/resources/agent-skills/audio-transcribe/SKILL.md`](src-tauri/resources/agent-skills/audio-transcribe/SKILL.md) |
-| 417 | ✓ | [`src-tauri/resources/agent-skills/currency/SKILL.md`](src-tauri/resources/agent-skills/currency/SKILL.md) |
-| 418 | ✓ | [`src-tauri/resources/agent-skills/docker/SKILL.md`](src-tauri/resources/agent-skills/docker/SKILL.md) |
-| 419 | ✓ | [`src-tauri/resources/agent-skills/ffmpeg/SKILL.md`](src-tauri/resources/agent-skills/ffmpeg/SKILL.md) |
-| 420 | ✓ | [`src-tauri/resources/agent-skills/github/SKILL.md`](src-tauri/resources/agent-skills/github/SKILL.md) |
-| 421 | ✓ | [`src-tauri/resources/agent-skills/gog-workspace/SKILL.md`](src-tauri/resources/agent-skills/gog-workspace/SKILL.md) |
-| 422 | ✓ | [`src-tauri/resources/agent-skills/imagemagick/SKILL.md`](src-tauri/resources/agent-skills/imagemagick/SKILL.md) |
-| 423 | ✓ | [`src-tauri/resources/agent-skills/notion/SKILL.md`](src-tauri/resources/agent-skills/notion/SKILL.md) |
-| 424 | ✓ | [`src-tauri/resources/agent-skills/obsidian/SKILL.md`](src-tauri/resources/agent-skills/obsidian/SKILL.md) |
-| 425 | ✓ | [`src-tauri/resources/agent-skills/pandoc/SKILL.md`](src-tauri/resources/agent-skills/pandoc/SKILL.md) |
-| 426 | ✓ | [`src-tauri/resources/agent-skills/pdf/SKILL.md`](src-tauri/resources/agent-skills/pdf/SKILL.md) |
-| 427 | ✓ | [`src-tauri/resources/agent-skills/skill-creator/SKILL.md`](src-tauri/resources/agent-skills/skill-creator/SKILL.md) |
-| 428 | ✓ | [`src-tauri/resources/agent-skills/wikipedia/SKILL.md`](src-tauri/resources/agent-skills/wikipedia/SKILL.md) |
-| 429 | ✓ | [`src-tauri/resources/agent-skills/wttr-weather/SKILL.md`](src-tauri/resources/agent-skills/wttr-weather/SKILL.md) |
-| 430 | ✓ | [`src-tauri/resources/agent-skills/xlsx/SKILL.md`](src-tauri/resources/agent-skills/xlsx/SKILL.md) |
-| 431 | ✓ | [`web-app/README.md`](web-app/README.md) |
-| 432 | ✓ | [`web-app/src/lib/core-settings-schema/README.md`](web-app/src/lib/core-settings-schema/README.md) |
-| 433 | ✓ | [`web-app/src/services/AGENTS.md`](web-app/src/services/AGENTS.md) |
-| 434 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 435 | → | [`core/CONTRIBUTING.md`](core/CONTRIBUTING.md) |
-| 436 | → | [`DEVELOP.md`](DEVELOP.md) |
-| 437 | → | [`docs/decisions/INDEX.md`](docs/decisions/INDEX.md) |
-| 438 | → | [`docs/ui-layout-rules.md`](docs/ui-layout-rules.md) |
-| 439 | → | [`extensions/CONTRIBUTING.md`](extensions/CONTRIBUTING.md) |
-| 440 | → | [`README.md`](README.md) |
-| 441 | → | [`src-tauri/CONTRIBUTING.md`](src-tauri/CONTRIBUTING.md) |
-| 442 | → | [`src-tauri/plugins/CONTRIBUTING.md`](src-tauri/plugins/CONTRIBUTING.md) |
-| 443 | → | [`web-app/CONTRIBUTING.md`](web-app/CONTRIBUTING.md) |
+| 398 | ✓ | [`docs/decisions/2026-10-07-install-media-and-mlx-engines-through-the-core.md`](docs/decisions/2026-10-07-install-media-and-mlx-engines-through-the-core.md) |
+| 399 | ✓ | [`docs/decisions/2026-10-07-move-installed-media-engines-onto-the-fork-build-with-an-atomic-tag.md`](docs/decisions/2026-10-07-move-installed-media-engines-onto-the-fork-build-with-an-atomic-tag.md) |
+| 400 | ✓ | [`docs/decisions/2026-10-08-a-threads-chat-calls-back-into-the-page-mounted-now.md`](docs/decisions/2026-10-08-a-threads-chat-calls-back-into-the-page-mounted-now.md) |
+| 401 | ✓ | [`docs/decisions/2026-10-08-cite-documents-by-name-and-retrieve-one-query-per-fact.md`](docs/decisions/2026-10-08-cite-documents-by-name-and-retrieve-one-query-per-fact.md) |
+| 402 | ✓ | [`docs/decisions/2026-10-08-say-how-embedding-models-load-and-copy-runnable-examples.md`](docs/decisions/2026-10-08-say-how-embedding-models-load-and-copy-runnable-examples.md) |
+| 403 | ✓ | [`docs/decisions/2026-10-08-stop-closes-the-local-stream-connection-in-rust.md`](docs/decisions/2026-10-08-stop-closes-the-local-stream-connection-in-rust.md) |
+| 404 | ✓ | [`docs/decisions/2026-10-08-take-engine-versions-from-the-core-and-update-through-it.md`](docs/decisions/2026-10-08-take-engine-versions-from-the-core-and-update-through-it.md) |
+| 405 | ✓ | [`docs/decisions/2026-10-09-a-send-waits-for-web-search-that-is-still-connecting.md`](docs/decisions/2026-10-09-a-send-waits-for-web-search-that-is-still-connecting.md) |
+| 406 | ✓ | [`docs/decisions/2026-10-09-gate-releases-beside-the-builds-and-warm-caches-on-main.md`](docs/decisions/2026-10-09-gate-releases-beside-the-builds-and-warm-caches-on-main.md) |
+| 407 | ✓ | [`docs/decisions/2026-10-09-hide-the-cli-in-the-app.md`](docs/decisions/2026-10-09-hide-the-cli-in-the-app.md) |
+| 408 | ✓ | [`docs/decisions/2026-10-09-match-file-ids-by-name-and-tell-the-model-documents-are-attached.md`](docs/decisions/2026-10-09-match-file-ids-by-name-and-tell-the-model-documents-are-attached.md) |
+| 409 | ✓ | [`docs/decisions/2026-10-09-run-qwen-image-2-1-turbo-as-a-qwen-image-2-1-sibling.md`](docs/decisions/2026-10-09-run-qwen-image-2-1-turbo-as-a-qwen-image-2-1-sibling.md) |
+| 410 | ✓ | [`docs/decisions/2026-10-13-bundle-the-upstream-release-the-pinned-core-would-choose.md`](docs/decisions/2026-10-13-bundle-the-upstream-release-the-pinned-core-would-choose.md) |
+| 411 | ✓ | [`docs/decisions/2026-10-13-offer-providers-media-models-beside-the-local-ones.md`](docs/decisions/2026-10-13-offer-providers-media-models-beside-the-local-ones.md) |
+| 412 | ✓ | [`docs/README.md`](docs/README.md) |
+| 413 | ✓ | [`extensions/assistant-extension/README.md`](extensions/assistant-extension/README.md) |
+| 414 | ✓ | [`foundation-models-server/README.md`](foundation-models-server/README.md) |
+| 415 | ✓ | [`mlx-server/README.md`](mlx-server/README.md) |
+| 416 | ✓ | [`scripts/concurrent-demo/README.md`](scripts/concurrent-demo/README.md) |
+| 417 | ✓ | [`src-tauri/resources/agent-skills/apple-calendar/SKILL.md`](src-tauri/resources/agent-skills/apple-calendar/SKILL.md) |
+| 418 | ✓ | [`src-tauri/resources/agent-skills/apple-notes/SKILL.md`](src-tauri/resources/agent-skills/apple-notes/SKILL.md) |
+| 419 | ✓ | [`src-tauri/resources/agent-skills/apple-reminders/SKILL.md`](src-tauri/resources/agent-skills/apple-reminders/SKILL.md) |
+| 420 | ✓ | [`src-tauri/resources/agent-skills/audio-transcribe/SKILL.md`](src-tauri/resources/agent-skills/audio-transcribe/SKILL.md) |
+| 421 | ✓ | [`src-tauri/resources/agent-skills/currency/SKILL.md`](src-tauri/resources/agent-skills/currency/SKILL.md) |
+| 422 | ✓ | [`src-tauri/resources/agent-skills/docker/SKILL.md`](src-tauri/resources/agent-skills/docker/SKILL.md) |
+| 423 | ✓ | [`src-tauri/resources/agent-skills/ffmpeg/SKILL.md`](src-tauri/resources/agent-skills/ffmpeg/SKILL.md) |
+| 424 | ✓ | [`src-tauri/resources/agent-skills/github/SKILL.md`](src-tauri/resources/agent-skills/github/SKILL.md) |
+| 425 | ✓ | [`src-tauri/resources/agent-skills/gog-workspace/SKILL.md`](src-tauri/resources/agent-skills/gog-workspace/SKILL.md) |
+| 426 | ✓ | [`src-tauri/resources/agent-skills/imagemagick/SKILL.md`](src-tauri/resources/agent-skills/imagemagick/SKILL.md) |
+| 427 | ✓ | [`src-tauri/resources/agent-skills/notion/SKILL.md`](src-tauri/resources/agent-skills/notion/SKILL.md) |
+| 428 | ✓ | [`src-tauri/resources/agent-skills/obsidian/SKILL.md`](src-tauri/resources/agent-skills/obsidian/SKILL.md) |
+| 429 | ✓ | [`src-tauri/resources/agent-skills/pandoc/SKILL.md`](src-tauri/resources/agent-skills/pandoc/SKILL.md) |
+| 430 | ✓ | [`src-tauri/resources/agent-skills/pdf/SKILL.md`](src-tauri/resources/agent-skills/pdf/SKILL.md) |
+| 431 | ✓ | [`src-tauri/resources/agent-skills/skill-creator/SKILL.md`](src-tauri/resources/agent-skills/skill-creator/SKILL.md) |
+| 432 | ✓ | [`src-tauri/resources/agent-skills/wikipedia/SKILL.md`](src-tauri/resources/agent-skills/wikipedia/SKILL.md) |
+| 433 | ✓ | [`src-tauri/resources/agent-skills/wttr-weather/SKILL.md`](src-tauri/resources/agent-skills/wttr-weather/SKILL.md) |
+| 434 | ✓ | [`src-tauri/resources/agent-skills/xlsx/SKILL.md`](src-tauri/resources/agent-skills/xlsx/SKILL.md) |
+| 435 | ✓ | [`web-app/README.md`](web-app/README.md) |
+| 436 | ✓ | [`web-app/src/lib/core-settings-schema/README.md`](web-app/src/lib/core-settings-schema/README.md) |
+| 437 | ✓ | [`web-app/src/services/AGENTS.md`](web-app/src/services/AGENTS.md) |
+| 438 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 439 | → | [`core/CONTRIBUTING.md`](core/CONTRIBUTING.md) |
+| 440 | → | [`DEVELOP.md`](DEVELOP.md) |
+| 441 | → | [`docs/decisions/INDEX.md`](docs/decisions/INDEX.md) |
+| 442 | → | [`docs/ui-layout-rules.md`](docs/ui-layout-rules.md) |
+| 443 | → | [`extensions/CONTRIBUTING.md`](extensions/CONTRIBUTING.md) |
+| 444 | → | [`README.md`](README.md) |
+| 445 | → | [`src-tauri/CONTRIBUTING.md`](src-tauri/CONTRIBUTING.md) |
+| 446 | → | [`src-tauri/plugins/CONTRIBUTING.md`](src-tauri/plugins/CONTRIBUTING.md) |
+| 447 | → | [`web-app/CONTRIBUTING.md`](web-app/CONTRIBUTING.md) |
 
 ---
 

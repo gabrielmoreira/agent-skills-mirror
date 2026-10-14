@@ -29,7 +29,8 @@ Load this reference when an accepted `ultrawork` plan splits into in-session `de
 
 ## Limits to State
 
-- Helpers share one workspace. A check is attributed to its lane, but another lane's edits are in the same tree; checks wait until every team helper is back to narrow this, not remove it.
+- Helpers share one workspace by default. A check is attributed to its lane, but another lane's edits are in the same tree; checks wait until every team helper is back to narrow this, not remove it.
+- With Hermes' `delegation.worktree_isolation` on, a helper works in a git worktree of its own and its edits land on its own branch, not in this workspace. A check run here then tests a tree without that lane's work, and a pass would accept a lane nobody checked. Once every helper is back, commit what each left uncommitted in its worktree, then merge each returned helper's branch into this workspace before `team_reconcile`; `references/native-delegation.md` says how to find the branches.
 - A check runs code the helpers wrote, as the person's own user account with the real home folder.
 - Parallel helpers in one call share one model route; a lane that needs a different model is dispatched in its own call after `omh_delegate_route`.
 - Board lanes (`references/kanban-lane.md`) are not checked by `omh_team` yet; they still follow the prepare and readback recipe there.

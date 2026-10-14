@@ -22,6 +22,15 @@ The app consumes OpenWork server surfaces (self-hosted or hosted) rather than
 inventing parallel behavior. Anything OpenCode can do is available in OpenWork,
 even before a dedicated UI exists.
 
+Customer-cloud managed installation architecture lives in
+`infra/managed-deployments/README.md` and `docs/managed-deployments.md`. AWS
+uses CloudFormation/CodeBuild; GCP uses customer-approved Cloud Shell and
+impersonated Terraform behind `managedDeploymentsGcp` (cloud only, off).
+Installer publication/configuration is an operator action, not CLI sign-in or a
+feature rollout. Never fake readiness; local tests do not prove a live install.
+Killing a rollout blocks launches without deleting customer resources or
+interrupting authenticated enrollment/health reports.
+
 ## Confidentiality (hard rule — this repo is public)
 
 Never let a branch name, commit, PR text, comment, fixture, or evidence identify
@@ -60,4 +69,20 @@ Hooks never commit, push, or change CI/Warden policy; CI remains authoritative.
   `DESIGN.md`: read it before designing, cite its rule ids in PRs, and attach
   screenshots of new UI. The optional
   `.warden/skills/design-spec-review` skill can review these rules locally.
+
+## Verify changes headless
+
+Launching the desktop app on a developer's computer opens a window that takes
+focus. Check app UI in headless Chrome instead:
+
+* Specs: `seed.appWeb` (`write-a-spec`); `run-tests` explains which placement
+  tests your working tree.
+* By hand: `pnpm world up dev-app-web --detach -- --browser`, then drive the
+  printed `cdp` address (`drive-desktop-cdp`).
+* Use the desktop app (`seed.desktop`, `pnpm dev`, `preview-desktop`,
+  `live-desktop`) only when the user asks or the change needs the desktop
+  shell: titlebar and window controls, native menus and dialogs, `openwork://`
+  links and OAuth hand-off, the built-in browser pane, updater, quit and
+  relaunch, or packaged builds. Prefer `--daytona` for those so the window
+  opens in a sandbox; Daytona builds a pushed commit, not your working tree.
 

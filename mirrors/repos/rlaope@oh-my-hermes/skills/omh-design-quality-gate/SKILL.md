@@ -1,6 +1,8 @@
 ---
 name: "omh-design-quality-gate"
 description: "[omh] Deliverable demands premium polish: enforce superior content, design, layout, publishing, and visual QA gates. Use when the user says: design-quality-gate, design quality gate, ui ux pro max, design pro max, frontend pro max, visual qa pro, premium design, high quality design."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, materials]
@@ -8,6 +10,7 @@ metadata:
     phase: design-quality-gate
     role: operator
     quality_tier: design-pro-gated
+    related_skills: [omh-image-cards, omh-decision-prototype, omh-materials-package, omh-deliverable-package]
 ---
 
 # Design Quality Gate
@@ -20,9 +23,9 @@ This is a Hermes-native `design-quality-gate` workflow skill.
 
 ## Do Not Use When
 
-- Basic image prompt card only; use `img-summary`.
-- The artifact is a throwaway probe whose quality is irrelevant to the decision it answers; use `decision-prototype`.
-- Ordinary file packaging/export plan only; use `materials-package` or `deliverable-package`.
+- Basic image prompt card only; use `omh-image-cards`.
+- The artifact is a throwaway probe whose quality is irrelevant to the decision it answers; use `omh-decision-prototype`.
+- Ordinary file packaging/export plan only; use `omh-materials-package` or `omh-deliverable-package`.
 - Pure backend, CLI, data, or text-only research with no visual surface.
 - The user asks to claim deployment, export, publication, or visual QA without evidence.
 
@@ -57,9 +60,9 @@ Bad example:
 
 - Current lane: **Materials and visual summaries** (`design-orchestration`, `apple-design`, `design-quality-gate`, `award-bar-score`, `frontend`, `accessibility-audit`, `visual-qa`, `content-operator`, `+6 more`) - web, accessibility, visual QA, files, and packages.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when web UI, decks, PDFs, posters, or visual packages must beat ordinary output on content, taste, layout, accessibility, and render QA.
 
@@ -140,4 +143,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

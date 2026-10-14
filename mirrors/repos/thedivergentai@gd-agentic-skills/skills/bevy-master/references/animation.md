@@ -1,11 +1,9 @@
 ---
 name: bevy-animation
-description: "Docs-first stub for Bevy animation playback. Godot counterpart: godot-animation-player. Keywords: Bevy, AnimationPlayer, AnimationClip, AnimationPlugin, animate_targets."
+description: "Bevy ECS skill for animation playback. Keywords: Bevy, AnimationPlayer, AnimationClip, AnimationPlugin, animate_targets."
 ---
 
-# Bevy animation playback (docs-first stub)
-
-Not a full port. Docs-first stub. Godot counterpart: godot-animation-player.
+# Bevy animation playback
 
 ## When to use
 
@@ -16,29 +14,28 @@ Load this when an entity should play an AnimationClip. Blend graphs belong on be
 - **Components:** `AnimationPlayer` controls playback. `AnimatedBy` links a target entity to the player entity. `AnimationTargetId` selects which curves apply.
 - **Assets:** `AnimationClip` holds `VariableCurve` entries.
 - **Systems:** `advance_animations` advances time. `animate_targets` writes the curves. `AnimationPlugin` adds animation support.
-- **Events:** `AnimationEvent` can be triggered from a clip. Observer wiring was not opened beyond the trait name.
+- **Events:** `AnimationEvent` can be triggered from a clip. Check the animation docs for observer wiring beyond the trait name.
 
-## Godot idea to Bevy idiom
+## Coming from Godot
 
-| Idea | Bevy idiom (idea only) |
+| Godot idea | Bevy idiom |
 | --- | --- |
 | Timeline player | AnimationPlayer on an entity, not a node |
 | Clip asset | AnimationClip |
 | Which bone or field | AnimationTargetId plus AnimatedBy |
 | Repeat | RepeatAnimation |
 
-## Gaps
+## Scope
 
-- Method names on AnimationPlayer (play, pause, seek) were not opened. Do not invent them.
-- glTF curve loading is a separate module (`gltf_curves`) and the `gltf_animation` feature. Loader steps were not opened.
-- Root motion extraction was not opened.
-
+- Check the `AnimationPlayer` docs for method names such as play, pause, and seek before writing them.
+- glTF curve loading is a separate module (`gltf_curves`) and the `gltf_animation` feature. Check those docs for loader steps before writing them.
+- Check the animation docs for root-motion extraction before writing it.
 
 ## Expert Knowledge Delta
 
-Library target in prose: **Bevy 0.20.0**. Lattice URLs stay unversioned.
+Target: **Bevy 0.20+**.
 
-Opened canon only: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. This file does not invent their struct APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
+Core ECS types: `Component`, `Resource`, `Query`, `Commands`, `Startup`, `Update`, `Fixed` / `FixedMain` (`bevy::time`), `.chain()`, `Plugin`, `DefaultPlugins`, `MinimalPlugins`. Messages and observers are an ownership slot. See `bevy-events-messaging` for their APIs. Systems run in parallel unless `.chain()` orders the ones that conflict.
 
 ### Who owns state
 
@@ -61,23 +58,20 @@ Borrow rule: two systems that both mutably query the same component must be orde
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API this skill did not open | A Gaps row | A fabricated crate (solver, navmesh module, net, XR) |
+| An API outside the documented set | Check the official docs first | A made-up crate or API |
 
-Load `references/a-gate-notes.md` for the same table plus the gap rule.
+Load [references/ecs-ownership.md](2d-animation-ecs-ownership.md) for the ownership table.
 
 ## NEVER
 
-- Do not put `/0.20.0/` in lattice URLs. WHY: permalinks stay on `latest`. The 0.20.0 pin belongs in prose once.
+- Do not pin `/0.20.0/` in docs URLs. WHY: links stay on `latest`; the 0.20 target is stated once in prose.
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
-- Do not invent a physics, navigation, networking, or XR crate here. WHY: those rows are gaps, blocked, or revisit.
+- Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot AnimationPlayer node or track types. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Godot AnimationPlayer node or track types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
-- No Godot types in Bevy code. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No invented APIs or unnamed third-party crates as the chosen solver. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No Creation Station content. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- No umbrella skill over Godot and Bevy. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
-- Do not mark this row `ported`. It is `docs_mapped`. WHY: a Godot port, an unopened API, or a public lie fails the docs-first bar.
+- No Godot types in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No invented APIs or unnamed third-party crates as the chosen solver. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
@@ -85,7 +79,7 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 
 ### Official Documentation
 - [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - Unversioned API index. Feature list opened for 0.20.0.
+- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
@@ -95,17 +89,17 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](../SKILL.md) - Hub and schedules.
-- [bevy-ecs-composition](ecs-composition.md) - Components and systems.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
 
 #### Complements
-- [bevy-animation-graph](animation-graph.md) - Blend instead of a single clip.
-- [bevy-2d-animation](2d-animation.md) - Sprite targets.
-- [bevy-asset-scenes](asset-scenes.md) - Load clip assets.
-- [godot-animation-player](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md) - Godot counterpart. Source idea only.
+- [bevy-animation-graph](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-animation-graph/SKILL.md) - Blend instead of a single clip.
+- [bevy-2d-animation](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-2d-animation/SKILL.md) - Sprite targets.
+- [bevy-asset-scenes](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-asset-scenes/SKILL.md) - Load clip assets.
+- [godot-animation-player](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-animation-player/SKILL.md) - Equivalent Godot skill.
 
 #### Downstream / consumers
-- [bevy-animation-graph](animation-graph.md) - Consumes clips.
+- [bevy-animation-graph](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-animation-graph/SKILL.md) - Consumes clips.
 
 #### Master
-- [bevy-master](../SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

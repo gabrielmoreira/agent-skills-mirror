@@ -1,6 +1,8 @@
 ---
 name: "omh-image-cards"
 description: "[omh] Infographic card for meeting notes, a report, or PR: image prompt cards - turn meetings, reports, PRs, issues, research, and releases into domain-aware image prompt cards. Use when the user says: img-summary, img summary, visual prompt card, image card, image generation, image edit, edit this image, remove the background."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, materials]
@@ -8,6 +10,7 @@ metadata:
     phase: visual-prompt-card
     role: operator
     quality_tier: visual-card-gated
+    related_skills: [omh-materials-package, omh-report-package]
 ---
 
 # Img Summary
@@ -20,8 +23,8 @@ This is a Hermes-native `img-summary` workflow skill.
 
 ## Do Not Use When
 
-- The user needs a deck, PDF, spreadsheet, HWP, Markdown package, or binary file export plan; use `materials-package`.
-- The user wants a text-only report, leadership brief, or PPT-ready outline; use `report-package`.
+- The user needs a deck, PDF, spreadsheet, HWP, Markdown package, or binary file export plan; use `omh-materials-package`.
+- The user wants a text-only report, leadership brief, or PPT-ready outline; use `omh-report-package`.
 - The user asks OMH to directly generate, inspect, upload, or post an image without a wrapper-supplied observed evidence path.
 
 ## Examples
@@ -53,9 +56,9 @@ Bad example:
 
 - Current lane: **Materials and visual summaries** (`design-orchestration`, `apple-design`, `design-quality-gate`, `award-bar-score`, `frontend`, `accessibility-audit`, `visual-qa`, `content-operator`, `+6 more`) - web, accessibility, visual QA, files, and packages.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when Hermes should prepare a source-specific visual or supplied-image edit prompt without claiming generation or transformation.
 
@@ -139,6 +142,8 @@ Safety rules:
 - Show `generate_visual_image` only when wrapper context reports image_generation_capability/v1 as connected, and still treat it as wrapper-owned action rather than evidence.
 - When image_generation_capability/v1 is unknown or prompt_only, ask which image tool to use and route to image_generation_setup/v1 instead of pretending generation can start.
 - For image edits, require a supplied image reference and state preserve, remove, replace, crop, and output constraints without claiming the source image was loaded.
+- On Hermes, report image_generation_capability/v1 as `connected` when `image_generate` is in your tool list or tool_search finds it, since Hermes offers that tool only while an image backend is configured, and as `prompt_only` otherwise; never infer it from a Hermes version, a provider key, or a model name.
+- A supplied-image edit goes through that tool only when its own description offers to edit an existing image; when it says text-to-image only, the edit stays a prompt card. A result with `success: true` names the file or URL in `image` and backs one visual_generation_receipt/v1 attempt, with every route field the result does not state left unknown; a generated-image claim still needs visual_observation/v1, and visual QA and delivery stay separate.
 
 ## Runtime Evidence
 
@@ -156,4 +161,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

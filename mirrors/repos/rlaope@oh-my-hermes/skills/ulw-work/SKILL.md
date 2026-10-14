@@ -1,6 +1,8 @@
 ---
 name: "ulw-work"
 description: "[omh] Accepted plan awaiting implementation: split it into disjoint parallel lanes with per-lane acceptance criteria, verification commands, and owners; prevents two lanes editing the same file. Aliases: ulw. Use when the user says: ultrawork, parallel work, parallel implementation, parallel then integrate, high throughput, coding team, coordinated workers, finish until done."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, execution]
@@ -8,6 +10,7 @@ metadata:
     phase: parallel-delivery
     role: handoff-guide
     quality_tier: handoff-gated
+    related_skills: [omh-decision-prototype, ulw-loop]
 ---
 
 # Ultrawork
@@ -20,20 +23,20 @@ This is a Hermes-native `ultrawork` workflow skill.
 
 ## First Steps
 
-- Initialize the phase todo before engine work: declare numbered phases in delivery order with `omh_todo` (todo init) — bootstrap, one implement/verify/deliver task per lane or work unit, independent review lanes, and an evidence-and-cleanup close, with one task per observable outcome — keep exactly one item active while working, and update states as lanes complete; the run walks a bounded, HUD-visible checklist instead of an open-ended reasoning loop. Phase names and task titles are written in English — short, operator-legible labels — even when the conversation runs in another language, since the HUD todo checklist is an operator surface under the repo's English-by-default output contract.
+- Initialize the phase todo before engine work (todo init) in ONE tool, never both: `todo_list` when `todo_list` is in your tool list or tool_search finds it (OMH mirrors it), else `omh_todo`; an accepted plan stays in `omh_todo`. Declare numbered phases in delivery order — bootstrap, one implement/verify/deliver task per lane or work unit, independent review lanes, and an evidence-and-cleanup close, one task per observable outcome — keep exactly one item active, and update states as lanes complete, so the run walks a bounded checklist. Phase names and task titles are written in English as short labels even when the conversation runs in another language, since the HUD checklist is an operator surface.
 
 ## Do Not Use When
 
 - Avoid conflicting parallel writers; use single-owner or ordered execution.
 - The plan is not accepted, lane boundaries are unclear, or verification commands are missing.
 - The user expects Hermes to secretly execute coding lanes instead of preparing explicit selected-runtime handoffs.
-- For a decision spike, use `decision-prototype`.
+- For a decision spike, use `omh-decision-prototype`.
 - [capability:coordinated_scope] The lanes are exploratory research or QA coordination without an accepted implementation plan; frame them with the `coordinated_scope` capability before parallel delivery.
 - [capability:single_owner_persistence] The request is a settings-only change, one bounded edit that is explicitly low-risk and has a direct owner and verification path, or a direct answer/diagnosis; use one direct owner instead of opening parallel delivery lanes, a finish-until-done loop, or a goal ledger.
-- [capability:delivery_boundary] The user wants an open-ended feedback loop or long-horizon campaign; use `loop` instead.
+- [capability:delivery_boundary] The user wants an open-ended feedback loop or long-horizon campaign; use `ulw-loop` instead.
 - [capability:single_owner_persistence] Progress must survive sessions as a ledger with multiple checkpoints and a final gate; use the `durable_checkpoint` capability.
 - [capability:durable_checkpoint] One concrete, already-scoped task only needs one owner to finish and verify; use the `single_owner_persistence` capability.
-- [capability:durable_checkpoint] The next work must be discovered or reframed repeatedly through research and feedback cycles; use `loop`.
+- [capability:durable_checkpoint] The next work must be discovered or reframed repeatedly through research and feedback cycles; use `ulw-loop`.
 - [capability:durable_checkpoint] Acceptance criteria, current checkpoint, and final gate expectations are too vague to make a goal inspectable.
 
 ## Examples
@@ -83,9 +86,9 @@ Bad example:
 
 - Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when an accepted implementation plan can be split into independent, reviewable work lanes.
 
@@ -111,7 +114,6 @@ Quality bar:
 - For each behavioral increment follow PIN -> RED -> GREEN -> SURFACE -> CLEAN: pin behavior a refactor could hide, capture the intended failing proof before implementation, make the smallest change, exercise the real user surface, and tear down every QA resource with a cleanup receipt; tests alone never prove completion.
 - Keep one inspectable, append-only evidence ledger for the run using the available goal/runtime records: record the tier decision, dependency topology, todo transitions, command outputs, real-surface artifacts, and cleanup receipts when each occurs.
 - For mid-run rulings and re-reviews, load `references/execution-rulings.md`.
-- For a tests-first (TDD or red-green) run, every implementation lane follows the observed red/green contract in `references/tdd-red-green.md`.
 - [capability:coordinated_scope] Keep Hermes as coordinator and status narrator for lane framing and status while coding lanes become runtime handoffs with explicit ownership.
 - [capability:delivery_boundary] Complete exactly one plan-to-PR delivery cycle, then stop with status, evidence gaps, or a next recommended workflow.
 - [capability:delivery_boundary] Start a delivery cycle with codebase/source research and a ralplan-style decision record before implementation handoff.
@@ -120,6 +122,7 @@ Quality bar:
 - [capability:delivery_boundary] For implementation, default to Hermes-native delegation with a per-lane `omh_delegate_route` mixture route and acceptance criteria and verification commands attached; hand off to the `durable_checkpoint` capability for work that must survive sessions, and prepare a selected external executor/runtime path only on the user's explicit owner acceptance.
 - When a lane's coding owner is an external CLI rather than the Hermes harness, that lane's handoff runs under `ulw-maestro`'s contract — load it and follow it whole; a lane with an external owner is never a Hermes-native `delegate_task` lane. Lane framing, disjointness, integration verification, and the closing brief stay here.
 - Route each Hermes-native lane before dispatch: an inherit-labeled delegation wave is an unrouted wave, not mixture routing — re-route it or state why parent inheritance is intended.
+- Before a `delegate_task` dispatch, load `references/native-delegation.md`: the answer schema, worktree-isolated lanes, and the one-shot budget.
 - Choose the wait strategy before starting long-running work and bind it to a completion signal the host exposes, never to a status loop: a command that fits one tool call runs once in the foreground with a duration-sized timeout; a longer terminal command runs in the background with completion notification armed and no process-status polling; a delegated lane relies on its delivered result while the parent continues independent work or ends the turn; a CI, PR, deploy, file, port, log-line, or external-session condition uses the host's monitor when observed, else exactly ONE bounded watcher or adaptive backoff outside model turns. Record the handle and observation mode at dispatch; every armed wait needs a hard deadline, a cancellation path, and a fallback naming the missing capability. Each wait closes in one terminal state with bounded evidence; an unbounded idle or busy-wait is a defect and a lost notification times out. One decision-changing midpoint peek and any user-requested status check stay allowed; neither is the wait mechanism. Ladder and terminal states: shared rail.
 - A mid-run user message is an interjection, not a stop: answer it briefly and, in the same reply, continue the run — re-read the phase todo when one is active and dispatch or advance the next pending step, or name the armed wait it is waiting on -- handle, bound completion signal, deadline -- instead of re-reading status. Only the user's explicit stop or cancel, or the engine's own completion gate, ends the run; when the interjection changes scope, say so and update the declared plan or todo instead of silently abandoning it. A mid-run message is the latest steering for the active task, not automatically a replacement objective: it replaces the objective when the user says so and steers the current one otherwise.
 - A follow-up that needs new authority, materially expands the scope, or changes external state not already authorized is described first and started only on the user's approval: the turn ends by naming that next action and asking whether to take it, as one question carrying the choices the user has, never by declaring what will not be done; persistence never broadens the authorized scope. A refused escalation is answered the same way, with a safer alternative inside the boundary or the authorization the boundary asks for — never a workaround or an indirect execution.
@@ -129,6 +132,7 @@ Quality bar:
 - [capability:single_owner_persistence] For single-owner coding edits, prepare and track the selected runtime path instead of implying unobserved work happened or hiding execution inside chat narration.
 - [capability:single_owner_persistence] Report single-owner completion only from observed execution and verification evidence, with remaining risks named.
 - [capability:durable_checkpoint] Keep goal state durable, inspectable, and separate from chat narration in the metadata-only .omh/goals goal_ledger/v1.
+- [capability:durable_checkpoint] Create a code-changing goal with `omh goal create --obligation slop-cleanup`; it completes only after a checkpoint cites one completed `ai-slop-cleaner` run for it, recorded and cited with the commands that skill closes on (`--cleanup-outcome passed|skipped|reverted` and an outputs or verification summary the integrity check accepts; placeholders are refused). Without the flag the goal is not gated.
 - [capability:durable_checkpoint] Checkpoint every success, blocker, and final quality gate with fresh evidence.
 - [capability:durable_checkpoint] Reject completion with a summary-only goal_completion_gate/v1 result until required criteria, blockers, and explicitly linked runtime runs are satisfied.
 - [capability:durable_checkpoint] Name the one element gating goal progress from the linked loop's loop_constraint_assessment/v1 before checkpointing the next step; load `ulw-loop/references/goal-constraint-discipline.md` for the method.
@@ -202,4 +206,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

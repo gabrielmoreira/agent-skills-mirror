@@ -281,7 +281,7 @@ Each file has a sibling `<module>_tests.rs`; the policy suites live in
 
 ## Further reading
 
-- [Security architecture](../../../../gitbooks/developing/architecture/security.md)
-- [Privacy and security](../../../../gitbooks/features/privacy-and-security.md)
-- [Approval gate](../../../../gitbooks/features/approval-gate.md)
-- [OS keyring and secret storage](../../../../gitbooks/features/os-keyring-and-secret-storage.md)
+- [Security architecture](../../../../docs/gitbooks/en/developing/architecture/security.md)
+- [Privacy and security](../../../../docs/gitbooks/en/features/privacy-and-security.md)
+- [Approval gate](../../../../docs/gitbooks/en/features/approval-gate.md)
+- [OS keyring and secret storage](../../../../docs/gitbooks/en/features/os-keyring-and-secret-storage.md)

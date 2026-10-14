@@ -1,6 +1,7 @@
 ---
 name: "omh-tech-debt-audit"
 description: "[omh] Accumulated tech debt to rank: build the severity-by-effort debt ledger from observed repo evidence - orient, audit the named dimensions with file:line citations, rank fixes and quick wins - and reconcile RESOLVED/NEW/CARRIED against the previous ledger on rerun. Use when the user says: tech-debt-audit, tech debt, tech debt audit, technical debt, technical debt audit, tech debt ledger, debt ledger, audit our tech debt."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, maintenance]
@@ -20,10 +21,10 @@ This is an OMH `tech-debt-audit` workflow skill, projected for Agent Skills host
 
 ## Do Not Use When
 
-- The target is one diff, PR, or claim rather than the codebase's accumulated state; use `code-review`.
-- The user wants the debt removed now, behavior preserved; use `ai-slop-cleaner` for deletion-first cleanup.
-- A boundary-changing fix from the ledger needs its execution shaped into phases; use `refactor-plan`.
-- The question is release risk for a specific deploy rather than source quality; use `production-audit`.
+- The target is one diff, PR, or claim rather than the codebase's accumulated state; use `omh-code-review`.
+- The user wants the debt removed now, behavior preserved; use `omh-ai-slop-cleaner` for deletion-first cleanup.
+- A boundary-changing fix from the ledger needs its execution shaped into phases; use `omh-refactor-plan`.
+- The question is release risk for a specific deploy rather than source quality; use `omh-production-audit`.
 
 ## Examples
 
@@ -54,7 +55,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when the codebase's accumulated debt should be measured and ranked as a ledger - findings with file:line, severity, and effort, quick wins separated from big fixes - rather than judged as a diff or cleaned up on the spot.
 

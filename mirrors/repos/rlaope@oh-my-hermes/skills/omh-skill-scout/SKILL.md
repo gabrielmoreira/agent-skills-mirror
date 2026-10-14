@@ -1,6 +1,8 @@
 ---
 name: "omh-skill-scout"
 description: "[omh] Existing skills to reuse before authoring: prepare a metadata-only search-before-creation report for local, marketplace, GitHub, and web skill candidates with risk review and adoption options. Use when the user says: skill-scout, skill scout, skill candidate, skill candidate search, skill discovery, find a skill, find skills, top skills."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operations]
@@ -8,6 +10,7 @@ metadata:
     phase: skill-scout
     role: operator
     quality_tier: workflow-surface-gated
+    related_skills: [omh-doctor, omh-skill-health, omh-skill]
 ---
 
 # Skill Scout
@@ -16,13 +19,13 @@ This is a Hermes-native `skill-scout` workflow skill.
 
 ## Why This Exists
 
-`skill-scout` exists so Hermes users can ask for this workflow in chat and get a structured, checkable answer instead of an improvised one.
+`skill-scout` exists because writing a skill that already exists, or adopting a public one on its popularity, both cost more than a search: it compares installed, bundled, and public candidates first, keeps each source's trust level and any scan verdict beside it, and recommends using, extending, or creating one without installing, copying, or trusting anything.
 
 ## Do Not Use When
 
-- The request is already handled by a narrower explicit skill with stronger evidence.
-- The user asks OMH to secretly run external platforms, connectors, schedulers, file exports, or runtime agents.
-- The only safe answer is to ask for missing authority, credentials, target, or observed evidence first.
+- Repairing an OMH install or a skill that does not load; use `omh-doctor`.
+- A health overview of the skills already installed; use `omh-skill-health`.
+- Writing or changing a skill once the scout decision is made; use `omh-skill`.
 
 ## Examples
 
@@ -43,6 +46,7 @@ Bad example:
 - Intent, keywords, source scope, and stop condition are explicit.
 - Local and external search evidence is separated from planned search.
 - No install, copy, write, credential, or trust claim is made without observed review or implementation.
+- On Hermes, fill the external candidates from `hermes skills search <query>` and `hermes skills inspect <identifier>`, whose hub requests are Hermes' own, not OMH's. Keep the trust each shows (`official` for an official-source row, otherwise `builtin`, `trusted`, or `community`, highest first) beside the candidate as its source's standing, never as a review of its content, and record a scan verdict (`safe`, `caution`, or `dangerous`) only from install or `hermes skills audit` output that was seen, so a candidate nobody installed has none.
 
 ## Recovery Notes
 
@@ -52,11 +56,11 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+39 more`) - schedules, status, health, and ops review.
+- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+40 more`) - schedules, status, health, and ops review.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use before creating or adapting a skill so OMH can compare existing local, marketplace, GitHub, or web candidates without installing, copying, or trusting them by default.
 
@@ -124,4 +128,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

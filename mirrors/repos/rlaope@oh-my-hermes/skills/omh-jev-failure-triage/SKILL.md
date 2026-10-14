@@ -1,6 +1,8 @@
 ---
 name: "omh-jev-failure-triage"
 description: "[omh] Failing run handed to Jev for a next move: Jev failure triage: retry, fix a dependency, ask for access, or change approach on a failing run. Use when the user says: jev-failure-triage, jev failure triage, ask jev if this failure is transient."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, review]
@@ -8,6 +10,7 @@ metadata:
     phase: jev-failure-triage
     role: reviewer
     quality_tier: evidence-gated
+    related_skills: [omh-build-failure-triage, omh-agent-debug, omh-live-incident-response]
     requires_tools: [omh_jev_ask]
 ---
 
@@ -15,7 +18,7 @@ metadata:
 
 Required: the failing command, an error excerpt, and the retry count. Output: `failure_triage/v1` next move with its rule.
 
-Read `omh-routing/references/jev-rail.md` before the first ask: consent, what leaves the machine, limits, and non-answer statuses. Prepared OMH routing is not execution or approval. Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+Read `skill_view(name='omh-routing', file_path='references/jev-rail.md')` before the first ask: consent, what leaves the machine, limits, and non-answer statuses. Prepared OMH routing is not execution or approval. Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
 Contract: `references/full-contract.md`. Preset: `references/preset.md`.
 

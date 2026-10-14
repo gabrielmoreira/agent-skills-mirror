@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `instructa/agent-skills` — 26 default patterns, 0 followed patterns, 122 file(s) materialized.
+Mirror of `instructa/agent-skills` — 26 default patterns, 0 followed patterns, 125 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `instructa/agent-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 122 |
+| Files         | 125 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -151,36 +151,39 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 90 | ✓ | [`skills/herdr/delegate-sol/README.md`](skills/herdr/delegate-sol/README.md) |
 | 91 | ✓ | [`skills/herdr/delegate-sol/scripts/delegate-sol.sh`](skills/herdr/delegate-sol/scripts/delegate-sol.sh) |
 | 92 | ✓ | [`skills/herdr/delegate-sol/SKILL.md`](skills/herdr/delegate-sol/SKILL.md) |
-| 93 | ✓ | [`skills/release/homebrew-publish/README.md`](skills/release/homebrew-publish/README.md) |
-| 94 | ✓ | [`skills/release/homebrew-publish/references/formula-go.md`](skills/release/homebrew-publish/references/formula-go.md) |
-| 95 | ✓ | [`skills/release/homebrew-publish/references/formula-node.md`](skills/release/homebrew-publish/references/formula-node.md) |
-| 96 | ✓ | [`skills/release/homebrew-publish/references/formula-prebuilt.md`](skills/release/homebrew-publish/references/formula-prebuilt.md) |
-| 97 | ✓ | [`skills/release/homebrew-publish/references/formula-python.md`](skills/release/homebrew-publish/references/formula-python.md) |
-| 98 | ✓ | [`skills/release/homebrew-publish/references/formula-rust.md`](skills/release/homebrew-publish/references/formula-rust.md) |
-| 99 | ✓ | [`skills/release/homebrew-publish/SKILL.md`](skills/release/homebrew-publish/SKILL.md) |
-| 100 | ✓ | [`skills/security/package-security-check/agents/openai.yaml`](skills/security/package-security-check/agents/openai.yaml) |
-| 101 | ✓ | [`skills/security/package-security-check/data/iocs/npm-supply-chain-2026-05.json`](skills/security/package-security-check/data/iocs/npm-supply-chain-2026-05.json) |
-| 102 | ✓ | [`skills/security/package-security-check/README.md`](skills/security/package-security-check/README.md) |
-| 103 | ✓ | [`skills/security/package-security-check/scripts/check_js_supply_chain.py`](skills/security/package-security-check/scripts/check_js_supply_chain.py) |
-| 104 | ✓ | [`skills/security/package-security-check/SKILL.md`](skills/security/package-security-check/SKILL.md) |
-| 105 | ✓ | [`skills/security/secleak-check/README.md`](skills/security/secleak-check/README.md) |
-| 106 | ✓ | [`skills/security/secleak-check/references/examples.md`](skills/security/secleak-check/references/examples.md) |
-| 107 | ✓ | [`skills/security/secleak-check/references/guardrails.md`](skills/security/secleak-check/references/guardrails.md) |
-| 108 | ✓ | [`skills/security/secleak-check/scripts/block-forbidden-staged-files.mjs`](skills/security/secleak-check/scripts/block-forbidden-staged-files.mjs) |
-| 109 | ✓ | [`skills/security/secleak-check/scripts/secleak-check.sh`](skills/security/secleak-check/scripts/secleak-check.sh) |
-| 110 | ✓ | [`skills/security/secleak-check/SKILL.md`](skills/security/secleak-check/SKILL.md) |
-| 111 | ✓ | [`skills/shell/shellck/README.md`](skills/shell/shellck/README.md) |
-| 112 | ✓ | [`skills/shell/shellck/scripts/run_shellck.sh`](skills/shell/shellck/scripts/run_shellck.sh) |
-| 113 | ✓ | [`skills/shell/shellck/SKILL.md`](skills/shell/shellck/SKILL.md) |
-| 114 | ✓ | [`skills/specs/app-spec-packager/agents/openai.yaml`](skills/specs/app-spec-packager/agents/openai.yaml) |
-| 115 | ✓ | [`skills/specs/app-spec-packager/README.md`](skills/specs/app-spec-packager/README.md) |
-| 116 | ✓ | [`skills/specs/app-spec-packager/references/document-blueprints.md`](skills/specs/app-spec-packager/references/document-blueprints.md) |
-| 117 | ✓ | [`skills/specs/app-spec-packager/references/platform-modules.md`](skills/specs/app-spec-packager/references/platform-modules.md) |
-| 118 | ✓ | [`skills/specs/app-spec-packager/references/safety-privacy.md`](skills/specs/app-spec-packager/references/safety-privacy.md) |
-| 119 | ✓ | [`skills/specs/app-spec-packager/references/task-taxonomy.md`](skills/specs/app-spec-packager/references/task-taxonomy.md) |
-| 120 | ✓ | [`skills/specs/app-spec-packager/references/validation-checklist.md`](skills/specs/app-spec-packager/references/validation-checklist.md) |
-| 121 | ✓ | [`skills/specs/app-spec-packager/scripts/create_spec_package.py`](skills/specs/app-spec-packager/scripts/create_spec_package.py) |
-| 122 | ✓ | [`skills/specs/app-spec-packager/SKILL.md`](skills/specs/app-spec-packager/SKILL.md) |
+| 93 | ✓ | [`skills/orchestration/sitrep/agents/openai.yaml`](skills/orchestration/sitrep/agents/openai.yaml) |
+| 94 | ✓ | [`skills/orchestration/sitrep/README.md`](skills/orchestration/sitrep/README.md) |
+| 95 | ✓ | [`skills/orchestration/sitrep/SKILL.md`](skills/orchestration/sitrep/SKILL.md) |
+| 96 | ✓ | [`skills/release/homebrew-publish/README.md`](skills/release/homebrew-publish/README.md) |
+| 97 | ✓ | [`skills/release/homebrew-publish/references/formula-go.md`](skills/release/homebrew-publish/references/formula-go.md) |
+| 98 | ✓ | [`skills/release/homebrew-publish/references/formula-node.md`](skills/release/homebrew-publish/references/formula-node.md) |
+| 99 | ✓ | [`skills/release/homebrew-publish/references/formula-prebuilt.md`](skills/release/homebrew-publish/references/formula-prebuilt.md) |
+| 100 | ✓ | [`skills/release/homebrew-publish/references/formula-python.md`](skills/release/homebrew-publish/references/formula-python.md) |
+| 101 | ✓ | [`skills/release/homebrew-publish/references/formula-rust.md`](skills/release/homebrew-publish/references/formula-rust.md) |
+| 102 | ✓ | [`skills/release/homebrew-publish/SKILL.md`](skills/release/homebrew-publish/SKILL.md) |
+| 103 | ✓ | [`skills/security/package-security-check/agents/openai.yaml`](skills/security/package-security-check/agents/openai.yaml) |
+| 104 | ✓ | [`skills/security/package-security-check/data/iocs/npm-supply-chain-2026-05.json`](skills/security/package-security-check/data/iocs/npm-supply-chain-2026-05.json) |
+| 105 | ✓ | [`skills/security/package-security-check/README.md`](skills/security/package-security-check/README.md) |
+| 106 | ✓ | [`skills/security/package-security-check/scripts/check_js_supply_chain.py`](skills/security/package-security-check/scripts/check_js_supply_chain.py) |
+| 107 | ✓ | [`skills/security/package-security-check/SKILL.md`](skills/security/package-security-check/SKILL.md) |
+| 108 | ✓ | [`skills/security/secleak-check/README.md`](skills/security/secleak-check/README.md) |
+| 109 | ✓ | [`skills/security/secleak-check/references/examples.md`](skills/security/secleak-check/references/examples.md) |
+| 110 | ✓ | [`skills/security/secleak-check/references/guardrails.md`](skills/security/secleak-check/references/guardrails.md) |
+| 111 | ✓ | [`skills/security/secleak-check/scripts/block-forbidden-staged-files.mjs`](skills/security/secleak-check/scripts/block-forbidden-staged-files.mjs) |
+| 112 | ✓ | [`skills/security/secleak-check/scripts/secleak-check.sh`](skills/security/secleak-check/scripts/secleak-check.sh) |
+| 113 | ✓ | [`skills/security/secleak-check/SKILL.md`](skills/security/secleak-check/SKILL.md) |
+| 114 | ✓ | [`skills/shell/shellck/README.md`](skills/shell/shellck/README.md) |
+| 115 | ✓ | [`skills/shell/shellck/scripts/run_shellck.sh`](skills/shell/shellck/scripts/run_shellck.sh) |
+| 116 | ✓ | [`skills/shell/shellck/SKILL.md`](skills/shell/shellck/SKILL.md) |
+| 117 | ✓ | [`skills/specs/app-spec-packager/agents/openai.yaml`](skills/specs/app-spec-packager/agents/openai.yaml) |
+| 118 | ✓ | [`skills/specs/app-spec-packager/README.md`](skills/specs/app-spec-packager/README.md) |
+| 119 | ✓ | [`skills/specs/app-spec-packager/references/document-blueprints.md`](skills/specs/app-spec-packager/references/document-blueprints.md) |
+| 120 | ✓ | [`skills/specs/app-spec-packager/references/platform-modules.md`](skills/specs/app-spec-packager/references/platform-modules.md) |
+| 121 | ✓ | [`skills/specs/app-spec-packager/references/safety-privacy.md`](skills/specs/app-spec-packager/references/safety-privacy.md) |
+| 122 | ✓ | [`skills/specs/app-spec-packager/references/task-taxonomy.md`](skills/specs/app-spec-packager/references/task-taxonomy.md) |
+| 123 | ✓ | [`skills/specs/app-spec-packager/references/validation-checklist.md`](skills/specs/app-spec-packager/references/validation-checklist.md) |
+| 124 | ✓ | [`skills/specs/app-spec-packager/scripts/create_spec_package.py`](skills/specs/app-spec-packager/scripts/create_spec_package.py) |
+| 125 | ✓ | [`skills/specs/app-spec-packager/SKILL.md`](skills/specs/app-spec-packager/SKILL.md) |
 
 ---
 

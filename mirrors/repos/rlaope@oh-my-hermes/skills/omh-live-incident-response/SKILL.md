@@ -1,6 +1,8 @@
 ---
 name: "omh-live-incident-response"
 description: "[omh] Production is down or an incident is open: command an incident that is still open -- severity as declared live state, commander and roles, an append-only timeline, a recorded temporary mitigation, verified recovery, and the customer notice. Use when the user says: live-incident-response, live incident response, incident response, active incident, ongoing incident, open incident, incident open, incident commander."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, reliability]
@@ -8,6 +10,7 @@ metadata:
     phase: live-incident-command
     role: operator
     quality_tier: incident-command-gated
+    related_skills: [omh-reliability-review, omh-support-operations, omh-deploy-and-monitor, omh-apps, omh-production-audit]
 ---
 
 # Live Incident Response
@@ -20,11 +23,11 @@ This is a Hermes-native `live-incident-response` workflow skill.
 
 ## Do Not Use When
 
-- The incident is over and the request is the postmortem, the SLO or error-budget consequence, or remediation follow-up; use `reliability-review`.
-- The request is one customer's support case needing a reply, a severity opinion, and an escalation path, with no incident declared; use `support-operations`.
-- The request is a release being rolled out and watched -- deploy checklist, health signals, rollback criteria -- and nothing has been declared broken; use `deploy-and-monitor`.
-- The request is to send the page, publish the status-page update, or deliver the customer notice; use `connector-operator`, which records a send as observed only on a returned result.
-- The request asks whether a release is ready across rollout, rollback, and observability, before anything broke; use `production-audit`.
+- The incident is over and the request is the postmortem, the SLO or error-budget consequence, or remediation follow-up; use `omh-reliability-review`.
+- The request is one customer's support case needing a reply, a severity opinion, and an escalation path, with no incident declared; use `omh-support-operations`.
+- The request is a release being rolled out and watched -- deploy checklist, health signals, rollback criteria -- and nothing has been declared broken; use `omh-deploy-and-monitor`.
+- The request is to send the page, publish the status-page update, or deliver the customer notice; use `omh-apps`, which records a send as observed only on a returned result.
+- The request asks whether a release is ready across rollout, rollback, and observability, before anything broke; use `omh-production-audit`.
 
 ## Examples
 
@@ -58,11 +61,11 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+39 more`) - schedules, status, health, and ops review.
+- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+40 more`) - schedules, status, health, and ops review.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when an incident is open right now and the user needs it commanded: severity declared as live state, a commander and the other roles assigned, an append-only timeline kept, a temporary mitigation recorded as temporary, recovery verified against a named signal, and the customer notice drafted. The incident is still running; once it is closed the work is a review.
 
@@ -87,7 +90,7 @@ Quality bar:
 
 Handoff policy:
 
-Keep severity, role assignment, the timeline, mitigation records, and recovery verification in Hermes. Paging, status-page updates, and customer sends are `connector-operator` requests recorded as observed only when the connector returns a result; rollbacks, code changes, and infrastructure operations are executor or operator work and reach the timeline as observations, never as claims.
+Keep severity, role assignment, the timeline, mitigation records, and recovery verification in Hermes. Paging, status-page updates, and customer sends are `omh-apps` requests recorded as observed only when the connector returns a result; rollbacks, code changes, and infrastructure operations are executor or operator work and reach the timeline as observations, never as claims.
 
 Required inputs:
 
@@ -138,4 +141,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

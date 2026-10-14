@@ -159,6 +159,20 @@ class FMPClient:
     RATE_LIMIT_DELAY = 0.3  # 300ms between requests
     _ENDPOINT_FAILURE_THRESHOLD = 3
 
+    def _redact_secret(self, text) -> str:
+        """Mask the API key in ``text`` by VALUE, then by URL query pattern.
+
+        ``_redact_key`` only masks ``?apikey=...`` in URLs; a proxy or API
+        error body can echo the bare key, so every message that may reach
+        stderr or ``_last_error`` goes through this first.
+        """
+        text = _redact_key(text)
+        # Mask every accepted key regardless of length: leaking a key matters
+        # more than over-masking ordinary words that happen to contain it.
+        if self.api_key:
+            text = text.replace(self.api_key, "***REDACTED***")
+        return text
+
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or os.getenv("FMP_API_KEY")
         self.session = requests.Session()
@@ -211,15 +225,15 @@ class FMPClient:
             else:
                 if not quiet:
                     print(
-                        _redact_key(
-                            f"ERROR: API request failed: {response.status_code} - {response.text[:200]}"
+                        self._redact_secret(
+                            f"ERROR: API request failed: {response.status_code} - {self._redact_secret(response.text)[:200]}"
                         ),
                         file=sys.stderr,
                     )
                 return None
         except requests.exceptions.RequestException as e:
             if not quiet:
-                print(_redact_key(f"ERROR: Request exception: {e}"), file=sys.stderr)
+                print(self._redact_secret(f"ERROR: Request exception: {e}"), file=sys.stderr)
             return None
 
     def _request_with_fallback(self, endpoint_key, symbols_str, extra_params=None):
@@ -364,7 +378,7 @@ class FMPClient:
             return {"symbol": symbol, "historical": historical[:days]}
         except Exception as e:
             print(
-                f"WARNING: yfinance fallback failed for {symbol}: {e}",
+                self._redact_secret(f"WARNING: yfinance fallback failed for {symbol}: {e}"),
                 file=sys.stderr,
             )
             return None

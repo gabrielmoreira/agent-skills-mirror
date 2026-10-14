@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [19.6.0] - 2026-10-13 - "Focused Plugins, Safer Workflows And Complete Agent Setup"
+
+> Adds **2** catalog skills and expands **21** focused plugins with **48** useful memberships. Ships **2,689** skills, with complete Codex/Claude setup guidance and reviewed fixes to API, testing, accessibility, analytics and agent-evaluation examples.
+
+### Added
+
+- **api-contract-testing** — provider/consumer runtime contract checks, invalid-response fixtures and version compatibility, using the project's existing tools.
+- **mcd-secret-menu-lab** — community recipe planning for McDonald's China through an already authorized MCP connection, with current-price/nutrition checks and explicit coupon/order boundaries. Installing the skill does not install an MCP server or bundle the upstream quiz/recipe application.
+
+### Changed
+
+- Expanded all 21 specialized plugins to 6–13 skills while keeping plugin IDs stable. Security adds threat modeling and skill audits; QA/API add contracts and bounded retries; other packs add focused UI, document, analytics, incident handoff, pricing, onboarding and privacy workflows.
+- Updated **riffkit** with Adapt, Swap and original-idea video workflows, quote-before-render approval, current free-plan guidance and retry-cost caveats.
+- Made the active **reverse-engineer-anything** upstream location discoverable while retaining historical import provenance and the reviewed local references.
+- Completed Codex and Claude setup guides: approved configuration with backups, connection checks, exact skill selection, immutable plan preview and installer handoff.
+- Improved skill pages and navigation: readable articles, direct SKILL.md copying, retained catalog filters and clearer related-skill context.
+
+### Fixed
+
+- Replaced 18 template or incomplete descriptions and rejected known empty/template descriptions in validation.
+- Corrected asynchronous test assertions, Python negative fixtures, webhook rejection under optimization, API retry statuses and provider wait budgets, alert units, contrast colors, scoring/savings arithmetic and evaluator JSON/calibration guidance.
+- Removed unavailable resource promises, unpinned accessibility-tool downloads and unsupported operational claims from the reviewed cohort.
+- Made plugin membership tests independent per pack so complete coverage fits normal CI deadlines without weakening assertions.
+
+### Review scope
+
+The complete catalog metadata and all 21 specialized compositions were examined. Deep content review covered the selected addition cohort, changed skill trees and this three-PR maintenance batch; it is not a claim that every catalog procedure ran successfully against live services. Automated semantic review and manual exact-head review remain distinct.
+
+### Thanks
+
+Thanks to **@Reak-Z**, **@owengu-ai** and **@morluto** for this maintenance batch, and to the upstream authors of the existing skills selected for the expanded plugins.
+
+---
+
 ## [19.5.0] - 2026-10-12 - "Design Systems, Token Discipline And Verified Sources"
 
 > Adds **10** reviewed skills for native iOS and frontend UI work, design-system documentation, screenshot-to-UI matching, UI state coverage, token-lean coding-agent habits, terse Cockney delivery, timestamped YouTube and podcast quote research, official statistics lookups, and a digest-pinned progressive-headshot studio; it also refreshes Jet Browser to v0.9.0 and ships the Core-first product homepage with guided discovery and collections. Ships **2,687** skills.

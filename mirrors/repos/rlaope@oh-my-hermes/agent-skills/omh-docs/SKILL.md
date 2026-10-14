@@ -1,6 +1,7 @@
 ---
 name: "omh-docs"
 description: "[omh] Explaining OMH itself: current-source-first documentation for OMH itself: product identity, public capability catalog, model routing, local state, and long-term memory. Use when the user says: product-docs, OMH documentation, oh-my-hermes documentation, what is OMH, what is oh-my-hermes, how does OMH work, OMH capability catalog, OMH skill catalog."
+license: MIT
 compatibility: "Requires the omh CLI on PATH (pip install oh-my-hermes)."
 metadata:
   hermes:
@@ -23,9 +24,9 @@ This is an OMH `product-docs` workflow skill, projected for Agent Skills hosts (
 
 - The user wants generic documentation writing, editing, or summarization unrelated to OMH.
 - The question is about OpenAI or Hermes Agent rather than OMH; use that product's official documentation skill.
-- The user wants setup or repair; route to `doctor` and stop before changing the machine unless separately authorized.
-- The user wants to install, update, remove, or edit catalog skills; route to `skill` and stop before mutation unless separately authorized.
-- The user wants model or provider settings changed; route to `model-setup` and stop before mutation unless separately authorized.
+- The user wants setup or repair; route to `omh-doctor` and stop before changing the machine unless separately authorized.
+- The user wants to install, update, remove, or edit catalog skills; route to `omh-skill` and stop before mutation unless separately authorized.
+- The user wants model or provider settings changed; route to `omh-model-setup` and stop before mutation unless separately authorized.
 
 ## Examples
 
@@ -56,7 +57,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use for current, source-backed questions about OMH itself, including its product identity, public skill catalog, model routing, local installation state, and long-term memory.
 

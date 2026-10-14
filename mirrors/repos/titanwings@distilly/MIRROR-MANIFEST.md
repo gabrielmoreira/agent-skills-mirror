@@ -7,7 +7,7 @@ ref: dot-skill
 
 # Mirror Manifest
 
-Mirror of `titanwings/distilly` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
+Mirror of `titanwings/distilly` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `titanwings/distilly` — 26 default patterns, 0 followed patterns, 25
 | Ref           | `dot-skill` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 25 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,30 +60,37 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`prompts/celebrity/budget_unfriendly/audit.md`](prompts/celebrity/budget_unfriendly/audit.md) |
-| 2 | ✓ | [`prompts/celebrity/budget_unfriendly/persona_analyzer.md`](prompts/celebrity/budget_unfriendly/persona_analyzer.md) |
-| 3 | ✓ | [`prompts/celebrity/budget_unfriendly/persona_builder.md`](prompts/celebrity/budget_unfriendly/persona_builder.md) |
-| 4 | ✓ | [`prompts/celebrity/budget_unfriendly/research.md`](prompts/celebrity/budget_unfriendly/research.md) |
+| 2 | ✓ | [`prompts/celebrity/budget_unfriendly/framework.md`](prompts/celebrity/budget_unfriendly/framework.md) |
+| 3 | ✓ | [`prompts/celebrity/budget_unfriendly/persona_analyzer.md`](prompts/celebrity/budget_unfriendly/persona_analyzer.md) |
+| 4 | ✓ | [`prompts/celebrity/budget_unfriendly/persona_builder.md`](prompts/celebrity/budget_unfriendly/persona_builder.md) |
 | 5 | ✓ | [`prompts/celebrity/budget_unfriendly/synthesis.md`](prompts/celebrity/budget_unfriendly/synthesis.md) |
-| 6 | ✓ | [`prompts/celebrity/budget_unfriendly/validation.md`](prompts/celebrity/budget_unfriendly/validation.md) |
-| 7 | ✓ | [`prompts/celebrity/intake.md`](prompts/celebrity/intake.md) |
-| 8 | ✓ | [`prompts/celebrity/merger.md`](prompts/celebrity/merger.md) |
-| 9 | ✓ | [`prompts/celebrity/persona_analyzer.md`](prompts/celebrity/persona_analyzer.md) |
-| 10 | ✓ | [`prompts/celebrity/persona_builder.md`](prompts/celebrity/persona_builder.md) |
-| 11 | ✓ | [`prompts/celebrity/research.md`](prompts/celebrity/research.md) |
-| 12 | ✓ | [`prompts/correction_handler.md`](prompts/correction_handler.md) |
-| 13 | ✓ | [`prompts/intake.md`](prompts/intake.md) |
-| 14 | ✓ | [`prompts/merger.md`](prompts/merger.md) |
-| 15 | ✓ | [`prompts/owner/intake.md`](prompts/owner/intake.md) |
-| 16 | ✓ | [`prompts/owner/profile_builder.md`](prompts/owner/profile_builder.md) |
-| 17 | ✓ | [`prompts/persona_analyzer.md`](prompts/persona_analyzer.md) |
-| 18 | ✓ | [`prompts/persona_builder.md`](prompts/persona_builder.md) |
-| 19 | ✓ | [`prompts/relationship/intake.md`](prompts/relationship/intake.md) |
-| 20 | ✓ | [`prompts/relationship/merger.md`](prompts/relationship/merger.md) |
-| 21 | ✓ | [`prompts/relationship/persona_analyzer.md`](prompts/relationship/persona_analyzer.md) |
-| 22 | ✓ | [`prompts/relationship/persona_builder.md`](prompts/relationship/persona_builder.md) |
-| 23 | ✓ | [`prompts/work_analyzer.md`](prompts/work_analyzer.md) |
-| 24 | ✓ | [`prompts/work_builder.md`](prompts/work_builder.md) |
-| 25 | ✓ | [`SKILL.md`](SKILL.md) |
+| 6 | ✓ | [`prompts/celebrity/budget_unfriendly/template.md`](prompts/celebrity/budget_unfriendly/template.md) |
+| 7 | ✓ | [`prompts/celebrity/budget_unfriendly/validation.md`](prompts/celebrity/budget_unfriendly/validation.md) |
+| 8 | ✓ | [`prompts/celebrity/intake.md`](prompts/celebrity/intake.md) |
+| 9 | ✓ | [`prompts/celebrity/merger.md`](prompts/celebrity/merger.md) |
+| 10 | ✓ | [`prompts/celebrity/persona_analyzer.md`](prompts/celebrity/persona_analyzer.md) |
+| 11 | ✓ | [`prompts/celebrity/persona_builder.md`](prompts/celebrity/persona_builder.md) |
+| 12 | ✓ | [`prompts/celebrity/research.md`](prompts/celebrity/research.md) |
+| 13 | ✓ | [`prompts/colleague/intake.md`](prompts/colleague/intake.md) |
+| 14 | ✓ | [`prompts/colleague/merger.md`](prompts/colleague/merger.md) |
+| 15 | ✓ | [`prompts/colleague/persona_analyzer.md`](prompts/colleague/persona_analyzer.md) |
+| 16 | ✓ | [`prompts/colleague/persona_builder.md`](prompts/colleague/persona_builder.md) |
+| 17 | ✓ | [`prompts/flows/celebrity_research.md`](prompts/flows/celebrity_research.md) |
+| 18 | ✓ | [`prompts/flows/create.md`](prompts/flows/create.md) |
+| 19 | ✓ | [`prompts/flows/evolve.md`](prompts/flows/evolve.md) |
+| 20 | ✓ | [`prompts/flows/manage.md`](prompts/flows/manage.md) |
+| 21 | ✓ | [`prompts/flows/owner.md`](prompts/flows/owner.md) |
+| 22 | ✓ | [`prompts/flows/sources.md`](prompts/flows/sources.md) |
+| 23 | ✓ | [`prompts/owner/intake.md`](prompts/owner/intake.md) |
+| 24 | ✓ | [`prompts/owner/profile_builder.md`](prompts/owner/profile_builder.md) |
+| 25 | ✓ | [`prompts/relationship/intake.md`](prompts/relationship/intake.md) |
+| 26 | ✓ | [`prompts/relationship/merger.md`](prompts/relationship/merger.md) |
+| 27 | ✓ | [`prompts/relationship/persona_analyzer.md`](prompts/relationship/persona_analyzer.md) |
+| 28 | ✓ | [`prompts/relationship/persona_builder.md`](prompts/relationship/persona_builder.md) |
+| 29 | ✓ | [`prompts/shared/correction_handler.md`](prompts/shared/correction_handler.md) |
+| 30 | ✓ | [`prompts/shared/work_analyzer.md`](prompts/shared/work_analyzer.md) |
+| 31 | ✓ | [`prompts/shared/work_builder.md`](prompts/shared/work_builder.md) |
+| 32 | ✓ | [`SKILL.md`](SKILL.md) |
 
 ---
 

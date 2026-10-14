@@ -1,6 +1,7 @@
 ---
 name: "omh-voice-input"
 description: "[omh] Dictated voice note about project work or status: terse voice and mobile-style requests - turn short spoken-style asks into clarify, plan, status, handoff, or confirmation actions. Use when the user says: voice-operator, voice operator, voice-first, voice command, mobile command, short command, dictated command, dictated request."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, accessibility]
@@ -51,7 +52,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes receives terse voice/mobile-style requests and should produce concise clarification, plan, or status UX.
 

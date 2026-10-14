@@ -78,6 +78,12 @@ them, from the repo root; never print a value.
   For another composition, inspect `packages/world/src/index.ts` and
   `evals/packages/env/src/index.ts` before declaring it unsupported; reuse the
   existing provisioning, runtime launch and hold primitives, not another framework.
+- To check your own app change on this computer, start with
+  `pnpm world up dev-app-web --detach -- --browser`: this checkout's app in
+  headless Chrome with a `cdp` address to drive (`drive-desktop-cdp`), nothing
+  on screen. Any `--place local` world with a desktop below opens a window that
+  takes focus here; use one only when asked or when the change needs the
+  desktop shell, otherwise run it on Daytona.
 - `preview-desktop`: **the desktop app alone**: no Den, organization, workspace
   or sign-in, exactly like a fresh install. From source (a pushed SHA on
   Daytona/Freestyle, this checkout locally) or exact published release bytes

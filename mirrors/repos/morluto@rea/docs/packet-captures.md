@@ -128,3 +128,49 @@ Each provider admits one inspection at a time, including acquisition and cleanup
 An occupied provider returns a retryable capacity error before acquiring another
 file or worker. Closing the provider stops new admission and drains accepted work;
 failed cleanup remains owned and can be retried.
+
+## Discover protocols and field names
+
+`inspect_packet_fields` / `inspect-packet-fields` queries the installed TShark
+registration glossary before selecting fields for capture inspection:
+
+```sh
+rea inspect-packet-fields --query usb
+rea inspect-packet-fields --kind fields --protocol usb --query idVendor
+rea inspect-packet-fields --kind fields --protocol udp --all
+```
+
+`kind` defaults to `protocols`; `fields` selects field definitions. `protocol`
+selects an exact protocol abbreviation (the protocol itself or its child fields).
+`query` is a case-insensitive literal substring in name, abbreviation or field
+description. `offset` skips matching records; `limit` defaults to 50. MCP
+`limit: null` or CLI `--all` requests all remaining matches within the resource
+budget. `--all` and `--limit` conflict. The window reports examined records of
+the selected kind before filters, matching records, returned records and
+`has_more`; it never counts capture packets.
+
+Returned records preserve field type, parent protocol, display base, bitmask,
+description and original glossary line number. Empty producer strings remain
+empty; protocol records have null field-only properties. Repeated abbreviations
+remain separate registrations. A listed field is an installation capability, not
+proof that the field appears in a selected recording.
+
+The adapter uses the documented `tshark -G fields` grammar under its existing
+private empty profile and Linux process limits. TShark 4.6.9's full glossary was
+measured at 22,303,197 bytes; discovery admits at most **32 MiB** combined command
+output (capture inspection remains at **4 MiB**). Parsing walks lines once and
+constructs objects only for the selected page. Returned strings are copied so
+retained pages do not retain the complete glossary string. Before constructing a selected
+record it charges six times the source UTF-8 bytes plus 512 bytes against an
+**8 MiB** representation budget, covering JSON escaping and record bookkeeping.
+If that budget would be exceeded, narrow the query or page size; results are not
+silently truncated. This is a conservative admission budget, not measured heap
+usage. Parent pipe buffers and producer per-process limits remain distinct.
+
+Tool/limiter identity, version, stderr and selected arguments are retained in
+Evidence. No capture, interface or device is opened. Discovery shares capture
+analysis's admission slot and cleanup owner. Each call rereads the glossary;
+installed plugins, libraries and global configuration remain trusted and are not
+fully fingerprinted. There is no cache or snapshot-consistent pagination claim.
+The real Linux lane checks public CLI/MCP queries against the direct glossary,
+including USB vendor-ID typing, negative queries and paging.

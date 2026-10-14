@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openstatusHQ/openstatus` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `openstatusHQ/openstatus` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openstatusHQ/openstatus` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,20 +59,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`apps/checker/AGENTS.md`](apps/checker/AGENTS.md) |
-| 3 | ✓ | [`apps/dashboard/AGENTS.md`](apps/dashboard/AGENTS.md) |
-| 4 | ✓ | [`apps/server/AGENTS.md`](apps/server/AGENTS.md) |
-| 5 | ✓ | [`apps/status-page/AGENTS.md`](apps/status-page/AGENTS.md) |
-| 6 | ✓ | [`apps/status-page/src/app/(status-page)/[domain]/[locale]/(public)/llms.txt/route.ts`](apps/status-page/src/app/(status-page)/[domain]/[locale]/(public)/llms.txt/route.ts) |
-| 7 | ✓ | [`apps/web/AGENTS.md`](apps/web/AGENTS.md) |
-| 8 | ✓ | [`apps/web/public/.well-known/agent-skills/openstatus-api/SKILL.md`](apps/web/public/.well-known/agent-skills/openstatus-api/SKILL.md) |
-| 9 | ✓ | [`apps/web/public/.well-known/agent-skills/openstatus-mcp/SKILL.md`](apps/web/public/.well-known/agent-skills/openstatus-mcp/SKILL.md) |
-| 10 | ✓ | [`apps/web/src/app/(ai)/llms.txt/route.ts`](apps/web/src/app/(ai)/llms.txt/route.ts) |
-| 11 | ✓ | [`apps/workflows/AGENTS.md`](apps/workflows/AGENTS.md) |
-| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 13 | ✓ | [`packages/services/AGENTS.md`](packages/services/AGENTS.md) |
-| 14 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
+| 1 | ✓ | [`.agents/skills/codebase-design/DEEPENING.md`](.agents/skills/codebase-design/DEEPENING.md) |
+| 2 | ✓ | [`.agents/skills/codebase-design/DESIGN-IT-TWICE.md`](.agents/skills/codebase-design/DESIGN-IT-TWICE.md) |
+| 3 | ✓ | [`.agents/skills/codebase-design/SKILL.md`](.agents/skills/codebase-design/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/grill-me/plan-readonly-mcp.md`](.agents/skills/grill-me/plan-readonly-mcp.md) |
+| 5 | ✓ | [`.agents/skills/grill-me/SKILL.md`](.agents/skills/grill-me/SKILL.md) |
+| 6 | ✓ | [`.agents/skills/README.md`](.agents/skills/README.md) |
+| 7 | ✓ | [`.agents/skills/screenshot/SKILL.md`](.agents/skills/screenshot/SKILL.md) |
+| 8 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 9 | ✓ | [`apps/checker/AGENTS.md`](apps/checker/AGENTS.md) |
+| 10 | ✓ | [`apps/dashboard/AGENTS.md`](apps/dashboard/AGENTS.md) |
+| 11 | ✓ | [`apps/server/AGENTS.md`](apps/server/AGENTS.md) |
+| 12 | ✓ | [`apps/status-page/AGENTS.md`](apps/status-page/AGENTS.md) |
+| 13 | ✓ | [`apps/status-page/src/app/(status-page)/[domain]/[locale]/(public)/llms.txt/route.ts`](apps/status-page/src/app/(status-page)/[domain]/[locale]/(public)/llms.txt/route.ts) |
+| 14 | ✓ | [`apps/web/AGENTS.md`](apps/web/AGENTS.md) |
+| 15 | ✓ | [`apps/web/public/.well-known/agent-skills/openstatus-api/SKILL.md`](apps/web/public/.well-known/agent-skills/openstatus-api/SKILL.md) |
+| 16 | ✓ | [`apps/web/public/.well-known/agent-skills/openstatus-mcp/SKILL.md`](apps/web/public/.well-known/agent-skills/openstatus-mcp/SKILL.md) |
+| 17 | ✓ | [`apps/web/src/app/(ai)/llms.txt/route.ts`](apps/web/src/app/(ai)/llms.txt/route.ts) |
+| 18 | ✓ | [`apps/workflows/AGENTS.md`](apps/workflows/AGENTS.md) |
+| 19 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 20 | ✓ | [`packages/services/AGENTS.md`](packages/services/AGENTS.md) |
+| 21 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
 
 ---
 

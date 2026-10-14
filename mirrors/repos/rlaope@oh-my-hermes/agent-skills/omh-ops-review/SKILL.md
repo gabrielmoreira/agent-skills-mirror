@@ -1,6 +1,7 @@
 ---
 name: "omh-ops-review"
 description: "[omh] Recurring operating status and blockers: status, risks, blockers, priorities, and follow-ups. Use when the user says: ops-review, ops review, weekly ops review, status review, operating review, release risks, risks and blockers, priorities."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operations]
@@ -20,8 +21,8 @@ This is an OMH `ops-review` workflow skill, projected for Agent Skills hosts (Cl
 
 ## Do Not Use When
 
-- The review is over sales stages, forecast categories, deal aging, or seller forecast rather than generic operating status; use `sales-pipeline-review`.
-- The primary output is durable cadence history, minutes, a decision log, or action history; use `operating-rhythm`.
+- The review is over sales stages, forecast categories, deal aging, or seller forecast rather than generic operating status; use `omh-sales-pipeline-review`.
+- The primary output is durable cadence history, minutes, a decision log, or action history; use `omh-operating-rhythm`.
 
 ## Examples
 
@@ -50,7 +51,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes should summarize observed status, risks, blockers, priorities, and follow-up actions for recurring operating work.
 

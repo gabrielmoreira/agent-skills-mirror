@@ -75,6 +75,7 @@ Port of perfectpixel-studio's `chroma.go` (MIT, see NOTICE). The default RGB pat
 3. **Despill** — subtracts only the key-direction chroma component inside the despill band; colors orthogonal to the key keep their saturation.
 4. **Border flood fill** — 4-connected from the image borders through lenient key-chroma pixels; interior key-family pixels (gems, highlights) never connect and survive.
 5. **Self-diagnostic rematte** — an opaque-fraction spike (subject erased) or declared-key residue spike (background survived) triggers a rematte with the declared pure key; the better result wins and the fallback is reported via extraction warnings (never silent).
+6. **Dots and pinholes** — on the matte that won, a lone pixel (opaque, with no opaque pixel among its eight neighbours: `isolated_dots`) is erased and a clear pixel with seven or more opaque neighbours is filled; soft edges are left as they are. A pixel that touches another only at a corner is joined to it, as in every component the engine reads. `isolated_dots` is the one judgment of a lone pixel: [`pixel-draw`](pixel-draw.md#gates)'s G5 counts a drawn grid's stray pixels by it.
 
 Select with request `chroma.mode: "ycbcr"` or `--chroma-mode ycbcr`. **The default stays `"rgb"`**: on clean flat-key raws the RGB path's exact-solve unmix already removes key tint completely, while ycbcr's fixed-scale despill leaves a small tinted soft-edge halo — ycbcr is for degraded sources (shaded/gradient backgrounds, JPEG chroma noise), not a general upgrade.
 

@@ -92,8 +92,8 @@ When every card is answered, show one summary grouped by outcome, list what will
 After a batch of merges:
 
 1. Run the full type-check and every package's test suite on current `main`. `main` has no CI of its own, and PRs validated one by one were never validated together.
-2. Write a symptom map of what landed (area, PR, merge sha, which part we wrote) to `.opencode/plans/pr-triage-<date>-merged.md`, so a later regression can be traced to its PR quickly.
-3. Write the testing list for the maintainer to `.opencode/plans/pr-triage-<date>-what-changed.md`, in Ukrainian: grouped by area of the app, each entry a linked PR (or commit) and two or three sentences on what the user sees change, marking single-platform changes and the parts we rewrote.
+2. Write a symptom map of what landed (area, PR, merge sha, which part we wrote) to `docs/personal/pr-triage/pr-triage-<date>-merged.md`, so a later regression can be traced to its PR quickly.
+3. Write the testing list for the maintainer to `docs/personal/pr-triage/pr-triage-<date>-what-changed.md`, in Ukrainian: grouped by area of the app, each entry a linked PR (or commit) and two or three sentences on what the user sees change, marking single-platform changes and the parts we rewrote.
 
 ## Message templates
 

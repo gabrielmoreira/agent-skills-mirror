@@ -1,6 +1,7 @@
 ---
 name: "omh-relational-db"
 description: "[omh] Database work on a relational store -- a slow query, an index to size, a migration on a big table, a lock taken during deploy, N+1 queries: plan it with the checks that prove it safe, and never call a migration ready without its lock behaviour and rollback. Use when the user says: relational-db, relational database, online migration, migration for a large table, lock-safe ddl, alter table, took a lock, table lock."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -25,10 +26,10 @@ This is an OMH `relational-db` workflow skill, projected for Agent Skills hosts 
 
 ## Do Not Use When
 
-- The request is a service or API change whose storage part is one section of the contract; use `backend`, which owns schema_migration_plan/v1.
-- The request is an end-to-end performance goal across the whole system rather than one database; use `ultraperf`.
-- The request is analysis of the data itself -- trends, metrics, a report; use `data-analysis`.
-- The request is watching a release roll out with its health signals and rollback criteria; use `deploy-and-monitor`.
+- The request is a service or API change whose storage part is one section of the contract; use `omh-backend`, which owns schema_migration_plan/v1.
+- The request is an end-to-end performance goal across the whole system rather than one database; use `ulw-perf`.
+- The request is analysis of the data itself -- trends, metrics, a report; use `omh-data-analysis`.
+- The request is watching a release roll out with its health signals and rollback criteria; use `omh-deploy-and-monitor`.
 
 ## Examples
 
@@ -59,7 +60,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when the work is the database itself on a relational engine such as Postgres or MySQL: a slow query and the index that fixes it, an online migration on a large table, DDL that took or would take a lock during deploy, N+1 queries from an endpoint, or when to partition or shard. The output is a plan plus the checks that prove it safe to run; OMH never connects to a database.
 

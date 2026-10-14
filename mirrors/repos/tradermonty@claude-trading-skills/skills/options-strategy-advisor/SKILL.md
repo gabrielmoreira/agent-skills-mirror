@@ -901,7 +901,8 @@ else:
 User: "Explain a covered call"
 
 Workflow:
-1. Load strategy reference (references/strategies_guide.md)
+1. Read the strategy descriptions in this document and the pricing methodology
+   in references/black_scholes_methodology.md
 2. Explain concept, risk/reward, when to use
 3. Simulate example on AAPL
 4. Show P/L diagram
@@ -968,14 +969,9 @@ Workflow:
 
 **References:**
 - `references/black_scholes_methodology.md` - Black-Scholes formulas, Greeks, and interpretation
-- `references/strategies_guide.md` - All 17+ strategies explained (future)
-- `references/greeks_explained.md` - Greeks deep dive (future)
-- `references/volatility_guide.md` - HV vs IV, when to trade (future)
 
 **Scripts:**
 - `scripts/black_scholes.py` - Pricing engine and Greeks
-- `scripts/strategy_analyzer.py` - Strategy simulation
-- `scripts/earnings_strategy.py` - Earnings-specific analysis
 
 **External Resources:**
 - Options Playbook: https://www.optionsplaybook.com/

@@ -11,12 +11,12 @@ holds the workflow-specific detail without copying those shared rails.
 
 ## Do Not Use When
 
-- The user needs market, competitor, pricing, or customer research on named sources without a discovery decision to make; use `research-brief`.
-- The user is clarifying their own request, requirements, or preferences rather than testing a customer problem with external people; use `deep-interview`.
-- The user needs a company or product strategy decision across existing options with evidence already in hand; use `strategy-brief`.
-- The problem, segment, and evidence are already validated and accepted and the user wants a PRD or prioritization; use `product-brief`.
-- An accepted product brief and plan exist and the user wants implementation, QA, and release gates; use `idea-to-deploy`.
-- The user has one falsifiable technical or empirical question a disposable prototype can answer; use `decision-prototype`.
+- The user needs market, competitor, pricing, or customer research on named sources without a discovery decision to make; use `omh-research-brief`.
+- The user is clarifying their own request, requirements, or preferences rather than testing a customer problem with external people; use `ulw-interview`.
+- The user needs a company or product strategy decision across existing options with evidence already in hand; use `omh-decide`.
+- The problem, segment, and evidence are already validated and accepted and the user wants a PRD or prioritization; use `omh-product-brief`.
+- An accepted product brief and plan exist and the user wants implementation, QA, and release gates; use `omh-idea-to-deploy`.
+- The user has one falsifiable technical or empirical question a disposable prototype can answer; use `omh-decision-prototype`.
 
 ## Examples
 
@@ -47,7 +47,7 @@ Bad example:
 - If the target segment is unknown, synthetic-only, or non-recruitable, keep the discovery frame and customer discovery plan and report defining a recruitable or behaviorally observed audience as the next evidence task.
 - If a pivot changes the problem or segment, open a new decision frame and carry the falsified hypotheses forward as rejected paths.
 
-## Use When
+## When to Use
 
 Use when a founder or product owner brings an early idea and needs the problem, segment, value proposition, and business hypothesis framed, evidence-typed, and tested to an explicit discovery decision before a PRD, prototype, or delivery plan exists.
 
@@ -68,7 +68,7 @@ Quality bar:
 
 Handoff policy:
 
-Keep decision framing, evidence classification, assumption ranking, test precommitment, and the discovery decision in Hermes. A prepared plan, ledger, portfolio, or receipt is not participant recruitment, an interview, a survey, a payment, a prototype, a PRD, code, or a launch. Prepare a `product-brief` handoff only from a `persevere` receipt the decision owner accepted; route a single empirical prototype question to `decision-prototype`; reach `idea-to-deploy` only after the resulting product brief and plan are accepted.
+Keep decision framing, evidence classification, assumption ranking, test precommitment, and the discovery decision in Hermes. A prepared plan, ledger, portfolio, or receipt is not participant recruitment, an interview, a survey, a payment, a prototype, a PRD, code, or a launch. Prepare a `omh-product-brief` handoff only from a `persevere` receipt the decision owner accepted; route a single empirical prototype question to `omh-decision-prototype`; reach `omh-idea-to-deploy` only after the resulting product brief and plan are accepted.
 
 Required inputs:
 

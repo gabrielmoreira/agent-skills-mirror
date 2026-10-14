@@ -76,7 +76,15 @@ analyze_trade_journal(file_path="uploads/xxx.csv", filter_expr="market=china_a")
 ```
 
 Note: PnL uses FIFO lot matching; unmatched open positions are excluded from
-win rate / PnL ratio (only closed round-trips count).
+win rate / PnL ratio (only closed round-trips count). Drawdown starts from
+zero realized PnL, so the first losing close counts.
+
+For mixed-currency journals, `total_pnl`, `total_dividends`, `max_drawdown`
+and `profit_loss_ratio` are currency-keyed objects. Present each currency
+separately; never add their values or average their ratios. Dividend-only
+journals follow the same rule. `overtrading.by_currency` contains each
+currency’s activity diagnosis; mixed journals rank `top_symbols` by trade
+count and label amounts with their currency. No FX conversion is implied.
 
 ## Presenting results to the user
 

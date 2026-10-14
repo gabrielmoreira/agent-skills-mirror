@@ -1,6 +1,8 @@
 ---
 name: "omh-backend"
 description: "[omh] Designing an API, server, or data-layer change: prepare server, API, and data-layer contracts — auth boundary, error paths, response shape, and schema/migration discipline — before implementation. Use when the user says: backend, back-end, back end, backend skill, server side, server-side, api design, api contract."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, planning]
@@ -8,6 +10,7 @@ metadata:
     phase: backend-design
     role: planner
     quality_tier: backend-contract-gated
+    related_skills: [omh-relational-db, omh-frontend, omh-security-safety-review, omh-verification-gate, omh-rust, omh-data-pipelines]
 ---
 
 # Backend
@@ -20,12 +23,12 @@ This is a Hermes-native `backend` workflow skill.
 
 ## Do Not Use When
 
-- The work is the database itself -- a slow query and the index that fixes it, DDL that locks a live table, N+1 queries, or when to partition or shard; use `relational-db`, which owns the lock behaviour and rollback of each statement.
-- The request is about web UI, layout, or a design system; use `frontend`.
-- The request is a security posture or threat review rather than a service design; use `security-safety-review`.
-- The request is to run or judge the verification of an already-built service; use `verification-gate`.
-- The request is a Rust-language change whose risk is compiler, ownership, or `unsafe` discipline; use `rust`.
-- The work is a batch or streaming job's rerun, backfill, duplicate rows, or a warehouse table's downstream readers; use `data-pipelines`.
+- The work is the database itself -- a slow query and the index that fixes it, DDL that locks a live table, N+1 queries, or when to partition or shard; use `omh-relational-db`, which owns the lock behaviour and rollback of each statement.
+- The request is about web UI, layout, or a design system; use `omh-frontend`.
+- The request is a security posture or threat review rather than a service design; use `omh-security-safety-review`.
+- The request is to run or judge the verification of an already-built service; use `omh-verification-gate`.
+- The request is a Rust-language change whose risk is compiler, ownership, or `unsafe` discipline; use `omh-rust`.
+- The work is a batch or streaming job's rerun, backfill, duplicate rows, or a warehouse table's downstream readers; use `omh-data-pipelines`.
 
 ## Examples
 
@@ -61,9 +64,9 @@ Bad example:
 
 - Current lane: **Coding handoff** (`idea-to-deploy`, `llm-app-dev`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `+28 more`) - coding owners, handoffs, review, CI, and merge evidence.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when Hermes should shape a server, API, or data-layer change before implementation: authentication boundary, contract error paths, response consistency, schema and migration discipline, and the per-stack reference the executor loads first.
 
@@ -148,4 +151,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

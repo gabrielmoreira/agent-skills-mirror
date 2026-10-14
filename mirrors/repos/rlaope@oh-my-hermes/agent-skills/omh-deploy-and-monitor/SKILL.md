@@ -1,6 +1,7 @@
 ---
 name: "omh-deploy-and-monitor"
 description: "[omh] Release rollout needing health signals: release checklist, deploy decision, health signals, rollback gate, and post-deploy status. Use when the user says: deploy-and-monitor, deploy and monitor, deploy monitor, deployment monitoring, release monitor, post deploy, post-deploy, rollback."
+license: MIT
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, monitoring]
@@ -20,9 +21,9 @@ This is an OMH `deploy-and-monitor` workflow skill, projected for Agent Skills h
 
 ## Do Not Use When
 
-- An incident has already been declared and the work is commanding it -- severity, commander, running timeline, recovery verification -- rather than watching a release; use `live-incident-response`.
-- The ask is deciding a release before it ships -- what goes in, its version and tag, the canary stages, or which command rolls it back; use `release-cut`, which writes the rollback trigger down before it is needed.
-- The change is to declared infrastructure itself -- a Terraform plan, a Kubernetes manifest, a Helm chart -- and needs its drift, blast radius, and cost delta read before it is applied; use `iac-change`.
+- An incident has already been declared and the work is commanding it -- severity, commander, running timeline, recovery verification -- rather than watching a release; use `omh-live-incident-response`.
+- The ask is deciding a release before it ships -- what goes in, its version and tag, the canary stages, or which command rolls it back; use `omh-release-cut`, which writes the rollback trigger down before it is needed.
+- The change is to declared infrastructure itself -- a Terraform plan, a Kubernetes manifest, a Helm chart -- and needs its drift, blast radius, and cost delta read before it is applied; use `omh-iac-change`.
 
 ## Examples
 
@@ -51,7 +52,7 @@ Bad example:
 
 
 
-## Use When
+## When to Use
 
 Use when Hermes should prepare or narrate a release operation with deploy checklist, health signals, rollback criteria, and post-deploy status without pretending to run infrastructure.
 
@@ -69,6 +70,8 @@ Quality bar:
 - Name release scope, target environment, health signals, rollback criteria, and evidence owner.
 - Show pre-deploy, deploy decision, monitor, rollback, and post-deploy as distinct stages.
 - Mark health and rollback status unknown until observed evidence arrives.
+- On Hermes, a watchlist that must keep running after this turn is prepared as a native blueprint through `automation-blueprint` (a cron job whose `monitor` source, a health URL or a script whose output carries no timestamps, is the user's source, never one OMH writes), activated by the user or Hermes and never by OMH.
+- On Hermes, the first monitor tick runs against a baseline with nothing to diff, so it is not a detected change; a silent tick says only that nothing was delivered (a no_change run, or an agent run that answered `[SILENT]`) and never that the release is healthy; a source that failed is an error, not a change; and what the job finds enters the post-deploy status only from its recorded runs (`hermes cron runs <job_id>`) and its open `hermes cron incidents`.
 
 Required inputs:
 

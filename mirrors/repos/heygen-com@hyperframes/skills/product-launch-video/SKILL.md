@@ -216,13 +216,21 @@ Inject transitions, run checks, pause for review, then render.
 
 `node <SKILL_DIR>/scripts/transitions.mjs verify --storyboard ./STORYBOARD.md --index ./index.html`
 
+**When a music bed plays under any voice track, carve the bed after assembly and transition injection, before checks.** The assembler's `data-volume` (0.12 by default under voice) is a fixed whole-bed gain, not the required spectral carve; the carve leaves it in place, so both apply. Read `/hyperframes-audio` → Voiceover carve.
+
+The assembler emits separate narration clips without an audio group. Before carving, add `data-audio-group="voiceover"` to each narration `<audio id="el-<frame_id>-voice">` in `index.html`, including any other voice clips that should join the same narration group. Keep the music bed and SFX outside that group. Multiple voice clips must be carved against their voice group, so later clips remain covered when the analysis is rerun. Then run from the composition project:
+
+`node <HYPERFRAMES_AUDIO_SKILL_DIR>/scripts/carve.mjs --comp ./index.html`
+
+`<HYPERFRAMES_AUDIO_SKILL_DIR>` is the installed `hyperframes-audio` skill directory. The script needs `ffmpeg` on PATH and `@hyperframes/core` installed in the composition project (`npm i -D @hyperframes/core`, or `bun add -D @hyperframes/core` in a Bun project). It detects the bed and overlapping voice tracks; use `--bed el-bgm` and repeat `--voice <voice-element-id>` when detection needs an explicit choice. Confirm the bed carries `data-fx-carve`, `data-fx-chain`, and `data-automation`; when multiple narration clips overlap the bed, `data-fx-carve.sources` should name the `voiceover` group, not individual clip ids. Skip this step only when no music plays under voice. Reassembling replaces `index.html`, so restore the narration group and rerun the carve after any reassembly.
+
 `npx hyperframes lint`
 
 `npx hyperframes check`
 
 `npx hyperframes snapshot --at <frame-midpoints-and-each-cut-minus-0.1s-and-plus-0.2s>`
 
-`snapshot` stitches the captured frames into one contact sheet (`snapshots/contact-sheet.jpg`). Inspect the midpoint frames for layout failures, then compare the two images around every cut. A continuing element must keep the promised position, scale, opacity, and direction; fix any visible pop before rendering.
+`snapshot` stitches the captured frames into one contact sheet (`.hyperframes/artifacts/snapshots/<id>/contact-sheet.jpg`; the command prints the path). Inspect the midpoint frames for layout failures, then compare the two images around every cut. A continuing element must keep the promised position, scale, opacity, and direction; fix any visible pop before rendering.
 
 If a command fails, surface stderr and stop — don't pile on recovery commands. Fix it yourself: the cheapest safe edit to `compositions/frames/NN-*.html`, then rerun the failed check.
 

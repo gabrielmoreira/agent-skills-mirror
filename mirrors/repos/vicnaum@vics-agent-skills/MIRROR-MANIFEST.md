@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vicnaum/vics-agent-skills` — 26 default patterns, 0 followed patterns, 89 file(s) materialized.
+Mirror of `vicnaum/vics-agent-skills` — 26 default patterns, 0 followed patterns, 95 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vicnaum/vics-agent-skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 89 |
+| Files         | 95 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -139,15 +139,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 78 | ✓ | [`skills/session-stripper/tests/test_thinking_signature_sizing.py`](skills/session-stripper/tests/test_thinking_signature_sizing.py) |
 | 79 | ✓ | [`skills/session-stripper/tests/test_tool_use_result_sidecar.py`](skills/session-stripper/tests/test_tool_use_result_sidecar.py) |
 | 80 | ✓ | [`skills/slopcheck/references/rules-template.md`](skills/slopcheck/references/rules-template.md) |
-| 81 | ✓ | [`skills/slopcheck/scripts/slopcheck`](skills/slopcheck/scripts/slopcheck) |
-| 82 | ✓ | [`skills/slopcheck/scripts/slopmark`](skills/slopcheck/scripts/slopmark) |
-| 83 | ✓ | [`skills/slopcheck/SKILL.md`](skills/slopcheck/SKILL.md) |
-| 84 | ✓ | [`skills/slopcheck/tests/run.sh`](skills/slopcheck/tests/run.sh) |
-| 85 | ✓ | [`skills/slopcheck/tests/test_pre_send_notion.py`](skills/slopcheck/tests/test_pre_send_notion.py) |
-| 86 | ✓ | [`skills/tasx/references/format.md`](skills/tasx/references/format.md) |
-| 87 | ✓ | [`skills/tasx/scripts/board.html`](skills/tasx/scripts/board.html) |
-| 88 | ✓ | [`skills/tasx/scripts/tasx`](skills/tasx/scripts/tasx) |
-| 89 | ✓ | [`skills/tasx/SKILL.md`](skills/tasx/SKILL.md) |
+| 81 | ✓ | [`skills/slopcheck/research/structure/eval_pairs.py`](skills/slopcheck/research/structure/eval_pairs.py) |
+| 82 | ✓ | [`skills/slopcheck/research/structure/extract_pairs.py`](skills/slopcheck/research/structure/extract_pairs.py) |
+| 83 | ✓ | [`skills/slopcheck/research/structure/README.md`](skills/slopcheck/research/structure/README.md) |
+| 84 | ✓ | [`skills/slopcheck/research/structure/surprisal_pairs.py`](skills/slopcheck/research/structure/surprisal_pairs.py) |
+| 85 | ✓ | [`skills/slopcheck/scripts/slopcheck`](skills/slopcheck/scripts/slopcheck) |
+| 86 | ✓ | [`skills/slopcheck/scripts/slopmark`](skills/slopcheck/scripts/slopmark) |
+| 87 | ✓ | [`skills/slopcheck/scripts/structcheck`](skills/slopcheck/scripts/structcheck) |
+| 88 | ✓ | [`skills/slopcheck/SKILL.md`](skills/slopcheck/SKILL.md) |
+| 89 | ✓ | [`skills/slopcheck/tests/run.sh`](skills/slopcheck/tests/run.sh) |
+| 90 | ✓ | [`skills/slopcheck/tests/test_pre_send_notion.py`](skills/slopcheck/tests/test_pre_send_notion.py) |
+| 91 | ✓ | [`skills/slopcheck/tests/test_structcheck.py`](skills/slopcheck/tests/test_structcheck.py) |
+| 92 | ✓ | [`skills/tasx/references/format.md`](skills/tasx/references/format.md) |
+| 93 | ✓ | [`skills/tasx/scripts/board.html`](skills/tasx/scripts/board.html) |
+| 94 | ✓ | [`skills/tasx/scripts/tasx`](skills/tasx/scripts/tasx) |
+| 95 | ✓ | [`skills/tasx/SKILL.md`](skills/tasx/SKILL.md) |
 
 ---
 

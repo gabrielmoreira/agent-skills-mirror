@@ -1,6 +1,8 @@
 ---
 name: "omh-agent-evaluation"
 description: "[omh] Choosing between coding agents on evidence: compare executor or agent choices on reproducible tasks using quality, cost, time, tool, and evidence metrics. Use when the user says: agent-evaluation, agent evaluation, agent eval, agent benchmark, executor evaluation, executor benchmark, compare agents, compare codex claude."
+license: MIT
+author: "oh-my-hermes maintainers"
 metadata:
   hermes:
     tags: [workflow, oh-my-hermes, operations]
@@ -8,6 +10,7 @@ metadata:
     phase: agent-evaluation
     role: operator
     quality_tier: agent-eval-gated
+    related_skills: [omh-executor-runtime-readiness, omh-workflow-learning, ulw-perf]
 ---
 
 # Agent Evaluation
@@ -20,10 +23,10 @@ This is a Hermes-native `agent-evaluation` workflow skill.
 
 ## Do Not Use When
 
-- The user needs current runtime readiness only; use `executor-runtime-readiness`.
+- The user needs current runtime readiness only; use `omh-executor-runtime-readiness`.
 - The user already selected an executor and wants implementation; use the coding handoff or delivery workflow.
-- The user asks for workflow learning from a single failed route; use `workflow-learning`.
-- The ask is to find and fix runtime, memory, cost, or rendering hotspots rather than score executor or model output quality; use `ultraperf`.
+- The user asks for workflow learning from a single failed route; use `omh-workflow-learning`.
+- The ask is to find and fix runtime, memory, cost, or rendering hotspots rather than score executor or model output quality; use `ulw-perf`.
 
 ## Examples
 
@@ -52,11 +55,11 @@ Bad example:
 
 ## Workflow Lane
 
-- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+39 more`) - schedules, status, health, and ops review.
+- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `live-incident-response`, `automation-blueprint`, `github-event-ops`, `github-issue-intake`, `buzz`, `+40 more`) - schedules, status, health, and ops review.
 - If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
-- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+- Shared product, routing, compatibility, and evidence rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`.
 
-## Use When
+## When to Use
 
 Use when Hermes should design or summarize a fair comparison of Codex, Claude Code, Hermes coding, or generic executors for a bounded task set.
 
@@ -128,4 +131,4 @@ Reply in the user's own words and the host's own voice: its SOUL.md persona owns
 
 Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
 
-Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.
+Shared product, compatibility, topology, memory, harness, and execution rules: `skill_view(name='omh-routing', file_path='references/skill-common-rail.md')`. Load it when applicable; otherwise name an unavailable capability.

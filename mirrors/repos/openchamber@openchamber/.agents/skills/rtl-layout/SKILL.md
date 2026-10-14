@@ -17,7 +17,7 @@ What CSS cannot express flips with the `rtl:` variant: `translate-x-*` (`data-[c
 
 ## Physical on purpose
 
-Some sides belong to the screen, not the line. ESLint (`no-restricted-syntax` in `eslint.config.js`) flags physical classes in `packages/ui` class lists, so a deliberate one carries `// eslint-disable-next-line no-restricted-syntax -- <why it is physical>`:
+Some sides belong to the screen, not the line. The lint rule `openchamber/no-physical-sides` (`tools/oxlint/openchamber`, enabled in `oxlint.config.ts`) flags physical classes in `packages/ui` class lists, so a deliberate one carries `// oxlint-disable-next-line openchamber/no-physical-sides -- <why it is physical>`:
 
 - **OS window controls.** macOS traffic lights stay top left in every language; frameless Windows/Linux controls stay on the side the user picked. The titlebar publishes `--oc-titlebar-start-inset` and maps controls through `getInlineStartSide(direction)` (see `Header.tsx`, `TitlebarLeftControls.tsx`).
 - **Geometry from measurement.** An element moved by `offsetLeft`, `getBoundingClientRect().left` or `clientX` anchors with `left-0`, because the numbers are physical (the active-tab pill in `sortable-tabs-strip.tsx`).
