@@ -383,13 +383,24 @@ exit comparison like `settlement.elapsed_ms`.
 Every capture requires `truncation_details`, with separate accounting for:
 
 - `raw_terminal`: original UTF-8 PTY chunk bytes and observed/retained chunk
-  counts. A chunk that does not fit `limits.output_bytes` is omitted whole;
-  a later smaller chunk can still fit.
+  counts. A chunk that does not fit either its remaining original-text budget
+  or normalized-text budget is omitted whole; a later smaller chunk can still
+  fit. A normalized-text omission also omits its original chunk, so raw and
+  normalized coverage can both be incomplete for that event.
+- `normalized_terminal`: normalized comparison-text bytes retained from raw
+  chunks. This is optional when reading historical captures. A raw-fitting
+  chunk is omitted if an ordered normalization stage would exceed the remaining
+  `output_bytes` budget before the final normalized size is known. Its final
+  size is unknown, not assumed to equal the budget. The capture records the
+  omitted-frame count and a limitation; later smaller chunks remain eligible.
 - `rendered_terminal`: cumulative UTF-8 serialized-state and visible-line
   bytes, plus observed/retained frame counts. This is independent of the raw
   chunk budget and does not count JSON encoding. Repeated screen snapshots can
   exhaust it even when all raw output fits. Rendered states use retained PTY
-  input, so raw omissions also limit rendered coverage.
+  input, so raw omissions also limit rendered coverage. When bounded
+  normalization omits a rendered frame before its final size is known,
+  `unknown_size_frames` reports that count; `observed_bytes` includes only
+  rendered frame sizes that were determined exactly.
 - `filesystem_before` and `filesystem_after`: file-count/depth limits,
   enumeration failures, whole-file hash budget and bytes successfully hashed.
   Directory names are read incrementally within the remaining entry capacity.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/clawsweeper` — 26 default patterns, 3 followed patterns, 43 file(s) materialized.
+Mirror of `openclaw/clawsweeper` — 26 default patterns, 3 followed patterns, 45 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/clawsweeper` — 26 default patterns, 3 followed patterns, 4
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 43 |
+| Files         | 45 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,44 +66,46 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.agents/skills/local-clawsweeper-review/SKILL.md`](.agents/skills/local-clawsweeper-review/SKILL.md) |
 | 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 5 | ✓ | [`docs/action-ledger.md`](docs/action-ledger.md) |
-| 6 | ✓ | [`docs/author-pr-budget-close-policy.md`](docs/author-pr-budget-close-policy.md) |
-| 7 | ✓ | [`docs/commit-sweeper.md`](docs/commit-sweeper.md) |
-| 8 | ✓ | [`docs/github-egress-telemetry.md`](docs/github-egress-telemetry.md) |
-| 9 | ✓ | [`docs/github-webhook-read-model.md`](docs/github-webhook-read-model.md) |
-| 10 | ✓ | [`docs/implemented-on-main-close-policy.md`](docs/implemented-on-main-close-policy.md) |
-| 11 | ✓ | [`docs/live-dashboard.md`](docs/live-dashboard.md) |
-| 12 | ✓ | [`docs/local-clawsweeper-skill.md`](docs/local-clawsweeper-skill.md) |
-| 13 | ✓ | [`docs/obsolescence-close-policies.md`](docs/obsolescence-close-policies.md) |
-| 14 | ✓ | [`docs/openclaw-event-hooks.md`](docs/openclaw-event-hooks.md) |
-| 15 | ✓ | [`docs/operator-configuration.md`](docs/operator-configuration.md) |
-| 16 | ✓ | [`docs/orchestration.md`](docs/orchestration.md) |
-| 17 | ✓ | [`docs/oversized-pr-close-policy.md`](docs/oversized-pr-close-policy.md) |
-| 18 | ✓ | [`docs/portable-review-receipt.md`](docs/portable-review-receipt.md) |
-| 19 | ✓ | [`docs/pr-proof-triage-dashboard.md`](docs/pr-proof-triage-dashboard.md) |
-| 20 | ✓ | [`docs/pr-review-comments.md`](docs/pr-review-comments.md) |
-| 21 | ✓ | [`docs/product-direction-close-policy.md`](docs/product-direction-close-policy.md) |
-| 22 | ✓ | [`docs/public-api.md`](docs/public-api.md) |
-| 23 | ✓ | [`docs/queue-service-split-runbook.md`](docs/queue-service-split-runbook.md) |
-| 24 | ✓ | [`docs/related-issue-discovery.md`](docs/related-issue-discovery.md) |
-| 25 | ✓ | [`docs/review-cache.md`](docs/review-cache.md) |
-| 26 | ✓ | [`docs/scheduler.md`](docs/scheduler.md) |
-| 27 | ✓ | [`docs/sqlite-change-policy-proposal.md`](docs/sqlite-change-policy-proposal.md) |
-| 28 | ✓ | [`docs/stalled-pr-close-policies.md`](docs/stalled-pr-close-policies.md) |
-| 29 | ✓ | [`docs/state-storage.md`](docs/state-storage.md) |
-| 30 | ✓ | [`docs/target-dispatcher.md`](docs/target-dispatcher.md) |
-| 31 | ✓ | [`docs/target-repositories.md`](docs/target-repositories.md) |
-| 32 | ✓ | [`docs/triage-dashboard.md`](docs/triage-dashboard.md) |
-| 33 | ✓ | [`docs/unsponsored-feature-close-policy.md`](docs/unsponsored-feature-close-policy.md) |
-| 34 | ✓ | [`docs/work-lane.md`](docs/work-lane.md) |
-| 35 | ✓ | [`prompts/pr-close-coverage-proof.md`](prompts/pr-close-coverage-proof.md) |
-| 36 | ✓ | [`prompts/review-close-reasons.md`](prompts/review-close-reasons.md) |
-| 37 | ✓ | [`prompts/review-commit.md`](prompts/review-commit.md) |
-| 38 | ✓ | [`prompts/review-item-issue.md`](prompts/review-item-issue.md) |
-| 39 | ✓ | [`prompts/review-item-pr.md`](prompts/review-item-pr.md) |
-| 40 | ✓ | [`prompts/review-item.md`](prompts/review-item.md) |
-| 41 | → | [`changelog.d/README.md`](changelog.d/README.md) |
-| 42 | → | [`docs/limits.md`](docs/limits.md) |
-| 43 | → | [`docs/README.md`](docs/README.md) |
+| 6 | ✓ | [`docs/agent-performance-metrics.md`](docs/agent-performance-metrics.md) |
+| 7 | ✓ | [`docs/author-pr-budget-close-policy.md`](docs/author-pr-budget-close-policy.md) |
+| 8 | ✓ | [`docs/commit-sweeper.md`](docs/commit-sweeper.md) |
+| 9 | ✓ | [`docs/github-egress-telemetry.md`](docs/github-egress-telemetry.md) |
+| 10 | ✓ | [`docs/github-webhook-read-model.md`](docs/github-webhook-read-model.md) |
+| 11 | ✓ | [`docs/implemented-on-main-close-policy.md`](docs/implemented-on-main-close-policy.md) |
+| 12 | ✓ | [`docs/live-dashboard.md`](docs/live-dashboard.md) |
+| 13 | ✓ | [`docs/local-clawsweeper-skill.md`](docs/local-clawsweeper-skill.md) |
+| 14 | ✓ | [`docs/obsolescence-close-policies.md`](docs/obsolescence-close-policies.md) |
+| 15 | ✓ | [`docs/openclaw-event-hooks.md`](docs/openclaw-event-hooks.md) |
+| 16 | ✓ | [`docs/operator-configuration.md`](docs/operator-configuration.md) |
+| 17 | ✓ | [`docs/orchestration.md`](docs/orchestration.md) |
+| 18 | ✓ | [`docs/oversized-pr-close-policy.md`](docs/oversized-pr-close-policy.md) |
+| 19 | ✓ | [`docs/portable-review-receipt.md`](docs/portable-review-receipt.md) |
+| 20 | ✓ | [`docs/pr-proof-triage-dashboard.md`](docs/pr-proof-triage-dashboard.md) |
+| 21 | ✓ | [`docs/pr-review-comments.md`](docs/pr-review-comments.md) |
+| 22 | ✓ | [`docs/product-direction-close-policy.md`](docs/product-direction-close-policy.md) |
+| 23 | ✓ | [`docs/public-api.md`](docs/public-api.md) |
+| 24 | ✓ | [`docs/queue-service-split-runbook.md`](docs/queue-service-split-runbook.md) |
+| 25 | ✓ | [`docs/related-issue-discovery.md`](docs/related-issue-discovery.md) |
+| 26 | ✓ | [`docs/review-authority.md`](docs/review-authority.md) |
+| 27 | ✓ | [`docs/review-cache.md`](docs/review-cache.md) |
+| 28 | ✓ | [`docs/scheduler.md`](docs/scheduler.md) |
+| 29 | ✓ | [`docs/sqlite-change-policy-proposal.md`](docs/sqlite-change-policy-proposal.md) |
+| 30 | ✓ | [`docs/stalled-pr-close-policies.md`](docs/stalled-pr-close-policies.md) |
+| 31 | ✓ | [`docs/state-storage.md`](docs/state-storage.md) |
+| 32 | ✓ | [`docs/target-dispatcher.md`](docs/target-dispatcher.md) |
+| 33 | ✓ | [`docs/target-repositories.md`](docs/target-repositories.md) |
+| 34 | ✓ | [`docs/triage-dashboard.md`](docs/triage-dashboard.md) |
+| 35 | ✓ | [`docs/unsponsored-feature-close-policy.md`](docs/unsponsored-feature-close-policy.md) |
+| 36 | ✓ | [`docs/work-lane.md`](docs/work-lane.md) |
+| 37 | ✓ | [`prompts/pr-close-coverage-proof.md`](prompts/pr-close-coverage-proof.md) |
+| 38 | ✓ | [`prompts/review-close-reasons.md`](prompts/review-close-reasons.md) |
+| 39 | ✓ | [`prompts/review-commit.md`](prompts/review-commit.md) |
+| 40 | ✓ | [`prompts/review-item-issue.md`](prompts/review-item-issue.md) |
+| 41 | ✓ | [`prompts/review-item-pr.md`](prompts/review-item-pr.md) |
+| 42 | ✓ | [`prompts/review-item.md`](prompts/review-item.md) |
+| 43 | → | [`changelog.d/README.md`](changelog.d/README.md) |
+| 44 | → | [`docs/limits.md`](docs/limits.md) |
+| 45 | → | [`docs/README.md`](docs/README.md) |
 
 ---
 

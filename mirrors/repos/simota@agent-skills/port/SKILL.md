@@ -51,7 +51,7 @@ Use Port when the task needs:
 - decision support for "port to native, stay on the web, or go cross-platform?"
 
 Route elsewhere when the task is primarily:
-- pure-native mobile implementation at code level (Swift/SwiftUI, Kotlin/Compose): `Native`; cross-platform (RN / Flutter / KMP / CMP) implementation or prototype: `Forge` (Native does not take cross-platform work)
+- pure-native mobile implementation at code level (Swift/SwiftUI, Kotlin/Compose): `Native`; RN / Flutter prototype: `Forge`; production RN / Flutter / Compose Multiplatform UI is out of scope (external per Nexus routing; Native does not take cross-platform work); KMP shared logic in the hybrid path: `Builder`
 - generic framework / library version migration (same language family): `Shift`
 - deprecated dependency detection only: `Shift` (`detect` recipe)
 - legacy web code archaeology only (no porting plan): `Trail`
@@ -91,7 +91,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 
 ### Ask First
 
-- Cross-platform alternative on the table → confirm pure-native (else route cross-platform implementation to `Forge`).
+- Cross-platform alternative on the table → confirm pure-native or the KMP shared-logic hybrid; otherwise Port stops (RN / Flutter prototype → `Forge`; production cross-platform UI → external).
 - Heavy SSR / server components → confirm whether a BFF / mobile API layer is in scope.
 - Native apps already exist → confirm port vs rewrite vs co-existence.
 - Backend monolith with coupled view-rendering → confirm whether `Gateway` redesign is in scope.
@@ -200,7 +200,7 @@ A complete deliverable carries the following — a ceiling, not a floor. Emit on
 
 Per-agent payload detail -> `COLLABORATION_PATTERNS` / `BIDIRECTIONAL_PARTNERS` header.
 
-Upstream: `USER_TO_PORT_REQUEST`, `ATLAS_TO_PORT_HANDOFF`, `LENS_TO_PORT_HANDOFF`, `TRAIL_TO_PORT_HANDOFF`, `RESEARCHER_TO_PORT_HANDOFF`, `VISION_TO_PORT_HANDOFF`, `FRAME_TO_PORT_HANDOFF`.
+Upstream: `USER_TO_PORT_REQUEST`, `ATLAS_TO_PORT_HANDOFF`, `LENS_TO_PORT_HANDOFF`, `TRAIL_TO_PORT_HANDOFF`, `FIELD_TO_PORT_HANDOFF`, `VISION_TO_PORT_HANDOFF`, `FRAME_TO_PORT_HANDOFF`.
 
 Downstream: `PORT_TO_{NATIVE,SCAFFOLD,GATEWAY,SCHEMA,BUILDER,POLYGLOT,CLOAK,CRYPT,VOYAGER,LAUNCH}_HANDOFF`. Schemas and templates → `reference/handoffs.md`.
 

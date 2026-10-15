@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `every-app/open-seo` — 26 default patterns, 0 followed patterns, 48 file(s) materialized.
+Mirror of `every-app/open-seo` — 26 default patterns, 0 followed patterns, 49 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `every-app/open-seo` — 26 default patterns, 0 followed patterns, 48 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 48 |
+| Files         | 49 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -107,6 +107,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 46 | ✓ | [`plugins/openseo/skills/seo-coach/SKILL.md`](plugins/openseo/skills/seo-coach/SKILL.md) |
 | 47 | ✓ | [`plugins/openseo/skills/seo-project-setup/SKILL.md`](plugins/openseo/skills/seo-project-setup/SKILL.md) |
 | 48 | ✓ | [`plugins/openseo/skills/seo-report/SKILL.md`](plugins/openseo/skills/seo-report/SKILL.md) |
+| 49 | ✓ | [`web/public/llms.txt`](web/public/llms.txt) |
 
 ---
 

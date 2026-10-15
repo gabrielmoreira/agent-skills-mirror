@@ -14,7 +14,7 @@
 
 ## ルーティング（単一入口）
 - 非自明な依頼（複数ステップ・複数領域・スキル選択が自明でないもの）は `nexus` を単一入口とする — 分類 → レシピ/チェーン選択 → 実行までを nexus が担う。
-- どのスキルにも該当しない依頼も nexus に投げてよい: LADDER（compass → architect → 明示的フォールバック）がカバレッジを保証する（`nexus/reference/routing-matrix.md` § LADDER）。
+- どのスキルにも該当しない依頼も nexus に投げてよい: LADDER（compass → architect → 明示的フォールバック）がカバレッジを保証する（`nexus/reference/routing-matrix.md` § Classify Flow (LADDER)）。
 - 個別スキルの直接呼び出しは、次の3条件を**すべて**満たす場合に限る: (1) 担当スキルが1つに確定している (2) 成果物が1種類 (3) `_common/BOUNDARIES.md` の境界を1つしか跨がない。1つでも満たさなければ nexus を通す — 「たぶんこのスキル」は条件(1)を満たさない。
 - 呼び出し経路にかかわらず、完了判定は `_common/OPERATIONAL.md` § Completion Contract に従う（AC凍結・証拠束縛・型付き繰越・完了スイープ・status非膨張）。nexus 経由かどうかで完了の基準は変わらない。
 - 環境レベルの強制（hooks 等によるプロンプト介入）はリポジトリ範囲外のため行わない — 本宣言が単一入口の境界である。
@@ -33,7 +33,7 @@
 - `make validate` — 全チェッカーを blocking severity で実行
 - `make test` — 全回帰テスト。チェッカーが実際に落ちることの証明（repoを1箇所ずつ壊す）を含む
 - `make check` — 上記2つ。CI が走らせるもの
-- `make hooks` — clone ごとに1回。pre-commit で `validate` を、`_common/scripts/` に触れたコミットでは `check` を走らせる
+- `make hooks` — clone ごとに1回。pre-commit で `validate` と高速なカタログ回帰テスト（`make test-catalog`）を毎回、`_common/scripts/` やテストが読む入力（README・catalog・orbit reference 等。一覧は Makefile の hook 定義）、またはテストモジュールがパスを名指しするファイルに触れたコミットでは `check` を走らせる。hook 定義が変わると `make validate` が `hook stale` と再実行を促す
 - 本リポは main へ直接コミットするため、**hook が実質の強制点**
 - **新しい check には、それが落ちるところを見るテストを `_common/scripts/test_checkers.py` に付ける。** テストのない check は常にゼロを返すものと区別がつかない — 実際に2本そうなっていた（`_common/LESSONS.md` L001/L002）
 - 機構を伴わない教訓は `_common/LESSONS.md` に入らない。`lint-lessons.py` が「remember to」型の記述を拒否する

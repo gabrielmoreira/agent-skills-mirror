@@ -12,4 +12,21 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+```rust
+#[derive(Component)]
+struct Racer {
+    lap: u32,
+}
+
+#[derive(Resource)]
+struct RaceClock {
+    elapsed: f32,
+}
+
+fn read_race(clock: Res<RaceClock>, racers: Query<&Racer>) {
+    let _elapsed = clock.elapsed;
+    for racer in &racers {
+        let _lap = racer.lap;
+    }
+}
+```

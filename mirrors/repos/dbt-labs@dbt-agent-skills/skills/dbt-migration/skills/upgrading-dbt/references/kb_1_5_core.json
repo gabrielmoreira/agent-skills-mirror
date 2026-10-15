@@ -208,7 +208,7 @@
       "issue_id": "1_7_008",
       "sort_order": 5080,
       "change": "require_explicit_package_overrides_for_builtin_materializations defaults to True",
-      "action": "Set the flag to false in dbt_project.yml flags: to keep old behavior, or update packages that override built-in materializations",
+      "action": "Only for package overrides of built-in materializations: set the flag to false or update the package",
       "category": "Breaking",
       "component": "core",
       "adapter_type": null,
@@ -219,8 +219,8 @@
       "out_of_repo_risk": false,
       "environment_change": false,
       "context": {
-        "detection": "- Check dbt_project.yml `flags:` for\n  require_explicit_package_overrides_for_builtin_materializations.\n- Check installed packages (dbt_packages/, packages.yml) for materialization overrides of\n  table/view/incremental.",
-        "fixing": "- Handled by `dbt-autofix deprecations` (sets the flag explicitly). Review the diff.\n- Manual fallback: add `require_explicit_package_overrides_for_builtin_materializations: false`\n  under `flags:` to preserve old behavior, or update the offending package.\n- Parse-detectable via the deprecation/warning; confirm clean on 1.8."
+        "detection": "- Inspect installed packages for table/view/incremental materialization overrides.\n- No packages or no overrides: not applicable. A missing flag alone is not evidence.",
+        "fixing": "- Only for detected package overrides: set `flags.require_explicit_package_overrides_for_builtin_materializations: false`\n  in dbt_project.yml to preserve behavior, or update the package.\n- Otherwise leave the flag unchanged, including in autofix diffs."
       },
       "_path": "kb/core/1_7_008.yaml"
     },

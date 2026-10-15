@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tech-leads-club/agent-skills` — 26 default patterns, 0 followed patterns, 103 file(s) materialized.
+Mirror of `tech-leads-club/agent-skills` — 26 default patterns, 0 followed patterns, 105 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tech-leads-club/agent-skills` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 103 |
+| Files         | 105 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -114,54 +114,56 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 53 | ✓ | [`packages/skills-catalog/skills/(development)/tlc-discover/SKILL.md`](packages/skills-catalog/skills/(development)/tlc-discover/SKILL.md) |
 | 54 | ✓ | [`packages/skills-catalog/skills/(development)/tlc-implement/SKILL.md`](packages/skills-catalog/skills/(development)/tlc-implement/SKILL.md) |
 | 55 | ✓ | [`packages/skills-catalog/skills/(development)/tlc-plan/SKILL.md`](packages/skills-catalog/skills/(development)/tlc-plan/SKILL.md) |
-| 56 | ✓ | [`packages/skills-catalog/skills/(development)/tlc-spec-driven/SKILL.md`](packages/skills-catalog/skills/(development)/tlc-spec-driven/SKILL.md) |
-| 57 | ✓ | [`packages/skills-catalog/skills/(development)/tlc-spec-lean/SKILL.md`](packages/skills-catalog/skills/(development)/tlc-spec-lean/SKILL.md) |
-| 58 | ✓ | [`packages/skills-catalog/skills/(gtm)/ai-cold-outreach/SKILL.md`](packages/skills-catalog/skills/(gtm)/ai-cold-outreach/SKILL.md) |
-| 59 | ✓ | [`packages/skills-catalog/skills/(gtm)/ai-pricing/SKILL.md`](packages/skills-catalog/skills/(gtm)/ai-pricing/SKILL.md) |
-| 60 | ✓ | [`packages/skills-catalog/skills/(gtm)/ai-sdr/SKILL.md`](packages/skills-catalog/skills/(gtm)/ai-sdr/SKILL.md) |
-| 61 | ✓ | [`packages/skills-catalog/skills/(gtm)/ai-seo/SKILL.md`](packages/skills-catalog/skills/(gtm)/ai-seo/SKILL.md) |
-| 62 | ✓ | [`packages/skills-catalog/skills/(gtm)/ai-ugc-ads/SKILL.md`](packages/skills-catalog/skills/(gtm)/ai-ugc-ads/SKILL.md) |
-| 63 | ✓ | [`packages/skills-catalog/skills/(gtm)/content-to-pipeline/SKILL.md`](packages/skills-catalog/skills/(gtm)/content-to-pipeline/SKILL.md) |
-| 64 | ✓ | [`packages/skills-catalog/skills/(gtm)/expansion-retention/SKILL.md`](packages/skills-catalog/skills/(gtm)/expansion-retention/SKILL.md) |
-| 65 | ✓ | [`packages/skills-catalog/skills/(gtm)/gtm-engineering/SKILL.md`](packages/skills-catalog/skills/(gtm)/gtm-engineering/SKILL.md) |
-| 66 | ✓ | [`packages/skills-catalog/skills/(gtm)/gtm-metrics/SKILL.md`](packages/skills-catalog/skills/(gtm)/gtm-metrics/SKILL.md) |
-| 67 | ✓ | [`packages/skills-catalog/skills/(gtm)/lead-enrichment/SKILL.md`](packages/skills-catalog/skills/(gtm)/lead-enrichment/SKILL.md) |
-| 68 | ✓ | [`packages/skills-catalog/skills/(gtm)/multi-platform-launch/SKILL.md`](packages/skills-catalog/skills/(gtm)/multi-platform-launch/SKILL.md) |
-| 69 | ✓ | [`packages/skills-catalog/skills/(gtm)/paid-creative-ai/SKILL.md`](packages/skills-catalog/skills/(gtm)/paid-creative-ai/SKILL.md) |
-| 70 | ✓ | [`packages/skills-catalog/skills/(gtm)/partner-affiliate/SKILL.md`](packages/skills-catalog/skills/(gtm)/partner-affiliate/SKILL.md) |
-| 71 | ✓ | [`packages/skills-catalog/skills/(gtm)/positioning-icp/SKILL.md`](packages/skills-catalog/skills/(gtm)/positioning-icp/SKILL.md) |
-| 72 | ✓ | [`packages/skills-catalog/skills/(gtm)/sales-motion-design/SKILL.md`](packages/skills-catalog/skills/(gtm)/sales-motion-design/SKILL.md) |
-| 73 | ✓ | [`packages/skills-catalog/skills/(gtm)/social-selling/SKILL.md`](packages/skills-catalog/skills/(gtm)/social-selling/SKILL.md) |
-| 74 | ✓ | [`packages/skills-catalog/skills/(gtm)/solo-founder-gtm/SKILL.md`](packages/skills-catalog/skills/(gtm)/solo-founder-gtm/SKILL.md) |
-| 75 | ✓ | [`packages/skills-catalog/skills/(gtm)/video-outreach/SKILL.md`](packages/skills-catalog/skills/(gtm)/video-outreach/SKILL.md) |
-| 76 | ✓ | [`packages/skills-catalog/skills/(learning)/learning-opportunities/SKILL.md`](packages/skills-catalog/skills/(learning)/learning-opportunities/SKILL.md) |
-| 77 | ✓ | [`packages/skills-catalog/skills/(monitoring)/sentry/SKILL.md`](packages/skills-catalog/skills/(monitoring)/sentry/SKILL.md) |
-| 78 | ✓ | [`packages/skills-catalog/skills/(performance)/core-web-vitals/SKILL.md`](packages/skills-catalog/skills/(performance)/core-web-vitals/SKILL.md) |
-| 79 | ✓ | [`packages/skills-catalog/skills/(performance)/perf-astro/SKILL.md`](packages/skills-catalog/skills/(performance)/perf-astro/SKILL.md) |
-| 80 | ✓ | [`packages/skills-catalog/skills/(performance)/perf-lighthouse/SKILL.md`](packages/skills-catalog/skills/(performance)/perf-lighthouse/SKILL.md) |
-| 81 | ✓ | [`packages/skills-catalog/skills/(performance)/perf-web-optimization/SKILL.md`](packages/skills-catalog/skills/(performance)/perf-web-optimization/SKILL.md) |
-| 82 | ✓ | [`packages/skills-catalog/skills/(quality)/react-best-practices/AGENTS.md`](packages/skills-catalog/skills/(quality)/react-best-practices/AGENTS.md) |
-| 83 | ✓ | [`packages/skills-catalog/skills/(quality)/react-best-practices/SKILL.md`](packages/skills-catalog/skills/(quality)/react-best-practices/SKILL.md) |
-| 84 | ✓ | [`packages/skills-catalog/skills/(quality)/seo/SKILL.md`](packages/skills-catalog/skills/(quality)/seo/SKILL.md) |
-| 85 | ✓ | [`packages/skills-catalog/skills/(quality)/the-judge/SKILL.md`](packages/skills-catalog/skills/(quality)/the-judge/SKILL.md) |
-| 86 | ✓ | [`packages/skills-catalog/skills/(quality)/tlc-generative-engine-optimization/SKILL.md`](packages/skills-catalog/skills/(quality)/tlc-generative-engine-optimization/SKILL.md) |
-| 87 | ✓ | [`packages/skills-catalog/skills/(quality)/tlc-generative-engine-optimization/templates/llms.txt`](packages/skills-catalog/skills/(quality)/tlc-generative-engine-optimization/templates/llms.txt) |
-| 88 | ✓ | [`packages/skills-catalog/skills/(quality)/web-accessibility/SKILL.md`](packages/skills-catalog/skills/(quality)/web-accessibility/SKILL.md) |
-| 89 | ✓ | [`packages/skills-catalog/skills/(quality)/web-best-practices/SKILL.md`](packages/skills-catalog/skills/(quality)/web-best-practices/SKILL.md) |
-| 90 | ✓ | [`packages/skills-catalog/skills/(quality)/web-quality-audit/SKILL.md`](packages/skills-catalog/skills/(quality)/web-quality-audit/SKILL.md) |
-| 91 | ✓ | [`packages/skills-catalog/skills/(security)/security-best-practices/SKILL.md`](packages/skills-catalog/skills/(security)/security-best-practices/SKILL.md) |
-| 92 | ✓ | [`packages/skills-catalog/skills/(security)/security-ownership-map/SKILL.md`](packages/skills-catalog/skills/(security)/security-ownership-map/SKILL.md) |
-| 93 | ✓ | [`packages/skills-catalog/skills/(security)/security-threat-model/SKILL.md`](packages/skills-catalog/skills/(security)/security-threat-model/SKILL.md) |
-| 94 | ✓ | [`packages/skills-catalog/skills/(tooling)/chrome-devtools/SKILL.md`](packages/skills-catalog/skills/(tooling)/chrome-devtools/SKILL.md) |
-| 95 | ✓ | [`packages/skills-catalog/skills/(tooling)/excalidraw-studio/SKILL.md`](packages/skills-catalog/skills/(tooling)/excalidraw-studio/SKILL.md) |
-| 96 | ✓ | [`packages/skills-catalog/skills/(tooling)/gh-fix-ci/SKILL.md`](packages/skills-catalog/skills/(tooling)/gh-fix-ci/SKILL.md) |
-| 97 | ✓ | [`packages/skills-catalog/skills/(tooling)/mermaid-studio/SKILL.md`](packages/skills-catalog/skills/(tooling)/mermaid-studio/SKILL.md) |
-| 98 | ✓ | [`packages/skills-catalog/skills/(tooling)/nx-ci-monitor/SKILL.md`](packages/skills-catalog/skills/(tooling)/nx-ci-monitor/SKILL.md) |
-| 99 | ✓ | [`packages/skills-catalog/skills/(tooling)/nx-generate/SKILL.md`](packages/skills-catalog/skills/(tooling)/nx-generate/SKILL.md) |
-| 100 | ✓ | [`packages/skills-catalog/skills/(tooling)/nx-run-tasks/SKILL.md`](packages/skills-catalog/skills/(tooling)/nx-run-tasks/SKILL.md) |
-| 101 | ✓ | [`packages/skills-catalog/skills/(tooling)/nx-workspace/SKILL.md`](packages/skills-catalog/skills/(tooling)/nx-workspace/SKILL.md) |
-| 102 | ✓ | [`packages/skills-catalog/skills/(web-automation)/playwright-skill/API_REFERENCE.md`](packages/skills-catalog/skills/(web-automation)/playwright-skill/API_REFERENCE.md) |
-| 103 | ✓ | [`packages/skills-catalog/skills/(web-automation)/playwright-skill/SKILL.md`](packages/skills-catalog/skills/(web-automation)/playwright-skill/SKILL.md) |
+| 56 | ✓ | [`packages/skills-catalog/skills/(development)/tlc-prd/SKILL.md`](packages/skills-catalog/skills/(development)/tlc-prd/SKILL.md) |
+| 57 | ✓ | [`packages/skills-catalog/skills/(development)/tlc-spec-driven/SKILL.md`](packages/skills-catalog/skills/(development)/tlc-spec-driven/SKILL.md) |
+| 58 | ✓ | [`packages/skills-catalog/skills/(development)/tlc-spec-lean/SKILL.md`](packages/skills-catalog/skills/(development)/tlc-spec-lean/SKILL.md) |
+| 59 | ✓ | [`packages/skills-catalog/skills/(gtm)/ai-cold-outreach/SKILL.md`](packages/skills-catalog/skills/(gtm)/ai-cold-outreach/SKILL.md) |
+| 60 | ✓ | [`packages/skills-catalog/skills/(gtm)/ai-pricing/SKILL.md`](packages/skills-catalog/skills/(gtm)/ai-pricing/SKILL.md) |
+| 61 | ✓ | [`packages/skills-catalog/skills/(gtm)/ai-sdr/SKILL.md`](packages/skills-catalog/skills/(gtm)/ai-sdr/SKILL.md) |
+| 62 | ✓ | [`packages/skills-catalog/skills/(gtm)/ai-seo/SKILL.md`](packages/skills-catalog/skills/(gtm)/ai-seo/SKILL.md) |
+| 63 | ✓ | [`packages/skills-catalog/skills/(gtm)/ai-ugc-ads/SKILL.md`](packages/skills-catalog/skills/(gtm)/ai-ugc-ads/SKILL.md) |
+| 64 | ✓ | [`packages/skills-catalog/skills/(gtm)/content-to-pipeline/SKILL.md`](packages/skills-catalog/skills/(gtm)/content-to-pipeline/SKILL.md) |
+| 65 | ✓ | [`packages/skills-catalog/skills/(gtm)/expansion-retention/SKILL.md`](packages/skills-catalog/skills/(gtm)/expansion-retention/SKILL.md) |
+| 66 | ✓ | [`packages/skills-catalog/skills/(gtm)/gtm-engineering/SKILL.md`](packages/skills-catalog/skills/(gtm)/gtm-engineering/SKILL.md) |
+| 67 | ✓ | [`packages/skills-catalog/skills/(gtm)/gtm-metrics/SKILL.md`](packages/skills-catalog/skills/(gtm)/gtm-metrics/SKILL.md) |
+| 68 | ✓ | [`packages/skills-catalog/skills/(gtm)/lead-enrichment/SKILL.md`](packages/skills-catalog/skills/(gtm)/lead-enrichment/SKILL.md) |
+| 69 | ✓ | [`packages/skills-catalog/skills/(gtm)/multi-platform-launch/SKILL.md`](packages/skills-catalog/skills/(gtm)/multi-platform-launch/SKILL.md) |
+| 70 | ✓ | [`packages/skills-catalog/skills/(gtm)/paid-creative-ai/SKILL.md`](packages/skills-catalog/skills/(gtm)/paid-creative-ai/SKILL.md) |
+| 71 | ✓ | [`packages/skills-catalog/skills/(gtm)/partner-affiliate/SKILL.md`](packages/skills-catalog/skills/(gtm)/partner-affiliate/SKILL.md) |
+| 72 | ✓ | [`packages/skills-catalog/skills/(gtm)/positioning-icp/SKILL.md`](packages/skills-catalog/skills/(gtm)/positioning-icp/SKILL.md) |
+| 73 | ✓ | [`packages/skills-catalog/skills/(gtm)/sales-motion-design/SKILL.md`](packages/skills-catalog/skills/(gtm)/sales-motion-design/SKILL.md) |
+| 74 | ✓ | [`packages/skills-catalog/skills/(gtm)/social-selling/SKILL.md`](packages/skills-catalog/skills/(gtm)/social-selling/SKILL.md) |
+| 75 | ✓ | [`packages/skills-catalog/skills/(gtm)/solo-founder-gtm/SKILL.md`](packages/skills-catalog/skills/(gtm)/solo-founder-gtm/SKILL.md) |
+| 76 | ✓ | [`packages/skills-catalog/skills/(gtm)/video-outreach/SKILL.md`](packages/skills-catalog/skills/(gtm)/video-outreach/SKILL.md) |
+| 77 | ✓ | [`packages/skills-catalog/skills/(learning)/learning-opportunities/SKILL.md`](packages/skills-catalog/skills/(learning)/learning-opportunities/SKILL.md) |
+| 78 | ✓ | [`packages/skills-catalog/skills/(monitoring)/sentry/SKILL.md`](packages/skills-catalog/skills/(monitoring)/sentry/SKILL.md) |
+| 79 | ✓ | [`packages/skills-catalog/skills/(performance)/core-web-vitals/SKILL.md`](packages/skills-catalog/skills/(performance)/core-web-vitals/SKILL.md) |
+| 80 | ✓ | [`packages/skills-catalog/skills/(performance)/perf-astro/SKILL.md`](packages/skills-catalog/skills/(performance)/perf-astro/SKILL.md) |
+| 81 | ✓ | [`packages/skills-catalog/skills/(performance)/perf-lighthouse/SKILL.md`](packages/skills-catalog/skills/(performance)/perf-lighthouse/SKILL.md) |
+| 82 | ✓ | [`packages/skills-catalog/skills/(performance)/perf-web-optimization/SKILL.md`](packages/skills-catalog/skills/(performance)/perf-web-optimization/SKILL.md) |
+| 83 | ✓ | [`packages/skills-catalog/skills/(quality)/react-best-practices/AGENTS.md`](packages/skills-catalog/skills/(quality)/react-best-practices/AGENTS.md) |
+| 84 | ✓ | [`packages/skills-catalog/skills/(quality)/react-best-practices/SKILL.md`](packages/skills-catalog/skills/(quality)/react-best-practices/SKILL.md) |
+| 85 | ✓ | [`packages/skills-catalog/skills/(quality)/seo/SKILL.md`](packages/skills-catalog/skills/(quality)/seo/SKILL.md) |
+| 86 | ✓ | [`packages/skills-catalog/skills/(quality)/the-judge/SKILL.md`](packages/skills-catalog/skills/(quality)/the-judge/SKILL.md) |
+| 87 | ✓ | [`packages/skills-catalog/skills/(quality)/tlc-generative-engine-optimization/SKILL.md`](packages/skills-catalog/skills/(quality)/tlc-generative-engine-optimization/SKILL.md) |
+| 88 | ✓ | [`packages/skills-catalog/skills/(quality)/tlc-generative-engine-optimization/templates/llms.txt`](packages/skills-catalog/skills/(quality)/tlc-generative-engine-optimization/templates/llms.txt) |
+| 89 | ✓ | [`packages/skills-catalog/skills/(quality)/web-accessibility/SKILL.md`](packages/skills-catalog/skills/(quality)/web-accessibility/SKILL.md) |
+| 90 | ✓ | [`packages/skills-catalog/skills/(quality)/web-best-practices/SKILL.md`](packages/skills-catalog/skills/(quality)/web-best-practices/SKILL.md) |
+| 91 | ✓ | [`packages/skills-catalog/skills/(quality)/web-quality-audit/SKILL.md`](packages/skills-catalog/skills/(quality)/web-quality-audit/SKILL.md) |
+| 92 | ✓ | [`packages/skills-catalog/skills/(security)/security-best-practices/SKILL.md`](packages/skills-catalog/skills/(security)/security-best-practices/SKILL.md) |
+| 93 | ✓ | [`packages/skills-catalog/skills/(security)/security-ownership-map/SKILL.md`](packages/skills-catalog/skills/(security)/security-ownership-map/SKILL.md) |
+| 94 | ✓ | [`packages/skills-catalog/skills/(security)/security-threat-model/SKILL.md`](packages/skills-catalog/skills/(security)/security-threat-model/SKILL.md) |
+| 95 | ✓ | [`packages/skills-catalog/skills/(tooling)/chrome-devtools/SKILL.md`](packages/skills-catalog/skills/(tooling)/chrome-devtools/SKILL.md) |
+| 96 | ✓ | [`packages/skills-catalog/skills/(tooling)/excalidraw-studio/SKILL.md`](packages/skills-catalog/skills/(tooling)/excalidraw-studio/SKILL.md) |
+| 97 | ✓ | [`packages/skills-catalog/skills/(tooling)/gh-fix-ci/SKILL.md`](packages/skills-catalog/skills/(tooling)/gh-fix-ci/SKILL.md) |
+| 98 | ✓ | [`packages/skills-catalog/skills/(tooling)/mermaid-studio/SKILL.md`](packages/skills-catalog/skills/(tooling)/mermaid-studio/SKILL.md) |
+| 99 | ✓ | [`packages/skills-catalog/skills/(tooling)/nx-ci-monitor/SKILL.md`](packages/skills-catalog/skills/(tooling)/nx-ci-monitor/SKILL.md) |
+| 100 | ✓ | [`packages/skills-catalog/skills/(tooling)/nx-generate/SKILL.md`](packages/skills-catalog/skills/(tooling)/nx-generate/SKILL.md) |
+| 101 | ✓ | [`packages/skills-catalog/skills/(tooling)/nx-run-tasks/SKILL.md`](packages/skills-catalog/skills/(tooling)/nx-run-tasks/SKILL.md) |
+| 102 | ✓ | [`packages/skills-catalog/skills/(tooling)/nx-workspace/SKILL.md`](packages/skills-catalog/skills/(tooling)/nx-workspace/SKILL.md) |
+| 103 | ✓ | [`packages/skills-catalog/skills/(web-automation)/demo/SKILL.md`](packages/skills-catalog/skills/(web-automation)/demo/SKILL.md) |
+| 104 | ✓ | [`packages/skills-catalog/skills/(web-automation)/playwright-skill/API_REFERENCE.md`](packages/skills-catalog/skills/(web-automation)/playwright-skill/API_REFERENCE.md) |
+| 105 | ✓ | [`packages/skills-catalog/skills/(web-automation)/playwright-skill/SKILL.md`](packages/skills-catalog/skills/(web-automation)/playwright-skill/SKILL.md) |
 
 ---
 

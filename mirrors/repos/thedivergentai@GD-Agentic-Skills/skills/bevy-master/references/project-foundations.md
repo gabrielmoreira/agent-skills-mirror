@@ -1,6 +1,6 @@
 ---
 name: bevy-project-foundations
-description: "Bevy ECS skill for a Bevy Rust project layout. Keywords: Bevy, Cargo, features, project layout."
+description: "Pins a Bevy 0.20 crate, dev-profile opt-level, and plugin boundaries before gameplay systems exist. Use when starting a windowed or headless Bevy app. Keywords: Bevy, Cargo.toml, DefaultPlugins, MinimalPlugins, opt-level."
 ---
 
 # Bevy project foundations
@@ -11,25 +11,99 @@ Load this when a new Bevy app needs a crate, a pin, and a place for feature code
 
 ## ECS shape
 
-- **Crate:** Getting Started says start with `cargo init` or `cargo new my_project`, then `cargo add bevy`. The same page's `Cargo.toml` sample still shows `bevy = "0.19"`. The library pin on bevy-master is **0.20.0**.
-- **Features:** The `bevy` 0.20.0 crate page documents profiles (`default`, `2d`, `3d`, `ui`) and `default-features = false` when you want a smaller set. One sample on that page still shows `version = "0.18"`. That sample is not the pin.
-- **App shell:** `App::new().run()` (Apps page). `use bevy::prelude::*` brings in the guide's essentials. Plugins, systems, and resources are added on that `App`.
-- **Code layout:** Split by feature in ordinary Rust modules if the crate grows. These pages do not define a required directory tree.
+- **Crate:** `cargo new` plus a `bevy` dependency pinned at **0.20**.
+- **Features:** `default` pulls windowing, input, and rendering. Turn `default-features` off only when the binary should stay headless.
+- **App shell:** `App::new()`, plugins, then systems and resources on that `App`.
+- **Code layout:** Split by feature in ordinary Rust modules. The engine does not require a directory tree.
 
-## Coming from Godot
+Pin the crate and keep dev builds usable. Bevy's default debug profile compiles dependencies unoptimized, so the dev profile lifts dependency `opt-level` while the game crate stays easy to step through.
 
-| Godot idea | Bevy idiom |
+```toml
+[package]
+name = "game"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.20"
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3
+```
+
+A headless tool crate drops the default feature set and adds only what that binary calls.
+
+```toml
+[dependencies]
+bevy = { version = "0.20", default-features = false }
+```
+
+The windowed game plugs `DefaultPlugins` and a feature plugin. `GameConfig` is app-wide state inserted before the first schedule runs.
+
+```rust
+#[derive(Resource)]
+struct GameConfig {
+    title: String,
+}
+
+fn boot(config: Res<GameConfig>) {
+    let _title = config.title.as_str();
+}
+
+pub struct GamePlugin;
+
+impl Plugin for GamePlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(GameConfig {
+            title: "Game".to_string(),
+        })
+        .add_systems(Startup, boot);
+    }
+}
+
+fn main() {
+    App::new()
+        .add_plugins(DefaultPlugins)
+        .add_plugins(GamePlugin)
+        .run();
+}
+```
+
+A second module owns one feature. The plugin is the boundary. Systems stay in the module that declares their components.
+
+```rust
+#[derive(Component)]
+struct Player;
+
+fn spawn_player(mut commands: Commands) {
+    commands.spawn(Player);
+}
+
+pub struct PlayerPlugin;
+
+impl Plugin for PlayerPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Startup, spawn_player);
+    }
+}
+```
+
+## Layout choices
+
+| Need | Bevy idiom |
 | --- | --- |
-| New project | `cargo new` plus the `bevy` dependency |
-| Engine module toggles | Cargo features and profiles on the `bevy` crate |
-| Feature folders | Rust modules you choose. Not a scene tree |
-| Editor project file | Check the docs before adding a project manifest beside `Cargo.toml`. |
+| New crate | `cargo new` plus the `bevy` dependency |
+| Window, input, rendering | Cargo features and profiles on the `bevy` crate |
+| Feature split | Rust modules you choose |
+| Project file | `Cargo.toml` plus Rust modules |
 
 ## Scope
 
-- Getting Started still shows `bevy = "0.19"` and a `v0.19.0` checkout example. Pin **0.20.0** from crates.io and docs.rs, not from that snippet.
-- OS window, audio, and input dependencies are mentioned as a Setup page. Check that page for package names before writing them.
-- Workspace members, feature-folder enforcement, and naming linters are not on these pages.
+- Pin `bevy = "0.20"` in `Cargo.toml`. `DefaultPlugins` brings the window, input, and audio backends that crate feature enables.
+- Workspace members and naming linters are ordinary Cargo. This skill does not invent a folder enforcer.
 
 ## Expert Knowledge Delta
 
@@ -53,7 +127,7 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A free-floating struct outside the `World` |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
@@ -68,32 +142,29 @@ Load [references/ecs-ownership.md](project-foundations-ecs-ownership.md) for the
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot project types, scenes, or autoloads in this crate. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
-- No invented Cargo features beyond the profiles and collections on docs.rs. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No scene-tree project types or autoload singletons in this crate. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No invented Cargo features beyond the profiles this skill names. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 - No third-party crates. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20**.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/)  -  Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/)  -  Profiles, collections, and Cargo features (0.20.0).
-- [Getting started](https://bevy.org/learn/quick-start/getting-started/)  -  `cargo new` / `cargo add bevy`. The version snippet is stale.
+- [Getting started](https://bevy.org/learn/quick-start/getting-started/)  -  `cargo new` / `cargo add bevy`.
 - [Apps](https://bevy.org/learn/quick-start/getting-started/apps/)  -  `App::new()`, `World`, and `Schedule`.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples)  -  Example tree on the `latest` branch.
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Library pin and which Bevy skill to load next.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Library pin and which Bevy skill to load next.
 
 #### Complements
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md)  -  Entities, components, and systems after the crate exists.
-- [godot-project-foundations](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-project-foundations/SKILL.md)  -  Equivalent Godot skill. Do not import Godot types.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md)  -  Entities, components, and systems after the crate exists.
 
 #### Downstream / consumers
-- [bevy-app-resources](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-app-resources/SKILL.md)  -  App-wide resources once the `App` exists.
+- [bevy-app-resources](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-app-resources/SKILL.md)  -  App-wide resources once the `App` exists.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.

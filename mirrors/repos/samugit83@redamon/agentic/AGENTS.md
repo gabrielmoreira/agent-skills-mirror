@@ -17,12 +17,14 @@ When performing these actions, ALWAYS invoke the corresponding skill FIRST:
 | Adding or editing an MCP server the agent uses | `agentic-tool-integration` |
 | Adding or integrating an LLM provider | `llm-provider-integration` |
 | Changing how a triage score, review or verdict is computed or written | `priority-board-triage` |
+| Changing how plugin services, networks or the plugins overlay are started by redamon.sh or compose | `plugin-platform` |
 | Changing or adding a project setting or default value | `project-settings-cascade` |
 | Editing a Prisma @default, a Python settings default, or the /defaults endpoint | `project-settings-cascade` |
 | Editing agent skill classification, phase injection, or the attack-skill UI | `builtin-agent-skill` |
 | Editing model-id routing or provider credential handling | `llm-provider-integration` |
 | Editing the Priority Board, the triage graph mixin, or the MCP triage tools | `priority-board-triage` |
 | Editing the agent tool registry, phase map, or PhaseAwareToolExecutor dispatch | `agentic-tool-integration` |
+| Editing the plugin platform: the plugins lib or routes, the plugin runner, or the Gateway | `plugin-platform` |
 
 ---
 
@@ -35,6 +37,20 @@ When performing these actions, ALWAYS invoke the corresponding skill FIRST:
 - **NEVER** give the agent white-box knowledge of a target. RedAmon agents
   operate black-box (no source access to the systems they test); prompts,
   skills, and tools must not assume target internals.
+- **ALWAYS** read user attack skills through `get_enabled_user_skills()`
+  ([project_settings.py](project_settings.py)), never `USER_ATTACK_SKILLS`
+  directly. A skill with no key in `ATTACK_SKILL_CONFIG.user` is OFF (only an
+  explicit `true` enables it, as in the project form), and at most
+  `MAX_ENABLED_USER_SKILLS` (20, first by name then id) are used.
+- **ALWAYS** resolve a `user_skill:<id>` label with `resolve_user_skill()`
+  ([prompts/\_\_init\_\_.py](prompts/__init__.py)). When the label's skill is off,
+  it returns the enabled skill whose `supersedes` lists it. That substitution is
+  render-only: never relabel, `switch_skill`, write Neo4j or reset LATS for it.
+- **ALWAYS** record rendered user-skill text with `record_applied_user()`
+  ([prompts/skill_part_seam.py](prompts/skill_part_seam.py)): `skill_workflow`
+  becomes `{skillId: "user_skill:<id>", kind: "user", contentSha256}` (16 hex of
+  the UTF-8 content's SHA-256) with **no `revision` key**, so every reader takes
+  `revision` with a default.
 
 ---
 
@@ -51,7 +67,11 @@ hot-reload (read-only mounts): `agentic/logs`, `agentic/skills` (Chat Skills),
 ```
 api.py  orchestrator.py  job_runner.py   FastAPI surface + agent loop entrypoints
 orchestrator_helpers/                    agent orchestration helpers
-prompts/                                 system + tool prompts
+prompts/                                 system + tool prompts; prompts/skill_parts.py registers the
+                                         built-in skill parts a plugin may override (rule: the
+                                         `builtin-agent-skill` skill, layer 10)
+plugin_api.py                            master-key /plugins/* routes (skill parts, proposal
+                                         validation, plugin model calls); `plugin-platform` skill
 skills/               Chat Skills (volume-mounted, no rebuild)
 community-skills/     Community Agent Skills (volume-mounted, no rebuild)
 cypherfix_triage/  cypherfix_codefix/    CypherFix triage + codefix agents

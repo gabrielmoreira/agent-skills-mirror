@@ -1,11 +1,11 @@
 ---
 name: bevy-genre-survival
-description: "Thin Bevy genre router for Survival. Keywords: Bevy, Survival, genre, ECS, router."
+description: "Bevy ECS skill for survival loops. Keywords: Bevy, survival, hunger, warmth, day clock, crafting, ECS."
 ---
 
-# Bevy Survival (thin router)
+# Bevy survival
 
-Genre router. Domain work lives in the Bevy skills below.
+Vitals, a day clock, and crafting inputs live on components and resources. Stats, item stacks, gathering, and camps stay on the skills linked below.
 
 ## When to use
 
@@ -18,24 +18,163 @@ Load this for vitals, crafting inputs, and a day clock you own.
 - **Systems** read those components on `Update` or the fixed timestep from bevy-master. Order them with `.chain()` when a later system must see the result.
 - **Schedule:** gameplay mode changes go through bevy-state-machines. Do not invent a genre plugin.
 
-## Coming from Godot
+## Ownership
 
-| Godot idea | Bevy idiom |
+| Need | Bevy shape |
 | --- | --- |
-| Genre scene tree | Entities plus the domain skills linked below |
-| Autoload director | A resource, not a singleton node |
-| Signal bus for the loop | bevy-events-messaging |
+| Actors in the genre | Entities plus the domain skills linked below |
+| Run-wide director | A resource |
+| Loop notices | bevy-events-messaging |
 
 ## Routing
 
-- [bevy-rpg-stats](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-rpg-stats/SKILL.md) - Vitals as stats.
-- [bevy-inventory-system](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-inventory-system/SKILL.md) - Items.
-- [bevy-game-loop-harvest](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-game-loop-harvest/SKILL.md) - Gathering.
-- [bevy-3d-world-building](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-3d-world-building/SKILL.md) - Camps.
+- [bevy-rpg-stats](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-rpg-stats/SKILL.md) - Vitals as stats.
+- [bevy-inventory-system](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-inventory-system/SKILL.md) - Items.
+- [bevy-game-loop-harvest](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-game-loop-harvest/SKILL.md) - Gathering.
+- [bevy-3d-world-building](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-3d-world-building/SKILL.md) - Camps.
 
 ## Scope
 
-- No hunger, temperature, or crafting-recipe type exists in Bevy.
+- Hunger, warmth, and the day clock are data you own. Item stacks and camp layout stay on the linked skills.
+
+## Examples
+
+```toml
+[package]
+name = "survival"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.20"
+```
+
+Hunger and warmth drain on the fixed step. Cold hours drain warmth faster. A meal and a fire restore them.
+
+```rust
+#[derive(Component)]
+struct Vitals {
+    hunger: f32,
+    warmth: f32,
+}
+
+#[derive(Resource)]
+struct DayClock {
+    hour: f32,
+    hours_per_day: f32,
+}
+
+fn tick_day(time: Res<Time<Fixed>>, mut clock: ResMut<DayClock>) {
+    let hours = time.delta_secs() * (24.0 / clock.hours_per_day);
+    clock.hour = (clock.hour + hours) % 24.0;
+}
+
+fn drain_vitals(time: Res<Time<Fixed>>, clock: Res<DayClock>, mut people: Query<&mut Vitals>) {
+    let dt = time.delta_secs();
+    let night = clock.hour < 6.0 || clock.hour >= 20.0;
+    let warmth_rate = if night { 2.5 } else { 0.4 };
+    for mut vitals in &mut people {
+        vitals.hunger = (vitals.hunger - 1.2 * dt).max(0.0);
+        vitals.warmth = (vitals.warmth - warmth_rate * dt).max(0.0);
+    }
+}
+
+#[derive(Message)]
+struct Eat {
+    who: Entity,
+    amount: f32,
+}
+
+fn apply_meals(mut meals: MessageReader<Eat>, mut people: Query<&mut Vitals>) {
+    for meal in meals.read() {
+        let Ok(mut vitals) = people.get_mut(meal.who) else {
+            continue;
+        };
+        vitals.hunger = (vitals.hunger + meal.amount).min(100.0);
+    }
+}
+
+pub struct SurvivalPlugin;
+
+impl Plugin for SurvivalPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(DayClock {
+            hour: 8.0,
+            hours_per_day: 480.0,
+        })
+        .add_message::<Eat>()
+        .add_systems(FixedUpdate, (tick_day, drain_vitals, apply_meals).chain());
+    }
+}
+```
+
+A recipe spends named counts from a bag, then writes a crafted stack. The bag is a component so each camp or player carries their own stores.
+
+```rust
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum ItemKind {
+    Wood,
+    Fiber,
+    Bandage,
+}
+
+#[derive(Component, Default)]
+struct Bag {
+    stacks: Vec<(ItemKind, u32)>,
+}
+
+fn count_of(bag: &Bag, kind: ItemKind) -> u32 {
+    bag.stacks
+        .iter()
+        .filter(|(k, _)| *k == kind)
+        .map(|(_, n)| *n)
+        .sum()
+}
+
+fn spend(bag: &mut Bag, kind: ItemKind, mut need: u32) -> bool {
+    if count_of(bag, kind) < need {
+        return false;
+    }
+    for (k, n) in &mut bag.stacks {
+        if *k != kind || need == 0 {
+            continue;
+        }
+        let take = (*n).min(need);
+        *n -= take;
+        need -= take;
+    }
+    bag.stacks.retain(|(_, n)| *n > 0);
+    true
+}
+
+fn craft_bandage(mut bags: Query<&mut Bag>) {
+    for mut bag in &mut bags {
+        if spend(&mut bag, ItemKind::Fiber, 2) {
+            bag.stacks.push((ItemKind::Bandage, 1));
+        }
+    }
+}
+```
+
+Spawn a survivor at dawn with full vitals.
+
+```rust
+#[derive(Component)]
+struct Vitals {
+    hunger: f32,
+    warmth: f32,
+}
+
+fn spawn_survivor(mut commands: Commands) {
+    commands.spawn((
+        Vitals {
+            hunger: 100.0,
+            warmth: 100.0,
+        },
+        Transform::from_xyz(0.0, 0.0, 0.0),
+    ));
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -59,12 +198,12 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A field stored outside a component |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API outside the documented set | Check the official docs first | A made-up crate or API |
+| Hunger, warmth, clock, recipes | Components and resources in the examples | An engine survival module |
 
 Load [references/ecs-ownership.md](genre-survival-ecs-ownership.md) for the ownership table.
 
@@ -74,17 +213,15 @@ Load [references/ecs-ownership.md](genre-survival-ecs-ownership.md) for the owne
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot types in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No types from another engine in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 - No invented genre APIs. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 - Do not pick a physics or net crate here. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+Official links stay on bevy.org. The library pin on bevy-master stays **0.20**.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
@@ -93,18 +230,17 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Spawn and query shape.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Spawn and query shape.
 
 #### Complements
-- [godot-genre-survival](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-genre-survival/SKILL.md) - Equivalent Godot skill.
-- [bevy-rpg-stats](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-rpg-stats/SKILL.md) - Vitals as stats.
-- [bevy-inventory-system](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-inventory-system/SKILL.md) - Items.
-- [bevy-game-loop-harvest](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-game-loop-harvest/SKILL.md) - Gathering.
-- [bevy-3d-world-building](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-3d-world-building/SKILL.md) - Camps.
+- [bevy-rpg-stats](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-rpg-stats/SKILL.md) - Vitals as stats.
+- [bevy-inventory-system](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-inventory-system/SKILL.md) - Items.
+- [bevy-game-loop-harvest](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-game-loop-harvest/SKILL.md) - Gathering.
+- [bevy-3d-world-building](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-3d-world-building/SKILL.md) - Camps.
 
 #### Downstream / consumers
 - None. This router does not own a second implementation.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `KAN-H/llama-cpp-windows-deployment-skill` — 26 default patterns, 5 followed patterns, 6 file(s) materialized.
+Mirror of `KAN-H/llama-cpp-windows-deployment-skill` — 26 default patterns, 8 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `KAN-H/llama-cpp-windows-deployment-skill` — 26 default patterns, 5 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 5 |
-| Files         | 6 |
+| Followed pats | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,8 +52,11 @@ Mirror of `KAN-H/llama-cpp-windows-deployment-skill` — 26 default patterns, 5 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `references/INDEX.md`
+- `references/guides/first-time-setup.md`
 - `references/sessions/20260803-session-experience.md`
 - `references/sessions/20260816-session-experience.md`
+- `references/guides/qwen38-gsqrco-27b-tuning.md`
+- `scripts/q6-tuning/README.md`
 - `references/guides/20260913-moe-offload-community-research.md`
 - `references/guides/mtp-head-grafting.md`
 
@@ -65,10 +68,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`SKILL.md`](SKILL.md) |
 | 2 | → | [`references/guides/20260913-moe-offload-community-research.md`](references/guides/20260913-moe-offload-community-research.md) |
-| 3 | → | [`references/guides/mtp-head-grafting.md`](references/guides/mtp-head-grafting.md) |
-| 4 | → | [`references/INDEX.md`](references/INDEX.md) |
-| 5 | → | [`references/sessions/20260803-session-experience.md`](references/sessions/20260803-session-experience.md) |
-| 6 | → | [`references/sessions/20260816-session-experience.md`](references/sessions/20260816-session-experience.md) |
+| 3 | → | [`references/guides/first-time-setup.md`](references/guides/first-time-setup.md) |
+| 4 | → | [`references/guides/mtp-head-grafting.md`](references/guides/mtp-head-grafting.md) |
+| 5 | → | [`references/guides/qwen38-gsqrco-27b-tuning.md`](references/guides/qwen38-gsqrco-27b-tuning.md) |
+| 6 | → | [`references/INDEX.md`](references/INDEX.md) |
+| 7 | → | [`references/sessions/20260803-session-experience.md`](references/sessions/20260803-session-experience.md) |
+| 8 | → | [`references/sessions/20260816-session-experience.md`](references/sessions/20260816-session-experience.md) |
+| 9 | → | [`scripts/q6-tuning/README.md`](scripts/q6-tuning/README.md) |
 
 ---
 

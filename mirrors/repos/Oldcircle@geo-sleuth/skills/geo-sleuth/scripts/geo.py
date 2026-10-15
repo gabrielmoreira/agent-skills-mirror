@@ -545,12 +545,32 @@ def _spacing_line(path: str, name: str | None, index: int):
     return pick["coords"], info
 
 
+def _spacing_frame_note(path: str, d) -> None:
+    """--cols from imgprep.py piers have always been in the upright frame (EXIF orientation applied); a ridge.json
+    without "frame" was written on the stored pixels. The two agree only when the photo has no EXIF orientation."""
+    if not isinstance(d, dict) or "frame" in d or not d.get("photo"):
+        return
+    photo = Path(d["photo"])
+    if not photo.is_file():
+        photo = Path(path).parent / photo
+    try:
+        from _image import open_image, orientation  # noqa: PLC0415 — pillow only when a ridge file is given
+        o = orientation(open_image(photo, load=False))
+    except Exception:  # noqa: BLE001 — the photo is only consulted for this note
+        return
+    if o != 1:
+        print(f"warning: {path} has no \"frame\": \"upright\": its ridge points are in the stored frame of {photo} (EXIF orientation {o}), "
+              f"while --cols from imgprep.py piers are in the upright frame. Re-run terrain.py ridge so both are in the same frame.",
+              file=sys.stderr)
+
+
 def _spacing_ridge(path: str) -> dict:
     """Read the output of terrain.py ridge {"ridge": [[x,y]…], "flat": [x0,x1], "hrow":…, "f0":…}.
 
     Also recognizes two handwritten formats: {"760": 826, …} (column → ridgeline row) and a bare [[x,y]…]."""
     with open(path, encoding="utf-8") as fh:
         d = json.load(fh)
+    _spacing_frame_note(path, d)
     out = {"flat": None, "hrow": None, "f0": None}
     if isinstance(d, list):
         pts = d

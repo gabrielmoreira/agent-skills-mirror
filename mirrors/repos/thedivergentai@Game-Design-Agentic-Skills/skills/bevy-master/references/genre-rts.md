@@ -1,6 +1,6 @@
 ---
 name: bevy-genre-rts
-description: "Thin Bevy genre router for RTS. Keywords: Bevy, RTS, genre, ECS, router."
+description: "Route a Bevy 0.20 RTS. Use when selection and move orders are components, a control group is one resource, and marching runs after the order write in one chain. Keywords: Bevy, RTS, Selected, MoveOrder, ControlGroup, chain, genre."
 ---
 
 # Bevy RTS (thin router)
@@ -18,24 +18,156 @@ Load this for selection, orders, and groups.
 - **Systems** read those components on `Update` or the fixed timestep from bevy-master. Order them with `.chain()` when a later system must see the result.
 - **Schedule:** gameplay mode changes go through bevy-state-machines. Do not invent a genre plugin.
 
-## Coming from Godot
-
-| Godot idea | Bevy idiom |
-| --- | --- |
-| Genre scene tree | Entities plus the domain skills linked below |
-| Autoload director | A resource, not a singleton node |
-| Signal bus for the loop | bevy-events-messaging |
-
 ## Routing
 
-- [bevy-input-handling](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Selection clicks.
-- [bevy-ai-navigation](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ai-navigation/SKILL.md) - Move orders and navigation.
-- [bevy-combat-system](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-combat-system/SKILL.md) - Attacks.
-- [bevy-economy-system](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-economy-system/SKILL.md) - Costs.
+- [bevy-input-handling](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Selection clicks.
+- [bevy-ai-navigation](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ai-navigation/SKILL.md) - Move orders and navigation.
+- [bevy-combat-system](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-combat-system/SKILL.md) - Attacks.
+- [bevy-economy-system](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-economy-system/SKILL.md) - Costs.
 
 ## Scope
 
-- No selection box or formation type was opened.
+Selection, move orders, and control groups are components and one resource. Pathfinding stays on bevy-ai-navigation.
+
+## Examples
+
+```toml
+[package]
+name = "rts"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.20"
+```
+
+`Selected` marks the current group. A move order is a target point. March runs after the order is written.
+
+```rust
+#[derive(Component)]
+struct Selected;
+
+#[derive(Component)]
+struct MoveOrder {
+    target: Vec3,
+}
+
+fn issue_move(keys: Res<ButtonInput<KeyCode>>, mut units: Query<&mut MoveOrder, With<Selected>>) {
+    if !keys.just_pressed(KeyCode::KeyM) {
+        return;
+    }
+    for mut order in &mut units {
+        order.target = Vec3::new(12.0, 0.0, 6.0);
+    }
+}
+
+fn march(time: Res<Time<Fixed>>, mut units: Query<(&MoveOrder, &mut Transform)>) {
+    let dt = time.delta_secs();
+    for (order, mut transform) in &mut units {
+        let delta = order.target - transform.translation;
+        let step = 6.0 * dt;
+        if delta.length() <= step {
+            transform.translation = order.target;
+        } else {
+            transform.translation += delta.normalize_or_zero() * step;
+        }
+    }
+}
+
+pub struct OrderPlugin;
+
+impl Plugin for OrderPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(FixedUpdate, (issue_move, march).chain());
+    }
+}
+```
+
+Number keys store the selected entities on a resource. Pressing the key again clears `Selected` and restores the group.
+
+```rust
+#[derive(Resource, Default)]
+struct ControlGroup {
+    members: Vec<Entity>,
+}
+
+#[derive(Component)]
+struct Selected;
+
+fn bind_group(
+    keys: Res<ButtonInput<KeyCode>>,
+    selected: Query<Entity, With<Selected>>,
+    mut group: ResMut<ControlGroup>,
+    mut commands: Commands,
+) {
+    if keys.just_pressed(KeyCode::Digit1) && keys.pressed(KeyCode::ControlLeft) {
+        group.members.clear();
+        for entity in &selected {
+            group.members.push(entity);
+        }
+        return;
+    }
+    if keys.just_pressed(KeyCode::Digit1) {
+        for entity in &selected {
+            commands.entity(entity).remove::<Selected>();
+        }
+        for entity in group.members.clone() {
+            commands.entity(entity).insert(Selected);
+        }
+    }
+}
+```
+
+Click-select uses a pointer resource filled by another system. Units inside the radius gain `Selected`.
+
+```rust
+#[derive(Resource)]
+struct PointerWorld(Vec3);
+
+#[derive(Component)]
+struct Selectable;
+
+#[derive(Component)]
+struct Selected;
+
+fn click_select(
+    buttons: Res<ButtonInput<MouseButton>>,
+    pointer: Res<PointerWorld>,
+    mut commands: Commands,
+    units: Query<(Entity, &Transform), With<Selectable>>,
+    selected: Query<Entity, With<Selected>>,
+) {
+    if !buttons.just_pressed(MouseButton::Left) {
+        return;
+    }
+    for entity in &selected {
+        commands.entity(entity).remove::<Selected>();
+    }
+    for (entity, transform) in &units {
+        if transform.translation.distance(pointer.0) < 1.5 {
+            commands.entity(entity).insert(Selected);
+        }
+    }
+}
+
+fn spawn_units(mut commands: Commands) {
+    commands.insert_resource(PointerWorld(Vec3::ZERO));
+    for index in 0..4 {
+        commands.spawn((
+            Selectable,
+            MoveOrder {
+                target: Vec3::new(index as f32 * 2.0, 0.0, 0.0),
+            },
+            Transform::from_xyz(index as f32 * 2.0, 0.0, 0.0),
+        ));
+    }
+}
+
+#[derive(Component)]
+struct MoveOrder {
+    target: Vec3,
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -59,12 +191,12 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A scene-tree script |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API outside the documented set | Check the official docs first | A made-up crate or API |
+| Group orders | `Selected` plus `MoveOrder` on each unit, marched in one system | A formation type invented as an engine singleton |
 
 Load [references/ecs-ownership.md](genre-rts-ecs-ownership.md) for the ownership table.
 
@@ -74,17 +206,15 @@ Load [references/ecs-ownership.md](genre-rts-ecs-ownership.md) for the ownership
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot types in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No scene-tree types in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 - No invented genre APIs. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 - Do not pick a physics or net crate here. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20.0**. Official links stay on the unversioned learn pages.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
@@ -93,18 +223,17 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Spawn and query shape.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Spawn and query shape.
 
 #### Complements
-- [godot-genre-rts](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-genre-rts/SKILL.md) - Equivalent Godot skill.
-- [bevy-input-handling](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Selection clicks.
-- [bevy-ai-navigation](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ai-navigation/SKILL.md) - Move orders and navigation.
-- [bevy-combat-system](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-combat-system/SKILL.md) - Attacks.
-- [bevy-economy-system](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-economy-system/SKILL.md) - Costs.
+- [bevy-input-handling](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Selection clicks.
+- [bevy-ai-navigation](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ai-navigation/SKILL.md) - Move orders and navigation.
+- [bevy-combat-system](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-combat-system/SKILL.md) - Attacks.
+- [bevy-economy-system](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-economy-system/SKILL.md) - Costs.
 
 #### Downstream / consumers
 - None. This router does not own a second implementation.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

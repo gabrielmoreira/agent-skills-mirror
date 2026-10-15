@@ -51,7 +51,9 @@ Use Forge when:
 Route elsewhere when:
 - Production hardening or shared-core refactors: `Builder`
 - Production-quality frontend implementation: `Artisan`
-- Complex backend migrations or infrastructure: `Gear`
+- Database schema migrations: `Schema`
+- Framework or library migrations: `Shift`
+- Infrastructure provisioning: `Scaffold`
 - Design token systems or style governance: `Muse`
 - Visual direction without code: `Vision`
 - Pixel-faithful reproduction from an existing mockup/screenshot: `Pixel`
@@ -135,7 +137,7 @@ Behavior notes per Recipe:
 - `api`: MSW v2 handlers or json-server. Set up as a shared source for dev/test. Hand-code security-sensitive logic.
 - `fullstack`: Both UI + mock/server. Validate the hypothesis as a thin slice. Declare each layer's responsibility in SCAFFOLD.
 - `landing`: Single LP page. Factor in separation of duties with Funnel; prioritize CTAs and forms. Pixel-perfect is forbidden.
-- `mobile`: Expo / React Native / Flutter PoC. Stub native capabilities (camera / push / location / biometric) with mock implementations during STRIKE. Prefer device preview (simulator, Expo Go) over real-device builds unless a native API is the actual hypothesis. ≤4h time-box, throwaway-first. Hand off to `Native` for production build when hypothesis survives.
+- `mobile`: Expo / React Native / Flutter PoC. Stub native capabilities (camera / push / location / biometric) with mock implementations during STRIKE. Prefer device preview (simulator, Expo Go) over real-device builds unless a native API is the actual hypothesis. ≤4h time-box, throwaway-first. The PoC is throwaway: when the hypothesis survives, hand off to `Native` for a pure-native production rebuild. Production RN / Flutter has no owner in the roster and needs an external implementer (Nexus routes it as external).
 - `dashboard`: Single dashboard slice (one layout, one set of widgets). Pick one charting library (Recharts for React / ECharts for dense data / Chart.js for simple cases). Seed mock time-series with deterministic generators; skip real backend wiring. Virtualize tables beyond 100 rows. Defer color-token polish — hand off to `Muse` if survived.
 - `ai`: Chat UI, streaming response shell, RAG demo, or agent UI. Use fixture-based mock LLM responses during STRIKE; swap in real API only after the happy path is demoable. Sanitize user prompts and escape rendered markdown to block prompt-injection via rendered output. Budget-check token cost before scaling demo input. Hand off to `Oracle` for real prompt / RAG design when hypothesis survives.
 
@@ -157,7 +159,7 @@ Behavior notes per Recipe:
 - Always state the hypothesis or slice, chosen strategy (Throwaway or Evolutionary), mock strategy, prototype status, test instructions, known debt, known edge cases, next action, and one explicit decision: ADOPT, ITERATE, or DISCARD.
 - Add a screenshot or GIF description when relevant.
 - Builder handoff: include the required artifact set from `reference/builder-integration.md` and a `## BUILDER_HANDOFF` section.
-- Preview-story handoff: use the relevant `FORGE_TO_SHOWCASE` or `ARTISAN_HANDOFF` format from `reference/story-scaffolding.md`.
+- Preview-story handoff: use the relevant `FORGE_TO_VITRINE` or `ARTISAN_HANDOFF` format from `reference/story-scaffolding.md`.
 
 ## Collaboration
 
@@ -171,7 +173,7 @@ Forge receives concepts and direction from upstream agents, builds rapid prototy
 | Lens → Forge | Code insight handoff | Code-level insight informs prototype structure or mock strategy |
 | Forge → Builder | `BUILDER_HANDOFF` | Prototype validated, needs production logic |
 | Forge → Artisan | `ARTISAN_HANDOFF` | Frontend prototype needs production-quality implementation |
-| Forge → Vitrine | `FORGE_TO_SHOWCASE` | Preview story exists, needs full coverage |
+| Forge → Vitrine | `FORGE_TO_VITRINE` | Preview story exists, needs full coverage |
 | Forge → Muse | Style-polish handoff | Functional prototype needs token-driven polish |
 | Forge → Sentinel | Security review request | AI-generated prototype code needs vulnerability scan before handoff |
 

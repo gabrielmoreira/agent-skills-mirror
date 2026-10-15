@@ -101,7 +101,7 @@ Safety rules:
 - Do not silently mutate skills, prompts, AGENTS.md, docs, memory, or catalog data from a distillation result.
 - Do not promote one-off preferences, weak anecdotes, or stale traces into global rules.
 - Keep observed sources, inferred principles, candidate wording, review state, and implementation patches separate.
-- On Hermes, when the destination is the user's own Hermes skills, an approved candidate lands through `skill_manage`: report it landed only from a result that succeeded without `staged: true`, with the matching skill audit ledger entry as its record while the ledger is on, and report a staged write as waiting in `/skills pending` for the person's own `/skills approve <id>` under their `skills.write_approval` setting. OMH-managed `omh-*` skills are generated from OMH's catalog and are never the destination; a lesson about one goes to `workflow-learning`.
+- On Hermes, when the destination is the user's own Hermes skills, an approved candidate lands through `skill_manage`: report it landed only from a result that succeeded without `staged: true`, with the matching skill audit ledger entry as its record while the ledger is on, and report a staged write as waiting in `/skills pending` for the person's own `/skills approve <id>` under their `skills.write_approval` setting. OMH-managed skills are generated from OMH's catalog and are never the destination; a lesson about one goes to `omh-workflow-learning`. An OMH-managed skill is one OMH installed, under a label OMH's catalog renders such as `omh-plan` or `ulw-work`; a companion skill the person or an agent created is theirs, whatever its name.
 
 ## Runtime Evidence
 

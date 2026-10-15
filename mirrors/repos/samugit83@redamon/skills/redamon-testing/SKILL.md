@@ -11,7 +11,7 @@ description: >
 license: MIT
 metadata:
   author: redamon
-  version: "1.0.0"
+  version: "1.1.0"
   scope: [root]
   auto_invoke:
     - "Adding or editing a test file in any section"
@@ -60,7 +60,7 @@ in the root [AGENTS.md](../../AGENTS.md) CRITICAL RULES; this skill is everythin
   it `@pytest.mark.xfail(strict=True, reason=...)` and say so. Tests must not enshrine bugs.
 - **NEVER put a recon test in the root [tests/](../../tests/) folder.** Root
   `tests/` runs in the **agent** image; recon files there must be listed in
-  `_ROOT_RECON_TESTS` at [redamon.sh:4476](../../redamon.sh#L4476) or they run
+  `_ROOT_RECON_TESTS` at [redamon.sh:4898](../../redamon.sh#L4898) or they run
   against the wrong image and fail on imports. New recon tests go in [recon/tests/](../../recon/tests/).
 - **NEVER add a third-party import to a test without checking it is in the section
   image.** Only `pytest`, `pytest-cov`, `pytest-xdist`, `pytest-asyncio`
@@ -107,6 +107,7 @@ unit-named file really is skipped:
 | --- | --- | --- |
 | recon module / tool wrapper | `recon/tests/` | unit |
 | agent graph, nodes, tools, prompts | `agentic/tests/` | unit |
+| plugin runner, worker, proxy, SDK | `services/plugin_runner/tests/` (`plugin_runner` section) | unit |
 | `graph_db`, `knowledge_base`, `supply_chain_*`, `mcp` | root `tests/` | unit |
 | `redamon.sh` / compose / deploy shell logic | `tests/*_test.sh` | bash, **in the gate** (`shell` section) |
 | webapp React/TS | next to the source `*.test.ts(x)` | vitest |
@@ -123,8 +124,12 @@ unit-named file really is skipped:
 ./agentic/run_tests.sh tests/test_foo.py::TestX::test_y   # single node id (already isolated)
 ```
 
-An **unbuilt image is skipped, not failed** - read the section headers before
-trusting "all green".
+A section that **cannot run fails the gate** (`unit`, `all`, `coverage`): an unbuilt
+image, an absent `webapp/node_modules`, or no `tests/*_test.sh` at all. Build the image (for the
+`plugin_runner` section: `docker compose --profile plugins build plugin-runner`), or opt
+out on purpose with `REDAMON_TEST_ALLOW_MISSING=<section>`, which prints `SKIPPED` so
+the hole shows in the log. A new section therefore breaks every session's gate until
+its image exists: build it before adding the section to `_TEST_SECTIONS`.
 
 ---
 
@@ -132,5 +137,5 @@ trusting "all green".
 
 - [docs/readmes/README.TESTING.md](../../docs/readmes/README.TESTING.md) - full testing guide + coverage ratchet
 - [tooling/scripts/pytest_isolated.py](../../tooling/scripts/pytest_isolated.py) - the per-file isolation gate
-- [redamon.sh:4479](../../redamon.sh#L4479) - `_TEST_SECTIONS`, section/image map, shell + webapp hooks
+- [redamon.sh:4901](../../redamon.sh#L4901) - `_TEST_SECTIONS`, section/image map, shell + webapp hooks
 - Related: root [AGENTS.md](../../AGENTS.md) for the host-pytest / Docker-gate rule

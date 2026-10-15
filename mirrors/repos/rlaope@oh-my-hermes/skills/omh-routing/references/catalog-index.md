@@ -101,7 +101,7 @@ Trigger phrases and the role registry live in `references/workflow-registry.md`;
 - `omh-ops-observability-card`: [omh] Tracking cost, tokens, latency, or service health: prepare an operations command-board for wrapper-safe token, cost, latency, run history, queue, failure-mode, external metric-provider, and service-quality evidence boundaries.
 - `omh-ops-review`: [omh] Recurring operating status and blockers: status, risks, blockers, priorities, and follow-ups.
 - `omh-paper-learning`: [omh] Paper or paper PDF to understand: explain a supplied paper or paper/PDF at a selected level while preserving full section coverage and source evidence boundaries.
-- `omh-parallel-tools`: [omh] Parallel tool-call capability in doubt: check version currency and parallel-tool capability status, then apply an update only after diff approval.
+- `omh-parallel-tools`: [omh] Parallel tool-call capability in doubt: report the version and whether MCP parallel tool calls are enabled, then apply the diff for parallel tool calls only after approval; an update only on request.
 - `omh-people-ops`: [omh] Company hiring or HR process to structure: turn hiring and people context into a fair, structured recruiting or people-operations brief.
 - `omh-physical-device-readiness`: [omh] Agent control of a robot, 3D printer, or IoT relay: gate robots, 3D printers, IoT relays, sensors, and lab hardware before trials; use external-connector-readiness for provider or connector adoption and toolbelt-readiness for missing control tools.
 - `omh-plan`: [omh] Software feature or bugfix not yet planned: structured planning before execution.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `eternityspring/shuohao-skills` — 26 default patterns, 0 followed patterns, 79 file(s) materialized.
+Mirror of `eternityspring/shuohao-skills` — 26 default patterns, 0 followed patterns, 91 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `eternityspring/shuohao-skills` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 79 |
+| Files         | 91 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -121,23 +121,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 60 | ✓ | [`skills/novel-script/scripts/novel-script.mjs`](skills/novel-script/scripts/novel-script.mjs) |
 | 61 | ✓ | [`skills/novel-script/scripts/selftest.mjs`](skills/novel-script/scripts/selftest.mjs) |
 | 62 | ✓ | [`skills/novel-script/SKILL.md`](skills/novel-script/SKILL.md) |
-| 63 | ✓ | [`skills/novel-storyboard/assets/report.webp`](skills/novel-storyboard/assets/report.webp) |
-| 64 | ✓ | [`skills/novel-storyboard/README.en.md`](skills/novel-storyboard/README.en.md) |
-| 65 | ✓ | [`skills/novel-storyboard/README.md`](skills/novel-storyboard/README.md) |
-| 66 | ✓ | [`skills/novel-storyboard/references/frame.md`](skills/novel-storyboard/references/frame.md) |
-| 67 | ✓ | [`skills/novel-storyboard/references/h3-prompt.md`](skills/novel-storyboard/references/h3-prompt.md) |
-| 68 | ✓ | [`skills/novel-storyboard/references/report-style.md`](skills/novel-storyboard/references/report-style.md) |
-| 69 | ✓ | [`skills/novel-storyboard/references/schema.md`](skills/novel-storyboard/references/schema.md) |
-| 70 | ✓ | [`skills/novel-storyboard/references/seedance-prompt.md`](skills/novel-storyboard/references/seedance-prompt.md) |
-| 71 | ✓ | [`skills/novel-storyboard/references/shot-writing.md`](skills/novel-storyboard/references/shot-writing.md) |
-| 72 | ✓ | [`skills/novel-storyboard/references/storyboard-pass.md`](skills/novel-storyboard/references/storyboard-pass.md) |
-| 73 | ✓ | [`skills/novel-storyboard/references/test-fixtures/shot-recipes/hands-tell.md`](skills/novel-storyboard/references/test-fixtures/shot-recipes/hands-tell.md) |
-| 74 | ✓ | [`skills/novel-storyboard/references/test-fixtures/shot-recipes/insert-beat.md`](skills/novel-storyboard/references/test-fixtures/shot-recipes/insert-beat.md) |
-| 75 | ✓ | [`skills/novel-storyboard/references/test-fixtures/shot-recipes/ots-shot-reverse.md`](skills/novel-storyboard/references/test-fixtures/shot-recipes/ots-shot-reverse.md) |
-| 76 | ✓ | [`skills/novel-storyboard/references/test-fixtures/upstream/README.md`](skills/novel-storyboard/references/test-fixtures/upstream/README.md) |
-| 77 | ✓ | [`skills/novel-storyboard/scripts/novel-storyboard.mjs`](skills/novel-storyboard/scripts/novel-storyboard.mjs) |
-| 78 | ✓ | [`skills/novel-storyboard/scripts/selftest.mjs`](skills/novel-storyboard/scripts/selftest.mjs) |
-| 79 | ✓ | [`skills/novel-storyboard/SKILL.md`](skills/novel-storyboard/SKILL.md) |
+| 63 | ✓ | [`skills/novel-staging/assets/report-en.jpg`](skills/novel-staging/assets/report-en.jpg) |
+| 64 | ✓ | [`skills/novel-staging/assets/report.webp`](skills/novel-staging/assets/report.webp) |
+| 65 | ✓ | [`skills/novel-staging/README.en.md`](skills/novel-staging/README.en.md) |
+| 66 | ✓ | [`skills/novel-staging/README.md`](skills/novel-staging/README.md) |
+| 67 | ✓ | [`skills/novel-staging/references/read-pass.md`](skills/novel-staging/references/read-pass.md) |
+| 68 | ✓ | [`skills/novel-staging/references/report-style.md`](skills/novel-staging/references/report-style.md) |
+| 69 | ✓ | [`skills/novel-staging/references/schema.md`](skills/novel-staging/references/schema.md) |
+| 70 | ✓ | [`skills/novel-staging/references/staging-pass.md`](skills/novel-staging/references/staging-pass.md) |
+| 71 | ✓ | [`skills/novel-staging/references/test-fixtures/upstream/README.md`](skills/novel-staging/references/test-fixtures/upstream/README.md) |
+| 72 | ✓ | [`skills/novel-staging/scripts/novel-staging.mjs`](skills/novel-staging/scripts/novel-staging.mjs) |
+| 73 | ✓ | [`skills/novel-staging/scripts/selftest.mjs`](skills/novel-staging/scripts/selftest.mjs) |
+| 74 | ✓ | [`skills/novel-staging/SKILL.md`](skills/novel-staging/SKILL.md) |
+| 75 | ✓ | [`skills/novel-storyboard/assets/report.webp`](skills/novel-storyboard/assets/report.webp) |
+| 76 | ✓ | [`skills/novel-storyboard/README.en.md`](skills/novel-storyboard/README.en.md) |
+| 77 | ✓ | [`skills/novel-storyboard/README.md`](skills/novel-storyboard/README.md) |
+| 78 | ✓ | [`skills/novel-storyboard/references/frame.md`](skills/novel-storyboard/references/frame.md) |
+| 79 | ✓ | [`skills/novel-storyboard/references/h3-prompt.md`](skills/novel-storyboard/references/h3-prompt.md) |
+| 80 | ✓ | [`skills/novel-storyboard/references/report-style.md`](skills/novel-storyboard/references/report-style.md) |
+| 81 | ✓ | [`skills/novel-storyboard/references/schema.md`](skills/novel-storyboard/references/schema.md) |
+| 82 | ✓ | [`skills/novel-storyboard/references/seedance-prompt.md`](skills/novel-storyboard/references/seedance-prompt.md) |
+| 83 | ✓ | [`skills/novel-storyboard/references/shot-writing.md`](skills/novel-storyboard/references/shot-writing.md) |
+| 84 | ✓ | [`skills/novel-storyboard/references/storyboard-pass.md`](skills/novel-storyboard/references/storyboard-pass.md) |
+| 85 | ✓ | [`skills/novel-storyboard/references/test-fixtures/shot-recipes/hands-tell.md`](skills/novel-storyboard/references/test-fixtures/shot-recipes/hands-tell.md) |
+| 86 | ✓ | [`skills/novel-storyboard/references/test-fixtures/shot-recipes/insert-beat.md`](skills/novel-storyboard/references/test-fixtures/shot-recipes/insert-beat.md) |
+| 87 | ✓ | [`skills/novel-storyboard/references/test-fixtures/shot-recipes/ots-shot-reverse.md`](skills/novel-storyboard/references/test-fixtures/shot-recipes/ots-shot-reverse.md) |
+| 88 | ✓ | [`skills/novel-storyboard/references/test-fixtures/upstream/README.md`](skills/novel-storyboard/references/test-fixtures/upstream/README.md) |
+| 89 | ✓ | [`skills/novel-storyboard/scripts/novel-storyboard.mjs`](skills/novel-storyboard/scripts/novel-storyboard.mjs) |
+| 90 | ✓ | [`skills/novel-storyboard/scripts/selftest.mjs`](skills/novel-storyboard/scripts/selftest.mjs) |
+| 91 | ✓ | [`skills/novel-storyboard/SKILL.md`](skills/novel-storyboard/SKILL.md) |
 
 ---
 

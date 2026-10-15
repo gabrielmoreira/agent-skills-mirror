@@ -15,13 +15,25 @@ compatibility: Designed for Claude Code or similar AI coding agents working on G
 allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(gofmt:*) Bash(golangci-lint:*)
 metadata:
   author: eduardo-sl
-  version: "1.3.1"
+  version: "1.4.1"
 ---
 
 # Go Coding Standards
 
 Idiomatic Go conventions grounded in Effective Go, Go Code Review Comments, and production-proven idioms.
 All code MUST pass `goimports`, `go vet`, and `staticcheck` (or `golangci-lint run`) without errors.
+
+> Community default. A project skill or agent-config rule that explicitly
+> supersedes `go-coding-standards` takes precedence over this one.
+
+Detailed reference material, loaded on demand:
+
+- `references/file-organization.md` — declaration grouping, file order,
+  breaking long signatures.
+- `references/receivers-and-tags.md` — receiver consistency and struct tag
+  examples.
+
+Read a reference file only when the summary below is not enough.
 
 ## 1. Import Ordering
 
@@ -32,11 +44,11 @@ import (
     // 1. Standard library
     "context"
     "fmt"
+    "log/slog"
     "net/http"
 
     // 2. External packages
     "github.com/gorilla/mux"
-    "log/slog"
 
     // 3. Internal/project packages
     "github.com/myorg/myproject/internal/service"
@@ -95,107 +107,53 @@ name := getUserName()
 
 ## 4. Struct Initialization
 
-ALWAYS use field names. Never rely on positional initialization:
+ALWAYS use field names, and omit zero-value fields unless they carry
+meaning — positional literals break silently when fields are added or
+reordered:
 
 ```go
 // ✅ Good
-user := User{
-    Name:  "Alice",
-    Email: "alice@example.com",
-    Age:   30,
-}
+user := User{Name: "Alice", Email: "alice@example.com"}
 
-// ❌ Bad — positional, breaks on field reordering
-user := User{"Alice", "alice@example.com", 30}
-```
-
-Omit zero-value fields unless clarity requires them:
-
-```go
-// ✅ Good — zero values omitted
-user := User{
-    Name: "Alice",
-}
+// ❌ Bad — positional
+user := User{"Alice", "alice@example.com", 0}
 ```
 
 ## 5. Reduce Nesting
 
-Handle errors and special cases first with early returns. Reduce indentation levels:
+Handle errors and special cases first with early returns, so the happy
+path stays at the left margin. Drop an `else` whose `if` already returns,
+and prefer assign-default-then-override:
 
 ```go
-// ✅ Good — early return
-func process(data []Item) error {
-    for _, v := range data {
-        if !v.IsValid() {
-            log.Printf("invalid item: %v", v)
-            continue
-        }
-
-        if err := v.Process(); err != nil {
-            return err
-        }
-
-        v.Send()
+// ✅ Good — guard clauses; no else
+for _, v := range data {
+    if !v.IsValid() {
+        continue
     }
-    return nil
-}
-```
-
-Eliminate unnecessary `else` blocks:
-
-```go
-// ✅ Good
-a := 10
-if condition {
-    a = 20
+    if err := v.Process(); err != nil {
+        return fmt.Errorf("process %s: %w", v.ID, err)
+    }
 }
 
-// ❌ Bad
-var a int
+a := 10 // default, then override
 if condition {
     a = 20
-} else {
-    a = 10
 }
 ```
 
 ## 6. Grouping and Ordering
 
-Group related declarations:
-
-```go
-const (
-    _defaultPort    = 8080
-    _defaultTimeout = 30 * time.Second
-)
-
-var (
-    _validTypes  = map[string]bool{"json": true, "xml": true}
-    _defaultUser = User{Name: "guest"}
-)
-```
-
-Function ordering within a file:
-1. Constants and variables
-2. `New()` / constructor functions
-3. Exported methods (sorted by importance, not alphabetically)
-4. Unexported methods
-5. Helper functions
-
-Receiver methods should appear immediately after the type declaration.
+- Group related `const` and `var` declarations in one parenthesized block.
+- File order: constants and variables, constructors, exported methods
+  (by importance, not alphabetically), unexported methods, helpers.
+- Methods sit directly after the type they belong to.
 
 ## 7. Line Length
 
-Soft limit of 99 characters. Break long function signatures:
-
-```go
-func (s *Store) CreateUser(
-    ctx context.Context,
-    name string,
-    email string,
-    opts ...CreateOption,
-) (*User, error) {
-```
+Soft limit of 99 characters. Break a long signature one parameter per
+line, closing parenthesis on its own line. Examples:
+`references/file-organization.md`.
 
 ## 8. Defer Usage
 
@@ -207,14 +165,15 @@ defer mu.Unlock()
 
 f, err := os.Open(path)
 if err != nil {
-    return err
+    return fmt.Errorf("open %s: %w", path, err)
 }
-defer f.Close()
+defer f.Close() // read-only; check Close errors on files you write
 ```
 
 ## 9. Enums
 
-Start enums at 1 (or use explicit sentinel) so zero-value signals "unset":
+Reserve the zero value for an explicit `Unknown` sentinel, so a value that
+was never set cannot pass for a real state:
 
 ```go
 type Status int
@@ -230,7 +189,8 @@ const (
 
 - Use `time.Duration` for durations, NOT raw integers.
 - Use `time.Time` for instants. Use `time.Since(start)` instead of `time.Now().Sub(start)`.
-- External APIs: accept `int` or `float64` and convert internally.
+- When a format cannot carry a `time.Duration` (JSON, YAML), put the unit
+  in the field name — `TimeoutSeconds int` — and convert at the edge.
 
 ```go
 // ✅ Good
@@ -244,66 +204,37 @@ poll(10)
 
 ## 11. Receivers
 
-Pick one receiver kind per type and use it for every method on that type.
-A type with both value and pointer methods has a method set that changes
-depending on how it is held, which is a bug waiting to happen.
-
-Use a **pointer receiver** when any of these hold — and then use it everywhere:
-
-- A method mutates the receiver
-- The struct contains a `sync.Mutex` or any other field that must not be copied
-- The struct is large enough that copying it per call is measurable
-- Any other method on the type already needs a pointer receiver
-
-Use a **value receiver** for small immutable types: `time.Time`-like value
-objects, enums, and types whose methods only read.
-
-```go
-// ✅ Consistent — every method on *Buffer takes a pointer
-func (b *Buffer) Write(p []byte) (int, error) { ... }
-func (b *Buffer) Len() int                     { ... }
-
-// ❌ Mixed — Len() on a value copies the mutex
-func (b *Buffer) Write(p []byte) (int, error) { ... }
-func (b Buffer) Len() int                      { ... }
-```
-
-Name the receiver one or two letters after the type (`s *Server`, `b *Buffer`).
-Never `this` or `self`. Keep the same name across every method on the type.
+Pick one receiver kind per type and use it on every method — a mixed
+method set changes with how the value is held. Use a pointer receiver if
+any method mutates, the struct holds a `sync.Mutex` or other no-copy
+field, the struct is large, or another method already needs a pointer.
+Use a value receiver for small immutable types. Name the receiver one or
+two letters after the type (`s *Server`), the same on every method, never
+`this` or `self`. Examples: `references/receivers-and-tags.md`.
 
 ## 12. Struct Tags
 
-Tags are strings the compiler does not check. A typo is silent.
+The compiler does not check tags, so a typo is silent.
 
-```go
-// ✅ Good — backticks, no spaces after commas, explicit names
-type User struct {
-    ID        string    `json:"id" db:"id"`
-    Email     string    `json:"email" db:"email" validate:"required,email"`
-    CreatedAt time.Time `json:"created_at" db:"created_at"`
-    password  string    `json:"-"` // never serialised
-}
+- Tag every field of a type that crosses a serialization boundary, even
+  when the name already matches.
+- `json:"-"` for anything that must never leave the process — an
+  unexported field is skipped silently, which reads as an oversight.
+- `omitempty` cannot tell "absent" from "zero"; use a pointer or wrapper
+  when that distinction matters. `omitempty` never omits a struct — use
+  `omitzero` (Go 1.24+), which honors the Go zero value and `IsZero()`, for
+  fields like `time.Time`.
+- Run `go vet` — its `structtag` check catches malformed tags.
 
-// ❌ Bad
-type User struct {
-    ID    string `json: "id"`        // space after the colon: tag is ignored
-    Email string `json:"email,"`     // trailing comma
-    Token string                     // no tag: marshals as "Token"
-}
-```
+## 13. Function Shape
 
-Rules:
-
-- Tag every field of a type that crosses a serialisation boundary, including
-  the ones whose name would happen to match.
-- Use `json:"-"` for anything that must never leave the process. Do not rely
-  on a field being unexported — an unexported field is skipped by
-  `encoding/json` silently, which reads as an oversight rather than intent.
-- `omitempty` omits zero values, so it cannot distinguish "absent" from
-  "explicitly zero". Use a pointer or a wrapper type when that distinction
-  carries meaning.
-- `go vet` includes a `structtag` check. Run it — it catches the malformed
-  cases above.
+- Name the parts of a condition with three or more operands (`isOwner`,
+  `isAdmin`) so the `if` reads as the business rule.
+- `ctx context.Context` first, then inputs, then options.
+- More than about four parameters, or several of one type next to each
+  other, means an options struct or functional options — the
+  go-design-patterns skill owns both.
+- Naked returns only in functions short enough to see every return value.
 
 ## Verification Checklist
 

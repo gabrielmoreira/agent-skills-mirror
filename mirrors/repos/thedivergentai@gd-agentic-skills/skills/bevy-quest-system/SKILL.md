@@ -1,6 +1,6 @@
 ---
 name: bevy-quest-system
-description: "Bevy ECS skill for quests. Keywords: Bevy, quest, objective, ECS, state."
+description: "Track Bevy 0.20 quest definitions in a Resource and per-party progress in a Component, advanced by Messages. Use when objectives must change stage without inventing a quest crate. Keywords: Bevy, quest, objective, QuestProgress, Message, ECS."
 ---
 
 # Bevy quest system
@@ -12,21 +12,189 @@ Load this when objectives advance. Dialogue that grants them stays on bevy-dialo
 ## ECS shape
 
 - **Components:** quest id and stage you define.
-- **Resources:** run-wide tables live in a resource (bevy-data-resources), not an autoload.
+- **Resources:** run-wide tables live in a `Resource` (bevy-data-resources).
 - **Systems:** mutate those components on `Update` or the fixed timestep. Use `.chain()` when damage must land before death.
 - **Messages:** one-shot facts (hit, pickup, quest advance) go through bevy-events-messaging. This file does not add a new event type name.
 
-## Coming from Godot
+## Where a quest lives
 
-| Godot idea | Bevy idiom |
+| Fact | Owner |
 | --- | --- |
-| Quest row | Id plus stage in a resource. |
-| Objective count | A number you increment from a message. |
-| Complete | A stage change. Rewards go through inventory or economy skills. |
+| Definition | Id plus objectives in `QuestCatalog`. |
+| Objective count | A number incremented from a `Message`. |
+| Complete | A stage change on `QuestProgress`. Rewards go through inventory or economy skills. |
 
 ## Scope
 
-- Quest, objective, and journal data are yours to build as components.
+- A quest definition is a `Resource` table. Runtime progress is a `Component` on the party entity.
+- One system writes stage changes. Completion grants stay as data another skill reads.
+
+## Examples
+
+```toml
+[dependencies]
+bevy = "0.20"
+```
+
+Definitions live in one resource. The party entity stores which quests are active and how far each objective has counted.
+
+```rust
+#[derive(Clone, Copy, PartialEq, Eq, Hash)]
+struct QuestId(u32);
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum QuestStage {
+    Inactive,
+    Active,
+    Complete,
+}
+
+#[derive(Clone, Copy)]
+struct ObjectiveDef {
+    id: u32,
+    required: u32,
+}
+
+struct QuestDef {
+    id: QuestId,
+    objectives: Vec<ObjectiveDef>,
+}
+
+#[derive(Resource)]
+struct QuestCatalog {
+    quests: Vec<QuestDef>,
+}
+
+#[derive(Clone, Copy)]
+struct ObjectiveProgress {
+    id: u32,
+    count: u32,
+}
+
+#[derive(Component)]
+struct QuestProgress {
+    quest: QuestId,
+    stage: QuestStage,
+    objectives: Vec<ObjectiveProgress>,
+}
+
+fn accept(catalog: Res<QuestCatalog>, mut commands: Commands, party: Query<Entity, Without<QuestProgress>>) {
+    let Some(def) = catalog.quests.first() else {
+        return;
+    };
+    for entity in &party {
+        commands.entity(entity).insert(QuestProgress {
+            quest: def.id,
+            stage: QuestStage::Active,
+            objectives: def
+                .objectives
+                .iter()
+                .map(|objective| ObjectiveProgress {
+                    id: objective.id,
+                    count: 0,
+                })
+                .collect(),
+        });
+    }
+}
+```
+
+A pickup or kill is a message. The quest system is the only writer of `QuestProgress`.
+
+```rust
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum QuestStage {
+    Active,
+    Complete,
+}
+
+#[derive(Component)]
+struct QuestProgress {
+    stage: QuestStage,
+    objective: u32,
+    count: u32,
+    required: u32,
+}
+
+#[derive(Message)]
+struct ObjectiveFact {
+    objective: u32,
+}
+
+fn apply_facts(mut facts: MessageReader<ObjectiveFact>, mut quests: Query<&mut QuestProgress>) {
+    for fact in facts.read() {
+        for mut quest in &mut quests {
+            if quest.stage != QuestStage::Active || quest.objective != fact.objective {
+                continue;
+            }
+            quest.count = (quest.count + 1).min(quest.required);
+            if quest.count >= quest.required {
+                quest.stage = QuestStage::Complete;
+            }
+        }
+    }
+}
+```
+
+Register the message, accept on startup, then apply facts. One system writes `QuestProgress`. A completed stage is the reward payload other skills read.
+
+```rust
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum QuestStage {
+    Active,
+    Complete,
+}
+
+#[derive(Component)]
+struct QuestProgress {
+    stage: QuestStage,
+    objective: u32,
+    count: u32,
+    required: u32,
+}
+
+#[derive(Message)]
+struct ObjectiveFact {
+    objective: u32,
+}
+
+#[derive(Resource, Default)]
+struct QuestCatalog;
+
+fn accept(mut commands: Commands) {
+    commands.spawn(QuestProgress {
+        stage: QuestStage::Active,
+        objective: 1,
+        count: 0,
+        required: 3,
+    });
+}
+
+fn apply_facts(mut facts: MessageReader<ObjectiveFact>, mut quests: Query<&mut QuestProgress>) {
+    for fact in facts.read() {
+        for mut quest in &mut quests {
+            if quest.stage != QuestStage::Active || quest.objective != fact.objective {
+                continue;
+            }
+            quest.count = (quest.count + 1).min(quest.required);
+            if quest.count >= quest.required {
+                quest.stage = QuestStage::Complete;
+            }
+        }
+    }
+}
+
+pub struct QuestPlugin;
+
+impl Plugin for QuestPlugin {
+    fn build(&self, app: &mut App) {
+        app.init_resource::<QuestCatalog>()
+            .add_message::<ObjectiveFact>()
+            .add_systems(Startup, accept)
+            .add_systems(Update, apply_facts);
+    }
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -50,12 +218,14 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A field stored outside the world |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
+| Quest definitions | `QuestCatalog` | Copying progress counts back into the catalog |
+| Stage change | The one `Update` system that reads `MessageReader<ObjectiveFact>` | A dialogue system writing `QuestProgress` |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API outside the documented set | Check the official docs first | A made-up crate or API |
+| An API outside the documented set | Check the official documentation | A made-up crate or API |
 
 Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownership table.
 
@@ -65,18 +235,15 @@ Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownershi
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot node, resource, or signal types for this mechanic. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
-
-- No Godot types in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
-- No invented APIs or unnamed third-party crates as the chosen solver. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- Do not keep a second writer of `QuestProgress`. WHY: two mutable queries of the same component race unless `.chain()` orders them.
+- Do not import another engine's node or signal types. WHY: quest stage is a component and a message, not a foreign object.
+- No invented APIs or unnamed third-party crates as the chosen solver. WHY: this skill only names documented Bevy crates and modules.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+Official links stay on unversioned `latest` pages. The library pin on bevy-master stays **0.20.0**.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
@@ -85,18 +252,18 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
-- [bevy-dialogue-system](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-dialogue-system/SKILL.md) - Lines that grant quests.
-- [bevy-data-resources](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md) - Tables and definitions.
-- [bevy-events-messaging](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-events-messaging/SKILL.md) - One-shot facts.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
+- [bevy-dialogue-system](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-dialogue-system/SKILL.md) - Lines that grant quests.
+- [bevy-data-resources](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md) - Tables and definitions.
+- [bevy-events-messaging](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-events-messaging/SKILL.md) - One-shot facts.
 
 #### Complements
-- [bevy-state-machines](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Mode flags.
-- [godot-quest-system](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-quest-system/SKILL.md) - Equivalent Godot skill.
+- [bevy-state-machines](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Mode flags.
+- [godot-quest-system](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-quest-system/SKILL.md) - Godot package for quest tracking.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

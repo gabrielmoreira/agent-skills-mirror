@@ -1,22 +1,22 @@
 ---
 name: go-api-design
 description: >
-  REST and gRPC API design patterns for Go services. Covers HTTP handlers,
-  middleware, routing, request/response patterns, versioning, pagination,
-  graceful shutdown, and OpenAPI documentation. Use when designing APIs,
-  writing HTTP handlers, implementing middleware, structuring REST
-  endpoints, or setting up gRPC services. Trigger examples: "design API",
-  "REST endpoints", "HTTP handler", "middleware pattern", "graceful
-  shutdown", "gRPC service", "API versioning".
-  Not for: general architecture (go-architecture-review), concurrency in
-  handlers (go-concurrency-review).
+  HTTP/REST API design for Go services: handlers, ServeMux routing,
+  middleware, request validation, pagination, idempotency, health checks,
+  error responses, and graceful shutdown. Use when designing APIs, writing
+  HTTP handlers, implementing middleware, or structuring REST endpoints.
+  Trigger examples: "design API", "REST endpoints", "HTTP handler",
+  "middleware pattern", "graceful shutdown", "API versioning".
+  Not for: gRPC services (go-grpc), spec-first OpenAPI work (go-openapi),
+  general architecture (go-architecture-review), concurrency in handlers
+  (go-concurrency-review).
 user-invocable: true
 license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents working on Go projects. Requires the Go toolchain.
 allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(gofmt:*)
 metadata:
   author: eduardo-sl
-  version: "1.1.1"
+  version: "2.0.1"
 ---
 
 # Go API Design
@@ -24,110 +24,33 @@ metadata:
 APIs are contracts. Once published, they're promises. Design them as if
 you'll maintain them for a decade — because you probably will.
 
+> Community default. A project skill or agent-config rule that explicitly
+> supersedes `go-api-design` takes precedence over this one.
+
+Detailed reference material, loaded on demand:
+
+- `references/handlers-and-middleware.md` — handler structs, JSON response
+  helpers, request ID and recoverer middleware, decode-and-validate.
+
+Read a reference file only when the summary below is not enough.
+
 ## 1. HTTP Handler Structure
 
-### Use the standard `http.Handler` interface:
-
-```go
-// ✅ Good — method on a struct with dependencies
-type UserHandler struct {
-    store  UserStore
-    logger *slog.Logger
-}
-
-func (h *UserHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-    switch r.Method {
-    case http.MethodGet:
-        h.handleGet(w, r)
-    case http.MethodPost:
-        h.handleCreate(w, r)
-    default:
-        http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
-    }
-}
-```
-
-### Handler function signature pattern:
-
-```go
-// Handler methods return nothing — they write directly to ResponseWriter.
-// Errors are handled inside the handler, not returned.
-func (h *UserHandler) handleGet(w http.ResponseWriter, r *http.Request) {
-    ctx := r.Context()
-
-    id := chi.URLParam(r, "id") // or mux.Vars(r)["id"]
-    if id == "" {
-        h.respondError(w, http.StatusBadRequest, "missing user id")
-        return
-    }
-
-    user, err := h.store.GetByID(ctx, id)
-    if err != nil {
-        if errors.Is(err, ErrNotFound) {
-            h.respondError(w, http.StatusNotFound, "user not found")
-            return
-        }
-        h.logger.Error("get user", slog.Any("error", err))
-        h.respondError(w, http.StatusInternalServerError, "internal error")
-        return
-    }
-
-    h.respondJSON(w, http.StatusOK, user)
-}
-```
-
-### JSON response helpers:
-
-```go
-func (h *UserHandler) respondJSON(w http.ResponseWriter, status int, data interface{}) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(status)
-    if err := json.NewEncoder(w).Encode(data); err != nil {
-        h.logger.Error("encode response", slog.Any("error", err))
-    }
-}
-
-func (h *UserHandler) respondError(w http.ResponseWriter, status int, msg string) {
-    h.respondJSON(w, status, map[string]string{"error": msg})
-}
-```
+- Route with the standard `http.ServeMux` (Go 1.22+): `"GET /users/{id}"`
+  patterns match the method, `r.PathValue("id")` reads the wildcard, and a
+  wrong method gets a 405 with `Allow`. A router dependency earns its place
+  for middleware groups and sub-routers, not for path parameters.
+- Handlers are methods on a struct that holds their dependencies (store,
+  logger) — never package globals.
+- Handler methods return nothing: they write the response and handle the
+  error themselves, mapping domain errors (`errors.Is(err, ErrNotFound)`)
+  to status codes and logging only the unexpected ones.
+- Route through one JSON helper that sets `Content-Type`, writes the status
+  once, and logs encode failures.
 
 ## 2. Middleware Pattern
 
-Middleware wraps handlers. Use the standard `func(http.Handler) http.Handler` signature:
-
-```go
-func RequestID(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        id := r.Header.Get("X-Request-ID")
-        if id == "" {
-            id = uuid.New().String()
-        }
-        ctx := context.WithValue(r.Context(), requestIDKey, id)
-        w.Header().Set("X-Request-ID", id)
-        next.ServeHTTP(w, r.WithContext(ctx))
-    })
-}
-
-func Recoverer(logger *slog.Logger) func(http.Handler) http.Handler {
-    return func(next http.Handler) http.Handler {
-        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-            defer func() {
-                if rec := recover(); rec != nil {
-                    logger.Error("panic recovered",
-                        slog.Any("panic", rec),
-                        slog.String("stack", string(debug.Stack())),
-                    )
-                    http.Error(w, "internal server error", http.StatusInternalServerError)
-                }
-            }()
-            next.ServeHTTP(w, r)
-        })
-    }
-}
-```
-
-### Middleware ordering (outside → inside):
+Middleware is `func(http.Handler) http.Handler`. Order, outside → inside:
 
 ```text
 Recoverer → RequestID → Logger → Auth → RateLimit → Handler
@@ -137,31 +60,10 @@ Recover MUST be outermost. Auth before business logic. Logger captures timing.
 
 ## 3. Request Validation
 
-### Decode and validate in one step:
-
-```go
-type CreateUserRequest struct {
-    Name  string `json:"name"  validate:"required,min=2,max=100"`
-    Email string `json:"email" validate:"required,email"`
-}
-
-func decodeAndValidate[T any](r *http.Request) (T, error) {
-    var req T
-    if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-        return req, fmt.Errorf("decode: %w", err)
-    }
-    if err := validate.Struct(req); err != nil {
-        return req, fmt.Errorf("validate: %w", err)
-    }
-    return req, nil
-}
-```
-
-### Limit request body size:
-
-```go
-r.Body = http.MaxBytesReader(w, r.Body, 1<<20) // 1 MB
-```
+- Cap the body before decoding: `r.Body = http.MaxBytesReader(w, r.Body, 1<<20)`.
+- Decode into a typed request struct, then validate it in the same step —
+  a successful decode is not a valid value.
+- Reply `400` with a stable message; never echo the decoder's error text.
 
 ## 4. URL and Naming Conventions
 
@@ -179,7 +81,8 @@ GET    /api/v1/users/{id}/orders → list user orders (nested resource)
 Rules:
 - Plural nouns for resources: `/users`, not `/user`
 - Kebab-case for multi-word paths: `/order-items`
-- camelCase for JSON fields: `"createdAt"`, `"firstName"`
+- One JSON field convention per API, never mixed — camelCase
+  (`"createdAt"`) is the default here; match an existing API if one exists
 - Version in URL path: `/api/v1/...`
 - No verbs in URLs: `/users/search?q=alice`, NOT `/searchUsers`
 
@@ -193,8 +96,8 @@ type PageRequest struct {
 
 type PageResponse[T any] struct {
     Items      []T    `json:"items"`
-    NextCursor string `json:"next_cursor,omitempty"`
-    HasMore    bool   `json:"has_more"`
+    NextCursor string `json:"nextCursor,omitempty"`
+    HasMore    bool   `json:"hasMore"`
 }
 ```
 
@@ -205,48 +108,64 @@ Offset pagination breaks under concurrent writes.
 
 ```go
 func main() {
+    if err := run(context.Background()); err != nil {
+        slog.Error("server stopped", slog.Any("error", err))
+        os.Exit(1)
+    }
+}
+
+func run(ctx context.Context) error {
+    ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
+    defer stop()
+
     srv := &http.Server{
-        Addr:         ":8080",
-        Handler:      router,
-        ReadTimeout:  5 * time.Second,
-        WriteTimeout: 10 * time.Second,
-        IdleTimeout:  120 * time.Second,
+        Addr:              ":8080",
+        Handler:           router,
+        ReadHeaderTimeout: 5 * time.Second, // Slowloris guard
+        ReadTimeout:       10 * time.Second,
+        WriteTimeout:      15 * time.Second,
+        IdleTimeout:       120 * time.Second,
     }
 
-    // Start server
-    go func() {
-        if err := srv.ListenAndServe(); err != http.ErrServerClosed {
-            log.Fatalf("server error: %v", err)
-        }
-    }()
+    errc := make(chan error, 1)
+    go func() { errc <- srv.ListenAndServe() }()
 
-    // Wait for interrupt
-    quit := make(chan os.Signal, 1)
-    signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-    <-quit
+    select {
+    case err := <-errc:
+        return fmt.Errorf("listen: %w", err) // e.g. port already in use
+    case <-ctx.Done():
+    }
 
-    // Graceful shutdown with timeout
-    ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+    // ctx is already cancelled; shutdown needs its own deadline.
+    shutdownCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 30*time.Second)
     defer cancel()
-
-    if err := srv.Shutdown(ctx); err != nil {
-        log.Fatalf("shutdown error: %v", err)
+    if err := srv.Shutdown(shutdownCtx); err != nil {
+        return fmt.Errorf("shutdown: %w", err)
     }
-    log.Println("server stopped gracefully")
+    if err := <-errc; !errors.Is(err, http.ErrServerClosed) {
+        return err
+    }
+    return nil
 }
 ```
 
-Programs should exit only in `main()`, preferably at most once.
+- `ReadHeaderTimeout` is the Slowloris defence: without it a client can
+  hold a connection open by trickling header bytes. `gosec` G112 flags a
+  server that lacks it.
+- Compare `http.ErrServerClosed` with `errors.Is`, never `==`.
+- Exit only from `main`. A `log.Fatal` inside the serving goroutine skips
+  every deferred cleanup, including the shutdown itself.
 
 ## 7. Health Check Endpoints
 
 ```go
-// Liveness: is the process alive?
-// GET /healthz → 200 OK
-
-// Readiness: can the process serve traffic?
-// GET /readyz → 200 OK or 503 Service Unavailable
+// Liveness: is the process alive? GET /healthz → 200, no dependency checks
+// Readiness: should it receive traffic? GET /readyz → 200 or 503
 func (h *HealthHandler) handleReady(w http.ResponseWriter, r *http.Request) {
+    if h.draining.Load() { // atomic.Bool, set when shutdown starts
+        h.respondError(w, http.StatusServiceUnavailable, "shutting down")
+        return
+    }
     if err := h.db.PingContext(r.Context()); err != nil {
         h.respondError(w, http.StatusServiceUnavailable, "database unavailable")
         return
@@ -254,6 +173,12 @@ func (h *HealthHandler) handleReady(w http.ResponseWriter, r *http.Request) {
     h.respondJSON(w, http.StatusOK, map[string]string{"status": "ready"})
 }
 ```
+
+On SIGTERM behind a load balancer: set `draining`, wait one readiness
+period so the balancer stops routing, *then* call `srv.Shutdown`.
+Shutting down first rejects requests the balancer is still sending. Keep
+liveness free of dependency checks — a database outage should not make the
+orchestrator restart every replica.
 
 ## 8. Error Response Format
 
@@ -272,4 +197,16 @@ Consistent error responses across the entire API:
 ```
 
 Map internal errors to HTTP status codes at the handler boundary.
-Internal errors should NEVER leak to clients.
+Internal errors should NEVER leak to clients. For a standard shape, use
+RFC 9457 problem details (`application/problem+json`) — the go-openapi
+skill has the type.
+
+## 9. Idempotency and Browser Clients
+
+- `POST` endpoints that create or charge accept an `Idempotency-Key`
+  header: store key → response for a bounded time, replay the stored
+  response for a repeated key, and reject a concurrent duplicate with 409.
+  Clients and proxies retry; without this, a retry is a double charge.
+- APIs called from browsers with cookies need CSRF protection —
+  `http.CrossOriginProtection` (Go 1.25+); the go-security-audit skill
+  owns the details.

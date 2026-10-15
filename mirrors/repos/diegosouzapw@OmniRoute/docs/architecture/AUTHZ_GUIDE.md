@@ -75,6 +75,21 @@ supplemented:
   login issues (`src/app/api/auth/login/route.ts`), so the rest of the
   dashboard session pipeline (auto-refresh, cookie flags) is unchanged —
   OIDC only replaces how the cookie gets minted, not what it grants.
+- Every `oidc*` setting (`oidcEnabled`, `oidcDisablePasswordLogin`,
+  `oidcIssuer`, `oidcClientId`, `oidcClientSecret`, `oidcAllowedSubjects`,
+  `oidcRedirectPath`, `oidcScopes`) is in `SECURITY_IMPACTING_SETTINGS_KEYS`
+  (`src/shared/constants/securityImpactingSettings.ts`): `PATCH /api/settings`
+  answers `400 PASSWORD_REQUIRED` unless the body carries the management
+  password as `currentPassword` (`401 PASSWORD_MISMATCH` when it is wrong).
+  `oidcDisablePasswordLogin` refuses password _login_ (`POST /api/auth/login`)
+  but keeps the stored password hash, and re-auth still checks
+  `currentPassword` against it.
+- `POST /api/settings/import-json` skips that re-auth, so it drops every key in
+  `IMPORT_STRIPPED_SETTINGS_KEYS` (same file) before writing: the password and
+  `currentPassword`, every `SECURITY_IMPACTING_SETTINGS_KEYS` entry, and the
+  dashboard session state (`sessionsValidAfter`, `revokedDashboardSessions`).
+  Importing an older backup therefore cannot revive a session that a password
+  change or a sign-out already ended.
 
 ## Route Classes
 

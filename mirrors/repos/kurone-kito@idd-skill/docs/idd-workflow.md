@@ -1069,7 +1069,11 @@ Running this variant safely requires:
   equivalent). As starting values an operator may tune — this guide's
   own starting choice, not measured limits — start no new worker while
   the 1-minute load exceeds the core count or the available memory is
-  under 2 GiB; dispatch fewer workers or wait instead. In one
+  under 2 GiB. A `host-load` stop with a readable load and core count is
+  waited out: the orchestrator re-checks every 60 seconds and dispatches once
+  `orchestrator.hostLoadClearStreak` (default 3) consecutive readings have a
+  free slot, stopping at `orchestrator.hostLoadWaitCeiling` (default `PT30M`).
+  A memory stop is not waited out; dispatch fewer workers instead. In one
   orchestrated private downstream adopter's run (reported 2026-09-30,
   kurone-kito/idd-skill#3677), a delegated worker's tool calls stopped
   returning and the runtime ended it (`Agent stalled: no progress for
@@ -1214,6 +1218,57 @@ Running this variant safely requires:
   `gh pr view <n> --json mergeable,mergeStateStatus`) or an orphaned
   claim before dispatching further workers, rather than assuming success
   or failure either way.
+- **Hold marker.** A worker that stops at a hold posts, on the claimed issue,
+  a comment whose first bytes are `<!-- idd-hold: {agent-id} {claim-id}
+  {ISO8601-timestamp} -->`, followed by a short visible note (`_{agent-id}:
+  issue hold — IDD automation marker. Do not edit._`), through the direct JSON
+  `POST` path. `post-idd-marker` has no hold type yet, and the claim parser
+  does not read this marker yet; the orchestrator reads it from the issue
+  comments. The delegation brief must tell the worker to post it when it stops
+  at a hold. A delegated worker posts it after its last `claimed-by` and posts
+  no `claimed-by` while the hold lasts, because the orchestrator owns the hold
+  heartbeat; this is the fan-out exception to the shared Hold / suspend 12 h
+  re-post. A hold marker is trusted only when the actor that posted the active
+  claim's `claimed-by` also posted it, and its agent id and claim id match
+  both the active claim and the claim this session recorded for that roster
+  entry in section 3 step 4, because the ids alone are public. It also needs
+  an explicit GraphQL `lastEditedAt: null`, resolved for each returned comment
+  by node id; an edited marker, or an edit state that cannot be resolved, is
+  ignored, as the claim-family marker edit-state contract in
+  `idd-helper-scripts.md` requires. A held worker is a roster entry that is
+  not `disposed` whose claim has a trusted hold marker newer than its latest
+  valid `claimed-by`, not counting the orchestrator's own renewals of that
+  claim. The hold starts at the earliest such marker's GitHub `created_at`,
+  not its embedded timestamp. The hold ends when the worker posts any other
+  valid `claimed-by` (one the claim parser recognizes as a heartbeat for this
+  claim, so a trusted, unedited comment with the active claim's ids and
+  branch; an anomalous or invalid one is ignored), when the entry is
+  `disposed`, or when the claim is released or superseded. A resumed worker
+  follows the normal report path. A released or superseded claim cannot be
+  renewed, so the orchestrator marks its entry `stalled` and follows the
+  worker-specific recovery, which re-verifies the claim and reports its state
+  to the operator; the entry leaves `--running` only when that recovery
+  disposes of it. A restarted orchestrator cannot tell its earlier renewals
+  apart, so it treats any valid `claimed-by` newer than the marker as ending
+  the hold and renews nothing.
+- **Held-worker renewal.** A held worker, as the hold marker defines, is
+  renewed at the orchestrator's wake-ups in section 4 of its phase file. A
+  worker that completes while held skips the report and disposal of section 5:
+  its entry stays `reporting`, and the renewal runs at those wake-ups. At or
+  after 72 h from the hold start, the claim revalidation gate confirms the
+  active claim is still this claim; the orchestrator then posts `unclaimed-by`
+  for it and records the hold and cap in the run report. Once that succeeds,
+  nothing is appended to the worker report store, because a claim released
+  without a merge or handoff has no terminal phase (Orchestrator restart, step
+  4); the release is reported to the operator, and the entry is then marked
+  `disposed`. Before the cap, each `claimed-by` re-post, due every 12 h from
+  the latest valid one, first has the claim revalidation gate confirm the
+  active claim's agent id and claim id, then copies its `branch` verbatim. A
+  failed heartbeat is retried once; if the retry also fails, the run report
+  records the hold and the failed post, and the claim is left untouched. A
+  failed 72-hour `unclaimed-by` leaves the claim in place, and the run report
+  records that the cap was reached and the release post failed. In both cases
+  the orchestrator posts no second claim id and starts no new claim.
 
 ### Orchestrator restart
 
@@ -1256,7 +1311,7 @@ new id cannot identify its old claims, and step 1 treats them as not its own.
    and is not treated as worktree-less. A readable linked record stays
    authoritative. For a worktree-less claim, take the issue number from the
    worker's brief in the agent listing, or from the issue-number prefix of its
-   report draft in the session scratchpad, and never from a `main` branch. Then
+   report draft in the session scratchpad, and never from the default branch. Then
    read that issue's trusted `claimed-by` and `unclaimed-by` markers for the
    agent-id and claim-id, and apply the same test, so that both the agent id and
    the claim id must match the marker. Also enumerate the candidates for

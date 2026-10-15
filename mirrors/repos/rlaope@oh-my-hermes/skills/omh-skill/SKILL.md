@@ -77,8 +77,8 @@ Quality bar:
 
 - Read skills with Hermes' own tools: `skills_list` to list them and `skill_view` to read a skill or one of its files.
 - Create, edit, or delete a skill of the person's own with `skill_manage` when `skill_manage` is in your tool list or tool_search finds it; otherwise hand the person the exact change.
-- Registry search, install, removal of a hub-installed skill, and per-platform hiding are the person's own `hermes skills search`, `install`, `uninstall`, and `config` in a terminal, with `/skills search` and `/skills install` in a CLI or TUI session.
-- Never edit or delete an OMH-managed skill (an `omh-*` or `ulw-*` name) with `skill_manage`: OMH generates its body from its catalog, so the change does not carry into the next generation; put the lesson in a separately named skill instead.
+- Registry search, install, removal of a hub-installed skill, and per-platform hiding are the person's own `hermes skills search`, `install`, `uninstall`, and `config` in a terminal, with `/skills search` and `/skills install` in a CLI or TUI session; after an install, `/reload-skills` in a running session makes the new skill available as `/<name>` without a restart.
+- Never edit or delete an OMH-managed skill with `skill_manage`: OMH generates its body from its catalog, so the change does not carry into the next generation; put the lesson in a separately named skill instead. An OMH-managed skill is one OMH installed, under a label OMH's catalog renders such as `omh-plan` or `ulw-work`; a companion skill the person or an agent created is theirs, whatever its name.
 
 Handoff policy:
 

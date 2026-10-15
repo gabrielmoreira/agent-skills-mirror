@@ -7,7 +7,7 @@ description: "Bevy ECS skill for audio playback. Keywords: Bevy, AudioPlayer, Au
 
 ## When to use
 
-Load this when a clip should start, loop, pause, or change volume. `bevy::audio` on docs.rs `latest` (0.20.0) and the `audio_control` example there are the sources.
+Load this when a clip should start, loop, pause, or change volume. `bevy::audio` in Bevy 0.20 and the `audio_control` example are the sources.
 
 ## ECS shape
 
@@ -17,21 +17,89 @@ Load this when a clip should start, loop, pause, or change volume. `bevy::audio`
 - **Replay:** after a non-looping sound finishes and the sink is drained, that `AudioPlayer` cannot be reused. Remove the audio components and add them again.
 - **Schedule:** spawn on `Startup` or from a system that has `Res<AssetServer>` and `Commands`. Control systems in the example run where they read `ButtonInput<KeyCode>` and `Res<Time>`.
 
-## Coming from Godot
+## Playback pieces
 
-| Godot idea | Bevy idiom |
+| Need | Bevy idiom |
 | --- | --- |
-| Play a file | `AudioPlayer::new` plus `AssetServer::load` |
+| Start a file | `AudioPlayer::new` plus `AssetServer::load` |
 | Loop | `PlaybackSettings::LOOP` |
-| Pause / mute / volume while playing | `AudioSink` methods on the same entity |
+| Pause, mute, or volume while playing | `AudioSink` methods on the same entity |
 | One-shot that should leave the world | `PlaybackMode::Despawn` or `Remove` |
 | Positional emitter | `PlaybackSettings` with `with_spatial(true)` and `SpatialAudioSink` |
 
-## Scope
+## Examples
 
-- Check the audio docs for bus graphs, music/sfx mixer layouts, and audio-area shapes before writing them.
-- Check the audio docs for sample rates, supported file types, and the `AudioSource` type beyond the `Handle` in `AudioPlayer::new`.
-- Removing `AudioSink` restarts an attached source (stated on the sink page). Check that page for a full restart recipe before writing one.
+```toml
+[dependencies]
+bevy = "0.20"
+```
+
+`AudioPlayer` starts when the handle is ready. `PlaybackSettings` applies only at that start. `AudioSink` is inserted once playback begins and is the live control.
+
+```rust
+use bevy::audio::{AudioSinkPlayback, Volume};
+
+fn spawn_music(mut commands: Commands, asset_server: Res<AssetServer>) {
+    commands.spawn((
+        AudioPlayer::new(asset_server.load("audio/music.ogg")),
+        PlaybackSettings::LOOP.with_volume(Volume::Linear(0.6)),
+    ));
+}
+
+fn spawn_oneshot(mut commands: Commands, asset_server: Res<AssetServer>) {
+    commands.spawn((
+        AudioPlayer::new(asset_server.load("audio/ui.ogg")),
+        PlaybackSettings::DESPAWN,
+    ));
+}
+
+fn duck_music(mut sinks: Query<&mut AudioSink>) {
+    for mut sink in &mut sinks {
+        sink.set_volume(Volume::Linear(0.25));
+        sink.pause();
+    }
+}
+```
+
+A positional emitter sets `with_spatial(true)` and a `Transform`. Live control of that emitter uses `SpatialAudioSink`.
+
+```rust
+use bevy::audio::{AudioSinkPlayback, Volume};
+
+fn spawn_footstep(mut commands: Commands, asset_server: Res<AssetServer>) {
+    commands.spawn((
+        AudioPlayer::new(asset_server.load("audio/step.ogg")),
+        PlaybackSettings::ONCE.with_spatial(true),
+        Transform::from_xyz(3.0, 0.0, 1.0),
+    ));
+}
+
+fn quiet_nearby(mut sinks: Query<&mut SpatialAudioSink>) {
+    for mut sink in &mut sinks {
+        sink.set_volume(Volume::Linear(0.5));
+    }
+}
+```
+
+A finished non-looping player cannot be reused. Drop the player and the sink, then insert them again with the same handle.
+
+```rust
+use bevy::audio::AudioSinkPlayback;
+
+fn replay_when_empty(mut commands: Commands, playing: Query<(Entity, &AudioPlayer, &AudioSink)>) {
+    for (entity, player, sink) in &playing {
+        if !sink.empty() {
+            continue;
+        }
+        let handle = player.0.clone();
+        commands.entity(entity).remove::<AudioPlayer>().remove::<AudioSink>();
+        commands.entity(entity).insert((
+            AudioPlayer::new(handle),
+            PlaybackSettings::ONCE,
+        ));
+    }
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -55,7 +123,7 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A plain struct stored outside the world |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
@@ -70,36 +138,31 @@ Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownershi
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot audio player, bus, or stream types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- Do not change `PlaybackSettings` to retune audio that is already playing. WHY: those settings apply only when playback starts; live control is `AudioSink`.
 - No volume curves or mixer nodes this file did not open. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 - No third-party audio crates. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20.0**. Permalinks stay unversioned.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/)  -  Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/)  -  Unversioned API index.
-- [AudioPlayer](https://docs.rs/bevy/latest/bevy/audio/struct.AudioPlayer.html)  -  Component that starts a `Handle`.
-- [PlaybackSettings](https://docs.rs/bevy/latest/bevy/audio/struct.PlaybackSettings.html)  -  Start settings; not live control.
-- [PlaybackMode](https://docs.rs/bevy/latest/bevy/audio/enum.PlaybackMode.html)  -  `Once`, `Loop`, `Despawn`, `Remove`.
-- [AudioSink](https://docs.rs/bevy/latest/bevy/audio/struct.AudioSink.html)  -  Live pause, mute, volume, speed.
 - [Assets](https://bevy.org/assets/)  -  Official asset catalog.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples)  -  Example tree on the `latest` branch.
+- [Audio examples](https://github.com/bevyengine/bevy/tree/latest/examples/audio)  -  Playback, spatial, and control samples.
+- [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/)  -  `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Who owns which piece of state.
-- [bevy-asset-scenes](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-asset-scenes/SKILL.md)  -  `AssetServer` and `Handle`.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Who owns which piece of state.
+- [bevy-asset-scenes](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-asset-scenes/SKILL.md)  -  `AssetServer` and `Handle`.
 
 #### Complements
-- [bevy-input-handling](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md)  -  Keys the control example uses.
-- [godot-audio-systems](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-audio-systems/SKILL.md)  -  Equivalent Godot skill.
+- [bevy-input-handling](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md)  -  Keys the control example uses.
 
 #### Downstream / consumers
 - None yet. Genre skills that play stingers should route here when they exist.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.

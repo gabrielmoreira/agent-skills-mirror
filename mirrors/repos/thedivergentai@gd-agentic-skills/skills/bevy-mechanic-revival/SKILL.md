@@ -16,18 +16,166 @@ Load this when an actor is downed, can be revived, or respawns.
 - **Systems:** mutate those components on `Update` or the fixed timestep. Use `.chain()` when damage must land before death.
 - **Messages:** one-shot facts (hit, pickup, quest advance) go through bevy-events-messaging. This file does not add a new event type name.
 
-## Coming from Godot
-
-| Godot idea | Bevy idiom |
-| --- | --- |
-| Downed | A state or component flag via bevy-state-machines. |
-| Revive progress | Elapsed on a component while an ally overlaps. Overlap tests belong on bevy-spatial-queries. |
-| Respawn point | A stored transform. No checkpoint type was opened. |
-
 ## Scope
 
-- No downed, revive, or checkpoint type exists in Bevy.
-- Overlap tests belong with the physics skills once you choose a solver.
+Downed time, revive progress, and the last checkpoint are components. Overlap is a distance test here; a physics solver can replace that test later.
+
+## Examples
+
+```toml
+[package]
+name = "revival"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.20"
+```
+
+Health hits zero, the actor is downed, and an ally within range fills the revive bar. A full bar clears the downed flag and restores health.
+
+```rust
+#[derive(Component)]
+struct Health {
+    current: f32,
+    max: f32,
+}
+
+#[derive(Component)]
+struct Downed {
+    elapsed: f32,
+}
+
+#[derive(Component)]
+struct Reviving {
+    progress: f32,
+    needed: f32,
+}
+
+#[derive(Component)]
+struct Ally;
+
+fn apply_down(
+    mut commands: Commands,
+    mut actors: Query<(Entity, &Health), Without<Downed>>,
+) {
+    for (entity, health) in &mut actors {
+        if health.current <= 0.0 {
+            commands.entity(entity).insert(Downed { elapsed: 0.0 });
+        }
+    }
+}
+
+fn tick_revive(
+    time: Res<Time<Fixed>>,
+    allies: Query<&Transform, With<Ally>>,
+    mut downed: Query<(Entity, &Transform, &mut Health, &mut Downed, Option<&mut Reviving>)>,
+    mut commands: Commands,
+) {
+    let dt = time.delta_secs();
+    for (entity, transform, mut health, mut downed, reviving) in &mut downed {
+        downed.elapsed += dt;
+        let near = allies.iter().any(|ally| {
+            ally.translation.distance(transform.translation) < 2.0
+        });
+        if !near {
+            commands.entity(entity).remove::<Reviving>();
+            continue;
+        }
+        let progress = reviving.map(|mut rev| {
+            rev.progress += dt;
+            rev.progress
+        });
+        if let Some(progress) = progress {
+            if progress >= 2.0 {
+                health.current = health.max;
+                commands.entity(entity).remove::<Downed>().remove::<Reviving>();
+            }
+        } else {
+            commands.entity(entity).insert(Reviving {
+                progress: 0.0,
+                needed: 2.0,
+            });
+        }
+    }
+}
+```
+
+The checkpoint resource stores the respawn pose. Death after the bleed-out moves the actor there and refills health.
+
+```rust
+#[derive(Resource)]
+struct Checkpoint {
+    translation: Vec3,
+}
+
+#[derive(Component)]
+struct Health {
+    current: f32,
+    max: f32,
+}
+
+#[derive(Component)]
+struct Downed {
+    elapsed: f32,
+}
+
+fn move_to_checkpoint(
+    mut query: Query<(Entity, &mut Transform, &mut Health, &Downed)>,
+    checkpoint: Res<Checkpoint>,
+    mut commands: Commands,
+) {
+    for (entity, mut transform, mut health, downed) in &mut query {
+        if downed.elapsed < 8.0 {
+            continue;
+        }
+        transform.translation = checkpoint.translation;
+        health.current = health.max;
+        commands.entity(entity).remove::<Downed>();
+    }
+}
+
+pub struct RevivalPlugin;
+
+impl Plugin for RevivalPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(Checkpoint {
+            translation: Vec3::ZERO,
+        })
+        .add_systems(FixedUpdate, move_to_checkpoint);
+    }
+}
+```
+
+Touching a marker overwrites the checkpoint.
+
+```rust
+#[derive(Component)]
+struct CheckpointMarker;
+
+#[derive(Component)]
+struct Player;
+
+#[derive(Resource)]
+struct Checkpoint {
+    translation: Vec3,
+}
+
+fn capture_checkpoint(
+    players: Query<&Transform, With<Player>>,
+    markers: Query<&Transform, With<CheckpointMarker>>,
+    mut checkpoint: ResMut<Checkpoint>,
+) {
+    let Ok(player) = players.single() else {
+        return;
+    };
+    for marker in &markers {
+        if player.translation.distance(marker.translation) < 1.2 {
+            checkpoint.translation = marker.translation;
+        }
+    }
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -73,11 +221,9 @@ Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownershi
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20.0**. Official pages stay on the unversioned `latest` branch.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
@@ -86,18 +232,18 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
-- [bevy-combat-system](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-combat-system/SKILL.md) - What drops health to zero.
-- [bevy-data-resources](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md) - Tables and definitions.
-- [bevy-events-messaging](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-events-messaging/SKILL.md) - One-shot facts.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
+- [bevy-combat-system](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-combat-system/SKILL.md) - What drops health to zero.
+- [bevy-data-resources](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md) - Tables and definitions.
+- [bevy-events-messaging](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-events-messaging/SKILL.md) - One-shot facts.
 
 #### Complements
-- [bevy-state-machines](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Mode flags.
-- [godot-mechanic-revival](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-mechanic-revival/SKILL.md) - Equivalent Godot skill.
+- [bevy-state-machines](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Mode flags.
+- [godot-mechanic-revival](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-mechanic-revival/SKILL.md) - Revival on the Godot engine, same depth.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

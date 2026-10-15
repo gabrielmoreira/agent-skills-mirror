@@ -11,22 +11,91 @@ Load this when a desktop window game must accept touch and a smaller layout. Pla
 
 ## ECS shape
 
-- **Input:** `touch` and `gestures` features exist. Action mapping lives on bevy-input-handling.
-- **UI:** scale nodes with `Node` layout. Check the window docs for a dpi component before writing one. `WindowResolution` and scale-factor events exist on the window page (`WindowScaleFactorChanged`).
-- **Textures:** ASTC is mentioned only as a compression feature blurb.
+- **Input:** `Touches` lists active contacts. Action mapping lives on bevy-input-handling.
+- **UI:** enlarge `Node` hit targets and pad the root with a safe-inset `Resource`. `WindowResolution` sets the logical size and an optional scale-factor override. `WindowScaleFactorChanged` reports a live dpi change.
+- **Textures:** ASTC is a compressed texture format for mobile GPUs. Upload still goes through `Assets<Image>`.
 
-## Coming from Godot
+```rust
+fn configure_window(mut windows: Query<&mut Window>) {
+    let Ok(mut window) = windows.single_mut() else {
+        return;
+    };
+    window.resolution.set(720.0, 1280.0);
+    window.resolution.set_scale_factor_override(Some(2.0));
+}
+```
 
-| Godot idea | Bevy idiom |
+```rust
+#[derive(Resource, Default)]
+struct LastTouch(Option<Vec2>);
+
+fn track_touch(touches: Res<Touches>, mut last: ResMut<LastTouch>) {
+    last.0 = touches.iter().next().map(|touch| touch.position());
+}
+```
+
+```rust
+#[derive(Component)]
+struct TouchTarget;
+
+#[derive(Component)]
+struct HudRoot;
+
+#[derive(Resource)]
+struct SafeInsets {
+    top: f32,
+    bottom: f32,
+}
+
+fn enlarge_targets(mut nodes: Query<&mut Node, With<TouchTarget>>) {
+    for mut node in &mut nodes {
+        node.min_width = Val::Px(88.0);
+        node.min_height = Val::Px(88.0);
+    }
+}
+
+fn pad_hud(insets: Res<SafeInsets>, mut roots: Query<&mut Node, With<HudRoot>>) {
+    for mut node in &mut roots {
+        node.padding = UiRect {
+            top: Val::Px(insets.top),
+            bottom: Val::Px(insets.bottom),
+            left: Val::Px(12.0),
+            right: Val::Px(12.0),
+        };
+    }
+}
+```
+
+```rust
+use bevy::window::WindowScaleFactorChanged;
+
+fn follow_dpi(
+    mut scale_events: MessageReader<WindowScaleFactorChanged>,
+    mut ui_scale: ResMut<UiScale>,
+) {
+    for event in scale_events.read() {
+        ui_scale.0 = event.scale_factor as f32;
+    }
+}
+```
+
+```toml
+[dependencies]
+bevy = "0.20"
+```
+
+## Adapt choices
+
+| Need | Bevy approach |
 | --- | --- |
-| Mouse | Touch feature. Check the input docs for pointer unification before writing it. |
-| Hover menus | Replace hover-only actions. UI picking exists as `ui_picking`. Check that feature's docs for behavior before writing it. |
-| Safe margins | Unverified. |
+| Pointer | `Touches` for contacts. Pointer position on a desktop window is `Window::cursor_position`. |
+| Hover-only menus | Actions that require a hover state need a pressed or tapped path as well. |
+| Safe margins | `SafeInsets` resource applied as `Node` padding. |
 
 ## Scope
 
-- No control-scheme or safe-area resource was opened.
-- Check the platform docs for store and permission steps before writing them.
+- Store listings and OS permission dialogs are outside this skill. Layout, touch, and dpi live in the systems above.
+- Platform packaging stays on bevy-platform-mobile.
 
 ## Expert Knowledge Delta
 
@@ -50,7 +119,7 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A script field copied onto the entity |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
@@ -65,18 +134,14 @@ Load [references/ecs-ownership.md](adapt-desktop-to-mobile-ecs-ownership.md) for
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot export-preset or touch emulation names. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
-
-- No Godot types in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No export-preset or touch-emulation names in Bevy code. WHY: `Touches`, `Window`, and `UiScale` are the documented Bevy pieces.
 - No invented APIs or unnamed third-party crates as the chosen solver. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+Official links stay on bevy.org. The library pin on bevy-master stays **0.20.0**.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
@@ -85,17 +150,17 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
-- [bevy-platform-mobile](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-platform-mobile/SKILL.md) - Android and touch features.
-- [bevy-ui-layout](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ui-layout/SKILL.md) - Reflow the HUD.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
+- [bevy-platform-mobile](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-platform-mobile/SKILL.md) - Android and touch features.
+- [bevy-ui-layout](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ui-layout/SKILL.md) - Reflow the HUD.
 
 #### Complements
-- [bevy-adapt-mobile-to-desktop](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-adapt-mobile-to-desktop/SKILL.md) - The reverse adapt.
-- [godot-adapt-desktop-to-mobile](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md) - Equivalent Godot skill.
+- [bevy-adapt-mobile-to-desktop](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-adapt-mobile-to-desktop/SKILL.md) - The reverse adapt.
+- [godot-adapt-desktop-to-mobile](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md) - Same topic on the Godot track.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

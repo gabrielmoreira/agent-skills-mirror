@@ -17,14 +17,17 @@ Use two stable phases:
 
 1. **Intake and Clarification** — inspect relevant context, identify
    ambiguity, run a secondary critique or explicit self-critique, and
-   ask only the questions that block safe issue drafting. Keep
-   clarification bounded; use the repository-local
+   ask only the questions that block safe issue drafting; for an
+   interactive choice, the question blocks publishing, so it is asked (see
+   [Human-dependency isolation](references/contract.md#human-dependency-isolation)).
+   Keep clarification bounded; use the repository-local
    `issueAuthoring.maxClarificationRounds` value when available,
    otherwise default to 3 rounds. **Under-clarification stop rule**: if,
    after bounded clarification, you still cannot name the concrete
    surface to edit or an objective verification for a candidate task,
-   route it to `needs-decision` or ask — do not publish a
-   confidently-vague `ready` issue. Reliability over speed.
+   route it to `needs-decision`, or for an interactive choice ask first under
+   [Human-dependency isolation](references/contract.md#human-dependency-isolation)
+   — do not publish a confidently-vague `ready` issue. Reliability over speed.
 2. **Decompose and Draft** — restate the request in implementation
    terms, split it into atomic tasks, classify readiness, reuse existing
    issues when safe, and draft the smallest issue shape that preserves
@@ -114,7 +117,9 @@ needs-decision, blocked-by-human, and out-of-scope.
    [Mechanical pre-publish gate](references/contract.md#mechanical-pre-publish-gate)
    in the bundled contract, including the manual fallback for
    `instructions-only` installs with no helper runtime. Resolve every
-   reported failure before treating the issue as ready. Before newly
+   reported failure before treating the issue as ready. Before publishing
+   a draft carrier, run the same linter with `--shape carrier`; a carrier
+   is never published without that check. Before newly
    publishing a body into the `needs-decision` or `blocked-by-human`
    bucket instead, also run the linter, passing
    `--expect-bucket <needs-decision|blocked-by-human>` (choose the one
@@ -130,7 +135,9 @@ needs-decision, blocked-by-human, and out-of-scope.
    Intake critique stays the pre-draft
    pass above and does not replace step 6. No separate publish
    approval is needed. Only skip publishing when the current request
-   explicitly asked for a preview instead. Manage the authoring label
+   explicitly asked for a preview instead, or when the interactive rule in
+   [Human-dependency isolation](references/contract.md#human-dependency-isolation)
+   holds that choice unpublished. Manage the authoring label
    for each created or updated issue:
    - resolve `issueAuthoring.authoringLabelName`, defaulting to
      `status:authoring`
@@ -379,13 +386,16 @@ needs-decision, blocked-by-human, and out-of-scope.
 - Run the completed-draft adversarial review, then the
   `audit-authored-issue` linter (or its manual fallback in
   `instructions-only` installs), against every drafted roadmap, child,
-  or orphan body. That includes a body published into
+  or orphan body and every draft carrier (`--shape carrier`). That
+  includes a body published into
   `needs-decision` or `blocked-by-human`; pass `--expect-bucket` for
   those two buckets. Resolve every reported failure before publishing.
   A failed review does not publish.
 - Name a concrete surface to edit and an objective verification for
-  every `ready` candidate; route anything else to `needs-decision` or
-  ask instead of guessing (the under-clarification stop rule).
+  every `ready` candidate; route anything else to `needs-decision` instead
+  of guessing, and ask first for an interactive choice under
+  [Human-dependency isolation](references/contract.md#human-dependency-isolation)
+  (the under-clarification stop rule).
 - Resolve the target repository's marker prefix before emitting any
   authoring marker; never assume this source repository's `idd-skill`
   prefix in an installed bundle (the prefix-first rule).

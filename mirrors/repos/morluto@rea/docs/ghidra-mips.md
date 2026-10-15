@@ -52,9 +52,23 @@ section names or the record being inside the initial 4 KiB header probe.
 Program and section declarations must agree; duplicate, conflicting, truncated
 or out-of-file records are rejected. Stripped section tables and section-only
 records are supported. Extended table numbering is explicitly unsupported.
-GNU `SHT_GNU_ATTRIBUTES` sections are refused by numeric section type until REA
-parses and reconciles their declarations; section names and payload sizes do not
-control detection or allocation. For carved ELFs whose section table extends
+GNU `SHT_GNU_ATTRIBUTES` sections are located by numeric section type; section
+names never control detection. REA reads at most 4096 payload bytes and parses
+format version `A`, the `gnu` vendor's file-scope `Tag_GNU_MIPS_ABI_FP` (4) and
+`Tag_GNU_MIPS_ABI_MSA` (8) only. Unknown vendors, scopes or tags, repeated
+declarations, malformed lengths, and out-of-file or oversized payloads remain
+refusals. A nonzero FP tag must match the separate ABI flags `fp_abi` record;
+value 0 (`ANY`) declares no requirement. The [GNU Object Attributes v1
+format](https://sourceware.org/binutils/docs/as/Object-Attributes-v1.html) and
+[GNU MIPS tag definitions](https://sourceware.org/binutils/docs/as/GNU-Object-Attributes.html)
+are the format references. The MSA tag describes the vector
+argument ABI, while the ABI flags ASE field describes instruction-set
+extensions; REA does not treat those as interchangeable. The 128-bit MSA
+argument ABI and unknown nonzero MSA values remain unsupported. Without a
+separate ABI flags record, FP attribute values are admitted only when absent,
+`ANY` (0), double precision (1), or FPXX (5), the values covered by the
+recordless profile. Parsed values are retained in the MIPS analysis profile.
+For carved ELFs whose section table extends
 beyond the captured file, REA examines every complete captured section header
 and records the unavailable headers as a limitation. The provider refuses an
 incomplete ABI declaration inspection even when a program-header ABI record is

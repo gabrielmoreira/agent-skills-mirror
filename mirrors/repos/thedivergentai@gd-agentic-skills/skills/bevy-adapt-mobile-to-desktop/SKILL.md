@@ -13,20 +13,151 @@ Load this when a touch-first game gains a window, mouse, and keyboard. Window se
 
 - **Window:** `Window`, `WindowMode`, and `PrimaryWindow`.
 - **Input:** keyboard, mouse, and gamepad features are named on the crate page and already used by bevy-input-handling.
-- **Cursor:** `CursorGrabMode` and `CursorOptions` are on the window page. Check that page for grab semantics before writing them.
+- **Pointer:** `CursorOptions` on the primary window. `CursorGrabMode::None`, `Confined`, or `Locked`.
 
-## Coming from Godot
+## Desktop choices
 
-| Godot idea | Bevy idiom |
+| Need | Bevy idiom |
 | --- | --- |
-| Touch buttons | Keyboard and mouse via bevy-input-handling. |
-| Portrait layout | A wider Node tree. No orientation type was opened. |
-| Cursor lock | CursorGrabMode exists. Check the window page for variants before writing them. |
+| On-screen buttons | Keyboard and mouse via bevy-input-handling, writing the same intent component. |
+| Wider layout | A wider `WindowResolution` on the primary `Window`. |
+| Pointer lock | `CursorOptions.grab_mode = CursorGrabMode::Locked` and `visible = false`. |
 
 ## Scope
 
-- Check the input docs for hint glyphs and control prompts before writing them.
-- Check the window page for cursor grab mode variants before writing them.
+- Keyboard and mouse write a `MoveIntent` component. Touch buttons can keep writing that same component.
+- Window mode, resolution, present mode, and cursor grab live on the primary window entity.
+
+## Examples
+
+```toml
+[package]
+name = "desktop_port"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.20"
+```
+
+Open a windowed 1920x1080 view and lock the pointer while aiming.
+
+```rust
+use bevy::window::{
+    CursorGrabMode, CursorOptions, MonitorSelection, PresentMode, PrimaryWindow, WindowMode,
+    WindowResolution,
+};
+
+fn desktop_window(mut windows: Query<&mut Window, With<PrimaryWindow>>) {
+    for mut window in &mut windows {
+        window.mode = WindowMode::Windowed;
+        window.resolution = WindowResolution::new(1920, 1080);
+        window.title = "Desktop".to_string();
+        window.present_mode = PresentMode::AutoVsync;
+    }
+}
+
+fn unlock_framerate(mut windows: Query<&mut Window, With<PrimaryWindow>>) {
+    for mut window in &mut windows {
+        window.present_mode = PresentMode::AutoNoVsync;
+    }
+}
+
+fn borderless(mut windows: Query<&mut Window, With<PrimaryWindow>>) {
+    for mut window in &mut windows {
+        window.mode = WindowMode::BorderlessFullscreen(MonitorSelection::Current);
+    }
+}
+
+#[derive(Component)]
+struct Aiming;
+
+fn grab_cursor(
+    mut cursors: Query<&mut CursorOptions, With<PrimaryWindow>>,
+    aiming: Query<(), With<Aiming>>,
+) {
+    let locked = !aiming.is_empty();
+    for mut cursor in &mut cursors {
+        cursor.visible = !locked;
+        cursor.grab_mode = if locked {
+            CursorGrabMode::Locked
+        } else {
+            CursorGrabMode::None
+        };
+    }
+}
+```
+
+WASD replaces on-screen sticks. The gameplay system reads `MoveIntent`, not the key codes.
+
+```rust
+use bevy::window::{MonitorSelection, PrimaryWindow, VideoModeSelection, WindowMode};
+
+#[derive(Component, Default)]
+struct MoveIntent(Vec2);
+
+fn read_wasd(keys: Res<ButtonInput<KeyCode>>, mut intents: Query<&mut MoveIntent>) {
+    let mut dir = Vec2::ZERO;
+    if keys.pressed(KeyCode::KeyA) {
+        dir.x -= 1.0;
+    }
+    if keys.pressed(KeyCode::KeyD) {
+        dir.x += 1.0;
+    }
+    if keys.pressed(KeyCode::KeyW) {
+        dir.y += 1.0;
+    }
+    if keys.pressed(KeyCode::KeyS) {
+        dir.y -= 1.0;
+    }
+    for mut intent in &mut intents {
+        intent.0 = dir;
+    }
+}
+
+fn toggle_fullscreen(
+    keys: Res<ButtonInput<KeyCode>>,
+    mut windows: Query<&mut Window, With<PrimaryWindow>>,
+) {
+    if !keys.just_pressed(KeyCode::F11) {
+        return;
+    }
+    for mut window in &mut windows {
+        window.mode = match window.mode {
+            WindowMode::Windowed => {
+                WindowMode::Fullscreen(MonitorSelection::Primary, VideoModeSelection::Current)
+            }
+            _ => WindowMode::Windowed,
+        };
+    }
+}
+```
+
+Captured look uses the frame's summed motion.
+
+```rust
+use bevy::input::mouse::AccumulatedMouseMotion;
+
+#[derive(Component)]
+struct LookRig;
+
+fn apply_look(
+    motion: Res<AccumulatedMouseMotion>,
+    mut rigs: Query<&mut Transform, With<LookRig>>,
+) {
+    for mut transform in &mut rigs {
+        transform.rotate_y(-motion.delta.x * 0.002);
+    }
+}
+
+pub struct LookPlugin;
+
+impl Plugin for LookPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Update, apply_look);
+    }
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -50,7 +181,7 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A value stored off the entity |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
@@ -65,38 +196,33 @@ Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownershi
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot device-feature tags. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
-
-- No Godot types in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No second input path that bypasses `MoveIntent`. WHY: keyboard, mouse, and touch must write the same component so gameplay stays device-agnostic.
 - No invented APIs or unnamed third-party crates as the chosen solver. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20.0**. Permalinks stay unversioned.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
+- [Window examples](https://github.com/bevyengine/bevy/tree/latest/examples/window) - `WindowMode`, present mode, and pointer grab.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
 - [Plugins](https://bevy.org/learn/quick-start/getting-started/plugins/) - `Plugin`, `DefaultPlugins`, `MinimalPlugins`, and `add_plugins`.
-- [bevy::window](https://docs.rs/bevy/latest/bevy/window/index.html) - `CursorGrabMode`, `WindowMode`.
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
-- [bevy-platform-desktop](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-platform-desktop/SKILL.md) - Window.
-- [bevy-input-handling](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Keyboard, mouse, gamepad.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
+- [bevy-platform-desktop](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-platform-desktop/SKILL.md) - Window.
+- [bevy-input-handling](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Keyboard, mouse, gamepad.
 
 #### Complements
-- [bevy-adapt-desktop-to-mobile](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-adapt-desktop-to-mobile/SKILL.md) - The reverse adapt.
-- [godot-adapt-mobile-to-desktop](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-adapt-mobile-to-desktop/SKILL.md) - Equivalent Godot skill.
+- [bevy-adapt-desktop-to-mobile](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-adapt-desktop-to-mobile/SKILL.md) - The reverse adapt.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

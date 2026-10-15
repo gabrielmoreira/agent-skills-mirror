@@ -12,4 +12,4 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+`tick_race`, `record_split`, and `cross_finish` all take `ResMut<RaceClock>`, so they share one `.chain()` on `Update`. `drive` only moves `Transform` on `FixedUpdate` and must not write the race clock. A split is recorded when the racer passes a `SplitGate`, once, via `taken`. Do not invent crates or types.

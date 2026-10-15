@@ -23,10 +23,44 @@ Running a crew? Update the lead first; members follow on their own. Details:
 
 ## [Unreleased]
 
+## [1.21.3] - 2026-10-14
+
+A bugfix release, not urgent. You need it if you use pi with `editorPaddingX` above 0, Claude Code 2.1.299 with a task list, or a crew peer that listens on loopback.
+
 ### Fixed
 
-- **The red "Could not update" row closes when you tap its ✕.** After a crew update that left a machine behind, for example one that was offline, the ✕ recorded the close but the row stayed on every screen. It now goes away and stays away. A later run that fails again, or a newer version, shows it again. A machine that was not reached still counts as "Could not update", because the run is over and nothing is still trying. The Updates page offers "Try <name> again".
-- **The Updates page shows release notes.** The notes reached the GitHub release page but never the app, so the page listed only version numbers. Each release now publishes its notes beside its version, and before you update the page lists what the new version brings, by Added, Changed and Fixed, with a link to the release page. After an update it lists what the running version changed, read from the changelog that ships with it, and the update screen's last step has a "What changed in <version>" button. Notes appear for releases from 1.21.1 on, and no new network request is made for them.
+- **A message to a pi editor with padding is sent again.** With pi's `editorPaddingX` setting above 0, Collie showed "the message didn't reach the input box" and never pressed Enter. The reader now knows a padded draft by pi's cursor cell and the padding on every row. Padding 0 is unchanged. This started in 1.20.1. Thanks @jrswab (#442). ([76811421](https://github.com/AltanS/collie/commit/76811421))
+- **A Claude question with the task list under it shows as its card.** Claude Code 2.1.299 draws the task list under a question's key hints in a session with tasks, so Collie could not read the question, and a long list hid it. The question now shows as its usual card, and tapping an answer works. While the question is open, the task list is not shown on the phone. It returns when Claude works again. Thanks @leftos (#436). ([397f816b](https://github.com/AltanS/collie/commit/397f816b))
+- **Doctor accepts a loopback bind on a peer behind a tunnel.** A peer that reaches its lead on loopback, through an ssh tunnel or on the same host, no longer reports `bind` as an error, and `crew update` no longer skips that member. Thanks @OowhitecatoO (#437). ([3798e6b1](https://github.com/AltanS/collie/commit/3798e6b1))
+- **A message is not typed into pi's settings pickers.** The /settings and /scoped-models screens of pi 1.2.0 read as a ready editor, so a message sent from the phone would have gone into their search row. Collie now holds the send while they are open. ([2b1e4c44](https://github.com/AltanS/collie/commit/2b1e4c44))
+
+### Changed
+
+- **Collie is tested on Bun 1.4.0 and newer.** The update preflight now warns on an older Bun when you build from source. Nothing is blocked. A test that took 20 GB on Bun 1.3.14 now fails there instead. Thanks @OowhitecatoO (#438, #439). ([09ba7b79](https://github.com/AltanS/collie/commit/09ba7b79)) ([866ae2cf](https://github.com/AltanS/collie/commit/866ae2cf))
+
+## [1.21.2] - 2026-10-14
+
+### Changed
+
+- **A launcher row started in a new workspace names the workspace after its folder.** The row's own name now goes on the tab, as it already did when you open the row beside a pane. Before, a row such as "Claude danger" became the name of the workspace, and the phone cannot rename a workspace yet. A name already in use gets a number, such as `app-2`. Existing workspaces keep their names, a one-off command still names its workspace after the command word, and on a crew each member names its own workspaces by the version it runs. ([2e91f43c](https://github.com/AltanS/collie/commit/2e91f43c))
+
+### Fixed
+
+- **A long message that ends with photos is sent to Claude.** Claude turns every image path at the end of a long paste into its own image mark. Collie counted only the last one, so it never pressed Enter and the message stayed in the input box. The check now follows Claude's own rule, probed live on Claude Code 2.1.299, and waits until the photos are attached before it presses Enter. ([e94848d4](https://github.com/AltanS/collie/commit/e94848d4))
+- **A pane launched on a crew member shows up on the phone within seconds.** The lead refreshed its copy of a member's panes only every 12 seconds, so a new Claude there stayed a shell or stayed missing. A launch, a new tab or space, and a close or rename forwarded to a member now keep the lead on its fast cadence for a few polls, as a reply already did. ([cee70af6](https://github.com/AltanS/collie/commit/cee70af6))
+- **The working mark on the pane header's agent icon no longer spins.** The mark sat on the icon with nothing behind it, so the icon showed through the half-filled working mark and it turned like a loading spinner. It now has a solid backing and holds still; the pane chip below keeps the turn. ([ce8d8adf](https://github.com/AltanS/collie/commit/ce8d8adf))
+- **A new photo is no longer sent twice when the draft already holds an old photo code.** A draft could carry an `[Image #1]` with no photo behind it, for example text copied from a closed pane. The next photo was numbered 1 again, so Send put its path in twice and the message stalled. A new photo now takes a number above every code already in the text. ([e32ecb57](https://github.com/AltanS/collie/commit/e32ecb57))
+
+## [1.21.1] - 2026-10-14
+
+**Urgent.** A crew member installed from a git checkout can end up half updated, still on the old version.
+
+### Fixed
+
+- **The red "Could not update" row closes when you tap its ✕.** After a crew update that left a machine behind, for example one that was offline, the ✕ recorded the close but the row stayed on every screen. It now goes away and stays away. A later run that fails again, or a newer version, shows it again. A machine that was not reached still counts as "Could not update", because the run is over and nothing is still trying. The Updates page offers "Try <name> again". ([21e5d537](https://github.com/AltanS/collie/commit/21e5d537))
+- **The Updates page shows release notes.** The notes reached the GitHub release page but never the app, so the page listed only version numbers. Each release now publishes its notes beside its version, and before you update the page lists what the new version brings, by Added, Changed and Fixed, with a link to the release page. After an update it lists what the running version changed, read from the changelog that ships with it, and the update screen's last step has a "What changed in <version>" button. Notes appear for releases from 1.21.1 on, and no new network request is made for them. ([827144e2](https://github.com/AltanS/collie/commit/827144e2))
+- **A crew update no longer leaves a member half updated.** A member could start its updater twice when its lead asked twice in a row, and the two runs broke each other's build. The member kept running the old version, and the update band waited until it gave up. A member now starts one updater per run, and `collie update` refuses to start while another update runs on the same machine. A member on an older version can still hit this once while it takes this update. If a member stays behind, run `collie update` on that machine. ([60b7100d](https://github.com/AltanS/collie/commit/60b7100d))
+- **The needs-you mark on the session switcher is smaller.** The red triangle on the switcher button was as heavy as the icon under it and cut into its corner. It is now smaller and covers less of the icon. ([173a2a42](https://github.com/AltanS/collie/commit/173a2a42))
 
 ## [1.21.0] - 2026-10-13
 

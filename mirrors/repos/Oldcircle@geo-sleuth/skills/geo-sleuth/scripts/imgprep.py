@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["numpy", "pillow"]
+# dependencies = ["numpy", "pillow", "pillow-heif"]
 # ///
 """Image processing before looking at and searching with a photo.
 
@@ -11,7 +11,8 @@
   grid      cut into N×M tiles, for "search only a part" in reverse image search
   piers     take a brightness profile along a few rows below the bridge deck and find the pixel columns of the bridge piers (for back-solving the camera position)
 
-Coordinates are always original-image pixels x0,y0,x1,y1 (top-left, bottom-right). Check the original image size first with `exif.py` or PIL.
+Coordinates are always pixels of the whole photo as a viewer shows it (EXIF orientation applied), x0,y0,x1,y1 (top-left, bottom-right);
+the same frame as ocr.py boxes, terrain.py ridge points and pose.py points. Check the photo size first: `exif.py` size, or its upright_size when it reports an EXIF orientation.
 
 Examples:
   imgprep.py zoom photo.jpg --box 820,40,1080,300 --scale 4 --out sign.png
@@ -33,6 +34,7 @@ piers output JSON:
 from __future__ import annotations
 
 import argparse
+from _image import open_photo
 import json
 import sys
 from pathlib import Path
@@ -221,7 +223,7 @@ drop non-pier peaks (bright foreground spots, railings, trees); structure segmen
     pr.add_argument("--sheet", type=Path, help="draw the row band and each column (numbered) on the original image, for a person to check")
 
     args = ap.parse_args()
-    im = ImageOps.exif_transpose(Image.open(args.image)).convert("RGB")
+    im = open_photo(args.image, "image").convert("RGB")
     W, H = im.size
 
     if args.cmd == "zoom":

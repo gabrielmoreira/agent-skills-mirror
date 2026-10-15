@@ -12,4 +12,15 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+```rust
+#[derive(Component)]
+struct PlacedCell {
+    kind: u16,
+}
+
+fn read_cells(cells: Query<&PlacedCell>) {
+    for cell in &cells {
+        let _ = cell.kind;
+    }
+}
+```

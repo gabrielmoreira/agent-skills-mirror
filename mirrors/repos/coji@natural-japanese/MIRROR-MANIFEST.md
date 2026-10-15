@@ -77,7 +77,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 16 | ✓ | [`skills/natural-japanese/references/readability-principles.md`](skills/natural-japanese/references/readability-principles.md) |
 | 17 | ✓ | [`skills/natural-japanese/references/revision-guide.md`](skills/natural-japanese/references/revision-guide.md) |
 | 18 | ✓ | [`skills/natural-japanese/references/translationese.md`](skills/natural-japanese/references/translationese.md) |
-| 19 | ✓ | [`skills/natural-japanese/references/writing-constitution.md`](skills/natural-japanese/references/writing-constitution.md) |
+| 19 | ✓ | [`skills/natural-japanese/references/writing-principles.md`](skills/natural-japanese/references/writing-principles.md) |
 | 20 | ✓ | [`skills/natural-japanese/scripts/calibrate.py`](skills/natural-japanese/scripts/calibrate.py) |
 | 21 | ✓ | [`skills/natural-japanese/scripts/fixtures/ai-smelly.md`](skills/natural-japanese/scripts/fixtures/ai-smelly.md) |
 | 22 | ✓ | [`skills/natural-japanese/scripts/fixtures/natural.md`](skills/natural-japanese/scripts/fixtures/natural.md) |

@@ -639,7 +639,9 @@ saved under `recordings/<slug>/` in your workspace. **See
 [`dev/recording-lanes.md`](../recording-lanes.md) for the full how-to** — which
 surface to drive, standing the recorder's server up (build the SPA first, strip
 leaked runner env), and the per-surface mechanics (`web` / `mobile` / `terminal` /
-`cli` / `desktop`), plus the empty-recordings and caption rules. This section states only
+`cli` / `desktop`), plus the empty-recordings and caption rules. Burn timed
+step-by-step captions into each new clip using `dev/caption_recording.py` and
+inspect the render as described there before handing it off. This section states only
 *which clip repro-agent produces*. Use the selected regression test when it can
 drive that surface. Otherwise reuse or create a separate temporary recording
 driver for the observed journey. Keep its source and command in the evidence
@@ -648,14 +650,16 @@ driver as permanent regression coverage.
 
 - a **`reproduced`** facet → **before-fix footage** (`kind: "before"`): use the
   journey driver to reproduce and verify the failure, but film only the product surface
-  and the user-visible bug (e.g. `recordings/1234/before-picker.webm`). Never film
+  and the user-visible bug (captioned output: `recordings/1234/before-picker.mp4`). Never film
   pytest, assertion output, or the test source.
 - an **`already_fixed`** facet → **proof-it-works footage** (`kind: "fixed"`): use
   a journey driver to verify the passing journey, while the video shows only
-  the product behaving correctly (e.g. `recordings/1234/fixed-picker.webm`).
+  the product behaving correctly (captioned output: `recordings/1234/fixed-picker.mp4`).
 
 `not_reproduced` and `needs_more_info` facets have nothing to film — skip them.
-Name the clip `<before|fixed>-<facet>.<ext>` when you move it to a stable path.
+Keep raw captures under `recordings/<slug>/raw/<before|fixed>-<facet>.<ext>`.
+Declare the inspected captioned MP4, or use the shared guide's explicit
+`uncaptioned-<kind>-<facet>.<ext>` fallback if captioning fails.
 
 Follow these rules for each clip:
 
@@ -733,7 +737,7 @@ choice:
   ],
   "test_path": "tests/e2e_ui/model_catalog/test_1234.py",
   "recordings": [
-    {"surface": "web", "kind": "before", "path": "recordings/1234/before-picker.webm", "format": "webm",
+    {"surface": "web", "kind": "before", "path": "recordings/1234/before-picker.mp4", "format": "mp4",
      "capture_mode": "playwright_ui",
      "caption": "open the model picker → select the catalog → picker shows raw IDs instead of names"}
   ],
@@ -827,7 +831,9 @@ Field meanings:
   the catalog → picker shows raw IDs"`. Phrase it for *this* clip's outcome: a
   `before` caption ends in the failure, a `fixed` caption ends in the correct
   behavior (the journey completing). Each screen claim comes from screen
-  evidence, not from a transcript or API check (Step 4). This is per-recording
+  evidence, not from a transcript or API check (Step 4). This attachment description
+  is separate from the timed captions burned into the video using
+  `dev/caption_recording.py`. This is per-recording
   (each clip drives its own steps), distinct from the bug-level `journey`
   field. `capture_mode` is one of the surface-appropriate values in
   `dev/recording-lanes.md`. Keep an authored-but-unrendered VHS tape in the

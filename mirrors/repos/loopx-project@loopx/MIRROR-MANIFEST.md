@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `loopx-project/loopx` — 26 default patterns, 103 followed patterns, 379 file(s) materialized.
+Mirror of `loopx-project/loopx` — 26 default patterns, 104 followed patterns, 380 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `loopx-project/loopx` — 26 default patterns, 103 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 103 |
-| Files         | 379 |
+| Followed pats | 104 |
+| Files         | 380 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,6 +71,7 @@ Mirror of `loopx-project/loopx` — 26 default patterns, 103 followed patterns, 
 - `docs/showcases/cases/independent-cpp-accuracy-long-run.md`
 - `docs/showcases/cases/independent-four-day-unattended-agent.md`
 - `docs/showcases/cases/independent-public-engine-refactor.md`
+- `docs/showcases/cases/independent-vllm-long-context-optimization.md`
 - `docs/showcases/README.md`
 - `packages/dsh-loopx-plugin/README.md`
 - `docs/guides/installing-loopx.md`
@@ -513,33 +514,34 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 350 | → | [`docs/showcases/cases/independent-cpp-accuracy-long-run.md`](docs/showcases/cases/independent-cpp-accuracy-long-run.md) |
 | 351 | → | [`docs/showcases/cases/independent-four-day-unattended-agent.md`](docs/showcases/cases/independent-four-day-unattended-agent.md) |
 | 352 | → | [`docs/showcases/cases/independent-public-engine-refactor.md`](docs/showcases/cases/independent-public-engine-refactor.md) |
-| 353 | → | [`docs/showcases/README.md`](docs/showcases/README.md) |
-| 354 | → | [`docs/state-interaction-model.md`](docs/state-interaction-model.md) |
-| 355 | → | [`docs/status-data-contract.md`](docs/status-data-contract.md) |
-| 356 | → | [`docs/update-notes/README.md`](docs/update-notes/README.md) |
-| 357 | → | [`examples/collaboration-delivery/README.md`](examples/collaboration-delivery/README.md) |
-| 358 | → | [`loopx/capabilities/change_quality/README.md`](loopx/capabilities/change_quality/README.md) |
-| 359 | → | [`loopx/capabilities/decision_context/README.md`](loopx/capabilities/decision_context/README.md) |
-| 360 | → | [`loopx/capabilities/decision_context/README.zh-CN.md`](loopx/capabilities/decision_context/README.zh-CN.md) |
-| 361 | → | [`loopx/capabilities/explore/README.md`](loopx/capabilities/explore/README.md) |
-| 362 | → | [`loopx/capabilities/explore/README.zh-CN.md`](loopx/capabilities/explore/README.zh-CN.md) |
-| 363 | → | [`loopx/capabilities/integration_branch/README.md`](loopx/capabilities/integration_branch/README.md) |
-| 364 | → | [`loopx/capabilities/issue_fix/README.md`](loopx/capabilities/issue_fix/README.md) |
-| 365 | → | [`loopx/capabilities/issue_fix/README.zh-CN.md`](loopx/capabilities/issue_fix/README.zh-CN.md) |
-| 366 | → | [`loopx/capabilities/periodic_report/README.md`](loopx/capabilities/periodic_report/README.md) |
-| 367 | → | [`loopx/capabilities/progress_review/README.md`](loopx/capabilities/progress_review/README.md) |
-| 368 | → | [`loopx/capabilities/progress_review/README.zh-CN.md`](loopx/capabilities/progress_review/README.zh-CN.md) |
-| 369 | → | [`loopx/capabilities/README.md`](loopx/capabilities/README.md) |
-| 370 | → | [`loopx/capabilities/reward_memory/README.md`](loopx/capabilities/reward_memory/README.md) |
-| 371 | → | [`loopx/capabilities/reward_memory/README.zh-CN.md`](loopx/capabilities/reward_memory/README.zh-CN.md) |
-| 372 | → | [`loopx/claude_goal_mode/README.md`](loopx/claude_goal_mode/README.md) |
-| 373 | → | [`loopx/dsh_goal_mode/README.md`](loopx/dsh_goal_mode/README.md) |
-| 374 | → | [`loopx/experiments/README.md`](loopx/experiments/README.md) |
-| 375 | → | [`loopx/kiro_cli_goal_mode/README.md`](loopx/kiro_cli_goal_mode/README.md) |
-| 376 | → | [`loopx/kunluncode_goal_mode/README.md`](loopx/kunluncode_goal_mode/README.md) |
-| 377 | → | [`packages/dsh-loopx-plugin/README.md`](packages/dsh-loopx-plugin/README.md) |
-| 378 | → | [`README.md`](README.md) |
-| 379 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 353 | → | [`docs/showcases/cases/independent-vllm-long-context-optimization.md`](docs/showcases/cases/independent-vllm-long-context-optimization.md) |
+| 354 | → | [`docs/showcases/README.md`](docs/showcases/README.md) |
+| 355 | → | [`docs/state-interaction-model.md`](docs/state-interaction-model.md) |
+| 356 | → | [`docs/status-data-contract.md`](docs/status-data-contract.md) |
+| 357 | → | [`docs/update-notes/README.md`](docs/update-notes/README.md) |
+| 358 | → | [`examples/collaboration-delivery/README.md`](examples/collaboration-delivery/README.md) |
+| 359 | → | [`loopx/capabilities/change_quality/README.md`](loopx/capabilities/change_quality/README.md) |
+| 360 | → | [`loopx/capabilities/decision_context/README.md`](loopx/capabilities/decision_context/README.md) |
+| 361 | → | [`loopx/capabilities/decision_context/README.zh-CN.md`](loopx/capabilities/decision_context/README.zh-CN.md) |
+| 362 | → | [`loopx/capabilities/explore/README.md`](loopx/capabilities/explore/README.md) |
+| 363 | → | [`loopx/capabilities/explore/README.zh-CN.md`](loopx/capabilities/explore/README.zh-CN.md) |
+| 364 | → | [`loopx/capabilities/integration_branch/README.md`](loopx/capabilities/integration_branch/README.md) |
+| 365 | → | [`loopx/capabilities/issue_fix/README.md`](loopx/capabilities/issue_fix/README.md) |
+| 366 | → | [`loopx/capabilities/issue_fix/README.zh-CN.md`](loopx/capabilities/issue_fix/README.zh-CN.md) |
+| 367 | → | [`loopx/capabilities/periodic_report/README.md`](loopx/capabilities/periodic_report/README.md) |
+| 368 | → | [`loopx/capabilities/progress_review/README.md`](loopx/capabilities/progress_review/README.md) |
+| 369 | → | [`loopx/capabilities/progress_review/README.zh-CN.md`](loopx/capabilities/progress_review/README.zh-CN.md) |
+| 370 | → | [`loopx/capabilities/README.md`](loopx/capabilities/README.md) |
+| 371 | → | [`loopx/capabilities/reward_memory/README.md`](loopx/capabilities/reward_memory/README.md) |
+| 372 | → | [`loopx/capabilities/reward_memory/README.zh-CN.md`](loopx/capabilities/reward_memory/README.zh-CN.md) |
+| 373 | → | [`loopx/claude_goal_mode/README.md`](loopx/claude_goal_mode/README.md) |
+| 374 | → | [`loopx/dsh_goal_mode/README.md`](loopx/dsh_goal_mode/README.md) |
+| 375 | → | [`loopx/experiments/README.md`](loopx/experiments/README.md) |
+| 376 | → | [`loopx/kiro_cli_goal_mode/README.md`](loopx/kiro_cli_goal_mode/README.md) |
+| 377 | → | [`loopx/kunluncode_goal_mode/README.md`](loopx/kunluncode_goal_mode/README.md) |
+| 378 | → | [`packages/dsh-loopx-plugin/README.md`](packages/dsh-loopx-plugin/README.md) |
+| 379 | → | [`README.md`](README.md) |
+| 380 | → | [`README.zh-CN.md`](README.zh-CN.md) |
 
 ---
 

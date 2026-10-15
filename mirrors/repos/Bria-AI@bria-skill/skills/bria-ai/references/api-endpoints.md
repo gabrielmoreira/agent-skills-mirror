@@ -275,9 +275,20 @@ Remove objects defined by mask.
 ```json
 {
   "image": "https://source-image-url",
-  "mask": "https://mask-image-url"
+  "mask": "https://mask-image-url",
+  "composite": false
 }
 ```
+
+**Parameters:**
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `image` | string | required | Source image URL |
+| `mask` | string | required | Mask URL (white=erase, black=keep). Mask only the object, in both modes |
+| `composite` | bool | true | `true` = pixel perfect: everything outside the mask stays as it was. `false` = context aware: also removes what the object casts outside the mask, such as its shadow or reflection |
+
+Send `composite: false` by default: it also removes the object's shadow or reflection, and the rest of the image may be lightly re-rendered. Send `true` only when nothing outside the mask may change (catalog retouching, faces, products, text near the object).
 
 ### POST /v2/image/edit/erase_foreground
 

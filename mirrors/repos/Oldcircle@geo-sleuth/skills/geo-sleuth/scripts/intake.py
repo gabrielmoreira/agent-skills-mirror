@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["pillow"]
+# dependencies = ["pillow", "pillow-heif"]
 # ///
 """Steps 0–3 of geolocation in one command: metadata, zoomed four edges and four corners, search variants, OCR, reverse image search, run in parallel, one report.
 
 Outputs (all in --out-dir):
   exif.json  edges/  variants/  ocr.json ocr.png  rev/<name>_<engine>.png + .json  intake.md  intake.json
+  work/<name>.png  only when the photo needs it: HEIC/WebP/... decoded, or an EXIF orientation applied. A lossless upright
+                   copy with the original's EXIF (orientation reset); every step below then uses it, and intake.json "input"
+                   records it. Metadata is always read from the original. Pixel coordinates are in the upright frame either way.
+Exit status: 0 ok or partial (the report says which steps failed), 1 every enabled visual step (edges, variants, OCR)
+failed, 2 the photo itself can't be read (metadata is still tried and reported). Steps turned off with --no-* don't count.
 intake.md is for humans (and the LLM): metadata, OCR text, Baidu similar images (count, source sites, numbered contact sheet rev/<name>_baidu_similar.jpg),
 tiered vote count of image-search tags, suspected residential compound / housing development / hotel names, list of outputs, items skipped and failed.
 Always open the image-search screenshots and the similar-image contact sheets; "searched, nothing found" and "not searched" are written separately in the report.
@@ -22,6 +27,7 @@ Examples:
 from __future__ import annotations
 
 import argparse
+from _image import ImageReadError, write_working_copy
 from _net import PROXY_HELP
 import json
 import os
@@ -155,21 +161,29 @@ def main() -> None:
         timings[name] = round(time.time() - t0, 1)
         return res
 
+    # A photo the later steps or the search engines can't take as stored gets one upright lossless working copy
+    try:
+        work = write_working_copy(photo, out / "work" / f"{photo.stem}.png")
+    except ImageReadError as e:
+        _unreadable_input(photo, out, e, timed)
+        return
+    src = Path(work["working"]) if work else photo
+
     def exif():
         return _run([UV, "run", _script("exif.py"), str(photo)])
 
     def edges():
-        return _run([UV, "run", _script("imgprep.py"), "edges", str(photo), "--out-dir", str(out / "edges")])
+        return _run([UV, "run", _script("imgprep.py"), "edges", str(src), "--out-dir", str(out / "edges")])
 
     def variants():
-        rc, so, se = _run([UV, "run", _script("imgprep.py"), "variants", str(photo), "--prefix", "full", "--out-dir", str(out / "variants")])
+        rc, so, se = _run([UV, "run", _script("imgprep.py"), "variants", str(src), "--prefix", "full", "--out-dir", str(out / "variants")])
         for i, b in enumerate(args.box or [], 1):
-            r2 = _run([UV, "run", _script("imgprep.py"), "variants", str(photo), "--box", b, "--prefix", f"box{i}", "--out-dir", str(out / "variants")])
+            r2 = _run([UV, "run", _script("imgprep.py"), "variants", str(src), "--box", b, "--prefix", f"box{i}", "--out-dir", str(out / "variants")])
             rc, so, se = max(rc, r2[0]), so + r2[1], se + r2[2]
         return rc, so, se
 
     def ocr():
-        return _run([UV, "run", _script("ocr.py"), str(photo), "--out", str(out / "ocr.json"), "--draw", str(out / "ocr.png")])
+        return _run([UV, "run", _script("ocr.py"), str(src), "--out", str(out / "ocr.json"), "--draw", str(out / "ocr.png")])
 
     # Batch 1: metadata, edges, variants, OCR in parallel
     with ThreadPoolExecutor(4) as ex:
@@ -195,7 +209,7 @@ def main() -> None:
         rev_dir.mkdir(exist_ok=True)
         var_files = sorted((out / "variants").glob("*.jpg")) + sorted((out / "variants").glob("*.png"))
         prefer = [f for f in var_files if any(k in f.stem for k in ("crop", "flip", "box"))] + [f for f in var_files if not any(k in f.stem for k in ("crop", "flip", "box"))]
-        images = [str(photo)] + [str(f) for f in prefer[: args.max_variants]]
+        images = [str(src)] + [str(f) for f in prefer[: args.max_variants]]
 
         def rev(engine):
             cmd = [UV, "run", _script("revimg.py"), *images, "--out-dir", str(rev_dir), "--engines", engine]
@@ -219,8 +233,19 @@ def main() -> None:
             pass
 
     # ---- report
-    L = [f"# Steps 0–3 report: {photo.name}", "", f"Total time {time.time() - t_all:.0f}s; per step: " + ", ".join(f"{k} {v}s" for k, v in timings.items()), "",
-         "Next: record clues on board.py (`clue`), lookup clues with `apply`; list the candidates in full first (`children`), then rank.", ""]
+    visual = ["edges", "variants"] + ([] if args.no_ocr else ["ocr"])
+    failed = [k for k, v in status.items() if v != "ok"]
+    result = "failed" if all(status.get(k) != "ok" for k in visual) else "partial" if failed else "ok"
+    L = [f"# Steps 0–3 report: {photo.name}", "", f"Total time {time.time() - t_all:.0f}s; per step: " + ", ".join(f"{k} {v}s" for k, v in timings.items()), ""]
+    if result == "failed":
+        L += [f"**Result: failed.** Every enabled visual step failed ({', '.join(visual)}); reasons under Status. Fix that before going on.", ""]
+    elif result == "partial":
+        L += [f"**Result: partial.** Failed: {', '.join(failed)} (reasons under Status); the other steps' outputs below are usable.", ""]
+    L += ["Next: record clues on board.py (`clue`), lookup clues with `apply`; list the candidates in full first (`children`), then rank.", ""]
+    if work:
+        L += [f"Input: {work['reason']}, so the steps below used `work/{Path(work['working']).name}` ({work['working_size'][0]}x{work['working_size'][1]}, lossless, "
+              "the original's EXIF kept). Metadata was read from the original. Crops and OCR boxes are in this upright frame, the same frame "
+              "every script uses when given the original, so keep passing the original photo to later commands.", ""]
     L += ["## Metadata", ""]
     gps = exif_json.get("gps") or exif_json.get("GPS")
     if exif_json and (gps or exif_json.get("datetime") or exif_json.get("DateTimeOriginal")):
@@ -304,10 +329,31 @@ def main() -> None:
     for k, v in status.items():
         L.append(f"- {k}: {v}")
     (out / "intake.md").write_text("\n".join(x for x in L if x is not None), encoding="utf-8")
-    (out / "intake.json").write_text(json.dumps({"photo": str(photo), "exif": exif_json, "ocr": ocr_items, "rev": entries, "votes": votes,
-                                                 "status": status, "timings": timings}, ensure_ascii=False, indent=1), encoding="utf-8")
+    (out / "intake.json").write_text(json.dumps({"photo": str(photo), "input": work, "result": result, "exif": exif_json, "ocr": ocr_items, "rev": entries,
+                                                 "votes": votes, "status": status, "timings": timings}, ensure_ascii=False, indent=1), encoding="utf-8")
     print("\n".join(L[:6]))
     print(f"-> {out / 'intake.md'} (read this)")
+    if result == "failed":
+        sys.exit(f"intake: every enabled visual step failed ({', '.join(visual)}); see {out / 'intake.md'}")
+
+
+def _unreadable_input(photo: Path, out: Path, err: ImageReadError, timed) -> None:
+    """The photo itself can't be decoded: still try its metadata (a RAW often carries GPS and time), write a short report, exit 2."""
+    res = timed("exif", lambda: _run([UV, "run", _script("exif.py"), str(photo)]))
+    try:
+        exif_json = json.loads(res[1].strip().splitlines()[0]) if res[1].strip() else {}
+    except Exception:  # noqa: BLE001
+        exif_json = {}
+    (out / "exif.json").write_text(json.dumps(exif_json, ensure_ascii=False, indent=1), encoding="utf-8")
+    L = [f"# Steps 0–3 report: {photo.name}", "", f"**Result: input unreadable.** {err.reason}.",
+         "No crops, variants, OCR or image search were done.", "", "## Metadata", "",
+         "```\n" + json.dumps(exif_json, ensure_ascii=False, indent=1)[:1500] + "\n```" if exif_json else "No metadata could be read either."]
+    (out / "intake.md").write_text("\n".join(L), encoding="utf-8")
+    (out / "intake.json").write_text(json.dumps({"photo": str(photo), "input": {"error": err.category, "reason": err.reason}, "result": "input unreadable",
+                                                 "exif": exif_json}, ensure_ascii=False, indent=1), encoding="utf-8")
+    print("\n".join(L[:4]))
+    print(f"-> {out / 'intake.md'}")
+    sys.exit(2)
 
 
 if __name__ == "__main__":

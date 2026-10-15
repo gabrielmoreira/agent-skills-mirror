@@ -27,6 +27,7 @@
 │   ├── mtp_graft.py                  MTP head 嫁接
 │   ├── _mtp_verify.py / _ub_probe.py 实测探针
 │   ├── launcher_gen/                 启动器生成器 + 交互门面
+│   ├── q6-tuning/                    Q6 批次探针集（GSQ-RCO 调优，见其 README）
 │   └── tests/                        闸门测试
 └── （以上即全部）      ← 公开仓库只有技能载荷；开发过程材料留在维护者本地，见 §7
 ```
@@ -47,7 +48,7 @@
 
 ## 2. 会话经验（`sessions/`）
 
-> 命名约定：`YYYYMMDD-session-experience.md`
+> 命名约定：`YYYYMMDD-session-experience.md`（专题报告体为 `YYYYMMDD-<主题>-report.md`）
 
 | 文档 | 主题 | 最有价值的一条 | 什么时候读 |
 |---|---|---|---|
@@ -57,6 +58,11 @@
 | [`20260816`](./sessions/20260816-session-experience.md) | `--fit` 自动分层（7 倍提速）、新 CPU 模型、GBK 恢复 SOP | 51K 上下文 10.6 → 72-93 t/s 的完整证据链 | 长上下文降速 |
 | [`20260829`](./sessions/20260829-session-experience.md) | Qwen3.8-27B 极限优化、更新器工程修复、WSL/VS Code 对接 | `ECONNREFUSED` 双根因排查 SOP | 配长上下文、VS Code 连不上 |
 | [`20260913`](./sessions/20260913-session-experience.md) | MoE 参数智能化、回归方法论、MTP 嫁接 | **新守卫必须先在已知可用样本上跑**（否则守卫自己成为 bug） | 加模型、写断言、做嫁接 |
+| [`20261012`](./sessions/20261012-qwen38-gsqrco-27b-tuning-report.md) | Qwen3.8-27B **GSQ-RCO**（非均匀量化）16GB 调优 + 启动器回写（专题报告体） | **dense + MTP 的 CPU 卸载断崖（-48%）** —— 与 MoE 经验完全相反 | 配 GSQ-RCO / 非均匀量化模型；dense+MTP 显存不足 |
+
+> 原始数据（Q6 批次）：[`_q6_results.json`](./sessions/_q6_results.json)（18 条实测记录）
+> ＋[`_q6_metadata.json`](./sessions/_q6_metadata.json)（GGUF 元数据基线；入库时脱敏的**快照**）—— 由
+> [`../scripts/q6-tuning/README.md`](../scripts/q6-tuning/README.md) 的探针产出。
 
 ---
 
@@ -64,8 +70,10 @@
 
 | 文档 | 解决什么 | 关键结论 |
 |---|---|---|
+| [`first-time-setup.md`](./guides/first-time-setup.md) | **从零首次部署**：预编译包获取（资产选择）→ 模型获取（HF/ModelScope）→ 自检 → 首次冒烟 | 冒烟三件事：`/health` = ok、一次 chat 返回非空、关服显存回落；**先证明「exe+模型+显卡」能出字，再谈性能** |
 | [`mtp-head-grafting.md`](./guides/mtp-head-grafting.md) | 给**没有 MTP head 的微调模型**嫁接官方 head | 实测 **+34.6% 解码**（64.28 → 86.51 t/s，acceptance 0.736）；四个陷阱；**显存代价 = 权重字节 × 3** |
 | [`20260913-moe-offload-community-research.md`](./guides/20260913-moe-offload-community-research.md) | MoE 卸载的**社区现状**调研 | 社区**无最优共识、无可用自动脚本**；但有两个可直接抄的杠杆（`-ub 2048`、`--load-mode none`） |
+| [`qwen38-gsqrco-27b-tuning.md`](./guides/qwen38-gsqrco-27b-tuning.md) | **GSQ-RCO 非均匀量化 + 内置 MTP** 的 16GB 实机调优档案（Qwen3.8-27B） | **CPU 参与断崖**：dense+MTP 下卸 3 层 CPU = -48%（与 MoE 完全相反）；MTP@45K +31.5%/代价 1,536 MiB；GSQ-RCO IQ3_S 任务无损 |
 
 ---
 
@@ -124,12 +132,20 @@
 | [`scripts/launcher_gen/llama_hub.py`](../scripts/launcher_gen/llama_hub.py) | 交互式门面：菜单 / `--guide` / `--diagnose` / `--write-docs` |
 | [`scripts/launcher_gen/llama-hub.bat`](../scripts/launcher_gen/llama-hub.bat) | 门面的 Windows 入口 |
 | [`scripts/launcher_gen/README.md`](../scripts/launcher_gen/README.md) | **冷启动指南** + 注册表 schema + 回归模式说明 ← 新用户从这里开始 |
+| [`scripts/q6-tuning/README.md`](../scripts/q6-tuning/README.md) | **Q6 探针集指南**：环境变量解析链、典型流程、产物、踩坑（先读这份） |
+| [`scripts/q6-tuning/_q6_metadata.py`](../scripts/q6-tuning/_q6_metadata.py) | Phase 0：GGUF 元数据基线（MTP head / 几何 / 布局完整性；写 `_q6_metadata.json`） |
+| [`scripts/q6-tuning/_q6_probe.py`](../scripts/q6-tuning/_q6_probe.py) | Phase 2：单配置端到端测量（launch → health → decode → VRAM）→ 追加 `_q6_results.json` |
+| [`scripts/q6-tuning/_q6_multiturn.py`](../scripts/q6-tuning/_q6_multiturn.py) | 长 agent 稳定性：3 轮同 slot（前缀缓存复用 / #30357 re-prefill 检查） |
+| [`scripts/q6-tuning/_q6_apply.py`](../scripts/q6-tuning/_q6_apply.py) | Phase 3：测量值 → 注册表 / `preset-overrides.json`（`--check` / `--go`；写前备份） |
+| [`scripts/q6-tuning/_refactor2_body_probe.py`](../scripts/q6-tuning/_refactor2_body_probe.py) | 启动块 argv 逐字段校验（cmd.exe 实收 vs 文件书写；FND-014 回归闸门） |
+| [`scripts/q6-tuning/_refactor2_regression.py`](../scripts/q6-tuning/_refactor2_regression.py) | 回归断言 A–E（`--strict` / `--self-test`；含 models-config.bat 共享 key 动态校验） |
 | [`scripts/detect.ps1`](../scripts/detect.ps1) | Windows 环境自检（GPU / 驱动 / VRAM / 模型 / 服务） |
 | [`scripts/detect.py`](../scripts/detect.py) | 同上，跨平台 Python 版 |
 | [`scripts/tests/test_mtp_graft.py`](../scripts/tests/test_mtp_graft.py) | 嫁接闸门测试（17 例：1 正向 + 16 负向；不需真模型，亚秒完成） |
 
 > `launcher_gen/*` 需要两个环境变量（`LAUNCHER_DIR` / `CHAT_DIR`），见其 README。
 > 这两个是**机器相关**的：`LAUNCHER_DIR` 缺省为脚本自身所在目录，`CHAT_DIR` **无默认值**、缺失即报错退出 2。
+> `q6-tuning/*` 读 `LLAMA_DIR`（缺省=脚本上一级）/ `LAUNCHER_DIR` / `CHAT_DIR` / `LLAMA_API_KEY`，解析链见其 README。
 
 ### 5B 部署侧参考布局（⚠️ 示例，**非本技能一部分**）
 
@@ -137,6 +153,10 @@
 > 价值在于**架构借鉴**：一个能跑起来的启动器生态长什么样、什么依赖什么、哪些是生成物。
 > **你自己的部署不必长这样；本技能也不依赖它存在。**
 > 历史文档（`sessions/`）里若出现下表「旧路径」列的写法，以下表「当前路径」列为准。
+>
+> 📌 **读者须知：本节是「地图」，不是「收录」。** 提到的部署侧/维护者本地材料（`plan/*`、
+> `launcher/backup/*`、`launcher/docs/*` 等）**都不在技能内** —— 你在仓库里找不到它们是**正常的**。
+> 本节真正对你有用的只有两件事：① 参考架构（依赖关系与生成物清单）；② 读过时文档时的旧路径对照。
 
 #### 5B.1 入口与核心
 
@@ -192,10 +212,14 @@
 | `plan/_mtp_verify.py` | 嫁接 A/B 验证（baseline vs `--spec-type draft-mtp`） |
 | `plan/_ub_probe.py` | batch / ubatch 探针（必须成对改） |
 | `plan/_phase2_loadprobe.py` | 加载探针（`--ncmoe` / `--ctx` / `--fittarget`） |
-| `plan/_refactor2_regression.py` | 回归断言（`--strict` / `--self-test`） |
-| `plan/_refactor2_body_probe.py` | 启动块 argv 逐字段校验 |
+| `plan/_refactor2_regression.py` | 回归断言（`--strict` / `--self-test`）—— 项目内可移植版见 §5A |
+| `plan/_refactor2_body_probe.py` | 启动块 argv 逐字段校验 —— 项目内可移植版见 §5A |
+| `plan/_q6_{probe,metadata,multiturn,apply}.py` | Q6 批次探针（单配置 / 元数据 / 多轮 / 回写）—— 已迁入 §5A |
 | `plan/_install_graft.py` | 嫁接产物落地（新目录 + mmproj + override） |
 
+> ⚠️ **Q6 探针集已迁入项目内** —— 用 [`../scripts/q6-tuning/`](../scripts/q6-tuning/README.md)（可移植版）；
+> `plan/` 下的副本是**血缘现场**（18 组实测的原始运行环境），脚本副本当前与 §5A 版本逐字节一致。
+>
 > ↑ 原「§5.6 项目内工具」表已提升为 **§5A** —— 它是本节里唯一有权威性的一组。
 > 本节剩下的都是**部署侧参考布局**（§5B），仅供架构借鉴。
 
@@ -280,6 +304,14 @@
 **两副本（公开仓库 payload ↔ `.agents`）应当逐字节一致。** 新增文档一律用占位符
 （`<llama-cpp-dir>` / `<models-dir>` / `C:\llama.cpp` / `C:\models\chat`），
 **不得写入本机绝对路径**。
+
+> ⚠️ **不存在「推送时脱敏」环节。** 载荷文件**在写入时就用占位符成型**（唯一版本），
+> 两副本因此天然一致；**禁止为发布单独维护「脱敏副本」** —— 双版本会让
+> 「差异 = 泄漏还是有意脱敏」无法机器判定，副本一致性校验随之失效。
+> 若内容不宜按占位符写入 ⇒ **不写**；只有**历史清理**（如 2026-09-13 的 `git-filter-repo`）
+> 才有一次性脱敏动作 —— 那是纠错，不是流程。
+> 数据类产物（如 §2 的 `_q6_metadata.json`）若必须来自含本地路径的原始输出，
+> 则在**入库时**一次性脱敏并冻结为「快照」；本地活体原件不属于载荷，也不构成「第二版本」。
 
 > 历史上有 3 份 session 文档在 `.agents` 副本里保留真实路径，造成长期的双副本差异。
 > 2026-09-17 已把 `.agents` 侧也改为占位符 —— **历史结论一字未动，只改了路径字面**。

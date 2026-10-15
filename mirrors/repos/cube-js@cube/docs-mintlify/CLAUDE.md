@@ -133,6 +133,8 @@ Make sure to use correct terms. On billing, pricing, and support pages, use **on
             - Tabs container
     - **Dashboard**
       - Scheduled refresh
+        - Data alert
+      - Review (revisions, reviewers, approvals)
     - **Semantic Model**
       - Semantic Model IDE (short: "IDE")
       - Semantic Model Agent

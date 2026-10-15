@@ -49,6 +49,7 @@ against these supported state files and their route owners:
 - `MCP-ENGINEERING-LEARNING.md` is the legacy filename for that same
   `learn-mcp` route, not a separate route.
 - `AGENT-SKILLS-LEARNING.md` belongs to `learn-agent-skills`.
+- `REVERSE-ENGINEERING-LEARNING.md` belongs to `learn-reverse-engineering`.
 - `CLAUDE-CERTIFICATION.md` belongs to `claude-certification`.
 
 If the learner names a route in a resume or continue request, dispatch to its
@@ -89,6 +90,17 @@ Codex, `/learn-agent-skills` in Claude Code, or ask another compatible host to
 use `learn-agent-skills`. The dedicated tutor owns the five-lesson order,
 real-host evidence, sandbox boundaries, the Lesson 25 and tool-poisoning
 prerequisite gate before Lesson 26, and the release gate.
+
+## Focused Reverse Engineering handoff
+
+If the learner explicitly wants Reverse Engineering instead of the full course,
+or `REVERSE-ENGINEERING-LEARNING.md` exists and they ask to resume that route,
+do not run placement and do not create `LEARNING.md`. Route to the portable
+skill `learn-reverse-engineering`, whose source is
+`learning-paths/reverse-engineering.json` and whose state file is
+`REVERSE-ENGINEERING-LEARNING.md`. Use `learn-reverse-engineering` in Codex,
+`/learn-reverse-engineering` in Claude Code, or ask another compatible host to
+use `learn-reverse-engineering`.
 
 If `LEARNING.md` already exists, do not overwrite it. Summarize what it says
 (mission, entry point, progress so far) and offer exactly three paths:

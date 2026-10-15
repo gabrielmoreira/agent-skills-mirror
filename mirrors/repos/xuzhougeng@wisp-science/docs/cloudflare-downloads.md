@@ -26,14 +26,19 @@ GitHub Releases remains the fallback and the home for older releases.
 
 | System | Processor | Formats |
 | --- | --- | --- |
-| Windows | Intel / AMD x64 | EXE (standard setup), MSI |
-| macOS | Apple Silicon / Intel | DMG |
+| Windows | Intel / AMD x64 | Standard EXE / MSI; WinUI Preview EXE (lightweight or with runtimes) |
+| macOS | Apple Silicon / Intel | Standard DMG; SwiftUI native DMG |
 | Linux | Intel / AMD x64 / ARM64 | DEB, AppImage |
+| Android 8.0+ | Universal | APK (optional, see below) |
 
 The browser suggests an operating system only. Mac and Linux users explicitly
-choose their processor. Mobile visitors choose the target desktop system. There
-is no native Windows ARM64 package. The page shows the mirrored version,
+choose their processor. Android phones get the APK preselected; iPhone and iPad
+visitors choose the target desktop system. There is no native Windows ARM64
+package. The page shows the mirrored version,
 filename, size and SHA-256 checksum, along with installation guidance.
+The edition/package selector keeps the standard app as the default and exposes
+SwiftUI and both WinUI Preview variants. Each selection displays its actual
+download version; an older build also shows the latest release for comparison.
 
 ## Local deployment
 
@@ -70,14 +75,28 @@ catalog; Worker source, configuration, dependencies and credentials stay private
 
 ## Synchronization behavior
 
-The sync script resolves the latest stable GitHub release at execution time. It
-accepts the exact eight installer names for that version; missing/duplicate files
-fail validation before any upload. Source archives, signatures and `.app.tar.gz`
-updater bundles are excluded.
+The sync script resolves the latest stable GitHub release at execution time.
+For each package it uses that release's installer when present; otherwise it
+searches the previous 20 release-list entries for the newest stable build.
+This lets the APK and finished desktop builds become available while another
+architecture or native edition is still building. Drafts, prereleases and newer
+tags are excluded from fallback selection. Invalid or duplicate assets in the
+preferred release fail validation rather than falling back silently.
+
+All eight standard desktop packages must be available across those releases.
+The Android APK and four native installers are optional when no published
+version is found. Exact native names are
+`Wisp-Science-SwiftUI_<version>_{aarch64,x86_64}.dmg` and
+`Wisp-Science-WinUI-Preview_<version>_x64-{framework-dependent,self-contained}-setup.exe`.
+The APK is served as `application/vnd.android.package-archive`. Source archives,
+signatures, size reports and `.app.tar.gz` updater bundles are excluded.
 
 Each installer is checked against the GitHub asset size, hashed with SHA-256,
 and uploaded to `releases/<tag>/<sha256>/<original-filename>`. The script checks
 that the latest release has not changed and publishes `latest.json` **last**.
+Manifest schema 1 entries may include their own `tag`; older entries without
+one inherit the top-level tag. Names, hashes and object paths are validated
+against each entry's tag, which cannot be newer than the top-level release.
 An upload failure leaves the previous manifest available. Content-addressed
 paths prevent a rebuild of the same tag from replacing an installer referenced
 by a cached manifest. Repeated syncs are safe; failures may leave unreferenced
@@ -96,10 +115,12 @@ and must not be configured as a Tauri updater endpoint.
 
 - `Deploy website to Cloudflare`: deploys on website/skills changes to `main`, or
   manual dispatch. GitHub Pages continues deploying the same public build.
-- `Sync installers to Cloudflare R2`: runs after a successful Windows, macOS or
-  Linux release workflow, daily as a recovery check, or manually. A platform
-  completion with missing installers waits for the other platforms; manual and
-  scheduled runs fail visibly if packages are missing. Runs are serialized and
+- `Sync installers to Cloudflare R2`: runs after a successful Windows, macOS,
+  Linux, Android or Windows WinUI Preview release workflow, daily as a recovery
+  check, or manually. A platform completion without any usable version of a
+  required desktop package waits; manual and scheduled runs fail visibly in
+  that case. Newly published APK and native builds replace their older entries
+  on the next sync. Runs are serialized and
   read the latest stable release using trusted `main` code.
 
 For unattended Cloudflare CI, set repository variable

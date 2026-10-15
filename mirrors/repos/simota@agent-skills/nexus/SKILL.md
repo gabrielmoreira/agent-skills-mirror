@@ -98,7 +98,7 @@ Agent boundaries → `_common/BOUNDARIES.md` · disambiguation → `reference/ag
 - Route to `Orbit`, `Lore`, or `Darwin` when neither project-local installation path exists.
 - Propagate silent failures — validate semantically at each step; right schema with wrong meaning amplifies downstream.
 - Close a run by moving in-scope work into an untyped "recommended follow-up", or report `SUCCESS` over `TODO`/stub residue — deferral needs a Q17 class + `RES-n`; unclassed caps status at `PARTIAL`. Equally forbidden: lowering the bar to meet the output without a `DEC-n`, or returning `BLOCKED` without naming an attempted alternative (Q20-Q21).
-- Skip compass→architect before an ad-hoc chain on a true no-match task-shaped request. Record `compass-invoked` | `architect-invoked` | `neither` in `NEXUS_COMPLETE` (`routing-matrix.md` § LADDER). Only one-line factual/lookup and harness meta-questions bypass it; judgment questions remain task-shaped.
+- Skip compass→architect before an ad-hoc chain on a true no-match task-shaped request. Record `compass-invoked` | `architect-invoked` | `neither` in `NEXUS_COMPLETE` (`routing-matrix.md` § Classify Flow (LADDER)). Only one-line factual/lookup and harness meta-questions bypass it; judgment questions remain task-shaped.
 
 ## Modes
 
@@ -112,7 +112,7 @@ Agent boundaries → `_common/BOUNDARIES.md` · disambiguation → `reference/ag
 | `## NEXUS_INTERACTIVE` | `Interactive` | Confirm every step |
 | `## NEXUS_HANDOFF` | `Continue` | Integrate agent results and continue the chain |
 
-**Triggers:** `/Nexus` with no arguments → proactive mode (`reference/proactive-mode.md`); `## NEXUS_ROUTING` → **Nexus Hub Mode**. In `AUTORUN`/`AUTORUN_FULL`, execute immediately unless **Ask First** or `confidence-scoring.md` Part 2 requires confirmation.
+**Triggers:** `/Nexus` with no arguments → proactive mode (`reference/proactive-mode.md`); `## NEXUS_ROUTING` → **Nexus Hub Mode**. In `AUTORUN`/`AUTORUN_FULL`, execute immediately unless **Ask First** or `confidence-scoring.md` § Decision Thresholds or § Reversibility and Safety Overrides requires confirmation.
 
 **Phase contract:** `AUTORUN_FULL` = `PLAN → PREPARE → CHAIN_SELECT → SPECIFY? → EXECUTE → AGGREGATE → VERIFY → DELIVER`; `AUTORUN` = `CLASSIFY → CHAIN_SELECT → SPECIFY? → EXECUTE_LOOP → VERIFY → DELIVER`. `SPECIFY?` is gated — `reference/specify-phase.md`.
 
@@ -202,7 +202,7 @@ If context is unclear, inspect git state and `.agents/PROJECT.md`; if confidence
 Every deliverable carries `## NEXUS_COMPLETE`, task + ACs, chain + mode, per-step agent/status/summary, verification evidence, and summary status. Four ledgers are non-optional in substance:
 - **Acceptance Provenance** — every intent-contract criterion classified, none silent; prohibited outcomes on their own axis (Q15).
 - **Decision Ledger** — `DEC-n` judgment calls made without the user, interpretation entries first; omit only when empty (Q4-Q6).
-- **Residual Ledger** — each leftover as `RES-n` (class, blocker/owner, marker location, route), bound bidirectionally to any `#TODO(agent):` left behind, plus the completion-sweep line (`scanned, 0 hits` when clean — never omitted).
+- **Residual Ledger** — each leftover as `RES-n` (class, blocker/owner, marker location, route), bound bidirectionally to any `#TODO(agent):` left behind, plus the completion-sweep line (`scanned, 0 hits` when clean — never omitted at Light/Full tier).
 - **`## Prompt Tuning`** — delta-only trace when a spawn's directives were adapted; omit entirely when none were.
 
 Scale the envelope to the run: empty ledgers are one line (`Residuals: none`); SIMPLE single-agent runs use `output-formats.md` § Compact Form; per-step results are one line. Never drop the completion sweep.

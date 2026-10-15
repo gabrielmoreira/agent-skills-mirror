@@ -29,11 +29,13 @@ COLLABORATION_PATTERNS:
 - Architect -> Quill: Documentation follow-up
 - Architect -> Canvas: Visualization follow-up
 - Architect -> Judge: Quality review request, compression equivalence review
-- Void -> Architect: Agent sunset candidate identification
+- Prune -> Architect: Merge execution request (consolidate overlapping skills)
+- Compass -> Architect: LADDER gap signal (no skill fits the request)
+- Architect -> Prune: New-skill notification (overlap re-audit trigger)
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: User (requirements), Atlas (ecosystem analysis), Nexus (gap signals), Judge (quality feedback), Lore (insights), Darwin (evolution signals), Void (sunset candidates)
-- OUTPUT: Nexus (routing updates), Quill (docs), Canvas (diagrams), Judge (review requests)
+- INPUT: User (requirements), Atlas (ecosystem analysis), Nexus (gap signals), Judge (quality feedback), Lore (insights), Darwin (evolution signals), Prune (merge requests), Compass (LADDER gap signals)
+- OUTPUT: Nexus (routing updates), Quill (docs), Canvas (diagrams), Judge (review requests), Prune (new-skill notifications)
 
 PROJECT_AFFINITY: Game(M) SaaS(M) E-commerce(M) Dashboard(M) Marketing(L)
 -->
@@ -58,8 +60,8 @@ Route elsewhere when the task is primarily:
 - product lifecycle delivery: `Nexus[deliver]`
 - project-specific lightweight skills: `Sigil`
 - architecture analysis of application code: `Atlas`
-- ecosystem self-evolution strategy: `Darwin`
-- cross-agent knowledge synthesis: `Lore`
+- ecosystem self-evolution strategy: project-local `Darwin` when available; otherwise `Prune` for retention audits, or stay in Architect for approved ecosystem improvements (the registered fallbacks in `_common/PROJECT_LOCAL_SKILLS.md`)
+- cross-agent knowledge synthesis: project-local `Lore` when available; otherwise `Tome` / `Scribe`
 - SKILL.md format audit only: `Gauge`
 
 ## Core Contract
@@ -249,6 +251,8 @@ A complete deliverable carries the following — a ceiling, not a floor. Emit on
 
 Receives requirements and feedback from User, Atlas, Nexus, Compass, Judge, Lore, and Darwin; returns new-skill designs, routing changes, compression notifications, documentation follow-ups, review requests, and self-evolution reports.
 
+`Darwin` and `Lore` are project-local — apply the Availability Gate in `_common/PROJECT_LOCAL_SKILLS.md` before emitting `EVOLUTION_SIGNAL` or any handoff to them; if absent, route to the registered fallback (Darwin → `Prune` for retention audits, Architect itself for approved ecosystem improvements; Lore → `Tome` / `Scribe`) and report `project_local_fallback: true`.
+
 | Direction | Handoff | Purpose |
 |-----------|---------|---------|
 | Nexus → Architect | `NEXUS_TO_ARCHITECT_HANDOFF` | Gap signals and new-agent requests |
@@ -256,11 +260,11 @@ Receives requirements and feedback from User, Atlas, Nexus, Compass, Judge, Lore
 | Atlas → Architect | `ATLAS_TO_ARCHITECT_HANDOFF` | Ecosystem analysis and dependency maps |
 | Judge → Architect | `JUDGE_TO_ARCHITECT_FEEDBACK` | Quality feedback on skill files |
 | Architect → Nexus | `ARCHITECT_TO_NEXUS_HANDOFF` | New-agent notification and routing updates |
-| Architect → Quill | `ARCHITECT_TO_QUILL_HANDOFF` | Documentation follow-up |
+| Architect → Quill | `ARCHITECT_TO_QUILL` | Documentation follow-up |
 | Architect → Canvas | `ARCHITECT_TO_CANVAS_HANDOFF` | Visualization follow-up |
 | Architect → Judge | `ARCHITECT_TO_JUDGE_HANDOFF` | Quality review request |
 | Architect → Judge | `ARCHITECT_TO_JUDGE_COMPRESS_REVIEW` | Compression equivalence review |
-| Architect → Nexus | `ARCHITECT_TO_NEXUS_COMPRESS_NOTIFY` | Post-compression routing update |
+| Architect → Nexus | `ARCHITECT_TO_NEXUS_HANDOFF` (`purpose: compress-notify`) | Post-compression routing update |
 | Architect → Architect | `SELF_EVOLUTION_REPORT` | Self-improvement cycle result |
 
 ## AUTORUN Support

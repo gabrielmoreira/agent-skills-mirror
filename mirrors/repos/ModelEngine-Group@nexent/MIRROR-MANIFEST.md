@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `ModelEngine-Group/nexent` — 26 default patterns, 0 followed patterns, 74 file(s) materialized.
+Mirror of `ModelEngine-Group/nexent` — 26 default patterns, 0 followed patterns, 75 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ModelEngine-Group/nexent` — 26 default patterns, 0 followed pattern
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 74 |
+| Files         | 75 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -117,22 +117,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 56 | ✓ | [`.cursor/rules/backend/app_layer_rules.mdc`](.cursor/rules/backend/app_layer_rules.mdc) |
 | 57 | ✓ | [`.cursor/rules/backend/database_layer_rules.mdc`](.cursor/rules/backend/database_layer_rules.mdc) |
 | 58 | ✓ | [`.cursor/rules/backend/service_layer_rules.mdc`](.cursor/rules/backend/service_layer_rules.mdc) |
-| 59 | ✓ | [`.cursor/rules/english_comments.mdc`](.cursor/rules/english_comments.mdc) |
-| 60 | ✓ | [`.cursor/rules/environment_variable.mdc`](.cursor/rules/environment_variable.mdc) |
-| 61 | ✓ | [`.cursor/rules/frontend/component_layer_rules.mdc`](.cursor/rules/frontend/component_layer_rules.mdc) |
-| 62 | ✓ | [`.cursor/rules/frontend/frontend_overview_rules.mdc`](.cursor/rules/frontend/frontend_overview_rules.mdc) |
-| 63 | ✓ | [`.cursor/rules/frontend/hook_layer_rules.mdc`](.cursor/rules/frontend/hook_layer_rules.mdc) |
-| 64 | ✓ | [`.cursor/rules/frontend/page_layer_rules.mdc`](.cursor/rules/frontend/page_layer_rules.mdc) |
-| 65 | ✓ | [`.cursor/rules/frontend/service_layer_rules.mdc`](.cursor/rules/frontend/service_layer_rules.mdc) |
-| 66 | ✓ | [`.cursor/rules/frontend/type_layer_rules.mdc`](.cursor/rules/frontend/type_layer_rules.mdc) |
-| 67 | ✓ | [`.cursor/rules/frontend/ui_standards_rules.mdc`](.cursor/rules/frontend/ui_standards_rules.mdc) |
-| 68 | ✓ | [`.cursor/rules/pytest_unit_test_rules.mdc`](.cursor/rules/pytest_unit_test_rules.mdc) |
-| 69 | ✓ | [`.cursor/rules/test_asset_rules.mdc`](.cursor/rules/test_asset_rules.mdc) |
-| 70 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 71 | ✓ | [`doc/docs/en/integration/integration-in/skills.md`](doc/docs/en/integration/integration-in/skills.md) |
-| 72 | ✓ | [`doc/docs/zh/integration/integration-in/skills.md`](doc/docs/zh/integration/integration-in/skills.md) |
-| 73 | ✓ | [`test-e2e/infra/assets/skills/SKILL.md`](test-e2e/infra/assets/skills/SKILL.md) |
-| 74 | ✓ | [`test-e2e/infra/assets/tool-fastpath/skill/SKILL.md`](test-e2e/infra/assets/tool-fastpath/skill/SKILL.md) |
+| 59 | ✓ | [`.cursor/rules/copyright_header.mdc`](.cursor/rules/copyright_header.mdc) |
+| 60 | ✓ | [`.cursor/rules/english_comments.mdc`](.cursor/rules/english_comments.mdc) |
+| 61 | ✓ | [`.cursor/rules/environment_variable.mdc`](.cursor/rules/environment_variable.mdc) |
+| 62 | ✓ | [`.cursor/rules/frontend/component_layer_rules.mdc`](.cursor/rules/frontend/component_layer_rules.mdc) |
+| 63 | ✓ | [`.cursor/rules/frontend/frontend_overview_rules.mdc`](.cursor/rules/frontend/frontend_overview_rules.mdc) |
+| 64 | ✓ | [`.cursor/rules/frontend/hook_layer_rules.mdc`](.cursor/rules/frontend/hook_layer_rules.mdc) |
+| 65 | ✓ | [`.cursor/rules/frontend/page_layer_rules.mdc`](.cursor/rules/frontend/page_layer_rules.mdc) |
+| 66 | ✓ | [`.cursor/rules/frontend/service_layer_rules.mdc`](.cursor/rules/frontend/service_layer_rules.mdc) |
+| 67 | ✓ | [`.cursor/rules/frontend/type_layer_rules.mdc`](.cursor/rules/frontend/type_layer_rules.mdc) |
+| 68 | ✓ | [`.cursor/rules/frontend/ui_standards_rules.mdc`](.cursor/rules/frontend/ui_standards_rules.mdc) |
+| 69 | ✓ | [`.cursor/rules/pytest_unit_test_rules.mdc`](.cursor/rules/pytest_unit_test_rules.mdc) |
+| 70 | ✓ | [`.cursor/rules/test_asset_rules.mdc`](.cursor/rules/test_asset_rules.mdc) |
+| 71 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 72 | ✓ | [`doc/docs/en/integration/integration-in/skills.md`](doc/docs/en/integration/integration-in/skills.md) |
+| 73 | ✓ | [`doc/docs/zh/integration/integration-in/skills.md`](doc/docs/zh/integration/integration-in/skills.md) |
+| 74 | ✓ | [`test-e2e/infra/assets/skills/SKILL.md`](test-e2e/infra/assets/skills/SKILL.md) |
+| 75 | ✓ | [`test-e2e/infra/assets/tool-fastpath/skill/SKILL.md`](test-e2e/infra/assets/tool-fastpath/skill/SKILL.md) |
 
 ---
 

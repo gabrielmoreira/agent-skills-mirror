@@ -175,3 +175,20 @@ and name-targeted record edits. Each requires its negotiated capability. The pho
 owner selects records locally; receipts bind the exact approved fields and selected
 record revision. Reminder v2 timing is never sent to a v1 peer. No-match results are
 observations, not evidence of a completed edit.
+
+## Reviewed phone SMS
+
+The `sms.send.v1` device capability adds `sms_send` for the owner-approved
+[AlphaPhone communication scope](https://github.com/AlphaCompute/alphaphone/issues/421)
+and [MVP plan](https://github.com/AlphaCompute/alphaphone/blob/ef9825a6/docs/owner-approved-mvp-plan-2026-10-12.md).
+The host admits this capability only on its trusted AOSP image. The phone must
+review the exact recipients, text and active SIM on an unlocked screen before
+it sends. Use the execution claim's `providerIdempotencyKey` as the native
+operation ID. A repeated ID reads the journal; it must not send again.
+
+The receipt binds that ID, SIM and SHA-256 of `smsBindingText(operation)`.
+`submitted` proves only that the send API returned. `sent` requires all matching
+sent callbacks. `delivered` requires all matching delivery reports. The shared
+effect receipt proves submission only. Unknown and partial failures require
+reconciliation; they do not permit automatic retry. This contract does not
+implement MMS, native transport, SIM qualification or device delivery evidence.

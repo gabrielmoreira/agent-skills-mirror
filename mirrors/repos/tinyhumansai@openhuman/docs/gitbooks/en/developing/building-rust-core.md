@@ -160,6 +160,12 @@ node scripts/modules/pin-status.mjs
 node scripts/modules/release-and-repin.mjs tinydocs --bump patch
 ```
 
+`linked-modules` links all eleven registry modules (`crates/openhuman-modules-linked`, one
+feature per module plus `all`), so `OPENHUMAN_MODULE_SOURCE=linked` serves any of them from the
+executable. They share one `tinybus`, one TinyAgents and one `tinystoragedrivers` through the root
+`[patch]` tables, which is why a module repo names those by version range and never by `=` pin or
+nested path. Check it with `cargo build -p openhuman-modules-linked --features all`.
+
 `OPENHUMAN_MODULE_SOURCE_<ID>` overrides one module. If a `linked` or `source`
 module is unavailable the core falls back to the release and logs a warning;
 `modules.list` shows which source each module is served from. Details:

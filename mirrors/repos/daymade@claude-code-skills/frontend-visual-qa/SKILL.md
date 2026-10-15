@@ -1,6 +1,7 @@
 ---
 name: frontend-visual-qa
 description: >-
+  Audits rendered UI and specific task/object-link handoffs; excludes ordinary source citations alone.
   Audits already-rendered UI and Markdown/Obsidian image layout — web app, deck/slide, dashboard, design-system, or Electron/native app
   — via real-browser/native-app journeys and a Playwright sweep. Use after UI implementation to find
   typography, overflow, responsive, routing, data-viz, browser-output, or native-shell defects, or
@@ -32,6 +33,10 @@ profile that covers the request:
   browser tool/game, map/GIS, or review tool;
 - **reference parity** — comparison with a named screenshot, product, or tier;
 - **data visualization** — chart hierarchy, tokens, semantics, and accessibility.
+
+For a specific task/object link handoff, select **state and journey** for that
+destination, including authoritative machine and run/job identity when titles
+repeat. Keep the audit bounded to the promised destination.
 
 For a website/document converted to Markdown, or an illustrated transcript/note
 consumed in Obsidian or another named reader, load
@@ -278,6 +283,10 @@ The full capture-calibration protocol and minimum inspection set are in
 [references/browser-driving-and-observation-traps.md](references/browser-driving-and-observation-traps.md)
 §12. Extent and device-emulation traps specific to headless capture are
 catalogued in the same reference at §4–§5.
+
+Before reading an overflowing `<pre>` with horizontal wheel input, load the
+[fresh input-target check](references/browser-driving-and-observation-traps.md#horizontal-pre-reading-needs-a-fresh-input-target)
+and inspect the affected text positions rather than accepting scroll movement alone.
 
 Load [references/history-derived-checklist.md](references/history-derived-checklist.md)
 for the core visual/responsive defect catalog and standards-backed checks.

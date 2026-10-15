@@ -1,0 +1,58 @@
+{
+  "name": "piindex-mcp",
+  "version": "0.1.0",
+  "description": "Read-only MCP server for the Pi Index directory of Pi Coding Agent extensions.",
+  "mcpName": "io.github.bubbleptr/piindex",
+  "type": "module",
+  "license": "CC0-1.0",
+  "author": "Kieran (https://github.com/bubbleptr)",
+  "homepage": "https://piindex.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bubbleptr/awesome-pi.git",
+    "directory": "mcp"
+  },
+  "bugs": {
+    "url": "https://github.com/bubbleptr/awesome-pi/issues"
+  },
+  "keywords": [
+    "mcp",
+    "piindex",
+    "pi",
+    "pi-coding-agent",
+    "modelcontextprotocol"
+  ],
+  "bin": {
+    "piindex-mcp": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "catalog.snapshot.json",
+    "server.json",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "snapshot": "bun ../site/scripts/export-catalog.ts",
+    "test": "npm run build && node --experimental-strip-types --test test/*.test.ts",
+    "prepublishOnly": "npm run snapshot && npm test"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.1",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.1",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "typescript": "5.9.3"
+  }
+}

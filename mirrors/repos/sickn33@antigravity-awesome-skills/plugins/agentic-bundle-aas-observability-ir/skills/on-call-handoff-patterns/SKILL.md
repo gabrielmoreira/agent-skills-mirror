@@ -65,7 +65,7 @@ The names, dates, incidents and numbers below are synthetic examples. Replace th
 
 ### Template 1: Shift Handoff Document
 
-```markdown
+````markdown
 # On-Call Handoff: Platform Team
 
 **Outgoing**: @alice (2024-01-15 to 2024-01-22)
@@ -230,7 +230,7 @@ redis-cli INFO memory
 - [ ] Verify Slack notifications working
 - [ ] Check VPN/access working
 - [ ] Review critical dashboards
-```
+````
 
 ### Template 2: Quick Handoff (Async)
 

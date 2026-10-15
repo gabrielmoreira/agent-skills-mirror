@@ -1,36 +1,148 @@
 ---
 name: bevy-ai-navigation
-description: "Bevy ECS skill for AI navigation policy. Keywords: Bevy, AI, chase, patrol, navigation, ECS."
+description: "Bevy 0.20 chase, patrol, and wait policy: an enum brain, a goal, a desired velocity, and a retarget timer on FixedUpdate. Use when an actor must choose a goal before movement. Paths stay on bevy-navigation. Keywords: Brain, Goal, DesiredVelocity, PatrolRoute, FixedUpdate, chase, patrol."
 ---
 
 # Bevy AI navigation
 
 ## When to use
 
-Load this when an actor must chase, patrol, or wait, and you need to see which Bevy skill owns the next step. Path data and any future nav crate stay on bevy-navigation. Transform integration stays on bevy-character-movement. Line-of-sight sensors stay on bevy-spatial-queries until a solver exists.
+Load this when an actor must chase, patrol, or wait. This skill owns the intent and the desired velocity. Paths stay on bevy-navigation. Transform integration stays on bevy-character-movement. Line-of-sight sensors stay on bevy-spatial-queries.
 
 ## ECS shape
 
 - **Components:** a mode flag can be an enum `Component` (see bevy-state-machines for the pattern). Goal position can be your own component. No agent, radius, or layer type was opened.
 - **Resources:** a shared patrol table can be a `Resource` you define. No navigation resource was opened.
-- **Systems:** read the mode and write a desired velocity or waypoint on `Update` or `Fixed`. Use `.chain()` so policy runs before movement. Do not name a Godot-style agent callback.
+- **Systems:** read the mode and write a desired velocity or waypoint on `Update` or `Fixed`. Use `.chain()` so policy runs before movement. Do not call an agent callback that writes `Transform`.
 - **Schedule:** `Fixed` / `FixedMain` when the result feeds the movement step.
 
-## Coming from Godot
+## Policy map
 
-| Godot idea | Bevy idiom |
+| Need | Owner |
 | --- | --- |
-| Chase vs patrol | Enum component plus a system. Not a navigation agent |
-| Retarget throttle | Your timer resource or a fixed-step counter. Check the navigation docs before assuming a retarget API. |
-| Crowd / avoidance | Crowd and avoidance belong on bevy-navigation. Check that skill before naming radii. |
-| Bake vs obstacle | Bake and obstacle handling belong on bevy-navigation. |
-| Line of sight | Line of sight belongs on bevy-spatial-queries. |
+| Chase vs patrol vs wait | Enum `Component` plus a system that writes `Goal` |
+| Retarget throttle | `Timer` resource ticked on `FixedUpdate` |
+| Crowd and avoidance | bevy-navigation |
+| Bake and obstacles | bevy-navigation |
+| Line of sight | bevy-spatial-queries |
 
-## Scope
+Policy writes `DesiredVelocity`. It does not move `Transform` and it does not query a navmesh.
 
-- No Bevy navigation module was opened, so node-agent versus server, bake, links, and layers have no Bevy names.
-- Sensors that need a cast belong with bevy-physics-2d and bevy-physics-3d once you choose a physics solver.
-- Formations and stuck recovery are design notes only.
+```toml
+[dependencies]
+bevy = "0.20"
+```
+
+```rust
+#[derive(Clone, Copy, PartialEq, Eq, Component)]
+enum Brain {
+    Wait,
+    Patrol,
+    Chase,
+}
+
+#[derive(Component)]
+struct WaypointIndex(usize);
+
+#[derive(Component)]
+struct Goal(Vec3);
+
+#[derive(Component)]
+struct DesiredVelocity(Vec3);
+
+#[derive(Component)]
+struct Player;
+
+#[derive(Resource)]
+struct PatrolRoute {
+    points: Vec<Vec3>,
+}
+
+#[derive(Resource)]
+struct RetargetClock(Timer);
+
+fn tick_policy(
+    time: Res<Time>,
+    mut clock: ResMut<RetargetClock>,
+    route: Res<PatrolRoute>,
+    players: Query<&Transform, With<Player>>,
+    mut actors: Query<(&Brain, &Transform, &mut WaypointIndex, &mut Goal)>,
+) {
+    clock.0.tick(time.delta());
+    if !clock.0.just_finished() {
+        return;
+    }
+    let player_pos = players.iter().next().map(|transform| transform.translation);
+    for (brain, transform, mut cursor, mut goal) in &mut actors {
+        match *brain {
+            Brain::Wait => goal.0 = transform.translation,
+            Brain::Patrol => {
+                if route.points.is_empty() {
+                    continue;
+                }
+                cursor.0 = (cursor.0 + 1) % route.points.len();
+                goal.0 = route.points[cursor.0];
+            }
+            Brain::Chase => {
+                if let Some(pos) = player_pos {
+                    goal.0 = pos;
+                }
+            }
+        }
+    }
+}
+
+fn steer(mut actors: Query<(&Transform, &Goal, &mut DesiredVelocity), With<Brain>>) {
+    for (transform, goal, mut velocity) in &mut actors {
+        let offset = goal.0 - transform.translation;
+        let flat = Vec3::new(offset.x, 0.0, offset.z);
+        velocity.0 = if flat.length_squared() < 0.05 {
+            Vec3::ZERO
+        } else {
+            flat.normalize() * 3.0
+        };
+    }
+}
+
+pub struct NavPolicyPlugin;
+
+impl Plugin for NavPolicyPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(PatrolRoute {
+            points: vec![Vec3::new(-6.0, 0.0, 0.0), Vec3::new(6.0, 0.0, 4.0)],
+        })
+        .insert_resource(RetargetClock(Timer::from_seconds(
+            0.4,
+            TimerMode::Repeating,
+        )))
+        .add_systems(FixedUpdate, (tick_policy, steer).chain());
+    }
+}
+```
+
+```rust
+#[derive(Component)]
+struct PatrolAgent;
+
+fn spawn_patrol(mut commands: Commands) {
+    commands.spawn((
+        PatrolAgent,
+        Transform::from_xyz(0.0, 0.0, 0.0),
+        DesiredDir(Vec3::X),
+    ));
+}
+
+#[derive(Component)]
+struct DesiredDir(Vec3);
+
+fn hold_when_close(mut agents: Query<(&Transform, &mut DesiredDir), With<PatrolAgent>>) {
+    for (transform, mut desired) in &mut agents {
+        if transform.translation.distance(Vec3::ZERO) < 0.5 {
+            desired.0 = Vec3::ZERO;
+        }
+    }
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -54,7 +166,7 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | One script that owns the whole actor |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
@@ -69,36 +181,33 @@ Load [references/ecs-ownership.md](ai-navigation-ecs-ownership.md) for the owner
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot navigation agent or server types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No navigation-agent or nav-server types from another engine. WHY: this skill writes `Goal` and `DesiredVelocity`; a foreign agent type would move `Transform` and skip the chain into movement.
 - No named third-party navigation or physics crate. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 - No invented path, bake, or avoidance APIs. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20.0**. No AI navigation module was opened. Load [references/ecs-ownership.md](ai-navigation-ecs-ownership.md) when splitting goal writes from velocity writes. Do not load it to bake a mesh.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - Unversioned API index. No AI navigation module was opened.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No AI plugin was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, `Resource` pairing via bevy-data-resources, systems, and `.chain()`.
-- [bevy::state](https://docs.rs/bevy/latest/bevy/state/index.html) - App states are not per-entity patrol modes. Per-entity flags stay components (bevy-state-machines).
+- App states are not per-entity patrol modes. Per-entity flags stay components (bevy-state-machines).
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership.
-- [bevy-navigation](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-navigation/SKILL.md) - Paths and navigation meshes.
-- [bevy-state-machines](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Enum components for a mode flag.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership.
+- [bevy-navigation](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-navigation/SKILL.md) - Paths and navigation meshes.
+- [bevy-state-machines](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Enum components for a mode flag.
 
 #### Complements
-- [bevy-character-movement](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-character-movement/SKILL.md) - Integrates a waypoint or velocity.
-- [bevy-spatial-queries](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-spatial-queries/SKILL.md) - Sensors and spatial queries.
-- [godot-ai-navigation](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-ai-navigation/SKILL.md) - Equivalent Godot skill.
+- [bevy-character-movement](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-character-movement/SKILL.md) - Integrates a waypoint or velocity.
+- [bevy-spatial-queries](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-spatial-queries/SKILL.md) - Sensors and spatial queries.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

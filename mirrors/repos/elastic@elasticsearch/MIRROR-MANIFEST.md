@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `elastic/elasticsearch` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `elastic/elasticsearch` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `elastic/elasticsearch` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,18 +63,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`benchmarks/AGENTS.md`](benchmarks/AGENTS.md) |
 | 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 4 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 5 | ✓ | [`libs/columnar/AGENTS.md`](libs/columnar/AGENTS.md) |
-| 6 | ✓ | [`x-pack/plugin/core/src/main/java/org/elasticsearch/xpack/core/ml/AGENTS.md`](x-pack/plugin/core/src/main/java/org/elasticsearch/xpack/core/ml/AGENTS.md) |
-| 7 | ✓ | [`x-pack/plugin/core/src/main/java/org/elasticsearch/xpack/core/ml/CLAUDE.md`](x-pack/plugin/core/src/main/java/org/elasticsearch/xpack/core/ml/CLAUDE.md) |
-| 8 | ✓ | [`x-pack/plugin/esql/compute/AGENTS.md`](x-pack/plugin/esql/compute/AGENTS.md) |
-| 9 | ✓ | [`x-pack/plugin/inference/AGENTS.md`](x-pack/plugin/inference/AGENTS.md) |
-| 10 | ✓ | [`x-pack/plugin/inference/CLAUDE.md`](x-pack/plugin/inference/CLAUDE.md) |
-| 11 | ✓ | [`x-pack/plugin/ml/AGENTS.md`](x-pack/plugin/ml/AGENTS.md) |
-| 12 | ✓ | [`x-pack/plugin/ml/CLAUDE.md`](x-pack/plugin/ml/CLAUDE.md) |
-| 13 | ✓ | [`x-pack/plugin/otel-data/AGENTS.md`](x-pack/plugin/otel-data/AGENTS.md) |
-| 14 | ✓ | [`x-pack/plugin/otel-data/CLAUDE.md`](x-pack/plugin/otel-data/CLAUDE.md) |
-| 15 | ✓ | [`x-pack/plugin/transform/AGENTS.md`](x-pack/plugin/transform/AGENTS.md) |
-| 16 | ✓ | [`x-pack/plugin/transform/CLAUDE.md`](x-pack/plugin/transform/CLAUDE.md) |
+| 5 | ✓ | [`docs/reference/query-languages/promql/AGENTS.md`](docs/reference/query-languages/promql/AGENTS.md) |
+| 6 | ✓ | [`docs/reference/query-languages/promql/CLAUDE.md`](docs/reference/query-languages/promql/CLAUDE.md) |
+| 7 | ✓ | [`libs/columnar/AGENTS.md`](libs/columnar/AGENTS.md) |
+| 8 | ✓ | [`x-pack/plugin/core/src/main/java/org/elasticsearch/xpack/core/ml/AGENTS.md`](x-pack/plugin/core/src/main/java/org/elasticsearch/xpack/core/ml/AGENTS.md) |
+| 9 | ✓ | [`x-pack/plugin/core/src/main/java/org/elasticsearch/xpack/core/ml/CLAUDE.md`](x-pack/plugin/core/src/main/java/org/elasticsearch/xpack/core/ml/CLAUDE.md) |
+| 10 | ✓ | [`x-pack/plugin/esql/compute/AGENTS.md`](x-pack/plugin/esql/compute/AGENTS.md) |
+| 11 | ✓ | [`x-pack/plugin/esql/src/main/java/org/elasticsearch/xpack/esql/plan/logical/promql/AGENTS.md`](x-pack/plugin/esql/src/main/java/org/elasticsearch/xpack/esql/plan/logical/promql/AGENTS.md) |
+| 12 | ✓ | [`x-pack/plugin/esql/src/main/java/org/elasticsearch/xpack/esql/plan/logical/promql/CLAUDE.md`](x-pack/plugin/esql/src/main/java/org/elasticsearch/xpack/esql/plan/logical/promql/CLAUDE.md) |
+| 13 | ✓ | [`x-pack/plugin/inference/AGENTS.md`](x-pack/plugin/inference/AGENTS.md) |
+| 14 | ✓ | [`x-pack/plugin/inference/CLAUDE.md`](x-pack/plugin/inference/CLAUDE.md) |
+| 15 | ✓ | [`x-pack/plugin/ml/AGENTS.md`](x-pack/plugin/ml/AGENTS.md) |
+| 16 | ✓ | [`x-pack/plugin/ml/CLAUDE.md`](x-pack/plugin/ml/CLAUDE.md) |
+| 17 | ✓ | [`x-pack/plugin/otel-data/AGENTS.md`](x-pack/plugin/otel-data/AGENTS.md) |
+| 18 | ✓ | [`x-pack/plugin/otel-data/CLAUDE.md`](x-pack/plugin/otel-data/CLAUDE.md) |
+| 19 | ✓ | [`x-pack/plugin/transform/AGENTS.md`](x-pack/plugin/transform/AGENTS.md) |
+| 20 | ✓ | [`x-pack/plugin/transform/CLAUDE.md`](x-pack/plugin/transform/CLAUDE.md) |
 
 ---
 

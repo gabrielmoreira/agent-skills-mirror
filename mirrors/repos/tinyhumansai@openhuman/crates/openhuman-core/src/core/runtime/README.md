@@ -204,8 +204,8 @@ Three guards keep SaaS work from falling back to process-wide state:
   (`config/schema/load/saas_scope.rs`). It never resolves
   `OPENHUMAN_WORKSPACE`, `active_user.toml` or `~/.openhuman`.
 - **Scoped spawns.** `runtime/spawn.rs`'s `spawn_scoped` /
-  `spawn_blocking_scoped` carry the caller's `CoreContext` and memory identity
-  into the spawned task. `scripts/ci/check-saas-ambient.mjs` (`pnpm
+  `spawn_blocking_scoped` carry the caller's `CoreContext` into the spawned task
+  (the memory identity is explicit and is handed to spawned work as a value). `scripts/ci/check-saas-ambient.mjs` (`pnpm
   saas:ambient`) ratchets the bare spawns, direct `load_or_init` calls,
   environment writes and `home_dir()` lookups that remain.
   `CoreContext::propagate` follows the same rule in SaaS.

@@ -4,6 +4,32 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.300](https://github.com/Piebald-AI/claude-code-system-prompts/commit/34073d4)
+
+_+10,545 tokens_
+
+- **NEW:** Data: Managed settings x-whenUnreadable field — Defines fallback and unusable states for invalid managed values; an unusable MCP server list keeps plugin-provided server tools blocked.
+- **NEW:** Data: OpenTelemetry tracing reference (C#, Go, Java, PHP, Python, Ruby, TypeScript) — Adds SDK tracing examples for registering providers, configuring content recording, and propagating context to connect application, SDK, and API spans.
+- **NEW:** System Prompt: Pasted content instruction trust boundary — Treats paste-only messages as requests without confirmation, checks pasted commands before execution, and keeps embedded document instructions separate from user intent.
+- **NEW:** System Prompt: Published artifact inline edits and large-change republish and Published artifact same-response edit and republish — Prefer inline publish edits when supported; otherwise edit before republishing in the same response, preserving the published artifact when edits fail.
+- **NEW:** System Prompt: Session scratchpad temporary-file guidance — Requires session scratchpad use instead of system temporary directories unless explicitly requested, and complete absolute paths when naming scratchpad files.
+- **NEW:** System Reminder: App tool server retrying connection failure — Continues work while app tools reconnect automatically; avoids user-side repair requests and describes blocking failures only as something wrong on our end.
+- **NEW:** System Reminder: Combined thinking and reply token budget — Warns that reasoning and reply share one token limit; directs effort toward planning long deliverables rather than drafting the output twice.
+- **NEW:** System Reminder: Staged files failed to arrive — Warns that failed transfers can leave missing or older files; identifies disk-space and filename-length remedies, requiring consent before deleting user files.
+- **NEW:** Tool Description: Artifact multi-file edit and republish guidance and Artifact small-change edit and republish guidance — Require edits before republishing the same path in one response, avoid unnecessary reads, and preserve publication when an edit fails.
+- **NEW:** Tool Description: Claude in Chrome switched-off chat guidance and Claude in Chrome switched-off and unlinked chat guidance — Explain disabled access and optional computer linking, restrict troubleshooting to supported setup steps, and continue with available tools instead of guessing causes.
+- **NEW:** Tool Description: Claude in Chrome unavailable stub result — Explains that the stub enables nothing; reports unavailable Chrome access without guessing causes or suggesting setup, and uses available alternatives.
+- **NEW:** Tool Description: Plugin organization submission and replacement — Describes consented uploads and organization review, requires fresh consent for replacement, and waits for user action before retrying an outdated version.
+- **NEW:** Tool Description: Project local_file read-only workflow — Requires copying read-only project files into a new working file before editing; saving an uploaded document creates text without replacing the upload.
+- **REMOVED:** Tool Description: Existing Claude Docs artifact content — Drops the standalone instructions to edit the document bound to an artifact and create a replacement only when that document is absent.
+- Agent Prompt: Agent Hook — Removes the instruction to ignore `transcript_path` in hook input when no transcript file exists; still states that no transcript is available.
+- Agent Prompt: Web fetch agent usage guidance and Web reading specialist — Limit retries to timeouts, dropped connections, or `Retry-After` responses; warn against resending permanently failed URLs and sites refusing automated fetches.
+- Data: Claude Code agent proxy troubleshooting guide — No longer attributes proxy denials specifically to organization policy; describes disallowed hosts as the usual cause and removes named escalation destinations.
+- Skill: Mod GitHub sharing consent — Requires scanning files for keys before reading them, leaves flagged files unopened, and checks remaining files for secrets, internal URLs, or others' data.
+- Tool Description: Artifact HTML document skeleton — Requires side-viewport metadata and both gutter paddings together; leaves older pages lacking both unchanged unless the request reworks their layout.
+- Tool Description: Computer use enable stub guidance — Requires loading all deferred computer tools in one tool-search call and waiting for its result before using them; no separate enable step exists.
+- Tool Description: Updating existing artifacts (app wording) — Adds same-response edit-and-republish guidance selected by inline-edit support, requiring edits before publication and preserving the artifact when an edit fails.
+
 # [2.1.299](https://github.com/Piebald-AI/claude-code-system-prompts/commit/8b74d89)
 
 _+6,453 tokens_

@@ -146,7 +146,14 @@ admitted skill-test JWT scope.
 Project-source API additions: GET `/api/companies/{companyId}/skill-sources/project-repositories`,
 POST `/api/companies/{companyId}/skill-sources/adopt-project` with `workspaceId`, and
 PATCH `/api/companies/{companyId}/skill-sources/{sourceId}/settings` with expected revision
-and update/connection preferences. Native API discovery uses the OpenAPI registration.
+and update/connection preferences. `trackingRef` accepts a branch or explicit ref;
+`"HEAD"` keeps default-branch tracking. GET `/api/companies/{companyId}/skill-sources/{sourceId}/branches`
+returns a bounded branch list and the default branch, with optional `connectionId` for
+connection repair. It requires source access and `skills.edit`, and reads only through
+the caller's authorized GitHub grant. Saving validates the requested ref before changing
+an independent source; active project bindings must be edited through their
+project configuration. Responses identify branch, connection, or retry repair and distinguish
+queued imports from imports under an active worker lease. Native API discovery uses the OpenAPI registration.
 
 Project-derived read/use permission follows current project authorization, with access
 through either originating project. File/version reads, source metadata, mutations,
@@ -168,6 +175,12 @@ do not retry automatically. Deferred jobs remain durable behind per-project and
 company admission limits. Scheduled refresh compares immutable tree identity and
 uses a persistent work allowance; manual refresh still requires its existing
 policy/access checks. These limits grant no content or execution access.
+
+Repository import, preview, and refresh share the bounded dependency-package fallback.
+Missing-reference warnings do not deny an otherwise authorized import. Recovered
+files come only from the same immutable, authorized Git tree and pass the existing
+content audit; no host paths or additional credentials are consulted. Source tests
+cover transitive files, limits, retained versions, and legacy dependency-error recovery.
 
 Agent repository setup preserves the active run's selected GitHub connection/grant
 IDs. Missing selections require human repair; the worker never searches the

@@ -23,12 +23,16 @@
 
 <code>npx rea-agents setup</code>
 
+</div>
+
 > [!IMPORTANT]
 > Κατέβασε το REA από το [morluto/rea](https://github.com/morluto/rea),
 > το [rea.tools](https://rea.tools/) ή το [πακέτο rea-agents στο npm](https://www.npmjs.com/package/rea-agents).
 > Ακολούθησε τους συνδέσμους εγκατάστασης και εκδόσεων από αυτές τις επίσημες πηγές.
 > Ένα παρόμοιο όνομα αποθετηρίου ή ένα αντιγραμμένο README δεν αποδεικνύει ότι
 > ένα αρχείο προς λήψη προέρχεται από επίσημη πηγή.
+
+<div align="center">
 
 <br />
 

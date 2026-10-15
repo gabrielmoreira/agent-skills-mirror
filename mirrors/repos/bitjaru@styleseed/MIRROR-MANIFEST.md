@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 76 file(s) materialized.
+Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 78 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 76 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 76 |
+| Files         | 78 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -133,8 +133,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 72 | ✓ | [`skills/styleseed/workflows/ss-update/scripts/check-update.mjs`](skills/styleseed/workflows/ss-update/scripts/check-update.mjs) |
 | 73 | ✓ | [`skills/styleseed/workflows/ss-update/scripts/consolidate-skills.mjs`](skills/styleseed/workflows/ss-update/scripts/consolidate-skills.mjs) |
 | 74 | ✓ | [`skills/styleseed/workflows/ss-update/WORKFLOW.md`](skills/styleseed/workflows/ss-update/WORKFLOW.md) |
-| 75 | ✓ | [`skills/styleseed/workflows/ss-verify/scripts/inspect-spacing.mjs`](skills/styleseed/workflows/ss-verify/scripts/inspect-spacing.mjs) |
-| 76 | ✓ | [`skills/styleseed/workflows/ss-verify/WORKFLOW.md`](skills/styleseed/workflows/ss-verify/WORKFLOW.md) |
+| 75 | ✓ | [`skills/styleseed/workflows/ss-verify/references/applied-checks.md`](skills/styleseed/workflows/ss-verify/references/applied-checks.md) |
+| 76 | ✓ | [`skills/styleseed/workflows/ss-verify/scripts/inspect-appearance.mjs`](skills/styleseed/workflows/ss-verify/scripts/inspect-appearance.mjs) |
+| 77 | ✓ | [`skills/styleseed/workflows/ss-verify/scripts/inspect-spacing.mjs`](skills/styleseed/workflows/ss-verify/scripts/inspect-spacing.mjs) |
+| 78 | ✓ | [`skills/styleseed/workflows/ss-verify/WORKFLOW.md`](skills/styleseed/workflows/ss-verify/WORKFLOW.md) |
 
 ---
 

@@ -61,7 +61,7 @@ flowchart LR
     end
     subgraph C["C · utilities"]
         direction LR
-        c1[cutout] ~~~ c2[slice-sheet] ~~~ c3[unpack-atlas]
+        c1[cutout] ~~~ c2[slice-sheet] ~~~ c4[ui-kit] ~~~ c3[unpack-atlas]
     end
     subgraph D["D · post-processing"]
         direction LR
@@ -134,6 +134,7 @@ A watch on one wrist, a pin on one side of the head? Turned over, a right-facing
 ```bash
 sprite-gen cutout icon.png --white-check              # white/ivory → matte, magenta/green → chroma engine
 sprite-gen slice-sheet --sheet sheet.png --chroma-key magenta --grid 3x2   # multi-figure sheet → per-cell cuts
+sprite-gen ui-kit --sheet uikit.png --out-dir ui/     # UI kit sheet (gen --layout-guide ui-kit) → nine-slice elements
 sprite-gen unpack-atlas --atlas sheet.png             # finished atlas → curator-ready run (or --pngs-dir folder/)
 ```
 
@@ -150,6 +151,7 @@ sprite-gen export-aseprite --run-dir <run>                       # Aseprite JSON
 
 ```bash
 sprite-gen background-tile --source background.png --period 512 --overlap 32 --out tile.png
+sprite-gen background-tile --source ground.png --axis xy --period 960 --overlap 64 --out ground-tile.png  # both ways
 sprite-gen shadow --source walk.strip.json --out-dir shadows/
 sprite-gen inspect-motion --source walk.strip.json --out motion.json
 # Only with known same-foot contact and an isolated foot ROI:

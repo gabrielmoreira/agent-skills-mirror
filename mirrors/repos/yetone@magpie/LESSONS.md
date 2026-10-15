@@ -56,6 +56,17 @@ app's values come from that app, a test named for a guarantee fails without
 it, a test never reaches the network, a tag waits for a green run and is not
 a release, and a large commit has a body with what was run.
 
+From 10-14 04:16 to 10-15 07:30 there were 275 commits and 16 tags
+(v0.1.1229 to v0.1.1244), each on a green run with its 16 assets. Two
+security holes were reported and fixed where every route passes: a page
+sending `Origin: null` (#2242) and a `*.localhost` page that WebKit
+resolves through DNS (#2256) both spent a subscription without a key. Main
+went red six times from tests that measured time instead of the state
+they were about: five waited a fixed duration, and one pinned a date that
+was tomorrow in UTC. A community layout change was merged and reverted the
+same day (#1354). Three plugin versions were bumped but never reached npm
+(plugins#56).
+
 ## Reading the report
 
 **Reproduce the reporter's exact case, on the surface they use, before you
@@ -163,6 +174,42 @@ protocol, never by a key's name.**
 - When writing such a sentence, file an issue in the same commit.
 - Seen 1× (2026-10-10).
 
+**An origin exemption judges every Origin a browser can send, not only
+the http(s) names it expects.**
+- c20bb76c4 (#2242, JasonBuildAI): `foreignPage` judged only http and https
+  origins, so `Origin: null`, which a sandboxed frame sends, passed
+  corsGuard without a key and spent the user's subscription. Null now needs
+  a gateway key.
+- d182294be (#2256, ggbdpq): every `*.localhost` counted as this computer
+  because "browsers resolve it to loopback". Chrome and Firefox do; WebKit
+  before macOS 26 asks the system resolver, so a hostile network's DNS
+  serves such a page from anywhere. Now it needs a key too, except
+  tauri.localhost and wails.localhost on Windows, where those webviews
+  live.
+- List what can arrive: null, each scheme, each engine's resolution of the
+  name, and a missing Origin (the 10-10 rebinding case). Test each one
+  without a key.
+- Seen 2× (2026-10-10, 2026-10-14).
+
+**A file another process rewrites is read as possibly half-written.**
+- #1928's host.js `mdev()` read models.json while catalog.Sync rewrote it
+  in place, and could drop the catalog on a half-written read (194b2fd3c).
+- Done right: d5847f198 writes Codex's auth.json to a flushed temp file
+  and renames it over the old one.
+- Write through temp-and-rename, and keep the last good read when a parse
+  fails.
+- Seen 1× (2026-10-14).
+
+**A pinned hash or a new download source is checked against the vendor,
+and trusted only as far as who can write it.**
+- 4e9335c96 pinned Bun's windows-aarch64 SHA-256. The review checked it
+  against Bun's own SHASUMS256.txt, not the commit's word.
+- 118f4f28b installs a plugin npm doesn't have from the plugins repo's
+  `dist` branch. Its sha512 comes from the same branch, so it only guards
+  against a bad mirror. The trust is in who can push `dist`: publish.yml
+  on a push to main (pull_request runs get no write token).
+- Seen 1× (2026-10-14).
+
 **Text magpie adds to a prompt that goes to a vendor names neither magpie
 nor the vendor's limits.**
 - 5d33f060b (10-12) headed the models it added to Codex's spawn_agent
@@ -218,6 +265,30 @@ could match the same key.**
 - Seen 1× (2026-10-05).
 
 ## Verification
+
+**A fixed date in a test is checked against every clock the code reads.**
+- 3c4b4dc97 (#1591) held usage's clock at 2026-10-15 12:00 and wrote its
+  rollouts then, but /api/sessions/overview counts seven days up to the
+  real today. In UTC+8 it passed; on CI, in UTC on 10-14, the fixture was
+  tomorrow and main went red (21aa40285). From 10-23 it would have been
+  red everywhere.
+- Hold every clock the path reads, or write the fixture at time.Now(). Run
+  it once with TZ=UTC and once in a far zone.
+- Seen 1× (2026-10-15).
+
+**A new field on a polled endpoint is costed at the poll's rate.**
+- 644f4316f's Codex model/effort consumption was read again on every 15s
+  Sessions poll. 019199e0f reads it again only when a call, price or
+  identity changed, before a release.
+- Seen 1× (2026-10-14), done right.
+
+**A full run gives the slow packages room.** `go test ./...` at the default
+10m timeout times out in internal/gateway (#2108), and under load in
+internal/provider and internal/agent. Use -timeout 45m, so "every package
+ok except gateway" stops being a normal run record.
+- 194b2fd3c, 2fbbd1694, 3e812ebde and 3ec45e715 each recorded a timed-out
+  package.
+- Seen 1× (2026-10-14).
 
 **Windows CI only compiles the tests, so a Windows-only red shows
 nowhere.** Run the package on the Windows box before calling a Windows
@@ -286,6 +357,14 @@ Two habits from them:
   timeout panic is not a hang until its stacks show one.
 - Reproduce a timing flake by injecting the delay, not by rerunning until
   it fails (0f8e4ebc, 229ce19a, 9e35eef3).
+- Wait for the state, or count what the test is about, never a duration.
+  On 10-14 five tests went red on CI for a fixed wait:
+  TestClaudeRunEndsAfterStructuredOutput (c4c3cafa2),
+  TestAgentGoneInTheRetryPause's 100ms (b8070cc6c),
+  TestCanceledRequestRestsNobody's 50ms (685521888),
+  TestProviderListReadsSettingsOnce's 2s bar, now a count of parses
+  (a36319d60), and TestCursorEditorCopiedOncePerChange's 100ms linger
+  (2efb71ea0).
 
 ## Red tests and releases
 
@@ -335,6 +414,15 @@ cause:
   on an origin/main 552e974f2 copy" and filed none of them; they were
   fixed one by one over the next day (searcher-pick, profile-in-use,
   library-mcp-tools among them).
+- 10-14: reds named in a body and left unfiled again. 56fcd1dc2 shipped
+  past a usage-ledger red that "passes alone". hhh2210's
+  TestPluginSOCKSProxy red on Bun 1.4.3 was filed only by the review
+  (#2207). b476dc5a9's Routing GUI reds on untouched main have #2252 and
+  nothing else. A red gets its own issue, with its output, in the same
+  commit.
+- A cancelled run tests nothing. On 10-14 nine pushes in ten minutes
+  cancelled each other's runs, and 3c4b4dc97 never had a run of its own;
+  its red showed first at 84f14e555.
 - Done right: 2bd49cc5's race was fixed at its cause in 25 minutes
   (28049bd2, -race -count=40 -cpu 1,2). 60f87223, b1cba654, 443f1cbc and
   395c4bc5 fixed flakes at their cause instead of retrying. 06420a71 fixed
@@ -378,7 +466,19 @@ own change and what was run at the reviewed head.
   isn't in git at all: the body after its subject is other commits.
 - Before pushing, check that `git log -1 --format=%B | wc -c` is a few KB at
   most.
-- Seen 1× (2026-10-13).
+- 10-14: b6e82c6c5 put a paragraph in the subject line. The subject is one
+  short line; the rest goes in the body.
+- Seen 2× (2026-10-13, 2026-10-14).
+
+**A community PR that changes how a page looks is not merged on review
+alone.**
+- #1354 (Nxir) rearranged the Routing page with no issue asking for it. It
+  passed review and shipped, users rejected it the same day ("v0.1.1231
+  没有这个问题"), and bfef5d51b reverted it whole. The fault was the merge,
+  not the author.
+- A layout change needs an issue or the owner asking for it. The default is
+  no.
+- Seen 1× (2026-10-14).
 
 **Two sessions never commit from the same checkout.**
 - 10-09 12:10: 2018882e carries the davsync subject but holds the GTK
@@ -479,6 +579,18 @@ each one.
   - Whatever a test starts: Devin's held installer (2ff4ecb42) and a
     Claude sign-in's `claude auth login` run (ebbe76420, #1802) outlived
     their tests.
+- **10-14, criteria still missed.**
+  - A large commit has a body with what was run: 509328ccb and c1e354245
+    pointed to "the push" for it. A pointer is not a record.
+  - A tag is not a release: zed 0.1.7 and zen-free 0.1.2 to 0.1.4 were
+    bumped and never reached npm (plugins#56). Done right: every mover min
+    raised on 10-14 (0337ce4bc, 50929661f, bd4cb7a26, 2c18c697c,
+    aae49d086) named a version npm had.
+- **Done right on 10-14.** 86cc7ac56 (hhh2210) ran -race -count=20 and
+  says its ordering was injected, not captured. f074996d9 named its load
+  red's issue (#2066). bfef5d51b checked the reverted page's screenshots
+  against v0.1.1231's assets. 21aa40285 ran the fixed test in four time
+  zones.
 - **Done right on 10-11 to 10-13.** 2dcc51417 found 3ccbe6bc1's reds the
   same evening. 5241de909 guards a caller's image URL at the one place all
   three draw paths download it. 86b2f4d05 fixed revoked sign-ins for every

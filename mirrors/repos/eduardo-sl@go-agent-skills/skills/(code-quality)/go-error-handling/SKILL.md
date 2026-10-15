@@ -15,13 +15,24 @@ compatibility: Designed for Claude Code or similar AI coding agents working on G
 allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(gofmt:*)
 metadata:
   author: eduardo-sl
-  version: "1.2.1"
+  version: "1.3.1"
 ---
 
 # Go Error Handling
 
 Go's explicit error handling is a feature, not a limitation.
 These patterns ensure errors are informative, actionable, and properly propagated.
+
+> Community default. A project skill or agent-config rule that explicitly
+> supersedes `go-error-handling` takes precedence over this one.
+
+Detailed reference material, loaded on demand:
+
+- `references/patterns-and-boundaries.md` — checking patterns, `Is`
+  methods, translating errors at the HTTP boundary, low-cardinality logging,
+  the Go 1.27 vet check on `%w` with pointer errors.
+
+Read a reference file only when the summary below is not enough.
 
 ## 1. Error Decision Tree
 
@@ -72,11 +83,29 @@ func (e *ValidationError) Error() string {
     return fmt.Sprintf("validation: field %s: %s", e.Field, e.Message)
 }
 
-// Callers extract with errors.As:
+// Callers extract it from the chain — Go 1.26+:
+if valErr, ok := errors.AsType[*ValidationError](err); ok {
+    log.Printf("invalid field: %s", valErr.Field)
+}
+
+// Before Go 1.26:
 var valErr *ValidationError
 if errors.As(err, &valErr) {
     log.Printf("invalid field: %s", valErr.Field)
 }
+```
+
+A custom type that wraps a cause must expose it, or `errors.Is`/`errors.As`
+stop at your type and never see the error underneath:
+
+```go
+type QueryError struct {
+    Query string
+    Err   error
+}
+
+func (e *QueryError) Error() string { return "query " + e.Query + ": " + e.Err.Error() }
+func (e *QueryError) Unwrap() error { return e.Err } // keeps the chain walkable
 ```
 
 ## 4. Error Wrapping
@@ -169,31 +198,30 @@ to prevent one request from crashing the server.
 
 ## 8. Error Checking Patterns
 
-```go
-// Inline error check — preferred for simple cases
-if err := doSomething(); err != nil {
-    return fmt.Errorf("do something: %w", err)
-}
+- Scope the error to the `if` when nothing else needs it:
+  `if err := do(); err != nil { return fmt.Errorf("do: %w", err) }`.
+- A deferred wrap on a named `err` result adds one prefix to every return
+  path of a long function.
+- Collect independent failures (validation, parallel work) and return
+  `errors.Join(errs...)` — `errors.Is`/`As` see every joined error.
 
-// Multi-return with named result — acceptable for complex functions
-func process() (result string, err error) {
-    defer func() {
-        if err != nil {
-            err = fmt.Errorf("process: %w", err)
-        }
-    }()
-    // ...
-}
+## 9. Errors at Boundaries
 
-// errors.Join for multiple errors (Go 1.20+)
-var errs []error
-for _, item := range items {
-    if err := validate(item); err != nil {
-        errs = append(errs, err)
-    }
-}
-return errors.Join(errs...)
-```
+- **Publishing an error is a contract.** Inside the module, wrap with `%w`.
+  At a boundary you publish (an exported library API, an RPC), `%w` makes
+  the wrapped error part of your API; `%v` or a new error keeps it private.
+- **Translate before it reaches a user.** Map domain errors to a status
+  and a stable message at the handler, and log the original once with its
+  chain. `err.Error()` in a response leaks SQL, paths and hostnames.
+- **Keep logged messages low-cardinality.** The stable text is the message;
+  IDs, paths and counts go in structured attributes so the log backend can
+  group identical failures.
+- **Panics do not cross goroutines.** A `recover` only works in the
+  goroutine that panicked — see go-concurrency-review.
+- **Implement `Is(target error) bool`** on a type to let `errors.Is` match a
+  whole family of errors against one sentinel.
+
+Examples for sections 8 and 9: `references/patterns-and-boundaries.md`.
 
 ## Executable Verification
 
@@ -212,6 +240,8 @@ golangci-lint run --enable errcheck,errorlint # unchecked errors, %v-vs-%w,
 2. Every `fmt.Errorf` wrapping uses `%w` (or `%v` with documented reason)
 3. Sentinel errors use `var Err...` naming
 4. Custom error types implement `error` interface
-5. Callers use `errors.Is` / `errors.As`, never `==` or type assertion
-6. No log-and-return patterns
-7. Error messages are lowercase, contextual, chain-friendly
+5. Callers use `errors.Is` / `errors.As` (`errors.AsType` on Go 1.26+), never `==` or type assertion
+6. Custom types that wrap a cause implement `Unwrap() error`
+7. No log-and-return patterns
+8. Error messages are lowercase, contextual, chain-friendly
+9. No `err.Error()` text in responses to users; logged messages are stable, details are attributes

@@ -179,7 +179,7 @@ Subcommand match wins over natural-language signal-keyword match.
 
 | Recipe | Subcommand | Default? | When to Use | Read First |
 |--------|-----------|---------|-------------|------------|
-| Usability Evaluation | `usability` | ✓ | Comprehensive UI/UX usability evaluation; SURVEY → EVALUATE → PRIORITIZE → PRESENT. Also load `interaction-anti-patterns.md` | `reference/ux-evaluation.md` |
+| Usability Evaluation | `usability` | ✓ | Comprehensive UI/UX usability evaluation; OBSERVE → SCORE → SELECT → IMPLEMENT → VERIFY → PRESENT. Also load `interaction-anti-patterns.md` | `reference/ux-evaluation.md` |
 | Cognitive Load | `cognitive` | | Cognitive load and information density analysis; output redesign proposals |  |
 | Feedback Design | `feedback` | | Feedback and microinteraction design; include animation timing notes | `reference/microinteraction-patterns.md` |
 | Accessibility | `a11y` | | Accessibility and WCAG 2.2 compliance evaluation; classify by level (A/AA/AAA). Also load `accessibility-patterns.md` | `reference/wcag22-inclusive-design.md` |
@@ -244,7 +244,7 @@ Palette receives UX direction and testing results from upstream agents. Palette 
 |-----------|---------|---------|
 | Vision → Palette | `VISION_TO_PALETTE` | Design direction and visual system constraints |
 | Echo → Palette | `ECHO_TO_PALETTE` | Persona testing results and friction findings |
-| Field → Palette | `RESEARCHER_TO_PALETTE` | Usability research and user pain points |
+| Field → Palette | `FIELD_TO_PALETTE` | Usability research and user pain points |
 | Palette → Artisan | `PALETTE_TO_ARTISAN` | Implementation specs and interaction requirements |
 | Palette → Flow | `PALETTE_TO_FLOW` | Animation and transition requirements |
 | Palette → Muse | `PALETTE_TO_MUSE` | Token adjustment requests |

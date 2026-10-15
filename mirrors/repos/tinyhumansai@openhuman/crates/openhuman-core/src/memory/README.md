@@ -66,8 +66,12 @@ Memory follows TinyMemory's standard layout (`tinymemory_tools::MemoryLayout`):
 ```
 
 A `MemoryIdentity` (in [`scope.rs`](./scope.rs)) is the acting agent definition and, for a
-team member, its team. The host scopes one around every agent turn with
-`scope::within_agent` or `scope::within`, which set a task-local.
+team member, its team. It is explicit, never ambient: a turn's
+`OpenHumanRunContext::memory_identity` carries it (`MemoryIdentity::child` for
+each sub-agent, `team_member` from the team runtime through
+`HostTurnEnv::memory_identity`), the RPC handlers and the embed facade pass
+`MemoryIdentity::root()`, and the `confine`, `brain`, `lifecycle` and `ops`
+entry points take a `&MemoryIdentity`.
 `MemoryIdentity::resolve` turns it into a `ResolvedIdentity` (layout root plus
 memory agent id), first match wins:
 
@@ -148,7 +152,8 @@ has a 120-second background deadline. When capacity is exhausted, automatic
 work is skipped without making the turn wait. The cache itself stays in process memory.
 Content invalidation clears packs and rejects stale completions while
 preserving queued logs; engine/credential invalidation also clears pending
-refreshes. Scoped spawns retain the caller's core and memory identity.
+refreshes. Scoped spawns retain the caller's core context; the key carries the
+resolved identity, so queued work needs nothing ambient.
 
 The explicit/manual `hooks::pre_turn` and `hooks::compaction` retain their
 configured `pre_turn_timeout_ms` and `compaction_timeout_ms` deadlines; they
@@ -275,7 +280,7 @@ The agent `memory` tool applies the same confinement and overwrites any
 | [`mod.rs`](./mod.rs) | Module declarations and re-exports (`memory_is_on`, `MemoryTool`, the controller aggregators, `register_memory_subscribers`). |
 | [`engine.rs`](./engine.rs) | `resolve` binds the configured engine or says why memory is off; per-fingerprint cache; host engine install; CortexDB key storage. |
 | [`guard.rs`](./guard.rs) | `ScrubbingEngine`: scrubs every write and times every engine call. |
-| [`scope.rs`](./scope.rs) | `MemoryIdentity`, `ResolvedIdentity`, resolution order, `within` / `within_agent`, layout v3 roots. |
+| [`scope.rs`](./scope.rs) | `MemoryIdentity`, `ResolvedIdentity`, resolution order, layout v3 roots. |
 | [`local_root.rs`](./local_root.rs) | The persistent install-id root of a signed-out session. |
 | [`lifecycle/mod.rs`](./lifecycle/mod.rs) | Builds `AgentMemory` for an identity under the `[memory.recall]` policy. |
 | [`lifecycle/hooks.rs`](./lifecycle/hooks.rs) | Lifecycle operations and bounded manual wrappers; `TurnPack`, `MemoryTurn`. |
@@ -312,8 +317,8 @@ The agent `memory` tool applies the same confinement and overwrites any
   `BoundEngine`, or learn that memory is off.
 - `engine::install_host_engine` (`engine.rs`): lets an embedder or test
   supply its own `MemoryEngine`.
-- `scope::within_agent` and `scope::resolve_current` (`scope.rs`): set and
-  read the acting identity around a turn.
+- `MemoryIdentity::child` and `MemoryIdentity::resolve` (`scope.rs`): derive
+  and resolve the acting identity a turn's run context carries.
 - `lifecycle::prefetch::pre_turn` and `compaction`
   (`lifecycle/prefetch.rs`): synchronous reads of completed packs plus scoped
   background refresh. `lifecycle::hooks` contains the underlying operations;

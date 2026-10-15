@@ -26,6 +26,29 @@ its manifest. Release CI builds both, and `prepublishOnly` rejects a missing,
 stale, mismatched, or wrong-architecture artifact. A development tarball built
 without this lane reports Windows native controls as unavailable.
 
+## Restore the artifact in a source checkout
+
+The source tree omits `native/windows/build/` from Git. To run Windows
+provider-backed workflows from a checkout without the MinGW build lane, extract
+the two files from the published `rea-agents` tarball whose version exactly
+matches the checkout's `package.json` version. Do not use `latest` or copy files
+from another REA version; the loader verifies the manifest version, ABI,
+architecture, and addon digest before it grants authority.
+
+From the checkout root, replace `<matching-version>` with the `version` in
+`package.json`:
+
+```sh
+npm pack rea-agents@<matching-version>
+tar -xzf rea-agents-<matching-version>.tgz
+mkdir -p native/windows/build
+cp package/native/windows/build/manifest.json native/windows/build/
+cp package/native/windows/build/rea-windows-x64.node native/windows/build/
+```
+
+This is a manual recovery step. REA does not fetch or install the artifact
+automatically. Alternatively, build it using the Linux/MinGW lane above.
+
 ## Boundaries
 
 - Opaque Node objects carry a native type tag, resource kind, and closed state.
@@ -88,7 +111,9 @@ without this lane reports Windows native controls as unavailable.
 - Cleanup walks locked directory objects, removes files by handle, and unlinks
   reparse entries without traversing their targets. Failed removal retains the
   root and ancestor leases for retry; a partially removed runtime accepts only
-  cleanup, and its registry entry remains until removal succeeds. Normal close, cancellation,
+  cleanup, and its registry entry remains until removal succeeds. The owned root
+  handle includes attribute-write access so cleanup can clear a read-only marker,
+  matching the child cleanup handles. Normal close, cancellation,
   startup failure, and timeout release provider resources. Abrupt owner death
   kills the owned job. The Android provider additionally uses a detached helper
   that owns its private runtime directory and cleans it when the owner pipe
@@ -133,8 +158,11 @@ npm run verify:windows-native
 npm run verify:ghidra:windows
 ```
 
-The native inspection probe retains its directory owner if deletion fails. A
-later availability query retries that cleanup before creating another probe;
+An unpublished runtime retains its directory and parent handles if validation,
+result publication, or rollback fails. Errors retain the original failure and
+any rollback failure. Later runtime creation or native inspection retries that
+exact owner before allocating another directory. The same owner covers the
+native inspection probe. A later availability query retries failed probe cleanup;
 successful admission and static artifact failures remain cached. Environment
 teardown makes one final cleanup attempt and reports a persistent failure to
 stderr rather than claiming the directory was removed.
@@ -151,9 +179,11 @@ On Windows, after compiling the runtime:
 node scripts/verify-windows-native-inspection.mjs
 ```
 
-This artifact injects one access-denied disposition result while using a real
-NTFS directory. The verifier checks retained ownership, recovery on a later
-query, cached successful admission, and cleanup on environment teardown. It
+This artifact injects an access-denied disposition result while using real
+NTFS directories, and separately denies post-create validation and rollback.
+The verifier checks retained ownership after inspection and direct runtime
+creation failures, recovery on later admission, cached successful inspection,
+and cleanup on environment teardown. It
 renames the retained probe and recreates its old path, checking that cleanup
 removes the owned inode while preserving the replacement directory.
 It does not reproduce or identify the host-dependent cause reported in #1701.

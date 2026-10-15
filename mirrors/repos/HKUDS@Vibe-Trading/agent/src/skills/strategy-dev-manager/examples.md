@@ -160,15 +160,16 @@ Structured extraction:
 ```python
 strategy_def = {
     "name": "order_flow_mean_reversion",
-    "entry_rules": [
-        "normalized_order_flow < -2.0 (heavy selling, buy signal)",
+    # Rules are text, one rule per line.
+    "entry_rules": (
+        "normalized_order_flow < -2.0 (heavy selling, buy signal)\n"
         "normalized_order_flow > 2.0 (heavy buying, sell signal)"
-    ],
-    "exit_rules": [
-        "hold_days >= 5 (time-based exit)",
-        "abs(normalized_order_flow) < 0.5 (flow normalized, exit)",
+    ),
+    "exit_rules": (
+        "hold_days >= 5 (time-based exit)\n"
+        "abs(normalized_order_flow) < 0.5 (flow normalized, exit)\n"
         "position_pnl < -0.05 (stop-loss)"
-    ],
+    ),
     "position_sizing": "equal_weight, max_positions=10",
     "risk_management": {"stop_loss_pct": 0.05, "max_positions": 10},
     "universe": "equity_us",

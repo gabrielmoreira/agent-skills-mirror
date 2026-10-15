@@ -61,7 +61,9 @@ In this phase, the agent:
 - inspects the relevant code, docs, and existing issues
 - identifies assumptions and ambiguity that affect issue quality
 - runs a secondary critique pass before drafting
-- asks the user only the questions that block safe issue drafting
+- asks the user only the questions that block safe issue drafting; for
+  the two interactive cases in Human-dependency isolation, the question
+  blocks publishing, so it is asked
 
 The critique pass is agent-neutral: use a subagent or rubber-duck
 reviewer when available, otherwise run an explicit self-critique
@@ -86,11 +88,12 @@ indefinitely.
 
 **Under-clarification stop rule.** If, after bounded clarification, you
 still cannot name the concrete surface to edit or an objective
-verification for a candidate task, route it to `needs-decision` or ask
-— do not publish a confidently-vague `ready` issue. Reliability over
-speed. This is distinct from the "Under-specified" specificity band
-below: that band judges an already-drafted body's wording, while this
-rule stops publication earlier, during Intake, before a body is even
+verification for a candidate task, ask first for an interactive choice
+under the interactive rule in Human-dependency isolation; otherwise route
+it to `needs-decision` — do not publish a confidently-vague `ready` issue.
+Reliability over speed. This is distinct from the "Under-specified"
+specificity band below: that band judges an already-drafted body's wording,
+while this rule stops publication earlier, during Intake, before a body is even
 drafted.
 
 ### 2. Decompose and Draft
@@ -413,6 +416,35 @@ isolated away from ready execution issues whenever possible.
   `blocked-by-human`, use `deferred` when timing or decomposition is not
   strong enough yet, and keep approval-gated ready work in the
   approval-needed hold instead of the normal ready-to-start set.
+- **Interactive choice.** In an interactive session, meaning the operator
+  asked for issue authoring in the current conversation, a product,
+  policy, or design choice the operator can answer, and a candidate missing
+  either a concrete surface or an objective verification, are asked about
+  before they are published as `needs-decision`. The session asks in one
+  turn, covering every such choice in the current set, each with a
+  recommended option. That turn is one clarification round under
+  `issueAuthoring.maxClarificationRounds`. A choice not yet asked is asked,
+  not treated as silence, while the session is below the cap. A reply that
+  names a concrete surface and an objective verification, and does not park
+  the choice, is drafted into the ready scope. A reply that explicitly parks
+  the choice, or explicitly leaves it open, publishes `needs-decision` at any
+  cap, whether or not it names a surface or a verification. Any other reply
+  that leaves a surface or a verification unnamed is published neither as
+  `ready` nor as `needs-decision`. Below the cap, the session asks for that
+  missing item in the same turn, unless it was already asked in that turn; a
+  later round below the cap asks again. At or above the cap, the session does
+  not ask again. With no reply after the question was sent, nothing is
+  published for that choice, at, below, or above the cap. A later interactive
+  session starts a new count. A session that is not interactive keeps the
+  `needs-decision` route for these two cases. The other routes stay as they
+  are: an incomplete previously-declined search, a same-shape follow-up with
+  no new signal, unclear intent, a malformed body, possible incoherence, an
+  uncertain check outside these two cases, a `review-needs-decision`
+  follow-up, an unattended A1.5 gap filing, and a `credential`, another
+  person, or an unavailable system, which waits as `blocked-by-human`. An
+  unchanged route wins when a candidate also matches one of the two cases:
+  unclear intent, for example, stays on `needs-decision` even when the
+  candidate also lacks a surface or a verification.
 - If a task cannot be expressed without unresolved human coordination in
   the middle of implementation, it is not yet `ready`.
 
@@ -436,7 +468,9 @@ Ask these checks:
    be front-loaded into a separate prerequisite issue.
 2. Does any implementation step or acceptance criterion depend on a
    product, policy, or design decision that has not been made? If yes,
-   route the work to `needs-decision`.
+   route the work to `needs-decision`, unless the interactive choice rule
+   in Human-dependency isolation applies, in which case ask the operator
+   first.
 3. Do the acceptance criteria require subjective human approval instead
    of objective verification? If yes, rewrite the ready issue around
    measurable checks and back-load the optional review or publication
@@ -1135,7 +1169,10 @@ Pre-publish validation checklist:
 
 If any check is uncertain, route the issue to `needs-decision` or
 `blocked-by-human` during drafting instead of publishing a
-marginally-ready issue.
+marginally-ready issue. An uncertain check that is one of the two
+interactive cases in Human-dependency isolation follows that section's
+interactive rule instead. Every other uncertain check still uses this
+sentence, and this sentence does not turn those other checks into an ask.
 
 ## Completed-draft adversarial review
 
@@ -1383,7 +1420,10 @@ finding reopens as a new finding.
 
 Before publishing a drafted `ready` **orphan, roadmap, or child** body
 (the shapes the linter supports), run the `audit-authored-issue`
-linter against it when a helper runtime is available. Before newly
+linter against it when a helper runtime is available. Before publishing
+a draft carrier (the `carrier` shape, described below), also run it
+with `--shape carrier`; a carrier is never published without that
+check. Before newly
 publishing a body into the **`needs-decision`** or **`blocked-by-human`**
 bucket instead, also run it, passing
 `--expect-bucket <needs-decision|blocked-by-human>` (choose the one
@@ -1477,6 +1517,31 @@ triage finding is downgraded to a warning instead of failing the
 report, mirroring how this linter already treats a bucket body as
 deliberately non-ready everywhere else.
 
+For the `carrier` shape, the linter checks a **draft carrier**: an
+issue that holds drafts which cannot yet be published as their final
+issues, labelled with the configured authoring-only label
+(`labels.authoringOnlyLabelName`, default `status:authoring-only`).
+Reviewed drafts kept only in local files are lost, and a duplicate
+search cannot see them (observed on the follow-up for roadmap
+`#4079`, 2026-10-13). A carrier is never an execution candidate, so the
+ready-shape checks above do not apply to it, and every triage finding
+reports "not applicable". Its checks are `carrier-marker` (the hidden
+`<!-- {prefix}-draft-carrier: v1 -->` marker, exactly once),
+`carrier-forbidden-markers` (no suitability, effort, roadmap-id,
+blocked-by, or authoring-bucket marker or footer outside code),
+`carrier-release-condition` (the `## Release condition` section holds
+only `Blocked by` declarations, and is empty when the drafts can be
+re-authored now), `carrier-drafts` (each `###` subsection under
+`## Drafts` has exactly one `Review:` line, one `Shape:` line, and one
+top-level fenced draft, not indented into a list item or quoted in a
+blockquote), and `carrier-label` (when `--label` values are given, one
+of them is the configured authoring-only label). The carrier also needs
+the `## Review ledger` heading, and its `## Drafts` and `## Release
+condition` headings each appear once. Content inside an HTML comment
+is not structure: a heading, draft, or line hidden in a comment does
+not count. `--shape carrier` cannot be combined with `--expect-bucket`,
+because a carrier has no readiness bucket.
+
 The linter also emits one **advisory, warning-severity-only** finding
 (`prose-dependency`): it flags an issue/PR reference (`#<digits>` or a
 full GitHub issue/PR URL) that appears near coordination language (for
@@ -1562,7 +1627,7 @@ convert the prose into a proper dependency marker or consciously
 confirm the reference is a mere breadcrumb.
 
 ```sh
-node scripts/audit-authored-issue.mjs --shape <orphan|roadmap|child> \
+node scripts/audit-authored-issue.mjs --shape <orphan|roadmap|child|carrier> \
   --marker-prefix <resolved-target-prefix> --title <drafted-title> \
   --body-file <path-to-drafted-body> [--label <label>]... \
   [--expect-bucket <needs-decision|blocked-by-human>]

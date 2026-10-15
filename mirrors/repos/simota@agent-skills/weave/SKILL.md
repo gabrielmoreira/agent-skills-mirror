@@ -1,6 +1,6 @@
 ---
 name: weave
-description: "Designing workflows and state machines. Use when state transition design, invalid transition detection, Saga patterns, or approval flow design is needed."
+description: "Designing workflows and state machines. Use when state transition design, invalid transition detection, Saga patterns, approval flow design, or scheduling (cron, DST-safe timing, business calendars) is needed."
 ---
 
 <!--
@@ -359,7 +359,7 @@ Quick orientation:
 
 ### Handoff Patterns
 
-Inbound (`USER_TO_WEAVE`, `SCRIBE_TO_WEAVE`, `ATLAS_TO_WEAVE`) and outbound (`WEAVE_TO_BUILDER`, `WEAVE_TO_CANVAS`, `WEAVE_TO_RADAR`) schemas -> `reference/handoffs.md`.
+Inbound (`USER_TO_WEAVE_HANDOFF`, `SCRIBE_TO_WEAVE_HANDOFF`, `ATLAS_TO_WEAVE_HANDOFF`) and outbound (`WEAVE_TO_BUILDER_HANDOFF`, `WEAVE_TO_CANVAS_HANDOFF`, `WEAVE_TO_RADAR_HANDOFF`) schemas -> `reference/handoffs.md`.
 
 ---
 

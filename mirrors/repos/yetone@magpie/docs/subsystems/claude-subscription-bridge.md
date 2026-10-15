@@ -112,6 +112,15 @@ exit status and the end of its stderr (`endedBefore`), as one that ends
 before it reads its input is (`whyEnded`). The tool-results path and
 `resume` already start a new run when the one they found has ended.
 
+magpie ends a run (`abort`) by asking Claude Code to end with SIGTERM
+(`proc.Tree.Stop`) and kills its tree only once it has exited or
+`stopGrace` (5s) has passed; Windows kills the job at once. Claude Code
+removes `~/.claude/.oauth_refresh.lock` as it exits on SIGTERM (2.1.299
+exits within half a second), and the SIGKILL magpie sent before left the
+lock for the next requests to fail on (#2195). The run counts as ended at
+once; the gateway stopping (`abortAll`) waits for every tree. Covered by
+`TestClaudeAbortAllowsLockCleanup` and `TestTreeStop*`.
+
 ## A side question after a reply (#1638)
 
 After each turn Claude Code 2.1.290 asks its prompt suggestion: the

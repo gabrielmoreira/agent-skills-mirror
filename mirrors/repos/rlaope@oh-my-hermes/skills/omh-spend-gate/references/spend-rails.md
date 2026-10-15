@@ -1,6 +1,6 @@
 # Spend Rails
 
-Load this before money moves. OMH prepares the card and checks the receipt; the person's own payment surface moves the money, and every spend stays `quoted` until a receipt is observed. The card's fields and the confirmation rule are in the skill body; this page holds what differs by rail.
+Load this before money moves. OMH prepares the card and checks the receipt; the person's own payment surface moves the money, and no spend is `charged` until a receipt is observed. The card's fields and the confirmation rule are in the skill body; this page holds what differs by rail.
 
 ## 1. Rails
 
@@ -19,7 +19,7 @@ A wallet transfer card shows the whole destination address, never a shortened on
 
 Each surface below is used only when it is present, and none replaces the person's typed confirmation in this session.
 
-- `browser_vault`: when `browser_vault` is in your tool list or tool_search finds it, it fills a saved card only on the exact origin the card was saved for, after its own approval prompt, and refuses in a session nobody can answer. Record that prompt's answer beside the typed confirmation, and stop on a `payment_declined` result rather than retry it. When it is absent, or OMH's browser adapter blocks the native `browser_*` tools, stop at the payment step: the person enters the card, and never type a card the person gives you into the page.
+- `browser_vault`: when `browser_vault` is in your tool list or tool_search finds it, it fills a saved card only on the exact origin the card was saved for, after its own approval prompt, and refuses in a session nobody can answer. Record that prompt's answer beside the typed confirmation, and stop on a `payment_declined` result rather than retry it. When it is absent or blocked, stop at the payment step: the person enters the card, and never type a card the person gives you into the page.
 - `clarify`: when `clarify` is in your tool list or tool_search finds it, ask for the confirmation with the card in the question; otherwise ask in a plain reply and end the turn.
 - Browser tools (`browser_navigate`, `browser_snapshot`, `browser_click`): read the quote and the receipt with them. A snapshot of the confirmation page with its order number is an observed receipt; a snapshot of the cart is a quote.
 - The approval prompt Hermes shows for a flagged command: when the paying command raises it, record its answer beside the typed confirmation. An auto-approval (`/yolo`, `approvals.mode: off`, or a call the default `smart` mode judged low-risk and approved itself) or a command the check did not flag is no confirmation at all.
@@ -27,7 +27,7 @@ Each surface below is used only when it is present, and none replaces the person
 
 ## 3. Unknown outcomes
 
-An outcome nobody saw -- a timeout, a dropped connection, a page that reloaded, a server error after submit, a client that exited without a result -- is `unknown`, not failed. It is the rule `llm-app-dev` applies to an ambiguous public post: reconcile before any retry.
+An outcome nobody saw -- a timeout, a dropped connection, a page that reloaded, a server error after submit, a client that exited without a result -- is `unknown`, not failed. It is the rule `omh-llm-app-dev` applies to an ambiguous public post: reconcile before any retry.
 
 1. Mark the spend `unknown` in the ledger with what is known: payee, amount, time, and rail.
 2. Look for the charge where it would show: the merchant's order history, the confirmation message, the card or wallet activity, the payment client's status, the provider's usage record.

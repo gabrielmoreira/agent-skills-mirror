@@ -11,23 +11,165 @@ Load this when an actor grants, cools down, or spends an ability. Combat resolut
 
 ## ECS shape
 
-- **Components:** your own ability id, charges, and cooldown elapsed. No engine ability component was opened.
-- **Resources:** run-wide tables live in a resource (bevy-data-resources), not an autoload.
+- **Components:** ability id, charges, and cooldown remaining on the caster.
+- **Resources:** run-wide tables live in a resource (bevy-data-resources).
 - **Systems:** mutate those components on `Update` or the fixed timestep. Use `.chain()` when damage must land before death.
 - **Messages:** one-shot facts (hit, pickup, quest advance) go through bevy-events-messaging. This file does not add a new event type name.
 
-## Coming from Godot
+## Ability choices
 
-| Godot idea | Bevy idiom |
+| Need | Bevy idiom |
 | --- | --- |
-| Ability definition | A data component or resource row. No ability resource type was opened. |
-| Cooldown | Your elapsed field stepped on the fixed clock. |
-| Cast | A message when the cast is accepted. Input read stays on bevy-input-handling. |
+| Ability definition | A `Resource` catalog plus a component row on the caster. |
+| Cooldown | `remaining` stepped with `Time<Fixed>::delta_secs` in `FixedUpdate`. |
+| Cast | `MessageWriter<CastAccepted>` after the cooldown and charge gates pass. |
 
 ## Scope
 
-- Ability, cooldown, and gameplay-effect data are yours to build as components and resources.
-- Status-effect stacking rules are design notes, not engine APIs.
+- Cooldowns, charges, and catalogs are components and resources. Combat damage stays on bevy-combat-system.
+- Stacking status effects is a component list you tick on `FixedUpdate`.
+
+## Examples
+
+```toml
+[package]
+name = "abilities"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.20"
+```
+
+Cooldown and charges share the caster. Tick, then accept the cast, on `FixedUpdate`.
+
+```rust
+#[derive(Component)]
+struct Cooldown {
+    remaining: f32,
+    duration: f32,
+}
+
+#[derive(Component)]
+struct Charges {
+    current: u32,
+    max: u32,
+}
+
+#[derive(Message)]
+struct CastAccepted {
+    caster: Entity,
+}
+
+fn tick_cooldowns(time: Res<Time<Fixed>>, mut query: Query<&mut Cooldown>) {
+    let dt = time.delta_secs();
+    for mut cooldown in &mut query {
+        cooldown.remaining = (cooldown.remaining - dt).max(0.0);
+    }
+}
+
+fn try_cast(
+    mut casters: Query<(Entity, &mut Cooldown, &mut Charges)>,
+    mut casts: MessageWriter<CastAccepted>,
+) {
+    for (entity, mut cooldown, mut charges) in &mut casters {
+        if cooldown.remaining > 0.0 || charges.current == 0 {
+            continue;
+        }
+        charges.current -= 1;
+        cooldown.remaining = cooldown.duration;
+        casts.write(CastAccepted { caster: entity });
+    }
+}
+
+fn recharge(time: Res<Time<Fixed>>, mut casters: Query<(&Cooldown, &mut Charges)>) {
+    let dt = time.delta_secs();
+    for (cooldown, mut charges) in &mut casters {
+        if cooldown.remaining <= 0.0 && charges.current < charges.max && dt > 0.0 {
+            charges.current += 1;
+        }
+    }
+}
+
+pub struct AbilityPlugin;
+
+impl Plugin for AbilityPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_message::<CastAccepted>()
+            .add_systems(FixedUpdate, (tick_cooldowns, try_cast, recharge).chain());
+    }
+}
+```
+
+The catalog is one resource. Live cooldown stays on the entity.
+
+```rust
+#[derive(Clone, Copy)]
+struct AbilityDef {
+    id: u32,
+    cooldown: f32,
+    cost: u32,
+}
+
+#[derive(Resource)]
+struct AbilityCatalog {
+    rows: Vec<AbilityDef>,
+}
+
+fn lookup(catalog: &AbilityCatalog, id: u32) -> Option<&AbilityDef> {
+    catalog.rows.iter().find(|row| row.id == id)
+}
+
+#[derive(Component)]
+struct Cooldown {
+    remaining: f32,
+    duration: f32,
+}
+
+#[derive(Component)]
+struct Charges {
+    current: u32,
+    max: u32,
+}
+
+fn spawn_caster(mut commands: Commands, catalog: Res<AbilityCatalog>) {
+    let def = lookup(&catalog, 1);
+    let duration = def.map(|row| row.cooldown).unwrap_or(0.5);
+    commands.spawn((
+        Cooldown {
+            remaining: 0.0,
+            duration,
+        },
+        Charges { current: 2, max: 2 },
+    ));
+}
+```
+
+A shared lock sits in a resource so one system owns it.
+
+```rust
+#[derive(Message)]
+struct CastAccepted {
+    caster: Entity,
+}
+
+#[derive(Resource)]
+struct GlobalCooldown {
+    remaining: f32,
+}
+
+fn tick_gcd(time: Res<Time<Fixed>>, mut gcd: ResMut<GlobalCooldown>) {
+    gcd.remaining = (gcd.remaining - time.delta_secs()).max(0.0);
+}
+
+fn arm_gcd(mut gcd: ResMut<GlobalCooldown>, mut casts: MessageReader<CastAccepted>) {
+    for _cast in casts.read() {
+        gcd.remaining = gcd.remaining.max(0.4);
+    }
+}
+```
+
+Register `CastAccepted` with `add_message` in the same plugin that adds `tick_gcd` and `arm_gcd`.
 
 ## Expert Knowledge Delta
 
@@ -51,7 +193,7 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A value stored off the entity |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
@@ -66,18 +208,14 @@ Load [references/ecs-ownership.md](ability-system-ecs-ownership.md) for the owne
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot node, resource, or signal types for this mechanic. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
-
-- No Godot types in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No cooldown stored in a process-global static. WHY: the caster's `Cooldown` component and the catalog `Resource` are the owners.
 - No invented APIs or unnamed third-party crates as the chosen solver. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20.0**. Permalinks stay unversioned.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
@@ -86,19 +224,18 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
-- [bevy-combat-system](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-combat-system/SKILL.md) - Hit resolution.
-- [bevy-input-handling](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Cast input.
-- [bevy-data-resources](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md) - Tables and definitions.
-- [bevy-events-messaging](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-events-messaging/SKILL.md) - One-shot facts.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
+- [bevy-combat-system](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-combat-system/SKILL.md) - Hit resolution.
+- [bevy-input-handling](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Cast input.
+- [bevy-data-resources](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md) - Tables and definitions.
+- [bevy-events-messaging](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-events-messaging/SKILL.md) - One-shot facts.
 
 #### Complements
-- [bevy-state-machines](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Mode flags.
-- [godot-ability-system](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-ability-system/SKILL.md) - Equivalent Godot skill.
+- [bevy-state-machines](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Mode flags.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

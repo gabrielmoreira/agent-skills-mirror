@@ -226,7 +226,8 @@ PR without the chat history.
   a log. The files it does write are metadata: the launcher's active-session
   file (the session id), and what OMH's own HUD reader and model-chain picker
   already write under the OMH home (the HUD fan-out cache and its lock, and
-  the chains `/omh-model` saves). The frontend opens no socket and makes no
+  the chains `/omh-model` saves), and an empty fallback marker at the path
+  `omh` named, which `omh` removes. The frontend opens no socket and makes no
   network call, strips the sidecar and attach URLs from the gateway's
   environment, and reaps the gateway when it exits, SIGTERM and SIGHUP
   included. OMH itself still makes no

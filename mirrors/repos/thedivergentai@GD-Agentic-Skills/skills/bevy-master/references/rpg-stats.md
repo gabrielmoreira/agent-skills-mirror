@@ -11,22 +11,174 @@ Load this when attributes, modifiers, or derived numbers live on an actor. Comba
 
 ## ECS shape
 
-- **Components:** base attributes you define.
-- **Resources:** run-wide tables live in a resource (bevy-data-resources), not an autoload.
-- **Systems:** mutate those components on `Update` or the fixed timestep. Use `.chain()` when damage must land before death.
-- **Messages:** one-shot facts (hit, pickup, quest advance) go through bevy-events-messaging. This file does not add a new event type name.
+- **Components:** base attributes, a modifier list, and current health on the actor.
+- **Resources:** the level curve is one resource for the whole run (bevy-data-resources).
+- **Systems:** recompute max health when `Attributes` change. An `IncomingHit` or `XpGain` is a component removed after it is applied. `.chain()` so a vitality gain runs before the health sync.
+- **Messages:** one-shot facts (hit, pickup, quest advance) go through bevy-events-messaging.
 
-## Coming from Godot
+```toml
+[dependencies]
+bevy = "0.20"
+serde = { version = "1", features = ["derive"] }
+ron = "0.10"
+```
 
-| Godot idea | Bevy idiom |
+Attributes and modifiers live on the actor. Derived attack is a function, not a second source of truth.
+
+```rust
+#[derive(Component, Clone, Copy)]
+struct Attributes {
+    strength: i32,
+    vitality: i32,
+}
+
+enum ModKind {
+    Add,
+    Mul,
+}
+
+struct Modifier {
+    kind: ModKind,
+    amount: f32,
+}
+
+#[derive(Component)]
+struct ModifierList(Vec<Modifier>);
+
+fn derived_attack(attrs: &Attributes, mods: &ModifierList) -> f32 {
+    let mut value = attrs.strength as f32;
+    let mut scale = 1.0;
+    for modifier in &mods.0 {
+        match modifier.kind {
+            ModKind::Add => value += modifier.amount,
+            ModKind::Mul => scale *= modifier.amount,
+        }
+    }
+    (value * scale).max(0.0)
+}
+```
+
+Health max follows vitality. The system runs only when `Attributes` changed, so idle frames do not recompute.
+
+```rust
+#[derive(Component, Clone, Copy)]
+struct Attributes {
+    strength: i32,
+    vitality: i32,
+}
+
+#[derive(Component)]
+struct Health {
+    current: i32,
+    max: i32,
+}
+
+fn sync_health(mut actors: Query<(&Attributes, &mut Health), Changed<Attributes>>) {
+    for (attrs, mut health) in &mut actors {
+        health.max = (20 + attrs.vitality * 5).max(1);
+        health.current = health.current.min(health.max);
+    }
+}
+
+#[derive(Component, Clone, Copy)]
+struct IncomingHit(i32);
+
+fn apply_hits(mut commands: Commands, mut actors: Query<(Entity, &mut Health, &IncomingHit)>) {
+    for (entity, mut health, hit) in &mut actors {
+        health.current = (health.current - hit.0).max(0);
+        commands.entity(entity).remove::<IncomingHit>();
+    }
+}
+```
+
+The curve is data. Load it once into a resource. Awarding experience mutates the actor component and reads that table.
+
+```rust
+use serde::Deserialize;
+
+#[derive(Deserialize, Resource, Clone, Copy)]
+struct LevelCurve {
+    base_xp: u32,
+    growth: f32,
+}
+
+#[derive(Component)]
+struct Progression {
+    level: u32,
+    xp: u32,
+}
+
+fn load_curve() -> LevelCurve {
+    let text = "(base_xp: 100, growth: 1.15)";
+    ron::from_str(text).expect("level curve")
+}
+
+fn xp_to_advance(curve: &LevelCurve, level: u32) -> u32 {
+    let scaled = curve.base_xp as f32 * curve.growth.powi(level as i32);
+    scaled.clamp(1.0, 1_000_000.0) as u32
+}
+
+#[derive(Component, Clone, Copy)]
+struct Attributes {
+    strength: i32,
+    vitality: i32,
+}
+
+#[derive(Component)]
+struct Health {
+    current: i32,
+    max: i32,
+}
+
+fn sync_health(mut actors: Query<(&Attributes, &mut Health), Changed<Attributes>>) {
+    for (attrs, mut health) in &mut actors {
+        health.max = (20 + attrs.vitality * 5).max(1);
+        health.current = health.current.min(health.max);
+    }
+}
+
+#[derive(Component, Clone, Copy)]
+struct XpGain(u32);
+
+fn grant_xp(
+    mut commands: Commands,
+    curve: Res<LevelCurve>,
+    mut actors: Query<(Entity, &mut Progression, &mut Attributes, &XpGain)>,
+) {
+    for (entity, mut progress, mut attrs, gain) in &mut actors {
+        progress.xp += gain.0;
+        let need = xp_to_advance(&curve, progress.level);
+        if progress.xp >= need {
+            progress.xp -= need;
+            progress.level += 1;
+            attrs.vitality += 1;
+        }
+        commands.entity(entity).remove::<XpGain>();
+    }
+}
+
+pub struct StatsPlugin;
+
+impl Plugin for StatsPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(load_curve())
+            .add_systems(Update, (grant_xp, sync_health).chain());
+    }
+}
+```
+
+## Choose the owner
+
+| Need | Owner |
 | --- | --- |
-| Attributes | A component of base numbers you name. |
-| Modifier | A list you own. No modifier stack type was opened. |
-| Level | An integer component. Curve math is yours. |
+| Attributes | `Attributes` on the actor. |
+| Modifier | `ModifierList` of additive and multiplicative rows. |
+| Level | `Progression` plus a `LevelCurve` resource loaded from RON. |
 
 ## Scope
 
-- Attribute, modifier, and level data are yours to build as components and resources.
+- Attribute, modifier, and level data are components and one curve resource, as in the systems above.
+- Combat resolution that spends the derived attack value belongs on bevy-combat-system.
 
 ## Expert Knowledge Delta
 
@@ -50,7 +202,7 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A value that is not a component |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
@@ -72,12 +224,10 @@ Load [references/ecs-ownership.md](rpg-stats-ecs-ownership.md) for the ownership
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20.0**.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
-- [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
+- [Assets](https://bevy.org/assets/) - Official asset catalog.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
 - [Plugins](https://bevy.org/learn/quick-start/getting-started/plugins/) - `Plugin`, `DefaultPlugins`, `MinimalPlugins`, and `add_plugins`.
@@ -85,18 +235,18 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
-- [bevy-combat-system](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-combat-system/SKILL.md) - Consumes derived attack and health.
-- [bevy-data-resources](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md) - Tables and definitions.
-- [bevy-events-messaging](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-events-messaging/SKILL.md) - One-shot facts.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
+- [bevy-combat-system](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-combat-system/SKILL.md) - Consumes derived attack and health.
+- [bevy-data-resources](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md) - Tables and definitions.
+- [bevy-events-messaging](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-events-messaging/SKILL.md) - One-shot facts.
 
 #### Complements
-- [bevy-state-machines](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Mode flags.
-- [godot-rpg-stats](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-rpg-stats/SKILL.md) - Equivalent Godot skill.
+- [bevy-state-machines](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Mode flags.
+- [godot-rpg-stats](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-rpg-stats/SKILL.md) - Equivalent Godot skill.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

@@ -7,7 +7,7 @@ description: "Bevy ECS skill for player input. Keywords: Bevy, ButtonInput, KeyC
 
 ## When to use
 
-Load this when a system should read keyboard, mouse, or gamepad state. The `bevy::input` module (docs.rs `latest`, crate 0.20.0) is the source for the names below.
+Load this when a system should read keyboard, mouse, or gamepad state. The `bevy::input` module on Bevy 0.20 is the source for the names below.
 
 ## ECS shape
 
@@ -29,9 +29,154 @@ Load this when a system should read keyboard, mouse, or gamepad state. The `bevy
 
 ## Scope
 
-- Touch and gesture modules are listed on the input index. Check those pages for event fields before writing them.
-- Check the input docs for a project-wide action-map resource (named actions, rebinding) before writing one.
-- Check the input docs for glyphs and device prompts before writing them.
+Keyboard, mouse, and gamepad state live on `ButtonInput` and `Gamepad`. Named actions, a jump buffer, a radial stick deadzone, and the last active device are resources you define. Glyph art is a UI concern once that device flag is set.
+
+## Examples
+
+```toml
+[dependencies]
+bevy = "0.20"
+```
+
+Read edges in `Update`. `FixedUpdate` can run zero or several times per frame, so a press sampled there is dropped or repeated. Store the edge on an intent component and let the fixed step consume it.
+
+```rust
+#[derive(Component, Default)]
+struct MoveIntent {
+    axis: Vec2,
+    jump: bool,
+}
+
+fn read_keys(keys: Res<ButtonInput<KeyCode>>, mut intents: Query<&mut MoveIntent>) {
+    let mut axis = Vec2::ZERO;
+    if keys.pressed(KeyCode::KeyA) || keys.pressed(KeyCode::ArrowLeft) {
+        axis.x -= 1.0;
+    }
+    if keys.pressed(KeyCode::KeyD) || keys.pressed(KeyCode::ArrowRight) {
+        axis.x += 1.0;
+    }
+    if keys.pressed(KeyCode::KeyW) || keys.pressed(KeyCode::ArrowUp) {
+        axis.y += 1.0;
+    }
+    if keys.pressed(KeyCode::KeyS) || keys.pressed(KeyCode::ArrowDown) {
+        axis.y -= 1.0;
+    }
+    let jump = keys.just_pressed(KeyCode::Space);
+    for mut intent in &mut intents {
+        intent.axis = axis;
+        if jump {
+            intent.jump = true;
+        }
+    }
+}
+
+use bevy::input::mouse::AccumulatedMouseMotion;
+
+fn look(motion: Res<AccumulatedMouseMotion>, mut cameras: Query<&mut Transform, With<LookCam>>) {
+    for mut tf in &mut cameras {
+        tf.rotate_y(-motion.delta.x * 0.002);
+        tf.rotate_local_x(-motion.delta.y * 0.002);
+    }
+}
+
+#[derive(Component)]
+struct LookCam;
+```
+
+A radial deadzone drops stick drift, then rescales the remaining range so full deflection still reaches length 1. The jump buffer keeps a press that landed a few frames early.
+
+```rust
+#[derive(Component, Default)]
+struct MoveIntent {
+    axis: Vec2,
+    jump: bool,
+}
+
+fn radial_deadzone(stick: Vec2, deadzone: f32) -> Vec2 {
+    let mag = stick.length();
+    if mag <= deadzone || mag == 0.0 {
+        return Vec2::ZERO;
+    }
+    let scaled = ((mag - deadzone) / (1.0 - deadzone)).clamp(0.0, 1.0);
+    stick / mag * scaled
+}
+
+fn read_pad(pads: Query<&Gamepad>, mut intents: Query<&mut MoveIntent>) {
+    let Some(pad) = pads.iter().next() else {
+        return;
+    };
+    let stick = Vec2::new(
+        pad.get(GamepadAxis::LeftStickX).unwrap_or(0.0),
+        pad.get(GamepadAxis::LeftStickY).unwrap_or(0.0),
+    );
+    let axis = radial_deadzone(stick, 0.15);
+    let jump = pad.just_pressed(GamepadButton::South);
+    for mut intent in &mut intents {
+        if axis.length_squared() > 0.0 {
+            intent.axis = axis;
+        }
+        if jump {
+            intent.jump = true;
+        }
+    }
+}
+
+#[derive(Resource)]
+struct JumpBuffer {
+    remaining: f32,
+    window: f32,
+}
+
+fn arm_jump_buffer(time: Res<Time>, mut intents: Query<&mut MoveIntent>, mut buffer: ResMut<JumpBuffer>) {
+    let dt = time.delta_secs();
+    buffer.remaining = (buffer.remaining - dt).max(0.0);
+    for mut intent in &mut intents {
+        if intent.jump {
+            buffer.remaining = buffer.window;
+            intent.jump = false;
+        }
+    }
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Default)]
+enum DeviceKind {
+    #[default]
+    Keyboard,
+    Gamepad,
+}
+
+#[derive(Resource, Default)]
+struct LastDevice(DeviceKind);
+
+fn track_device(
+    keys: Res<ButtonInput<KeyCode>>,
+    mouse: Res<ButtonInput<MouseButton>>,
+    pads: Query<&Gamepad>,
+    mut last: ResMut<LastDevice>,
+) {
+    if keys.get_pressed().next().is_some() || mouse.get_pressed().next().is_some() {
+        last.0 = DeviceKind::Keyboard;
+    }
+    for pad in &pads {
+        if pad.get_pressed().next().is_some() {
+            last.0 = DeviceKind::Gamepad;
+        }
+    }
+}
+
+pub struct InputHandlingPlugin;
+
+impl Plugin for InputHandlingPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(JumpBuffer {
+            remaining: 0.0,
+            window: 0.12,
+        })
+        .init_resource::<LastDevice>()
+        .add_systems(Update, (read_pad, track_device, arm_jump_buffer).chain());
+    }
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -76,30 +221,29 @@ Load [references/ecs-ownership.md](input-handling-ecs-ownership.md) for the owne
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20.0**.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/)  -  Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/)  -  Unversioned API index.
-- [bevy::input](https://docs.rs/bevy/latest/bevy/input/index.html)  -  `ButtonInput`, `InputPlugin`, device modules.
-- [ButtonInput](https://docs.rs/bevy/latest/bevy/input/struct.ButtonInput.html)  -  `pressed`, `just_pressed`, `just_released`, `KeyCode` and `Key`.
-- [Mouse](https://docs.rs/bevy/latest/bevy/input/mouse/index.html)  -  `MouseButton`, motion and scroll resources.
-- [Gamepad](https://docs.rs/bevy/latest/bevy/input/gamepad/index.html)  -  `Gamepad` and connection events.
+- `bevy crate` - API index for this skill's types.
+- `bevy::input` - `ButtonInput`, `InputPlugin`, and the device modules.
+- `ButtonInput` - `pressed`, `just_pressed`, `just_released`, `KeyCode`, and `Key`.
+- `bevy::input::mouse` - `MouseButton`, motion, and scroll resources.
+- `bevy::input::gamepad` - `Gamepad` and connection events.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples)  -  Example tree on the `latest` branch.
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Who owns which piece of state.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md)  -  Systems and `Query`.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Who owns which piece of state.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md)  -  Systems and `Query`.
 
 #### Complements
-- [bevy-character-movement](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-character-movement/SKILL.md)  -  Motion that consumes this input on the fixed timestep.
-- [bevy-camera-systems](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-camera-systems/SKILL.md)  -  Viewpoint that may read mouse motion.
-- [godot-input-handling](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-input-handling/SKILL.md)  -  Equivalent Godot skill.
+- [bevy-character-movement](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-character-movement/SKILL.md)  -  Motion that consumes this input on the fixed timestep.
+- [bevy-camera-systems](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-camera-systems/SKILL.md)  -  Viewpoint that may read mouse motion.
+- [godot-input-handling](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-input-handling/SKILL.md)  -  Equivalent Godot skill.
 
 #### Downstream / consumers
-- [bevy-audio-systems](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-audio-systems/SKILL.md)  -  The audio control example reads `ButtonInput<KeyCode>` to pause and mute.
+- [bevy-audio-systems](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-audio-systems/SKILL.md)  -  The audio control example reads `ButtonInput<KeyCode>` to pause and mute.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.

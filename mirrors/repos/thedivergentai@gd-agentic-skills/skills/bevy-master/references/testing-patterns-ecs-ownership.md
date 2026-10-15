@@ -12,4 +12,21 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+The test inserts the resource, runs one `Update`, and reads it back. That is the same owner the game plugin uses.
+
+```rust
+#[derive(Resource)]
+struct Score(u32);
+
+fn add_point(mut score: ResMut<Score>) {
+    score.0 += 1;
+}
+
+#[test]
+fn score_moves_once() {
+    let mut app = App::new();
+    app.insert_resource(Score(0)).add_systems(Update, add_point);
+    app.update();
+    assert_eq!(app.world().resource::<Score>().0, 1);
+}
+```

@@ -159,6 +159,18 @@ or terminates an existing personal profile. The result returns a
 `prepared_pid`; list that process's windows and bind the new `(pid,
 window_id)`.
 
+The result's optional `lifecycle` object describes how long the browser
+process lives: `owner` is `session`, `idle_expires_in_seconds` is how long the
+session may stay idle after this call before it and the browser end,
+`process_ends_with_session` is `true`, and
+`profile_persists_after_session` is `true` only for `isolated_named`. The
+value is advisory, not a lease. `get_session` reports the remaining time later
+but does not keep the browser alive, and explicit `end_session`, disconnect,
+revocation, or shutdown ends the browser earlier. A named profile keeps its
+files, not the process or its open pages. Attachments to an existing profile
+or endpoint the driver did not launch, and sessions already ending, have no
+`lifecycle`.
+
 ### Existing profile
 
 Attaching to an authenticated profile requires explicit trusted launch or host
@@ -208,6 +220,15 @@ authorize generic pixel interaction.
 On macOS this attachment cannot stay in the background. Chrome brings itself
 to the front to show its "Allow remote debugging?" prompt for every new
 DevTools connection, and turning remote debugging on needs Chrome in front.
+Chrome does not prompt again for tabs or targets reached over a connection it
+already allowed, so the driver keeps one approved connection per running
+Chrome and every session for that Chrome shares it: a second session, or a new
+session after the previous one ended, attaches without another prompt. Each
+session still needs its own `browser_prepare` approval from the driver, and
+only sees the targets it bound. The shared connection closes after 30 minutes
+without a session, 8 hours after the prompt that opened it, when the daemon
+restarts, on `cua-driver revoke --all`, or when the driver turns remote
+debugging back off; the next session after that prompts once again.
 When the Chrome window is on another Space than the user's, the attach runs in
 the background: the driver turns remote debugging on without bringing Chrome
 forward, and reverts Chrome's own brief activations (its consent window opens
@@ -370,11 +391,12 @@ browser_click
 Before dispatch, the driver refreshes the element box and hit-tests the point.
 It refuses stale, covered, or ambiguous targets.
 
-Standalone Chromium on macOS and Linux can activate its native window when
-trusted CDP pointer input is used. CUA Driver detects that limitation and
-returns `browser_input_trust_unavailable` before dispatch instead of claiming
-background delivery. Windows Chrome and Edge have validated trusted
-background delivery.
+Standalone Chromium on Linux can activate its native window when trusted CDP
+pointer input is used. CUA Driver detects that limitation and returns
+`browser_input_trust_unavailable` before dispatch instead of claiming
+background delivery. Chrome and Edge on Windows, and Chrome on macOS, deliver
+trusted input in the background, including to an inactive (hidden) tab,
+without activating or raising the browser window.
 
 When the application semantics allow a synthetic JavaScript click, request it
 explicitly with a current ref:
@@ -385,8 +407,11 @@ browser_click
     "input_route":"dom_event","session":"browser-run-1"}'
 ```
 
-`dom_event` calls the page element's click behavior without pretending that a
-trusted pointer event occurred. It requires a ref and is the full-background
+`dom_event` replays a primary-button click as synthetic DOM events at the
+element's center: pointer and mouse over, move, down, up, then `click`. Apps
+that open rows or menus from pointer or mouse down/up, as many React tables
+do, respond to it; it does not pretend that a trusted pointer event occurred.
+Controls that check `event.isTrusted` still need the trusted route. It requires a ref and is the full-background
 alternative where supported. Dispatch is not proof that the control activated:
 trust-gated controls can ignore synthetic events, so refresh page state and
 verify the expected postcondition. Never silently change trust class or

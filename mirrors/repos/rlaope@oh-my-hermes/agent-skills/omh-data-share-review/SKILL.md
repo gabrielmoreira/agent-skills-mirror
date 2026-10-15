@@ -17,7 +17,7 @@ This is an OMH `data-share-review` workflow skill, projected for Agent Skills ho
 
 ## Why This Exists
 
-`data-share-review` exists because data leaving the team had no owner: Hermes redacts identifiers in gateway chat and secrets in tool output, `security-safety-review` reviews an agent's own exposure, and `legal-compliance-review` reads the obligations, while nothing minimized a file's fields, kept its pseudonym mapping local, and refused to call it redacted before a scan of what actually leaves.
+`data-share-review` exists because data leaving the team had no owner: Hermes redacts identifiers in gateway chat and secrets in tool output, `omh-security-safety-review` reviews an agent's own exposure, and `omh-legal-compliance-review` reads the obligations, while nothing minimized a file's fields, kept its pseudonym mapping local, and refused to call it redacted before a scan of what actually leaves.
 
 ## First Steps
 
@@ -101,7 +101,7 @@ Artifact expectations:
 
 - field_inventory/v1 lists every column, key, and free-text field with its class -- direct identifier, quasi-identifier, secret, free text, or not personal -- and the evidence for the class
 - minimization_plan/v1 gives each field one action -- drop, generalize, mask, or pseudonymize -- with the destination's need for the fields it keeps, and names the local path that holds any pseudonym mapping outside the shipped file
-- residual_scan/v1 records, for the exact file that leaves, the scan method and an observed count per class with zero hits or each remaining hit accepted by name, and its verdict: redacted, or not_observed when no scan ran
+- residual_scan/v1 records, for the exact file that leaves, the scan method and an observed count per class with zero hits or each remaining hit accepted by name, and its verdict: redacted, not redacted with the counts while a hit remains unaccepted, or not_observed when no scan ran
 - share_record/v1 is metadata only -- destination, date, fields shipped, row count, and the sha256 digest of the shipped file -- and holds no value from it
 
 Safety rules:

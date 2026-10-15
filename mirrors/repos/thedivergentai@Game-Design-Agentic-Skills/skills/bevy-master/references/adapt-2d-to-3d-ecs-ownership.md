@@ -11,5 +11,7 @@ Target: **Bevy 0.20+**.
 | Spawn | `Commands` | `Startup` or the runtime schedule |
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
+| Sprite and Camera2d removal | `Commands` on the same entity | `Startup`, chained before any 3D reader |
+| Lifted motion | `WishVelocity` | `FixedUpdate` only; do not also write `PlanarVelocity` there |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+`promote_actors` and `promote_camera` share no component, but both run before gameplay reads the new draw components, so they stay on one `Startup` chain. `lift_velocity` is the only writer of `WishVelocity`.

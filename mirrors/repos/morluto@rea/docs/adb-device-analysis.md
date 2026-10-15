@@ -26,6 +26,9 @@ Readiness is `rea inspect-adb-client`: it runs `adb version` and reports the
 resolved binary, its version, and where it was selected from. A missing
 binary reports `capability_unavailable` with the `REA_ADB_PATH` remediation
 rather than attempting an installation.
+The `binary_session` inventory uses the same bounded client-version probe; it
+does not query devices, start the adb server, or establish that a requested
+serial is reachable. Device state is checked by each device operation.
 
 ## Answer an analyst question
 
@@ -94,11 +97,16 @@ existing analysis families directly, for example
 | `capture_adb_screen`    | read               | One `screencap -p` frame (exec-out, no device-side file) with dimensions                                                                                                                                                              |
 | `collect_adb_bugreport` | read               | Device-generated bugreport zip, digested                                                                                                                                                                                              |
 | `push_adb_file`         | **mutates device** | One local file to a device path (e.g. pushing tools into `/data/local/tmp`); checks for existing targets and refuses them without explicit overwrite (the check is not atomic); compares digests when device `sha256sum` is available |
-| `install_adb_package`   | **mutates device** | Local APK via `adb install [-r]`; preserves the device's Success/Failure verdict                                                                                                                                                      |
+| `install_adb_package`   | **mutates device** | Local APK via `adb install [-r]`; preserves its Success/Failure verdict, records `replace_requested`, and leaves actual replacement `null` because prior package state is not observed                                                |
 | `uninstall_adb_package` | **mutates device** | Removes a package and its data for user 0                                                                                                                                                                                             |
 | `start_adb_app`         | **mutates device** | Resolves the package's launcher activity (`cmd package resolve-activity --brief`) and starts it (`am start -n`)                                                                                                                       |
 | `start_adb_activity`    | **mutates device** | Starts an intent (`am start -a` with optional URI, component, and up to 16 typed extras); preserves the activity manager's verdict                                                                                                    |
 | `stop_adb_app`          | **mutates device** | Force-stops every process of a package, ending a dynamic-analysis run                                                                                                                                                                 |
+
+For `install_adb_package`, `replace_requested` records whether `-r` was sent.
+The `replaced` result is `null`: the successful install response does not say
+whether the package was installed fresh or replaced, and REA does not query the
+device first. The install verdict and host APK digest remain available.
 
 ## Interpret the result
 

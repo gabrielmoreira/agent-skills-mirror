@@ -1,6 +1,6 @@
 ---
 name: bevy-spatial-queries
-description: "Bevy ECS skill for spatial queries. Keywords: Bevy, raycast, shapecast, picking, physics query."
+description: "Answer Bevy 0.20 line-of-sight, radius, and cursor picks with Transform distance and facing. Use when a design needs a probe and collider casts belong on the physics skills. Keywords: Bevy, spatial query, viewport_to_world_2d, GlobalTransform, facing, radius."
 ---
 
 # Bevy spatial queries
@@ -11,25 +11,147 @@ Load this when a design needs line of sight, a volume overlap, a ground probe, o
 
 ## ECS shape
 
-- **Components** would own query origin, direction, and a mask once a solver defines them. Check the solver docs before naming those types.
-- **Resources** would own a physics world. None was opened.
-- **Systems** would run the query after the solver step. Order that with `.chain()` on the ECS page. The clock is `Fixed` / `FixedMain` from `bevy::time`, which is not a query API.
-- **Camera-only pick:** `Camera::viewport_to_world_2d` with `GlobalTransform` maps a viewport position to a 2D world position. That is not an intersection test. See bevy-camera-systems.
+- **Components** own a probe radius or a facing marker. Positions come from `GlobalTransform`.
+- **Camera pick:** `Camera::viewport_to_world_2d` with `GlobalTransform` maps a cursor to a 2D world point. That is a camera map, then a distance test against sprites. See bevy-camera-systems.
+- **Systems** read transforms after movement. Chain the probe after the system that writes `Transform` when both run in the same schedule.
 
-## Coming from Godot
+## Probe choice
 
-| Godot idea | Bevy idiom |
+| Need | Bevy path |
 | --- | --- |
-| Ray or shape cast | Check bevy-physics-2d or bevy-physics-3d before naming a cast API. |
-| Mouse position in 2D world | `viewport_to_world_2d` on a `Camera` (bevy-camera-systems). A collider hit belongs with the physics skills once you choose a solver. |
-| Exclude the caster | Unverified. Do not copy Godot RID exclude lists |
-| Field-of-view fan | Design data on components. Check the docs for a sensor API before writing one. |
+| Collider cast or sweep | bevy-physics-2d or bevy-physics-3d. This skill measures distance and facing with `Transform`. |
+| Pointer in the 2D world | `viewport_to_world_2d`, then the nearest entity inside a radius. |
+| Exclude the caster | Skip the probe `Entity` when comparing distances. |
+| View cone | Dot the view forward with the direction to the target and compare against a cosine threshold. |
 
 ## Scope
 
-- The `bevy` 0.20.0 feature list has no physics-engine feature, so there is no ray, shape, point, or sweep query to cite.
-- Third-party plugins may be added with `add_plugins`. Check a physics crate's own docs before naming a query API.
-- Piercing casts, reflection from normals, and ground volumes are unverified.
+- Stock Bevy measures points, radii, and facing. Collider casts, sweeps, and normals stay on bevy-physics-2d and bevy-physics-3d.
+- A probe never reports itself. Compare `Entity` before accepting a hit.
+- Chain the probe after movement so it reads the transforms written this frame.
+
+## Examples
+
+```toml
+[dependencies]
+bevy = "0.20"
+```
+
+Map the cursor into the world, then keep the closest marker inside the pick radius.
+
+```rust
+#[derive(Component)]
+struct Pickable;
+
+use bevy::window::PrimaryWindow;
+
+fn pick_nearest(
+    windows: Query<&Window, With<PrimaryWindow>>,
+    cameras: Query<(&Camera, &GlobalTransform), With<Camera2d>>,
+    targets: Query<(Entity, &GlobalTransform), With<Pickable>>,
+) {
+    let Ok(window) = windows.single() else {
+        return;
+    };
+    let Ok((camera, camera_tf)) = cameras.single() else {
+        return;
+    };
+    let Some(cursor) = window.cursor_position() else {
+        return;
+    };
+    let Ok(world) = camera.viewport_to_world_2d(camera_tf, cursor) else {
+        return;
+    };
+    let mut best: Option<(Entity, f32)> = None;
+    for (entity, transform) in &targets {
+        let point = transform.translation().truncate();
+        let distance = point.distance(world);
+        if distance > 24.0 {
+            continue;
+        }
+        if best.is_none_or(|(_, so_far)| distance < so_far) {
+            best = Some((entity, distance));
+        }
+    }
+    let _hit = best.map(|(entity, _)| entity);
+}
+```
+
+A radius probe lists other entities inside its range and skips its own entity.
+
+```rust
+#[derive(Component)]
+struct Probe {
+    radius: f32,
+}
+
+#[derive(Component)]
+struct Body;
+
+fn overlaps(
+    probes: Query<(Entity, &GlobalTransform, &Probe)>,
+    bodies: Query<(Entity, &GlobalTransform), With<Body>>,
+) {
+    for (probe_entity, probe_tf, probe) in &probes {
+        for (body, body_tf) in &bodies {
+            if body == probe_entity {
+                continue;
+            }
+            let distance = probe_tf.translation().distance(body_tf.translation());
+            if distance <= probe.radius {
+                let _hit = body;
+            }
+        }
+    }
+}
+```
+
+Facing uses the view forward and a cosine limit. Movement writes `Transform` first. The sight test reads `Transform` in the next chained system, because `GlobalTransform` updates only after propagation.
+
+```rust
+#[derive(Component)]
+struct Watcher {
+    cos_limit: f32,
+}
+
+#[derive(Component)]
+struct Mark;
+
+fn advance(mut watchers: Query<&mut Transform, With<Watcher>>) {
+    for mut transform in &mut watchers {
+        transform.translation.x += 1.0;
+    }
+}
+
+fn can_see(
+    watchers: Query<(&Transform, &Watcher)>,
+    marks: Query<&Transform, (With<Mark>, Without<Watcher>)>,
+) {
+    for (watcher_tf, watcher) in &watchers {
+        let origin = watcher_tf.translation;
+        let forward = watcher_tf.forward().as_vec3();
+        for mark_tf in &marks {
+            let to = mark_tf.translation - origin;
+            let length = to.length();
+            if length <= f32::EPSILON {
+                continue;
+            }
+            let facing = forward.dot(to / length);
+            if facing >= watcher.cos_limit {
+                let _seen = true;
+            }
+        }
+    }
+}
+
+pub struct SpatialPlugin;
+
+impl Plugin for SpatialPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Update, (advance, can_see).chain());
+    }
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -53,12 +175,14 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A field stored outside the world |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
+| Same-frame facing | `advance` then `can_see` with `.chain()` on `Transform` | Reading `GlobalTransform` in the system that just wrote `Transform` |
+| Collider cast | bevy-physics-2d or bevy-physics-3d | An invented ray or mask API |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API outside the documented set | Check the official docs first | A made-up crate or API |
+| An API outside the documented set | Check the official documentation | A made-up crate or API |
 
 Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownership table.
 
@@ -68,36 +192,33 @@ Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownershi
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot ray, shape-cast, or direct-space-state types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
-- No Avian, Rapier, or any other named physics crate as the chosen solver. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
-- No invented `intersect_ray` or mask APIs. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- Do not read `GlobalTransform` in the same system that just wrote `Transform`. WHY: propagation has not run, so the global pose is still last frame.
+- No Avian, Rapier, or any other named physics crate as the chosen solver. WHY: collider casts stay on the physics skills; this skill uses transforms.
+- No invented `intersect_ray` or mask APIs. WHY: stock Bevy here is distance, radius, and a dot product.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+Official links stay on unversioned `latest` pages. The library pin on bevy-master stays **0.20.0**. No stock spatial-query module is used here.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - Unversioned API index. No spatial-query module was opened.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No query plugin was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - Systems, `Query`, and `.chain()`.
-- [bevy::camera](https://docs.rs/bevy/latest/bevy/camera/index.html) - `viewport_to_world_2d` is a camera map, not a collider query. Details live on bevy-camera-systems.
-- [Quick Start: plugins](https://bevy.org/learn/quick-start/getting-started/plugins/) - Third-party `add_plugins` without a chosen crate.
+- [Quick Start: plugins](https://bevy.org/learn/quick-start/getting-started/plugins/) - `add_plugins` without a chosen physics crate. `viewport_to_world_2d` is a camera map; details live on bevy-camera-systems.
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership.
-- [bevy-camera-systems](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-camera-systems/SKILL.md) - Viewport to 2D world, without a hit test.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership.
+- [bevy-camera-systems](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-camera-systems/SKILL.md) - Viewport to 2D world, without a hit test.
 
 #### Complements
-- [bevy-physics-2d](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-physics-2d/SKILL.md) - 2D physics and solver choice.
-- [bevy-physics-3d](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-physics-3d/SKILL.md) - 3D physics and solver choice.
-- [godot-raycasting-queries](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-raycasting-queries/SKILL.md) - Equivalent Godot skill.
+- [bevy-physics-2d](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-physics-2d/SKILL.md) - 2D physics and solver choice.
+- [bevy-physics-3d](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-physics-3d/SKILL.md) - 3D physics and solver choice.
+- [godot-raycasting-queries](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-raycasting-queries/SKILL.md) - Godot package for cast queries.
 
 #### Downstream / consumers
-- [bevy-ai-navigation](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ai-navigation/SKILL.md) - Sensors that need a cast.
+- [bevy-ai-navigation](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ai-navigation/SKILL.md) - Sensors that need a cast.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

@@ -7,28 +7,169 @@ description: "Bevy ECS skill for tile maps. Keywords: Bevy, tilemap, tiles, ECS,
 
 ## When to use
 
-Load this before storing a grid of tiles. The `bevy` crate has sprites and meshes. A tilemap is yours to build in ECS.
+Load this before storing a grid of tiles. Bevy draws cells with `Sprite` and a `TextureAtlas`. The grid itself is a resource and a set of entities you own.
 
 ## ECS shape
 
-- **Components:** a cell can be your own component (grid coord plus an id) spawned through normal ECS. `Sprite` can draw one cell. That is not a tilemap type.
-- **Resources:** a map resource can hold width, height, and a seed. See bevy-data-resources.
-- **Systems:** paint and collision generation are yours. No engine tile system was named.
-- **Schedule:** generation on `Startup` or a state enter. Check the docs for a streaming API before writing one.
+- **Resource:** `TileGrid` owns width, height, and one cell id per slot.
+- **Component:** `TileCell` stores the grid coordinate on the sprite entity.
+- **Draw:** `TextureAtlasLayout::from_grid` slices a sheet. `Sprite::from_atlas_image` picks a cell index.
+- **Schedule:** spawn the grid in `Startup`. Autotile rules are a plain function over neighbor ids.
 
-## Coming from Godot
+## Examples
 
-| Godot idea | Bevy idiom |
+```toml
+[dependencies]
+bevy = "0.20"
+```
+
+The grid is the source of truth. Sprites are a view of it.
+
+```rust
+#[derive(Resource)]
+struct TileGrid {
+    width: i32,
+    height: i32,
+    cells: Vec<u16>,
+}
+
+impl TileGrid {
+    fn index(&self, x: i32, y: i32) -> Option<usize> {
+        if x < 0 || y < 0 || x >= self.width || y >= self.height {
+            return None;
+        }
+        Some((y * self.width + x) as usize)
+    }
+
+    fn get(&self, x: i32, y: i32) -> u16 {
+        self.index(x, y).map(|i| self.cells[i]).unwrap_or(0)
+    }
+}
+
+#[derive(Component)]
+struct TileCell {
+    x: i32,
+    y: i32,
+}
+```
+
+A 4 by 4 sheet of 16-pixel tiles becomes one layout asset. Each solid cell spawns a sprite.
+
+```rust
+#[derive(Resource)]
+struct TileGrid {
+    width: i32,
+    height: i32,
+    cells: Vec<u16>,
+}
+
+impl TileGrid {
+    fn get(&self, x: i32, y: i32) -> u16 {
+        if x < 0 || y < 0 || x >= self.width || y >= self.height {
+            return 0;
+        }
+        self.cells[(y * self.width + x) as usize]
+    }
+}
+
+#[derive(Component)]
+struct TileCell {
+    x: i32,
+    y: i32,
+}
+
+fn spawn_tiles(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut layouts: ResMut<Assets<TextureAtlasLayout>>,
+    grid: Res<TileGrid>,
+) {
+    let layout = layouts.add(TextureAtlasLayout::from_grid(
+        UVec2::splat(16),
+        4,
+        4,
+        None,
+        None,
+    ));
+    let image = asset_server.load("tiles.png");
+    let tile = 16.0;
+    for y in 0..grid.height {
+        for x in 0..grid.width {
+            let id = grid.get(x, y);
+            if id == 0 {
+                continue;
+            }
+            commands.spawn((
+                Sprite::from_atlas_image(
+                    image.clone(),
+                    TextureAtlas {
+                        layout: layout.clone(),
+                        index: id as usize,
+                    },
+                ),
+                Transform::from_xyz(x as f32 * tile, y as f32 * tile, 0.0),
+                TileCell { x, y },
+            ));
+        }
+    }
+    commands.spawn(Camera2d);
+}
+```
+
+Four-neighbor bits pick an atlas index. Empty neighbors stay zero.
+
+```rust
+#[derive(Resource)]
+struct TileGrid {
+    width: i32,
+    height: i32,
+    cells: Vec<u16>,
+}
+
+impl TileGrid {
+    fn get(&self, x: i32, y: i32) -> u16 {
+        if x < 0 || y < 0 || x >= self.width || y >= self.height {
+            return 0;
+        }
+        self.cells[(y * self.width + x) as usize]
+    }
+}
+
+#[derive(Component)]
+struct TileCell {
+    x: i32,
+    y: i32,
+}
+
+fn autotile_index(grid: &TileGrid, x: i32, y: i32) -> usize {
+    let solid = |nx: i32, ny: i32| u16::from(grid.get(nx, ny) != 0);
+    let mask = solid(x, y + 1)
+        | (solid(x + 1, y) << 1)
+        | (solid(x, y - 1) << 2)
+        | (solid(x - 1, y) << 3);
+    mask as usize
+}
+
+fn repaint(grid: Res<TileGrid>, mut tiles: Query<(&TileCell, &mut Sprite)>) {
+    for (cell, mut sprite) in &mut tiles {
+        if let Some(atlas) = sprite.texture_atlas.as_mut() {
+            atlas.index = autotile_index(&grid, cell.x, cell.y);
+        }
+    }
+}
+```
+
+## Same job, Bevy types
+
+| Design | Bevy idiom |
 | --- | --- |
-| TileSet atlas | No atlas type on the sprite page. Check that page before assuming one. |
-| TileMap layer | A set of entities or a resource grid. No TileMap component. |
-| Autotile | Your rule table. Unverified as an engine feature. |
+| TileSet atlas | `TextureAtlasLayout::from_grid` plus `Sprite::from_atlas_image` |
+| TileMap layer | `TileGrid` resource and one entity per visible cell |
+| Autotile | A function from neighbor ids to an atlas index |
 
 ## Scope
 
-- No tilemap feature appears in the 0.20.0 feature list that was opened.
-- No tilemap module appears in the module list.
-- No third-party tile crate was chosen.
+There is no engine tilemap type. Collision from the grid is a physics concern on bevy-physics-2d. Streaming a larger world means spawning and despawning `TileCell` entities from the same resource.
 
 ## Expert Knowledge Delta
 
@@ -52,7 +193,7 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A scene-tree script hung on the entity |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
@@ -75,30 +216,27 @@ Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownershi
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+Official pages stay on unversioned bevy.org URLs. The library pin on bevy-master stays **0.20.0**. Cells draw with `Sprite` and `TextureAtlas`. There is no engine tile-map type.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
 - [Plugins](https://bevy.org/learn/quick-start/getting-started/plugins/) - `Plugin`, `DefaultPlugins`, `MinimalPlugins`, and `add_plugins`.
-- [bevy::sprite](https://docs.rs/bevy/latest/bevy/sprite/index.html) - `Sprite` only. Not a tile map.
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
-- [bevy-procedural-generation](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-procedural-generation/SKILL.md) - Seeded layouts.
-- [bevy-data-resources](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md) - Map resource.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
+- [bevy-procedural-generation](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-procedural-generation/SKILL.md) - Seeded layouts.
+- [bevy-data-resources](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md) - Map resource.
 
 #### Complements
-- [godot-tilemap-mastery](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) - Equivalent Godot skill.
+- [godot-tilemap-mastery](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) - Equivalent Godot skill.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

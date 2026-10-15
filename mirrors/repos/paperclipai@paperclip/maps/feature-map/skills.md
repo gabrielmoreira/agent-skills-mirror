@@ -69,15 +69,33 @@ Manual: Enable the skill for one test agent and leave another without access. Ru
 ### Project repository source behavior
 
 New GitHub project repositories import skills automatically. Skills → Sources lists
-accessible legacy repositories with Import skills, shows source/project provenance,
-and provides Refresh and Automatic updates in its source menu. Verify future additions,
+accessible legacy repositories with Import skills, shows each saved repository once with
+its access scope but without project names, and groups matching repository/ref workspaces.
+Additional legacy imports for an existing source live in its More menu. Import progress
+appears in the source metadata; Refresh and Automatic updates are also available.
+Verify future additions,
 retained exclusions, error recovery and reload persistence. Private-only sources must
 be absent for unrelated people/agents; access through either originating project is sufficient.
+
+For an oversized repository, preview and import a skill that links to shared files
+outside its folder. Its saved version should include those files under the original
+repository paths. Missing references remain visible warnings and must not disable
+an otherwise valid skill's selection. Verify an existing source with cached dependency
+errors recovers on refresh without requiring a new upstream commit. A refresh that
+cannot preserve installed shared files retains the prior version.
 
 Storybook/browser coverage uses scoped fixtures. Live GitHub-to-routine execution
 must be verified separately; inspect resolved version IDs across an upstream update.
 
 ### Connection repair during an update
+
+A missing tracked branch is a branch repair, not a credential failure. On an independent
+source, choose a new branch from the searchable list or enter its name. The repository's
+default branch is marked and included even outside the first 100 listed branches.
+Loading or a failed list request does not prevent manual entry; saving validates the
+requested ref. Installed identities, selections and version pins remain. Project-tracked
+branches are changed in project settings. A saved connection
+is validated against both the repository and tracked revision before repair succeeds.
 
 Open Choose connection while a source is being refreshed. Select an authorized account and save. If the source changes, the dialog must retain that selection, load the current revision, and allow a second save without reopening. The [project repository browser suite](../../tests/storybook-visual/project-repository-skills.spec.ts) covers this recovery with simulated upstream data.
 

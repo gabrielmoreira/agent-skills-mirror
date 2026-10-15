@@ -1,6 +1,6 @@
 ---
 name: bevy-genre-party
-description: "Thin Bevy genre router for Party. Keywords: Bevy, Party, genre, ECS, router."
+description: "Bevy 0.20 party router: local seats, shared scores, and minigame swaps as ECS data. Use when routing a local party game. Keywords: Bevy, Party, minigame, score, ECS, router."
 ---
 
 # Bevy Party (thin router)
@@ -16,26 +16,147 @@ Load this for local minigame swaps and shared scores.
 - **Components** hold the genre's per-entity flags as plain data. This file does not name new engine types.
 - **Resources** hold run-wide counters (score, wave index, seed) via bevy-data-resources.
 - **Systems** read those components on `Update` or the fixed timestep from bevy-master. Order them with `.chain()` when a later system must see the result.
-- **Schedule:** gameplay mode changes go through bevy-state-machines. Do not invent a genre plugin.
-
-## Coming from Godot
-
-| Godot idea | Bevy idiom |
-| --- | --- |
-| Genre scene tree | Entities plus the domain skills linked below |
-| Autoload director | A resource, not a singleton node |
-| Signal bus for the loop | bevy-events-messaging |
+- **Schedule:** gameplay mode changes go through bevy-state-machines. This file registers only seat scores and the minigame swap.
 
 ## Routing
 
-- [bevy-state-machines](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Minigame mode.
-- [bevy-input-handling](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Local devices. Gamepad exists.
-- [bevy-game-loop-time-trial](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-game-loop-time-trial/SKILL.md) - When a minigame is timed.
+- [bevy-state-machines](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Minigame mode.
+- [bevy-input-handling](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Local devices. Gamepad exists.
+- [bevy-game-loop-time-trial](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-game-loop-time-trial/SKILL.md) - When a minigame is timed.
 
 ## Scope
 
-- No minigame-board or local-player-slot type was opened.
-- Online party play is on the networking hold.
+Local seats, the shared board, and the current minigame are plain data. Mode machines, devices, and timed rounds stay in the skills linked above.
+
+| Call | Owner here | Leave to the linked skill |
+| --- | --- | --- |
+| One seat earns the round | `PartyBoard.award_pending`, then clear it | Input devices in bevy-input-handling |
+| Hub opens a race | `CurrentMinigame` on a just-pressed key | The state machine in bevy-state-machines |
+| Score mode ends | bump `round` and the active seat, then return to hub | The timer in bevy-game-loop-time-trial |
+
+```toml
+[dependencies]
+bevy = "0.20"
+```
+
+```rust
+#[derive(Component)]
+struct LocalSeat {
+    index: u8,
+    score: i32,
+}
+
+#[derive(Resource)]
+struct PartyBoard {
+    active: u8,
+    round: u32,
+    award_pending: bool,
+}
+
+fn award(mut board: ResMut<PartyBoard>, mut seats: Query<&mut LocalSeat>) {
+    if !board.award_pending {
+        return;
+    }
+    board.award_pending = false;
+    for mut seat in &mut seats {
+        if seat.index == board.active {
+            seat.score += 1;
+        }
+    }
+}
+
+pub struct ScorePlugin;
+
+impl Plugin for ScorePlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(PartyBoard {
+            active: 0,
+            round: 1,
+            award_pending: true,
+        })
+        .add_systems(Update, award);
+    }
+}
+```
+
+```rust
+#[derive(Resource)]
+struct PartyBoard {
+    active: u8,
+    round: u32,
+    award_pending: bool,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Minigame {
+    Hub,
+    Race,
+    Score,
+}
+
+#[derive(Resource)]
+struct CurrentMinigame(Minigame);
+
+fn open_race(keys: Res<ButtonInput<KeyCode>>, mut current: ResMut<CurrentMinigame>) {
+    if keys.just_pressed(KeyCode::Digit1) && current.0 == Minigame::Hub {
+        current.0 = Minigame::Race;
+    }
+}
+
+fn advance_round(
+    keys: Res<ButtonInput<KeyCode>>,
+    mut current: ResMut<CurrentMinigame>,
+    mut board: ResMut<PartyBoard>,
+) {
+    if keys.just_pressed(KeyCode::Digit2) && current.0 == Minigame::Score {
+        board.round += 1;
+        board.active = board.active.wrapping_add(1) % 4;
+        board.award_pending = true;
+        current.0 = Minigame::Hub;
+    }
+}
+
+pub struct MinigamePlugin;
+
+impl Plugin for MinigamePlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(CurrentMinigame(Minigame::Hub))
+            .add_systems(Update, (open_race, advance_round).chain());
+    }
+}
+```
+
+```rust
+#[derive(Component)]
+struct LocalSeat {
+    index: u8,
+    score: i32,
+}
+
+fn join_seat(keys: Res<ButtonInput<KeyCode>>, mut commands: Commands, seats: Query<&LocalSeat>) {
+    if keys.just_pressed(KeyCode::KeyJ) {
+        let index = seats.iter().count() as u8;
+        if index < 4 {
+            commands.spawn(LocalSeat { index, score: 0 });
+        }
+    }
+}
+
+pub struct JoinPlugin;
+
+impl Plugin for JoinPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Update, join_seat);
+    }
+}
+
+fn main() {
+    App::new()
+        .add_plugins(MinimalPlugins)
+        .add_plugins(JoinPlugin)
+        .run();
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -59,12 +180,12 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | One mutable blob shared by every entity |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API outside the documented set | Check the official docs first | A made-up crate or API |
+| Behavior a linked domain skill already owns | Keep this router to components and resources | A second implementation in this file |
 
 Load [references/ecs-ownership.md](genre-party-ecs-ownership.md) for the ownership table.
 
@@ -74,17 +195,15 @@ Load [references/ecs-ownership.md](genre-party-ecs-ownership.md) for the ownersh
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot types in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- Do not add to a seat score every frame. WHY: the board flag awards once, then clears, so the active seat does not climb for free.
 - No invented genre APIs. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 - Do not pick a physics or net crate here. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20.0**. Official pages stay on the unversioned site.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
@@ -93,17 +212,16 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Spawn and query shape.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Spawn and query shape.
 
 #### Complements
-- [godot-genre-party](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-genre-party/SKILL.md) - Equivalent Godot skill.
-- [bevy-state-machines](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Minigame mode.
-- [bevy-input-handling](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Local devices. Gamepad exists.
-- [bevy-game-loop-time-trial](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-game-loop-time-trial/SKILL.md) - When a minigame is timed.
+- [bevy-state-machines](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Minigame mode.
+- [bevy-input-handling](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Local devices. Gamepad exists.
+- [bevy-game-loop-time-trial](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-game-loop-time-trial/SKILL.md) - When a minigame is timed.
 
 #### Downstream / consumers
 - None. This router does not own a second implementation.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

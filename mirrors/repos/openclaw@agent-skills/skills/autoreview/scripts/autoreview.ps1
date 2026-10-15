@@ -1,6 +1,6 @@
 $ErrorActionPreference = 'Stop'
 
-$Helper = Join-Path $PSScriptRoot 'autoreview'
+$Helper = [IO.Path]::Combine($PSScriptRoot, 'autoreview')
 $ForwardedArgs = $args
 $Candidates = @(
     @{ Name = 'py'; Arguments = @('-3') },
@@ -9,8 +9,14 @@ $Candidates = @(
 )
 
 foreach ($Candidate in $Candidates) {
-    $Command = Get-Command $Candidate.Name -CommandType Application -ErrorAction SilentlyContinue |
-        Select-Object -First 1
+    # Missing executable names must not trigger unrelated module discovery.
+    $Command = $null
+    foreach ($Application in $ExecutionContext.InvokeCommand.GetCommands(
+        $Candidate.Name, [System.Management.Automation.CommandTypes]::Application, $false
+    )) {
+        $Command = $Application
+        break
+    }
     if ($null -eq $Command) {
         continue
     }

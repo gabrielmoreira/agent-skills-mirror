@@ -1,6 +1,6 @@
 ---
 name: bevy-genre-educational
-description: "Thin Bevy genre router for Educational. Keywords: Bevy, Educational, genre, ECS, router."
+description: "Route a Bevy 0.20 educational loop. Use when prompts and choices are components, lesson totals are one resource, and grading must run after selection in one chain. Keywords: Bevy, Educational, LessonProgress, Choice, chain, genre."
 ---
 
 # Bevy Educational (thin router)
@@ -13,29 +13,138 @@ Load this for prompts, answers, and progress flags.
 
 ## ECS shape
 
-- **Components** hold the genre's per-entity flags as plain data. This file does not name new engine types.
-- **Resources** hold run-wide counters (score, wave index, seed) via bevy-data-resources.
-- **Systems** read those components on `Update` or the fixed timestep from bevy-master. Order them with `.chain()` when a later system must see the result.
-- **Schedule:** gameplay mode changes go through bevy-state-machines. Do not invent a genre plugin.
+- **Components** hold a prompt and each choice as plain data.
+- **Resources** hold how many answers were graded and how many were correct.
+- **Systems** select a choice, then grade it. `.chain()` keeps the grade after the selection.
+- **Schedule:** gameplay mode changes go through bevy-state-machines.
 
-## Coming from Godot
+```toml
+[package]
+name = "educational"
+version = "0.1.0"
+edition = "2021"
 
-| Godot idea | Bevy idiom |
+[dependencies]
+bevy = "0.20"
+```
+
+One prompt, two choices, one progress resource.
+
+```rust
+#[derive(Component)]
+struct Prompt {
+    text: String,
+}
+
+#[derive(Component)]
+struct Choice {
+    label: String,
+    correct: bool,
+    picked: bool,
+    graded: bool,
+}
+
+#[derive(Resource, Default)]
+struct LessonProgress {
+    answered: u32,
+    correct: u32,
+}
+
+fn spawn_lesson(mut commands: Commands) {
+    commands.spawn(Prompt {
+        text: "Which way is north?".to_string(),
+    });
+    commands.spawn(Choice {
+        label: "Up".to_string(),
+        correct: true,
+        picked: false,
+        graded: false,
+    });
+    commands.spawn(Choice {
+        label: "Down".to_string(),
+        correct: false,
+        picked: false,
+        graded: false,
+    });
+    commands.init_resource::<LessonProgress>();
+}
+
+fn pick_first(mut choices: Query<&mut Choice>) {
+    for mut choice in &mut choices {
+        if choice.correct && !choice.graded && !choice.picked {
+            choice.picked = true;
+            break;
+        }
+    }
+}
+
+fn grade(mut progress: ResMut<LessonProgress>, mut choices: Query<&mut Choice>) {
+    for mut choice in &mut choices {
+        if choice.picked && !choice.graded {
+            progress.answered = progress.answered.saturating_add(1);
+            if choice.correct {
+                progress.correct = progress.correct.saturating_add(1);
+            }
+            choice.graded = true;
+            choice.picked = false;
+        }
+    }
+}
+
+pub struct LessonPlugin;
+
+impl Plugin for LessonPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Startup, spawn_lesson)
+            .add_systems(Update, (pick_first, grade).chain());
+    }
+}
+```
+
+`pick_first` and `grade` both write `Choice`, so they stay chained.
+
+A readout only reads progress.
+
+```rust
+#[derive(Resource, Default)]
+struct LessonProgress {
+    answered: u32,
+    correct: u32,
+}
+
+fn show_score(progress: Res<LessonProgress>) {
+    let _answered = progress.answered;
+    let _correct = progress.correct;
+}
+
+pub struct ScorePlugin;
+
+impl Plugin for ScorePlugin {
+    fn build(&self, app: &mut App) {
+        app.init_resource::<LessonProgress>()
+            .add_systems(Update, show_score);
+    }
+}
+```
+
+## Lesson data
+
+| Need | Bevy idiom |
 | --- | --- |
-| Genre scene tree | Entities plus the domain skills linked below |
-| Autoload director | A resource, not a singleton node |
-| Signal bus for the loop | bevy-events-messaging |
+| Prompts and choices | Entities plus the domain skills linked below |
+| Lesson totals | A `Resource` |
+| One-shot loop notices | bevy-events-messaging |
 
 ## Routing
 
-- [bevy-ui-text](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ui-text/SKILL.md) - Prompts.
-- [bevy-ui-layout](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ui-layout/SKILL.md) - Choices.
-- [bevy-save-load](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-save-load/SKILL.md) - Progress saves.
-- [bevy-state-machines](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Lesson mode.
+- [bevy-ui-text](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ui-text/SKILL.md) - Prompts.
+- [bevy-ui-layout](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ui-layout/SKILL.md) - Choices.
+- [bevy-save-load](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-save-load/SKILL.md) - Progress saves.
+- [bevy-state-machines](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Lesson mode.
 
 ## Scope
 
-- No quiz or learning-record type exists in Bevy.
+- Prompts, choices, and the progress resource are gameplay data you define. UI text and layout stay on the linked UI skills.
 
 ## Expert Knowledge Delta
 
@@ -59,12 +168,12 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | One struct that stores every entity's fields |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API outside the documented set | Check the official docs first | A made-up crate or API |
+| An API outside the documented set | Read the linked Bevy pages | A made-up crate or API |
 
 Load [references/ecs-ownership.md](genre-educational-ecs-ownership.md) for the ownership table.
 
@@ -74,17 +183,15 @@ Load [references/ecs-ownership.md](genre-educational-ecs-ownership.md) for the o
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot types in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No scene-tree types in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 - No invented genre APIs. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 - Do not pick a physics or net crate here. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20.0**. Official links stay on the unversioned learn pages.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
@@ -93,18 +200,17 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Spawn and query shape.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Spawn and query shape.
 
 #### Complements
-- [godot-genre-educational](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-genre-educational/SKILL.md) - Equivalent Godot skill.
-- [bevy-ui-text](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ui-text/SKILL.md) - Prompts.
-- [bevy-ui-layout](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ui-layout/SKILL.md) - Choices.
-- [bevy-save-load](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-save-load/SKILL.md) - Progress saves.
-- [bevy-state-machines](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Lesson mode.
+- [bevy-ui-text](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ui-text/SKILL.md) - Prompts.
+- [bevy-ui-layout](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ui-layout/SKILL.md) - Choices.
+- [bevy-save-load](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-save-load/SKILL.md) - Progress saves.
+- [bevy-state-machines](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Lesson mode.
 
 #### Downstream / consumers
 - None. This router does not own a second implementation.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

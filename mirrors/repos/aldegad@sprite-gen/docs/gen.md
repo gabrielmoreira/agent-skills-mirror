@@ -236,7 +236,7 @@ sprite-gen gen \
   [--quality low|medium|high|xhigh|max|auto] # billed effort; openai takes the range, grok takes auto/low/medium
   [--resolution 1k|1.5k|2k]  # grok output-size tier, priced with --quality
   [--model ID] \
-  [--layout-guide]        # attach a one-slot layout guide (safe box, crown and floor lines); see below
+  [--layout-guide [figure|ui-kit]]  # attach a layout guide: the one-slot figure guide (bare flag) or the UI kit layout; see below
   [--direction side|front|back|front_diagonal|back_diagonal [--facing right|left]] # add the engine's view sentence
   [--handed "the black smartwatch=left wrist" ...]  # with --direction: where an item on one side is in that view
   [--body-plan quadruped | --body-plan "the horse=quadruped" ...]  # with --direction: the view for that body
@@ -315,7 +315,7 @@ strategy it can execute, and `--alpha-mode auto` (the default) follows it:
 | Strategy | Who | What happens | Refused when |
 |---|---|---|---|
 | `native` | `codex` (**first choice**, 2026-09-08), `openai` (`background: transparent`) | On codex the transport prompt asks image_gen for a genuinely transparent background (the bundled `imagegen` skill honours "transparent background" and keeps the generated alpha; codex reports `transparentBackground: true` on the completed item); on openai the request carries `background: transparent` with `output_format: png`, which the API answers with a real alpha channel. Either way the decoded PNG's alpha is **measured**: no alpha band or `alpha_zero_pct: 0.0` refuses to publish, RGB under alpha 0 is scrubbed, partial alpha (1–254) is left as produced and reported as `partial_alpha_pct`. | The model drew a checkerboard / flat background (RGB image) — nothing can recover alpha from that, so the run fails instead of silently keying. |
-| `chroma` | `grok` (only option), `codex` with `--alpha-mode chroma` | Generate on a `#FF00FF` (or `#00FF00`) background — pick the key by subject colour (magenta subjects → green key) — and matte it out through the frame extractor's canonical YCbCr matte (`remove_chroma_background_ycbcr`), which keys from the background chroma it detects on the borders (`detect_background_key_ycc`) rather than from the pure key alone — the RGB matte behind `cutout`/`extract`/`slice-sheet` does the same since 2026-09-11 (`detect_background_key_rgb`), so every chroma path tolerates the slightly-off green/magenta generators actually paint. Gradients and texture within that chroma family are supported. | `alpha_zero_pct: 0.0` after keying, or stale RGB under alpha 0. |
+| `chroma` | `grok` (only option), `codex` with `--alpha-mode chroma` | Generate on a `#FF00FF` (or `#00FF00`) background — pick the key by subject colour (magenta subjects → green key) — and matte it out through the frame extractor's canonical YCbCr matte (`remove_chroma_background_ycbcr`), which keys from the background chroma it detects on the borders (`detect_background_key_ycc`) rather than from the pure key alone — the RGB matte behind `cutout`/`extract`/`slice-sheet` does the same since 2026-09-11 (`detect_background_key_rgb`), so every chroma path tolerates the slightly-off green/magenta generators actually paint. Gradients and texture within that chroma family are supported. | `alpha_zero_pct: 0.0` after keying, or stale RGB under alpha 0; and, before keying, a background painted as a transparency checkerboard (below). |
 
 - **`auto` steps down to `chroma` when `--ref` is attached**, on either native provider. Measured
   2026-09-08 (plan `sprite-gen/parts-rig`): codex `image_gen` with reference images
@@ -354,7 +354,8 @@ strategy it can execute, and `--alpha-mode auto` (the default) follows it:
   Keying it reads the RGB left under alpha 0 as the background colour and mattes the
   outline and light fills away. A raw with no alpha band or no alpha-0 pixel — a drawn
   checkerboard, a key background, an opaque RGBA — is `no-alpha` and keyed as before
-  (`strategy_source: "refs-attached"`). Alpha 0 that misses either bar is `ambiguous`:
+  (`strategy_source: "refs-attached"`), but a painted checkerboard is refused before
+  keying (below). Alpha 0 that misses either bar is `ambiguous`:
   keyed as before, with a `warning` in the report and on stderr. The verdict and its
   numbers are in `alpha.raw_alpha` on every ref run that planned the key. The check
   belongs to `auto`'s step down only — `--alpha-mode chroma` keys whatever comes back.
@@ -372,6 +373,23 @@ strategy it can execute, and `--alpha-mode auto` (the default) follows it:
   the native request (`--alpha-mode native`), both came back with real alpha 3/3 —
   no checkerboard in 6 runs, against 5 of 6 on 2026-09-08. The step down is kept
   until a larger measurement replaces that one.
+- **A painted transparency checkerboard is refused before keying.** Asked for a key
+  background, a model sometimes paints the grey and white checkerboard that editors show
+  behind transparent pixels instead. The matte reads the key off the borders, so it reads
+  the checkerboard and keys nearly the whole image away: a UI kit sheet keyed that way has
+  nothing left to cut. Every chroma key checks the raw first
+  (`chroma.painted_checkerboard`). Each edge is read on its 8 nearest lines. A line is
+  a checkerboard row when at least 90 % of it is grey (channels within 24 of each other),
+  it holds two greys at least 12 apart (10th and 90th percentiles), and it changes from
+  one to the other in at least 6 runs between changes, whose median is 4 to 128 px and
+  three quarters of which lie within a quarter of it (or 2 px). A checkerboard alternates along both axes, so
+  the raw is one when the top or bottom edge and the left or right edge show it. Stripes
+  alternate along one axis only, a key background is not grey, and a checkered subject
+  inside a key background does not reach the edges. The run then fails with its own
+  reason, before anything is published:
+  `chroma: the background is a painted transparency checkerboard (8 px squares along the
+  top, bottom, left and right edges), not the magenta key the image was asked for; keying
+  it would erase the image — generate it again`. A caller generates again.
 - `--alpha-mode chroma` on codex is for prompts that already carry a key background
   (the sprite-row pipeline today): the native request is **not** added to the prompt
   and the raw is keyed like a grok run.
@@ -484,6 +502,16 @@ rather than artwork, and nothing of the guide itself in the output. The guide is
 for `--aspect-ratio` (square without one) and the report records the cell it used in
 `extra.layout_guide` (size, safe margins, `crown_y`, `floor_y`); the report's `refs` are
 still the caller's own.
+
+`--layout-guide ui-kit` attaches the UI kit layout instead: one box per element of a game
+UI kit, and a paragraph naming what to draw in each box, with straight edges between
+corner ornaments and empty centres. [`ui-kit`](ui-kit.md) cuts the sheet along the same
+boxes. The ratio chooses the layout: `--aspect-ratio 1:1` (or none) draws the square
+layout's seven frames (panel, button, pressed button, card frame, two bar frames, timer
+badge); `--aspect-ratio 2:3` draws the whole kit, those seven at the same places and, below
+them, the two bar fills, an item slot, a counter plate, a lit and an unlit dot and a
+joystick base and knob. Any other ratio is refused. `extra.layout_guide` is then
+`{"kind": "ui-kit", "width", "height", "boxes"}`.
 
 The guide is an attached image, so it changes the call: openai sends it to
 `/images/edits` and bills it as image input, grok sends it as a reference, and

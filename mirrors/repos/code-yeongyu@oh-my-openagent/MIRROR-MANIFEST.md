@@ -63,9 +63,9 @@ Mirror of `code-yeongyu/oh-my-openagent` — 26 default patterns, 20 followed pa
 - `docs/reference/omo-daemon.md`
 - `README.ru.md`
 - `README.md`
-- `README.ko.md`
-- `README.ja.md`
 - `README.zh-cn.md`
+- `README.ja.md`
+- `README.ko.md`
 - `docs/guide/migrating-from-opencode.md`
 - `docs/reference/configuration.md`
 - `docs/reference/features.md`

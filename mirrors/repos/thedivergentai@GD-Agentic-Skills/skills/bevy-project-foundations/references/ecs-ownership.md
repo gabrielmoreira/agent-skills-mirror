@@ -12,4 +12,29 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+The plugin inserts app-wide data in `build`. The startup system spawns the entity.
+
+```rust
+#[derive(Resource)]
+struct GameConfig {
+    title: String,
+}
+
+#[derive(Component)]
+struct Player;
+
+fn spawn_player(mut commands: Commands) {
+    commands.spawn(Player);
+}
+
+pub struct FoundationsPlugin;
+
+impl Plugin for FoundationsPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(GameConfig {
+            title: "Game".to_string(),
+        })
+        .add_systems(Startup, spawn_player);
+    }
+}
+```

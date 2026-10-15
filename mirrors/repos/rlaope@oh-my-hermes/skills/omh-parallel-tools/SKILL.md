@@ -1,6 +1,6 @@
 ---
 name: "omh-parallel-tools"
-description: "[omh] Parallel tool-call capability in doubt: check version currency and parallel-tool capability status, then apply an update only after diff approval. Use when the user says: parallel-tools, parallel tools, hermes parallel tools setup, update hermes for parallel tools, check parallel tool support, enable parallel tool calls, verify parallel tools capability, check hermes version for parallel tools."
+description: "[omh] Parallel tool-call capability in doubt: report the version and whether MCP parallel tool calls are enabled, then apply the diff for parallel tool calls only after approval; an update only on request. Use when the user says: parallel-tools, parallel tools, hermes parallel tools setup, update hermes for parallel tools, check parallel tool support, enable parallel tool calls, verify parallel tools capability, check hermes version for parallel tools."
 license: MIT
 author: "oh-my-hermes maintainers"
 metadata:
@@ -32,12 +32,12 @@ Good example:
 
 - Prompt: update hermes for parallel tools — can you check if I'm on a current enough version?
 - Expected behavior: Report the installed version and each MCP server's `supports_parallel_tool_calls` value, say that built-in read-only tools already run concurrently, and offer the per-server flag as one diff only for a server whose calls cannot interfere with one another.
-- Why: The request is a version-currency and capability check, the core of this skill.
+- Why: Whether tools run in parallel turns on each MCP server's flag, not on the version, so the version is read and reported and the flag is what is offered.
 
 Bad example:
 
 - Prompt: parallel-tools: update your memory with what we discussed.
-- Expected behavior: Route to a memory workflow instead of a version-currency check.
+- Expected behavior: Route to a memory workflow instead of a parallel-tool capability check.
 - Why: Memory update is unrelated to parallel-tool capability or Hermes version.
 
 ## Completion Checklist
@@ -60,7 +60,7 @@ Bad example:
 
 ## When to Use
 
-Use when the user wants Hermes to check whether parallel tool calls are current and enabled, run a version-currency check, or report capability status, following the shared prerequisite-check, diagnose, guide, diff-approved apply, and verify contract.
+Use when the user wants to check the parallel-tool capability status, if Hermes tool calls run in parallel, or if the version is current for parallel tool calls, following the shared prerequisite-check, diagnose, guide, diff-approved apply, and verify contract.
 
     Strong routing signals: `parallel-tools`, `parallel tools`, `hermes parallel tools setup`, `update hermes for parallel tools`, `check parallel tool support`, `enable parallel tool calls`, `verify parallel tools capability`, `check hermes version for parallel tools`, `헤르메스 업데이트 확인해줘`, `병렬 도구 설정`, `병렬 툴 확인`, `헤르메스 병렬 도구`
 

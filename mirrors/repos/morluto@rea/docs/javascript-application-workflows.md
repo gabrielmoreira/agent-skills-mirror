@@ -60,6 +60,8 @@ provider implicitly.
 `trace_javascript_semantics` queries the authenticated companion graph without
 rereading mutable files. A seed may identify a semantic or application node,
 literal, function fingerprint, property, endpoint, event, or boundary field.
+For a recovered parse, coercion, or validation boundary, its field value is the
+static operation's method name (for example, `Number`).
 The query declares backward provenance, forward influence, callers, or
 ownership and can restrict admitted relation kinds. REA returns every matching
 seed and the complete reachable subgraph; callers do not choose node, relation,
@@ -83,10 +85,22 @@ callee bodies and built-ins such as `Object.assign`, `Reflect.set`, and
 values. This uncertainty does not prove that a call actually mutated a value.
 Interprocedural aliasing beyond the supported call-site references remains
 outside this mutation pass.
+For process configuration, only known environment value slots and canonical
+argument indexes are treated as primitive when passed to calls. Unknown or
+inherited selections can expose a mutable prototype, so later reads of that
+configuration container retain uncertainty; earlier top-level reads and unrelated
+configuration containers remain independent.
 
 Function fingerprints commit normalized syntax, control-flow shape, relation
 shape, literal sets, arity, and detected effects without using local names or
-source offsets. Equal duplicate fingerprints remain ambiguous. Dynamic
+source offsets. Function-local directive literals contribute their values while
+preserving escape spelling: `"use\x20strict"` differs from `"use strict"`.
+Quote style, formatting, and local names remain normalized. Equal duplicate
+fingerprints remain ambiguous.
+Fingerprints are static candidates, not behavioral-equivalence proofs or a
+version-independent identity. Re-analyze affected sources and obtain new seeds
+after analyzer corrections; previously retained Evidence remains queryable using
+its original component commitments. Dynamic
 calls/properties/names, parser recovery, unresolved handles, and unsupported API
 shapes stay explicit unknowns; a missing relation is never reported as proven
 behavioral absence.

@@ -46,7 +46,7 @@ Bad example:
 - Token counts and session references are observed values or the literal unknown, never estimates.
 - Elapsed time for an unfinished unit comes from its start marker, which cannot prove the unit is still alive.
 - The board is labelled observed activity, not result, verification, review, CI, or merge evidence.
-- On Hermes, `delegate_task` children and kanban workers of this conversation come from `omh_hud` (its `subagents` rows and `kanban` block, read from Hermes' own records) beside the OMH units, each labelled by source; `/agents` is the person's own Hermes list of running agents and tasks.
+- On Hermes, `delegate_task` children and kanban workers of this conversation come from `omh_hud` (its `subagents` rows and `kanban` block, read from Hermes' own records) beside the OMH units, each labelled by source; `/agents` is the person's own Hermes list of running agents and tasks in Hermes' own terminal; the OMH TUI refuses `/agents`, and its agent list (Down on an empty composer while subagents show) shows the subagents of the running turn.
 
 ## Recovery Notes
 

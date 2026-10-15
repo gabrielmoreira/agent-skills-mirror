@@ -12,4 +12,13 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+```rust
+#[derive(Resource, Default)]
+struct RouteFlags {
+    names: Vec<String>,
+}
+
+fn remember(flag: &str, routes: &mut RouteFlags) {
+    routes.names.push(flag.to_string());
+}
+```

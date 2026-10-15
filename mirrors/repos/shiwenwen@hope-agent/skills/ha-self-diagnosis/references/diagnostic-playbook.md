@@ -125,6 +125,12 @@ gotcha that most often explains a failure. Open every DB read-only.
 - 免 Key 搜索：`tools/web_search/keyless.rs` 先尝试 Brave 网页、再回退 360 网页搜索，日志仍用 `category='tool'` / `source='web_search'`，用量操作为 `keyless_search`。403 / 429 后该引擎冷却 60 秒；上游限流、页面变更和确实没有结果须区分。360 网页入口不支持时效过滤，指定 `freshness` 时跳过；不能把免 Key 当作始终可用的保证。
 - Gotcha: tool not callable → trace `resolve_tool_fate` (visibility) then `resolve_async` (Decision); check `sessions.permission_mode` (`default|smart|yolo`) and `permission.global_yolo`. Hiding a tool is never a security boundary. MCP handshake 401/403 → `ServerState::NeedsAuth` (no retry loop). IM not replying / wrong session → `SELECT * FROM channel_conversations WHERE session_id=?` (1:1 attach both ways). **Background jobs (R1 naming split)**: the DB is `background_jobs.db` (table `background_jobs`, `JobKind` tool/subagent(R6)/group(R5) — all three populated) and the single code entry is `async_jobs::JobManager`, but the Rust **module + log category stay `async_jobs`** (lineage) — so grep job lifecycle under `category='async_jobs'`, not `background_jobs`. Stale-schema probe is `SELECT group_id` (newest col); on upgrade a pre-R5 table + the legacy `async_jobs.db` / `async_jobs/` are best-effort dropped/deleted (pure rebuildable cache, no migration). EventBus lifecycle events use the `job:*` prefix (R3, was `async_tool_job:*`) — distinct from the `async_jobs` LOG category; `subagent` kind keeps `subagent:*` events (no double-emit), so the R4 panel merges both streams.
 
+### Project operations automations — `automation-operations.md`
+
+- Entry: `scripts/automation/control.py`; installed into the explicitly authorized `~/.codex/automation-runtime/hope-agent` directory alongside the existing prepare helper. This is Codex project maintenance, not product Cron or an alternative Agent loop.
+- State: `policy.json` / `tasks.json`; `control-state/{health,writer-lease}.json` and scoped observation hashes; immutable recovery manifests and receipts under `recovery/`. Codex scheduling DBs are read-only inputs. Inbox `PENDING_REVIEW` is not run success: inspect native thread terminal state.
+- Gotcha: `writer_busy` means inspect the exact owner and its pending PR before release; never steal on timeout. Missing or invalid archive input is an evidence gap; legacy LATEST indexes must resolve to validated immutable files. Permission failure stays closed. Recovery covers project operations assets only, never user data or credentials; local hash verification is not offsite acceptance.
+
 ### Subagent / Team / Cron — `subagent.md`, `agent-team.md`, `cron.md`
 
 - Entry: `subagent/injection.rs`, `team/coordinator.rs`, ha-cron 的 `cron/scheduler.rs`·`cron/executor.rs`（阶段 5 迁出；台账 `cron/db.rs` 仍在 ha-core）, `session/subagent_db.rs`, `wakeup/mod.rs` (+`wakeup/db.rs`).
@@ -212,3 +218,7 @@ gotcha that most often explains a failure. Open every DB read-only.
 - PDF 解析失败沿文本回退处理；深层输入的受控错误与进程 abort 分别记录。quick-xml 自有/Excel 为 0.41，xcb 旧构建链与 GTK/glib 平台债不冒称已消除。
 - 客户端 MP4 导出分别定位编码、异步封装与清理错误；成功须有最终 MP4 bytes，不能以抓帧数或 encoder flush 完成认定已交付。Mediabunny 仅为隔离候选，合成读回不证明平台 H.264 编码/播放可用，生产默认未切换。
 - 桌面 updater 2.12.0 的降级开关来自应用配置且固定 false；不通过 renderer 参数覆盖版本门，不关闭验签/重启确认。
+
+### Kimi Basic 搜索迁移
+
+排查 `web_search.kimi.basic` 时先核对既有 Key、是否设置国家/语言/时效过滤及后续已启用服务商；Basic 不支持这些过滤，明确错误不代表账号异常。固定国内 REST、SSRF 与禁止重定向失败不回退旧聊天模型。用量中模型/Token 缺失属于按次合同；`billable_call=null` 表示取消或响应未知，不能据此断言免费或自动重试。仅收集脱敏状态码与时间，不采集查询、Key、响应正文或真实账号材料。

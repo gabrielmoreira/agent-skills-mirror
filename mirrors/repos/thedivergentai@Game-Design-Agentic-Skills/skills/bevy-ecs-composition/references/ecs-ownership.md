@@ -12,4 +12,4 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+A system that writes `Name` and a system that reads the new value share one `.chain()`. A system that only reads `Name` and does not depend on that write stays outside the chain so it can run in parallel. `ChildOf` is data on the child, not a scene tree. Do not invent crates or types.

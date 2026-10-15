@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["pillow", "pyobjc-framework-Vision; sys_platform == 'darwin'", "pyobjc-framework-Quartz; sys_platform == 'darwin'", "rapidocr-onnxruntime"]
+# dependencies = ["pillow", "pillow-heif", "pyobjc-framework-Vision; sys_platform == 'darwin'", "pyobjc-framework-Quartz; sys_platform == 'darwin'", "rapidocr-onnxruntime"]
 # ///
 """Read the text in a photo (second reader): runs once each on the whole image, upscaled, and in tiles; merges and dedupes; marks which text was only readable after zooming.
 
@@ -17,12 +17,13 @@ Examples:
 from __future__ import annotations
 
 import argparse
+from _image import open_photo
 import json
 import sys
 import time
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageOps
+from PIL import Image, ImageDraw
 
 
 def _iou(a, b) -> float:
@@ -158,7 +159,7 @@ def main() -> None:
     ap.add_argument("--out")
     ap.add_argument("--draw")
     args = ap.parse_args()
-    im = ImageOps.exif_transpose(Image.open(args.image))
+    im = open_photo(args.image, "image")
     t0 = time.time()
     be = backend([x.strip() for x in args.langs.split(",") if x.strip()])
     r, c = (int(v) for v in args.tiles.lower().split("x"))

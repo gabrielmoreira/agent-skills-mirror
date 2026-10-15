@@ -238,6 +238,15 @@ When you add or change a skill that a plugin ships, run `npm run sync:plugins` (
 
 The root Agent Plugins package is the exception: it reads `skills/` directly, so it needs no vendoring and no sync step.
 
+## Some skill references are generated from the docs
+
+Some `references/` files are not written here: [`scripts/sync-skill-docs.mjs`](scripts/sync-skill-docs.mjs) generates them from the Neon website docs, through the same converter that serves neon.com's `/docs/*.md`. The `SKILL_DOCS` map at the top of the script lists which docs page becomes which file in which skill.
+
+- Regenerate with `npm run sync:docs -- --website ../website` (a local checkout of the website repo), then `npm run sync:plugins` so the plugin copies follow (the pre-commit hook does this too).
+- Never hand-edit a generated file. Each one carries a header naming its source and a `sha256` of its body, and `npm run validate:skill-docs` (part of `validate:ci`) fails when the two disagree. Fix the docs and regenerate instead. The files are excluded from prettier in `.prettierignore`, so `npm run fmt` cannot break the hash.
+- The script reads only a local website checkout until the docs launch. A neon.com source and a scheduled refresh are follow-ups.
+- The downstream marketplaces vendor `references/` with the rest of the skill, so mirror regenerated files there too.
+
 ## Releasing: bump package.json
 
 [`package.json`](package.json) holds the plugin version. Every other manifest that declares one is **generated** from it, the same way `plugins/*/skills` is generated from `skills/`:
@@ -274,7 +283,7 @@ Neon maintains **two** agent-skill repositories with a shared, hardened CI pipel
 
 | Repo | GitHub | What CI validates |
 | --- | --- | --- |
-| **agent-skills** (this repo) | [neondatabase/agent-skills](https://github.com/neondatabase/agent-skills) | Every skill under `skills/` via `skills-ref` and its reference graph, plus the root Agent Plugins v1 package, both marketplace catalogs and plugin manifests, the vendored plugin skills, and every manifest version against `package.json` |
+| **agent-skills** (this repo) | [neondatabase/agent-skills](https://github.com/neondatabase/agent-skills) | Every skill under `skills/` via `skills-ref` and its reference graph, plus the root Agent Plugins v1 package, both marketplace catalogs and plugin manifests, the vendored plugin skills, the docs-generated skill references, and every manifest version against `package.json` |
 | **neon-for-agent-platforms** | [neondatabase/neon-for-agent-platforms](https://github.com/neondatabase/neon-for-agent-platforms) | Every skill under `skills/` via `skills-ref` |
 
 Shared pipeline shape (both repos):
@@ -284,8 +293,8 @@ Shared pipeline shape (both repos):
 - Entry point: `npm run validate:ci`
 - Supply chain: SHA-pinned GitHub Actions, exact-pinned npm dependencies (`save-exact=true` in `.npmrc`, no ranges and no unpinned `npx`), `package-lock.json` resolving from `registry.npmjs.org`, `harden-runner` egress audit, Dependabot for `github-actions` + `npm`
 
-**Repo-specific (keep — do not drop when aligning):** this repo also validates the root **Agent Plugins v1 package** and the Cursor and Claude **plugin manifests** under `plugins/`. That's why `validate:ci` here is `validate:agent-plugin && validate:plugins && validate:versions && validate:skills && validate:references` (vs. skills-only in `neon-for-agent-platforms`) and why this workflow also filters on `plugins/**`, `plugin.json`, `mcp.json`, `kimi.plugin.json`, `.claude-plugin/**`, and `.cursor-plugin/**`. Do not drop the last three: the Kimi manifest and the two catalogs hold four of the synced version fields between them, so losing one of those filters would let a version-bearing change skip `validate:versions`. Alignment means matching the shared shape above, **not** stripping this repo's plugin checks.
+**Repo-specific (keep — do not drop when aligning):** this repo also validates the root **Agent Plugins v1 package** and the Cursor and Claude **plugin manifests** under `plugins/`. That's why `validate:ci` here is `validate:agent-plugin && validate:plugins && validate:versions && validate:skills && validate:references && validate:skill-docs` (vs. skills-only in `neon-for-agent-platforms`) and why this workflow also filters on `plugins/**`, `plugin.json`, `mcp.json`, `kimi.plugin.json`, `.claude-plugin/**`, and `.cursor-plugin/**`. Do not drop the last three: the Kimi manifest and the two catalogs hold four of the synced version fields between them, so losing one of those filters would let a version-bearing change skip `validate:versions`. Alignment means matching the shared shape above, **not** stripping this repo's plugin checks.
 
 **When you change CI/CD here** — workflow triggers, install hardening, `skills-ref` pinning, Dependabot config, or validate scripts — **apply the same change to [neondatabase/neon-for-agent-platforms](https://github.com/neondatabase/neon-for-agent-platforms)**, preserving each repo's intentional differences (this repo's plugin validation and `plugins/**` path filter).
 
-`neon-for-agent-platforms` has no `plugins/` directory and no root `plugin.json` yet, so `validate:agent-plugin`, `validate:versions`, and the `plugin.json`/`mcp.json`/`kimi.plugin.json` path filters do **not** port over as-is. Giving that repo its own portable manifest is a follow-up; until then, this is an intentional difference rather than drift.
+`neon-for-agent-platforms` has no `plugins/` directory and no root `plugin.json` yet, so `validate:agent-plugin`, `validate:versions`, and the `plugin.json`/`mcp.json`/`kimi.plugin.json` path filters do **not** port over as-is. Giving that repo its own portable manifest is a follow-up; until then, this is an intentional difference rather than drift. The same goes for `validate:skill-docs`: its `SKILL_DOCS` map names only this repo's skills, so it is not ported either.

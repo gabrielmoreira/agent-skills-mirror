@@ -58,7 +58,7 @@ A new APK must be built from the changed native sources and tested on the device
 Install dependencies with `bun install` at the repository root. Run from that root:
 
 ```bash
-bun run build:client  # build
+bun run --cwd packages/app build  # build
 bun run --cwd packages/app test   # tests
 ```
 
@@ -178,8 +178,11 @@ the registered Capacitor BGE bridge from a real WebView, including tokenization,
 embedding, admission rejection, and context release.
 
 Use `--speech-model-dir <directory>` instead of `--embedding` for CPU Kokoro
-transport and PCM diagnostics through the framed host. Supply `kokoro-82m-v1_0.gguf` and `af_sam.bin`
-from the pinned assets in `plugins/plugin-native-inference/src/aosp-voice-download.ts`.
+transport and PCM diagnostics through the framed host. Supply `kokoro-82m-v1_0.gguf`
+(sha256 `165acd9d…`) and `af_sam.bin` (sha256 `68746708…`) from `elizaos/eliza-1` at
+revision `1e4c7371`. These are no longer the agent's voice: the AOSP agent now
+stages the pinned `mobile-voice` bundle (Paradee-8M + misaki lexicon, Phonon-2 ASR,
+Silero VAD) from `plugins/plugin-native-inference/src/model-catalog/voice-model-versions.json`.
 The test verifies their hashes inside the installed APK, checks speed, input
 rejection and release/reload, and exports full PCM plus a playable WAV. A passing
 diagnostic does not qualify speech intelligibility: the report explicitly marks
@@ -189,30 +192,96 @@ defect remains unresolved (issue #30679). Diagnosis needs a matched canonical
 reference and the first divergent tensor. Microphone capture, phonemization and
 physical speaker playback are outside this IPA-input diagnostic.
 
+## Mobile voice quality gates
+
+The shipped mobile voice (Paradee-8M TTS and Phonon-2 ASR, both on
+libelizainference, no ONNX) is gated by `scripts/voice-quality/host-wer-gate.ts`
+on the host and by `scripts/paradee-voice/qualify` on a device. Both use the
+pins and thresholds in `scripts/voice-quality/fixtures.json`: TTS round-trip
+WER <= 0.08 over the Paradee card samples, the 25 qualify sentences and the
+first 200 Paradee held-out sentences; ASR WER <= 0.06 over 100 LibriSpeech
+test-clean utterances and `speech-fixture/0.wav`; and an empty transcript for
+silence. RTF is reported. The host report goes to `test-results/voice-quality/`.
+
+ASR is Phonon-2 (`asr/phonon-2-fv5.gguf`, Parakeet-TDT 0.6B with five-value
+weights, 330,632,256 bytes, sha256 `dc552eb7…`) on the library's parakeet
+backend, which also streams (`ElizaVoiceNative.nativeAsrStream*`,
+`NativeAsr.openStream`). The GGUF is not published yet, so stage it by
+converting the pinned source and pass it through `ELIZA_VOICE_BUNDLE_FROM`
+(`<dir>/asr/phonon-2-fv5.gguf`; the catalog row pins its hash):
+`python tools/parakeet/convert_phonon2_to_gguf.py --archive phonon-2.bps.tar.zst
+--output phonon-2-fv5.gguf --verify` in the llama.cpp submodule, with the
+archive from `FermionResearch/Phonon-2@7e153e40`. Phonon-2 is the only
+local ASR model; `ELIZA_ASR_THREADS` sets decode threads. Phonon-2 weights are CC-BY-4.0
+(derived from NVIDIA parakeet-tdt-0.6b-v3): ship the attribution and
+Fermion's NOTICE. The NOTICE lists CHiME-6 (CC-BY-SA-4.0) and SPGISpeech
+(Kensho terms) training audio, which is flagged for review and does not block
+a build.
+
+The agent reaches streaming ASR over the bionic UDS: `ElizaBionicInferenceServer`
+serves `asr_stream_supported / open / feed / partial / finish / close / cancel`
+(`BionicAsrStreams`: one stream per connection, at most 5 s per feed, 120 s per
+stream and 4 streams; disconnecting cancels and frees the stream; logs carry
+lengths, never text). On the agent side `BionicHostLoader.openAsrStream()` and
+`createStreamingTranscriber()` emit partials and use batch `op:"asr"` only when
+the host reports `STREAM_UNSUPPORTED`. Before loading the library,
+`ElizaVoiceNative` sets `ELIZA_ASR_BACKEND=ggml`, the registered in-tree
+backend used by Phonon-2. For `ELIZA_ASR_THREADS`, a process value wins over
+the build-time `BuildConfig` value; the default is one thread per big core.
+
+```sh
+bun packages/app/scripts/voice-quality/host-wer-gate.ts --librispeech /data/LibriSpeech
+# device inputs, then build the qualify app with them:
+bun packages/app/scripts/voice-quality/host-wer-gate.ts --librispeech /data/LibriSpeech \
+  --export-device-fixtures /tmp/voice-fixtures
+packages/app/platforms/android/gradlew -p packages/app/scripts/paradee-voice/qualify \
+  -PasrFixturesDir=/tmp/voice-fixtures :app:connectedDebugAndroidTest
+```
+
+A device run is owner acceptance; the qualify app only depends on `:paradee-voice`.
+
 ## Standalone host speech
 
-Bun hosts may explicitly enable owner-authenticated local speech with
-`ELIZA_KOKORO_ENABLED=1`, an absolute `ELIZA_INFERENCE_LIBRARY`, its reviewed
-`ELIZA_KOKORO_LIBRARY_SHA256`, and an absolute `ELIZA_KOKORO_MODEL_DIR`.
-The worker requires ABI 14 or later, the pinned Kokoro 82M v1.0 GGUF and
-`voices/af_bella.bin`; it does not download assets or use a cloud fallback.
-`GET /api/tts/kokoro/status` reports readiness. `POST /api/tts/kokoro` accepts
-only `{ "text": "..." }` (1–500 characters) and a UUID `X-Request-Id`, returning
-mono PCM16 WAV at 24 kHz. Both require an active owner session, not merely the
-host's static API token, and are available only in local runtime modes.
+Bun hosts may explicitly enable owner-authenticated local speech on
+libelizainference (ABI 17 or later). Both workers need an absolute
+`ELIZA_INFERENCE_LIBRARY` and its reviewed `ELIZA_INFERENCE_LIBRARY_SHA256`.
+They hash every pinned asset before loading native code, do not download
+assets, and have no cloud fallback.
 
-Each server owns its worker and replay ledger. Runtime replacement stops the
-old worker; closing the server prevents further speech startup. Cancelling a
-request destroys its worker context and a subsequent request initializes a
-new one. Direct compat-handler hosts must call `closeStandaloneKokoro(state)`
-on shutdown and `stopStandaloneKokoro(state)` before replacing the runtime.
+- Speech output: `ELIZA_PARADEE_ENABLED=1` and an absolute
+  `ELIZA_PARADEE_MODEL_DIR` with the pinned `paradee-8m-v1_0.gguf` and
+  `misaki-en-us.lex`. Text is phonemized by the native misaki G2P.
+  `GET /api/tts/paradee/status` reports readiness. `POST /api/tts/paradee`
+  accepts only `{ "text": "..." }` (1–500 characters) and returns mono PCM16
+  WAV at 24 kHz (voice `af_heart`, provider `libelizainference-paradee`).
+- Speech input: `ELIZA_ASR_ENABLED=1` and an absolute `ELIZA_ASR_MODEL_DIR`
+  with the pinned Qwen3-ASR-0.6B pair at `asr/eliza-1-asr.gguf` and
+  `asr/eliza-1-asr-mmproj.gguf`, plus pinned `vad/silero-vad-v5.gguf` as the
+  only GGUF in `vad/`. Native Silero VAD rejects non-speech before ASR; speech
+  retains the complete input audio. No text model is loaded.
+  `GET /api/asr/libelizainference/status` reports readiness.
+  `POST /api/asr/libelizainference` accepts a mono PCM16 WAV at 8–48 kHz
+  (`Content-Type: audio/wav`, at most 60 s) and returns
+  `{ "text": "...", "provider": "local-inference" }`.
+
+Requests need a UUID `X-Request-Id` and an active owner session, not merely the
+host's static API token, and are available only in local runtime modes.
+Each server owns its workers and replay ledger. A client abort or deadline
+cancels the native call (`eliza_inference_cancel_tts` or
+`eliza_inference_asr_cancel`) and keeps the worker loaded; a worker that does
+not answer within 10 s is killed. After two idle minutes a worker evicts its
+weights and reloads them on the next request. Runtime replacement stops the
+workers; closing the server prevents further speech startup. Direct
+compat-handler hosts must call `closeStandaloneSpeech(state)` on shutdown and
+`stopStandaloneSpeech(state)` before replacing the runtime.
 
 With the same reviewed native asset environment, run
-`bun run --cwd packages/app test:tts:standalone` for real HTTP policy, durable
-SQLite session, native speech, replay, host-isolation and cancellation checks.
-The test writes synthetic audio and a report under
-`test-results/standalone-kokoro-http`; it fails if assets are unavailable.
-This qualification does not prove browser playback or Android execution.
+`bun run --cwd packages/app test:speech:standalone` for real HTTP policy,
+durable SQLite session, native speech, a speech-to-text round trip, replay,
+host-isolation and cancellation checks. The test writes synthetic audio and a
+report under `test-results/standalone-speech-http`; it fails if assets are
+unavailable. This qualification does not prove browser playback or Android
+execution.
 
 ### Android secure-store broker
 

@@ -16,11 +16,13 @@ When performing these actions, ALWAYS invoke the corresponding skill FIRST:
 | Adding, removing or changing a tool on the inbound MCP server | `mcp-server-tools` |
 | Changing MCP token scopes, their UI wording, or the MCP API reference generator | `mcp-server-tools` |
 | Changing how a triage score, review or verdict is computed or written | `priority-board-triage` |
+| Changing how plugin services, networks or the plugins overlay are started by redamon.sh or compose | `plugin-platform` |
 | Changing or adding a project setting or default value | `project-settings-cascade` |
 | Editing a Prisma @default, a Python settings default, or the /defaults endpoint | `project-settings-cascade` |
 | Editing agent skill classification, phase injection, or the attack-skill UI | `builtin-agent-skill` |
 | Editing model-id routing or provider credential handling | `llm-provider-integration` |
 | Editing the Priority Board, the triage graph mixin, or the MCP triage tools | `priority-board-triage` |
+| Editing the plugin platform: the plugins lib or routes, the plugin runner, or the Gateway | `plugin-platform` |
 
 ---
 
@@ -29,6 +31,21 @@ When performing these actions, ALWAYS invoke the corresponding skill FIRST:
 <!-- Add a rule only if an agent breaks it while working elsewhere AND cannot
      discover it from the file being edited. Component patterns belong in a
      scoped skill. See the root AGENTS.md for repo-wide rules. -->
+
+- **NEVER write a user's own agent skill (`UserAttackSkill`) except through
+  [userSkillWrites.ts](src/lib/userSkillWrites.ts).** It holds the per-user lock
+  that makes the unique-name check and the 1,000-skill cap exact, and writes the
+  audit row. Names are compared by a key computed IN SQL
+  ([userSkillNames.ts](src/lib/userSkillNames.ts)), never in JavaScript.
+- **ALWAYS pass a written `attackSkillConfig` through
+  `normalizeUserSkillToggles`** ([userSkills.ts](src/lib/userSkills.ts)), or
+  through `validateCrossFieldRules`, which applies it and replaces the value. A
+  user skill is on only when its toggle is `true` (missing is OFF, in the form,
+  the tooltip, the agent payload and the agent), at most 20 of the owner's
+  skills may be on, ids the owner does not have are dropped, and a quarantined
+  skill cannot be turned on. Write project rows that change toggles through
+  Prisma, never raw SQL, so `updatedAt` moves and an open form gets a stale
+  save instead of reverting the change.
 
 ---
 
@@ -42,12 +59,16 @@ Tailwind) · Vitest 4. Runs in the `webapp` container; build via Docker.
 
 ```
 src/app/          App Router routes + API route handlers (src/app/api/**)
-src/components/   React components
+src/components/   React components (shared primitives, incl. useAlertModal, in src/components/ui)
 src/context/      React context providers        src/providers/  provider wrappers
-src/hooks/        hooks (e.g. useAlertModal)      src/lib/        client/server utilities
+src/hooks/        hooks                          src/lib/        client/server utilities
 src/types/        shared TS types                 src/middleware.ts  edge middleware
 server_actions/   Next.js server actions          prisma/schema.prisma  data model
 ```
+
+The plugin platform (always on; plugins themselves are installed on demand) is
+`src/lib/plugins/`, its routes `src/app/api/{plugins,plugin-gateway,plugin-runner,internal/plugins}/`,
+its UI `src/components/plugins/` and `src/app/plugins/`; the `plugin-platform` skill holds its rules.
 
 ## COMMANDS
 
@@ -68,5 +89,5 @@ docker compose exec webapp npx prisma db push
 - [ ] `npm run test` green (with `--no-file-parallelism`).
 - [ ] New or changed behaviour is covered by a test (see the `redamon-testing` skill for where + how).
 - [ ] Prisma schema edited? Applied with `db push` (not `prisma migrate`) and client regenerated.
-- [ ] UI prompts/alerts use the `useAlertModal` hook, never `window.alert` / `window.confirm`.
+- [ ] UI prompts/alerts use the `useAlertModal` hook (`import { useAlertModal } from '@/components/ui'`), never `window.alert` / `window.confirm`.
 - [ ] Rebuilt the webapp image (prod) or relied on dev hot-reload as appropriate.

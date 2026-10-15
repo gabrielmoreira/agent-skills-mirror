@@ -18,25 +18,215 @@ Load this for match clock, teams, and ball entities you define.
 - **Systems** read those components on `Update` or the fixed timestep from bevy-master. Order them with `.chain()` when a later system must see the result.
 - **Schedule:** gameplay mode changes go through bevy-state-machines. Do not invent a genre plugin.
 
-## Coming from Godot
-
-| Godot idea | Bevy idiom |
-| --- | --- |
-| Genre scene tree | Entities plus the domain skills linked below |
-| Autoload director | A resource, not a singleton node |
-| Signal bus for the loop | bevy-events-messaging |
-
 ## Routing
 
-- [bevy-game-loop-time-trial](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-game-loop-time-trial/SKILL.md) - Match clock.
-- [bevy-combat-system](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-combat-system/SKILL.md) - Contact if the sport uses hits.
-- [bevy-character-movement](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-character-movement/SKILL.md) - Athletes.
-- [bevy-state-machines](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Period state.
+- [bevy-game-loop-time-trial](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-game-loop-time-trial/SKILL.md) - Match clock.
+- [bevy-combat-system](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-combat-system/SKILL.md) - Contact if the sport uses hits.
+- [bevy-character-movement](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-character-movement/SKILL.md) - Athletes.
+- [bevy-state-machines](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Period state.
 
 ## Scope
 
-- No ball-sport or rules type exists in Bevy.
-- Physics contacts wait on the solver.
+Match clock, score, possession, and formation targets are components and one resource. A rigid-body ball solver stays on the physics skill once one is chosen.
+
+## Examples
+
+```toml
+[package]
+name = "sports"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.20"
+```
+
+The clock and score are one resource. Period changes after the clock step in the same chain.
+
+```rust
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Period {
+    Kickoff,
+    Playing,
+    Goal,
+    FullTime,
+}
+
+#[derive(Resource)]
+struct Match {
+    period: Period,
+    seconds_left: f32,
+    score_a: u32,
+    score_b: u32,
+}
+
+fn tick_match(time: Res<Time<Fixed>>, mut game: ResMut<Match>) {
+    if game.period != Period::Playing {
+        return;
+    }
+    game.seconds_left = (game.seconds_left - time.delta_secs()).max(0.0);
+    if game.seconds_left == 0.0 {
+        game.period = Period::FullTime;
+    }
+}
+
+fn score_goal(team_a: bool, game: &mut Match) {
+    if team_a {
+        game.score_a += 1;
+    } else {
+        game.score_b += 1;
+    }
+    game.period = Period::Goal;
+}
+
+pub struct MatchPlugin;
+
+impl Plugin for MatchPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(Match {
+            period: Period::Kickoff,
+            seconds_left: 300.0,
+            score_a: 0,
+            score_b: 0,
+        })
+        .add_systems(FixedUpdate, tick_match);
+    }
+}
+```
+
+Athletes seek a slot. Only the presser chases the ball; the rest hold formation so the side does not bunch.
+
+```rust
+#[derive(Component)]
+struct Athlete {
+    speed: f32,
+    presses: bool,
+}
+
+#[derive(Component)]
+struct Slot {
+    offset: Vec3,
+}
+
+#[derive(Component)]
+struct Ball;
+
+fn hold_formation(
+    time: Res<Time<Fixed>>,
+    ball: Query<&Transform, With<Ball>>,
+    slots: Query<&Slot>,
+    mut athletes: Query<(&Athlete, &mut Transform), Without<Ball>>,
+) {
+    let Ok(ball_tf) = ball.single() else {
+        return;
+    };
+    let dt = time.delta_secs();
+    for (athlete, mut transform) in &mut athletes {
+        let mut target = ball_tf.translation;
+        if !athlete.presses {
+            if let Some(slot) = slots.iter().next() {
+                target += slot.offset;
+            }
+        }
+        let delta = target - transform.translation;
+        let step = athlete.speed * dt;
+        if delta.length() > step {
+            transform.translation += delta.normalize() * step;
+        } else {
+            transform.translation = target;
+        }
+    }
+}
+```
+
+The action key passes when the controlled athlete has the ball, and takes the ball when that athlete is close.
+
+```rust
+#[derive(Component)]
+struct Controlled;
+
+#[derive(Component)]
+struct HasBall;
+
+#[derive(Component)]
+struct Athlete {
+    speed: f32,
+    presses: bool,
+}
+
+#[derive(Component)]
+struct Ball;
+
+fn contextual_action(
+    keys: Res<ButtonInput<KeyCode>>,
+    ball: Query<&Transform, With<Ball>>,
+    mut athletes: Query<(Entity, &Transform, Has<HasBall>, Has<Controlled>), With<Athlete>>,
+    mut commands: Commands,
+) {
+    if !keys.just_pressed(KeyCode::KeyJ) {
+        return;
+    }
+    let Ok(ball_tf) = ball.single() else {
+        return;
+    };
+    for (entity, transform, has_ball, controlled) in &mut athletes {
+        if !controlled {
+            continue;
+        }
+        if has_ball {
+            commands.entity(entity).remove::<HasBall>();
+        } else if transform.translation.distance(ball_tf.translation) < 1.5 {
+            commands.entity(entity).insert(HasBall);
+        }
+    }
+}
+```
+
+Kickoff places two athletes, one slot, and the ball.
+
+```rust
+#[derive(Component)]
+struct Athlete {
+    speed: f32,
+    presses: bool,
+}
+
+#[derive(Component)]
+struct Controlled;
+
+#[derive(Component)]
+struct Slot {
+    offset: Vec3,
+}
+
+#[derive(Component)]
+struct Ball;
+
+fn spawn_kickoff(mut commands: Commands) {
+    commands.spawn((
+        Athlete {
+            speed: 6.0,
+            presses: true,
+        },
+        Controlled,
+        Transform::from_xyz(-2.0, 0.0, 0.0),
+    ));
+    commands.spawn((
+        Athlete {
+            speed: 5.0,
+            presses: false,
+        },
+        Transform::from_xyz(-8.0, 0.0, 2.0),
+    ));
+    commands.spawn((
+        Slot {
+            offset: Vec3::new(-6.0, 0.0, 4.0),
+        },
+        Transform::default(),
+    ));
+    commands.spawn((Ball, Transform::from_xyz(0.0, 0.4, 0.0)));
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -81,11 +271,9 @@ Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownershi
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20.0**. Official pages stay on the unversioned `latest` branch.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
@@ -94,18 +282,18 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Spawn and query shape.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Spawn and query shape.
 
 #### Complements
-- [godot-genre-sports](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-genre-sports/SKILL.md) - Equivalent Godot skill.
-- [bevy-game-loop-time-trial](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-game-loop-time-trial/SKILL.md) - Match clock.
-- [bevy-combat-system](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-combat-system/SKILL.md) - Contact if the sport uses hits.
-- [bevy-character-movement](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-character-movement/SKILL.md) - Athletes.
-- [bevy-state-machines](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Period state.
+- [godot-genre-sports](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-genre-sports/SKILL.md) - Sports on the Godot engine, same depth.
+- [bevy-game-loop-time-trial](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-game-loop-time-trial/SKILL.md) - Match clock.
+- [bevy-combat-system](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-combat-system/SKILL.md) - Contact if the sport uses hits.
+- [bevy-character-movement](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-character-movement/SKILL.md) - Athletes.
+- [bevy-state-machines](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Period state.
 
 #### Downstream / consumers
 - None. This router does not own a second implementation.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

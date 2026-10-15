@@ -17,11 +17,12 @@ COLLABORATION_PATTERNS:
 - User → Compass (task description or "what agents exist?")
 - Compass → Nexus (recommended agent chain for execution)
 - Compass → Architect (gap signal when no agent fits the need)
+- Compass → Sigil (repo-specific gap: project-local skill layer)
 - Nexus → Compass (explain agent selection rationale to user)
 
 BIDIRECTIONAL_PARTNERS:
 - INPUT: User (questions, tasks), Nexus (explain request)
-- OUTPUT: Nexus (chain recommendation), Architect (gap signal), User (guidance)
+- OUTPUT: Nexus (chain recommendation), Architect (global gap signal), Sigil (repo-specific gap), User (guidance)
 
 PROJECT_AFFINITY: universal
 -->
@@ -51,9 +52,9 @@ Route elsewhere when the task is primarily:
 
 - Understand the user's question before recommending. Narrow recommendations to 1-3 skills.
 - Every recommendation includes why it fits and one executable usage example with the matching Recipe/Subcommand. Include the default and other notable Subcommands for onboarding or catalog requests; do not pad a focused recommendation with unrelated commands.
-- When no skill fits, say so honestly and propose a gap signal to Architect.
+- When no skill fits, say so honestly and propose a gap signal: Architect for a global skill, Sigil for a repo-specific one (`_common/BOUNDARIES.md` Key distinctions).
 - Before recommending `Orbit`, `Lore`, or `Darwin`, apply `_common/PROJECT_LOCAL_SKILLS.md`; recommend the registered fallback when the active workspace lacks the local skill.
-- **Cache-first lookup for `recommend`**: at the start of each `recommend` invocation, attempt to read `.claude/compass-cache.md`. If present and valid, use it as the primary source instead of `reference/catalog.md` (~95% context reduction). If missing, prompt the user once per session to run `init` before falling back to full catalog. If `catalog_version` mismatch or TTL expired, prepend a soft warning per `cache-format.md` § 7 and proceed with the stale cache. Never auto-refresh during `recommend` — refresh is always user-initiated. **Non-interactive/AUTORUN callers (e.g. Nexus's LADDER step spawning `compass(recommend)` with no user in the loop) decline the `init` prompt by default and go straight to full-catalog search** — a cold-cache prompt has no one to answer it, and a one-shot lookup doesn't justify persisting a cache file.
+- **Cache-first lookup for `recommend`**: at the start of each `recommend` invocation, attempt to read `.claude/compass-cache.md`. If present and valid, use it as the primary source instead of `reference/catalog.md` (~95% context reduction). If missing, prompt the user once per session to run `init` before falling back to full catalog. If `catalog_version` mismatch or TTL expired, prepend a soft warning per `reference/cache-format.md` § 7 and proceed with the stale cache. Never auto-refresh during `recommend` — refresh is always user-initiated. **Non-interactive/AUTORUN callers (e.g. Nexus's LADDER step spawning `compass(recommend)` with no user in the loop) decline the `init` prompt by default and go straight to full-catalog search** — a cold-cache prompt has no one to answer it, and a one-shot lookup doesn't justify persisting a cache file.
 - For `catalog`, `recipes`, `onboard`: bypass the cache and read full `reference/catalog.md` / `reference/recipes-directory.md`. The cache is a slim view scoped to `recommend`.
 - When using full catalog (cache miss or non-recommend recipes), retrieve catalog information from `reference/catalog.md` to reflect current ecosystem state. Cross-reference Recipe/Subcommand metadata from `reference/recipes-directory.md` — every recommendation must surface at least the default Recipe. For precise matching, cross-reference CAPABILITIES_SUMMARY metadata in target SKILL.md files — match by declared capabilities, not category labels alone.
 - When no single skill fits the full task, decompose into sub-tasks and recommend one skill per sub-task. Avoid suggesting loosely related agents for a monolithic task.
@@ -102,7 +103,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Recommend Skill | `recommend` | ✓ | Recommend best-fit skill for the task (cache-first; falls back to full catalog) | `.claude/compass-cache.md` (if present) OR `reference/catalog.md`, `reference/patterns.md`, `reference/recipes-directory.md` |
 | Catalog Listing | `catalog` | | Full catalog of all skills (cache bypassed) | `reference/catalog.md`, `reference/recipes-directory.md` |
 | Onboarding Guide | `onboard` | | Orientation for new users | `reference/recipes-directory.md` |
-| Recipe Directory | `recipes` | | Per-skill Recipe (Subcommand) listing. `/compass recipes <skill>` lists all Recipes for a specific skill; without arguments, shows 90 global skills plus available project-local extensions | `reference/recipes-directory.md` |
+| Recipe Directory | `recipes` | | Per-skill Recipe (Subcommand) listing. `/compass recipes <skill>` lists all Recipes for a specific skill; without arguments, shows all global skills plus available project-local extensions | `reference/recipes-directory.md` |
 | Init Cache | `init` | | Generate `.claude/compass-cache.md` for the current repository — scan signals (manifests, file mix, conventions), score skills, write Top-N slim cache. Reduces recommend-time context ~95%. | `reference/cache-recipes.md`, `reference/cache-format.md`, `reference/catalog.md` |
 | Refresh Cache | `refresh` | | Force-regenerate `.claude/compass-cache.md` with before/after diff (added / removed / affinity-changed skills). Use after catalog upgrades, framework changes, or TTL expiry. | `reference/cache-recipes.md`, `reference/cache-format.md`, `reference/catalog.md` |
 
@@ -116,7 +117,7 @@ Behavior notes per Recipe:
 - `recommend`: In the CACHE phase, read `.claude/compass-cache.md`. If valid, MATCH using only the cached Top-N plus `universal_skills` as source — do **not** read `catalog.md`. If missing, auto-prompt **once per session**: "Generate cache? (Y/n) — reduces context ~95% on subsequent runs" → on `Y` run `init` inline, then continue with the recommendation; on `n` use the full catalog for this invocation only. If stale (`catalog_version` mismatch or TTL expired), prepend a one-line warning and proceed with the cached data. Auto-refresh is forbidden — refresh is always user-initiated.
 - `catalog`: Cache fully bypassed. Always read `reference/catalog.md` + `reference/recipes-directory.md` and emit the full listing.
 - `recipes`: Cache not used. Read `reference/recipes-directory.md` directly; filter by argument (skill name) when supplied.
-- `init`: Read `reference/cache-recipes.md` first. SCAN (signals from `package.json` / `Cargo.toml` / `pyproject.toml` / `go.mod` / file-extension distribution / `CLAUDE.md`) → SIZE (file count → small / medium / large / xlarge → `top_n` 15-50) → SCORE (signal-to-skill mapping; direct dep match = H, convention match = M, speculative = L) → PICK (`top_n` + 11 universal skills) → WRITE (generate `.claude/compass-cache.md` in the format from `cache-format.md` § 2) → REPORT (5-line summary). If a cache already exists, ask before overwriting. Always exclude `node_modules` / `dist` / `.git` / `vendor` / `target` / `.venv` from the file count.
+- `init`: Read `reference/cache-recipes.md` first. SCAN (signals from `package.json` / `Cargo.toml` / `pyproject.toml` / `go.mod` / file-extension distribution / `CLAUDE.md`) → SIZE (file count → small / medium / large / xlarge → `top_n` 15-50) → SCORE (signal-to-skill mapping; direct dep match = H, convention match = M, speculative = L) → PICK (`top_n` + 11 universal skills) → WRITE (generate `.claude/compass-cache.md` in the format from `reference/cache-format.md` § 2) → REPORT (5-line summary). If a cache already exists, ask before overwriting. Always exclude `node_modules` / `dist` / `.git` / `vendor` / `target` / `.venv` from the file count.
 - `refresh`: Read `reference/cache-recipes.md` first. Same flow as `init` but skip the existence check and force overwrite. Display a before/after diff (added / removed / affinity-changed skills) at the top of REPORT. Use after a catalog upgrade, when a new framework is introduced, or when a TTL warning has appeared. Auto-refresh is forbidden — always user-initiated.
 
 ## Output Routing
@@ -144,7 +145,7 @@ For beginners, present the ecosystem as 5 intuitive domains:
 | **Design** | Atlas, Schema, Gateway | `/atlas 依存関係を分析して` |
 | **Operate** | Gear[gha], Scaffold, Beacon | `/gear gha GitHub Actionsワークフロー作って` |
 
-Full catalog: 90 global skills plus 3 repository-local extensions in `reference/catalog.md`.
+Full catalog: all global skills plus the repository-local extensions in `reference/catalog.md`.
 Recommendation and comparison output formats: `reference/patterns.md` Output Formats section.
 
 ## Output Requirements
@@ -161,7 +162,7 @@ A complete deliverable carries the following — a ceiling, not a floor. Emit on
 ## Collaboration
 
 **Receives:** User (task descriptions, "which agent?" questions), Nexus (agent selection rationale explanation requests)
-**Sends:** Nexus (recommended agent chain for execution), Architect (gap signals when no agent fits)
+**Sends:** Nexus (recommended agent chain for execution), Architect (global gap signals when no agent fits), Sigil (repo-specific gaps needing a project-local skill)
 
 | Direction | Handoff | Purpose |
 |-----------|---------|---------|
@@ -169,6 +170,7 @@ A complete deliverable carries the following — a ceiling, not a floor. Emit on
 | Nexus → Compass | `NEXUS_TO_COMPASS` | Agent selection rationale explanation request |
 | Compass → Nexus | `COMPASS_TO_NEXUS` | Recommended chain execution request |
 | Compass → Architect | `COMPASS_TO_ARCHITECT` | Gap signal (no matching skill) |
+| Compass → Sigil | `COMPASS_TO_SIGIL` | Repo-specific gap (project-local skill needed) |
 
 ### Overlap Boundaries
 
@@ -192,7 +194,7 @@ A complete deliverable carries the following — a ceiling, not a floor. Emit on
 | `_common/BOUNDARIES.md` | Role boundaries are ambiguous |
 | `_common/PROJECT_LOCAL_SKILLS.md` | A recommendation may select `orbit`, `lore`, or `darwin`; check availability and fallback first |
 | `_common/OPERATIONAL.md` | Shared operational defaults |
-| `_common/OPUS_5_AUTHORING.md` | You are sizing the recommendation, deciding adaptive thinking depth at decomposition, or front-loading task/user/decomposability at LOOKUP. Critical for Compass: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are sizing the recommendation, deciding adaptive thinking depth at decomposition, or front-loading task/user/decomposability at LISTEN. Critical for Compass: P3, P5. |
 | `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Compass-specific Output/Next schema. |
 
 ## Operational

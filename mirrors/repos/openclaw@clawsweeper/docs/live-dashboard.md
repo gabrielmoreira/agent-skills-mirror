@@ -72,8 +72,13 @@ Workers Scripts edit permission before enabling the workflow as the production
 deploy path. The deploy workflow injects the `CLAWSWEEPER_STATUS_INGEST_TOKEN`
 GitHub secret into a temporary Wrangler config as the Worker `INGEST_TOKEN`.
 The smoke test waits for the expected deployment revision and a successful
-exact-review queue response within the same default 180-second readiness budget. It then
-verifies the signed review-admission capability contract, queue schema,
+exact-review queue response within the same default 600-second readiness budget.
+It then waits up to another 600 seconds for the signed review-admission
+response to report that same deployment revision from the Durable Object itself.
+The queue Durable Object can keep serving the previous version for several
+minutes after a deploy.
+A healthy outer Worker or a successful response from an older queue is not
+deployment readiness. The smoke also verifies the capability contract, queue schema,
 unsigned-request rejection, and Overview rendering. An exact-revision smoke run
 requires the existing `CLAWSWEEPER_WEBHOOK_SECRET`; it sends a signed empty JSON
 object without following redirects and validates scheduled pacing, replay, and
@@ -159,7 +164,7 @@ unchanged.
 
 ## Operator dashboard pages
 
-The operator dashboard at `/` (Overview, Throughput, Quality, Queue, Operations,
+The operator dashboard at `/` (Overview, Agent performance, Throughput, Review assessments, Queue, Operations,
 Coverage, Repositories) is a static Astro site in `dashboard-site/`. The `Dashboard site`
 workflow (`.github/workflows/dashboard-site.yml`) rebuilds it every 15 minutes
 and publishes it to the Cloudflare Pages project `clawsweeper-dashboard`
@@ -213,6 +218,29 @@ and the review-corpus time. A page warns when its build is more than an hour old
 only with `refresh_corpus`). Unknown paths return the site's 404 page with
 status 404. Pull requests that touch `dashboard-site/` build the site from
 `dashboard-site/fixtures/dashboard.json`, without secrets or publishing.
+
+Metric labels distinguish latest-record snapshots from event history. Items refreshed
+count each item once on its latest review date; re-review moves that date and does
+not preserve historical daily throughput. Maintainer-authored items describes the
+item author, not who performed a review. Activity deltas are neutral. Model time
+and creation-to-latest-review age show sample counts across the stored corpus;
+neither measures first response or end-to-end service latency. Sweep run success
+shows its numerator, denominator and recorded days in the requested seven-day
+window; period comparison requires all seven days in both windows. Execution
+success does not establish decision correctness.
+
+Each detailed chart has one page owner. Agent performance owns execution timing,
+failed attempts by stage and repeated-claim investigation. Its run-time chart shows
+daily p50 and p90 together in duration units; these are run timings, separate from
+the model-only latest-review snapshot. Operations owns review flow, publication
+backlog, actual deliveries and batch handoff. Throughput owns volume and workflow
+activity; Coverage owns freshness. Overview keeps compact summaries and links.
+
+Publication pending excludes superseded revisions retained for command
+acknowledgements; those records do not establish failed delivery. Repeated-claim
+alerts count recorded claims, which may end before model execution. The bounded
+public target sample links to GitHub for revision and trigger investigation; it is
+not a ranking or proof of wasted execution.
 
 The site shows no report bodies, author identities or free-text concerns.
 Local preview: in `dashboard-site/`, install dependencies, run
@@ -428,9 +456,9 @@ Actions set. The public recent-publication route revalidates that state into
 bounded outcome counts without returning private repositories, revision
 identifiers, target keys, facts, titles, raw URLs, or failure detail.
 
-Status responses use stale-while-revalidate delivery. After the 20-second fresh
-window expires, the Worker immediately returns the last good snapshot, marks it
-with `X-ClawSweeper-Cache: stale`, and coalesces one background refresh per
+Status responses use stale-while-revalidate delivery. After the configured fresh
+window expires (60 seconds in production), the Worker immediately returns the last
+good snapshot, marks it with `X-ClawSweeper-Cache: stale`, and coalesces one background refresh per
 isolate. The Worker applies the public status projector before writing fresh or
 stale edge-cache bodies and the `StatusStore` snapshot, then applies it again on
 every cache/store read. Legacy cache bodies are reprojected, nested or unexpected
@@ -545,6 +573,16 @@ in-progress run at least 150 minutes old, or incomplete Actions telemetry opens 
 expandable “Work execution needs attention” alert. This live diagnostic reuses
 the status snapshot's Actions reads; the history cron no longer stores queue
 pressure or oldest-run values.
+
+Active-run collection reads up to three pages of 100 runs for each active status.
+When counts or rows change during a census, it discards that attempt and reads
+the affected status again once, bypassing the refresh-local memoized pages.
+The ceiling is 30 page reads across five statuses, including fresh rebuilds.
+A full final page with additional runs, a failed page, or a second inconsistent
+census keeps operational telemetry unknown. A complete 100-run page does not
+itself make telemetry unavailable. The advisory ETag cache has a one-second deadline
+per operation; a stalled lookup, confirmation, or write falls back to the
+authoritative GitHub response without consuming the entire refresh deadline.
 
 Queued runs older than 1440 minutes are reported separately as zombies and do
 not contribute to `queued_over_threshold` or `oldest_queued_minutes`; they
@@ -668,19 +706,22 @@ or `recover-fresh` these rows through the signed parked-review routes, and the
 periodic terminal check still removes closed or head-advanced targets. The lane
 breakdown counts them under `parked_reasons.source_drift_loop`.
 
-Review items parked as `locked_conversation` or `oversized_pull_request` are
-holds for deterministic no-ops, not failures. A review run for an open but
+Review items parked as `locked_conversation`, `oversized_pull_request`, or
+`maintainer_request_required` are holds for deterministic no-ops, not failures.
+A review run for an open but
 locked conversation completes without Codex, and a run for a PR above the size
-limit takes the metadata-only size path; neither writes anything the scheduled
-planners can see, so without the hold the same unchanged item is offered and
-claimed again every tick. The queue keeps the completed row parked instead,
+limit takes the metadata-only size path. Maintainer items without an explicit
+request or automation opt-in also skip review. None writes a completed review
+the scheduled planners can see, so without the hold the same unchanged item is
+offered and claimed again every tick. The queue keeps the completed row parked instead,
 scheduled offers dedupe against it with that reason, and automatic recoveries
 dedupe with `dedupe_scope: review_hold`. Any other admitted input releases the
 hold: an organic webhook event such as `unlocked` or `synchronize`, an explicit
 command, or a manual review. The periodic terminal check removes closed and
 head-advanced targets, and the parked-review reconciler recovers a row whose
 source identity changed (for example an unlock or a `size: accepted-large`
-label). Command reviews and PRs without a pinned head are never held.
+label). Command reviews are never held; oversized PR holds also require a
+pinned head.
 
 `review_runaway_health` is the companion alert for any self-feeding loop the
 breaker does not stop, such as a command continuation. The queue records each
@@ -724,8 +765,12 @@ left by a rollback cannot override that newer lease, and a wholly unknown legacy
 age stays non-alarming. A claim is degraded after one third of the dispatch
 lease (bounded to 30-120 seconds) and stalled after two thirds (bounded to
 31-300 seconds), so operators see the failure before the lease expires and
-requeues. A blocked dispatcher with pending work is stalled; an intentionally
-paused dispatcher is degraded. `/api/status` includes this snapshot and the live
+requeues. During its retry delay, a blocked dispatcher with pending work is
+stalled and a paused dispatcher is degraded. After the deadline, eligible work
+shows degraded `dispatcher_retry_due` until a successful preflight records
+recovery. If capacity, target cooldowns, review throttling, or debounce prevents
+admission, the expired block does not override current handoff health. Missing
+retry deadlines retain the warning. `/api/status` includes this snapshot and the live
 dashboard renders the three phases, oldest age, available exact-review slots,
 and the current classification without changing queue capacity or storage
 schema. Fleet snapshots may use the longer stale fallback during a GitHub API
@@ -1207,3 +1252,9 @@ stays parked with its exhausted attempt/recovery budgets; no review is restarted
 If a status writer retries after a token or write failure, it releases only its
 exact recorded successor coordination deferral before clearing the lease. A
 concurrently changed successor revision, reason, or deadline is not overwritten.
+
+Attention lists from a complete corpus refresh sort by reviewer-assigned priority
+(P0 through P3), then oldest review, with unranked items last. These are historical
+flags, not verified unresolved work. Cached corpora built before priority collection
+retain newest-first ordering until the next `refresh_corpus` run; discarded older
+rows cannot be reconstructed by sorting the cache.

@@ -15,18 +15,94 @@ Load this when a 3D design should render as sprites or billboards. Gameplay comp
 - **Camera:** use `Camera2d` from bevy-camera-systems.
 - **Lights:** 3D light entities are not required for an unlit sprite. Do not leave clustered-light assumptions in gameplay code.
 
-## Coming from Godot
+## What stays and what changes
 
-| Godot idea | Bevy idiom |
+| Piece | Bevy idiom |
 | --- | --- |
-| Mesh actor | Sprite plus the same gameplay components. |
-| Perspective camera | Camera2d. |
-| Height | A sort value you store. No 2.5D engine mode was opened. |
+| Gameplay on the actor | Keep the same components. Swap render components for `Sprite`. |
+| View | `Camera2d`. |
+| Draw order | A `DrawOrder` component you store, then write into `Transform`. |
 
-## Scope
+## Examples
 
-- Check the sprite and mesh docs.rs pages for billboard and impostor types before writing them.
-- Physics dimension change belongs with the physics skills once you choose a solver.
+```toml
+[dependencies]
+bevy = "0.20"
+```
+
+Gameplay components stay on the entity. The 3D render components come off, and a `Sprite` goes on. `Camera2d` is the view.
+
+```rust
+#[derive(Component)]
+struct Actor;
+
+#[derive(Component)]
+struct DrawOrder(f32);
+
+fn spawn_flat_view(mut commands: Commands) {
+    commands.spawn(Camera2d);
+}
+
+fn present_as_sprites(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    actors: Query<(Entity, &DrawOrder), With<Actor>>,
+) {
+    let image = asset_server.load("actors/hero.png");
+    for (entity, order) in &actors {
+        commands
+            .entity(entity)
+            .remove::<Mesh3d>()
+            .remove::<MeshMaterial3d<StandardMaterial>>()
+            .insert((
+                Sprite {
+                    image: image.clone(),
+                    custom_size: Some(Vec2::new(64.0, 64.0)),
+                    ..default()
+                },
+                Transform::from_xyz(0.0, order.0, 0.0),
+            ));
+    }
+}
+```
+
+A new actor can spawn already flat. The same `Actor` component is what gameplay systems query.
+
+```rust
+#[derive(Component)]
+struct Actor;
+
+fn spawn_sprite_actor(mut commands: Commands, asset_server: Res<AssetServer>) {
+    commands.spawn((
+        Actor,
+        Sprite {
+            image: asset_server.load("actors/hero.png"),
+            color: Color::WHITE,
+            ..default()
+        },
+        Transform::from_xyz(0.0, 0.0, 0.0),
+    ));
+}
+
+fn face_motion(mut actors: Query<(&Transform, &mut Sprite), With<Actor>>) {
+    for (transform, mut sprite) in &mut actors {
+        sprite.flip_x = transform.translation.x < 0.0;
+    }
+}
+```
+
+Sort sprites from the stored order without a 3D camera. Higher `DrawOrder` maps to a higher Y so the 2D camera draws it later in a top-down layout.
+
+```rust
+#[derive(Component)]
+struct DrawOrder(f32);
+
+fn apply_draw_order(mut sprites: Query<(&DrawOrder, &mut Transform), With<Sprite>>) {
+    for (order, mut transform) in &mut sprites {
+        transform.translation.y = order.0;
+    }
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -50,7 +126,7 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A plain struct stored outside the world |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
@@ -65,37 +141,33 @@ Load [references/ecs-ownership.md](adapt-3d-to-2d-ecs-ownership.md) for the owne
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot convert-to-2D operations. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
-
-- No Godot types in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No leftover `Mesh3d` or `MeshMaterial3d` on an entity that is now a sprite. WHY: both render paths on one entity fight over the same transform.
 - No invented APIs or unnamed third-party crates as the chosen solver. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20.0**. Permalinks stay unversioned.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
+- [2D examples](https://github.com/bevyengine/bevy/tree/latest/examples/2d) - Sprite and camera samples.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
 - [Plugins](https://bevy.org/learn/quick-start/getting-started/plugins/) - `Plugin`, `DefaultPlugins`, `MinimalPlugins`, and `add_plugins`.
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
-- [bevy-camera-systems](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-camera-systems/SKILL.md) - Camera2d.
-- [bevy-2d-animation](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-2d-animation/SKILL.md) - Sprite clips.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
+- [bevy-camera-systems](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-camera-systems/SKILL.md) - Camera2d.
+- [bevy-2d-animation](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-2d-animation/SKILL.md) - Sprite clips.
 
 #### Complements
-- [bevy-adapt-2d-to-3d](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-adapt-2d-to-3d/SKILL.md) - The reverse adapt.
-- [godot-adapt-3d-to-2d](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-adapt-3d-to-2d/SKILL.md) - Equivalent Godot skill.
+- [bevy-adapt-2d-to-3d](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-adapt-2d-to-3d/SKILL.md) - The reverse adapt.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

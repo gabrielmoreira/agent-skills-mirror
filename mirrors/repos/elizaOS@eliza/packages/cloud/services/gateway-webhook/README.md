@@ -30,7 +30,14 @@ release process after the matching Cloud admission and delivery chain passes:
 - `NETWORK_SERVICE_URL` and the existing `SERVICE_TURN_SECRET` must identify
   the Network service authority. Admitted turns fail closed if it is missing.
 
-This Shared path handles direct Blooio and Twilio phone traffic. Group and
+The owned Shared path requires `NETWORK_PERSONAL_CONTINUITY_ENABLED=true` and
+the exact seven-field `NETWORK_OWNED_INGRESS_POLICY` accepted by Cloud: owned
+phone, `eliza-app` project, Blooio platform, connector account, exact
+`blooio:eliza-app:` message prefix, canonical user UUID and organization UUID.
+Malformed policy fails before intake. Cloud separately verifies actual account
+ownership. Proof-bearing identity-link challenges keep their original route.
+
+This owned Shared path handles direct private Blooio phone traffic. Group and
 explicit-agent traffic keep their existing routing. The original `network`
 project keeps its existing rollout policy.
 

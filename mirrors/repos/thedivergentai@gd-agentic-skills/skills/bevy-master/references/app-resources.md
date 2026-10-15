@@ -17,20 +17,138 @@ Load this when data or logic must exist for the whole app: one clock, one rulese
 - **Schedules.** `add_systems(Startup, ...)` runs once before other systems. `add_systems(Update, ...)` is the repeating schedule in the ECS page. `.chain()` orders systems that must see each other's writes. `bevy::ecs::message` names `FixedUpdate` only as the schedule after which `signal_message_update_system` runs. Fixed-timestep clock types stay in bevy-character-movement.
 - **States.** App-wide modes are `bevy::state`, not a global node. See bevy-state-machines.
 
-## Coming from Godot
+## App choices
 
-| Godot idea | Bevy idiom |
+| Need | Bevy idiom |
 | --- | --- |
-| Autoload singleton | A `Resource` inserted on the `App` |
-| Global script that ticks | A system on `Update` (or a chained pair) |
+| One copy for the whole app | A `Resource` inserted on the `App` |
+| Logic that ticks every frame | A system on `Update` (or a chained pair) |
 | Boot setup | A `Startup` system or `insert_resource` in a `Plugin` |
-| Cross-scene bus | A message or event. See bevy-events-messaging. Not a persistent node |
+| One-shot notice | A message or event. See bevy-events-messaging. |
 
 ## Scope
 
-- Check the plugins page for dependency order and groups before writing them.
-- Sub-apps are named on the state module (`SubApp`). Check that module before writing sub-app setup.
-- Save-game resources and settings files are yours to build. `bevy_settings` is a feature name on the crate page. Check that page before treating it as a settings API.
+- Insert app-wide data with `insert_resource` inside `Plugin::build`, or from a `Startup` system.
+- Order two systems that both mutably use the same resource with `.chain()`.
+- Save files are a `Resource` you serialize yourself. The running copy stays in the `World`.
+
+## Examples
+
+```toml
+[package]
+name = "app_resources"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.20"
+```
+
+One rules resource, one startup spawn, and a pair of systems that must not race on `Score`.
+
+```rust
+#[derive(Resource)]
+struct Ruleset {
+    gravity: f32,
+}
+
+#[derive(Resource, Default)]
+struct Score(u32);
+
+#[derive(Component)]
+struct Falling;
+
+fn spawn_session(mut commands: Commands) {
+    commands.spawn((Name::new("session"), Transform::default(), Falling));
+}
+
+fn apply_gravity(
+    rules: Res<Ruleset>,
+    time: Res<Time>,
+    mut bodies: Query<&mut Transform, With<Falling>>,
+) {
+    let step = rules.gravity * time.delta_secs();
+    for mut transform in &mut bodies {
+        transform.translation.y += step;
+    }
+}
+
+fn award(mut score: ResMut<Score>) {
+    score.0 = score.0.saturating_add(1);
+}
+
+fn publish(score: Res<Score>, mut bodies: Query<&mut Transform, With<Falling>>) {
+    let lift = score.0 as f32;
+    for mut transform in &mut bodies {
+        transform.translation.x = lift;
+    }
+}
+
+pub struct RulesPlugin;
+
+impl Plugin for RulesPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(Ruleset { gravity: -9.8 })
+            .init_resource::<Score>()
+            .add_systems(Startup, spawn_session)
+            .add_systems(Update, (apply_gravity, award, publish).chain());
+    }
+}
+
+fn main() {
+    App::new()
+        .add_plugins(DefaultPlugins)
+        .add_plugins(RulesPlugin)
+        .run();
+}
+```
+
+`award` and `publish` both touch `Score` or `Transform`. `apply_gravity` also writes `Transform`, so the three systems stay in one chain.
+
+A second plugin only reads the rules resource.
+
+```rust
+#[derive(Resource)]
+struct Ruleset {
+    gravity: f32,
+}
+
+fn log_rules(rules: Res<Ruleset>) {
+    let _gravity = rules.gravity;
+}
+
+pub struct HudPlugin;
+
+impl Plugin for HudPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Update, log_rules);
+    }
+}
+```
+
+Fixed-step simulation reads `Time<Fixed>` and stays on `FixedUpdate`.
+
+```rust
+#[derive(Component)]
+struct Falling;
+
+fn fixed_step(time: Res<Time<Fixed>>, mut bodies: Query<&mut Transform, With<Falling>>) {
+    let step = time.delta_secs();
+    for mut transform in &mut bodies {
+        transform.translation.z += step;
+    }
+}
+
+pub struct FixedRulesPlugin;
+
+impl Plugin for FixedRulesPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(FixedUpdate, fixed_step);
+    }
+}
+```
+
+`fixed_step` owns `Falling` in this module. The startup example uses its own `Falling` marker.
 
 ## Expert Knowledge Delta
 
@@ -54,7 +172,7 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A value stored off the entity |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
@@ -69,18 +187,15 @@ Load [references/ecs-ownership.md](app-resources-ecs-ownership.md) for the owner
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No autoload, singleton node, or signal bus. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
-- No Godot types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No process-global static for app data. WHY: a `Resource` on the `App` is the single owner, and systems borrow it through `Res` or `ResMut`.
 - No invented plugin lists beyond `DefaultPlugins` and the `Plugin` trait the Resources page uses. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 - No third-party crates. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20.0**. Permalinks stay unversioned.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/)  -  Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/)  -  Unversioned API index. `default_app` includes `bevy_state` and `bevy_log`.
 - [Apps](https://bevy.org/learn/quick-start/getting-started/apps/)  -  `App`, `World`, resources, `Schedule`, plugins.
 - [Resources](https://bevy.org/learn/quick-start/getting-started/resources/)  -  `Resource`, `insert_resource`, `Plugin::build`, `DefaultPlugins`, `Time`.
 - [Quick Start: ECS](https://bevy.org/learn/quick-start/getting-started/ecs/)  -  `Startup`, `Update`, `add_systems`, `.chain()`.
@@ -89,16 +204,15 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  No autoload layer on top of the schedule.
-- [bevy-project-foundations](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-project-foundations/SKILL.md)  -  Crate and `App::new()`.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Hub and schedules.
+- [bevy-project-foundations](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-project-foundations/SKILL.md)  -  Crate and `App::new()`.
 
 #### Complements
-- [bevy-data-resources](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md)  -  When data is a component instead of a resource.
-- [bevy-state-machines](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md)  -  App-wide `States` instead of a global mode flag on a node.
-- [godot-autoload-architecture](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-autoload-architecture/SKILL.md)  -  Equivalent Godot skill. Do not import Godot types.
+- [bevy-data-resources](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md)  -  When data is a component instead of a resource.
+- [bevy-state-machines](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md)  -  App-wide `States` for mode changes.
 
 #### Downstream / consumers
 - Save, audio, and scene skills cover persistence, playback, and scene spawn.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.

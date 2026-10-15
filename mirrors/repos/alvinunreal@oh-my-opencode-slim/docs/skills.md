@@ -290,7 +290,8 @@ Control which skills each agent can use in `~/.config/opencode/oh-my-opencode-sl
 | `["!*"]` | Deny all skills |
 
 **Rules:**
-- `*` expands to all available installed skills
+- `*` grants access to registered skills, subject to global disables and
+  native permissions
 - `!item` excludes a specific skill
 - Conflicts (e.g. `["a", "!a"]`) → deny wins (principle of least privilege)
 

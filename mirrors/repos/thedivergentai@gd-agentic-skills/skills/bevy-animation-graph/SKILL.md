@@ -11,24 +11,135 @@ Load this when clips must blend, add, or mask. Single-clip playback stays on bev
 
 ## ECS shape
 
-- **Assets:** `AnimationGraph` describes how clips blend. `AnimationGraphNode` is one node. `AnimationNodeType` covers clip, blend, or add.
-- **Components:** `AnimationGraphHandle` is a handle to the graph used by the `AnimationPlayer` on the same entity.
-- **Masks:** `AnimationMask` is a bitfield alias on the graph page. Check that page for the bit layout before writing it.
+- **Assets:** `AnimationGraph` describes how clips blend. `add_clip` parents a clip node. `add_blend` parents a blend node. `add_clip_with_mask` stores a `u64` mask (bone groups you assign; `0` means no mask).
+- **Components:** `AnimationGraphHandle` is a handle to the graph used by the `AnimationPlayer` on the same entity. `AnimationTransitions` crossfades between nodes.
+- **Weights:** `ActiveAnimation::set_weight` on the player, after `play`, drives a node that is already in the graph.
 - **Systems:** evaluation still runs through the animation player systems. Do not add a second player.
 
-## Coming from Godot
+```rust
+#[derive(Resource)]
+struct LocomotionNodes {
+    graph: Handle<AnimationGraph>,
+    walk: AnimationNodeIndex,
+    run: AnimationNodeIndex,
+}
 
-| Godot idea | Bevy idiom |
+fn build_locomotion_graph(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut graphs: ResMut<Assets<AnimationGraph>>,
+) {
+    let mut graph = AnimationGraph::new();
+    let blend = graph.add_blend(0.5, graph.root);
+    let walk = graph.add_clip(
+        asset_server.load(GltfAssetLabel::Animation(0).from_asset("models/fox.glb")),
+        1.0,
+        blend,
+    );
+    let run = graph.add_clip_with_mask(
+        asset_server.load(GltfAssetLabel::Animation(1).from_asset("models/fox.glb")),
+        0b0011,
+        1.0,
+        blend,
+    );
+    let handle = graphs.add(graph);
+    commands.insert_resource(LocomotionNodes {
+        graph: handle,
+        walk,
+        run,
+    });
+}
+```
+
+```rust
+#[derive(Resource)]
+struct LocomotionNodes {
+    graph: Handle<AnimationGraph>,
+    walk: AnimationNodeIndex,
+    run: AnimationNodeIndex,
+}
+
+fn attach_player(
+    mut commands: Commands,
+    nodes: Res<LocomotionNodes>,
+    mut players: Query<(Entity, &mut AnimationPlayer), Without<AnimationGraphHandle>>,
+) {
+    for (entity, mut player) in &mut players {
+        commands.entity(entity).insert((
+            AnimationGraphHandle(nodes.graph.clone()),
+            AnimationTransitions::new(),
+        ));
+        player.play(nodes.walk).repeat();
+        player.play(nodes.run).repeat();
+    }
+}
+```
+
+```rust
+#[derive(Resource)]
+struct LocomotionNodes {
+    graph: Handle<AnimationGraph>,
+    walk: AnimationNodeIndex,
+    run: AnimationNodeIndex,
+}
+
+#[derive(Component)]
+struct RunBlend(f32);
+
+fn sync_blend(mut players: Query<(&mut AnimationPlayer, &RunBlend)>, nodes: Res<LocomotionNodes>) {
+    for (mut player, blend) in &mut players {
+        if let Some(active) = player.animation_mut(nodes.run) {
+            active.set_weight(blend.0.clamp(0.0, 1.0));
+        }
+        if let Some(active) = player.animation_mut(nodes.walk) {
+            active.set_weight(1.0 - blend.0.clamp(0.0, 1.0));
+        }
+    }
+}
+```
+
+```rust
+use std::time::Duration;
+
+#[derive(Resource)]
+struct LocomotionNodes {
+    graph: Handle<AnimationGraph>,
+    walk: AnimationNodeIndex,
+    run: AnimationNodeIndex,
+}
+
+#[derive(Component)]
+struct RunBlend(f32);
+
+fn fade_to_run(
+    nodes: Res<LocomotionNodes>,
+    mut query: Query<(&mut AnimationPlayer, &mut AnimationTransitions, &RunBlend)>,
+) {
+    for (mut player, mut transitions, blend) in &mut query {
+        if blend.0 > 0.5 {
+            transitions.play(&mut player, nodes.run, Duration::from_millis(180));
+        }
+    }
+}
+```
+
+```toml
+[dependencies]
+bevy = "0.20"
+```
+
+## Graph choices
+
+| Need | Bevy approach |
 | --- | --- |
-| Blend tree | AnimationGraph plus AnimationGraphHandle |
-| State machine tree | Not the same type. App or entity states stay on bevy-state-machines. |
-| Additive layer | AnimationNodeType includes add. Check the graph page for weights before writing them. |
+| Blend clips | `AnimationGraph` plus `AnimationGraphHandle` |
+| Gameplay mode | App or entity states stay on bevy-state-machines. The graph is not that state type. |
+| Additive layer | `AnimationGraph::add_additive_blend` inserts `AnimationNodeType::Add`. Clip weights still go through `ActiveAnimation::set_weight`. |
 
 ## Scope
 
-- Transition APIs live under `bevy::animation::transition`. Check that module for method names before writing them.
-- Graph load and save error enums exist. Check those pages for file-format steps before writing them.
-- A 1D or 2D blend-space type was not on the graph page.
+- Crossfades use `AnimationTransitions::play` with a `Duration`, as in `fade_to_run`.
+- Persisting a graph is `SerializedAnimationGraph` plus `ron`. A 1D or 2D blend-space type is not part of `AnimationGraph`; blend with node weights.
 
 ## Expert Knowledge Delta
 
@@ -52,7 +163,7 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A script field copied onto the entity |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
@@ -67,37 +178,32 @@ Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownershi
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot AnimationTree, BlendSpace, or state-machine node types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
-
-- No Godot types in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No AnimationTree, BlendSpace, or scene-tree state-machine types in Bevy code. WHY: `AnimationGraph`, `AnimationGraphHandle`, and `AnimationTransitions` are the documented Bevy pieces.
 - No invented APIs or unnamed third-party crates as the chosen solver. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+Official links stay on bevy.org. The library pin on bevy-master stays **0.20.0**.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
 - [Plugins](https://bevy.org/learn/quick-start/getting-started/plugins/) - `Plugin`, `DefaultPlugins`, `MinimalPlugins`, and `add_plugins`.
-- [animation graph](https://docs.rs/bevy/latest/bevy/animation/graph/index.html) - `AnimationGraph`, `AnimationGraphHandle`, `AnimationNodeType`.
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
-- [bevy-animation](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-animation/SKILL.md) - Player and clips the graph drives.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
+- [bevy-animation](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-animation/SKILL.md) - Player and clips the graph drives.
 
 #### Complements
-- [bevy-state-machines](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Gameplay mode is not an animation graph.
-- [godot-animation-tree-mastery](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md) - Equivalent Godot skill.
+- [bevy-state-machines](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Gameplay mode is not an animation graph.
+- [godot-animation-tree-mastery](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md) - Same topic on the Godot track.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

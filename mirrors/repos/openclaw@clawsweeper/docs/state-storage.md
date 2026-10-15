@@ -86,10 +86,42 @@ record shape and observer-only projection are unchanged.
 from R2. Exact and batch review publishers pass the reviewed item numbers to
 read only their open/closed reports, plans, and decision packets. Those focused
 reads do not depend on repository-wide snapshots or journal exports.
+
+PR hydration uses current GitHub inputs; only the bounded raw file window is
+retained in memory for the current review preflight. Review records do not persist
+`pr_hydration_snapshot`; later review and apply runs fetch current GitHub inputs.
+Canonical publication also strips that retired field from older publishers and
+restored snapshots while retaining the original authenticated retry receipts.
+Existing canonical reports drain through the finite
+`record-hydration-cache-cleanup:v1` alarm checkpoint: at most 64 raw identities,
+four tuples and 8 MiB of source bodies per pass. Maintenance preserves report
+evidence, packets, producer provenance and answered state, and advances tuple
+and export revisions atomically. Conflicted tuples retry after the first scan;
+unresolved ownership stays explicitly incomplete. The unresolved count records
+deferred encounters, not distinct tuples. Logical contents shrink;
+physical database size is measured separately.
+The signed storage-stats response and maintenance summary expose committed
+removed-byte/field counters and completion or unresolved status without a
+separate payload census.
 Explicit ledger/assets hydration streams one R2 listing page into its staging
 tree at a time; descriptor memory does not grow with the entire prefix. It still
-downloads the complete requested trees and replaces local trees only after all
-pages and downloads succeed. This is not a retention or pruning operation.
+downloads the complete requested trees. Before replacing the local view, it
+checks each completed action-ledger import against its existing reservation and
+fetches any payload or binding missed by listing pagination. A malformed or
+incomplete committed import fails before replacement. Direct legacy shards with
+neither transaction marker remain readable.
+
+An import with a valid reservation and an authoritative missing completion is
+unfinished. Hydration excludes its currently staged payloads, retains its
+bindings and all remote objects, and reports bounded producer examples and
+omitted counts. A later hydration can include it after publication completes.
+`blobs` and `bytes` count acquired objects (listed plus `closureBlobs`);
+`trees` counts the initial listings. `materializedBlobs` and
+`materializedBytes` exclude the reported omitted payloads. This is not a
+retention or pruning operation, and it does not promise a snapshot across R2
+listing pages. Local tree replacement remains the existing remove-then-rename
+operation; custom subtree selection also retains its existing top-level
+replacement behavior.
 Jobs that need operational Git state receive a sparse checkout containing only
 the retained paths above. Canonical-only lanes set `hydrate-git-state: "false"`
 and never mint or use a state-repository token.
@@ -164,6 +196,23 @@ retention convention, cap the store at 2,048 entries and each JSON body at 512
 KiB, and evict least-recently validated entries when full. The durable body is
 returned only by the post-304 confirmation operation; a lookup alone returns
 only its ETag and digest.
+
+Ordinary webhook item, comment, and review payloads become eligible for retirement
+after 30 minutes of family inactivity. Bounded passes preserve active collections,
+unresolved placeholders, ordering metadata, and real deletion tombstones.
+Retired reads require authoritative repair before reuse.
+See [the webhook read model](github-webhook-read-model.md#stored-schema-and-bounds)
+for deployment approval, rebuild behavior, and the remaining metadata growth.
+
+Canonical non-commit publication removes its replaced backfill body and chunks
+inside the same transaction as the canonical record and export pointer. An idle
+alarm also sweeps the historical backfill rowid range captured on first startup,
+at most 64 raw candidates per pass. Its durable cursor advances past ineligible
+rows and stops at that fixed upper bound. Deletion requires an exact record ID
+and agreement between the canonical record and canonical export pointer on
+revision, deletion state, and digest. Commits, live backfill exports, and missing
+or mismatched owners remain. Progress counts logical payload bytes; SQLite's
+physical database size can stay unchanged while freed pages become reusable.
 
 Git-backed reports, dashboard status, and post-dispatch cursors are best-effort
 after their productive side effect or canonical publication succeeds. Git

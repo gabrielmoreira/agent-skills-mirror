@@ -12,4 +12,24 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+```rust
+#[derive(Component)]
+struct Hunger {
+    value: f32,
+}
+
+#[derive(Resource)]
+struct SimClock {
+    hour: f32,
+    paused: bool,
+}
+
+fn read_sim(clock: Res<SimClock>, agents: Query<&Hunger>) {
+    if clock.paused {
+        return;
+    }
+    for hunger in &agents {
+        let _value = hunger.value + clock.hour;
+    }
+}
+```

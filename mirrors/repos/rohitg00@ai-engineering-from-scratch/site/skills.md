@@ -88,6 +88,15 @@ One lesson at a time through the Agent Skills path: write, find, run, secure, te
 - Install: `npx skills add rohitg00/ai-engineering-from-scratch --skill learn-agent-skills`
 - Source: https://github.com/rohitg00/ai-engineering-from-scratch/blob/main/skills/learn-agent-skills/SKILL.md
 
+### learn-reverse-engineering (v1.0.0)
+
+One lesson at a time through the Reverse Engineering path: read a compiled program you built, decode it, lift it, record evidence, and prove a rebuild equal.
+
+- Say: "teach me reverse engineering", "continue the reverse engineering path"
+- Writes: REVERSE-ENGINEERING-LEARNING.md
+- Install: `npx skills add rohitg00/ai-engineering-from-scratch --skill learn-reverse-engineering`
+- Source: https://github.com/rohitg00/ai-engineering-from-scratch/blob/main/skills/learn-reverse-engineering/SKILL.md
+
 ## 04 Certification prep
 
 Use these to prepare for an exam with lessons, labs, and timed practice.
@@ -161,4 +170,4 @@ A long manual about one tool at one pinned version, with sources, a table of con
 
 ## 06 Lesson artifacts
 
-395 skills and 100 prompts live under `phases/**/outputs/`. Install with `python3 scripts/install_skills.py <target> --phase <n>` or `--tag <tag>`.
+409 skills and 100 prompts live under `phases/**/outputs/`. Install with `python3 scripts/install_skills.py <target> --phase <n>` or `--tag <tag>`.

@@ -1,6 +1,6 @@
 ---
 name: bevy-character-movement
-description: "Bevy ECS skill for character movement. Keywords: Bevy, movement, ECS, fixed timestep."
+description: "Bevy 0.20 kinematic character movement: intent components, FixedUpdate integration, coyote time, and jump buffer. Use when a player or actor walks or jumps and the step must stay stable. Keywords: Bevy, movement, FixedUpdate, coyote, jump buffer, ECS."
 ---
 
 # Bevy character movement
@@ -16,7 +16,7 @@ Load this when a Bevy app needs a player or actor that moves in discrete steps (
 - **Systems** read intent and write velocity or position. Register them on the fixed schedule, not on a per-node physics callback.
 - **Schedule:** `run_fixed_main_schedule` runs `FixedMain` from virtual time (`bevy::time` 0.20.0). Order dependent systems with `.chain()` (ECS page). Do not paste a Godot physics-process function.
 
-## Coming from Godot
+## Engine counterparts
 
 | Godot idea | Bevy idiom |
 | --- | --- |
@@ -27,9 +27,162 @@ Load this when a Bevy app needs a player or actor that moves in discrete steps (
 
 ## Scope
 
-- Check the `bevy` 0.20.0 crate docs for a character-controller type before writing one. The feature list has no physics solver.
-- Do not call `move_and_slide`, `_physics_process`, or `CharacterBody2D`.
-- Ground detection, shape casts, and collision layers are unverified. Do not invent query APIs.
+Locomotion here is kinematic data on `FixedUpdate`: intent, velocity, coyote time, and a jump buffer. Collision response belongs on bevy-physics-3d. Do not call `move_and_slide`, `_physics_process`, or `CharacterBody2D`.
+
+```toml
+[dependencies]
+bevy = "0.20"
+```
+
+```rust
+#[derive(Component, Default)]
+struct PlanarIntent {
+    axis: Vec2,
+    jump_pressed: bool,
+}
+
+#[derive(Component)]
+struct KinematicBody {
+    velocity: Vec3,
+    grounded: bool,
+    coyote: f32,
+    jump_buffer: f32,
+}
+
+#[derive(Resource)]
+struct MoveTuning {
+    speed: f32,
+    jump_speed: f32,
+    gravity: f32,
+    coyote_time: f32,
+    jump_buffer_time: f32,
+}
+
+impl Default for MoveTuning {
+    fn default() -> Self {
+        Self {
+            speed: 6.0,
+            jump_speed: 8.0,
+            gravity: 20.0,
+            coyote_time: 0.12,
+            jump_buffer_time: 0.12,
+        }
+    }
+}
+
+fn read_move_intent(keys: Res<ButtonInput<KeyCode>>, mut bodies: Query<&mut PlanarIntent>) {
+    let mut axis = Vec2::ZERO;
+    if keys.pressed(KeyCode::KeyA) {
+        axis.x -= 1.0;
+    }
+    if keys.pressed(KeyCode::KeyD) {
+        axis.x += 1.0;
+    }
+    let jump_pressed = keys.just_pressed(KeyCode::Space);
+    for mut intent in &mut bodies {
+        intent.axis = axis;
+        intent.jump_pressed = jump_pressed;
+    }
+}
+
+fn step_kinematic(
+    time: Res<Time<Fixed>>,
+    tuning: Res<MoveTuning>,
+    mut bodies: Query<(&mut PlanarIntent, &mut KinematicBody, &mut Transform)>,
+) {
+    let dt = time.delta_secs();
+    for (mut intent, mut body, mut transform) in &mut bodies {
+        body.velocity.x = intent.axis.x * tuning.speed;
+        if body.grounded {
+            body.coyote = tuning.coyote_time;
+        } else {
+            body.coyote = (body.coyote - dt).max(0.0);
+            body.velocity.y -= tuning.gravity * dt;
+        }
+        if intent.jump_pressed {
+            body.jump_buffer = tuning.jump_buffer_time;
+            intent.jump_pressed = false;
+        } else {
+            body.jump_buffer = (body.jump_buffer - dt).max(0.0);
+        }
+        if body.jump_buffer > 0.0 && body.coyote > 0.0 {
+            body.velocity.y = tuning.jump_speed;
+            body.jump_buffer = 0.0;
+            body.coyote = 0.0;
+            body.grounded = false;
+        }
+        transform.translation += body.velocity * dt;
+        if transform.translation.y <= 0.0 {
+            transform.translation.y = 0.0;
+            body.velocity.y = 0.0;
+            body.grounded = true;
+        }
+    }
+}
+
+fn spawn_mover(mut commands: Commands) {
+    commands.spawn((
+        Transform::default(),
+        PlanarIntent::default(),
+        KinematicBody {
+            velocity: Vec3::ZERO,
+            grounded: true,
+            coyote: 0.0,
+            jump_buffer: 0.0,
+        },
+    ));
+}
+
+pub struct CharacterMovementPlugin;
+
+impl Plugin for CharacterMovementPlugin {
+    fn build(&self, app: &mut App) {
+        app.init_resource::<MoveTuning>()
+            .add_systems(Startup, spawn_mover)
+            .add_systems(Update, read_move_intent)
+            .add_systems(FixedUpdate, step_kinematic);
+    }
+}
+```
+
+Sample `ButtonInput::just_pressed` in `Update`. `FixedUpdate` can run zero times or several times in one frame, so a press read there is dropped or repeated. The intent component keeps the edge until `FixedUpdate` consumes it.
+
+When a physics skill writes `Grounded`, chain the coyote refill after that write so the timer sees the contact from the same tick.
+
+```rust
+#[derive(Component)]
+struct Grounded;
+
+#[derive(Component)]
+struct CoyoteTimer(f32);
+
+#[derive(Resource)]
+struct CoyoteWindow(f32);
+
+fn refill_coyote(window: Res<CoyoteWindow>, mut movers: Query<&mut CoyoteTimer, With<Grounded>>) {
+    for mut timer in &mut movers {
+        timer.0 = window.0;
+    }
+}
+
+fn tick_coyote(time: Res<Time<Fixed>>, mut movers: Query<&mut CoyoteTimer, Without<Grounded>>) {
+    let dt = time.delta_secs();
+    for mut timer in &mut movers {
+        timer.0 = (timer.0 - dt).max(0.0);
+    }
+}
+
+pub struct CoyotePlugin;
+
+impl Plugin for CoyotePlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(CoyoteWindow(0.12)).add_systems(
+            FixedUpdate,
+            (refill_coyote, tick_coyote).chain(),
+        );
+    }
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -58,7 +211,7 @@ Borrow rule: two systems that both mutably query the same component must be orde
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API outside the documented set | Check the official docs first | A made-up crate or API |
+| An API outside this skill | Load the skill that owns it | A made-up crate or API |
 
 Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownership table.
 
@@ -66,32 +219,31 @@ Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownershi
 
 - Do not pin `/0.20.0/` in docs URLs. WHY: links stay on `latest`; the 0.20 target is stated once in prose.
 - Do not step locomotion on raw `Update` when the step must stay stable. WHY: `bevy::time` documents `Fixed` and `run_fixed_main_schedule` (`FixedMain`) for a fixed clock.
+- Do not read `ButtonInput::just_pressed` inside `FixedUpdate`. WHY: that schedule can skip a frame or run more than once, so the press is lost or applied twice.
 - Do not call `move_and_slide`, `_physics_process`, or `CharacterBody2D`. WHY: those are Godot types. This skill only owns ECS movement data.
-- Do not invent a character-controller or shape-cast API. Check the `bevy` crate docs for a controller type before writing one.
+- Do not invent a character-controller or shape-cast API. WHY: this skill owns kinematic intent and the fixed step; contact queries live on the physics skills.
 - Do not mutably query the same movement component from two unordered systems. WHY: systems run in parallel unless `.chain()` orders them.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20.0**. Official pages stay on the unversioned site.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/)  -  Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/)  -  Unversioned API index.
-- [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples)  -  Example tree on the `latest` branch.
 - [Quick Start: ECS](https://bevy.org/learn/quick-start/getting-started/ecs/)  -  Entities, `Component`, systems, `Query`, `Commands`, and `.chain()`.
-- [bevy::time](https://docs.rs/bevy/latest/bevy/time/index.html)  -  `Time`, `Fixed`, and `run_fixed_main_schedule` (`FixedMain`).
+- [Fixed timestep](https://bevy.org/learn/quick-start/getting-started/ecs/)  -  `Fixed` and `FixedMain` via `run_fixed_main_schedule` on the ECS schedule page.
+- [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples)  -  Example tree on the `latest` branch.
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  ECS ownership, schedules, and which Bevy skill to load.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  ECS ownership, schedules, and which Bevy skill to load.
 
 #### Complements
-- [bevy-physics-3d](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-physics-3d/SKILL.md)  -  Collision and physics solvers. Player motion stays in this skill.
-- [godot-characterbody-2d](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-characterbody-2d/SKILL.md)  -  Equivalent Godot skill. Do not import Godot types.
+- [bevy-physics-3d](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-physics-3d/SKILL.md)  -  Collision and physics solvers. Player motion stays in this skill.
+- [godot-characterbody-2d](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-characterbody-2d/SKILL.md)  -  Equivalent Godot skill. Do not import Godot types.
 
 #### Downstream / consumers
 - Genre skills cover loop and encounter design.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.

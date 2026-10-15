@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aden-hive/hive` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
+Mirror of `aden-hive/hive` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `aden-hive/hive` — 26 default patterns, 0 followed patterns, 27 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 27 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -86,6 +86,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | ✓ | [`core/framework/skills/_preset_skills/terminal-tools-pty-sessions/SKILL.md`](core/framework/skills/_preset_skills/terminal-tools-pty-sessions/SKILL.md) |
 | 26 | ✓ | [`core/framework/skills/_preset_skills/terminal-tools-troubleshooting/SKILL.md`](core/framework/skills/_preset_skills/terminal-tools-troubleshooting/SKILL.md) |
 | 27 | ✓ | [`core/framework/skills/_preset_skills/x-automation/SKILL.md`](core/framework/skills/_preset_skills/x-automation/SKILL.md) |
+| 28 | ✓ | [`templates/derivative/AGENTS.md`](templates/derivative/AGENTS.md) |
 
 ---
 

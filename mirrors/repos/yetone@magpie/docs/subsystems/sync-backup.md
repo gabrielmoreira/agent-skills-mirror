@@ -49,6 +49,16 @@ can replace it with this computer's setup, keeping the old file first.
 HTML and XML are not offered for replacement. GitHub diagnostics name the
 repository and `magpie github upload`, rather than WebDAV's recovery path.
 
+A local file that is there but can't be read is unknown, never empty or the
+defaults. `backup.Collect` stops on an unreadable providers.json (with its groups
+and order), settings.json (`settings.LoadChecked`: unreadable, or
+not parsing with no good `.bak`) or library.json, and on a gateway key
+store that fails to export. A backup, an export and a sync all end with that
+error, nothing sealed or pushed; the sync's status shows it. A missing or
+empty settings.json is still none (`TestCollectStopsOnUnreadableSettings`,
+`TestSyncStopsOnUnreadableProviders`, `TestSyncStopsOnUnreadableSettings`,
+#2269).
+
 Switching services keeps all inactive kinds in `Config.Servers`. `Other`
 remains the most recently left server for compatibility with older saved
 configurations and clients. Only the active server is used. Empty credential

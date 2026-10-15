@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["pillow", "numpy", "torch", "transformers", "opencv-python-headless", "socksio", "pysocks", "requests"]
+# dependencies = ["pillow", "pillow-heif", "numpy", "torch", "transformers", "opencv-python-headless", "socksio", "pysocks", "requests"]
 # ///
 """Similarity ranking of a photo against a batch of candidate real-scene images (street-view renders, satellite thumbnails, reference images): the machine ranks first, you look only at the top few.
 
@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import argparse
 from _device import torch_device
+from _image import ImageReadError, find_images, open_image, open_photo, upright
 from _net import PROXY_HELP
 from _net import model_proxy_env
 import glob
@@ -201,15 +202,38 @@ def _render_items(items: list[dict], engine: str, proxy: str | None, cache: Path
         return list(ex.map(one, items))
 
 
+def _open_images(files: list[Path]) -> tuple[list[Path], list[Image.Image]]:
+    """Decode every candidate up front; skip the files that can't be read as a supported image and say why, instead of failing mid-run."""
+    ok, ims, bad = [], [], []
+    for f in files:
+        try:
+            im = upright(open_image(f))
+        except ImageReadError as e:
+            # group by reason; for decode errors drop the exception detail so one cause stays one line
+            bad.append((f, e.reason.split(" (")[0] if e.category in ("decode-error", "not-image") else e.reason))
+            continue
+        ok.append(f)
+        ims.append(im)
+    if bad:
+        kinds: dict[str, int] = {}
+        for _, why in bad:
+            kinds[why] = kinds.get(why, 0) + 1
+        detail = "; ".join(f"{n} {why}" for why, n in sorted(kinds.items(), key=lambda kv: -kv[1]))
+        print(f"skipped {len(bad)} of {len(files)} files that are not readable images: {detail}; e.g. {bad[0][0].name}", file=sys.stderr)
+    if not ims:
+        sys.exit(f"none of the {len(files)} candidate files could be read as an image; see the reasons above")
+    return ok, ims
+
+
 def _load_candidates(args) -> tuple[list[dict], list[Image.Image]]:
     cache = Path(args.cache)
     if args.images:
         p = Path(args.images)
-        files = sorted(p.glob("*.jp*g")) + sorted(p.glob("*.png")) if p.is_dir() else [Path(x) for x in sorted(glob.glob(args.images))]
+        files = find_images(p) if p.is_dir() else [Path(x) for x in sorted(glob.glob(args.images))]
         if not files:
             sys.exit(f"--images has no images: {args.images}")
-        items = [{"id": f.stem, "file": str(f)} for f in files]
-        return items, [Image.open(f) for f in files]
+        files, ims = _open_images(files)
+        return [{"id": f.stem, "file": str(f)} for f in files], ims
     if args.items:
         items = json.loads(Path(args.items).read_text(encoding="utf-8"))
         if args.spread_headings:
@@ -261,7 +285,7 @@ def _sheet(rows: list[dict], ims: dict, out: Path, cols: int = 3, tw: int = 480,
 
 def cmd_rank(args) -> None:
     _proxy_env(args.proxy)
-    q = Image.open(args.query)
+    q = open_photo(args.query, "query")
     if args.query_box:
         x0, y0, x1, y1 = (int(float(v)) for v in args.query_box.split(","))
         q = q.crop((x0, y0, x1, y1))
@@ -316,9 +340,12 @@ def cmd_rank(args) -> None:
 def cmd_index(args) -> None:
     _proxy_env(args.proxy)
     p = Path(args.images)
-    files = sorted(p.glob("*.jp*g")) + sorted(p.glob("*.png")) if p.is_dir() else [Path(x) for x in sorted(glob.glob(args.images))]
+    files = find_images(p) if p.is_dir() else [Path(x) for x in sorted(glob.glob(args.images))]
+    if not files:
+        sys.exit(f"--images has no images: {args.images}")
+    files, ims = _open_images(files)
     emb = Embedder(args.method)
-    feats = emb.embed([Image.open(f) for f in files], multi=False)[:, 0]
+    feats = emb.embed(ims, multi=False)[:, 0]
     np.savez(args.out, ids=np.array([f.stem for f in files]), files=np.array([str(f) for f in files]), feats=feats, method=args.method)
     print(f"{len(files)} images -> {args.out}")
 

@@ -54,6 +54,22 @@ resource limit; use selected fields, a display filter or an input-packet limit
 when dissection output is too large. Each call checks the recording's current
 digest, so pages from different source digests must not be combined.
 
+For a question about a known input prefix, select `packet_limit` for that
+prefix, the fields needed for the answer, and a matching output window. For
+example, a question about the first twelve PostgreSQL TCP packets within
+original frames 1–2,000 can use fields `tcp.srcport`, `tcp.dstport`, `tcp.flags`,
+filter `tcp.port == 5432`, `packet_limit: 2000` and `match_limit: 12`.
+The matching count then describes that input prefix. A filter containing
+`frame.number <= 2000` without an input limit still reads the entire capture;
+returning twelve rows does not limit producer output. These controls answer a
+bounded question and must not be used to infer whole-capture absence.
+
+Discover unfamiliar field names with `inspect_packet_fields`, using an exact
+protocol and a narrow query. If the installed names are already established,
+direct field selection avoids an additional glossary probe. Count discovery
+and any retries when comparing investigation cost; a small page alone does
+not establish a faster workflow.
+
 Additional selections:
 
 - `display_filter`: Wireshark display-filter syntax; omitted means no filter.

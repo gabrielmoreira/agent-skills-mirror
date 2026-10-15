@@ -18,24 +18,204 @@ Load this for dialogue, portraits, and choice flags.
 - **Systems** read those components on `Update` or the fixed timestep from bevy-master. Order them with `.chain()` when a later system must see the result.
 - **Schedule:** gameplay mode changes go through bevy-state-machines. Do not invent a genre plugin.
 
-## Coming from Godot
-
-| Godot idea | Bevy idiom |
-| --- | --- |
-| Genre scene tree | Entities plus the domain skills linked below |
-| Autoload director | A resource, not a singleton node |
-| Signal bus for the loop | bevy-events-messaging |
-
 ## Routing
 
-- [bevy-dialogue-system](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-dialogue-system/SKILL.md) - Lines.
-- [bevy-ui-text](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ui-text/SKILL.md) - Body text.
-- [bevy-ui-layout](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ui-layout/SKILL.md) - Choice buttons.
-- [bevy-save-load](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-save-load/SKILL.md) - Route flags.
+- [bevy-dialogue-system](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-dialogue-system/SKILL.md) - Lines.
+- [bevy-ui-text](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ui-text/SKILL.md) - Body text.
+- [bevy-ui-layout](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ui-layout/SKILL.md) - Choice buttons.
+- [bevy-save-load](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-save-load/SKILL.md) - Route flags.
 
 ## Scope
 
-- No script parser or portrait stack was opened.
+Lines, the visible character index, and route flags are resources. Choice rows are entities. A full script parser stays data you load into those resources.
+
+## Examples
+
+```toml
+[package]
+name = "visual-novel"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.20"
+```
+
+One resource owns the script index and the flags later scenes read.
+
+```rust
+#[derive(Clone)]
+struct Line {
+    speaker: String,
+    body: String,
+}
+
+#[derive(Resource)]
+struct Script {
+    lines: Vec<Line>,
+    index: usize,
+    flags: Vec<String>,
+}
+
+fn current_line(script: &Script) -> Option<&Line> {
+    script.lines.get(script.index)
+}
+
+fn advance(script: &mut Script) {
+    if script.index + 1 < script.lines.len() {
+        script.index += 1;
+    }
+}
+
+fn set_flag(script: &mut Script, flag: &str) {
+    if !script.flags.iter().any(|f| f == flag) {
+        script.flags.push(flag.to_string());
+    }
+}
+```
+
+Space advances. Number keys pick a choice and write its flag.
+
+```rust
+#[derive(Component)]
+struct Choice {
+    key: KeyCode,
+    flag: String,
+    next_index: usize,
+}
+
+#[derive(Clone)]
+struct Line {
+    speaker: String,
+    body: String,
+}
+
+#[derive(Resource)]
+struct Script {
+    lines: Vec<Line>,
+    index: usize,
+    flags: Vec<String>,
+}
+
+fn advance(script: &mut Script) {
+    if script.index + 1 < script.lines.len() {
+        script.index += 1;
+    }
+}
+
+fn set_flag(script: &mut Script, flag: &str) {
+    if !script.flags.iter().any(|f| f == flag) {
+        script.flags.push(flag.to_string());
+    }
+}
+
+fn read_advance(keys: Res<ButtonInput<KeyCode>>, mut script: ResMut<Script>) {
+    if keys.just_pressed(KeyCode::Space) {
+        advance(&mut script);
+    }
+}
+
+fn read_choice(
+    keys: Res<ButtonInput<KeyCode>>,
+    choices: Query<&Choice>,
+    mut script: ResMut<Script>,
+) {
+    for choice in &choices {
+        if keys.just_pressed(choice.key) {
+            set_flag(&mut script, &choice.flag);
+            script.index = choice.next_index.min(script.lines.len().saturating_sub(1));
+        }
+    }
+}
+
+pub struct NovelPlugin;
+
+impl Plugin for NovelPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(Script {
+            lines: vec![Line {
+                speaker: "Guide".to_string(),
+                body: "The gate is shut.".to_string(),
+            }],
+            index: 0,
+            flags: Vec::new(),
+        })
+        .add_systems(Update, (read_advance, read_choice).chain());
+    }
+}
+```
+
+Startup spawns two choices. The portrait name is a component on its own entity.
+
+```rust
+#[derive(Component)]
+struct Portrait {
+    name: String,
+}
+
+#[derive(Component)]
+struct Choice {
+    key: KeyCode,
+    flag: String,
+    next_index: usize,
+}
+
+#[derive(Resource)]
+struct Script {
+    lines: Vec<Line>,
+    index: usize,
+    flags: Vec<String>,
+}
+
+#[derive(Resource, Default)]
+struct ShownLine {
+    speaker: String,
+    portrait: String,
+    body: String,
+}
+
+#[derive(Clone)]
+struct Line {
+    speaker: String,
+    body: String,
+}
+
+fn current_line(script: &Script) -> Option<&Line> {
+    script.lines.get(script.index)
+}
+
+fn spawn_scene(mut commands: Commands) {
+    commands.spawn(Portrait {
+        name: "guide".to_string(),
+    });
+    commands.spawn(Choice {
+        key: KeyCode::Digit1,
+        flag: "opened_gate".to_string(),
+        next_index: 1,
+    });
+    commands.spawn(Choice {
+        key: KeyCode::Digit2,
+        flag: "walked_away".to_string(),
+        next_index: 2,
+    });
+}
+
+fn show_portrait(
+    portraits: Query<&Portrait>,
+    script: Res<Script>,
+    mut shown: ResMut<ShownLine>,
+) {
+    let Some(line) = current_line(&script) else {
+        return;
+    };
+    let Some(portrait) = portraits.iter().next() else {
+        return;
+    };
+    shown.speaker = line.speaker.clone();
+    shown.portrait = portrait.name.clone();
+    shown.body = line.body.clone();
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -80,11 +260,9 @@ Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownershi
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20.0**. Official pages stay on the unversioned `latest` branch.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
@@ -93,18 +271,18 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Spawn and query shape.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Spawn and query shape.
 
 #### Complements
-- [godot-genre-visual-novel](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-genre-visual-novel/SKILL.md) - Equivalent Godot skill.
-- [bevy-dialogue-system](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-dialogue-system/SKILL.md) - Lines.
-- [bevy-ui-text](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ui-text/SKILL.md) - Body text.
-- [bevy-ui-layout](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ui-layout/SKILL.md) - Choice buttons.
-- [bevy-save-load](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-save-load/SKILL.md) - Route flags.
+- [godot-genre-visual-novel](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-genre-visual-novel/SKILL.md) - Visual novel on the Godot engine, same depth.
+- [bevy-dialogue-system](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-dialogue-system/SKILL.md) - Lines.
+- [bevy-ui-text](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ui-text/SKILL.md) - Body text.
+- [bevy-ui-layout](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ui-layout/SKILL.md) - Choice buttons.
+- [bevy-save-load](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-save-load/SKILL.md) - Route flags.
 
 #### Downstream / consumers
 - None. This router does not own a second implementation.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

@@ -12,4 +12,4 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+Multiply a stored base by `SpeedScale` when you write `Speed`. Writing `speed *= scale` every `Update` compounds. `insert_resource` on the `App` is for values known at plugin build. `Commands::insert_resource` is for values known only after `Startup` work such as `AssetServer::load`. Do not invent crates or types.

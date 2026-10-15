@@ -23,6 +23,7 @@ hand the verified evidence to `daymade-claude-code:continue-claude-code-work`.
 |---|---|
 | Recent Claude Code sessions, titles, dates, or IDs | Indexed metadata only; the bundled `list_local_history.py` currently reads all candidate bodies before date/limit filtering, so do not use it for a broad inventory |
 | One known Session reconstructed as a chronological evidence briefing | `scripts/read_claude_session.py --session <ID>` |
+| Original tool input and paired result from one exact Session, selected by tool name, literal text, ordinal or time | `scripts/read_claude_session.py --session <ID> --tool-evidence --contains '<literal>'`; see **Original tool call/result evidence** below |
 | The exact command behind a hook audit row that records a Session ID and a command SHA-256 instead of the text | `scripts/read_claude_session.py --session <ID> --find-command-sha256 <HEX>`; see **Command behind a hook audit row** below |
 | Every Agent/Task tool_use in one Session, quoted verbatim (e.g. the exact prompt handed to an independent reviewer agent) | `scripts/read_claude_session.py --session <ID> --agent-prompts` (optionally `--agent-description-prefix TEXT`); a prompt dispatched twice is listed twice |
 | Which session launched a program in a known time window, across sessions | `scripts/analyze_sessions.py tool-calls --from <ISO> --to <ISO> --pattern <REGEX> [--tool NAME]`; candidates are selected by filesystem metadata before any body is read, then grouped by session; Codex rollouts are out of scope and the gap is stated in the output |
@@ -37,9 +38,9 @@ hand the verified evidence to `daymade-claude-code:continue-claude-code-work`.
 | Kimi CLI sessions | `history_index.py recall --provider kimi`, then read the named session's `wire.jsonl`; see **Kimi CLI** below |
 | Continue a verified Claude session | Stop reading and invoke `daymade-claude-code:continue-claude-code-work` |
 
-## 找「我们之前做的那个 X」（产物类目标）的三个判据
+## 找「我们之前做的那个 X」（产物类目标）的判据
 
-按词搜不到时换这三个判据，别扩词硬搜：
+按词搜不到时换这些判据，别扩词硬搜：
 
 1. **时间约束是第一筛子**。用户给了时间窗（「前两天」「本周」）→ 先按 mtime 筛文件系统（`find <root> -newermt '<日期>' -name '*.html'`），候选面缩到几十条再按形态排。全库关键词搜索应该在时间筛之后，不是之前。
 2. **session scratchpad 必须在搜索面内**（`/private/tmp/claude-$(id -u)/**/scratchpad/`，macOS 单用户通常是 `claude-501`）。Claude session 的默认产物落点在那，不在 workspace——「我们之前写的 X」有相当概率躺在 scratchpad。找产物类目标时显式包含它。
@@ -115,6 +116,64 @@ project across the discovered active homes and registered archives; an explicit
 `--project` remains a strict scope. A filename alone never proves Session identity.
 Read [Local runtime and working-directory evidence](references/session_file_format.md#local-runtime-and-working-directory-evidence)
 before interpreting task endings, local-command output, or cwd receipts.
+
+### Original tool call/result evidence
+
+Use this mode for a particular backup, transfer, continuation command or tool
+receipt. Resolve one exact Session first; do not obtain tool evidence by printing
+the whole briefing or recreating a raw-history parser.
+
+```text
+<skill-dir>/scripts/read_claude_session.py --session <SESSION_ID> \
+  --tool-evidence --tool Bash --contains 'scp' --contains 'backup'
+<skill-dir>/scripts/read_claude_session.py --session <SESSION_ID> \
+  --tool-evidence --ordinal 4:6 --from <ISO_WITH_TIMEZONE> --to <ISO_WITH_TIMEZONE>
+
+# Save the complete selected payload when it exceeds the bounded response.
+<skill-dir>/scripts/read_claude_session.py --session <SESSION_ID> \
+  --tool-evidence --tool Bash --contains 'scp' --full > /absolute/path/tool-evidence.json
+```
+
+Expect one JSON envelope with original `tool_use` and `tool_result` blocks, the
+selected source SHA-256, one-based physical line and content-block coordinates,
+record UUID/parent UUID, timestamp, cwd and recorded agent/sidechain identity.
+This mode reads the selected main transcript, including its stored sidechains;
+it excludes separate subagent files and does not read current Git state or memory.
+It validates every physical record in that transcript; its evidence output omits
+unrelated conversation prose. Global lookup checks only exact
+`<SESSION_ID>.jsonl` filenames in active homes and registered archives; a renamed
+archive remains outside that lookup. Pass an explicitly bounded `--project` if
+its existing discovery can locate that renamed file. Record-level identity,
+malformed/unreadable input and divergent-copy gates still apply. A source changing
+during the read fails visibly; repeat only this read.
+
+Require at least one selector. Repeat `--tool NAME` for exact, case-sensitive
+tool-name alternatives. Repeat `--contains TEXT` to require every case-sensitive
+literal somewhere in that group's original string values, including nested call
+inputs and result content; an orphan result cannot match a tool-name filter.
+`--tools` is an alias for `--tool-evidence`. `--ordinal N` or `N:M` selects one-based
+group ordinals in first physical occurrence order **before** other filters.
+Time bounds are inclusive and use the first call timestamp, or the first orphan
+result timestamp. Datetimes require a timezone; date-only bounds use the machine's
+local day. Missing/invalid timestamps excluded by a time filter are counted.
+
+Pair by tool-use ID within recorded agent/sidechain context, independent of which
+side landed first. Preserve every block for repeated IDs and label `ambiguous`;
+label absent counterparts `missing_call` or `missing_result`, and missing IDs
+`missing_id`. These statuses describe evidence availability, not execution success.
+Read the original result's error/content fields before claiming the action worked.
+
+Check `coverage.output_complete` before treating returned matches as complete.
+The default `--max-output-bytes 64000` bounds the entire UTF-8 JSON envelope,
+including its newline. Larger matches may return an explicitly incomplete
+`block_json_prefix` with its original character count instead of a `block`;
+later groups may be omitted with a count and `first_omitted_ordinal`. Raise the
+bound or use `--full` redirected to an absolute local output path to obtain full
+selected payloads; `--full` removes this mode's byte cap. If metadata alone cannot
+fit, the read fails without emitting evidence. Exit 0 means at least one selected
+group, 1 means no match or a source/read failure, and 2 means invalid arguments.
+Read stderr and coverage to distinguish those cases; zero matches with a time
+gap or excluded source is not proof that the action never happened.
 
 ### Command behind a hook audit row
 
@@ -233,7 +292,7 @@ Do not call a compact summary verbatim history; it is a continuation aid and mus
 be checked against raw records and the current workspace for load-bearing claims.
 
 Before writing any negative or absolute claim ("never said," "never appears,"
-"could not have happened," "impossible to satisfy"), clear all three:
+"could not have happened," "impossible to satisfy"), complete this checklist:
 
 1. **Every record type, not only user/assistant text.** A grep for the literal
    string must also cover `attachment` (`queued_command.prompt`), `tool_result`,
@@ -313,8 +372,8 @@ Locate the real home instead of guessing, in this order:
 
 1. **Ask the recall index, if one was ever built with Kimi in scope.**
    `scripts/history_index.py status` prints `scope.sources`, and a `provider:
-   kimi` entry there carries the absolute `home` it was indexed from. One
-   command, no searching. It only answers after Kimi has been indexed once, so
+   kimi` entry there carries the absolute `home` it was indexed from. It only
+   answers after Kimi has been indexed once, so
    it is the fastest path on a configured machine and silent on a fresh one.
 2. **Read the desktop client's user-data directory off its running process.**
    An Electron app carries `--user-data-dir` on its command line
@@ -333,7 +392,7 @@ Locate the real home instead of guessing, in this order:
    both are present. This test is what tells the store apart from the CLI
    install directory one level up.
 
-Two schema facts that decide whether a located store reads correctly. Newer
+Schema facts decide whether a located store reads correctly. Newer
 builds drop `id` and `cwd` from each session's `state.json` and keep the working
 directory only in `session_index.jsonl`, so a session's project must come from
 that map rather than from its own state file. And the same `sessions/` tree holds

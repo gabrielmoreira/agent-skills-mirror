@@ -119,6 +119,10 @@ hold the arms still, and check the loop with `handed-check --state walk`.
 | Idle breathing | curation choice, baked by compose | [breathing](docs/breathing.md) |
 | Engine exports | `export-aseprite`, `export-pngs` | [engine-export](docs/engine-export.md) |
 | Background recipe or repeating tile | existing `gen` / `cutout`, then optional `background-tile` | [asset-tools](docs/asset-tools.md#background-recipe) |
+| Ground tile that repeats both ways | `gen` (opaque), then `background-tile --axis xy` | [asset-tools](docs/asset-tools.md#both-axes-a-ground-tile) |
+| Game UI kit: panel, buttons, card, HP/XP bar frames and fills, timer badge, item slot, counter plate, on/off dots, joystick base and knob as sliced elements | `gen --transparent --aspect-ratio 2:3 --layout-guide ui-kit` (`1:1`: the seven frames alone), then `ui-kit`; the seven frames are required, and a band element whose box is empty is left out and named under `missing` | [ui-kit](docs/ui-kit.md#missing-elements) |
+| Props or icons on a transparent sheet | `slice-sheet --chroma-key none --alpha-floor 64`, props with `--scale sheet --fit contain`, icons with `--fit contain` | [sheet-slicing](docs/sheet-slicing.md#props-and-icons-sheet-scale-and-contain-fit) |
+| Painted props, a ground tile and a UI kit in a game pack | `game-pack` request version 2 (`images`, `tiles`, `ui`) | [game-pack](docs/game-pack.md#version-2-images-tiles-and-ui) |
 | Standalone projected shadow | `shadow` | [asset-tools](docs/asset-tools.md#projected-shadows) |
 | Duplicate poses, foot contact and stride measurement | `inspect-motion` | [asset-tools](docs/asset-tools.md#motion-and-contact-evidence) |
 | Optional scene placement, lighting, camera and render | `scene-render`, `scene-inspect` | [scene](docs/scene.md) |
@@ -126,7 +130,7 @@ hold the arms still, and check the loop with `handed-check --state walk`.
 
 Say a thing once: what an option says, leave out of the prompt. `--direction`, `--facing`, `--handed`, the key background and `video --direction side` each add their own sentence after your text, in one place; without `--handed` every prompt is 2.22.0's, byte for byte, and only the handed sentences are left out where your text already has them. Your prompt carries the subject, its design and its pose. Text that says the opposite of an option ("facing left" with `--facing right`, the item on the other wrist) is sent as written with a warning (`extra.prompt_notes`, `video-prompt`'s `warnings`): fix the prompt, do not send it — [prompt-assembly](docs/prompt-assembly.md).
 
-`gen --transparent` with `--ref` plans a chroma key (adding the key's background line to a prompt that names none), and publishes a result that already came back transparent on its own alpha instead of keying its outline away; `alpha.strategy_source` in the report says which (`refs-attached` keyed, `refs-attached-raw-alpha` not) — [gen](docs/gen.md#transparent-output--strategy-per-provider).
+`gen --transparent` with `--ref` plans a chroma key (adding the key's background line to a prompt that names none), and publishes a result that already came back transparent on its own alpha instead of keying its outline away; `alpha.strategy_source` in the report says which (`refs-attached` keyed, `refs-attached-raw-alpha` not). A key background painted as a transparency checkerboard is refused before keying (`chroma: the background is a painted transparency checkerboard …`): generate again — [gen](docs/gen.md#transparent-output--strategy-per-provider).
 
 Use existing automatic pipeline stages for background removal, extraction, alignment and export. Do not ask users to select each script. For a direct utility request, run that utility; no unrelated generation questions are needed. Preserve the row pipeline and component extraction for image sprites. One-shot grid generation and fixed cell cutting are not an alternative sprite-generation route.
 

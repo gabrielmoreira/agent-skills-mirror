@@ -19,6 +19,15 @@ npm run sync:plugins
 
 A git pre-commit hook (installed via the `prepare` script when you run `npm install`) runs this automatically and stages the result, so you never have to copy skills by hand. CI runs `npm run validate:plugin-skills` (part of `validate:ci`) to fail the build if the vendored copies drift from the source or if any symlink sneaks back into a plugin.
 
+Some skill `references/` files are generated from the Neon website docs by [`scripts/sync-skill-docs.mjs`](scripts/sync-skill-docs.mjs), whose `SKILL_DOCS` map lists them. Don't edit them by hand: change the docs, then regenerate from a local website checkout and re-vendor:
+
+```bash
+npm run sync:docs -- --website ../website
+npm run sync:plugins
+```
+
+`npm run validate:skill-docs` (part of `validate:ci`) fails if a generated file no longer matches the hash in its header. The script is local-only until the docs launch; a neon.com source and a scheduled refresh are follow-ups.
+
 ## Releasing
 
 `package.json` holds the plugin version, and the manifests that declare one — the root `plugin.json` and `kimi.plugin.json`, both `marketplace.json` catalogs, and each plugin's client manifest — are generated from it. Bump it and commit:
@@ -42,6 +51,8 @@ The Neon skills are also published as plugins in external marketplaces that **ve
 
 Each marketplace has its own packaging and validation steps — follow that repo's contributing guide when opening the mirror PR. For JetBrains, copy each skill directory from `skills/` into a flat top-level directory in their catalog (include any `references/`), keep `metadata.source` pointing back here, and optionally add a README table row.
 
+Regenerated docs references count as a skill change: after `npm run sync:docs`, mirror the updated `references/` files to every marketplace above.
+
 ## Validation
 
 Before opening a PR here, run:
@@ -51,7 +62,7 @@ npm ci --ignore-scripts
 npm run validate:ci
 ```
 
-This runs `npm run validate:agent-plugin` for the root Agent Plugins v1 package, plugin manifest validation under `plugins/`, `npm run validate:versions` to confirm every manifest matches the version in `package.json`, skill validation (`skills-ref` on every directory under `skills/`), and the skill reference-graph check. See `AGENTS.md` for the full CI/CD picture and the paired **neon-for-agent-platforms** repo.
+This runs `npm run validate:agent-plugin` for the root Agent Plugins v1 package, plugin manifest validation under `plugins/`, `npm run validate:versions` to confirm every manifest matches the version in `package.json`, skill validation (`skills-ref` on every directory under `skills/`), the skill reference-graph check, and `npm run validate:skill-docs` for the docs-generated references. See `AGENTS.md` for the full CI/CD picture and the paired **neon-for-agent-platforms** repo.
 
 The Agent Plugins manifest schema is closed, so none of `skills`, `mcpServers`, `hooks`, or `logo` may appear in the root `plugin.json`. MCP servers are declared in the root `mcp.json` and skills are discovered from the root `skills/`; `hooks` and `logo` are client-only and belong in the packaging under `plugins/`. `AGENTS.md` lists the full set of allowed fields.
 

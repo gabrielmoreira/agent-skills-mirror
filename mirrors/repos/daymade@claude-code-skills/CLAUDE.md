@@ -68,8 +68,14 @@ For local/remote ASR selection, speed comparison and speech-content acceptance, 
 For competitor source-carrier/edition binding, claims, citations and existing-product learning, enter
 [competitors-analysis](competitors-analysis/SKILL.md) and its
 [citation readback checklist](competitors-analysis/references/analysis_checklist.md#citation-readback-and-counterevidence).
+For changes since a prior analysis, load its
+[Update classification](competitors-analysis/references/analysis_checklist.md#a-newly-discovered-path-is-not-necessarily-a-new-feature).
 For user-selected collection destinations, load the
 [collection destination route](competitors-analysis/references/collection_destination.md).
+For running an original application demo, follow that Skill's
+[original-app demo recipe](competitors-analysis/references/original-app-demo.md).
+For transaction recovery tests or financial migration/fixture acceptance, enter
+[qa-expert](qa-expert/SKILL.md); its test-case routes select the detailed recipes.
 
 For choosing or reviewing a library, framework, storage, data format, model,
 build-vs-buy or architecture — including 用哪个 / 选什么框架 / 要不要自建 / A 还是 B /
@@ -89,12 +95,19 @@ For evidence-based improvement of an existing application, enter
 [app-evolver](app-evolver/SKILL.md). For released-artifact or runtime evidence,
 load its [Skill composition route](app-evolver/references/skill-composition.md);
 keep specialist selection and handoff boundaries in that owner.
+When a repair batch ends or the user questions its direction, load its
+[increment-selection contract](app-evolver/references/evidence-and-fit.md#make-the-disposition-operational).
 
 For permission-sensitive fixtures, use Skill Creator's
 [execution-context verification recipe](daymade-skill/skill-creator/references/stateful-script-verification.md#execution-identity-and-permission-fixtures).
 
 For its audit, release, source-contract or materialization commands from another
 working directory, use the [fixed command entry](daymade-skill/skill-creator/references/fixed-command-entry.md).
+
+Before reading a large file or captured tool response, follow Skill Creator's
+[bounded-read recipe](daymade-skill/skill-creator/references/stateful-script-verification.md)
+through that fixed entry. Keep selection, output limits and incomplete-read semantics
+in the owning recipe.
 
 For plugin/Skill naming, source registration or release labels, use
 [source location and activation](daymade-skill/skill-creator/references/source-location-and-activation.md)
@@ -180,6 +193,8 @@ Python hooks.
 For rendered UI freshness, delayed editor/batch responses or deployment acceptance, enter
 [frontend-visual-qa](frontend-visual-qa/SKILL.md). Keep its manifest, launcher,
 result semantics and rendered-journey procedure in that owner.
+For build reuse across source refs, load its
+[delivery provenance procedure](frontend-visual-qa/references/delivery-verification.md#reuse-a-build-from-another-source-ref).
 For nested zoomable workspaces, use its
 [journey and state matrix](frontend-visual-qa/references/journey-and-page-contracts.md#journey-and-state-matrix).
 For embedded-reader zoom, return, focus or filtered-selection changes, use its
@@ -331,6 +346,10 @@ the delivered artifact. Detailed retrieval mechanics remain in
 
 ### Local Conversation History Boundary
 
+For reconciliation of an already-resumed native Goal, read
+[native Goal reconciliation](daymade-claude-code/continue-codex-work/references/native-goal-reconciliation.md)
+directly; use `continue-codex-work`'s full entry for external task takeover.
+
 For input appended after an operation's current-thread request, use [read-codex-history's bounded input cursor](daymade-claude-code/read-codex-history/SKILL.md#bounded-current-thread-direct-input-cursor). That owner defines source binding and read failures; the consuming operation owns human authorization. Keep executable commands and source details in the Skill.
 
 For conversation-backup health checks or recent unfinished-request inventories, follow
@@ -343,6 +362,10 @@ owns complete Codex tool evidence, and
 [`hybrid history recall`](daymade-claude-code/read-claude-code-history/references/hybrid_history_recall.md#query)
 owns indexed role/phrase filters. Keep commands and source-attribution rules in
 those owners rather than copying them here.
+
+For an original Claude tool call and its result from one known Session, use
+[read-claude-code-history's narrow evidence entry](daymade-claude-code/read-claude-code-history/SKILL.md#original-tool-callresult-evidence).
+Keep selectors, pairing, source scope and incomplete-output handling in that owner.
 
 Codex inventory must use the index-only command in
 `daymade-claude-code/read-codex-history/SKILL.md`. If its state database is
@@ -489,6 +512,8 @@ validation.
 For document-ingestion reviews and authorized small maintainer repairs, enter
 [github-review-pr](github-review-pr/SKILL.md) and its
 [small-repair workflow](github-review-pr/references/remediation_and_landing.md#expose-an-authorized-small-repair).
+Before selecting an environment for an authorized repair, follow its
+[carrier and source-owner selection](github-review-pr/SKILL.md#2-fetch-the-exact-objects-without-touching-the-users-worktree).
 For cross-runtime staged-content validation or isolated task-copy setup, enter
 [auto-repo-setup's Git safety reference](auto-repo-setup/references/git_safety.md).
 
@@ -501,17 +526,13 @@ For inbound coordination during delivery or closeout, use
 [peer-message's receiving route](peer-message/SKILL.md#收到消息先分流).
 Keep the receiving and user-delivery procedure with that owner rather than duplicating it here.
 
-This repository uses standard git workflow, but **always stage files by name**,
-never `git add -A` / `git add .`. Multiple agents may have unstaged changes in
-the same worktree — a blanket stage piggybacks their work into your commit:
-
-```bash
-git status
-git add path/to/file1 path/to/file2   # specific files only
-git diff --cached --name-status       # every staged entry (`D` lines included) must be one you intended; a `D` you never made = drift from a parallel session's index-bypassing commit — see git-safety-net Mode D
-git commit -m "message"
-git push
-```
+Stage only explicit owned file paths; never `git add -A` / `git add .`.
+Inspect the staged file list, including deletions,
+in a separate call before committing; investigate any entry outside the intended
+scope through `git-safety-net`. For branch publication and PR creation, follow
+[the publication recipe](github-ops/references/pr_operations.md#basic-pr-creation)
+before the first push. Keep its policy preflight, pinned source and remote readback
+in that owner rather than maintaining another push example here.
 
 For recovery or repository convergence under concurrent work, treat
 `git-safety-net/SKILL.md` as the canonical authorization and evidence router. It owns the
@@ -574,20 +595,9 @@ stale feature worktree select its own stale dispatcher. CI and the GitHub main
 ruleset independently enforce version progression on PRs; private review
 evidence is checked locally by pre-push, as defined in the linked release SOP.
 
-**Push through the remote name, never a bare URL.** The guard resolves the
-remote from its argument (`process.argv[3]`) and then fetches
-`<remote> refs/heads/main:refs/remotes/<remote>/main` to judge the push against
-current main. Handed a bare URL it therefore builds the refspec
-`refs/remotes/https://github.com/…/main` and dies with
-`fatal: invalid refspec` followed by `could not refresh current main` — which
-reads like a network failure and is not. From a linked worktree, push over HTTPS
-with a token without editing repository config by overriding per invocation:
-
-```
-git -C <worktree> \
-  -c remote.origin.url=<https-url> -c remote.origin.pushurl=<https-url> \
-  push origin HEAD:refs/heads/<branch>
-```
+Push through the remote name so the repository guard can refresh current main.
+For per-invocation HTTPS transport without changing shared remote configuration,
+follow [the named-remote transport SOP](references/git-publication-transport.md).
 
 1. **Never commit directly to local `main`.** All work starts on a feature
    branch (`git checkout -b <topic>`), ships via PR, and lands by squash merge.

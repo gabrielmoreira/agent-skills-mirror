@@ -1,6 +1,6 @@
 ---
 name: bevy-save-load
-description: "Bevy ECS skill for persistence boundaries. Keywords: Bevy, save, Resource, Scene, AssetServer."
+description: "Persists a versioned Bevy Resource as RON when a SaveRequest exists. Use for player slots; scene spawn stays on bevy-asset-scenes. Keywords: Bevy, save, load, RON, serde, Resource, SaveRequest."
 ---
 
 # Bevy save and load
@@ -11,23 +11,153 @@ Load this when a design asks to persist player progress. Route asset and scene s
 
 ## ECS shape
 
-- **What exists:** app-wide progress can be a `Resource` (see `bevy-data-resources`). Level content loads through `AssetServer` and may spawn with `spawn_scene` / `queue_spawn_scene` (`bevy::scene`, docs.rs `latest`, 0.20.0).
-- **What was checked and rejected:** `https://docs.rs/bevy/latest/bevy/scene/struct.DynamicScene.html` returned 404 on 2026-10-11. The live scene index documents `Scene` and `bsn!`, not a save-file serializer. Do not call `DynamicScene::serialize` from this skill.
-- **Schedule:** no save system is specified here. Do not invent a filesystem write inside `Update`.
+- **What exists:** app-wide progress is a `Resource` you serialize yourself. Level content loads through `AssetServer` and scene spawn (`bevy-asset-scenes`). A scene spawn is not a player slot.
+- **Format:** progress structs use `serde` and RON. The file holds primitives and a `version` field. Entity ids and asset handles stay out of the file.
+- **Schedule:** write the slot from an explicit request system. Do not write the file from every `Update` frame.
 
-## Coming from Godot
+`serde` and `ron` sit beside Bevy. The progress type is a normal resource.
 
-| Godot idea | Bevy idiom |
+```toml
+[dependencies]
+bevy = "0.20"
+serde = { version = "1", features = ["derive"] }
+ron = "0.10"
+```
+
+```rust
+use serde::{Deserialize, Serialize};
+
+#[derive(Resource, Clone, Serialize, Deserialize)]
+struct Progress {
+    version: u32,
+    coins: u32,
+    level: String,
+}
+
+fn fresh_progress() -> Progress {
+    Progress {
+        version: 2,
+        coins: 0,
+        level: "town".to_string(),
+    }
+}
+```
+
+Encode and decode are plain functions. Call them from the request system, not from a per-frame query.
+
+```rust
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Serialize, Deserialize)]
+struct Progress {
+    version: u32,
+    coins: u32,
+    level: String,
+}
+
+fn encode_slot(progress: &Progress) -> String {
+    ron::ser::to_string_pretty(progress, ron::ser::PrettyConfig::default())
+        .expect("progress encodes")
+}
+
+fn decode_slot(text: &str) -> Progress {
+    ron::from_str(text).expect("progress decodes")
+}
+
+fn round_trip() {
+    let saved = Progress {
+        version: 2,
+        coins: 4,
+        level: "town".to_string(),
+    };
+    let loaded = decode_slot(&encode_slot(&saved));
+    assert_eq!(loaded.coins, 4);
+}
+```
+
+Older files omit `version`. Migration builds the current struct before anything inserts it.
+
+```rust
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize)]
+struct SaveV1 {
+    coins: u32,
+}
+
+#[derive(Resource, Clone, Serialize, Deserialize)]
+struct Progress {
+    version: u32,
+    coins: u32,
+}
+
+fn load_any(text: &str) -> Progress {
+    if let Ok(current) = ron::from_str::<Progress>(text) {
+        return current;
+    }
+    let legacy: SaveV1 = ron::from_str(text).expect("legacy slot");
+    Progress {
+        version: 2,
+        coins: legacy.coins,
+    }
+}
+```
+
+The save system runs only while `SaveRequest` is present, then removes it. One system owns the resource and the disk write.
+
+```rust
+use serde::{Deserialize, Serialize};
+
+#[derive(Resource, Clone, Serialize, Deserialize)]
+struct Progress {
+    version: u32,
+    coins: u32,
+}
+
+#[derive(Resource)]
+struct SaveRequest {
+    path: String,
+}
+
+fn write_slot(progress: Res<Progress>, request: Res<SaveRequest>) -> std::io::Result<()> {
+    let text = ron::ser::to_string(&*progress).expect("progress encodes");
+    std::fs::write(&request.path, text)
+}
+
+fn save_when_asked(mut commands: Commands, progress: Res<Progress>, request: Option<Res<SaveRequest>>) {
+    let Some(request) = request else {
+        return;
+    };
+    let _ = write_slot(progress, request);
+    commands.remove_resource::<SaveRequest>();
+}
+
+pub struct SavePlugin;
+
+impl Plugin for SavePlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(Progress {
+            version: 2,
+            coins: 0,
+        })
+        .add_systems(Update, save_when_asked);
+    }
+}
+```
+
+## What to persist
+
+| Need | Bevy idiom |
 | --- | --- |
-| Resource file for designer data | An asset `Handle`, or a `Resource` you own in code |
-| Packed scene instance | `Scene` spawn on `bevy-asset-scenes` |
-| Player save slot | Leave it as data you have not serialized yet. Check the docs before naming a slot format. |
+| Designer content | An asset `Handle`, or a `Resource` you own in code |
+| Level instance | `Scene` spawn on `bevy-asset-scenes` |
+| Player save slot | A versioned `Resource` written as RON when a `SaveRequest` exists |
 
 ## Scope
 
-- Check docs.rs `latest` for a save path, slot index, version field, or RON/JSON writer before writing one.
+- The slot path, version field, and RON text live on `Progress` and `SaveRequest` above.
 - Scene spawn is not a save game. Do not treat `bsn!` as a user save.
-- Wasm has no general filesystem story on the docs pages for this skill. Do not invent one.
+- A native `std::fs` write is the desktop slot. Web builds need a different storage story. Do not call `std::fs` and assume a browser has that path.
 
 ## Expert Knowledge Delta
 
@@ -51,7 +181,7 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A free-floating struct outside the `World` |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
@@ -66,34 +196,27 @@ Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownershi
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot `Resource`, `FileAccess`, or config-file types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No engine config-file types in the slot. WHY: the slot is a versioned `Resource` encoded as RON.
 - No `DynamicScene` or scene-file writer this file does not list. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 - No third-party save crates. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20**. Scene spawn is not a save format.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/)  -  Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/)  -  Unversioned API index.
-- [bevy::scene](https://docs.rs/bevy/latest/bevy/scene/index.html)  -  Spawn API that is not a save format. `DynamicScene` struct URL 404.
-- [bevy::asset](https://docs.rs/bevy/latest/bevy/asset/index.html)  -  Disk assets, not player slots.
-- [Resources](https://bevy.org/learn/quick-start/getting-started/resources/)  -  App-wide data that a future save would have to name.
-- [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples)  -  Example tree on the `latest` branch.
+- [Resources](https://bevy.org/learn/quick-start/getting-started/resources/)  -  App-wide data the slot serializes.
+- [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples)  -  Example tree on the `latest` branch. Scene spawn lives with `bevy-asset-scenes`.
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Who owns which piece of state.
-- [bevy-data-resources](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md)  -  `Resource` versus `Component`.
-- [bevy-asset-scenes](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-asset-scenes/SKILL.md)  -  Loading content. Not a save slot.
-
-#### Complements
-- [godot-save-load-systems](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-save-load-systems/SKILL.md)  -  Equivalent Godot skill.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Who owns which piece of state.
+- [bevy-data-resources](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md)  -  `Resource` versus `Component`.
+- [bevy-asset-scenes](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-asset-scenes/SKILL.md)  -  Loading content. Not a save slot.
 
 #### Downstream / consumers
 - None until a save format is opened.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.

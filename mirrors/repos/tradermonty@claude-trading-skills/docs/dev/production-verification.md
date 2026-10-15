@@ -67,6 +67,10 @@ The parity test in `scripts/tests/test_production_verification_baseline.py` requ
 cover exactly the current production IDs and to resolve to the same eight values stored in
 `skills-index.yaml`.
 
+The [2026-10-14 unit-test inventory](production-verification-unit-tests-audit-20261014.md)
+records production helper/test discovery and outstanding audit work at a pinned revision.
+It is preparation evidence, not an axis pass or a completed test audit.
+
 ## Keeping evidence current
 
 Verification is valid only for the repository revision it accompanies. When a skill's scripts,

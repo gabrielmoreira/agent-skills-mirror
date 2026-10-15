@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bcgov/sharepoint-knowledge-workbench` — 26 default patterns, 0 followed patterns, 109 file(s) materialized.
+Mirror of `bcgov/sharepoint-knowledge-workbench` — 26 default patterns, 0 followed patterns, 111 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bcgov/sharepoint-knowledge-workbench` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 109 |
+| Files         | 111 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -154,20 +154,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 93 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-validate-link-integrity/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-validate-link-integrity/SKILL.md) |
 | 94 | ✓ | [`plugins/sharepoint-site-migration/skills/sharepoint-validate-page-modernization/SKILL.md`](plugins/sharepoint-site-migration/skills/sharepoint-validate-page-modernization/SKILL.md) |
 | 95 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-deploy-spfx-solution/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-deploy-spfx-solution/SKILL.md) |
-| 96 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-develop-spfx-form-customizer/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-develop-spfx-form-customizer/SKILL.md) |
-| 97 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-develop-spfx-listview-command-set/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-develop-spfx-listview-command-set/SKILL.md) |
-| 98 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-package-spfx-solution/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-package-spfx-solution/SKILL.md) |
-| 99 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-publish-spfx-package/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-publish-spfx-package/SKILL.md) |
-| 100 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-request-site-collection-app-catalog/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-request-site-collection-app-catalog/SKILL.md) |
-| 101 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-master-detail-webpart/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-master-detail-webpart/SKILL.md) |
-| 102 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-react-webpart/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-react-webpart/SKILL.md) |
-| 103 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-webpart/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-webpart/SKILL.md) |
-| 104 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-setup-spfx-hosted-workbench/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-setup-spfx-hosted-workbench/SKILL.md) |
-| 105 | ✓ | [`plugins/sharepoint-workbench-setup/skills/workbench-initialize-connection-config/SKILL.md`](plugins/sharepoint-workbench-setup/skills/workbench-initialize-connection-config/SKILL.md) |
-| 106 | ✓ | [`plugins/sharepoint-workbench-setup/skills/workbench-initialize-document-workflow/SKILL.md`](plugins/sharepoint-workbench-setup/skills/workbench-initialize-document-workflow/SKILL.md) |
-| 107 | ✓ | [`plugins/sharepoint-workbench-setup/skills/workbench-request-app-registration/SKILL.md`](plugins/sharepoint-workbench-setup/skills/workbench-request-app-registration/SKILL.md) |
-| 108 | ✓ | [`plugins/sharepoint-workbench-setup/skills/workbench-resolve-document-paths/SKILL.md`](plugins/sharepoint-workbench-setup/skills/workbench-resolve-document-paths/SKILL.md) |
-| 109 | ✓ | [`plugins/sharepoint-workbench-setup/skills/workbench-validate-sharepoint-connection/SKILL.md`](plugins/sharepoint-workbench-setup/skills/workbench-validate-sharepoint-connection/SKILL.md) |
+| 96 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-develop-spfx-application-customizer/references/acceptance-criteria.md`](plugins/sharepoint-spfx-development/skills/sharepoint-develop-spfx-application-customizer/references/acceptance-criteria.md) |
+| 97 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-develop-spfx-application-customizer/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-develop-spfx-application-customizer/SKILL.md) |
+| 98 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-develop-spfx-form-customizer/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-develop-spfx-form-customizer/SKILL.md) |
+| 99 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-develop-spfx-listview-command-set/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-develop-spfx-listview-command-set/SKILL.md) |
+| 100 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-package-spfx-solution/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-package-spfx-solution/SKILL.md) |
+| 101 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-publish-spfx-package/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-publish-spfx-package/SKILL.md) |
+| 102 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-request-site-collection-app-catalog/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-request-site-collection-app-catalog/SKILL.md) |
+| 103 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-master-detail-webpart/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-master-detail-webpart/SKILL.md) |
+| 104 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-react-webpart/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-react-webpart/SKILL.md) |
+| 105 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-webpart/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-scaffold-spfx-webpart/SKILL.md) |
+| 106 | ✓ | [`plugins/sharepoint-spfx-development/skills/sharepoint-setup-spfx-hosted-workbench/SKILL.md`](plugins/sharepoint-spfx-development/skills/sharepoint-setup-spfx-hosted-workbench/SKILL.md) |
+| 107 | ✓ | [`plugins/sharepoint-workbench-setup/skills/workbench-initialize-connection-config/SKILL.md`](plugins/sharepoint-workbench-setup/skills/workbench-initialize-connection-config/SKILL.md) |
+| 108 | ✓ | [`plugins/sharepoint-workbench-setup/skills/workbench-initialize-document-workflow/SKILL.md`](plugins/sharepoint-workbench-setup/skills/workbench-initialize-document-workflow/SKILL.md) |
+| 109 | ✓ | [`plugins/sharepoint-workbench-setup/skills/workbench-request-app-registration/SKILL.md`](plugins/sharepoint-workbench-setup/skills/workbench-request-app-registration/SKILL.md) |
+| 110 | ✓ | [`plugins/sharepoint-workbench-setup/skills/workbench-resolve-document-paths/SKILL.md`](plugins/sharepoint-workbench-setup/skills/workbench-resolve-document-paths/SKILL.md) |
+| 111 | ✓ | [`plugins/sharepoint-workbench-setup/skills/workbench-validate-sharepoint-connection/SKILL.md`](plugins/sharepoint-workbench-setup/skills/workbench-validate-sharepoint-connection/SKILL.md) |
 
 ---
 

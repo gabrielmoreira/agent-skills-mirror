@@ -11,5 +11,8 @@ Target: **Bevy 0.20+**.
 | Spawn | `Commands` | `Startup` or the runtime schedule |
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
+| Sun shadow atlas size | `DirectionalLightShadowMap` resource | insert once in `Startup` |
+| Cascade distances | `CascadeShadowConfig` on the sun entity | spawn with the `DirectionalLight` |
+| Which point lights cast | `PointLight.shadow_maps_enabled` | one `Update` system; chain any other writer |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+`keep_nearest_point_shadows` is the only system that should write `PointLight` after spawn. A second writer in the same schedule must be `.chain()`ed with it or the shadow budget races.

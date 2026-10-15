@@ -12,4 +12,16 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+```rust
+#[derive(Component)]
+struct ScoreLine {
+    team: u8,
+    points: u32,
+}
+
+fn add_point(mut lines: Query<&mut ScoreLine>) {
+    for mut line in &mut lines {
+        line.points += 1;
+    }
+}
+```

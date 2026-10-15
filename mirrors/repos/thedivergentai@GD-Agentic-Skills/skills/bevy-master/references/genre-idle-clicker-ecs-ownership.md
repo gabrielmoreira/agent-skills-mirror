@@ -12,4 +12,21 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+The wallet is the app-wide resource. Generators stay on entities. One system writes the wallet.
+
+```rust
+#[derive(Resource)]
+struct Wallet {
+    coins: f64,
+}
+
+#[derive(Component)]
+struct Generator {
+    owned: u32,
+}
+
+fn boot(mut commands: Commands) {
+    commands.insert_resource(Wallet { coins: 0.0 });
+    commands.spawn(Generator { owned: 1 });
+}
+```

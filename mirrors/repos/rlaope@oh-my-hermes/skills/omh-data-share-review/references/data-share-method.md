@@ -1,6 +1,6 @@
 # Data Share Method
 
-Load this while preparing a file to leave the team. OMH prepares; the scan runs where the user or the session's tools run, and the file stays `prepared` until its scan counts are observed. Where a team or regulator rule is stricter than this page, that rule governs; say which one was used.
+Load this while preparing a file to leave the team. OMH prepares; the scan runs where the user or the session's tools run, and the file's verdict stays `not_observed` until its scan counts are observed. Where a team or regulator rule is stricter than this page, that rule governs; say which one was used.
 
 ## 1. Field classes
 

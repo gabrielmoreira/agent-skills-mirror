@@ -1,6 +1,6 @@
 ---
 name: bevy-particles
-description: "Bevy ECS skill for particle effects. Keywords: Bevy, particles, VFX, ECS."
+description: "Bevy ECS skill for particle effects. Use when spawning a one-shot burst or a trail of sprite motes with life and velocity. Keywords: Bevy, particles, burst, trail, Sprite, ECS."
 ---
 
 # Bevy particles
@@ -11,23 +11,168 @@ Load this before adding a burst, trail, or GPU particle effect. Particle effects
 
 ## ECS shape
 
-- **Components** would own emitter settings once a particle type exists. None was on the crate index.
-- **Resources:** none named for particles.
-- **Systems:** none named.
-- **Schedule:** a future emitter would run on `Update` or a fixed step. That is a placement note, not an API.
+- **Components** own each mote (`Particle`) and each emitter (`Emitter`). A `Sprite` is the visible quad.
+- **Resources:** none. Burst origin and rate live on the emitter entity.
+- **Systems:** one system spawns motes, one integrates them and despawns the dead.
+- **Schedule:** both run on `FixedUpdate`, chained so a mote spawned this step is integrated next step.
 
 ## Coming from Godot
 
 | Godot idea | Bevy idiom |
 | --- | --- |
-| CPU particles | Unverified. No particle module in the 0.20.0 module list. |
-| GPU particles | GPU particles are yours to build in ECS, same as CPU bursts. |
-| One-shot burst | Your own timer component until a particle page is opened. |
+| CPU particles | Entities with `Particle`, `Sprite`, and `Transform` |
+| GPU particles | The same entities, drawn by the sprite pipeline |
+| One-shot burst | Spawn a fixed count, then despawn when `life` hits zero |
 
 ## Scope
 
-- The `bevy` 0.20.0 module and feature lists have no particle feature and no particle module.
-- No third-party particle crate was selected from the assets page.
+Bevy ships no particle module. A burst is a spawn loop over `Sprite` entities. A trail is an emitter component that spends a rate accumulator.
+
+## Examples
+
+```toml
+[package]
+name = "particles"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.20"
+rand = "0.9"
+```
+
+A one-shot burst scatters sprites. Each mote stores velocity and remaining life.
+
+```rust
+use rand::Rng;
+
+#[derive(Component)]
+struct Particle {
+    velocity: Vec2,
+    life: f32,
+}
+
+fn burst(mut commands: Commands) {
+    let mut rng = rand::rng();
+    for _ in 0..24 {
+        let angle = rng.random_range(0.0..std::f32::consts::TAU);
+        let speed = rng.random_range(1.0..4.0);
+        commands.spawn((
+            Particle {
+                velocity: Vec2::new(angle.cos(), angle.sin()) * speed,
+                life: rng.random_range(0.3..0.8),
+            },
+            Sprite {
+                color: Color::srgba(1.0, 0.45, 0.1, 1.0),
+                custom_size: Some(Vec2::splat(6.0)),
+                ..default()
+            },
+            Transform::from_xyz(0.0, 0.0, 0.0),
+        ));
+    }
+}
+```
+
+Integration writes `Transform` and despawns when life expires. Gravity is a constant acceleration on Y.
+
+```rust
+#[derive(Component)]
+struct Particle {
+    velocity: Vec2,
+    life: f32,
+}
+
+fn simulate(
+    time: Res<Time<Fixed>>,
+    mut commands: Commands,
+    mut motes: Query<(Entity, &mut Transform, &mut Particle, &mut Sprite)>,
+) {
+    let dt = time.delta_secs();
+    for (entity, mut transform, mut particle, mut sprite) in &mut motes {
+        particle.life -= dt;
+        if particle.life <= 0.0 {
+            commands.entity(entity).despawn();
+            continue;
+        }
+        particle.velocity.y -= 6.0 * dt;
+        transform.translation.x += particle.velocity.x * dt;
+        transform.translation.y += particle.velocity.y * dt;
+        sprite.color.set_alpha(particle.life.clamp(0.0, 1.0));
+    }
+}
+```
+
+An emitter on a moving entity spends `accumulator` and spawns motes at its translation. That is a trail.
+
+```rust
+use rand::Rng;
+
+#[derive(Component)]
+struct Emitter {
+    rate: f32,
+    accumulator: f32,
+}
+
+#[derive(Component)]
+struct Particle {
+    velocity: Vec2,
+    life: f32,
+}
+
+fn emit(
+    time: Res<Time<Fixed>>,
+    mut commands: Commands,
+    mut emitters: Query<(&Transform, &mut Emitter)>,
+) {
+    let dt = time.delta_secs();
+    let mut rng = rand::rng();
+    for (transform, mut emitter) in &mut emitters {
+        emitter.accumulator += emitter.rate * dt;
+        while emitter.accumulator >= 1.0 {
+            emitter.accumulator -= 1.0;
+            commands.spawn((
+                Particle {
+                    velocity: Vec2::new(rng.random_range(-0.4..0.4), rng.random_range(0.2..1.0)),
+                    life: 0.6,
+                },
+                Sprite {
+                    color: Color::srgba(0.7, 0.7, 0.7, 0.8),
+                    custom_size: Some(Vec2::splat(4.0)),
+                    ..default()
+                },
+                Transform::from_translation(transform.translation),
+            ));
+        }
+    }
+}
+
+fn simulate(
+    time: Res<Time<Fixed>>,
+    mut commands: Commands,
+    mut motes: Query<(Entity, &mut Transform, &mut Particle, &mut Sprite)>,
+) {
+    let dt = time.delta_secs();
+    for (entity, mut transform, mut particle, mut sprite) in &mut motes {
+        particle.life -= dt;
+        if particle.life <= 0.0 {
+            commands.entity(entity).despawn();
+            continue;
+        }
+        particle.velocity.y -= 6.0 * dt;
+        transform.translation.x += particle.velocity.x * dt;
+        transform.translation.y += particle.velocity.y * dt;
+        sprite.color.set_alpha(particle.life.clamp(0.0, 1.0));
+    }
+}
+
+pub struct ParticlePlugin;
+
+impl Plugin for ParticlePlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(FixedUpdate, (emit, simulate).chain());
+    }
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -74,11 +219,9 @@ Load [references/ecs-ownership.md](particles-ecs-ownership.md) for the ownership
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
+- `bevy crate` - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
@@ -87,15 +230,15 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
 
 #### Complements
-- [bevy-shaders](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-shaders/SKILL.md) - Materials are not a particle system.
-- [godot-particles](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-particles/SKILL.md) - Equivalent Godot skill.
+- [bevy-shaders](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-shaders/SKILL.md) - Materials are not a particle system.
+- [godot-particles](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-particles/SKILL.md) - Equivalent Godot skill.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

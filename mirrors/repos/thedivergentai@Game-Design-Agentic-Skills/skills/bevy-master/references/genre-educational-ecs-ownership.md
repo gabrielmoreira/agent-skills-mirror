@@ -12,4 +12,4 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+`pick_first` and `grade` both write `Choice`, so they share one `.chain()`. `graded` stops the same choice from incrementing `LessonProgress` on later frames. `show_score` only takes `Res<LessonProgress>` and stays off that chain. Do not invent crates or types.

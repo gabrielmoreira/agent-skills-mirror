@@ -20,7 +20,7 @@ renders artifact content itself.
 | [`types.rs`](./types.rs) | `ArtifactKind` (presentation/document/image/other), `ArtifactStatus` (pending/ready/failed), `ArtifactMeta`. Enums serialize lowercase; `parse` is case-insensitive and never errors (unknown kind → `Other`, unknown status → `Pending`). `ArtifactMeta.error` and `.thread_id` are optional, `skip_serializing_if` none. |
 | [`files.rs`](./files.rs) | Where the bytes live: `reserve_file` (claims `<stem>.<ext>`, then `<stem> (2).<ext>`, with `create_new` in the shared files folder), `resolve_file` + the escape guard, `resolve_ready_file` (`pub`: the one id → existing-file lookup for readers and the desktop Download command), `remove_empty_placeholder`, the "file missing" error. |
 | [`migrate.rs`](./migrate.rs) | `migrate_legacy_artifacts`: the idempotent, crash-safe boot move of pre-#5505 files into the files folder (copy to `.<id>.partial` → claim a name and rename → atomic meta write → delete legacy bytes). Run per account from `config::ensure_agent_dirs`. |
-| [`store.rs`](./store.rs) | All filesystem I/O over `tokio::fs`: `artifacts_root`, `create_artifact`, `finalize_artifact`, `fail_artifact`, `read_artifact_bytes` (`pub`); `save_artifact_meta`, `save_artifact_args`, `read_artifact_args`, `list_artifacts`, `get_artifact`, `delete_artifact` (`pub(crate)`); `validate_artifact_id` / `assert_within_root` sandboxing; the `REGENERATE_TARGET_ID` task-local; `sanitize_filename_stem`. |
+| [`store.rs`](./store.rs) | All filesystem I/O over `tokio::fs`: `artifacts_root`, `create_artifact`, `finalize_artifact`, `fail_artifact`, `read_artifact_bytes` (`pub`); `save_artifact_meta`, `save_artifact_args`, `read_artifact_args`, `list_artifacts`, `get_artifact`, `delete_artifact` (`pub(crate)`); `validate_artifact_id` / `assert_within_root` sandboxing; `create_artifact_regenerating` (explicit regenerate target); `sanitize_filename_stem`. |
 | [`ops.rs`](./ops.rs) | RPC business logic returning `Outcome<Value>`: `ai_list_artifacts`, `ai_get_artifact`, `ai_delete_artifact`, `ai_regenerate`. `DEFAULT_LIMIT = 50`, `MAX_LIMIT = 200`. The regenerate path that re-runs `PresentationTool` is `#[cfg(feature = "documents")]`; without the feature `ai_regenerate` returns an error. |
 | [`schemas.rs`](./schemas.rs) | `ControllerSchema`s and `handle_*` fns for the four `ai.*` controllers; param helpers `read_required`, `read_optional_u64`, `read_optional_string` (whitespace-only → absent), `type_name`. |
 | [`tools.rs`](./tools.rs) | `ArtifactListTool`, `ArtifactGetTool`, `ArtifactDeleteTool`: shims over `ops` that unwrap the `Outcome` and return `outcome.value` as the `ToolResult` string. |
@@ -30,7 +30,7 @@ renders artifact content itself.
 
 - `ArtifactKind`, `ArtifactMeta`, `ArtifactStatus`.
 - Producer API, `pub` and re-exported from `mod.rs`:
-  - `create_artifact(workspace_dir, kind, title, extension) -> (ArtifactMeta, PathBuf)`: mints a UUID (or reuses `REGENERATE_TARGET_ID`), creates `<root>/<id>/`, writes a `Pending` `meta.json`, publishes `ArtifactPending`, and returns the absolute path the producer should write to (`<id>/<sanitized-title>.<ext>`).
+  - `create_artifact(workspace_dir, kind, title, extension) -> (ArtifactMeta, PathBuf)`: mints a UUID (`create_artifact_regenerating` reuses an explicit regenerate target), creates `<root>/<id>/`, writes a `Pending` `meta.json`, publishes `ArtifactPending`, and returns the absolute path the producer should write to (`<id>/<sanitized-title>.<ext>`).
   - `finalize_artifact(workspace_dir, id, size_bytes)`: `Pending → Ready`, publishes `ArtifactReady`; no-op if already `Ready` with the same size.
   - `fail_artifact(workspace_dir, id, reason)`: `→ Failed`, stores `meta.error`, publishes `ArtifactFailed`. Logs only `reason.len()`, not the reason.
   - `read_artifact_bytes(workspace_dir, id)`: the one sanctioned id → bytes path; refuses non-`Ready` records.
@@ -53,8 +53,8 @@ and trim string params.
 | `ai.regenerate` | `artifact_id`, `thread_id`, `client_id` (all required) | `{ artifact_id, regenerated: true, is_error }` |
 
 `ai.regenerate` only accepts `kind == presentation`, reloads `args.json`,
-and re-runs `PresentationTool` inside `REGENERATE_TARGET_ID.scope(id, ..)`
-and `APPROVAL_CHAT_CONTEXT.scope({thread_id, client_id}, ..)` so the same id
+and re-runs `PresentationTool::with_regenerate_target(id)` with the
+`{thread_id, client_id}` chat context passed to the tool, so the same id
 is reused and the Pending/Ready/Failed events route back to the originating
 chat. The RPC result is an ack; the card state comes from the socket events.
 When `thread_id` is given to `list_artifacts`, legacy records with no
@@ -82,8 +82,8 @@ subscribes to nothing):
 - `DomainEvent::ArtifactReady`: from `finalize_artifact` on a real transition.
 - `DomainEvent::ArtifactFailed`: from `fail_artifact`.
 
-All three carry `thread_id` / `client_id` read from the
-`security::approval::APPROVAL_CHAT_CONTEXT` task-local; outside a chat turn
+All three carry `thread_id` / `client_id` taken from the
+`ApprovalChatContext` the producing tool receives with its run context; outside a chat turn
 (CLI, cron, sub-agents) both are `None` and the
 `web_chat::artifact_surface` subscriber ([`web_chat/event_bus.rs`](../../web_chat/event_bus.rs)) drops the
 event.

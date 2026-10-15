@@ -20,6 +20,17 @@ Inspect native SAZ or HAR 1.2 offline with REA, or connect Everywhere's separate
 - `observe_web_session` / `rea observe-web-session` arms an observation window of the requested duration for an external user action and records ordered reload, SPA navigation, redirect, failure, lifecycle, and target-termination metadata.
 - `discover_webmcp_tools` / `rea discover-webmcp-tools` uses the experimental CDP WebMCP domain to return every in-scope registration and its complete observed `input_schema` declaration and canonical `input_schema_sha256` digest inline. Declarations are untrusted JSON data, including declared types, required fields, enums, examples and reference URLs. REA does not resolve schema references. These fields replace `input_schema_shape`. Registrations with the same name and URL in distinct observed frames retain separate identities. `tool_key` includes the observed frame ID; it is not a stable identity across navigation or browser sessions. Same-frame registration updates replace that owner only, and removal leaves other owners intact. Declared `readOnly`, `untrustedContent`, `consequential`, and `autosubmit` annotation hints are reported per registration: `true`/`false` are declared values, `null` means the declaration did not provide the hint in that capture, and a missing `consequential` key means the hint was not recorded, either in a historical capture or because the observed annotation was invalid. Consult discovery completeness and exclusions to distinguish these cases. Malformed annotation values retain the registration with incomplete coverage and an `invalid_protocol_value` exclusion. Other malformed protocol payloads can fail discovery explicitly. REA never exposes `WebMCP.invokeTool`.
 - `compare_web_captures` / `rea compare-web-captures` compares passive captures or exact-step-aligned browser scenarios. Scenario results commit reproducible literal normalization and expose alignment failures plus artifact-level action, screenshot, DOM, accessibility, URL, history, storage, and event differences. Missing or truncated evidence is never treated as equivalence.
+
+Passive DOM comparison checks complete node inventories and complete frame
+parent/child structure independently. Frame IDs and sibling enumeration order
+are capture-local and do not establish a change; duplicate IDs, missing parents,
+and cyclic ancestry remain unknown. A complete frame difference can still prove
+change when DOM nodes are incomplete, and vice versa. Partial DOM or metadata
+collection digests do not prove modification: a missing node or link can result
+from a protocol omission. Rejected DOM facts also mark derived URL and agent-hint
+metadata incomplete, while valid facts from other nodes and documents remain
+available in the capture.
+
 - `capture_web_screenshot` / `rea capture-web-screenshot` returns a content-addressed visible-viewport PNG.
 - `compare_web_screenshots` / `rea compare-web-screenshots` performs bounded local PNG pixel comparison without OCR or external services.
 - The CLI comparison commands accept each capture, screenshot artifact or normalization policy as inline JSON or a JSON file path. Use files for screenshot artifacts and scenario captures, whose embedded PNG bytes can exceed the host's command-line length limit.
@@ -270,6 +281,32 @@ REA retains local observation data and removes only URL userinfo credentials, ex
 - Accessibility structure and roles are retained by default, while names and descriptions require `include_accessibility_text: true`.
 - Network observations retain method, status, MIME type, size, type, initiator stack location, and complete URLs with userinfo credentials removed. Redirects reported by CDP are attached as ordered `redirects` on the one request ID, with the prior request URL, CDP response URL, method/type, response status/MIME/encoded length, request timestamp, and the next `requestWillBeSent` event timestamp. CDP delivers `redirectResponse` with that next request event, so the latter is an event boundary rather than an exact response timestamp. Redirect response headers and bodies are discarded; hops outside the selected origins are discarded with the request chain. Headers are discarded after an allowlisted projection of length/encoding, structured CSP/Link/policy fields, and untrusted agent hints. Cookies and authorization headers are never retained.
 - Request/response bodies are not requested or parsed by default. When selected, only allowed-origin JSON media types are read, converted immediately to complete value-free typed paths, types and observation counts, and discarded. Each path segment is either `{ "kind": "property", "name": "raw property name" }` or `{ "kind": "array-element" }`; array-element types include primitives and nested arrays. Literal `*` properties remain distinct from array elements. `Network.getResponseBody` is never sent unless JSON body shape capture is selected. Comparison uses body shapes only when both captures selected them, and compares request/response shapes only where both observations provide those facts. Unavailable or truncated selected coverage makes equivalence unknown; observed differences still report changed.
+  For normalized passive inputs with complete request inventories on both sides,
+  request additions and removals remain observable even when selected body shapes,
+  response metadata, or WebSocket coverage are unavailable. HTTP request and
+  WebSocket inventory coverage are evaluated separately; complete HTTP coverage
+  cannot prove a missing WebSocket connection. Limited request inventory still
+  prevents request-absence claims. This comparison rule does not make live CDP's
+  attach-limited inventory complete or establish body-shape equality.
+  An unavailable HTTP resource type also leaves request identity incomplete:
+  observations with the same method and URL remain possible matches across types,
+  and identical unknown types cannot establish complete equality. Ambiguous type
+  groups cannot prove membership or content changes either: a missing type may
+  redistribute repeated requests between buckets without changing the requests.
+  Their comparison remains unknown, while independently identified groups retain
+  proven changes. Different methods/URLs and complete empty peer inventories still
+  support absence claims.
+  Relevant dropped-event counts also limit inventory completeness even when no
+  section is listed as truncated: HTTP uses `network_requests`, while WebSocket
+  uses `websocket_connections` and `websocket_frames`. Drops in other event kinds
+  and the aggregate total do not by themselves limit HTTP inventory. Proven
+  modifications remain reportable despite incomplete inventory.
+  Repeated identical HTTP content samples establish multiplicity changes only
+  with complete request inventories; limited inventories retain known content
+  comparisons without interpreting duplicate sample counts as changes.
+  WebSocket stream inventories and connection counts likewise require complete
+  WebSocket coverage. Redirect resource types use only shared known metadata:
+  an omitted type leaves equality unknown rather than proving a modification.
 - Console observations with a stack source retain call type, argument types, timestamp, and source location. When console text capture is selected, already-delivered primitive values are retained verbatim; objects, getters, and remote properties are never expanded.
 - WebSocket observations retain direction, opcode, and payload byte length. When shape capture is selected, text frames are classified as text or complete value-free JSON shape; binary bytes, hashes, prefixes, and raw frames are never retained.
 - Storage observations always redact values. Key names, IndexedDB names, and cache names require `include_storage_keys`; stable content fingerprints require the additional `include_storage_fingerprints` selection. Cookie fingerprints cover cookies applicable to the current main-frame URL, including its path, rather than every cookie path on that origin. Other storage remains scoped to the origin. Cache bodies above 64 KiB and partial IndexedDB remote objects make fingerprint coverage incomplete, so identical observations remain `unknown`.
@@ -293,6 +330,18 @@ coverage. It reports excluded items and any values omitted or truncated by
 validation and resource bounds. Omitted script metadata makes its affected
 section explicitly truncated.
 Disallowed-origin entries are filtered before retention.
+
+Resource-tree inventories distinguish a valid empty `resources` array from a
+missing or malformed collection. Invalid resource entries are omitted with
+incomplete coverage, while valid resources from that frame and other frames
+remain available. Comparing an incomplete resource inventory cannot prove
+addition, removal, or equality; a complete empty inventory can prove removal.
+Resource records require a nonempty type and a string MIME type; absent or
+malformed required fields are recorded as omissions instead of invented defaults.
+An explicitly empty MIME type is valid. The optional content size may be absent;
+an invalid supplied size remains unknown with incomplete resource coverage while
+the resource's other facts are retained. Zero and nonnegative fractional sizes
+are preserved.
 
 CDP discovery, connection, and commands wait for the peer or caller cancellation;
 a stalled peer can leave an operation waiting. WebSocket messages remain subject

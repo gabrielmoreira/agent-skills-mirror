@@ -20,6 +20,11 @@ requires an absolute filesystem path and preserves that exact selection:
 }
 ```
 
+On POSIX hosts, the CLI preserves path components so symlinks are followed
+before parent (`..`) steps. Bundle selections may end in `.` or parent steps
+through real directories; a terminal parent step through a directory symlink
+is rejected. Windows CLI paths retain native drive and separator resolution.
+
 Check this before `observe_javascript_runtime` with `electron-main`. When
 `EnableNodeCliInspectArguments` is disabled or removed, Electron ignores
 Inspector flags, and a later target listing can simply show no main-process

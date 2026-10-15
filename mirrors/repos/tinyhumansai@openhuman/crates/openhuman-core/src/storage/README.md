@@ -2,7 +2,7 @@
 
 The process's storage backend on the
 [tinystoragedrivers](https://github.com/tinyhumansai/tinystoragedrivers)
-ports, vendored through `vendor/tinyagents/vendor/tinystoragedrivers`.
+ports, taken by git tag (`v0.11.0`) by the host and by every module, so the build holds one copy.
 
 One URL picks it: `OPENHUMAN_STORAGE_URL`, else `[storage] url` in
 `config.toml` (`config::StorageConfig`), else the default,
@@ -74,8 +74,12 @@ record deleted afterwards is not resurrected from the untouched legacy file.
   clustered node's leases need. Memory and file drivers coordinate only
   within one process.
 - `blob_sweep`: reclaims expired blobs (`StorageBackend::sweep_expired_blobs`)
-  for `local` and each known agent scope every hour, spawned with the cron
-  service (`core::runtime::services`). SaaS profile scopes are not swept yet.
+  for `local`, each known agent scope and each provisioned SaaS profile
+  (`profile:<id>` plus the blob-owning modules' scopes for it) every hour,
+  spawned with the cron `ServiceSet` switch (`core::runtime::services`; not
+  gated on `[cron] enabled`, since it reclaims storage rather than running
+  jobs). Each scope's sweep is bounded by `SCOPE_SWEEP_TIMEOUT`; a timeout
+  counts as a failed sweep and is retried on the next tick.
 - `fence` / `fenced_backend`: lease-epoch write fencing (see
   [Write fencing](#write-fencing)).
 - `scope_for_profile(profile_id)`: the scope a SaaS profile's records live

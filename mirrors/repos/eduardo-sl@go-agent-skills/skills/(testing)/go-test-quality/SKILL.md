@@ -18,7 +18,7 @@ compatibility: Designed for Claude Code or similar AI coding agents working on G
 allowed-tools: Read Edit Write Glob Grep Bash(go:*) Bash(gofmt:*)
 metadata:
   author: eduardo-sl
-  version: "1.4.1"
+  version: "1.5.1"
 ---
 
 # Go Test Quality
@@ -27,12 +27,17 @@ Tests are production code. They run in CI on every commit, they document behavio
 and they're the first thing you read when a function breaks at 3am.
 Write them with the same care you'd give to code that handles money.
 
+> Community default. A project skill or agent-config rule that explicitly
+> supersedes `go-test-quality` takes precedence over this one.
+
 Detailed reference material, loaded on demand:
 
 - `references/helpers-and-fixtures.md` — test helpers, factory functions
   with options, `t.Cleanup`, golden files, mock implementations.
 - `references/integration-testing.md` — httptest recorder and server,
   testcontainers, build tags, `TestMain`, fuzz testing.
+- `references/concurrency-and-benchmarks.md` — `synctest`, `goleak`,
+  `t.Context()`, `b.Loop()` benchmarks, `t.Attr` and artifacts.
 
 Read a reference file only when the summary below is not enough.
 
@@ -77,6 +82,15 @@ func TestParseConfig_ReturnsErrorOnMissingRequiredField(t *testing.T) { ... }
 func TestCancel(t *testing.T) { ... }
 func TestRateLimiter_Success(t *testing.T) { ... }
 ```
+
+### Layout
+
+- One `_test.go` per source file (`parser.go` → `parser_test.go`), tests
+  in the order of the functions they cover — tools and reviewers navigate
+  by file.
+- Public-API tests live in the `pkg_test` package so they can only use
+  what callers can; white-box tests stay in `pkg`.
+- Integration tests sit behind `//go:build integration`.
 
 ## 2. Subtests for Organized Scenarios
 
@@ -142,118 +156,60 @@ func TestSlugify(t *testing.T) {
 ```
 
 Do NOT use `t.Parallel()` when tests share mutable state, databases,
-files, or process-level state (`os.Setenv`).
+files, or process-level state — `t.Setenv` and `t.Chdir` panic in a
+parallel test for exactly that reason.
 
 ```bash
-go test -race -coverprofile=coverage.out ./...
-go tool cover -func=coverage.out
+go test -race -coverprofile=coverage.out -coverpkg=./... ./...
+go tool cover -html=coverage.out   # read the red lines, not the percentage
 ```
 
-**Targets:** business logic 80%+, critical paths (auth, payments) 95%+,
-handlers 70%+. Don't chase 100% on generated code and simple getters.
+Coverage finds untested code; it does not measure whether the assertions
+are any good. Use it to locate gaps, and let CI enforce a floor that only
+ratchets up (the go-ci skill owns the gate). Without `-coverpkg`, a
+package exercised only by another package's tests reports 0%.
 
 ## 7. Testing Concurrent Code
 
-Never synchronize a test with `time.Sleep`. It is slow when it works and
-flaky when it does not.
-
-`testing/synctest` (Go 1.25+) runs a test inside a bubble with a fake clock.
-Time advances instantly whenever every goroutine in the bubble is blocked, so
-a one-hour timeout test finishes in microseconds and is deterministic.
-
-```go
-import "testing/synctest"
-
-func TestCacheExpiry(t *testing.T) {
-    synctest.Test(t, func(t *testing.T) {
-        c := NewCache(time.Hour)
-        c.Set("k", "v")
-
-        time.Sleep(59 * time.Minute) // instant: fake clock
-        if _, ok := c.Get("k"); !ok {
-            t.Fatal("entry expired early")
-        }
-
-        time.Sleep(2 * time.Minute)
-        if _, ok := c.Get("k"); ok {
-            t.Fatal("entry outlived its TTL")
-        }
-    })
-}
-```
-
-`synctest.Wait()` blocks until every other goroutine in the bubble is durably
-blocked — use it instead of sleeping to let a background goroutine reach a
-known point.
-
-On Go 1.24 the package is behind `GOEXPERIMENT=synctest` and the entry point
-is `synctest.Run`. Below 1.24, poll with a deadline instead of sleeping.
-
-### Detect goroutine leaks in tests
-
-A test that leaks a goroutine passes locally and destabilises the suite.
-
-```go
-import "go.uber.org/goleak"
-
-// Whole package, in TestMain:
-func TestMain(m *testing.M) { goleak.VerifyTestMain(m) }
-
-// Or per test:
-func TestWorker(t *testing.T) {
-    defer goleak.VerifyNone(t)
-    // ... every goroutine started here must exit before the test returns
-}
-```
-
-Add it to any package that starts goroutines. `go test -race` finds data
-races; it does not find a goroutine that never exits.
+- Never synchronise a test with `time.Sleep` — it is slow when it works and
+  flaky when it does not.
+- Go 1.25+: run time-dependent code inside `synctest.Test`. The bubble's
+  fake clock advances instantly once every goroutine is blocked, and
+  `synctest.Wait()` replaces "sleep until the background goroutine gets
+  there". On Go 1.24 the API is `synctest.Run` behind
+  `GOEXPERIMENT=synctest`. Go 1.27 adds `synctest.Sleep(d)` (advance and
+  settle in one call) and `httptest.NewTestServer(t, h)`, an in-memory
+  server that works inside the bubble and closes itself.
+- Any package that starts goroutines verifies none leak:
+  `goleak.VerifyTestMain(m)` in `TestMain`, or `defer goleak.VerifyNone(t)`.
+  `-race` finds data races; it does not find a goroutine that never exits.
 
 ## 8. Test Context, Benchmarks, and Artifacts
 
-Use `t.Context()` (Go 1.24+) instead of `context.Background()`. It is
-cancelled before `t.Cleanup` functions run, so anything blocking on it
-unwinds when the test ends — including on timeout or failure.
+- `t.Context()` (Go 1.24+) instead of `context.Background()` — it is
+  cancelled before `t.Cleanup` runs, so blocked work unwinds when the test
+  ends.
+- Benchmarks use `for b.Loop()` (Go 1.24+): setup runs once, results stay
+  alive without a sink. Add `b.ReportAllocs()` and compare runs with
+  `benchstat`.
+- `t.Attr` (Go 1.25+) emits key/value pairs CI can parse;
+  `t.ArtifactDir()` with `go test -artifacts` (Go 1.26+) keeps failing
+  golden output or captured bodies outside the repository.
 
-```go
-func TestFetch(t *testing.T) {
-    ctx := t.Context()
-    got, err := client.Fetch(ctx, "id-1") // cancelled automatically at test end
-    // ...
-}
-```
+Examples for both sections: `references/concurrency-and-benchmarks.md`.
 
-Write benchmarks with `for b.Loop()` (Go 1.24+), not `for range b.N`. It runs
-setup exactly once, keeps arguments and results alive without a sink
-variable, and cannot be optimised away.
+## 9. Assertion Library Traps
 
-```go
-// ✅ Go 1.24+
-func BenchmarkEncode(b *testing.B) {
-    in := makeInput()
-    for b.Loop() {
-        Encode(in)
-    }
-}
-
-// ❌ Pre-1.24 form — needs a package-level sink to defeat dead-code elimination
-func BenchmarkEncode(b *testing.B) {
-    in := makeInput()
-    for range b.N {
-        sink = Encode(in)
-    }
-}
-```
-
-Report allocations with `b.ReportAllocs()` and compare runs with `benchstat`.
-
-Two newer reporting hooks, when the toolchain supports them:
-
-- `t.Attr("build", sha)` (Go 1.25+) emits a key/value pair into the test log
-  for CI to parse.
-- `t.ArtifactDir()` with `go test -artifacts` (Go 1.26+) gives the test a
-  directory that survives the run — write failing golden output, captured
-  HTTP bodies, or profiles there instead of into the repository.
+- **Build `assert.New(t)` / `require.New(t)` inside each `t.Run`.** An
+  instance created from the parent `t` reports a subtest's failure against
+  the parent, and the failing subtest itself prints `PASS`.
+- **`require`, `t.Fatal` and `t.FailNow` only on the test goroutine.**
+  From a spawned goroutine they cannot stop the test. Send results back on
+  a channel and assert after receiving. `go vet`'s `testinggoroutine` and
+  golangci-lint's `testifylint` catch most cases.
+- **`require` for preconditions, `assert` for independent checks** — a
+  failed precondition should stop the test before it nil-panics.
+- **`assert.Eventually` hides timing bugs** in polling; prefer `synctest`.
 
 ## Anti-Patterns
 
@@ -265,10 +221,10 @@ Two newer reporting hooks, when the toolchain supports them:
 - 🟡 Reaching into private fields — test through the public API
 - 🟡 No edge cases: empty, nil, zero, max values, unicode
 - 🟡 Giant shared setup — each test should set up only what it needs
-- 🟢 Fuzz anything that takes untrusted input
-- 🟢 Golden files for complex output comparisons
 - 🟡 `context.Background()` in a test — use `t.Context()`
 - 🟡 `for range b.N` on Go 1.24+ — use `for b.Loop()`
+- 🟢 Fuzz anything that takes untrusted input
+- 🟢 Golden files for complex output comparisons
 
 ## Verification Checklist
 
@@ -282,6 +238,7 @@ Two newer reporting hooks, when the toolchain supports them:
 8. No `time.Sleep` for synchronization anywhere in the suite
 9. Packages that start goroutines verify with `goleak`
 10. Benchmarks use `for b.Loop()` and call `b.ReportAllocs()`
-8. Edge cases covered: empty, nil, zero, boundary values
-9. `go test -race ./...` passes
-10. Coverage is meaningful, not just high numbers
+11. Edge cases covered: empty, nil, zero, boundary values
+12. `go test -race ./...` passes
+13. Coverage is used to find gaps; CI enforces a ratcheting floor, not a target
+14. testify instances are built per subtest; no `require` off the test goroutine

@@ -87,6 +87,12 @@ malformed, unavailable, cancellation, and partial outcomes through affected
 consumers. Real-engine claims require the matching provider lane; see
 [testing.md](testing.md).
 
+For fixed tuples in public contracts, use `src/domain/fixedTupleSchema.ts`:
+Zod's tuple projection omits implicit length bounds and Draft 2020-12 `items`,
+which some clients require even alongside `prefixItems`. Tuples with a rest
+schema also need explicit minimum lengths. Check parser/schema parity for empty,
+short, overlong, and malformed values in both input and output projections.
+
 When discoverability changes, evaluate representative broad, direct, and negative
 tasks on the intended host. Record host/model/catalog, selected tools, arguments,
 errors, retries, and task outcomes. Schema validity and keyword heuristics do not

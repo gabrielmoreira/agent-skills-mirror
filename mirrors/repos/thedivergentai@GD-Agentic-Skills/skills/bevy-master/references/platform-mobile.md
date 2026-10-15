@@ -7,27 +7,121 @@ description: "Bevy ECS skill for mobile. Keywords: Bevy, mobile, android, touch,
 
 ## When to use
 
-Load this when targeting touch devices. Check the platform docs for safe-area and store-listing steps before writing them. XR is a separate topic.
+Load this when targeting touch devices. Store listings and OS permission dialogs stay outside the crate. XR is a separate topic.
 
 ## ECS shape
 
-- **Input features:** `touch` (enabled by bevy_window) and `gestures` (enabled by bevy_window).
-- **Android:** `android-game-activity` is the default Android activity. `android-native-activity` is marked legacy.
-- **Textures:** `compressed_image_saver` mentions ASTC for mobile via an environment variable. Check that feature's docs for the variable's behavior beyond that blurb.
-- **Log:** `bevy::log` says it configures platform log handlers including Android. Check that page for handler setup before writing it.
+- **Input:** `Touches` holds active contacts. `PinchGesture` is a message for two-finger pinch on iOS and macOS.
+- **Android:** enable the `android-game-activity` feature. `android-native-activity` is the legacy activity.
+- **Power:** `WinitSettings::mobile()` waits on input while focused and drops to a one-second wait when unfocused.
+- **iOS edges:** `Window::preferred_screen_edges_deferring_system_gestures` takes a `ScreenEdge`.
+- **Textures:** ASTC shows up as `TextureFormat::Astc` on an `Image` descriptor after the asset loads.
 
-## Coming from Godot
+## Examples
 
-| Godot idea | Bevy idiom |
+```toml
+[dependencies]
+bevy = { version = "0.20", features = ["android-game-activity"] }
+```
+
+Mobile update mode sleeps the loop when the window is backgrounded.
+
+```rust
+use bevy::winit::WinitSettings;
+
+fn main() {
+    App::new()
+        .insert_resource(WinitSettings::mobile())
+        .add_plugins(DefaultPlugins)
+        .run();
+}
+```
+
+A stick zone turns the first contact into a unit axis. Keyboard and mouse stay on bevy-input-handling.
+
+```rust
+#[derive(Component, Default)]
+struct MoveIntent {
+    axis: Vec2,
+}
+
+#[derive(Resource)]
+struct StickZone {
+    center: Vec2,
+    radius: f32,
+}
+
+fn read_stick(touches: Res<Touches>, zone: Res<StickZone>, mut intents: Query<&mut MoveIntent>) {
+    let Some(touch) = touches.iter().next() else {
+        return;
+    };
+    let offset = touch.position() - zone.center;
+    let length = offset.length();
+    let axis = if length <= zone.radius && length > 0.0 {
+        offset / zone.radius
+    } else if length > zone.radius {
+        offset / length
+    } else {
+        Vec2::ZERO
+    };
+    for mut intent in &mut intents {
+        intent.axis = axis;
+    }
+}
+```
+
+Pinch messages adjust a zoom resource. Registering messages is the engine's job for built-in gesture types.
+
+```rust
+use bevy::input::gestures::PinchGesture;
+
+#[derive(Resource)]
+struct CameraZoom(f32);
+
+fn apply_pinch(mut pinches: MessageReader<PinchGesture>, mut zoom: ResMut<CameraZoom>) {
+    for pinch in pinches.read() {
+        zoom.0 = (zoom.0 + pinch.0).clamp(0.25, 4.0);
+    }
+}
+```
+
+Defer system gestures on every screen edge, and count ASTC images already in the asset store.
+
+```rust
+use bevy::render::render_resource::TextureFormat;
+use bevy::window::PrimaryWindow;
+use bevy::window::ScreenEdge;
+
+fn defer_system_gestures(mut windows: Query<&mut Window, With<PrimaryWindow>>) {
+    let Ok(mut window) = windows.single_mut() else {
+        return;
+    };
+    window.preferred_screen_edges_deferring_system_gestures = ScreenEdge::All;
+}
+
+#[derive(Resource, Default)]
+struct AstcCount(usize);
+
+fn count_astc(images: Res<Assets<Image>>, mut count: ResMut<AstcCount>) {
+    count.0 = images
+        .iter()
+        .filter(|(_, image)| matches!(image.texture_descriptor.format, TextureFormat::Astc { .. }))
+        .count();
+}
+```
+
+## Same job, Bevy types
+
+| Design | Bevy idiom |
 | --- | --- |
-| Touch | The touch feature. Check the input docs for button mapping before writing it. See bevy-input-handling for keyboard and mouse. |
-| Android activity | android-game-activity feature. |
-| Safe area | Unverified. No safe-area type was on the window page summary. |
+| Touch | `Touches` on `Update` |
+| Android activity | `android-game-activity` Cargo feature |
+| Safe area | `ScreenEdge` on the primary `Window`, plus UI padding from bevy-adapt-desktop-to-mobile |
+| Background FPS | `WinitSettings::mobile()` |
 
 ## Scope
 
-- The feature list names `ScreenEdge` on the window page, which documents a winit iOS screen-edge correspondence. Check that page for the rules before writing them.
-- Check the platform docs for store packaging, permissions, and safe-area insets before writing them.
+Packaging, signing, and store permission prompts are outside this skill. Touch, pinch, screen edges, ASTC detection, and the mobile update mode are the systems above.
 
 ## Expert Knowledge Delta
 
@@ -51,7 +145,7 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A scene-tree script hung on the entity |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
@@ -73,31 +167,28 @@ Load [references/ecs-ownership.md](platform-mobile-ecs-ownership.md) for the own
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+Official pages stay on unversioned bevy.org URLs. The library pin on bevy-master stays **0.20.0**. `ScreenEdge` is a field on `Window`. Touch contacts stay on `Touches`; they are not a separate event struct.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
 - [Plugins](https://bevy.org/learn/quick-start/getting-started/plugins/) - `Plugin`, `DefaultPlugins`, `MinimalPlugins`, and `add_plugins`.
-- [bevy::window](https://docs.rs/bevy/latest/bevy/window/index.html) - `ScreenEdge` mentions winit iOS. Check that page before treating touch events as their own struct.
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
-- [bevy-input-handling](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Other devices.
-- [bevy-platform-desktop](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-platform-desktop/SKILL.md) - Window shell.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
+- [bevy-input-handling](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Other devices.
+- [bevy-platform-desktop](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-platform-desktop/SKILL.md) - Window shell.
 
 #### Complements
-- [bevy-adapt-desktop-to-mobile](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-adapt-desktop-to-mobile/SKILL.md) - Layout and input adapt.
-- [godot-platform-mobile](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-platform-mobile/SKILL.md) - Equivalent Godot skill.
+- [bevy-adapt-desktop-to-mobile](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-adapt-desktop-to-mobile/SKILL.md) - Layout and input adapt.
+- [godot-platform-mobile](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-platform-mobile/SKILL.md) - Equivalent Godot skill.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

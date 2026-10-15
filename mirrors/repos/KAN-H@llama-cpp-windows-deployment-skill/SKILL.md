@@ -7,7 +7,7 @@ user-invocable: true
 
 # llama.cpp Windows 多模型部署与优化集成技能
 
-> **版本**: v3.7.0 | **基准硬件**: RTX 5060 Ti 16GB + Intel U7 270K / CPU-only (48GB DDR5) | **平台**: Windows 10/11 + WSL2 | **llama.cpp 版本**: b10056 – b10713+ | **更新**: 2026-09-18（收紧公开发布边界：移除维护者本地材料与机器路径，补全可移植性与发布门禁）
+> **版本**: v3.8.0 | **基准硬件**: RTX 5060 Ti 16GB + Intel U7 270K / CPU-only (48GB DDR5) | **平台**: Windows 10/11 + WSL2 | **llama.cpp 版本**: b10056 – b10713+ | **更新**: 2026-10-14（Q6 批次入库：GSQ-RCO 调优入口 + q6-tuning 探针集；脚本载荷可移植化；补全首次部署链路）
 >
 > 📚 **references 导航**：先看 [`./references/INDEX.md`](./references/INDEX.md) —— 目录结构、每份文档的用途，以及**权威代码路径表**（历史文档中的旧路径一律以该表为准）。
 
@@ -32,6 +32,7 @@ user-invocable: true
 | 纯 CPU 推理 | "CPU工具调用", "纯CPU", "CPU-only", "不占GPU", "128K" |
 | BAT 脚本 | "脚本闪退", "乱码", "GBK", "UTF-8", "编码" |
 | Qwen3.8 部署 | "Qwen3.8", "qwen35", "reasoning_effort", "128K", "长上下文", "长会话" |
+| GSQ-RCO 非均匀量化 | "GSQ-RCO", "GSQ", "非均匀量化", "IQ3_S", "全层 GPU", "CPU 卸载断崖" |
 | VS Code 模型接入 | "VS Code", "customendpoint", "chat-completions", "ECONNREFUSED", "8084" |
 
 ## 二、Prerequisites（前置条件）
@@ -46,7 +47,7 @@ user-invocable: true
 | OS | Windows 10 64-bit | Windows 11 24H2 |
 
 ### 2.2 软件要求
-- `llama.cpp` 预编译包（`llama-b10056+-bin-win-cuda-13.3-x64.zip`，Blackwell sm_120 原生支持）
+- `llama.cpp` 预编译包（`llama-b10056+-bin-win-cuda-13.3-x64.zip`，Blackwell sm_120 原生支持）—— 获取/资产选择/解压验证见 [`./references/guides/first-time-setup.md`](./references/guides/first-time-setup.md)
 - 模型文件：GGUF 格式（标准 / QAT-UD / MTP）
 - NVIDIA 驱动正常，`nvidia-smi` 可运行（GPU 场景）
 - PowerShell + CMD（BAT 脚本兼容）
@@ -89,6 +90,18 @@ C:\models\
 | **BAT 编码** | 中文 Windows cmd 按 GBK(936) 解码 .bat。UTF-8 中文会乱码→语法错误→闪退；`chcp 65001` 与 BOM 均无法修复解析问题 |
 
 ## 四、Deployment Workflow（部署工作流）
+
+### Step 0：环境准备（仅首次部署）
+
+> **全新机器才需要**；环境已就绪直接跳到 Step 1。
+
+从零到「能出一句话」的最短路径（完整步骤、资产选择表与六类陷阱见
+[`./references/guides/first-time-setup.md`](./references/guides/first-time-setup.md)）：
+
+1. **llama.cpp**：从 <https://github.com/ggml-org/llama.cpp/releases> 取 `llama-b<BUILD>-bin-win-cuda-13.3-x64.zip`（≥ b10056；50 系必须 cuda-13.3）→ 解压进 `<llama-cpp-dir>`（CUDA 运行时 `cudart-*` 包一并解压）→ `llama-server.exe --version` 验证
+2. **模型**：HuggingFace / ModelScope 下载 GGUF → 落位 `<models-dir>\<模型目录>\`（分片下载要全）
+3. **自检**：`.\scripts\detect.ps1 -llamaDir "<llama-cpp-dir>" -modelsDir "<models-dir>"`
+4. **冒烟**：小 ctx 启动 + `/health` = ok + 一次 chat 请求出字 —— 通过后再进入下面正式步骤
 
 ### Step 1：环境校验与版本指纹
 
@@ -326,6 +339,20 @@ pause
 
 **长会话稳定参数（实测 45K 上下文 5 轮零降速）**：`--reasoning-budget 8192` + `--reasoning-format deepseek`（防无限思考，Gemma 经验复用）+ `--reasoning-preserve` + `--metrics`；KV 保持 q8_0 不降精度；`--cache-reuse` **不支持**（当前 context 自动禁用，勿加）。
 
+#### 3G：Qwen3.8-27B GSQ-RCO 专项（非均匀量化 + 内置 MTP，141K 全层）⭐ 2026-10-12 实测
+
+**模型**：ISTA-DASLab `Qwen3.8-27B-GSQ-RCO-GGUF` 的 `IQ3_S-mtp` 构建（11.28 GiB + mmproj 0.87 GiB；qwen35 / GQA 24:4、65 层含 MTP 头、ctx_train 262K；官方解码质量任务均分 ≈99.8%，与 BF16 同级）。**GSQ-RCO = 逐张量非均匀量化**（本文件混排 12 种类型），"IQ3_S" 只是预算标签。
+
+**16GB 卡定档（唯一可行全速档）**：`-ngl 64` 全层 + KV **q4_0** + 内置 MTP（n-max 3）+ b/u 256 + ctx 141312：
+
+- 45K 长 prompt：**decode 28.10 t/s（MTP +31.5%）/ prefill 690 t/s**，余量 555 MiB
+- 视觉档 = 同配置去 MTP + `--mmproj`：20.66 t/s，余量 1,009 MiB —— **mmproj 与 MTP 不可叠加**（+888 / +1,536 MiB）
+- ⛔ **dense + MTP 任何 CPU 卸载都是断崖**（3 层整层 CPU → -48%；`--n-cpu-ffn 8` → -30%），与 MoE 经验相反 —— 余量不足时**换 KV / 降 ctx，不卸层**
+- 单发 prompt ≤90K（135K 单发 >10min 未完成 prefill 且无报错）；**会话累计 KV 到 138K 无限制**（90K 检索 acc=1.0 / reprefill=0）
+- ⚠️ #30302（同款配置 Windows+CUDA 开 draft-mtp 首推理蓝屏）：**先 `--smoke` 再放大**；#30357 长 agent 多轮需盯日志 `forcing full prompt re-processing`
+
+📎 完整档案（KV 阶梯 / batch 对比 / 显存方程 / 采样参数）：[`./references/guides/qwen38-gsqrco-27b-tuning.md`](./references/guides/qwen38-gsqrco-27b-tuning.md) ｜ 原始数据：[`_q6_results.json`](./references/sessions/_q6_results.json)＋[`_q6_metadata.json`](./references/sessions/_q6_metadata.json) ｜ 探针集：[`./scripts/q6-tuning/README.md`](./scripts/q6-tuning/README.md)
+
 ### Step 4：安全配置（WSL2 + Agent 对接）
 
 ```bat
@@ -393,7 +420,7 @@ if "%AGENT_TOOLS%"=="all" ( set "TOOLS_ARG=--tools all" ) else ( set "TOOLS_ARG=
 
 - **位置**：生成器**随本技能发布** —— [`./scripts/launcher_gen/`](./scripts/launcher_gen/)
   （`update_launchers.py` Python 3.11 纯标准库 + `update-launchers.bat` 纯 ASCII 入口 + `llama_hub.py` 交互门面）
-- **怎么跑**：在**你自己的**部署目录里设两个环境变量 —— `LAUNCHER_DIR`（缺省=脚本所在目录）与 `CHAT_DIR`（模型目录，**无默认值**，缺失即报错退出 2）；冷启动见 `scripts/launcher_gen/README.md`
+- **怎么跑**：在**你自己的**部署目录里设两个环境变量 —— `LAUNCHER_DIR`（缺省=脚本所在目录）与 `CHAT_DIR`（模型目录；未设时回退到注册表里记的 `chat_dir`，全新机器缺失即报错退出 2）；冷启动见 `scripts/launcher_gen/README.md`
 - **运行时数据**（写在 `LAUNCHER_DIR` 下）：`launcher-models.json` 注册表（UTF-8）、`preset-overrides.json` 参数源、`backup/` 自动备份
 - **作用**：扫描 `<models-dir>`，自动同步 4 个工件——`start-CPU-Toolcall-Launcher.bat` / `start-Gemma4-Launcher.bat` / `start-Qwen-Launcher.bat` / `models-config.ini`（Router preset）
   - 模型目录被删 → 自动移除对应变量/菜单/启动块并重编号菜单；ini 僵尸段同步清除

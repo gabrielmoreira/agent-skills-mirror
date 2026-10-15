@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `MODSetter/SurfSense` — 26 default patterns, 14 followed patterns, 224 file(s) materialized.
+Mirror of `MODSetter/SurfSense` — 26 default patterns, 14 followed patterns, 228 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `MODSetter/SurfSense` — 26 default patterns, 14 followed patterns, 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 14 |
-| Files         | 224 |
+| Files         | 228 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -237,65 +237,69 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 163 | ✓ | [`docs/adr/0051-plugins-are-mcp-servers-behind-one-tool-gateway.md`](docs/adr/0051-plugins-are-mcp-servers-behind-one-tool-gateway.md) |
 | 164 | ✓ | [`docs/adr/0052-the-chat-model-never-calls-tools.md`](docs/adr/0052-the-chat-model-never-calls-tools.md) |
 | 165 | ✓ | [`docs/adr/0053-plugins-are-listed-in-a-registry-and-third-party-ones-start-off.md`](docs/adr/0053-plugins-are-listed-in-a-registry-and-third-party-ones-start-off.md) |
-| 166 | ✓ | [`docs/architecture/about.md`](docs/architecture/about.md) |
-| 167 | ✓ | [`docs/architecture/agent.md`](docs/architecture/agent.md) |
-| 168 | ✓ | [`docs/architecture/chat.md`](docs/architecture/chat.md) |
-| 169 | ✓ | [`docs/architecture/chatgpt-subscription.md`](docs/architecture/chatgpt-subscription.md) |
-| 170 | ✓ | [`docs/architecture/connections.md`](docs/architecture/connections.md) |
-| 171 | ✓ | [`docs/architecture/data-model.md`](docs/architecture/data-model.md) |
-| 172 | ✓ | [`docs/architecture/documents.md`](docs/architecture/documents.md) |
-| 173 | ✓ | [`docs/architecture/egress.md`](docs/architecture/egress.md) |
-| 174 | ✓ | [`docs/architecture/embedding.md`](docs/architecture/embedding.md) |
-| 175 | ✓ | [`docs/architecture/import.md`](docs/architecture/import.md) |
-| 176 | ✓ | [`docs/architecture/issue-reports.md`](docs/architecture/issue-reports.md) |
-| 177 | ✓ | [`docs/architecture/localization.md`](docs/architecture/localization.md) |
-| 178 | ✓ | [`docs/architecture/model-capabilities.md`](docs/architecture/model-capabilities.md) |
-| 179 | ✓ | [`docs/architecture/office-pack.md`](docs/architecture/office-pack.md) |
-| 180 | ✓ | [`docs/architecture/packaging.md`](docs/architecture/packaging.md) |
-| 181 | ✓ | [`docs/architecture/resource-usage.md`](docs/architecture/resource-usage.md) |
-| 182 | ✓ | [`docs/architecture/search.md`](docs/architecture/search.md) |
-| 183 | ✓ | [`docs/architecture/studio.md`](docs/architecture/studio.md) |
-| 184 | ✓ | [`docs/architecture/updates.md`](docs/architecture/updates.md) |
-| 185 | ✓ | [`docs/contracts/01-license-file.md`](docs/contracts/01-license-file.md) |
-| 186 | ✓ | [`docs/contracts/02-scraper-api-auth.md`](docs/contracts/02-scraper-api-auth.md) |
-| 187 | ✓ | [`docs/contracts/03-export-bundle.md`](docs/contracts/03-export-bundle.md) |
-| 188 | ✓ | [`docs/contracts/04-sunset-flag.md`](docs/contracts/04-sunset-flag.md) |
-| 189 | ✓ | [`surfsense_backend/AGENTS.md`](surfsense_backend/AGENTS.md) |
-| 190 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/email-drafting/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/email-drafting/SKILL.md) |
-| 191 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/kb-research/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/kb-research/SKILL.md) |
-| 192 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/meeting-prep/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/meeting-prep/SKILL.md) |
-| 193 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/slack-summary/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/slack-summary/SKILL.md) |
-| 194 | ✓ | [`surfsense_backend/CLAUDE.md`](surfsense_backend/CLAUDE.md) |
-| 195 | ✓ | [`surfsense_local/AGENTS.md`](surfsense_local/AGENTS.md) |
-| 196 | ✓ | [`surfsense_local/backend/modules/agent/prompts/agent.md`](surfsense_local/backend/modules/agent/prompts/agent.md) |
-| 197 | ✓ | [`surfsense_local/backend/modules/agent/skills/surfsense-data/SKILL.md`](surfsense_local/backend/modules/agent/skills/surfsense-data/SKILL.md) |
-| 198 | ✓ | [`surfsense_local/backend/modules/agent/skills/surfsense-documents/SKILL.md`](surfsense_local/backend/modules/agent/skills/surfsense-documents/SKILL.md) |
-| 199 | ✓ | [`surfsense_local/backend/modules/agent/skills/surfsense-pdf/SKILL.md`](surfsense_local/backend/modules/agent/skills/surfsense-pdf/SKILL.md) |
-| 200 | ✓ | [`surfsense_local/backend/modules/agent/skills/surfsense-revisions/SKILL.md`](surfsense_local/backend/modules/agent/skills/surfsense-revisions/SKILL.md) |
-| 201 | ✓ | [`surfsense_local/backend/worker/studio/office/docx/SKILL.md`](surfsense_local/backend/worker/studio/office/docx/SKILL.md) |
-| 202 | ✓ | [`surfsense_local/backend/worker/studio/office/pdf/SKILL.md`](surfsense_local/backend/worker/studio/office/pdf/SKILL.md) |
-| 203 | ✓ | [`surfsense_local/backend/worker/studio/office/pptx/SKILL.md`](surfsense_local/backend/worker/studio/office/pptx/SKILL.md) |
-| 204 | ✓ | [`surfsense_local/backend/worker/studio/office/xlsx/SKILL.md`](surfsense_local/backend/worker/studio/office/xlsx/SKILL.md) |
-| 205 | ✓ | [`surfsense_local/CLAUDE.md`](surfsense_local/CLAUDE.md) |
-| 206 | ✓ | [`surfsense_mcp/AGENTS.md`](surfsense_mcp/AGENTS.md) |
-| 207 | ✓ | [`surfsense_mcp/CLAUDE.md`](surfsense_mcp/CLAUDE.md) |
-| 208 | ✓ | [`surfsense_web/.cursorrules`](surfsense_web/.cursorrules) |
-| 209 | ✓ | [`surfsense_web/AGENTS.md`](surfsense_web/AGENTS.md) |
-| 210 | ✓ | [`surfsense_web/CLAUDE.md`](surfsense_web/CLAUDE.md) |
-| 211 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 212 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 213 | → | [`docs/adr/README.md`](docs/adr/README.md) |
-| 214 | → | [`docs/architecture/overview.md`](docs/architecture/overview.md) |
-| 215 | → | [`docs/architecture/sunset.md`](docs/architecture/sunset.md) |
-| 216 | → | [`docs/contracts/README.md`](docs/contracts/README.md) |
-| 217 | → | [`docs/proposals/plugins/README.md`](docs/proposals/plugins/README.md) |
-| 218 | → | [`docs/README.md`](docs/README.md) |
-| 219 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
-| 220 | → | [`SECURITY.md`](SECURITY.md) |
-| 221 | → | [`surfsense_backend/README.md`](surfsense_backend/README.md) |
-| 222 | → | [`surfsense_local/README.md`](surfsense_local/README.md) |
-| 223 | → | [`surfsense_mcp/README.md`](surfsense_mcp/README.md) |
-| 224 | → | [`surfsense_web/README.md`](surfsense_web/README.md) |
+| 166 | ✓ | [`docs/adr/0054-surfsenses-plugins-run-on-one-plugin-host.md`](docs/adr/0054-surfsenses-plugins-run-on-one-plugin-host.md) |
+| 167 | ✓ | [`docs/architecture/about.md`](docs/architecture/about.md) |
+| 168 | ✓ | [`docs/architecture/agent.md`](docs/architecture/agent.md) |
+| 169 | ✓ | [`docs/architecture/chat.md`](docs/architecture/chat.md) |
+| 170 | ✓ | [`docs/architecture/chatgpt-subscription.md`](docs/architecture/chatgpt-subscription.md) |
+| 171 | ✓ | [`docs/architecture/connections.md`](docs/architecture/connections.md) |
+| 172 | ✓ | [`docs/architecture/data-model.md`](docs/architecture/data-model.md) |
+| 173 | ✓ | [`docs/architecture/documents.md`](docs/architecture/documents.md) |
+| 174 | ✓ | [`docs/architecture/egress.md`](docs/architecture/egress.md) |
+| 175 | ✓ | [`docs/architecture/embedding.md`](docs/architecture/embedding.md) |
+| 176 | ✓ | [`docs/architecture/import.md`](docs/architecture/import.md) |
+| 177 | ✓ | [`docs/architecture/issue-reports.md`](docs/architecture/issue-reports.md) |
+| 178 | ✓ | [`docs/architecture/localization.md`](docs/architecture/localization.md) |
+| 179 | ✓ | [`docs/architecture/model-capabilities.md`](docs/architecture/model-capabilities.md) |
+| 180 | ✓ | [`docs/architecture/office-pack.md`](docs/architecture/office-pack.md) |
+| 181 | ✓ | [`docs/architecture/packaging.md`](docs/architecture/packaging.md) |
+| 182 | ✓ | [`docs/architecture/plugin-host.md`](docs/architecture/plugin-host.md) |
+| 183 | ✓ | [`docs/architecture/plugin-registry.md`](docs/architecture/plugin-registry.md) |
+| 184 | ✓ | [`docs/architecture/plugins.md`](docs/architecture/plugins.md) |
+| 185 | ✓ | [`docs/architecture/resource-usage.md`](docs/architecture/resource-usage.md) |
+| 186 | ✓ | [`docs/architecture/search.md`](docs/architecture/search.md) |
+| 187 | ✓ | [`docs/architecture/studio.md`](docs/architecture/studio.md) |
+| 188 | ✓ | [`docs/architecture/updates.md`](docs/architecture/updates.md) |
+| 189 | ✓ | [`docs/contracts/01-license-file.md`](docs/contracts/01-license-file.md) |
+| 190 | ✓ | [`docs/contracts/02-scraper-api-auth.md`](docs/contracts/02-scraper-api-auth.md) |
+| 191 | ✓ | [`docs/contracts/03-export-bundle.md`](docs/contracts/03-export-bundle.md) |
+| 192 | ✓ | [`docs/contracts/04-sunset-flag.md`](docs/contracts/04-sunset-flag.md) |
+| 193 | ✓ | [`surfsense_backend/AGENTS.md`](surfsense_backend/AGENTS.md) |
+| 194 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/email-drafting/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/email-drafting/SKILL.md) |
+| 195 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/kb-research/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/kb-research/SKILL.md) |
+| 196 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/meeting-prep/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/meeting-prep/SKILL.md) |
+| 197 | ✓ | [`surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/slack-summary/SKILL.md`](surfsense_backend/app/agents/chat/multi_agent_chat/main_agent/skills/builtin/slack-summary/SKILL.md) |
+| 198 | ✓ | [`surfsense_backend/CLAUDE.md`](surfsense_backend/CLAUDE.md) |
+| 199 | ✓ | [`surfsense_local/AGENTS.md`](surfsense_local/AGENTS.md) |
+| 200 | ✓ | [`surfsense_local/backend/modules/agent/prompts/agent.md`](surfsense_local/backend/modules/agent/prompts/agent.md) |
+| 201 | ✓ | [`surfsense_local/backend/modules/agent/skills/surfsense-data/SKILL.md`](surfsense_local/backend/modules/agent/skills/surfsense-data/SKILL.md) |
+| 202 | ✓ | [`surfsense_local/backend/modules/agent/skills/surfsense-documents/SKILL.md`](surfsense_local/backend/modules/agent/skills/surfsense-documents/SKILL.md) |
+| 203 | ✓ | [`surfsense_local/backend/modules/agent/skills/surfsense-pdf/SKILL.md`](surfsense_local/backend/modules/agent/skills/surfsense-pdf/SKILL.md) |
+| 204 | ✓ | [`surfsense_local/backend/modules/agent/skills/surfsense-revisions/SKILL.md`](surfsense_local/backend/modules/agent/skills/surfsense-revisions/SKILL.md) |
+| 205 | ✓ | [`surfsense_local/backend/worker/studio/office/docx/SKILL.md`](surfsense_local/backend/worker/studio/office/docx/SKILL.md) |
+| 206 | ✓ | [`surfsense_local/backend/worker/studio/office/pdf/SKILL.md`](surfsense_local/backend/worker/studio/office/pdf/SKILL.md) |
+| 207 | ✓ | [`surfsense_local/backend/worker/studio/office/pptx/SKILL.md`](surfsense_local/backend/worker/studio/office/pptx/SKILL.md) |
+| 208 | ✓ | [`surfsense_local/backend/worker/studio/office/xlsx/SKILL.md`](surfsense_local/backend/worker/studio/office/xlsx/SKILL.md) |
+| 209 | ✓ | [`surfsense_local/CLAUDE.md`](surfsense_local/CLAUDE.md) |
+| 210 | ✓ | [`surfsense_mcp/AGENTS.md`](surfsense_mcp/AGENTS.md) |
+| 211 | ✓ | [`surfsense_mcp/CLAUDE.md`](surfsense_mcp/CLAUDE.md) |
+| 212 | ✓ | [`surfsense_web/.cursorrules`](surfsense_web/.cursorrules) |
+| 213 | ✓ | [`surfsense_web/AGENTS.md`](surfsense_web/AGENTS.md) |
+| 214 | ✓ | [`surfsense_web/CLAUDE.md`](surfsense_web/CLAUDE.md) |
+| 215 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 216 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 217 | → | [`docs/adr/README.md`](docs/adr/README.md) |
+| 218 | → | [`docs/architecture/overview.md`](docs/architecture/overview.md) |
+| 219 | → | [`docs/architecture/sunset.md`](docs/architecture/sunset.md) |
+| 220 | → | [`docs/contracts/README.md`](docs/contracts/README.md) |
+| 221 | → | [`docs/proposals/plugins/README.md`](docs/proposals/plugins/README.md) |
+| 222 | → | [`docs/README.md`](docs/README.md) |
+| 223 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
+| 224 | → | [`SECURITY.md`](SECURITY.md) |
+| 225 | → | [`surfsense_backend/README.md`](surfsense_backend/README.md) |
+| 226 | → | [`surfsense_local/README.md`](surfsense_local/README.md) |
+| 227 | → | [`surfsense_mcp/README.md`](surfsense_mcp/README.md) |
+| 228 | → | [`surfsense_web/README.md`](surfsense_web/README.md) |
 
 ---
 

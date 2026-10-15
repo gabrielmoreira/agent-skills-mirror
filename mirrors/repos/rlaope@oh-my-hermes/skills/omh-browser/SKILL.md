@@ -10,7 +10,7 @@ metadata:
     phase: browser-task
     role: guide
     quality_tier: workflow-surface-gated
-    related_skills: [omh-visual-qa, omh-web-research]
+    related_skills: [omh-visual-qa, omh-web-research, omh-spend-gate]
 ---
 
 # Browser Operator
@@ -26,6 +26,7 @@ This is a Hermes-native `browser-operator` workflow skill.
 - An ordinary read of a public page with no sign-in, form, or purchase; use the native browser tools directly unless OMH's browser adapter bridge is enabled, which blocks them.
 - The question is whether a page looks right at each viewport; use `omh-visual-qa`.
 - A web lookup or a cited answer rather than an interaction with a page; use `omh-web-research`.
+- A page step that moves money -- a checkout, a payment, a booking deposit, a top-up; use `omh-spend-gate`, which shows the pre-spend card and takes the person's typed yes even when Hermes prompts on its own.
 
 ## Examples
 
@@ -44,10 +45,11 @@ Bad example:
 ## Completion Checklist
 
 - Specify URL, allowed/prohibited actions, auth boundary, stop condition.
-- Gate credentials/login/payment/purchase/destruction/scraping/export; observed traces only.
+- Gate credentials/login/destruction/scraping/export; a payment or purchase step waits for `omh-spend-gate`'s card and typed yes; observed traces only.
+- With nobody to answer the confirmation (a scheduled job, a one-shot run, a webhook run), an irreversible or externally visible action is not run: it is handed to a person's turn and its confirmation is recorded as missing.
 - Host request admission (not enablement/adapter presence) gates schemas/context/callbacks/writes. Refuse foreign/stale/expired/released/ambiguous targets; no index fallback.
 - omh_browser blocks native browser_*; inert by default. Opted-in effects need exact approval: docs/BROWSER-EFFECTS.md.
-- Sign-ins, one-time codes, and saved cards go through `browser_vault` when `browser_vault` is in your tool list or tool_search finds it (`list` first; `fill` for a saved login, card, or address; `enter_code` for a one-time code after the password; `save_login` when nothing is saved for the site, so the user types it into Hermes' masked prompt; Hermes asks the user before it fills a card and refuses that in a headless run): no password, card number, card security code, or one-time code is asked for, typed, or echoed in chat; record only its `success` and `filled_fields`, and never retry a `payment_declined`. Without it, the sign-in is the user's own step and a named gap.
+- Sign-ins, one-time codes, and saved cards go through `browser_vault` when `browser_vault` is in your tool list or tool_search finds it (`list` first; `fill` for a saved login, card, or address; `enter_code` for a one-time code after the password; `save_login` when nothing is saved for the site, so the user types it into Hermes' masked prompt; Hermes asks the user before it fills a card and refuses that in a headless run, and that answer sits beside `omh-spend-gate`'s typed yes, never in place of it): no password, card number, card security code, or one-time code is asked for, typed, or echoed in chat; record only its `success` and `filled_fields`, and never retry a `payment_declined`. Without it, the sign-in is the user's own step and a named gap.
 
 ## Recovery Notes
 

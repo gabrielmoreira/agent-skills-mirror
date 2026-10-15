@@ -14,7 +14,12 @@ docs changes, simple bug fixes, or routine bounded features.
 ## Core Contract
 
 When deepwork is active, the orchestrator must manage the work as a scheduler,
-not as the default implementation worker.
+not as the default implementation worker. Scheduling does not mean
+delegating everything: apply small integration and remediation edits
+yourself when you already hold the context, rather than starting a lane
+that must re-read the same files. Value productivity: working results
+matter more than review rounds — deepwork is heavy because the task is
+large, not because every step needs debate.
 
 ## Setup and Deepwork State
 
@@ -26,7 +31,8 @@ files. Route content to one address: status, open items, one-line verdicts
 deliverables (code, specs, data, docs) → real project paths; scratch
 intermediates → nowhere. `.slim/deepwork/.runtime/` is machine-written
 guard bookkeeping (receipts, claim markers) — never read by the workflow;
-guards record in shadow mode by default.
+guards record in shadow mode by default. Other root-level `.md` files are
+legacy notes: never resume, claim, or write them.
 
 ### Pinned Router Head
 
@@ -86,9 +92,14 @@ one, do not read other task directories.
 - before dispatch, draft a phased implementation/delegation plan: a small number
   of coherent phases from the work's dependencies and natural delivery
   boundaries; do not split work merely to reduce an Oracle review's scope;
-- make an `@oracle` review mandatory after each phase; record the phase order,
-  specialist ownership, gate order, and one-line gate rationale in the deepwork
-  file; share a compact version with the user;
+- order phases by fidelity, like a painter: the first phase lands a working
+  end-to-end skeleton, later phases deepen structure, then detail and polish;
+  never finish one area in full detail before the whole shape exists;
+- make an `@oracle` review mandatory after each phase, scoped to that phase's
+  fidelity: early gates check direction, correctness, and blocking risks, not
+  polish or naming; record the phase order, specialist ownership, gate order,
+  and one-line gate rationale in the task progress file; share a compact
+  version with the user;
 
 ## Phase Execution
 
@@ -109,6 +120,9 @@ Use the scheduler model throughout:
 
 ## Phase Gate and Commit
 
+- during a phase, lanes run only focused checks for their own scope; at phase
+  close, run the broad validation once on the reconciled state, and reuse it
+  for the gate rather than re-running it per lane or per review round;
 - after each planned phase, run relevant validation, update the task progress file,
   then request its planned `@oracle` gate before continuing;
 - before its planned Oracle gate, record in the task progress file the phase goal,
@@ -117,9 +131,11 @@ Use the scheduler model throughout:
   context rather than repeating discovery;
 - when the phase changes module boundaries, dependency direction, or file
   placement, run an `@explorer` structure scan in parallel with the Oracle gate;
-- reconcile review findings, perform one bounded remediation pass for material
-  issues, including simplify/readability feedback, and validate that pass with
-  focused evidence;
+- reconcile review findings, perform one bounded remediation pass for issues
+  material at the current fidelity, and validate that pass with focused
+  evidence; record polish, naming, and simplify/readability findings that
+  belong to a later phase as open items instead of fixing them now; make
+  small remediation edits directly when you already hold the context;
 - create a focused commit when the phase is an independently valid delivery
   boundary before starting the next phase;
 
@@ -170,6 +186,5 @@ tombstone of at most 15 lines: first line `status: completed`, then the
 final conclusion, pointers to key deliverables, surviving frozen
 constraints, and the date. Drop the log and checklist. Move nothing; add
 no index files or ledgers. A finished task directory is read by nothing
-and may be deleted at any time, without record.
-
-- finish with final validation and a concise summary.
+and may be deleted at any time, without record. Finish with final
+validation and a concise summary.

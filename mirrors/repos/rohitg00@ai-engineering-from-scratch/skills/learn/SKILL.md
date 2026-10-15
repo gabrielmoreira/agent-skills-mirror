@@ -57,6 +57,7 @@ supported state files and their route owners:
 - `MCP-ENGINEERING-LEARNING.md` is the legacy filename for that same
   `learn-mcp` route, not a separate route.
 - `AGENT-SKILLS-LEARNING.md` belongs to `learn-agent-skills`.
+- `REVERSE-ENGINEERING-LEARNING.md` belongs to `learn-reverse-engineering`.
 - `CLAUDE-CERTIFICATION.md` belongs to `claude-certification`.
 
 If the learner names a route in a resume or continue request, dispatch to its
@@ -97,6 +98,16 @@ invocation contract. Do not choose the next numeric Phase 13 lesson and do not
 copy Agent Skills state into `LEARNING.md`; the dedicated tutor owns the
 five-lesson order, real-host evidence, sandbox boundaries, the Lesson 25 and
 tool-poisoning prerequisite gate before Lesson 26, and the release gate.
+
+## Focused Reverse Engineering handoff
+
+If the learner asks for the Reverse Engineering route, or
+`REVERSE-ENGINEERING-LEARNING.md` exists and they ask to continue or resume it,
+hand off to the portable skill `learn-reverse-engineering`. Its source of truth
+is `learning-paths/reverse-engineering.json`. Render the handoff with the host
+invocation contract. Do not copy its state into `LEARNING.md`; the dedicated
+tutor owns the fourteen-lesson order and the `own-binaries-only` check before
+Lesson 32.
 
 ## Step 0 — Locate state
 

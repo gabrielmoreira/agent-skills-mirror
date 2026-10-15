@@ -23,9 +23,9 @@ that rejection does not roll back browser effects. REA removes its owned
 future-document scripts, restores live frame methods, then disconnects.
 Add secret declarations, storage seeds, and additional artifact or event
 capture only when needed. Action, secret, and storage counts are not capped.
-Duration, action, and navigation
-timeouts remain fixed provider-owned liveness limits; the request does not
-accept a caller-controlled `limits` object.
+Duration, action, and navigation timeouts remain fixed provider-owned liveness
+limits. `capture.limits` controls retained event and network-content budgets;
+it does not change those liveness deadlines.
 
 ## Minimal launch example
 
@@ -179,12 +179,44 @@ declared action. Each step reports action status, elapsed time, sanitized URLs,
 event bounds, and independently typed capture states for screenshot, DOM,
 accessibility, URL, history, and storage. Console, page-error, network,
 WebSocket, frame, worker, popup, and cancelled-download events are attributed to
-steps and all observed events and requested artifacts are returned inline.
-There are no event, frame, worker, popup, WebSocket, DOM-node,
-accessibility-node, storage-entry, screenshot-count, or cumulative
-metadata-byte caps. Requested artifacts and observed events are returned
-inline without application-defined size ceilings. Other missing sections
-remain explicit and make the capture ineligible for equality claims.
+steps. Retained events and requested artifacts are returned inline; omitted
+events are counted by kind and identify affected network transactions.
+Event and selected network-content retention have caller-selected limits under
+`capture.limits`. Omitted values use the defaults below; every supplied value
+must be a positive safe integer, and callers can raise or lower a default.
+Byte limits are conservative allocation-cost estimates for retained event
+values, including UTF-16 storage and JSON expansion, rather than serialized
+bytes or a promise about exact process memory. `events.omissions.by_kind`
+reports counts and reasons for omitted event kinds. Its
+`network_transactions` rows identify affected transaction IDs and omitted
+event kinds; `network_transaction_range` identifies the contiguous IDs beyond
+the transaction limit. Omission metadata is bounded by the selected
+transaction limit. Other missing sections remain explicit and make the capture
+ineligible for equality claims.
+
+The default limits are 10,000 events, 4 MiB estimated allocation for one
+event, 16 MiB estimated allocation across retained events, 1,024 network
+transactions, 64 KiB of body bytes per transaction phase, 1 MiB estimated
+allocation for body redaction/base64, 1 MiB for retained header values, and
+1 MiB for network metadata. The same limits are included in the capture
+Evidence. Playwright materializes response bodies before REA can inspect their
+byte length; `max_network_body_bytes` bounds subsequent retained copies and
+does not bound the browser API read itself. A body that exceeds its selected
+limit has an explicit `body-size-limit` or `body-allocation-limit` unavailable
+state with the observed and allowed values.
+
+Additional implementation bounds are 16 simultaneous network-content reads,
+a 5-second deadline for each provider API read, and 2,048 live event-listener
+owners. These are not caller-selectable. The concurrency bound queues admitted
+content jobs and does not itself omit observations; a provider read timeout
+produces a typed unavailable state, while exceeding listener capacity produces
+event-kind omission counts. A preflight avoids body redaction and base64 copies
+when the currently available event budget already rejects the body.
+Concurrent reads may each pass that check before their events are retained;
+their retained-copy work is bounded by 16 times the selected per-body
+allocation limit. The Playwright response Buffer itself is materialized before
+REA can apply that limit. Requested artifacts and retained events are returned
+inline within the declared limits.
 Attach-mode captures also declare the unavoidable pre-attach event gap.
 
 Selected event families are observed on the root page and discovered descendant
@@ -288,16 +320,21 @@ retained representation after redaction.
 
 Only completed responses are read. At the end of the final step, observation
 stops; requests still in flight emit `request-unfinished`, and their observed
-responses have explicitly unavailable bodies. This cutoff does not wait for
-long-lived streaming connections. Already-started content reads settle before
-browser cleanup, with a provider-owned five-second timeout per read and
-cancellation support. Failed or unexposed reads retain per-content states and make selected
-event coverage incomplete. Body events can arrive during later steps or final
-drain; event bounds describe receipt during the step, while the source event
-reference establishes the transaction phase. Comparison attributes content, like
-every other event of its transaction, to the step that sent the request (the
-receipt step when that request was not observed) and excludes the sequence
-reference from normalization.
+responses have explicitly unavailable bodies. Already-admitted content reads
+drain before browser cleanup. At most 16 reads run at once; queued work is
+bounded by the selected network-transaction limit and by successful admission
+of its request or response event. Each provider API read has its own five-second
+timeout once it starts, so queue wait adds to total drain and cleanup time; this
+is not a five-second total capture cutoff. Cancellation interrupts active reads
+and queued jobs produce cancelled states without calling their provider APIs.
+This drain does not wait for long-lived unfinished streaming connections and
+does not refetch unfinished response bodies. Failed or unexposed reads retain
+per-content states and make selected event coverage incomplete. Body events can
+arrive during later steps or final drain; event bounds describe receipt during
+the step, while the source event reference establishes the transaction phase.
+Comparison attributes content, like every other event of its transaction, to
+the step that sent the request (the receipt step when that request was not
+observed) and excludes the sequence reference from normalization.
 Playwright scenario capture does not supply initiator stacks; passive CDP
 observation retains its own initiator evidence.
 

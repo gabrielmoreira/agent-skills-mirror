@@ -12,4 +12,20 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+Coyote time is per-entity data. The follow camera reads `Transform` and writes only the camera.
+
+```rust
+#[derive(Component)]
+struct Mover {
+    coyote: f32,
+    grounded: bool,
+}
+
+fn refill(mut movers: Query<&mut Mover>) {
+    for mut mover in &mut movers {
+        if mover.grounded {
+            mover.coyote = 0.12;
+        }
+    }
+}
+```

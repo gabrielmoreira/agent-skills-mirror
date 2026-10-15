@@ -128,9 +128,11 @@ anything else. Surgical precision: change the minimum characters to fix each fai
   pnpm), `setup.py`/`pyproject.toml` (pip), `Cargo.toml` (cargo), `go.mod` (go get). Include all
   applicable if multiple runtimes.
 - Quick start — shortest install→working-output path (2-4 steps). Check `scripts.start`/
-  `scripts.dev`, `.bin` entry, `examples/`/`demo/` runnable entry.
+  `scripts.dev`, `.bin` entry, `examples/`/`demo/` runnable entry. None exists → critical rule 10
+  (test/build fallback, then "no standalone run mode"), not an invented run step.
 - Usage examples — 1-3 concrete examples with expected output. Read entry points (`bin/`,
-  `src/index.*`, `lib/index.*`) for API/CLI surface; check `examples/`.
+  `src/index.*`, `lib/index.*`) for API/CLI surface; check `examples/`. Event-triggered service
+  with no CLI/HTTP surface → "no standalone run mode" (rule 10), no fabricated examples.
 - Contributing link — one line, only if CONTRIBUTING.md exists or is in the generation queue.
 - License — one line + link; read LICENSE first line, fall back to `package.json` `.license`.
 
@@ -169,7 +171,11 @@ directory structure as a tree-indented code block.
 - Installation steps — clone → cd → install (detected package manager). Check `package.json`,
   `Pipfile`/`requirements.txt`, `Makefile` install targets.
 - First run — single command producing working output. `scripts.start`/`scripts.dev`, `Makefile`
-  `run`/`serve`, existing README quick-start.
+  `run`/`serve`, existing README quick-start. Cannot start from repo contents alone (config from a
+  secrets manager or deploy-time env, no `.env.example`) or no local entry point (event-triggered
+  handlers) → fall back: test command, then build command, then an explicit "no standalone run mode"
+  statement (rule 10); put the blocked start-the-server path under Common setup issues. Before citing
+  a `Makefile`/`package.json` script as the run path, confirm its referenced inputs exist (rule 11).
 - Common setup issues — known new-contributor problems + solutions. Check `.env.example`
   (missing env var errors), `engines` constraints, existing troubleshooting, port conflicts.
   ≥2 issues; placeholder list if none discoverable.
@@ -328,7 +334,9 @@ Used when `scope: per_package` is set.
   heading (scoped name, e.g. `@myorg/core`).
 - Installation — scoped install command from `.name`; omit if `"private": true`.
 - Usage — key exports/CLI specific to this package only (1-2 examples). Read
-  `{package_dir}/src/index.*` or `.main`/`.module`/`.exports`.
+  `{package_dir}/src/index.*` or `.main`/`.module`/`.exports`. Event-triggered handler (Lambda
+  behind SNS/Kinesis, queue consumer) with no CLI/HTTP surface → a "Run Locally" note stating "no
+  standalone run mode" plus the test/build commands (rule 10); no fabricated usage examples.
 - API summary (if applicable) — top-level exports with one-liners (grep `export (function|class|
   const|type|interface)`). Omit if package has no public exports.
 - Testing — `{package_dir}/package.json` `scripts.test`; also show workspace-scoped command if a
@@ -424,6 +432,16 @@ type. Create `docs/` if missing. No frontmatter added.
 5. Use `<!-- VERIFY: {claim} -->` for infrastructure claims not verifiable from the repo alone.
 6. Update mode: PRESERVE accurate user-authored content. Only rewrite inaccurate/missing sections.
 7. Supplement mode: NEVER modify existing content. Only append missing sections. No GSD marker.
+10. Not every target runs locally. No runnable entry point (event-triggered handlers with no CLI/HTTP
+   surface) or cannot start from repo contents alone (config from a secrets manager/deploy-time env)
+   → no literal run step or fabricated output. Fall back: test command, then build command, then an
+   explicit "no standalone run mode" statement. Normal entry points (`scripts.start`, CLI bin,
+   `go run`, `docker compose up`) keep the normal run step.
+11. Before citing a Makefile target or `package.json` script as a quick-start/run path, confirm the
+   inputs it references (event fixtures, SAM/CloudFormation templates, config files) exist in the
+   repo. A script that only looks like the answer is not proof it works: if an input is missing,
+   document the target as-is with `<!-- VERIFY: {target} references {missing input}, which is not in
+   the repository -->`, not as working.
 
 </critical_rules>
 

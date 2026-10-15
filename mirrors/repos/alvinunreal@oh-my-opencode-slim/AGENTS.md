@@ -56,6 +56,19 @@ bun test -t "test-name-pattern"
 - Let errors propagate appropriately rather than catching silently
 - Use Zod for runtime validation (already a dependency)
 
+### Test Time
+- Tests never bind to real time (`ts-no-test-timers`): no `Bun.sleep()`,
+  guessed `setTimeout` waits, or duration-based settling.
+- Drive timer code deterministically with `src/utils/test-timers.ts`
+  (`createTimerHarness`, `tick`). Scheduling components accept injected
+  `setTimeout`/`clearTimeout` seams (see `BackgroundJobSupervisor`,
+  `createBackgroundJobTerminalGate`); wire the harness there, not via
+  global spies.
+- Keep observation-time (`now`) seams separate from scheduling when event
+  timestamps are the subject of the test.
+- Integration tests that exercise real platform timing may keep a real
+  delay: keep rare and comment why deterministic control will not work.
+
 ### Git Integration
 - Biome integrates with git (VCS enabled)
 - Commits should pass `bun run check:ci` before pushing

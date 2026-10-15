@@ -12,4 +12,16 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+```rust
+#[derive(Component)]
+struct Bleed {
+    seconds: f32,
+}
+
+fn age(time: Res<Time>, mut bleeds: Query<&mut Bleed>) {
+    let dt = time.delta_secs();
+    for mut bleed in &mut bleeds {
+        bleed.seconds += dt;
+    }
+}
+```

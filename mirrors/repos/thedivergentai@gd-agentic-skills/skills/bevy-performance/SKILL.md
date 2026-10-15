@@ -7,7 +7,7 @@ description: "Bevy ECS skill for runtime cost. Keywords: Bevy, parallel systems,
 
 ## When to use
 
-Load this when a system is slow or assets stay in memory. Pair it with `bevy-debugging-profiling` for the counters. Sources: the Quick Start ECS page, `bevy::diagnostic`, and the `bevy::asset` index (docs.rs `latest`, 0.20.0).
+Load this when a system is slow or assets stay in memory. Pair it with `bevy-debugging-profiling` for the counters.
 
 ## ECS shape
 
@@ -17,20 +17,118 @@ Load this when a system is slow or assets stay in memory. Pair it with `bevy-deb
 - **Memory:** `Handle` is reference counted. A strong handle kept in a long-lived `Resource` keeps the asset. The last strong drop removes it from `Assets<T>`. `Assets::add` does not deduplicate procedural assets. `AssetServer::load` reuses a handle while one remains.
 - **Schedule:** diagnostics plugins are added on the `App` after `DefaultPlugins`. Do not invent a budget resource.
 
-## Coming from Godot
-
-| Godot idea | Bevy idiom |
-| --- | --- |
-| Stop scripts from fighting | Let independent systems run in parallel; `.chain()` only for real order |
-| Physics-ish tick vs render | `Fixed` versus `Update` |
-| Watch frame time | `FrameTimeDiagnosticsPlugin` |
-| Unload unused art | Drop the last strong `Handle` |
-
 ## Scope
 
-- Check the render docs before naming frustum culling, LOD, or draw-call batching knobs.
-- No entity count cap or frame-time budget number is on these pages.
-- Check the ECS docs, and bevy-ecs-composition, for change detection as a performance tool before writing it.
+Chain only the systems that share a mutable query. Read frame diagnostics from `DiagnosticsStore`. Keep a strong `Handle` in a resource only while the asset must stay loaded. `Changed<T>` skips entities whose component did not change this tick.
+
+## Examples
+
+```toml
+[package]
+name = "performance"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.20"
+```
+
+Damage writes health. The death system is chained after it so it observes the same tick. Movement does not share that query, so it stays outside the chain.
+
+```rust
+#[derive(Component)]
+struct Health(f32);
+
+#[derive(Component)]
+struct Velocity(Vec3);
+
+fn apply_damage(mut query: Query<&mut Health>) {
+    for mut health in &mut query {
+        health.0 = (health.0 - 1.0).max(0.0);
+    }
+}
+
+fn reap(mut commands: Commands, query: Query<(Entity, &Health)>) {
+    for (entity, health) in &query {
+        if health.0 <= 0.0 {
+            commands.entity(entity).despawn();
+        }
+    }
+}
+
+fn integrate(time: Res<Time<Fixed>>, mut query: Query<(&Velocity, &mut Transform)>) {
+    let dt = time.delta_secs();
+    for (velocity, mut transform) in &mut query {
+        transform.translation += velocity.0 * dt;
+    }
+}
+
+pub struct SimPlugin;
+
+impl Plugin for SimPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(FixedUpdate, (apply_damage, reap).chain())
+            .add_systems(FixedUpdate, integrate);
+    }
+}
+```
+
+Frame diagnostics record fps. A strong mesh handle in a resource keeps that mesh loaded until the resource is dropped.
+
+```rust
+use bevy::diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin};
+
+#[derive(Resource)]
+struct KeptMesh(Handle<Mesh>);
+
+fn spawn_kept_mesh(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
+    let handle = meshes.add(Mesh::from(Cuboid::new(1.0, 1.0, 1.0)));
+    commands.insert_resource(KeptMesh(handle));
+}
+
+fn read_fps(diagnostics: Res<DiagnosticsStore>) {
+    let Some(fps) = diagnostics.get(&FrameTimeDiagnosticsPlugin::FPS) else {
+        return;
+    };
+    let _value = fps.smoothed();
+}
+
+pub struct MeasurePlugin;
+
+impl Plugin for MeasurePlugin {
+    fn build(&self, app: &mut App) {
+        app.add_plugins((
+            FrameTimeDiagnosticsPlugin::default(),
+            LogDiagnosticsPlugin::default(),
+        ))
+        .add_systems(Startup, spawn_kept_mesh)
+        .add_systems(Update, read_fps);
+    }
+}
+```
+
+Anchors that moved this tick are the only transforms the follower reads. `Changed<Transform>` leaves the rest of the query idle.
+
+```rust
+#[derive(Component)]
+struct Marker;
+
+#[derive(Component)]
+struct Anchor;
+
+fn follow_changed(
+    movers: Query<&Transform, (With<Anchor>, Changed<Transform>)>,
+    mut markers: Query<&mut Transform, (With<Marker>, Without<Anchor>)>,
+) {
+    let Some(source) = movers.iter().next() else {
+        return;
+    };
+    let translation = source.translation;
+    for mut marker in &mut markers {
+        marker.translation = translation;
+    }
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -75,31 +173,27 @@ Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownershi
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20.0**. Official pages stay on the unversioned `latest` branch.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/)  -  Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/)  -  Unversioned API index.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/)  -  Parallel systems and `.chain()`.
-- [bevy::time](https://docs.rs/bevy/latest/bevy/time/index.html)  -  `Fixed` and `FixedMain`.
-- [bevy::diagnostic](https://docs.rs/bevy/latest/bevy/diagnostic/index.html)  -  Frame time, entity count, system info.
-- [bevy::asset](https://docs.rs/bevy/latest/bevy/asset/index.html)  -  Handle lifetimes and `Assets::add`.
+- [Time examples](https://github.com/bevyengine/bevy/tree/latest/examples/time)  -  `Fixed` and `FixedMain`.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples)  -  Example tree on the `latest` branch.
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Who owns which piece of state.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md)  -  Systems and `.chain()`.
-- [bevy-debugging-profiling](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-debugging-profiling/SKILL.md)  -  How those diagnostics are plugged in.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Who owns which piece of state.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md)  -  Systems and `.chain()`.
+- [bevy-debugging-profiling](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-debugging-profiling/SKILL.md)  -  How those diagnostics are plugged in.
 
 #### Complements
-- [bevy-asset-scenes](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-asset-scenes/SKILL.md)  -  When handles are loaded and dropped.
-- [bevy-character-movement](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-character-movement/SKILL.md)  -  Work that belongs on the fixed timestep.
-- [godot-performance-optimization](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-performance-optimization/SKILL.md)  -  Equivalent Godot skill.
+- [bevy-asset-scenes](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-asset-scenes/SKILL.md)  -  When handles are loaded and dropped.
+- [bevy-character-movement](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-character-movement/SKILL.md)  -  Work that belongs on the fixed timestep.
+- [godot-performance-optimization](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-performance-optimization/SKILL.md)  -  Performance on the Godot engine, same depth.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.

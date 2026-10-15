@@ -12,4 +12,17 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+The startup system spawns the node. A later system is the only writer of `BackgroundColor` on buttons.
+
+```rust
+fn spawn_panel(mut commands: Commands) {
+    commands.spawn((
+        Node {
+            width: Val::Px(200.0),
+            height: Val::Px(80.0),
+            ..default()
+        },
+        BackgroundColor(Color::srgb(0.1, 0.1, 0.1)),
+    ));
+}
+```

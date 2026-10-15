@@ -11,27 +11,159 @@ Load this when a level, loot table, or map should be reproducible from a seed, a
 
 ## ECS shape
 
-- **Components:** cell, room, or prop facts you define. The ECS page shows plain `Component` structs and `commands.spawn`.
-- **Resources:** one seed and a generator state you own as a `Resource` (see bevy-data-resources). Do not invent a Bevy RNG type.
-- **Systems:** fill the resource on `Startup`, then spawn entities from that data. Use `.chain()` so spawn sees the finished grid.
-- **Schedule:** `Startup` for a one-shot map. A streaming map is a later system on `Update`. Check the docs for a background-thread API before leaving the main schedules.
+- **Components:** cell facts you define, spawned with `Commands`.
+- **Resources:** one `RunSeed` for the whole run. The generator reads it; it does not invent a Bevy RNG type. `rand` 0.9 supplies `StdRng`.
+- **Systems:** insert the seed on `Startup`, then spawn from that data. `.chain()` so the spawn system sees the seed.
+- **Schedule:** `Startup` for a one-shot map. A streaming map is a later `Update` system that still reads the same seed.
 
-## Coming from Godot
+```toml
+[dependencies]
+bevy = "0.20"
+rand = "0.9"
+```
 
-| Godot idea | Bevy idiom |
+The seed is a resource. The walk is plain data. Entities are spawned only after the seed exists.
+
+```rust
+use rand::rngs::StdRng;
+use rand::{Rng, SeedableRng};
+
+#[derive(Resource)]
+struct RunSeed(u64);
+
+#[derive(Component, Clone, Copy)]
+struct FloorCell {
+    x: i32,
+    y: i32,
+}
+
+fn insert_seed(mut commands: Commands) {
+    commands.insert_resource(RunSeed(42));
+}
+
+fn spawn_walk(mut commands: Commands, seed: Res<RunSeed>) {
+    let mut rng = StdRng::seed_from_u64(seed.0);
+    let mut x = 0;
+    let mut y = 0;
+    for _ in 0..24 {
+        commands.spawn((
+            FloorCell { x, y },
+            Transform::from_xyz(x as f32, y as f32, 0.0),
+        ));
+        match rng.random_range(0..4) {
+            0 => x += 1,
+            1 => x -= 1,
+            2 => y += 1,
+            _ => y -= 1,
+        }
+    }
+}
+
+pub struct DungeonPlugin;
+
+impl Plugin for DungeonPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Startup, (insert_seed, spawn_walk).chain());
+    }
+}
+```
+
+Height samples stay in a resource. The same seed always rebuilds the same grid. Sampling happens once, not every frame.
+
+```rust
+#[derive(Resource)]
+struct HeightGrid {
+    width: i32,
+    samples: Vec<f32>,
+}
+
+#[derive(Resource)]
+struct RunSeed(u64);
+
+fn hash_unit(x: i32, y: i32, seed: u64) -> f32 {
+    let mut n = seed
+        .wrapping_mul(0x9E37_79B9_7F4A_7C15)
+        ^ (x as u64).wrapping_mul(0xBF58_476D_1CE4_E5B9)
+        ^ (y as u64).wrapping_mul(0x94D0_49BB_1331_11EB);
+    n = (n ^ (n >> 30)).wrapping_mul(0xBF58_476D_1CE4_E5B9);
+    n = (n ^ (n >> 27)).wrapping_mul(0x94D0_49BB_1331_11EB);
+    n ^= n >> 31;
+    (n >> 40) as f32 / (1u32 << 24) as f32
+}
+
+fn build_heights(mut commands: Commands, seed: Res<RunSeed>) {
+    let width = 16;
+    let mut samples = Vec::with_capacity((width * width) as usize);
+    for y in 0..width {
+        for x in 0..width {
+            samples.push(hash_unit(x, y, seed.0));
+        }
+    }
+    commands.insert_resource(HeightGrid { width, samples });
+}
+```
+
+Rooms are rectangles carved into a grid you own. Spawn markers only for floor cells.
+
+```rust
+struct Room {
+    x: i32,
+    y: i32,
+    w: i32,
+    h: i32,
+}
+
+fn carve(width: i32, rooms: &[Room]) -> Vec<bool> {
+    let mut floor = vec![false; (width * width) as usize];
+    for room in rooms {
+        for y in room.y..room.y + room.h {
+            for x in room.x..room.x + room.w {
+                if (0..width).contains(&x) && (0..width).contains(&y) {
+                    floor[(y * width + x) as usize] = true;
+                }
+            }
+        }
+    }
+    floor
+}
+
+#[derive(Component, Clone, Copy)]
+struct FloorCell {
+    x: i32,
+    y: i32,
+}
+
+fn spawn_rooms(mut commands: Commands) {
+    let rooms = [
+        Room { x: 1, y: 1, w: 4, h: 3 },
+        Room { x: 8, y: 6, w: 5, h: 4 },
+    ];
+    let width = 16;
+    for (i, open) in carve(width, &rooms).into_iter().enumerate() {
+        if open {
+            let x = (i as i32) % width;
+            let y = (i as i32) / width;
+            commands.spawn(FloorCell { x, y });
+        }
+    }
+}
+```
+
+## Choose the owner
+
+| Need | Owner |
 | --- | --- |
 | Seeded run | A `Resource` holding a seed you define |
 | Chunk or dungeon grid | Your components, spawned with `Commands` |
-| Noise, BSP, walk, collapse | Algorithm names from the Godot skill are ideas only. Check the docs.rs crate index before treating them as Bevy functions. |
-| Tile write | No tile API here. Wait for a later tile skill |
+| Hash, rooms, or walk | Your functions over a `RunSeed`. `rand::rngs::StdRng` is the seeded generator. |
+| Floor cells | Entities spawned from the grid. Tilemaps belong on the tile skill. |
 | Nav bake after generation | Nav bake after generation belongs on bevy-navigation. |
 
 ## Scope
 
-- Check docs.rs `bevy` `latest` for a noise, RNG, or constraint-solver module before writing one.
-- Check the docs for worker threads and off-main-thread spawn before writing a pool type.
-- The assets catalog was not used to pick a generation plugin.
-- Large-grid batching and navigation rebake are unverified.
+- Seeded walks and room carves above use `rand` 0.9 and your own grid. Bevy does not ship a dungeon solver.
+- Build the grid on the main schedule, then spawn. `Commands` stay on the system that runs there.
+- Navigation rebake after a generated map belongs on bevy-navigation.
 
 ## Expert Knowledge Delta
 
@@ -55,7 +187,7 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A value that is not a component |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
@@ -76,12 +208,10 @@ Load [references/ecs-ownership.md](procedural-generation-ecs-ownership.md) for t
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20.0**.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - Unversioned API index. No procedural module was opened.
-- [Assets](https://bevy.org/assets/) - Official asset catalog. No generation plugin was selected.
+- [Assets](https://bevy.org/assets/) - Official asset catalog.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, `Commands`, `Startup`, and `.chain()`.
 - [Resources](https://bevy.org/learn/quick-start/getting-started/resources/) - App-wide seed state. API limits are on bevy-data-resources.
@@ -89,18 +219,18 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership.
-- [bevy-data-resources](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md) - `Resource` versus `Component`.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Spawn tuples and `.chain()`.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership.
+- [bevy-data-resources](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md) - `Resource` versus `Component`.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Spawn tuples and `.chain()`.
 
 #### Complements
-- [bevy-asset-scenes](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-asset-scenes/SKILL.md) - Spawn a scene asset. Not a generator.
-- [bevy-save-load](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-save-load/SKILL.md) - Seed persistence.
-- [bevy-navigation](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-navigation/SKILL.md) - No bake after a generated map.
-- [godot-procedural-generation](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-procedural-generation/SKILL.md) - Equivalent Godot skill.
+- [bevy-asset-scenes](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-asset-scenes/SKILL.md) - Spawn a scene asset. Not a generator.
+- [bevy-save-load](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-save-load/SKILL.md) - Seed persistence.
+- [bevy-navigation](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-navigation/SKILL.md) - No bake after a generated map.
+- [godot-procedural-generation](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-procedural-generation/SKILL.md) - Equivalent Godot skill.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

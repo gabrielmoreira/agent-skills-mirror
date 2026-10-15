@@ -134,6 +134,14 @@ bun run --cwd packages/studio test:edit-accuracy -- --grid pr --filter '^resize-
 - Each run writes its results, a table and a candidate baseline to
   `tests/e2e/evidence/edit-accuracy/<run>/` (git-ignored; `--out` moves it); a
   failing case also gets its screens and saved files under `cases/<id>/`.
+- A measurement waits until the box and the preview frames read the same on 3
+  animation frames in a row, with no Studio request in flight and every file
+  write announced by the server. `EDIT_ACCURACY_STILL_MS=500` swaps that for
+  the older fixed window of 500 ms with no network signal, if the faster check
+  ever proves flaky on CI.
+- The run keeps one producer Chrome open for every render; each render still
+  gets its own page and file server. Studio's server is started per case,
+  because it serves one project folder and keeps that folder's undo history.
 - CI runs the full grid in shards and `ratchet.mjs` gates the result against the
   base branch's `baseline.json`; its header states the rules. When cases newly
   pass, commit the `baseline.json` from the `edit-accuracy-gate` artifact.

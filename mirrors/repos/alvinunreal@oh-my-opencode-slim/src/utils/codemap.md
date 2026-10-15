@@ -29,6 +29,7 @@ Centralized utilities and shared abstractions used across the oh-my-opencode-sli
 - **BackgroundJobTerminalGate** (`background-job-terminal-gate.ts`): Terminal evidence verification with host outcome attribution, evidence deadlines, and reading leases
 - **BackgroundJobPersistence** (`background-job-persistence.ts`): Persistence layer for lifecycle state with tombstone and epoch tracking across host restarts
 - **BackgroundJobFixture** (`background-job-fixture.ts`): Test-only board fixtures for adapter/state-machine tests (not for production)
+- **TestTimers** (`test-timers.ts`): Test-only deterministic timer harness (manual clock, injected `setTimeout`/`clearTimeout` seams, zero-duration `tick` drain); wire into timer-seam components, see AGENTS.md "Test Time"
 - **TUI Reusable Projection** (`tui-reusable-projection.ts`): Board → tui-state projection for sidebar reusable dot display
 - **JSDOM Probe** (`jsdom.ts`): JSDOM runtime detection without making it a prerequisite
 - **Redact** (`redact.ts`): Shape-based secret redaction for logging and task output structure masking
@@ -159,6 +160,7 @@ Session metadata, the opencode client accessor, and the type-only call-shape con
 | `background-job-persistence.ts` | Persistence for lifecycle state (tombstones, deletion) |
 | `background-job-terminal-gate.ts` | Terminal evidence verification and attribution |
 | `background-job-fixture.ts` | Test-only board fixtures for adapter/state-machine tests |
+| `test-timers.ts` | Test-only deterministic timer harness for seam-wired timer code |
 | `tui-reusable-projection.ts` | Board → tui-state projection for sidebar reusable dots |
 | `session.ts` | Session timeout, abort, and model-reference utilities |
 | `session-metadata.ts` | Bounded session → agent/directory store |

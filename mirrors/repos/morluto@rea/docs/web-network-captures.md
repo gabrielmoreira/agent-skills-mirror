@@ -69,6 +69,13 @@ The observed mitmproxy 12.2.3 `SaveHar` profile can emit `postData.text: null`
 for a missing request body. REA preserves that reported null, omitting the
 optional field only from its validation copy for this exact producer profile;
 it does not invent an empty string or body bytes.
+The observed Playwright 1.58.2 profile can report a bracketed IPv6
+`serverIPAddress`, forwarded from Chromium's `remoteIPAddress` through
+[Playwright's HAR tracer](https://github.com/microsoft/playwright/blob/v1.58.2/packages/playwright-core/src/server/har/harTracer.ts).
+REA preserves the original spelling in reported Evidence and removes brackets
+only from its validation copy, only for this declared producer and a valid IPv6
+literal. Invalid addresses, bracketed IPv4, ports and zone identifiers remain
+validation failures. Producer declarations do not authenticate origin.
 
 Native mitmproxy decoding requires a caller-supplied **mitmdump 12.2.3 on
 Linux**. Set its absolute executable path:
@@ -110,7 +117,11 @@ gRPC message bytes. Missing members remain null, distinct from empty bodies.
 See Telerik's [SAZ format reference](https://www.telerik.com/fiddler/fiddler-everywhere/documentation/knowledge-base/fiddler-archives).
 
 The existing ZIP reader verifies read members; expanded archive contents are
-limited to 32 MiB in addition to the input/output budgets below. Encrypted
+limited to 32 MiB in addition to the input/output budgets below. Exceeding this
+expanded-byte budget returns `invalid_request` / `invalid_input` through both
+CLI and MCP, with an `out_of_range` issue at
+`capture_path` and `maximum_expanded_capture_bytes`. Selecting records does not
+bypass the complete-archive admission check or return partial Evidence. Encrypted
 archives and unrecognized raw session members are unsupported. SAZ requires an
 enforced decoder memory bound: Node's fixed heap, or the Windows Job Object
 commit limit. Bun on hosts without that Job Object limit returns capability

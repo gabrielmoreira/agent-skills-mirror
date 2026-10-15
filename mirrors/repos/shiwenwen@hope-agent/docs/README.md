@@ -115,6 +115,7 @@
 | [设计空间（Design Space）](architecture/infra/design-space.md) | agent 原生设计工作空间：11 类自包含产物（web/mobile/deck/dashboard/poster/document/email/image/motion/audio/component）、品牌设计系统 + token 编译、稳定单产物预览（无画布）、oid 确定性可视化微调、一键导出 HTML/PNG/PDF/PPTX/MP4/ZIP、5 维质量门 + 反 slop 自查、**工程轴**（多平台 Token 导出 / Figma 导入 / 代码交付包 / 绑定代码工程同步）、与知识空间/项目联动 | `crates/ha-design/`, `components/design/` |
 | [Artifacts 产物平台](architecture/infra/artifacts.md) | Canvas façade、不可变版本、Gallery、Data Analytics、离线本地导出与未来 Publisher Guard | `crates/ha-design/`（artifacts / tool_artifact）, `components/artifacts/` |
 | [Cron 调度](architecture/infra/cron.md)           | 定时任务调度、Agent 执行、Failover、指数退避      | ha-cron 的 `cron/` + kernel 的 `cron/db.rs`·`schedule.rs` |
+| [项目自主运维自动化](architecture/infra/automation-operations.md) | Codex 项目任务的状态、去重、执行互斥、归档与恢复验证；与产品 Cron 分开 | `scripts/automation/` |
 | [Sandbox 架构](architecture/infra/sandbox.md) | 会话级 Docker 执行沙箱、权限放松矩阵、Docker 平台引导、SearXNG 容器管理 | `ha-vcs (sandbox.rs · docker/)`, `ha-core (sandbox.rs 配置面)`, `permission/` |
 | [Dashboard](architecture/infra/dashboard.md)    | 跨 DB 聚合分析、成本估算、系统指标、Learning Tab、coding release/generalization gate 与 general domain quality gate | ha-dash 的 `dashboard/`, `components/dashboard/learning/` |
 | [Recap 深度复盘](architecture/infra/recap.md)      | 逐会话 LLM facet 提取、量化+语义融合报告、HTML 导出 | `recap/`                |

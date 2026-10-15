@@ -16,9 +16,11 @@ When performing these actions, ALWAYS invoke the corresponding skill FIRST:
 | Adding a node label, relationship, or property to the graph schema | `graph-db-writes` |
 | Adding or editing a test file in any section | `redamon-testing` |
 | Changing how a triage score, review or verdict is computed or written | `priority-board-triage` |
+| Changing how plugin services, networks or the plugins overlay are started by redamon.sh or compose | `plugin-platform` |
 | Changing test tiers, conftest.py, pytest.ini, or the runner in redamon.sh | `redamon-testing` |
 | Checking or ratcheting a coverage floor | `redamon-testing` |
 | Editing the Priority Board, the triage graph mixin, or the MCP triage tools | `priority-board-triage` |
+| Editing the plugin platform: the plugins lib or routes, the plugin runner, or the Gateway | `plugin-platform` |
 | Investigating a red, skipped or xfailed test | `redamon-testing` |
 | Writing to the Neo4j graph or editing a graph_db mixin | `graph-db-writes` |
 
@@ -92,7 +94,8 @@ scanners/             the 11 scan tools, each its own container image
   capture_proxy/        mitmproxy HTTP capture
   ai_attack_surface_scan/  LLM/AI attack-surface scanning
   gvm_scan/  github_secret_hunt/  trufflehog_scan/  baddns_scan/  wcvs/  codefix_sandbox/
-services/             supporting services (docker_broker, knowledge_base, postgres_db)
+services/             supporting services (docker_broker, knowledge_base, postgres_db,
+                      plugin_runner: the plugin runner + plugin-gateway proxy image)
 testing/              e2e/ (Playwright) + guinea_pigs/ (vulnerable targets)
 tooling/              scripts/ (e.g. pytest_isolated.py), hooks/, deploy/
 docs/                 readmes/ (prose docs) + assets/ (media)
@@ -100,6 +103,10 @@ docs/                 readmes/ (prose docs) + assets/ (media)
 
 A scanner's container-side paths stay `/app/<scanner>`; only host-side paths
 carry the `scanners/` prefix.
+
+`redamon-plugins/`, if present at the root, is a separate git repository (the plugins
+and their signed catalog, public as `samugit83/redamon-plugins`), ignored by
+`.gitignore`: never commit it here, and never put plugin logic in this repository.
 
 Prose docs live in `docs/readmes/` (architecture, `README.<SUBSYSTEM>.md`, and
 `docs/readmes/coding_agent_prompts/` "how to add X" guides) and `redamon.wiki/`
@@ -149,7 +156,7 @@ Maintained by hand (not touched by `sync.sh`). One row per skill.
 | --- | --- | --- |
 | `redamon-testing` | How tests run + how to author them: the per-file Docker gate, tiers, and green-run-that-lies failure modes | [SKILL.md](skills/redamon-testing/SKILL.md) |
 | `agentic-tool-integration` | Wiring a new tool the agent can call: registry, phase map, dispatch chokepoint, duplicated exec paths | [SKILL.md](skills/agentic-tool-integration/SKILL.md) |
-| `builtin-agent-skill` | Adding a built-in attack skill across its 9 layers (incl. the KNOWN_ATTACK_PATHS gate + silent drawer layers) | [SKILL.md](skills/builtin-agent-skill/SKILL.md) |
+| `builtin-agent-skill` | Adding a built-in attack skill across its 10 layers (incl. the KNOWN_ATTACK_PATHS gate, the skill-part registry + silent drawer layers) | [SKILL.md](skills/builtin-agent-skill/SKILL.md) |
 | `project-settings-cascade` | Changing/adding a project default across Prisma + two Python modules + /defaults + frontend + existing rows | [SKILL.md](skills/project-settings-cascade/SKILL.md) |
 | `graph-db-writes` | Writing the Neo4j graph: the tenant-isolation MERGE key, mixin placement, schema-sync | [SKILL.md](skills/graph-db-writes/SKILL.md) |
 | `recon-ai-enrichment` | Wiring an LLM into a recon tool: never-raise, per-target cache, full+partial, two toggles one field | [SKILL.md](skills/recon-ai-enrichment/SKILL.md) |
@@ -162,3 +169,4 @@ Maintained by hand (not touched by `sync.sh`). One row per skill.
 | `add-partial-recon` | Partial-recon support: graph-sourced inputs, MERGE dedup, the input-node modal, mirror the right ref impl | [SKILL.md](skills/add-partial-recon/SKILL.md) |
 | `mcp-server-tools` | Inbound MCP server tools: regenerate the wiki API reference, spec-accurate destructiveHint, runnable example calls | [SKILL.md](skills/mcp-server-tools/SKILL.md) |
 | `priority-board-triage` | Priority Board layers: nobody writes a score (combine_layers only), one layer per writer, never updated_at, legacy-tolerant readers | [SKILL.md](skills/priority-board-triage/SKILL.md) |
+| `plugin-platform` | Plugin platform: no plugin logic in the base, plugin services only via plugins_converge, overlay-only webapp wiring, every Gateway call re-authorized, plugins only propose | [SKILL.md](skills/plugin-platform/SKILL.md) |

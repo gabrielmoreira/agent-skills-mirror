@@ -365,9 +365,15 @@ and revocation is permanent. Operators must provision unguessable random codes,
 store only their digest, select a published monthly plan and invite eligible
 principals. No campaign is seeded by the migration.
 
-This ledger is not an entitlement or spendable balance. It does not create Stripe
-records, start a paid renewal or expose a public redemption endpoint. Service
-access and allowance publication must be integrated atomically before a product
-can enable redemption. Existing paid or unresolved checkout work prevents new
-admission; the later public flow must also prevent checkout while sponsored
-access is active.
+Migration 0543 publishes access and six separate monthly, non-rollover allowances
+in the redemption transaction. Each month receives the immutable selected plan's
+paid allowance for one seat. No Stripe subscription or invoice is fabricated.
+App inference reserves participant allowance and real developer infrastructure
+funds together. It rechecks revocation and time before dispatch; settlement and
+release retain their original accounting after expiry or revocation. Active pilot
+access prevents a paid checkout. Usage records identify pilot funding explicitly.
+
+A failed publication rolls back redemption and campaign capacity. The public
+redemption/readback API and product UI are still required before enabling a
+pilot campaign. Real providers, registered app configuration and device/user
+acceptance remain separate gates.

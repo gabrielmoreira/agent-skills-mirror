@@ -11,25 +11,211 @@ Load this when agents need a path over walkable space before adding a crate. Mov
 
 ## ECS shape
 
-- **Components** may store a goal `Transform` target and a path as your own data (a list of positions you define). The ECS page allows plain `Component` structs. It does not define a nav agent.
-- **Resources** would own a map. None was opened.
-- **Systems** that follow a path you already computed should move on `Fixed` / `FixedMain` (`bevy::time`) and use `.chain()` when the next waypoint must be visible before motion. Check the docs for a path-computation API before writing one.
-- **Schedule:** do not invent a navigation schedule name.
+- **Components** store the goal cell and the waypoint list for one agent.
+- **Resources** own the walk grid: width, height, and blocked cells.
+- **Systems** search on `Update`, then step along the path on `FixedUpdate`. `.chain()` keeps the new path visible before motion.
+- **Schedule:** search and follow stay on the app schedules above. Crowd policy stays on bevy-ai-navigation.
 
-## Coming from Godot
+## Ownership
 
-| Godot idea | Bevy idiom |
+| Need | Bevy shape |
 | --- | --- |
-| Navigation agent | Check the docs for an agent component before writing one. |
-| Baked region | Unverified. Do not copy Godot bake calls |
-| Avoidance | Unverified |
-| Next waypoint | Your component data, then bevy-character-movement |
+| Agent | An entity with a goal and a waypoint list |
+| Walkable space | A `WalkGrid` resource of blocked cells |
+| Avoidance | Separation stays on bevy-ai-navigation |
+| Next waypoint | `AgentPath` stepped on `FixedUpdate` |
 
 ## Scope
 
-- Check docs.rs `bevy` `latest` (0.20.0 on bevy-master) for a navigation module before naming mesh, link, layer, or cost types.
-- `add_plugins` allows a third-party crate later. No navigation plugin path is named here. Check the assets catalog before choosing one.
-- Runtime rebake, stuck recovery, and crowd radius are unverified.
+- A grid, a breadth-first search, and a follower are enough for walkable cells. Navmesh baking and crowd radius stay outside this skill.
+- Actor locomotion after a waypoint exists belongs on bevy-character-movement.
+
+## Examples
+
+```toml
+[package]
+name = "navigation"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.20"
+```
+
+The grid is a resource. Search writes waypoints. The follower consumes them on the fixed step.
+
+```rust
+use std::collections::VecDeque;
+
+#[derive(Resource)]
+struct WalkGrid {
+    width: i32,
+    height: i32,
+    cell: f32,
+    blocked: Vec<bool>,
+}
+
+#[derive(Component)]
+struct GoalCell(i32, i32);
+
+#[derive(Component)]
+struct AgentPath {
+    waypoints: Vec<Vec3>,
+    index: usize,
+}
+
+fn cell_index(grid: &WalkGrid, x: i32, y: i32) -> Option<usize> {
+    if x < 0 || y < 0 || x >= grid.width || y >= grid.height {
+        return None;
+    }
+    Some((y * grid.width + x) as usize)
+}
+
+fn search(grid: &WalkGrid, start: (i32, i32), goal: (i32, i32)) -> Vec<Vec3> {
+    let Some(start_i) = cell_index(grid, start.0, start.1) else {
+        return Vec::new();
+    };
+    if grid.blocked[start_i] {
+        return Vec::new();
+    }
+    let mut prev: Vec<Option<(i32, i32)>> = vec![None; grid.blocked.len()];
+    let mut queue = VecDeque::new();
+    prev[start_i] = Some(start);
+    queue.push_back(start);
+    while let Some((x, y)) = queue.pop_front() {
+        if (x, y) == goal {
+            break;
+        }
+        for (nx, ny) in [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)] {
+            let Some(i) = cell_index(grid, nx, ny) else {
+                continue;
+            };
+            if grid.blocked[i] || prev[i].is_some() {
+                continue;
+            }
+            prev[i] = Some((x, y));
+            queue.push_back((nx, ny));
+        }
+    }
+    let Some(_) = cell_index(grid, goal.0, goal.1).filter(|i| prev[*i].is_some()) else {
+        return Vec::new();
+    };
+    let mut cells = Vec::new();
+    let mut cursor = goal;
+    cells.push(cursor);
+    while cursor != start {
+        let Some(i) = cell_index(grid, cursor.0, cursor.1) else {
+            break;
+        };
+        let Some(parent) = prev[i] else {
+            break;
+        };
+        if parent == cursor {
+            break;
+        }
+        cursor = parent;
+        cells.push(cursor);
+    }
+    cells.reverse();
+    cells
+        .into_iter()
+        .map(|(x, y)| Vec3::new(x as f32 * grid.cell, 0.0, y as f32 * grid.cell))
+        .collect()
+}
+
+fn plan_paths(
+    grid: Res<WalkGrid>,
+    mut agents: Query<(&Transform, Ref<GoalCell>, &mut AgentPath)>,
+) {
+    let grid_changed = grid.is_changed();
+    for (tf, goal, mut path) in &mut agents {
+        if !grid_changed && !goal.is_changed() {
+            continue;
+        }
+        let start = (
+            (tf.translation.x / grid.cell).floor() as i32,
+            (tf.translation.z / grid.cell).floor() as i32,
+        );
+        path.waypoints = search(&grid, start, (goal.0, goal.1));
+        path.index = 0;
+    }
+}
+
+fn follow_paths(time: Res<Time<Fixed>>, mut agents: Query<(&mut Transform, &mut AgentPath)>) {
+    let step = 4.0 * time.delta_secs();
+    for (mut tf, mut path) in &mut agents {
+        let Some(goal) = path.waypoints.get(path.index).copied() else {
+            continue;
+        };
+        let delta = goal - tf.translation;
+        let dist = delta.length();
+        if dist <= step || dist == 0.0 {
+            tf.translation = goal;
+            path.index += 1;
+        } else {
+            tf.translation += delta / dist * step;
+        }
+    }
+}
+
+pub struct NavigationPlugin;
+
+impl Plugin for NavigationPlugin {
+    fn build(&self, app: &mut App) {
+        let width = 8;
+        let height = 8;
+        app.insert_resource(WalkGrid {
+            width,
+            height,
+            cell: 1.0,
+            blocked: vec![false; (width * height) as usize],
+        })
+        .add_systems(Update, plan_paths)
+        .add_systems(FixedUpdate, follow_paths);
+    }
+}
+```
+
+Mark a cell blocked and give an agent a goal. Planning runs again because the grid resource changed.
+
+```rust
+#[derive(Resource)]
+struct WalkGrid {
+    width: i32,
+    height: i32,
+    cell: f32,
+    blocked: Vec<bool>,
+}
+
+#[derive(Component)]
+struct GoalCell(i32, i32);
+
+#[derive(Component)]
+struct AgentPath {
+    waypoints: Vec<Vec3>,
+    index: usize,
+}
+
+fn block_cell(mut grid: ResMut<WalkGrid>) {
+    let x = 2;
+    let y = 3;
+    let i = (y * grid.width + x) as usize;
+    if let Some(cell) = grid.blocked.get_mut(i) {
+        *cell = true;
+    }
+}
+
+fn spawn_agent(mut commands: Commands) {
+    commands.spawn((
+        Transform::from_xyz(0.0, 0.0, 0.0),
+        GoalCell(5, 5),
+        AgentPath {
+            waypoints: Vec::new(),
+            index: 0,
+        },
+    ));
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -53,12 +239,12 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A field stored outside a component |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API outside the documented set | Check the official docs first | A made-up crate or API |
+| A path over cells | `WalkGrid` plus breadth-first search | An engine navmesh type this crate does not ship |
 
 Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownership table.
 
@@ -68,35 +254,31 @@ Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownershi
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot navigation agent, region, or server types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No navigation types from another engine. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 - No named third-party navigation crate as the chosen solver. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 - No invented bake, avoidance, or path-query APIs. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+Official links stay on bevy.org. The library pin on bevy-master stays **0.20**. No navigation module was opened.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - Unversioned API index. No navigation module was opened.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No navigation plugin was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, `Query`, `Commands`, and `.chain()`.
-- [bevy::time](https://docs.rs/bevy/latest/bevy/time/index.html) - `Fixed` and `FixedMain` for motion after a path exists.
 - [Quick Start: plugins](https://bevy.org/learn/quick-start/getting-started/plugins/) - `add_plugins` without a chosen nav crate.
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership.
-- [bevy-character-movement](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-character-movement/SKILL.md) - How an actor moves once a waypoint exists.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership.
+- [bevy-character-movement](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-character-movement/SKILL.md) - How an actor moves once a waypoint exists.
 
 #### Complements
-- [bevy-ai-navigation](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ai-navigation/SKILL.md) - Chase, patrol, and retarget policy. Not the mesh.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) - Equivalent Godot skill.
+- [bevy-ai-navigation](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ai-navigation/SKILL.md) - Chase, patrol, and retarget policy. Not the mesh.
 
 #### Downstream / consumers
 - Genre skills route chase, patrol, and similar policies.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

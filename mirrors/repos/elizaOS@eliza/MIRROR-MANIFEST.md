@@ -71,7 +71,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`packages/app/deploy/dstack-alpha/README.md`](packages/app/deploy/dstack-alpha/README.md) |
 | 7 | ✓ | [`packages/app/deploy/README.md`](packages/app/deploy/README.md) |
 | 8 | ✓ | [`packages/app/e2e/accounts-ui/README.md`](packages/app/e2e/accounts-ui/README.md) |
-| 9 | ✓ | [`packages/app/platforms/android/kokoro-voice/README.md`](packages/app/platforms/android/kokoro-voice/README.md) |
+| 9 | ✓ | [`packages/app/platforms/android/paradee-voice/README.md`](packages/app/platforms/android/paradee-voice/README.md) |
 | 10 | ✓ | [`packages/app/platforms/android/README.md`](packages/app/platforms/android/README.md) |
 | 11 | ✓ | [`packages/app/platforms/electrobun/direct-only/computeruse-exact-window/README.md`](packages/app/platforms/electrobun/direct-only/computeruse-exact-window/README.md) |
 | 12 | ✓ | [`packages/app/platforms/electrobun/entitlements/README.md`](packages/app/platforms/electrobun/entitlements/README.md) |

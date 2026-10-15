@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [19.7.0] - 2026-10-14 - "Clearer Plugins, Recovered Resources And Safer Skills"
+
+> Adds **browser-bridge**, ships **2,690** catalog skills, and consolidates **58** overlapping plugin bundles into **30** active offers with preserved skill inventories and migration guidance.
+
+### Added
+
+- **browser-bridge** — Edge and Chrome automation guidance for an explicitly approved upstream bridge, with pinned provenance, accurate command examples and authenticated-action boundaries. The skill does not install or start a bridge service.
+
+### Changed
+
+- Unified overlapping old bundles and specialized AAS plugins. Web App Builder and Product Design Studio have clear canonical names; security, agents, Python/API, marketing, data and other retained packs preserve their useful skills.
+- Restored licensed upstream references and helpers, including Deep Research, Imagen and OSINT material, with immutable source notices, bounded inputs and explicit provider/runtime limitations.
+- Recorded two individual review cohorts of **175** skill trees each, alongside focused documentation and integration repairs. This release changes **571** canonical skill trees relative to `19.6.0`; that count includes content and metadata changes.
+
+### Fixed
+
+- Corrected examples, cancellation and retry behavior, credential/output handling, environment prerequisites, unsupported claims and missing local resources in the reviewed cohorts.
+- TypeScript diagnostics now fail when the compiler cannot run, use locally installed tools and correctly handle the bundled JSONC configuration; export and Vitest examples are updated.
+- Web performance guidance uses INP and correct tree-shaking, image dimensions and hero-image loading advice.
+- Scanner reports retain useful local locations and fixed finding labels while omitting raw suspicious payloads and credential values.
+- Release subprocesses preserve argument boundaries on Windows and reject invalid versions before Git or filesystem changes.
+
+### Review scope
+
+The reported cohorts have individual receipts and bundled-file review evidence. The complete catalog audit remains unfinished; this release does not claim that all 2,690 skills were deeply reviewed or exercised against live services. Native-host and provider limitations remain explicit in the review records.
+
+### Thanks
+
+Thanks to **@AshenJyy** and **@jwcastillo** for the browser, TypeScript and web-performance contributions, and to the upstream authors whose licensed resources were recovered.
+
+---
+
 ## [19.6.0] - 2026-10-13 - "Focused Plugins, Safer Workflows And Complete Agent Setup"
 
 > Adds **2** catalog skills and expands **21** focused plugins with **48** useful memberships. Ships **2,689** skills, with complete Codex/Claude setup guidance and reviewed fixes to API, testing, accessibility, analytics and agent-evaluation examples.

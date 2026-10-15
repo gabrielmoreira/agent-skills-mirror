@@ -140,8 +140,35 @@ profiles](mcp-contracts.md#output-schemas).
 Setup registers `rea` in `~/.kimi-code/mcp.json`, or
 `$KIMI_CODE_HOME/mcp.json` when set, while preserving unrelated settings and
 creating a `.rea.backup` before updating an existing file. Kimi Code infers
-stdio from the `command` entry, so setup does not add a `type` field. The
-registration includes `startupTimeoutMs = 30000` and `toolTimeoutMs = 120000`.
+stdio from the `command` entry, so setup does not add a `type` field. New
+registrations include `startupTimeoutMs = 30000` and a `toolTimeoutMs` derived
+from REA's known provider allowance plus 120 seconds of operation
+headroom. The default is 450000 ms, covering the default 330-second Ghidra
+startup; an explicit Ghidra startup timeout of 2700000 ms produces a 2820000 ms
+tool timeout. The startup allowance follows an explicitly selected Ghidra or
+Hopper provider, and otherwise uses the larger known Ghidra/Hopper deadline.
+An explicit `REA_JEB_MCP_TIMEOUT_MS` request budget also contributes to that
+maximum. For `ida` or `auto` selection, a valid IDA registration's parsed
+`timeoutMs` also contributes to that maximum; its default is 300000 ms.
+Setup forwards these explicitly selected REA deadlines and the input schema
+profile into the registration; unrelated process values are omitted.
+This headroom is a practical default, not a guarantee for every analysis
+duration. Setup preserves positive timeout values already in the `rea` entry.
+You can edit `startupTimeoutMs` and `toolTimeoutMs` there; doctor keeps positive
+caller-selected values aligned and reports a non-blocking advisory when a tool
+timeout is shorter than the known provider allowance.
+Setup selects the compact input-schema advertisement for new or refreshed Kimi
+registrations unless their stored configuration or setup environment explicitly
+selects `REA_MCP_INPUT_SCHEMA_PROFILE=full` or `compact`. This keeps REA's
+canonical tool validation unchanged while avoiding a Moonshot Kimi Code 2.2.0
+failure observed with the full catalog: its request was rejected because a
+single tool schema exceeded the provider's size limit. The limit is
+provider-specific and not an MCP protocol limit. `rea doctor --client kimi`
+reports an older registration with no explicit profile as stale. To restore the
+compact profile, run `rea setup --client kimi` or add
+`REA_MCP_INPUT_SCHEMA_PROFILE=compact` to the registration's `env`, then restart
+Kimi Code. An explicit `full` profile remains respected and can still exceed
+Moonshot's limit.
 Kimi Code also discovers personal skills in `~/.agents/skills` and project-local
 `.agents/skills`, so no separate skill root is required; setup still installs
 and verifies the matching skill files through the normal shared-skill flow.
@@ -207,8 +234,20 @@ standalone CLI check.
 
 ## Codex and Devin
 
-Codex treats an unset or empty `CODEX_HOME` as `~/.codex`. Devin honors
-`XDG_CONFIG_HOME` for its `devin/mcp_config.json` on non-Windows systems.
+Codex treats an unset or empty `CODEX_HOME` as `~/.codex`. Its MCP server
+registration supports `startup_timeout_sec` for connection initialization and
+`tool_timeout_sec` for each tool call. New REA registrations use a 30-second
+startup timeout and a tool timeout derived from the known provider
+allowance plus 120 seconds of operation headroom. This yields 450 seconds for
+the default Ghidra allowance; an explicit Ghidra startup timeout of 2700
+seconds yields 2820 seconds. Setup preserves positive caller-selected timeout
+values in the REA entry, and doctor reports a non-blocking advisory when a tool
+timeout is shorter than the known provider allowance. An explicitly selected
+JEB request budget also contributes to the allowance. A configured IDA
+registration's parsed `timeoutMs` contributes for `ida` or `auto` selection.
+These values are client-side deadlines, so increase them in `~/.codex/config.toml` if a
+workload needs more time. Devin honors `XDG_CONFIG_HOME` for its
+`devin/mcp_config.json` on non-Windows systems.
 
 ## OMP
 

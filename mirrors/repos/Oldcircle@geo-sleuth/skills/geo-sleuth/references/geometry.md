@@ -238,12 +238,13 @@ When you have the building name, look up its floor count and floor height direct
 Window views, downward shots from tall buildings, views across a river: as long as you can identify ≥4 points on satellite imagery (bridgeheads, spires, building corners, intersections, sports-field corners), you can solve the camera position's lat/lon, height, heading, pitch, roll and FOV in one go. It uses height information that a two-sight-line intersection doesn't, and can compute the floor directly.
 
 ```bash
-# spec.json: {"image_size":[W,H], "points":[{"name":…,"px":[x,y],"ll":[lat,lon],"h":<elevation ASL>}...],
+# spec.json: {"frame":"upright", "image_size":[W,H], "points":[{"name":…,"px":[x,y],"ll":[lat,lon],"h":<elevation ASL>}...],
 #             "init":{"at":[lat,lon],"height":<elevation ASL>,"heading":…,"pitch":…,"hfov":65}, "fix":["hfov"]}
 uv run scripts/pose.py solve spec.json --photo photo.jpg --out pose_check.jpg --search-radius 500
 uv run scripts/pose.py project --pose pose.json --points river_bank.json --photo photo.jpg --out bank_check.jpg
 ```
 
+- In this template, `image_size` and `px` use the whole photo after EXIF orientation is applied, matching `imgprep.py` and `ocr.py`. Old specs without `frame` retain the stored-pixel frame when solved again; the saved pose carries the frame through to `project`.
 - The heights of the points and of the camera position must use the same datum; always use elevation above sea level: ground points via `terrain.py elev`, rooftop = ground elevation + building height.
 - Spread the points across different directions and distances in the frame; if they all lie on one line the solution is unstable (the script warns).
 - Check `rms_px` in the output (reprojection error; >15 px means a point is misidentified or the height datums are inconsistent) and `radius_m` (95% error radius; use it directly as the radius in the conclusion).

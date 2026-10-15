@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `first-fluke/oh-my-agent` — 26 default patterns, 0 followed patterns, 940 file(s) materialized.
+Mirror of `first-fluke/oh-my-agent` — 26 default patterns, 0 followed patterns, 976 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `first-fluke/oh-my-agent` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 940 |
+| Files         | 976 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -986,19 +986,55 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 925 | ✓ | [`skills/oma-voice/resources/prompt-tips.md`](skills/oma-voice/resources/prompt-tips.md) |
 | 926 | ✓ | [`skills/oma-voice/resources/voice-matrix.md`](skills/oma-voice/resources/voice-matrix.md) |
 | 927 | ✓ | [`skills/oma-voice/SKILL.md`](skills/oma-voice/SKILL.md) |
-| 928 | ✓ | [`web/docs/core-concepts/skills.md`](web/docs/core-concepts/skills.md) |
-| 929 | ✓ | [`web/i18n/de/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/de/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 930 | ✓ | [`web/i18n/es/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/es/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 931 | ✓ | [`web/i18n/fr/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/fr/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 932 | ✓ | [`web/i18n/ja/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/ja/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 933 | ✓ | [`web/i18n/ko/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/ko/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 934 | ✓ | [`web/i18n/nl/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/nl/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 935 | ✓ | [`web/i18n/pl/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/pl/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 936 | ✓ | [`web/i18n/pt/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/pt/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 937 | ✓ | [`web/i18n/ru/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/ru/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 938 | ✓ | [`web/i18n/vi/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/vi/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 939 | ✓ | [`web/i18n/zh/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/zh/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
-| 940 | ✓ | [`web/static/llms.txt`](web/static/llms.txt) |
+| 928 | ✓ | [`web/docs/core-concepts/agents.md`](web/docs/core-concepts/agents.md) |
+| 929 | ✓ | [`web/docs/core-concepts/project-structure.md`](web/docs/core-concepts/project-structure.md) |
+| 930 | ✓ | [`web/docs/core-concepts/skills.md`](web/docs/core-concepts/skills.md) |
+| 931 | ✓ | [`web/docs/core-concepts/workflows.md`](web/docs/core-concepts/workflows.md) |
+| 932 | ✓ | [`web/i18n/de/docusaurus-plugin-content-docs/current/core-concepts/agents.md`](web/i18n/de/docusaurus-plugin-content-docs/current/core-concepts/agents.md) |
+| 933 | ✓ | [`web/i18n/de/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md`](web/i18n/de/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md) |
+| 934 | ✓ | [`web/i18n/de/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/de/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 935 | ✓ | [`web/i18n/de/docusaurus-plugin-content-docs/current/core-concepts/workflows.md`](web/i18n/de/docusaurus-plugin-content-docs/current/core-concepts/workflows.md) |
+| 936 | ✓ | [`web/i18n/es/docusaurus-plugin-content-docs/current/core-concepts/agents.md`](web/i18n/es/docusaurus-plugin-content-docs/current/core-concepts/agents.md) |
+| 937 | ✓ | [`web/i18n/es/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md`](web/i18n/es/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md) |
+| 938 | ✓ | [`web/i18n/es/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/es/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 939 | ✓ | [`web/i18n/es/docusaurus-plugin-content-docs/current/core-concepts/workflows.md`](web/i18n/es/docusaurus-plugin-content-docs/current/core-concepts/workflows.md) |
+| 940 | ✓ | [`web/i18n/fr/docusaurus-plugin-content-docs/current/core-concepts/agents.md`](web/i18n/fr/docusaurus-plugin-content-docs/current/core-concepts/agents.md) |
+| 941 | ✓ | [`web/i18n/fr/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md`](web/i18n/fr/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md) |
+| 942 | ✓ | [`web/i18n/fr/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/fr/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 943 | ✓ | [`web/i18n/fr/docusaurus-plugin-content-docs/current/core-concepts/workflows.md`](web/i18n/fr/docusaurus-plugin-content-docs/current/core-concepts/workflows.md) |
+| 944 | ✓ | [`web/i18n/ja/docusaurus-plugin-content-docs/current/core-concepts/agents.md`](web/i18n/ja/docusaurus-plugin-content-docs/current/core-concepts/agents.md) |
+| 945 | ✓ | [`web/i18n/ja/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md`](web/i18n/ja/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md) |
+| 946 | ✓ | [`web/i18n/ja/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/ja/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 947 | ✓ | [`web/i18n/ja/docusaurus-plugin-content-docs/current/core-concepts/workflows.md`](web/i18n/ja/docusaurus-plugin-content-docs/current/core-concepts/workflows.md) |
+| 948 | ✓ | [`web/i18n/ko/docusaurus-plugin-content-docs/current/core-concepts/agents.md`](web/i18n/ko/docusaurus-plugin-content-docs/current/core-concepts/agents.md) |
+| 949 | ✓ | [`web/i18n/ko/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md`](web/i18n/ko/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md) |
+| 950 | ✓ | [`web/i18n/ko/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/ko/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 951 | ✓ | [`web/i18n/ko/docusaurus-plugin-content-docs/current/core-concepts/workflows.md`](web/i18n/ko/docusaurus-plugin-content-docs/current/core-concepts/workflows.md) |
+| 952 | ✓ | [`web/i18n/nl/docusaurus-plugin-content-docs/current/core-concepts/agents.md`](web/i18n/nl/docusaurus-plugin-content-docs/current/core-concepts/agents.md) |
+| 953 | ✓ | [`web/i18n/nl/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md`](web/i18n/nl/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md) |
+| 954 | ✓ | [`web/i18n/nl/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/nl/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 955 | ✓ | [`web/i18n/nl/docusaurus-plugin-content-docs/current/core-concepts/workflows.md`](web/i18n/nl/docusaurus-plugin-content-docs/current/core-concepts/workflows.md) |
+| 956 | ✓ | [`web/i18n/pl/docusaurus-plugin-content-docs/current/core-concepts/agents.md`](web/i18n/pl/docusaurus-plugin-content-docs/current/core-concepts/agents.md) |
+| 957 | ✓ | [`web/i18n/pl/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md`](web/i18n/pl/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md) |
+| 958 | ✓ | [`web/i18n/pl/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/pl/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 959 | ✓ | [`web/i18n/pl/docusaurus-plugin-content-docs/current/core-concepts/workflows.md`](web/i18n/pl/docusaurus-plugin-content-docs/current/core-concepts/workflows.md) |
+| 960 | ✓ | [`web/i18n/pt/docusaurus-plugin-content-docs/current/core-concepts/agents.md`](web/i18n/pt/docusaurus-plugin-content-docs/current/core-concepts/agents.md) |
+| 961 | ✓ | [`web/i18n/pt/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md`](web/i18n/pt/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md) |
+| 962 | ✓ | [`web/i18n/pt/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/pt/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 963 | ✓ | [`web/i18n/pt/docusaurus-plugin-content-docs/current/core-concepts/workflows.md`](web/i18n/pt/docusaurus-plugin-content-docs/current/core-concepts/workflows.md) |
+| 964 | ✓ | [`web/i18n/ru/docusaurus-plugin-content-docs/current/core-concepts/agents.md`](web/i18n/ru/docusaurus-plugin-content-docs/current/core-concepts/agents.md) |
+| 965 | ✓ | [`web/i18n/ru/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md`](web/i18n/ru/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md) |
+| 966 | ✓ | [`web/i18n/ru/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/ru/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 967 | ✓ | [`web/i18n/ru/docusaurus-plugin-content-docs/current/core-concepts/workflows.md`](web/i18n/ru/docusaurus-plugin-content-docs/current/core-concepts/workflows.md) |
+| 968 | ✓ | [`web/i18n/vi/docusaurus-plugin-content-docs/current/core-concepts/agents.md`](web/i18n/vi/docusaurus-plugin-content-docs/current/core-concepts/agents.md) |
+| 969 | ✓ | [`web/i18n/vi/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md`](web/i18n/vi/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md) |
+| 970 | ✓ | [`web/i18n/vi/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/vi/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 971 | ✓ | [`web/i18n/vi/docusaurus-plugin-content-docs/current/core-concepts/workflows.md`](web/i18n/vi/docusaurus-plugin-content-docs/current/core-concepts/workflows.md) |
+| 972 | ✓ | [`web/i18n/zh/docusaurus-plugin-content-docs/current/core-concepts/agents.md`](web/i18n/zh/docusaurus-plugin-content-docs/current/core-concepts/agents.md) |
+| 973 | ✓ | [`web/i18n/zh/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md`](web/i18n/zh/docusaurus-plugin-content-docs/current/core-concepts/project-structure.md) |
+| 974 | ✓ | [`web/i18n/zh/docusaurus-plugin-content-docs/current/core-concepts/skills.md`](web/i18n/zh/docusaurus-plugin-content-docs/current/core-concepts/skills.md) |
+| 975 | ✓ | [`web/i18n/zh/docusaurus-plugin-content-docs/current/core-concepts/workflows.md`](web/i18n/zh/docusaurus-plugin-content-docs/current/core-concepts/workflows.md) |
+| 976 | ✓ | [`web/static/llms.txt`](web/static/llms.txt) |
 
 ---
 

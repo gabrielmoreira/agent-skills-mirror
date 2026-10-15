@@ -55,6 +55,11 @@ dependency sections are typed failures. A cycle is reported and is not walked.
 
 A missing section returns success with `auditable_metadata: null` and a
 limitation. Absence of `.dep-v0` does not mean the binary has no dependencies.
+Unknown embedded format revisions are retained in `format_version` and
+interpreted using the highest known preceding revision, following the
+cargo-auditable schema. The output includes a limitation that identifies this
+fallback and notes that the particular revision has not been independently
+verified. An omitted revision remains `null` and follows revision 0 semantics.
 Embedded names and versions are file content. They do not authenticate the
 packages or the compiler.
 

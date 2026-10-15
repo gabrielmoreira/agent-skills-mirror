@@ -10,7 +10,7 @@ metadata:
     phase: scheduled-ops-blueprint
     role: operator
     quality_tier: ops-blueprint-gated
-    related_skills: [omh-lifecycle-growth, omh-report-package, omh-materials-package, omh-reliability-review]
+    related_skills: [omh-lifecycle-growth, omh-report-package, omh-materials-package, omh-reliability-review, omh-spend-gate]
 ---
 
 # Automation Blueprint
@@ -28,6 +28,7 @@ This is a Hermes-native `automation-blueprint` workflow skill.
 - The user asks to review incident metrics once; use `omh-reliability-review`.
 - The user needs actual code changes; prepare a selected executor/runtime handoff after the blueprint or plan is accepted.
 - The person is inside Hermes' own /blueprint setup for one of its catalog automations; answer the questions that flow asks and let it create the job instead of preparing a second blueprint.
+- The recurring job would move money -- a purchase, a renewal, a top-up, or a transfer; use `omh-spend-gate`, because an agent run on a schedule never spends, and a no-agent script that pays is a spend set up now: its card, typed yes, and cap come before the job exists.
 
 ## Examples
 

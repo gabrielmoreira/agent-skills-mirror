@@ -12,4 +12,23 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+```rust
+fn chain_example(app: &mut App) {
+    app.add_systems(Update, (write_health, read_health).chain());
+}
+
+#[derive(Component)]
+struct Hp(i32);
+
+fn write_health(mut query: Query<&mut Hp>) {
+    for mut hp in &mut query {
+        hp.0 -= 1;
+    }
+}
+
+fn read_health(query: Query<&Hp>) {
+    for hp in &query {
+        let _ = hp.0;
+    }
+}
+```

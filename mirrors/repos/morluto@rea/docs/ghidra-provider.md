@@ -153,8 +153,8 @@ overview merely because its source artifact is unchanged.
 
 Function extents and instruction completeness refer to Ghidra's analyzed body.
 An inferred no-return call can terminate that body before subsequent bytes.
-Pseudocode, assembly, procedure info, instruction windows, callee and caller
-reads, and dossiers report observed terminal call sites in Evidence limitations,
+Pseudocode, assembly, procedure info, instruction windows, incoming and outgoing
+references, callee and caller reads, and dossiers report observed terminal call sites in Evidence limitations,
 including resolved callee names, addresses, and FunctionManager flags when
 available. On x86-32, the same views also report the exact Borland/Delphi-style
 FS exception-registration pattern when its handler address falls outside the

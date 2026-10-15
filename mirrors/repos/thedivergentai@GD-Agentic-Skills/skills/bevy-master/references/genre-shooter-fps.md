@@ -1,9 +1,9 @@
 ---
 name: bevy-genre-shooter-fps
-description: "Thin Bevy genre router for FPS shooter. Keywords: Bevy, FPS shooter, genre, ECS, router."
+description: "Bevy genre router for FPS shooter. Keywords: Bevy, FPS shooter, genre, ECS, router."
 ---
 
-# Bevy FPS shooter (thin router)
+# Bevy FPS shooter
 
 Genre router. Domain work lives in the Bevy skills below.
 
@@ -16,27 +16,155 @@ Load this for a first-person shooter route: 3D camera, view model, and combat.
 - **Components** hold the genre's per-entity flags as plain data. This file does not name new engine types.
 - **Resources** hold run-wide counters (score, wave index, seed) via bevy-data-resources.
 - **Systems** read those components on `Update` or the fixed timestep from bevy-master. Order them with `.chain()` when a later system must see the result.
-- **Schedule:** gameplay mode changes go through bevy-state-machines. Do not invent a genre plugin.
+- **Schedule:** gameplay mode changes go through bevy-state-machines. Look, the view model, and the shot clock below are components plus one resource.
 
-## Coming from Godot
+## Examples
 
-| Godot idea | Bevy idiom |
+```toml
+[dependencies]
+bevy = "0.20"
+```
+
+Pitch stays on the camera. Yaw stays on the body so the view model inherits the turn. The shot clock is a resource. `tick_shot` then `fire` share `ShotClock`, so they chain. Look writes a different component and stays outside that chain.
+
+```rust
+use bevy::input::mouse::AccumulatedMouseMotion;
+use bevy::window::{CursorGrabMode, CursorOptions, PrimaryWindow};
+
+#[derive(Component)]
+struct LookPitch {
+    radians: f32,
+}
+
+#[derive(Component)]
+struct FpsBody;
+
+#[derive(Component)]
+struct ViewModel;
+
+#[derive(Resource)]
+struct ShotClock {
+    seconds_left: f32,
+}
+
+fn boot(mut commands: Commands) {
+    commands.insert_resource(ShotClock { seconds_left: 0.0 });
+    let body = commands
+        .spawn((FpsBody, Transform::from_xyz(0.0, 1.6, 0.0)))
+        .id();
+    commands.spawn((
+        Camera3d::default(),
+        LookPitch { radians: 0.0 },
+        Transform::default(),
+        ChildOf(body),
+    ));
+    commands.spawn((
+        ViewModel,
+        Transform::from_xyz(0.25, -0.2, -0.45),
+        ChildOf(body),
+    ));
+}
+
+fn lock_pointer(mut windows: Query<&mut CursorOptions, With<PrimaryWindow>>) {
+    for mut window in &mut windows {
+        window.visible = false;
+        window.grab_mode = CursorGrabMode::Locked;
+    }
+}
+
+fn apply_look(
+    motion: Res<AccumulatedMouseMotion>,
+    mut bodies: Query<&mut Transform, With<FpsBody>>,
+    mut cameras: Query<(&mut Transform, &mut LookPitch), Without<FpsBody>>,
+) {
+    let dx = motion.delta.x;
+    let dy = motion.delta.y;
+    for mut transform in &mut bodies {
+        transform.rotate_y(-dx * 0.002);
+    }
+    for (mut transform, mut pitch) in &mut cameras {
+        pitch.radians = (pitch.radians - dy * 0.002).clamp(-1.2, 1.2);
+        transform.rotation = Quat::from_rotation_x(pitch.radians);
+    }
+}
+
+fn tick_shot(time: Res<Time>, mut clock: ResMut<ShotClock>) {
+    clock.seconds_left = (clock.seconds_left - time.delta_secs()).max(0.0);
+}
+
+fn fire(
+    keys: Res<ButtonInput<MouseButton>>,
+    mut clock: ResMut<ShotClock>,
+) {
+    if clock.seconds_left > 0.0 || !keys.just_pressed(MouseButton::Left) {
+        return;
+    }
+    clock.seconds_left = 0.12;
+}
+
+fn install(app: &mut App) {
+    app.add_systems(Startup, (boot, lock_pointer))
+        .add_systems(Update, apply_look)
+        .add_systems(Update, (tick_shot, fire).chain());
+}
+```
+
+A shot hits when a target lies inside a cone along the body's forward axis. This is data on transforms. Physics crates stay in the combat skill.
+
+```rust
+#[derive(Component)]
+struct FpsBody;
+
+#[derive(Component)]
+struct Target;
+
+#[derive(Component)]
+struct Health {
+    points: i32,
+}
+
+fn hitscan(
+    bodies: Query<&GlobalTransform, With<FpsBody>>,
+    mut targets: Query<(&GlobalTransform, &mut Health), With<Target>>,
+) {
+    let Some(body) = bodies.iter().next() else {
+        return;
+    };
+    let origin = body.translation();
+    let forward = body.forward().as_vec3();
+    for (transform, mut health) in &mut targets {
+        let to_target = transform.translation() - origin;
+        let distance = to_target.length();
+        if distance > 40.0 || distance < 0.05 {
+            continue;
+        }
+        let along = to_target.normalize().dot(forward);
+        if along > 0.98 {
+            health.points -= 20;
+        }
+    }
+}
+```
+
+## Scene shape
+
+| Piece | Bevy idiom |
 | --- | --- |
-| Genre scene tree | Entities plus the domain skills linked below |
-| Autoload director | A resource, not a singleton node |
-| Signal bus for the loop | bevy-events-messaging |
+| Genre content | Entities plus the domain skills linked below |
+| Run-wide director | A `Resource` |
+| Loop notices | bevy-events-messaging |
 
 ## Routing
 
-- [bevy-camera-systems](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-camera-systems/SKILL.md) - Camera3d.
-- [bevy-input-handling](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Look. Cursor grab is only named on the window page.
-- [bevy-combat-system](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-combat-system/SKILL.md) - Damage.
-- [bevy-3d-world-building](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-3d-world-building/SKILL.md) - Arenas.
+- [bevy-camera-systems](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-camera-systems/SKILL.md) - Camera3d.
+- [bevy-input-handling](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Look. Pointer lock is `CursorOptions` on the primary window.
+- [bevy-combat-system](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-combat-system/SKILL.md) - Damage.
+- [bevy-3d-world-building](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-3d-world-building/SKILL.md) - Arenas.
 
 ## Scope
 
-- Check the docs for a first-person controller before writing one. `bevy_camera_controller` exists as a feature. Check that feature's docs for its types before writing them.
-- Hitscan belongs on bevy-spatial-queries.
+- Look is `LookPitch` on the camera plus yaw on `FpsBody`. The camera and view model use `ChildOf` so they inherit that yaw. Pointer lock uses `CursorOptions`. `ShotClock` gates fire. The hitscan example compares transforms. `bevy_camera_controller` is an optional Bevy feature; this skill uses `Camera3d` and `Transform` directly.
+- Broader spatial queries belong on bevy-spatial-queries.
 
 ## Expert Knowledge Delta
 
@@ -60,7 +188,7 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | One script that owns the whole tree |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
@@ -75,17 +203,15 @@ Load [references/ecs-ownership.md](genre-shooter-fps-ecs-ownership.md) for the o
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot types in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No foreign-engine types in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 - No invented genre APIs. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 - Do not pick a physics or net crate here. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+Official pages stay on unversioned permalinks. The library pin on bevy-master stays **0.20**.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
@@ -94,18 +220,18 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Spawn and query shape.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - ECS ownership and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Spawn and query shape.
 
 #### Complements
-- [godot-genre-shooter-fps](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md) - Equivalent Godot skill.
-- [bevy-camera-systems](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-camera-systems/SKILL.md) - Camera3d.
-- [bevy-input-handling](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Look. Cursor grab is only named on the window page.
-- [bevy-combat-system](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-combat-system/SKILL.md) - Damage.
-- [bevy-3d-world-building](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-3d-world-building/SKILL.md) - Arenas.
+- [godot-genre-shooter-fps](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md) - Peer skill for the same genre.
+- [bevy-camera-systems](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-camera-systems/SKILL.md) - Camera3d.
+- [bevy-input-handling](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Look. Pointer lock is `CursorOptions` on the primary window.
+- [bevy-combat-system](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-combat-system/SKILL.md) - Damage.
+- [bevy-3d-world-building](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-3d-world-building/SKILL.md) - Arenas.
 
 #### Downstream / consumers
 - None. This router does not own a second implementation.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

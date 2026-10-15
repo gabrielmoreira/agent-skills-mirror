@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HermannBjorgvin/Clawdmeter` — 26 default patterns, 1 followed patterns, 4 file(s) materialized.
+Mirror of `HermannBjorgvin/Clawdmeter` — 26 default patterns, 2 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `HermannBjorgvin/Clawdmeter` — 26 default patterns, 1 followed patte
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 4 |
+| Followed pats | 2 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `HermannBjorgvin/Clawdmeter` — 26 default patterns, 1 followed patte
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `docs/porting/adding-a-board.md`
+- `.github/pull_request_template.md`
 
 ## File Index
 
@@ -62,7 +63,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 2 | ✓ | [`docs/porting/hal-contract.md`](docs/porting/hal-contract.md) |
 | 3 | ✓ | [`research/clawd-official/CLAUDE.md`](research/clawd-official/CLAUDE.md) |
-| 4 | → | [`docs/porting/adding-a-board.md`](docs/porting/adding-a-board.md) |
+| 4 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 5 | → | [`docs/porting/adding-a-board.md`](docs/porting/adding-a-board.md) |
 
 ---
 

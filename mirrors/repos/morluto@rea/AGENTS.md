@@ -78,6 +78,37 @@ For test changes or provider claims, use [docs/testing.md](docs/testing.md). Pre
 
 Use Conventional Commit subjects and PR titles. Mark breaking changes with `!` or a `BREAKING CHANGE:` footer. Describe behavior changes, relevant validation, and real-provider verification scope.
 
+## Issue Reports
+
+Follow [issue reporting guidance](CONTRIBUTING.md#reporting-issues) and the matching
+issue form. Keep reports concise and cite the smallest useful evidence.
+Distinguish observed results, source-derived reasoning, hypotheses, and proposed
+checks. Never claim runtime reproduction or measurements you did not perform.
+Use `NOT_ENOUGH_INFO` with an explanation for missing narrative answers or evidence.
+Incomplete reports, source-only findings, and early feature or design ideas are
+welcome when their limitations are explicit; a completed diagnosis or fix is not
+required to open an issue.
+
+## Pull Request Readiness
+
+Follow [human ownership and readiness](CONTRIBUTING.md#pull-request-ownership-and-readiness)
+when preparing a PR. AI-assisted contributions are welcome; a human must review
+and own the final diff, check the validation evidence and its limitations, and
+explicitly declare the PR ready for initial maintainer review.
+
+Keep the PR body concise and current, with the concrete problem, observable
+outcome, approach, and evidence. Report only checks that actually ran as executed;
+distinguish source-derived conclusions, proposed checks, and unavailable coverage.
+Address actionable automated review findings and explain disagreements.
+
+Leave the template's **Author readiness** declarations unchecked for the human
+owner to complete. Never attest to human review on their behalf. Keep the PR in
+draft until the human declares the PR initially ready. Later pushes do not
+invalidate that declaration or require another human sign-off. Keep the PR body
+and affected validation current as work changes. The readiness check validates
+the filled declaration; CI and automated review results do not establish that
+human review occurred, maintainer scope approval, or merge permission.
+
 <!-- BEGIN:turborepo-agent-rules -->
 
 # This is NOT the Turborepo you know

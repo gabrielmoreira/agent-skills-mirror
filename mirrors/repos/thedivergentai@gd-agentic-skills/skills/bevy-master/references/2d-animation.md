@@ -16,19 +16,152 @@ Load this when a 2D actor needs clip playback on a sprite entity. Pair with bevy
 - **Systems:** `advance_animations` and `animate_targets` are the engine systems named on the animation page. Gameplay code should not reimplement them.
 - **Schedule:** those systems are engine-owned. Gameplay that reacts to a finished clip chains after them.
 
-## Coming from Godot
+## Playback choices
 
-| Godot idea | Bevy idiom |
+| Need | Bevy idiom |
 | --- | --- |
-| Sprite frames | Sprite plus an AnimationClip. Atlas layout was not a struct on the sprite page. |
-| Cutout bones | AnimationTargetId identifies which curves hit which entity. Check the animation docs.rs page for cutout-rig field names before writing them. |
-| Looping | RepeatAnimation is the repetition enum on the animation page. |
+| Frame cells | `Sprite` with `texture_atlas: Some(TextureAtlas { .. })`, or an `AnimationClip` curve. |
+| Named cutout limb | `AnimationTargetId::from_name` / `from_names` selects which entity a curve writes. |
+| Loop | `ActiveAnimation::repeat` sets `RepeatAnimation::Forever`. |
 
 ## Scope
 
-- The sprite page lists `Sprite`, `SpritePlugin`, `Anchor`, and `Text2d`. It does not list a texture-atlas or sprite-frames type. Do not invent one.
-- `animated_field` exists as a macro on the animation page. Check that page for its argument rules before writing them.
-- Skeletal 2D cutout weights are unverified.
+- Frame sheets use `Sprite::from_atlas_image` and `TextureAtlas`. Clip curves use `animated_field!` plus `AnimatableCurve`.
+- A cutout limb is an entity with `AnimationTargetId` and `AnimatedBy` pointing at the entity that owns `AnimationPlayer`.
+
+## Examples
+
+Atlas frame on a sprite. `TextureAtlas.index` is the cell.
+
+```rust
+fn spawn_sheet(
+    mut commands: Commands,
+    assets: Res<AssetServer>,
+    mut layouts: ResMut<Assets<TextureAtlasLayout>>,
+) {
+    let layout = TextureAtlasLayout::from_grid(UVec2::splat(32), 4, 1, None, None);
+    let layout = layouts.add(layout);
+    let image = assets.load("actor.png");
+    commands.spawn((
+        Sprite::from_atlas_image(image, TextureAtlas { layout, index: 0 }),
+        FrameClock {
+            timer: Timer::from_seconds(0.12, TimerMode::Repeating),
+            frames: 4,
+        },
+    ));
+}
+
+#[derive(Component)]
+struct FrameClock {
+    timer: Timer,
+    frames: usize,
+}
+
+fn tick_frames(time: Res<Time>, mut sprites: Query<(&mut Sprite, &mut FrameClock)>) {
+    for (mut sprite, mut clock) in &mut sprites {
+        clock.timer.tick(time.delta());
+        if clock.timer.just_finished() {
+            if let Some(atlas) = sprite.texture_atlas.as_mut() {
+                atlas.index = (atlas.index + 1) % clock.frames;
+            }
+        }
+    }
+}
+```
+
+Clip playback. The player stores an `AnimationNodeIndex` from the graph, not a raw clip handle.
+
+```rust
+use bevy::animation::animated_field;
+use bevy::animation::{AnimatedBy, AnimationTargetId};
+
+#[derive(Component)]
+struct IdleNode(AnimationNodeIndex);
+
+fn spawn_clip(
+    mut commands: Commands,
+    mut clips: ResMut<Assets<AnimationClip>>,
+    mut graphs: ResMut<Assets<AnimationGraph>>,
+) {
+    let name = Name::new("actor");
+    let target = AnimationTargetId::from_name(&name);
+    let samples = UnevenSampleAutoCurve::new([
+        (0.0, Vec3::ZERO),
+        (0.4, Vec3::new(8.0, 0.0, 0.0)),
+    ])
+    .expect("two samples");
+    let mut clip = AnimationClip::default();
+    clip.add_curve_to_target(
+        target,
+        AnimatableCurve::new(animated_field!(Transform::translation), samples),
+    );
+    let clip_handle = clips.add(clip);
+    let (graph, indices) = AnimationGraph::from_clips([clip_handle]);
+    let idle = indices[0];
+    let graph_handle = graphs.add(graph);
+    let player = commands
+        .spawn((
+            name,
+            Sprite::from_color(Color::WHITE, Vec2::splat(32.0)),
+            AnimationPlayer::default(),
+            AnimationGraphHandle(graph_handle),
+            target,
+            IdleNode(idle),
+        ))
+        .id();
+    commands.entity(player).insert(AnimatedBy(player));
+}
+
+fn play_idle(mut actors: Query<(&mut AnimationPlayer, &IdleNode)>) {
+    for (mut player, idle) in &mut actors {
+        player.play(idle.0).repeat();
+    }
+}
+
+fn cutout_id(root: &Name, limb: &Name) -> AnimationTargetId {
+    AnimationTargetId::from_names([root, limb].into_iter())
+}
+```
+
+Facing and frame ticks both write `Sprite`, so they share one chain.
+
+```rust
+fn face_keys(keys: Res<ButtonInput<KeyCode>>, mut sprites: Query<&mut Sprite>) {
+    let left = keys.pressed(KeyCode::KeyA);
+    let right = keys.pressed(KeyCode::KeyD);
+    if !left && !right {
+        return;
+    }
+    for mut sprite in &mut sprites {
+        sprite.flip_x = left;
+    }
+}
+
+#[derive(Component)]
+struct SheetClock {
+    timer: Timer,
+    frames: usize,
+}
+
+fn advance_sheet(time: Res<Time>, mut sprites: Query<(&mut Sprite, &mut SheetClock)>) {
+    for (mut sprite, mut clock) in &mut sprites {
+        clock.timer.tick(time.delta());
+        if clock.timer.just_finished() {
+            if let Some(atlas) = sprite.texture_atlas.as_mut() {
+                atlas.index = (atlas.index + 1) % clock.frames;
+            }
+        }
+    }
+}
+
+pub struct SpriteAnimPlugin;
+
+impl Plugin for SpriteAnimPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Update, (face_keys, advance_sheet).chain());
+    }
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -52,7 +185,7 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A value stored off the entity |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
@@ -67,38 +200,33 @@ Load [references/ecs-ownership.md](2d-animation-ecs-ownership.md) for the owners
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot AnimatedSprite or sprite-frames types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
-
-- No Godot types in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No sprite-frame type outside `Sprite`, `TextureAtlas`, and `AnimationClip`. WHY: those are the documented owners of a 2D frame and a sampled curve.
 - No invented APIs or unnamed third-party crates as the chosen solver. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20.0**. Permalinks stay unversioned.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
+- [2D examples](https://github.com/bevyengine/bevy/tree/latest/examples/2d) - Sprite and atlas samples.
+- [Animation examples](https://github.com/bevyengine/bevy/tree/latest/examples/animation) - `AnimationPlayer`, clips, and graphs.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
 - [Plugins](https://bevy.org/learn/quick-start/getting-started/plugins/) - `Plugin`, `DefaultPlugins`, `MinimalPlugins`, and `add_plugins`.
-- [bevy::sprite](https://docs.rs/bevy/latest/bevy/sprite/index.html) - `Sprite`, `SpritePlugin`.
-- [bevy::animation](https://docs.rs/bevy/latest/bevy/animation/index.html) - `AnimationPlayer`, `AnimationClip`, `animated_field`.
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
-- [bevy-animation](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-animation/SKILL.md) - AnimationPlayer and AnimationClip.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
+- [bevy-animation](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-animation/SKILL.md) - AnimationPlayer and AnimationClip.
 
 #### Complements
-- [bevy-animation-graph](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-animation-graph/SKILL.md) - Blend clips.
-- [godot-2d-animation](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-2d-animation/SKILL.md) - Equivalent Godot skill.
+- [bevy-animation-graph](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-animation-graph/SKILL.md) - Blend clips.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

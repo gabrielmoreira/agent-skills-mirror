@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.10"
-# dependencies = ["playwright", "pillow"]
+# dependencies = ["playwright", "pillow", "pillow-heif"]
 # ///
 """Reverse image search + Chinese keyword search: headless Chrome or Chromium opens the search engines, saves result screenshots, extracts guess text and links.
 
@@ -21,6 +21,8 @@ Keyword search (use when general web search tools often fail on Chinese domestic
 - Baidu web search pops up a security check, not done.
 
 Each item outputs `<name>_<engine>.png` (result-page screenshot, always open it) and `.json` (guess text + links; Baidu also has `similar` and the similar-images contact sheet).
+<name> is the file stem; inputs that share a stem (from different folders, or differing only in case) get their number in front: 02_photo.
+An input that can't be read as a photo (camera RAW, a saved error page, a damaged file) is not uploaded: its `.json` records the reason, and revimg exits 2 after the other searches.
 Before reverse image search, use `imgprep.py variants` to make tight-crop / flipped / color-cast-removed versions and search each one — no hit on the full image is normal.
 Requires Google Chrome or Playwright Chromium. Chrome is tried first, then Chromium.
 Run `uvx playwright install chromium` if neither is installed; `doctor.py` checks that the browser can start.
@@ -35,6 +37,7 @@ from __future__ import annotations
 
 import argparse
 from _browser import launch_browser
+from _image import ImageReadError, open_image, upright, write_working_copy
 from _net import fetch_bytes, PROXY_HELP
 import asyncio
 import io
@@ -109,8 +112,8 @@ def _similar_sheet(query: Path, items: list[dict], out: Path, cols: int = 5, til
     with ThreadPoolExecutor(8) as ex:
         ims = list(ex.map(fetch, [it["thumb"] for it in items]))
     try:
-        q = Image.open(query).convert("RGB")
-    except Exception:  # noqa: BLE001
+        q = upright(open_image(query)).convert("RGB")
+    except ImageReadError:
         q = None
     tiles = [(q, "query", "cyan")] + [
         (im, f"{i:02d} {it['site'] or '?'}", "yellow") for i, (it, im) in enumerate(zip(items, ims))]
@@ -245,13 +248,50 @@ async def _text(ctx, engine: str, query: str, shot: Path) -> dict:
     return res
 
 
+def _names(images: list[Path]) -> list[str]:
+    """One name per input for its screenshots, result JSON and upload copy. A stem shared with another input (from
+    another folder, or differing only in case, which Windows and macOS file systems don't tell apart) gets the
+    input's number in front; the result is unique without regard to case."""
+    stems = [i.stem.casefold() for i in images]
+    names, used = [], set()
+    for k, img in enumerate(images):
+        name = img.stem if stems.count(img.stem.casefold()) == 1 else f"{k + 1:02d}_{img.stem}"
+        while name.casefold() in used:
+            name = f"{k + 1:02d}_{name}"
+        used.add(name.casefold())
+        names.append(name)
+    return names
+
+
+def _upload_path(img: Path, out_dir: Path, name: str | None = None) -> Path:
+    """Search engines take JPEG and PNG as stored. A HEIC, WebP, ... or a photo with an EXIF orientation still to
+    apply is uploaded as an upright lossless PNG copy, out_dir/upload/<name>.png; everything else as it is.
+    Raises ImageReadError for a file the shared loader rejects: it is never uploaded."""
+    info = write_working_copy(img, out_dir / "upload" / f"{name or img.stem}.png")
+    return Path(info["working"]) if info else img
+
+
 async def run(images: list[Path], engines: list[str], out_dir: Path, proxy: str | None,
               queries: list[str] | None = None, text_engines: list[str] | None = None,
               similar_pages: int = 2, sheet_n: int = 24) -> list[dict]:
-    from playwright.async_api import async_playwright
-
     out_dir.mkdir(parents=True, exist_ok=True)
     results = []
+    names = _names(images)
+    uploads: list[Path | None] = []
+    for img, name in zip(images, names) if engines else []:
+        try:
+            uploads.append(_upload_path(img, out_dir, name))
+        except ImageReadError as e:             # reported once per engine, the way a failed search is, but nothing is sent
+            uploads.append(None)
+            for eng in engines:
+                res = {"error": f"cannot read image: {e.reason}", "unreadable": e.category, "image": str(img), "engine": eng,
+                       "guess": [], "links": []}
+                (out_dir / f"{name}_{eng}.json").write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
+                results.append(res)
+    if not queries and not any(uploads):
+        return results
+    from playwright.async_api import async_playwright
+
     async with async_playwright() as p:
         async def browser():
             result, _ = await launch_browser(p, proxy)
@@ -272,19 +312,21 @@ async def run(images: list[Path], engines: list[str], out_dir: Path, proxy: str 
                     results.append(res)
             await b.close()
 
-        for eng in engines if images else []:
+        for eng in engines if any(uploads) else []:
             b = await browser()
             ctx = await b.new_context(viewport={"width": 1400, "height": 1000},
                                       locale="zh-CN" if eng == "baidu" else "en-US")
-            stems = [i.stem for i in images]
-            for k, img in enumerate(images):
-                name = img.stem if stems.count(img.stem) == 1 else f"{k + 1:02d}_{img.stem}"
+            for img, name, up in zip(images, names, uploads):
+                if up is None:
+                    continue
                 shot = out_dir / f"{name}_{eng}.png"
                 try:
-                    res = await (_baidu(ctx, img, shot, similar_pages, sheet_n, proxy) if eng == "baidu" else _yandex(ctx, img, shot))
+                    res = await (_baidu(ctx, up, shot, similar_pages, sheet_n, proxy) if eng == "baidu" else _yandex(ctx, up, shot))
                 except Exception as e:  # noqa: BLE001
                     res = {"error": str(e)[:300]}
                 res.update({"image": str(img), "engine": eng, "screenshot": str(shot)})
+                if up != img:
+                    res["uploaded"] = str(up)
                 (out_dir / f"{name}_{eng}.json").write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
                 results.append(res)
             await b.close()
@@ -311,11 +353,12 @@ def main() -> None:
         ap.error("image not found: " + ", ".join(missing))
     engines = [e for e in args.engines.split(",") if e in ("baidu", "yandex")]
     text_engines = [e for e in args.text_engines.split(",") if e in TEXT_URL]
-    for r in asyncio.run(run(args.images, engines, args.out_dir, args.proxy, args.query, text_engines,
-                             args.similar_pages, args.similar_sheet)):
+    results = asyncio.run(run(args.images, engines, args.out_dir, args.proxy, args.query, text_engines,
+                              args.similar_pages, args.similar_sheet))
+    for r in results:
         head = f"[{r['engine']}] {r['query'] if r.get('query') else Path(r['image']).name}"
         if r.get("error"):
-            print(f"{head}  error: {r['error']}  screenshot {r['screenshot']}")
+            print(f"{head}  error: {r['error']}" + (f"  screenshot {r['screenshot']}" if r.get("screenshot") else ""))
             continue
         print(f"{head}  screenshot {r['screenshot']}")
         for g in r["guess"][:2]:
@@ -330,6 +373,11 @@ def main() -> None:
             print(f"   similar images: {len(r['similar'])} ({tally})" + (f"  contact sheet {r['similar_sheet']} (open it and look for the same object/scene)" if r.get("similar_sheet") else ""))
         elif r["engine"] == "baidu":
             print("   similar images: none captured")
+    unreadable = {r["image"]: r["error"].removeprefix("cannot read image: ") for r in results if r.get("unreadable")}
+    if unreadable:
+        print(f"revimg: {len(unreadable)} of {len(args.images)} images could not be read and were not uploaded: "
+              + "; ".join(f"{p} ({why})" for p, why in unreadable.items()), file=sys.stderr)
+        sys.exit(2)
 
 
 if __name__ == "__main__":

@@ -11,25 +11,86 @@ Load this when one system should notice that something happened without storing 
 
 ## ECS shape
 
-- **Messages (pull).** `bevy::ecs::message` 0.20.0 defines the `Message` trait as a buffered message for pull-based handling. `MessageWriter` writes. `MessageReader` reads and tracks what it already saw. `Messages` holds what occurred within the last two `Messages::update` calls. `message_update_system` calls `Messages::update` on registered messages. `signal_message_update_system` signals that update after `FixedUpdate` systems. Check the `App` docs for message registration helpers before writing a method name.
-- **Events (push).** The `Event` trait page: derive `Event`, add an observer, trigger. The sample uses `World::trigger` and `world.add_observer` with `On<Speak>`. `Commands::trigger` is also named. Observers run immediately inside the trigger call. `Event::Trigger` defaults to `GlobalTrigger` for derived events.
-- **Observers.** `bevy::ecs::observer`: an `Observer` is a component that holds a system. `On` is the system parameter that processes the event. `EntityEvent` is the page's pointer for events that target one entity. Check that trait page for method names before writing them.
-- **State transitions.** `bevy::state` documents `StateTransitionEvent<S>` when state `S` changes. That type lives with states. See bevy-state-machines.
+- **Messages (pull).** `Message` is a buffered message for pull-based handling. `MessageWriter` writes. `MessageReader` reads and tracks what it already saw. `Messages` holds what occurred within the last two updates. Register the type with `App::add_message`. The engine updates the buffer; gameplay systems only write and read.
+- **Events (push).** Derive `Event`, add an observer, trigger. `Commands::trigger` and `World::trigger` run observers immediately inside the call. `On<E>` is the system parameter. `Event::Trigger` defaults to `GlobalTrigger` for derived events.
+- **Observers.** An `Observer` is a component that holds a system. `EntityEvent` targets one entity: the event carries the `entity` field, and `On::event_target` returns it.
+- **State transitions.** `StateTransitionEvent<S>` fires when state `S` changes. That type lives with states. See bevy-state-machines.
 
-## Coming from Godot
+## Examples
 
-| Godot idea | Bevy idiom |
-| --- | --- |
-| Something happened; readers poll later | A `Message` plus `MessageWriter` / `MessageReader` |
-| Something happened; listeners run now | An `Event` plus an `Observer` (`On<...>`) and `trigger` |
-| Notice on one entity | `EntityEvent`. Check the trait page for methods before writing them. |
-| Global signal singleton | Not this. Use a message type or a global event |
+```toml
+[dependencies]
+bevy = "0.20"
+```
+
+A hit is a fact other systems poll. Register the message, write it from the strike system, and read it later in the same schedule. `add_message` keeps the double-buffered queue.
+
+```rust
+#[derive(Message)]
+struct Hit {
+    amount: i32,
+}
+
+fn install(app: &mut App) {
+    app.add_message::<Hit>()
+        .add_systems(Update, (deal, apply).chain());
+}
+
+fn deal(mut hits: MessageWriter<Hit>) {
+    hits.write(Hit { amount: 12 });
+}
+
+fn apply(mut hits: MessageReader<Hit>) {
+    for hit in hits.read() {
+        info!("hit {}", hit.amount);
+    }
+}
+```
+
+A shout should run listeners now. Derive `Event`, observe with `On<Shout>`, and `trigger`. The observer runs inside `trigger` before the system returns.
+
+```rust
+#[derive(Event)]
+struct Shout {
+    text: String,
+}
+
+fn listen(shout: On<Shout>) {
+    info!("{}", shout.event().text);
+}
+
+fn setup(mut commands: Commands) {
+    commands.spawn(Observer::new(listen));
+    commands.trigger(Shout {
+        text: "round".into(),
+    });
+}
+```
+
+An entity-targeted event names its target. `event_target` is that entity; the observer still runs immediately.
+
+```rust
+#[derive(EntityEvent)]
+struct Stagger {
+    entity: Entity,
+}
+
+fn on_stagger(hit: On<Stagger>) {
+    info!("stagger {:?}", hit.event_target());
+}
+
+fn strike(mut commands: Commands, fighters: Query<Entity>) {
+    for entity in &fighters {
+        commands.trigger(Stagger { entity });
+    }
+}
+```
 
 ## Scope
 
-- Check the `App` docs for methods that register a message type before writing them.
-- Check the observer module for `EntityEvent` methods, entity-targeted trigger helpers, and observer run-condition helpers beyond the module index names.
-- Check the message docs for ordering between `message_update_system` and gameplay systems beyond the `FixedUpdate` signal function name.
+- Register a message with `App::add_message` before any `MessageWriter` or `MessageReader`.
+- Entity-targeted triggers use `EntityEvent` and `Commands::trigger` with the `entity` field set.
+- Write and read a message in the same schedule with `.chain()` so the reader sees the write before the buffer updates.
 
 ## Expert Knowledge Delta
 
@@ -53,12 +114,12 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | One mutable blob shared by every entity |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API outside the documented set | Check the official docs first | A made-up crate or API |
+| An API outside the documented set | Read the official Bevy pages | A made-up crate or API |
 
 Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownership table.
 
@@ -68,34 +129,29 @@ Load [references/ecs-ownership.md](references/ecs-ownership.md) for the ownershi
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot signal types or a signal bus autoload. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 - No invented message-registration or trigger methods. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 - No third-party crates. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20.0**. Official pages stay on the unversioned site.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/)  -  Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/)  -  Unversioned API index.
-- [bevy::ecs::message](https://docs.rs/bevy/latest/bevy/ecs/message/index.html)  -  `Message`, `MessageWriter`, `MessageReader`, `Messages`, `message_update_system`.
-- [Event](https://docs.rs/bevy/latest/bevy/ecs/event/trait.Event.html)  -  `Event`, `On`, `World::trigger`, `Commands::trigger`, `add_observer`.
-- [bevy::ecs::observer](https://docs.rs/bevy/latest/bevy/ecs/observer/index.html)  -  `Observer` and `On`.
+- [ECS messages](https://bevy.org/learn/quick-start/getting-started/ecs/)  -  Systems, `Query`, and where a buffered notice fits beside components.
+- [Observer example](https://github.com/bevyengine/bevy/blob/latest/examples/ecs/observer_propagation.rs)  -  `Event`, `EntityEvent`, `Observer`, and `trigger`.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples)  -  Example tree on the `latest` branch.
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  ECS ownership before adding a notice channel.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md)  -  Systems that write or read the notice.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  ECS ownership before adding a notice channel.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md)  -  Systems that write or read the notice.
 
 #### Complements
-- [bevy-state-machines](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md)  -  `StateTransitionEvent` for app-wide state changes.
-- [godot-signal-architecture](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-signal-architecture/SKILL.md)  -  Equivalent Godot skill. Do not import Godot types.
+- [bevy-state-machines](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md)  -  `StateTransitionEvent` for app-wide state changes.
 
 #### Downstream / consumers
 - Gameplay skills cover combat, abilities, and similar loops.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.

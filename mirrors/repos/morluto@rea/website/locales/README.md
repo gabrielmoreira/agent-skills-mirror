@@ -120,9 +120,10 @@ Persian use right-to-left page layouts; code and numeric demos remain left to
 right. The two Notes target applications and the downloadable source archive
 remain the original investigation inputs.
 
-Greek (`el`) has a translated README and a partially translated website catalog.
-Incomplete website pages use the labeled English fallback until their required
-messages are translated and reviewed.
+Greek (`el`) has a translated README and a complete website catalog, including
+setup guides, case studies, articles and Contributors. Like the other editions,
+it uses the labeled English fallback when a future source change leaves a
+required translation missing or pending review.
 
 The first catalogs started with machine-assisted drafts. They include editorial
 corrections to navigation, prompts and technical terminology. Traditional Chinese

@@ -12,4 +12,21 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+Projectiles are entities. The wave index is one resource.
+
+```rust
+#[derive(Component)]
+struct Projectile {
+    damage: i32,
+}
+
+#[derive(Resource)]
+struct Wave {
+    index: u32,
+}
+
+fn boot(mut commands: Commands) {
+    commands.insert_resource(Wave { index: 1 });
+    commands.spawn(Projectile { damage: 1 });
+}
+```

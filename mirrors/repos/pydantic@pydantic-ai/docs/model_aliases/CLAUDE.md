@@ -1,0 +1,1 @@
+cache/repos/github.com/pydantic@pydantic-ai/docs/model_aliases/AGENTS.md

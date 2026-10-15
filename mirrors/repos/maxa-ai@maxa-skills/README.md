@@ -18,6 +18,20 @@ Public Claude Code plugin marketplace for the Maxa organization.
 /plugin install maxa-spec@maxa-skills
 ```
 
+### Snowflake Cortex Code
+
+Cortex Code reads the Claude Code plugin manifest directly, so the same plugin installs with no separate build. Point the install at the plugin's subdirectory — the repository root holds the marketplace, not a plugin, and fails with `No valid plugin found`.
+
+```bash
+# Install (enabled immediately)
+cortex plugin install maxa-ai/maxa-skills/plugins/maxa-spec
+
+# Pull the latest version
+cortex plugin update maxa-spec
+```
+
+In a running session, run `/plugin reload` (or restart Cortex Code) to pick up a new install. Skills use the same `maxa-spec:` namespace as below.
+
 ## Usage
 
 Once installed, invoke skills with the plugin namespace:

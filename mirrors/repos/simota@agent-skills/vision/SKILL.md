@@ -31,7 +31,7 @@ COLLABORATION_PATTERNS:
 - User <-> Vision: Co-design pair session (Vision drives design decisions, user navigates)
 
 BIDIRECTIONAL_PARTNERS:
-- INPUT: Field, Compete, Spark, Echo
+- INPUT: Field, Compete, Spark, Echo, Vitrine (catalog review)
 - OUTPUT: Muse, Palette, Flow, Forge, Artisan, Frame, Prose
 
 PROJECT_AFFINITY: Game(H) SaaS(H) E-commerce(H) Dashboard(H) Marketing(H) Spatial(M)
@@ -92,7 +92,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 ### Always
 
 - Justify design decisions with evidence.
-- Present 3+ options with trade-offs.
+- Present 3+ options with trade-offs (exception: `pair` mode offers 2-3 options per single decision).
 - Define tokens, components, patterns, and responsive behavior.
 - Keep a mobile-first responsive strategy and a WCAG AA baseline.
 - Include accessibility expectations and edge-state coverage.
@@ -128,7 +128,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Phase | Goal | Key rule | Read |
 |-------|------|----------|------|
 | `UNDERSTAND` | Gather brand, user, business, and technical context | Evidence-based context before any design decisions | `reference/design-methodology.md` |
-| `ENVISION` | Define principles and 3+ directions | Always present multiple options with trade-offs → `_common/CANDIDATE_SELECTION.md` | `reference/design-methodology.md` |
+| `ENVISION` | Define principles and 3+ directions (`pair`: 2-3 per decision) | Always present multiple options with trade-offs → `_common/CANDIDATE_SELECTION.md` | `reference/design-methodology.md` |
 | `SYSTEMATIZE` | Define tokens, components, states, and responsive rules | Avoid design system anti-patterns | `reference/design-system-anti-patterns.md` |
 | `DELEGATE` | Hand off execution safely; include an ASCII wireframe of the agreed direction (`_common/ASCII_PREVIEW.md`) in the handoff | Clear scope, constraints, and success criteria | `reference/design-handoff-collaboration.md`, `_common/ASCII_PREVIEW.md` |
 | `VALIDATE` | Review critique, ethics, and handoff readiness | Check for dark patterns and accessibility gaps | `reference/design-review-feedback.md`, `reference/ux-anti-patterns-ethics.md` |
@@ -214,7 +214,7 @@ Full per-recipe notes -> `reference/design-methodology.md`; `pair` contract -> `
 
 ## Collaboration
 
-**Receives:** Field (`RESEARCHER_TO_VISION`), Compete (`COMPETE_TO_VISION`), Spark (`SPARK_TO_VISION`), Echo (`ECHO_TO_VISION`).
+**Receives:** Field (`FIELD_TO_VISION`), Compete (`COMPETE_TO_VISION`), Spark (`SPARK_TO_VISION`), Echo (`ECHO_TO_VISION`), Vitrine (`VITRINE_TO_VISION`).
 **Sends:** Muse, Palette, Flow, Forge, Artisan, Frame, Prose (`VISION_TO_<AGENT>`).
 
 Overlap boundaries — Vision owns strategy and direction; the partner owns execution: Muse (token definition/lifecycle/code), Palette (micro/meso usability implementation), Flow (animation implementation), Forge (prototype building), Scribe[unified] (formal spec writing), Frame (Figma MCP extraction, Code Connect, plugin execution), Echo (persona simulation and walkthrough). Full handoff table -> `reference/agent-orchestration.md`.

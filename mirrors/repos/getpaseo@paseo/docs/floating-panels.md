@@ -198,6 +198,47 @@ viewport keeps the last keyboard reservation until the next opening replaces
 it, so a capped draft keeps one height through every keyboard transition
 instead of expanding on close and shrinking again on open.
 
+Fullscreen is a layout mode of the dock, not a second editor. `ComposerDock
+fullscreen` fills the stationary viewport with the composer slot over the
+still-mounted content, paints its own surface under the safe areas, and turns
+the surface translation off. The composer's single tree keeps the editing
+surface at the same position in both modes, so the mounted editor, its native
+buffer, selection, and focus survive the toggle and Send's clear always reaches
+the live input. The one remount left is a viewport crossing the compact
+breakpoint: the app shell swaps its gesture wrapper and the workspace screen
+mounts tabs in different trees, so every screen below remounts. The draft owner
+restores the text and the editing session restores the caret and focus intent.
+New workspace keys its sessions by draft in the app-level store for the same
+reason. The centered form honors fullscreen by style alone: no centering, no
+translation, setup fields hidden, slot filling the stationary viewport. The
+global exit action (Escape, hardware back) is registered only for the active
+composer: a retained tab keeps its fullscreen editor mounted while hidden, the
+sheet suspends pane focus, and the composer gives up input from the moment the
+user asks for the compact agent list or explorer, before the panel's motion
+settles. Pane focus itself stays put under those panels: the agent panel reads
+it as "the user is in this chat" for attention clearing, and opening the agent
+list must not clear the attention it shows. Focus restoration follows pane
+focus, not the active composer. The editor keeps its focus intent only across
+a blur that lands while its pane is not the user's (a retained tab hidden, a
+sheet over it) and refocuses when the pane comes back. A blur while the pane is
+theirs drops the intent in every layout mode, and the keyboard the compact
+panels dismiss when they settle is such a blur, so closing the agent list or
+explorer never reopens the keyboard. Keying restoration on the active composer
+made that dismiss look like a hidden-tab blur and refocused on close.
+The band beside the inline editor where the fullscreen glyph sits is the input's
+own right padding, so a tap anywhere in it focuses the editor whether or not the
+glyph shows. On web the slot is a fixed box over the visible viewport, which is
+also what lets a zoomed mobile page pan under it. Inside the slot, `ComposerFullscreenBody` reserves the keyboard
+height as a bottom margin at move start and end (boundary-time, like the
+capacity reservation) while `ComposerFullscreenFooter` rides the keyboard per
+frame with `KeyboardTranslateView`, so Send lands on the keyboard without a gap
+and without animating the editor's height. The screen that owns the chrome
+unmounts it: the workspace screen reads `useComposerTabFullscreen` for the
+active tab and New workspace reads the mounted composer's session. Hosts that
+render the dock pass the same `ComposerEditingSession` to the `Composer` so the
+dock, chrome, and editor agree on one fullscreen state. Escape (web overlay
+registration, focus untouched) and the Android back button leave fullscreen.
+
 Keep setup fields out of the composer's shrink chain. New workspace supplies its
 setup fields as the first dock child so they move up under the header as the draft
 grows. Putting the fields and composer in one bounded, shrinkable column made

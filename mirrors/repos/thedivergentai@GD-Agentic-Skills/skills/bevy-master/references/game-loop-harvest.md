@@ -1,33 +1,174 @@
 ---
 name: bevy-game-loop-harvest
-description: "Bevy ECS skill for a Bevy harvest loop. Keywords: Bevy, harvest, grow, timer, ECS."
+description: "Bevy ECS harvest loop: Crop stage on Time<Fixed>, season scale, catch-up from a LastVisit resource, Harvested messages. Use when growth must finish before the yield message. Keywords: Bevy, harvest, crop, FixedUpdate, season, catch-up."
 ---
 
 # Bevy harvest loop
 
 ## When to use
 
-Load this when nodes grow on a timer and the player extracts them into inventory.
+Load this when crops advance on a timer and a harvest message records the yield.
 
 ## ECS shape
 
 - **Components:** growth elapsed and a stage index you define.
-- **Resources:** run-wide tables live in a resource (bevy-data-resources), not an autoload.
-- **Systems:** mutate those components on `Update` or the fixed timestep. Use `.chain()` when damage must land before death.
-- **Messages:** one-shot facts (hit, pickup, quest advance) go through bevy-events-messaging. This file does not add a new event type name.
+- **Resources:** the last visit and the season scale live in resources (bevy-data-resources).
+- **Systems:** step growth on `FixedUpdate`. Use `.chain()` so harvest reads the stage growth just wrote.
+- **Messages:** `Harvested` is the one-shot yield fact. Inventory applies it in bevy-inventory-system.
 
-## Coming from Godot
+## Idioms
 
-| Godot idea | Bevy idiom |
+| Need | Bevy shape |
 | --- | --- |
 | Growth | Elapsed time on a component, stepped on the fixed clock. |
-| Extract | A message that adds a stack via bevy-inventory-system. |
-| Season | Optional resource. No calendar type was opened. |
+| Extract | A `Harvested` message. Inventory consumes it. |
+| Season | A resource scale. No calendar type was opened. |
 
 ## Scope
 
-- Crop, growth stage, and season data are yours to build as components.
-- Check the docs for a timestamp API before writing offline catch-up math.
+- A crop component stores stage and elapsed time. Growth steps on `Time<Fixed>`.
+- Offline catch-up reads `Time::elapsed_secs` against a resource that remembers the last visit.
+
+## Examples
+
+```toml
+[package]
+name = "harvest"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.20"
+```
+
+Growth advances one stage per interval. Harvest only fires when the last stage is ready.
+
+```rust
+#[derive(Component)]
+struct Crop {
+    stage: u8,
+    elapsed: f32,
+    stage_seconds: f32,
+    stages: u8,
+}
+
+#[derive(Message)]
+struct Harvested {
+    plot: Entity,
+    yield_item: u32,
+}
+
+fn grow(time: Res<Time<Fixed>>, mut crops: Query<&mut Crop>) {
+    let dt = time.delta_secs();
+    for mut crop in &mut crops {
+        if crop.stage + 1 >= crop.stages {
+            continue;
+        }
+        crop.elapsed += dt;
+        if crop.elapsed >= crop.stage_seconds {
+            crop.elapsed = 0.0;
+            crop.stage += 1;
+        }
+    }
+}
+
+fn harvest(
+    mut commands: Commands,
+    crops: Query<(Entity, &Crop)>,
+    mut harvested: MessageWriter<Harvested>,
+) {
+    for (entity, crop) in &crops {
+        if crop.stage + 1 < crop.stages {
+            continue;
+        }
+        harvested.write(Harvested {
+            plot: entity,
+            yield_item: 7,
+        });
+        commands.entity(entity).despawn();
+    }
+}
+
+pub struct HarvestPlugin;
+
+impl Plugin for HarvestPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_message::<Harvested>()
+            .add_systems(FixedUpdate, (grow, harvest).chain());
+    }
+}
+```
+
+Catch-up applies the seconds since the last recorded visit, then stores the new mark.
+
+```rust
+#[derive(Component)]
+struct Crop {
+    stage: u8,
+    elapsed: f32,
+    stage_seconds: f32,
+    stages: u8,
+}
+
+#[derive(Resource)]
+struct LastVisit {
+    elapsed_secs: f32,
+}
+
+fn catch_up(time: Res<Time>, mut last: ResMut<LastVisit>, mut crops: Query<&mut Crop>) {
+    let now = time.elapsed_secs();
+    let gap = (now - last.elapsed_secs).max(0.0);
+    last.elapsed_secs = now;
+    if gap <= 0.0 {
+        return;
+    }
+    for mut crop in &mut crops {
+        let mut left = gap;
+        while left > 0.0 && crop.stage + 1 < crop.stages {
+            let need = (crop.stage_seconds - crop.elapsed).max(0.0);
+            if left < need {
+                crop.elapsed += left;
+                left = 0.0;
+            } else {
+                left -= need;
+                crop.elapsed = 0.0;
+                crop.stage += 1;
+            }
+        }
+    }
+}
+```
+
+A season resource scales how fast every crop in the run advances.
+
+```rust
+#[derive(Resource)]
+struct Season {
+    growth_scale: f32,
+}
+
+#[derive(Component)]
+struct Crop {
+    stage: u8,
+    elapsed: f32,
+    stage_seconds: f32,
+    stages: u8,
+}
+
+fn season_grow(time: Res<Time<Fixed>>, season: Res<Season>, mut crops: Query<&mut Crop>) {
+    let dt = time.delta_secs() * season.growth_scale.max(0.0);
+    for mut crop in &mut crops {
+        if crop.stage + 1 >= crop.stages {
+            continue;
+        }
+        crop.elapsed += dt;
+        if crop.elapsed >= crop.stage_seconds {
+            crop.elapsed -= crop.stage_seconds;
+            crop.stage += 1;
+        }
+    }
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -51,12 +192,12 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A scene-tree script on the actor |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API outside the documented set | Check the official docs first | A made-up crate or API |
+| An API outside the documented set | Read the official manual linked below | A made-up crate or API |
 
 Load [references/ecs-ownership.md](game-loop-harvest-ecs-ownership.md) for the ownership table.
 
@@ -66,18 +207,14 @@ Load [references/ecs-ownership.md](game-loop-harvest-ecs-ownership.md) for the o
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot node, resource, or signal types for this mechanic. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
-
-- No Godot types in Bevy code. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No scene-tree node or signal bus for this mechanic. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 - No invented APIs or unnamed third-party crates as the chosen solver. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20**.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
@@ -86,18 +223,17 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
-- [bevy-inventory-system](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-inventory-system/SKILL.md) - Where the yield goes.
-- [bevy-data-resources](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md) - Tables and definitions.
-- [bevy-events-messaging](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-events-messaging/SKILL.md) - One-shot facts.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
+- [bevy-inventory-system](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-inventory-system/SKILL.md) - Where the yield goes.
+- [bevy-data-resources](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-data-resources/SKILL.md) - Tables and definitions.
+- [bevy-events-messaging](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-events-messaging/SKILL.md) - One-shot facts.
 
 #### Complements
-- [bevy-state-machines](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Mode flags.
-- [godot-game-loop-harvest](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-game-loop-harvest/SKILL.md) - Equivalent Godot skill.
+- [bevy-state-machines](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-state-machines/SKILL.md) - Mode flags.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

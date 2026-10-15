@@ -10,6 +10,8 @@
 - With GPS: gives WGS84 coordinates and the GCJ-02 conversion (for Amap/Tencent Maps) directly, but you still must check against the image (metadata can be edited).
 - With capture time: can be fed to sun.py (note EXIF time is usually local time at the capture location, without a time zone; see the OffsetTime field).
 - With 35mm equivalent focal length: can be fed to geo.py range / geometry.md to compute the field of view, no need to guess the zoom factor.
+- size is the stored pixel size; a photo with an EXIF orientation also gets orientation and upright_size, the size as a viewer shows it,
+  which is the frame the other scripts' pixel coordinates use (imgprep.py boxes, ocr.py, terrain.py ridge, pose.py points).
 - WeChat, QQ and most social platforms strip metadata when forwarding; screenshots and rephotographed images have no metadata. Empty output is normal and means nothing.
 """
 from __future__ import annotations
@@ -22,6 +24,7 @@ from PIL import ExifTags, Image
 
 sys.path.insert(0, str(Path(__file__).parent))
 import geo  # noqa: E402
+from _image import orientation  # noqa: E402
 
 try:
     import pillow_heif
@@ -40,6 +43,10 @@ def read(path: Path) -> dict:
     im = Image.open(path)
     ex = im.getexif()
     out: dict = {"file": str(path), "size": list(im.size)}
+    o = orientation(im)
+    if o != 1:      # size is the stored pixels; pixel coordinates for the other scripts are in the upright frame
+        out["orientation"] = o
+        out["upright_size"] = list(im.size) if o <= 4 else list(im.size)[::-1]
     base = {ExifTags.TAGS.get(k, k): v for k, v in ex.items()}
     sub = {ExifTags.TAGS.get(k, k): v for k, v in ex.get_ifd(0x8769).items()}
     for k in ("Make", "Model", "Software"):

@@ -12,4 +12,15 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+```rust
+#[derive(Component)]
+struct Sanity {
+    value: f32,
+}
+
+fn read_sanity(minds: Query<&Sanity>) {
+    for mind in &minds {
+        let _ = mind.value;
+    }
+}
+```

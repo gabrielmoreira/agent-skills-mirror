@@ -11,5 +11,8 @@ Target: **Bevy 0.20+**.
 | Spawn | `Commands` | `Startup` or the runtime schedule |
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
+| Quest definitions | `QuestCatalog` resource | insert in `Startup` |
+| Runtime stage and counts | `QuestProgress` | one system on `Update` |
+| Pickup or kill notice | `Message` via `MessageReader` | read in the writer system |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+One system writes `QuestProgress`. Use the APIs linked from the skill. Do not invent crates or types.

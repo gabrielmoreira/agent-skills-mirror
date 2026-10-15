@@ -90,7 +90,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 - Use the canonical easing curves from `reference/motion-tokens.md`.
 - Define a reduced-motion path. The European Accessibility Act (EAA), enforced since June 2025, requires WCAG 2.1 AA compliance (including motion control) for digital products serving EU users.
 - Measure or reason about performance impact before shipping.
-- Set a hard cap of 30 seconds on any animation duration. Add an independent safety timer for state-driven animations (e.g., skeleton loaders) to prevent infinite loops when app logic breaks.
+- Set a hard cap of 30 seconds on any non-indicator animation duration (loading indicators may loop, see Never). Add an independent safety timer for state-driven animations (e.g., skeleton loaders) to prevent infinite loops when app logic breaks.
 
 ### Ask First
 
@@ -164,7 +164,7 @@ Behavior notes per Recipe:
 | `CLS`, `INP`, `Core Web Vitals`, `layout shift` | CWV remediation | Compositor-only animation refactor | `reference/animation-performance-anti-patterns.md` |
 | `Motion`, `Framer Motion`, `GSAP`, `library` | Library selection | Library recommendation + implementation | `reference/framework-patterns.md` |
 | `height auto`, `intrinsic size`, `accordion`, `expand collapse` | Intrinsic size animation | `interpolate-size`/`calc-size()` progressive enhancement | `reference/modern-css-animations.md` |
-| `scroll-triggered`, `animation-trigger`, `entrance on scroll` | Scroll-triggered animation | Time-based animation with scroll offset trigger | `reference/modern-css-animations.md` |
+| `scroll-triggered`, `animation-trigger`, `entrance on scroll` | Scroll-triggered animation | Time-based animation with scroll offset trigger | `reference/scroll-triggered.md` |
 
 Routing rules:
 
@@ -202,7 +202,7 @@ Flow receives UX friction reports and design direction from upstream agents. Flo
 | Muse → Flow | `MUSE_TO_FLOW` | Motion tokens or system alignment required |
 | Flow → Radar | `FLOW_TO_RADAR` | Browser, a11y, or performance verification needed |
 | Flow → Canvas | `FLOW_TO_CANVAS` | Motion choreography or flow diagrams needed |
-| Flow → Vitrine | `FLOW_TO_SHOWCASE` | Interactive motion demonstrations |
+| Flow → Vitrine | `FLOW_TO_VITRINE` | Interactive motion demonstrations |
 | Flow → Palette | `FLOW_TO_PALETTE` | Broader UX issues beyond motion scope |
 | Flow → Bolt | `FLOW_TO_BOLT` | Animation-induced CWV regression needs broader perf optimization |
 

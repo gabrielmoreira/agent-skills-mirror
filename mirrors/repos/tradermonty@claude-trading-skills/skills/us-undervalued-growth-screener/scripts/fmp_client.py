@@ -232,18 +232,26 @@ class FMPClient:
     CAPABILITY_DISABLING_STATUS_CODES = (402, 403)
 
     def _redact_secret(self, text) -> str:
-        """Mask the API key in ``text`` by VALUE, then by URL query pattern.
+        """Mask raw and URL-encoded key echoes before diagnostics are truncated."""
+        from urllib.parse import quote, quote_plus
 
-        ``_redact_key`` only masks ``?apikey=...`` in URLs; a proxy or API
-        error body can echo the bare key, so every message that may reach
-        stderr or ``_last_error`` goes through this first.
-        """
         text = _redact_key(text)
-        # Mask every accepted key regardless of length: leaking a key matters
-        # more than over-masking ordinary words that happen to contain it.
-        if self.api_key:
-            text = text.replace(self.api_key, "***REDACTED***")
-        return text
+        if not self.api_key:
+            return text
+        patterns = {re.escape(self.api_key)}
+        for encoded in (quote(self.api_key, safe=""), quote_plus(self.api_key, safe="")):
+            # Percent triplets are case-insensitive; the key's letters are not.
+            parts = re.split(r"(%[0-9A-Fa-f]{2})", encoded)
+            patterns.add(
+                "".join(
+                    "(?i:" + re.escape(part) + ")"
+                    if re.fullmatch(r"%[0-9A-Fa-f]{2}", part)
+                    else re.escape(part)
+                    for part in parts
+                )
+            )
+        # One pass prevents a short key from matching the replacement marker.
+        return re.sub("|".join(sorted(patterns, key=len, reverse=True)), "***REDACTED***", text)
 
     def __init__(
         self,
@@ -258,7 +266,7 @@ class FMPClient:
         rate_limit_delay: float | None = None,
         respect_capability_cache: bool = True,
     ):
-        self.api_key = api_key or os.getenv("FMP_API_KEY")
+        self.api_key = (api_key or os.getenv("FMP_API_KEY") or "").strip()
         self.offline = bool(offline)
         # Provenance of the payload returned by the most recent
         # _request_json call: {"source": "cache"|"http"|None,

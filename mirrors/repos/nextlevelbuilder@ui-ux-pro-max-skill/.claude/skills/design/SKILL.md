@@ -111,7 +111,7 @@ python3 scripts/cip/generate.py --brand "TopGroup" --logo logo.png --deliverable
 python3 scripts/cip/generate.py --brand "TechFlow" --deliverable "business card" --no-logo-prompt
 ```
 
-Models: `flash` (default, `gemini-2.5-flash-image`), `pro` (`gemini-3-pro-image-preview`)
+Models: `flash` (default, `gemini-2.5-flash-image`), `pro` (`gemini-3-pro-image`). Override the ids with `GEMINI_FLASH_IMAGE_MODEL` / `GEMINI_PRO_IMAGE_MODEL`.
 
 ### CIP: Render HTML Presentation
 

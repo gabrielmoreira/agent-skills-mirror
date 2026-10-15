@@ -101,6 +101,7 @@ SQLite、临时旧目录、完整 package、公开状态及卸载 API 验证升�
 - v1 durable package fingerprint 使用 `skill-package-sha256-v1`；桌面主进程、CLI 和 renderer 远程包指纹解析不得把旧版 stable-text 目录摘要标记为该算法。Git tree/API 中只有 blob hash、没有包文件内容时，不得直接产出 durable `directory_fingerprint`；必须留空等待 clone/materialize 后按 v1 计算，或在未来能取得文件内容时按 v1 manifest 计算。旧版只记录 `SKILL.md` hash 的安装，只能在旧 hash 证明本地与远程入口一致时静默升级基线，否则进入无法确定历史的状态。
 - 兼容旧版安装时，如果缺少 `installed_directory_fingerprint` 但旧 `installed_content_hash` 与远程入口 hash 一致，来源检查可以把当前本地 package fingerprint 作为可推断基线，再判断远程 package 是否变化。自动检查不得绕过 `baseline-missing` 的冲突保护；PromptHub 托管副本只有在用户显式选择覆盖/重置后，才能重新暂存来源并建立基线。链接外部目录即使显式覆盖也不得被 PromptHub 写入。
 - 来源更新检查必须通过共享的 `B/L/R` 对账逻辑产生 `localModified`、`remoteChanged` 和状态，UI/store 不得各自手写不一致的状态机。
+- Git 子目录 Skill 的 `source_directory` / `canonical_skill_path` 描述上游包位置，`local_repo_path` 描述安装后的本地包根目录；本地快照不得以仓库根目录或已清理的 checkout 为包根。canonical authority 下的旧托管路径必须按 Skill id 从已有完整 bundle 物化当前 workspace，不能走旧 variant 目录的仅入口引导；外部链接目录仍由用户拥有。Desktop `syncFromRepo` 必须在路径恢复之后读取并返回当前记录，即使内容和 fingerprint 均未改变，也不能返回路径修复之前的对象。不放宽 root `SKILL.md` 校验，不增加目录猜测或持久化格式；bundle 缺失时保持原有无法物化结果，不退回仅入口引导。
 - 从 Project/Agent 扫描结果复制导入 My Skills 时，必须立即持久化基于确切本地目录的 `source_id`、内容 hash、目录 fingerprint、安装版本/时间和来源基线；后续检查与更新必须继续从该来源目录解析，而不是把复制后的 PromptHub 托管 repo 误当成远程来源。
 - 如果 Project/Agent 扫描条目是指向外部目录的 symlink，复制导入必须以解析后的 `symlinkTargetPath` 作为来源身份和来源读取目录，同时保留扫描到的 shortcut 作为 Agent/Project 分发路径；PromptHub 自己管理的 symlink 不适用该外部目标归一化规则。已导入且由 PromptHub 管理的非内置 Agent Skill 详情必须提供来源检查/更新入口，但不应因此暴露 My Skills 的快照、编辑或删除操作。
 - 本地来源的 package 校验、目录复制和 package fingerprint 必须复用同一个忽略谓词；依赖、缓存、运行态和本地环境文件不能因为数量或大小限制让有效 Agent 来源变成 `source-unavailable`，也不能被复制进托管 package。可分发模板仍需参与校验、复制和 fingerprint。
@@ -126,11 +127,14 @@ SQLite、临时旧目录、完整 package、公开状态及卸载 API 验证升�
 - PromptHub Cloud 的桌面账号与 Skill Store 入口必须受同一个 renderer capability 控制；生产 endpoint 与发布证据未完成时默认关闭。关闭后设置导航、商店来源、程序化选择、持久化恢复和后台刷新都不得访问 Cloud，旧选中状态回退到官方商店。
 - Cloud release 的 `store-package-sha256-v1` 只用于远程交付 intent 的版本期望；桌面本地 package 仍必须计算并持久化 `skill-package-sha256-v1`，不得把两种 fingerprint 直接比较或互相标记。
 - Cloud 多文件 package 写入失败时必须恢复已写入文件并清理新建文件；安装失败不得留下半成品 Skill，更新失败不得提前刷新来源基线。
-- 扫描复制导入只有在完整 package 已写入 PromptHub 托管 repo 且 `local_repo_path` 已持久化后才能计为成功。复制、返回路径或路径持久化失败必须删除临时 Skill 记录；补偿删除失败必须报告原始失败与回滚失败，不得吞错或保留假成功状态。
+- 扫描导入统一使用 package lifecycle，不先调用 content-only create 再复制或更新路径。只有完整 package、来源基线与库记录提交后才计为成功；失败与补偿由生命周期所有者报告，renderer 不执行第二次回滚。Copy 与 Link 均先暂存完整有效目录验证，来源元数据取实际入口而非陈旧扫描结果；用户标签与来源标签分开。
+- Link 的 `local_repo_path` 保持外部目录。设备来源绑定的可选 `localRepoPath` 只记录外部目录，缺省表示托管副本；与 portable bundle 一次发布/删除，本机启动对账恢复该路径，跨设备不套用。现有缺省绑定不改变语义，无 SQLite schema 变化；历史已丢失的 Link 身份不能猜测恢复，需要重新选择目录。回退前保留 data/config 备份；旧程序不支持新 Link 记录，不得继续写入该 profile。外部包仍遵守同一 ignore/路径/容量校验，不删除外部来源。
+- Link 元数据编辑从实际外部包暂存完整 inventory，仅原子替换外部 `SKILL.md`，在同一 finalize 发布元数据、包和历史；失败恢复原入口，已提交错误不再回滚。外部辅助文件不被替换，用户标签仍不进入来源 frontmatter。入口改动检测防止覆盖陈旧编辑；无 schema 或新目录布局。`commitLinkedSkillEdit` 顺序保留文件核验、发布及补偿，允许超过 50 行以一起审查提交边界。
 
 ### 2.1.1 Library CRUD command boundary
 
 - Desktop 创建、编辑、改名和删除只使用已迁移完成的 canonical 文件权威。移除 CRUD 中旧式按名称移动托管目录、独立 frontmatter 补写、renderer 再写 SKILL.md 和忽略失败的路径；未完成迁移明确报错，不启动第二套存储逻辑。
+- 首启等待 renderer persistence 时，迁移 IPC 必须等待主进程接续已有 authority 发布和数据库/IPC 重新绑定完成后再确认；失败明确返回且允许重试，不要求用户重启，不移除写入保护。CLI/Web 没有 renderer 迁移前置条件。
 - 创建先准备入口文件，再一次发布完整 bundle。编辑从 canonical inventory 暂存完整包，正文、元数据、fingerprint 和修改前版本在一次 finalize 中发布；用户 tags 不写入来源 frontmatter，未知 YAML 字段和二进制资源保留。仅收藏/用户标签等修改不复制暂存包。源布局和 schema 不变，缓存仍使用稳定 Skill ID。
 - 改名只迁移明确安装的目标，不传旧名/新名兼容清理列表；目标冲突提前失败。原分发副本暂存用于失败恢复，符号链接保持模式。全部目标处理完才提交库内名称；失败保留旧名称并恢复分发，恢复失败明确报告保留的临时备份位置。备份、分发和清理按目标顺序执行，有界占用为本次包和已部署副本总大小。
 - 删除先撤回指定分发，再由 canonical 层删除 bundle 和缓存。任何前置撤回失败保留库内记录供重试，不显示完成；外部来源不删除。调用者可保留 copy，symlink 必须撤回。canonical 提交后缓存清理失败沿用已提交错误语义，不能伪装为未提交或完整成功。
@@ -141,6 +145,11 @@ SQLite、临时旧目录、完整 package、公开状态及卸载 API 验证升�
 
 ### 2.1.2 Functional acceptance
 
+- #227：`skill-first-launch.test.ts` 从全新 profile 执行 renderer migration IPC，返回前即可从真实 Skill preload 创建，并验证重复迁移、失败重试及关闭重开。
+- #228：`skill-scanned-import.test.ts` 验证 Copy/Link 完整嵌套文本/二进制、用户标签、来源基线、重开、外部文件和元数据编辑、提交失败后的入口恢复/重试及删除保全，并复用 Plugin 子 Skill renderer 组合用例。
+- #229：`skill-file-save-display.test.tsx` 等待真实保存完成后验证查看器内容、UTF-8 字节数和重开。Desktop 本机文件写入的规范返回值为 `Promise<void>`；带 revision 的自定义文件源仍返回其定义的文件对象，不把布尔值当成文件。检查结果见现有 [核心操作验收记录](../../changes/active/existing-feature-release-acceptance/skill-actions-audit.md)。
+
+- `apps/desktop/tests/integration/skill-nested-git-source-update.test.ts` 对应 #218：使用报告中的深层 GitHub tree URL 与旁支 Skill，通过实际目录选择、renderer store、preload/IPC、Git checkout、SQLite 和完整包文件验证导入、检查、仅附件/二进制变化的更新与关闭重开；旧托管 checkout 路径恢复必须让数据库和 renderer 都使用修复后的根目录。仓库根目录仍须拒绝；远程入口丢失不得改变本地包、来源基线或版本。替换 Git/GitHub 网络传输和 Electron 运输，不替换业务服务；不代表真实 Windows GUI 或网络验收。此修复属于 Desktop IPC，CLI/Web 不消费该桌面同步和本地快照 IPC，既有 Web bridge 明确不支持本机 repo 操作。
 - `apps/desktop/tests/integration/skill-public-workflow.test.ts` 从生产 preload API 和完整 IPC 注册入口执行真实服务、磁盘 SQLite、首次 canonical 迁移与关闭重开。正常流程覆盖手工创建、元数据和嵌套文件编辑、版本、完整目录导入、二进制、copy/symlink 分发、改名、来源更新、卸载和删除；之后从同一 IPC 边界验证非法输入、路径穿越、缺失入口和陈旧来源，检查错误类型与持久化结果。Electron 消息运输及隔离 home 属于测试环境边界，不替换业务服务。
 - 该功能用例由现有 desktop integration shards 自动纳入。真实按钮流程 `agent-skill-lifecycle.spec.ts` 纳入既有 E2E smoke；`skill-create-structure.spec.ts` 检查当前 canonical bundle 和 workspace，移除过期 variant container 断言。接口流程与 E2E 证据分别记录，mock 组件/store 测试只证明局部交互。
 - 多步骤正常流程测试保留顺序断言，允许超过 50 行以直接呈现输入、结果和关闭重开边界；文件 inventory 一次线性遍历，只在临时小包上比较完整字节。此前 170 项聚焦测试与覆盖率仅证明各自局部边界，不作为完整功能可用的结论。
@@ -157,7 +166,7 @@ SQLite、临时旧目录、完整 package、公开状态及卸载 API 验证升�
 - 只检查内容意图和上下文，不根据来源域名、Git/Gitea/目录等渠道、source URL 是否存在、DNS、商店审计或脚本文件名判断风险。AI 输入不携带来源信任元数据，不执行被审查内容，不回显凭据值。
 - 报告仅供阅读，任何风险等级都不批准或阻止业务写入；旧操作请求的 safetyScan、safetyScanMode、approvedPackageFingerprint 为不生效的兼容字段。安装/更新不保存扫描结论或写入信任列表。
 - 路径穿越、不安全 archive、无效 package 结构、容量超限和写入/回滚错误仍按各自业务契约处理。内容扫描预算不得缩减可备份、版本化或安装的 package 内容。
-- 标准生命周期在完整暂存和结构校验后创建持久化 Skill 记录。兼容扫描导入的临时记录仍必须验证补偿删除成功，失败返回回滚诊断。
+- 标准生命周期在完整暂存和结构校验后创建持久化 Skill 记录。扫描导入也使用同一生命周期，不创建内容式临时记录；失败与补偿由生命周期所有者报告。
 - Desktop 进程启动时必须在接受新的 Skill package 请求前恢复上一进程留下的全部
   lifecycle journal 与 pending 记录，不受运行时清理所用年龄租约限制；进程运行期间
   的维护清理仍必须保留租约，避免把正在执行的安装或更新当作中断操作回滚。

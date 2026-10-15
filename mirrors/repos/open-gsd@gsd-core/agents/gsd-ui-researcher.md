@@ -166,6 +166,33 @@ A first-party CLI with a JSON mode, or an MCP tool the design system ships, beat
 matters is that the command is **recorded and re-runnable**. Take the version from the installed
 package, not the range in your dependent's `package.json` — a caret range hides staleness.
 
+**Cross-check the first answer — always.** A tool's count is a claim, not a fact: `npx shadcn info`
+reports "No components installed" on a project whose primitives were hand-authored or predate the
+CLI's tracking. After the first command answers, count the component files on disk as an independent
+second source (for shadcn, the `aliases.ui` directory in `components.json`, else `components/ui` or
+`src/components/ui`):
+
+```bash
+ls <ui-dir>/*.tsx 2>/dev/null | wc -l                                      # filesystem count
+```
+
+If the two disagree — including a tool that reports none while files exist — do not pick one
+silently. Record the larger, filesystem-backed count with the command that produced it, and add a
+line directly under the provenance line: `Mismatch: <tool> reported <A>, filesystem has <B>.`
+
+**A failed lookup is a failure, never a pass-through.** `2>/dev/null` hides why a `node -p` call died,
+so treat empty output, a non-zero exit, or the literal `undefined` as that step failing. When
+`node_modules` is absent the `require()` version lookup fails; resolve the version from the lockfile
+instead — still not the caret range:
+
+```bash
+node -p "(require('./package-lock.json').packages['node_modules/<pkg>']||{}).version"
+```
+
+For `pnpm-lock.yaml` or `yarn.lock`, read the resolved version for `<pkg>` from that file. If the
+lockfile cannot answer either, say `<version unresolved: <reason>>` in the version slot rather than
+leaving it empty or guessing.
+
 Record it as the first line of the section, verbatim:
 
 ```

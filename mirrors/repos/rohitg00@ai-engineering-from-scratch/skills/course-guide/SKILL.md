@@ -69,6 +69,12 @@ ordered lessons, so it is the exception to the usual 1-3 lesson limit. Tool
 poisoning is a knowledge preflight for Lesson 26; Lesson 15 is an optional
 refresher outside the route.
 
+Reverse Engineering has a focused route. For file formats, ELF or Mach-O,
+disassembly, control-flow graphs, decompilation, lifting, or binary evidence,
+route to `learn-reverse-engineering`. Its source of truth is
+`learning-paths/reverse-engineering.json`, and its state lives in
+`REVERSE-ENGINEERING-LEARNING.md`. Every target is a program the learner built.
+
 ## How to route
 
 1. **Interpret the ask**, which arrives in one of six shapes:

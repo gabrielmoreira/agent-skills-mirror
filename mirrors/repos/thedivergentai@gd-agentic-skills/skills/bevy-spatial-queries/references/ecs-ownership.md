@@ -11,5 +11,8 @@ Target: **Bevy 0.20+**.
 | Spawn | `Commands` | `Startup` or the runtime schedule |
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
+| Pointer pick | `Camera` + `PrimaryWindow` | `Update`, read-only |
+| Radius | `Probe` component | read after movement |
+| Same-frame facing | `Transform` | `advance` then `can_see`, `.chain()` |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+Do not invent ray APIs. Collider casts stay on the physics skills.

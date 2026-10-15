@@ -1,5 +1,11 @@
 # Analysis efficiency measurements
 
+For genuine Fiddler captures, see the [SAZ selection checkpoint](saz-selection-workflows.md).
+`measure.mjs --saz-selection baseline|focused|retained` compares default complete
+delivery (including retained-reference recovery), caller-selected ordinals, and
+summary/preview/complete/repeated pages. Each failed RPC remains in task costs.
+The body question uses stored bytes, not decoded HTTP application payloads.
+
 Tracks the experiments for [#2016](https://github.com/morluto/rea/issues/2016).
 The production CLI/MCP contracts and defaults remain the compatibility baseline.
 Downloaded artifacts, runtime copies, exported Evidence, transcripts and detailed
@@ -71,6 +77,18 @@ private lab. These local files are not required to build or use REA. Historical
 checkpoint commits retain their original receipts; no history was rewritten.
 
 ## Optimization priorities and gradual migration
+
+The [larger/non-HTTP packet checkpoint](packet-field-workflows.md) records
+same-question SDK and actual Codex comparisons using existing input limits,
+field/filter selection, discovery and output windows. Lower delivered JSON did
+not establish stable total-token or speed gains; failed plans and negative
+controls remain visible.
+
+The [sigrok selection checkpoint](signal-selection-workflows.md) records two
+real hardware recordings, independently verified bytes, repeated decoder/pages,
+and an eight-task Codex cohort with mixed token/time results. Existing annotation
+controls reduce replies; these measurements introduce no production cache,
+default or API changes.
 
 Agent token consumption and end-to-end task time are the primary objectives.
 Memory and CPU consumption are also measured and controlled. Correctness,

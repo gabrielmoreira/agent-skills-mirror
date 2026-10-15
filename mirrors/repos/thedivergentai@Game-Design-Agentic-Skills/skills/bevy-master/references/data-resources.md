@@ -1,6 +1,6 @@
 ---
 name: bevy-data-resources
-description: "Bevy ECS skill for components and resources as data. Keywords: Bevy, Resource, Res, Component, data."
+description: "Place Bevy 0.20 gameplay data on a Component or a Resource. Use when choosing Query versus Res/ResMut, insert_resource, Time and Timer, or a RON/asset handle stored once for the app. Keywords: Bevy, Resource, Res, ResMut, Component, Timer, AssetServer."
 ---
 
 # Bevy data resources
@@ -17,22 +17,117 @@ Load this when you are deciding where a piece of data lives: on many entities, o
 - **Time.** `Time` is inserted by `add_plugins(DefaultPlugins)`. `time.delta()` is the elapsed time since the last update. `Timer::tick` and `just_finished` are the page's timer methods.
 - **Schedule:** The sample reads `Res<Time>` and `ResMut<GreetTimer>` inside an `Update` system. Startup versus update is on the ECS page.
 
-Check the asset docs for loader APIs before writing them. "Asset collections" on the Resources page is an example of what a resource might hold, not a loader type.
+A resource can hold asset handles loaded through `AssetServer`. The handles are data; the loader stays on the asset server.
 
-## Coming from Godot
+## Where data lives
 
-| Godot idea | Bevy idiom |
+| Need | Bevy idiom |
 | --- | --- |
 | Data on one gameplay thing | A `Component` |
 | One copy for the whole app | A `Resource` inserted with `insert_resource` |
 | Shared clock | `Time` from `DefaultPlugins`, or your own `Resource` |
-| Authored data file | Check the asset docs before naming a file format or loader. |
+| Authored data file | `serde` plus `ron::from_str` into a `Resource`, or `Handle<Mesh>` from `AssetServer` |
 
 ## Scope
 
-- Check the asset docs for handles, serialization, and reflection-based loading before writing them.
-- Check the plugins page for resource initialization order beyond a single `insert_resource` call inside `Plugin::build`.
+- Handles, RON tables, and plugin `insert_resource` calls are in the examples below.
 - Per-entity data files and save blobs are out of scope. See bevy-save-load.
+
+```toml
+[package]
+name = "data-resources"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.20"
+serde = { version = "1", features = ["derive"] }
+ron = "0.10"
+```
+
+One greet timer resource, ticked from `Time` on `Update`.
+
+```rust
+#[derive(Resource)]
+struct GreetTimer(Timer);
+
+fn greet(time: Res<Time>, mut timer: ResMut<GreetTimer>) {
+    timer.0.tick(time.delta());
+    if timer.0.just_finished() {
+        let _ready = true;
+    }
+}
+
+pub struct GreetPlugin;
+
+impl Plugin for GreetPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(GreetTimer(Timer::from_seconds(2.0, TimerMode::Repeating)))
+            .add_systems(Update, greet);
+    }
+}
+
+fn main() {
+    App::new().add_plugins(DefaultPlugins).add_plugins(GreetPlugin).run();
+}
+```
+
+Per-entity speed stays a component. The shared multiplier stays a resource.
+
+```rust
+#[derive(Component)]
+struct BaseSpeed(f32);
+
+#[derive(Component)]
+struct Speed(f32);
+
+#[derive(Resource)]
+struct SpeedScale(f32);
+
+fn scale_speed(scale: Res<SpeedScale>, mut bodies: Query<(&BaseSpeed, &mut Speed)>) {
+    for (base, mut speed) in &mut bodies {
+        speed.0 = base.0 * scale.0;
+    }
+}
+
+pub struct SpeedPlugin;
+
+impl Plugin for SpeedPlugin {
+    fn build(&self, app: &mut App) {
+        app.insert_resource(SpeedScale(1.0))
+            .add_systems(Startup, |mut commands: Commands| {
+                commands.spawn((BaseSpeed(4.0), Speed(4.0)));
+            })
+            .add_systems(Update, scale_speed);
+    }
+}
+```
+
+Load a scene handle into a resource, and parse a RON table into another.
+
+```rust
+use serde::Deserialize;
+
+#[derive(Resource)]
+struct LevelAssets {
+    mesh: Handle<Mesh>,
+}
+
+#[derive(Deserialize, Resource)]
+struct Tuning {
+    speed: f32,
+}
+
+fn load_level(mut commands: Commands, assets: Res<AssetServer>) {
+    commands.insert_resource(LevelAssets {
+        mesh: assets.load("models/gate.glb#Mesh0/Primitive0"),
+    });
+}
+
+fn tuning_from_ron(raw: &str) -> Result<Tuning, ron::error::SpannedError> {
+    ron::from_str(raw)
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -56,12 +151,12 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | One struct that stores every entity's fields |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
 | Cross-system notice that is not shared state | Message or observer slot in `bevy-events-messaging` | A new event type invented in this file |
-| An API outside the documented set | Check the official docs first | A made-up crate or API |
+| An API outside the documented set | Read the linked Bevy pages | A made-up crate or API |
 
 Load [references/ecs-ownership.md](data-resources-ecs-ownership.md) for the ownership table.
 
@@ -71,17 +166,15 @@ Load [references/ecs-ownership.md](data-resources-ecs-ownership.md) for the owne
 - Do not mutably query the same component from two unordered systems. WHY: the schedule runs systems in parallel unless `.chain()` orders them.
 - Do not invent a physics, navigation, networking, or XR crate here. WHY: this skill only names documented Bevy crates and modules.
 
-- No Godot resource, packed-scene, or data-file types. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
+- No packed scene or node-script stand-ins for `Resource`. WHY: app-wide data is a `Resource` inserted on the `App` or `Commands`.
 - No invented asset or serialization APIs. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 - No third-party crates. WHY: Bevy code stays idiomatic ECS and uses only documented Bevy APIs.
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+The library pin on bevy-master stays **0.20.0**. Official links stay on the unversioned learn pages.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/)  -  Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/)  -  Unversioned API index.
 - [Resources](https://bevy.org/learn/quick-start/getting-started/resources/)  -  `Resource`, `Res`, `ResMut`, `insert_resource`, `Time`, `Timer`, `TimerMode`.
 - [Quick Start: ECS](https://bevy.org/learn/quick-start/getting-started/ecs/)  -  `Component` and `Query` for per-entity data.
 - [Apps](https://bevy.org/learn/quick-start/getting-started/apps/)  -  Resources as the single copy of global data in the `World`.
@@ -90,15 +183,14 @@ docs.rs links use the unversioned `latest` permalink. The library pin on bevy-ma
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Component versus resource ownership.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md)  -  How components are spawned and queried.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Component versus resource ownership.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md)  -  How components are spawned and queried.
 
 #### Complements
-- [bevy-app-resources](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-app-resources/SKILL.md)  -  Schedules and plugins around those resources.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-resource-data-patterns/SKILL.md)  -  Equivalent Godot skill. Do not import Godot types.
+- [bevy-app-resources](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-app-resources/SKILL.md)  -  Schedules and plugins around those resources.
 
 #### Downstream / consumers
 - Inventory, stats, and save skills cover items, attributes, and persistence.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md)  -  Bevy router.

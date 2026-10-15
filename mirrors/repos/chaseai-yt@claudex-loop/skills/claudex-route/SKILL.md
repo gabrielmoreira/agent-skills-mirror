@@ -28,16 +28,16 @@ The current agent keeps the user's requirements and coordinates the work. A diff
 
 ## Select a practical candidate
 
-Start with models available in the user's environment. The following are dated starting points (September 2026), not a permanent leaderboard:
+Start with models available in the user's environment. The following are dated starting points (October 2026), not a permanent leaderboard:
 
-- **GPT-5.6 Luna** (`gpt-5.6-luna`): consider for narrow, repetitive tasks with explicit checks, such as fixtures, extraction, documentation updates, or an isolated helper.
-- **GPT-5.6 Terra** (`gpt-5.6-terra`): consider for bounded coding or investigation requiring more judgment and context than the Luna task above.
+- **GPT-6 Luna** (`gpt-6-luna`): consider for narrow, repetitive tasks with explicit checks, such as fixtures, extraction, documentation updates, or an isolated helper.
+- **GPT-6.1 Sol** (`gpt-6.1-sol`) and **Claude Opus 5.5** (`claude-opus-5-5`): consider for bounded coding or investigation requiring more judgment and context than the Luna task above.
 - **GPT-6 Astra** (`gpt-6-astra`) and **Claude Fable 5.1** (`claude-fable-5-1`): candidates for ambiguous work, difficult debugging, or a substantial independent review. From Codex, Fable is a candidate for cross-provider review; from Claude Code, Astra is a candidate.
-- **Claude Sonnet, Opus, or another available model**: retain as options when their task fit, existing context, account access, or the user's preference favors them. Cross-provider delegation is optional.
+- **Claude Sonnet or another available model**: retain as options when their task fit, existing context, account access, or the user's preference favors them. Cross-provider delegation is optional.
 
 Use local model listings and CLI status/help when accessible without launching a model task. Distinguish listed, authenticated, and proven runnable: none alone establishes the others. If access or the active model is unknown, make the recommendation conditional and explain what needs checking. Do not launch paid comparison calls just to choose a model.
 
-For price-sensitive choices or comparative claims, consult current official [OpenAI model information](https://developers.openai.com/api/docs/models) and [Anthropic model information](https://platform.claude.com/docs/en/about-claude/models/overview). Check [Codex usage guidance](https://learn.chatgpt.com/docs/pricing) when using subscription allowances. API token prices are different from subscription usage; task costs also include context transfer, reasoning, retries, and host verification. Do not call Terra cheaper than Sonnet, claim Luna is universally stronger, or promise savings without relevant evidence. If sources cannot be checked, omit numeric claims and label the cost assumption.
+For price-sensitive choices or comparative claims, consult current official [OpenAI model information](https://developers.openai.com/api/docs/models) and [Anthropic model information](https://platform.claude.com/docs/en/about-claude/models/overview). Check [Codex usage guidance](https://learn.chatgpt.com/docs/pricing) when using subscription allowances. API token prices are different from subscription usage; task costs also include context transfer, reasoning, retries, and host verification. Do not call Sol cheaper than Sonnet, claim Luna is universally stronger, or promise savings without relevant evidence. If sources cannot be checked, omit numeric claims and label the cost assumption.
 
 ## Return a short routing brief
 

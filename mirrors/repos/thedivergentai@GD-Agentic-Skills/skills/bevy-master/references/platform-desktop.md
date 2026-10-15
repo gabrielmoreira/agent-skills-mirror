@@ -1,6 +1,6 @@
 ---
 name: bevy-platform-desktop
-description: "Bevy ECS skill for desktop windows. Keywords: Bevy, window, desktop, WindowPlugin, PrimaryWindow, winit."
+description: "Bevy ECS skill for desktop windows. Use when setting the primary window size, present mode, fullscreen, or close behavior. Keywords: Bevy, window, desktop, WindowPlugin, PrimaryWindow, WindowMode."
 ---
 
 # Bevy desktop platform
@@ -21,14 +21,91 @@ Load this when configuring the desktop window, mode, or close behavior. Web and 
 
 | Godot idea | Bevy idiom |
 | --- | --- |
-| Window size | WindowResolution on the Window component. |
-| Fullscreen | WindowMode. Check the window page for variants before writing them. |
-| Quit on close | exit_on_primary_closed. |
+| Window size | `WindowResolution` on the primary `Window` |
+| Fullscreen | `WindowMode::BorderlessFullscreen` |
+| Quit on close | `ExitCondition::OnPrimaryClosed` on `WindowPlugin` |
 
 ## Scope
 
-- Check the `Window` docs for per-field defaults before writing them.
-- Check the window docs for display-server selection code before writing it. Feature names only are listed here.
+`x11` and `wayland` are `bevy` features. The primary window is configured on `WindowPlugin` before the app runs. Runtime mode changes write the `Window` component marked `PrimaryWindow`.
+
+## Examples
+
+```toml
+[package]
+name = "desktop"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.20"
+```
+
+The primary window is 1280 by 720, vsync, and closes the app when that window closes.
+
+```rust
+use bevy::window::ExitCondition;
+use bevy::window::PresentMode;
+use bevy::window::WindowMode;
+use bevy::window::WindowResolution;
+
+fn main() {
+    App::new()
+        .add_plugins(DefaultPlugins.set(WindowPlugin {
+            primary_window: Some(Window {
+                title: "Desktop".into(),
+                resolution: WindowResolution::new(1280, 720),
+                present_mode: PresentMode::AutoVsync,
+                mode: WindowMode::Windowed,
+                ..default()
+            }),
+            exit_condition: ExitCondition::OnPrimaryClosed,
+            close_when_requested: true,
+            ..default()
+        }))
+        .run();
+}
+```
+
+F11 flips the primary window between windowed and borderless fullscreen on the current monitor.
+
+```rust
+use bevy::window::MonitorSelection;
+use bevy::window::PrimaryWindow;
+use bevy::window::WindowMode;
+
+fn toggle_fullscreen(
+    keys: Res<ButtonInput<KeyCode>>,
+    mut windows: Query<&mut Window, With<PrimaryWindow>>,
+) {
+    if !keys.just_pressed(KeyCode::F11) {
+        return;
+    }
+    let Ok(mut window) = windows.single_mut() else {
+        return;
+    };
+    window.mode = if window.mode == WindowMode::Windowed {
+        WindowMode::BorderlessFullscreen(MonitorSelection::Current)
+    } else {
+        WindowMode::Windowed
+    };
+}
+```
+
+A second system reads the live resolution. It does not write `Window`, so it can run beside the toggle without `.chain()`.
+
+```rust
+use bevy::window::PrimaryWindow;
+
+fn log_resolution(windows: Query<&Window, With<PrimaryWindow>>) {
+    let Ok(window) = windows.single() else {
+        return;
+    };
+    let width = window.resolution.width();
+    let height = window.resolution.height();
+    let _ = (width, height);
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -74,30 +151,28 @@ Load [references/ecs-ownership.md](platform-desktop-ecs-ownership.md) for the ow
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
+- `bevy crate` - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
 - [Plugins](https://bevy.org/learn/quick-start/getting-started/plugins/) - `Plugin`, `DefaultPlugins`, `MinimalPlugins`, and `add_plugins`.
-- [bevy::window](https://docs.rs/bevy/latest/bevy/window/index.html) - `Window`, `WindowPlugin`, `PrimaryWindow`, `WindowMode`.
+- `bevy::window` - `Window`, `WindowPlugin`, `PrimaryWindow`, `WindowMode`.
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
 
 #### Complements
-- [bevy-platform-web](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-platform-web/SKILL.md) - Wasm limits.
-- [bevy-input-handling](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Pointer and keyboard.
-- [godot-platform-desktop](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-platform-desktop/SKILL.md) - Equivalent Godot skill.
+- [bevy-platform-web](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-platform-web/SKILL.md) - Wasm limits.
+- [bevy-input-handling](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-input-handling/SKILL.md) - Pointer and keyboard.
+- [godot-platform-desktop](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-platform-desktop/SKILL.md) - Equivalent Godot skill.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

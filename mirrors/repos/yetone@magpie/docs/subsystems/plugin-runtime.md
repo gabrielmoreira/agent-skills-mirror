@@ -8,8 +8,9 @@ turned off. `plugins.yml` says which are on. This page describes P0 (the
 runtime, the file and the window's switch) and P1 (the window's kernel: a
 plugin's page, its error boundary, the kit it draws with and its settings
 form, with the Gateway page as the first plugin to draw its own page), and
-P2 so far (a page moved out of the core whole: its code, styles and words,
-starting with Sessions). OpenCode plugins (npm packages in
+P2 so far (a page moved out of the core whole: its code, styles and words:
+Sessions, Library, Routing and Usage), and P3 so far (the gateway's
+extension points: the observer, with OTel export as its first plugin). OpenCode plugins (npm packages in
 the plugin host) are a different thing; see
 [provider and plugin ownership](provider-plugins.md) and
 [gateway middleware](gateway-middleware.md).
@@ -24,7 +25,7 @@ the plugin host) are a different thing; see
 | Ctx | What `Apply` gets: `OnDispose(f)`, `Contribute(slot, key)`, `Provide(name, v)` (withdrawn when it goes), `Service(name)`, and its composed `Config`. Disposers run in reverse, each one's panic logged and the rest still run. | [`pluginrt.go`](../../internal/pluginrt/pluginrt.go) |
 | plugins.yml | `appdir.Config()/plugins.yml`: `preset` (`essentials` or `all`) and `plugins`, rows of `{id, enabled, config}` holding only what the user set. | [`config.go`](../../internal/pluginrt/config.go) |
 | Settings schema | `SchemaOf(Settings)` makes a JSON Schema object of the struct, in its fields' order (`x-order`): each exported field with a json name is a setting, of `bool`, an int, `float64` or `string`, with tags `title` (English; the window translates it), `description`, `enum` (comma separated) and `min`/`max`. Its values are the defaults. A field a form can't draw, or a tag that doesn't parse, panics at `Register`. `Schema.Validate` takes a value only as the schema allows it (a JSON float64 or a YAML int for an integer); `SetConfig(id, config)` writes the user's row through it, and `Compose` leaves out a value edited into plugins.yml by hand that it doesn't allow, so the default stands. | [`schema.go`](../../internal/pluginrt/schema.go), [`config.go`](../../internal/pluginrt/config.go) |
-| Built-in plugins | `groups`, `library`, `otel`, `sessions`, `warmups` (P0), and `gateway` (P1), the Gateway page, which is Essential and in use while a gateway key is there (`access.List`). Its one setting, `callsPage` (10, 20, 50 or 100; 20), is how many recent calls the page shows at a time. The other five aren't Essential. Each one's `InUse` counts what the user made with it: routing groups not Auto and not hidden, library items given to agents, a collector sent to, gateway conversations recorded, warm-ups and check-ins on. | [`plugins/`](../../plugins) |
+| Built-in plugins | `groups`, `library`, `otel`, `sessions`, `warmups` (P0), `gateway` (P1), the Gateway page, which is Essential and in use while a gateway key is there (`access.List`), and `routing` (P2), the Routing page, Essential and in use while the user has a routing group, since the page is where groups are made and changed. `rotation` (P3), the routings besides Smart, is Essential and in use while a provider or group is routed by one of them. `usage` (P2), the Usage page, is Essential too, with no `InUse`: what it shows the gateway counts anyway, and the tray panel's Usage tab still shows the allowances with it off. The Gateway page's one setting, `callsPage` (10, 20, 50 or 100; 20), is how many recent calls the page shows at a time. The other five aren't Essential. Each one's `InUse` counts what the user made with it: routing groups not Auto and not hidden, library items given to agents, a collector sent to, gateway conversations recorded, warm-ups and check-ins on. | [`plugins/`](../../plugins) |
 
 The boundary is checked by `TestPluginsImportOnlyCore`: no package outside
 `plugins/` imports one (but `main.go`, through `plugins/all`), a plugin never
@@ -113,6 +114,95 @@ says one of its words, which goes back to i18n.js.
   are hidden, and `close`, `dirty` and `discard` are what `show()` asks
   before the reader leaves it. `window.loadLibrary`, `redrawLibrary`,
   `closeLibraryModal`, `libraryDirty` and `discardLibrary` are gone.
+- **Routing** (`plugins/routing`, `Client: i18n.js, routing.css,
+  client.js`): the page that was `routing.js`, Essential. Its part's `html`
+  is the page's head and boxes that were index.html's; the rest of the page
+  is drawn by `routingPage`, run at `mount` because it builds on app.js. It
+  keeps itself after that, as it did (its own `hidden`, the language, the
+  window's focus), so its hooks are only `dirty` and `discard`, a routing
+  group being edited, which `show()` and the window's close ask through
+  `magpie.call("routing", …)`: `window.routingDirty` and `discardRouting`
+  are gone. Its tab in the tray panel and the panel's section are marked
+  `data-feature="routing"`. What other pages use of it is still on
+  `window` (`openRoute` for context.js; `kindName`, `swapWhy` and
+  `routedWhy` for Usage's Requests; `newGroupWith` for Providers;
+  `panelRoutingShown` for the panel). With the plugin off, what leads to
+  the page goes with it: the nav and panel tabs, the guide's Open Routing,
+  Providers' "Make a routing group of …" (`data-feature="routing"`), the
+  Usage list's View routing and its time as a link, and the context card's
+  Latest request; a panel left on its Routing tab shows Agents.
+- **Usage** (`plugins/usage`, `Client: i18n.js, client.js, page.js`):
+  the page that was the largest part of app.js (about 3000 lines: the
+  Overview's cards, the Requests ledger, the Sessions tab and the Agents
+  list). Its part's `html` is the page's markup that was index.html's
+  `#view-usage`. Its code builds on app.js at the top level (its timers,
+  `?view=usage`'s tab and filters), so `page.js` is the one script a
+  plugin loads after app.js: index.html loads kernel.js, the plugins'
+  other scripts, app.js and the scripts beside it, then each `page.js`,
+  then `start.js`, which is app.js's old tail (`magpie.start()`, the
+  first page shown, the first `load()`), so the first page has its code.
+  `TestBuiltinClientsLoaded` holds that order. Its hooks: `open` loads
+  it, `refresh(again)` is `load()`'s read of it (coming back to the
+  Overview is opening the allowances, #1588), `reload` is Refresh now,
+  `costs` draws the costs again when Settings' currency changes, and
+  `tab` says which tab it is on, for `focusQuotaCard`. Still in app.js,
+  since the tray panel draws them too: the allowance cards,
+  `quotasOpened`, `panelQuotaFocus` and `panelUseFocus`. With the plugin
+  off, its nav tab goes, and so do the ways to the page
+  (`data-feature="usage"`): the tray panel's Open Usage and Routing's View
+  usage. A `show("usage")` left anywhere gives way to Agents. The panel's
+  Allowances tab stays.
+
+## Gateway extension points (P3): observer
+
+P3 opens the gateway to plugins at four points: observer, router strategy,
+middleware and tool. The observer is the first. It only reads, so it is
+the safest to move first. `plugins/otel` is its first consumer, and with the
+plugin off the gateway does no observing work.
+
+| Part | What it does | Source |
+| --- | --- | --- |
+| `usage.Observer` | `Serve() (stop)`, `Bodies()`, `Begin(Request) Watch` and `Ledger(Record)`. An observer watches what the gateway serves and what the ledger is written, and never changes either. `Observe(o)` registers one until its remove; `Observers` lists them. It lives in `internal/usage`, not the gateway, because every row is a usage `Record` and the ledger's other writers reach it too. | [`observe.go`](../../internal/usage/observe.go) |
+| Serving | `ServeObservers()` starts every observer registered, and each one registered later, until the last of its stops (it is counted). Only the process serving the gateway calls it (`Server.ListenAndServe`), so a CLI that writes a usage row exports nothing. Remove stops a serving observer. | [`observe.go`](../../internal/usage/observe.go), [`gateway.go`](../../internal/gateway/gateway.go) |
+| `Begin` and `Watch` | As a request starts the gateway asks each observer (`observeRequest`) with `usage.Request`: its header, agent, session (the native one when the agent names it), call kind (`auxiliary` for Claude's tool-less helper calls) and `Plain` (loopback, no gateway key, not passed on from another magpie). A `Watch` it returns gets `Attempt` for each routing attempt, unbilled failures and retries too, and `End` once. With no observer, or none watching, the request carries nothing. | [`observe.go`](../../internal/gateway/observe.go) |
+| Bodies | `Bodies()` is `NoBodies`, `CapturedBodies` (the first 256 KiB, cut with `usage.BodyCut`) or `WholeBodies` (the reply spooled whole as it streams, #538). The gateway takes the most any observer wants now (`ObservedBodies`): it keeps the whole reply only when one asks for it, and puts bodies on an attempt's record only when one asks for any. | [`observe.go`](../../internal/gateway/observe.go), [`capture.go`](../../internal/gateway/capture.go) |
+| `Ledger` and `Watched` | Every row `Append` writes is passed to each observer. A row of a request some observer watched has `Watched` set (`appendUsage`), so an observer that sent the request's attempts doesn't send its row again. | [`usage.go`](../../internal/usage/usage.go), [`lan.go`](../../internal/gateway/lan.go) |
+| `internal/otlp` | The OTLP/HTTP exporter, moved whole out of `internal/usage`: `otlp.New()` is an `Exporter`, a `usage.Observer`. Its Begin leaves a local agent's own turn to the agent's transcript when session tracing reads it, and takes a W3C `traceparent` as the parent. Settings are read on each call, as before. | [`otlp/`](../../internal/otlp) |
+| `plugins/otel` | Requires `window`, `settings` and `gateway`. Apply registers `otlp.New()` and disposes of it when turned off. `InUse` is 1 while `settings.OTelExport` says to send (settings.json or `MAGPIE_OTEL_*`), so a user who exports only through the environment keeps it on under Essentials. | [`otel.go`](../../plugins/otel/otel.go) |
+
+## Gateway extension points (P3): router strategy
+
+The router strategy point says the order a pool of routes is tried in: a
+provider's accounts or keys, or the heads of a group's members. The gateway
+still lists the pool, and keeps rests, affinity, rules, pins and the walk
+over the order itself; a strategy only orders. Smart, the default, stays in
+the core. The five other routings are the built-in plugin `rotation`'s.
+
+| Part | What it does | Source |
+| --- | --- | --- |
+| `routes.Strategy` | `Order(pool, seats) []int`: a permutation of the seats' indexes. `pool` is a provider's id or `group/<id>`, for a strategy that keeps a round per pool. `Exact` keeps the order as given; otherwise a provider's API keys that fit the request better go first, each in its order. `ByUse` puts each seat's recent tokens in the trace. | [`routes.go`](../../internal/routes/routes.go) |
+| `routes.Seat` | What a strategy weighs, read by `weighRouted` under the routing state's lock: its rest key, whether it is an account, whether its allowance is known or it learns it as it answers, the share used, when its windows renew, its weekly pace, its key's weight, whether it rests now and its tokens of the last hours. | [`routes.go`](../../internal/routes/routes.go), [`routing.go`](../../internal/gateway/routing.go) |
+| `Register`, `Find`, `Apply` | `Register(routing, s)` serves a routing until its remove; registering again stacks, and the last one serves. `Find("")` is `Smart` always. `Apply` fails open: a strategy that panics, or answers what isn't a permutation, leaves the pool in its listed order, logged. Every route is still tried. | [`routes.go`](../../internal/routes/routes.go) |
+| Strategies | `Smart` (core), and `Ordered`, `Rotate`, `LeastUsed`, `Pace` and `Weighted` in `routes.Builtin`. `Rotate` keeps a turn per pool and `Weighted` a smooth weighted round (`Round`, `MoveRound`), both moved out of the gateway; `Forget` clears them. | [`strategies.go`](../../internal/routes/strategies.go), [`round.go`](../../internal/routes/round.go) |
+| Off | A routing no strategy serves is its listed order. `routingOf` in the gateway reads it as `order` wherever the core asks about a routing (a turn's mark, `sinks`, a rotate group's sessions, a group's heads), so nothing of the routing is left half on. | [`routing.go`](../../internal/gateway/routing.go) |
+| `plugins/rotation` | Requires `providers` and `gateway`, `Essential`. Apply registers every `routes.Builtin` and removes them when turned off. `InUse` counts the providers and groups providers.json routes by one of them (`provider.Routings`, the file alone, not the catalog); an unreadable providers.json is an error, so it stays on. The gateway's `KeepFresh` watches providers.json too, so a routing set from the CLI or the TUI turns it on within 2s. Off, the window's routing pickers (the provider editor, the Routing page's pools and groups) offer Smart alone: their options are marked `data-feature="rotation"` (`routingSegs`). | [`rotation.go`](../../plugins/rotation/rotation.go), [`provider.go`](../../internal/provider/provider.go), [`app.js`](../../internal/gui/assets/app.js) |
+
+The user's own routing groups are the `groups` plugin's on this point. The
+groups magpie finds (a model two providers serve, `auto-<model>`) stay the
+core's, as Smart does: they are how a model several providers serve is one
+model with failover, which a new install has with the Essentials preset,
+where `groups` is off. `planGroup` and the walk over a group's members are
+the core's either way: a strategy only orders a pool, and a group off is
+not offered at all.
+
+| Part | What it does | Source |
+| --- | --- | --- |
+| `GateGroups`, `ServeGroups` | The gateway holds `GateGroups` while it serves (`ListenAndServe`), and the plugin holds `ServeGroups` while it is on. Gated with none served, `groupsIn` leaves out every group not `Auto`, so `Groups`, `FindGroup`, `GroupFor`, the catalog, `/v1/models` and a group's `Unlists` go without them: a request for one is a model not served. A process not serving the gateway (the CLI, the TUI) is never gated and lists them all. Nothing built from the groups is kept past a call, so a flip is seen by the next lookup. Gated and off, a lookup that finds a group of the user's own first asks the gate's refresh (the gateway's is `pluginrt.Refresh`), at most once a second and never from inside one, then looks again: a group made a moment ago turns the plugin on and is served by the request that asks for it, not after `KeepFresh`'s next look (`TestOwnGroupRefreshesTheGate`). | [`group_serve.go`](../../internal/provider/group_serve.go), [`group.go`](../../internal/provider/group.go), [`gateway.go`](../../internal/gateway/gateway.go) |
+| `plugins/groups` | Requires `window` and `providers`, not Essential. Apply holds `ServeGroups`. `InUse` is `provider.NamedGroups`: the groups providers.json holds that are neither Auto nor hidden, read from the file, never through the gate (else off would count none and stay off); an unreadable file is an error, so it stays on. The `routing` plugin's `InUse` is the same count. The gateway's `KeepFresh` watches providers.json, so a group made with `magpie group add` turns it on within 2s, and a request for it before then turns it on itself (the gate's refresh, above); the window's New group button is `data-feature="groups"`. | [`groups.go`](../../plugins/groups/groups.go), [`routing.go`](../../plugins/routing/routing.go) |
+
+The other points follow in this order: middleware (the JS gateway middleware becomes one consumer of it, with its
+place, API and fail-open policy unchanged; redaction fails closed), then
+tool (search) and budget.
 
 ## Source of truth and composing
 
@@ -148,6 +238,12 @@ remembering its layer (`Source`):
   (`magpie plugin preset essentials|all`). Off is refused while the plugin
   is in use.
 - **The window**: see [GUI app shell](gui-shell.md), "Built-in plugins".
+- **The gateway**: the process serving it runs `pluginrt.KeepFresh` (every
+  2s), which refreshes when plugins.yml, settings.json or providers.json
+  changes, so a
+  plugin turned on or off in the window or by `magpie plugin builtin` comes
+  and goes in the gateway without a restart, and a headless `magpie serve`
+  follows the file too.
 
 ## Failure and compatibility
 
@@ -164,9 +260,14 @@ remembering its layer (`Source`):
   with the reason; the rest run.
 - A plugin's page whose code throws breaks only that page (the boundary
   above); a POST of a config the schema refuses is a 400 and writes nothing.
-- A plugin's off is the window's alone: its page, sections and rows
+- A page plugin's off is the window's alone: its page, sections and rows
   leave the window. The gateway, the TUI and the CLI serve the same either
-  way, and nothing the user made is deleted. Davsync doesn't carry
+  way, and nothing the user made is deleted. A gateway plugin's off is the
+  gateway's: with `otel` off nothing is exported and no reply is kept
+  whole for it. An observer can't fail a request; it only reads. With
+  `rotation` off a pool set to one of its routings is tried in its listed
+  order; a strategy that fails falls back to the same order, never to an
+  error. Davsync doesn't carry
   plugins.yml.
 
 ## Verification
@@ -185,5 +286,23 @@ remembering its layer (`Source`):
   boot.js and from a change) in Chromium and WebKit, every language, 1100,
   800 and 420 points; the Gateway page's own tests (`gateway-*`,
   `recent-calls-*`) unchanged.
+- P3 observer: `go test ./internal/usage/ -run 'TestObserver|TestBodiesStayOutOfTheLog'`,
+  `go test ./internal/gateway/ -run 'TestObserverPoint|OTel|Deferred'`,
+  `go test ./internal/otlp/ ./plugins/otel/`
+  (`TestOnExportsOffSendsNothing`, `TestInUseByEnvironment`) and
+  `go test ./internal/pluginrt/ -run TestKeepFreshFollowsPluginsYml`.
+- P3 router strategy: `go test ./internal/routes/ ./plugins/rotation/`
+  (`TestRegisterStacks`, `TestApplyFailsOpen`, the strategies' orders,
+  `TestOnServesOffDoesNot`, `TestInUse`), `go test ./internal/gateway/`
+  whole (its `TestMain` registers the strategies, so every routing test is
+  the parity run with the plugin on; `TestRotationOnAndOff` turns it off),
+  and `routing-save.test.cjs` (Smart alone with it off, every width and
+  engine).
+- P3 groups: `go test ./internal/provider/ -run 'TestOwnGroupsWaitOnThePlugin|TestNamedGroupsUnreadable'`,
+  `go test ./plugins/groups/` (`TestOnServesOffDoesNot`, `TestInUse`) and
+  `go test ./internal/gateway/` whole (its `TestMain` holds
+  `ServeGroups`, the parity run with the plugin on; `TestGroupsOnAndOff`
+  turns it off: the user's group leaves `/v1/models` and isn't served,
+  the found one is both).
 - By hand, under a sandbox HOME: `magpie plugin builtin`, `magpie plugin
   builtin on groups`, `magpie plugin dump`, and a plugins.yml broken by hand.

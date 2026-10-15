@@ -63,6 +63,8 @@ everything else requires human comparison with current main.
   local-range export; bounded advisory PR-body handoff
 - [GitHub webhook read model](github-webhook-read-model.md) — active; signed
   ingress, App subscriptions, snapshot freshness, and safety boundary
+- [Review authority contract](review-authority.md) — proposed integration;
+  inert role classifier and API evidence requirements
 
 ## Configuration and repository onboarding
 
@@ -88,6 +90,7 @@ everything else requires human comparison with current main.
 
 - [Live dashboard](live-dashboard.md) — active; Worker status and operational
   telemetry
+- [Agent performance metrics](agent-performance-metrics.md) — execution timing, repeated work, chart ownership and observation limits
 - [GitHub publication egress telemetry](github-egress-telemetry.md) — active;
   wire denominator, credential attribution, completeness, and retention
 - [Triage dashboard](triage-dashboard.md) — active; cached issue triage

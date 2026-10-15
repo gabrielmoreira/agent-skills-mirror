@@ -1,0 +1,261 @@
+# Stateful script verification
+
+Use these recipes when a change touches persisted formats, partial state updates,
+permission-sensitive checks, or output too large for a tool response. Select only the affected recipes. Run
+against an isolated state directory with synthetic values; do not mutate live
+accounts or journals to obtain test evidence. Stop when the changed contract is
+decided by the checks below; the selected verification tier still governs review.
+
+## Persisted-format compatibility
+
+Before editing, name the supported reader versions, files and behaviors. Freeze
+the old reader and writer from an immutable release/ref; a new parser with a
+`legacy=True` flag is not an independent old reader.
+
+| Writer | Reader | Required observation |
+|---|---|---|
+| Old | Old | Baseline fixture is valid and produces the expected result |
+| Old | New | Historical records retain their identities and business meaning |
+| New | New | Changed records produce the intended new behavior |
+| New | Old | Still-supported behavior remains usable without crashes or silent reinterpretation |
+
+Write through each version's actual writer into a temporary directory, then close
+and reopen the files through the other version's actual reader. Assert counts,
+record identities and decisions, not only successful parsing. Exercise the new
+record type and an existing resolved record. Compare the old reader's result
+before and after the new write.
+
+When removing persisted derived fields or normalizing evidence, include malformed
+lists in that same round trip. A filter that drops non-string members can turn
+`[1]` into `[]`, or `["manual_gap", null]` into `["manual_gap"]`; a returned
+validation error is insufficient if the writer saves the cleaned result and the
+next reader interprets it as valid or complete. Validate evidence before cleaning
+it, or preserve an explicit invalid/unknown diagnosis according to the owning
+format. Missing, empty, null, scalar and mixed-list inputs need separate controls;
+their meanings come from that format, not from this recipe. On rejection, verify
+that the last valid record remains intact.
+
+The runnable example is `tests/test_persisted_receipt_roundtrip.py`: it exercises
+this Skill's actual `release_readiness.attest` writer and `verify` reader, with an
+exact old implementation frozen under `tests/fixtures/persisted-receipt/`. Its
+mixed-list control fails when the reader's deciding predicate is mutated to
+filter malformed members. Run from the locked Skill project:
+
+```bash
+uv run --frozen python -m pytest tests/test_persisted_receipt_roundtrip.py -q
+```
+
+This proves the receipt-format control, not another Skill's media completeness.
+Apply the recipe to that capability's actual writer and consumer to establish
+its business decisions after persistence.
+
+The last row covers the declared compatibility surface, not features the old
+reader never supported. A new sidecar file may be ignored by the old reader;
+verify that the shared journal still works. If old readers cannot safely consume
+the changed format, publish the approved migration/version boundary rather than
+claiming bidirectional compatibility. Keep frozen code as a test-only fixture
+with exact ref/path provenance; it is not another runtime implementation.
+
+This matrix follows the mixed-version rollout concern in the
+[Protocol Buffers best practices](https://protobuf.dev/best-practices/dos-donts/).
+Its binary-format guarantees do not establish compatibility for JSON/JSONL;
+exercise the actual format and consumers used by the Skill.
+
+## Partial updates and persisted evidence
+
+List the independent state dimensions and what makes an update explicit. Start
+from established values, not only an all-unknown fixture. For an event journal,
+use a scored hit, a confirmed event and two distinct accounts with unresolved
+arrival gaps; adapt these values to the domain's real states.
+
+1. Capture each dimension's value, identity and deciding record before updating.
+2. Update one dimension through the real command. Read persisted data through the
+   normal consumer and compare every other dimension with the captured baseline.
+   Include updating one entity while a second entity retains its unresolved gap.
+3. Separately exercise an explicit correction/retraction of the changed dimension.
+   Distinguish omitted fields (no update), explicit unknown, empty and null according
+   to the existing contract; do not invent a universal meaning for these inputs.
+4. For each changed write branch, supply required evidence fields, including the
+   normal and unknown branches. Close the writer, reopen the JSONL/database and
+   assert the exact persisted values and the consumer's decision. Inspect both
+   storage and projection when the consumer hides fields. Returned objects and
+   validation success alone do not prove persistence.
+5. Exercise missing keys and empty values separately (and null if accepted by the
+   interface). Assert the specified rejection or observable default. On rejection,
+   verify that the authoritative records remain intact; an empty file created by
+   the command is not itself evidence of data loss.
+
+Prove the regression detects the original failure using the frozen faulty code or
+an isolated mutation of the same write/read path. Use synthetic evidence URLs and
+account identifiers; do not copy live secrets into fixtures.
+
+## Operational route changes
+
+Use this recipe when replacing a provider, changing the normal route or disabling
+an optional leg. The author records the original user-visible result, the changed
+leg and its actual downstream consumer before editing. Approval to replace the
+means does not retire the result; a boundary change still follows the migration gate.
+
+Follow one exact object through the ordinary trigger, handoff and final consumer.
+Use the existing state and verification owners. Record what wakes the consumer,
+what input identity/profile crosses the seam, and what proves final delivery or
+the precise pending human action. A named downstream Skill, a file that exists,
+an empty upstream queue or a successful subprocess is insufficient.
+
+Select the affected controls; they extend the existing narrow evidence plan:
+
+| Case | Required observable result |
+|---|---|
+| Replacement route, optional leg disabled | The same user result is delivered, or a genuine review boundary is visible; no implicit restart of the optional leg |
+| Upstream succeeds, downstream is disconnected | Final-result check reports incomplete with the exact object; it cannot self-certify from upstream success |
+| Input device disappears before asynchronous completion | Durable downstream work continues without the device; completed upstream work is not repeated |
+| Human review remains unresolved | The exact pending action is retained; later authoritative resolution continues from that step |
+| Repeated trigger or interrupted worker | One object/attempt is active, completed side effects are reused, and failures remain observable |
+| Valid completed object | The normal consumer still recognizes its verified result without a false alarm |
+
+Run the deciding check first on a known incomplete state and on an independently
+verified completed state. Keep actual argv and examined-object counts in the
+existing evidence. A fixture must exercise the real consumer's command parser;
+a stub that accepts every argv can hide a broken handoff. Remove or isolate-mutate
+the handoff itself and confirm the affected regression fails, rather than mutating
+an unrelated helper. Synthetic controls prove logic; an authorized live object
+proves the deployed seam. Neither alone proves the other.
+
+For an agent-authored completion message, compare its claimed scope with the
+consumer's object-level result. Keep upload/backup/processing/review/delivery
+separate in the actual reply; do not promote one stage into a whole-flow result.
+The recipe is applied by the author and verified by the domain regression/runtime
+probe; prose itself does not enforce it. Stop when the changed cases have decisive
+evidence, and retain an unavailable live case as unverified rather than expanding
+into a generic monitoring framework.
+
+## Execution identity and permission fixtures
+
+Before a permission-sensitive check, state which identity the tested behavior
+serves and what that identity is expected to be allowed or denied. The verification
+agent records the actual test process's effective identity and groups, plus any
+elevation, capabilities, ACLs, mount restrictions or sandbox rules that affect
+that expectation. Observe the test process itself; the launching terminal's
+identity alone does not establish its child's permissions.
+
+Use an isolated temporary fixture and low-level permission probes independent of
+the product's logic to confirm both a normally writable control and the expected
+permission-denied control. Run these probes in the same test process against the
+fixture's actual target paths; do not use the product's own result as the control.
+File mode bits alone do not establish rejection: a root or otherwise privileged test context
+may bypass a restriction that applies to an ordinary user. When the fixture expects
+ordinary-user rejection, run it with that intended identity and restrictions.
+For a genuinely privileged runtime branch, retain its real execution identity and
+state its expected result separately; do not force every test to run unprivileged.
+
+Only when an independent control disproves the fixture's permission assumption,
+report an **environment mismatch** and preserve the failed result. Correct the test
+context, then rerun the affected gate unchanged. When the controls match the
+assumption but product behavior is wrong, retain the failure as a product defect
+or unresolved investigation; do not change the environment to make it pass.
+Still complete the repository's required checks. Do not change product
+code to satisfy an invalid fixture, broaden permissions on real account data, or
+suppress a failed check. Reuse a suitable existing test environment; this recipe
+does not require a new container or a blanket identity change for unrelated tests.
+
+## Large command output
+
+When the host returns a running-session or cell identifier, the executing agent
+preserves the complete result: output, identifier and available status fields.
+Forwarding only the text field discards the handle needed to observe completion.
+Resume through that host's documented wait/poll API until a terminal exit status
+is received. Partial output without terminal status remains running or unknown.
+If the handle is lost, recover the existing run through the host's supported
+status/artifact query; leave its outcome unknown when that evidence is unavailable.
+Do not repeat a write to replace missing completion evidence.
+
+Before a command that may produce large output, choose a scratch output path
+outside the shipped Skill. Treat unmeasured JSON output as potentially large;
+scope or count flags do not establish a byte bound. Capture raw stdout/stderr and
+the exit status before inspecting its shape or selecting values, then return a
+small summary and the path. For example, this stdlib recipe runs an
+already-authorized command supplied after the script name:
+
+```python
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+with tempfile.NamedTemporaryFile(prefix="skill-output-", suffix=".log", delete=False) as out:
+    result = subprocess.run(sys.argv[1:], stdout=out, stderr=subprocess.STDOUT)
+    path = Path(out.name)
+print(f"exit={result.returncode} bytes={path.stat().st_size} output={path}")
+sys.exit(result.returncode)
+```
+
+Inspect the saved file through the bounded reader below. Use `--schema-json` for
+JSON key/type/count metadata, then select exact scalar leaves with repeatable
+`--json-pointer /path` arguments and the returned `--expect-sha256`. Missing keys
+fail; a container requires a schema query or explicit leaf selection. Do not
+construct a summary by excluding guessed field names: an unexpected key can carry
+the entire payload. Preserve present null/empty values as distinct from missing.
+
+Preserve stderr and nonzero status when choosing another capture method. If a
+response is already truncated, read the missing evidence from the saved output;
+if nothing was saved, rerun only a safe read-only command or retrieve its existing
+artifact. Do not rerun a write merely to recapture its output. Truncated responses
+cannot establish completeness. File length alone does not justify reorganizing
+the Skill.
+
+## Complete file reads
+
+Prefer the host's Skill/Read loader. For a shell fallback, use the fixed entry with
+an absolute source path. The original direct `skill_read_plan.py <file>
+--max-chunk-bytes <bytes>` invocation remains supported. First request a plan:
+
+```bash
+python3 <skill-creator-path>/scripts/creator.py skill_read_plan <file> \
+  --max-chunk-bytes 2000 --max-output-bytes 6000
+```
+
+Choose a budget below both the inner tool and outer response limits; these values
+are starting choices. `--max-output-bytes` caps the final UTF-8 JSON envelope,
+including escaping, metadata and its newline. Oversized content fails with exit 2
+before any content is emitted. Error envelopes obey a valid usable budget;
+malformed arguments with only an unusable budget may return a small generic
+diagnostic or no output, never source content. Success exits 0. The reader
+does not constrain several results aggregated into one outer tool response or
+prevent truncation when the caller chooses a smaller token budget. Return one
+reader envelope per outer call, with adequate inner and outer response budgets;
+do not append several pages into one capped payload.
+
+Read a planned range in a separate call, binding it to the returned `sha256`:
+
+```bash
+python3 <skill-creator-path>/scripts/creator.py skill_read_plan <file> \
+  --lines 1:20 --expect-sha256 <sha256> --max-output-bytes 6000
+```
+
+Use one-based inclusive line ranges; use `--chars 0:200` for a zero-based,
+half-open Unicode character range when a single line is too large. `--chars` can
+also accompany exactly one `--json-pointer` to slice a large string leaf. It
+cannot accompany several pointers or a schema query. Read JSON shape first with
+`--schema-json`, optionally `--at-pointer /path`, then request only the needed
+leaves. Character positions count decoded codepoints; output limits count bytes.
+
+If a first plan refuses an oversized plain-text line before returning a hash,
+compute that same file's SHA-256 with a local hashing tool, then pass the digest
+with `--expect-sha256` to the character read. Do not remove the hash requirement.
+
+Plan/schema responses contain only a bounded page. Follow `next_cursor` using
+`--cursor` and the same `--expect-sha256`; `plan_complete`/`schema_complete` are
+true only when one response contains the whole plan/shape. Collect pages against
+that hash. A complete plan is metadata, not source-content loading. Content
+responses identify the requested range or pointers and `source_coverage`;
+`requested_range_complete` describes the selection, not whole-file loading.
+
+Track successfully received content ranges against the source hash. A changed
+hash fails rather than stitching versions together. If either tool layer
+truncates, reduce the budget and recover the missing range. The reader never sets
+a loaded marker: preserve unknown when a host's loading-evidence adapter does not
+recognize its receipt. For such a host's mandatory loading check, retain the
+recognized native Read or separate literal `sed -n '<start>,<end>p' <file>` path
+using the bounded plan; do not bypass the check. Do not promote a JSON selection
+to a complete file read. Reuse verified loading in the same session instead of
+repeatedly rereading unchanged text.

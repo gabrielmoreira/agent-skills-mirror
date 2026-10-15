@@ -2,6 +2,18 @@
 
 > 按里程碑记录各阶段交付内容。每次分支合回 main 时追加条目。
 
+## 未发布：修复 expression drain 测试的时序 flake
+
+- `test_public_expression_drain_carries_partial_progress_into_missing_retry_transient` 与 `test_expression_coordinator_reports_same_branch_partial_progress` 依赖 drain 按 A→D 顺序出批，但 `_seed_pool` 写入的 `last_scored_at` 使用 SQLite `CURRENT_TIMESTAMP`（秒级精度），种子插入跨秒时 `ORDER BY last_scored_at DESC` 不再等于插入顺序，CI 上以约每秒一次的概率随机失败。测试新增 `_pin_seed_score_order`，在种子后显式钉入递减时间戳，使 drain 顺序与种子顺序一致；生产代码不变。
+
+## 未发布：配置写 / 探测接口远程访问门禁（issue #300 安全修复）
+
+- 修复默认部署下 `PUT /api/config` 零鉴权篡改配置的严重漏洞：远程对端可改写 `llm.*.base_url` 劫持全部 LLM 流量并窃取存储的 API Key、植入 `bilibili.browser_executable` 在本机任意执行。`PUT /api/config`、`POST /api/config/probe-service`、`POST /api/config/discover-models` 收口为与 B 站凭据接口相同的特权检查（`_local_or_authenticated_gate`）：本机或已认证会话可用，门禁关闭时远程一律 `403 local_only`；probe / discover 不写盘也可泄露 Key，一并收口。门禁关闭时跨设备的桌面 / 移动 Web 与扩展改设置会被拒，需先开启密码门禁。README 中英文、`config.example.toml` 与 `docs/modules/api-auth.md` 同步更新。
+
+## 未发布：B 站凭据接口远程访问门禁（issue #299 安全修复）
+
+- 修复默认部署（`0.0.0.0` 绑定 + `[api.auth]` 门禁关闭）下 `POST /api/bilibili/auth/export` 零鉴权泄露完整 B 站登录 Cookie（SESSDATA / bili_jct）的严重漏洞：凭据导入、导出、注销三个接口无论门禁开关都要求本机访问或已认证会话，远程零鉴权调用一律 `403 local_only`。移动 App 远程使用这三接口前需先开启密码门禁并登录。`config.example.toml`、README 中英文与 `docs/modules/api-auth.md` 同步补充安全警示。
+
 ## 未发布：TikTok 源后端缺口修复与前端展示面补全（issue #88）
 
 - README 中英文与项目首页突出 Instagram/TikTok 新来源，补齐首页首屏、搜索/分享摘要和连接指引；区分 Instagram 已发布、TikTok main 已合入待发版，保留默认关闭、代理要求及账号验收限制。

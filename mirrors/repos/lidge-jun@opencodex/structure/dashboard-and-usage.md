@@ -21,7 +21,7 @@ Codex account panels expose no Spark quota toggle or setting and retain quota re
 Dashboard localization uses the English `gui/src/i18n/en.ts` catalog as the complete key and
 placeholder contract. Every registered locale, including Vietnamese and Brazilian Portuguese (`pt`, HTML `pt-BR`), supplies the same keys;
 locale-specific Compatibility Lab, log-guard, routing, vision, status-code, and quota-formatting
-maps remain total rather than silently falling back to English.
+maps remain total rather than silently falling back to English. The Dashboard registers Qoder for export and managed integration under the [Qoder settings ownership contract](clients/qoder.md#qoder-settings-ownership).
 
 The Models catalog names three distinct delivery states. A successful management mutation confirms
 only that the catalog is saved on the hub. `gui/src/api-targets.ts` carries the local machine's
@@ -110,7 +110,7 @@ Provider Overview consumes the existing shared `add-provider-presets` resource f
 presentation. `matchingWorkspacePreset` requires the configured id, adapter and normalized
 endpoint to match; a custom endpoint or absent sponsor metadata suppresses the introduction.
 `ProviderSponsor` keeps localized promotional copy and outbound HTTP(S) links separate from
-operator notes; its brand table maps each sponsor preset id (OrcaRouter, PackyCode, TokenLab) to a
+operator notes; its brand table maps each sponsor preset id (OrcaRouter, TokenLab) to a
 name and i18n copy, and a sponsor preset without a row renders nothing. Notes stay editable once in
 the main column; stats and account quota stay in the side column. Nothing here writes config or routes.
 
@@ -279,7 +279,7 @@ inheriting its bounds, so deleting a ledger row removes it from the grouping.
 `usageLedgerMaxBytes` is unset by default; when set, an append that crosses it publishes the newest
 whole rows byte for byte through the shared atomic writer, refuses the rename unless the source is
 the exact revision that was copied, and then discards the Logs ring, the retained aggregates and the
-request-history index so no surface serves rows the ledger no longer has.
+request-history index so no surface serves rows the ledger no longer has. That index (`src/routing/history/`) rebuilds a ledger of at least `REQUEST_HISTORY_WORKER_REBUILD_MIN_BYTES` (1 MiB) on a worker thread (#6990): `rebuild-worker.ts`, driven by `rebuild-job.ts`, ingests the ledger snapshot the refresh recorded into a private `<index>.rebuild-<pid>-<n>` file through the same `ingest.ts` the inline path uses, switches it to WAL and closes it; the serving thread then closes the old index and renames the build over it. Async readers wait for the build; the routing-time sync entry never does and throws `RequestHistoryIndexBusyError`, which health scoring reads as unknown evidence. A close discards the build, rejects waiting readers with `RequestHistoryIndexClosedError`, and removes the build files only after the worker thread exits. For 30 s after a worker build fails (other than on a replaced ledger), async readers and manual rebuilds rebuild inline instead, while routing-time reads keep reporting busy.
 `src/usage/summary.ts` turns that file into the `/api/usage` shape — totals, daily zero-filled
 grid, model and provider breakdowns, and `measured / reported / unreported / unsupported / estimated` counts. Each scope also aggregates end-to-end output throughput (#6309): measured output tokens and wall-clock `durationMs` are summed over attempts reporting both, exposing `throughputTokensPerSec` — a token-sum-over-duration-sum, never a mean of per-request rates. `throughputSamples` counts qualifying attempts (legacy rows without attempts contribute one); nonpositive or nonfinite tokens/timing are excluded. The Usage summary and Models/Providers tables display the rate and sample basis, or unavailable when none qualify.
 All three throughput displays use the same finite-number guard as their tooltip; malformed or nonfinite rates are unavailable rather than formatted.

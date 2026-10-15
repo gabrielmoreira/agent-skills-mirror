@@ -7,27 +7,129 @@ description: "Bevy ECS skill for shaders. Keywords: Bevy, shader, material, bevy
 
 ## When to use
 
-Load this when a surface needs a material or a custom shader asset. 3D PBR defaults stay on bevy-3d-materials. Do not treat this as a Godot shader-language port.
+Load this when a surface needs a custom material or a full-screen effect. `StandardMaterial` field lists stay on bevy-3d-materials. Shader source is WGSL loaded as an asset.
 
 ## ECS shape
 
-- **Features on the crate page:** `bevy_shader` (shaders through asset handles) and `bevy_material` (material abstraction).
-- **PBR hook:** `StandardMaterial` is named in feature blurbs (`pbr_anisotropy_texture` and neighbors) and in the `DistanceFog` summary on the pbr page.
-- **Extension:** `ExtendedMaterial` is on the pbr page as a material that extends a base material with extra shaders and data. Check that page for type parameters before writing them.
-- **Systems:** material extraction is engine-owned. Do not schedule a custom shader compiler.
+- **Shader asset:** `AssetServer` loads a `Shader` from a path. `ShaderRef::Handle` or a path string points a material at that asset.
+- **Material:** implement `Material`, derive `AsBindGroup`, and register `MaterialPlugin::<T>`. The engine extracts materials. Do not schedule a shader compiler.
+- **Full-screen:** `Bloom` is a camera component from `bevy::post_process`. It requires an HDR camera, which the component requests itself.
 
-## Coming from Godot
+## Examples
 
-| Godot idea | Bevy idiom |
+```toml
+[dependencies]
+bevy = "0.20"
+```
+
+A material stores a color uniform and names its fragment shader. Register the plugin before any system spawns that material.
+
+```rust
+use bevy::pbr::{Material, MaterialPlugin};
+use bevy::render::render_resource::AsBindGroup;
+use bevy::shader::ShaderRef;
+
+#[derive(Asset, TypePath, AsBindGroup, Clone)]
+struct PulseMaterial {
+    #[uniform(0)]
+    color: LinearRgba,
+}
+
+impl Material for PulseMaterial {
+    fn fragment_shader() -> ShaderRef {
+        "shaders/pulse.wgsl".into()
+    }
+}
+
+fn main() {
+    App::new()
+        .add_plugins(DefaultPlugins)
+        .add_plugins(MaterialPlugin::<PulseMaterial>::default())
+        .run();
+}
+```
+
+Spawn uses the same mesh and material components as a PBR surface. The asset store owns the material.
+
+```rust
+use bevy::pbr::Material;
+use bevy::render::render_resource::AsBindGroup;
+use bevy::shader::ShaderRef;
+
+#[derive(Asset, TypePath, AsBindGroup, Clone)]
+struct PulseMaterial {
+    #[uniform(0)]
+    color: LinearRgba,
+}
+
+impl Material for PulseMaterial {
+    fn fragment_shader() -> ShaderRef {
+        "shaders/pulse.wgsl".into()
+    }
+}
+
+fn spawn_pulse(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<PulseMaterial>>,
+) {
+    let mesh = meshes.add(Cuboid::new(1.0, 1.0, 1.0));
+    let material = materials.add(PulseMaterial {
+        color: LinearRgba::rgb(0.2, 0.7, 0.9),
+    });
+    commands.spawn((
+        Mesh3d(mesh),
+        MeshMaterial3d(material),
+        Transform::default(),
+    ));
+}
+```
+
+Load the shader yourself when the handle must be explicit. `ShaderRef` accepts that handle.
+
+```rust
+use bevy::shader::{Shader, ShaderRef};
+
+#[derive(Resource)]
+struct PulseShader(Handle<Shader>);
+
+fn load_pulse(asset_server: Res<AssetServer>, mut commands: Commands) {
+    let handle: Handle<Shader> = asset_server.load("shaders/pulse.wgsl");
+    commands.insert_resource(PulseShader(handle));
+}
+
+fn shader_ref(shader: Res<PulseShader>) -> ShaderRef {
+    shader.0.clone().into()
+}
+```
+
+Bloom is the full-screen pass. Intensity is the scene-wide scatter amount.
+
+```rust
+use bevy::post_process::bloom::Bloom;
+
+fn spawn_bloom_camera(mut commands: Commands) {
+    commands.spawn((
+        Camera3d::default(),
+        Bloom {
+            intensity: 0.2,
+            ..default()
+        },
+    ));
+}
+```
+
+## Same job, Bevy types
+
+| Design | Bevy idiom |
 | --- | --- |
-| Shader material | A material asset handle. Check the shader docs for the source language before writing it. |
-| Spatial shader | Unverified. Do not copy Godot shader hints. |
-| Full-screen pass | bevy_post_process is a feature. Check that feature's docs for effect types before writing them. |
+| ShaderMaterial | `Material` plus a WGSL path in `fragment_shader` |
+| Spatial shader | Vertex and fragment `ShaderRef` on that material |
+| Full-screen pass | `Bloom` (or another `bevy::post_process` component) on the camera |
 
 ## Scope
 
-- Check the `bevy::shader` and `bevy::material` module pages before naming a `Shader` struct or a `Material` trait method.
-- Check the shader docs for WGSL entry points, bind group layout, and pipeline specialization keys before writing them.
+WGSL entry points live in the shader file the `ShaderRef` names. Bindings are the `AsBindGroup` fields on the material struct. Pipeline specialization stays inside the material plugin.
 
 ## Expert Knowledge Delta
 
@@ -51,7 +153,7 @@ Borrow rule: two systems that both mutably query the same component must be orde
 
 | If you need | Do this | Do not |
 | --- | --- | --- |
-| Per-entity data | `Component` + `Query` | A Godot node script |
+| Per-entity data | `Component` + `Query` | A scene-tree script hung on the entity |
 | App-wide config or clock | `Resource` | Copy the value onto every entity |
 | Stable simulation step | `FixedMain` and the `Fixed` clock | Tie simulation to raw frame `Update` |
 | Startup spawn | `Commands` in `Startup` | Spawn from a render system |
@@ -73,32 +175,28 @@ Load [references/ecs-ownership.md](shaders-ecs-ownership.md) for the ownership t
 
 ## Reference
 
-docs.rs links use the unversioned `latest` permalink. The library pin on bevy-master stays **0.20.0**.
+Official pages stay on unversioned bevy.org URLs. The library pin on bevy-master stays **0.20.0**. Custom surfaces use `Material`, `AsBindGroup`, and `MaterialPlugin`. `StandardMaterial` field lists stay on bevy-3d-materials.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/) - Unversioned hop index.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/) - API reference and Cargo feature list.
 - [Assets](https://bevy.org/assets/) - Official asset catalog. No third-party crate was selected.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples) - Example tree on the `latest` branch.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/) - `Component`, systems, `Query`, `Startup`, `Update`, and `.chain()`.
 - [Plugins](https://bevy.org/learn/quick-start/getting-started/plugins/) - `Plugin`, `DefaultPlugins`, `MinimalPlugins`, and `add_plugins`.
-- [bevy::pbr](https://docs.rs/bevy/latest/bevy/pbr/index.html) - `ExtendedMaterial`, `DistanceFog` mentions `StandardMaterial`.
-- [bevy::material](https://docs.rs/bevy/latest/bevy/material/index.html) - Material module reference.
 
 ### Related Skills
 
 #### Prerequisites
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
-- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
-- [bevy-3d-materials](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-3d-materials/SKILL.md) - StandardMaterial surface fields.
-- [bevy-asset-scenes](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-asset-scenes/SKILL.md) - Asset handles.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Hub and schedules.
+- [bevy-ecs-composition](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-ecs-composition/SKILL.md) - Components and systems.
+- [bevy-3d-materials](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-3d-materials/SKILL.md) - StandardMaterial surface fields.
+- [bevy-asset-scenes](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-asset-scenes/SKILL.md) - Asset handles.
 
 #### Complements
-- [bevy-3d-lighting](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-3d-lighting/SKILL.md) - Lights are not shaders.
-- [godot-shaders-basics](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-shaders-basics/SKILL.md) - Equivalent Godot skill.
+- [bevy-3d-lighting](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-3d-lighting/SKILL.md) - Lights are not shaders.
+- [godot-shaders-basics](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-shaders-basics/SKILL.md) - Equivalent Godot skill.
 
 #### Downstream / consumers
 - None yet.
 
 #### Master
-- [bevy-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.
+- [bevy-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/bevy-master/SKILL.md) - Bevy router.

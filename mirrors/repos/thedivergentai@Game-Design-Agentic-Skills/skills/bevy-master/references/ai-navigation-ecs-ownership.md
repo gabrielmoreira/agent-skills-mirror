@@ -11,5 +11,9 @@ Target: **Bevy 0.20+**.
 | Spawn | `Commands` | `Startup` or the runtime schedule |
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
+| Mode | `Brain` component | read in `tick_policy` |
+| Shared path | `PatrolRoute` resource | read-only in policy |
+| Retarget | `RetargetClock` resource | one system ticks it |
+| Output | `Goal` then `DesiredVelocity` | `FixedUpdate` chain: policy, then steer |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+`tick_policy` writes `Goal`. `steer` reads `Goal` and writes `DesiredVelocity`. They must stay `.chain()`ed. Neither system writes `Transform`.

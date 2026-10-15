@@ -53,17 +53,125 @@ The Quick Start ECS page defines entities, components (`Component`), systems as 
 
 ## When not to spawn an entity
 
-Data that is not simulated can be a plain Rust struct or a resource. The Quick Start treats resources as app-wide data. Check the resources page for field names before writing them. Do not copy a Godot Object / RefCounted / Resource / Node table into Bevy.
+Data that is not simulated can be a plain Rust struct or a resource. The Quick Start treats resources as app-wide data. A score or a seed is one `Resource` inserted at startup. Do not copy a Godot Object / RefCounted / Resource / Node table into Bevy.
 
 ## Workflows
 
-**(a) App scaffold.** `App::new()`, plugins, schedules, and states. The plugins page documents `Plugin`, `DefaultPlugins`, `MinimalPlugins`, and `add_plugins`. The `bevy` 0.20.0 crate docs list a `bevy_state` feature ("built in global state machines"). Check the state docs for the state API before writing it. Do not invent a plugin list beyond `DefaultPlugins` / `MinimalPlugins`.
+**(a) App scaffold.** `App::new()`, plugins, schedules, and states. The plugins page documents `Plugin`, `DefaultPlugins`, `MinimalPlugins`, and `add_plugins`. The `bevy` 0.20.0 crate docs list a `bevy_state` feature ("built in global state machines"). `States`, `init_state`, and `OnEnter` are the state API. Do not invent a plugin list beyond `DefaultPlugins` / `MinimalPlugins`.
 
 **(b) Entity.** Components plus systems. Movement belongs on a fixed timestep. `bevy::time` 0.20.0 documents `Fixed` ("fixed timestep game clock") and `run_fixed_main_schedule` (`FixedMain`). Do not invent a schedule label beyond those names.
 
 **(c) Data.** Components and resources. Not `.tres` files.
 
 **(d) Performance.** The ECS page states systems run in parallel by default when they can, and `.chain()` forces order. Frame-time diagnostics and handle lifetimes are on `bevy-performance`. No numeric budget is stated on those pages.
+
+## Examples
+
+```toml
+[package]
+name = "bevy-app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bevy = "0.20"
+```
+
+A new app adds `DefaultPlugins`, inserts one resource, and spawns the player on startup.
+
+```rust
+#[derive(Resource)]
+struct Score(u32);
+
+#[derive(Component)]
+struct Player;
+
+fn spawn_player(mut commands: Commands) {
+    commands.insert_resource(Score(0));
+    commands.spawn((Player, Transform::from_xyz(0.0, 0.0, 0.0)));
+}
+
+fn main() {
+    App::new()
+        .add_plugins(DefaultPlugins)
+        .add_systems(Startup, spawn_player)
+        .run();
+}
+```
+
+Input writes velocity. Movement writes `Transform`. They share `Player` data, so they are chained on `FixedUpdate`.
+
+```rust
+#[derive(Component)]
+struct Velocity(Vec2);
+
+fn read_input(
+    keys: Res<ButtonInput<KeyCode>>,
+    mut players: Query<&mut Velocity>,
+) {
+    for mut velocity in &mut players {
+        let mut dir = Vec2::ZERO;
+        if keys.pressed(KeyCode::KeyA) {
+            dir.x -= 1.0;
+        }
+        if keys.pressed(KeyCode::KeyD) {
+            dir.x += 1.0;
+        }
+        if keys.pressed(KeyCode::KeyW) {
+            dir.y += 1.0;
+        }
+        if keys.pressed(KeyCode::KeyS) {
+            dir.y -= 1.0;
+        }
+        velocity.0 = dir.normalize_or_zero() * 4.0;
+    }
+}
+
+fn apply_velocity(
+    time: Res<Time<Fixed>>,
+    mut players: Query<(&Velocity, &mut Transform)>,
+) {
+    let dt = time.delta_secs();
+    for (velocity, mut transform) in &mut players {
+        transform.translation.x += velocity.0.x * dt;
+        transform.translation.y += velocity.0.y * dt;
+    }
+}
+
+pub struct MovementPlugin;
+
+impl Plugin for MovementPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(FixedUpdate, (read_input, apply_velocity).chain());
+    }
+}
+```
+
+`AppState` is a global state. Entering `Playing` runs the spawn system once.
+
+```rust
+#[derive(States, Debug, Clone, PartialEq, Eq, Hash, Default)]
+enum AppState {
+    #[default]
+    Loading,
+    Playing,
+}
+
+#[derive(Component)]
+struct Player;
+
+fn enter_playing(mut commands: Commands) {
+    commands.spawn((Player, Transform::from_xyz(0.0, 0.0, 0.0)));
+}
+
+fn main() {
+    App::new()
+        .add_plugins(DefaultPlugins)
+        .init_state::<AppState>()
+        .add_systems(OnEnter(AppState::Playing), enter_playing)
+        .run();
+}
+```
 
 ## Expert Knowledge Delta
 
@@ -209,18 +317,16 @@ Genre routers:
 ## Reference
 
 
-docs.rs links use the unversioned `latest` permalink (same role as Godot `/en/stable/`). The library pin above stays **0.20.0**.
 
 ### Official Documentation
-- [Migration guides](https://bevy.org/learn/migration-guides/introduction/)  -  Unversioned hop index. Version numbers stay in prose; this link does not pin a release.
-- [bevy crate](https://docs.rs/bevy/latest/bevy/)  -  Unversioned API index. Feature samples on the pinned page may still show older version strings.
+- `bevy crate`  -  Unversioned API index. Feature samples on the pinned page may still show older version strings.
 - [Assets](https://bevy.org/assets/)  -  Official asset catalog.
 - [Examples](https://github.com/bevyengine/bevy/tree/latest/examples#examples)  -  Example tree on the `latest` branch, not a release tag.
 - [Quick Start](https://bevy.org/learn/quick-start/)  -  Guide index. The legacy `/learn/book/` path returned 404 on 2026-10-11.
 - [Getting started](https://bevy.org/learn/quick-start/getting-started/)  -  App setup before ECS and plugins.
 - [ECS](https://bevy.org/learn/quick-start/getting-started/ecs/)  -  Entities, components, systems, `Query`, `Commands`, `Startup`, `Update`, and `.chain()`.
 - [Plugins](https://bevy.org/learn/quick-start/getting-started/plugins/)  -  `Plugin`, `DefaultPlugins`, `MinimalPlugins`, and `add_plugins`.
-- [bevy::time](https://docs.rs/bevy/latest/bevy/time/index.html)  -  `Fixed` and `run_fixed_main_schedule` (`FixedMain`).
+- `bevy::time`  -  `Fixed` and `run_fixed_main_schedule` (`FixedMain`).
 - [crates.io bevy](https://crates.io/crates/bevy)  -  Release pin source (0.20.0, 2026-10-08).
 
 ### Related Skills
@@ -229,7 +335,7 @@ docs.rs links use the unversioned `latest` permalink (same role as Godot `/en/st
 - None. This hub is the Bevy entry point.
 
 #### Complements
-- [godot-master](https://github.com/thedivergentai/Game-Design-Agentic-Skills/blob/main/skills/godot-master/SKILL.md)  -  Godot hub.
+- [godot-master](https://github.com/thedivergentai/Game-Dev-Agentic-Skills/blob/main/skills/godot-master/SKILL.md)  -  Godot hub.
 
 #### Downstream / consumers
 - [bevy-project-foundations](references/project-foundations.md)  -  Crate, Cargo features, and layout habits.
@@ -262,5 +368,5 @@ Cipher rule titles only: runtime gameplay is Rust; do not pull Godot types into 
 ## Scope
 
 - Resources, states, messages, and observers live in their own skills. Call only the types those skills cite. Check the `App` docs for state-installation method names before writing them.
-- The getting-started snippet still shows `bevy = "0.19"` while crates.io latest is 0.20.0. Pin **0.20.0** from crates.io and docs.rs, not from that stale snippet.
-- docs.rs feature examples on the 0.20.0 page still show `version = "0.18"` in one sample. That sample is not the pin.
+- The getting-started snippet still shows `bevy = "0.19"` while crates.io latest is 0.20.0. Pin **0.20.0** from crates.io and the Bevy API reference, not from that stale snippet.
+- Bevy API reference feature examples on the 0.20.0 page still show `version = "0.18"` in one sample. That sample is not the pin.

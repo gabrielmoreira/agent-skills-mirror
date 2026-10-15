@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `trycua/cua` — 26 default patterns, 25 followed patterns, 78 file(s) materialized.
+Mirror of `trycua/cua` — 26 default patterns, 26 followed patterns, 79 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `trycua/cua` — 26 default patterns, 25 followed patterns, 78 file(s)
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 25 |
-| Files         | 78 |
+| Followed pats | 26 |
+| Files         | 79 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,6 +67,7 @@ Mirror of `trycua/cua` — 26 default patterns, 25 followed patterns, 78 file(s)
 - `docs/README.md`
 - `libs/cua-driver/rust/crates/cua-driver-e2e/tests/README.md`
 - `scripts/ci/README.md`
+- `.github/releases/README.md`
 - `libs/cua-driver/docs/test-harnesses-guide.md`
 - `libs/cua-driver/docs/test-matrix.md`
 - `THIRD_PARTY_NOTICES.md`
@@ -136,31 +137,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 51 | ✓ | [`skills/gui-automation/references/command-reference.md`](skills/gui-automation/references/command-reference.md) |
 | 52 | ✓ | [`skills/gui-automation/SKILL.md`](skills/gui-automation/SKILL.md) |
 | 53 | ✓ | [`skills/jev-use/SKILL.md`](skills/jev-use/SKILL.md) |
-| 54 | → | [`apps/cua-spaces/README.md`](apps/cua-spaces/README.md) |
-| 55 | → | [`COMMERCIAL.md`](COMMERCIAL.md) |
-| 56 | → | [`Development.md`](Development.md) |
-| 57 | → | [`docs/README.md`](docs/README.md) |
-| 58 | → | [`libs/cua-driver/docs/test-harnesses-guide.md`](libs/cua-driver/docs/test-harnesses-guide.md) |
-| 59 | → | [`libs/cua-driver/docs/test-matrix.md`](libs/cua-driver/docs/test-matrix.md) |
-| 60 | → | [`libs/cua-driver/README.md`](libs/cua-driver/README.md) |
-| 61 | → | [`libs/cua-driver/rust/crates/cua-driver-e2e/tests/README.md`](libs/cua-driver/rust/crates/cua-driver-e2e/tests/README.md) |
-| 62 | → | [`libs/cua-driver/rust/crates/cua-perception/models/THIRD_PARTY_NOTICES.md`](libs/cua-driver/rust/crates/cua-perception/models/THIRD_PARTY_NOTICES.md) |
-| 63 | → | [`libs/cua-driver/rust/README.md`](libs/cua-driver/rust/README.md) |
-| 64 | → | [`libs/cua-spacesd/README.md`](libs/cua-spacesd/README.md) |
-| 65 | → | [`libs/cua/README.md`](libs/cua/README.md) |
-| 66 | → | [`libs/cuabot/README.md`](libs/cuabot/README.md) |
-| 67 | → | [`libs/images/README.md`](libs/images/README.md) |
-| 68 | → | [`libs/lume/Development.md`](libs/lume/Development.md) |
-| 69 | → | [`libs/typescript/README.md`](libs/typescript/README.md) |
-| 70 | → | [`LICENSE.md`](LICENSE.md) |
-| 71 | → | [`LICENSING.md`](LICENSING.md) |
-| 72 | → | [`rfcs/README.md`](rfcs/README.md) |
-| 73 | → | [`scripts/ci/README.md`](scripts/ci/README.md) |
-| 74 | → | [`scripts/licenses/README.md`](scripts/licenses/README.md) |
-| 75 | → | [`SECURITY.md`](SECURITY.md) |
-| 76 | → | [`TESTING.md`](TESTING.md) |
-| 77 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
-| 78 | → | [`TRADEMARKS.md`](TRADEMARKS.md) |
+| 54 | → | [`.github/releases/README.md`](.github/releases/README.md) |
+| 55 | → | [`apps/cua-spaces/README.md`](apps/cua-spaces/README.md) |
+| 56 | → | [`COMMERCIAL.md`](COMMERCIAL.md) |
+| 57 | → | [`Development.md`](Development.md) |
+| 58 | → | [`docs/README.md`](docs/README.md) |
+| 59 | → | [`libs/cua-driver/docs/test-harnesses-guide.md`](libs/cua-driver/docs/test-harnesses-guide.md) |
+| 60 | → | [`libs/cua-driver/docs/test-matrix.md`](libs/cua-driver/docs/test-matrix.md) |
+| 61 | → | [`libs/cua-driver/README.md`](libs/cua-driver/README.md) |
+| 62 | → | [`libs/cua-driver/rust/crates/cua-driver-e2e/tests/README.md`](libs/cua-driver/rust/crates/cua-driver-e2e/tests/README.md) |
+| 63 | → | [`libs/cua-driver/rust/crates/cua-perception/models/THIRD_PARTY_NOTICES.md`](libs/cua-driver/rust/crates/cua-perception/models/THIRD_PARTY_NOTICES.md) |
+| 64 | → | [`libs/cua-driver/rust/README.md`](libs/cua-driver/rust/README.md) |
+| 65 | → | [`libs/cua-spacesd/README.md`](libs/cua-spacesd/README.md) |
+| 66 | → | [`libs/cua/README.md`](libs/cua/README.md) |
+| 67 | → | [`libs/cuabot/README.md`](libs/cuabot/README.md) |
+| 68 | → | [`libs/images/README.md`](libs/images/README.md) |
+| 69 | → | [`libs/lume/Development.md`](libs/lume/Development.md) |
+| 70 | → | [`libs/typescript/README.md`](libs/typescript/README.md) |
+| 71 | → | [`LICENSE.md`](LICENSE.md) |
+| 72 | → | [`LICENSING.md`](LICENSING.md) |
+| 73 | → | [`rfcs/README.md`](rfcs/README.md) |
+| 74 | → | [`scripts/ci/README.md`](scripts/ci/README.md) |
+| 75 | → | [`scripts/licenses/README.md`](scripts/licenses/README.md) |
+| 76 | → | [`SECURITY.md`](SECURITY.md) |
+| 77 | → | [`TESTING.md`](TESTING.md) |
+| 78 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
+| 79 | → | [`TRADEMARKS.md`](TRADEMARKS.md) |
 
 ---
 

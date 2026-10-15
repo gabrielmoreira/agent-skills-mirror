@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 86 file(s) materialized.
+Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 87 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `anomalyco/opencode` — 26 default patterns, 2 followed patterns, 86 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 86 |
+| Files         | 87 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -134,18 +134,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 72 | ✓ | [`packages/tui/AGENTS.md`](packages/tui/AGENTS.md) |
 | 73 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
 | 74 | ✓ | [`packages/web/README.md`](packages/web/README.md) |
-| 75 | ✓ | [`script/ast-grep/effect-simplifications/README.md`](script/ast-grep/effect-simplifications/README.md) |
-| 76 | ✓ | [`sdks/vscode/README.md`](sdks/vscode/README.md) |
-| 77 | ✓ | [`services/changelog/README.md`](services/changelog/README.md) |
-| 78 | ✓ | [`services/files/README.md`](services/files/README.md) |
-| 79 | ✓ | [`services/README.md`](services/README.md) |
-| 80 | ✓ | [`services/update/README.md`](services/update/README.md) |
-| 81 | ✓ | [`services/www/AGENTS.md`](services/www/AGENTS.md) |
-| 82 | ✓ | [`services/www/README.md`](services/www/README.md) |
-| 83 | ✓ | [`services/www/src/docs/AGENTS.md`](services/www/src/docs/AGENTS.md) |
-| 84 | ✓ | [`specs/v2/README.md`](specs/v2/README.md) |
-| 85 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 86 | → | [`README.md`](README.md) |
+| 75 | ✓ | [`salesforce/README.md`](salesforce/README.md) |
+| 76 | ✓ | [`script/ast-grep/effect-simplifications/README.md`](script/ast-grep/effect-simplifications/README.md) |
+| 77 | ✓ | [`sdks/vscode/README.md`](sdks/vscode/README.md) |
+| 78 | ✓ | [`services/changelog/README.md`](services/changelog/README.md) |
+| 79 | ✓ | [`services/files/README.md`](services/files/README.md) |
+| 80 | ✓ | [`services/README.md`](services/README.md) |
+| 81 | ✓ | [`services/update/README.md`](services/update/README.md) |
+| 82 | ✓ | [`services/www/AGENTS.md`](services/www/AGENTS.md) |
+| 83 | ✓ | [`services/www/README.md`](services/www/README.md) |
+| 84 | ✓ | [`services/www/src/docs/AGENTS.md`](services/www/src/docs/AGENTS.md) |
+| 85 | ✓ | [`specs/v2/README.md`](specs/v2/README.md) |
+| 86 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 87 | → | [`README.md`](README.md) |
 
 ---
 

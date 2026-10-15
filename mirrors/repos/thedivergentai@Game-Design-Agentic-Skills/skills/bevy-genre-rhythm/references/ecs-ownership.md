@@ -12,4 +12,11 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+```rust
+#[derive(Resource, Default)]
+struct ChartClock(f32);
+
+fn read_clock(clock: Res<ChartClock>) {
+    let _ = clock.0;
+}
+```

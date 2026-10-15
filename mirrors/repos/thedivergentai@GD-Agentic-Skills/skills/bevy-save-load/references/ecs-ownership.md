@@ -12,4 +12,15 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+`Progress` is the app-wide slot. One system writes it. Disk I/O stays in that system when a request resource exists.
+
+```rust
+#[derive(Resource)]
+struct Progress {
+    coins: u32,
+}
+
+fn grant_coin(mut progress: ResMut<Progress>) {
+    progress.coins = progress.coins.saturating_add(1);
+}
+```

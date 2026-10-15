@@ -12,4 +12,17 @@ Target: **Bevy 0.20+**.
 | Ordered mutation | `.chain()` | same schedule |
 | Plugin setup | `Plugin` `build` | before run |
 
-Use the APIs linked in the skill's Official Documentation list. Do not invent crates or types.
+The seed is app-wide. Each room is an entity spawned once at startup.
+
+```rust
+#[derive(Resource)]
+struct RunSeed(u64);
+
+#[derive(Component)]
+struct Room;
+
+fn boot(mut commands: Commands) {
+    commands.insert_resource(RunSeed(1));
+    commands.spawn(Room);
+}
+```
