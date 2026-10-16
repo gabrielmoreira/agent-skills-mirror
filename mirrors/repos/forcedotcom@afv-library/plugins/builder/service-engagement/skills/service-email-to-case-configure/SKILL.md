@@ -13,11 +13,7 @@ metadata:
       semver: ">=3.9"
     - tool: ["sf"]
       semver: ">=2.0.0"
-  accessCheck:
-    - type: "orgPerm"
-      value: "OrgPermissions.HasEmailToCase"
-    - type: "userPerm"
-      value: "UserPermissions.CustomizeApplication"
+  accessCheck: "(OrgPermissions.HasEmailToCase) && (UserPermissions.CustomizeApplication)"
 ---
 
 # Configure Email-to-Case (Metadata API)

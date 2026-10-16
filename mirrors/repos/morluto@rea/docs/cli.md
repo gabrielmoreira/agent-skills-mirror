@@ -95,8 +95,9 @@ dependency edges, and the section's file range. A missing `.dep-v0` section is
 null metadata, not proof that the binary has no dependencies. See
 [Rust binaries](rust-binaries.md).
 
-Configure [Hopper or Ghidra](installation.md#hopper), or the
-[IDA adapter](ida-provider.md), before analyzing a native target. Substitute
+Configure [Hopper or Ghidra](installation.md#hopper), the
+[IDA adapter](ida-provider.md), or [Kuna](kuna-provider.md) before analyzing a
+native target. Substitute
 your target, search text and function name or address in these examples:
 
 ```bash
@@ -166,6 +167,12 @@ A client timeout can end its wait while the provider continues analyzing.
 be verified. See [MCP contracts](mcp-contracts.md) for session lifecycle and
 [Ghidra first-query deadlines](mcp-contracts.md#ghidra-first-query-deadlines-and-recovery)
 for import, client timeouts and recovery.
+
+If one-shot analysis fails and closing its session also fails, the original
+error details remain inline and `details.cleanup_error` describes the later
+close failure. Each diagnostic retains its own reported resources; the later
+failure does not establish whether an earlier resource was released. Captured
+output and partial observations remain in the original details.
 
 ## Save and reuse analysis snapshots
 
@@ -314,7 +321,9 @@ diagnostics appear inside the report when `--full-output` is selected. Log
 truncation alone does not change the diagnostic health or exit status.
 
 The default terminal format is TOON. Use `--json` when saving results for a
-JSON consumer. `--json` is indented on a terminal and compact when piped or
+JSON consumer. Valued output flags (`--format`, `--filter-output`,
+`--token-limit`, `--token-offset`) accept `--flag value` or `--flag=value`; a
+missing value fails with `MISSING_OUTPUT_VALUE` before the command runs. `--json` is indented on a terminal and compact when piped or
 redirected, which keeps large results smaller for agents and scripts; pipe
 through `jq .` for indented files. Output selection and formatting do not change
 operation status.

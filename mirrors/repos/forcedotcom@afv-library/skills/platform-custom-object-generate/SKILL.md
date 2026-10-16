@@ -5,6 +5,8 @@ metadata:
   version: "1.1"
   domains: ["Platform"]
   minApiVersion: "60.0"
+  relatedSkills:
+    - "platform-metadata-api-context-get"
 ---
 
 ## When to Use This Skill
@@ -16,6 +18,8 @@ Use this skill when you need to:
 - Set up object features and capabilities
 - Troubleshoot deployment errors related to custom objects
 - **Add, update, or delete a field OR a validation rule on an existing object** — any of these may make the object's `<description>` stale, so you must refresh it (propose + confirm). This applies equally to validation-rule changes, not just fields. See Section 3.B.
+
+For authoritative Metadata API type, field, and enum details beyond this skill, use the `platform-metadata-api-context-get` skill.
 
 ## Specification
 

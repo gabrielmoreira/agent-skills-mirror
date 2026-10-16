@@ -8,9 +8,7 @@ metadata:
   minApiVersion: "66.0"
   relatedSkills:
     - "service-omni-base-settings-configure"
-  accessCheck:
-    - type: license
-      value: ServiceCloud
+  accessCheck: "OrgPermissions.LightningService"
   cliTools:
     - tool: ["jq"]
       semver: ">=1.6"

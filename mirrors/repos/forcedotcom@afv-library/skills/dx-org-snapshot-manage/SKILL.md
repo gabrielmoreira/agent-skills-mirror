@@ -13,9 +13,7 @@ metadata:
       semver: ">=2.0.0"
     - tool: ["jq"]
       semver: ">=1.6"
-  accessCheck:
-    - type: "orgPref"
-      value: "ScratchOrgSnapshotPref"
+  accessCheck: "OrgPreferences.ScratchOrgSnapshotPref"
 ---
 
 # dx-org-snapshot-manage

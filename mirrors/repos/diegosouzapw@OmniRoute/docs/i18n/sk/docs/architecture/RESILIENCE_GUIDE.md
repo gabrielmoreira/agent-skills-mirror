@@ -388,6 +388,17 @@ Keď sa odoslanie so zdieľaním kvóty zameria na pripojenie, ktoré deklaruje 
 
 Pri každej stratégii kombinácie (ak je zapnutá) požiadavka, ktorá by viedla k definitívnemu vráteniu chyby 429 z dôvodu KRÁTKEJ prechodnej čakacej lehoty, počká na jej uplynutie a odošle sa znova namiesto vrátenia chyby 429 — to pokrýva okná TPM/RPM triedy Gemini (~60 s podľa `retry-after`) pri kombináciách viacerých modelov, napr. keď oba ciele kombinácie dvoch modelov narazia na limit frekvencie pre daný model. Správanie je ohraničené nastavením `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts`, `budgetMs`) v časti **Nastavenia → Odolnosť**. Nikdy nečaká pri dôvode `quota_exhausted` (uzamknuté do polnoci) ani pri dôvodoch súvisiacich s autentifikáciou či nenájdením.
 
+```text
+#16319 · comboCooldownWait · pre-dispatch (attempts = 0)
+all targets skipped + transient model lockout:
+  enabled ∧ 0 < waitMs ≤ maxWaitMs ∧ attempt < maxAttempts ∧ budgetLeftMs ≥ waitMs
+    → wait → re-dispatch
+  wait = false → HTTP 429 rate_limit_error
+  retry_after / reset_at ← earliest transient lock expiry
+quota_exhausted / auth_error / not_found / not_found_local:
+  no transient hint → HTTP 503 ALL_TARGETS_SKIPPED
+```
+
 ---
 
 ## 5. Riadenie prijímania do frontu požiadaviek (v3.8.49 · problém #6593)

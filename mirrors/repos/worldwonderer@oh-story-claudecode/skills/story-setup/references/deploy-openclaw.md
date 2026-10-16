@@ -1,6 +1,6 @@
 # OpenClaw 部署
 
-`target_cli` 含 `openclaw` 时，由 SKILL.md Phase 2 完整读取本文件并按顺序执行。路径安全检查、幂等重跑、清理自嵌套残留、部署标记、模板占位符、AGENTS.md 合并策略和安装报告的写法在 SKILL.md，这里只写 OpenClaw 专属部分。
+`target_cli` 含 `openclaw` 时，由 SKILL.md Phase 2 完整读取并依次执行本文件。路径检查、幂等重跑、残留清理、部署标记、模板占位符、AGENTS.md 合并和报告遵循 SKILL.md 的公共规则。
 
 ## 部署清单（机械可检查）
 
@@ -16,7 +16,7 @@
 
 ## OpenClaw skills-only 部署算法
 
-OpenClaw 首版只部署 skills，不部署 OpenClaw agents/hooks/plugin。
+按以下步骤部署项目 skills：
 
 1. 读取仓库当前 `skills/` 下所有包含 `SKILL.md` 的 story skill 目录（13 个：`browser-cdp` 与 `story*`）。
 2. 写入目标项目 `skills/{skill-name}/`，仅替换这些 story-setup 管理的已知 skill 目录；保留用户在 `skills/` 下的其他目录。项目副本是整份 skill 拷贝，agent references 只使用当前规范前缀 `skills/`。
@@ -29,7 +29,7 @@ OpenClaw 首版只部署 skills，不部署 OpenClaw agents/hooks/plugin。
 
 - 检查 `AGENTS.md` 含 OpenClaw story skill routing sections
 - 检查 `skills/` 下 13 个 story skill 目录存在，且每个 `SKILL.md` 包含单行 `name`、单行 `description`、单行 JSON `metadata.openclaw`
-- 检查 `skills/story-setup/references/agent-references/` 下 reference 文件完整且数量与源目录一致
+- 按源目录相对路径核对 `skills/story-setup/references/agent-references/`，含子目录
 
 ## 安装报告必须提示
 

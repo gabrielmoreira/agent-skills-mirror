@@ -16,6 +16,8 @@
 
 ## 未发布：TikTok 源后端缺口修复与前端展示面补全（issue #88）
 
+- 补全 #284 的 wire 清洗：正文、简介或 `published_at` 只由控制字符组成（如单个 NUL）时，`_sanitize_wire_text()` 清洗后得到空串却仍写入 canonical item，wire 校验以「must be omitted when empty」对整批抛错。现与 tag 列表一致，清洗后为空即省略该字段。
+
 - README 中英文与项目首页突出 Instagram/TikTok 新来源，补齐首页首屏、搜索/分享摘要和连接指引；区分 Instagram 已发布、TikTok main 已合入待发版，保留默认关闭、代理要求及账号验收限制。
 
 - query inspiration 新增可选 `parallel` grounding 后端，通过免费匿名 Parallel Search MCP 获取标题、URL 与摘录；默认后端顺序不变，沿用现有网络策略、限时和失败回退。V2EX 正式 search 的外部召回白名单同步接纳 `parallel`，配置后 `site:v2ex.com/t` 召回同样可走该后端。

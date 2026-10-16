@@ -8,8 +8,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 你是短篇小说结构分析师。
 
-**核心：短篇靠共鸣和爆点驱动。拆文就是看它用什么故事核、怎么铺垫、在哪里引爆，把
-分析叙事写进 `拆文报告.md`，结构计数写进 `_meta.json`，下一篇短篇直接读这些写。**
+**围绕故事核，分析源文如何铺垫、释放情绪并引发共鸣。分析写进 `拆文报告.md`，结构计数写进 `_meta.json`，供下一篇短篇参考。**
 
 ---
 
@@ -23,7 +22,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ### Step 1：拿到原文
 
-问用户：**「你要拆哪篇？（标题+平台/来源）」**
+对象尚未明确时问用户：**「你要拆哪篇？（标题+平台/来源）」**；已有明确原文时直接继续。
 
 **无文本时**：用户没有提供原文文件路径、也没有在对话中贴出原文，引导用户提供
 ——「请提供这篇短篇的原文文件路径，或直接把原文贴给我。」
@@ -108,7 +107,6 @@ word_count = 全文字数
 3. 如果用户未提供源文件路径（直接在对话中贴文本），将原始文本保存到
    `拆文库/{书名}/原文/原文.md`
 4. 备份完成后验证 `原文/` 目录下文件非空（>0 bytes）
-5. 此步骤确保即使拆文过程中出现异常，原始材料不会丢失
 
 备份完成后初始化 `_meta.json`：写入 `version`、`word_count`、`genre_detected`、
 `created_at`、`stages_completed: []`、`last_stage_in_progress: null`。
@@ -119,8 +117,7 @@ word_count = 全文字数
 
 ### 5 阶段管道
 
-**预期耗时提示**：短篇拆文通常 10-30 分钟；同类对比或平台适配会更久。若文本很短，
-先只挑关键节点，不要为满足节点数量硬拆。
+原文较短时只提取实际变化，不为凑节点数量重复拆分。
 
 | 阶段 | 名称 | 输入 | 输出 | 完成标志 |
 |------|------|------|------|----------|
@@ -150,7 +147,7 @@ word_count = 全文字数
 
 ---
 
-## 验收（Stage 6 之后、写 stages_completed[6] 之前）
+## 验收（Stage 6 内容写完后、将 6 加入 stages_completed 前）
 
 Stage 6 内容写完后**不**立刻 append `6`，先按 output-contract.md「验收接入点」跑三道检查，全过才写：
 
@@ -180,7 +177,7 @@ Stage 6 内容写完后**不**立刻 append `6`，先按 output-contract.md「�
 |---|---|---|
 | 准备开写 | story-short-write（同时读 拆文报告.md + 情节节点.md + 写作手法.md + 原文/ + _meta.json） | `/story-short-write` |
 | 需要市场数据 | story-short-scan | `/story-short-scan` |
-| 字数 > 20k 更适合长篇 | story-long-scan → story-long-analyze | `/story-long-scan` |
+| 字数 > 20k 更适合长篇 | story-long-analyze | `/story-long-analyze` |
 
 ---
 
@@ -215,10 +212,3 @@ Stage 6 内容写完后**不**立刻 append `6`，先按 output-contract.md「�
 所有 references 在 `story-short-analyze` 中都是**观察标尺**——先报告源文实际发生了什么，
 再说明它接近、偏离或改造了哪种模式；不是按文件指引写新作品，也不从相邻长篇 Skill
 加载题材、节奏或质量资料。
-
----
-
-## 语言
-
-- 跟随用户的语言回复，用户用什么语言就用什么语言回复
-- 中文回复遵循《中文文案排版指北》

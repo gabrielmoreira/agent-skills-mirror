@@ -10,9 +10,7 @@ metadata:
     - "service-omni-command-center-analyze"
     - "service-omni-supervisor-config-deploy"
     - "service-omni-supervisor-permset-assign"
-  accessCheck:
-    - type: license
-      value: ServiceCloud
+  accessCheck: "OrgPermissions.LightningService"
   cliTools:
     - tool: ["jq"]
       semver: ">=1.6"

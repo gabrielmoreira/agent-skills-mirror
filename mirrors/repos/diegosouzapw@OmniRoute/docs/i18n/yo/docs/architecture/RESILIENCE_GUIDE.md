@@ -450,6 +450,17 @@ dé òpin oṣùwọ̀n fún model kọ̀ọ̀kan. `comboCooldownWait` ló fi à
 `budgetMs`) ní **Ètò → Ìfaradà**. Kì í dúró lórí `quota_exhausted`
 (tí a ti tì pa títí di ọ̀gànjọ́ òru) tàbí àwọn ìdí auth/not-found.
 
+```text
+#16319 · comboCooldownWait · pre-dispatch (attempts = 0)
+all targets skipped + transient model lockout:
+  enabled ∧ 0 < waitMs ≤ maxWaitMs ∧ attempt < maxAttempts ∧ budgetLeftMs ≥ waitMs
+    → wait → re-dispatch
+  wait = false → HTTP 429 rate_limit_error
+  retry_after / reset_at ← earliest transient lock expiry
+quota_exhausted / auth_error / not_found / not_found_local:
+  no transient hint → HTTP 503 ALL_TARGETS_SKIPPED
+```
+
 ---
 
 ## 5. Ìṣàkóso Gbigba Sórí Ìlà Ìbéèrè (v3.8.49 · issue #6593)

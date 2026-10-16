@@ -25,6 +25,7 @@ Create site columns with Add-PnPField, or Add-PnPFieldFromXml for complex types.
 - Dry run by default: without `-Execute` it prints a structured JSON action summary and changes nothing.
 - A real write needs `-Execute -ConfirmToken PROVISION-SPO-SITE-COLUMNS`, exactly. The plan's own `confirmation_token` field is a different value. A real run is a live tenant write that the user runs.
 - Supports standard and complex types, including Calculated via Field XML; use Field XML as supplied and do not rewrite formulas.
+- Typed field plans may supply `group`; it is passed to `Add-PnPField`, defaulting to `Custom Columns` when omitted or empty.
 - Read the "Plan JSON shape" block in `scripts/spo-provision-site-columns.ps1`'s header and do not invent plan keys. When running an installed copy, pass `-ConfigPath` (or `-SiteUrl`, `-ClientId`, `-TenantId`).
 
 ## Quick start

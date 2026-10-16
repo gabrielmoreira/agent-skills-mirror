@@ -376,6 +376,17 @@ Quota-share dispatch တစ်ခုက အပေါင်းတန်ဖို�
 
 Combo strategy တစ်ခုချင်းစီအတွက် (ဖွင့်ထားသည့်အခါ) SHORT ယာယီ cooldown ကြောင့် 429 ကို အတည်ဖြစ်ပေါ်စေမည့် request တစ်ခုသည် 429 ကို ပြန်ပေးမည့်အစား cooldown ပြီးဆုံးသည်အထိ စောင့်ဆိုင်းပြီး ပြန်လည် dispatch လုပ်သည် — ၎င်းသည် model များစွာပါဝင်သည့် combo များတွင် Gemini အမျိုးအစား TPM/RPM window များ (~60s retry-after) ကို ကိုင်တွယ်ပေးသည်။ ဥပမာ model 2 ခုပါသော combo ၏ target နှစ်ခုစလုံးသည် model တစ်ခုချင်းအလိုက် rate limit သို့ ရောက်သွားသည့်အခြေအနေဖြစ်သည်။ **Settings → Resilience** ရှိ `comboCooldownWait` (`enabled`၊ `maxWaitMs`၊ `maxAttempts`၊ `budgetMs`) ဖြင့် ကန့်သတ်ထားသည်။ `quota_exhausted` (သန်းခေါင်ယံအထိ lock လုပ်ထားခြင်း) သို့မဟုတ် auth/not-found အကြောင်းရင်းများအတွက် မည်သည့်အခါမျှ စောင့်ဆိုင်းမည်မဟုတ်ပါ။
 
+```text
+#16319 · comboCooldownWait · pre-dispatch (attempts = 0)
+all targets skipped + transient model lockout:
+  enabled ∧ 0 < waitMs ≤ maxWaitMs ∧ attempt < maxAttempts ∧ budgetLeftMs ≥ waitMs
+    → wait → re-dispatch
+  wait = false → HTTP 429 rate_limit_error
+  retry_after / reset_at ← earliest transient lock expiry
+quota_exhausted / auth_error / not_found / not_found_local:
+  no transient hint → HTTP 503 ALL_TARGETS_SKIPPED
+```
+
 ---
 
 ## 5. တောင်းဆိုမှုတန်းစီစာရင်း ဝင်ခွင့်ထိန်းချုပ်မှု (v3.8.49 · issue #6593)

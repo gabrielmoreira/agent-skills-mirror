@@ -16,9 +16,7 @@ metadata:
   # could falsely gate an admin holding only one. Declare the canonical
   # System-Administrator perm; the OR alternative stays documented in the
   # description and body.
-  accessCheck:
-    - type: "userPerm"
-      value: "ModifyAllData"
+  accessCheck: "UserPermissions.ModifyAllData"
   cliTools:
     - tool: ["jq"]
       semver: ">=1.6.0"

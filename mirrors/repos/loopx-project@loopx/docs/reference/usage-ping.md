@@ -41,7 +41,7 @@ is auto-loaded. Existing ID-free diagnostic rows remain ID-free.
 
 The **new** `POST /v1/installation` contract,
 `loopx_installation_usage_v1`, links the existing random installation ID to up
-to eight UTC daily snapshots. Each has activity date, numeric version,
+to eight UTC daily snapshots. Each has activity date, release version,
 voluntary context, revision, fixed CLI family counts, independent observed
 runtime minutes, and a truncation flag. The context and version freeze on that
 day's first observation; later settings do not relabel that day or history.
@@ -122,8 +122,13 @@ from hardware or an account. Sessions and disclosure upgrades retain it; explici
 disable deletes it. Ephemeral homes, deleted/copied state and re-enabling distort
 installation counts. It enables cross-day association, so this is **not fully anonymous**.
 OS is `darwin|linux|windows|other`, CPU is `x64|arm64|x86|other`, and channel is
-`pip|local_release|source|unknown`. Version accepts only numeric major.minor.patch;
-a custom version containing a private suffix is not sent.
+`pip|local_release|source|unknown`. Heartbeat, diagnostics and installation profiles
+share one version grammar: numeric `major.minor.patch`, optionally followed by a
+canonical Python prerelease such as `2.0.0a1`, `2.0.0b2` or `2.0.0rc3`. The numeric
+components retain their 3/3/4-digit bounds; the prerelease counter has 1–4 digits.
+The exact label is retained, so a prerelease never becomes a stable release in
+statistics. Custom/local suffixes, paths and surrounding whitespace are rejected.
+The legacy v0 contract is unchanged.
 
 **ID-free CLI diagnostics** (`POST /v1/aggregate`, introduced in notice revision 5):
 
@@ -131,7 +136,7 @@ a custom version containing a private suffix is not sent.
 {"schema":"loopx_usage_diagnostics_v1","counters":[{"feature":"pr-review","operation":"merge-readiness","outcome":"blocked","error":"not_ready","duration":"lt_1s","count":4,"version":"1.2.3","activity_day":"2026-09-30","context":"unknown","signal":"none"}]}
 ```
 
-The new default adds numeric release version, UTC activity **date** (not event
+The new default adds release version, UTC activity **date** (not event
 time), fixed sub-operation, result/reason and receipt-backed lifecycle signal.
 Deployment context is optional self-report via the shared device setting or
 `LOOPX_USAGE_CONTEXT` (environment takes precedence):
@@ -260,6 +265,12 @@ backups of authority providers, or public projections. Normal
 CLI invocation reads only a small local hint; a detached Node process owns
 measurement, locks and network I/O. A first-use/settings operation may wait for
 local Node execution, never for a collector connection.
+Quota-cycle start/spend observations may wait up to two seconds for this local
+statistics lock in the detached worker; ordinary observers retain 250 ms.
+Contention beyond that bound remains unobserved. This does not delay business
+commands, retry network delivery or change quota settlement. Consent and its
+generation are rechecked after acquiring the lock, so queued observations cannot
+restore withdrawn collection.
 Offline `migrate-local-state` commands do not schedule these observations,
 because their previews and rollback receipts bind the machine-state bytes.
 

@@ -6,8 +6,6 @@ Update fallback: 자동 업데이트가 안 되면 `hephaestus update`를 한 �
 
 # /hep-cloud
 
-Raw request: `$ARGUMENTS`
-
 Act as the temporary top-level workforce orchestrator. Use the local Agentlas
 OS MCP server `hephaestus-network` and call the Workforce tools with exact
 `sourceScope: "cloud"`. This command may search only packages owned by the
@@ -28,7 +26,6 @@ for candidate in \
   "$HOME/.agentlas/runtime/current/bin/hephaestus" \
   "${CLAUDE_PLUGIN_ROOT:+$CLAUDE_PLUGIN_ROOT/bin/hephaestus}" \
   "${PLUGIN_ROOT:+$PLUGIN_ROOT/bin/hephaestus}" \
-  "${GEMINI_EXTENSION_ROOT:+$GEMINI_EXTENSION_ROOT/bin/hephaestus}" \
   "./bin/hephaestus"
 do
   if [ -n "$candidate" ] && [ -x "$candidate" ]; then RUNNER="$candidate"; break; fi
@@ -61,6 +58,17 @@ Report the exact finite Core refusal—such as `source_unauthorized`,
 call a legacy route, or expose a direct remote `agentlas` MCP alongside Core.
 A prepared roster is not proof of execution.
 
+If `workforce.prepare_execution` refuses with a `repair` object, the agent is
+broken, not absent. Say in plain words what `repair.meaning` says, offer the
+first `available` action in `repair.repair`, and run its `command` only after
+the user agrees. When a repair reports `reselectionRequired: true`, select
+again (`workforce.validate_selection`, then `workforce.prepare_execution`);
+never swap in a different agent without a new selection. A refusal that carries
+`alternates` lists other callable agents from the same search: present them as
+candidates and let the user or the selection step choose.
+
 For a `partial` or `failed` result, report each source receipt's exact
 `failureCode`. Never collapse several receipts into one, substitute a different
 code, or relabel the outcome.
+
+Raw request: `$ARGUMENTS`

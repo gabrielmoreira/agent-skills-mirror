@@ -392,6 +392,17 @@ Kun quota-share-välitys kohdistuu yhteyteen, joka määrittää positiivisen `m
 
 Kun ominaisuus on käytössä, pyyntö, joka minkä tahansa yhdistelmästrategian yhteydessä johtaisi lyhyestä tilapäisestä jäähdytysjaksosta aiheutuvaan lopulliseen 429-virheeseen, odottaa jakson päättymistä ja välitetään uudelleen 429-virheen palauttamisen sijaan — tämä kattaa Gemini-tyyppiset TPM-/RPM-aikaikkunat (noin 60 sekunnin retry-after) usean mallin yhdistelmissä, esimerkiksi kun kahden mallin yhdistelmän molemmat kohteet saavuttavat mallikohtaisen pyyntönopeusrajan. Toimintaa rajoittavat `comboCooldownWait`-asetukset (`enabled`, `maxWaitMs`, `maxAttempts`, `budgetMs`) kohdassa **Asetukset → Häiriönsieto**. Se ei koskaan odota syyn ollessa `quota_exhausted` (lukittu keskiyöhön asti) tai todennukseen / puuttuvaan resurssiin liittyvä.
 
+```text
+#16319 · comboCooldownWait · pre-dispatch (attempts = 0)
+all targets skipped + transient model lockout:
+  enabled ∧ 0 < waitMs ≤ maxWaitMs ∧ attempt < maxAttempts ∧ budgetLeftMs ≥ waitMs
+    → wait → re-dispatch
+  wait = false → HTTP 429 rate_limit_error
+  retry_after / reset_at ← earliest transient lock expiry
+quota_exhausted / auth_error / not_found / not_found_local:
+  no transient hint → HTTP 503 ALL_TARGETS_SKIPPED
+```
+
 ---
 
 ## 5. Pyyntöjonon sisäänpääsyn hallinta (v3.8.49 · issue #6593)

@@ -21,7 +21,7 @@ This is an OMH `jit-learn` workflow skill, projected for Agent Skills hosts (Cla
 
 ## Do Not Use When
 
-- The user asks OMH to learn from workflow outcomes, missed routes, or evaluation traces; use `omh-workflow-learning`.
+- The user asks OMH to learn from workflow outcomes, missed routes, or evaluation traces.
 - The learning goal is already chosen and the user wants a multi-week syllabus, instructional sequence, or assessment plan; use `omh-curriculum-design`.
 - The user supplied a paper, PDF, arXiv entry, or excerpt and wants it explained; use `omh-paper-learning`.
 - The requested output is a typed source candidate inventory or acquisition status rather than a fitted learning brief; use `omh-source-finder`.

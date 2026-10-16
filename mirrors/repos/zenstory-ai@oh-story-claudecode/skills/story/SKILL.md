@@ -5,7 +5,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 ---
 # story：网文工具箱路由
 
-你是网文工具箱的路由入口。用户的请求模糊时由你分发到具体 skill。
+识别用户的写作需求，并路由到对应 skill。
 
 ## 路由表
 
@@ -45,12 +45,13 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 用户要求记住、查看、确认、替换或忘掉作者习惯时，加载 [references/author-memory.md](references/author-memory.md)，并只用本 skill 的 `scripts/author_memory_commit.py` 管理两级 `.story/作者记忆/`：全局、题材、流程条目在工作区（`AP`），本书条目在书目录（`BP`，传 `--book-root`）。常用变更走单事件 `record`；工具未返回 `ok: true` 和 `Author Memory Receipt` 前，不得声称已记住。告诉作者时先用一句人话说记住了什么（如「记住了：这本书的对话一律用「」」），回执放最后一行，写法见协议「回执怎么告诉作者」。显示画像或待确认项是只读操作；不存在时直接说明尚未建立。
 
-新增习惯必须保留用户原话和适用范围。一次性要求只执行不记录；小说事实写入本书设定/追踪；不从反复修改或成稿推断偏好，只记作者明确说的，原话范围含糊才进待确认；与已生效习惯冲突时显式 replace，不原地改写历史。作者说「整理作者记忆」、回执提示习惯攒得太多、工具报单书布局错误，或项目级画像里还有「本书：」条目（建议对该书运行 `migrate --book-root`）时，再加载 [references/author-memory-maintenance.md](references/author-memory-maintenance.md)。用户没有指定工作区时，按协议定位已有作者记忆的最近祖先或当前创作工作区，禁止默认写到用户主目录。
+新增习惯保留用户原话和适用范围，只记作者明确表达的偏好；一次性要求只执行，小说事实写入本书设定/追踪，不从反复修改或成稿推断偏好。范围含糊时进待确认；与同范围生效条目冲突时记录候选，作者明确替换旧规则才用 `replace`，不原地改写历史。
+
+作者要求「整理作者记忆」、回执提示容量不足、工具报单书布局错误，或项目级画像仍有「本书：」条目时，加载 [references/author-memory-maintenance.md](references/author-memory-maintenance.md)；迁移本书条目用 `migrate --book-root`。工作区按协议定位已有记忆的最近祖先或当前创作工作区，不默认写到用户主目录。
 
 ## Dashboard 工作台
 
-用户执行 `/story dashboard`（Codex 为 `$story dashboard`），或明确说“打开工作台 / 看项目
-文件”时，直接启动随本 skill 分发的本地 Dashboard，不再转发到其他 skill：
+用户执行 `/story dashboard`（Codex 为 `$story dashboard`），或明确要求打开工作台、查看项目文件时，启动本 skill 的本地 Dashboard：
 
 1. 把**当前工作目录**作为默认工作区；用户明确给出目录时改用该目录。目录必须存在。
 2. 从当前已加载的 `story` skill 目录定位 `scripts/dashboard-server.mjs`，不要硬编码仓库路径、
@@ -71,9 +72,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 - 长篇目录结构：目录内含 `正文/`、`大纲/`、`设定/` 或 `追踪/` 任一普通子目录。
 - 短篇单文件结构：目录内含普通文件 `正文.md`，并同时含 `小节大纲.md` 或 `设定.md`。
 
-符号链接不作为项目标记，只有单个 `正文.md` 的普通资料目录也不会被误认。浏览器可编辑
-`.md`、`.txt`、`.json`、`.yaml`、`.yml`、`.toml`，保存或确认删除前用修改时间防止
-误操作外部更新。
+符号链接不作为项目标记，只有单个 `正文.md` 的资料目录不识别为写作项目。浏览器可编辑 `.md`、`.txt`、`.json`、`.yaml`、`.yml`、`.toml`；保存或确认删除时核对文件内容版本，避免覆盖外部修改。
 
 停止服务时终止对应的 Node 长运行进程即可。若用户只问用法，不要替他启动；给出
 `/story dashboard` / `$story dashboard` 两种平台对应入口。
@@ -83,7 +82,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 1. 分析用户请求，提取意图关键词
 2. 匹配上表，找到对应的 skill
 3. 如果能明确匹配，直接调用对应 skill（Claude/OpenCode 可用 `Skill("skill-name")` 或 slash command；Codex 用 `$skill-name` / `/skills`；Antigravity 用 `/skills` 或自然语言点名；OpenClaw 用 `/skill skill-name` 或自然语言点名）
-4. 如果无法匹配，询问用户想做什么（从上表中选择）
+4. 无法匹配时只问缺失信息；写作篇幅按下一条处理
 5. 如果用户说"我想写小说"但未指定长篇/短篇，询问篇幅类型后再路由
 
 ## 查询降级
@@ -102,9 +101,9 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 路由前先检查当前项目状态：
 
 - **无项目目录**（没有包含 `追踪/` 或 `设定/` 的书名目录，也没有同时有 `正文.md` 与 `小节大纲.md`（或 `设定.md`）的短篇目录）：
-  - 如果用户要写作，下一步是先运行 `/story-setup` 初始化环境（Codex 中用 `$story-setup`）
+  - 创建写作项目时先运行 `/story-setup` 初始化环境（Codex 中用 `$story-setup`）；只讨论结构或选题时直接路由
   - 如果用户要扫榜/拆文，直接路由
-- **已有项目**：检查 `.story-deployed` 标记，如未部署则先运行 `/story-setup`（Codex 中用 `$story-setup`）
+- **已有项目**：读取 `.story-deployed`，按目标 skill 的环境检查继续；查询沿用上方降级，导入保留串行选项。需要初始化或补部署时运行 `/story-setup`（Codex 中用 `$story-setup`）。
 
 ## 多书切换
 
@@ -117,13 +116,13 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ## 版本更新检查
 
-用户问"有没有新版本""检查更新""升级"时执行。**只通知，更不更新由用户定，不自动安装。**
+用户问“有没有新版本”“检查更新”“升级”时执行。**先报告版本，是否安装由用户决定。**
 
 1. **当前版本**：读本 skill 同目录的 `VERSION` 文件；缺失则视为未知。
 2. **最新版本**：优先 `gh release view --json tagName,name,url -R zenstory-ai/oh-story-claudecode` 取 `tagName`；无 gh 用 `curl -fsS --max-time 5 https://api.github.com/repos/zenstory-ai/oh-story-claudecode/releases/latest` 取 `.tag_name`（jq 或 grep）。查不到 → 告知"暂时拉不到最新版本，可手动看 [Releases](https://github.com/zenstory-ai/oh-story-claudecode/releases)"，不报错。
-3. **比较**：去掉 `v` 前缀按语义版本比（major.minor.patch）。`gh release` 默认取 latest 稳定版，不含 pre-release。
+3. **比较**：当前版本已知时，去掉 `v` 前缀按语义版本比较（major.minor.patch）；未知时只展示最新稳定版，不判定是否已最新。`gh release` 默认取 latest 稳定版，不含 pre-release。
 4. **告知**：
    - 已最新 → 「已是最新版 vX.Y.Z」。
-   - 有新版 → 列出 当前 vA → 最新 vB + [Releases](https://github.com/zenstory-ai/oh-story-claudecode/releases)/[CHANGELOG](https://github.com/zenstory-ai/oh-story-claudecode/blob/main/CHANGELOG.md)（能拿到 release notes 就附本次要点），再用 AskUserQuestion 问「现在更新吗？」：
+   - 有新版或当前版本未知 → 展示已知版本与 [Releases](https://github.com/zenstory-ai/oh-story-claudecode/releases)/[CHANGELOG](https://github.com/zenstory-ai/oh-story-claudecode/blob/main/CHANGELOG.md)，有 release notes 时附更新要点，再用宿主可用的提问方式问「现在更新吗？」：
      - 选更新 → 跑 `npx skills add zenstory-ai/oh-story-claudecode -y -g`（`-g` 全局，去掉则只更当前目录）；完成后提示：已部署过的项目在项目根重跑 `/story-setup`（Codex 中用 `$story-setup`）同步 hooks/agents/references，并**新开一个会话**让 agents 重新注册。
      - 选先不 → 不动，告知随时可再来。

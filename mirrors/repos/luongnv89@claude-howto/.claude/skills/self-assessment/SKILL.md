@@ -1,6 +1,6 @@
 ---
 name: self-assessment
-version: 2.5.3
+version: 2.5.4
 description: Comprehensive Claude Code self-assessment and learning path advisor. Runs a multi-category quiz covering 10 feature areas, produces a detailed skill profile with per-topic scores, identifies specific gaps, and generates a personalized learning path with prioritized next steps. Use when asked to "assess my level", "take the quiz", "find my level", "where should I start", "what should I learn next", "check my skills", "skill check", or "level up".
 ---
 
@@ -82,7 +82,7 @@ Options:
 1. "Installed and used an auto-invoked skill" — A skill that triggers automatically based on its description, without manual /command invocation
 2. "Controlled skill invocation behavior" — Used `disable-model-invocation`, `user-invocable`, or `context: fork` with agent field in SKILL.md frontmatter
 3. "Set up a PreToolUse or PostToolUse hook" — Configured a hook that runs before/after tool execution (e.g., command validator, auto-formatter)
-4. "Used advanced hook features" — Configured prompt-type hooks, component-scoped hooks in SKILL.md, HTTP hooks, or hooks with custom JSON output (updatedInput, systemMessage)
+4. "Used advanced hook features" — Configured prompt-type hooks, skill-frontmatter hooks, HTTP hooks, or hooks with custom JSON output (updatedInput, systemMessage)
 
 **Scoring for Round 2:**
 - Options 1-2 map to **Skills** (0-2 points)
@@ -109,8 +109,8 @@ Options:
 
 "Which of these have you done? Select all that apply."
 Options:
-1. "Used checkpoints for safe experimentation" — Created checkpoints, used Esc+Esc or /rewind, restored code and/or conversation, or used either Summarize option (summarize from here / summarize up to here)
-2. "Used planning mode or extended thinking" — Activated planning via /plan, Shift+Tab, or --permission-mode plan; toggled extended thinking with Alt+T/Option+T
+1. "Used checkpoints for safe experimentation" — Rewound to a checkpoint with Esc+Esc or /rewind, restored code and/or conversation, or used either Summarize option (summarize from here / summarize up to here)
+2. "Used planning mode or extended thinking" — Activated planning via /plan, Shift+Tab, or --permission-mode plan; toggled extended thinking with Alt+T/Option+T on a model that allows it, or set reasoning depth with `/effort`
 3. "Configured permission modes" — Used any of the six modes — manual (renamed from default in v2.1.200), acceptEdits, plan, auto, dontAsk, or bypassPermissions — via CLI flags, keyboard shortcuts, or settings (just starting in the built-in auto default doesn't count)
 4. "Used remote/desktop/web features" — Used `claude --remote-control`, `claude --cloud`, `/teleport`, `/desktop`, or worktrees with `claude -w`
 
@@ -303,7 +303,7 @@ Use these specific recommendations when a topic is a gap:
 **Skills (score 0)**:
 - Tutorial: [03-skills/](../../../03-skills/)
 - Focus on: SKILL.md format, auto-invocation via description field, progressive disclosure (3 loading levels)
-- Key exercise: Install the code-review skill and verify it auto-triggers
+- Key exercise: Install `03-skills/code-review-specialist` and verify it auto-triggers
 - Done when: A skill automatically activates based on conversation context
 
 **Skills (score 1 — review)**:
@@ -317,8 +317,8 @@ Use these specific recommendations when a topic is a gap:
 - Done when: A hook blocks dangerous commands before execution
 
 **Hooks (score 1 — review)**:
-- Focus on: All 33 hook events (including PostToolUseFailure, StopFailure, TaskCreated, CwdChanged, FileChanged, PostCompact, Elicitation, ElicitationResult, Setup, UserPromptExpansion, MessageDisplay, PreModelSwitch, PostModelSwitch — the last two added in v2.1.251), 5 hook types (command, http, mcp_tool, prompt, agent — agent hooks are experimental and may change), component-scoped hooks in SKILL.md frontmatter, HTTP hooks with allowedEnvVars, `onFailure: "block"` to block the action when a command or HTTP hook fails (v2.1.295+), `CLAUDE_ENV_FILE` for SessionStart/CwdChanged/FileChanged
-- Done when: You can create a prompt-based Stop hook and a component-scoped hook in a skill
+- Focus on: All 33 hook events (including PostToolUseFailure, StopFailure, TaskCreated, CwdChanged, FileChanged, PostCompact, Elicitation, ElicitationResult, Setup, UserPromptExpansion, MessageDisplay, PreModelSwitch, PostModelSwitch — the last two added in v2.1.251), 5 hook types (command, http, mcp_tool, prompt, agent — agent hooks are experimental and may change), hooks in SKILL.md frontmatter (they persist for the session after invocation; subagent-frontmatter hooks end with the subagent), HTTP hooks with allowedEnvVars, `onFailure: "block"` to block the action when a command or HTTP hook fails (v2.1.295+), `CLAUDE_ENV_FILE` for SessionStart, Setup, CwdChanged and FileChanged
+- Done when: You can create a prompt-based Stop hook and a hook in a skill's frontmatter (and you know it stays registered for the rest of the session)
 
 **MCP (score 0)**:
 - Tutorial: [05-mcp/](../../../05-mcp/)
@@ -327,8 +327,8 @@ Use these specific recommendations when a topic is a gap:
 - Done when: You can query live data from an external service via MCP
 
 **MCP (score 1 — review)**:
-- Focus on: Project-scope .mcp.json (requires team approval), OAuth 2.0 auth, MCP resources with `@server:resource` mentions, Tool Search (ENABLE_TOOL_SEARCH), `claude mcp serve`, output limits (10,000 tokens warning; 25,000 tokens default max via `MAX_MCP_OUTPUT_TOKENS`; 50,000 characters disk-persistence threshold)
-- Done when: You have a project .mcp.json and understand Tool Search auto mode
+- Focus on: Project-scope .mcp.json (each user approves it on first use; workspace trust applies), OAuth 2.0 auth, MCP resources with `@server:resource` mentions, Tool Search (ENABLE_TOOL_SEARCH), `claude mcp serve`, output limits (10,000 tokens warning; 25,000 tokens default max via `MAX_MCP_OUTPUT_TOKENS`; 50,000 characters disk-persistence threshold)
+- Done when: You have a project .mcp.json and understand how tool search defers MCP tools by default and what `ENABLE_TOOL_SEARCH=auto`/`false` change
 
 **Subagents (score 0)**:
 - Tutorial: [04-subagents/](../../../04-subagents/)

@@ -395,6 +395,17 @@ Gdy wysłanie żądania quota-share jest kierowane do połączenia, które dekla
 
 W przypadku każdej strategii kombinacji (gdy ta funkcja jest włączona) żądanie, które spowodowałoby ostateczny błąd 429 z KRÓTKIM przejściowym okresem karencji, czeka na jego zakończenie i zostaje wysłane ponownie zamiast zwracać błąd 429 — obejmuje to okna TPM/RPM klasy Gemini (około 60 s określonych przez `retry-after`) w kombinacjach wielu modeli, np. gdy oba cele kombinacji 2 modeli osiągają limit szybkości dla danego modelu. Mechanizm jest ograniczony ustawieniami `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts`, `budgetMs`) w sekcji **Ustawienia → Odporność**. Nigdy nie oczekuje w przypadku `quota_exhausted` (blokady do północy) ani powodów związanych z uwierzytelnianiem lub nieznalezieniem zasobu.
 
+```text
+#16319 · comboCooldownWait · pre-dispatch (attempts = 0)
+all targets skipped + transient model lockout:
+  enabled ∧ 0 < waitMs ≤ maxWaitMs ∧ attempt < maxAttempts ∧ budgetLeftMs ≥ waitMs
+    → wait → re-dispatch
+  wait = false → HTTP 429 rate_limit_error
+  retry_after / reset_at ← earliest transient lock expiry
+quota_exhausted / auth_error / not_found / not_found_local:
+  no transient hint → HTTP 503 ALL_TARGETS_SKIPPED
+```
+
 ---
 
 ## 5. Kontrola przyjmowania żądań do kolejki (v3.8.49 · zgłoszenie #6593)

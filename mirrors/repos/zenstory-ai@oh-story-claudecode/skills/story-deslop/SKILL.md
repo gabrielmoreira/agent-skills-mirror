@@ -8,9 +8,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 **文风裁决**：正文写作、改写或审稿前先读 [references/style-resolution.md](references/style-resolution.md)，加载本书文风并形成 `style_resolution`；无作者记忆也执行。当前请求、本书文风和 active 偏好按维度覆盖通用 references；同一裁决交给后续执行者。
 
-你是网文润色专家。你的任务是把 AI 味浓重的网文文本改写自然，降低模板化、书面腔和过度工整感。
-
-**核心信念：AI 味的主要问题并非语法错误；更常见的是过度圆滑、工整、解释充分。改写目标是保留剧情功能，同时增加口语、停顿、跳跃和具体动作。**
+**改写重点：保留剧情功能，删掉空转解释与套话，按人物声线恢复自然节奏。**
 
 ---
 
@@ -22,7 +20,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ### 原则 1：改味优先，别当改错
 
-AI味不按语法错误处理，也不需要"修正"。它属于风格问题：过于书面化、过于对仗工整、过于面面俱到。去AI味的本质，是把文字从过度工整拉回具体、自然、可读。
+AI味按风格问题处理：检查书面腔、机械对仗和重复解释，保留自然、可读且承担信息的表达。
 
 ### 原则 2：改最少，效果最大
 
@@ -38,7 +36,7 @@ AI味不按语法错误处理，也不需要"修正"。它属于风格问题：�
 
 ### 原则 3：保留创作意图
 
-去AI味只改"怎么说"，不改"说什么"。剧情、人设、情节走向一概不动；不新增原文没有的情节、设定、关系或时间线。如果原文有逻辑问题，那不是去AI味的活。
+去AI味只改"怎么说"，不改"说什么"。剧情、人设、情节走向一概不动；不新增原文没有的情节、设定、关系或时间线。原文逻辑问题单独标记，不借润色改剧情。
 
 ### 原则 4：按文风保留有功能的语气与停顿
 
@@ -50,13 +48,13 @@ AI味不按语法错误处理，也不需要"修正"。它属于风格问题：�
 
 ### 作者习惯
 
-若作者记忆 state 已存在，改写前用 `scripts/author_memory_commit.py query --workspace {工作区} --book-root {书目录} --kind prose_style [--genre {题材}] [--workflow 去AI味]` 获取匹配的 active 文风条目（`--workspace` 必传；`--genre` 填本书题材类型），把输出的 `lines`（≤2KB）交给 inline/spawn 执行者作为自然倾向，不逐条展示或最大化命中，不牺牲连贯、节奏和字数；当前请求、原文剧情功能和本 skill 保护规则优先。用户明确声明长期文风习惯时，改写后按 [references/author-memory.md](references/author-memory.md) 用 `record` 写入并按其「回执怎么告诉作者」转告；只记作者明确说的，一次性要求、反复修改、检测器 findings 和助手自己的结果不记录。
+若作者记忆 state 已存在，改写前用 `scripts/author_memory_commit.py query --workspace {工作区} --book-root {书目录} --kind prose_style [--genre {题材}] [--workflow 去AI味]` 获取匹配的 active 文风条目（`--workspace` 必传；`--genre` 填本书题材类型），把输出的 `lines`（≤2KB）交给 inline/spawn 执行者作为自然倾向，不逐条展示或最大化命中，不牺牲连贯、节奏和字数；当前请求、原文剧情功能和本 skill 保护规则优先。用户明确声明长期文风习惯时，改写后按 [references/author-memory.md](references/author-memory.md) 用 `record` 写入并按其「回执怎么告诉作者」转告；只记作者明确说的，一次性要求、反复修改、检测器 findings 和助手自己的结果不记录。`omitted_ids` 非空时，按 `omitted_summaries` 原话告诉作者哪些习惯没带上。
 
 ---
 
 ## 自然文本基准
 
-去AI味需要知道自然网文文本的特征。以下是从热门网文中提炼的非模板化写作特征，作为对比基准：
+去AI味需要知道自然网文文本的特征。下表用于定位常见表达问题，具体取舍按本书文风：
 
 ### 自然文本特征（与AI味对比）
 | 维度 | 自然文本 | AI味文本 |
@@ -65,14 +63,14 @@ AI味不按语法错误处理，也不需要"修正"。它属于风格问题：�
 | 句内节奏 | 叙述以逗号长句为主（逗号之间 8-12 字、整句 20-30 字，见 anti-ai-writing.md 规则 3） | 要么长句臃肿，要么通篇碎句像提纲 |
 | 对话标签 | 标签低频且不公式化，多用动作/上下文引出；普通"说"可保留 | 几乎每句都有"说道/问道/笑道" |
 | 情绪表达 | 直写有上下文支撑，反应带后果 | 空转的情绪总结句，或给每个情绪词配微动作 |
-| 比喻 | 生活化（"像哈士奇护食"） | 文学化（"如寒冰般"） |
+| 比喻 | 贴合人物视角（如"像哈士奇护食"） | 套用万能画面（如"如寒冰般"） |
 | 语气词 | "嘤""嘶""靠""行吧" | 几乎没有 |
-| 省略 | 大量省略，读者自己脑补 | 面面俱到，生怕读者不懂 |
+| 省略 | 省去已清楚的信息，保留必要指代 | 重复解释已知信息 |
 | 排比 | 偶尔1-2个，从不连续3+ | 连续3-5个排比是标配 |
 | 结尾 | 动作/对话收尾 | 总结/升华/感慨收尾 |
 
 ### 自然表达替换参考
-> 来自大量网文写作研究：
+> 以下是替换方向；只沿用原文已有信息，不把示例动作照加进正文。
 
 - 替代"深吸一口气"→ 直接删；若确有功能，改成角色当下动作
 - 替代"眼中闪过一丝..."→ "他垂下眼" / "眯起眼"
@@ -117,16 +115,16 @@ AI味不按语法错误处理，也不需要"修正"。它属于风格问题：�
 
 > 评价只输出 AI味等级（轻度/中度/重度）与问题标记；不做「上乘 / 新人投稿属上乘 / 性价比高」这类横向市场判断——skill 没有平台投稿分布数据，这类措辞是无依据的越权担保。
 
-**确定性句式预检（文件模式）**：当输入是本地正文文件路径时，「AI味扫描」必须先运行本 skill 自带脚本，只报告不修改：
+**确定性句式预检（文件模式）**：本地文件的「AI味扫描」先运行本 skill 自带脚本，只报告不修改。下列 `node scripts/...` 命令从本 skill 根运行，正文参数使用绝对路径：
 
 ```bash
 node scripts/check-ai-patterns.js --check --fail-on=blocking <正文文件...>
 ```
 
-- 检测器 blocking＝必须修，advisory＝建议看；轻/中/重分档另按「诊断与分级」定，用来选 Gate。
+- 检测器 blocking＝必须修，advisory＝建议看；脚本不逐词统计整份禁用词表，findings 条数不能直接当定档密度。轻/中/重仍按「诊断与分级」六指标核定。
 - severity=blocking 的类别（`not-is-comparison` / `em-dash` / `voice-contrast` / `negation-parade` / `reverse-not-is` / `trailer-ending` / `trailer-summary`）是写作/去 AI 味时优先处理的问题：章尾预告与章尾状态总结（`trailer-ending` / `trailer-summary`）归 Gate F，其余 blocking 并入 Gate B。
 - 其他 findings（碎句号、长段落、微动作、套式反应细节、动作清单、抽象总结、套词、比喻密度、解释链、公文腔、过度精炼、低连接密度、引号强调滥用、`formulaic-parallelism` 工整并列）只作读感提示；完整类别和修法见 `references/anti-ai-writing.md`。其中工整并列会扫描台词，必须读语境判断，不能因为 hook 对台词低误报豁免就跳过。
-- 处理方式：删掉否定铺垫，直接写后项；或改成角色动作、物件细节、身体反应来呈现。
+- 处理方式：删重复铺垫、直接写实质内容；需要改写时沿用原文已有选择、台词、物件或后果，不另配身体反应。
 - 若用户只要检测，保留报告不改文。若执行去 AI 味，只改确实损害读感且无叙事功能的问题；功能性写法标 `[需复核]` 并保留。
 
 ---
@@ -187,7 +185,7 @@ node scripts/normalize-punctuation.js <正文文件...>
 
 作用边界：
 - `check-ai-patterns.js` 只报告不改写：severity=blocking 的类别优先改正文并复扫；advisory 先通读判断，确属提纲感、解释腔或模板腔再改，功能性写法标 `[需复核]`。
-- 它只是读感提示；完整类别、例外和修法见 `references/anti-ai-writing.md`。
+- 退出 1 表示命中当前 `--fail-on` 范围；退出 2 是命令或文件错误。退化脚本此处默认有任意 finding 即退出 1，须按每条 severity 分流，不能把 advisory 当 blocking。
 - `check-degeneration.js` 报告模型退化（逐字复读/打转、末尾截断、占位符、工程词泄漏 `细纲`/`情节点` 等），每条带 `severity: blocking|advisory`。blocking 是退化信号，去AI味改不掉，应回去重新生成那一段再 deslop；advisory（tier2 章节/歧义词）只提示。
 - `normalize-punctuation.js` 机械兜底：保留书级白名单获准的停顿，清除其余残留的 `……`、漏网破折号 `——`/`—`、双连字符 `--` 和独立行 `---`；默认不改变引号风格，也不把有功能的 `？` / 少量 `！` 改成句号。
 - 知乎盐言短篇可保留 `「」`；只有用户或项目明确要求时，才给标点脚本加 `--quote-mode ascii` 或 `--quote-mode yan`。
@@ -223,7 +221,7 @@ node scripts/normalize-punctuation.js <正文文件...>
 **收敛终止**：
 1. 同一段连续两轮去 AI 后没有新改动 → 停止该段处理
 2. 全文上限 3 轮重扫；第 3 轮仍有 ≥10 处改动 → 在报告里标 `[需复核]`，移交人工
-3. 每轮结束前都要做一遍"再检一次"：是否有不符合的地方，有则继续；没有则停
+3. 每轮结束按已选 Gate 复核；有未解决问题则在上述轮次上限内继续，没有则停
 
 ---
 
@@ -249,7 +247,7 @@ node scripts/normalize-punctuation.js <正文文件...>
 | [references/agent-calls.md](references/agent-calls.md) | 交给 narrative-writer 去味时：prompt 模板 |
 | [references/anti-ai-writing.md](references/anti-ai-writing.md) | **去AI味完整指南**：预防+改写顺序+范例 |
 | [scripts/normalize-punctuation.js](scripts/normalize-punctuation.js) | 文件模式落盘后做确定性标点收尾；默认保留引号风格 |
-| [scripts/check-ai-patterns.js](scripts/check-ai-patterns.js) | 文件模式「AI味扫描」预检与「确定性收尾」复扫（只看引号外叙述），只报告不改写 |
+| [scripts/check-ai-patterns.js](scripts/check-ai-patterns.js) | 文件模式预检与复扫；各规则对台词豁免不同，破折号与部分工整并列也查引号内；只报告不改写 |
 | [scripts/check-degeneration.js](scripts/check-degeneration.js) | 文件模式「确定性收尾」复扫，只报告不改写 |
 | [references/author-memory.md](references/author-memory.md) + [scripts/author_memory_commit.py](scripts/author_memory_commit.py) | 读取或更新跨会话作者文风习惯时 |
 
@@ -265,10 +263,3 @@ node scripts/normalize-punctuation.js <正文文件...>
 | 继续写作 | story-long-write / story-short-write | `/story-long-write` 或 `/story-short-write` |
 | 发现结构问题 | story-long-analyze / story-short-analyze | `/story-long-analyze` 或 `/story-short-analyze` |
 | 准备做封面 | story-cover | `/story-cover` |
-
----
-
-## 语言
-
-- 跟随用户的语言回复，用户用什么语言就用什么语言回复
-- 中文回复遵循《中文文案排版指北》

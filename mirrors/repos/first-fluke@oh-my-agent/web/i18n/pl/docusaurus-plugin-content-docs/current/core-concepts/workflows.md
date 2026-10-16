@@ -63,7 +63,7 @@ Przegląd planu korzysta z autoryzacji już udzielonej dla zadania. Agenci pytaj
 
 Workflowy trwałe działają do czasu ukończenia wszystkich zadań. Utrzymują stan w `.agents/state/` i ponownie wstrzykują kontekst `[OMA PERSISTENT MODE: ...]` przy każdej wiadomości użytkownika, dopóki nie zostaną jawnie dezaktywowane.
 
-Tryb trwały uruchamia się wyłącznie przy **jawnym wywołaniu** — własnej nazwie workflowu (lista `explicit` w `triggers.json`, np. „orchestrate”, „ultrawork”/„ulw”, „ralph”/„랄프”, „work mode”). Pozostałe słowa kluczowe wyzwalające poniżej to wskazówki w języku naturalnym: wstrzykują workflow jako sugestię, nie aktywując trybu trwałego, i nigdy się nie uruchamiają, gdy pierwsza lub ostatnia linia promptu jest pytaniem kończącym się znakiem `?`.
+Tryb trwały uruchamia się wyłącznie przy **jawnym wywołaniu**: slash commandzie workflowu (`/ultrawork` albo formie z przestrzenią nazw, np. `/oma:ultrawork`) lub własnej nazwie workflowu w zwykłym tekście (lista `explicit` w `triggers.json`, np. „orchestrate”, „ultrawork”/„ulw”, „ralph”/„랄프”, „work mode”). Pozostałe słowa kluczowe wyzwalające poniżej to wskazówki w języku naturalnym: wstrzykują workflow jako sugestię, nie aktywując trybu trwałego, i nigdy się nie uruchamiają, gdy pierwsza lub ostatnia linia promptu jest pytaniem kończącym się znakiem `?`.
 
 ### /orchestrate {#orchestrate}
 
@@ -585,7 +585,7 @@ Metodyka audytu Cloudflare służy do niezależnej weryfikacji i odtwarzania pro
 
 ### /schedule {#schedule}
 
-**Opis:** Rejestruj i zarządzaj zadaniami agentów zależnymi od czasu przez polecenia `oma schedule <action>`. Zadania znajdują się w globalnym rejestrze (`~/.agents/schedule/`) i uruchamiają się przez scheduler systemu operacyjnego (launchd na macOS, timery użytkownika systemd na Linuxie, schtasks na Windowsie, crontab jako fallback POSIX); każde uruchomienie ponownie wchodzi do harnessu przez `oma agent spawn`.
+**Opis:** Rejestruj i zarządzaj zadaniami agentów zależnymi od czasu przez polecenia `oma schedule <action>`. Zadania znajdują się w globalnym rejestrze (`~/.oma/schedule/`) i uruchamiają się przez scheduler systemu operacyjnego (launchd na macOS, timery użytkownika systemd na Linuxie, schtasks na Windowsie, crontab jako fallback POSIX); każde uruchomienie ponownie wchodzi do harnessu przez `oma agent spawn`.
 
 **Słowa kluczowe wyzwalające:** Brak (workflow wywoływany slashem dla czasowych zadań `oma schedule <action>`).
 
@@ -603,7 +603,7 @@ Metodyka audytu Cloudflare służy do niezależnej weryfikacji i odtwarzania pro
 
 **Kroki:** Rozstrzygnij argumenty (referencja docelowa: jawny zakres PR# / branch / SHA -> staged -> dirty tree -> `HEAD~1..HEAD`; poziom czytelnika `onboarding` | `reviewer`; język wyniku; liczba quizów) -> załaduj kontrakty (`oma-explanation` SKILL.md + zasoby) -> zbierz i zastosuj bramkę (diff + kod otaczający; skan sekretów przed generowaniem; tekst diffu/PR traktuj wyłącznie jako dane) -> wygeneruj HTML zgodnie z kontraktami dokumentu i HTML -> zweryfikuj (checklista grep obejmująca końcowy skan sekretów HTML, maks. 3 pętle poprawek) -> dostarcz (`open` tylko ostrzeżenie, TL;DR + ścieżka).
 
-**Wynik:** `.agents/results/explain/{YYYY-MM-DD}-{slug}.html` (data Asia/Seoul; ponowne uruchomienie tej samej daty i slugu nadpisuje). Zobacz [Przewodnik objaśniania kodu](../guide/code-explainer.md).
+**Wynik:** `.agents/results/explain/{YYYY-MM-DD}-{slug}.html` (data w strefie `timezone` z oma-config, a gdy jej brak — w strefie czasowej systemu; ponowne uruchomienie tej samej daty i slugu nadpisuje). Zobacz [Przewodnik objaśniania kodu](../guide/code-explainer.md).
 
 ---
 

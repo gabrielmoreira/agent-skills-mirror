@@ -23,7 +23,7 @@
 
 <p align="center">
   <strong>Your headhunter. When the work needs a specialist team, it brings one.</strong><br>
-  <sub>Runs inside Claude Code, Codex, Cursor and Gemini.</sub>
+  <sub>Runs inside Claude Code, Codex, Cursor and Antigravity.</sub>
 </p>
 
 <p align="center">
@@ -36,7 +36,7 @@
   <a href="https://github.com/agentlas-ai/Agentlas-OS/releases/latest"><img alt="release" src="https://img.shields.io/github/v/release/agentlas-ai/Agentlas-OS?label=release"></a>
   <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-green"></a>
   <img alt="platforms" src="https://img.shields.io/badge/macOS%20%7C%20Windows%20%7C%20Linux-black">
-  <img alt="hosts" src="https://img.shields.io/badge/Claude%20Code%20%7C%20Codex%20%7C%20Gemini%20%7C%20Cursor%20%7C%20Antigravity%20%7C%20Local-black">
+  <img alt="hosts" src="https://img.shields.io/badge/Claude%20Code%20%7C%20Codex%20%7C%20Cursor%20%7C%20Antigravity%20%7C%20Local-black">
   <img alt="ranking" src="https://img.shields.io/badge/ranking-none%20by%20design-blue">
   <a href="https://discord.gg/wbWfdGZ6S"><img alt="Join the Agentlas Discord" src="https://img.shields.io/badge/Discord-Join-5865F2?logo=discord&logoColor=white"></a>
 </p>
@@ -54,7 +54,7 @@ In the [Web Hub](https://agentlas.cloud/hub), each public agent has a space for 
 
 ### Install
 
-**Agentlas OS** — for Claude Code, Codex, Gemini CLI, Antigravity, Cursor and the
+**Agentlas OS** — for Claude Code, Codex, Antigravity, Cursor and the
 other hosts on your machine. No `sudo`, nothing written outside `$HOME`. Restart
 your agent host afterwards and run `hephaestus doctor`.
 
@@ -298,7 +298,6 @@ one you are typing in — detection is by what is on your `PATH`.
 | `~/.local/bin/` | the `hephaestus`, `ontology`, `agentlas-one` and `hep-*` shell wrappers |
 | `~/.claude/`, `~/.codex/` | plugin registration, commands/prompts, memory hooks, MCP registration |
 | `~/.cursor/` | commands, skills, and the MCP entry in `mcp.json` |
-| `~/.gemini/` | Gemini CLI extension and fallback commands |
 | `~/.gemini/antigravity/`, `~/.gemini/config/` | Antigravity workflows, plugin, MCP config and memory hook — Antigravity lives under `.gemini`, not `.antigravity` |
 | `~/.config/opencode/` | commands, the MCP entry in `opencode.json`, and the memory plugin |
 | `~/.config/goose/config.yaml` | MCP registration, only when the file does not exist yet |
@@ -331,11 +330,6 @@ extracted, and a mismatch refuses the install.
 
 Two more things worth knowing before you run it:
 
-- **A trust prompt is auto-answered.** Gemini's extension installer asks "Do you
-  trust the files in this folder? … These configurations could execute code on
-  your behalf", defaulting to No, and the installer answers yes — for the
-  extension you just asked it to install, and nothing else. You will see it
-  scroll past.
 - **An existing install is updated in place, not removed and reinstalled.** An
   installed Claude Code plugin is updated with `claude plugin update`, and a
   marketplace entry is re-pointed only when it is the installer's own verified
@@ -363,8 +357,7 @@ back out. To turn it on during the install instead, add
 
 ### Paste to Install
 
-Already inside an LLM? Paste this into Claude Code, Codex, Gemini CLI,
-Antigravity or Cursor. It is written so the model can verify what it is running
+Already inside an LLM? Paste this into Claude Code, Codex, Antigravity or Cursor. It is written so the model can verify what it is running
 before it runs it, rather than being asked to trust it blindly:
 
 ```text
@@ -672,7 +665,7 @@ xcode-select --install   # Command line tools (skip if already installed)
 git --version            # Confirm git is available
 curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Agentlas-OS/main/scripts/install-all-runtimes.sh | bash
 ```
-This installs the neutral runner at `~/.agentlas/runtime/current/bin/hephaestus` and registers the command, skill, or MCP adapters for Claude Code, Codex, Gemini CLI, Antigravity, Cursor, OpenCode, OpenClaw, Hermes, Kimi Code CLI, goose, and GitHub Copilot CLI, plus memory hooks for Grok. Local models use the MCP entrypoint `hephaestus mcp serve`. The installer verifies each runtime surface after registration.
+This installs the neutral runner at `~/.agentlas/runtime/current/bin/hephaestus` and registers the command, skill, or MCP adapters for Claude Code, Codex, Antigravity, Cursor, OpenCode, OpenClaw, Hermes, Kimi Code CLI, goose, and GitHub Copilot CLI, plus memory hooks for Grok. Local models use the MCP entrypoint `hephaestus mcp serve`. The installer verifies each runtime surface after registration.
 
 Desktop startup and every `/hep-*` command start the same digest-verified,
 rate-limited update check in the background. The current command never waits
@@ -709,12 +702,12 @@ Global router command reference:
 
 | Command | What it does |
 | --- | --- |
-| `hephaestus global install` | Install or refresh the managed router block for Codex, Claude Code, and Antigravity/Gemini. |
+| `hephaestus global install` | Install or refresh the managed router block for Codex, Claude Code, and Antigravity. |
 | `hephaestus global status` | Show whether each runtime file has the managed router block. |
 | `hephaestus global remove` | Remove only the managed Hephaestus router block. Existing user content stays in place. |
 | `hephaestus global install --target codex` | Install only `~/.codex/AGENTS.md`. |
 | `hephaestus global install --target claude` | Install only `~/.claude/CLAUDE.md`. |
-| `hephaestus global install --target antigravity` | Install only `~/.gemini/GEMINI.md`, which Antigravity shares with Gemini CLI. |
+| `hephaestus global install --target antigravity` | Install only `~/.gemini/GEMINI.md`, which Antigravity reads. |
 | `hephaestus global install --target codex --target claude --target antigravity` | Explicitly install all supported targets. |
 | `hephaestus global install --dry-run` | Preview what would change without writing files. |
 | `hephaestus global install --no-backup` | Edit without writing a timestamped `.bak.*` file. |
@@ -750,7 +743,7 @@ above; it also writes `~/.claude/commands/agentlas.md` and `hep-*.md`. Claude Co
 
 From your OS terminal:
 ```bash
-codex plugin marketplace add agentlas-ai/Agentlas-OS --ref v1.2.62
+codex plugin marketplace add agentlas-ai/Agentlas-OS --ref v1.2.65
 codex plugin add hephaestus@agentlas-core-engine
 ```
 *Note: Codex does not accept `/plugin marketplace add` inside the app — run the two commands above in your OS terminal. The OS-terminal CLI command is singular (`codex plugin`); inside the Codex app, the plugin browser slash command is plural (`/plugins`). Codex 0.117+ removed custom `/prompts:*` commands; after install, invoke the supported plugin skill as `$hephaestus-network <request>`.*
@@ -760,7 +753,7 @@ codex plugin add hephaestus@agentlas-core-engine
 <details>
 <summary>Copy Files into a Project (Manual Driver)</summary>
 
-Clone the repo and copy `AGENTS.md`, `agent.md`, `agents/`, `skills/`, `modes/`, `schemas/`, `templates/`, and `.agentlas/` into your workspace. Runtime folders (`.claude/`, `codex/`, `.gemini/`, `.agents/`) function as adapters over the same canonical core.
+Clone the repo and copy `AGENTS.md`, `agent.md`, `agents/`, `skills/`, `modes/`, `schemas/`, `templates/`, and `.agentlas/` into your workspace. Runtime folders (`.claude/`, `codex/`, `antigravity/`, `.agents/`) function as adapters over the same canonical core.
 
 </details>
 
@@ -794,15 +787,40 @@ Inside native Agentlas environments, Hephaestus operates commandless. External L
 | **Cloud / Hub Destination Gate** | `/agentlas-upload` (or `/agentlas upload`, `/hep-upload`) | `/agentlas-upload ./agents/customer-support-hq` |
 | **Sign-in** | `/agentlas-login` (or `/agentlas login`, `/hep-login`) | `/agentlas-login` |
 | **Orchestrator / Worker Models** | `/agentlas-orch` (or `/agentlas orch`, `/hep-orch`) | `/agentlas-orch orchestrator=frontier worker=economy` |
+| **Goal Plan Tree (long, measurable goals)** | `/agentlas-goal` (or `/agentlas goal`, `/hep-goal`) | `/agentlas-goal reach 1000 followers in a month, today 30` |
 | **Runtime + Adapter Update** | `/agentlas-update` (or `/agentlas update`, `/hep-update`) | `/agentlas-update` |
 
 `/hep-orch` sets which model runs the orchestrator and which runs the workers,
 so a fan-out of mechanical work does not bill frontier runs. **The split only
 puts two models to work on Claude Code**, which is the one host that spawns a
-real subagent and takes a model per subagent. Codex, Gemini/Antigravity, Cursor,
+real subagent and takes a model per subagent. Codex, Antigravity, Cursor,
 and OpenCode have no subagent of their own: one model plays every role in
 sequence there, the allocation receipt is still written, and the ceiling still
 bounds what that model may request — but no second, cheaper model appears.
+
+`/hep-goal` adds a plan tree to your host's own `/goal`. It first decides the
+shape of the goal. Short work with one clear check stays a single tactic and
+behaves exactly like the host goal, with no extra text. A long goal with a
+number you named becomes a mission tree: key results, strategies, tactics, and a
+KPI reading that says whether the plan is moving. It tells you when the numbers
+say the plan has stalled, and when the target looks out of reach it asks you
+instead of re-planning forever. The host goal still decides when the work is
+done; `/hep-goal` only keeps the plan and the numbers honest. A target is only a
+number you wrote in the goal text, and every reading needs a source and a short
+evidence quote. It changes only its own files under `.agentlas/goal/`, never
+permissions or payments. The default mode is `shadow` (it records and measures,
+injects nothing, applies no re-plan); set `AGENTLAS_GOAL_STRATEGY=on` to use it.
+
+What has been measured so far: against a simulated account, the engine saw a
+stalled approach on day 2 and told the owner about an unreachable target on day
+3, where a loop that keeps one approach never does; with a better alternative to
+switch to it reached 298 of 300 followers against 44. That simulation assumes the
+alternatives are known, so it shows the mechanism, not a model's judgment. With
+real models, sonnet and haiku stored a valid plan in 12 of 12 runs (the right
+shape every time, targets equal to the owner's numbers), and submitted an
+accepted re-plan in 6 of 6 review runs. Not measured: whether it beats a plain
+host goal on real long-running work. Treat it as unproven until it has run on
+real goals.
 
 Every row also answers to its original `/hep-*` name — `/agentlas network` and
 `/hep-network` are the same command. Nothing was renamed away, so existing

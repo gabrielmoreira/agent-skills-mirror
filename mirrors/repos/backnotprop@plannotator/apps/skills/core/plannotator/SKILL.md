@@ -208,7 +208,7 @@ plannotator improve-context
 | `PLANNOTATOR_AI=disabled` | Disable Ask AI and agent-launched review surfaces in the UI. |
 | `PLANNOTATOR_SHARE=disabled` | Disable URL sharing, including guide share links. |
 | `PLANNOTATOR_DATA_DIR` | Move the data directory (default `~/.plannotator`): plans, history, drafts, config. |
-| `PLANNOTATOR_BROWSER` | Open sessions in a specific browser. |
+| `PLANNOTATOR_BROWSER` | Open sessions in a specific browser; `none` opens no browser at all (the session URL is always printed on stderr). |
 | `PLANNOTATOR_UPDATE_CHECK=0` | No automatic check for a newer release (and no update notices or auto-update). `plannotator update` still checks when run. |
 
 ## Posting annotations into a live session

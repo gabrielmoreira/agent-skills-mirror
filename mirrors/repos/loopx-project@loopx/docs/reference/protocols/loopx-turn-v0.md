@@ -895,6 +895,18 @@ an explicit replay or failed-Turn recovery. The context policy controls Host
 memory, while the TurnEnvelope and durable LoopX frontier remain the sole
 authority for work selection and continuation.
 
+`run-once --resume-turn-key` loads that original plan before fresh selection or
+Turn-start context, inbox synchronization and recall. It does not mint a new
+TurnEnvelope for recovery. The existing actor/Goal-lifetime checks, typed
+journal/session recovery decision, provider revalidation and post-writeback
+recovery still apply; `--retry-failed-turn` retains its existing bounded policy.
+A new invocation without a resume key continues through fresh admission.
+
+中文：显式 resume 先读原计划，不为恢复另建一次选任务、TurnEnvelope 或 Turn-start
+上下文、inbox 同步和 recall。原身份／Goal 生命周期、journal／Session 恢复、provider
+当前校验与写回后恢复流程保持；失败重试仍受既有有界策略约束。无 resume key 的新轮次
+继续走完整 fresh 准入。
+
 ## Adapter Requirements
 
 An external host adapter must provide:

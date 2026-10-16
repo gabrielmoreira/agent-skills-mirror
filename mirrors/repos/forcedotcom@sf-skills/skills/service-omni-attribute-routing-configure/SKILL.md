@@ -8,9 +8,7 @@ metadata:
   minApiVersion: "68.0"
   relatedSkills:
     - "service-omni-work-skill-routing-configure"
-  accessCheck:
-    - type: license
-      value: ServiceCloud
+  accessCheck: "OrgPermissions.LightningService"
   cliTools:
     - tool: ["jq"]
       semver: ">=1.6"

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cathrynlavery/diagram-design` — 26 default patterns, 0 followed patterns, 292 file(s) materialized.
+Mirror of `cathrynlavery/diagram-design` — 26 default patterns, 0 followed patterns, 293 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `cathrynlavery/diagram-design` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 292 |
+| Files         | 293 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -347,10 +347,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 286 | ✓ | [`skills/diagram-design/references/type-waterfall.md`](skills/diagram-design/references/type-waterfall.md) |
 | 287 | ✓ | [`skills/diagram-design/scripts/drawio_extract.py`](skills/diagram-design/scripts/drawio_extract.py) |
 | 288 | ✓ | [`skills/diagram-design/scripts/excalidraw_extract.py`](skills/diagram-design/scripts/excalidraw_extract.py) |
-| 289 | ✓ | [`skills/diagram-design/scripts/export_svg.py`](skills/diagram-design/scripts/export_svg.py) |
-| 290 | ✓ | [`skills/diagram-design/scripts/mermaid_extract.py`](skills/diagram-design/scripts/mermaid_extract.py) |
-| 291 | ✓ | [`skills/diagram-design/scripts/self_check.py`](skills/diagram-design/scripts/self_check.py) |
-| 292 | ✓ | [`skills/diagram-design/SKILL.md`](skills/diagram-design/SKILL.md) |
+| 289 | ✓ | [`skills/diagram-design/scripts/export_png.py`](skills/diagram-design/scripts/export_png.py) |
+| 290 | ✓ | [`skills/diagram-design/scripts/export_svg.py`](skills/diagram-design/scripts/export_svg.py) |
+| 291 | ✓ | [`skills/diagram-design/scripts/mermaid_extract.py`](skills/diagram-design/scripts/mermaid_extract.py) |
+| 292 | ✓ | [`skills/diagram-design/scripts/self_check.py`](skills/diagram-design/scripts/self_check.py) |
+| 293 | ✓ | [`skills/diagram-design/SKILL.md`](skills/diagram-design/SKILL.md) |
 
 ---
 

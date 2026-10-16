@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `astral-sh/ruff` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
+Mirror of `astral-sh/ruff` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `astral-sh/ruff` — 26 default patterns, 0 followed patterns, 17 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 17 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,18 +64,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.agents/skills/adding-ty-diagnostics/SKILL.md`](.agents/skills/adding-ty-diagnostics/SKILL.md) |
 | 4 | ✓ | [`.agents/skills/minimizing-ty-ecosystem-changes/references/advanced-minimization.md`](.agents/skills/minimizing-ty-ecosystem-changes/references/advanced-minimization.md) |
 | 5 | ✓ | [`.agents/skills/minimizing-ty-ecosystem-changes/SKILL.md`](.agents/skills/minimizing-ty-ecosystem-changes/SKILL.md) |
-| 6 | ✓ | [`.agents/skills/summarise-ecosystem-results/assets/report-template.md`](.agents/skills/summarise-ecosystem-results/assets/report-template.md) |
-| 7 | ✓ | [`.agents/skills/summarise-ecosystem-results/references/evidence-acquisition.md`](.agents/skills/summarise-ecosystem-results/references/evidence-acquisition.md) |
-| 8 | ✓ | [`.agents/skills/summarise-ecosystem-results/references/subagent-handoff.md`](.agents/skills/summarise-ecosystem-results/references/subagent-handoff.md) |
-| 9 | ✓ | [`.agents/skills/summarise-ecosystem-results/SKILL.md`](.agents/skills/summarise-ecosystem-results/SKILL.md) |
-| 10 | ✓ | [`.agents/skills/wobbling-ty-constraint-order/SKILL.md`](.agents/skills/wobbling-ty-constraint-order/SKILL.md) |
-| 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 12 | ✓ | [`agents/references/cli-threat-model.md`](agents/references/cli-threat-model.md) |
-| 13 | ✓ | [`agents/references/language-server-threat-model.md`](agents/references/language-server-threat-model.md) |
-| 14 | ✓ | [`agents/references/playground-threat-model.md`](agents/references/playground-threat-model.md) |
-| 15 | ✓ | [`agents/references/repository-threat-model.md`](agents/references/repository-threat-model.md) |
-| 16 | ✓ | [`agents/references/threat-models.md`](agents/references/threat-models.md) |
-| 17 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 6 | ✓ | [`.agents/skills/review-ty-pr/agents/openai.yaml`](.agents/skills/review-ty-pr/agents/openai.yaml) |
+| 7 | ✓ | [`.agents/skills/review-ty-pr/SKILL.md`](.agents/skills/review-ty-pr/SKILL.md) |
+| 8 | ✓ | [`.agents/skills/summarise-ecosystem-results/assets/report-template.md`](.agents/skills/summarise-ecosystem-results/assets/report-template.md) |
+| 9 | ✓ | [`.agents/skills/summarise-ecosystem-results/references/evidence-acquisition.md`](.agents/skills/summarise-ecosystem-results/references/evidence-acquisition.md) |
+| 10 | ✓ | [`.agents/skills/summarise-ecosystem-results/references/subagent-handoff.md`](.agents/skills/summarise-ecosystem-results/references/subagent-handoff.md) |
+| 11 | ✓ | [`.agents/skills/summarise-ecosystem-results/SKILL.md`](.agents/skills/summarise-ecosystem-results/SKILL.md) |
+| 12 | ✓ | [`.agents/skills/triage-ty-issue/agents/openai.yaml`](.agents/skills/triage-ty-issue/agents/openai.yaml) |
+| 13 | ✓ | [`.agents/skills/triage-ty-issue/SKILL.md`](.agents/skills/triage-ty-issue/SKILL.md) |
+| 14 | ✓ | [`.agents/skills/wobbling-ty-constraint-order/SKILL.md`](.agents/skills/wobbling-ty-constraint-order/SKILL.md) |
+| 15 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 16 | ✓ | [`agents/references/cli-threat-model.md`](agents/references/cli-threat-model.md) |
+| 17 | ✓ | [`agents/references/language-server-threat-model.md`](agents/references/language-server-threat-model.md) |
+| 18 | ✓ | [`agents/references/playground-threat-model.md`](agents/references/playground-threat-model.md) |
+| 19 | ✓ | [`agents/references/repository-threat-model.md`](agents/references/repository-threat-model.md) |
+| 20 | ✓ | [`agents/references/threat-models.md`](agents/references/threat-models.md) |
+| 21 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

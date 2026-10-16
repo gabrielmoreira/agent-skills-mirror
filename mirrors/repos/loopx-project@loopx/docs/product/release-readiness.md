@@ -228,10 +228,12 @@ relax the environment policy, or replace Trusted Publishing with a token.
 For a browser-fixture error discovered after an immutable tag was published,
 maintainers may dispatch the release workflow from reviewed tooling with
 `tag` set to that existing release and `browser_fixture_commit` set to a full,
-merged commit SHA. Only the personal-workspace fixture, typed-actions and goal-work-map
-scenario files are extracted from that commit; its other changes are not
-applied to the product checkout. A non-default commit must contain at least
-one correction in these fixture owners. The wheel and sdist are built before
+merged commit SHA. Only the personal-workspace fixture, typed-actions,
+goal-work-map and goal-workspace-m2 scenario files are extracted from that commit;
+its other changes are not applied to the product checkout. All candidate files
+must remain regular source files before any correction is copied; deletion or a
+symlink fails closed without partially applying the fixture correction.
+A non-default commit must contain at least one correction in these fixture owners. The wheel and sdist are built before
 those test corrections are applied; checksums are verified again after the
 browser and managed-runtime tests, and the fixtures are restored. An empty
 input uses the tagged fixtures. This does not skip browser validation, rebuild
@@ -861,6 +863,50 @@ path, and canary route rather than as a user-facing release baseline.
   authenticated Host interaction, external backend execution and sustained
   SQLite qualification remain unqualified. No paired-version benchmark uplift
   or isolated Astra causal effect is claimed.
+
+- `v1.4.1` on 2026-10-15: workspace visibility, semantic replan and recovery
+  hardening at frozen commit `4f27801c4e26fd51246d352eada72c98f8e7e657`.
+  The [published release](https://github.com/loopx-project/loopx/releases/tag/v1.4.1)
+  records nineteen bilingual operating entries and concrete community credits.
+  GitHub/PyPI packages, four desktop installers, the signed macOS update feed,
+  `desktop-stable`, source `stable`, the website download path and the personal
+  illustrated guide were independently read back. An actual PyPI
+  1.4.0-to-1.4.1 upgrade preserved existing work; package hashes and source bytes
+  matched the immutable product tag. Reviewed publication-fixture recovery did
+  not move that tag. At the final source, 515 public smokes and 2,213 affected
+  Python checks passed, with five explicit native-environment skips; this was
+  not a fresh full-tree Python sweep. Doubao Evolving/high completed the fixed
+  22-scenario, two-repeat portfolio and six contrasts with zero failures or
+  skips. Mac artifacts retain ad-hoc signing without Apple notarization;
+  Windows artifacts were verified without native client execution. No paired
+  benchmark, sustained scientific continuation or isolated model causal uplift
+  is claimed.
+
+- `v1.4.2` on 2026-10-16: clearer workspace onboarding and Agent work pages,
+  state-aware suggestions, version-bound delivery checks, and original-operation
+  recovery. New Todos default to P1; existing unranked work remains unchanged.
+  The immutable tag targets `77d6b07fb65c7ddffe14f45549f97295aca995d6`.
+  The [published release](https://github.com/loopx-project/loopx/releases/tag/v1.4.2)
+  records twenty-one bilingual operating entries and annotated community credits.
+  GitHub/PyPI packages, four Mac/Windows desktop installers, signed macOS updates,
+  `desktop-stable`, source `stable`, and website download links were independently
+  read back. Package checksums, hosted attestations, and included source bytes
+  match the tag. An actual PyPI 1.4.1-to-1.4.2 upgrade preserved the original
+  Goal/Todo; fresh installation, doctor, and packaged UI checks passed. The
+  [personal illustrated guide](https://my.feishu.cn/docx/HsYgdSqSHo4u6gxJR03cNmVEnrb)
+  has verified user ownership, two released UI screenshots, reviewed native
+  rendering, and public-link read-only access. At the final source, 515 public
+  smokes and 1,655 affected checks across 37 complete modules passed; this was
+  not a fresh full-tree Python sweep. Dependency-pinned benchmark tests recorded
+  781 passes and 68 explicit environment qualification skips. The authorized
+  DS V4.1 Flash/high alternative passed all 22 scenarios twice and six contrasts,
+  with zero failures or skips. The final-source Evolving/high selected-Todo
+  failure remains unqualified; diagnostic passes do not establish a repair.
+  The separate native-Codex live profile was unavailable and explicitly skipped.
+  Mac artifacts remain ad-hoc signed without Apple notarization; Windows client
+  execution and optional host dependency security remain separately unqualified.
+  No paired benchmark, sustained scientific continuation, or isolated model
+  causal improvement is claimed.
 
 When a new public release is promoted, add it here only after the matching tag,
 release note, stable ref, update path, and focused release canary agree.

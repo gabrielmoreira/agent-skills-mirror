@@ -1,11 +1,11 @@
 ---
 name: lieflat-charts
-description: 一套模板驱动的数据可视化与报告生成 skill，既能严格从 Lupi、Basics、Glance、Maps 与 Interactive gallery 的真实实现生成 HTML 图表，也能从 12 套中英文整页报告模板生成可发布的 HTML 报告；以 Mono 为保底，能按数据语义自动选择内置彩色预设，也支持用户明确提供的自定义色板。地图仅在用户明确要求时启用，同一交付禁止混用色系。
+description: 一套模板驱动的数据可视化、PPT 演示与整页报告生成 skill，既能严格从 Lupi、Basics、Glance、Maps 与 Interactive gallery 的真实实现生成 HTML 图表，也能从 Presentation Mode 生成 HTML/PDF 演示，或从报告模板生成整页 HTML 报告；以 Mono 为保底，能按数据语义自动选择内置彩色预设，也支持用户明确提供的自定义色板。地图仅在用户明确要求时启用，同一交付禁止混用色系。
 ---
 
 # Lieflat Charts — 图表品味法典
 
-Lieflat Charts 是一套遵循 Agent Skills 格式的数据可视化与报告生成 skill，以 Mono 灰阶为保底，也会在数据语义和使用场景明确适配时自动选择一套彩色预设。本 skill 在 [moxt.ai](https://moxt.ai) 制作，支持 Lupi 编辑叙事型、Glance 快速判断型、Basics 基础编辑型、Maps 地图、Interactive 交互大图，以及 `report-catalog.md` 中的 12 套中英文整页报告模板。用户给你数据和场合，可以得到一个无需构建、双击可打开的单文件 HTML 图表或 HTML 报告。纯 SVG 图可离线运行；使用 Chart.js、ECharts、地图 GeoJSON 或在线字体的图，在未内联依赖时需要联网。**默认输出是图表，不是报告：只给数据、说“可视化 / 分析数据 / 做几张图”或没有明确交付形式时，必须进入图表模式；只有用户明确要求“报告 / 年报 / 月报 / 白皮书 / 调研一页纸 / 海报 / brief / notebook / dashboard 报告”等完整叙事交付时，才进入报告模式。** 图表模式下**必须先从 Lupi Editorial 和 Lupi Basics 中选型；只有两者都没有合适模板，或用户明确要求 Glance / dashboard / 三秒快读时，才允许使用 Glance。Maps 只有在用户明确说要地图或地域分布时才启用。**
+Lieflat Charts 是一套遵循 Agent Skills 格式的数据可视化、PPT 演示与整页报告生成 skill，以 Mono 灰阶为保底，也会在数据语义和使用场景明确适配时自动选择一套彩色预设。本 skill 同时提供图表模式、Presentation Mode 和 Report Mode，但默认产出图表。用户明确要求一套 PPT、幻灯片或可翻页汇报时，进入 Presentation Mode，生成 HTML 或 PDF 格式的 PPT；用户明确要求报告、年报、月报、白皮书、海报或 brief 时，进入 Report Mode，生成整页 HTML 报告。纯 SVG 图可离线运行；使用 Chart.js、ECharts、地图 GeoJSON 或在线字体的图，在未内联依赖时需要联网。**默认输出是图表：只给数据、说“可视化 / 分析数据 / 做几张图”或没有明确交付形式时，必须进入图表模式。只有用户明确要求“一套 PPT / 幻灯片 / 演示文稿 / 可翻页汇报”时，才进入演示模式并读取 `presentation-catalog.md` 与 `references/presentation.md`，生成 HTML 或 PDF 格式的 PPT；只有用户明确要求“报告 / 年报 / 月报 / 白皮书 / 调研一页纸 / 海报 / brief / notebook / dashboard 报告”等完整叙事交付时，才进入报告模式并读取 `report-catalog.md`。** 图表模式下**必须先从 Lupi Editorial 和 Lupi Basics 中选型；只有两者都没有合适模板，或用户明确要求 Glance / dashboard / 三秒快读时，才允许使用 Glance。Maps 只有在用户明确说要地图或地域分布时才启用。**
 
 颜色无需用户显式触发。按第六点五节在 Mono 与 `color-presets.js` 的三套内置方案之间自动判断；用户明确给出品牌色或自定义色值时，可以建立一套交付内的 custom 色板。同一份 HTML 或同一组交付只能锁定一种色彩系统，不得混用。换肤样张在 `templates/color/`。
 
@@ -24,6 +24,7 @@ Lieflat Charts 是一套遵循 Agent Skills 格式的数据可视化与报告生
 - **默认图表模式**：用户只给数据，或说“可视化这组数据 / 分析数据 / 做一张图 / 做几张图 / 做个图表页 / 做 PPT 插图”，都必须生成图表或图表页。没有报告关键词时，不得自行套用 R01–R12，也不得因为数据很丰富、结论很多或用户说“分析”就升级成报告。
 - **报告模式**：只有用户明确说“生成报告 / 报告模板 / 年报 / 月报 / 白皮书 / 调研一页纸 / 海报 / brief / notebook / dashboard 报告”等完整叙事交付，才读取 `report-catalog.md`，按报告类型、内容结构、版心、密度、阅读速度和语言选择一个 R01–R12。目录里的场景只是召回线索，不是对模板的限制。
 - **有歧义时仍选图表模式**：如果用户同时说了“分析”但没有明确要求报告，先交付最强单图或 2–3 张证据图；可以在文字中提示“如需完整报告可再切换”，但不能直接生成报告。
+- **演示模式边界**：用户说“做 PPT 插图 / 放进 PPT”仍是图表模式；用户说“做一套 PPT”才是演示模式。演示模式交付为 HTML 或 PDF，不得未经确认把 HTML/PDF 称为可编辑 `.pptx`。**用户提供的 PPT、截图或 HTML 只能作为画布、字体、留白、页眉页脚和页面编排的参考，不是数据来源，也不能决定图型。数据、单位、时间范围、来源、标题结论和无障碍描述必须来自用户材料或明确标注的计算；每页图表仍按 `catalog.md` 的数据形状选择。**不能因为演示版式而默认 Glance、照搬模板示例数字或发明新图型。
 - **不要把报告模式当成“多画几张图”**。报告模板决定整页结构；页内图表仍必须遵守 `catalog.md` 和本文件的图表规则。
 - 报告模板提供 `.zh.html` 与 `.en.html` 两个版本。用户没有指定语言时，跟随输入语言；中英文内容不能混在同一版本中。
 
@@ -56,7 +57,17 @@ Lieflat Charts 是一套遵循 Agent Skills 格式的数据可视化与报告生
 6. 报告页的色彩系统锁定为模板当前色系；如用户明确要求改色，整页统一替换为 Mono、单一内置预设或完整 custom 色板，不得局部混搭。
 7. 报告模式的交付前额外检查：版心尺寸未漂移、章节顺序仍成立、页内图表数量有证据支撑、定尺模板没有溢出、中文字体和英文 fallback 可读。
 
-### 1.2 图数规则
+### 1.2 演示模式工作流
+
+1. 先确认主题、听众、语言、用途和材料范围；明确交付为 HTML 或 PDF 格式的 PPT，若用户要求 `.pptx` 先确认替代格式。
+2. 写逐页提纲：每页一个主要结论，记录来源、数据口径、图型编号、版式编号和待检查项。
+3. 在 `catalog.md` 先审计 Lupi Editorial 与 Lupi Basics，再把已锁定的真实图型放进 `presentation-catalog.md` 的 P04–P08 页面槽位。
+4. 按已锁定的全局色系选模板：Mono 复制 `templates/presentations/presentation.zh.html` 或 `.en.html`；彩色预设复制对应的 `complete-porcelain` / `complete-palm` / `complete-wire`（各 19 页、中英双版、带入场动效），替换所有示例内容；不拼接报告模板。
+5. 验收导航、字体回退、动画生命周期、无障碍描述、打印分页和 1280×720 显示。
+
+演示模式规则详见 `references/presentation.md`。
+
+### 1.3 图数规则
 
 图的数量由**独立结论数**决定，不由“有多少数据列”决定，也不固定要求 5 张或 6 张：
 
@@ -344,10 +355,16 @@ MONO.obsReveal('ch', el => { /* ... */ });
 </html>
 ```
 
-## 十、报告模式骨架
+## 十、报告与演示模式骨架
 
 ```text
 report-catalog.md                # 先按场景选 R01–R12
+presentation-catalog.md            # 演示模式 P01–P10
+references/presentation.md          # 演示模式完整规则
+templates/presentations/index.html # 演示模板索引
+templates/presentations/presentation.zh.html # 中文 16:9 演示正本（Mono）
+templates/presentations/presentation.en.html # English 16:9 deck source (Mono)
+templates/presentations/complete-{porcelain,palm,wire}{,-zh}.html # 彩色完整版，19 页中英双版
 templates/reports/report-NN.zh.html  # 中文整页正本
 templates/reports/report-NN.en.html  # English full-page source
 templates/reports/index.html         # 本地可打开的模板索引

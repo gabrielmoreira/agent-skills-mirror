@@ -23,7 +23,7 @@ This is an OMH `ask` workflow skill, projected for Agent Skills hosts (Claude Co
 
 - The request is casual chat, a status-only acknowledgement, or another workflow has stronger routing evidence.
 - The user needs implementation, review, CI, merge, or external publishing evidence that has not been delegated or observed.
-- The user wants typed yes/no, pick-one, or scored probabilities from Jev over supplied text; use `omh-jev-ask`.
+- The user wants typed yes/no, pick-one, or scored probabilities from Jev over supplied text.
 
 ## Examples
 

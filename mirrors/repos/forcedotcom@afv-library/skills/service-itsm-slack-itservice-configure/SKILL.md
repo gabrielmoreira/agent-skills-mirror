@@ -19,9 +19,7 @@ metadata:
   cliTools:
     - tool: ["node"]
       semver: ">=18.0.0"
-  accessCheck:
-    - type: "orgPref"
-      value: "EmployeeServiceSlackEnabled"
+  accessCheck: "OrgPreferences.EmployeeServiceSlackEnabled"
 allowed-tools: |
   Read AskUserQuestion Bash
   mcp__headless-360__discover

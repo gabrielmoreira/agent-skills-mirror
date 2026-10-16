@@ -1,6 +1,6 @@
 # Video → sprite pipeline (engine SSoT)
 
-> Owns: Pipeline B engine contract: state canvas, keyed frames, true-period and one-shot cycles, strip/GIF/WebP, the batch, a set's sheet · Index: [docs/README.md](README.md)
+> Owns: Pipeline B engine contract: state canvas, keyed frames, true-period and one-shot cycles, strip/GIF/WebP, the batch, a set's sheet, a walk or run's stop · Index: [docs/README.md](README.md)
 
 One still becomes a whole motion set: the still is padded into the canvas a state
 needs, Grok Imagine animates it in place, the clip is keyed frame by frame, and one
@@ -27,6 +27,7 @@ still ──video-canvas──▶ canvas.png ──video──▶ clip.mp4 ─�
 | `sprite-gen video-follow` | `sprite_gen/video/follow.py` | a loop directory + an ellipse → the strip, GIF and WebP with that region following the body ([section 6](#6-follow-through--video-follow)) |
 | `sprite-gen video-follow-inspect` | `sprite_gen/video/follow_inspect.py` | a loop directory + the ellipses `video-follow` takes → a record of where each is carried in every cell and what the move changes there, and two boards of every cell; the loop directory is only read ([section 6](#inspecting-a-follow-through--video-follow-inspect)) |
 | `sprite-gen video-set-sheet` | `sprite_gen/video/set_sheet.py` | the loop directories of one set, each with its `--view` → one sheet: a row per direction in compass order, one cell size, one ground line, every row as cut, + a record and an optional centre picture; the loop directories are only read ([section 7](#7-one-sheet-for-a-set--video-set-sheet)) |
+| `sprite-gen video-stop` | `sprite_gen/video/stop.py` | keyed frames + a walk or run loop → one-shot stop strip (`loop: false`, `hold_last: true`), GIF, WebP, report ([section 8](#8-a-walk-or-run-that-stops--video-stop)) |
 
 Wrappers: `scripts/video_canvas.py`, `scripts/video_frames.py`, `scripts/video_loop.py`,
 `scripts/video_set.py`. Binaries: `ffmpeg`/`ffprobe` (frames), `img2webp` from libwebp
@@ -726,7 +727,7 @@ sprite-gen video-loop --frames-dir frames/keyed --fps 24 --state death --cycle o
 
 In the sequence above, replace 24 with the `fps` value from `frames.report.json`. For batch operations, `sprite-gen video-set --end-frame` takes `ITEM=PATH` (e.g., `--end-frame side-death=final.png`). With no seam gate or wrap correction, nonloop insists on `--anchor none` and `--fit state`, with no optional override to anchor; nonloop states reject non-none anchor and tight fit. See [states-and-frames.md](states-and-frames.md) for the state table.
 
-For `--cycle once`, the terminal gate searches the whole clip for the first stable terminal window of $K = \max(4, \lceil\text{fps} \times 0.2\rceil)$ frames after action departure, then ends at the window end and discards later recovery or shaking. Across the window, pairwise window distance diameter divided by median subject mass must be $\le 0.025$ (premultiplied RGBA thumbnail difference divided by median terminal subject mass), detecting jitter and slow drift regardless of canvas padding. The first frame precedes departure from the initial pose. The gate refuses clips with no action; the retained cut must have a visible body and no alpha >= 8 pixels touching any source edge, ignoring the discarded tail for that check. Candidate end pose geometry uses alpha >= 8 body boxes, rejecting candidates as returned starting geometry if height and width/height ratio are each within 5% of initial and bottom movement is <= 2% of initial height. `death` and `fall` require median end-window height <= 80% of initial height, while other `once` states require changed geometry. This provides a conservative geometric screen; inspect semantic pose visually.
+For `--cycle once`, the terminal gate searches the whole clip for the first stable terminal window of $K = \max(4, \lceil\text{fps} \times 0.2\rceil)$ frames after action departure, then ends at the window end and discards later recovery or shaking. Across the window, pairwise window distance diameter divided by median subject mass must be $\le 0.025$ (premultiplied RGBA thumbnail difference divided by median terminal subject mass), detecting jitter and slow drift regardless of canvas padding. The first frame precedes departure from the initial pose. The gate refuses clips with no action; the retained cut must have a visible body and no alpha >= 8 pixels touching any source edge, ignoring the discarded tail for that check. A named terminal state's candidate end pose is screened by its geometry on alpha >= 8 body boxes, rejecting candidates as returned starting geometry if height and width/height ratio are each within 5% of initial and bottom movement is <= 2% of initial height. `death` and `fall` require median end-window height <= 80% of initial height, while `land`, `cast`, `hurt_hold` and `transform` require changed geometry. This provides a conservative geometric screen; inspect semantic pose visually. Any other motion cut `once` — a once-hold of a word of your own ([play modes](#play-modes)), or `--cycle once` on `jump`, `attack` or another state — is screened by its drawing instead: each end-window frame is moved sideways until its body box is centred where the first frame's is, and its median distance from the first frame (premultiplied RGBA thumbnail difference divided by the subject mass, as the action departure is read) must exceed 0.05. Its body box may keep its size and floor, so a shield raised across the chest is an end pose, while the first drawing come back, in place or slid sideways, is refused as the starting pose. The report's `cycle.terminal.pose` records the screen: `profile` `ground` or `changed` with the geometry ratios, or `drawing` with `departure`, `departure_min` and `shift_px` (the sideways move taken out).
 
 Strip and preview downsampling preserves start and end endpoints. Strip metadata includes `loop: false`, `hold_last: true`, `end_frame`, and candidate `events:[{"frame": n, "name":"motion_peak"}]`. Strip `end_frame` and event `frame` are zero-based output cell indices. Report `cycle.end_frame` and `cycle.event_frame` are keyed source frame indices. `source_cut.samples` maps each strip output cell to its keyed source frame; they are not numerically equal after trimming/subsampling. WebP previews set `loop=1`, GIF previews omit loop extension, and decoded preview verification enforces `once` behavior.
 
@@ -1003,6 +1004,14 @@ re-render noise of the pinned frame as a jump; a clip that ends in another pose 
 with its own message (`the pinned clip does not end on its first frame`). The report says
 `kind = "pinned"` and records `pin_error` and `pin_tolerance`.
 
+`--cycle once-return` is for a clip pinned to end on its first frame that plays once (`video-set
+--play once-return`, [play modes](#play-modes)). It keeps every frame, the last too, so the strip
+starts and ends on the first pose and a game plays it once and goes on from the pose it started in.
+The gate is the pin, as for `pinned` (`the once-return clip does not end on its first frame … it does
+not return to its first pose`). The strip is sampled with both ends kept, the previews play once as a
+`once` cut's do (WebP `loop=1`, no GIF loop extension), and `strip.json` says `loop: false`,
+`hold_last: false`, `returns: true`, `end_frame` and a `motion_peak` event (the clip's largest step).
+
 Outputs:
 
 - `cycle/frame-NNN.png` — the cycle frames, RGB under alpha 0 scrubbed, detached specks
@@ -1123,6 +1132,58 @@ where both apply). Two cases skip the alignment with a warning instead of failin
 `reason`, and a line under the report's `warnings`): no RIFE (`rife-not-installed`), and a loop
 that may hold more than one cycle (`cycle-suspects`, the loops under `suspects`; count them, then
 `video-cycle-align --cycles <loop>=<k>`). See [loop repair](loop-repair.md) section 4.
+
+### Play modes
+
+A state's name used to decide everything about its clip: its sentence, whether the clip is pinned to
+end on its first frame, how it is cut and whether its strip loops, so every new motion was a change to
+the engine. `--play` gives how a motion plays as a value of the request, and `--motion` gives the
+motion's own words, so a motion the engine has no state for — a punch, typing at a desk, a block — is
+filmed under a name of your own. The modes and the presets are `sprite_gen/video/play.py`.
+
+```bash
+sprite-gen video-set --base side=side.png --base front=front.png --states idle,punch,type_at_desk,slash \
+  --play punch=once-return --motion "punch=It throws one straight punch with its front fist and pulls it back." \
+  --play type_at_desk=loop --motion "type_at_desk=It sits at a desk and types on a keyboard." \
+  --play slash=lifetime --motion "slash=A white crescent arcs from left to right." --out-dir set/
+```
+
+| `--play` | the clip | the prompt asks for | the cut (`video-loop --cycle`) | `strip.json` |
+|---|---|---|---|---|
+| `loop` | as the state is filmed: an idle or attack pinned to its first frame, a walk or run pinned in a diagonal view, any other unpinned | an evenly paced repeat, or the return to the first pose where pinned | `pinned` for an idle or attack, otherwise `periodic` | `loop: true` |
+| `once-return` | pinned to end on its first frame | one action, then the first pose again (after your text: `It does this once, then returns to the exact pose of the first frame.`) | `once-return`: the whole clip, its last frame too, gated by the pin | `loop: false`, `hold_last: false`, `returns: true`; the first and last cells are the first pose |
+| `once-hold` | unpinned (`--end-frame ITEM=PATH` pins a terminal pose) | one action, its last pose held still for 0.4 s | `once`: the first settled pose whose drawing is not its first, a change inside an unchanged body outline included (a terminal state's by its own body geometry) | `loop: false`, `hold_last: true` |
+| `lifetime` | framed as an effect and pinned to an empty black frame | an effect that appears and is gone | `lifetime` | `loop: false`, `blend: add` |
+
+`STATE=…` applies to every view of that state and `ITEM=…` (`side-punch=…`) to one item, whose own
+value wins over its state's. A key that names neither, a key given twice, an empty value or a mode the
+state cannot play is refused before any clip is made. `set.report.json` records each item's `play`
+and, where given, its `motion`.
+
+Named states are presets. Without `--play` every state is filmed, prompted and cut as before: `effect`
+as a lifetime, the six terminal states (`death`, `fall`, `land`, `cast`, `hurt_hold`, `transform`) as a
+once-hold and every other state as a loop, each with its own sentence, canvas row and cut (the prompts
+are unchanged, `tests/gen/test_prompt_freeze.py`). A state of one nature plays only that mode — `effect`
+a lifetime, a terminal state a once-hold, a cyclic state (`idle`, `walk`, `run`, `talk`, `blink`,
+`breathe`) a loop — and another motion is filmed under a name of its own. A named state's sentence is
+used in its preset mode, and the attack's (one strike, then a recovery to the exact starting stance) in
+once-return as well: the same prompt and the same pinned clip, cut whole and played once. In any other
+mode, and for a word the engine does not name, the mode's own sentence names the motion (`performs the
+'punch' action once in place, then returns to the exact starting stance.`) unless `--motion` gives one.
+
+A mode the request names is the cut's: a `loop` asked for is searched as a loop (`periodic`) and
+refused when it does not repeat, never failed over to a single play the way a preset's `auto` cut of a
+`jump` or of an unnamed state may be ([one-shot actions](#one-shot-actions--cycle-autoperiodicone-shot)).
+The canvas row is the state's (a motion of your own films on the square default; `--shape` widens
+every canvas of the set), except that a lifetime is framed as an effect whatever its name.
+
+`video-prompt --play MODE` does the same for a clip made elsewhere: the record's `play`, `last_frame`,
+`cycle` and commands follow the mode. A source with no end frame films a once-return only with
+`--unpinned`, as a searched return (`--cycle one-shot`: rest, action, rest; `loop: false`), and
+refuses a lifetime.
+
+Not measured on a clip model: the sentences for a motion of your own (`PLAY_TEXT`, `RETURN_TEXT`).
+The once-return template is the one an attack is filmed with (`ACTION_COMMON_TEXT`).
 
 ## 6. Follow-through — `video-follow`
 
@@ -1424,6 +1485,27 @@ rows' codes), `columns`, `cell_w`, `cell_h`, `baseline_y`, `anchor` (`[cell_w / 
 `center` — null, or the picture's `png`, `input`, `sha256`, its own `standing_h`, the rows' `body_h` it
 was scaled to, the `scale` and its `box` in the cell. The loop directories are only read: no strip,
 frame or frame time is changed.
+
+## 8. A walk or run that stops — `video-stop`
+
+A game character that stops running jumps from a running frame straight to its standing picture. Frames made between them (RIFE in-betweens) are the wrong tool: as [loop repair](loop-repair.md) notes, RIFE smears a changed appearance, and where two drawings are too far apart for the flow, legs come out as one shape of fill; a running frame and a separately drawn standing picture are both. Every walk or run clip filmed from a still (image to video) already holds a filmed "stand → set off" at its start: the body stands, sets off, and runs into the gait the loop is cut from. Played backwards from the frame where the clip reaches the loop, that start is the body running into the standing still — filmed frames, no frame made between two others, ending on the clip's first frame, the still as filmed. `video-stop` cuts this as a one-shot clip beside the loop: a strip, its sidecar (`loop: false`, `hold_last: true`), a GIF, a WebP and a report. Played backwards, motion runs backwards (a cape, a planted foot), which is a cost to look at. This example cuts a run's stop and plays it twice as fast:
+
+```bash
+sprite-gen video-stop --frames-dir run/frames/keyed --loop run/loop/run.strip.json --out-dir run/stop --speed 2
+```
+
+- **The rest.** The clip's opening run of frames within `SAME_POSE` (0.35 steps) of its first frame by engine pose distance (`gait_fallback.poses`: 48 px thumbnails cut about the feet). A step is the clip's median neighbouring-frame pose distance in the loop's window on the clip as filmed, whether cut or aligned. The stop ends on the first frame itself, the still as filmed.
+- **The entry and the cell left from.** The first frame after the rest within `SAME_POSE` of a loop cell, searched to the end of the loop's window (`source_cut`): where the clip reaches the loop. The stop leaves from the nearest cell (`from_cell`) — a player shows the loop through that cell, then the stop — and its first frame is the clip frame before the entry. The entry frame is laid on its cell within 12 % of the cell height (coverage difference, quarter-size search then to the pixel); the first frame is searched across a cell's width.
+- **The seam and its refusal.** Reported in steps from the leaving cell into the stop's first frame. Past the jump line (1.4 steps, `repair.JUMP_RATIO`, overridden by `--seam-max`), the stop is refused: "the clip reaches the loop by a jump".
+- **Another motion and its refusal.** A setting-off goes one way, from the still into the loop: the body does not come back to a pose it has left. `video-stop` finds, among the run-up's frames, the one that comes nearest back to the pose of an earlier frame of the clip (the still or one of the rest's frames, or an earlier frame of the run-up itself), counting only earlier frames the body went `TURN_BACK_AWAY` (one step) or more away from in between. That nearest comeback is recorded in the report as `turn_back` (fields `frame`: the frame that comes back; `back_to`: the earlier frame whose pose it is back at; `steps`: how far it still is from that pose; `away_frame`: the farthest frame between; `away_steps`: how far that one went), alongside `turn_back_away` (the one-step threshold); `turn_back` is null when the body never leaves any pose by a step. If that comeback is within `SAME_POSE` (0.35 steps), the run-up turned back: it holds another motion — for example a gesture that ends where it began (an arm waved, a crouch, then standing again before the run sets off), a motion done again, or a run going round a cycle of its own. The stop would play it backwards, so the command refuses, however short the motion is (two frames are enough), naming the three frames: "the run-up turns back — another motion, that the stop would play backwards". This is the only judgment that refuses another motion; the run-up's length plays no part in it, and `--run-up-max` cannot let it through. A motion carried one way into the run (an arm drawn in, a crouch, a turn before the first stride) is the setting-off's own and is not refused; the pose distance cannot tell it from a gesture carried one way into the run.
+- **The run-up and its refusal.** The frames between the rest and the entry that the stop plays before the still. A body sets off into its gait within about a cycle; a run-up longer than `RUN_UP_MAX_CYCLES` (1.5 cycles, `source_cut.length` frames, overridden by `--run-up-max`) plays strides unlike the loop's — a run of its own before the loop's, or a start slower than a setting-off — and is refused: "strides unlike the loop's, that the stop would play backwards". The seam refusal (overridden by `--seam-max`), the another-motion refusal and the run-up refusal can all be named in one message.
+- **Drift.** A body setting off may move across its frame, sliding into the still if played back as filmed. Two frames are laid where the loop stands: the entry on its cell (least coverage difference), and the first frame with its lowest body row on the loop's ground and across where it covers the loop best (mean coverage of the cells). Frames between are moved by a straight share of the difference per step of the stop, none at the entry and all on the first frame: drift is taken out without moving any frame by its own pose. Because a standing pose is laid on a running one by coverage, a run leaning or reaching away moves the still a few pixels — a straight glide over the stop, the same with drift or without it — and drift not straight over the frames shown leaves a little of itself.
+- **Speed and the frame cap.** `--speed 2` plays every other frame (still kept last); `--max-frames N` (at least 2) spaces N frames evenly from the first to the still. Each frame is shown one clip tick (`--fps` defaults to the loop's `source_cut` fps, else 24). Strips wider than 32,000 px are refused; pass `--max-frames` or `--speed 2`.
+- **The ghost screen.** Frames shown pass the ghost screen delivered on every loop path (`interpolation_quality`), read on them as filmed, as `video-loop` reads its cut. Any ghost is named in the report and warned on stderr by cell and clip frame, and kept as filmed.
+- **Cell placement and anchor.** Measured on one canvas in loop cell coordinates, the stop's cell holds every shown frame and the loop's cell, centred across on the loop's cell with the same bottom unless a frame reaches lower (`loop_cell_origin`). No frame is scaled (the loop's scale). The sidecar's `anchor` is the loop's pivot there (its declared `anchor`, else bottom centre), so drawing at the pivot stands where the loop stood.
+- **Refusals and source warnings.** Refuses loops that play once (`loop: false`), are not walks or runs, sidecars missing `source_cut` (source, start, length), frame folders shorter than the loop's window reaches, `--speed` other than 1 or 2, `--max-frames` under 2, or clips whose frames after the rest never reach a loop cell within `SAME_POSE` before the window ends ("these frames are not the loop's clip"). Each refusal exits non-zero with `status: "failed"` and the error in `<name>.stop.report.json`. Keyed frames not byte-for-byte identical to the loop's cut warn on stderr (the stop is still written; the entry is found by pose, so inspect the stop), as do ghosts or an unreadable ghost screen.
+
+The outputs are `<name>.strip.png`, `<name>.strip.json`, `<name>.gif` (plays once), `<name>.webp` (plays once), and `<name>.stop.report.json` (or `--report PATH`). The GIF and WebP are reopened and checked as `video-loop` checks its own. The sidecar records `frames`, `w`, `h`, `delay_ms` (1000 / fps), `kind: "stop"`, `state: "stop"`, `loop: false`, `hold_last: true`, `end_frame`, `events: []`, `anchor`, `loop_cell_origin`, `body_h`, `body_src_h`, `scale`, `cycle_frames`, `cycle_seconds`, `from_loop` (`strip_sha256`, `state`, `frames`, `w`, `h`, `from_cell`), `source_cut` (`source`, `frames`, `entry`, `rest_end`), `speed`, and `seam_steps`. The report records `status`, `error` (on refusal), `source` (`same_as_loop`), `loop_cut` (`start`, `length`, `cells`, `state`), `step`, `loop_cell_step` (which differs for an aligned loop), `same_pose`, `turn_back_away` (the one-step threshold), `seam_max`, `run_up_max_cycles`, `rest` (`end`), `to_rest` and `to_loop` (each frame's distance in steps to the first frame and nearest cell), `entry` (`frame`, `match`, `from_cell`), `seam` (`steps`, `from_cell`, `into_frame`, `max`), `turn_back` (`frame`, `back_to`, `steps`, `away_frame`, `away_steps`; null when the body leaves no pose by a step), `run_up` (`frames`, `cycles`, `max_cycles`), `played`, `shown`, `frames_shown`, `seconds`, `drift` (`leave`, `stand`, `clip_px`, `ground`, `ground_in_cell`, `ends_on_ground`), `ghost_screen` (`frame`, `clip_frame`), `strip`, `gif`, and `webp`.
 
 ## What the rules were measured on
 

@@ -420,6 +420,17 @@ glm-4.7=3
 `maxAttempts`, `budgetMs`) 설정에 따라 제한됩니다. `quota_exhausted`
 (자정까지 잠김) 또는 인증/찾을 수 없음 사유인 경우에는 대기하지 않습니다.
 
+```text
+#16319 · comboCooldownWait · pre-dispatch (attempts = 0)
+all targets skipped + transient model lockout:
+  enabled ∧ 0 < waitMs ≤ maxWaitMs ∧ attempt < maxAttempts ∧ budgetLeftMs ≥ waitMs
+    → wait → re-dispatch
+  wait = false → HTTP 429 rate_limit_error
+  retry_after / reset_at ← earliest transient lock expiry
+quota_exhausted / auth_error / not_found / not_found_local:
+  no transient hint → HTTP 503 ALL_TARGETS_SKIPPED
+```
+
 ---
 
 ## 5. 요청 큐 승인 제어 (v3.8.49 · 이슈 #6593)

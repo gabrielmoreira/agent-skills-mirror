@@ -10,14 +10,14 @@
 {PYTHON} {story-import skill 根}/scripts/build_outline_brief.py --project {书目录} --chapters {A-B}
 ```
 
-脚本把反推规则与模板（[outline-reverse-rules.md](outline-reverse-rules.md) 全文）、每章按 `visible_chars_v1` 测好的历史长度与摘要要点、卷纲里覆盖本批的剧情单元行，拼成 `{书目录}/.story/work/排纲/导入细纲_第AAA-BBB章.md`。执行者要读的总量超过约 25K 字时脚本自动少排几章（可少于 10 章），以 stdout JSON 的 `chapters` 为本批实际范围、`next` 为下一批起点。缺摘要的章改用简化摘要或正文，已算进总量。
+脚本将反推规则与模板（[outline-reverse-rules.md](outline-reverse-rules.md) 全文）、测好的历史长度、摘要要点和覆盖本批的卷纲剧情单元行，拼成 `{书目录}/.story/work/排纲/导入细纲_第AAA-BBB章.md`。历史长度按 `visible_chars_v1` 计算；执行者要读的总量超过约 25K 字时脚本自动少排几章（可少于 10 章）。以 stdout JSON 的 `chapters` 为实际范围、`next` 为下一批起点，`null` 表示已到最后一章。缺摘要时先取简化摘要，再回退正文，所需正文量也计入总量。
 
 长度必须由脚本测，不得用模型估算或静默跳过。找不到 Python 3 或脚本报错时停下，用一句话告诉作者卡在哪（如「第 12 章正文读不到，先把正文迁完」），原文报错放技术备注；卷纲缺失时先回结构迁移补卷纲。
 
 ## Step 2：写本批细纲
 
 - **有 story-architect**（导入记录写着可用，按 SKILL.md 顶部的 Agent 兼容性检查 canonical 目录）：主会话只取任务包路径，不读包的内容。Prompt：`项目目录：{dir}\n任务包：{任务包路径}\n先完整读取任务包，按包里的规则与模板完成；作者已定的事在 .story/work/导入记录.md，对话内容不会传给你\n交付后只回任务包开头要求的几项`。Antigravity 用 `invoke_subagent` + `TypeName: "story-architect"`。
-- **没有**：主会话完整读取任务包，自己按包写本批；不另读本文件以外的规则，也不整读拆文库摘要。
+- **没有**：主会话完整读取任务包，按包内规则写本批；不另读包外写作技法，也不整读拆文库摘要。
 
 ## Step 3：验收与交接
 

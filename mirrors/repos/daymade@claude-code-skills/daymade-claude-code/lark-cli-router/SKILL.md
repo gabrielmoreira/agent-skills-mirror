@@ -1,7 +1,7 @@
 ---
 name: lark-cli-router
 description: >-
-  Routes any Feishu/Lark/Doubao operation through the version-matched lark-cli domain guide embedded
+  Routes any Feishu/Lark/Doubao operation, including recording lookup by date (按日期找会议录音), through the version-matched lark-cli domain guide embedded
   in the installed CLI, then executes and verifies the task. Use for 飞书/Lark/Doubao docs, drive,
   sheets, Base, wiki, minutes, meetings, calendar, IM, mail, tasks, approval, apps, auth/scope,
   resource URLs or tokens, and lark-cli troubleshooting. This is the single Lark entry point; use
@@ -26,6 +26,14 @@ instead of copying their domain instructions into another static catalog.
 - Do not bypass `lark-cli` with browser automation, raw `curl`, or guessed API
   contracts while the CLI or one of its embedded guides covers the task.
 
+## Find an existing recording by date
+
+When Feishu is the known source and the request is to find an existing recording
+by date, read [recording lookup](references/recording-lookup.md) before searching.
+Use its bounded candidate helper with explicit authorized profiles; do not start
+ingest, gap audit or ASR for a playback-link lookup. Preserve a supplied minute
+token or meeting ID and use the embedded guide's direct lookup instead.
+
 ## Workflow
 
 ### 1. Confirm the runtime
@@ -45,25 +53,12 @@ Run `lark-cli skills list --json`. Match the user's intent and any URL path or
 token to the returned `name`, `description`, and `metadata.cliHelp`.
 
 Do not derive the CLI domain by stripping `lark-` from the guide name: exceptions
-exist, and `metadata.cliHelp` or the guide itself is authoritative. These
-high-confusion routes need explicit care:
+exist, and `metadata.cliHelp` or the guide itself is authoritative.
 
-| Intent | Guide |
-|---|---|
-| auth, login, profile identity, missing scope, user vs bot | `lark-shared` |
-| `/wiki/` document content | `lark-doc` |
-| wiki space, membership, or node hierarchy | `lark-wiki` |
-| future meeting or room scheduling | `lark-calendar` |
-| ended meeting search, participants, or meeting artifacts | `lark-vc` |
-| known `note_id` | `lark-note` |
-| `minute_token`, 妙记 content, or audio-to-minutes | `lark-minutes` |
-| live meeting participation or in-meeting events | `lark-vc-agent` |
-| file upload, download, move, permissions, metadata, or Office import | `lark-drive` |
-
-For ordinary docs, sheets, Base, slides, mail, IM, tasks, approval, apps, and
-other domains, the live `skills list` descriptions are the routing table. A
-multi-domain request may select a workflow guide or a small ordered set of domain
-guides.
+Select the guide from the live descriptions. A compatibility guide that delegates
+to another Skill is for an explicitly requested legacy name; load its canonical
+owner for the task. For a multi-domain request, select a workflow guide or a small
+ordered set of domain guides from those descriptions.
 
 ### 3. Load the selected instructions completely
 

@@ -14,7 +14,8 @@ Or manually: copy `skills/*/*/` into `.github/skills/`.
 ## Skills Catalog
 
 ### Code Quality
-- **go-coding-standards** — Style conventions, naming, imports
+- **go-coding-standards** — Style conventions, imports, declarations
+- **go-naming** — Package, type, function, receiver and error naming
 - **go-code-review** — Structured review with BLOCKER/WARNING/SUGGESTION severity
 - **go-error-handling** — Error wrapping, sentinel errors, custom types
 - **go-context** — Context propagation, cancellation, timeouts, values
@@ -58,4 +59,5 @@ Or manually: copy `skills/*/*/` into `.github/skills/`.
 
 All skills are in `skills/(category)/skill-name/SKILL.md`.
 - **go-binary-size** — Linker flags, CGO, build tags, dependency weight, container image size
+- **go-build-release** — Reproducible builds, GoReleaser, SBOMs, cosign signing, provenance
 - **go-skills-router** — Task-to-skill routing, overlap boundaries, multi-concern task recipes

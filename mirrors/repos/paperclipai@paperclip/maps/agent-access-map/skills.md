@@ -89,6 +89,19 @@ remaining operations before qualifying the whole capability.
 Gaps: Revision metadata has an API; pinned execution skill versions and installed latest
 are distinct.
 
+Runtime disk-cache expiration does not delete version records or change access. Normal
+execution rematerializes saved bytes after existing skill authorization; cleanup is an
+internal company-scoped maintenance operation, with no new agent endpoint. Verify pinned
+restoration and active-run protection with `server/src/__tests__/skill-version-cache.test.ts`
+and the assembled heartbeat runtime-skill tests; live acceptance remains separate.
+
+Native runs with an empty effective or saved selection do not read skill files
+or wait for the company cache lock. Explicit references still require the existing
+skill authorization. Selected skills and legacy operational skills retain cache
+exclusion and immutable version pinning. This changes no agent endpoint or grant;
+the [configuration tests](../../server/src/__tests__/heartbeat-execution-configuration.test.ts)
+cover the held-lock boundary with real PostgreSQL.
+
 ## `policy`
 
 Review: `baseline`.

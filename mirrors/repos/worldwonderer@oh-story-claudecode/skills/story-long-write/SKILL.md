@@ -31,7 +31,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ## 核心方法
 
-先抓情绪，再用验证过的模式可靠交付，灵感只做素材：每个场景服务一个说得清的目标情绪；从对标里找验证过的剧情模式，把对标角色当功能位，用本书的角色和素材填；写每章只读「不知道就会写错」的状态、伏笔与设定。契约与推进决策先过 `references/reader-contract-and-progression.md`「契约四问」。作者记忆：写正文时组装脚本已代查注入；其他任务直接跑 `{PYTHON} {skill 根}/scripts/author_memory_commit.py query --workspace {放 .active-book 的那层} --book-root {书目录} --kind …`（规划查 story_design、workflow、interaction，改稿查 prose_style、story_design；无记忆返回空），执行者只拿输出的 `lines`，当前请求与本书文风优先；作者说出要长期记住的偏好时才读 [references/author-memory.md](references/author-memory.md) 按它 `record` 写入、回传回执。
+先明确每个场景的主导情绪，从对标中找有依据的剧情模式，把角色当功能位，用本书的角色和素材实现；写每章只读「不知道就会写错」的状态、伏笔与设定。契约与推进决策先过 `references/reader-contract-and-progression.md`「契约四问」。作者记忆：写正文时组装脚本已代查注入；其他任务直接跑 `{PYTHON} {skill 根}/scripts/author_memory_commit.py query --workspace {放 .active-book 的那层} --book-root {书目录} --kind …`（规划查 story_design、workflow、interaction，改稿查 prose_style、story_design；无记忆返回空），执行者只拿输出的 `lines`，当前请求与本书文风优先；作者说出要长期记住的偏好时才读 [references/author-memory.md](references/author-memory.md) 按它 `record` 写入、回传回执。
 
 **本章技法（每章至多读一份）**：按细纲主功能选——打脸/逆袭（爽感释放）`style-combat-face.md`；身份/认知/立场反转（震撼+痛快）`long-reversal.md`；感情拉扯（意难平）`emotional-methods.md`，自己写时加 `emotion-on-page.md`；悬疑/惊悚/异常线索（紧张+好奇）`long-suspense.md`；日常装逼（期待感）`long-chapter-hooks.md`。都不对应就不读，按 writing-craft 写。交给写手时只在 prompt「本章技法」填类别，由写手整份读；主会话自己写正文时只读该文件的「决策路由」和它指向的那一节（先看标题定位，不整读），日更一批只读一份，按本批最需要的那章选，其余章按 writing-craft 写。作者先说情绪没说题材时按括号反查，再从 `long-genre-catalog.md` 找细分方向。
 
@@ -39,7 +39,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ## 写作流程
 
-先确定操作对象、交付范围和停点，再看项目状态；空项目不等于授权完整开书。范围与转正文的权威规则如下。
+先确定操作对象、交付范围和停点，再看项目状态；空项目不等于授权完整开书。范围与转正文规则如下。
 
 | 场景 | 触发条件 | 执行流程 |
 |------|----------|----------|
@@ -54,7 +54,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 **对象优先**："写/修改第N章细纲"是规划，不因命中"写/修改第N章"而写正文；"以后再写正文"不是本轮授权。仅规划要求优先于旧日更任务，停止旧批量。对象不明或同一请求范围冲突时，只确认冲突项。
 
-**规划续接**："继续/按这个来/确认方案"不扩大范围，完成即停，不自动转细纲或正文；"继续写/接着写"指正文——下一章有细纲就写，上一轮在规划就只问一句「要接着写第N章正文吗？」（默认是），缺细纲则问是否先补。规划模式不写入追踪或作者记忆，不调用 narrative-writer。开新卷时新角色/势力/设定回 Phase 2 增量补，Phase 3 只做到请求层级。
+**规划续接**："继续/按这个来/确认方案"不扩大范围，完成即停，不自动转细纲或正文；"继续写/接着写"指正文——下一章有细纲就写，上一轮在规划就只问一句「要接着写第N章正文吗？」（默认是），缺细纲则问是否先补。规划模式不写追踪、不自动记录作者记忆，不调用 narrative-writer；作者明确要求长期记住时按记忆协议处理。开新卷时新角色/势力/设定回 Phase 2 增量补，Phase 3 只做到请求层级。
 
 **转入正文**：明确的正文请求只授权进入写作流程。落正文前重新完成本轮「写前必读」，按 workflow-chapter 处理缺 state、使 `tracking_commit.py check` 通过，任一未完成就停止；之后按原流程写作、质检、提交，不再问是否继续。
 
@@ -122,15 +122,10 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 | 写完，去 AI 味 | story-deslop | `/story-deslop` |
 | 想对比参考书 | story-long-analyze | `/story-long-analyze` |
 | 需要市场方向 | story-long-scan | `/story-long-scan` |
-| 太长，适合短篇 | story-short-write | `/story-short-write` |
+| 想改写成短篇 | story-short-write | `/story-short-write` |
 
 ---
 
 ## 参考资料索引
 
 阶段必读项按首屏「写前必读」执行；写正文不按索引加读；规划或作者点名问技法时按 [参考索引](references/reference-index.md) 的加载条件选用。
-
-## 语言
-
-- 跟随用户的语言回复，用户用什么语言就用什么语言回复
-- 中文回复遵循《中文文案排版指北》

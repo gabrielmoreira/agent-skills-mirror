@@ -22,7 +22,7 @@ spinners, animations, drag-and-drop, or real-time interactions that a static
 frame cannot capture. When video is used, embed it inside the frame-by-frame
 HTML page alongside the static frames.
 
-First run the relevant `evals/specs/**/*.test.ts` through `run-tests`. The spec
+First run the relevant `evals/core` journey or `evals/proofs` proof through `run-tests`. The spec
 imports `test` from `@openwork/testkit`; screenshots and validation claims are
 recorded ambiently in its test evidence. Create the custom index here only if
 it adds something the spec's report does not show.

@@ -12,9 +12,7 @@ metadata:
     - "service-omni-permission-set-assign"
     - "service-omni-queue-members-assign"
     - "service-omni-supervisor-users-create"
-  accessCheck:
-    - type: license
-      value: ServiceCloud
+  accessCheck: "OrgPermissions.LightningService"
   cliTools:
     - tool: ["jq"]
       semver: ">=1.6"

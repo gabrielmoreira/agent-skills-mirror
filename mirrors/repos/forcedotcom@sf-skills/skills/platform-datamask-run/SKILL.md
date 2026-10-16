@@ -14,11 +14,7 @@ metadata:
       semver: ">=3.10.0"
     - tool: ["sf"]
       semver: ">=2.0.0"
-  accessCheck:
-    - type: userPerm
-      value: PermissionsManageDataMaskPolicies
-    - type: userPerm
-      value: PermissionsAccessDataMaskAndSeed
+  accessCheck: "(UserPermissions.PermissionsManageDataMaskPolicies) && (UserPermissions.PermissionsAccessDataMaskAndSeed)"
 ---
 
 # platform-datamask-run: Salesforce Data Mask End-to-End Operation

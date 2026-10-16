@@ -185,6 +185,10 @@ The cursor travels from where it was last seen and hides before the ring and
 label appear. A show-only guide never plays a tap, because the person presses
 that control. An action cursor stays on its target, and the 800 ms readiness
 starts after it arrives. Reduced motion shows everything in place.
+At the request's expiry a show-only guide keeps its words readable: the ring,
+tail, cursor and answers end, and Dismiss stays. The host shows the pointer
+again only by showing the step again after a fresh observation; the same step
+then returns in place. An action guide ends at its expiry.
 When no label position is clear of the control, a show-only guide keeps only
 its ring: there is no label, cursor or Dismiss, `visible` stays false, and the
 ring ends with the request's expiry or the host's `hide`. An action guide shows

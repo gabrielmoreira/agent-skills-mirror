@@ -1,12 +1,12 @@
 # agent-calls.md：短篇派写手的调用方式
 
-只在要 spawn narrative-writer 时读；主会话自己写正文、自己去味时不读。何时派由 workflow-draft.md / workflow-revision.md 决定，这里只放 prompt 与必须附带的内容。Antigravity 用 `invoke_subagent` + 同名 `TypeName`。
+按 workflow-draft.md / workflow-revision.md 决定是否派 narrative-writer；派出时读本文件，主会话自行写作或去味时跳过。Antigravity 用 `invoke_subagent` + 同名 `TypeName`。
 
 ## 写正文
 
 spawn `Agent(subagent_type: "narrative-writer", prompt: ...)`，只传项目目录、输出文件、目标情绪、题材风格包、小节大纲、角色、主/副对标召回摘要、本书文风全文路径与 style_resolution、作者偏好 query 输出的 lines、格式硬约束和写作硬约束，并传入检查分工：本批只做内容覆盖与格式自检，完整语义去味由 Phase 4 负责，最终文件扫描由主会话负责。
 
-不把本 skill 整段规则塞进 prompt；细节以 `short-format.md`、题材包、`short-craft.md` 与 `scene-craft.md` 为准。收回后按 workflow-draft.md 的格式规范重排再写入 `正文.md`。
+写手按 `short-format.md`、题材包、`short-craft.md` 与 `scene-craft.md` 执行，无需将 skill 全文复制进 prompt。主会话收到结果后，按 workflow-draft.md 的格式规范重排，再写入 `正文.md`。
 
 ## 精修去味
 

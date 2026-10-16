@@ -171,8 +171,20 @@ PR without the chat history.
   directory and session ownership, then starts OMH's frontend in place of its
   own. That frontend spawns exactly one child, Hermes' `tui_gateway`, with the
   interpreter and import path the launcher handed it, and speaks the
-  gateway's stdio JSON-RPC. It relays only what the person types. It never
-  answers an approval, clarify, sudo, or secret request on its own: Esc or
+  gateway's stdio JSON-RPC. It relays only what the person types; on its
+  own it reads Hermes' settings and command catalog as a session opens
+  and, at a fresh start, `session.list` to name the last session under
+  the banner, and, beyond opening and closing sessions
+  (`client.capabilities`, `session.create`, `session.resume`,
+  `session.close`), sends only what this bullet names below, plus
+  `session.history` again when Hermes refuses a rewind; when no turn runs,
+  a steer Hermes refused as an ordinary prompt; and, at once, the decline
+  frame for a request it cannot show (a vault unlock or save-login prompt,
+  a terminal, preview or window read, a preview action, a tour, a display
+  sudo install, a clarify with no question in it, or a method it does not
+  know). It never
+  answers an approval, clarify, sudo, or secret request on its own, apart
+  from declining at once a request it cannot show (listed above): Esc or
   Ctrl+C declines, an approval decline is an explicit deny, allowing a
   command takes the arrows and then Enter, and a request the gateway
   withdraws (its own timeout, an interrupt) closes without an answer.
@@ -189,7 +201,8 @@ PR without the chat history.
   sends that session an explicit off, since Hermes keeps yolo through
   `session.close` for a session a messaging gateway started. The mode is
   shown on the composer (both rules and the mode row, or the status line on
-  a short terminal) only once Hermes confirms it
+  a short terminal; the mode row, or that status line, alone while a list
+  the person picks from hides the composer) only once Hermes confirms it
   for that session; when turning it on, an answer that confirms anything else
   is a failure, followed by an explicit off, and accept is shown again if
   Hermes does not confirm that off either; and `session.info` corrects
@@ -197,35 +210,64 @@ PR without the chat history.
   too, except that one saying approvals are on within 2 seconds of a
   confirmed on is held until the next, keeping accept shown. Ctrl+T and
   `/effort` set that session's reasoning effort through the same
-  session-scoped call. Plan mode is the frontend's own flag, also
+  session-scoped call. A pick in the `/model` picker (bare `/model`,
+  listed from `model.options`) is sent as Hermes' own `/model <name>
+  --provider <slug> --session` through `slash.exec`, so it switches
+  that session only, and a name or slug that could read as a flag is
+  left out of the list. `/cost` and `/permissions` run Hermes' `/usage`
+  and `/approvals`; the latter shows or sets Hermes' persistent
+  approval mode, as typed. Plan mode is the frontend's own flag, also
   turned on with Shift+Tab: while it is on, a prompt the person types goes to
   Hermes as `/plan <text>`. While Hermes has approvals off on its own (an off
   it confirmed did not end them, or they were off without the TUI turning
   them on), Shift+Tab sends nothing and turns only plan mode on and off. A
   steer (Ctrl+Enter, `/steer`) sends into the running turn only text the
   person typed and sent that way; the TUI never steers on its own, and a
-  queued prompt is never turned into a steer. A steer Hermes does not take
-  waits in the TUI's own queue for the running turn to end, whatever the busy
-  mode, so it never interrupts that turn. The subagent views (the strip, the
-  list, one agent's log) are read-only:
-  `subagent.tail` is the only subagent call the TUI makes, it reads the tail
-  of the log the person opened, and the TUI never steers, interrupts or
-  answers for a subagent. Mouse reporting is on in two states only, a turn
-  running with agents named on the strip and the agent list open, and off in
-  every other and on every exit. A plain left click on an agent opens its
-  log, one on the list's `main` row leaves the list, and every other report
-  does nothing. A report that starts while reporting is on, or within 0.5 s
-  after it goes off, types nothing if it arrives whole within 0.8 s of its
-  first byte. If 300 ms pass after that byte without the next, the byte is
-  read as Esc, and the rest is dropped only if it arrives within 0.5 s after
-  that. One that starts later and is split right after its first or second
-  byte is read as keys. It never attaches to a session another runtime
+  queued prompt is never turned into a steer. A steer Hermes does
+  not take waits in the TUI's own queue for the running turn to
+  end, whatever the busy mode, so it never interrupts that turn.
+  A steer Hermes does not answer within 120 s goes back to the
+  composer and is never re-sent. The subagent views (the strip, the
+  list, one agent's log) read with `subagent.tail` only, the tail of the log
+  the person opened. Two keys in the agent list act on the highlighted
+  agent, and only on the person's keypress: `x` interrupts it
+  (`subagent.interrupt`) once a second `x` confirms, and `s` steers it
+  (`subagent.steer`) with text the person then types and sends; the TUI
+  never interrupts, steers or answers for a subagent on its own. A line the
+  person sends that starts with `!` is their own shell command: the TUI
+  sends it with `shell.exec`, which Hermes runs outside the model's context
+  under its own 30 s limit and dangerous-command refusals, shows what it
+  printed and its exit code when that is not 0 or nothing was
+  printed, and sends nothing else that way: only a line whose
+  leading `!` the composer showed (a collapsed paste whose text
+  starts with `!` goes to the model), never a refused steer or
+  a queued prompt that happens to start with `!`. A rewind (Esc
+  Esc on an empty composer, `/rewind`) cuts the session's history before
+  the prompt the person picked, and only when they send the prompt that
+  replaces it (`prompt.submit` with `truncate_before_row_id` and
+  `confirm_truncate`). Mouse reporting is on in one state only, the agent
+  list open, and off in every other and on every exit. A plain left click
+  on an agent opens its log, one on the list's `main` row leaves the list,
+  and every other report does nothing. A report that starts while
+  reporting is on, or within 0.5 s after it goes off, types nothing if it
+  arrives whole within 0.8 s of its first byte. If 300 ms pass after that
+  byte without the next, the byte is read as Esc, and the rest is dropped
+  only if it arrives within 0.5 s after that. One that starts later and is
+  split right after its first or second byte is read as keys. It never
+  attaches to a session another runtime
   owns: when the launcher sets `HERMES_TUI_GATEWAY_URL`, it exits and names
-  `hermes`. It writes no prompt
-  text, transcript, attachment, secret or server-request frame to disk or to
-  a log. The files it does write are metadata: the launcher's active-session
-  file (the session id), and what OMH's own HUD reader and model-chain picker
-  already write under the OMH home (the HUD fan-out cache and its lock, and
+  `hermes`. It writes no transcript, attachment, secret or server-request
+  frame to disk or to a log, and prompt text in one place only: each line
+  the person sends from the composer is appended to Hermes' own input
+  history, `$HERMES_HOME/.hermes_history`, the file `hermes --tui` reads and
+  writes, in its format (`+`-prefixed lines under a `#` timestamp line). It
+  only appends there (opened `O_APPEND` and `O_NOFOLLOW`, created mode
+  0600), reads at most the file's last 1 MiB and only when it is a regular
+  file (no symlink or FIFO), and never writes an answer to
+  a question Hermes asked or masked input there. The other files it writes
+  are metadata: the launcher's active-session file (the session id), and
+  what OMH's own HUD reader and model-chain picker already write under the
+  OMH home (the HUD fan-out cache and its lock, and
   the chains `/omh-model` saves), and an empty fallback marker at the path
   `omh` named, which `omh` removes. The frontend opens no socket and makes no
   network call, strips the sidecar and attach URLs from the gateway's

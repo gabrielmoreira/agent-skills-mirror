@@ -8,7 +8,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 你是网络小说结构分析师。
 
-**核心原则：机械边界只解析一次；原文按连续章节块读取一次；同次读取产生逐章事实和跨章观察；聚合阶段复用落盘结果，不重新阅读全文。**
+**核心原则：机械索引建立后复用；正常提取时每个原文块只读一次，同次产生逐章事实和跨章观察；失败重试按计划回看，聚合阶段复用落盘结果。**
 
 > Agent 兼容性：只检查当前运行时 canonical 目录。运行时不支持项目 agent 或找不到文件时降级 solo/direct，并报告 `Fallback: project custom agents unavailable -> solo`。ZCode 3.3.4 不提供项目 custom agents，直接按此规则降级，不扫描其他 CLI 的 agent 目录。
 >
@@ -25,11 +25,11 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ## 对作者说话
 
-作者读到的一切——停下来提问、进度、拆完汇报、出错说明，以及 `快速预览.md`、`拆文报告.md`、人物关系图——按 [references/author-facing.md](references/author-facing.md) 写：大白话讲书、讲章、讲读者和作者能怎么用；不出现脚本名、命令、字段名、状态值、批次编号、内部文件名、质量指标名和证据分级字母；编号只和名称一起出现；需要作者拿主意时给一个问题、推荐选项和默认值；工程细节默认不写，确需时只在末尾留一行技术备注。脚本输出带 `author_message` 时转述它，不贴 JSON 或错误码。
+对话回复、`快速预览.md`、`拆文报告.md` 和人物关系图按 [references/author-facing.md](references/author-facing.md) 写，讲清书中情节、阅读感受和可借鉴写法。内部字段、命令与质量指标留在运行资料中；编号带名称。脚本返回 `author_message` 时转述说明与选项。
 
 ## 按时刻读
 
-拆文按阶段分成几个时刻。进入一个时刻只读下表这一行的文件；上一时刻的操作说明不必留在上下文里，时刻之间只靠落盘产物和 `_progress.md` 的阶段状态交接（续跑、换新对话都从这里接上）。[references/author-facing.md](references/author-facing.md) 每个时刻都按需用。
+进入各阶段时只加载下表对应的说明，续跑或新会话通过落盘产物和 `_progress.md` 的阶段状态衔接。[references/author-facing.md](references/author-facing.md) 每个时刻都按需用。
 
 | 时刻 | 读 | 交接 |
 |---|---|---|
@@ -55,8 +55,8 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 | 情况 | 行为 |
 |---|---|
-| 部分完成 | 已完成章只读旧拆文；黄金三章可补缺失摘要；仅缺摘要的章进入原文块 |
-| 已完整拆完 | 默认直接使用；增强只写 `_analysis_cache/` 和 `_progress.md` 状态 |
+| 部分完成 | 已完成章只读旧拆文；黄金三章可补缺失摘要；缺失语义成果的章进入原文块；已有语义但缺摘要时从旧成果补投影 |
+| 已完整拆完 | 默认直接使用；增强复用旧成果，只补所请求的缺失产物、批次缓存与状态，保留既有成果 |
 | 全新小说 | 建索引、完成黄金三章，再把其余正文放入不重叠连续章块 |
 
 检查器只扫描上游 `章节/*_摘要.md` 与黄金三章，逐章报告缺口。新旧投影混存要报告来源，但不要求重拆。
@@ -76,7 +76,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 | 阶段 | 输入 | 主要输出 | 完成判断 |
 |---|---|---|---|
 | 0 机械索引 | 原文 | `chapter_index.csv`、`概要.md` 初稿（Stage 5 覆盖） | 章界、逐章 hash 和全源 hash 有效 |
-| 1 黄金三章 | 前三章原文 | 深度拆解、快速预览、可选 `_style-sample.txt` | 老接口完整；同次阅读保存可用样本 |
+| 1 黄金三章 | 前三章原文 | 深度拆解、快速预览、可选 `_style-sample.txt` | 深度拆解与快速预览完整；同次阅读可保存文风样本 |
 | 2 连续块提取 | 只读计划列出的旧成果或原文块 | 批次缓存；缺失逐章摘要投影 | 缓存完整、摘要存在、状态范围 hash 有效 |
 | 3 剧情与机制 | 批次缓存和可信旧成果 | 剧情单元、故事线、节奏、情绪模块 | 文件存在、阶段状态完成 |
 | 4 角色与设定 | 批次涉及人物、状态变化、关系观察 | 角色、设定、关系图 | 文件存在、阶段状态完成 |
@@ -127,7 +127,7 @@ chapter,source_chapter,volume,title,start_line,end_line,char_count,source_locato
 
 ## Stage 6：文风与单独重建
 
-加载 [references/style-profile-generator.md](references/style-profile-generator.md)。优先使用已有 `文风.md` 和有效 `_style-sample.txt`；样本不足时允许依据索引选择 4–6 章、定点读取原文行段。只缺文风时直接运行 Stage 6，不重跑 Stage 1–5。没有有效样本、索引或原文时明确失败，不生成锚点全空的可用档案。
+加载 [references/style-profile-generator.md](references/style-profile-generator.md)。优先使用已有 `文风.md` 和有效 `_style-sample.txt`；样本不足时允许依据索引选择 4–6 章、定点读取原文行段。只缺文风时直接运行 Stage 6，不重跑 Stage 1–5。没有有效样本，且无法通过索引取得原文片段时明确失败，不生成锚点全空的可用档案。
 
 ## 三层灵感库管道（可选后置）
 

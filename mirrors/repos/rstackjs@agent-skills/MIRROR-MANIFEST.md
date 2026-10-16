@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rstackjs/agent-skills` — 26 default patterns, 0 followed patterns, 93 file(s) materialized.
+Mirror of `rstackjs/agent-skills` — 26 default patterns, 0 followed patterns, 95 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rstackjs/agent-skills` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 93 |
+| Files         | 95 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -114,44 +114,46 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 53 | ✓ | [`skills/rsdoctor-analysis/references/install-rsdoctor.md`](skills/rsdoctor-analysis/references/install-rsdoctor.md) |
 | 54 | ✓ | [`skills/rsdoctor-analysis/references/rsdoctor-data-types.md`](skills/rsdoctor-analysis/references/rsdoctor-data-types.md) |
 | 55 | ✓ | [`skills/rsdoctor-analysis/SKILL.md`](skills/rsdoctor-analysis/SKILL.md) |
-| 56 | ✓ | [`skills/rslib-best-practices/SKILL.md`](skills/rslib-best-practices/SKILL.md) |
-| 57 | ✓ | [`skills/rslib-modern-package/SKILL.md`](skills/rslib-modern-package/SKILL.md) |
-| 58 | ✓ | [`skills/rspack-best-practices/SKILL.md`](skills/rspack-best-practices/SKILL.md) |
-| 59 | ✓ | [`skills/rspack-debugging/references/guide_a_hmr_crash.md`](skills/rspack-debugging/references/guide_a_hmr_crash.md) |
-| 60 | ✓ | [`skills/rspack-debugging/references/guide_b_build_crash.md`](skills/rspack-debugging/references/guide_b_build_crash.md) |
-| 61 | ✓ | [`skills/rspack-debugging/references/guide_c_attach_to_stuck_process.md`](skills/rspack-debugging/references/guide_c_attach_to_stuck_process.md) |
-| 62 | ✓ | [`skills/rspack-debugging/references/guide_d_coredump_analysis_dev.md`](skills/rspack-debugging/references/guide_d_coredump_analysis_dev.md) |
-| 63 | ✓ | [`skills/rspack-debugging/references/guide_e_coredump_analysis_build.md`](skills/rspack-debugging/references/guide_e_coredump_analysis_build.md) |
-| 64 | ✓ | [`skills/rspack-debugging/references/guide_f_async_deadlock.md`](skills/rspack-debugging/references/guide_f_async_deadlock.md) |
-| 65 | ✓ | [`skills/rspack-debugging/references/lldb.md`](skills/rspack-debugging/references/lldb.md) |
-| 66 | ✓ | [`skills/rspack-debugging/scripts/setup_debug_deps.cjs`](skills/rspack-debugging/scripts/setup_debug_deps.cjs) |
-| 67 | ✓ | [`skills/rspack-debugging/SKILL.md`](skills/rspack-debugging/SKILL.md) |
-| 68 | ✓ | [`skills/rspack-split-chunks/references/repo-behavior.md`](skills/rspack-split-chunks/references/repo-behavior.md) |
-| 69 | ✓ | [`skills/rspack-split-chunks/SKILL.md`](skills/rspack-split-chunks/SKILL.md) |
-| 70 | ✓ | [`skills/rspack-tracing/references/bottlenecks.md`](skills/rspack-tracing/references/bottlenecks.md) |
-| 71 | ✓ | [`skills/rspack-tracing/references/tracing-guide.md`](skills/rspack-tracing/references/tracing-guide.md) |
-| 72 | ✓ | [`skills/rspack-tracing/scripts/analyze_trace.mjs`](skills/rspack-tracing/scripts/analyze_trace.mjs) |
-| 73 | ✓ | [`skills/rspack-tracing/SKILL.md`](skills/rspack-tracing/SKILL.md) |
-| 74 | ✓ | [`skills/rspack-v2-upgrade/SKILL.md`](skills/rspack-v2-upgrade/SKILL.md) |
-| 75 | ✓ | [`skills/rspress-best-practices/SKILL.md`](skills/rspress-best-practices/SKILL.md) |
-| 76 | ✓ | [`skills/rspress-custom-theme/references/css-variables.md`](skills/rspress-custom-theme/references/css-variables.md) |
-| 77 | ✓ | [`skills/rspress-custom-theme/references/eject-components.md`](skills/rspress-custom-theme/references/eject-components.md) |
-| 78 | ✓ | [`skills/rspress-custom-theme/references/layout-slots.md`](skills/rspress-custom-theme/references/layout-slots.md) |
-| 79 | ✓ | [`skills/rspress-custom-theme/SKILL.md`](skills/rspress-custom-theme/SKILL.md) |
-| 80 | ✓ | [`skills/rspress-description-generator/SKILL.md`](skills/rspress-description-generator/SKILL.md) |
-| 81 | ✓ | [`skills/rspress-docs-generator/references/create-new-docs.md`](skills/rspress-docs-generator/references/create-new-docs.md) |
-| 82 | ✓ | [`skills/rspress-docs-generator/references/doc-structure-conventions.md`](skills/rspress-docs-generator/references/doc-structure-conventions.md) |
-| 83 | ✓ | [`skills/rspress-docs-generator/references/maintain-docs-for-prs.md`](skills/rspress-docs-generator/references/maintain-docs-for-prs.md) |
-| 84 | ✓ | [`skills/rspress-docs-generator/references/rspress-version-guard.md`](skills/rspress-docs-generator/references/rspress-version-guard.md) |
-| 85 | ✓ | [`skills/rspress-docs-generator/SKILL.md`](skills/rspress-docs-generator/SKILL.md) |
-| 86 | ✓ | [`skills/rspress-v2-upgrade/SKILL.md`](skills/rspress-v2-upgrade/SKILL.md) |
-| 87 | ✓ | [`skills/rstest-best-practices/SKILL.md`](skills/rstest-best-practices/SKILL.md) |
-| 88 | ✓ | [`skills/rstest-debugging/references/dependency-bundling.md`](skills/rstest-debugging/references/dependency-bundling.md) |
-| 89 | ✓ | [`skills/rstest-debugging/references/mocked-module-build-graph.md`](skills/rstest-debugging/references/mocked-module-build-graph.md) |
-| 90 | ✓ | [`skills/rstest-debugging/references/performance-measurement.md`](skills/rstest-debugging/references/performance-measurement.md) |
-| 91 | ✓ | [`skills/rstest-debugging/references/runtime-output-memory.md`](skills/rstest-debugging/references/runtime-output-memory.md) |
-| 92 | ✓ | [`skills/rstest-debugging/SKILL.md`](skills/rstest-debugging/SKILL.md) |
-| 93 | ✓ | [`skills/storybook-rsbuild/SKILL.md`](skills/storybook-rsbuild/SKILL.md) |
+| 56 | ✓ | [`skills/rsdoctor-v2-upgrade/references/migration-map.md`](skills/rsdoctor-v2-upgrade/references/migration-map.md) |
+| 57 | ✓ | [`skills/rsdoctor-v2-upgrade/SKILL.md`](skills/rsdoctor-v2-upgrade/SKILL.md) |
+| 58 | ✓ | [`skills/rslib-best-practices/SKILL.md`](skills/rslib-best-practices/SKILL.md) |
+| 59 | ✓ | [`skills/rslib-modern-package/SKILL.md`](skills/rslib-modern-package/SKILL.md) |
+| 60 | ✓ | [`skills/rspack-best-practices/SKILL.md`](skills/rspack-best-practices/SKILL.md) |
+| 61 | ✓ | [`skills/rspack-debugging/references/guide_a_hmr_crash.md`](skills/rspack-debugging/references/guide_a_hmr_crash.md) |
+| 62 | ✓ | [`skills/rspack-debugging/references/guide_b_build_crash.md`](skills/rspack-debugging/references/guide_b_build_crash.md) |
+| 63 | ✓ | [`skills/rspack-debugging/references/guide_c_attach_to_stuck_process.md`](skills/rspack-debugging/references/guide_c_attach_to_stuck_process.md) |
+| 64 | ✓ | [`skills/rspack-debugging/references/guide_d_coredump_analysis_dev.md`](skills/rspack-debugging/references/guide_d_coredump_analysis_dev.md) |
+| 65 | ✓ | [`skills/rspack-debugging/references/guide_e_coredump_analysis_build.md`](skills/rspack-debugging/references/guide_e_coredump_analysis_build.md) |
+| 66 | ✓ | [`skills/rspack-debugging/references/guide_f_async_deadlock.md`](skills/rspack-debugging/references/guide_f_async_deadlock.md) |
+| 67 | ✓ | [`skills/rspack-debugging/references/lldb.md`](skills/rspack-debugging/references/lldb.md) |
+| 68 | ✓ | [`skills/rspack-debugging/scripts/setup_debug_deps.cjs`](skills/rspack-debugging/scripts/setup_debug_deps.cjs) |
+| 69 | ✓ | [`skills/rspack-debugging/SKILL.md`](skills/rspack-debugging/SKILL.md) |
+| 70 | ✓ | [`skills/rspack-split-chunks/references/repo-behavior.md`](skills/rspack-split-chunks/references/repo-behavior.md) |
+| 71 | ✓ | [`skills/rspack-split-chunks/SKILL.md`](skills/rspack-split-chunks/SKILL.md) |
+| 72 | ✓ | [`skills/rspack-tracing/references/bottlenecks.md`](skills/rspack-tracing/references/bottlenecks.md) |
+| 73 | ✓ | [`skills/rspack-tracing/references/tracing-guide.md`](skills/rspack-tracing/references/tracing-guide.md) |
+| 74 | ✓ | [`skills/rspack-tracing/scripts/analyze_trace.mjs`](skills/rspack-tracing/scripts/analyze_trace.mjs) |
+| 75 | ✓ | [`skills/rspack-tracing/SKILL.md`](skills/rspack-tracing/SKILL.md) |
+| 76 | ✓ | [`skills/rspack-v2-upgrade/SKILL.md`](skills/rspack-v2-upgrade/SKILL.md) |
+| 77 | ✓ | [`skills/rspress-best-practices/SKILL.md`](skills/rspress-best-practices/SKILL.md) |
+| 78 | ✓ | [`skills/rspress-custom-theme/references/css-variables.md`](skills/rspress-custom-theme/references/css-variables.md) |
+| 79 | ✓ | [`skills/rspress-custom-theme/references/eject-components.md`](skills/rspress-custom-theme/references/eject-components.md) |
+| 80 | ✓ | [`skills/rspress-custom-theme/references/layout-slots.md`](skills/rspress-custom-theme/references/layout-slots.md) |
+| 81 | ✓ | [`skills/rspress-custom-theme/SKILL.md`](skills/rspress-custom-theme/SKILL.md) |
+| 82 | ✓ | [`skills/rspress-description-generator/SKILL.md`](skills/rspress-description-generator/SKILL.md) |
+| 83 | ✓ | [`skills/rspress-docs-generator/references/create-new-docs.md`](skills/rspress-docs-generator/references/create-new-docs.md) |
+| 84 | ✓ | [`skills/rspress-docs-generator/references/doc-structure-conventions.md`](skills/rspress-docs-generator/references/doc-structure-conventions.md) |
+| 85 | ✓ | [`skills/rspress-docs-generator/references/maintain-docs-for-prs.md`](skills/rspress-docs-generator/references/maintain-docs-for-prs.md) |
+| 86 | ✓ | [`skills/rspress-docs-generator/references/rspress-version-guard.md`](skills/rspress-docs-generator/references/rspress-version-guard.md) |
+| 87 | ✓ | [`skills/rspress-docs-generator/SKILL.md`](skills/rspress-docs-generator/SKILL.md) |
+| 88 | ✓ | [`skills/rspress-v2-upgrade/SKILL.md`](skills/rspress-v2-upgrade/SKILL.md) |
+| 89 | ✓ | [`skills/rstest-best-practices/SKILL.md`](skills/rstest-best-practices/SKILL.md) |
+| 90 | ✓ | [`skills/rstest-debugging/references/dependency-bundling.md`](skills/rstest-debugging/references/dependency-bundling.md) |
+| 91 | ✓ | [`skills/rstest-debugging/references/mocked-module-build-graph.md`](skills/rstest-debugging/references/mocked-module-build-graph.md) |
+| 92 | ✓ | [`skills/rstest-debugging/references/performance-measurement.md`](skills/rstest-debugging/references/performance-measurement.md) |
+| 93 | ✓ | [`skills/rstest-debugging/references/runtime-output-memory.md`](skills/rstest-debugging/references/runtime-output-memory.md) |
+| 94 | ✓ | [`skills/rstest-debugging/SKILL.md`](skills/rstest-debugging/SKILL.md) |
+| 95 | ✓ | [`skills/storybook-rsbuild/SKILL.md`](skills/storybook-rsbuild/SKILL.md) |
 
 ---
 

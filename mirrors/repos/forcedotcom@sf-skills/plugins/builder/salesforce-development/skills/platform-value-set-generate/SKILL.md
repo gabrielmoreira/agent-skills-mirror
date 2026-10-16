@@ -7,6 +7,7 @@ metadata:
   minApiVersion: "60.0"
   relatedSkills:
     - "platform-custom-field-generate"
+    - "platform-metadata-api-context-get"
   cliTools:
     - tool: ["sf"]
       semver: ">=2.0.0"
@@ -19,6 +20,8 @@ metadata:
 ## Overview
 
 Generates and validates the two reusable picklist value-set metadata types — **GlobalValueSet** (a new reusable set shared across fields) and **StandardValueSet** (customizing a built-in catalog picklist like Industry or Lead Source) — and wires a CustomField to one via `<valueSetName>`.
+
+For authoritative Metadata API type, field, and enum details beyond this skill, use the `platform-metadata-api-context-get` skill.
 
 ### Scope
 

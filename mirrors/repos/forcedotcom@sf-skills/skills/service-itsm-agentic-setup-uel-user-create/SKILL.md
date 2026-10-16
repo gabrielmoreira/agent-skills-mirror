@@ -9,15 +9,7 @@ metadata:
     headless-360:
       tools: ["discover", "describe", "dispatch", "dispatch_readonly"]
       semver: ">=1.0.0"
-  accessCheck:
-    - type: "userPerm"
-      value: "ManageUsers"
-    - type: "userPerm"
-      value: "ManageProfilesPermissionsets"
-    - type: "userPerm"
-      value: "CustomizeApplication"
-    - type: "userPerm"
-      value: "AssignPermissionSets"
+  accessCheck: "(UserPermissions.ManageUsers) && (UserPermissions.ManageProfilesPermissionsets) && (UserPermissions.CustomizeApplication) && (UserPermissions.AssignPermissionSets)"
 allowed-tools: |
   Read AskUserQuestion
   mcp__headless-360__discover

@@ -105,7 +105,7 @@ See **[Clonedeps](clonedeps.md)** for the full workflow and file layout.
 
 **Heavy/complex coding sessions and large modifications workflow.**
 
-`deepwork` is an orchestrator workflow for deep architectural work, multi-phase implementations, and complex refactoring, with risk-based review gates and flexible planning. It is surfaced two ways: as a resident bundled skill (so the model can auto-activate it when a task clearly warrants it) and via the self-contained `/deepwork <task>` command, which injects the full bundled `SKILL.md` instructions directly. The command does not depend on skill registration — users who prefer minimal resident context can list `deepwork` in `disabled_skills` without losing `/deepwork`. To also remove the command, list `deepwork` in `disabled_commands`.
+`deepwork` is an orchestrator workflow for building a whole product or subsystem, deep architectural work, and complex refactoring. It works like a painter: the whole picture first, then more detail in each pass, with one review gate per pass. It is surfaced two ways: as a resident bundled skill (so the model can auto-activate it when a task clearly warrants it) and via the self-contained `/deepwork <task>` command, which injects the full bundled `SKILL.md` instructions directly. The command does not depend on skill registration — users who prefer minimal resident context can list `deepwork` in `disabled_skills` without losing `/deepwork`. To also remove the command, list `deepwork` in `disabled_commands`.
 
 Start it directly with:
 
@@ -114,33 +114,33 @@ Start it directly with:
 ```
 
 **How it works:**
-1. Before planning, delegation, or state creation, inspect `.gitignore` and
-   `.ignore`; add only missing entries (without duplicates) for
-   `.slim/deepwork/` in `.gitignore` and `!.slim/deepwork/` plus
-   `!.slim/deepwork/**` in `.ignore`. This keeps state git-local while making it
-   readable to OpenCode.
-2. Orchestrator creates a router head at `.slim/deepwork/<session-id>.md` and a
-   task directory `.slim/deepwork/<task-slug>/` holding the task's progress file
-   and topic files
-3. Draft a phased implementation plan with a small number of coherent phases
-   based on dependencies and natural delivery boundaries. Do not split work
-   merely to make an Oracle review smaller.
-4. Before execution, show a compact overview of phase order, specialist
-   ownership/scope, the Oracle review total, the review after each phase, and a
-   short reason for each gate.
-5. Execute phase by phase: validate, update the task progress file, then get an
-   Oracle review before advancing.
-6. Batch material findings into one bounded remediation pass with focused
-   validation. Re-review only when needed to assess a changed decision/risk or
-   an otherwise unverifiable concern.
+1. Work in passes over the whole product: a thin end-to-end **sketch**, then
+   **structure** (real data model, boundaries, main failure paths), then
+   **detail** (hardening, crash recovery, edge cases, polish). Security and
+   money/data correctness are never deferred.
+2. Each pass has a one-line goal and a few lanes with disjoint write scopes.
+   @designer and @fixer are separate lanes from the start; if any lanes are
+   risky (state, money, concurrency, crash recovery, destructive operations),
+   one short @oracle design review of the pass plan covers them before code.
+3. Lanes report changed files, exact commands with exit codes, and what is
+   unverified; the orchestrator accepts after checking one decisive artifact.
+   Lanes run focused checks; the broad suite runs once per pass.
+4. Each pass ends with broad validation, one @oracle gate scoped to that
+   pass's fidelity (later-pass findings go to a known-issues list), a commit,
+   and a step back: run the whole product, re-plan the next pass, and
+   reorganize code that grew huge or tangled.
+5. Runs autonomously to the end by default; asks only when truly blocked
+   (credentials, paid commitments, irreversible or public actions, no safe
+   default) or when the task asks for check-ins.
 
-**Key features:**
-- Bounded state: a ≤12-line router head per session, an ~80-line progress file
-  per task, one-line fold-on-close entries
-- Predictable Oracle reviews after each planned phase, declared before execution
-- V2 scheduler integration (dispatch specialists, wait for hook-driven completion, reconcile)
-- Fixed head, flexible body — the orchestrator shapes everything below the
-  progress-file head
+**State** (kept small; for resuming after compaction, not activity logging):
+- Router head `.slim/deepwork/<session-id>.md`: `status:` and `slug:` only.
+- Progress file `.slim/deepwork/<task-slug>/progress.md`: ~40 lines of current
+  state — pass, goal, next step, decisions, running lanes, ranked known
+  issues. No activity log; history lives in git commits and gate verdicts.
+- Topic files only for gate verdicts and research, one per topic.
+- Before creating state, `.gitignore` gets `.slim/deepwork/` and `.ignore` gets
+  `!.slim/deepwork/` plus `!.slim/deepwork/**` (only missing entries).
 
 **When to use:** Large-scale refactoring, multi-file architectural changes, complex feature development spanning modules.
 

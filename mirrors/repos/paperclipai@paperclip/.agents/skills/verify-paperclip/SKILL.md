@@ -189,6 +189,26 @@ For Paperclip-assigned work, attach important proof through
 the evidence directory or issue, not in the map. The generated
 `maps/generated/coverage.json` lists page references, not live test health.
 
+### Preserve failures through acceptance
+
+A successful retry establishes that a later attempt succeeded. Retain earlier
+material failures in the verification record, including the failed requirement,
+relevant logs, and what changed before the retry. Use a focused comparison or
+reproduction to determine whether the change caused the failure. When useful,
+check the unchanged baseline under comparable conditions. If the cause remains
+unknown, state that uncertainty; do not infer an infrastructure fault from a
+passing retry alone.
+
+Report recovery and resolution separately. A later passing journey can show
+recovery without explaining the earlier failure. Do not describe acceptance as
+complete while a relevant requirement remains unverified. Record the remaining
+gap and the next discriminating check instead of repeating retries until green.
+
+Apply this to failures that bear on the changed behavior or requested acceptance
+criteria. Independently established infrastructure failures can be tracked
+separately, with supporting evidence and any checks they prevented still marked
+blocked or not run. This does not require investigating every unrelated failure.
+
 ## Cleanup
 
 Close the browser context you created (the smoke does this in `finally`). Leave

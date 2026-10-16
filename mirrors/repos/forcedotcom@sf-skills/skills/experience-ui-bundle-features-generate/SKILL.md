@@ -10,11 +10,7 @@ metadata:
       semver: ">=7.0.0"
     - tool: ["npm"]
       semver: ">=7.0.0"
-  accessCheck:
-    - type: "license"
-      value: "Experience Cloud (Customer Community / Customer Community Plus)"
-    - type: "orgPref"
-      value: "Sites"
+  accessCheck: "(OrgPreferences.Sites) && (License.ExperienceCloudCustomerCommunityCustomerCommunityPlus)"
 ---
 
 # UI Bundle Features

@@ -59,7 +59,18 @@ SVG_TYPE_PREFIX_RE = re.compile(r"^svg(?![\w-])", re.IGNORECASE)
 # `stroke="currentColor"` reads `color`, and text without its own font rule
 # reads `font-family`.
 BODY_INHERITED_RE = re.compile(r"(?:^|;)\s*(color|font-family)\s*:\s*([^;]+)", re.IGNORECASE)
-CSS_COMMENT_RE = re.compile(r"/\*.*?\*/", re.DOTALL)
+# Strings and escapes consume their comment-looking text before comments do.
+CSS_COMMENT_OR_LITERAL_RE = re.compile(
+    r'''"(?:\\[\s\S]|[^"\\])*"|'(?:\\[\s\S]|[^'\\])*'|\\[\s\S]|/\*.*?\*/''',
+    re.DOTALL,
+)
+
+
+def strip_css_comments(css: str) -> str:
+    """Remove CSS comments while preserving quoted and escaped literals."""
+    return CSS_COMMENT_OR_LITERAL_RE.sub(
+        lambda token: "" if token.group(0).startswith("/*") else token.group(0), css
+    )
 
 # HTML-only attribute syntax that strict XML rejects: a valueless attribute
 # (`<g data-motion-item>`) or an unquoted value (`data-step=1`).
@@ -72,6 +83,11 @@ START_TAG_RE = re.compile(
 TAG_ATTR_RE = re.compile(
     r"(\s+)([^\s\"'<>/=]+)(?:(\s*=\s*)(\"[^\"]*\"|'[^']*'|[^\s\"'=<>`]+))?"
 )
+
+CSS_URL_ATTRIBUTES = {
+    "fill", "stroke", "filter", "clip-path", "mask", "cursor", "marker",
+    "marker-start", "marker-mid", "marker-end",
+}
 
 DEFS_ID_TAGS = (
     "marker",
@@ -481,6 +497,23 @@ def css_escape(text: str, pos: int) -> tuple[str, int] | None:
     return value, end
 
 
+def decoded_css_url_fragment(fragment: str) -> str:
+    """Decode valid CSS escapes before comparing a local fragment with an ID."""
+    decoded: list[str] = []
+    pos = 0
+    while pos < len(fragment):
+        if fragment[pos] == "\\":
+            escaped = css_escape(fragment, pos)
+            if escaped is None:
+                return fragment
+            value, pos = escaped
+            decoded.append(value)
+        else:
+            decoded.append(fragment[pos])
+            pos += 1
+    return "".join(decoded)
+
+
 def css_id_token(text: str, pos: int) -> tuple[str, int] | None:
     """Read a whole valid CSS ID selector after '#', decoding identifier escapes."""
     def starts_name(index: int) -> bool:
@@ -636,7 +669,7 @@ def diagram_css_from_html(html: str, root_id: str, original_root_id: str = "") -
             block = CDATA_SECTION_RE.sub(lambda match: match.group(1), block)
         # A comment before a rule would otherwise become part of its selector
         # (`/* Tokens */ :root` is not recognised as `:root`).
-        block = CSS_COMMENT_RE.sub("", block)
+        block = strip_css_comments(block)
         for match in RULE_RE.finditer(block):
             selector = match.group(1).strip()
             if original_root_id:
@@ -779,30 +812,86 @@ def namespace_defs_ids(svg: str, prefix: str) -> str:
     replacements = {old: html_entities.escape(f"{prefix}-{old}", quote=True) for old in ids}
     live_replacements = {old: replacements[old] for old in live_reference_ids}
     url_ref = re.compile(
-        r"(?i:url)\(\s*(?P<quote>[\"']|&quot;|&apos;|)\s*#\s*"
+        r"(?<![A-Za-z0-9_\\\-\u0080-\U0010ffff])(?i:url)\(\s*(?P<quote>[\"']|&quot;|&apos;|)\s*#\s*"
         r"(?P<ident>.*?)\s*(?P=quote)\s*\)", re.DOTALL,
     )
 
     raw_url_ref = re.compile(
-        r"(?i:url)\(\s*(?P<quote>[\"']|)\s*#\s*(?P<ident>.*?)\s*(?P=quote)\s*\)", re.DOTALL,
+        r"(?<![A-Za-z0-9_\\\-\u0080-\U0010ffff])(?i:url)\(\s*(?P<quote>[\"']|)\s*#\s*(?P<ident>.*?)\s*(?P=quote)\s*\)", re.DOTALL,
     )
 
-    def rewrite_raw_url(match: re.Match[str]) -> str:
+    css_string = re.compile(
+        r'''(?:"(?:\\[\s\S]|[^"\\])*"|'(?:\\[\s\S]|[^'\\])*')''', re.DOTALL,
+    )
+
+    def rewrite_css_urls(css: str, commented: bool = False) -> str:
+        """Consume complete identifiers before considering literal URL functions."""
+        out: list[str] = []
+        pos = 0
+        while pos < len(css):
+            if css[pos] in "\"'":
+                literal = css_string.match(css, pos)
+                end = literal.end() if literal else len(css)
+            elif css.startswith("/*", pos):
+                closing = css.find("*/", pos + 2)
+                end = closing + 2 if closing >= 0 else len(css)
+            else:
+                token = css_id_token(css, pos)
+                if token is not None:
+                    _, end = token
+                    # Only literal ASCII url(...) is in the supported grammar.
+                    # Escape terminator whitespace is part of the identifier.
+                    if css[pos:end].lower() == "url" and css[end:end + 1] == "(":
+                        reference = raw_url_ref.match(css, pos)
+                        if reference is not None:
+                            out.append(rewrite_raw_url(reference, commented))
+                            pos = reference.end()
+                            continue
+                else:
+                    escaped = css_escape(css, pos) if css[pos] == "\\" else None
+                    end = escaped[1] if escaped else pos + 1
+            out.append(css[pos:end])
+            pos = end
+        return "".join(out)
+
+    def rewrite_raw_url(match: re.Match[str], commented: bool = False) -> str:
         # CSS text with XML references already resolved (or CDATA, which has
-        # none): compare and write the ID unescaped; the caller escapes.
-        if match.group("ident") not in live_reference_ids:
+        # none): compare the decoded CSS identity, preserving its escape
+        # spelling when prefixing the reference. The caller XML-escapes.
+        ident = decoded_css_url_fragment(match.group("ident"))
+        if ident not in (ids if commented else live_reference_ids):
             return match.group(0)
         return f"url({match.group('quote')}#{prefix}-{match.group('ident')}{match.group('quote')})"
 
     def rewrite_url(match: re.Match[str], commented: bool = False) -> str:
         mapping = replacements if commented else live_replacements
-        new = mapping.get(decode_xml_references(match.group("ident")))
+        new = mapping.get(decoded_css_url_fragment(decode_xml_references(match.group("ident"))))
         if new is None:
             return match.group(0)
-        return f"url({match.group('quote')}#{new}{match.group('quote')})"
+        return f"url({match.group('quote')}#{prefix}-{match.group('ident')}{match.group('quote')})"
 
     def rewrite_tag(tag: re.Match[str], commented: bool = False) -> str:
         mapping = replacements if commented else live_replacements
+        # SMIL values describe the animated attribute, not the animation tag's
+        # own paint. Only supported paint/reference targets carry CSS URLs.
+        animation_values = {"set": {"to"}, "animate": {"from", "to", "values", "by"}}
+        target = next((decode_xml_references(attr.group(4)[1:-1])
+                       for attr in TAG_ATTR_RE.finditer(tag.group(2))
+                       if attr.group(2) == "attributeName" and attr.group(4) is not None
+                       and attr.group(4)[0] in "\"'"), "")
+        animated_attributes = (animation_values.get(tag.group(1), set())
+                               if target in CSS_URL_ATTRIBUTES else set())
+
+        def rewrite_css_attribute(raw: str) -> str:
+            # XML normalizes original literal whitespace before expanding
+            # character references. References to controls must survive the
+            # next parse; an amp-escaped reference must stay literal text.
+            value = decode_xml_references(re.sub(r"\r\n?|[\n\t]", " ", raw))
+            rewritten = rewrite_css_urls(value, commented)
+            if rewritten == value:
+                return raw
+            return (escape_css_for_xml(rewritten).replace('"', "&quot;").replace("'", "&apos;")
+                    .replace("\t", "&#9;").replace("\n", "&#10;").replace("\r", "&#13;"))
 
         def attribute(match: re.Match[str]) -> str:
             space, name, equals, quoted = match.groups()
@@ -817,7 +906,9 @@ def namespace_defs_ids(svg: str, prefix: str) -> str:
                 raw = replacements[value]
             elif name.lower() in {"href", "xlink:href"} and value.startswith("#") and value[1:] in mapping:
                 raw = "#" + mapping[value[1:]]
-            else:
+            elif name.lower() == "style" or name in animated_attributes:
+                raw = rewrite_css_attribute(raw)
+            elif name.lower() in CSS_URL_ATTRIBUTES:
                 raw = url_ref.sub(lambda reference: rewrite_url(reference, commented), raw)
             return space + name + equals + quoted[0] + raw + quoted[-1]
 
@@ -853,7 +944,7 @@ def namespace_defs_ids(svg: str, prefix: str) -> str:
                     + "{" + rule.group(2) + "}",
                     css,
                 )
-            return raw_url_ref.sub(rewrite_raw_url, css)
+            return rewrite_css_urls(css)
 
         # CDATA content is raw text: rewrite it inside its markers without XML
         # decoding or escaping. Only the text outside CDATA is XML-decoded and
@@ -889,7 +980,7 @@ def namespace_defs_ids(svg: str, prefix: str) -> str:
 
 def _decoded_css_property_text(style: str) -> str:
     """Read opacity spellings conservatively without changing carried CSS."""
-    style = CSS_COMMENT_RE.sub("", html_entities.unescape(style))
+    style = strip_css_comments(html_entities.unescape(style))
 
     def escape(match: re.Match[str]) -> str:
         hexadecimal, literal = match.groups()
@@ -1003,7 +1094,7 @@ def normalize_rgba_presentation_attrs(svg: str) -> str:
                 re.search(rf"(?:^|[;{{])\s*{prop}\s*:", _decoded_css_property_text(rule.group(2)), re.I)
                 and _css_paint_may_target_descendants(rule.group(1), [element] + children)
                 for style in STYLE_BLOCK_RE.findall(svg)
-                for rule in RULE_RE.finditer(CSS_COMMENT_RE.sub("", style))
+                for rule in RULE_RE.finditer(strip_css_comments(style))
             )
             if inline_paint or descendant_paint or stylesheet_paint or opacity_name in css_opacity or opacity_counts[opacity_name] > int(opacity_name in values):
                 continue
@@ -1035,7 +1126,7 @@ def has_diagram_stylesheet(svg: str) -> bool:
     """True when a <style> block contains CSS rules beyond the fonts @import."""
     for block in STYLE_BLOCK_RE.findall(svg):
         stripped = re.sub(r"@import\b[^;]*;", "", block, flags=re.IGNORECASE)
-        stripped = re.sub(r"/\*.*?\*/", "", stripped, flags=re.DOTALL)
+        stripped = strip_css_comments(stripped)
         if RULE_RE.search(stripped):
             return True
     return False

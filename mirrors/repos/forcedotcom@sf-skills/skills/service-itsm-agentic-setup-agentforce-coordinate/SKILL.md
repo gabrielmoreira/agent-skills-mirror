@@ -14,9 +14,7 @@ metadata:
   cliTools:
     - tool: ["node"]
       semver: ">=18.0.0"
-  accessCheck:
-    - type: "license"
-      value: "Agentforce"
+  accessCheck: "License.Agentforce"
 allowed-tools: Read Bash Write AskUserQuestion
 ---
 

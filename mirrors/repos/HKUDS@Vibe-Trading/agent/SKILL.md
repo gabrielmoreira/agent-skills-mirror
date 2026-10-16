@@ -331,6 +331,17 @@ vibe-trading connector quote AAPL
 vibe-trading connector history AAPL --duration "30 D" --bar-size "1 day"
 ```
 
+Live-runner model spending is independent of mandate trade limits. Operators
+configure it through Runtime / the chat runner panel, or
+`vibe-trading connector runner-settings --profile robinhood-live-mcp`
+(`--file settings.json` saves settings while stopped). Defaults are one model
+decision every 15 minutes, 26 decisions and 1,000,000 reported tokens per UTC day,
+with fresh conversation context per decision. A once-daily time and IANA timezone
+are optional. Dollar limits require operator-supplied input/output prices and are
+estimates, not provider billing guarantees. Usage is checked after each response;
+budget exhaustion or missing usage activates the existing kill switch. The agent
+must not edit this operator state or raise its own spending limits.
+
 Default ports are TWS paper `7497`, IB Gateway paper `4002`, TWS live-readonly
 `7496`, and IB Gateway live-readonly `4001`.
 

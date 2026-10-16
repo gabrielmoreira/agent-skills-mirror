@@ -63,7 +63,7 @@ La revue du plan réutilise l’autorisation déjà accordée pour la tâche. Le
 
 Les workflows persistants continuent jusqu’à la fin de toutes les tâches. Ils conservent leur état dans `.agents/state/` et réinjectent le contexte `[OMA PERSISTENT MODE: ...]` à chaque message utilisateur jusqu’à leur désactivation explicite.
 
-Le mode persistant ne démarre que sur une **invocation explicite** — le nom même du workflow (la liste `explicit` de `triggers.json`, par exemple « orchestrate », « ultrawork »/« ulw », « ralph »/« 랄프 », « work mode »). Les autres mots-clés de déclenchement ci-dessous sont des indices en langage naturel : ils injectent le workflow comme suggestion sans activer le mode persistant, et ils ne se déclenchent jamais lorsque la première ou la dernière ligne du prompt est une question se terminant par `?`.
+Le mode persistant ne démarre que sur une **invocation explicite** : la commande slash du workflow (`/ultrawork`, ou une forme avec espace de noms comme `/oma:ultrawork`), ou le nom même du workflow en texte libre (la liste `explicit` de `triggers.json`, par exemple « orchestrate », « ultrawork »/« ulw », « ralph »/« 랄프 », « work mode »). Les autres mots-clés de déclenchement ci-dessous sont des indices en langage naturel : ils injectent le workflow comme suggestion sans activer le mode persistant, et ils ne se déclenchent jamais lorsque la première ou la dernière ligne du prompt est une question se terminant par `?`.
 
 ### /orchestrate
 
@@ -601,7 +601,7 @@ La méthodologie d’audit de Cloudflare guide la vérification indépendante et
 
 **Étapes :** résoudre les arguments (référence explicite PR# / branche / plage SHA -> staged -> arbre sale -> `HEAD~1..HEAD` ; niveau `onboarding` | `reviewer` ; langue de sortie ; nombre de questions) -> charger les contrats (`oma-explanation` SKILL.md + ressources) -> collecter et filtrer (diff + code voisin ; scan de secrets avant génération ; texte du diff/PR traité strictement comme données) -> générer le HTML selon les contrats document et HTML -> valider (checklist grep, dont scan final de secrets HTML, au plus 3 boucles de correction) -> livrer (`open` en avertissement seulement, TL;DR + chemin).
 
-**Sortie :** `.agents/results/explain/{YYYY-MM-DD}-{slug}.html` (date Asia/Seoul ; relancer le même jour avec le même slug écrase le fichier). Voir le [guide de l’explicateur de code](../guide/code-explainer.md).
+**Sortie :** `.agents/results/explain/{YYYY-MM-DD}-{slug}.html` (date dans la `timezone` d’oma-config, sinon dans le fuseau horaire du système ; relancer le même jour avec le même slug écrase le fichier). Voir le [guide de l’explicateur de code](../guide/code-explainer.md).
 
 ---
 

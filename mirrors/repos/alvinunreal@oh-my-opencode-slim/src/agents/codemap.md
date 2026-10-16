@@ -67,7 +67,7 @@ const orchestrator = createOrchestratorAgent(
   orchestratorModel,
   orchestratorPrompts.prompt,
   orchestratorPrompts.appendPrompt,
-  disabled,
+  { disabledAgents: disabled, hostFlavor /* , waitForUser, wakeScheduler, routingBlock */ },
 );
 applyDefaultPermissions(orchestrator, orchestratorOverride?.skills, config?.disabled_skills);
 

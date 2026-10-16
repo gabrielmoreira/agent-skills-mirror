@@ -477,7 +477,7 @@ BusinessProcess** — adding one to a custom-object record type is wrong.
 ```xml
 <!-- File 1: objects/Opportunity/businessProcesses/Enterprise_Sales_Process.businessProcess-meta.xml -->
 <BusinessProcess xmlns="http://soap.sforce.com/2006/04/metadata">
-  <fullName>Enterprise_Sales_Process</fullName>   <!-- BARE — see the api-context translation note below -->
+  <fullName>Enterprise_Sales_Process</fullName>   <!-- BARE — see the Metadata API fullName note below -->
   <isActive>true</isActive>
   <values><fullName>Prospecting</fullName></values>      <!-- these are Opportunity STAGE (StageName) values, NOT Status__c — the BP governs the standard stage picklist. Do NOT add <default> (fails: "Cannot specify a default on: Opportunity") -->
   <values><fullName>Qualification</fullName></values>
@@ -486,16 +486,16 @@ BusinessProcess** — adding one to a custom-object record type is wrong.
 </BusinessProcess>
 ```
 
-> ⛔ **`<fullName>` is BARE in the source file — strip the entity prefix that api-context gives you.**
-> The metadata grounding / api-context for `BusinessProcess` reports the fullName in its **API
-> form**, entity-qualified: `Opportunity.Enterprise_Sales_Process`. That is correct for the API —
+> ⛔ **`<fullName>` is BARE in the source file — strip the entity prefix the Metadata API gives you.**
+> The `platform-metadata-api-context-get` skill's `BusinessProcess` entry (and the live Metadata
+> API) reports the fullName in its **API form**, entity-qualified: `Opportunity.Enterprise_Sales_Process`. That is correct for the API —
 > but in the **source/DX-format file you author**, the entity is already conveyed by the
 > `objects/Opportunity/` folder path, so the `<fullName>` element is the **bare process name**:
 > `Enterprise_Sales_Process`, NOT `Opportunity.Enterprise_Sales_Process`. (Same API-vs-source split
 > as the GlobalValueSet `__gvs` suffix in §1.) Writing the entity-qualified form makes the
 > RecordType's bare `<businessProcess>Enterprise_Sales_Process</businessProcess>` reference fail to
 > resolve → `no BusinessProcess named Opportunity.Enterprise_Sales_Process found`. **When you pull
-> the BP name from api-context and it looks like `Opportunity.X`, write `X` in the file.** The BP
+> the BP name from the Metadata API and it looks like `Opportunity.X`, write `X` in the file.** The BP
 > file's `<fullName>` and the RecordType's `<businessProcess>` must be the identical bare string.
 
 ```xml

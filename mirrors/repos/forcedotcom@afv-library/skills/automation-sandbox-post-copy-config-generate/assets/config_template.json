@@ -28,5 +28,15 @@
     },
     "IsActive": true,
     "ExecutionOrder": 3
+  },
+  {
+    "ConfigurationName": "Flows",
+    "Label": "<Human-readable description, e.g. \"Deactivate Nightly Sync Flow\">",
+    "Fields": {
+      "FlowApiName": "<Flow DeveloperName — unique across Flows, e.g. Nightly_Sync_Flow>",
+      "Action": "Deactivate"
+    },
+    "IsActive": true,
+    "ExecutionOrder": 4
   }
 ]

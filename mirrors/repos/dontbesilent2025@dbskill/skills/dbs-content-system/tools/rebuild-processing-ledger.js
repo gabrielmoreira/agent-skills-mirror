@@ -2,6 +2,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { loadSourceRules } = require("./source-rules");
 
 const root = path.resolve(process.cwd());
 const sourceRoot = path.join(root, "01-原始素材区");
@@ -11,16 +12,7 @@ const rawIndexPath = path.join(stateRoot, "原始素材索引.csv");
 const pendingPath = path.join(stateRoot, "待处理清单.csv");
 const processedPath = path.join(stateRoot, "已处理清单.csv");
 
-const catalog = [
-  { category: "短视频", sourceType: "短视频", dirs: ["短视频/文稿"] },
-  { category: "公众号", sourceType: "公众号文章", dirs: ["公众号"] },
-  { category: "观点与概念", sourceType: "观点与概念", dirs: ["观点与概念"] },
-  { category: "爆款文稿", sourceType: "爆款文稿", dirs: ["爆款文稿"] },
-  { category: "推文", sourceType: "推文素材", dirs: ["推文"] },
-  { category: "其他作者", sourceType: "外部研究素材", dirs: ["其他作者"] },
-  { category: "dontbesilent", sourceType: "本人内容", dirs: ["dontbesilent"] },
-  { category: "完整副本", sourceType: "完整副本", dirs: ["完整副本"] },
-];
+const catalog = loadSourceRules(root);
 
 function walkFiles(dir) {
   const results = [];

@@ -104,7 +104,7 @@ could actually pick, drawn from the request, repo evidence, or the tradeoff the 
 really about, never filler to reach a count, and never a candidate whose text is itself a bare
 number (a reply by number would collide with it, in the list below and in a messaging picker).
 
-- **With Hermes' `clarify` tool** (in your tool list or tool search): keep the header in your
+- **With Hermes' `clarify` tool**, when `clarify` is in your tool list or tool_search finds it: keep the header in your
   message and ask through `clarify` — one `questions` entry, the sentence as `question`, the
   candidates as `choices`. Add no free-input row of your own and keep the candidates out of the
   question sentence: the picker marks the recommendation and adds its own typed-answer row.

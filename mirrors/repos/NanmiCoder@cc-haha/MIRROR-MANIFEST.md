@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 3 followed patterns, 26 file(s) materialized.
+Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 5 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 3 followed patterns, 26 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 3 |
-| Files         | 26 |
+| Followed pats | 5 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,6 +54,8 @@ Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 3 followed patterns, 26 
 - `CONTRIBUTING.md`
 - `docs/internals/contributing.md`
 - `.github/pull_request_template.md`
+- `LICENSING.md`
+- `THIRD_PARTY_LICENSES.md`
 
 ## File Index
 
@@ -87,6 +89,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
 | 25 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 26 | → | [`docs/internals/contributing.md`](docs/internals/contributing.md) |
+| 27 | → | [`LICENSING.md`](LICENSING.md) |
+| 28 | → | [`THIRD_PARTY_LICENSES.md`](THIRD_PARTY_LICENSES.md) |
 
 ---
 

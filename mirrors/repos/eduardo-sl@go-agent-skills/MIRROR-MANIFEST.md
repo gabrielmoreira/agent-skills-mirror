@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `eduardo-sl/go-agent-skills` — 26 default patterns, 0 followed patterns, 103 file(s) materialized.
+Mirror of `eduardo-sl/go-agent-skills` — 26 default patterns, 0 followed patterns, 108 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `eduardo-sl/go-agent-skills` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 103 |
+| Files         | 108 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -105,63 +105,68 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 44 | ✓ | [`skills/(code-quality)/go-modernize/references/stdlib-migrations.md`](skills/(code-quality)/go-modernize/references/stdlib-migrations.md) |
 | 45 | ✓ | [`skills/(code-quality)/go-modernize/references/version-bump.md`](skills/(code-quality)/go-modernize/references/version-bump.md) |
 | 46 | ✓ | [`skills/(code-quality)/go-modernize/SKILL.md`](skills/(code-quality)/go-modernize/SKILL.md) |
-| 47 | ✓ | [`skills/(data)/_category.json`](skills/(data)/_category.json) |
-| 48 | ✓ | [`skills/(data)/go-database/references/locking-and-retries.md`](skills/(data)/go-database/references/locking-and-retries.md) |
-| 49 | ✓ | [`skills/(data)/go-database/references/performance.md`](skills/(data)/go-database/references/performance.md) |
-| 50 | ✓ | [`skills/(data)/go-database/references/query-patterns.md`](skills/(data)/go-database/references/query-patterns.md) |
-| 51 | ✓ | [`skills/(data)/go-database/references/testing.md`](skills/(data)/go-database/references/testing.md) |
-| 52 | ✓ | [`skills/(data)/go-database/references/tooling.md`](skills/(data)/go-database/references/tooling.md) |
-| 53 | ✓ | [`skills/(data)/go-database/SKILL.md`](skills/(data)/go-database/SKILL.md) |
-| 54 | ✓ | [`skills/(safety)/_category.json`](skills/(safety)/_category.json) |
-| 55 | ✓ | [`skills/(safety)/go-concurrency-review/references/channels.md`](skills/(safety)/go-concurrency-review/references/channels.md) |
-| 56 | ✓ | [`skills/(safety)/go-concurrency-review/references/goroutine-patterns.md`](skills/(safety)/go-concurrency-review/references/goroutine-patterns.md) |
-| 57 | ✓ | [`skills/(safety)/go-concurrency-review/references/mutex-and-atomics.md`](skills/(safety)/go-concurrency-review/references/mutex-and-atomics.md) |
-| 58 | ✓ | [`skills/(safety)/go-concurrency-review/SKILL.md`](skills/(safety)/go-concurrency-review/SKILL.md) |
-| 59 | ✓ | [`skills/(safety)/go-defensive-coding/references/copies-and-lifecycle.md`](skills/(safety)/go-defensive-coding/references/copies-and-lifecycle.md) |
-| 60 | ✓ | [`skills/(safety)/go-defensive-coding/references/nil-and-aliasing.md`](skills/(safety)/go-defensive-coding/references/nil-and-aliasing.md) |
-| 61 | ✓ | [`skills/(safety)/go-defensive-coding/references/numeric-safety.md`](skills/(safety)/go-defensive-coding/references/numeric-safety.md) |
-| 62 | ✓ | [`skills/(safety)/go-defensive-coding/SKILL.md`](skills/(safety)/go-defensive-coding/SKILL.md) |
-| 63 | ✓ | [`skills/(safety)/go-observability/references/alerting.md`](skills/(safety)/go-observability/references/alerting.md) |
-| 64 | ✓ | [`skills/(safety)/go-observability/references/metrics.md`](skills/(safety)/go-observability/references/metrics.md) |
-| 65 | ✓ | [`skills/(safety)/go-observability/references/slog.md`](skills/(safety)/go-observability/references/slog.md) |
-| 66 | ✓ | [`skills/(safety)/go-observability/references/tracing.md`](skills/(safety)/go-observability/references/tracing.md) |
-| 67 | ✓ | [`skills/(safety)/go-observability/SKILL.md`](skills/(safety)/go-observability/SKILL.md) |
-| 68 | ✓ | [`skills/(safety)/go-performance-review/references/benchmarking.md`](skills/(safety)/go-performance-review/references/benchmarking.md) |
-| 69 | ✓ | [`skills/(safety)/go-performance-review/references/logging.md`](skills/(safety)/go-performance-review/references/logging.md) |
-| 70 | ✓ | [`skills/(safety)/go-performance-review/references/memory-and-io.md`](skills/(safety)/go-performance-review/references/memory-and-io.md) |
-| 71 | ✓ | [`skills/(safety)/go-performance-review/references/profiling.md`](skills/(safety)/go-performance-review/references/profiling.md) |
-| 72 | ✓ | [`skills/(safety)/go-performance-review/references/runtime-tuning.md`](skills/(safety)/go-performance-review/references/runtime-tuning.md) |
-| 73 | ✓ | [`skills/(safety)/go-performance-review/SKILL.md`](skills/(safety)/go-performance-review/SKILL.md) |
-| 74 | ✓ | [`skills/(safety)/go-security-audit/references/auth-and-transport.md`](skills/(safety)/go-security-audit/references/auth-and-transport.md) |
-| 75 | ✓ | [`skills/(safety)/go-security-audit/references/crypto.md`](skills/(safety)/go-security-audit/references/crypto.md) |
-| 76 | ✓ | [`skills/(safety)/go-security-audit/references/injection.md`](skills/(safety)/go-security-audit/references/injection.md) |
-| 77 | ✓ | [`skills/(safety)/go-security-audit/references/threat-model.md`](skills/(safety)/go-security-audit/references/threat-model.md) |
-| 78 | ✓ | [`skills/(safety)/go-security-audit/SKILL.md`](skills/(safety)/go-security-audit/SKILL.md) |
-| 79 | ✓ | [`skills/(safety)/go-troubleshooting/references/common-bugs.md`](skills/(safety)/go-troubleshooting/references/common-bugs.md) |
-| 80 | ✓ | [`skills/(safety)/go-troubleshooting/references/flaky-and-build.md`](skills/(safety)/go-troubleshooting/references/flaky-and-build.md) |
-| 81 | ✓ | [`skills/(safety)/go-troubleshooting/references/methodology.md`](skills/(safety)/go-troubleshooting/references/methodology.md) |
-| 82 | ✓ | [`skills/(safety)/go-troubleshooting/SKILL.md`](skills/(safety)/go-troubleshooting/SKILL.md) |
-| 83 | ✓ | [`skills/(testing)/_category.json`](skills/(testing)/_category.json) |
-| 84 | ✓ | [`skills/(testing)/.gitkeep`](skills/(testing)/.gitkeep) |
-| 85 | ✓ | [`skills/(testing)/go-test-quality/references/concurrency-and-benchmarks.md`](skills/(testing)/go-test-quality/references/concurrency-and-benchmarks.md) |
-| 86 | ✓ | [`skills/(testing)/go-test-quality/references/helpers-and-fixtures.md`](skills/(testing)/go-test-quality/references/helpers-and-fixtures.md) |
-| 87 | ✓ | [`skills/(testing)/go-test-quality/references/integration-testing.md`](skills/(testing)/go-test-quality/references/integration-testing.md) |
-| 88 | ✓ | [`skills/(testing)/go-test-quality/SKILL.md`](skills/(testing)/go-test-quality/SKILL.md) |
-| 89 | ✓ | [`skills/(testing)/go-test-table-driven/references/patterns.md`](skills/(testing)/go-test-table-driven/references/patterns.md) |
-| 90 | ✓ | [`skills/(testing)/go-test-table-driven/references/refactoring.md`](skills/(testing)/go-test-table-driven/references/refactoring.md) |
-| 91 | ✓ | [`skills/(testing)/go-test-table-driven/SKILL.md`](skills/(testing)/go-test-table-driven/SKILL.md) |
-| 92 | ✓ | [`skills/(workflow)/_category.json`](skills/(workflow)/_category.json) |
-| 93 | ✓ | [`skills/(workflow)/git-commit/SKILL.md`](skills/(workflow)/git-commit/SKILL.md) |
-| 94 | ✓ | [`skills/(workflow)/go-binary-size/SKILL.md`](skills/(workflow)/go-binary-size/SKILL.md) |
-| 95 | ✓ | [`skills/(workflow)/go-ci/references/security-and-automation.md`](skills/(workflow)/go-ci/references/security-and-automation.md) |
-| 96 | ✓ | [`skills/(workflow)/go-ci/SKILL.md`](skills/(workflow)/go-ci/SKILL.md) |
-| 97 | ✓ | [`skills/(workflow)/go-dependency-audit/references/resolution-and-workspaces.md`](skills/(workflow)/go-dependency-audit/references/resolution-and-workspaces.md) |
-| 98 | ✓ | [`skills/(workflow)/go-dependency-audit/SKILL.md`](skills/(workflow)/go-dependency-audit/SKILL.md) |
-| 99 | ✓ | [`skills/(workflow)/go-refactoring/references/bulk-rewrites.md`](skills/(workflow)/go-refactoring/references/bulk-rewrites.md) |
-| 100 | ✓ | [`skills/(workflow)/go-refactoring/SKILL.md`](skills/(workflow)/go-refactoring/SKILL.md) |
-| 101 | ✓ | [`skills/(workflow)/go-semantic-tools/references/mcp-and-code-actions.md`](skills/(workflow)/go-semantic-tools/references/mcp-and-code-actions.md) |
-| 102 | ✓ | [`skills/(workflow)/go-semantic-tools/SKILL.md`](skills/(workflow)/go-semantic-tools/SKILL.md) |
-| 103 | ✓ | [`skills/(workflow)/go-skills-router/SKILL.md`](skills/(workflow)/go-skills-router/SKILL.md) |
+| 47 | ✓ | [`skills/(code-quality)/go-naming/references/examples.md`](skills/(code-quality)/go-naming/references/examples.md) |
+| 48 | ✓ | [`skills/(code-quality)/go-naming/SKILL.md`](skills/(code-quality)/go-naming/SKILL.md) |
+| 49 | ✓ | [`skills/(data)/_category.json`](skills/(data)/_category.json) |
+| 50 | ✓ | [`skills/(data)/go-database/references/locking-and-retries.md`](skills/(data)/go-database/references/locking-and-retries.md) |
+| 51 | ✓ | [`skills/(data)/go-database/references/performance.md`](skills/(data)/go-database/references/performance.md) |
+| 52 | ✓ | [`skills/(data)/go-database/references/query-patterns.md`](skills/(data)/go-database/references/query-patterns.md) |
+| 53 | ✓ | [`skills/(data)/go-database/references/testing.md`](skills/(data)/go-database/references/testing.md) |
+| 54 | ✓ | [`skills/(data)/go-database/references/tooling.md`](skills/(data)/go-database/references/tooling.md) |
+| 55 | ✓ | [`skills/(data)/go-database/SKILL.md`](skills/(data)/go-database/SKILL.md) |
+| 56 | ✓ | [`skills/(safety)/_category.json`](skills/(safety)/_category.json) |
+| 57 | ✓ | [`skills/(safety)/go-concurrency-review/references/channels.md`](skills/(safety)/go-concurrency-review/references/channels.md) |
+| 58 | ✓ | [`skills/(safety)/go-concurrency-review/references/goroutine-patterns.md`](skills/(safety)/go-concurrency-review/references/goroutine-patterns.md) |
+| 59 | ✓ | [`skills/(safety)/go-concurrency-review/references/mutex-and-atomics.md`](skills/(safety)/go-concurrency-review/references/mutex-and-atomics.md) |
+| 60 | ✓ | [`skills/(safety)/go-concurrency-review/SKILL.md`](skills/(safety)/go-concurrency-review/SKILL.md) |
+| 61 | ✓ | [`skills/(safety)/go-defensive-coding/references/copies-and-lifecycle.md`](skills/(safety)/go-defensive-coding/references/copies-and-lifecycle.md) |
+| 62 | ✓ | [`skills/(safety)/go-defensive-coding/references/nil-and-aliasing.md`](skills/(safety)/go-defensive-coding/references/nil-and-aliasing.md) |
+| 63 | ✓ | [`skills/(safety)/go-defensive-coding/references/numeric-safety.md`](skills/(safety)/go-defensive-coding/references/numeric-safety.md) |
+| 64 | ✓ | [`skills/(safety)/go-defensive-coding/SKILL.md`](skills/(safety)/go-defensive-coding/SKILL.md) |
+| 65 | ✓ | [`skills/(safety)/go-observability/references/alerting.md`](skills/(safety)/go-observability/references/alerting.md) |
+| 66 | ✓ | [`skills/(safety)/go-observability/references/metrics.md`](skills/(safety)/go-observability/references/metrics.md) |
+| 67 | ✓ | [`skills/(safety)/go-observability/references/slog.md`](skills/(safety)/go-observability/references/slog.md) |
+| 68 | ✓ | [`skills/(safety)/go-observability/references/tracing.md`](skills/(safety)/go-observability/references/tracing.md) |
+| 69 | ✓ | [`skills/(safety)/go-observability/SKILL.md`](skills/(safety)/go-observability/SKILL.md) |
+| 70 | ✓ | [`skills/(safety)/go-performance-review/references/benchmarking.md`](skills/(safety)/go-performance-review/references/benchmarking.md) |
+| 71 | ✓ | [`skills/(safety)/go-performance-review/references/logging.md`](skills/(safety)/go-performance-review/references/logging.md) |
+| 72 | ✓ | [`skills/(safety)/go-performance-review/references/memory-and-io.md`](skills/(safety)/go-performance-review/references/memory-and-io.md) |
+| 73 | ✓ | [`skills/(safety)/go-performance-review/references/profiling.md`](skills/(safety)/go-performance-review/references/profiling.md) |
+| 74 | ✓ | [`skills/(safety)/go-performance-review/references/runtime-tuning.md`](skills/(safety)/go-performance-review/references/runtime-tuning.md) |
+| 75 | ✓ | [`skills/(safety)/go-performance-review/SKILL.md`](skills/(safety)/go-performance-review/SKILL.md) |
+| 76 | ✓ | [`skills/(safety)/go-security-audit/references/auth-and-transport.md`](skills/(safety)/go-security-audit/references/auth-and-transport.md) |
+| 77 | ✓ | [`skills/(safety)/go-security-audit/references/crypto.md`](skills/(safety)/go-security-audit/references/crypto.md) |
+| 78 | ✓ | [`skills/(safety)/go-security-audit/references/injection.md`](skills/(safety)/go-security-audit/references/injection.md) |
+| 79 | ✓ | [`skills/(safety)/go-security-audit/references/threat-model.md`](skills/(safety)/go-security-audit/references/threat-model.md) |
+| 80 | ✓ | [`skills/(safety)/go-security-audit/SKILL.md`](skills/(safety)/go-security-audit/SKILL.md) |
+| 81 | ✓ | [`skills/(safety)/go-troubleshooting/references/common-bugs.md`](skills/(safety)/go-troubleshooting/references/common-bugs.md) |
+| 82 | ✓ | [`skills/(safety)/go-troubleshooting/references/flaky-and-build.md`](skills/(safety)/go-troubleshooting/references/flaky-and-build.md) |
+| 83 | ✓ | [`skills/(safety)/go-troubleshooting/references/methodology.md`](skills/(safety)/go-troubleshooting/references/methodology.md) |
+| 84 | ✓ | [`skills/(safety)/go-troubleshooting/SKILL.md`](skills/(safety)/go-troubleshooting/SKILL.md) |
+| 85 | ✓ | [`skills/(testing)/_category.json`](skills/(testing)/_category.json) |
+| 86 | ✓ | [`skills/(testing)/.gitkeep`](skills/(testing)/.gitkeep) |
+| 87 | ✓ | [`skills/(testing)/go-test-quality/references/concurrency-and-benchmarks.md`](skills/(testing)/go-test-quality/references/concurrency-and-benchmarks.md) |
+| 88 | ✓ | [`skills/(testing)/go-test-quality/references/helpers-and-fixtures.md`](skills/(testing)/go-test-quality/references/helpers-and-fixtures.md) |
+| 89 | ✓ | [`skills/(testing)/go-test-quality/references/integration-testing.md`](skills/(testing)/go-test-quality/references/integration-testing.md) |
+| 90 | ✓ | [`skills/(testing)/go-test-quality/SKILL.md`](skills/(testing)/go-test-quality/SKILL.md) |
+| 91 | ✓ | [`skills/(testing)/go-test-table-driven/references/patterns.md`](skills/(testing)/go-test-table-driven/references/patterns.md) |
+| 92 | ✓ | [`skills/(testing)/go-test-table-driven/references/refactoring.md`](skills/(testing)/go-test-table-driven/references/refactoring.md) |
+| 93 | ✓ | [`skills/(testing)/go-test-table-driven/SKILL.md`](skills/(testing)/go-test-table-driven/SKILL.md) |
+| 94 | ✓ | [`skills/(workflow)/_category.json`](skills/(workflow)/_category.json) |
+| 95 | ✓ | [`skills/(workflow)/git-commit/SKILL.md`](skills/(workflow)/git-commit/SKILL.md) |
+| 96 | ✓ | [`skills/(workflow)/go-binary-size/SKILL.md`](skills/(workflow)/go-binary-size/SKILL.md) |
+| 97 | ✓ | [`skills/(workflow)/go-build-release/references/goreleaser.md`](skills/(workflow)/go-build-release/references/goreleaser.md) |
+| 98 | ✓ | [`skills/(workflow)/go-build-release/references/supply-chain.md`](skills/(workflow)/go-build-release/references/supply-chain.md) |
+| 99 | ✓ | [`skills/(workflow)/go-build-release/SKILL.md`](skills/(workflow)/go-build-release/SKILL.md) |
+| 100 | ✓ | [`skills/(workflow)/go-ci/references/security-and-automation.md`](skills/(workflow)/go-ci/references/security-and-automation.md) |
+| 101 | ✓ | [`skills/(workflow)/go-ci/SKILL.md`](skills/(workflow)/go-ci/SKILL.md) |
+| 102 | ✓ | [`skills/(workflow)/go-dependency-audit/references/resolution-and-workspaces.md`](skills/(workflow)/go-dependency-audit/references/resolution-and-workspaces.md) |
+| 103 | ✓ | [`skills/(workflow)/go-dependency-audit/SKILL.md`](skills/(workflow)/go-dependency-audit/SKILL.md) |
+| 104 | ✓ | [`skills/(workflow)/go-refactoring/references/bulk-rewrites.md`](skills/(workflow)/go-refactoring/references/bulk-rewrites.md) |
+| 105 | ✓ | [`skills/(workflow)/go-refactoring/SKILL.md`](skills/(workflow)/go-refactoring/SKILL.md) |
+| 106 | ✓ | [`skills/(workflow)/go-semantic-tools/references/mcp-and-code-actions.md`](skills/(workflow)/go-semantic-tools/references/mcp-and-code-actions.md) |
+| 107 | ✓ | [`skills/(workflow)/go-semantic-tools/SKILL.md`](skills/(workflow)/go-semantic-tools/SKILL.md) |
+| 108 | ✓ | [`skills/(workflow)/go-skills-router/SKILL.md`](skills/(workflow)/go-skills-router/SKILL.md) |
 
 ---
 

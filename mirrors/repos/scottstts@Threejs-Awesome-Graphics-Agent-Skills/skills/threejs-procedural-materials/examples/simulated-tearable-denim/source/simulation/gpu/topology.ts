@@ -1,0 +1,238 @@
+import { ComputeModule, createBuffer } from '../../gpu/util';
+import type { CompiledScene } from '../fabric-config';
+import { NO_PIECE, type GpuSolver } from './solver';
+import commonWgsl from './wgsl/common.wgsl?raw';
+import stateWgsl from './wgsl/state.wgsl?raw';
+
+/**
+ * Detached-piece detection. After ruptures (or a grip release) the active span graph is read back
+ * (one u32 per node) and searched from its anchors: mounted nodes and, while gripping, the grip
+ * patch core. Cloth nodes that no longer reach an anchor become detached (see state.wgsl): they stay in
+ * the solve, but nothing holds them.
+ * A piece torn out inside the pinch stays in the fingers, whatever its size, until the grip ends.
+ * At most one analysis is in flight; requests made meanwhile are coalesced into one rerun.
+ *
+ * The anchors are taken when an analysis applies its result, not when it was requested: a grip that
+ * attached while the connectivity readback was pending keeps what it holds. (The read connectivity
+ * may be older than that; cuts only remove spans, so a stale graph frees less, never more.)
+ *
+ * Every analysis also labels the detached pieces (connected through active spans) for the solver's
+ * rigid-mode correction (GpuSolver.setPieces): pieces split by later ruptures are relabelled by the
+ * analysis those ruptures request.
+ */
+export class Topology {
+  private readonly device: GPUDevice;
+  private readonly solver: GpuSolver;
+  private readonly scene: CompiledScene;
+  private readonly mod: ComputeModule;
+  private readonly group: GPUBindGroup;
+  private readonly packPipe: GPUComputePipeline;
+  private readonly applyPipe: GPUComputePipeline;
+  private readonly packed: GPUBuffer;
+  private readonly freedBuf: GPUBuffer;
+  private readonly staging: GPUBuffer;
+  private readonly freed: Uint32Array;
+  private readonly visited: Uint8Array;
+  private readonly queue: Int32Array;
+  /** Per node: lattice row length (stride between rows), column i and row j. */
+  private readonly stride: Int32Array;
+  private readonly column: Int32Array;
+  private readonly row: Int32Array;
+  private tail = 0;
+  /** The analysis in flight (it reruns while requests arrive), or null. */
+  private running: Promise<void> | null = null;
+  /** Bumped by reset(): an analysis started before it must not apply its result. */
+  private epoch = 0;
+  private again = false;
+  private anchors: readonly number[] = [];
+  /** Current grip anchors, when the owner supplies them (read at apply time). */
+  private readonly anchorSource: (() => readonly number[]) | null;
+  /** Nodes detached so far (development statistics). */
+  freedCount = 0;
+  /** Per node its detached piece (NO_PIECE outside), each piece's nodes contiguous from pieceStart. */
+  private readonly pieceOf: Uint32Array;
+  private readonly pieceNodes: Uint32Array;
+  private pieceSignature = 0;
+
+  constructor(device: GPUDevice, solver: GpuSolver, scene: CompiledScene, anchors: (() => readonly number[]) | null = null) {
+    this.device = device;
+    this.anchorSource = anchors;
+    this.solver = solver;
+    this.scene = scene;
+    const N = scene.nodeCount;
+    this.mod = new ComputeModule(device, 'state', commonWgsl + stateWgsl);
+    this.packPipe = this.mod.pipeline('pack');
+    this.applyPipe = this.mod.pipeline('applyFreed');
+    this.packed = createBuffer(device, 'state.packed', 4 * N);
+    this.freedBuf = createBuffer(device, 'state.freed', 4 * N);
+    this.staging = device.createBuffer({ label: 'state.staging', size: Math.max(16, 4 * N), usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ });
+    this.group = this.mod.bindGroup('state', { 0: solver.simParams, 1: solver.segs, 2: solver.x, 4: this.packed, 5: this.freedBuf });
+    this.freed = new Uint32Array(N);
+    this.pieceOf = new Uint32Array(N).fill(NO_PIECE);
+    this.pieceNodes = new Uint32Array(N);
+    this.visited = new Uint8Array(N);
+    this.queue = new Int32Array(N);
+    this.stride = new Int32Array(N);
+    this.column = new Int32Array(N);
+    this.row = new Int32Array(N);
+    for (const L of scene.layers) {
+      for (let k = 0; k < L.nodeCount; k++) {
+        const n = L.nodeOffset + k;
+        this.stride[n] = L.nx;
+        this.column[n] = k % L.nx;
+        this.row[n] = Math.floor(k / L.nx);
+      }
+    }
+  }
+
+  /**
+   * Request an analysis. Extra anchors (grip patch cores) come from the anchor source when there is
+   * one, else from `anchors`. Resolves once an analysis that started after this request has applied.
+   */
+  request(anchors: readonly number[] = []): Promise<void> {
+    this.anchors = anchors;
+    if (this.running) {
+      this.again = true;
+      return this.running;
+    }
+    this.running = this.run().finally(() => (this.running = null));
+    return this.running;
+  }
+
+  private currentAnchors(): readonly number[] {
+    return this.anchorSource ? this.anchorSource() : this.anchors;
+  }
+
+  /** Clear all dynamic state (reset). */
+  reset(): void {
+    this.epoch++;
+    this.again = false;
+    const enc = this.device.createCommandEncoder({ label: 'state.reset' });
+    enc.clearBuffer(this.freedBuf);
+    this.device.queue.submit([enc.finish()]);
+    this.pieceOf.fill(NO_PIECE);
+    this.pieceSignature = 0;
+    this.solver.setPieces(this.pieceOf, new Uint32Array(1), new Uint32Array(0));
+    const fixed = new Uint32Array(this.scene.nodeCount);
+    for (let n = 0; n < fixed.length; n++) fixed[n] = this.scene.pinned[n];
+    this.device.queue.writeBuffer(this.solver.levels[0].fixed, 0, fixed);
+  }
+
+  private async run(): Promise<void> {
+    do {
+      this.again = false;
+      const epoch = this.epoch;
+      const enc = this.device.createCommandEncoder({ label: 'state.pack' });
+      const pass = enc.beginComputePass();
+      pass.setBindGroup(0, this.group);
+      pass.setPipeline(this.packPipe);
+      pass.dispatchWorkgroups(Math.ceil(this.scene.nodeCount / 128));
+      pass.end();
+      enc.copyBufferToBuffer(this.packed, 0, this.staging, 0, 4 * this.scene.nodeCount);
+      this.device.queue.submit([enc.finish()]);
+      await this.staging.mapAsync(GPUMapMode.READ);
+      const bits = new Uint32Array(this.staging.getMappedRange()).slice();
+      this.staging.unmap();
+      if (epoch !== this.epoch) continue;
+      // anchors as they are now: the result is submitted before any other task can change them
+      if (this.search(bits, this.currentAnchors()) > 0) {
+        this.device.queue.writeBuffer(this.freedBuf, 0, this.freed);
+        const e2 = this.device.createCommandEncoder({ label: 'state.apply' });
+        const p2 = e2.beginComputePass();
+        p2.setBindGroup(0, this.group);
+        p2.setPipeline(this.applyPipe);
+        p2.dispatchWorkgroups(Math.ceil(this.scene.nodeCount / 128));
+        p2.end();
+        this.device.queue.submit([e2.finish()]);
+      }
+      this.labelPieces(bits);
+    } while (this.again);
+  }
+
+  /**
+   * Flood the active span graph from the mounts, then from each grip anchor not yet reached. Returns
+   * the number of newly freed nodes.
+   */
+  private search(bits: Uint32Array, anchors: readonly number[]): number {
+    const s = this.scene;
+    const vis = this.visited;
+    vis.fill(0);
+    this.tail = 0;
+    for (let n = 0; n < s.nodeCount; n++) if (s.pinned[n]) this.push(bits, n);
+    this.flood(bits, 0);
+    for (const a of anchors) {
+      if (vis[a] || bits[a] & 4) continue;
+      const start = this.tail;
+      this.push(bits, a);
+      this.flood(bits, start);
+    }
+    let count = 0;
+    for (let n = 0; n < s.nodeCount; n++) {
+      const f = !vis[n] && !(bits[n] & 4) ? 1 : 0;
+      this.freed[n] = f;
+      count += f;
+    }
+    this.freedCount += count;
+    return count;
+  }
+
+  /**
+   * Label the detached pieces (detached before, or freed by this analysis; not retired) through active
+   * spans, and hand them to the solver when they changed.
+   */
+  private labelPieces(bits: Uint32Array): void {
+    const N = this.scene.nodeCount;
+    const detached = (n: number) => ((bits[n] & 4) !== 0 && (bits[n] & 8) === 0) || this.freed[n] === 1;
+    const of = this.pieceOf;
+    of.fill(NO_PIECE);
+    const start: number[] = [0];
+    let tail = 0;
+    let hash = 2166136261;
+    for (let seed = 0; seed < N; seed++) {
+      if (of[seed] !== NO_PIECE || !detached(seed)) continue;
+      const p = start.length - 1;
+      let head = tail;
+      of[seed] = p;
+      this.pieceNodes[tail++] = seed;
+      while (head < tail) {
+        const n = this.pieceNodes[head++];
+        const nx = this.stride[n];
+        const nbr: number[] = [];
+        if (bits[n] & 1) nbr.push(n + 1);
+        if (bits[n] & 2) nbr.push(n + nx);
+        if (this.column[n] > 0 && bits[n - 1] & 1) nbr.push(n - 1);
+        if (this.row[n] > 0 && bits[n - nx] & 2) nbr.push(n - nx);
+        for (const m of nbr) {
+          if (of[m] !== NO_PIECE || !detached(m)) continue;
+          of[m] = p;
+          this.pieceNodes[tail++] = m;
+        }
+      }
+      start.push(tail);
+      hash = Math.imul(hash ^ (seed + 1), 16777619) ^ tail;
+    }
+    hash = (hash ^ start.length) >>> 0;
+    if (hash === this.pieceSignature) return;
+    this.pieceSignature = hash;
+    this.solver.setPieces(of, Uint32Array.from(start), this.pieceNodes.subarray(0, tail));
+  }
+
+  private push(bits: Uint32Array, n: number): void {
+    if (this.visited[n] || bits[n] & 4) return;
+    this.visited[n] = 1;
+    this.queue[this.tail++] = n;
+  }
+
+  /** Breadth-first flood over active spans from queue position `head` until the queue is exhausted. */
+  private flood(bits: Uint32Array, head: number): void {
+    const { stride, column } = this;
+    while (head < this.tail) {
+      const n = this.queue[head++];
+      const nx = stride[n];
+      if (bits[n] & 1) this.push(bits, n + 1);
+      if (bits[n] & 2) this.push(bits, n + nx);
+      if (column[n] > 0 && bits[n - 1] & 1) this.push(bits, n - 1);
+      if (this.row[n] > 0 && bits[n - nx] & 2) this.push(bits, n - nx);
+    }
+  }
+}

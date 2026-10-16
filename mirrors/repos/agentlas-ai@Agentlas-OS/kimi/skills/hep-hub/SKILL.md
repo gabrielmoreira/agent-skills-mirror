@@ -6,8 +6,6 @@ Update fallback: 자동 업데이트가 안 되면 `hephaestus update`를 한 �
 
 # /hep-hub
 
-Raw request: `$ARGUMENTS`
-
 Use the local Agentlas OS MCP server `hephaestus-network` and call the
 Workforce tools with exact `sourceScope: "hub"`. This is public Hub only; it
 must not add registered Local or owner Cloud candidates.
@@ -72,6 +70,17 @@ do not silently search Local or Cloud. Core owns the Hub upstream transport;
 do not expose a direct remote `agentlas` MCP alongside it. A prepared roster
 is not proof of execution.
 
+If `workforce.prepare_execution` refuses with a `repair` object, the agent is
+broken, not absent. Say in plain words what `repair.meaning` says, offer the
+first `available` action in `repair.repair`, and run its `command` only after
+the user agrees. When a repair reports `reselectionRequired: true`, select
+again (`workforce.validate_selection`, then `workforce.prepare_execution`);
+never swap in a different agent without a new selection. A refusal that carries
+`alternates` lists other callable agents from the same search: present them as
+candidates and let the user or the selection step choose.
+
 For a `partial` or `failed` result, report each source receipt's exact
 `failureCode`. Never collapse several receipts into one, substitute a different
 code, or relabel the outcome.
+
+Raw request: `$ARGUMENTS`

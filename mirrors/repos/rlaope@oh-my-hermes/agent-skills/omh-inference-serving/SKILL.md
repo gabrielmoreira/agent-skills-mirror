@@ -21,9 +21,9 @@ This is an OMH `inference-serving` workflow skill, projected for Agent Skills ho
 
 ## Do Not Use When
 
-- A new model generation needs recognition, calibration, routing, and pricing onboarding; use `omh-model-optimization`.
-- The user wants their own machine's model routing or providers configured; use `omh-model-setup`.
-- The question is whether a coding runtime/executor can run at all; use `omh-executor-runtime-readiness`.
+- A new model generation needs recognition, calibration, routing, and pricing onboarding.
+- The user wants their own machine's model routing or providers configured.
+- The question is whether a coding runtime/executor can run at all.
 - The goal is application or system performance rather than the serving endpoint itself; use `ulw-perf`.
 
 ## Examples

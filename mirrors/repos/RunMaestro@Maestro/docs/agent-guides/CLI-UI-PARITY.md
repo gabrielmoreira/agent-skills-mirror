@@ -225,8 +225,14 @@ of taking a second round trip or trusting a value the caller guessed.
 
 ## Covered
 
+Notification center history uses the live desktop `notificationStore` over a request-response bridge. Main owns durable append/read/clear mutations in `maestro-notification-history.json`; renderer snapshots are synchronized across windows, and CLI results await committed writes. `notify inbox list --unread` filters the snapshot, `read <id>` / `read-all` update read state, `clear` clears history, `dismiss [id]` dismisses one entry or clears visible toasts, and `activate <id>` / `link <id>` run the same entry and inline-link actions as the UI. Every result includes the resulting unread count and history. `detail <id>` / `collapse` expand and collapse the same in-inbox details view. The five opt-in inbox preferences are registered settings and can be changed with `settings set <key> <value>`. `open notification-center` and `notify inbox open` open the app-level popover even when the Main Panel header is absent.
+
 | Point-and-click action                                                   | CLI                                                                                              |
 | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| Open / close notification center                                         | `open notification-center`, `notify inbox open` / `close`                                        |
+| Read / clear / activate notification history                             | `notify inbox list`, `read`, `read-all`, `clear`, `activate`, `link`                             |
+| Dismiss one / all visible notifications                                  | `notify inbox dismiss [id]`                                                                      |
+| Expand / collapse full inbox details                                     | `notify inbox detail <id>` / `collapse`                                                          |
 | Bookmark / unbookmark an agent (Cmd+Shift+B)                             | `bookmark` / `unbookmark`, or `update-agent --bookmark`                                          |
 | Create / rename / remove an agent                                        | `create-agent`, `rename-agent`, `remove-agent`                                                   |
 | Edit Agent modal fields                                                  | `update-agent`, `settings agent set`                                                             |
@@ -252,6 +258,7 @@ of taking a second round trip or trusting a value the caller guessed.
 | Send a message, or run a shell command                                   | `send`, `dispatch`, `send-terminal`                                                              |
 | Consult another agent (`@mention`)                                       | `ask <agent> "<question>" --from <caller>`                                                       |
 | Open a file / URL / terminal tab                                         | `open-file`, `open-browser`, `open-terminal`                                                     |
+| Click a folder link (reveal it in the Files panel)                       | `open-file <folder>` (both ride `revealPathInFileTree`)                                          |
 | Open a modal or dashboard                                                | `open <surface> [--tab]` (registry in `src/shared/uiSurfaces.ts`)                                |
 | Auto Run: start, stop, resume, skip, abort                               | `auto-run`, `stop-auto-run`, `resume-auto-run`, ...                                              |
 | Settings, theme, Encore features                                         | `settings`, `theme`, `set-theme`, `encore`                                                       |
@@ -275,6 +282,7 @@ of taking a second round trip or trusting a value the caller guessed.
 | Auto Run panel: Change folder                                            | `auto-run-folder <path> -a <agent>`                                                              |
 | Thought Stream: Steer Auto Run (send a note, cancel one, read replies)   | `steer-auto-run send <note> -a <agent>`, `steer-auto-run list`, `steer-auto-run cancel <id>`     |
 | Playbook Exchange: browse, README, install                               | `marketplace list`, `marketplace show <id>`, `marketplace import`                                |
+| Usage Dashboard: Tokens tab and Overview token speed (avg / peak tok/s)  | `stats-tokens [-r <range>] [--refresh] [--json]`                                                 |
 
 ## Open gaps
 

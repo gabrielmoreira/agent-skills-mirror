@@ -5,8 +5,6 @@ Update fallback: 자동 업데이트가 안 되면 `hephaestus update`를 한 �
 
 Set or show which model runs the orchestrator and which runs the workers.
 
-Raw request: `the request typed after the command`
-
 A role split only saves anything when the roles actually run on different
 models. Before this policy existed the allocator had nothing to read, so every
 worker inherited the orchestrator's frontier model and a five-worker fan-out
@@ -15,8 +13,19 @@ billed five frontier runs to do work a cheap model finishes.
 ## Read the request
 
 - No arguments, or `show`/`status` → report the current policy and stop.
+- A request refused with `tier_clamped_by_cost_policy` or
+  `requested_exact_model_exceeds_cost_policy` is this policy working: show the
+  current policy, name the role whose ceiling refused it, and offer the exact
+  `hep-orch` line that would allow the request. Change the policy only when the
+  user says so, never to get a refused request through.
 - `clear`/`reset` → remove the policy and stop.
 - Otherwise the request is one or more `role=value` pairs.
+
+`role.effort=<level>` sets the reasoning-effort ceiling for that role
+(`none`, `minimal`, `low`, `medium`, `high`, `xhigh`, `max`); an empty value
+removes it. Model and effort are independent, so
+`worker=<exact-model-id> worker.effort=xhigh` pins a model and lets it think
+as hard as that model supports.
 
 `role` is `orchestrator` or `worker`. `value` is either a tier
 (`economy`, `balanced`, `frontier`) — read as a ceiling — or an exact model id
@@ -44,7 +53,7 @@ separate invocation can put two different models to work at once.
 - **Claude Code** spawns real subagents and takes a model per subagent, so an
   orchestrator/worker split runs as written — this is the only host where the
   split is verified end to end today.
-- **Codex, Gemini/Antigravity, Cursor, OpenCode** have no subagent of their own.
+- **Codex, Antigravity, Cursor, OpenCode** have no subagent of their own.
   One model plays every role in sequence. The allocation receipt is still
   produced and the ceiling still applies to what that model may request, but a
   worker tier does not put a second, cheaper model on the machine.
@@ -77,3 +86,5 @@ Recommend a split only from what the tasks actually need: mechanical fan-out
 judgement, and final synthesis stay high. Do not promise a cost saving you have
 not measured — the saving is real only when the workers were genuinely doing
 mechanical work.
+
+Raw request: `the request typed after the command`

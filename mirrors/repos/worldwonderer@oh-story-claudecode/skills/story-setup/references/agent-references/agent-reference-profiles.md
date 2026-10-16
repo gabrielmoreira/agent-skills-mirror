@@ -1,6 +1,6 @@
 # Agent 参考资料 Profile 契约
 
-> 本文件是 story-architect 的唯一资料清单。story-architect 自身只描述任务能力，不复制文件清单。每次任务选择 `long` 或 `short` 后，只能加载 `Common + 当前 profile`；表外文件即使存在也不读取。其他 agent 按各自模板的参考表读取，只用本文件的 long / short 选择规则和质量覆盖表。
+> 本文件是 story-architect 的唯一资料清单，agent 模板不重复列出。任务包未覆盖的问题选择 `long` 或 `short` 后，只加载 `Common + 当前 profile`；不自行加读表外文件，表内索引点名的题材卡按索引读取。其他 agent 按自身模板读取，沿用这里的 long / short 选择规则和质量覆盖。
 
 ## 选择规则
 
@@ -45,10 +45,9 @@ Long profile 禁止读取 `short-*` 文件，不得采用“6 章”“每节 50
 |---|---|
 | [short-genre-formulas.md](short-genre-formulas.md) | 需要短篇题材结构骨架时 |
 | [short-paragraph-hooks.md](short-paragraph-hooks.md) | 设计段落留存、付费断点与小节内钩子 |
-| [short-chapter-hooks.md](short-chapter-hooks.md) | 设计节首/节尾钩子与高密度接力 |
+| [short-chapter-hooks.md](short-chapter-hooks.md) | 设计节首/节尾钩子、主悬念承接与全文收束 |
 | [short-emotional-methods.md](short-emotional-methods.md) | 设计单篇内的羁绊、撕裂、拉扯与余韵 |
-| [short-suspense.md](short-suspense.md) | 编排主悬念、副悬念、节间钩子和全文回收 |
-| [short-reversal.md](short-reversal.md) | 设计短篇线索、误导、揭示位置与两层反转 |
+| [short-reversal.md](short-reversal.md) | 设计短篇线索、误导与揭示；两层反转按所选方案使用 |
 | [short-quality.md](short-quality.md) | 审查全文密度、付费点、反转证据链和结尾兑现 |
 
 Short profile 禁止读取 `long-*`、`outline-*`、`opening-design.md` 或 `genre-prose-cards.md`；不得把卷级、日更或跨十几章指标当硬门槛。

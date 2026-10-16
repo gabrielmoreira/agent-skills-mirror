@@ -12,27 +12,26 @@ skill. For Go-specific facts:
 
 | Fact | Fetch |
 |---|---|
-| Latest `otelconf` module tag | `gh api repos/open-telemetry/opentelemetry-go-contrib/git/matching-refs/tags/otelconf -q '.[-1].ref'` |
 | `otelconf` CHANGELOG (which schema rc each release supports, breaking changes) | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-go-contrib/main/CHANGELOG.md` |
 | Current API surface (`SDK` methods, options) | `WebFetch https://pkg.go.dev/go.opentelemetry.io/contrib/otelconf` |
-| Current parser fixtures (`file_format` examples) | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-go-contrib/main/otelconf/testdata/v1.0.0.yaml` |
+| Schema tag the generated types come from (`genjsonschema` target) | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-go-contrib/otelconf/<tag>/Makefile` |
 | Latest `go.opentelemetry.io/otel` core release | `gh api repos/open-telemetry/opentelemetry-go/releases/latest -q '.tag_name'` |
 
 ## Choosing an Import Path
 
 The `otelconf` repo ships two flavors of the package:
 
-- **Root** `go.opentelemetry.io/contrib/otelconf` — tracks the current schema. Active
-  development. Confirm the accepted `file_format` literal from the selected module's
-  parser fixtures, not from the generic language support matrix alone. Includes
-  `sdk.Propagator()` for installing
+- **Root** `go.opentelemetry.io/contrib/otelconf` — trails the schema repository. Verified
+  2026-10-15: `v0.27.0` targets schema `v1.0.0-rc.3` (`file_format: "1.0-rc.3"`) while the schema
+  repository is at `v1.2.0` (owner: the `otel-declarative-config`
+  [parsers table](../../otel-declarative-config/SKILL.md)). Includes `sdk.Propagator()` for installing
   propagators from YAML.
 - **Schema-pinned** `go.opentelemetry.io/contrib/otelconf/v0.3.0` — frozen at file_format
   `"0.3"` (a 2024 schema). Has no `Propagator()` method; propagators must be installed
   manually via `otel.SetTextMapPropagator(...)`.
 
-Fetch the `otelconf` CHANGELOG (see Sources of Truth) to confirm which schema version the
-latest module tag supports.
+Newer `otelconf` releases may exist; check the selected tag's Makefile schema tag before deploying.
+For "latest", resolve the tag once with the `otelconf` tag command in this skill's `SKILL.md`.
 
 ## Migration notes
 

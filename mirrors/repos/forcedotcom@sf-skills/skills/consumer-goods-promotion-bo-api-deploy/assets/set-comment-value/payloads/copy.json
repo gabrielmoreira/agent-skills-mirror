@@ -4,7 +4,7 @@
   "salesOrg": "0001",
   "promotions": [
     {
-      "SourceId": "REPLACED-AT-RUNTIME-PROMOTION-ID"
+      "Id": "REPLACED-AT-RUNTIME-PROMOTION-ID"
     }
   ]
 }

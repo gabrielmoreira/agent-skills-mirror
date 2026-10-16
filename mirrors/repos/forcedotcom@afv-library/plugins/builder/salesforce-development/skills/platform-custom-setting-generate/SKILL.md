@@ -9,6 +9,7 @@ metadata:
     - "platform-custom-field-generate"
     - "platform-custom-metadata-type-generate"
     - "platform-custom-object-generate"
+    - "platform-metadata-api-context-get"
   cliTools:
     - tool: ["sf"]
       semver: ">=2.136.8"
@@ -35,6 +36,8 @@ Use this skill when you need to:
 > that checks the flag is the developer's to write — this skill generates the setting only.
 
 ---
+
+For authoritative Metadata API type, field, and enum details beyond this skill, use the `platform-metadata-api-context-get` skill.
 
 ## 1. Overview and Purpose
 

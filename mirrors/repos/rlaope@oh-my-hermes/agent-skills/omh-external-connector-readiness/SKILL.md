@@ -1,6 +1,6 @@
 ---
 name: "omh-external-connector-readiness"
-description: "[omh] Evaluating a plugin, connector, or API for adoption: external connector readiness - assess whether a named plugin, connector, API, data provider, or multimodal route is safe, affordable, fresh, and observable; use executor-runtime-readiness for coding-owner choice and toolbelt-readiness for missing capability inventory. Use when the user says: external-connector-readiness, external connector readiness, connector readiness matrix, plugin readiness matrix, provider readiness, api readiness, connector adoption, external plugin adoption."
+description: "[omh] Evaluating a plugin, connector, or API for adoption: external connector readiness - assess whether a named plugin, connector, API, data provider, or multimodal route is safe, affordable, fresh, and observable; use toolbelt-readiness for missing capability inventory. Use when the user says: external-connector-readiness, external connector readiness, connector readiness matrix, plugin readiness matrix, provider readiness, api readiness, connector adoption, external plugin adoption."
 license: MIT
 metadata:
   hermes:
@@ -21,7 +21,7 @@ This is an OMH `external-connector-readiness` workflow skill, projected for Agen
 
 ## Do Not Use When
 
-- Choosing which coding owner runs a task; use `omh-executor-runtime-readiness`.
+- Choosing which coding owner runs a task.
 - Finding which tool, credential, or install is missing for work already chosen; use `omh-toolbelt-readiness`.
 - A read-only live lookup or an external write through a connector already adopted; use `omh-live-info` or `omh-apps`.
 
@@ -55,7 +55,7 @@ Bad example:
 - If the candidate list is unknown, route to skill-scout or source-finder before readiness scoring.
 - If credentials, cost authority, or connector installation is missing, keep readiness blocked and route setup to toolbelt-readiness.
 - If a specific provider action is already selected, route read-only live data to live-info-operator or write/mutation tasks to connector-operator.
-- If a memory-provider lifecycle field is unknown, ask the operator to declare it or supply an observed trial receipt; hand the result to memory-sync as not_omh_reviewed context rather than importing it into OMH review.
+- If a memory-provider lifecycle field is unknown, ask the operator to declare it or supply an observed trial receipt; keep the result as not_omh_reviewed context rather than importing it into OMH review.
 - If a realtime voice connector has no supplied realtime_voice_trial_receipt/v1, route the setup and the trial run to the host, connector, or operator that owns the microphone, call, or room, then consume only the returned receipt.
 
 

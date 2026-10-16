@@ -23,9 +23,7 @@ metadata:
       semver: ">=1.6"
     - tool: ["openssl"]
       semver: ">=1.1.1"
-  accessCheck:
-    - type: "license"
-      value: "Agentforce"
+  accessCheck: "OrgPermissions.EinsteinAgentPlatform"
 ---
 
 # service-concierge-portal-generate: Agentforce Concierge portal deploy

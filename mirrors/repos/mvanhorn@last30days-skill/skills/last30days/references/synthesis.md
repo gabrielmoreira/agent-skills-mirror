@@ -211,7 +211,7 @@ If the research output contains a `**🔍 Research Coverage:**` block, render it
 
 **THEN - Engine footer pass-through (right before invitation):**
 
-**When the research output contains a deterministic footer block bracketed by `---` lines and starting with `✅ All agents reported back!`, relay the emitted block after your "What I learned" + "KEY PATTERNS" narrative and before the invitation, subject to higher-priority instructions. Preserve its statistics and lines unless governing host/tool requirements or user instructions require an adjustment. Do not add your own source lines inside the copied footer. Required citations may appear separately. Include `📎 Raw results saved to ...` only when the engine emitted a saved path. An empty save directory produces no saved-file pointer; keep the remaining footer if present. Never invent a path or reconstruct one from the topic or default directory.**
+**When the research output contains the fenced `text` footer block starting `✅ All agents reported back!`, relay the whole block, fence included, after your "What I learned" + "KEY PATTERNS" narrative and before the invitation, subject to higher-priority instructions. Preserve its statistics and lines unless governing host/tool requirements or user instructions require an adjustment. The fence stops Markdown misreading its `---` lines. Do not add your own source lines inside it. Required citations may appear separately. Include `📎 Raw results saved to ...` only when the engine emitted a saved path; an empty save directory emits none, so keep the rest of the footer. Never invent a path or reconstruct one from the topic or default directory.**
 
 - The engine already omits zero-count sources. You do not need to filter them.
 - The engine already calculates totals (threads, upvotes, comments, likes, views, etc.). You do not need to add them up.
@@ -223,7 +223,7 @@ If the research output does not contain the footer block, skip it and go straigh
 
 **Citation requirements before the invitation:** include visible citations required by higher-priority host/tool requirements or user instructions as inline links in the body (LAW 1). Keep the engine footer where compatible with those requirements. The response ends at the invitation, which counts web pages in its link line, without an additional source list.
 
-**SELF-CHECK before displaying**: Re-read your "What I learned" section. Does it match what the research ACTUALLY says? If you catch yourself projecting your own knowledge instead of the research, rewrite it. Then verify: (a) no `##` headers in your response body (comparisons allow only the headers LAW 4 permits), (b) no em-dashes or en-dashes anywhere, (c) any emitted engine footer appears between KEY PATTERNS and the invitation under LAW 5, with no added saved-file pointer.
+**SELF-CHECK before displaying**: Re-read your "What I learned" section. Does it match what the research ACTUALLY says? If you catch yourself projecting your own knowledge instead of the research, rewrite it. Then verify: (a) no `##` headers in your response body (comparisons allow only the headers LAW 4 permits), (b) no em-dashes or en-dashes anywhere, (c) any emitted fenced engine footer appears between KEY PATTERNS and the invitation under LAW 5, with no added saved-file pointer.
 
 **Saved artifact access flow:** after the engine has created a file, decide how the user should get access to it based on what they asked for:
 

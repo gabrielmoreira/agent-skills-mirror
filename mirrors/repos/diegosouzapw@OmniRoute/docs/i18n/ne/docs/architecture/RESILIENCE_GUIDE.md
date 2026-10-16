@@ -428,6 +428,17 @@ glm-4.7=3
 (`enabled`, `maxWaitMs`, `maxAttempts`, `budgetMs`) द्वारा सीमित हुन्छ। यसले
 `quota_exhausted` (मध्यरातसम्म लक गरिएको) वा auth/not-found कारणहरूमा कहिल्यै प्रतीक्षा गर्दैन।
 
+```text
+#16319 · comboCooldownWait · pre-dispatch (attempts = 0)
+all targets skipped + transient model lockout:
+  enabled ∧ 0 < waitMs ≤ maxWaitMs ∧ attempt < maxAttempts ∧ budgetLeftMs ≥ waitMs
+    → wait → re-dispatch
+  wait = false → HTTP 429 rate_limit_error
+  retry_after / reset_at ← earliest transient lock expiry
+quota_exhausted / auth_error / not_found / not_found_local:
+  no transient hint → HTTP 503 ALL_TARGETS_SKIPPED
+```
+
 ---
 
 ## 5. अनुरोध क्यू प्रवेश नियन्त्रण (v3.8.49 · issue #6593)

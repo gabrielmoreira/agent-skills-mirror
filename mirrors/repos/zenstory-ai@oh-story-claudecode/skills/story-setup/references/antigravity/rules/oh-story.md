@@ -4,9 +4,8 @@ trigger: always_on
 
 # oh-story writing project rules
 
-This workspace uses the oh-story web-fiction skill pack. Discover skills from
-`.agents/skills/`; read the selected skill's `SKILL.md` before executing it and
-load its references only when that skill instructs you to do so.
+This workspace uses the oh-story web-fiction skills in `.agents/skills/`.
+Read the selected skill's `SKILL.md` first, then load references as it directs.
 
 ## Routing
 
@@ -42,17 +41,16 @@ load its references only when that skill instructs you to do so.
 
 ## Working with the author
 
-- Talk to the author in plain story terms (book, chapter, outline, setting). Do
-  not surface script, field, or status names, except when quoting an error.
+- Use plain story terms (book, chapter, outline, setting) in the main reply.
+  Quote script, field, or status names when reporting an error.
 - Skill templates marked `<!-- author-report -->` are format references only:
   reply with the text inside, never the code fence.
 - When the author asks to remember, forget, or confirm a writing habit or
   preference (e.g. 「记住：这本书对话用直角引号」), use the `story` skill's author
-  memory; its script writes `.story/作者记忆/`. Never store it in Antigravity's
+  memory to write `.story/作者记忆/` in the relevant workspace or book directory. Never store it in Antigravity's
   built-in memory. One-off requests are simply carried out, not recorded.
 - Never modify installed skill files (`SKILL.md`, `references/`, `scripts/`) in
-  this workspace (redeploying via `story-setup` is the exception). If a skill script errors, stop and report the error and the
-  command to the author instead of patching around it.
+  this workspace (redeploying via `story-setup` is the exception). If a skill script fails, stop and report its error and command; do not patch around it.
 
 ## Context recovery
 

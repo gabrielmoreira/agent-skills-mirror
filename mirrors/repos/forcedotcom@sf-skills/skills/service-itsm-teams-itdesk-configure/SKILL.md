@@ -14,9 +14,7 @@ metadata:
     headless-360:
       tools: ["describe", "discover", "dispatch", "dispatch_readonly"]
       semver: ">=1.0.0"
-  accessCheck:
-    - type: "orgPref"
-      value: "ITSMTeamsEnabled"
+  accessCheck: "OrgPreferences.ITSMTeamsEnabled"
 allowed-tools: |
   Read AskUserQuestion
   mcp__headless-360__discover

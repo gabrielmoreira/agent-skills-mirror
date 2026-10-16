@@ -94,6 +94,36 @@ recorded observations, identity, hashes, exports and source ranges; it does not
 include every child syntax observation, related edge or original source file.
 An absent item fact is not evidence of absence from the whole application.
 
+For canonical identities and retained source-range counts, use a typed reference
+page instead of reading every full item:
+
+```json
+{
+  "source": {
+    "kind": "retained-evidence",
+    "evidence_id": "ev_ACTUAL_PARENT_ID"
+  },
+  "view": {
+    "kind": "javascript",
+    "collection": "modules",
+    "projection": "references",
+    "where": { "path": "main.js", "kind": "javascript-module" },
+    "offset": 0,
+    "limit": 16
+  }
+}
+```
+
+Filters match exact retained strings; omit a filter to include all values, use
+`path: null` for unavailable paths, and `path: ""` for a recorded empty path.
+Rows preserve canonical `identity` and distinct observation support states in
+`basis`. `retained_source_range_count` counts retained source-range observations,
+not runtime imports or unique reference sites. Use a row's `node_id` with the item
+view above for exact locations and full supporting observations. Follow
+`coverage.next_offset`; page exhaustion describes matching retained rows only.
+Check `source_coverage` for source selection, partial/unknown graph coverage and
+unknown counts before drawing a negative conclusion.
+
 ## Trace only the remaining question
 
 Use `trace_application_feature` on the parent application Evidence for one

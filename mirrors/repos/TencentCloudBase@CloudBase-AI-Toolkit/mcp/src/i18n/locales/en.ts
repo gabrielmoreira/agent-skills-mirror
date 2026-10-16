@@ -28,6 +28,8 @@ import { setup } from "./modules/setup.js";
 import { envSetup } from "./modules/envSetup.js";
 import { interactive } from "./modules/interactive.js";
 import { feedback } from "./modules/feedback.js";
+import { mcpUi } from "./modules/mcpUi.js";
+import { mcpUiCredits } from "./modules/mcpUiCredits.js";
 
 export const en = {
   env: env.en,
@@ -59,4 +61,6 @@ export const en = {
   envSetup: envSetup.en,
   interactive: interactive.en,
   feedback: feedback.en,
+  mcpUi: mcpUi.en,
+  mcpUiCredits: mcpUiCredits.en,
 };

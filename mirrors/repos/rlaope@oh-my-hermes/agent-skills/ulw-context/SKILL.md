@@ -26,8 +26,8 @@ This is an OMH `context` workflow skill, projected for Agent Skills hosts (Claud
 - The request is broad ambiguity with no project-language conflict; use `ulw-interview`.
 - The unresolved decision is empirical and a cheap isolated experiment can answer it; use `omh-decision-prototype` and keep the frontier for the rest.
 - The terminology is already agreed and the request is to produce an implementation plan; use `ulw-plan`.
-- The user wants to capture or curate general retained memory rather than repository terminology; use `omh-memory-new` or `omh-memory-sync`.
-- The user asks for workflow discovery, help, status, file lookup, direct answer, or dispatch; preserve `omh-routing` and ordinary protected-route behavior.
+- The user wants to capture or curate general retained memory rather than repository terminology; use `omh-memory-new`.
+- The user asks for workflow discovery, help, status, file lookup, direct answer, or dispatch.
 
 ## Examples
 

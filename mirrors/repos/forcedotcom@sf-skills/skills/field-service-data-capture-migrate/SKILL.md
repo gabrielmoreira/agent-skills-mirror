@@ -18,9 +18,7 @@ metadata:
     slack:
       tools: ["slack_create_canvas", "slack_send_message"]
       semver: ">=1.0.0"
-  accessCheck:
-    - type: "license"
-      value: "Field Service"
+  accessCheck: "License.FieldService"
 ---
 
 # Migrate Field Service Mobile Flows to Data Capture

@@ -1424,6 +1424,7 @@ function SlideElements({
           callout={callout}
           src={screenshot}
           screenWidth={deviceWidth * SCREEN_WIDTH_FRACTION}
+          shortSide={Math.min(rect.width, rect.height)}
           cW={cW}
           accent={theme.accent}
           hideEmpty={hideEmpty}

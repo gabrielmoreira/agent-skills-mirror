@@ -358,6 +358,42 @@ EVERY change:
   passed their builds and shipped anyway.
 - **Audit the whole class, not the one instance.** Fixing one JS-string escape, one stack frame, one
   stale title doesn't fix its siblings — grep the class and verify the family.
+- **A check must not share its rule with the code it checks.** The Delivered tab shipped a "name was
+  cut short" rule built on `longer.startswith(shorter)`, and the query written to audit it used the
+  same prefix test — so it agreed with the bug and reported zero. It took three releases and
+  $348.74 of money filed against the wrong repository to find. Write the audit from the OTHER
+  direction, and prefer a metric where the data **disproves itself** over one that re-applies your
+  rule: "a row whose own evidence names a different repository" needs no oracle, no network and no
+  opinion, and it found in one query what three rounds of shape checks had missed.
+- **A filter's half that matters is what it does NOT remove.** Every exclusion rule ships a test that
+  passes both before and after, pinning the thing that must survive. And when the rule would reject
+  this repo's own fixtures, the fixtures are what change — if a new filter leaves your own test
+  vocabulary working, it probably is not filtering.
+- **Read the whole value space, not just your filter classes.** Every rule-shaped audit can only find
+  what its rule already describes. Three more phantom repositories (a `.extraheader` git config key, a
+  `github.com/resources/insights/<slug>` product page, an `openai/openai` out of a documentation
+  example) survived eleven green defect-class checks and were found by listing all 200 repository names
+  on the live node and READING them. Budget one pass of plain eyes over the distinct values.
+- **When one signal contains another, the rule has one signal.** A two-signal specimen filter required
+  the word `example` AND a reserved documentation domain — but `example.com` contains `example`, so the
+  domain satisfied both halves by itself and the rule silently collapsed, deleting a real repository.
+  For every multi-signal rule, prove each signal can be absent while the others are present.
+- **A silent-empty result reads as a passing check.** The daemon query proxy returns `[]` for malformed
+  SQL, and a `0` from an audit query is indistinguishable from "nothing wrong". Every check must be run
+  once against data that SHOULD trip it, and seen to trip. The same shape bit a CI waiter that anchored
+  on `^\S+\s+pending` while the check names contain spaces: it reported "settled, 0 failures" over a
+  run in which every check was still pending.
+- **A waiter that swallows its errors cannot succeed.** The twin of the rule above. A poller written as
+  `try: ... except Exception: sleep(); continue` turns a transport failure into "not ready yet": one run
+  polled PyPI with `urllib` for a full hour and printed nothing but `timed out`, while the wheel it was
+  waiting for had been published 50 minutes earlier (`urllib` uses the system trust store, which on a
+  dev box can fail every HTTPS handshake; `curl` and `pip` carry their own CA bundle and worked in the
+  same shell). A waiter must say WHY it retried, and the thing it waits for is worth checking once by
+  hand before trusting a long wait.
+- **A fold that runs per item leaves the cross-item case.** `_fold_repo_case` makes one repository
+  spelled two ways one row inside a session, and the live tab still showed both spellings, because they
+  came from two different sessions and the read query grouped on the exact text. Ask where the rows
+  finally meet, and put the rule there.
 
 ## 4. PR → green CI → merge
 
@@ -542,6 +578,36 @@ gh pr create --title "[RELEASE] <summary> (carries #<feature-pr>)" --body "…"
 ## 6. Promote to clawmetry-cloud
 
 Hand off to the cloud repo's `FLYWHEEL.md`. In short: bump `clawmetry==<new>` in the cloud `Dockerfile` *only when the daemon code changed* (a cloud-only render fix that reads an already-shipped snapshot key needs no bump), add the matching `cm-cloud-*` interceptor + route-policy entry, get cloud CI green, and verify the deploy.
+
+### 6a. A release that ADDS a route deadlocks the pin
+
+`cloud_route_policy`'s enforcer **refuses to boot** the cloud app when an
+installed OSS route has no policy entry. That is deliberate — an unclassified
+route might serve a tenant data it should not — and it means the two cloud pull
+requests block each other:
+
+- the auto-pin PR (`chore: auto-pin clawmetry==X`) goes red on ~18 checks, every
+  one of them on the same `cloud_route_policy/enforcer.py: sys.exit(1)`, because
+  every test that constructs the app errors in setup;
+- a PR carrying the policy entry is red against the **old** pin, because the
+  entry names a route the installed wheel does not have.
+
+**Fold the one-line `Dockerfile` bump into the PR that adds the policy entries,
+and close the auto-pin PR as superseded.** They can never be green apart.
+
+The tell that this is not a regression in your code: check the **previous**
+auto-pin PR. A release with no new route merges clean (0.12.916 was 55 pass / 0
+fail; 0.12.917, which added `/api/delivery`, was 18 fail). Since 2026-10-15 the
+pin PR says this in its own body — `scripts/list_oss_routes.py --added-since`
+names the added routes in `auto-deploy-cloud.yml`, and the auto-merge poll is
+skipped rather than left to time out after 45 minutes.
+
+A pin PR whose body carries that warning is **not** waiting for anyone to fix
+its CI. And an empty list there means "no new routes", never "could not tell":
+the script exits 2 when a revision it was asked to compare reads short, and the
+workflow reports that it could not compare rather than reporting a route-adding
+release as route-free. That distinction is the whole value of the check, so it
+is a contract rather than an implementation detail.
 
 ## 7. Verify in production (the part that's non-negotiable)
 

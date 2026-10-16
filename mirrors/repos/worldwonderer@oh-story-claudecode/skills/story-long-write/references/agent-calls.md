@@ -1,6 +1,6 @@
 # agent-calls.md：spawn 子代理的调用方式
 
-只在要 spawn 对应 agent 时读；主会话自己写正文、自己排纲时不读。何时调用由各流程文件决定，这里只放 prompt 与必须附带的内容。Antigravity 用 `invoke_subagent` + 同名 `TypeName`。
+只在要 spawn 对应 agent 时读；主会话自己写正文、自己排纲时不读。调用时机见各流程；下列 prompt 列明必传内容。Antigravity 用 `invoke_subagent` + 同名 `TypeName`。
 
 ## narrative-writer：写一章
 

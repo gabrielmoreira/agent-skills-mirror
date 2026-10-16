@@ -1,9 +1,10 @@
 # Agentlas 도구 색인 (자동 생성 — 손으로 편집 금지)
 
-생성원: `agentlas_cloud/mcp_stdio.py` TOOLS (29개). 재생성: `python3 scripts/generate-ops-skill-index.py`.
+생성원: `agentlas_cloud/mcp_stdio.py` TOOLS (36개). 재생성: `python3 scripts/generate-ops-skill-index.py`.
 
 | 도구 | 요지 |
 |---|---|
+| `agentlas.read_agent_file` | Read an original UTF-8 file below a local agent package using its existing agentlas.json allowRead/denyRead policy. |
 | `agentlas_resolve_plugins` | Resolve a short, redacted missing capability against installed Agentlas plugins and the Agentlas Hub catalog before claiming that no suitabl |
 | `agentlas_tool_search` | Find the TOOL for a concrete action, not the plugin for a topic. |
 | `hephaestus_route` | Legacy compatibility/debug card router. |
@@ -26,6 +27,7 @@
 | `workforce.goal_runtime` | Load the exact locally cached prepared plans for an active account/project goal. |
 | `workforce.record_goal_turn` | Record the host LLM's content-free per-turn choice: reuse the bound roster, use local skills only, recruit a real gap, remain on standby, or |
 | `workforce.complete_goal` | Release a durable Workforce binding only after an explicit host/user goal completion or cancellation. |
+| `goal.strategy` | Plan tree and KPI check for a long, measurable goal (adds to the host /goal; the host still decides when the work is done). |
 | `context.refresh` | Explicitly build one complete content-addressed project Context Map snapshot. |
 | `context.locate` | Locate exact project symbols, definitions, and reverse references in the local dependency map. |
 | `context.refs` | Return every bounded local backlink for one exact symbol. |
@@ -33,3 +35,8 @@
 | `context.impact` | Trace changed files or symbols through reverse references and module dependencies. |
 | `context.verify` | Completion gate: fail closed while any impacted file is neither changed, reviewed, nor explicitly waived. |
 | `hephaestus.unpublish_agent` | Take one of YOUR OWN published agents back down from the public Agentlas Hub. |
+| `agentlas.record_agent_memory` | Record a compact package turn summary for automatic memory consolidation. |
+| `agentlas.decide_agent_learning` | Process an existing package memory or playbook candidate. |
+| `agentlas.memory_curation_request` | Resume a server-owned automatic memory job using the host's configured no-tools background adapter. |
+| `agentlas.memory_session_open` | Bind package turn summaries and continuation to an authenticated logical host session. |
+| `agentlas.memory_session_recap` | Read the source-bound package checkpoint and memory context using the owner session capability. |

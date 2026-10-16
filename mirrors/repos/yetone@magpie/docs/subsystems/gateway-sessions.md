@@ -37,7 +37,12 @@ resume command or terminal action: the agent's own files of them are not on
 this computer. Their rows carry `gateway: true`; the Sessions page groups them
 under "Seen through the gateway" rather than "No folder", and their size is the
 text magpie recorded of them (`sessions.GatewaySizes`), shown only when there
-is some. Their
+is some. The overview's top summaries (`MergeExternalStats`) carry
+`gateway: true` too, and Usage › Sessions names such a row "Gateway session"
+where a folder would be, with "(prompt not recorded)" when no text was kept,
+so it doesn't read as a native session with an empty prompt (#2285: a Pi
+subagent whose session file is in a temp folder). Verification:
+`TestTopSessionsMarkWhatOnlyTheGatewaySaw`, `sessions-overview.test.cjs`. Their
 models, token totals, start/last timestamps and effective prices come from the
 same usage records used by Usage and stats endpoints.
 
@@ -298,6 +303,23 @@ reporter's real wire files), `TestCodeBuddyCalls`, `TestWorkBuddyCalls*`,
 `TestPiCalls*` (Pi 1.1.0's and omp 18.9.1's own files) and
 `TestWSLSessionsListed`.
 
+A read of every call decodes each file's cached shard, and over a long
+history that is tens of thousands of files (#2278: 68k shards, 415 MB).
+Asks for the same calls while one read is under way wait for it and get
+copies of its answer (`sharedCalls`), and reads run one at a time.
+`AgentCalls` reads one agent's files only. The Sessions overview's Codex
+model and effort (`usage.CodexModelEffort`) is built from Codex's calls
+and the gateway's records alone, since only those name a Codex actor.
+It is built once at a time per period, and an ask while it builds gets
+the last answer for the same home. The answer is kept when usage.jsonl is
+missing or grows during the build, and up to 8 periods are kept. The page
+asks for an overview it is already waiting for only once (`sessOverview`
+in `plugins/usage/page.js`). Before this, each ask during the gateway's
+writes rebuilt the whole ledger, and the app grew to 85 GB. Verification:
+`TestConcurrentCallsShareOneRead`, `TestAgentCallsReadsOneAgent`,
+`TestCodexModelEffort*` in `codex_effort_shared_test.go` (the codex-only
+answer equals the whole ledger's), and `sessions-overview-once.test.cjs`.
+
 ### Calls an app reports itself
 
 `POST /v1/magpie/usage/requests`
@@ -408,19 +430,26 @@ for the session) and `start`/`last`; its file is never sent.
   `ocRoots` records its parent. Its title splits 1.x's
   `<description> (@<agent> subagent)`; 2.x titles it the description alone
   (task tool, opencode 2.0.25), and a default `Child session - <time>` is no
-  title. ZCode shares the parser but has no transcript, so lists none.
+  title. OpenCode 2 names the agent in `session_v2.agent` (2.0.29), which
+  is the kind when set, the title's `@<agent>` otherwise (`ocV2DB.agent`,
+  kept once found; #2290). ZCode shares the parser but has no transcript,
+  so lists none.
 - Kimi Code: each `agents/agent-<n>/wire.jsonl`. 1.5's `subagent.spawned`
   record, written in the starting agent's wire, gives `subagentName`,
   `description` and `parentAgentId` (`kimiWireOf`, read again only when the
   file's size or time changes); 1.4 writes none, and the title is the
-  subagent's first `turn.prompt`.
+  subagent's first `turn.prompt`. In a subagent's own wire, a `turn.prompt`
+  from a `system_trigger` named `subagent` is the task it was given and
+  opens as its first user message, not folded context (`kimiTask`, #2290);
+  other system triggers, and any in `agents/main`, stay folded.
 
 These are read beside the parsed-session cache, not in it, so its version
 is unchanged. `GET /api/sessions/transcript` takes `sub=<id>` for a
 subagent's conversation; the id is looked up among the session's own
 `subagents` (`sessions.SubagentTranscript`), never used as a path, and one
 not listed is an error. See `TestClaudeSubagents`, `TestQoderSubagents`,
-`TestOpenCodeSubagents`, `TestKimiSubagents` and
+`TestOpenCodeSubagents`, `TestOpenCodeV2SubagentKind`, `TestKimiSubagents`,
+`TestKimiSubagentTask` and
 `TestSessionSubagentTranscript`.
 
 The Sessions page draws only main sessions on top. A session's subagents are

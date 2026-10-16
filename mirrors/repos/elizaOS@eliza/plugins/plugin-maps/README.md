@@ -47,3 +47,9 @@ Requests belong to the current authenticated conversation and device enrollment.
 The relay delivers a request once and waits at most 30 seconds for its result.
 Cancellation, replacement, or an uncertain response does not replay an effect.
 Idle polls wait up to one second without holding a database transaction.
+
+Cloud Maps creates one `Idempotency-Key` for each explicit POST operation.
+The server consumes a separate organization Maps request allowance and makes
+no per-request monetary charge (Alpha P-56). It refuses duplicate admissions,
+including retries after an unknown acknowledgement. An unconfigured allowance
+needs an operator configuration change; it is not a payment or upgrade prompt.

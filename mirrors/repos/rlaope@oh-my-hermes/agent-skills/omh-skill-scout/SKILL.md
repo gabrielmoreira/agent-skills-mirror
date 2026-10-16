@@ -21,9 +21,9 @@ This is an OMH `skill-scout` workflow skill, projected for Agent Skills hosts (C
 
 ## Do Not Use When
 
-- Repairing an OMH install or a skill that does not load; use `omh-doctor`.
+- Repairing an OMH install or a skill that does not load.
 - A health overview of the skills already installed; use `omh-skill-health`.
-- Writing or changing a skill once the scout decision is made; use `omh-skill`.
+- Writing or changing a skill once the scout decision is made.
 
 ## Examples
 
@@ -48,9 +48,9 @@ Bad example:
 
 ## Recovery Notes
 
-- If the request is about setup or installed skill repair, route to doctor.
+- If the request is about setup or installed skill repair, it is outside this skill.
 - If the request is a portfolio health dashboard, route to skill-health.
-- If the request is an approved skill mutation or creation task, route to skill or implementation after the scout decision.
+- If the request is an approved skill mutation or creation task, route to implementation after the scout decision.
 
 
 

@@ -5,9 +5,7 @@ metadata:
   version: "1.2"
   domains: ["Service"]
   minApiVersion: "68.0"
-  accessCheck:
-    - type: "orgPerm"
-      value: "ThunderbirdVoice.orgHasNativeVoiceAllowed"
+  accessCheck: "ThunderbirdVoice.orgHasNativeVoiceAllowed"
   cliTools:
     - tool: ["jq"]
       semver: ">=1.6"

@@ -421,6 +421,8 @@ strategy it can execute, and `--alpha-mode auto` (the default) follows it:
   Rollouts are selected by an exact session-id filename suffix.
   Missing, duplicate, or pre-existing stale matches fail rather than falling back to another root or choosing by modification time.
   The transport prompt names the skill with codex's official `$imagegen` mention, which is how a codex skill is invoked explicitly. The adapter owns that trigger alone; the caller's sprite-request prompt is passed through verbatim.
+  How codex is signed in is asked once per call by `codex_provider.codex_login` (`codex login status`), the same reading the default resolution, the facing check and the guided workflow use: signed in with ChatGPT is the subscription (`auth_source: codex-login`); signed in with an API key bills that key per call, said on stderr before `codex exec` runs (`codex-api-key`); not signed in is refused with the reason before codex runs (an omitted `--provider` falls back to grok instead, above). What `codex login status` prints is never repeated: an API-key login can name its key.
+  A codex call is stopped after `SPRITE_GEN_GEN_TIMEOUT_SECONDS` (180) without an answer and reported as a stall (`gen-timeout`).
 
 ### When codex produces no image at all
 
@@ -451,9 +453,11 @@ that choice) plus its layout guide, into `raw/<state>.png`. Each row gets
 `reports/gen-set/<state>.json`, the batch writes `reports/gen-set/table.md` and
 `set.report.json`, existing rows are reused unless `--force`, a direction run generates
 its anchors before its rows and stops when an anchor failed, and the exit code is
-non-zero when any row failed. `--provider` is honoured verbatim; unspecified, it
-resolves exactly as `gen` does (above), and any codex→grok availability failover is
-recorded per row.
+non-zero when any row failed. `--provider` (`codex` or `grok`; `openai` is named on `gen`
+itself) is honoured verbatim; unspecified, it resolves exactly as `gen` does (above), and any
+codex→grok availability failover is recorded per row with the row's `auth_source`. Each row's
+output goes to its log, but a row's billing line and a provider switch also print on the
+terminal as they happen (`base.run_logged`), so a metered row is never announced only in a file.
 
 One row by hand is the same call `gen-set` makes: `--provider codex` (or `grok`) with
 `prompts/<state>.txt`, writing `raw/<state>.png`.

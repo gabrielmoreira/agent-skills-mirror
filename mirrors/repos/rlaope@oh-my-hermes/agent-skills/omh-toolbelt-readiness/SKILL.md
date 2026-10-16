@@ -1,6 +1,6 @@
 ---
 name: "omh-toolbelt-readiness"
-description: "[omh] Which tools and credentials a workflow needs: inventory which MCP servers, CLIs, APIs, credentials, and connectors a workflow needs; use external-connector-readiness to assess one named integration and executor-runtime-readiness to choose the coding owner. Use when the user says: toolbelt-readiness, mcp readiness, tool readiness, plugin readiness, connector readiness, needed mcp, api credential, missing cli."
+description: "[omh] Which tools and credentials a workflow needs: inventory which MCP servers, CLIs, APIs, credentials, and connectors a workflow needs; use external-connector-readiness to assess one named integration. Use when the user says: toolbelt-readiness, mcp readiness, tool readiness, plugin readiness, connector readiness, needed mcp, api credential, missing cli."
 license: MIT
 metadata:
   hermes:
@@ -22,7 +22,7 @@ This is an OMH `toolbelt-readiness` workflow skill, projected for Agent Skills h
 ## Do Not Use When
 
 - One named integration needs assessing end to end before adoption; use `omh-external-connector-readiness`.
-- The question is which coding owner should run the work; use `omh-executor-runtime-readiness`.
+- The question is which coding owner should run the work.
 - The user wants a tool installed, a credential validated, or a connector called now; the card names that step and who runs it, and performs none of them.
 
 ## Examples

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `plannotator/effective-html` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `plannotator/effective-html` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `plannotator/effective-html` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 19 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,23 +61,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
 | 2 | ✓ | [`site/app/llms.txt/route.ts`](site/app/llms.txt/route.ts) |
-| 3 | ✓ | [`skills/design-artifact/agents/openai.yaml`](skills/design-artifact/agents/openai.yaml) |
-| 4 | ✓ | [`skills/design-artifact/SKILL.md`](skills/design-artifact/SKILL.md) |
-| 5 | ✓ | [`skills/html-diagram/agents/openai.yaml`](skills/html-diagram/agents/openai.yaml) |
-| 6 | ✓ | [`skills/html-diagram/SKILL.md`](skills/html-diagram/SKILL.md) |
-| 7 | ✓ | [`skills/html-plan/agents/openai.yaml`](skills/html-plan/agents/openai.yaml) |
-| 8 | ✓ | [`skills/html-plan/SKILL.md`](skills/html-plan/SKILL.md) |
-| 9 | ✓ | [`skills/html-prototype/agents/openai.yaml`](skills/html-prototype/agents/openai.yaml) |
-| 10 | ✓ | [`skills/html-prototype/SKILL.md`](skills/html-prototype/SKILL.md) |
-| 11 | ✓ | [`skills/html-wireframe/agents/openai.yaml`](skills/html-wireframe/agents/openai.yaml) |
-| 12 | ✓ | [`skills/html-wireframe/SKILL.md`](skills/html-wireframe/SKILL.md) |
-| 13 | ✓ | [`skills/html/agents/openai.yaml`](skills/html/agents/openai.yaml) |
-| 14 | ✓ | [`skills/html/references/charts-and-data.md`](skills/html/references/charts-and-data.md) |
-| 15 | ✓ | [`skills/html/references/creative-direction.md`](skills/html/references/creative-direction.md) |
-| 16 | ✓ | [`skills/html/references/diagrams.md`](skills/html/references/diagrams.md) |
-| 17 | ✓ | [`skills/html/references/documents-and-presentations.md`](skills/html/references/documents-and-presentations.md) |
-| 18 | ✓ | [`skills/html/references/interfaces.md`](skills/html/references/interfaces.md) |
-| 19 | ✓ | [`skills/html/SKILL.md`](skills/html/SKILL.md) |
+| 3 | ✓ | [`skills/big-pics-little-words/agents/openai.yaml`](skills/big-pics-little-words/agents/openai.yaml) |
+| 4 | ✓ | [`skills/big-pics-little-words/SKILL.md`](skills/big-pics-little-words/SKILL.md) |
+| 5 | ✓ | [`skills/design-artifact/agents/openai.yaml`](skills/design-artifact/agents/openai.yaml) |
+| 6 | ✓ | [`skills/design-artifact/SKILL.md`](skills/design-artifact/SKILL.md) |
+| 7 | ✓ | [`skills/html-diagram/agents/openai.yaml`](skills/html-diagram/agents/openai.yaml) |
+| 8 | ✓ | [`skills/html-diagram/SKILL.md`](skills/html-diagram/SKILL.md) |
+| 9 | ✓ | [`skills/html-plan/agents/openai.yaml`](skills/html-plan/agents/openai.yaml) |
+| 10 | ✓ | [`skills/html-plan/SKILL.md`](skills/html-plan/SKILL.md) |
+| 11 | ✓ | [`skills/html-prototype/agents/openai.yaml`](skills/html-prototype/agents/openai.yaml) |
+| 12 | ✓ | [`skills/html-prototype/SKILL.md`](skills/html-prototype/SKILL.md) |
+| 13 | ✓ | [`skills/html-wireframe/agents/openai.yaml`](skills/html-wireframe/agents/openai.yaml) |
+| 14 | ✓ | [`skills/html-wireframe/SKILL.md`](skills/html-wireframe/SKILL.md) |
+| 15 | ✓ | [`skills/html/agents/openai.yaml`](skills/html/agents/openai.yaml) |
+| 16 | ✓ | [`skills/html/references/charts-and-data.md`](skills/html/references/charts-and-data.md) |
+| 17 | ✓ | [`skills/html/references/creative-direction.md`](skills/html/references/creative-direction.md) |
+| 18 | ✓ | [`skills/html/references/diagrams.md`](skills/html/references/diagrams.md) |
+| 19 | ✓ | [`skills/html/references/documents-and-presentations.md`](skills/html/references/documents-and-presentations.md) |
+| 20 | ✓ | [`skills/html/references/interfaces.md`](skills/html/references/interfaces.md) |
+| 21 | ✓ | [`skills/html/SKILL.md`](skills/html/SKILL.md) |
 
 ---
 

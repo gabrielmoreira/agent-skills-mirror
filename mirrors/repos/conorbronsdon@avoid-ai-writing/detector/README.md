@@ -62,11 +62,11 @@ and `source-mode` inputs, and outputs `pass`, `total-findings`, and `failed-file
 The CLI, Action, and shipped pre-commit hook default to **6 findings per file**
 with `technical` context and `rendered-markdown` source mode.
 
-That default is measured rather than guessed. On the current 376-document human
-control corpus under those exact settings, threshold 0 rejects 31.4% of human
-documents, while threshold 6 rejects 1.9% (7/376). A value of 6 is at or above
-the observed 95th-percentile finding count for every represented register; the
-single `technical-blog` document is an explicitly under-sampled slice. Use
+The [dated gate calibration](../evals/gate-calibration/2026-10-15.md) binds the
+human-control measurements to the exact detector and corpus revision. It records
+rejection counts and per-register percentiles, including the under-sampled
+single-document `technical-blog` slice. Results can change as detector rules
+change; they are not a live rate for every later revision. Use
 `--threshold 0` when a repository deliberately wants a strict zero-findings
 policy. The corpus predates current model generations, so this threshold is a
 practical writing-quality default, not an AI-authorship accuracy claim.
@@ -193,6 +193,21 @@ apostrophes in contractions and possessives would pair up across ordinary
 prose. Zero-width characters, lookalike letters, and roleplay markers inside a
 quotation or blockquote do not raise the normalization flag.
 
+### Typography findings
+
+`smart-punct-signature` is a low-priority style check in `plain` mode: at
+least 80 words, curly punctuation, a prose em dash, an Oxford comma, and the
+existing spacing/contraction checks. Those checks do not establish that a
+document has no typos or that a model wrote it. Preserve house-style
+punctuation. Rendered-Markdown mode omits this finding.
+
+The type remains in the public API, but its authorship weight is zero and it
+is not a classifier corroborator. It cannot change the score, label,
+classification, probabilities, confidence, or AI sentence highlights. It
+still counts in plain-mode finding totals, including count-based gates;
+filter by type or severity when only higher-priority findings should block.
+Other findings and their existing thresholds remain active.
+
 ### Severity and P-tiers
 
 Each `issues[]` entry carries one of four `severity` values. `SEVERITY_LABELS`
@@ -201,9 +216,9 @@ in `patterns.js` maps them to P-labels:
 | `severity` | P-label | Types that emit it |
 |---|---|---|
 | `critical` | P0 | `chatbot`, `sycophantic`, `reasoning-artifact`, `vague-attribution`, `cutoff-disclaimer`, `ai-placeholder`, `ai-citation-markup`, `ai-utm-source`, `normalization-flag` (zero-width or homoglyph characters) |
-| `high` | P1 | `tier1`, `significance-inflation`, `template-phrase`, `hedge-stack`, `future-narrative`, `social-cta-closer`, `negation-chain`, `negative-parallelism`, `formulaic-opener`, `speculative-opener`, `launch-intro`, `fake-casual-prop`, `tier3-phrase-cluster`, `bullet-np-list`, `smart-punct-signature`, `normalization-flag` (roleplay markers), `fnword-trigram-entropy` (one trigram repeated across the document) |
+| `high` | P1 | `tier1`, `significance-inflation`, `template-phrase`, `hedge-stack`, `future-narrative`, `social-cta-closer`, `negation-chain`, `negative-parallelism`, `formulaic-opener`, `speculative-opener`, `launch-intro`, `fake-casual-prop`, `tier3-phrase-cluster`, `bullet-np-list`, `normalization-flag` (roleplay markers), `fnword-trigram-entropy` (one trigram repeated across the document) |
 | `medium` | P2 | `tier1-clarity`, `tier2`, `transition`, `filler`, `generic-conclusion`, `lets-construction`, `hollow-intensifier`, `lingering-attention`, `novelty-inflation`, `false-concession`, `rhetorical-question`, `real-actual-inflation`, `performed-insight`, `dev-blog-boilerplate`, `crowd-contrast`, `parenthetical-hedge`, `title-case-header`, `unnecessary-hyphenation`, `tier3-phrase`, `hashtag-stuff`, `em-dash`, `formatting`, `punct-distribution`, `cross-para-burstiness`, `uniformity` (sentence length), `fnword-trigram-entropy` (low entropy) |
-| `low` | P3 | `tier3`, `emotional-flatline`, `confidence-calibration`, `low-ttr`, `uniformity` (paragraph length) |
+| `low` | P3 | `smart-punct-signature`, `tier3`, `emotional-flatline`, `confidence-calibration`, `low-ttr`, `uniformity` (paragraph length) |
 
 The skill's writing rules define only P0 to P2, so `low` / P3 has no
 counterpart there. The engine assigns its labels independently: a type can

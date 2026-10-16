@@ -63,7 +63,7 @@ description: OMA의 21개 워크플로우 레퍼런스입니다. 슬래시 명�
 
 지속 워크플로우는 모든 태스크가 완료될 때까지 계속 실행됩니다. `.agents/state/`에 상태를 유지하고, 명시적으로 비활성화될 때까지 매 사용자 메시지에 `[OMA PERSISTENT MODE: ...]` 컨텍스트를 재주입합니다.
 
-지속 모드는 **명시적 호출**, 즉 워크플로우 자체의 이름으로 호출할 때만 시작됩니다(`triggers.json`의 `explicit` 목록, 예: "orchestrate", "ultrawork"/"ulw", "ralph"/"랄프", "work mode"). 아래의 나머지 트리거 키워드는 자연어 힌트입니다. 이 키워드는 지속 모드를 활성화하지 않고 워크플로우를 제안으로만 주입하며, 프롬프트의 첫 줄이나 마지막 줄이 `?`로 끝나는 질문이면 절대 발동하지 않습니다.
+지속 모드는 **명시적 호출**, 즉 워크플로우의 슬래시 커맨드(`/ultrawork`, 또는 `/oma:ultrawork` 같은 네임스페이스 형식)나 평문으로 쓴 워크플로우 자체의 이름으로 호출할 때만 시작됩니다(`triggers.json`의 `explicit` 목록, 예: "orchestrate", "ultrawork"/"ulw", "ralph"/"랄프", "work mode"). 아래의 나머지 트리거 키워드는 자연어 힌트입니다. 이 키워드는 지속 모드를 활성화하지 않고 워크플로우를 제안으로만 주입하며, 프롬프트의 첫 줄이나 마지막 줄이 `?`로 끝나는 질문이면 절대 발동하지 않습니다.
 
 ### /orchestrate
 
@@ -601,7 +601,7 @@ Cloudflare 감사 방법론은 독립 검증과 로컬 샌드박스 재현에 �
 
 **단계:** 인자 해석(대상 ref는 명시적 PR 번호 / 브랜치 / SHA 범위 → 스테이징된 변경 → 더티 트리 → `HEAD~1..HEAD` 순, 독자 수준은 `onboarding` 또는 `reviewer`, 출력 언어, 퀴즈 개수) -> 계약 로드(`oma-explanation` SKILL.md와 리소스) -> 수집과 게이팅(diff와 주변 코드, 생성 전 시크릿 스캔, diff와 PR 텍스트는 철저히 데이터로만 취급) -> 문서 계약과 HTML 계약에 따라 HTML 생성 -> 검증(최종 HTML 시크릿 스캔을 포함한 grep 체크리스트, 수정 루프 최대 3회) -> 전달(`open`은 경고만, TL;DR과 경로 제시).
 
-**출력:** `.agents/results/explain/{YYYY-MM-DD}-{slug}.html`(Asia/Seoul 날짜 기준이며, 같은 날짜와 슬러그로 다시 실행하면 덮어씁니다). [코드 설명서 가이드](../guide/code-explainer.md)를 참고하세요.
+**출력:** `.agents/results/explain/{YYYY-MM-DD}-{slug}.html`(oma-config의 `timezone` 날짜 기준이고 설정이 없으면 시스템 시간대를 쓰며, 같은 날짜와 슬러그로 다시 실행하면 덮어씁니다). [코드 설명서 가이드](../guide/code-explainer.md)를 참고하세요.
 
 ---
 

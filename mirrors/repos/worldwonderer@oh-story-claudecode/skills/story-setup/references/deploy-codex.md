@@ -1,6 +1,6 @@
 # Codex 部署
 
-`target_cli` 含 `codex` 时，由 SKILL.md Phase 2 完整读取本文件并按顺序执行。路径安全检查、幂等重跑、清理自嵌套残留、部署标记、模板占位符、AGENTS.md 合并策略和安装报告的写法在 SKILL.md，这里只写 Codex 专属部分。
+`target_cli` 含 `codex` 时，由 SKILL.md Phase 2 完整读取并依次执行本文件。路径检查、幂等重跑、残留清理、部署标记、模板占位符、AGENTS.md 合并和报告遵循 SKILL.md 的公共规则。
 
 ## 部署清单（机械可检查）
 
@@ -16,7 +16,7 @@
 ## 部署 Codex Agents
 
 - 读取 `skills/story-setup/references/codex/agents/` 下所有 `.toml` 文件，复制到用户项目 `.codex/agents/`
-- Agent 文件属于 story-setup 管理文件，可安全覆盖；Agent 正文以 Claude Code Markdown 为真源，`references/codex/agents/` 里的 TOML 由仓库根的 `scripts/generate-codex-agents.py` 从 Claude agent 模板确定性生成后提交入库，部署只做复制
+- Agent 文件由 story-setup 管理，可覆盖。Claude Code Markdown 是正文真源；仓库根 `scripts/generate-codex-agents.py` 确定性生成 `references/codex/agents/` TOML，部署只复制这些产物
 - 校验每个 TOML 都能解析，且包含 Codex 必需字段：`name`、`description`、`developer_instructions`
 - 只读职责 agent（`consistency-checker`、`story-explorer`）必须保留 `sandbox_mode = "read-only"`；`chapter-extractor` 要写批次输入文件，不设只读沙箱
 - **部署后必须 trust + 新开 Codex 会话**（报告文案与 fallback 规则见下方「安装报告必须提示」）；hooks 未在 `/hooks` 信任前会被 Codex 静默跳过，包括写正文前的大纲守卫；若运行时返回 `unknown agent_type`，调用方必须降级 solo/direct 并报告 fallback。
@@ -43,7 +43,7 @@ Codex 项目 hooks 部署到 `.codex/hooks.json`；运行脚本部署到 `.codex
 - 检查 `.codex/agents/` 下 7 个 `.toml` agent 定义文件存在并可解析
 - 检查 `.codex/hooks.json` 存在且 JSON 有效，Unix `command` 仅通过 `run-story-hook.sh` 启动，Windows `commandWindows` 仅通过 `run-story-hook.cmd` 启动；不存在直调 `story_codex_hook.py` 的注册
 - 检查 `.codex/hooks/story_codex_hook.py`、`run-story-hook.sh`、`run-story-hook.cmd` 存在，Python 语法有效，POSIX/Windows launcher 能从嵌套 cwd 定位项目根
-- 检查 `.codex/skills/story-setup/references/agent-references/` 下 reference 文件完整且数量与源目录一致
+- 按源目录相对路径核对 `.codex/skills/story-setup/references/agent-references/`，含子目录
 
 ## 安装报告必须提示
 

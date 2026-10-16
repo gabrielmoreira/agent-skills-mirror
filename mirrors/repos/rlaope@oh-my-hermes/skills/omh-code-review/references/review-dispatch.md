@@ -168,11 +168,15 @@ verdicts are the ones `code-review` already names.
   The skill leaves those values open; the schema is where they are fixed.
 - A `ship` names what it checked. `checked_clean` is required and non-empty on a
   `ship`, so a verdict with no finding and nothing checked does not validate.
-- A return that does not match the schema is not a review. Ask once for a
-  corrected return, naming what failed, unless the host already made that ask
-  (a retry count on the result says so). If the corrected return still does not
-  match, the review is `not_observed`: never a pass, and a verdict lifted out of
-  the unmatched text is not a verdict.
+- A return that does not match the schema is not a review. The contract allows
+  one corrected ask, naming what failed. When the host checked the return
+  against this schema, it may already have made that ask without the result
+  saying so, so do not ask the same reviewer again, whether or not the result
+  shows a retry count. When nothing checked it before you, make the ask
+  yourself. If the return still does not match after that one ask, the review
+  is `not_observed`: never a pass, and a verdict lifted out of the unmatched
+  text is not a verdict. Re-dispatch with something changed, or write the
+  findings yourself, and say which you did.
 - A return that matches has a checked shape. Its findings are still claims, read
   under the two rules below.
 

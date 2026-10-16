@@ -1,5 +1,5 @@
 # 小说封面视觉风格库
-各题材网文封面视觉风格定义，用于构建 GPT-Image-2 英文提示词。
+按平台和题材选择构图、色彩、字体与光效，组合成 GPT-Image-2 提示词。设计指令用英文，书名和笔名保留作者原文。
 
 ---
 
@@ -7,32 +7,32 @@
 
 ### 番茄小说
 
-视觉：高饱和高对比 / 人物占60%+面部清晰 / 书名大粗有光效(金/红/白) / 大头贴构图+华丽背景
+视觉：高饱和、高对比，人物占画面60%以上且面部清晰；大头贴构图搭配华丽背景，书名用金、红或白色粗体并加光效。
 关键词：`vibrant saturated colors, eye-catching bold design, character portrait dominating frame, mass-market novel cover style, high contrast`
 
 ### 起点
 
-视觉：细腻精致偏写实插画 / 构图讲究层次丰富 / 书名偏传统毛笔楷体 / 色彩沉稳 / 人物场景均衡有电影感
+视觉：细腻、偏写实的插画，色彩沉稳；人物与场景均衡，构图层次丰富，有电影感，书名偏传统毛笔楷体。
 关键词：`polished refined illustration, detailed cinematic composition, epic atmospheric, mature sophisticated style, premium quality`
 
 ### 晋江
 
-视觉：柔和色调(粉/紫/浅蓝/暖白) / 唯美画风大眼精致五官 / 花瓣光斑丝绸珠宝装饰 / 居中对称画面干净 / 书名优雅行书细圆
+视觉：粉、紫、浅蓝、暖白等柔和色调，人物五官精致、大眼唯美；画面居中对称，以花瓣、光斑、丝绸和珠宝装饰，书名用优雅行书或纤细圆体。
 关键词：`dreamy ethereal aesthetic, soft pastel tones, elegant romantic, delicate beauty, flower petals and bokeh`
 
 ### 知乎盐言
 
-视觉：大量留白极简 / 冷淡色(灰/蓝/白/暗色) / 氛围感>人物细节，常用场景/物品/抽象意象 / 书名现代简约无衬线 / 独立电影海报质感
+视觉：灰、蓝、白或暗色的极简画面，大量留白；用场景、物品或抽象意象营造氛围，少刻画人物细节，书名用现代简约无衬线字体，接近独立电影海报。
 关键词：`minimalist literary style, clean composition with negative space, subtle moody atmosphere, independent film poster aesthetic`
 
 ### 七猫
 
-视觉：极度饱和强烈冲击 / 人物华丽服饰装备丰富 / 火焰雷电灵力特效 / 书名大号发光占比大 / 海报感信息密度高
+视觉：高饱和、强冲击，人物服饰华丽、装备丰富；用火焰、雷电和灵力特效增强海报感，书名大号发光，画面信息密度高。
 关键词：`striking high-impact design, vivid dramatic colors, spectacular visual effects, attention-grabbing poster style`
 
 ### 刺猬猫
 
-视觉：日系插画二次元 / 色彩明亮线稿清晰 / Q版元素 / 书名卡通手绘风 / 轻松活泼
+视觉：明亮、线稿清晰的日系二次元插画，搭配 Q 版元素和卡通手绘书名，整体轻松活泼。
 关键词：`anime illustration style, vibrant colorful, detailed character art, Japanese light novel aesthetic`
 
 ---
@@ -63,7 +63,9 @@
 
 通用修饰：`professional book cover design, high detail digital painting, portrait orientation 2:3 ratio, no watermark`
 
-文字层必须指定：书名内容+位置(top center)+字体风格+颜色；作者名内容+位置(bottom center)+字体风格+颜色
+这里和下方示例的 `2:3` 是默认竖版比例；组合最终提示词时，按入口 Step 1 替换为目标平台比例，番茄用 `3:4`。
+
+文字层写明书名和笔名的原文、位置、字体与颜色：书名在上方居中（top center），笔名在下方居中（bottom center）。
 
 ---
 
@@ -71,7 +73,7 @@
 
 ### 文字渲染
 
-GPT-Image-2可直接渲染中文。格式：
+GPT-Image-2 可直接渲染中文书名和笔名，在英文指令中逐字写入：
 ```
 Title text '书名' at top center in {字体风格}
 Author name '作者名' at bottom center in {字体风格}
@@ -79,7 +81,7 @@ Author name '作者名' at bottom center in {字体风格}
 
 ### 人物描述要具体
 
-不要"a man"，要：
+写清人物的服饰、发型、姿态和道具，避免只写“a man”：
 ```
 a young man in flowing white silk robes with gold embroidery,
 long black hair tied in a topknot with a jade crown,

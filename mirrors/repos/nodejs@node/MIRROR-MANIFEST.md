@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nodejs/node` — 26 default patterns, 1 followed patterns, 33 file(s) materialized.
+Mirror of `nodejs/node` — 26 default patterns, 1 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nodejs/node` — 26 default patterns, 1 followed patterns, 33 file(s)
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 33 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,31 +67,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`deps/v8/agents/skills/crossbench/SKILL.md`](deps/v8/agents/skills/crossbench/SKILL.md) |
 | 7 | ✓ | [`deps/v8/agents/skills/doc-invalidation-checker/SKILL.md`](deps/v8/agents/skills/doc-invalidation-checker/SKILL.md) |
 | 8 | ✓ | [`deps/v8/agents/skills/ecmascript-evaluation/SKILL.md`](deps/v8/agents/skills/ecmascript-evaluation/SKILL.md) |
-| 9 | ✓ | [`deps/v8/agents/skills/env-abstraction/SKILL.md`](deps/v8/agents/skills/env-abstraction/SKILL.md) |
-| 10 | ✓ | [`deps/v8/agents/skills/header-cycle-breaker/SKILL.md`](deps/v8/agents/skills/header-cycle-breaker/SKILL.md) |
-| 11 | ✓ | [`deps/v8/agents/skills/jsvu/SKILL.md`](deps/v8/agents/skills/jsvu/SKILL.md) |
-| 12 | ✓ | [`deps/v8/agents/skills/minimize-reproducer/SKILL.md`](deps/v8/agents/skills/minimize-reproducer/SKILL.md) |
-| 13 | ✓ | [`deps/v8/agents/skills/orchestrator/SKILL.md`](deps/v8/agents/skills/orchestrator/SKILL.md) |
-| 14 | ✓ | [`deps/v8/agents/skills/subagent-env-passing/SKILL.md`](deps/v8/agents/skills/subagent-env-passing/SKILL.md) |
-| 15 | ✓ | [`deps/v8/agents/skills/torque/SKILL.md`](deps/v8/agents/skills/torque/SKILL.md) |
-| 16 | ✓ | [`deps/v8/agents/skills/v8-ciderg-paths/SKILL.md`](deps/v8/agents/skills/v8-ciderg-paths/SKILL.md) |
-| 17 | ✓ | [`deps/v8/agents/skills/v8-commands/SKILL.md`](deps/v8/agents/skills/v8-commands/SKILL.md) |
-| 18 | ✓ | [`deps/v8/agents/skills/v8-log/SKILL.md`](deps/v8/agents/skills/v8-log/SKILL.md) |
-| 19 | ✓ | [`deps/v8/agents/skills/v8-poc-classification/SKILL.md`](deps/v8/agents/skills/v8-poc-classification/SKILL.md) |
-| 20 | ✓ | [`deps/v8/agents/skills/v8-profile/SKILL.md`](deps/v8/agents/skills/v8-profile/SKILL.md) |
-| 21 | ✓ | [`deps/v8/agents/skills/v8-regression-testing/SKILL.md`](deps/v8/agents/skills/v8-regression-testing/SKILL.md) |
-| 22 | ✓ | [`deps/v8/agents/skills/v8-security-triaging/SKILL.md`](deps/v8/agents/skills/v8-security-triaging/SKILL.md) |
-| 23 | ✓ | [`deps/v8/agents/skills/v8-setup/SKILL.md`](deps/v8/agents/skills/v8-setup/SKILL.md) |
-| 24 | ✓ | [`deps/v8/agents/skills/v8-structure/SKILL.md`](deps/v8/agents/skills/v8-structure/SKILL.md) |
-| 25 | ✓ | [`deps/v8/agents/skills/v8-testing/SKILL.md`](deps/v8/agents/skills/v8-testing/SKILL.md) |
-| 26 | ✓ | [`deps/v8/agents/skills/v8-understanding/SKILL.md`](deps/v8/agents/skills/v8-understanding/SKILL.md) |
-| 27 | ✓ | [`deps/v8/agents/skills/v8-workflow/SKILL.md`](deps/v8/agents/skills/v8-workflow/SKILL.md) |
-| 28 | ✓ | [`deps/v8/agents/skills/wasm-d8-perf/SKILL.md`](deps/v8/agents/skills/wasm-d8-perf/SKILL.md) |
-| 29 | ✓ | [`deps/v8/agents/skills/workflow-debugging/SKILL.md`](deps/v8/agents/skills/workflow-debugging/SKILL.md) |
-| 30 | ✓ | [`deps/v8/agents/skills/workflow-general-debugging/SKILL.md`](deps/v8/agents/skills/workflow-general-debugging/SKILL.md) |
-| 31 | ✓ | [`deps/v8/agents/skills/workflow-gerrit-fix/SKILL.md`](deps/v8/agents/skills/workflow-gerrit-fix/SKILL.md) |
-| 32 | ✓ | [`deps/v8/agents/skills/workflow-perf/SKILL.md`](deps/v8/agents/skills/workflow-perf/SKILL.md) |
-| 33 | → | [`doc/contributing/ai-guidelines.md`](doc/contributing/ai-guidelines.md) |
+| 9 | ✓ | [`deps/v8/agents/skills/header-cycle-breaker/SKILL.md`](deps/v8/agents/skills/header-cycle-breaker/SKILL.md) |
+| 10 | ✓ | [`deps/v8/agents/skills/jsvu/SKILL.md`](deps/v8/agents/skills/jsvu/SKILL.md) |
+| 11 | ✓ | [`deps/v8/agents/skills/minimize-reproducer/SKILL.md`](deps/v8/agents/skills/minimize-reproducer/SKILL.md) |
+| 12 | ✓ | [`deps/v8/agents/skills/torque/SKILL.md`](deps/v8/agents/skills/torque/SKILL.md) |
+| 13 | ✓ | [`deps/v8/agents/skills/v8-ciderg-paths/SKILL.md`](deps/v8/agents/skills/v8-ciderg-paths/SKILL.md) |
+| 14 | ✓ | [`deps/v8/agents/skills/v8-commands/SKILL.md`](deps/v8/agents/skills/v8-commands/SKILL.md) |
+| 15 | ✓ | [`deps/v8/agents/skills/v8-log/SKILL.md`](deps/v8/agents/skills/v8-log/SKILL.md) |
+| 16 | ✓ | [`deps/v8/agents/skills/v8-poc-classification/SKILL.md`](deps/v8/agents/skills/v8-poc-classification/SKILL.md) |
+| 17 | ✓ | [`deps/v8/agents/skills/v8-profile/SKILL.md`](deps/v8/agents/skills/v8-profile/SKILL.md) |
+| 18 | ✓ | [`deps/v8/agents/skills/v8-regression-testing/SKILL.md`](deps/v8/agents/skills/v8-regression-testing/SKILL.md) |
+| 19 | ✓ | [`deps/v8/agents/skills/v8-security-triaging/SKILL.md`](deps/v8/agents/skills/v8-security-triaging/SKILL.md) |
+| 20 | ✓ | [`deps/v8/agents/skills/v8-setup/SKILL.md`](deps/v8/agents/skills/v8-setup/SKILL.md) |
+| 21 | ✓ | [`deps/v8/agents/skills/v8-structure/SKILL.md`](deps/v8/agents/skills/v8-structure/SKILL.md) |
+| 22 | ✓ | [`deps/v8/agents/skills/v8-testing/SKILL.md`](deps/v8/agents/skills/v8-testing/SKILL.md) |
+| 23 | ✓ | [`deps/v8/agents/skills/v8-understanding/SKILL.md`](deps/v8/agents/skills/v8-understanding/SKILL.md) |
+| 24 | ✓ | [`deps/v8/agents/skills/v8-workflow/SKILL.md`](deps/v8/agents/skills/v8-workflow/SKILL.md) |
+| 25 | ✓ | [`deps/v8/agents/skills/wasm-d8-perf/SKILL.md`](deps/v8/agents/skills/wasm-d8-perf/SKILL.md) |
+| 26 | ✓ | [`deps/v8/agents/skills/workflow-debugging/SKILL.md`](deps/v8/agents/skills/workflow-debugging/SKILL.md) |
+| 27 | ✓ | [`deps/v8/agents/skills/workflow-general-debugging/SKILL.md`](deps/v8/agents/skills/workflow-general-debugging/SKILL.md) |
+| 28 | ✓ | [`deps/v8/agents/skills/workflow-gerrit-fix/SKILL.md`](deps/v8/agents/skills/workflow-gerrit-fix/SKILL.md) |
+| 29 | ✓ | [`deps/v8/agents/skills/workflow-perf/SKILL.md`](deps/v8/agents/skills/workflow-perf/SKILL.md) |
+| 30 | → | [`doc/contributing/ai-guidelines.md`](doc/contributing/ai-guidelines.md) |
 
 ---
 

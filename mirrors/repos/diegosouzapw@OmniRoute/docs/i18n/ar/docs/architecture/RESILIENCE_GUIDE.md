@@ -396,6 +396,17 @@ glm-4.7=3
 
 بالنسبة إلى كل استراتيجية تركيبات (عند تمكينها)، ينتظر الطلب الذي كان سيؤدي إلى تثبيت استجابة 429 خلال فترة تهدئة انتقالية قصيرة انتهاء تلك الفترة، ثم يُعاد إرساله بدلًا من إرجاع استجابة 429 — ويشمل ذلك نوافذ TPM/RPM لفئة Gemini (قيمة retry-after بنحو 60 ثانية) في التركيبات متعددة النماذج، مثل بلوغ كلا هدفي تركيبة من نموذجين حد المعدل الخاص بكل نموذج. ويخضع ذلك لحدود `comboCooldownWait` (`enabled` و`maxWaitMs` و`maxAttempts` و`budgetMs`) ضمن **الإعدادات → المرونة**. ولا ينتظر مطلقًا عند `quota_exhausted` (مقفل حتى منتصف الليل) أو لأسباب المصادقة/عدم العثور.
 
+```text
+#16319 · comboCooldownWait · pre-dispatch (attempts = 0)
+all targets skipped + transient model lockout:
+  enabled ∧ 0 < waitMs ≤ maxWaitMs ∧ attempt < maxAttempts ∧ budgetLeftMs ≥ waitMs
+    → wait → re-dispatch
+  wait = false → HTTP 429 rate_limit_error
+  retry_after / reset_at ← earliest transient lock expiry
+quota_exhausted / auth_error / not_found / not_found_local:
+  no transient hint → HTTP 503 ALL_TARGETS_SKIPPED
+```
+
 ---
 
 ## 5. التحكم في قبول طابور الطلبات (v3.8.49 · المشكلة #6593)

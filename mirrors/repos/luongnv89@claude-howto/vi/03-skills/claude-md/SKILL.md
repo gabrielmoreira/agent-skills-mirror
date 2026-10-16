@@ -17,7 +17,7 @@ Bạn **BẮT BUỘC** phải xem xét đầu vào của người dùng trước
 
 ## Nguyên Tắc Cốt Lõi
 
-**LLMs là không trạng thái**: CLAUDE.md là file duy nhất được bao gồm tự động trong mọi cuộc hội thoại. Nó phục vụ như tài liệu onboarding chính cho các tác nhân AI vào codebase của bạn.
+**LLMs là không trạng thái**: CLAUDE.md là file dự án chính được tải vào mọi cuộc hội thoại (cùng với auto memory và các rules không giới hạn phạm vi). Nó phục vụ như tài liệu onboarding chính cho các tác nhân AI vào codebase của bạn.
 
 ### Các Quy Tắc Vàng
 
@@ -214,3 +214,10 @@ Subagents được định nghĩa riêng, trong `.claude/agents/*.md` — không
 - Lời nhắc hệ thống cho Claude biết rằng CLAUDE.md "có thể hoặc có thể không liên quan" - càng nhiều tiếng ồn, càng bị bỏ qua
 - Monorepos hưởng lợi nhất từ cấu trúc WHAT/WHY/HOW rõ ràng
 - Các file CLAUDE.md cụ thể thư mục nên được tập trung hơn nữa
+
+---
+
+**Cập Nhật Lần Cuối**: Ngày 15 tháng 10 năm 2026
+**Phiên Bản Claude Code**: 2.1.300
+**Nguồn**:
+- https://code.claude.com/docs/en/memory

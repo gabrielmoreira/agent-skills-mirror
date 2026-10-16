@@ -374,6 +374,17 @@ glm-4.7=3
 
 对于每种组合策略（启用时），如果某个请求会因短暂的短期冷却而最终产生 429，系统会等待冷却结束并重新调度，而不是返回 429——这涵盖多模型组合中 Gemini 类 TPM/RPM 窗口（约 60 秒的 retry-after），例如双模型组合的两个目标都触及每模型速率限制的情况。此行为受**设置 → 韧性**中的 `comboCooldownWait`（`enabled`、`maxWaitMs`、`maxAttempts`、`budgetMs`）约束。对于 `quota_exhausted`（锁定至午夜）或身份验证/未找到原因，系统绝不会等待。
 
+```text
+#16319 · comboCooldownWait · pre-dispatch (attempts = 0)
+all targets skipped + transient model lockout:
+  enabled ∧ 0 < waitMs ≤ maxWaitMs ∧ attempt < maxAttempts ∧ budgetLeftMs ≥ waitMs
+    → wait → re-dispatch
+  wait = false → HTTP 429 rate_limit_error
+  retry_after / reset_at ← earliest transient lock expiry
+quota_exhausted / auth_error / not_found / not_found_local:
+  no transient hint → HTTP 503 ALL_TARGETS_SKIPPED
+```
+
 ---
 
 ## 5. 请求队列准入控制（v3.8.49 · issue #6593）

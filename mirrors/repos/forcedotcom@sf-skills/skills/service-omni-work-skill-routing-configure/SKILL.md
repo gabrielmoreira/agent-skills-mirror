@@ -10,9 +10,7 @@ metadata:
     - "service-omni-base-settings-configure"
     - "service-omni-channel-setup-coordinate"
     - "service-omni-skills-based-routing-configure"
-  accessCheck:
-    - type: license
-      value: ServiceCloud
+  accessCheck: "OrgPermissions.LightningService"
   cliTools:
     - tool: ["jq"]
       semver: ">=1.6"

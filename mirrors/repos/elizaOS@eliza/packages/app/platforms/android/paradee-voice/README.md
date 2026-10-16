@@ -44,6 +44,19 @@ if (asr.supportsStreaming()) {
 }
 ```
 
+With native ABI 19, `ParadeeVoice.supportsStreaming()` admits
+`synthesizeStream(text, speed, sink)`. The sink receives each model chunk before
+the next chunk is synthesized, in arrays of at most 24,000 samples. It runs on
+the caller's worker and provides backpressure. An empty array with `complete`
+marks the end; the method return is authoritative. Return false or call `cancel()`
+to cancel, and discard queued playback after any error. The sink may not reenter
+synthesis, trimming or close on this voice. A separate thread may close it;
+close cancels and waits until callbacks have retired before freeing the context.
+Cancellation retires calls already waiting for the synthesis lock. A fresh call
+after cancellation may start again. Consumers must also fence their own owner and
+turn generations and keep playback queues bounded. No PCM needs to cross a
+renderer bridge. This API does not report heard text or qualify physical playback.
+
 `cancel()` on either object stops the running call from another thread; that
 call throws `java.util.concurrent.CancellationException`. `trimMemory()` frees
 the weights and keeps the object; the next call reloads them.

@@ -11,9 +11,7 @@ metadata:
     - "service-omni-channel-setup-coordinate"
     - "service-omni-command-center-analyze"
     - "service-omni-supervisor-config-deploy"
-  accessCheck:
-    - type: license
-      value: ServiceCloud
+  accessCheck: "OrgPermissions.LightningService"
   cliTools:
     - tool: ["jq"]
       semver: ">=1.6"

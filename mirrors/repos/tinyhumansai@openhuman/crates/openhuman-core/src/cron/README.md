@@ -155,8 +155,9 @@ nothing is sent and no alert is raised. For a web origin, the reply is stored in
 the origin thread under `run_reply_message_id("cron:<job>:<run>")`, the
 web-channel `proactive_message` event is emitted with that `thread_id` and
 `request_id`, and `append_to_origin_transcript` appends it to the thread's agent
-transcript (idempotent on the same key, and it waits out a live turn on the
-session, up to 120 seconds). For a channel origin, the reply goes to the
+transcript in the session store, under the key the session host wrote it with
+(`agent_key_for` of the job's tenant and agent), idempotent on the same key, and
+it waits out a live turn on the session, up to 120 seconds. For a channel origin, the reply goes to the
 origin's `reply_target` through `cron::channel_bridge` and is appended to that
 chat's in-memory history.
 

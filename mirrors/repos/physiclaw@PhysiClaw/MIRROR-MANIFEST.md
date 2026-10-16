@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `physiclaw/PhysiClaw` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `physiclaw/PhysiClaw` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `physiclaw/PhysiClaw` — 26 default patterns, 0 followed patterns, 5 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,11 +59,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/jd/SKILL.md`](skills/jd/SKILL.md) |
-| 2 | ✓ | [`skills/taobao/SKILL.md`](skills/taobao/SKILL.md) |
-| 3 | ✓ | [`src/physiclaw/agent/claude/CLAUDE.md`](src/physiclaw/agent/claude/CLAUDE.md) |
-| 4 | ✓ | [`src/physiclaw/agent/claude/skills/jobs/SKILL.md`](src/physiclaw/agent/claude/skills/jobs/SKILL.md) |
-| 5 | ✓ | [`src/physiclaw/agent/claude/skills/screen-layout/SKILL.md`](src/physiclaw/agent/claude/skills/screen-layout/SKILL.md) |
+| 1 | ✓ | [`hardware/AGENTS.md`](hardware/AGENTS.md) |
+| 2 | ✓ | [`skills/jd/SKILL.md`](skills/jd/SKILL.md) |
+| 3 | ✓ | [`skills/taobao/SKILL.md`](skills/taobao/SKILL.md) |
+| 4 | ✓ | [`src/physiclaw/agent/claude/CLAUDE.md`](src/physiclaw/agent/claude/CLAUDE.md) |
+| 5 | ✓ | [`src/physiclaw/agent/claude/skills/jobs/SKILL.md`](src/physiclaw/agent/claude/skills/jobs/SKILL.md) |
+| 6 | ✓ | [`src/physiclaw/agent/claude/skills/screen-layout/SKILL.md`](src/physiclaw/agent/claude/skills/screen-layout/SKILL.md) |
 
 ---
 

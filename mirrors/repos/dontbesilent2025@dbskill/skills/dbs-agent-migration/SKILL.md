@@ -67,8 +67,8 @@ description: 审计项目规则文件、识别真源、统一命名并生成桥�
 ### 原则 2：真源优先，bridge 从真源生成
 
 - `skills/` 是理想真源目录
-- `~/.claude/skills/`、`~/.codex/skills/`、`~/.grok/skills/`、`~/.agents/skills/` 都只是 bridge 或宿主安装入口
-- `~/.agents/skills/` 是豆包 Mac App、Trae Solo、Codex 等通用 Agent 会读取的 skill 根目录
+- `~/.claude/skills/`、`~/.grok/skills/`、`~/.agents/skills/` 都只是 bridge 或宿主安装入口
+- `~/.agents/skills/` 是豆包 Mac App、Trae Solo、Codex 等通用 Agent 会读取的 skill 根目录。Codex 只从这里读取，不在 `~/.codex/skills/` 另建入口；那里已有的同源入口视为冗余，会造成重复显示
 - 不要把长期逻辑维护在 bridge 里
 
 ### 原则 3：不能假设项目已经规范
@@ -159,6 +159,8 @@ Grok Build（Grok TUI）对 bridge 有明确要求：
 
 ### Phase 2：规则文件迁移
 
+改写或删除任何已有规则文件（`CLAUDE.md`、`AGENTS.md`、`SOURCE_OF_TRUTH.md` 等）之前，先在同目录复制一份 `<文件名>.bak-YYYYMMDD-HHMMSS`，并告诉用户备份位置。用户要求撤销时，用备份恢复。
+
 如果有 `CLAUDE.md`：
 
 - 拆出平台无关规则 → 写入 `AGENTS.md`
@@ -231,15 +233,15 @@ Grok Build（Grok TUI）对 bridge 有明确要求：
 命名规则：
 
 1. 每个 Skill 只保留 1 个可调用名。
-2. 可调用名使用小写英文 kebab-case；dbskill 正式 Skill 使用 `dbs-` 前缀，例如 `dbs-good-question`。
+2. 可调用名使用小写英文 kebab-case。是否统一前缀由用户项目自己决定，不套用其他项目的前缀规则。
 3. 目录名、frontmatter 的 `name`、bridge 目录名和文档中的斜杠调用必须完全一致。
 4. 中文名称只可作为说明标题和自然语言意图，不能作为 `/` 调用别名。
-5. Codex 的 `agents/openai.yaml` 中，`interface.display_name` 必须与英文标准名完全一致，不能添加 `DBS｜`、中文功能名或其他展示前缀。
+5. Codex 的 `agents/openai.yaml` 中，`interface.display_name` 以英文标准名开头，便于用户对照调用名；是否在后面附中文说明，按用户项目的约定。
 6. `interface.short_description` 必须写清该 Skill 独有的处理对象、动作与主要结果；禁止批量套用通用模板，且不同 Skill 之间不能重复。
 
 不要让脚本根据标题临时取名，也不要保留中文或混合语言的斜杠别名。
 
-### Phase 5：生成多端 bridge（Claude / Codex / Grok / 通用 Agents）
+### Phase 5：生成多端 bridge（Claude / Grok / 通用 Agents）
 
 bridge 的核心要求：
 
@@ -248,6 +250,8 @@ bridge 的核心要求：
 - 多端使用同一套规范名
 - Grok bridge 必须带 `user_invocable: true`
 - 通用 Agents bridge 或软链写入 `~/.agents/skills/<name>`，豆包 Mac App / Trae Solo / Codex 会从这里发现 skill
+- 不写入 `~/.codex/skills/`
+- 当前环境已安装 `dbs-install-skill` 时，`~/.agents/skills` 与 `~/.claude/skills` 的链接一律交给它的脚本建立和清理（Windows 下它会改用目录联接），不手写软链，避免两套规则互相清理
 
 #### Grok Bridge 精确模板
 
@@ -278,7 +282,7 @@ description: |
 
 **必须检查**：`user_invocable: true` 是否存在，description 是否提到了 Grok TUI 和触发词，路径是否为正斜杠绝对路径。
 
-#### Claude / Codex Bridge 模板
+#### Claude Code Bridge 模板
 
 使用类似的薄指针风格：
 
@@ -286,11 +290,11 @@ description: |
 ---
 name: 技能规范名
 description: |
-  一句话描述。在 Claude Code / Codex 中作为 bridge 使用；触发后先读取项目真源 SKILL.md。
+  一句话描述。在 Claude Code 中作为 bridge 使用；触发后先读取项目真源 SKILL.md。
 source_of_truth: /绝对路径/到/项目/skills/技能规范名/SKILL.md
 bridge_mode: passthrough
 ---
-# 技能规范名（Claude Code / Codex Bridge）
+# 技能规范名（Claude Code Bridge）
 
 请读取真源：
 `/绝对路径/到/项目/skills/技能规范名/SKILL.md`
@@ -316,10 +320,9 @@ bridge_mode: passthrough
 #### Phase 5 执行策略
 
 1. 告诉用户你准备为哪些宿主生成 bridge。
-2. 得到明确确认后，直接帮用户生成文件内容，或先给出完整预览内容。
+2. 用户明确允许写入目标宿主目录后，才把 bridge 写到目标位置；未得到允许时，只给出完整预览内容。
 3. Grok bridge 必须当场验证 `user_invocable: true`。
-4. 通用 Agents 目录优先写软链，不复制真源内容。
-5. 只有在用户明确允许写入目标宿主目录时，你才可以直接把 bridge 写到目标位置；否则先提供预览。
+4. 通用 Agents 目录优先写链接，不复制真源内容；Windows 下 `ln -s` 通常需要管理员权限，改用 `dbs-install-skill` 或目录联接。
 
 #### Phase 5 写入前确认
 
@@ -382,4 +385,4 @@ bridge_mode: passthrough
 
 ---
 
-完成当前任务后直接结束。只有用户明确询问下一步，且当前环境已经安装 `/dbs` 时，简短提示：「下一步不确定时，可以输入 `/dbs`。」
+完成当前任务后直接结束。用户的请求超出本 Skill 的范围、任务完成后用户的材料里出现明确的后续需求，或用户询问下一步时，用一句话说明还需要哪种能力，不点名其他 Skill；当前环境已经安装 `/dbs` 时，补一句「可以输入 `/dbs`，由它匹配对应的 Skill」。

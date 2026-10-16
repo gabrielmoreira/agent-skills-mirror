@@ -430,6 +430,17 @@ per model. Este limitată de `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAt
 `budgetMs`) în **Setări → Reziliență**. Nu așteaptă niciodată pentru `quota_exhausted`
 (blocat până la miezul nopții) sau din motive de autentificare/resursă negăsită.
 
+```text
+#16319 · comboCooldownWait · pre-dispatch (attempts = 0)
+all targets skipped + transient model lockout:
+  enabled ∧ 0 < waitMs ≤ maxWaitMs ∧ attempt < maxAttempts ∧ budgetLeftMs ≥ waitMs
+    → wait → re-dispatch
+  wait = false → HTTP 429 rate_limit_error
+  retry_after / reset_at ← earliest transient lock expiry
+quota_exhausted / auth_error / not_found / not_found_local:
+  no transient hint → HTTP 503 ALL_TARGETS_SKIPPED
+```
+
 ---
 
 ## 5. Controlul admiterii în coada de cereri (v3.8.49 · problema #6593)

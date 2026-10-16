@@ -448,6 +448,17 @@ hitrosti za posamezni model. Omejeno je z `comboCooldownWait` (`enabled`, `maxWa
 `budgetMs`) v **Nastavitve → Odpornost**. Nikoli ne čaka pri razlogih `quota_exhausted`
 (zaklenjeno do polnoči) ali pri razlogih, povezanih z avtentikacijo oziroma neobstoječim virom.
 
+```text
+#16319 · comboCooldownWait · pre-dispatch (attempts = 0)
+all targets skipped + transient model lockout:
+  enabled ∧ 0 < waitMs ≤ maxWaitMs ∧ attempt < maxAttempts ∧ budgetLeftMs ≥ waitMs
+    → wait → re-dispatch
+  wait = false → HTTP 429 rate_limit_error
+  retry_after / reset_at ← earliest transient lock expiry
+quota_exhausted / auth_error / not_found / not_found_local:
+  no transient hint → HTTP 503 ALL_TARGETS_SKIPPED
+```
+
 ---
 
 ## 5. Nadzor sprejema v čakalno vrsto zahtev (v3.8.49 · težava #6593)

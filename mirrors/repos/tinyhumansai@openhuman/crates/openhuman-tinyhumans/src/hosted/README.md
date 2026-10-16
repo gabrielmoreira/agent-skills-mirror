@@ -38,7 +38,7 @@ registered.
  JSON-RPC  openhuman.billing_get_balance
    |
    v
- schemas.rs handler         load config (config_rpc::load_config_with_timeout)
+ schemas.rs handler         load config (DispatchCtx::load_config)
    |                        read and validate params
    v
  ops.rs operation           validate inputs (trimmed, non-empty) first

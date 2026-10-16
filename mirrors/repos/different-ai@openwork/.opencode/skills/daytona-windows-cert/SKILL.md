@@ -273,7 +273,7 @@ Drive the installed OpenWork Windows app through VNC, not `daytona exec`.
 
 Use the `daytona` skill for normal Electron driving patterns. If this is PR
 evidence, translate the user-visible path and TLS assertions into an
-`evals/specs/<slug>.e2e.test.ts` test via `write-a-spec`, run it with
+`evals/proofs/<slug>.proof.test.ts` proof via `write-a-spec`, run it with
 `run-tests`, and use its ambient test evidence for the verdict. The VNC checklist and
 captures above remain supplementary setup and debugging evidence.
 

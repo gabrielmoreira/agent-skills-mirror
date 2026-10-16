@@ -1,11 +1,11 @@
 ---
 name: automation-sandbox-post-copy-config-generate
-description: "Generate the JSON config file that the Salesforce sandbox post-copy automation tool consumes, from a customer SOP in any format (PDF, xlsx, csv, JSON, docx, Markdown, plain text, or a screenshot of an endpoint table). Use when the user asks to create, build, generate, produce, or convert a post-copy or post-refresh automation config — turning a sandbox-refresh SOP into a JSON array of OutboundMessages, RemoteSiteSettings, and ScheduledApex entries with ConfigurationName, Label, Fields, IsActive, and ExecutionOrder. Also trigger for phrasings like \"post-copy config\", \"post-refresh automation JSON\", \"update the outbound message (OBM) endpoints after refresh\", \"convert this SOP to config\", \"remote site settings JSON\", \"refresh planner to JSON\", or \"sandbox refresh config\". DO NOT TRIGGER when: user wants to deploy the generated config to an org (use platform-metadata-deploy), or apply/execute/run/dry-run the post-copy automation JSON against a sandbox (use automation-sandbox-post-copy-configure)."
+description: "Generates the JSON config file that the Salesforce sandbox post-copy automation tool consumes, from a customer SOP in any format (PDF, xlsx, csv, JSON, docx, Markdown, plain text, or a screenshot of an endpoint table). Use when the user asks to create, build, generate, produce, or convert a post-copy or post-refresh automation config — turning a sandbox-refresh SOP into a JSON array of OutboundMessages (OBM), RemoteSiteSettings, ScheduledApex, and Flows entries with ConfigurationName, Label, Fields, IsActive, and ExecutionOrder. Also trigger for phrasings like \"post-copy config\", \"post-refresh automation JSON\", \"update the outbound message (OBM) endpoints after refresh\", \"convert this SOP to config\", \"remote site settings JSON\", \"refresh planner to JSON\", or \"sandbox refresh config\". DO NOT TRIGGER when: user wants to deploy the generated config to an org (use platform-metadata-deploy), or apply/execute/run/dry-run the post-copy automation JSON against a sandbox (use automation-sandbox-post-copy-configure)."
 metadata:
   relatedSkills:
     - "automation-sandbox-post-copy-configure"
     - "platform-metadata-deploy"
-  version: "1.1"
+  version: "1.2"
   domains: ["Automation"]
 ---
 
@@ -20,7 +20,7 @@ fields are involved, whether it is active, and what order it runs in.
 
 Do **not** compose the output from memory. Before you write the file, you
 MUST open and read `assets/config_template.json` and copy an entry from it
-for each action. Every output entry is exactly one of these three shapes —
+for each action. Every output entry is exactly one of these four shapes —
 five top-level keys, no others, no wrapper object:
 
 ```json
@@ -45,12 +45,21 @@ five top-level keys, no others, no wrapper object:
     "Fields": { "ApexClassName": "NightlyDataSyncScheduler", "CronExpression": "0 0 2 * * ?", "JobName": "Nightly Data Sync" },
     "IsActive": true,
     "ExecutionOrder": 3
+  },
+  {
+    "ConfigurationName": "Flows",
+    "Label": "Deactivate Nightly Sync Flow",
+    "Fields": { "FlowApiName": "Nightly_Sync_Flow", "Action": "Deactivate" },
+    "IsActive": true,
+    "ExecutionOrder": 4
   }
 ]
 ```
 
-- `ConfigurationName`: exactly `OutboundMessages`, `RemoteSiteSettings`, or `ScheduledApex` — never `Type`, `Name`, or `Operation`.
-- OBM `Fields`: `EndpointUrl` + `Object` (both required). RemoteSite `Fields`: `RemoteSiteUrl` only — never `Url`/`RemoteSiteURL`. ScheduledApex `Fields`: `ApexClassName` + `CronExpression` + `JobName` (all three required).
+- `ConfigurationName`: exactly `OutboundMessages`, `RemoteSiteSettings`, `ScheduledApex`, or `Flows` — these are the ONLY four valid values and they are **plural / PascalCase** (never singular `OutboundMessage`, never `Type` / `Name` / `Operation`).
+- Field keys inside `Fields` are **PascalCase** verbatim: `EndpointUrl`, `Object`, `RemoteSiteUrl`, `ApexClassName`, `CronExpression`, `JobName`, `FlowApiName`, `Action`, `VersionNumber` — never lowercase (`endpointUrl`), never duplicated at the top level (no `isActive`/`Label` inside `Fields` — those already live at the top level of the entry).
+- OBM `Fields`: `EndpointUrl` + `Object` (both required). RemoteSite `Fields`: `RemoteSiteUrl` only — never `Url`/`RemoteSiteURL`. ScheduledApex `Fields`: `ApexClassName` + `CronExpression` + `JobName` (all three required). Flows `Fields`: `FlowApiName` + `Action` (both required); `Action` is exactly `"Activate"` or `"Deactivate"`; optional `VersionNumber` (positive integer) is meaningful only for `Activate`.
+- `ExecutionOrder` is a **phase number**, not a per-row counter. The `1, 2, 3, 4` in the template above only differ because each example is a different entry type. **Multiple entries of the same type with no dependency on each other share the same number** — e.g., three independent OBMs all get `ExecutionOrder: 1`.
 - Top level is a JSON array. No `steps`/`actions`/`records` wrapper. No `<…>` or `REPLACE_WITH_…` placeholder ever survives into the output.
 
 If you announce "I will now write …" without having read the template and
@@ -134,15 +143,15 @@ having read `assets/config_template.json` and
 
 3. **Map each action to a `ConfigurationName`** — load
    `references/configuration_catalog.md`. The catalog currently supports
-   `OutboundMessages`, `RemoteSiteSettings`, and `ScheduledApex`. Any
-   action that targets a different configuration type is out of scope:
-   skip it and list it in the response so the user can extend the
-   catalog later.
+   `OutboundMessages`, `RemoteSiteSettings`, `ScheduledApex`, and
+   `Flows`. Any action that targets a different configuration type is
+   out of scope: skip it and list it in the response so the user can
+   extend the catalog later.
 
 4. **Read the JSON template** — load `assets/config_template.json`. It
    shows the exact required shape of one `OutboundMessages` entry, one
-   `RemoteSiteSettings` entry, and one `ScheduledApex` entry, with
-   `<…>` placeholder slots. Copy an entry, replace every `<…>` slot
+   `RemoteSiteSettings` entry, one `ScheduledApex` entry, and one
+   `Flows` entry, with `<…>` placeholder slots. Copy an entry, replace every `<…>` slot
    with the concrete SOP value, and keep the exact top-level keys
    (`ConfigurationName`, `Label`, `Fields`, `IsActive`, `ExecutionOrder`)
    — never rename them to `Type`, `Name`, `Operation`, etc. Never emit
@@ -183,6 +192,7 @@ having read `assets/config_template.json` and
 | Information already captured by another field is **not** repeated in `Fields` (e.g., `RemoteSiteName` lives in `Label`, `IsActive` lives at the top level — neither belongs in `Fields`) | Duplicate keys make the entry ambiguous and waste bytes the tool then has to reconcile |
 | For `OutboundMessages`, `Fields` MUST include both `EndpointUrl` and `Object` (the target SObject — `Account`, `Contact`, `Asset`, `Lead`, etc.) | Same Label can apply to multiple OBMs differing only by entity; `Object` disambiguates them at runtime |
 | For `RemoteSiteSettings`, the URL key MUST be spelled exactly `RemoteSiteUrl` — never `Url`, `RemoteSiteURL`, `SiteUrl`, or `EndpointUrl` | The post-copy tool matches the field by exact API name; any other spelling means it can't locate the field and the entry silently no-ops at runtime |
+| For `Flows`, `Fields` MUST include `FlowApiName` (the flow's DeveloperName — unique across Flows) and `Action` (exactly `"Activate"` or `"Deactivate"`, case-sensitive). `Fields.VersionNumber` (positive integer) is optional and only meaningful when `Action` is `"Activate"`; if omitted for Activate, the apply-side skill resolves to the latest saved version. | `FlowApiName` is the unique lookup key on `FlowDefinition.DeveloperName`; `Action` is a fixed instruction verb (not a Salesforce field name) that the apply-side skill matches by exact string. Flow labels are not unique — never use them as the lookup. |
 | `ExecutionOrder` is a phase number — entries with no dependency on each other share the same value | The post-copy tool runs all entries with the same `ExecutionOrder` in parallel; sequencing is only needed where one action depends on another |
 | `IsActive: false` entries remain in the output (do not delete them) | The customer toggles them on per-environment; deleting loses traceability |
 | Default `IsActive` to `true` when the SOP marks an action as required | Most SOP steps are required; explicit opt-out is the exception |

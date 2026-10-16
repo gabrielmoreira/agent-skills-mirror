@@ -82,6 +82,37 @@
             }
           }
         }
+      },
+      {
+        "if": {
+          "properties": { "ConfigurationName": { "const": "Flows" } }
+        },
+        "then": {
+          "properties": {
+            "Fields": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["FlowApiName", "Action"],
+              "properties": {
+                "FlowApiName": {
+                  "description": "Flow DeveloperName — unique across Flows in the org. Maps to FlowDefinition.DeveloperName. Must match ^[A-Za-z_][A-Za-z0-9_]*$.",
+                  "type": "string",
+                  "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+                },
+                "Action": {
+                  "description": "Whether the apply-side skill should Activate or Deactivate the flow. Exact string match, case-sensitive.",
+                  "type": "string",
+                  "enum": ["Activate", "Deactivate"]
+                },
+                "VersionNumber": {
+                  "description": "Optional. Only meaningful when Action is Activate — the specific flow version to activate. If omitted for Activate, the apply-side skill resolves to the latest saved version. Ignored for Deactivate.",
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            }
+          }
+        }
       }
     ],
     "properties": {
@@ -91,7 +122,8 @@
         "enum": [
           "OutboundMessages",
           "RemoteSiteSettings",
-          "ScheduledApex"
+          "ScheduledApex",
+          "Flows"
         ]
       },
       "Label": {

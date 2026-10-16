@@ -7,11 +7,7 @@ metadata:
   minApiVersion: "58.0"
   relatedSkills:
     - "dx-devops-work-item-manage"
-  accessCheck:
-    - type: "orgPref"
-      value: "ALMDevopsCorePref"
-    - type: "userPerm"
-      value: "UserHasDevOpsCore"
+  accessCheck: "(OrgPreferences.ALMDevopsCorePref) && (UserPermissions.UserHasDevOpsCore)"
   cliTools:
     - tool: ["jq"]
       semver: ">=1.6"

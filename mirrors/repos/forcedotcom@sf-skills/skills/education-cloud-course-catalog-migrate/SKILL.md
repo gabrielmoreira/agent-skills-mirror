@@ -5,9 +5,7 @@ metadata:
   version: "1.0"
   domains:
     - "Education"
-  accessCheck:
-    - type: "accessCheck"
-      value: "IndustriesEducation.userHasEducationCloudAccess"
+  accessCheck: "IndustriesEducation.userHasEducationCloudAccess"
   cliTools:
     - tool: ["python3"]
       semver: ">=3.9.0"

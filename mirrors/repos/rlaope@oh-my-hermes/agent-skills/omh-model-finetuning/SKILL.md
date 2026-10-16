@@ -17,7 +17,7 @@ This is an OMH `model-finetuning` workflow skill, projected for Agent Skills hos
 
 ## Why This Exists
 
-`model-finetuning` exists because producing a model had no owner: `model-optimization` onboards a model into OMH, `inference-serving` serves one that exists, and `llm-app-dev` builds on top of one, while an SFT or DPO question reached `workflow-learning` with no baseline comparison and no way to answer that training is not needed.
+`model-finetuning` exists because producing a model had no owner: `inference-serving` serves one that exists and `llm-app-dev` builds on top of one, while an SFT or DPO question had no baseline comparison and no way to answer that training is not needed.
 
 ## First Steps
 
@@ -26,10 +26,10 @@ This is an OMH `model-finetuning` workflow skill, projected for Agent Skills hos
 
 ## Do Not Use When
 
-- The ask is onboarding a new model generation into OMH's routing, calibration, or pricing; use `omh-model-optimization`.
+- The ask is onboarding a new model generation into OMH's routing, calibration, or pricing.
 - The ask is serving an existing model behind an endpoint or benchmarking that endpoint; use `omh-inference-serving`.
 - The ask is building an application on top of a hosted model -- RAG, structured output, prompt versions; use `omh-llm-app-dev`.
-- The ask is learning from an OMH run, a missed route, or a skill improvement candidate; use `omh-workflow-learning`.
+- The ask is learning from an OMH run, a missed route, or a skill improvement candidate.
 
 ## Examples
 

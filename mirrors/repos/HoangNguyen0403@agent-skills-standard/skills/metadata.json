@@ -120,6 +120,14 @@
       "nestjs",
       "angular"
     ],
+    "json": [
+      "common",
+      "product-management"
+    ],
+    "md": [
+      "common",
+      "product-management"
+    ],
     "spec.ts": [
       "common"
     ],
@@ -482,14 +490,14 @@
       ]
     },
     "common": {
-      "version": "2.8.8",
-      "last_updated": "2026-10-14",
+      "version": "3.0.0",
+      "last_updated": "2026-10-15",
       "tag_prefix": "common-v",
       "token_metrics": {
-        "total_skills": 46,
-        "total_tokens": 40952,
-        "avg_tokens_per_skill": 890,
-        "largest_skill": "common-product-requirements (1740 tokens)"
+        "total_skills": 44,
+        "total_tokens": 38388,
+        "avg_tokens_per_skill": 872,
+        "largest_skill": "common-skill-creator (1693 tokens)"
       },
       "owners": [
         "HoangNguyen0403"
@@ -501,8 +509,8 @@
       "tag_prefix": "quality-engineering-v",
       "token_metrics": {
         "total_skills": 14,
-        "total_tokens": 11956,
-        "avg_tokens_per_skill": 854,
+        "total_tokens": 12010,
+        "avg_tokens_per_skill": 858,
         "largest_skill": "quality-engineering-zephyr-test-generation (1278 tokens)"
       },
       "owners": [
@@ -846,11 +854,25 @@
       "owners": [
         "HoangNguyen0403"
       ]
+    },
+    "product-management": {
+      "version": "1.1.0",
+      "last_updated": "2026-10-15",
+      "tag_prefix": "product-management-v",
+      "owners": [
+        "HoangNguyen0403"
+      ],
+      "token_metrics": {
+        "total_skills": 10,
+        "total_tokens": 13868,
+        "avg_tokens_per_skill": 1387,
+        "largest_skill": "product-metrics (1717 tokens)"
+      }
     }
   },
   "releases": {
     "workflows": {
-      "version": "1.1.6",
+      "version": "1.1.7",
       "tag_prefix": "workflows-v"
     }
   },

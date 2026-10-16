@@ -363,12 +363,14 @@ export function DeviceDepth({
 
 /**
  * A loupe showing part of the screenshot at `zoom`× the size it appears on the
- * device. `screenWidth` is the device's on-canvas screen width in canvas px.
+ * device. `screenWidth` is the device's on-canvas screen width in canvas px;
+ * `shortSide` is the lens's shorter side in canvas px.
  */
 export function CalloutLoupe({
   callout,
   src,
   screenWidth,
+  shortSide,
   cW,
   accent,
   hideEmpty,
@@ -376,12 +378,17 @@ export function CalloutLoupe({
   callout: Callout;
   src: string;
   screenWidth: number;
+  shortSide: number;
   cW: number;
   accent: string;
   hideEmpty?: boolean;
 }) {
   const resolved = img(src);
   const border = Math.max(3, cW * 0.009);
+  // A % radius resolves against width and height separately, so a wide lens
+  // got stretched elliptical corners. A px radius from the shorter side stays
+  // round and matches the old 14% on a square lens.
+  const radius = callout.shape === "circle" ? "50%" : `${shortSide * 0.14}px`;
   // An export without a screenshot shouldn't ship an empty lens.
   if (!resolved && hideEmpty) return null;
   return (
@@ -390,7 +397,7 @@ export function CalloutLoupe({
         position: "relative",
         width: "100%",
         height: "100%",
-        borderRadius: callout.shape === "circle" ? "50%" : "14%",
+        borderRadius: radius,
         overflow: "hidden",
         background: "#0f0f12",
         boxShadow: `0 0 0 ${border}px #ffffff, 0 ${cW * 0.025}px ${cW * 0.06}px rgba(0,0,0,0.32)`,

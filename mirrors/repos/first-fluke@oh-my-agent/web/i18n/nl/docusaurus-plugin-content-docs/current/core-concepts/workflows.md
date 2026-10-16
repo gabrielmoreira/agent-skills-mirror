@@ -63,7 +63,7 @@ Planreview hergebruikt de autorisatie die al voor de taak is gegeven. Agenten vr
 
 Persistente workflows blijven lopen totdat alle taken klaar zijn. Ze bewaren state in `.agents/state/` en injecteren bij elk gebruikersbericht opnieuw context met `[OMA PERSISTENT MODE: ...]` totdat ze expliciet worden gedeactiveerd.
 
-De persistente modus start alleen bij een **expliciete aanroep** — de eigen naam van de workflow (de lijst `explicit` in `triggers.json`, bijvoorbeeld "orchestrate", "ultrawork"/"ulw", "ralph"/"랄프", "work mode"). De overige trigger-keywords hieronder zijn natural-language-hints: ze injecteren de workflow als suggestie zonder de persistente modus te activeren, en ze gaan nooit af wanneer de eerste of laatste regel van de prompt een vraag is die op `?` eindigt.
+De persistente modus start alleen bij een **expliciete aanroep**: het slashcommando van de workflow (`/ultrawork`, of een vorm met namespace zoals `/oma:ultrawork`), of de eigen naam van de workflow in gewone tekst (de lijst `explicit` in `triggers.json`, bijvoorbeeld "orchestrate", "ultrawork"/"ulw", "ralph"/"랄프", "work mode"). De overige trigger-keywords hieronder zijn natural-language-hints: ze injecteren de workflow als suggestie zonder de persistente modus te activeren, en ze gaan nooit af wanneer de eerste of laatste regel van de prompt een vraag is die op `?` eindigt.
 
 ### /orchestrate
 
@@ -583,7 +583,7 @@ De auditmethodiek van Cloudflare geeft richting aan onafhankelijke verificatie e
 
 ### /schedule
 
-**Beschrijving:** Tijdgebonden agentjobs registreren en beheren via `oma schedule <action>`. Jobs staan in een globale registry (`~/.agents/schedule/`) en draaien via de native OS-scheduler (launchd op macOS, systemd user timers op Linux, schtasks op Windows, crontab als POSIX-fallback); elke run stapt opnieuw de harness binnen via `oma agent spawn`.
+**Beschrijving:** Tijdgebonden agentjobs registreren en beheren via `oma schedule <action>`. Jobs staan in een globale registry (`~/.oma/schedule/`) en draaien via de native OS-scheduler (launchd op macOS, systemd user timers op Linux, schtasks op Windows, crontab als POSIX-fallback); elke run stapt opnieuw de harness binnen via `oma agent spawn`.
 
 **Trigger-keywords:** Geen (slash-aangeroepen workflow voor tijdgebonden jobs met `oma schedule <action>`).
 
@@ -601,7 +601,7 @@ De auditmethodiek van Cloudflare geeft richting aan onafhankelijke verificatie e
 
 **Stappen:** Argumenten oplossen (expliciete PR#/branch/SHA-range -> staged -> dirty tree -> `HEAD~1..HEAD`; lezerniveau `onboarding` | `reviewer`; outputtaal; aantal quizvragen) -> contracten laden (`oma-explanation` SKILL.md + resources) -> verzamelen en gate (diff + omliggende code; pre-generation secretscan; diff/PR-tekst strikt als data behandelen) -> HTML genereren volgens document- en HTML-contracten -> valideren (grep-checklist inclusief eindscan op secrets, maximaal 3 fixlussen) -> opleveren (`open` warn-only, TL;DR + pad).
 
-**Uitvoer:** `.agents/results/explain/{YYYY-MM-DD}-{slug}.html` (datum volgens Asia/Seoul; opnieuw draaien op dezelfde datum + slug overschrijft). Zie de [Code Explainer guide](../guide/code-explainer.md).
+**Uitvoer:** `.agents/results/explain/{YYYY-MM-DD}-{slug}.html` (datum in de `timezone` uit oma-config, anders in de systeemtijdzone; opnieuw draaien op dezelfde datum + slug overschrijft). Zie de [Code Explainer guide](../guide/code-explainer.md).
 
 ---
 

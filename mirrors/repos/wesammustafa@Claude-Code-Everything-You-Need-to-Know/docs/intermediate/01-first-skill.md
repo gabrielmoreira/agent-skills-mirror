@@ -1,6 +1,6 @@
 # Turn a repeated workflow into a skill
 
-<sub>**Intermediate** · Lesson 1 of 8 · about 20 minutes · Needs: [Intermediate index](README.md) · Verified against Claude Code v2.1.285 (stable) on 2026-10-06</sub>
+<sub>**Intermediate** · Lesson 1 of 8 · about 20 minutes · Needs: [Intermediate index](README.md) · Verified against Claude Code v2.1.292 (stable) on 2026-10-15</sub>
 
 ## Goal
 
@@ -55,7 +55,7 @@ flowchart LR
    ```
 
    followed by five numbered steps and the rule "Don't change any files."
-2. Start `claude` in the repository and run `/skills` ([Commands](https://code.claude.com/docs/en/commands)). The list includes `five-whys`, marked as a project skill.
+2. Start `claude` in the repository and run `/skills` ([Commands](https://code.claude.com/docs/en/commands)). The list includes `five-whys`, a project skill because it lives in `.claude/skills/` ([Choose where skills load](https://code.claude.com/docs/en/skills#where-skills-live)).
 3. Run the skill by name, with a problem from your repository. In the practice template:
 
    ```text
@@ -69,7 +69,7 @@ flowchart LR
    Why does the test suite pass even though samples/guide.md has a broken link? I want the root cause, not a quick fix.
    ```
 
-   Before Claude answers, the transcript shows a call to the `Skill` tool for `five-whys`: Claude loaded the skill on its own ([Tools reference](https://code.claude.com/docs/en/tools-reference)).
+   Before Claude answers, the transcript should show a call to the `Skill` tool for `five-whys`, which means Claude loaded the skill on its own ([Tools reference](https://code.claude.com/docs/en/tools-reference)).
 
 ## Your turn
 
@@ -114,7 +114,7 @@ You are done when all of these are true:
 
 Run `npm run check -- i-1 --dir <your repo>` from your practice copy, or `npm run check -- i-1` in the copy itself.
 
-If the skill isn't committed, run `git check-ignore -v .claude/skills/tdd/SKILL.md`: an ignore rule that matches `.claude`, in a `.gitignore`, `.git/info/exclude` or your global excludes file, hides the folder from `git add`, so add the file with `git add -f`. If the second item fails, rewrite the description as what the skill does followed by "Use when" and the requests it fits, because Claude reads only the description when it decides whether to load a skill. If the commit item fails, run `/tdd` again on a new small feature and let it commit the test with the code.
+If the skill isn't committed, run `git check-ignore -v .claude/skills/tdd/SKILL.md`: an ignore rule that matches `.claude`, in a `.gitignore`, `.git/info/exclude` or your global excludes file, hides the folder from `git add`, so add the file with `git add -f`. If the second item fails, rewrite the description as what the skill does followed by "Use when" and the requests it fits, because Claude decides whether to load a skill from its description, plus any `when_to_use` text, in the skill listing, not from the skill body. If the commit item fails, run `/tdd` again on a new small feature and let it commit the test with the code.
 
 ## Watch out
 

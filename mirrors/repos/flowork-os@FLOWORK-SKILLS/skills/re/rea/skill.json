@@ -1,0 +1,31 @@
+{
+  "id": "rea",
+  "name": "Reverse Engineering Assistant (REA)",
+  "category_id": "CAT-005",
+  "category": "technology",
+  "description": "Systematic reverse engineering methodology for binary triage, feature tracing, decompilation verification, patch diffing, and runtime observation.",
+  "version": "1.0.0",
+  "author": "Flowork OS",
+  "keywords": [
+    "reverse_engineering",
+    "binary_analysis",
+    "decompilation",
+    "disassembly",
+    "patch_diffing",
+    "control_flow",
+    "symbol_extraction",
+    "fault_localization",
+    "crash_analysis",
+    "dynamic_instrumentation",
+    "ghidra",
+    "jadx",
+    "electron_deobfuscation",
+    "android_reversing",
+    "call_stack_trace",
+    "epistemic_discipline",
+    "runtime_observation",
+    "static_analysis",
+    "exit_code_0",
+    "quality_control"
+  ]
+}

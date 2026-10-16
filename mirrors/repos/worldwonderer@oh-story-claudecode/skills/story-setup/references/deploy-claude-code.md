@@ -1,6 +1,6 @@
 # Claude Code 部署
 
-`target_cli` 含 `claude-code` 时，由 SKILL.md Phase 2 完整读取本文件并按顺序执行。路径安全检查、幂等重跑、清理自嵌套残留、部署标记、模板占位符和安装报告的写法在 SKILL.md，这里只写 Claude Code 专属部分。
+`target_cli` 含 `claude-code` 时，由 SKILL.md Phase 2 完整读取并依次执行本文件。路径检查、幂等重跑、残留清理、部署标记、模板占位符和报告遵循 SKILL.md 的公共规则。
 
 ## 部署清单（机械可检查）
 
@@ -16,7 +16,7 @@
 | `skills/story-setup/scripts/copy-path-safety.py` | 每个递归复制步骤前执行，不复制到项目专用目录 | story-setup helper | execute | JSON 仅 `copy_allowed: true` 时允许复制；symlink 同对象 no-op；target 位于 source 内时停止 |
 | generated sentinel | `.story-deployed` | story-setup managed | replace | contains `agents_version`, `setup_skill_version`, `target_cli`, `resolver_strategy`, `references_dir` |
 
-`references/templates/hooks/` 内容：8 个 hook 脚本模板 + `story_hook_core.js`（正文网/大纲守卫/连续性/commit 侦测的共享实现，与 OpenCode/ZCode 同一份）+ `story_hook_cli.js`（bash hook 调核的 node 桥）+ `lib/common.sh`/`lib/sentinel.sh`。正文兜底 `check-prose-after-write.sh` 限 PostToolUse Write/Edit；`cat>`/`tee` 等 Bash 写正文由 Codex Stop 回合末 git 扫描兜，Claude/OpenCode 的 Bash 仅 pre-guard。
+`references/templates/hooks/` 内容：8 个 hook 脚本模板 + `story_hook_core.js`（正文网/大纲守卫/连续性/commit 侦测的共享实现，与 OpenCode/ZCode 同一份）+ `story_hook_cli.js`（bash hook 调核的 node 桥）+ `lib/common.sh`/`lib/sentinel.sh`。正文兜底 `check-prose-after-write.sh` 限 PostToolUse Write/Edit；`cat>`/`tee` 等 Bash 写正文在 Claude 端仅运行写前守卫。
 
 ## 部署 CLAUDE.md
 
@@ -57,7 +57,7 @@
 
 ### 部署 Agent References
 
-- 将 `skills/story-setup/references/agent-references/` 下所有 `.md` 复制到项目内 `.claude/skills/story-setup/references/agent-references/`
+- 递归复制 `skills/story-setup/references/agent-references/` 的全部 `.md`（含子目录）到项目内 `.claude/skills/story-setup/references/agent-references/`
 - 校验：凡 agent 或 reference 中出现 `story-setup/references/agent-references/<file>.md`，源包与目标包都必须存在 `<file>.md`
 - 部署到项目后，agent 内引用的参考资料必须走 `story-setup/references/agent-references/*.md` 这一本 skill 内复制路径；不要跨 skill 引用其他 skill 的 references。Claude Code 只使用当前规范前缀 `.claude/skills/`，不在运行时遍历历史备选路径。
 
@@ -85,7 +85,7 @@
 3. 验证 agents：
    - 检查 `.claude/agents/` 下的 7 个 agent 定义文件是否存在
 4. 验证 agent reference bundle：
-   - 检查 `.claude/skills/story-setup/references/agent-references/` 下 reference 文件完整
+   - 按源目录相对路径核对 `.claude/skills/story-setup/references/agent-references/`，含子目录
    - 检查所有 `story-setup/references/agent-references/<file>.md` 都能解析到 deployed bundle
 
 ## 安装报告必须提示

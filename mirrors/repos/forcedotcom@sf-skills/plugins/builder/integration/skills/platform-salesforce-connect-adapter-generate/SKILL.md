@@ -4,9 +4,7 @@ description: "Custom Apex adapter generation for Salesforce Connect — connects
 metadata:
   version: "1.0"
   minApiVersion: "66.0"
-  accessCheck:
-    - type: license
-      value: SalesforceConnect
+  accessCheck: "License.SalesforceConnect"
   domains:
     - Platform
   relatedSkills:

@@ -1,14 +1,11 @@
 ---
 name: output-contract
-description: |
-  story-short-analyze 输出契约。定义 Stage → 文件映射、_meta.json schema、
-  写入顺序、Resume 与验收接入点。story-short-write 怎么读这些产出由写作侧自己维护。
+description: story-short-analyze 输出契约。定义 Stage → 文件映射、_meta.json schema、写入顺序、Resume 与验收接入点；写作侧维护产出的读取方式。
 ---
 
 # 输出契约：story-short-analyze ↔ story-short-write
 
-`story-short-analyze` 拆完一篇短篇后，产物落盘到 `拆文库/{书名}/`。`story-short-write`
-写下一篇同题材短篇时，**同时**读这个目录下的全部产出。
+`story-short-analyze` 将短篇拆文产出存入 `拆文库/{书名}/`。`story-short-write` 构思新篇时结合报告、节点、手法与原文建立对标，正文阶段从已落盘的对标摘要召回。
 
 ---
 
@@ -23,9 +20,7 @@ description: |
 └── _meta.json             # 管道元数据 + 结构计数（resume + 验收数值依据）
 ```
 
-**文件名约定**：`拆文报告.md / 情节节点.md / 写作手法.md` 由 `story-short-write` 硬编码
-消费，不可重命名。分析叙事走 markdown，数字/枚举走 `_meta.json.structure_counts`。
-写作侧怎么读这些产出（读哪几段、按什么顺序用）由 `story-short-write` 自己的参考文件维护，不在本契约里。
+**文件名约定**：`story-short-write` 按 `拆文报告.md / 情节节点.md / 写作手法.md` 定位产物，不可重命名。分析正文写入 Markdown，结构计数与反转枚举写入 `_meta.json.structure_counts`；具体读取范围与顺序按写作侧参考文件执行。
 
 ---
 
@@ -43,8 +38,7 @@ description: |
 
 ## `_meta.json` schema
 
-`_meta.json` 是管道元数据 + 结构计数。**不放分析内容**，只放数字和枚举——给验收
-检查做完整性校验用。分析叙事都在 `拆文报告.md` 里。
+`_meta.json` 保存来源字数、题材、时间、阶段进度及结构计数，供续跑与验收使用；分析正文写入 `拆文报告.md`。
 
 ```jsonc
 {
@@ -70,31 +64,27 @@ description: |
 
 1. **Stage N 开始前**：`last_stage_in_progress = N`，写盘。
 2. **Stage N 文件写完后**：non-empty + 最小长度合理性检查（如 `拆文报告.md` 新增段 ≥ 200 字）。
-3. **通过**：清空 `last_stage_in_progress`，append `N` 到 `stages_completed[]`。
+3. **通过**：Stage 2–5 清空 `last_stage_in_progress`，将 `N` 追加到 `stages_completed[]`；Stage 6 须先通过下方验收。
 4. **失败**：`stages_completed` 不动，`last_stage_in_progress` 保留为 `N`。
-5. **Stage 6 完成时额外动作**：把 `structure_counts` 一次性算出并写入 `_meta.json`，
-   然后才进入验收。
+5. **Stage 6 内容写完后**：一次性算出 `structure_counts` 并写入 `_meta.json`，再进入验收。
 
 ### Resume 协议
 
-- `last_stage_in_progress` 非空 → 该 Stage 上次中断，**从头**重跑（不复用半成品）。
-- `last_stage_in_progress` 为空 → 从 `max(stages_completed) + 1` 开始。
+- `last_stage_in_progress` 非空 → 该 Stage 上次中断，**从头**重跑，不复用半成品；Stage 6 内容已齐、仅验收未过时按下方例外处理。
+- `last_stage_in_progress` 为空且 `stages_completed` 不含 `6` → 从 `max(stages_completed) + 1` 开始；尚无完成阶段时从 Stage 2 开始。
 - `stages_completed` 含 6 → 已完成，询问用户覆盖/取消。
 
-**Stage 6 = 内容写完 AND 验收通过**。验收未过前 `last_stage_in_progress` 保持 `6`、`stages_completed` 不含 `6`；resume 时正文/structure_counts 已在盘上，只重跑验收检查，不重写 Stage 6 正文。
+**Stage 6 完成须同时满足内容写完与验收通过**。验收未过前，`last_stage_in_progress` 保持 `6`，`stages_completed` 不含 `6`。续跑时若综合段与 `structure_counts` 已完整落盘，只重跑验收；验收发现内容缺失则补足对应产出。
 
 ---
 
 ## 验收接入点
 
-Stage 6 内容写完后、`stages_completed[6]` append 前，跑三道检查：
+Stage 6 内容写完后、将 `6` 追加到 `stages_completed[]` 前，依次跑三道检查，通过后执行 Step 4：
 
-### Step 1：拆文报告 AI 腔自检
+### Step 1：拆文报告表达自检
 
-扫描 `拆文报告.md` 全文 against 拆文流程本地加载的禁用词表与报告 AI 腔规则。
-这是拆文报告质量门；成稿去 AI 规则由写作流程在自己的 Skill 内维护，不跨 Skill 读取参考文件，也不要把两套规则混用。
-命中 → 不写 `stages_completed[6]`，逐处修订**拆文报告本身**的 AI 腔后重扫
-（源文里有 AI 腔不算——这里扫的是分析师写的报告）。
+按拆文流程本地加载的报告表达规则检查 `拆文报告.md`，跳过源文引用，只修报告本身的证据不足、空转套话与越界推测。发现问题时暂不将 `6` 追加到 `stages_completed[]`，修订后重扫。成稿去 AI 味由写作流程维护，不在此评判源文是否由 AI 写成。
 
 ### Step 2：`_meta.json.structure_counts` 数值校验
 
@@ -117,8 +107,7 @@ Stage 6 内容写完后、`stages_completed[6]` append 前，跑三道检查：
 
 ### Step 4：通过
 
-清空 `_meta.json.last_stage_in_progress`，append `6` 到 `stages_completed[]`，按拆文
-流程 SKILL 的完成汇报告诉作者。
+清空 `_meta.json.last_stage_in_progress`，将 `6` 追加到 `stages_completed[]`，按拆文流程 SKILL 的完成汇报告诉作者。
 
 ---
 

@@ -11,9 +11,7 @@ metadata:
     - "service-omni-queue-routing-config-deploy"
     - "service-omni-routing-flow-deploy"
     - "service-omni-service-channel-configure"
-  accessCheck:
-    - type: license
-      value: ServiceCloud
+  accessCheck: "OrgPermissions.LightningService"
   cliTools:
     - tool: ["jq"]
       semver: ">=1.6"

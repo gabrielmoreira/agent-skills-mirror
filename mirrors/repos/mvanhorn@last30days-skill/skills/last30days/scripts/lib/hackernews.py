@@ -10,6 +10,7 @@ import math
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from http.client import HTTPException
 from typing import Any, Dict, List, Optional
 
 import re
@@ -24,6 +25,9 @@ _HN_PREFIXES = re.compile(r"^(Tell HN|Show HN|Ask HN|Launch HN)\s*:\s*", re.IGNO
 ALGOLIA_SEARCH_URL = "https://hn.algolia.com/api/v1/search"
 ALGOLIA_SEARCH_BY_DATE_URL = "https://hn.algolia.com/api/v1/search_by_date"
 ALGOLIA_ITEM_URL = "https://hn.algolia.com/api/v1/items"
+# Official HN Firebase item API — `kids` is in the order the thread displays
+# top-level comments (Algolia's /items children do not carry useful points).
+FIREBASE_ITEM_URL = "https://hacker-news.firebaseio.com/v0/item"
 
 DEPTH_CONFIG = {
     "quick": 15,
@@ -309,6 +313,68 @@ def _hn_item_url(item_id: Any) -> str:
     return f"https://news.ycombinator.com/item?id={item_id}"
 
 
+# Ordering is optional, so a slow Firebase must not hold up the report.
+FIREBASE_KIDS_TIMEOUT = 5
+FIREBASE_KIDS_RETRIES = 2
+FIREBASE_KIDS_BUDGET = 8.0
+
+
+def _fetch_hn_kids(object_id: str) -> Optional[List[Any]]:
+    """Return HN's display order for a story's top-level comments, or None on failure.
+
+    Algolia's `/items/<id>` children list is effectively id-order with `points`
+    always null, so sorting by points is a no-op (#1285). The Firebase item
+    endpoint returns `kids` in the same order the HN thread UI shows.
+    """
+    url = f"{FIREBASE_ITEM_URL}/{object_id}.json"
+    # Comment order is a refinement over comments Algolia already returned, so a
+    # Firebase failure must not reach the pipeline's sink and mark HN degraded.
+    try:
+        with http.capture_failures():
+            data = http.request(
+                "GET",
+                url,
+                timeout=FIREBASE_KIDS_TIMEOUT,
+                retries=FIREBASE_KIDS_RETRIES,
+                deadline_monotonic=time.monotonic() + FIREBASE_KIDS_BUDGET,
+            )
+    # http.request wraps HTTP and socket errors, but a truncated or non-UTF-8
+    # body escapes as IncompleteRead or UnicodeDecodeError.
+    except (http.HTTPError, HTTPException, UnicodeDecodeError) as e:
+        _log(f"Failed to fetch HN kids for {object_id}: {e}")
+        return None
+    if not isinstance(data, dict):
+        return None
+    kids = data.get("kids")
+    if not isinstance(kids, list):
+        return None
+    return kids
+
+
+def _order_comments_by_kids(
+    comments: List[Dict[str, Any]],
+    kids: List[Any],
+) -> List[Dict[str, Any]]:
+    """Reorder Algolia children to match HN `kids` order; unknowns keep relative order."""
+    by_id: Dict[Any, Dict[str, Any]] = {}
+    for comment in comments:
+        cid = comment.get("id")
+        if cid is not None and cid not in by_id:
+            by_id[cid] = comment
+    ordered: List[Dict[str, Any]] = []
+    seen = set()
+    for kid in kids:
+        comment = by_id.get(kid)
+        if comment is not None:
+            ordered.append(comment)
+            seen.add(kid)
+    for comment in comments:
+        cid = comment.get("id")
+        if cid not in seen:
+            ordered.append(comment)
+    return ordered
+
+
 def _fetch_item_comments(object_id: str, max_comments: int = 5) -> Dict[str, Any]:
     """Fetch top-level comments for a story from Algolia items endpoint.
 
@@ -329,12 +395,18 @@ def _fetch_item_comments(object_id: str, max_comments: int = 5) -> Dict[str, Any
 
     children = data.get("children", [])
 
-    # Sort by points (highest first), filter to actual comments
+    # Filter to actual comments. Prefer HN's Firebase `kids` order (#1285);
+    # Algolia children have null points, so a points sort is a no-op and leaves
+    # earliest-posted replies first. Fall back to points only when kids is unavailable.
     real_comments = [
         c for c in children
         if c.get("text") and c.get("author")
     ]
-    real_comments.sort(key=lambda c: c.get("points") or 0, reverse=True)
+    kids = _fetch_hn_kids(object_id)
+    if kids is not None:
+        real_comments = _order_comments_by_kids(real_comments, kids)
+    else:
+        real_comments.sort(key=lambda c: c.get("points") or 0, reverse=True)
 
     comments = []
     insights = []

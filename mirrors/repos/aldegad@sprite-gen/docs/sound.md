@@ -15,7 +15,7 @@ sprite-gen sound --kind sfx|bgm --prompt TEXT (or --prompt-file PATH) --duration
 - `--cache-dir`: Defaults to `$XDG_CACHE_HOME/sprite-gen/audio` or `~/.cache/sprite-gen/audio` (never inside `--out-dir`; local by default but can be copied; no cross-cache-directory or cross-machine duplicate-request guarantee).
 - `--target-lufs`: Target integrated loudness within `-36..-9` LUFS.
 - `--crossfade`: Overlap duration in seconds.
-- **Environment & PATH**: `ELEVENLABS_API_KEY` is required only for new paid requests (offline work needs none). `ffmpeg` (with `libopus` and `aac` encoders) and `ffprobe` are required on `PATH` and checked before paid calls.
+- **Environment & PATH**: `ELEVENLABS_API_KEY` is required only for new paid requests (offline work needs none); ElevenLabs has no subscription login, so every new request is billed per call and says so on stderr before it leaves (`[gen] elevenlabs: running on ELEVENLABS_API_KEY — this is a per-call API charge …`, the line every metered route prints), and the receipt records `auth_source`. `ffmpeg` (with `libopus` and `aac` encoders) and `ffprobe` are required on `PATH` and checked before paid calls.
 
 ## Provider APIs and Cost Accounting
 
@@ -31,7 +31,7 @@ Checked 2026-10-13: [ElevenLabs Pricing](https://elevenlabs.io/pricing/api) quot
 Raw paid audio is stored in SQLite keyed by provider parameter digest. Tuning `--event`, loudness, or exports reuses raw cache without new purchases:
 - **Locking & Recovery**: Atomic claims precede requests; raw blobs and receipts commit on success. Duplicates, crashes, or uncertain results refuse resubmission. Do not delete unresolved cache entries blindly; inspect provider billing/history first. All errors remain unresolved.
 - **Offline Processing**: Downstream processing runs offline. Identical runs require no network.
-- **Retries**: Uses `sprite_gen.gen.retry` exclusively. ElevenLabs 429 retries only when `detail.status` is `system_busy` or `too_many_concurrent_requests` (max 2 retries via `Retry-After` or engine backoff; see [ElevenLabs 429 Errors](https://elevenlabs.io/docs/help-center/technical/api-error-code-429)). No other 429, 5xx, transport retries, or provider fallbacks occur. Emits only bounded status, code, and request IDs without error prose.
+- **Retries**: Uses `sprite_gen.gen.retry` exclusively. ElevenLabs 429 retries only when `detail.status` is `system_busy` or `too_many_concurrent_requests` (max 2 retries via `Retry-After` or engine backoff; see [ElevenLabs 429 Errors](https://elevenlabs.io/docs/help-center/technical/api-error-code-429)). No other 429, 5xx, transport retries, or provider fallbacks occur. Emits only bounded status, code, and request IDs without error prose, and the billing line above.
 
 ## Audio DSP, Looping, and Quality Gates
 

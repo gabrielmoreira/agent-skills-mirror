@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `opensquilla/opensquilla` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `opensquilla/opensquilla` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `opensquilla/opensquilla` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,8 +70,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`src/opensquilla/skills/bundled/pptx/SKILL.md`](src/opensquilla/skills/bundled/pptx/SKILL.md) |
 | 10 | ✓ | [`src/opensquilla/skills/bundled/skill-creator/SKILL.md`](src/opensquilla/skills/bundled/skill-creator/SKILL.md) |
 | 11 | ✓ | [`src/opensquilla/skills/bundled/sub-agent/SKILL.md`](src/opensquilla/skills/bundled/sub-agent/SKILL.md) |
-| 12 | ✓ | [`src/opensquilla/skills/bundled/xlsx/SKILL.md`](src/opensquilla/skills/bundled/xlsx/SKILL.md) |
-| 13 | ✓ | [`tests/fixtures/live_skill_hub/opensquilla-live-skill-hub-canary/SKILL.md`](tests/fixtures/live_skill_hub/opensquilla-live-skill-hub-canary/SKILL.md) |
+| 12 | ✓ | [`src/opensquilla/skills/bundled/visualize/SKILL.md`](src/opensquilla/skills/bundled/visualize/SKILL.md) |
+| 13 | ✓ | [`src/opensquilla/skills/bundled/xlsx/SKILL.md`](src/opensquilla/skills/bundled/xlsx/SKILL.md) |
+| 14 | ✓ | [`tests/fixtures/live_skill_hub/opensquilla-live-skill-hub-canary/SKILL.md`](tests/fixtures/live_skill_hub/opensquilla-live-skill-hub-canary/SKILL.md) |
 
 ---
 

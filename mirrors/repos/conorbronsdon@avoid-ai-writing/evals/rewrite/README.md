@@ -1,5 +1,9 @@
 # Rewrite preservation regressions
 
+Offline preparation for the separate loading experiment is documented in
+[`reference-loading-205.md`](reference-loading-205.md). It does not change the
+installed full-loading policy or claim an executed model comparison.
+
 ## Current merge gate
 
 The [automated regression gate](automated-gate.md) governs the editing-contract

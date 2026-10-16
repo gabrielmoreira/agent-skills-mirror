@@ -36,7 +36,10 @@ for (const dir of dirs) {
   fs.mkdirSync(path.join(targetRoot, dir), { recursive: true });
 }
 
+const { DEFAULT_SOURCE_RULES } = require("./source-rules");
+
 const files = {
+  "03-处理状态/来源规则.json": `${JSON.stringify(DEFAULT_SOURCE_RULES, null, 2)}\n`,
   "03-处理状态/来源注册表.csv": "\"source_id\",\"path\",\"source_type\",\"author\",\"status\",\"notes\"\n",
   "03-处理状态/来源注册表_批量生成候选.csv": "\"source_id\",\"path\",\"source_type\",\"author\",\"status\",\"notes\"\n",
   "03-处理状态/原始素材索引.csv": "\"path\",\"category\"\n",
@@ -102,6 +105,7 @@ const toolNames = [
   "generate-duplicate-candidates.js",
   "fill-obsidian-links.js",
   "summarize-system.js",
+  "source-rules.js",
 ];
 
 for (const name of toolNames) {

@@ -63,7 +63,7 @@ description: OMA 全部 21 个工作流的完整参考，涵盖斜杠命令、�
 
 持久化工作流持续运行直到所有任务完成。它们在 `.agents/state/` 中维护状态，并在每条用户消息中重新注入 `[OMA PERSISTENT MODE: ...]` 上下文，直到显式停用。
 
-只有**显式调用**才会启动持久化模式，即工作流自己的名称（`triggers.json` 中的 `explicit` 列表，例如“orchestrate”、“ultrawork”/“ulw”、“ralph”/“랄프”、“work mode”）。下面的其他触发关键词是自然语言提示：它们只会把工作流作为建议注入，不会激活持久化模式；当提示的第一行或最后一行是以 `?` 结尾的问句时，它们也绝不会触发。
+只有**显式调用**才会启动持久化模式：工作流的斜杠命令（`/ultrawork`，或带命名空间的形式，例如 `/oma:ultrawork`），或以纯文本写出的工作流自己的名称（`triggers.json` 中的 `explicit` 列表，例如“orchestrate”、“ultrawork”/“ulw”、“ralph”/“랄프”、“work mode”）。下面的其他触发关键词是自然语言提示：它们只会把工作流作为建议注入，不会激活持久化模式；当提示的第一行或最后一行是以 `?` 结尾的问句时，它们也绝不会触发。
 
 ### /orchestrate
 
@@ -601,7 +601,7 @@ Cloudflare 审计方法用于指导独立验证和本地沙箱复现。这并非
 
 **步骤**：解析参数（目标引用：显式 PR# / 分支 / SHA 范围 → 暂存区 → dirty tree → `HEAD~1..HEAD`；读者级别 `onboarding` | `reviewer`；输出语言；题目数）-> 加载契约（`oma-explanation` SKILL.md 和资源）-> 收集并设关卡（diff + 周边代码；生成前机密扫描；将 diff/PR 文本严格作为数据）-> 按文档和 HTML 契约生成 HTML -> 验证（包含最终 HTML 机密扫描的 grep 清单，最多 3 个修复循环）-> 交付（`open` 仅警告，不阻断；TL;DR + 路径）。
 
-**输出：**`.agents/results/explain/{YYYY-MM-DD}-{slug}.html`（Asia/Seoul 日期；同一日期和 slug 再运行会覆盖）。参见[代码讲解指南](../guide/code-explainer.md)。
+**输出：**`.agents/results/explain/{YYYY-MM-DD}-{slug}.html`（日期使用 oma-config 的 `timezone`，未设置时使用系统时区；同一日期和 slug 再运行会覆盖）。参见[代码讲解指南](../guide/code-explainer.md)。
 
 ---
 

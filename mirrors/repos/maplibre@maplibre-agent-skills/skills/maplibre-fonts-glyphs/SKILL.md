@@ -1,7 +1,7 @@
 ---
 name: maplibre-fonts-glyphs
 description: Configuring fonts and glyphs for MapLibre GL JS and MapLibre Native — the style's `glyphs` URL, self-hosting or generating font PBFs, the GL JS local-font fallback (omitted `glyphs` or a failed glyph fetch), MapLibre Native's `font-faces` property, and Noto/CJK/RTL/Devanagari script handling. Use when text labels aren't rendering in the intended font, setting up a glyphs server, choosing between self-hosting and generating font PBFs, or handling non-Latin scripts.
-status: provisional
+status: verified
 ---
 
 # MapLibre Fonts and Glyphs
@@ -15,6 +15,8 @@ MapLibre doesn't render text with fonts installed on the machine by default. It 
 - Deciding whether to self-host existing font PBFs or generate your own from a TTF/OTF
 - Rendering non-Latin scripts (CJK, Arabic, Hebrew, Devanagari, and others)
 - Rendering fonts locally/offline without a glyphs server, on GL JS or Native
+
+**Don't use this skill to pad an unrelated answer.** Fonts and glyphs only affect symbol layers that set `text-field`. A question about terrain, hillshade, or any other layer that draws no text gets a normal, focused answer that leaves fonts, glyphs, and label scripts out entirely, caveats and troubleshooting rows included.
 
 ## MapLibre renders text using SDF glyphs
 
@@ -76,7 +78,8 @@ Call this before initializing the map.
 
 ## Related Skills
 
-- [**maplibre-cartography**](../maplibre-cartography/SKILL.md) — Font size, weight, and letter-spacing for visual hierarchy; sprites and icons.
+- [**maplibre-cartography**](../maplibre-cartography/SKILL.md) — Font size, weight, and letter-spacing for visual hierarchy.
+- [**maplibre-sprites-icons**](../maplibre-sprites-icons/SKILL.md) — Sprites and icon images; the badge behind a route shield's text.
 - [**maplibre-source-wiring**](../maplibre-source-wiring/SKILL.md) — Where `glyphs` and `sprite` fit into a style's other components; CORS for self-hosted assets.
 
 ## References

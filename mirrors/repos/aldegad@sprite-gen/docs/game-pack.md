@@ -47,6 +47,8 @@ Invalid arguments, missing files, frame dimension overflows, or budget violation
 }
 ```
 
+A request must declare at least one asset or sound; `assets` may be empty or absent when `audio` names a sound (a [sound-only pack](#sound-only-packs)). A request with neither is refused ("game pack request declares nothing to pack").
+
 ### Asset identification and naming
 
 * Asset `id` and optional `state` names must use only letters, digits, underscores, dots, and hyphens (`[a-zA-Z0-9_.-]`).
@@ -86,6 +88,8 @@ Source policies and row anchors are preserved by the asset adapter. Optional ent
 * `blend`: `"normal"` (default) or `"add"`.
 * `direction`: Direction override code or `null` (defaults to `null`). Allowed only if the entry resolves to one animation; the user can select one source `state` to override one animation. An entry expanding multiple states or directions must reject any `direction` field, including `null`, before publishing output.
 * `events`: Array of `{"frame": <int>, "name": "<string>"}` triggers where `frame` is a zero-based playback position validated within frame count (defaults to `[]`).
+
+A `video-stop` strip sidecar is packed like a loop strip and carries `loop: false`, `hold_last: true` and an `anchor` that puts the loop's pivot where the stop's cells hold it, so the two animations drawn at their anchors stand in one place.
 
 ## Packing and layout
 
@@ -192,7 +196,7 @@ Version 2 adds three sections for painted scene art: single images such as props
 }
 ```
 
-* `assets` and `audio` keep their version 1 meaning. In version 2, `assets` may be empty or absent; the request must still declare at least one asset, image, tile, UI kit or icon.
+* `assets` and `audio` keep their version 1 meaning. As in version 1, `assets` may be empty or absent; the request must still declare at least one asset, image, tile, UI kit, icon or sound.
 * Every `id` uses the asset name characters (`[A-Za-z0-9_.-]`) and is unique within its section.
 * `images[]`: one PNG each (a static image or a one-frame descriptor; more frames are refused). `display` takes exactly one of `width` or `height` (no `body_height`), and `resample` works as for assets. `anchor` is `[x, y]` in source pixels and defaults to the bottom centre of the image. `footprint` is optional: an explicit `{x, y, w, h}` rectangle in source pixels, or `"base"` for the measured base described below.
 * Props cut from one sheet by [`slice-sheet`](sheet-slicing.md#props-and-icons-sheet-scale-and-contain-fit) share one canvas size, so giving every cell of the sheet the same `display` height keeps the sizes the sheet gave them (`--scale sheet`). The [slice-sheet report](sheet-slicing.md#report) states each cell's `anchor`, the centre of its main subject's base, in the PNG's own pixels: pass it as the entry's `anchor` as it is.
@@ -310,6 +314,20 @@ Game packs support optional bundled audio declared in pack recipes via `request.
   - Never play raw exported loop files with only `source.loop = true`; raw files are encoded audio containing complete pre-overlap sources and codec padding. HTML `<audio loop>` cannot guarantee gapless playback.
   - `prepareAudioBuffer(decoded, playback)` returns an immutable, cached source buffer with fixed rounded loop length or one-shot trimmed actual interval; see [rounding and decoder tolerance](sound.md#export-signatures).
   - Consumers must use `createAudioSource` to configure loop playback using an internally cached L+1 guard buffer, setting `loopEnd = L / sampleRate` which must not be overwritten with `source.buffer.duration`.
+
+### Sound-only packs
+
+A game whose graphics are drawn in code needs its sounds and no atlas. A sound-only request produces exactly `game-pack.json`, `audio-<id>.ogg`, `audio-<id>.m4a` and `sprite-gen-audio-v2.mjs`; no atlas page (`atlas-*.png` / `atlas-*.webp`) is written. Its manifest has the same keys as a pack with images: `textures` is `[]` and `animations` is `{}` (a version 2 manifest also keeps its empty `images` (`{}`), `tiles` (`{}`) and `ui` (`{"nine_slice": {}, "icons": {}}`)). Each `audio` entry is identical to the entry the same sound gets in a pack with images, `player` included, and the sound files and the helper are byte-for-byte the same as in that pack.
+
+```json
+{
+  "version": 1,
+  "assets": [],
+  "audio": [
+    { "id": "music", "source": "../music/sound.json" }
+  ]
+}
+```
 
 ### Web Audio Playback Example
 

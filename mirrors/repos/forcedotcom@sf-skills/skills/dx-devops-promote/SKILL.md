@@ -12,11 +12,7 @@ metadata:
       semver: ">=1.6"
     - tool: ["sf"]
       semver: ">=2.0.0"
-  accessCheck:
-    - type: "orgPref"
-      value: "ALMDevopsCorePref"
-    - type: "userPerm"
-      value: "UserHasDevOpsCore"
+  accessCheck: "(OrgPreferences.ALMDevopsCorePref) && (UserPermissions.UserHasDevOpsCore)"
 ---
 
 # DevOps Center Promotion

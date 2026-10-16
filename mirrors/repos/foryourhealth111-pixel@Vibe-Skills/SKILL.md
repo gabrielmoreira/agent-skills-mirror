@@ -15,13 +15,9 @@ Do not route every loosely related task into `vibe`. Lightweight questions,
 single-command checks, or tasks better served by another explicitly requested
 skill may proceed outside `vibe` unless the user explicitly invoked this entry.
 
-Installed-copy upgrades stay on the command path. Use the repo's `update`
-entry with `--skills-dir` for the same managed skills directory instead of
-starting a separate skill flow.
+Installed-copy updates use `update --skills-dir <skills-dir>` on the same managed directory.
 
-User instructions remain highest priority. If CLAUDE.md, GEMINI.md, AGENTS.md,
-or the direct user request narrows or forbids a workflow such as TDD, follow the
-user's instruction while preserving canonical launch and proof rules.
+User instructions, including CLAUDE.md, GEMINI.md, AGENTS.md and direct workflow limits such as TDD exceptions, remain highest priority. Preserve canonical launch and proof rules within those limits.
 
 ## Canonical Bootstrap
 
@@ -38,69 +34,42 @@ Do not use the Vibe installation root as the governed artifact root.
 
 Local skill candidate audit: semantic owner `packages/runtime-core/src/vgo_runtime/router_contract_runtime.py`; compatibility bridge `scripts/router/resolve-pack-route.ps1`
 
-Specialist recommender input rules:
-
-This audit runs inside canonical `vibe`; it may expose candidates for inspection, but it does not choose task skills, bind execution, or control stage progression.
-
-- Include work type, domain/technology, deliverable, and explicit constraints.
-- Reuse verified frozen requirement/plan facts when continuing a run.
-- Treat its output as compatibility evidence only; never relabel a routed candidate as an Agent choice.
+The audit runs inside canonical `vibe` and exposes candidates for inspection. Include work type, domain/technology, deliverable, explicit constraints, and verified frozen facts on continuation. Its output is compatibility evidence only; the Agent owns skill choice, binding, and stage progression.
 
 Canonical entry command shape:
 
 ```powershell
 $env:PYTHONPATH = "<skill_root>/apps/vgo-cli/src"
-py -3 -m vgo_cli.main canonical-entry `
-  --repo-root "<skill_root>" `
-  --artifact-root "<workspace_root>" `
-  --prompt "<current user task, verbatim>"
+py -3 -m vgo_cli.main canonical-entry --repo-root "<skill_root>" --artifact-root "<workspace_root>" --prompt "<current user task, verbatim>"
 ```
 
 For PowerShell, do not place `$env:PYTHONPATH=...` inside a double-quoted `-Command` string; host interpolation may corrupt it to `:PYTHONPATH`.
 
-Bash-like hosts, including Claude Code, should avoid Bash-wrapped PowerShell.
-Set `PYTHONPATH` in the outer shell and call Python directly. If `py -3` is unavailable, try `python` instead. If `python` is unavailable, try `python3`.
+Bash-like hosts, including Claude Code, set `PYTHONPATH` in the outer shell and call Python directly. Try `py -3`, `python`, then `python3` according to availability.
 
 ```bash
 REPO_ROOT='<skill_root>'
 WORKSPACE_ROOT="${WORKSPACE_ROOT:-$PWD}"
-PYTHONPATH="$REPO_ROOT/apps/vgo-cli/src" python -m vgo_cli.main canonical-entry \
-  --repo-root "$REPO_ROOT" \
-  --artifact-root "$WORKSPACE_ROOT" \
-  --prompt "<current user task, verbatim>"
+PYTHONPATH="$REPO_ROOT/apps/vgo-cli/src" python -m vgo_cli.main canonical-entry --repo-root "$REPO_ROOT" --artifact-root "$WORKSPACE_ROOT" --prompt "<current user task, verbatim>"
 ```
 
-A normal launch does not need explicit `--host-id` or `--entry-id`.
-Those flags remain compatibility-only for wrappers or older automation that already carries them.
+`--host-id` and `--entry-id` remain compatibility-only for wrappers or older automation; omit them on a normal launch.
 
 Only validate canonical proof artifacts after canonical-entry returns a `session_root`.
-`check` on an installed copy proves only `installed locally`.
-It does not prove `runtime coherent` or `delivery accepted`.
+`check` proves `installed locally`; runtime coherence and delivery acceptance require their own evidence.
 Proof of canonical launch is post-launch and requires: `host-launch-receipt.json`, `runtime-input-packet.json`, `governance-capsule.json`, and `stage-lineage.json` under the returned `session_root`.
 `local-agent-kernel` follows the same proof rule. If it cannot produce those truth artifacts, it may produce local work scaffolds, but it must not be treated as `canonical verified`.
 If canonical launch fails, report `blocked` with the concrete failure reason instead of simulating the missing stages or proof artifacts.
 
 ## Consensus And Task Evolution
 
-Use `deep_interview` as a real conversation. Continue until the user and Agent
-share a concrete understanding of the goal, scope, constraints, deliverables,
-unknowns that affect the work, and completion criteria. A first clarification
-response is input to that conversation; freeze the requirement only when the
-user has confirmed the resulting task-specific summary.
+Use `deep_interview` until the user and Agent agree on the goal, scope, constraints, deliverables, relevant unknowns, and completion criteria. Freeze the requirement after confirmation of that task-specific summary; the first clarification is an input to the conversation.
 
-Keep that agreement in the existing TaskCard. When the user changes the work,
-append an accepted revision, update the affected work units and checks, and
-reuse completed work whose inputs and acceptance criteria remain valid. Surface
-a new decision only when it changes the agreed outcome, scope, risk, or required
-human judgment.
+Keep the agreement in the existing TaskCard. Append accepted revisions, update affected work and checks, and reuse results only while their inputs and acceptance remain valid. Surface decisions that change the agreed outcome, scope, risk, or required human judgment.
 
 ## Hard Stop And Re-entry
 
-`vibe` uses progressive governed stops:
-
-1. `requirement_doc`
-2. `xl_plan`
-3. `phase_cleanup`
+The progressive governed stops are `requirement_doc`, `xl_plan`, and `phase_cleanup`.
 
 When `bounded_return_control.explicit_user_reentry_required = true`, stop the
 current assistant turn. Do not consume re-entry credentials until a later user
@@ -119,9 +88,8 @@ write a structured host decision JSON file. Use the same `run_id`,
 `bounded_reentry_token`, and stable `workspace_root`:
 
 At a requirement stop, build `agent_skill_organization` directly from `agent_skill_organization_contract`; `preferred_payload` is incomplete until then, and the schema must not be learned through failed retries or runtime source inspection.
+Use the same `REPO_ROOT` and `WORKSPACE_ROOT` from bootstrap:
 ```bash
-REPO_ROOT='<skill_root>'
-WORKSPACE_ROOT="${WORKSPACE_ROOT:-$PWD}"
 DECISION_JSON="$WORKSPACE_ROOT/.vibeskills/tmp/host-decision.json"
 mkdir -p "$(dirname "$DECISION_JSON")"
 
@@ -158,10 +126,7 @@ stage without asking the user for a separate approval first:
   "decision_kind": "approval_response",
   "decision_action": "revise_requirement",
   "approval_decision": "revise",
-  "revision_delta": [
-    "Freeze one public small/medium face dataset downloaded locally.",
-    "Require a polished LaTeX paper and compiled PDF."
-  ]
+  "revision_delta": ["Use the revised dataset and agreed output scope."]
 }
 ```
 
@@ -198,13 +163,7 @@ The full runtime contract, stage ownership, lineage rules, internal `M`/`L`/`XL`
 grades, user-visible L/XL workflow confirmation, cleanup rules, and output inventory are defined in
 `protocols/runtime.md`.
 
-Public wrapper entries remain limited to:
-
-- `vibe`
-
-Installed-copy updates remain a command-path action:
-
-- `update --skills-dir <skills-dir>`
+`vibe` is the only public wrapper entry. Installed-copy updates use the command path described above.
 
 Compatibility stage wrappers stay internal-only. If an old caller still sends
 one, collapse it to canonical `vibe` before runtime launch and keep it out of
@@ -250,7 +209,7 @@ Never claim success without evidence. Minimum invariants:
 - Expose failures, fallback, degraded status, or blocked state explicitly.
 - Do not add mock success paths, swallowed errors, or template-only pass results.
 - Treat scaffold or draft artifacts as `needs_execution` with `proof_ready = false`; do not call them completed work.
-- Reuse completed work only while its selected Skill content and delivered artifact hashes remain unchanged; rerun changed units before verification.
+- Reuse completed work only while effective task inputs, selected Skill content, dependency outputs, and delivered artifact hashes remain unchanged. Rerun affected dependency chains before verification; block dependents when prerequisites fail.
 - Do not use fallback or boundary behavior to bypass real execution,
   verification, or root-cause repair.
 - When a check fails within the confirmed scope, make at most one targeted
@@ -281,6 +240,5 @@ Read these references only after canonical launch or when maintaining the repo:
 
 - Runtime family: governed-runtime-first
 - Version: 4.1.0
-- Updated: 2026-08-29
-- Local skill candidate audit: semantic owner `packages/runtime-core/src/vgo_runtime/router_contract_runtime.py`; compatibility bridge `scripts/router/resolve-pack-route.ps1`
+- Updated: 2026-10-16
 - Primary contract metadata: `core/skill-contracts/v1/vibe.json`

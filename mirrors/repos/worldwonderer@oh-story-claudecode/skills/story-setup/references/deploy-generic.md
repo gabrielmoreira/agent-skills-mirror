@@ -1,6 +1,6 @@
 # 通用 Web AI / 其他 Agent 部署
 
-`target_cli` 含 `generic` 时，由 SKILL.md Phase 2 完整读取本文件并按顺序执行。路径安全检查、幂等重跑、清理自嵌套残留、部署标记、模板占位符、AGENTS.md 合并策略和安装报告的写法在 SKILL.md，这里只写通用路径专属部分。
+`target_cli` 含 `generic` 时，由 SKILL.md Phase 2 完整读取并依次执行本文件。路径检查、幂等重跑、残留清理、部署标记、模板占位符、AGENTS.md 合并和报告遵循 SKILL.md 的公共规则。
 
 ## 部署清单（机械可检查）
 
@@ -12,7 +12,7 @@
 
 ## 通用 Web AI / 其他 Agent 部署算法
 
-通用路径面向 NarraFork、Web AI、自定义 Agent 等可读取项目文件的环境，只部署通用 `AGENTS.md` 与项目本地 `skills/`，不写平台专属 hooks/agents，也不声明平台原生 hooks/agents 能力。
+通用路径面向可读取项目文件的 NarraFork、Web AI、自定义 Agent，只部署 `AGENTS.md` 与项目本地 `skills/`。原生 hooks/agents 不部署；检查按 skill 软约束执行，分工走 solo/direct fallback。
 
 1. 复制仓库当前 `skills/` 下所有包含 `SKILL.md` 的 story skill 目录（13 个：`browser-cdp` 与 `story*`）到目标项目 `skills/{skill-name}/`；仅替换这些 story-setup 管理的已知 skill 目录，保留用户其他目录。项目副本是整份 skill 拷贝，agent references 只使用当前规范前缀 `skills/`。
 2. 复制 `skills/story-setup/references/generic/AGENTS.md.tmpl` 到项目 `AGENTS.md`，按 SKILL.md「AGENTS.md 合并策略」合并。
@@ -23,7 +23,7 @@
 
 - 检查 `AGENTS.md` 含通用 story skill routing sections
 - 检查 `skills/` 下 13 个 story skill 目录存在，且每个 `SKILL.md` 可读
-- 检查 `skills/story-setup/references/agent-references/` 下 reference 文件完整且数量与源目录一致
+- 按源目录相对路径核对 `skills/story-setup/references/agent-references/`，含子目录
 
 ## 安装报告必须提示
 

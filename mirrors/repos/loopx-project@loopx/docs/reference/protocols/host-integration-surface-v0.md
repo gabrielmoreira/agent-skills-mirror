@@ -27,6 +27,28 @@ before ordinary chat, then hands off to the same CLI-backed lifecycle.
 | Loopback server adapter | Provide compact status and controlled write endpoints for local dashboards or host runtimes. | Bind remotely by default, publish private state, or make browser/frontstage/server writes authoritative without CLI-equivalent dry-run. |
 | CLI fallback | Preserve a deterministic path for every read and write when the hook/MCP/server layer is absent or unhealthy. | Become a hidden headless execution path for TUI-first bootstrap unless the user explicitly opted in. |
 
+## Codex Ordinary Project Git Writes
+
+An ordinary project with the Core `workspace_write` grant adds its physical
+`.git` directory to the native workspace policy's explicit write roots. When
+both `.codex` and `.codex/skills` are physical directories, it also adds only
+the project skills subtree, so an authorized checkout or merge can update
+repository skills. Codex otherwise protects `.codex` recursively even inside
+a writable workspace. Project configuration, other protected directories and
+the account's native store gain no write root.
+
+Start and resume require native readback of every added root; subsequent Turns
+retain the same thread policy. Existing host network, temporary-directory
+settings and approved write roots are preserved. This changes the ordinary
+project default for project skills; it does not select full access.
+
+Read-only projects and workspace-only community isolation keep their existing
+policies. A symlinked `.git` or a linked worktree's external Git directory gains
+no extra write root. Symlinked `.codex` or `skills` directories also gain no
+additional root. The ordinary project's account, tools and network policy
+remain under their existing owners; this is filesystem execution support,
+not authorization to publish or perform destructive Git operations.
+
 ## Thin Hook Activation
 
 A host hook may only activate the current LoopX lifecycle. It should:

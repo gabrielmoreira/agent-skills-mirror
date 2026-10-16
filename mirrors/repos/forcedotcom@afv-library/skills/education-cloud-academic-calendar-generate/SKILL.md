@@ -6,9 +6,7 @@ metadata:
   domains:
     - "Education"
   minApiVersion: "68.0"
-  accessCheck:
-    - type: "orgPref"
-      value: "EducationCloudEnabled"
+  accessCheck: "OrgPreferences.EducationCloudEnabled"
   cliTools:
     - tool: ["python3"]
       semver: ">=3.8"

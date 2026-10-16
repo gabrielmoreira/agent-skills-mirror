@@ -17,7 +17,7 @@ You **MUST** consider the user input before proceeding (if not empty). User may 
 
 ## Core Principles
 
-**LLMs are stateless**: CLAUDE.md is the only file automatically included in every conversation. It serves as the primary onboarding document for AI agents into your codebase.
+**LLMs are stateless**: CLAUDE.md is the main project file loaded into every conversation (alongside auto memory and unscoped rules). It serves as the primary onboarding document for AI agents into your codebase.
 
 ### The Golden Rules
 
@@ -217,10 +217,11 @@ Apply similar principles:
 
 ---
 
-**Last Updated**: September 26, 2026
-**Claude Code Version**: 2.1.283
+**Last Updated**: October 15, 2026
+**Claude Code Version**: 2.1.300
 **Sources**:
 - https://code.claude.com/docs/en/skills
 - https://code.claude.com/docs/en/memory#agents-md
 - https://code.claude.com/docs/en/memory#when-agents-md-support-is-unavailable
+- https://code.claude.com/docs/en/memory
 **Compatible Models**: Claude Fable 5, Claude Opus 5, Claude Sonnet 5, Claude Sonnet 4.6, Claude Opus 4.8, Claude Haiku 4.5

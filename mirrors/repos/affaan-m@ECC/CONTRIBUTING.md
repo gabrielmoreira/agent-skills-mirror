@@ -433,6 +433,17 @@ Translations live under `docs/` (e.g. `docs/zh-CN`, `docs/zh-TW`, `docs/ja-JP`).
 
 ## Pull Request Process
 
+### Submission volume
+
+Please submit at most five PRs within any 20-minute period. Automated moderation
+closes and locks excess PRs, including drafts. More than ten submissions within
+20 minutes triggers a maintainer alert and an account-block attempt. Closed PRs
+still count toward the window. Contributors with repository write access bypass
+this policy. Maintainers can review exceptions through the moderation alert.
+
+See the [moderation runbook](.github/PR_MODERATION.md)
+for activation, credential requirements, and recovery.
+
 ### 1. PR Title Format
 
 ```

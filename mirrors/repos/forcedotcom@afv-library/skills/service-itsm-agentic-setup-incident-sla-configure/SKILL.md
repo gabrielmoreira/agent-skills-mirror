@@ -5,6 +5,7 @@ metadata:
   version: "3.10"
   domains: ["Service"]
   minApiVersion: "67.0"
+  accessCheck: "(UserPermissions.CustomizeApplication) && (IncidentMgmt.orgHasITSMOrgPermission)"
   relatedSkills:
     - "service-itsm-incident-mgmt-configure"
     - "service-itsm-incident-priority-configure"

@@ -9,8 +9,8 @@ Usage:
   install-skill.sh status <skill-name-or-path>
 
 Examples:
-  install-skill.sh link dbs-hook
-  install-skill.sh link skills/dbs-hook
+  install-skill.sh link dbs-diagnosis
+  install-skill.sh link skills/dbs-diagnosis
   install-skill.sh link skills
   install-skill.sh status /absolute/path/to/skill
 
@@ -157,6 +157,7 @@ list_skill_sources() {
   fi
 
   for skill_dir in "$candidate"/*; do
+    [[ "$(basename "$skill_dir")" == "private" ]] && continue
     [[ -f "$skill_dir/SKILL.md" ]] || continue
     found=1
     (cd "$skill_dir" && pwd -P)
@@ -662,6 +663,7 @@ link_grok_one() {
   local grok_home="$INSTALL_HOME/.grok"
   local dir="$grok_home/skills/$name"
   local skill_file="$dir/SKILL.md"
+  local existing_source
 
   if [[ ! -d "$grok_home" ]]; then
     echo "· $grok_home 不存在，跳过"
@@ -679,6 +681,12 @@ link_grok_one() {
   elif [[ -d "$dir" && ! -f "$skill_file" ]]; then
     echo "✗ $dir 是真实目录，已保留"
     return 2
+  elif [[ -f "$skill_file" ]]; then
+    existing_source="$(grok_bridge_source "$skill_file")"
+    if [[ "$existing_source" != "$src/SKILL.md" && -f "$existing_source" ]]; then
+      echo "✗ $dir 是指向其他真源的 Grok 适配层（$existing_source），已保留"
+      return 2
+    fi
   fi
 
   mkdir -p "$dir"
@@ -707,8 +715,13 @@ EOF
   echo "✓ $dir -> $src"
 }
 
+grok_bridge_source() {
+  grep -m 1 '^- Source of truth:' "$1" | sed 's/^- Source of truth: //'
+}
+
 unlink_grok_one() {
-  local name="$1"
+  local src="$1"
+  local name="$2"
   local grok_home="$INSTALL_HOME/.grok"
   local dir="$grok_home/skills/$name"
   local skill_file="$dir/SKILL.md"
@@ -722,6 +735,10 @@ unlink_grok_one() {
     remove_managed_link "$dir"
     echo "✓ 已移除链接 $dir"
   elif [[ -d "$dir" && -f "$skill_file" ]] && grep -q '^## Grok Bridge$' "$skill_file"; then
+    if [[ "$(grok_bridge_source "$skill_file")" != "$src/SKILL.md" ]]; then
+      echo "✗ $dir 指向其他真源（$(grok_bridge_source "$skill_file")），已保留"
+      return 2
+    fi
     rm -rf "$dir"
     echo "✓ 已移除 Grok bridge $dir"
   elif [[ -e "$dir" ]]; then
@@ -807,7 +824,7 @@ main() {
         for target_dir in "${NATIVE_TARGET_DIRS[@]}" "${REDUNDANT_TARGET_DIRS[@]}"; do
           unlink_if_points_to "$src" "$target_dir" "$name" || failed=1
         done
-        unlink_grok_one "$name" || failed=1
+        unlink_grok_one "$src" "$name" || failed=1
         ;;
       status)
         status_one "$src" "$SHARED_TARGET_DIR" "$name" "公共入口" || failed=1

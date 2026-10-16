@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `morluto/rea` — 26 default patterns, 61 followed patterns, 116 file(s) materialized.
+Mirror of `morluto/rea` — 26 default patterns, 62 followed patterns, 117 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `morluto/rea` — 26 default patterns, 61 followed patterns, 116 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 61 |
-| Files         | 116 |
+| Followed pats | 62 |
+| Files         | 117 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -101,6 +101,7 @@ Mirror of `morluto/rea` — 26 default patterns, 61 followed patterns, 116 file(
 - `docs/process-capture.md`
 - `docs/reverse-engineering-tools.md`
 - `docs/ida-provider.md`
+- `docs/kuna-provider.md`
 - `docs/windows-ghidra-p0.md`
 - `docs/ghidra-dos.md`
 - `docs/mcp-contracts.md`
@@ -192,49 +193,50 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 71 | → | [`docs/javascript-application-workflows.md`](docs/javascript-application-workflows.md) |
 | 72 | → | [`docs/javascript-artifact-reconstruction.md`](docs/javascript-artifact-reconstruction.md) |
 | 73 | → | [`docs/jeb-analysis.md`](docs/jeb-analysis.md) |
-| 74 | → | [`docs/managed-code-analysis.md`](docs/managed-code-analysis.md) |
-| 75 | → | [`docs/mcp-contracts.md`](docs/mcp-contracts.md) |
-| 76 | → | [`docs/mcp-prompts.md`](docs/mcp-prompts.md) |
-| 77 | → | [`docs/native-investigation.md`](docs/native-investigation.md) |
-| 78 | → | [`docs/packet-captures.md`](docs/packet-captures.md) |
-| 79 | → | [`docs/pcap-analysis.md`](docs/pcap-analysis.md) |
-| 80 | → | [`docs/process-capture.md`](docs/process-capture.md) |
-| 81 | → | [`docs/readme/README_ar.md`](docs/readme/README_ar.md) |
-| 82 | → | [`docs/readme/README_de.md`](docs/readme/README_de.md) |
-| 83 | → | [`docs/readme/README_el.md`](docs/readme/README_el.md) |
-| 84 | → | [`docs/readme/README_es.md`](docs/readme/README_es.md) |
-| 85 | → | [`docs/readme/README_fa.md`](docs/readme/README_fa.md) |
-| 86 | → | [`docs/readme/README_fr.md`](docs/readme/README_fr.md) |
-| 87 | → | [`docs/readme/README_id.md`](docs/readme/README_id.md) |
-| 88 | → | [`docs/readme/README_it.md`](docs/readme/README_it.md) |
-| 89 | → | [`docs/readme/README_ja.md`](docs/readme/README_ja.md) |
-| 90 | → | [`docs/readme/README_ko.md`](docs/readme/README_ko.md) |
-| 91 | → | [`docs/readme/README_pl.md`](docs/readme/README_pl.md) |
-| 92 | → | [`docs/readme/README_pt-BR.md`](docs/readme/README_pt-BR.md) |
-| 93 | → | [`docs/readme/README_ru.md`](docs/readme/README_ru.md) |
-| 94 | → | [`docs/readme/README_th.md`](docs/readme/README_th.md) |
-| 95 | → | [`docs/readme/README_tr.md`](docs/readme/README_tr.md) |
-| 96 | → | [`docs/readme/README_uk.md`](docs/readme/README_uk.md) |
-| 97 | → | [`docs/readme/README_vi.md`](docs/readme/README_vi.md) |
-| 98 | → | [`docs/readme/README_zh-TW.md`](docs/readme/README_zh-TW.md) |
-| 99 | → | [`docs/readme/README_zh.md`](docs/readme/README_zh.md) |
-| 100 | → | [`docs/recorded-crashes.md`](docs/recorded-crashes.md) |
-| 101 | → | [`docs/releasing.md`](docs/releasing.md) |
-| 102 | → | [`docs/reverse-engineering-tools.md`](docs/reverse-engineering-tools.md) |
-| 103 | → | [`docs/roadmap.md`](docs/roadmap.md) |
-| 104 | → | [`docs/rust-binaries.md`](docs/rust-binaries.md) |
-| 105 | → | [`docs/signal-recordings.md`](docs/signal-recordings.md) |
-| 106 | → | [`docs/testing.md`](docs/testing.md) |
-| 107 | → | [`docs/tool-design.md`](docs/tool-design.md) |
-| 108 | → | [`docs/web-network-captures.md`](docs/web-network-captures.md) |
-| 109 | → | [`docs/windows-ghidra-p0.md`](docs/windows-ghidra-p0.md) |
-| 110 | → | [`licenses/README.md`](licenses/README.md) |
-| 111 | → | [`README.md`](README.md) |
-| 112 | → | [`SECURITY.md`](SECURITY.md) |
-| 113 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
-| 114 | → | [`third_party/evmole/README.md`](third_party/evmole/README.md) |
-| 115 | → | [`third_party/pwndbg/LICENSE.md`](third_party/pwndbg/LICENSE.md) |
-| 116 | → | [`third_party/wabt/README.md`](third_party/wabt/README.md) |
+| 74 | → | [`docs/kuna-provider.md`](docs/kuna-provider.md) |
+| 75 | → | [`docs/managed-code-analysis.md`](docs/managed-code-analysis.md) |
+| 76 | → | [`docs/mcp-contracts.md`](docs/mcp-contracts.md) |
+| 77 | → | [`docs/mcp-prompts.md`](docs/mcp-prompts.md) |
+| 78 | → | [`docs/native-investigation.md`](docs/native-investigation.md) |
+| 79 | → | [`docs/packet-captures.md`](docs/packet-captures.md) |
+| 80 | → | [`docs/pcap-analysis.md`](docs/pcap-analysis.md) |
+| 81 | → | [`docs/process-capture.md`](docs/process-capture.md) |
+| 82 | → | [`docs/readme/README_ar.md`](docs/readme/README_ar.md) |
+| 83 | → | [`docs/readme/README_de.md`](docs/readme/README_de.md) |
+| 84 | → | [`docs/readme/README_el.md`](docs/readme/README_el.md) |
+| 85 | → | [`docs/readme/README_es.md`](docs/readme/README_es.md) |
+| 86 | → | [`docs/readme/README_fa.md`](docs/readme/README_fa.md) |
+| 87 | → | [`docs/readme/README_fr.md`](docs/readme/README_fr.md) |
+| 88 | → | [`docs/readme/README_id.md`](docs/readme/README_id.md) |
+| 89 | → | [`docs/readme/README_it.md`](docs/readme/README_it.md) |
+| 90 | → | [`docs/readme/README_ja.md`](docs/readme/README_ja.md) |
+| 91 | → | [`docs/readme/README_ko.md`](docs/readme/README_ko.md) |
+| 92 | → | [`docs/readme/README_pl.md`](docs/readme/README_pl.md) |
+| 93 | → | [`docs/readme/README_pt-BR.md`](docs/readme/README_pt-BR.md) |
+| 94 | → | [`docs/readme/README_ru.md`](docs/readme/README_ru.md) |
+| 95 | → | [`docs/readme/README_th.md`](docs/readme/README_th.md) |
+| 96 | → | [`docs/readme/README_tr.md`](docs/readme/README_tr.md) |
+| 97 | → | [`docs/readme/README_uk.md`](docs/readme/README_uk.md) |
+| 98 | → | [`docs/readme/README_vi.md`](docs/readme/README_vi.md) |
+| 99 | → | [`docs/readme/README_zh-TW.md`](docs/readme/README_zh-TW.md) |
+| 100 | → | [`docs/readme/README_zh.md`](docs/readme/README_zh.md) |
+| 101 | → | [`docs/recorded-crashes.md`](docs/recorded-crashes.md) |
+| 102 | → | [`docs/releasing.md`](docs/releasing.md) |
+| 103 | → | [`docs/reverse-engineering-tools.md`](docs/reverse-engineering-tools.md) |
+| 104 | → | [`docs/roadmap.md`](docs/roadmap.md) |
+| 105 | → | [`docs/rust-binaries.md`](docs/rust-binaries.md) |
+| 106 | → | [`docs/signal-recordings.md`](docs/signal-recordings.md) |
+| 107 | → | [`docs/testing.md`](docs/testing.md) |
+| 108 | → | [`docs/tool-design.md`](docs/tool-design.md) |
+| 109 | → | [`docs/web-network-captures.md`](docs/web-network-captures.md) |
+| 110 | → | [`docs/windows-ghidra-p0.md`](docs/windows-ghidra-p0.md) |
+| 111 | → | [`licenses/README.md`](licenses/README.md) |
+| 112 | → | [`README.md`](README.md) |
+| 113 | → | [`SECURITY.md`](SECURITY.md) |
+| 114 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
+| 115 | → | [`third_party/evmole/README.md`](third_party/evmole/README.md) |
+| 116 | → | [`third_party/pwndbg/LICENSE.md`](third_party/pwndbg/LICENSE.md) |
+| 117 | → | [`third_party/wabt/README.md`](third_party/wabt/README.md) |
 
 ---
 

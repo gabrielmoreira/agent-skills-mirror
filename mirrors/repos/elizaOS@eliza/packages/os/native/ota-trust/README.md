@@ -26,6 +26,15 @@ in test code. The independent-host test rejects another product's release.
 These tests do not prove device-owner provisioning, installed update recovery,
 full AOSP boot, production trust enrollment or real-device acceptance.
 
+Release metadata uses a closed channel graph: top-level targets delegate only to
+terminating `stable` and `beta` roles with their own keys. Devices and the
+publication verifier refuse a Stable delegation whose threshold is below two, so
+an admitted Stable release carries signatures from two distinct authorized
+approver keys; Beta needs one. Each channel key must be a distinct public key
+that shares no other role's authority, and go-tuf counts each authorized key
+once, so a repeated signature or an aliased key cannot stand in for the second
+approval. Who holds those keys is the host's decision.
+
 Hosts retain trust-root provisioning, signing authority, repository/package
 binding, update UI, permitted hardware and release/rollout policy. Native callers
 must independently recheck current device state and installation authority.

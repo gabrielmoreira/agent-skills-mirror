@@ -25,7 +25,7 @@ This is an OMH `source-finder` workflow skill, projected for Agent Skills hosts 
 - The user needs a business decision brief with evidence-versus-inference treatment; use `omh-research-brief`.
 - The user asks for current citations, fact-finding, or source-backed synthesis; use `ulw-research`.
 - The user supplies a paper/PDF/arXiv/DOI/excerpt and wants explanation; use `omh-paper-learning`.
-- The user asks for recurring monitoring, source inbox, or Scout/Analyst/Briefer operations; use `omh-research-department`.
+- The user asks for recurring monitoring, source inbox, or Scout/Analyst/Briefer operations.
 - The user asks to export, convert, render, package, or attach a file; use `omh-materials-package` or `omh-deliverable-package`.
 - The user asks for an image card or visual summary; use `omh-image-cards`.
 
@@ -61,7 +61,7 @@ Bad example:
 
 ## When to Use
 
-Use when the requested output is a typed source candidate inventory and acquisition status across papers, web links, datasets, GitHub repositories, public presentations, docs/specs, or unknown source material before choosing paper-learning, research, research-brief, research-department, materials-package, or an ultrawork delivery cycle.
+Use when the requested output is a typed source candidate inventory and acquisition status across papers, web links, datasets, GitHub repositories, public presentations, docs/specs, or unknown source material before choosing paper-learning, research, research-brief, materials-package, or an ultrawork delivery cycle.
 
     Strong routing signals: `source-finder`, `source finder`, `source acquisition`, `source intake`, `find papers and datasets`, `find datasets and repos`, `find papers`, `find arxiv link`, `find arxiv paper`, `find datasets`, `find github repos`, `find oss repos`, `find presentations`, `find public slides`, `find docs and specs`, `find source candidates`, `download candidate`, `source candidate`, `acquisition status`, `자료 후보`, `출처 후보`, `arxiv 링크`, `arxiv 링크 찾아`, `논문 데이터셋 찾아`, `깃허브 저장소 찾아`, `공개 발표자료 찾아`, `문서 스펙 찾아`
 
@@ -105,8 +105,8 @@ Artifact expectations:
 Safety rules:
 
 - Do not claim web search, download, repository clone, file extraction, file hash verification, license verification, or source correctness from a prepared candidate.
-- Do not redefine research-department's source_inbox/v1; source-finder owns source_candidate_set/v1 and source_acquisition_status/v1 only.
-- Route current citations and source-backed synthesis to `research`, supplied-paper explanation to `paper-learning`, recurring monitoring to `research-department`, file export to `materials-package`, and image cards to `img-summary`.
+- Do not define a source inbox; source-finder owns source_candidate_set/v1 and source_acquisition_status/v1 only.
+- Route current citations and source-backed synthesis to `research`, supplied-paper explanation to `paper-learning`, file export to `materials-package`, and image cards to `img-summary`.
 
 ## Runtime Evidence
 

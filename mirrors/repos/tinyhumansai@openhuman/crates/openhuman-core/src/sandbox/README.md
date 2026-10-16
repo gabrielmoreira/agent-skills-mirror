@@ -83,15 +83,39 @@ the `modules` feature the run is refused.
 `native_jail.rs` asks the pinned TinyBox module for `JailStatus`, creates a
 module-owned `passthrough` resource rooted at `policy.workspace_root`, and
 starts the shell through `StartNativeShellExec` with a jail. The request carries only the
-resolved read-only/read-write grants, network policy, and a required enforced
-isolation floor. TinyBox owns the jail provider, child process, pipe capture,
+resolved read-only/read-write grants, network policy, and the posture
+`native_jail::jail_isolation` picked from `JailStatus`:
+
+| Posture | Backend | Accepted for | Request |
+| --- | --- | --- | --- |
+| `isolated` | Kernel isolation or stronger (Landlock + namespaces) | every caller | `Enforced`, `require_process_isolation` |
+| `folder_confined` | Seatbelt (macOS), no process isolation | the local desktop sandbox only | `Declared`, no process-isolation floor |
+
+An explicitly requested Landlock jail and a SaaS tenant (untrusted code) still
+need `isolated`; Seatbelt is refused for them. Folder confinement means the
+child can write only inside `policy.workspace_root` (the selected folder), its
+read-write grants, TinyBox's scratch directory, `/private/tmp` and `/dev/null`.
+Network follows `policy.allow_network` (on for a local session, off for a
+remote one), which the jail's `allow_net` enforces.
+
+**Known limitation (`folder_confined`): reads are not confined.** Seatbelt's
+profile is allow-default for reads, so a command can read any file the user
+can, credential stores included (`~/.ssh`, `~/.gnupg`, `~/.aws`, Keychains), and
+with network on could send it out. The pinned TinyBox contract has no way to
+deny reads (`NativeJailConfig` carries no deny list). The capability is
+[tinyhumansai/tinybox#87](https://github.com/tinyhumansai/tinybox/pull/87)
+(`deny_read`, contract 1.20); once it is released and pinned, `folder_confined`
+requests will deny the `is_always_forbidden` credential stores.
+
+TinyBox owns the jail provider, child process, pipe capture,
 and kill/reap acknowledgement; OpenHuman reads bounded output batches and
 closes the resource after terminal cleanup. TinyBox owns the per-call scratch
 directory under the core state dir: it grants it read-write and points `TMPDIR`,
 `TEMP`, and `TMP` at it unless the caller supplied one. No host-local jail or unconfined fallback
 runs if the module, artifact, or requested enforcement is unavailable.
 
-A real jail (Landlock, Seatbelt) denies everything it is not told about, so
+Landlock denies everything it is not told about, and Seatbelt denies every
+write it is not told about, so
 TinyBox's `ResolveLocalGrants` (called through `local_grants::with_resolved_grants` at spawn time) computes what everyday commands need,
 controlled by `[runtime.local_jail]` (`LocalJailConfig`):
 
@@ -131,8 +155,9 @@ reports host networking and a mount or workspace root of `/`, `/etc`, `/proc`,
 `Ready`. Docker is `Ready` when the TinyBox status operation reports the daemon
 available and `Error` otherwise. A module or transport failure is surfaced by
 the status RPC rather than probed with a host-local Docker CLI.
-Local reports `Ready` only when the module says its native jail is available
-and suitable for untrusted code. Missing modules and transport errors are
+Local reports `Ready` when `jail_isolation` accepts the module's native jail,
+and its handle's `isolation` says which posture (`isolated` or
+`folder_confined`); the field is omitted for every other handle. Missing modules and transport errors are
 reported as errors; unavailable or insufficient isolation is `Inactive`, and
 execution refuses to run without the required provider.
 

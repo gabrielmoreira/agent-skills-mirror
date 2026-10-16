@@ -1,0 +1,46 @@
+# Kami: developer and agent surface
+
+> Scoped context for integrating Kami. For the product overview, read https://kami.tw93.fun/llms.txt instead.
+
+## Integration model
+Kami is a locally installed skill and template system. There is no hosted API, no account, no API key, and no authenticated endpoint on this domain. Everything below runs on the machine that installs it.
+
+## When to use
+Reach for Kami when a user wants a finished document whose appearance matters: resume, one-pager, letter, portfolio, long document, slide deck, equity report, changelog, or a product landing page. Skip it when the user only wants the text.
+
+## MCP server
+- Start: `python3 scripts/mcp_server.py` (stdio, newline-delimited JSON-RPC 2.0)
+- Register: `claude mcp add kami -- python3 <checkout>/skills/kami/scripts/mcp_server.py`
+- Card: https://kami.tw93.fun/.well-known/mcp/server-card.json
+- Tools: `kami_templates` (templates, diagrams, schema types), `kami_doctor` (installed capabilities), `kami_render` (HTML to PDF), `kami_check` (stable findings + coverage), `kami_deliver` (every gate plus render, one READY verdict), `kami_screenshot` (page PNGs + CJK font verdict + `review_pending` checklist)
+
+## Content contracts
+- Schemas: `references/schemas/<type>.json` for changelog, equity-report, landing-page, letter, long-doc, one-pager, portfolio, resume, slides
+- Artifact brief: new `content.json` files carry audience, job, output contract, target, preserve boundary, evidence, and acceptance checks under `brief`; older files without it remain valid
+- Validate: `python3 scripts/build.py --check-content content.json`
+- Coverage into the filled document: `python3 scripts/build.py --check-content content.json filled.html`
+
+## Verification
+- Finish a document: `python3 scripts/build.py --deliver filled.html content.json` runs the checks below in order, renders the PDF, exports page images, and ends in one READY / NOT READY verdict
+- Deterministic: `--check-placeholders`, `--check-markdown`, `--check-orphans`, `--check-density`, `--check-rhythm`, `--check-resume-balance`
+- Perceptual: `--check-visual` exports page images with a fixed review checklist
+- Repository-wide: `python3 scripts/build.py --check` (template lint, token sync, public-fact drift)
+- Authoritative command list: `python3 scripts/build.py --help`
+
+## Machine-readable files
+- https://kami.tw93.fun/developers.md (this surface as prose Markdown)
+- https://kami.tw93.fun/index.md (homepage as Markdown)
+- https://kami.tw93.fun/.well-known/agent-skills/index.json
+- https://kami.tw93.fun/.well-known/mcp/server-card.json
+- https://kami.tw93.fun/feeds/catalog.jsonld (8 document templates, 18 diagram types)
+- https://kami.tw93.fun/schemamap.xml
+- https://kami.tw93.fun/SKILL.md
+
+## Install
+- Claude Code, Codex, Cursor, and other agents: `npx skills add tw93/kami -a claude-code codex cursor -g -y`
+- Claude Code plugin (v2.1.142+): `/plugin marketplace add tw93/kami` then `/plugin install kami@kami`
+- Codex plugin: `codex plugin marketplace add tw93/kami` then `codex plugin add kami@kami`
+- Claude Desktop: release asset `kami.zip` from https://github.com/tw93/kami/releases/latest/download/kami.zip
+
+## Source
+https://github.com/tw93/kami (MIT)

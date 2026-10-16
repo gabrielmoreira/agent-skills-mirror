@@ -9,12 +9,15 @@
 # Usage:
 #   cross-model-work.sh <authorization-json> <workspace> <unit-packet> <expected-packet-sha256> <result-dir>
 #
-# Routes: codex | claude | grok-cli | cursor | composer | grok-cursor | opencode
+# Routes: codex | claude | grok-cli | cursor | composer | grok-cursor | opencode | antigravity
 # Output: <result-dir>/implementation-result.json and redacted adapter.log
 # Exit: 0 host-resolvable terminal result, 1 failed/schema-invalid, 2 unavailable
 #
 # Introspection (no model call):
 #   cross-model-work.sh --emit-adapter <route>
+#   cross-model-work.sh --check-model antigravity <model>
+#     opens an Antigravity session for <model> without sending a prompt; exit 0
+#     when the account offers it, exit 2 with the reason on stderr otherwise
 
 set -uo pipefail
 umask 077
@@ -32,12 +35,13 @@ fi
 # so grok-cursor runs at high/fast and composer at its fast tier.
 M_GROK_CURSOR="grok-4.7[context=256k,reasoning_effort=high,fast=true]"
 M_COMPOSER="composer-2.5[fast=true]"
+M_ANTIGRAVITY="gemini-4-argon"
 
 log() { printf '[cross-model-work] %s\n' "$*" >&2; }
 
 route_target() {
   case "$1" in
-    codex|claude|cursor|composer) printf '%s' "$1" ;;
+    codex|claude|cursor|composer|antigravity) printf '%s' "$1" ;;
     grok-cli|grok-cursor) printf 'grok' ;;
     opencode) printf 'opencode' ;;
     *) return 1 ;;
@@ -51,6 +55,7 @@ route_harness() {
     grok-cli) printf 'grok' ;;
     cursor|composer|grok-cursor) printf 'cursor-agent' ;;
     opencode) printf 'opencode' ;;
+    antigravity) printf 'antigravity' ;;
     *) return 1 ;;
   esac
 }
@@ -71,6 +76,7 @@ route_model() {
     grok-cursor) printf '%s' "$M_GROK_CURSOR" ;;
     composer) printf '%s' "$M_COMPOSER" ;;
     opencode) printf 'auto' ;;
+    antigravity) printf '%s' "$M_ANTIGRAVITY" ;;
   esac
 }
 
@@ -81,6 +87,7 @@ route_available() {
     grok-cli) command -v grok >/dev/null 2>&1 ;;
     cursor|composer|grok-cursor) command -v cursor-agent >/dev/null 2>&1 ;;
     opencode) command -v opencode >/dev/null 2>&1 ;;
+    antigravity) command -v agy_acp_server.par >/dev/null 2>&1 ;;
     *) return 1 ;;
   esac
 }
@@ -100,8 +107,29 @@ acpx_agent() {   # <route> -> acpx built-in agent name
     grok-cli) printf 'grok-build' ;;
     grok-cursor|cursor|composer) printf 'cursor' ;;
     opencode) printf 'opencode' ;;
+    antigravity) printf 'antigravity' ;;
     *) return 1 ;;
   esac
+}
+
+# acpx launches Google's Antigravity ACP runtime by name. It is a separate
+# download from the agy CLI and needs its localharness_external helper from the
+# same release, beside it or named by ANTIGRAVITY_HARNESS_PATH.
+acpx_antigravity_helper() {
+  local runtime
+  if [ -n "${ANTIGRAVITY_HARNESS_PATH:-}" ]; then printf '%s' "$ANTIGRAVITY_HARNESS_PATH"; return 0; fi
+  runtime="$(command -v agy_acp_server.par 2>/dev/null)" || return 1
+  printf '%s/localharness_external' "$(dirname "$runtime")"
+}
+
+# The runtime reads skills and settings from GEMINI_HOME and copies its sign-in
+# token there, so every run gets a private one, deleted with the caller's
+# scratch. The settings select the personal Google login the runtime reuses.
+acpx_antigravity_home() {   # <private-dir> -> GEMINI_HOME path
+  local home="$1/gemini-home"
+  (umask 077; mkdir -p "$home/antigravity-acp") || return 1
+  printf '{"auth":{"type":"oauth-personal"}}\n' > "$home/antigravity-acp/settings.json" || return 1
+  printf '%s' "$home"
 }
 
 acpx_unavailable() {   # <shared|route> <reason>
@@ -137,6 +165,13 @@ acpx_preflight() {   # <route> <cwd>; nothing is sent to a provider here
     return 1
   fi
   command -v npx >/dev/null 2>&1 || { acpx_unavailable shared "npx not found; acpx runs through npx"; return 1; }
+  if [ "$1" = antigravity ]; then
+    case "$(uname -s 2>/dev/null)" in
+      MINGW*|MSYS*|CYGWIN*) acpx_unavailable route "the Antigravity route is not yet supported on native Windows"; return 1 ;;
+    esac
+    route_available "$1" || { acpx_unavailable route "Antigravity's ACP runtime (agy_acp_server.par) is not on PATH; it is a separate download from the agy CLI (run ce-setup for the link)"; return 1; }
+    [ -x "$(acpx_antigravity_helper)" ] || { acpx_unavailable route "Antigravity's localharness_external helper is not beside agy_acp_server.par or at ANTIGRAVITY_HARNESS_PATH; install both from the same release (run ce-setup for the link)"; return 1; }
+  fi
   route_available "$1" || { acpx_unavailable route "the agent CLI for route '$1' is not installed"; return 1; }
   if [ "$1" = opencode ]; then
     case "$(uname -s 2>/dev/null)" in
@@ -159,11 +194,19 @@ acpx_claude_wrapper() {   # <private-dir> -> wrapper path
 # flags; the worker appends permission flags, `--model`, the agent, and exec options.
 # The codex and claude adapters are pointed at the installed CLIs so the pin
 # governs the transport, not which models the agent can serve.
-acpx_base_argv() {   # <route> <cwd> <mcp-config> <timeout-secs> <claude-wrapper>
-  printf '%s\0' env npm_config_prefer_offline=true npm_config_fetch_retries=0
+acpx_base_argv() {   # <route> <cwd> <mcp-config> <timeout-secs> <claude-wrapper> <gemini-home>
+  printf '%s\0' env
+  # An ambient Google API key or cloud project would bill it instead of the
+  # Antigravity subscription. env takes -u only before its first assignment.
+  case "$1" in
+    antigravity) printf '%s\0' -u GEMINI_API_KEY -u GOOGLE_API_KEY -u GOOGLE_APPLICATION_CREDENTIALS \
+      -u GOOGLE_CLOUD_PROJECT -u GOOGLE_CLOUD_LOCATION -u GOOGLE_GENAI_USE_VERTEXAI -u AGY_LLM_GATEWAY_URL ;;
+  esac
+  printf '%s\0' npm_config_prefer_offline=true npm_config_fetch_retries=0
   case "$1" in
     codex) printf '%s\0' "CODEX_PATH=$(command -v codex)" ;;
     claude) printf '%s\0' "CLAUDE_CODE_EXECUTABLE=$5" ;;
+    antigravity) printf '%s\0' "GEMINI_HOME=$6" "ANTIGRAVITY_HARNESS_PATH=$(acpx_antigravity_helper)" ;;
   esac
   printf '%s\0' npx -y "acpx@$ACPX_VERSION" --cwd "$2" --format json --mcp-config "$3" --timeout "$4"
 }
@@ -183,6 +226,21 @@ acpx_outcome() {   # <stream-log> -> end_turn | <other stopReason> | error | inc
   [ -n "$id" ] || { printf 'not-sent'; return 0; }
   outcome="$(jq -rR --argjson id "$id" 'fromjson? | select(.method == null and .id == $id) | if .error then "error" else (.result.stopReason // "error") end' "$1" 2>/dev/null | tail -1)"
   printf '%s' "${outcome:-incomplete}"
+}
+
+# Antigravity holds session/new open while it waits for a browser sign-in it
+# will never get, so a run without a usable login would otherwise sit out the
+# whole idle cap. Nothing has been sent while the session is pending.
+ACPX_SESSION_START_SECS="${CROSS_MODEL_SESSION_START_SECS:-60}"
+acpx_session_state() {   # <stream-log> -> starting | pending | open
+  local id
+  jq -eR 'fromjson? | select(.result.protocolVersion? != null)' "$1" >/dev/null 2>&1 || { printf 'starting'; return 0; }
+  id="$(jq -R 'fromjson? | select(.method == "session/new") | .id' "$1" 2>/dev/null | tail -1)"
+  if [ -n "$id" ] && jq -eR --argjson id "$id" 'fromjson? | select(.method == null and .id == $id)' "$1" >/dev/null 2>&1; then
+    printf 'open'
+  else
+    printf 'pending'
+  fi
 }
 
 acpx_text() {   # <stream-log> <outfile>: the agent's reply text
@@ -217,7 +275,7 @@ validate_model_override() {
   local route="$1" override="${CE_WORK_MODEL_OVERRIDE:-}" override_target="${CE_WORK_MODEL_OVERRIDE_TARGET:-}" target base base_lower
   [ -n "$override" ] || { [ -z "$override_target" ]; return; }
   case "$override_target" in
-    codex|claude|grok|cursor|composer|opencode) ;;
+    codex|claude|grok|cursor|composer|opencode|antigravity) ;;
     *) return 1 ;;
   esac
   target="$(route_target "$route")" || return 1
@@ -236,14 +294,16 @@ validate_model_override() {
   fi
   case "$route:$base" in
     codex:gpt-*|codex:o[0-9]*|claude:fable|claude:opus|claude:sonnet|claude:haiku|claude:claude-*|grok-cli:grok-*|grok-cursor:grok-*|grok-cursor:cursor-grok-*|composer:composer-*|opencode:*/*) ;;
+    antigravity:gemini-*) [[ "$base" =~ ^gemini-[A-Za-z0-9._-]+$ ]] || return 1 ;;
     *) return 1 ;;
   esac
 }
 
 # Accept an effort only where the route's ACP adapter exposes an effort option
-# and lists the value (claude effort, codex and grok reasoning_effort; checked
-# 2026-10-06 through acpx 0.19.4). Codex levels vary per model, so a listed
-# level can still be refused before the prompt is sent. Cursor fixes effort in
+# and lists the value (claude effort, codex and grok reasoning_effort, checked
+# 2026-10-06 through acpx 0.19.4; antigravity thinking_level, checked
+# 2026-10-14). Codex levels vary per model, so a listed level can still be
+# refused before the prompt is sent. Cursor fixes effort in
 # the model preset and OpenCode has no effort option over ACP, so any effort
 # there makes the route unavailable instead of being dropped.
 validate_effort_override() {
@@ -253,21 +313,23 @@ validate_effort_override() {
     claude:low|claude:medium|claude:high|claude:xhigh|claude:max) ;;
     codex:low|codex:medium|codex:high|codex:xhigh|codex:max|codex:ultra) ;;
     grok-cli:low|grok-cli:medium|grok-cli:high|grok-cli:xhigh) ;;
+    antigravity:low|antigravity:medium|antigravity:high) ;;
     *) return 1 ;;
   esac
 }
 
 # The worker runs in the prepared workspace with every permission request
 # approved. Each adapter runs in its write-capable mode (codex agent, claude
-# default, cursor agent, opencode build); none of them confines writes to the
-# workspace, which references/cross-model-execution.md records per route.
-# Codex and Claude run at high effort and native Grok at xhigh unless the
-# authorization requests another level.
+# default, cursor agent, opencode build, antigravity auto_edit, since its
+# default mode waits on approvals that never come); none of them confines
+# writes to the workspace, which references/cross-model-execution.md records
+# per route. Codex, Claude, and Antigravity run at high effort and native Grok
+# at xhigh unless the authorization requests another level.
 adapter_argv() {
   local route="$1" model
   acpx_agent "$route" >/dev/null || return 1
   model="$(route_model "$route")"
-  acpx_base_argv "$route" "$WORKSPACE" "$MCP_CONFIG" "$ACPX_TIMEOUT" "$CLAUDE_WRAPPER"
+  acpx_base_argv "$route" "$WORKSPACE" "$MCP_CONFIG" "$ACPX_TIMEOUT" "$CLAUDE_WRAPPER" "$GEMINI_HOME_DIR"
   printf '%s\0' --approve-all
   [ "$model" = auto ] || printf '%s\0' --model "$model"
   acpx_agent_argv "$route"
@@ -278,6 +340,7 @@ adapter_argv() {
     grok-cli) printf '%s\0' --config-option "reasoning_effort=${EFFORT_REQUESTED:-xhigh}" ;;
     cursor|composer|grok-cursor) printf '%s\0' --config-option mode=agent ;;
     opencode) printf '%s\0' --config-option mode=build ;;
+    antigravity) printf '%s\0' --config-option mode=auto_edit --config-option "thinking_level=${EFFORT_REQUESTED:-high}" ;;
   esac
   printf '%s\0' --file "$PROMPT_FILE"
 }
@@ -290,6 +353,7 @@ if [ "${1:-}" = "--emit-adapter" ]; then
   PROMPT_FILE="<prompt-file>"
   MCP_CONFIG="<mcp-config>"
   CLAUDE_WRAPPER="<claude-safe-mode-wrapper>"
+  GEMINI_HOME_DIR="<gemini-home>"
   ROUTE="${2:-}"
   EFFORT_REQUESTED="${CROSS_MODEL_EFFORT_OVERRIDE:-}"
   validate_model_override "$ROUTE" || {
@@ -304,6 +368,80 @@ if [ "${1:-}" = "--emit-adapter" ]; then
   adapter_argv "$ROUTE" | tr '\0' ' '
   printf '\n'
   exit 0
+fi
+
+SIGN_IN_STALL_REASON="transport unavailable (pre-egress, route): Antigravity is waiting for a Google sign-in; sign in once with the agy CLI or the Antigravity app, then retry"
+
+# --check-model antigravity <model>: acpx checks --model against the models the
+# session advertises before any prompt, so opening a session answers whether the
+# account offers the model. acpx records the session under $HOME/.acpx; the
+# check deletes that record, and the directories when it created them. A scratch
+# HOME is not an option: the runtime then never opens the session.
+if [ "${1:-}" = "--check-model" ]; then
+  ROUTE="${2:-}"
+  CE_WORK_MODEL_OVERRIDE="${3:-}"
+  CE_WORK_MODEL_OVERRIDE_TARGET=antigravity
+  [ "$ROUTE" = antigravity ] || { printf "no model check for route '%s'\n" "$ROUTE" >&2; exit 2; }
+  validate_model_override antigravity && [ -n "$CE_WORK_MODEL_OVERRIDE" ] || {
+    printf "model '%s' not compatible with route 'antigravity'\n" "$CE_WORK_MODEL_OVERRIDE" >&2
+    exit 2
+  }
+  command -v jq >/dev/null 2>&1 || { echo "transport unavailable (pre-egress, shared): jq not found; the ACP stream is read with jq" >&2; exit 2; }
+  CHECK_DIR="$(mktemp -d "${TMPDIR:-/tmp}/ce-work-model-check-XXXXXX")" || exit 2
+  CHECK_PID=""
+  ACPX_STATE="${HOME:-}/.acpx"
+  ACPX_STATE_EXISTED=false; [ -d "$ACPX_STATE" ] && ACPX_STATE_EXISTED=true
+  # Every exit path stops the detached acpx group (TERM, then KILL) and removes
+  # what the check created.
+  check_cleanup() {
+    local i
+    # Probe the whole group, not the leader: acpx can exit and leave the
+    # runtime running in its group.
+    if [ -n "$CHECK_PID" ] && kill -0 -- -"$CHECK_PID" 2>/dev/null; then
+      kill -TERM -- -"$CHECK_PID" 2>/dev/null
+      for i in 1 2 3 4 5; do kill -0 -- -"$CHECK_PID" 2>/dev/null || break; sleep 1; done
+      kill -KILL -- -"$CHECK_PID" 2>/dev/null || true
+    fi
+    rm -rf "$CHECK_DIR"
+    [ "$ACPX_STATE_EXISTED" = true ] || { rmdir "$ACPX_STATE/sessions" "$ACPX_STATE" 2>/dev/null || true; }
+  }
+  trap check_cleanup EXIT
+  trap 'exit 130' INT TERM HUP QUIT
+  mkdir "$CHECK_DIR/cwd" || exit 2
+  acpx_preflight antigravity "$CHECK_DIR/cwd" || {
+    printf 'transport unavailable (pre-egress, %s): %s\n' "$ACPX_SCOPE" "$ACPX_UNAVAILABLE" >&2
+    exit 2
+  }
+  GEMINI_HOME_DIR="$(acpx_antigravity_home "$CHECK_DIR")" || { echo "cannot prepare a private Antigravity home" >&2; exit 2; }
+  printf '{"mcpServers":[]}\n' > "$CHECK_DIR/mcp.json"
+  ARGS=()
+  while IFS= read -r -d '' token; do ARGS+=("$token"); done < <(
+    acpx_base_argv antigravity "$CHECK_DIR/cwd" "$CHECK_DIR/mcp.json" "$ACPX_TIMEOUT" "" "$GEMINI_HOME_DIR")
+  ARGS+=(--model "$CE_WORK_MODEL_OVERRIDE" antigravity sessions new --name "ce-work-model-check-$$")
+  set -m
+  (cd "$CHECK_DIR" && exec "${ARGS[@]}" < /dev/null > "$CHECK_DIR/stdout" 2> "$CHECK_DIR/stderr") &
+  CHECK_PID=$!
+  set +m
+  CHECK_DEADLINE=$(( $(date +%s) + ACPX_SESSION_START_SECS ))
+  while kill -0 "$CHECK_PID" 2>/dev/null && [ "$(date +%s)" -lt "$CHECK_DEADLINE" ]; do sleep 1; done
+  if kill -0 "$CHECK_PID" 2>/dev/null; then
+    echo "$SIGN_IN_STALL_REASON" >&2
+    exit 2
+  fi
+  wait "$CHECK_PID"
+  CHECK_EXIT=$?
+  RECORD_ID="$(jq -r 'select(.action? == "session_ensured") | .acpxRecordId // empty' "$CHECK_DIR/stdout" 2>/dev/null | tail -1)"
+  case "$RECORD_ID" in ''|*[!A-Za-z0-9-]*) ;; *) rm -f "$ACPX_STATE/sessions/$RECORD_ID.json" ;; esac
+  [ "$CHECK_EXIT" -eq 0 ] && exit 0
+  REASON="$(grep -m1 '^npm error' "$CHECK_DIR/stderr" 2>/dev/null)"
+  if [ -n "$REASON" ]; then
+    printf 'transport unavailable (pre-egress, shared): %s\n' "${REASON:0:200}" >&2
+  else
+    REASON="$(acpx_failure_evidence "$CHECK_DIR/stdout")"
+    [ -n "$REASON" ] || REASON="$(grep -m1 -e 'did not advertise' -e 'Error' "$CHECK_DIR/stderr" 2>/dev/null)"
+    printf 'transport unavailable (pre-egress, route): %s\n' "${REASON:-acpx exited $CHECK_EXIT while opening a session}" >&2
+  fi
+  exit 2
 fi
 
 AUTHORIZATION="${1:-}"
@@ -341,6 +479,8 @@ REPLY_TEXT="$SCRATCH/reply.txt"
 SERVED_MODELS="$SCRATCH/served-models"
 MCP_CONFIG="$SCRATCH/mcp.json"
 CLAUDE_WRAPPER=""
+GEMINI_HOME_DIR=""
+SESSION_STALL_MARKER="$SCRATCH/session-stalled"
 RAW_LIMIT_MARKER="$SCRATCH/raw-output-limit"
 PACKET_SNAPSHOT="$SCRATCH/unit-packet"
 AUTH_VALUES="$SCRATCH/authorization-values"
@@ -370,6 +510,7 @@ contracts = {
     "composer": ("composer", "cursor-agent", ["cursor"], "cooperative"),
     "grok-cursor": ("grok", "cursor-agent", ["cursor"], "cooperative"),
     "opencode": ("opencode", "opencode", [], "cooperative"),
+    "antigravity": ("antigravity", "antigravity", [], "cooperative"),
 }
 
 def fail(message):
@@ -397,6 +538,8 @@ def model_allowed(route, model):
         return model == "auto" or bool(re.fullmatch(r"grok-[A-Za-z0-9._-]+", model))
     if route == "opencode":
         return model == "auto" or bool(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*/[A-Za-z0-9._-]+", model))
+    if route == "antigravity":
+        return bool(re.fullmatch(r"gemini-[A-Za-z0-9._-]+", model))
     return False
 
 try:
@@ -859,6 +1002,12 @@ if [ "$ROUTE" = claude ]; then
     exit 2
   }
 fi
+if [ "$ROUTE" = antigravity ]; then
+  GEMINI_HOME_DIR="$(acpx_antigravity_home "$SCRATCH")" || {
+    publish_unavailable "transport unavailable (pre-egress, route): cannot prepare a private Antigravity home" || exit 2
+    exit 2
+  }
+fi
 printf '{"mcpServers":[]}\n' > "$MCP_CONFIG"
 
 ARGS=()
@@ -941,6 +1090,9 @@ set +m
   # Kill every background job, so a TERM between `sleep &` and `$!` still reaps it.
   trap 'kill $(jobs -p) 2>/dev/null; exit 0' TERM
   previous=0
+  session=open
+  [ "$ROUTE" = antigravity ] && session=starting
+  started="$(date +%s)"
   while kill -0 "$ACTIVE_ROUTE_PID" 2>/dev/null; do
     current="$(raw_byte_count)"
     if [ "$current" -gt "$MAX_RAW_BYTES" ]; then
@@ -948,6 +1100,15 @@ set +m
       log "activity route=$ROUTE raw-output-limit bytes=$current cap=$MAX_RAW_BYTES"
       stop_route "$ACTIVE_ROUTE_PID"
       break
+    fi
+    if [ "$session" != open ] && [ $(( $(date +%s) - started )) -ge "$ACPX_SESSION_START_SECS" ]; then
+      session="$(acpx_session_state "$RAW_STDOUT")"
+      if [ "$session" = pending ]; then
+        : > "$SESSION_STALL_MARKER"
+        log "Antigravity opened no session within ${ACPX_SESSION_START_SECS}s; stopping the route"
+        stop_route "$ACTIVE_ROUTE_PID"
+        break
+      fi
     fi
     if [ "$current" != "$previous" ]; then
       log "activity route=$ROUTE output-updated"
@@ -994,6 +1155,8 @@ case "$OUTCOME" in
     REASON="$(grep -m1 '^npm error' "$RAW_STDERR" 2>/dev/null)"
     if [ -n "$REASON" ]; then
       REASON="transport unavailable (pre-egress, shared): ${REASON:0:200}"
+    elif [ -f "$SESSION_STALL_MARKER" ]; then
+      REASON="$SIGN_IN_STALL_REASON"
     else
       REASON="$(acpx_failure_evidence "$STREAM")"
       REASON="transport unavailable (pre-egress, route): ${REASON:-acpx exited $ROUTE_EXIT before sending the prompt}"

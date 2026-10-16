@@ -23,7 +23,7 @@ This is an OMH `lifecycle-growth` workflow skill, projected for Agent Skills hos
 
 - The user only wants a one-off message, email, banner, or push copy rewrite with no audience, experiment, or decision; use `omh-content-operator`.
 - The user wants generic exploration or calculation over a supplied cohort, retention, conversion, or segment table with no journey or experiment to design; use `omh-data-analysis`.
-- The user wants a recurring schedule, cron, or digest cadence for an already-decided operation rather than a lifecycle intervention; use `omh-automation-blueprint`.
+- The user wants a recurring schedule, cron, or digest cadence for an already-decided operation rather than a lifecycle intervention.
 - The user asks to send a message, change a feature flag, create a segment, or start an experiment in a provider now; use `omh-apps` with explicit authorization and observed results.
 - The user needs a PRD, prioritization frame, or roadmap for a product change rather than a journey or experiment; use `omh-product-brief`.
 

@@ -11,11 +11,7 @@ metadata:
     headless-360:
       tools: ["describe", "discover", "dispatch", "dispatch_readonly"]
       semver: ">=1.0.0"
-  accessCheck:
-    - type: "userPerm"
-      value: "CustomizeApplication"
-    - type: "orgPerm"
-      value: "IncidentMgmt.orgHasITSMOrgPermission"
+  accessCheck: "(UserPermissions.CustomizeApplication) && (IncidentMgmt.orgHasITSMOrgPermission)"
 allowed-tools: |
   Read AskUserQuestion
   mcp__headless-360__discover

@@ -50,6 +50,20 @@ Both phases run only on a green Phase 4 and a confirmed Phase 5 interview.
        <stepName>.cls-meta.xml
    ```
 
+   **Deploy-directory hygiene — clean stale `.cls` files before writing the new
+   step.** When the skill is invoked more than once against the same working
+   tree (a second custom step, an interview re-run), any prior step's `.cls` /
+   `.cls-meta.xml` left behind in `force-app/main/default/classes/` is picked
+   up by `sf project deploy start` in step 5 below. If that stale file is no
+   longer known to the source-tracking manifest, MDAPI evaluates the deploy
+   with `rollbackOnError: true` and rolls back the *entire* batch — including
+   the new class — while the CLI still surfaces `"created": true` for the
+   intended component. The user sees an apparent success; the class is not
+   actually in the org. Before writing the new step, delete every
+   `*.cls`/`*.cls-meta.xml` under `./.promotion-bo-api-deploy/force-app/main/default/classes/`
+   that is not the class about to be generated. Do NOT wipe `setup-data/`
+   (Phase 3a's retrieved read-only static resource lives there).
+
    `sfdx-project.json`:
    ```json
    {
@@ -188,6 +202,15 @@ for (String wf : workflows) {
 // pre-check. SIS uses RecordType to declare the JSON type (String, Array,
 // Boolean, Number, Object) — a missing RecordTypeId defaults to Array,
 // which produces "Expected List<Object>" at runtime.
+//
+// `Required__c` MUST be set explicitly. The field defaults to `true` at
+// the platform level, so omitting it silently promotes every optional
+// input path to mandatory org-wide for that workflow — every subsequent
+// ingest of a promotion that does not carry the path fails with
+// `Required property missing at #.<path>`. Default the SIS insert to
+// `false`; only set `true` for paths the interview explicitly flagged
+// as required (interview field `inputPathRequired`, defaults to `false`).
+Boolean inputPathRequired = <inputPathRequired>;  // interview answer; defaults to false
 Id sisRecordTypeId = [
   SELECT Id FROM RecordType
    WHERE SobjectType = '${PREFIX_UNDER}BO_API_Step_Input_Structure__c'
@@ -203,11 +226,21 @@ for (${PREFIX_DOT}BO_API_Step_Input_Structure__c s : [
 }
 List<${PREFIX_DOT}BO_API_Step_Input_Structure__c> sisRows =
   new List<${PREFIX_DOT}BO_API_Step_Input_Structure__c>();
+// `Path__c` carries a packaged validation rule requiring JSON-path form
+// (leading `.` or `$`). Interview values from the user typically omit the
+// leading dot (e.g. `Comment`); normalize before insert or the row rejects
+// with `FIELD_CUSTOM_VALIDATION_EXCEPTION: The Path must represent a
+// valid JSON path.: [${PREFIX_UNDER}Path__c]`. Existing-path comparison
+// also uses the normalized value so a re-run does not double-insert.
 for (String inputPath : inputPaths) {
-  if (existingPaths.contains(inputPath)) continue;
+  String normalizedPath = (inputPath.startsWith('.') || inputPath.startsWith('$'))
+    ? inputPath
+    : '.' + inputPath;
+  if (existingPaths.contains(normalizedPath)) continue;
   sisRows.add(new ${PREFIX_DOT}BO_API_Step_Input_Structure__c(
     ${PREFIX_DOT}BO_API_Workflow_Step__c = step.Id,
-    ${PREFIX_DOT}Path__c = inputPath,
+    ${PREFIX_DOT}Path__c = normalizedPath,
+    ${PREFIX_DOT}Required__c = inputPathRequired,
     RecordTypeId = sisRecordTypeId
   ));
 }

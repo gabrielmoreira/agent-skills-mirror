@@ -68,6 +68,54 @@ satisfy. A plan without execution does not establish runtime behavior.
   constraints. Report pagination, truncation, cancellation, and partial failure.
   An assumed agent budget is insufficient justification for a limit.
 
+## Own the lifecycle
+
+For tools that acquire resources, identify the owner and the observations that
+establish each transition. Include temporary files and one-shot commands, as
+well as persistent engine sessions. Use the existing provider contracts;
+providers need not expose identical state machines.
+
+- Keep target admission, provider readiness, active work, observed process exit,
+  and resource release separate. A valid process handle, successful launcher,
+  or selected target establishes only its own fact. Publish available identity
+  and exit observations even when launch fails; retain unknown ownership.
+- Authenticate and capture identity through the same boundary on initial and
+  recovery handshakes. Bound abandoned unauthenticated listeners where the
+  protocol permits it; that deadline must not expire authenticated idle sessions
+  or long-running native work. Listener expiry does not prove target closure.
+- Shared startup has one producer and independently cancellable caller waits.
+  Keep it running while any caller still needs it. The final departing caller
+  waits for owned cleanup and retains its failure. Provider closure is distinct
+  from caller cancellation. Retained cleanup capabilities block replacement;
+  derive readiness from the current startup's completion and live connection.
+- For cancellable observations, carry cancellation through result consumption
+  and awaited cleanup. Before returning success, check the signal after the
+  last awaited finalization step.
+  Retain collected observations under typed cancellation. Preserve an existing
+  primary failure and let incomplete cleanup retain its own classification.
+  Client cancellation alone does not prove native work stopped.
+  For atomic publication, document the cancellation cutoff and preserve any
+  committed output's publication receipt.
+- Release only owned resources. Attaching owns a connection or session unless
+  the provider contract explicitly establishes target ownership. A helper exit,
+  missing reply, or missing PID does not establish target exit.
+- Retain successful child cleanup and retry only unresolved children, including
+  when close options change. Preserve observed child failure or activity when
+  another child's health is unavailable; idle plus missing coverage stays
+  unknown.
+  Bind cleanup failures to their exact resource owner. Resolve current cleanup
+  uncertainty only after that owner confirms release, while preserving the
+  original failure and completed observations. Later failure composition must
+  report only resources whose cleanup remains unresolved.
+- Await one-shot cleanup without discarding the completed result or primary
+  diagnostic. Preserve partial observations, remaining resources, and the cleanup
+  owner's recovery instructions. CLI adapters should reuse
+  [`finishAnalysisCommand`](https://github.com/morluto/rea/blob/main/src/cli/finishAnalysisCommand.ts) where its contract
+  applies rather than duplicate close/finally handling.
+
+Exercise the applicable [lifecycle regression scenarios](testing.md#lifecycle-regressions)
+through the producing owner and affected CLI/MCP consumers.
+
 ## Implement and evaluate
 
 Put provider protocols/parsing in adapters and shared CLI/MCP workflows in the

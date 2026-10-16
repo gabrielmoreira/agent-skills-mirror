@@ -12,11 +12,7 @@ metadata:
     headless-360:
       tools: ["describe", "discover", "dispatch", "dispatch_readonly"]
       semver: ">=1.0.0"
-  accessCheck:
-    - type: "orgPerm"
-      value: "ITSrvcsCnfgMgmnt"
-    - type: "orgPref"
-      value: "CMDBEnabled"
+  accessCheck: "(OrgPermissions.ITSrvcsCnfgMgmnt) && (OrgPreferences.CMDBEnabled)"
 allowed-tools: |
   Read AskUserQuestion
   mcp__headless-360__discover

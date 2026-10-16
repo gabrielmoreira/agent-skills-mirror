@@ -131,15 +131,61 @@ Skip F-4 entirely in dry-run (nothing to verify).
 
 ## Summary shape for a Step F entry
 
-Reuse the phase table from the canonical output shape:
+The generic `Planned request:` block from SKILL.md's canonical output
+shape does **not** apply to a ScheduledApex entry — the Step F path
+dispatches across four distinct sub-steps (pre-flight SOQL, snippet
+build, `sf apex run`, verify SOQL), so the summary must record
+evidence that each sub-step ran, not just the final `sf apex run`.
+Replace the `Planned request:` block with the labeled narrative
+below, keeping the single-row phase table and the Totals /
+Follow-ups sections unchanged.
 
-- `Sobject` column reads `CronTrigger`.
-- `Describe` column reads `—` (no describe probe on this route).
-- "Planned request" / "Request executed" is the anonymous Apex snippet
-  path (`/tmp/entry-<Slug>.apex`) and its contents inline, not a PATCH
-  path/body.
-- `HTTP` column reads `—` (no direct HTTP status; `sf apex run` bundles
-  compile+execute into one response).
+For each ScheduledApex entry's phase block, emit (in this order):
+
+1. A one-line route header:
+   ```text
+   Route: **Step F — Scheduled Apex (anonymous Apex)**. No describe probe on this route; `CronTrigger` is read-only.
+   ```
+
+2. `Pre-flight AMBIGUOUS check:` — the F-1 SOQL and the single-row
+   `totalSize` result (never a bulk count claim), ending with the
+   decision (`totalSize = 0 → proceed to F-2` /
+   `AMBIGUOUS short-circuit — N existing CronTrigger rows`). Emit the
+   SOQL verbatim, with `JobName` single-quoted as it appeared on the
+   wire (post-SOQL-escape); do not paraphrase.
+
+3. `Request executed:` — the F-2/F-3 artifacts as **three separate
+   bullets** (not Method/Path/Body sub-structure):
+   - `Snippet path:` — the `/tmp/entry-<Slug>.apex` path F-2 wrote.
+   - `Snippet body:` — the exact one-line
+     `System.schedule('<JobName>', '<CronExpression>', new <ApexClassName>());`
+     string F-2 produced, with the same single-quote-escaping F-2
+     applied (not the pre-escape input).
+   - `Command:` — the exact
+     `sf apex run --file /tmp/entry-<Slug>.apex --json` invocation
+     F-3 ran.
+   On dry-run, rename this section to `Planned request (F-2, dry-run):`,
+   keep only the `Snippet path:` and `Snippet body:` bullets (omit
+   `Command:` — F-3 is skipped), row Outcome is `DRY_RUN`, and skip
+   section 5 below.
+
+4. The single-row phase table (unchanged from SKILL.md's canonical
+   shape):
+   - `Sobject` column reads `CronTrigger`.
+   - `Describe` column reads `—` (no describe probe on this route).
+   - `HTTP` column reads `—` (no direct HTTP status; `sf apex run`
+     bundles compile + execute into one response).
+
+5. `Read-back verification:` — the F-4 SOQL verbatim and the
+   observed row (`N row(s) with CronExpression = "<value>"`),
+   confirming the schedule landed. On `0 rows → FAILED_VERIFY`
+   emit the zero-row result; on `CronExpression mismatch →
+   FAILED_VERIFY` emit both the expected and observed values.
+
+Short-circuit cases (`AMBIGUOUS` / `API_NOT_IDENTIFIED` /
+`FAILED` at F-2 or F-3 / `FAILED_VERIFY`) emit F-1 (and F-2/F-3 if
+the failure is visible later) and stop — skip F-4 and the row's
+`HTTP` column renders `—`.
 
 ## Dry-run recap
 

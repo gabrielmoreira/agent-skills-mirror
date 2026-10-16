@@ -109,6 +109,6 @@ impact-triggered spray.
 
 ## Route elsewhere
 
-- Use `$threejs-water-optics` for bounded water, screen-space refraction, depth thickness, shoreline absorption, and analytic wave surfaces. Its screen-space refraction is valid there because the camera stays in air and the volume is bounded; it is not a substitute for this skill's forward projection across an open interface.
+- Use `$threejs-water-optics` and its `photoreal-water` example for air-side shallow-water FFT optics, RGB caustics and diffraction glare. Use that skill for bounded water, screen-space refraction, depth thickness, shoreline absorption, and analytic wave surfaces. Its screen-space refraction is valid there because the camera stays in air and the volume is bounded; it is not a substitute for this skill's forward projection across an open interface.
 - Add `$threejs-procedural-vfx` only when crest spray or interaction splashes are required.
 - Add `$threejs-visual-validation` for cross-seed, temporal, and GPU evidence.

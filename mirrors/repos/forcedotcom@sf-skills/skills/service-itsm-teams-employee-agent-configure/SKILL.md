@@ -14,9 +14,7 @@ metadata:
   cliTools:
     - tool: ["sf"]
       semver: ">=2.0.0"
-  accessCheck:
-    - type: "orgPref"
-      value: "ITSMTeamsEnabled"
+  accessCheck: "OrgPreferences.ITSMTeamsEnabled"
 ---
 
 # Configure the Embedded Agentforce Employee Agent in Microsoft Teams

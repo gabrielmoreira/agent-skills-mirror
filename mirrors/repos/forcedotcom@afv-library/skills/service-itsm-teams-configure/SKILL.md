@@ -19,9 +19,7 @@ metadata:
   cliTools:
     - tool: ["sf"]
       semver: ">=2.0.0"
-  accessCheck:
-    - type: "orgPerm"
-      value: "MSTeamsSetupAutomationAccess"
+  accessCheck: "OrgPermissions.MSTeamsSetupAutomationAccess"
 allowed-tools: |
   Read AskUserQuestion Bash
   mcp__headless-360__discover

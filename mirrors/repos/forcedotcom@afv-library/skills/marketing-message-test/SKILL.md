@@ -4,9 +4,7 @@ description: "Salesforce Marketing Cloud / Engagement 360 message preview and te
 metadata:
   version: "1.0"
   minApiVersion: "62.0"
-  accessCheck:
-  - type: "orgPerm"
-    value: "MarketingEngagement"
+  accessCheck: "OrgPermissions.MarketingEngagement"
   cliTools:
   - tool:
     - "sf"

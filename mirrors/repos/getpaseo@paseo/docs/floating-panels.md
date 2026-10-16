@@ -343,11 +343,20 @@ Do not treat `onChange(-1)` as a close by itself. In a stacked
 another pushed sheet. Close React state from `onDismiss`; use `onChange` only to
 track phase.
 
-All sheets use the app-wide Gorhom modal provider through `IsolatedBottomSheetModal`. This
-includes native centered dialogs: separate React Native Modals cannot present a root-owned
-sibling dialog over an existing iOS presenter. The one exception is the
-[workspace sheet](explorer-sidebar.md#workspace-sheet), an in-tree Gorhom `BottomSheet` that hosts a
-whole workspace panel.
+All sheets use the app-wide Gorhom modal provider through `IsolatedBottomSheetModal`, with no
+exceptions: one stack means a sheet opened from any sheet lands on top of it and uncovers it on
+close. This includes native centered dialogs: separate React Native Modals cannot present a
+root-owned sibling dialog over an existing iOS presenter. A sheet that must draw inside a subtree
+(the [sheet tabs](explorer-sidebar.md#sheets) draw inside the compact workspace column so their
+panels read the workspace providers) presents from inside a `SheetHostScope`, which moves the
+portal host and container measurement while the sheet still joins the same stack. That export is
+what `patches/@gorhom+bottom-sheet+*.patch` adds.
+
+A sheet whose owner may veto the close (unsaved work) passes `enableDismissOnClose={false}`. Every
+close path then parks the sheet at index -1 with its content mounted; the owner hears
+`onChange(-1)`, runs its guard, and either snaps back to 0 or drops its state, which unmounts the
+sheet and takes it off the stack. Calling `dismiss()` on such a sheet bypasses the guard and
+unmounts it, so its backdrop and Back press call `close()`.
 
 The wrapper must give Gorhom an object ref. Gorhom accepts a callback ref at the React boundary
 but stores it in the modal queue and later reads `.current`; provider dismissal, replacement,
@@ -357,9 +366,10 @@ forwards commands to the current Gorhom handle.
 Request a backdrop with `backdropOpacity`; do not install a caller-owned backdrop. On web,
 Gorhom's default backdrop closes its own sheet, even when another modal is above it. Its animated
 pointer-event changes can expose a lower backdrop during a transition. The shared web backdrop
-keeps its press target until portal teardown and asks the provider to dismiss the top modal.
-Gorhom's presentation queue remains the authority; backdrop mount order is irrelevant. Native
-retains Gorhom's gesture backdrop and the same push/replace presentation semantics.
+keeps its press target until portal teardown and asks the provider to dismiss the top modal
+(a guarded sheet closes itself instead, see above). Gorhom's presentation queue remains the
+authority; backdrop mount order is irrelevant. Native retains Gorhom's gesture backdrop and the
+same push/replace presentation semantics.
 
 ## Gotcha 7 — A sheet cannot read context from its call site
 

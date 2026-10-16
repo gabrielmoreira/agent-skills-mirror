@@ -9,9 +9,7 @@ metadata:
   relatedSkills:
     - "platform-metadata-deploy"
     - "service-omni-channel-setup-coordinate"
-  accessCheck:
-    - type: license
-      value: ServiceCloud
+  accessCheck: "OrgPermissions.LightningService"
   cliTools:
     - tool: ["jq"]
       semver: ">=1.6"

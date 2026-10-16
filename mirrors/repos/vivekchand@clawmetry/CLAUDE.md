@@ -48,6 +48,7 @@ All HTTP endpoints live here, organised by feature: 70 modules, 82 blueprints, l
 | `routes/local_query.py` | `bp_local_query` — `/api/local/*` DuckDB read API + the daemon-proxy `_dispatch` (shape→store bridge shared by HTTP and the cloud relay) |
 | `routes/public_api.py` | `bp_public_api` — `/api/q/1/*`, the **keyed, cross-origin** read API custom UIs are built on (`docs/BUILD_YOUR_OWN_UI.md`). Same `_dispatch`, but it is the one surface that does not trust loopback: every request needs a scoped `cmk_` key, and CORS is echoed only for an origin that key named |
 | `routes/apikeys_admin.py` | `bp_apikeys_admin` — `/api/apikeys`, minting and revoking the keys `public_api` accepts. Kept apart from that surface on purpose: it sits behind the dashboard's own cross-origin write guard and never carries a CORS header, so a page holding a read key can neither list this node's keys nor issue itself a wider one |
+| `routes/node_activity.py` | Stored node observations and typed monitoring preferences/reviews. Node-wide, daemon-owned; hosted detail uses encrypted `nodeActivity`. |
 | `routes/guard.py` | `bp_guard` — live session control (Pause/Stop/Kill), Guard policy CRUD, policy decision log, learned baselines. Sessions ranked by **spend at risk**, not severity |
 | `routes/policy.py` | `bp_policy` — the *pre-tool* sandbox/permission surface (`/api/tool-policy`). Deliberately a different axis from `routes/guard.py`: different table, no shared state |
 | `routes/hooks.py` | `bp_hooks` — hook install / status / uninstall per runtime, and the gate's decision log |
@@ -280,7 +281,11 @@ CLAWMETRY_REVIEW_SAMPLE_MAX=200        # Review queue: per-agent cap in percent 
 CLAWMETRY_DETECTORS=1                  # Trajectory + behavioural detectors on/off
 CLAWMETRY_GUARD_POLICIES=1             # Evaluate Guard policies at all (0 = skip the pass entirely)
 CLAWMETRY_NATIVE_APPROVALS=1           # Import OpenClaw's own pending approvals (0 = never shell out to `openclaw approvals`; auto-skipped when openclaw isn't installed)
-CLAWMETRY_DESKTOP_ALERTS=1             # Urgent incidents (critical, or an agent blocked on you) pop a desktop notification (0 = off)
+CLAWMETRY_DESKTOP_ALERTS=1             # Urgent incidents pop a desktop notification you can click through to the session (0 = off).
+                                       # clawmetry/desktop_notify.py: terminal-notifier on macOS, a native toast on Windows,
+                                       # notify-send with an action on Linux
+CLAWMETRY_TERMINAL_NOTIFIER=...        # Explicit terminal-notifier path, when it is somewhere the macOS search does not look
+CLAWMETRY_NOTIFY_ACTION_WAIT=1800      # Linux only: seconds a notification waits for a click before the listener thread gives up
 CLAWMETRY_CLOUD_INCIDENT_ALERTS=1      # Connected nodes hand urgent incidents to cloud, which always emails the account owner (0 = off)
 CLAWMETRY_POLICY_ENFORCE=0             # Let a policy actually signal a process. Default 0 = dry run; this one env var disables every policy on the node
 CLAWMETRY_GUARD_CRITICAL_USD=...       # Spend-at-risk above which a warning becomes critical
@@ -322,3 +327,7 @@ DEBUG=1                                # Enable debug logging
 - **Detector thresholds are resolved, not hard-coded** — `detectors.resolve_thresholds(runtime, baseline)` layers four sources, each overriding the last: module defaults → the runtime profile (write-tool vocabulary, a checkable fact about the adapter, never an invented number) → the cohort's learned baseline from `guard_session_stats` / `guard_egress_hosts` → a per-runtime env override (`CLAWMETRY_NOPROG_TOOLS__CODEX=40`). Every incident carries `threshold_source`, so a reader can tell a measured threshold from a shipped constant. Learned values are clamped to a band around the static default: a cohort where everything loops cannot teach the detectors to go blind, and a cohort of three sessions cannot make them scream.
 - **Incident severity maps to money** — detectors attach `spend_at_risk_usd` (the estimated cost of the *flagged stretch*, not the session bill) plus the `spend_basis` that produced it, and a `warning` crossing `CLAWMETRY_GUARD_CRITICAL_USD` becomes `critical`. Where no cost is known the field is `0.0` with basis `unknown`, never a fabricated figure. Surfaces that list incidents (`/api/loop-signals`) rank by it.
 - **snake_case** functions, **PascalCase** classes, **SCREAMING_SNAKE_CASE** constants.
+
+### Node activity
+
+`clawmetry/node_activity.py` collects bounded psutil observations and private selected-file fingerprints. `clawmetry/node_activity_service.py` runs independently of cloud sync on a bounded cadence. `clawmetry/node_activity_store.py` owns DuckDB source comparison, retention, preferences and historical reviews. Only complete comparable sources infer removals. Unknown actors remain unknown. The browser tab shows coverage, differences, recorded resource history and findings without arbitrary process controls. Hosted updates bind an encrypted operation to the node, request ID and expiry; the daemon rejects replay and confirms stored read-back. See `docs/NODE_ACTIVITY.md`.

@@ -261,6 +261,7 @@ def _drive_process(process: subprocess.Popen[str], cli: str, timeout_ms: int) ->
         result = processor.get_result()
         if result is None:
             processor.process_complete_output("".join(stdout_lines))
+            processor.finish_opencode_stream()
             result = processor.get_result()
 
         return build_final_response(
@@ -357,7 +358,7 @@ def _isolated_opencode_env(
 def execute_agent(inv: AgentInvocation, timeout_ms: int = DEFAULT_TIMEOUT_MS) -> AgentResponse:
     process_invocation = build_invocation_args(inv)
 
-    if inv.cli == "opencode":
+    if process_invocation.isolate_xdg_state:
         temp_dir = tempfile.mkdtemp(prefix="subagent-opencode-")
         try:
             proc_env = _build_proc_env(

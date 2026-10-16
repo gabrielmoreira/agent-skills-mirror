@@ -390,6 +390,17 @@ glm-4.7=3
 
 प्रत्येक कॉम्बो रणनीति के लिए (सक्षम होने पर), ऐसा अनुरोध जो अल्पकालिक क्षणिक कूलडाउन हेतु 429 त्रुटि को निश्चित कर देता, उसके समाप्त होने तक प्रतीक्षा करता है और 429 लौटाने के बजाय पुनः प्रेषित होता है — इसमें बहु-मॉडल कॉम्बो पर Gemini-श्रेणी की TPM/RPM विंडो (~60s retry-after) शामिल हैं, जैसे 2-मॉडल कॉम्बो के दोनों लक्ष्यों का प्रति-मॉडल दर सीमा तक पहुँचना। यह **सेटिंग्स → रेज़िलिएंस** में `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts`, `budgetMs`) द्वारा सीमित होता है। यह `quota_exhausted` (मध्यरात्रि तक लॉक) या प्रमाणीकरण/नहीं-मिला कारणों पर कभी प्रतीक्षा नहीं करता।
 
+```text
+#16319 · comboCooldownWait · pre-dispatch (attempts = 0)
+all targets skipped + transient model lockout:
+  enabled ∧ 0 < waitMs ≤ maxWaitMs ∧ attempt < maxAttempts ∧ budgetLeftMs ≥ waitMs
+    → wait → re-dispatch
+  wait = false → HTTP 429 rate_limit_error
+  retry_after / reset_at ← earliest transient lock expiry
+quota_exhausted / auth_error / not_found / not_found_local:
+  no transient hint → HTTP 503 ALL_TARGETS_SKIPPED
+```
+
 ---
 
 ## 5. अनुरोध कतार प्रवेश नियंत्रण (v3.8.49 · issue #6593)

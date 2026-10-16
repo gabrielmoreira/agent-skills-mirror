@@ -22,7 +22,7 @@ This is an OMH `paper-learning` workflow skill, projected for Agent Skills hosts
 ## Do Not Use When
 
 - The request asks to export, convert, render, or package a file; use `omh-materials-package`.
-- The request asks for daily/weekly paper monitoring, digest, source inbox, or Scout/Analyst/Briefer operations; use `omh-research-department`.
+- The request asks for daily/weekly paper monitoring, digest, source inbox, or Scout/Analyst/Briefer operations.
 - The request asks to find current papers or sources when no supplied paper exists; use `ulw-research`.
 - The request asks for a visual/image card; use `omh-image-cards`.
 - The request asks to implement or reproduce the paper's code; prepare a coding handoff only after a paper learning or reproduction plan is accepted.
@@ -79,7 +79,7 @@ Quality bar:
 - Preserve the coverage policy `coverage_preserving_not_lossy_summary` through a section-by-section ledger.
 - Explain by chunks when the source is long; keep each chunk linked to coverage_ledger status.
 - Set source_state from how the paper was acquired, not from the request. An entry that Hermes' bundled `arxiv` skill returned (search or id lookup) is `metadata_only` until paper text is read. Text that the bundled `pdf` skill's `pdf_read.py <file> --text` run returned is `file_text_extraction_observed` for the pages that came back with text, and a page that came back empty is listed as missing. Without those skills, the state is whatever the supplied text supports.
-- For a paper past one read budget, when the `long-document-reading` skill is available, take the chunks from its page ranges - its page-count probe and page-anchored extraction - instead of a second chunking scheme, and map each covered range onto the coverage ledger's sections; without it, plan numbered page ranges before reading.
+- For a paper past one read budget, plan numbered page ranges before reading, and map each covered range onto the coverage ledger's sections.
 - List missing sections and not-observed claims before presenting the explanation as complete.
 
 Required inputs:

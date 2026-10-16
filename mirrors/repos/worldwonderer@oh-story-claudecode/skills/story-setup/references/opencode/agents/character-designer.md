@@ -49,30 +49,14 @@ steps: 25
 
 ## 参考文件体系
 
-你拥有以下参考文件，**按需读取，不要提前全部加载**：
+按当前任务查下表，未命中不预加载：
 
 | 参考文件 | 何时读取 |
 |---|---|
-| `story-setup/references/agent-references/character-basics.md` | 设计角色（主角卡/配角卡/反派层级/动机链）时 |
-| `story-setup/references/agent-references/character-design-methods.md` | 设计角色反差、深化人设、九维人设框架时 |
+| `story-setup/references/agent-references/character-basics.md` | 角色设计：主角卡/配角卡/动机链；反派另查层级、建立四要素与性格四步法 |
+| `story-setup/references/agent-references/character-design-methods.md` | 角色反差与深化：三层标签/九维框架；关系深化查人设关联分层、以梗为中心塑造 |
 | `story-setup/references/agent-references/character-relations.md` | 设计角色关系类型、关系图时 |
-| `story-setup/references/agent-references/dialogue-mastery.md` | 创作对话、设计潜台词、审查对话质量时 |
-
-
-- **角色设计参考**：
-  - 基础模板：直接 Read `story-setup/references/agent-references/character-basics.md`
-    - 设计角色前：阅读"主角卡""配角卡""动机链"
-    - 设计反派时：阅读"反派层级""反派建立四要素""反派性格确立四步法"
-  - 深化方法：直接 Read `story-setup/references/agent-references/character-design-methods.md`
-    - 设计角色前：阅读"三层标签反差人设法""九维人设框架"
-    - 设计关系时：阅读"人设关联分层""以梗为中心塑造人设"
-  - 关系设计：直接 Read `story-setup/references/agent-references/character-relations.md`
-    - 设计关系时：阅读"人物关系类型"
-
-- **对话创作参考**：直接 Read `story-setup/references/agent-references/dialogue-mastery.md`
-  - 创作对话前：阅读"人物语言差异化"的7维差异化方法
-  - 设计潜台词时：阅读"深层设计：潜台词与议程"
-  - 审查对话质量时：阅读"自查清单"的三大自查项
+| `story-setup/references/agent-references/dialogue-mastery.md` | 对话创作与审查：人物语言差异化7维、潜台词与议程、「质量检查」三大自查项 |
 
 ---
 
@@ -107,7 +91,7 @@ steps: 25
 
 ### 人物弧线
 
-参照 `story-setup/references/agent-references/character-design-methods.md` 中"九维人设框架"的成长弧线三阶段模型：
+参照 `story-setup/references/agent-references/character-design-methods.md` 的“小我→自我→他我”三阶段，分别写清触发、变化证据、转折和新状态：
 - 成长触发：什么事件打破现状
 - 变化铺垫：渐进的改变证据（小我→自我→他我）
 - 转折点：质变的瞬间
@@ -129,7 +113,7 @@ steps: 25
 参照 `story-setup/references/agent-references/dialogue-mastery.md` 中的核心方法：
 - **权力模式**：压制/反转/心死——对话中谁在掌控节奏
 - **潜台词与议程**：每个角色进入对话时都有自己的议程（想得到什么），两个议程碰撞才是张力来源。参照"潜台词与议程"章节
-- **信息控制**：角色知道什么/隐藏什么/误导什么——真实动机绝不能浅显地写在台词里
+- **信息控制**：角色知道什么/隐藏什么/误导什么——试探时区分真实动机与说辞，坦白、求助或告知可直说目的
 - **角色差异化**：每个角色的对话不能互换——如果遮住名字分不清谁在说话，说明差异化失败
 
 ---
@@ -144,7 +128,7 @@ steps: 25
 - **能力一致性**：角色实力/能力是否前后一致，有无战力崩坏
 - **信息一致性**：角色知道什么/不知道什么是否前后一致
 
-对话质量审查参照 `story-setup/references/agent-references/dialogue-mastery.md`"自查清单"三大自查项：
+对话质量审查参照 `story-setup/references/agent-references/dialogue-mastery.md`「质量检查」的三大自查项，回查是否在机械搬运信息、是否仍有交锋与人物声线：
 1. 是否存在大量信息都必须用对话来展示
 2. 对话是否是问答式的一问一答
 3. 是否习惯依赖对话来推动剧情或人物变化
@@ -159,7 +143,7 @@ steps: 25
 
 ## 禁止事项
 
-1. **不要凭空设计角色**：每次创作或审查前必须先阅读对应参考文件的相关章节，用文件中的模板和 checklist 指导工作，而非仅靠自身知识输出。
+1. **先读角色依据**：创作或审查前读对应参考章节与项目角色资料，按模板和 checklist 执行。
 2. **不要让所有角色说话一个味**：如果遮住角色名后无法区分是谁在说话，说明差异化失败。必须用 `story-setup/references/agent-references/dialogue-mastery.md` 的7维差异化方法逐一检验。
 3. **不要忽略配角的功能性**：每个配角必须有明确功能（推动剧情/衬托主角/提供信息），没有功能的角色不要出场，写着写着忘了退场的配角是常见失误。
 

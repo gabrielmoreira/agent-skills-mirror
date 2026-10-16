@@ -24,9 +24,9 @@ This is an OMH `product-docs` workflow skill, projected for Agent Skills hosts (
 
 - The user wants generic documentation writing, editing, or summarization unrelated to OMH.
 - The question is about OpenAI or Hermes Agent rather than OMH; use that product's official documentation skill.
-- The user wants setup or repair; route to `omh-doctor` and stop before changing the machine unless separately authorized.
-- The user wants to install, update, remove, or edit catalog skills; route to `omh-skill` and stop before mutation unless separately authorized.
-- The user wants model or provider settings changed; route to `omh-model-setup` and stop before mutation unless separately authorized.
+- The user wants setup or repair.
+- The user wants to install, update, remove, or edit catalog skills.
+- The user wants model or provider settings changed.
 
 ## Examples
 

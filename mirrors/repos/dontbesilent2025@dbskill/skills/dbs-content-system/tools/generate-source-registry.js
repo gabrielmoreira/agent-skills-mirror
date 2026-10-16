@@ -2,6 +2,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { loadSourceRules, ruleMatchesPath } = require("./source-rules");
 
 const root = path.resolve(process.cwd());
 const sourceRoot = path.join(root, "01-原始素材区");
@@ -9,15 +10,9 @@ const stateRoot = path.join(root, "03-处理状态");
 const output = path.join(stateRoot, "来源注册表_批量生成候选.csv");
 const registryPath = path.join(stateRoot, "来源注册表.csv");
 
-const rules = [
-  { keywords: ["短视频", "文稿"], type: "短视频", code: "VIDEO" },
-  { keywords: ["公众号"], type: "公众号文章", code: "WX" },
-  { keywords: ["观点与概念"], type: "观点与概念", code: "CON" },
-  { keywords: ["爆款文稿"], type: "爆款文稿", code: "BK" },
-  { keywords: ["推文"], type: "推文素材", code: "POST" },
-  { keywords: ["其他作者"], type: "外部研究素材", code: "EXT" },
-  { keywords: ["dontbesilent"], type: "本人内容", code: "USER" },
-];
+const rules = loadSourceRules(root)
+  .filter((rule) => rule.code)
+  .map((rule) => ({ ...rule, type: rule.sourceType }));
 
 function walk(dir) {
   const results = [];
@@ -86,7 +81,7 @@ function loadRegistry() {
 function inferRule(relPath) {
   const normalized = relPath.replaceAll("\\", "/");
   for (const rule of rules) {
-    if (rule.keywords.every((item) => normalized.includes(item))) return rule;
+    if (ruleMatchesPath(rule, normalized)) return rule;
   }
   return { type: "未分类素材", code: "MISC" };
 }

@@ -21,7 +21,7 @@ This is an OMH `llm-app-dev` workflow skill, projected for Agent Skills hosts (C
 
 ## Do Not Use When
 
-- The subject is comparing executors or agent harnesses - Codex against Claude Code against Hermes coding - rather than evaluating the product's own model calls; use `omh-agent-evaluation`.
+- The subject is comparing executors or agent harnesses - Codex against Claude Code against Hermes coding - rather than evaluating the product's own model calls.
 - An agent run is already stuck, looping, or drifting and needs diagnosis; use `omh-agent-debug`.
 - The subject is the harness's own context window, prompt caching, or token budget rather than the application being built; use `omh-context-budget-review`.
 - The request is a prompt-injection, secret-handling, or dependency risk gate on work that already exists; use `omh-security-safety-review`.

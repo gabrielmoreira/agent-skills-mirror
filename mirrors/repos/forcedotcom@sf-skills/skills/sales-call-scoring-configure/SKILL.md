@@ -15,11 +15,7 @@ metadata:
       semver: ">=1.6.0"
     - tool: ["curl"]
       semver: ">=7.0.0"
-  accessCheck:
-    - type: "orgPref"
-      value: "ConversationPilotPref"
-    - type: "userPerm"
-      value: "ModifyAllData"
+  accessCheck: "(OrgPreferences.ConversationPilotPref) && (UserPermissions.ModifyAllData)"
 ---
 
 # Sales Call Scoring — Configure

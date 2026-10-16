@@ -17,8 +17,10 @@ One control size across Settings — `h-8`:
 Widths are capped — never let controls span the pane:
 
 - Field-row control cluster / stacked-field default cap: `max-w-[24rem]` (built into `SettingsStackedField`; use `SETTINGS_CONTROL_CLUSTER_CLASS` elsewhere).
-- Field-row selects: `SETTINGS_SELECT_ROW_TRIGGER_CLASS` (full width narrow, `@xl:w-56` wide).
-- Stacked-field selects: `SETTINGS_SELECT_TRIGGER_CLASS` (fills the capped container).
+- Dropdown triggers hug their value, chevron right after it, up to a `ch`-based
+  cap where long values truncate (`SETTINGS_SELECT_ROW_TRIGGER_CLASS` in field
+  rows, `SETTINGS_SELECT_TRIGGER_CLASS` in stacked cells). A column of pickers
+  is ragged on purpose; never stretch a trigger to fill its column.
 - Genuinely full-width content (dialog textareas): opt out with `controlClassName="w-full max-w-none"`.
 
 ## Field Rows

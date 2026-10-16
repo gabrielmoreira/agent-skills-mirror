@@ -69,6 +69,23 @@ graph TD
 
 ![LoopX 管家总览与 4 泳道流](../assets/personal-workspace/guide_manager_overview.png)
 
+### 首次打开 / First open
+
+![还没有 Goal 时的管家总览](../assets/personal-workspace/first-goal-home-desktop.png)
+
+还没有任何 Goal 时，总览不显示空泳道或健康告警，而是一个「还没有 Goal」状态：一句话说明
+Goal 是什么、一个 **创建 Goal** 按钮（打开与侧边栏 `+` 相同的创建表单），以及三条示例
+请求。点选示例只会填入输入框，按发送前不会发出任何内容。状态来源自身的检查行（例如
+本机尚未建立注册表）折叠在「状态来源详情」里。只有状态来源真的不健康（例如注册表损坏）
+时才显示健康告警，并以可读句子描述问题，原始检查行同样折叠在「诊断信息」里。
+
+When no Goal exists yet, the overview shows a first-Goal state instead of empty lanes or a
+health banner: what a Goal is, a **Create a Goal** button (the same form as the sidebar `+`),
+and three example requests that only fill the composer. The status source's own check
+lines (such as "no registry yet on this machine") stay collapsed under "Status source
+details". A health banner appears only when the source is actually unhealthy, in plain
+sentences, with the raw check lines collapsed under "Diagnostics".
+
 ### 核心功能区
 1. **「你不在的时候」离线概览**：
    - 聚合展示你离开期间所有 Agent 的运行结果：`已完成` 数量、`异常/失败` 数量以及当前 **`等你确认`** 的阻塞项。
@@ -246,6 +263,54 @@ execution permissions.
 ![点击「转为 Task」草稿提取并回填](../assets/personal-workspace/goal_tasks_task_draft_extracted_v2.png)
 
 ---
+
+### 4.1.1 状态感知的快捷建议 / State-aware suggestions
+
+![根据 Goal 当前状态推导的建议行](../assets/personal-workspace/goal-suggestions-row.png)
+
+Goal 对话页的「快捷提问」折叠行，除了固定的几条问题外，会根据这个 Goal 的当前投影给出至多三条
+建议，每条只引用投影里的真实事实：有事项等你决定时是「先处理 N 项等你决定的事项」，点击直接打开
+概览页的需要你栏；有受阻任务时是「解释 N 项受阻任务」，点击把这些任务的标题带进问题立即发送；
+验收条件未通过时是「为什么「…」未通过」；观察到没有运行中的工作且仍有未完成任务时是「继续推进」；
+任务全部完成时是「查看成果」。「等你决定」只计需要你介入的事项，可选提醒会列出但不计入；
+「查看成果」只在工作列表完整且已知没有未完成任务时出现，只列出一部分的投影不会被当作全部完成。
+已停止的 Goal 不给建议；执行状态未知时不会假装空闲。折叠时摘要行会带出第一条建议，便于一眼看到。
+
+The "Suggestions" disclosure on a Goal's Chat view adds up to three suggestions derived from the
+Goal's current projection, each citing a real fact: decisions waiting on you (opens the overview's
+needs-you rail), blocked tasks (sends a question naming those tasks), a failing acceptance
+criterion, no observed running work with open tasks, or all tasks done. "Decisions" counts only
+items that wait on you; an optional reminder is listed but not counted. "All done" appears only
+when the work list is complete and the owner's open count is known to be zero; a partial listing is
+never read as finished. A stopped Goal gets no
+suggestion and unknown execution is never read as idle. The collapsed summary line shows the first
+suggestion.
+### 4.1.2 自你上次查看 / Since you looked
+
+![回到 Goal 概览时的「自你上次查看」一行](../assets/personal-workspace/since-you-looked-line.png)
+
+回到一个 Goal 的概览时，如果自你上次查看以来有实质变化，概览顶部会出现一行安静的摘要：
+「自你上次查看（3 小时前）：新完成 2 项、新增 1 项等你决定、新受阻 1 项、新成果 1 项」，以及
+「标记已读」。它来自这个浏览器本地保存的上次查看标记（只有计数和编号，不含标题、内容或费用），
+不写回服务，也不是通知。「等你决定」只计需要你介入的事项，可选提醒会列出但不计入。没有实质变化时
+不显示；点「标记已读」以当前画面为基线，离开这个 Goal 则以这次进入时看到的那一眼为基线，期间到达但
+没有呈现的变化下次回来仍会算入；已点过的「标记已读」不会被离开撤回。标记只保留每类最近 200 个编号，
+超出后只按数量增长判断新增，没有总数时就不再报告，不会把没保留的旧项当成新项。浏览器不允许本地存储时只是失去这份记忆，
+Goal 照常可读。费用变化暂不纳入：用量投影还不能可靠地界定两次查看之间的区间。
+
+When you return to a Goal's overview after a material change, one quiet line at the top says what
+changed since your last look ("Since you looked (3 hours ago): 2 newly done, 1 new decision for
+you, 1 newly blocked, 1 result returned") with **Mark seen**. It comes from a marker this browser
+keeps locally (counts and ids only, never titles, content or cost), writes nothing to the service
+and is not a notification. "Decisions for you" counts only items that wait on you; an optional
+reminder is listed but not counted. Nothing shows when nothing material changed. **Mark seen** makes
+what is on screen the new baseline; leaving the Goal keeps the look you arrived to, so a change that
+landed during the visit without being shown is still reported next time, and leaving never undoes a
+**Mark seen**. The marker keeps the latest 200 ids of each kind; beyond that only growth of the
+count reports something new (nothing at all when there is no total), never an older item the marker
+did not retain. A browser that denies
+local storage only loses this memory; the Goal stays readable. Spend is left out until the usage
+projection can qualify the exact interval between two looks.
 
 ### 4.2 Goal 概览与交付依据 / Goal overview
 

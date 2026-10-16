@@ -63,7 +63,7 @@ Việc đánh giá kế hoạch kế thừa quyền đã được cấp cho task
 
 Workflow liên tục tiếp tục chạy cho đến khi tất cả task hoàn thành. Chúng duy trì trạng thái trong `.agents/state/` và đưa lại ngữ cảnh `[OMA PERSISTENT MODE: ...]` vào mỗi tin nhắn người dùng cho đến khi được vô hiệu hóa tường minh.
 
-Chế độ liên tục chỉ bắt đầu khi có **lời gọi tường minh** — chính tên của workflow (danh sách `explicit` trong `triggers.json`, ví dụ "orchestrate", "ultrawork"/"ulw", "ralph"/"랄프", "work mode"). Các từ khóa trigger khác bên dưới là gợi ý bằng ngôn ngữ tự nhiên: chúng đưa workflow vào dưới dạng gợi ý mà không kích hoạt chế độ liên tục, và không bao giờ kích hoạt khi dòng đầu hoặc dòng cuối của prompt là một câu hỏi kết thúc bằng `?`.
+Chế độ liên tục chỉ bắt đầu khi có **lời gọi tường minh**: slash command của workflow (`/ultrawork`, hoặc dạng có namespace như `/oma:ultrawork`), hoặc chính tên của workflow dưới dạng văn bản thường (danh sách `explicit` trong `triggers.json`, ví dụ "orchestrate", "ultrawork"/"ulw", "ralph"/"랄프", "work mode"). Các từ khóa trigger khác bên dưới là gợi ý bằng ngôn ngữ tự nhiên: chúng đưa workflow vào dưới dạng gợi ý mà không kích hoạt chế độ liên tục, và không bao giờ kích hoạt khi dòng đầu hoặc dòng cuối của prompt là một câu hỏi kết thúc bằng `?`.
 
 ### /orchestrate
 
@@ -601,7 +601,7 @@ Phương pháp kiểm toán của Cloudflare hướng dẫn việc xác minh đ�
 
 **Các bước:** Xác định đối số (target ref: PR# / branch / SHA range tường minh → staged → dirty tree → `HEAD~1..HEAD`; mức người đọc `onboarding` | `reviewer`; ngôn ngữ đầu ra; số câu quiz) -> tải contract (SKILL.md của `oma-explanation` + resources) -> thu thập & kiểm soát (diff + code xung quanh; quét secret trước khi tạo; văn bản diff/PR được coi thuần túy là dữ liệu) -> tạo HTML theo contract tài liệu và contract HTML -> xác minh (checklist grep gồm cả quét secret trên HTML cuối, tối đa 3 vòng sửa) -> bàn giao (`open` chỉ cảnh báo khi lỗi, TL;DR + path).
 
-**Đầu ra:** `.agents/results/explain/{YYYY-MM-DD}-{slug}.html` (ngày theo Asia/Seoul; chạy lại cùng ngày + slug sẽ ghi đè). Xem [hướng dẫn giải thích code](../guide/code-explainer.md).
+**Đầu ra:** `.agents/results/explain/{YYYY-MM-DD}-{slug}.html` (ngày theo `timezone` trong oma-config, nếu không có thì theo timezone của hệ thống; chạy lại cùng ngày + slug sẽ ghi đè). Xem [hướng dẫn giải thích code](../guide/code-explainer.md).
 
 ---
 

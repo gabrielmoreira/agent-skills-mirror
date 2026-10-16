@@ -559,10 +559,15 @@ C/E delegate:
 Union the findings whenever both mechanisms run. After `usable: true`,
 a missing command, non-zero exit, timeout, cancellation, or unreadable
 findings is a failure. A readable empty list is a clean verdict. If no
-mechanism that ran returns a readable list, do not publish: do not
-create an issue, update a body, change a label, or append a marker. An
-existing held issue keeps its label and previous body. A failure is
-never a clean review.
+mechanism that ran returns a readable list, do not publish the drafted
+issue: do not create it, update its body, change its label, or append a
+marker for it. An existing held issue keeps its label and previous body.
+The drafts go into a draft carrier marked `Review: not reviewed` (see the
+[issue-authoring skill contract](issue-authoring-skill.md#draft-carrier)),
+unless they already sit in one (they stay there), the user said not to
+create any issue, or the carrier cannot be published either (then they stay
+local).
+A failure is never a clean review.
 
 The reviewer must be read-only and returns a findings list only: it must
 not create or update issues, change labels, or append markers. That is a
@@ -587,6 +592,11 @@ The normative checklist and disposition rule live in the
 [issue-authoring skill contract](issue-authoring-skill.md#completed-draft-adversarial-review).
 
 ### User-global issue-authoring delegate default
+
+This resolver reads only its own fragment of the user-global file. The
+layered rules for `overrides[]`, the repository-policy field class, and the
+CI off switches are in the
+[user-global installation guide](https://github.com/kurone-kito/idd-skill/blob/main/docs/user-global-install.md).
 
 A local runtime may also inherit `issueAuthoring.adversarialReview.delegate`
 from the same optional user-global file the critique delegate uses when the
@@ -1029,6 +1039,11 @@ The operating rules for this variant are in the
 `.github/instructions/idd-orchestrator.instructions.md`, which an agent
 reads only when its activation conditions hold or a fan-out session restarts.
 
+The orchestrator's end-of-run report is defined under
+[Orchestrator run report](#orchestrator-run-report). The `outcome` that each
+worker's own final report carries for each way a run can end is listed under
+[Worker report outcomes](#worker-report-outcomes).
+
 Running this variant safely requires:
 
 - **A non-context-inheriting delegation mechanism for the full worker role,
@@ -1080,11 +1095,47 @@ Running this variant safely requires:
   600s`) while the 1-minute load average read 90.87 on 24 cores and no
   memory was available, and full-suite runs failed on timeouts in
   unrelated specs that all passed alone.
+- **Instruction freshness.** An orchestrator session reads its instruction
+  files once but can run for many hours, so a rule that lands on the base
+  branch mid-run never reaches it. In the 2026-10-14 to 2026-10-15 run, pull
+  request kurone-kito/idd-skill#4290 (merged 2026-10-14T16:36Z) added the
+  host-load wait rule after the session had read its files, and the session
+  kept using a single reading (no issue records the incident). Every
+  `idd-worker-budget` call after the first baseline is set, the host-load
+  re-checks included, therefore passes `--instructions-since` with the
+  baseline, run from the repository root because the helper reads the policy
+  file from the working directory. It reads local refs only and never
+  fetches, so the workers' own `git fetch origin` in B1 and F4 keeps its base
+  ref current, and it needs git 2.28 or newer. Its `instructionsChanged` lists
+  the paths under `.github/instructions/` and `docs/idd-workflow.md` that
+  differ between the baseline and `instructionsTip`, the commit the base ref
+  resolves to. Only a listed file that this session already loaded is re-read.
+  - The first baseline is `git rev-parse HEAD` of the primary checkout when
+    the session reads the orchestrator file; a restarted session takes a new
+    one the same way.
+  - Every later call passes the baseline. The baseline advances to the
+    `instructionsTip` of a call only after every listed file that this session
+    already loaded has been re-read, so a change is reported until it has been
+    read and then not again.
+  - A call that reports an error, including a baseline that is not an
+    ancestor of the tip, leaves the baseline as it is. To recover, when
+    `instructionsTip` is not null, the orchestrator re-reads every file it
+    loaded and then takes that tip as the baseline. If the next call reports
+    an error again, it stops passing `--instructions-since` for the rest of
+    the session and tells the operator once.
+  - A changed file is re-read with `git show <instructionsTip>:<path>`, which
+    does not depend on the state of the checkout; a file the session first
+    loads later is read the same way, because the checkout may lag the tip. A
+    deleted path needs no re-read and counts as removed. `git show` reports
+    such a path as absent from the tip.
 - **Full per-issue gating before every delegation.** The orchestrator
   runs the complete A4.5/A5 suitability and claim gates (and the A4
   viability gate that precedes them) for each issue before handing it to
   a worker; claiming several issues concurrently is never a shortcut
-  around those gates.
+  around those gates. A pick that fails A4.5, or A5 before or after the claim
+  marker is posted, starts no worker and gets no roster entry, and only a later
+  full Discover run reconsiders the pick; a failure after the marker is
+  contested and keeps its claim and worktree.
 - **A delegation brief that restates the background-wait topology
   warning and the worker's exit boundary.** Each worker's brief must
   carry the
@@ -1101,7 +1152,17 @@ Running this variant safely requires:
   under `fully_autonomous_merge`, F2.5 otherwise): the worker reports its final
   result back to the orchestrator instead of
   independently entering F5's Discover step, so Discover/Claim
-  ownership stays with the orchestrator alone.
+  ownership stays with the orchestrator alone. When the run is scoped to end
+  earlier than that terminal phase, whether by the operator or by the
+  orchestrator (for example, "stop at F2"), the brief must name that boundary
+  and say that finishing that phase and stopping there with no gate or unmet
+  condition blocking is a scope stop, not a hold: the worker's report draft
+  carries `scope-stopped` and not `held`. A gate or unmet condition that
+  blocks the run before or at the boundary is a hold, and a scope relayed after
+  dispatch carries the same statement (see
+  [Worker report outcomes](#worker-report-outcomes)). The
+  [Delegation brief template](#delegation-brief-template) assembles the
+  elements of the brief bullets in this list into one fill-in form.
 - **A delegation brief that requires issue-number-namespaced
   scratchpad filenames.** Concurrently delegated workers share the
   orchestrating session's own scratchpad directory — it is
@@ -1167,7 +1228,9 @@ Running this variant safely requires:
   `holderAlive` is true is expected and is waited for, never removed; a
   present lock whose holder is gone is stale and takes the
   manual-recovery procedure above. A worker that can no longer be
-  messaged keeps the fresh-subagent path above. In a downstream
+  messaged keeps the fresh-subagent path above, and the replacement's own
+  start identifier then replaces the roster entry's handle, which is the
+  `workerHandle` of its report. In a downstream
   adopter's run (reported 2026-09-30, kurone-kito/idd-skill#3677), the
   orchestrator verified claim routing, `git log`, the pull request list,
   and the process table, sent one message to the same worker with those
@@ -1221,12 +1284,17 @@ Running this variant safely requires:
 - **Hold marker.** A worker that stops at a hold posts, on the claimed issue,
   a comment whose first bytes are `<!-- idd-hold: {agent-id} {claim-id}
   {ISO8601-timestamp} -->`, followed by a short visible note (`_{agent-id}:
-  issue hold — IDD automation marker. Do not edit._`), through the direct JSON
-  `POST` path. `post-idd-marker` has no hold type yet, and the claim parser
-  does not read this marker yet; the orchestrator reads it from the issue
-  comments. The delegation brief must tell the worker to post it when it stops
-  at a hold. A delegated worker posts it after its last `claimed-by` and posts
-  no `claimed-by` while the hold lasts, because the orchestrator owns the hold
+  issue hold — IDD automation marker. Do not edit._`), through
+  `post-idd-marker --type idd-hold --target issue <n> --agent-id <id>
+  --claim-id <id> --timestamp <ISO8601> --apply` or, where no helper runtime
+  exists, the direct JSON `POST` path. Without `--apply` the command only
+  previews the body. The claim parser never reads this marker, so it cannot
+  change who owns the claim; the orchestrator reads it from the issue comments
+  by the trust rule below, which `resolveTrustedHoldMarkers` implements (the
+  Hold marker contract in `idd-helper-scripts.md` covers the helper side). The
+  delegation brief must tell the worker to post it when it stops at a hold. A
+  delegated worker posts it after its last `claimed-by` and posts no
+  `claimed-by` while the hold lasts, because the orchestrator owns the hold
   heartbeat; this is the fan-out exception to the shared Hold / suspend 12 h
   re-post. A hold marker is trusted only when the actor that posted the active
   claim's `claimed-by` also posted it, and its agent id and claim id match
@@ -1257,10 +1325,11 @@ Running this variant safely requires:
   its entry stays `reporting`, and the renewal runs at those wake-ups. At or
   after 72 h from the hold start, the claim revalidation gate confirms the
   active claim is still this claim; the orchestrator then posts `unclaimed-by`
-  for it and records the hold and cap in the run report. Once that succeeds,
+  for it and records the hold and cap in
+  [the run report](#orchestrator-run-report). Once that post succeeds,
   nothing is appended to the worker report store, because a claim released
   without a merge or handoff has no terminal phase (Orchestrator restart, step
-  4); the release is reported to the operator, and the entry is then marked
+  4); the release goes in the run report, and the entry is then marked
   `disposed`. Before the cap, each `claimed-by` re-post, due every 12 h from
   the latest valid one, first has the claim revalidation gate confirm the
   active claim's agent id and claim id, then copies its `branch` verbatim. A
@@ -1269,6 +1338,309 @@ Running this variant safely requires:
   failed 72-hour `unclaimed-by` leaves the claim in place, and the run report
   records that the cap was reached and the release post failed. In both cases
   the orchestrator posts no second claim id and starts no new claim.
+
+#### Delegation brief template
+
+The orchestrator fills in this block to write each worker's delegation brief.
+It puts the elements that the brief bullets above,
+[Orchestrator delegation](../.github/instructions/idd-claim.instructions.md#orchestrator-delegation),
+and section 5 of the orchestrator phase file require into one form, and it links
+their rules instead of restating them. Replace each single-brace placeholder
+with its value from the list below, and copy the parts into the brief. The link
+targets are relative to this file, so rewrite each one to a repository-root path
+(for example `docs/idd-workflow.md#worker-delegation`) when you copy it. A "Fill
+note" paragraph addresses the orchestrator, so it is not copied. The incident
+counts in the notes come from the operator's retrospective of the source
+repository's 2026-10-14 to 2026-10-15 orchestrator run, which is kept outside
+the repository.
+
+- `{issue-number}`: the claimed issue.
+- `{agent-id}` and `{claim-id}`: the claim token the orchestrator verified,
+  verbatim.
+- `{nonce}`: the orchestrator's current activation nonce, verbatim and never
+  minted anew.
+- `{branch-name}`: the branch named in the claim marker.
+- `{worktree-path}`: the worktree the orchestrator pre-created for the claim.
+- `{scratchpad-dir}`: an issue-numbered subdirectory of the scratchpad path that
+  the harness reports (see the Scratchpad part).
+- `{report-path}`: the worker's report draft, a file whose name starts with the
+  issue number, directly in the scratchpad path that the harness reports.
+- `{terminal-phase}`: F4 under `fully_autonomous_merge`, F2.5 otherwise, or
+  the earlier phase that the run is scoped to end at (see the Terminal phase
+  part).
+
+**Role.** You are the sole worker for issue `{issue-number}`. No peer worker
+exists for it, so there is nobody to coordinate with or to wait on for a reply;
+a critique agent that the Critique allowance part permits is not a peer. Do
+the implementation yourself and do not re-delegate it. See
+[Orchestrator delegation](../.github/instructions/idd-claim.instructions.md#orchestrator-delegation).
+
+**Claim token.** Your claim token is `{agent-id}` / `{claim-id}` and your
+activation nonce is `{nonce}`. Adopt them verbatim and mint neither a new claim
+nor a new nonce. Before each mutation, recompute the nonce winner for
+`{claim-id}` and confirm that it still equals `{nonce}`; a different winner
+means the claim is lost. See
+[Orchestrator delegation](../.github/instructions/idd-claim.instructions.md#orchestrator-delegation).
+
+**Branch and worktree.** Your branch is `{branch-name}` and your worktree is
+`{worktree-path}`, already created: reuse it without B1, running only the
+dependency install and checking that `git rev-parse --abbrev-ref HEAD` returns
+`{branch-name}`, and do your work there. Before any branch-state action, open D1
+in
+[idd-pr-submit.instructions.md](../.github/instructions/idd-pr-submit.instructions.md#d1--sync-development-branch-before-first-push)
+and the "E-phase branch-sync check" section of
+[idd-review-triage.instructions.md](../.github/instructions/idd-review-triage.instructions.md#e-phase-branch-sync-check),
+and do not paraphrase either.
+
+**Wake-up discipline.** Never end your turn while a background wait or a
+background command is unresolved, because a completion notice can reach only the
+orchestrator. Wait synchronously, or with a confirmed topology-safe wake, as the
+topology-safety condition of the
+[wake-up discipline](../.github/instructions/idd-ci.instructions.md#wake-up-discipline)
+says.
+
+Fill note: when a same-session sibling worker has stalled this way, add a line
+that cites that failure by name.
+
+**Execution timeout.** Before a CI watch or a heavy local command, set the
+execution-timeout override that the
+[wake-up discipline](../.github/instructions/idd-ci.instructions.md#wake-up-discipline)
+names, near the calling tool's own ceiling.
+
+**Terminal phase.** You run your whole span through `{terminal-phase}`, then
+report back to the orchestrator and do not enter F5's Discover step. Your
+worktree was pre-created, so it takes the B1 skip of "Already inside a
+host-isolated worktree" in
+[idd-work.instructions.md](../.github/instructions/idd-work.instructions.md#already-inside-a-host-isolated-worktree).
+
+F4 cleanup, for a run that ends at F4. Under `fully_autonomous_merge` that means
+every step of
+[F4](../.github/instructions/idd-merge.instructions.md#f4--cleanup), with the
+[F4 head proof](idd-resume-detail.md#f4-head-proof) reused or captured before
+step 3, ending with step 7's final `unclaimed-by`. The F4 skip of that section
+(skip the primary-worktree steps and the worktree removal, and let the harness
+reclaim the checkout) applies only when the harness itself reclaims the
+worktree. The orchestrator created yours on the shared clone, so you run F4
+steps 4 and 5 yourself, with step 4's fetch and step 5's worktree removal behind
+the [clone-scoped lock](idd-helper-scripts.md#clone-scoped-lock), as the lock
+sentence of F4 step 4 says, and that overrides "let the harness reclaim it".
+Both steps run from the primary worktree, which is the first entry of
+`git worktree list`: change into it before step 4 and stay there for step 5,
+which removes your own worktree and branch. Never remove the checkout that you
+are standing in.
+
+Fill note: when the run is scoped to end before the merge policy's terminal
+phase, name that earlier phase as `{terminal-phase}` and add that finishing it
+and stopping there, with no gate or unmet condition blocking, is a scope stop
+and not a hold: the report draft carries `scope-stopped` and not `held`. When
+`{terminal-phase}` is not F4 (F2.5 or an earlier phase), delete the whole
+paragraph that begins "F4 cleanup, for a run that ends at F4" and keep the rest
+of this part, because no cleanup runs before a merge. When the worker has its
+own clone, rewrite the sentence about the shared clone and drop the clone-scoped
+lock clause from that paragraph. A brief line
+that forbids edits in the primary worktree must exempt F4 steps 4 to 6, which
+run from the primary worktree. The shared-clone override and this exemption are
+preventive; no observed incident yet. Observed in the source repository's
+2026-10-14 to 2026-10-15 orchestrator run (no issue records the incident
+itself): most briefs drew the worker's span too narrowly, so the orchestrator
+finished the F4 steps by hand for most workers.
+
+**Scratchpad.** Your scratch files go only in `{scratchpad-dir}`, an
+issue-numbered subdirectory of the session scratchpad, with these exceptions:
+your report draft at `{report-path}`, and the critique scratch directory that
+Critique pass invocation names, if you start a critique agent. Never write
+scratch files in `{worktree-path}`, the pre-created worktree that you reuse.
+Concurrently delegated workers share the scratchpad, so the issue-numbered
+directory keeps your files apart from theirs, as the
+[fan-out variant](#orchestrator-fan-out-variant) requires. Before you create it,
+confirm that its parent path already exists. When the parent path is missing,
+create nothing and end the run as a hold: post the hold marker of the Hold
+marker part, and let your report draft carry `held`, as for any hold; if
+`{report-path}` cannot be written because the parent path is missing, the hold
+marker alone is the report. Create the directory with a plain mkdir and never
+use mkdir -p, which would build a mistyped parent path instead of failing. If
+the directory already exists, reuse it. If it cannot be created although the
+parent path exists, fall back to prefixing each scratch file you write in that
+parent path with the issue number, for example `2878-pr-body.md`.
+
+Fill note: copy the scratchpad path that your harness reports, and hand the
+worker an issue-numbered subdirectory of it as `{scratchpad-dir}`. Never type
+the path by hand. Observed in the source repository's 2026-10-14 to 2026-10-15
+orchestrator run (no issue records the incident itself): one brief went out
+with a mistyped scratchpad path and needed a correction message to the running
+worker.
+
+**Critique allowance.** For the critique pass only, you may start a
+non-context-inheriting agent, as a carve-out from the Role part. Follow
+[Critique pass invocation](#critique-pass-invocation) in full, including the
+rules that its critique brief states, for the wait ceiling, the stop tool, the
+wake-up, the scratch directory, and the scratch check. If you cannot confirm
+that you can arm a wake-up and stop the agent, as the pre-launch check in that
+section requires, start no agent and run an inline self-critique instead. Never
+end your turn while a critique agent is still running.
+
+Fill note: keep this part only when the Limits column of the
+[Worker delegation](#worker-delegation) table allows it. The worker sits at
+nesting depth 1 and its critique agent at depth 2, so the limit must be at least
+depth 2 for the worker's harness: Claude Code lists a nesting depth of 3, and
+Grok Build lists one level, so there the critique stays an inline self-critique,
+as it does for a Limits cell that is `unverified` or gives no depth. Keep it
+only when the worker is not a context-inheriting fork either, because the
+Known limitation in `claim-orchestrator.instructions.md`, which
+[Orchestrator delegation](../.github/instructions/idd-claim.instructions.md#orchestrator-delegation)
+points at, records that fallback's
+[residual role-misread risk](idd-design-rationale.md#context-inheriting-delegation-residual-risk).
+Otherwise replace the body of this part with one line that tells the worker to
+run each critique pass as an inline self-critique, and remove the clause about a
+critique agent from the Role part and the "and the critique scratch directory"
+exception from the Scratchpad part. The Limits gating is
+preventive; no observed incident yet. Observed in the source repository's
+2026-10-14 to 2026-10-15 orchestrator run (no issue records the incident
+itself): none of about 25 briefs allowed the critique agent, so the workers'
+critiques ran inline.
+
+**Hold marker.** When you stop at a hold, post the `idd-hold` marker on the
+claimed issue after your last `claimed-by`, as the Hold marker bullet of the
+[fan-out variant](#orchestrator-fan-out-variant) says, and post no `claimed-by`
+while the hold lasts: the orchestrator owns the hold heartbeat. Your report
+draft then carries `held`.
+
+**Review cold start.** Do not assume that `ReviewItems_snapshot` still reflects
+live state. Run the
+[cold-start reconstruction](../.github/instructions/idd-review-snapshot.instructions.md#cold-start-reviewitems_snapshot-reconstruction)
+and the Cold entry outside Resume note of the
+[ReviewItems_snapshot lifecycle](#reviewitems_snapshot-lifecycle).
+
+Fill note: include this part only when the brief hands the worker into E4 or E9
+without a `ReviewItems_snapshot` from the worker's own E1 to E3 pass. A brief
+that hands a worker into E10, E13, E14, or E15 has no supported cold-entry route
+yet, so stop and report instead.
+
+**Worker report.** Write your final report as a draft to `{report-path}`,
+outside the worktree. Fill the fields of `schemas/worker-report.schema.json`:
+`schemaVersion`, `issue`, `pullRequest`, `claimId`, `harness`, `workerHandle`,
+`terminalPhase`, `outcome`, and the optional `reviewRounds`, `stalls`,
+`deviations`, `frictions`, and `followUps`. Give `workerHandle` any non-empty
+value, such as `{agent-id}`, which the orchestrator overwrites from its roster
+entry, and leave `verifiedAt` and `recordedAt` out, because you cannot know
+them. Do not append the draft to the
+[worker final report store](idd-helper-scripts.md#worker-final-report-store),
+because the orchestrator checks it against live GitHub state first. The
+`outcome` that the draft proposes follows
+[Worker report outcomes](#worker-report-outcomes).
+
+Fill note: set `{report-path}` to a file whose name starts with the issue number,
+for example `2878-worker-report.json`, directly in the scratchpad path that the
+harness reports, because an orchestrator restart looks there for report drafts.
+The orchestrator completes the draft, as section 5 of the orchestrator phase
+file says.
+
+### Orchestrator run report
+
+The **run report** is the orchestrator's end-of-run report to its operator. The
+orchestrator writes it as a message in its session each time it stops
+(including the stops in section 4 of the orchestrator phase file) or pauses to
+wait for the operator (its turn ends awaiting an operator reply), and the
+operator reads it there. Each report lists the whole state, not only what
+changed since the last one. Waiting for a worker's completion, a host-load
+re-check, or a renewal due time is neither a stop nor a pause.
+
+At minimum it lists:
+
+- **Roster.** Each roster entry, with its issue number and its final state, the
+  state it is in when the report is written: `running`, `reporting`,
+  `disposed`, or `stalled`, as section 2 of the orchestrator phase file lists
+  them.
+- **Holds.** Each hold, with its issue number, its start as the hold marker
+  defines it, its cap time (72 h after the start, per the held-worker renewal
+  rule), the GitHub `created_at` of the latest valid `claimed-by` on its claim,
+  and how it stands: still held, released at the cap, or ended by a cause the
+  hold marker defines (the worker's valid `claimed-by` or, after a restart, any
+  valid `claimed-by` newer than the marker, which can be the earlier run's own
+  renewal; a release other than the cap release; a supersession; or the
+  entry's disposal). Once no living orchestrator renews a hold, the stale clock
+  (`claim-stale-age`, 24 h by default) counts from the latest valid
+  `claimed-by`.
+- **Failures.** Each renewal or release that failed since the run began, even
+  if a later wake-up's attempt succeeded, with its issue number, its claim id,
+  and which post failed and when (the 12 h `claimed-by` re-post, once its one
+  retry has also failed, or the 72-hour `unclaimed-by`) and, for the
+  `unclaimed-by`, that the cap was reached. A failed post leaves its entry
+  where it stands, not `disposed`, and the failure stays listed in every later
+  report.
+
+It also carries any gap the Discover pass says to name in "the run report" (for
+example an incomplete parked-issue listing) and the `limitingFactor` that
+section 4 of the orchestrator phase file has the orchestrator report when a
+limit stops it. Any other report to the operator that the IDD instructions or
+this guide require is made at the step that requires it; this report neither
+defers nor replaces it.
+
+The orchestrator notes each item when it happens and writes them out together,
+so an entry can be `disposed` before the report is written. The report is a
+message, not a store: it is not a file, an issue comment, or a record in the
+worker final report store, which holds per-worker records and receives nothing
+from a cap release, and no helper reads it. A session that ends without writing
+it leaves no report (preventive; no observed incident yet). A restart that can
+recover (see [Orchestrator restart](#orchestrator-restart)) rebuilds the roster
+from the forge, the worktrees, and the harness's agent listing, never from a run
+report, and the new run writes its own.
+
+### Worker report outcomes
+
+A worker writes its final report as a draft. Once the orchestrator has checked
+the draft, it becomes one record in the
+[worker final report store](idd-helper-scripts.md#worker-final-report-store),
+and its `outcome` says how the run ended; a held worker is the exception, as the
+`held` bullet below says. The report is the worker's own, not the
+orchestrator's [run report](#orchestrator-run-report). The store and
+`schemas/worker-report.schema.json` list the values and define `scope-stopped`.
+This subsection says which value each way of ending a run carries. The draft
+proposes the value, and the orchestrator checks it against live GitHub state
+before it appends the record, as section 5 of the orchestrator phase file and
+the "Independently verify a worker's reported terminal outcome before trusting
+it" bullet of the [fan-out variant](#orchestrator-fan-out-variant) require. For
+`scope-stopped`, live state can only rule out the other values; the paragraph
+after the list says what supplies the rest.
+
+- `merged`: the worker's pull request merged and no trusted handoff summary was
+  posted.
+- `handed-off`: a trusted handoff summary carrying the worker's claim id is on
+  the issue, whatever its pull request has done since.
+- `held`: a gate or an unmet condition stopped the run. A worker held on a
+  trusted hold marker is not reported or disposed of while the hold lasts, so no
+  record is appended then. The Hold marker and Held-worker renewal bullets of
+  the [fan-out variant](#orchestrator-fan-out-variant) say what the
+  orchestrator does instead, and the [run report](#orchestrator-run-report)
+  lists the hold.
+- `scope-stopped`: the run finished the phase it was scoped to end at, earlier
+  than the merge policy's terminal phase, and stopped there with no gate or
+  unmet condition blocking it.
+- `abandoned`: the worker's pull request was closed without merging and no
+  trusted handoff summary was posted.
+- `failed`: none of the above fits.
+
+Live GitHub state cannot confirm a scope stop: all it shows is a claim still
+held with no handoff summary and no trusted hold marker, which a stop at a gate
+can also leave. So the orchestrator checks a `scope-stopped` draft against the
+boundary that the brief, or an instruction the orchestrator later relayed to the
+worker, named. The draft's `terminalPhase` must be that phase, and live state
+must show none of the other values above. When it shows one, that value is
+recorded instead, except that a worker held on a trusted hold marker gets no
+record while the hold lasts, as the `held` bullet says. When the brief is not
+available or names no such boundary, no `scope-stopped` record is appended and
+the claim is reported to the operator. A phase is finished when its normal exit
+is met, so a run still waiting inside it, for example on pending CI, has not
+reached the boundary. Storing a scope stop as `held` inflated the `held` count
+(observed 2026-10-13 on the worker records of kurone-kito/idd-skill#3974,
+decided on kurone-kito/idd-skill#4213, requested in kurone-kito/idd-skill#4348,
+added by kurone-kito/idd-skill#4354).
+
+[Orchestrator restart](#orchestrator-restart) has no `scope-stopped` case: step
+4 maps a claim still held to `held` and appends nothing for it when no draft is
+found, and step 3 sends a finished worker whose claim is still held with no
+handoff summary to worker-death recovery. How a restart treats a scope stop is
+not defined here.
 
 ### Orchestrator restart
 
@@ -1417,9 +1789,11 @@ new id cannot identify its old claims, and step 1 treats them as not its own.
    matched worker is still running gets no record and is reported in step 5.
    Look for the worker's report draft in the scratchpad of the same session,
    under the issue-number prefix that the fan-out variant already requires. If a
-   draft is found, check that its `issue` and `claimId` match the claim, and
-   that its `workerHandle` matches the listed handle when the claim has a
-   matched worker. A draft that matches the claim but has no listed worker is
+   draft is found, check that its `issue` and `claimId` match the claim. When
+   the claim has a matched worker, set the draft's `workerHandle` to the listed
+   handle, whatever value the draft holds, as section 5 of the orchestrator
+   phase file does at the append. A draft that matches the claim but has no
+   listed worker is
    appended under its own `workerHandle`, because the store dedupes on that
    handle with the claim id and terminal phase, so a record already appended
    under it is not counted twice. The listing matches workers only and never
@@ -1884,17 +2258,17 @@ reports the slots left after the running workers, the harness limit, and the
 startable candidates, and it reports zero slots when host load, host memory,
 or the GitHub API quota is unknown or too low.
 
-| Harness                     | Start and fresh context                                                                                                                                                                                                                                                                               | Wait model                                                                                                                                                                                                                                                                                                                                                                     | Re-address                                                                                                                                           | Stop or dispose                                                                                                                                                              | Limits                                                                                                                                                                                                                                                                                                        | Eligibility                                                                                                                                |
-| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| Claude Code                 | `Agent` tool; `Task` still works as an alias. Fresh context: yes. [CC1] 2026-10-08                                                                                                                                                                                                                    | `streaming`: a background result arrives as a completion notification in a later turn; a foreground subagent blocks. [CC1] 2026-10-08                                                                                                                                                                                                                                          | `SendMessage` to the agent ID or name resumes it with its history; Explore and Plan agents cannot be resumed. [CC1] 2026-10-08                       | `TaskStop`, or `x` in `/tasks`; a finished subagent needs no close. [CC2] 2026-10-08                                                                                         | 20 concurrent subagents by default (`CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`); nesting depth 3; no wall-clock subagent timeout documented. The 2-hour cap covers a background Bash command, not a subagent: 30 minutes by default, 2 hours at most, unattended sessions only. [CC1], [CC2], [CC3] 2026-10-08    | `orchestrator`: start and wait model confirmed, and no subagent lifetime cap documented. [CC1], [CC3] 2026-10-08                           |
-| Codex CLI                   | `spawn_agent` (V1, the default surface); `multi_agent_v2` is off by default. Fresh context: `unverified`; the spec describes both an initial-prompt-only default and a full-history default. [CX1], [CX2] 2026-10-08                                                                                  | `unverified`: the docs say Codex waits until every requested result arrives (`wave`), while the V1 spec describes a timed `wait_agent` plus a completion notification (`streaming`). [CX1], [CX2] 2026-10-08                                                                                                                                                                   | V1 `send_input` (with `interrupt`) and `resume_agent` for a closed agent; V2 `send_message` and `followup_task`. [CX2] 2026-10-08                    | V1 `close_agent`; a completed agent counts toward the concurrency limit until it is closed. V2 has `interrupt_agent` and no close tool in its handler list. [CX2] 2026-10-08 | V1 default of 6 threads (from source; the docs give no number); V2 defaults to 3 spawned children; `max_depth` 1 (V1); `wait_agent` times out after 30 s by default, and V2 allows at most 3600 s, so a multi-hour run needs repeated waits. [CX1], [CX2] 2026-10-08                                          | `one issue per session`: the wait model is contested between the docs and the spec. [CX1], [CX2] 2026-10-08                                |
-| OpenCode                    | `task` tool (the v2 docs call it the subagent tool). Fresh context: yes. [OC1], [OC3] 2026-10-08                                                                                                                                                                                                      | Conditional. Each foreground call blocks the parent until its child returns, which makes parallel calls a `wave`. With `background: true` and `OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS=true`, the call returns at once and a completion message reaches the parent (`streaming`). The official docs do not mention that flag; only the source does. [OC2], [OC3] 2026-10-08 | `task_id` resumes the earlier child session (source only; the docs do not describe it). [OC3] 2026-10-08                                             | Aborting the parent cancels the child; a finished child session persists and needs no close. [OC3] 2026-10-08                                                                | Subagent depth 1 (source). Neither the source nor the docs set a concurrency cap or a timeout. Finished background jobs are lost on process restart. [OC3] 2026-10-08                                                                                                                                         | `one issue per session`: the `streaming` mode needs a flag that only the source names. [OC2], [OC3] 2026-10-08                             |
-| Grok Build                  | `spawn_subagent`, confirmed in the xAI source-repo user guide but not on docs.x.ai. Fresh context: yes, its own context window. [GB1] 2026-10-08                                                                                                                                                      | `streaming`: the parent receives the child's output when the child finishes, and a background run appends a completion block to the parent's scrollback. The result can also be pulled with `get_command_or_subagent_output`. [GB1] 2026-10-08                                                                                                                                 | `resume_from` continues a completed child; `send_subagent_message` reaches a running child and is off by default. [GB1] 2026-10-08                   | Ctrl+C cancels that child's turn only, and the tasks pane offers a kill action. No agent-callable stop is documented. [GB1] 2026-10-08                                       | No timeout or concurrency cap documented; nesting is one level. [GB1] 2026-10-08                                                                                                                                                                                                                              | `orchestrator`: the wait model and start mechanism are documented, and no lifetime cap is documented. [GB1] 2026-10-08                     |
-| Cursor CLI                  | The Task tool; its function name and parameters are not documented, and the `generalPurpose` type value is `unverified`. Fresh context: yes ("Subagents start with a clean context"). [CU1] 2026-10-08                                                                                                | `unverified` as `streaming`: a foreground call blocks until the subagent returns; a background call returns at once, and the parent reads progress from `~/.cursor/subagents/`. No completion notification is documented. [CU1] 2026-10-08                                                                                                                                     | Resume with the agent ID that each execution returns, with its context kept. Messaging a running subagent is not documented. [CU1] 2026-10-08        | Not documented. [CU1] 2026-10-08                                                                                                                                             | No numeric concurrency cap; the docs advise 2 to 3 focused subagents. The nesting limit's value and any timeout are not documented. [CU1] 2026-10-08                                                                                                                                                          | `one issue per session`: no completion notification is documented. [CU1] 2026-10-08                                                        |
-| GitHub Copilot CLI          | `/delegate` hands work to the Copilot coding agent, which opens a draft PR. Local subagents start from a model `task` call, or from a custom agent chosen with `/agent`. Fresh context: `unverified`; the docs say only that a subagent has a separate context window. [CP1], [CP2], [CP3] 2026-10-08 | `unverified`: local subagents can run in parallel and return a summary or full output; whether the parent blocks or is notified is not documented. [CP2], [CP4] 2026-10-08                                                                                                                                                                                                     | `unverified`. [CP2] 2026-10-08                                                                                                                       | `unverified`: a `subagentStop` hook runs when a subagent completes, but no cancel is described. [CP3] 2026-10-08                                                             | `unverified`: no timeout or concurrency value is documented. [CP2], [CP3] 2026-10-08                                                                                                                                                                                                                          | `one issue per session`: the wait model, stop, and limits are unverified. [CP2], [CP3] 2026-10-08                                          |
-| GitHub Copilot coding agent | Issue assignment, the agents tab, Copilot Chat, or a scheduled or event-triggered session. Fresh context: `unverified`; a session runs in an ephemeral cloud environment, though it keeps context from earlier sessions on the same pull request. [CA1], [CA2], [CA4] 2026-10-08                      | None: the output arrives as a pull request, and no completion notification to a parent is documented. [CA1], [CA2] 2026-10-08                                                                                                                                                                                                                                                  | Mention `@copilot` in a PR comment (only users with write access get a reply); steering applies after the current tool call. [CA3], [CA4] 2026-10-08 | "Stop session" ends the Actions run and keeps pushed commits. A finished session can be archived but not deleted, and needs no close. [CA3] 2026-10-08                       | A 59-minute maximum session that cannot be extended; `timeout-minutes` in `copilot-setup-steps.yml` can shorten it. [CA1] 2026-10-08                                                                                                                                                                          | `one issue per session`: the 59-minute cap ends before a multi-hour worker run. [CA1] 2026-10-08                                           |
-| GitHub Copilot Chat         | `runSubagent` tool in agent mode (VS Code). Fresh context: yes; a local subagent does not inherit the main conversation history. [VS1] 2026-10-08                                                                                                                                                     | `unverified`: the subagent runs independently and returns a final result; whether the parent blocks is not stated. Parallel runs are supported (VS Code 1.109). [VS1], [VS3] 2026-10-08                                                                                                                                                                                        | Not possible: each local invocation is stateless. [VS1] 2026-10-08                                                                                   | `unverified`. [VS1] 2026-10-08                                                                                                                                               | No timeout or concurrency values documented. Nesting is off by default (`chat.subagents.allowInvocationsFromSubagents`, default `false`); when on, the maximum depth is 5. github.com Copilot Chat documents no sub-agent or background worker and only starts cloud sessions. [VS1], [VS2], [CA2] 2026-10-08 | `one issue per session`: the wait model is unverified, and no worker mechanism is documented for a multi-hour run. [VS1], [VS2] 2026-10-08 |
-| Antigravity CLI             | `invoke_subagent` spawns a concurrent session; `define_subagent` creates a transient one. Fresh context: yes ("a clean slate"). [AG1] 2026-10-08                                                                                                                                                      | `unverified` as `streaming`: subagents run asynchronously in the background, but no completion notification to the parent is documented. [AG1] 2026-10-08                                                                                                                                                                                                                      | A message to an idle subagent re-awakens it; a message to a running one interrupts it; a killed subagent cannot be re-awakened. [AG1] 2026-10-08     | "Stop Subagent" in the subagent panel, or `k` in the CLI; "Kill Active Subagent" in `/agents`. [AG1], [AG2] 2026-10-08                                                       | No timeout or turn value documented; several subagents may run concurrently; nesting depth 10. [AG1] 2026-10-08                                                                                                                                                                                               | `one issue per session`: no completion notification is documented. [AG1] 2026-10-08                                                        |
+| Harness                     | Start and fresh context                                                                                                                                                                                                                                                                               | Wait model                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Re-address                                                                                                                                           | Stop or dispose                                                                                                                                                              | Limits                                                                                                                                                                                                                                                                                                        | Eligibility                                                                                                                                |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Claude Code                 | `Agent` tool (renamed from `Task` in v2.1.63; existing `Task(...)` references in settings and agent definitions still work as aliases). Fresh context: yes for a non-fork subagent, which starts with a fresh, isolated context window; a `fork` inherits the entire conversation. [CC1] 2026-10-15   | `streaming` (default interactive session, v2.1.232 or later, fork mode on): Agent-tool subagents, forks and non-fork alike, run in the background, and Claude cannot ask for the foreground; a result arrives as a completion notification in a later turn. Claude Code picks foreground or background from the first case that applies; three cases run a subagent in the foreground, and foreground subagents block the main conversation until complete: an in-process agent-team teammate spawning the subagent; `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS=1`, which disables all background task functionality (background Bash and auto-backgrounding included) in every kind of session, whether or not fork mode is on; and fork mode off with Claude needing the result before continuing, unless the subagent's frontmatter sets `background: true`. Fork mode is off under `-p` and in the Agent SDK unless `CLAUDE_CODE_FORK_SUBAGENT=1` turns it on; `CLAUDE_CODE_FORK_SUBAGENT=0` turns it off in every session, and before v2.1.232 interactive sessions also need `CLAUDE_CODE_FORK_SUBAGENT=1`. With fork mode off, a subagent otherwise runs in the background, and how a `-p` run collects its result is not described here. Skills with `context: fork` follow their own rules. The Eligibility verdict assumes the default case, and this cell does not confirm it for `-p`, SDK or DISABLE sessions. [CC1], [CC3] 2026-10-15 | `SendMessage` to the agent ID or name resumes it with its history; Explore and Plan agents cannot be resumed. [CC1] 2026-10-08                       | `TaskStop`, or `x` in `/tasks`; a finished subagent needs no close. [CC2] 2026-10-08                                                                                         | 20 concurrent subagents by default (`CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`); nesting depth 3; no wall-clock subagent timeout documented. The 2-hour cap covers a background Bash command, not a subagent: 30 minutes by default, 2 hours at most, unattended sessions only. [CC1], [CC2], [CC3] 2026-10-08    | `orchestrator`: start and wait model confirmed, and no subagent lifetime cap documented. [CC1], [CC3] 2026-10-08                           |
+| Codex CLI                   | `spawn_agent` (V1, the default surface); `multi_agent_v2` is off by default. Fresh context: `unverified`; the spec describes both an initial-prompt-only default and a full-history default. [CX1], [CX2] 2026-10-08                                                                                  | `unverified`: the docs say Codex waits until every requested result arrives (`wave`), while the V1 spec describes a timed `wait_agent` plus a completion notification (`streaming`). [CX1], [CX2] 2026-10-08                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | V1 `send_input` (with `interrupt`) and `resume_agent` for a closed agent; V2 `send_message` and `followup_task`. [CX2] 2026-10-08                    | V1 `close_agent`; a completed agent counts toward the concurrency limit until it is closed. V2 has `interrupt_agent` and no close tool in its handler list. [CX2] 2026-10-08 | V1 default of 6 threads (from source; the docs give no number); V2 defaults to 3 spawned children; `max_depth` 1 (V1); `wait_agent` times out after 30 s by default, and V2 allows at most 3600 s, so a multi-hour run needs repeated waits. [CX1], [CX2] 2026-10-08                                          | `one issue per session`: the wait model is contested between the docs and the spec. [CX1], [CX2] 2026-10-08                                |
+| OpenCode                    | `task` tool (the v2 docs call it the subagent tool). Fresh context: yes. [OC1], [OC3] 2026-10-08                                                                                                                                                                                                      | Conditional. Each foreground call blocks the parent until its child returns, which makes parallel calls a `wave`. With `background: true` and `OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS=true`, the call returns at once and a completion message reaches the parent (`streaming`). The official docs do not mention that flag; only the source does. [OC2], [OC3] 2026-10-08                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | `task_id` resumes the earlier child session (source only; the docs do not describe it). [OC3] 2026-10-08                                             | Aborting the parent cancels the child; a finished child session persists and needs no close. [OC3] 2026-10-08                                                                | Subagent depth 1 (source). Neither the source nor the docs set a concurrency cap or a timeout. Finished background jobs are lost on process restart. [OC3] 2026-10-08                                                                                                                                         | `one issue per session`: the `streaming` mode needs a flag that only the source names. [OC2], [OC3] 2026-10-08                             |
+| Grok Build                  | `spawn_subagent`, confirmed in the xAI source-repo user guide but not on docs.x.ai. Fresh context: yes, its own context window. [GB1] 2026-10-08 A background run (default) returns a subagent ID for `resume_from` (section Spawning Subagents); no field name or format is shown. [GB1] 2026-10-15  | `streaming`: the parent receives the child's output when the child finishes, and a background run appends a completion block to the parent's scrollback. The result can also be pulled with `get_command_or_subagent_output`. [GB1] 2026-10-08                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | `resume_from` continues a completed child; `send_subagent_message` reaches a running child and is off by default. [GB1] 2026-10-08                   | Ctrl+C cancels that child's turn only, and the tasks pane offers a kill action. No agent-callable stop is documented. [GB1] 2026-10-08                                       | No timeout or concurrency cap documented; nesting is one level. [GB1] 2026-10-08                                                                                                                                                                                                                              | `orchestrator`: a background start returns a subagent ID; the wait model is documented; no lifetime cap is documented. [GB1] 2026-10-15    |
+| Cursor CLI                  | The Task tool; its function name and parameters are not documented, and the `generalPurpose` type value is `unverified`. Fresh context: yes ("Subagents start with a clean context"). [CU1] 2026-10-08                                                                                                | `unverified` as `streaming`: a foreground call blocks until the subagent returns; a background call returns at once, and the parent reads progress from `~/.cursor/subagents/`. No completion notification is documented. [CU1] 2026-10-08                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Resume with the agent ID that each execution returns, with its context kept. Messaging a running subagent is not documented. [CU1] 2026-10-08        | Not documented. [CU1] 2026-10-08                                                                                                                                             | No numeric concurrency cap; the docs advise 2 to 3 focused subagents. The nesting limit's value and any timeout are not documented. [CU1] 2026-10-08                                                                                                                                                          | `one issue per session`: no completion notification is documented. [CU1] 2026-10-08                                                        |
+| GitHub Copilot CLI          | `/delegate` hands work to the Copilot coding agent, which opens a draft PR. Local subagents start from a model `task` call, or from a custom agent chosen with `/agent`. Fresh context: `unverified`; the docs say only that a subagent has a separate context window. [CP1], [CP2], [CP3] 2026-10-08 | `unverified`: local subagents can run in parallel and return a summary or full output; whether the parent blocks or is notified is not documented. [CP2], [CP4] 2026-10-08                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | `unverified`. [CP2] 2026-10-08                                                                                                                       | `unverified`: a `subagentStop` hook runs when a subagent completes, but no cancel is described. [CP3] 2026-10-08                                                             | `unverified`: no timeout or concurrency value is documented. [CP2], [CP3] 2026-10-08                                                                                                                                                                                                                          | `one issue per session`: the wait model, stop, and limits are unverified. [CP2], [CP3] 2026-10-08                                          |
+| GitHub Copilot coding agent | Issue assignment, the agents tab, Copilot Chat, or a scheduled or event-triggered session. Fresh context: `unverified`; a session runs in an ephemeral cloud environment, though it keeps context from earlier sessions on the same pull request. [CA1], [CA2], [CA4] 2026-10-08                      | None: the output arrives as a pull request, and no completion notification to a parent is documented. [CA1], [CA2] 2026-10-08                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Mention `@copilot` in a PR comment (only users with write access get a reply); steering applies after the current tool call. [CA3], [CA4] 2026-10-08 | "Stop session" ends the Actions run and keeps pushed commits. A finished session can be archived but not deleted, and needs no close. [CA3] 2026-10-08                       | A 59-minute maximum session that cannot be extended; `timeout-minutes` in `copilot-setup-steps.yml` can shorten it. [CA1] 2026-10-08                                                                                                                                                                          | `one issue per session`: the 59-minute cap ends before a multi-hour worker run. [CA1] 2026-10-08                                           |
+| GitHub Copilot Chat         | `runSubagent` tool in agent mode (VS Code). Fresh context: yes; a local subagent does not inherit the main conversation history. [VS1] 2026-10-08                                                                                                                                                     | `unverified`: the subagent runs independently and returns a final result; whether the parent blocks is not stated. Parallel runs are supported (VS Code 1.109). [VS1], [VS3] 2026-10-08                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Not possible: each local invocation is stateless. [VS1] 2026-10-08                                                                                   | `unverified`. [VS1] 2026-10-08                                                                                                                                               | No timeout or concurrency values documented. Nesting is off by default (`chat.subagents.allowInvocationsFromSubagents`, default `false`); when on, the maximum depth is 5. github.com Copilot Chat documents no sub-agent or background worker and only starts cloud sessions. [VS1], [VS2], [CA2] 2026-10-08 | `one issue per session`: the wait model is unverified, and no worker mechanism is documented for a multi-hour run. [VS1], [VS2] 2026-10-08 |
+| Antigravity CLI             | `invoke_subagent` spawns a concurrent session; `define_subagent` creates a transient one. Fresh context: yes ("a clean slate"). [AG1] 2026-10-08                                                                                                                                                      | `unverified` as `streaming`: subagents run asynchronously in the background, but no completion notification to the parent is documented. [AG1] 2026-10-08                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | A message to an idle subagent re-awakens it; a message to a running one interrupts it; a killed subagent cannot be re-awakened. [AG1] 2026-10-08     | "Stop Subagent" in the subagent panel, or `k` in the CLI; "Kill Active Subagent" in `/agents`. [AG1], [AG2] 2026-10-08                                                       | No timeout or turn value documented; several subagents may run concurrently; nesting depth 10. [AG1] 2026-10-08                                                                                                                                                                                               | `one issue per session`: no completion notification is documented. [AG1] 2026-10-08                                                        |
 
 Antigravity CLI is the former Gemini CLI, which was replaced on
 2026-06-18. The Gemini CLI page [GM1] (last updated 2026-06-08) gives a
@@ -2298,6 +2672,11 @@ a weak model could get wrong.
 
 ### User-global critique delegate default
 
+This resolver reads only its own fragment of the user-global file. The
+layered rules for `overrides[]`, the repository-policy field class, and the
+CI off switches are in the
+[user-global installation guide](https://github.com/kurone-kito/idd-skill/blob/main/docs/user-global-install.md).
+
 A local runtime (one that reads the operator's own `$HOME`) may also
 inherit a `critiqueLoop.delegate` from a user-global file when the
 repository leaves the repo-local field genuinely absent — a
@@ -2316,27 +2695,25 @@ missing one — silently falls back to the per-agent mechanism — which
 is distinct from repo-local `null`'s stronger role of actively
 disabling any inherited delegate.
 
-The global file lives at `$XDG_CONFIG_HOME/idd-skill/config.json`,
-falling back to `$HOME/.config/idd-skill/config.json` when
-`XDG_CONFIG_HOME` is unset or not a **qualified root**. A qualified
-root is judged against the **running platform**, not accepted in any
-form: on Windows only a drive-letter root (`C:\…` or `C:/…`) or a UNC
-root (`\\server\…`) qualifies, and on POSIX only a `/…` path does —
-`//…` is excluded there, as is a Windows-shaped value, and a
+The global file lives at `$XDG_CONFIG_HOME/idd-skill/config.json`, falling back
+to `$HOME/.config/idd-skill/config.json` when `XDG_CONFIG_HOME` is unset or not
+a **qualified root**. A qualified root is judged against the **running
+platform**, not accepted in any form: on Windows only a drive-letter root
+(`C:\…` or `C:/…`) or a UNC root (`\\server\…`) qualifies, and on POSIX only a
+`/…` path does — `//…` is excluded there, as is a Windows-shaped value, and a
 current-drive root such as `\config` is excluded on Windows even though
-`path.isAbsolute` calls it absolute. A relative or otherwise unqualified
-value is ignored rather than joined against the process's working
-directory, so the global config can never resolve inside the checkout
-under review. A missing, unreadable,
-invalid-JSON, or non-object global file is silently treated as
-absent — this layer is opt-in and never required for OSS adopters.
-Only the
-`critiqueLoop.delegate` fragment is read by this resolver. The same file
-can also carry `critiqueLoop.telemetryHook` (read only by the telemetry
-hook resolver) and `issueAuthoring.adversarialReview.delegate` (read only
-by the issue-authoring delegate resolver); every other key is ignored by
-all three, and repository-local `.github/idd/config.json` stays the sole
-authority for every other policy surface.
+`path.isAbsolute` calls it absolute. A relative or otherwise unqualified value
+is ignored rather than joined against the process's working directory, so the
+global config can never resolve inside the checkout under review. A missing,
+unreadable, invalid-JSON, or non-object global file is silently treated as
+absent — this layer is opt-in and never required for OSS adopters. Only the
+`critiqueLoop.delegate` fragment is read by this resolver. The same file can
+also carry `critiqueLoop.telemetryHook` (read only by the telemetry hook
+resolver) and `issueAuthoring.adversarialReview.delegate` (read only by the
+issue-authoring delegate resolver); every other key is ignored by all three.
+Other policy fields can still come from the repository-local
+`.github/idd/config.json` or from the user-global layers, under the rules in the
+[user-global installation guide](https://github.com/kurone-kito/idd-skill/blob/main/docs/user-global-install.md).
 
 Example (a generic local reviewer, not a specific product):
 
@@ -2418,6 +2795,11 @@ is configured, missing, or failing.
 
 ### User-global critique telemetry hook default
 
+This resolver reads only its own fragment of the user-global file. The
+layered rules for `overrides[]`, the repository-policy field class, and the
+CI off switches are in the
+[user-global installation guide](https://github.com/kurone-kito/idd-skill/blob/main/docs/user-global-install.md).
+
 A local runtime (one that reads the operator's own `$HOME`) may also
 inherit a `critiqueLoop.telemetryHook` from a user-global file when the
 repository leaves the repo-local field genuinely absent — a
@@ -2435,16 +2817,16 @@ treated the same as a missing one — silently falls back to "no hook" —
 which is distinct from repo-local `null`'s stronger role of actively
 disabling any inherited hook.
 
-The global file lives at the same path, and under the same
-qualified-root rules, as the critique delegate's own user-global file
-above (`$XDG_CONFIG_HOME/idd-skill/config.json`, falling back to
-`$HOME/.config/idd-skill/config.json`). Only the
-`critiqueLoop.telemetryHook` fragment is read by this resolver. The same
-file can also carry `critiqueLoop.delegate` (read only by the critique
-delegate resolver) and `issueAuthoring.adversarialReview.delegate` (read
-only by the issue-authoring delegate resolver); every other key is
-ignored by all three, and repository-local `.github/idd/config.json`
-stays the sole authority for every other policy surface.
+The global file lives at the same path, and under the same qualified-root rules,
+as the critique delegate's own user-global file above
+(`$XDG_CONFIG_HOME/idd-skill/config.json`, falling back to
+`$HOME/.config/idd-skill/config.json`). Only the `critiqueLoop.telemetryHook`
+fragment is read by this resolver. The same file can also carry
+`critiqueLoop.delegate` (read only by the critique delegate resolver) and
+`issueAuthoring.adversarialReview.delegate` (read only by the issue-authoring
+delegate resolver); every other key is ignored by all three. Other policy fields
+can still come from the repository-local `.github/idd/config.json` or from the
+user-global layers, under the rules in the [user-global installation guide](https://github.com/kurone-kito/idd-skill/blob/main/docs/user-global-install.md).
 
 Example (a generic local notifier, not a specific product):
 

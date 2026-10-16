@@ -262,6 +262,16 @@ class StreamProcessor:
 
         return False
 
+    def finish_opencode_stream(self) -> None:
+        """OpenCode 2 emits step_finish only for steps that end in tool calls."""
+        if self.cli != "opencode" or self.result_json is not None or not self.opencode_parts:
+            return
+        self.result_json = {
+            "type": "result",
+            "result": "".join(self.opencode_parts),
+            "status": "success",
+        }
+
     def get_result(self) -> StreamData | None:
         return self.result_json
 

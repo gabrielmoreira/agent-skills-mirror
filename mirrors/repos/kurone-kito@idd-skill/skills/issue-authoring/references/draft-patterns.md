@@ -106,13 +106,16 @@ Before you publish a ready issue, confirm:
 
 ## Mechanical pre-publish gate
 
-Run the completed-draft adversarial review in
-[contract.md](contract.md#completed-draft-adversarial-review) before
-this linter. The linter then runs on the reviewed body.
+For a roadmap, child, or orphan body, run the completed-draft adversarial
+review in [contract.md](contract.md#completed-draft-adversarial-review)
+before this linter. The linter then runs on the reviewed body. A draft
+carrier body is linted, not reviewed.
 
 Before you publish a drafted **ready orphan, roadmap, or child** body,
 run the `audit-authored-issue` linter against it when a helper runtime
-is available. It mechanically catches shape and marker mistakes — a
+is available. Before you publish a draft carrier, also run it with
+`--shape carrier` (it takes no `--expect-bucket`). It mechanically catches
+shape and marker mistakes — a
 missing or duplicated autopilot-suitability footer, a wrong
 markerPrefix, a missing required heading for the declared shape, a
 malformed dependency marker — that a confident narrative can otherwise
@@ -124,8 +127,9 @@ evaluate:
 
 ```sh
 node scripts/audit-authored-issue.mjs --shape orphan \
-  --marker-prefix <resolved-target-prefix> --title "Drafted issue title" \
-  --body-file draft.md
+  --marker-prefix <resolved-target-prefix> \
+  --config <target-checkout>/.github/idd/config.json \
+  --title "Drafted issue title" --body-file draft.md
 ```
 
 Before newly publishing a body into the `needs-decision` or
@@ -141,8 +145,9 @@ instead of a failure, since such a body is meant to be non-ready:
 
 ```sh
 node scripts/audit-authored-issue.mjs --shape orphan \
-  --marker-prefix <resolved-target-prefix> --title "Drafted issue title" \
-  --body-file draft.md \
+  --marker-prefix <resolved-target-prefix> \
+  --config <target-checkout>/.github/idd/config.json \
+  --title "Drafted issue title" --body-file draft.md \
   --expect-bucket needs-decision \
   --label status:authoring \
   --label status:needs-decision
@@ -164,7 +169,8 @@ silently defaults to this source repository's own `idd-skill` prefix
 when that file is missing or unreadable — producing a false pass or
 fail against the wrong prefix instead of an error.
 
-Use `--shape roadmap` or `--shape child` for those shapes, `--stdin`
+Use `--shape roadmap` or `--shape child` for those shapes,
+`--shape carrier` for a draft carrier, `--stdin`
 instead of `--body-file` when the draft is not yet on disk, and
 `--label <name>` (repeatable) to pass proposed labels for the check
 that a suitability score of `1` carries the configured
@@ -195,7 +201,9 @@ the proposed post-change memberships and limits as well as current entries.
 linter cannot run. `instructions-only` is a first-class supported
 fallback, not a waiver — manually re-verify the same checks against
 [contract.md's Mechanical pre-publish gate](contract.md#mechanical-pre-publish-gate)
-before publishing instead.
+before publishing instead. A draft carrier has no manual route: without a
+helper runtime it cannot be published (see
+[Draft carrier](contract.md#draft-carrier)).
 
 ## Hidden human-dependency quick check
 
@@ -828,6 +836,9 @@ release is what authorizes starting the IDD execution loop, so a
 request phrased as "start the IDD execution loop" counts as that same
 release request, not a separate path around it.
 
-If the user asked for drafts only (a preview before anything is
-created), honor that instead: stop after reporting the issue set,
-assumptions, and non-ready buckets, without publishing.
+A preview request publishes a draft carrier
+(`publish-authoring-hold --shape carrier`, run with `--apply`) and shows
+the issue set, assumptions, and non-ready buckets in the reply too. A
+reviewed draft ends in local files only when the user explicitly says not
+to publish or the carrier cannot be published either; see
+[Draft carrier](contract.md#draft-carrier) for both exceptions.

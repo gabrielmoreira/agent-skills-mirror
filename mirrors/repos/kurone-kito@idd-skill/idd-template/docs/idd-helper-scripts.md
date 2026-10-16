@@ -323,7 +323,7 @@ default run rather than a usage error.
 | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- | ---------------------------------------------- | ----------------------- |
 | `advisory-comment-debounce.mjs`      | unknown flag exits `1`; missing `--pr` or `--triggered-at` exits `2`                                                      | a `gh` failure collecting comment events           | —                                              | an unexpected exception |
 | `advisory-convergence.mjs`           | missing `--pr`, or an unknown flag (exit `1`)                                                                             | a `gh` failure resolving review state              | `--assert` when the verdict is not ready       | an unexpected exception |
-| `advisory-wait-state.mjs`            | missing `--pr`, or an unknown flag (exit `1`)                                                                             | a `gh` failure resolving advisory wait state       | —                                              | an unexpected exception |
+| `advisory-wait-state.mjs`            | missing `--pr`, an unknown flag, an invalid `--wait` or `--poll-interval`, or `--now` with `--wait` (exit `1`)            | a `gh` failure resolving advisory wait state       | —                                              | an unexpected exception |
 | `ci-wait-policy.mjs`                 | an unknown flag (exit `1`); no arguments is a successful exit `0`                                                         | a `gh` failure resolving a `--run-id`              | —                                              | an unexpected exception |
 | `rerun-advisory-convergence.mjs`     | missing `--pr`, or an unknown flag (exit `1`)                                                                             | a `gh` failure resolving rerun state               | `--apply` reports a per-instance failure       | an unexpected exception |
 | `review-activity-snapshot.mjs`       | missing `--pr`, or an unknown flag (exit `1`)                                                                             | a `gh` failure resolving review activity           | —                                              | an unexpected exception |
@@ -361,6 +361,9 @@ arguments reaches `gh repo view` and is `transport`, not `usage`.
 `75` after printing an incomplete result (see
 [Discover Roadmap Graph Contract](#discover-roadmap-graph-contract));
 that is `transport`, carrying `retryAt` when known, never `gate`.
+`claim-issue.mjs` (issue `#4372`) exits `1` as `gate` for every
+ineligible result, including a failure inside one of its checks, and as
+`transport` for a failure before any check starts.
 
 | Helper                             | `usage`                                                                                                                                             | `gate`                                                                                                                                                      |
 | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -368,9 +371,10 @@ that is `transport`, carrying `retryAt` when known, never `gate`.
 | `discover-roadmap-graph.mjs`       | a missing `--issue`, a flag-combination error, or an unknown flag                                                                                   | none today (`--with-progress` exit `75` is `transport`)                                                                                                     |
 | `discover-shared-file-overlap.mjs` | missing candidates, an invalid value, a flag-combination error, or an unknown flag                                                                  | none today                                                                                                                                                  |
 | `select-desynced-index.mjs`        | a missing `--token` or `--band-size`, or an unknown flag                                                                                            | none today                                                                                                                                                  |
-| `idd-worker-budget.mjs`            | a missing or invalid `--running` / `--startable` / `--harness-limit` value, or an unknown flag                                                      | none today                                                                                                                                                  |
+| `idd-worker-budget.mjs`            | a missing or invalid `--running` / `--startable` / `--harness-limit` value, an invalid `--instructions-since` value, or an unknown flag             | none today                                                                                                                                                  |
 | `idd-activation.mjs`               | an unknown flag, or an empty `--cwd` value                                                                                                          | none today                                                                                                                                                  |
 | `claim-approval-gate.mjs`          | a missing `--issue`, or an unknown flag                                                                                                             | none today                                                                                                                                                  |
+| `claim-issue.mjs`                  | a missing or invalid `--issue`, or an unknown flag (including `--apply`)                                                                            | exit `1` for every ineligible result, including a failed check                                                                                              |
 | `claim-lock.mjs`                   | a missing mode or required flag, or an unknown flag                                                                                                 | exit `2` on an `--acquire` collision, exit `4` on a primary-worktree refusal, or a non-`backfilled` `--backfill-tokens`                                     |
 | `clone-lock.mjs`                   | a missing mode, `--agent-id`, or command, or an unknown flag                                                                                        | exit `3` on an acquire timeout; a wrapped command's own non-zero status                                                                                     |
 | `phase-id-resolver.mjs`            | a missing `--phase-id`, or an unknown flag                                                                                                          | none today                                                                                                                                                  |
@@ -437,6 +441,7 @@ outcome path.
 | `provider-outage-park.mjs`           | missing `--service`/`--agent-id`/`--claim-id`, an invalid `--pr`/`--issue`, `--park` and `--parked-issues` together, or an unknown flag (exit `1`)                                                                                                                                                          | a `gh` failure resolving the repository                                                                                                                                                 | `--park` reports an ineligible park (exit `1`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | an unexpected exception                                                                                                                                                                                                     |
 | `idd-doctor.mjs`                     | an unknown flag (exit `1`)                                                                                                                                                                                                                                                                                  | a `gh` failure reached during a live check                                                                                                                                              | the report contains at least one error (exit `1`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | an unexpected exception                                                                                                                                                                                                     |
 | `idd-delete-remote-branch.mjs`       | missing/empty `--branch`, missing/invalid `--expected-sha`, or an unknown flag (exit `1`)                                                                                                                                                                                                                   | —                                                                                                                                                                                       | invalid ref, unreadable remote/default-branch state, expected-SHA mismatch, refused default branch, failed delete, or unconfirmed deletion (exit `1`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | an unexpected exception                                                                                                                                                                                                     |
+| `idd-claimed-push.mjs`               | missing or invalid `--issue`, missing `--claim-id`, an empty `--nonce`, or an unknown flag (exit `1`)                                                                                                                                                                                                       | —                                                                                                                                                                                       | a refused or failed step: the claim assert, the location check, a dirty tree, the gate, the second assert, or the push (exit `1`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | an unexpected exception                                                                                                                                                                                                     |
 | `idd-onboard.mjs`                    | missing/conflicting mode flags, a stage-foreign flag, `--import`/`--verify` missing `--source`, `--record-policy` missing `--transcript`, `--install-user-global`/`--uninstall` with a flag outside their whitelist or an invalid `--harness` list, an unknown argument, or a missing flag value (exit `2`) | a `gh` failure reached during any stage (exit `2`)                                                                                                                                      | `--substitute`/`--import`/`--verify` report a blocking verdict, `--hear`/`--record-policy` report a schema-invalid transcript, or `--install-user-global`/`--uninstall` refuse or fail (exit `1`)                                                                                                                                                                                                                                                                                                                                                                                                                                | an environment/config issue (e.g. `--substitute`'s own core file set resolution, path confinement) or any other unexpected exception (exit `2`)                                                                             |
 | `helper-runtime-manifest.mjs`        | an unknown flag (exit `1`)                                                                                                                                                                                                                                                                                  | —                                                                                                                                                                                       | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | an unexpected exception                                                                                                                                                                                                     |
 | `idd-critique-delegate.mjs`          | an unknown flag (exit `1`)                                                                                                                                                                                                                                                                                  | —                                                                                                                                                                                       | —                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | an unexpected exception (deterministic, network-free)                                                                                                                                                                       |
@@ -893,7 +898,26 @@ in this preamble, since the fallback differs per helper.
   `--no-network` is set. Missing host signals, failed or incomplete API
   results, and rate-limit headroom below 500 produce zero slots. The
   `--harness-limit` value and `--startable` count constrain the final
-  minimum; the helper never claims a host-wide worker total.
+  minimum; the helper never claims a host-wide worker total. The optional
+  `--instructions-since` argument (issue
+  [kurone-kito/idd-skill#4376](https://github.com/kurone-kito/idd-skill/issues/4376))
+  takes 7 to 40 hexadecimal digits in either case; any other value is a usage
+  error. It adds three keys. `instructionsTip` is the commit that the local
+  base ref resolves to (`origin/<developmentBranch>` when the policy
+  configures one, else the target of `refs/remotes/origin/HEAD`), or `null`.
+  `instructionsChanged` is the repository paths that differ between the given
+  commit and that tip, limited to `.github/instructions/` and
+  `docs/idd-workflow.md` and sorted by bytes; a rename lists both paths, and a
+  deleted path is listed. `instructionsChangedError` is present only on
+  failure. When git cannot compute the difference (a commit the repository
+  lacks or that is not an ancestor of the tip, a directory that is not a
+  repository, an invalid `developmentBranch`, or an unresolved base ref),
+  `instructionsChanged` is `null` and `slots` and `limitingFactor` are
+  unaffected. A short value that also names a ref for a different commit is
+  reported as not a commit, so pass the full SHA. The helper reads local refs
+  only and never fetches, reads the policy file from the working directory
+  (run it from the repository root), needs git 2.28 or newer, and without the
+  argument prints none of the three keys.
 - `scripts/suitability-triage.mjs` for A4.5 seven-check suitability
   evaluation (referenced in
   [kurone-kito/idd-skill#392](https://github.com/kurone-kito/idd-skill/issues/392)),
@@ -910,7 +934,28 @@ in this preamble, since the fallback differs per helper.
   of any kind, so a local six-of-seven pass can never be mistaken for a
   live `--issue <n>` verdict; `duplicate_or_superseded` always reports
   `"not_evaluated"`, never omitted (referenced in
-  [kurone-kito/idd-skill#2102](https://github.com/kurone-kito/idd-skill/issues/2102))
+  [kurone-kito/idd-skill#2102](https://github.com/kurone-kito/idd-skill/issues/2102)).
+  `--verbose` adds each reported check's `evidence` string to the live
+  `--issue` output (and to the local `--body-file` / `--stdin` output), and
+  the default omits `evidence`. Without it, the `--issue` output's
+  `"failedCheck": "autonomy"` names no reason. When `autonomy` fails on the
+  body marker or the title prefix,
+  clearing the `status:blocked-by-human` label clears neither trigger.
+  Removing the label can leave `autonomy` failing (observed 2026-10-14 on
+  `kurone-kito/idd-skill#4239`; the trigger was not recorded).
+  That label name is the default; `labels.blockedByHumanLabelName` can
+  change it. The body marker is
+  `<!-- {{PROJECT_MARKER_PREFIX}}-authoring-bucket: blocked-by-human -->`,
+  read only from an HTML comment outside code. The title prefix is
+  `blocked-by-human:`, matched case-insensitively, including the configured
+  label's local-name stem. Removing either one means editing the issue body
+  or title, and a worker must not make that edit to clear a trigger
+  (preventive; no observed incident yet). The blocking-label check, which
+  also covers the configured `labels.needsDecisionLabelName` (default
+  `status:needs-decision`), runs first within the autonomy check and returns
+  early, so removing a blocking label can expose a marker, title, or
+  body-text failure that it had hidden. A body-text failure has no marker or
+  title to remove, and `--verbose` names which body-text check fired.
 - `scripts/suitability-close-execute.mjs` for the A4.5 high-confidence
   duplicate/superseded coordination-close path (referenced in
   [kurone-kito/idd-skill#1485](https://github.com/kurone-kito/idd-skill/issues/1485));
@@ -925,6 +970,10 @@ in this preamble, since the fallback differs per helper.
   `issue/<number>-<slug>` branch-name slug computation; deterministic and
   network-free (referenced in
   [kurone-kito/idd-skill#901](https://github.com/kurone-kito/idd-skill/issues/901))
+- `scripts/claim-issue.mjs` for a read-only dry run of the five A5
+  pre-checks; see [Claim pre-check helper](#claim-pre-check-helper)
+  (referenced in
+  [kurone-kito/idd-skill#4372](https://github.com/kurone-kito/idd-skill/issues/4372))
 - `scripts/emit-marker.mjs` for emitting the per-cycle `claimed-by` /
   `review-watermark` / `review-baseline` marker bodies (emit-only, no
   network write; referenced in
@@ -1223,18 +1272,47 @@ in this preamble, since the fallback differs per helper.
 - `scripts/publish-authoring-hold.mjs` (`idd-publish-authoring-hold`,
   issues #4127 and #4171, and issue `#4253`) publishes one drafted issue
   under the issue-authoring hold, running the authoring contract's
-  New-issue ownership steps in order. The default `--shape orphan`
-  publishes a standalone held orphan. `--shape carrier` publishes a draft
-  carrier, labelled with the authoring label and the authoring-only label,
-  and accepts only `--bucket ready` (exit `2` otherwise). A carrier is
-  linted with `audit-authored-issue.mjs --shape carrier`, which needs
-  markdown-it: without it the lint refuses, and nothing is written. The
-  helper refuses `--shape child` (exit `2`). An orphan requires
-  `--review-result <path>` (a JSON object with `"completed": true`; any
-  `findings` entry must be `fixed` or `rejected`); a carrier's review
-  result is optional, and when given it must be a JSON object whose
-  `completed` is a boolean and whose `findings`, if present, is an array of
-  objects. The helper stops with the `blocked-by-human`
+  New-issue ownership steps in order, one issue per call. The default
+  `--shape orphan` publishes a standalone held orphan. `--shape carrier`
+  publishes a draft carrier, labelled with the authoring label and the
+  authoring-only label, and accepts only `--bucket ready` (exit `2`
+  otherwise). A carrier is linted with
+  `audit-authored-issue.mjs --shape carrier`, which needs markdown-it:
+  without it the lint refuses, and nothing is written. `--shape roadmap`
+  publishes a held roadmap shell, linted as a roadmap; its `## Tracks` list
+  may be empty, and it is its own set anchor, like an orphan. `--shape
+  child` publishes one held child under an existing set and needs
+  `--anchor <owner>/<repo>#<number>`: a child without `--anchor`, any other
+  shape with `--anchor`, a malformed anchor, and an anchor in another
+  repository all exit `2` before anything is created. The anchor must be an
+  open issue, not a pull request, that still carries the authoring label,
+  has no active claim or open linked pull request, and whose trusted
+  owner-marker log replays to one open generation (every marker follows the
+  field rules of its mode, the first valid opener wins and a later opener of
+  the same generation loses, a completed set cannot be reopened under its set
+  ID, and a resume does not end a release in progress). The token of the
+  anchor's own publication line must also replay to `state=member` in the
+  journal (trusted, unedited records that match the line on target, anchor,
+  set, session, and token, in order, with a conflicting or out-of-order
+  record failing closed), which verifies the set's originating hold. The
+  check also runs in a dry run; otherwise the report is a refusal and
+  nothing is written. The helper does not serialize concurrent calls of one
+  session, so publish a set's children one call at a time (preventive; no
+  observed incident yet). The child takes the anchor's
+  set ID and session, uses the anchor's real reference as `anchor` in its
+  publication line, journal records, and owner marker, and appends a same-owner
+  heartbeat on the anchor (reusing a fresh matching marker under
+  `issueAuthoring.heartbeatCoalesceWindow`) after the identity attach and
+  before its own `acquire` marker. Its provenance check runs in process with
+  the anchor expected, and the anchor and child are read again before
+  `state=member`; a changed anchor owner or a failed heartbeat is a
+  recovery hold with the child held. The helper never edits the anchor's
+  body, so the roadmap's `## Tracks` list stays a separate reviewed edit.
+  An orphan, a roadmap, and a child require `--review-result <path>` (a JSON
+  object with `"completed": true`; any `findings` entry must be `fixed` or
+  `rejected`); a carrier's review result is optional, and when given it must
+  be a JSON object whose `completed` is a boolean and whose `findings`, if
+  present, is an array of objects. The helper stops with the `blocked-by-human`
   outcome (exit `2`) when `issueAuthoring.journalIssue` is unset or
   unverifiable. It then puts the `authoring-publication` line first in the
   body, lints that exact body with `audit-authored-issue.mjs --new-issue`
@@ -1259,6 +1337,24 @@ in this preamble, since the fallback differs per helper.
   before the create. Every policy value comes from the repository policy
   file only, and `--marker-prefix` is required when the issue or the
   journal is in another repository.
+
+  For `--shape carrier`, after `state=member` the helper runs the carrier
+  release (contract.md, "Carrier creation-hold exception"). It posts the
+  `release`, `release-guard`, and `heartbeat` owner markers, removes the
+  authoring label with one `gh issue edit --remove-label` call, and posts
+  `release-complete`. The authoring-only label stays. Before the heartbeat
+  and again after its settle wait, the release checks the sole-member
+  result, the roadmap-id marker outside code, the carrier audit, the body
+  digest, and both labels. It runs three `sweep-authoring-markers.mjs`
+  sweeps; a failed sweep is recorded and never blocks the release. Each
+  sweep also records its `authoring-marker-minimization-backlog` count. The
+  report's `outcome` is `published` when the release ends `released` or
+  `held` (exit `0`), and `recovery-hold` otherwise (exit `1`). `journalState`
+  is `member` in every case. A `release` object carries `state`,
+  `failedStep`, `nextAction`, `sweeps`, and `backlog`. A `held` release keeps
+  both labels for a person's release, and a `recovery-hold` needs an
+  owner-log replay before any release. The dry run lists the release steps
+  as planned and writes nothing.
 
 - `scripts/review-disposition-verify.mjs` for read-only E7 disposition
   marker presence verification across PATH A and PATH B items
@@ -2856,6 +2952,9 @@ The adopted helper boundaries are intentionally narrow:
   posts markers, or mutates PR state
 - it does not replace the advisory-wait decision table; it only reduces
   command-copy variance when collecting canonical AW evidence
+- with `--wait`, it polls inside the helper until the state settles or a
+  bound of at most `PT8M` elapses, and stays read-only (see Advisory-wait
+  evidence below)
 
 - `ci-wait-policy.mjs` is read-only, resolves `ciWait.*` defaults from
   `.github/idd/config.json`, and can evaluate whether the current rerun
@@ -3105,7 +3204,35 @@ The adopted helper boundaries are intentionally narrow:
   row for the current HEAD; the manual E4 `**Rejected**` stays its
   route. The helper does not track that manual reply, so it keeps
   reporting the comment after one is posted: check `pre-merge-readiness`
-  `dispositionEvidence.missingRegularComments` before replying. An
+  `dispositionEvidence.missingRegularComments` before replying. A
+  `codex-review-running` comment whose row for the current HEAD is
+  `Failed` is not a completed review, so the helper does not post for it,
+  and when `pre-merge-readiness` still lists the comment in
+  `dispositionEvidence.missingRegularComments`, a stamped `**Rejected**`
+  reply is the route, whereas a `Running` row gets no `**Rejected**`
+  reply because that review can still complete. Codex edits its status
+  comment in place, so re-read the comment's row for the current HEAD
+  immediately before each reply and post only while it still reads
+  `Failed`. Build the reply from the canonical body this entry shows for
+  a non-review notice, with `{reason}` set to a note that its review
+  summary reports the code review as failed for this commit, and the
+  source comment id set to the `noticeId` of that comment's entry in
+  `skipped`.
+  The helper keeps reporting the comment after the reply. The gate pairs
+  a reply with a listed comment by count and age, never by source comment
+  id, so run this helper's `--apply` first for any coexisting notice from
+  the same bot, then re-read `dispositionEvidence.missingRegularComments`
+  after replying and reply again only while the comment is still listed
+  and its row still reads `Failed`. Append the stamp as the
+  [E13 reply-and-resolve](#e13-reply-and-resolve-resolve-review-thread)
+  entry describes, since a manual `gh api` JSON body must append the
+  stamp itself. Observed 2026-10-15 on kurone-kito/idd-skill#4344,
+  kurone-kito/idd-skill#4352 and kurone-kito/idd-skill#4364: the Codex
+  status table's row for the HEAD read `Failed` (its
+  `codex-review-state:v1` marker also carried `failed`), the helper
+  skipped the comment as `codex-review-running`, and each pull request
+  carries a hand-posted stamped `**Rejected**` reply to it (the reason
+  wording differs). An
   `unrecognized-notice-body` entry for a comment the gate does not list
   (one it already paired through its generic pairing) is expected and
   harmless.
@@ -4093,6 +4220,66 @@ still fails closed:
   widen eligibility for a cross-repo-only (or all-malformed) closing
   reference -- caught live during this issue's own C1 self-review pass.
 
+### Hold marker contract
+
+Issue `#4310` adds the `idd-hold` marker a delegated worker posts on its
+claimed issue when it stops at a hold under the orchestrator fan-out
+variant. The rule that reads it, including how long a hold lasts, lives in
+`docs/idd-workflow.md` (Hold marker); this section covers only the helper
+side. The body is the token as the literal first bytes of the comment, a
+blank line, then the visible note:
+
+```md
+<!-- idd-hold: {agent-id} {claim-id} {iso8601} -->
+
+_{agent-id}: issue hold — IDD automation marker. Do not edit._
+```
+
+Post it with the profile-selected `post-idd-marker` command -- see
+[Post operational markers](#post-operational-markers-write-side) above
+for the command forms; source-repo example: `node scripts/post-idd-marker.mjs
+--type idd-hold --target issue <n> --agent-id <id> --claim-id <id>
+--timestamp <iso8601> --apply`. `--target pr` is refused, because the
+orchestrator reads the claimed issue's comments and a marker posted on a PR
+would be missed.
+
+The marker is informational and is deliberately **not** a claim-family
+marker: `resolveActiveClaim` never reads it, so it neither starts, ends,
+refreshes, nor transfers a claim, and a hold marker whose edit state is
+unresolved is ignored instead of making claim resolution throw.
+
+- `parseHoldMarker()` (`marker-helpers.mts`) reads one comment body. The
+  token must be the literal first bytes, so a quoted or embedded marker does
+  not parse. An identifier that contains a comment delimiter (`<!--` or
+  `-->`) or a date that cannot exist is rejected, and the operational-marker
+  registry applies the same rules, so such a body is not recognized as a live
+  hold marker. It keeps the comment's GitHub `created_at` apart from the
+  timestamp embedded in the body, which is for diagnostics only.
+- `resolveTrustedHoldMarkers()` (`protocol-helpers.mts`) takes an issue's
+  comments plus the claim's agent id, claim id, and the login that posted the
+  claim's `claimed-by`, and returns `{ markers, first, newest }` or `null`.
+  `markers` holds every qualifying marker for that claim, oldest first by
+  GitHub `created_at` (never the embedded timestamp; a same-second tie goes
+  to the numeric comment id, with comments that have none after those that do,
+  then to the input order), so the whole unbroken run stays readable and not
+  only the newest marker.
+- A marker qualifies only when **all** of these hold: its author login is the
+  login that posted the claim's `claimed-by` and is in the trusted marker
+  login set (the marker's own `{agent-id}` text is never trusted, because the
+  ids are public); its agent id and claim id match the claim; and its edit
+  state is an explicit `lastEditedAt: null` (an edited marker, or an
+  unresolved edit state, is ignored). This mirrors the trust rule in
+  `docs/idd-workflow.md`.
+- The helper encodes no "the hold ended" verdict. Whether a later
+  `claimed-by` ends a hold depends on which renewals the orchestrator itself
+  posted, which only the orchestrator knows, so the caller narrows the result
+  against its own claim timeline.
+
+`MARKER_HIDE_POLICY` (`marker-helpers.mts`) classifies `<!-- idd-hold:`
+`excluded`: the hold start is the earliest marker of the run, so hiding one
+would shift the start of the cap. It is listed in `IDD_AGENT_DERIVED_MARKERS`,
+like `activation-nonce`, because a worker posts it as itself.
+
 ### Provider health helper
 
 - Command: `node scripts/provider-health.mjs [--owner <owner>] [--repo <repo>]`
@@ -4479,6 +4666,97 @@ still fails closed:
   checks stay on the written live GitHub path because inheritable-branch
   and linked-issue exceptions do not yet have a supported helper
   contract
+
+### Claim pre-check helper
+
+- Source repo / vendored-node command:
+  `node scripts/claim-issue.mjs --issue <issue-number>`
+- Package-manager command: run the profile-selected `idd:claim-issue`
+  package script. The example uses `npm`; substitute the repository's
+  configured package manager:
+
+  ```sh
+  npm run idd:claim-issue -- --issue <issue-number>
+  ```
+
+- Ephemeral-npx command: use the profile-selected `idd:claim-issue`
+  command from the helper runtime manifest wiring above; the literal
+  invocation is:
+
+  ```sh
+  npx --yes --package <helper-package-spec> \
+    idd-claim-issue --issue <issue-number>
+  ```
+
+- Read-only dry run of the five A5 pre-checks of
+  `idd-claim.instructions.md`: it posts no marker and creates no
+  worktree, lock file, or git change. It exists because a claim script
+  written by hand in the 2026-10-14 to 2026-10-15 orchestrator run
+  stopped issue `#4251` on a pull request that only mentioned it, which
+  A5(d) does not count. The instruction files still point to the written
+  A5 paths; this helper does not replace them. The write half is a
+  separate change, so `--apply` is not accepted and is a usage error.
+- The checks run in the order of the instruction file and stop at the
+  first one that is not eligible; every later check has the status
+  `not-run`. Each check calls existing code rather than a copy of it:
+  - A5(a) `a5a-approval`: spawns `claim-approval-gate.mjs`. A non-zero
+    exit, invalid JSON, or missing required evidence fields is
+    `approval-unproven` (apply the written A5(a) path by hand); an
+    `approved` of `false` is `approval-missing`
+  - A5(b) `a5b-assignee`: the issue has no assignee, else `assigned`.
+    The project status is not checked, so every report has
+    `projectStatusChecked: false`
+  - A5(c) `a5c-claim-state`: spawns `resume-claim-routing.mjs
+    --fresh-claim-gate`. `claimable` continues; `already-claimed` stops,
+    and the report carries `gateReason` (the CLI's top-level `reason`)
+    and `winningClaimId` (the gate's `winning_claim_id`, `null` when
+    there is no winner); `stale-reclaimable` stops with
+    `stale-takeover-out-of-scope`, because takeover is out of scope
+  - A5(d) `a5d-open-pr`: open pull requests that close or reference the
+    issue. Linked pull requests come from `fetchOpenLinkedPrReferences`;
+    closing keywords in pull request bodies come from the D3.5 body
+    matcher of `findIssueRelatedOpenPrs`, applied to the paginated open
+    pull request list of the provider port. A bare mention, a `Refs`
+    line, a mention in a block quote or code, a reference to another
+    repository, and a closed or merged pull request are not references.
+    Both signals always run, and a pull request found by either is
+    `open-pr` whatever the lookup state; a failed lookup that found
+    nothing is `precheck-unavailable`. The GitHub adapter throws on an
+    open pull request row it cannot trust (a missing or non-string
+    field; a null body stays valid), which fails the lookup rather than
+    reading the row as "no reference". The head-branch exemption of A5(d)
+    applies only to an inheritable claim, which is out of scope
+  - A5(e) `a5e-branch-collision`: the branch comes from the
+    `branch-name` helper code; then a local worktree scan of every
+    worktree on `issue/<number>-*` (`local-worktree-occupied`, or
+    `local-worktree-unreadable` when an entry cannot be ruled out or the
+    listing fails); then the scoped remote scan
+    `git/matching-refs/heads/issue/<number>-` (`branch-collision`,
+    naming the ref). The A5(e) hold note is not posted; the next action
+    says to post it
+- A pre-check helper or `gh` call that fails or returns malformed output
+  is `precheck-unavailable` with the written path of that check as the
+  next action. Malformed covers a required field that is missing or of
+  the wrong type, evidence that names another issue, an approval or a
+  verdict paired with a reason, state, action, or winner the gate never
+  pairs it with, approval evidence whose `gateEnabled` flag or checks
+  contradict its reason, and a local scan result that calls a worktree
+  absent while still naming a path or a reason. This holds for every check
+  except A5(a), which has `approval-unproven`, and the local worktree
+  scan, which has `local-worktree-unreadable`
+- Report (JSON on stdout): `issue`, `eligible`, `reason` (the stop
+  reason, or `null`), `branch`, `projectStatusChecked`, and `steps`, an
+  array of `id`, `status` (`passed`, `failed`, or `not-run`), `reason`,
+  `nextAction`, and `detail`. The `detail` of a failed step names the
+  pull request numbers of `open-pr`, the paths of a local worktree
+  stop, and the refs of `branch-collision`. `gateReason` and
+  `winningClaimId` appear only for `already-claimed`
+- Exit `0` means eligible. An ineligible result, including every
+  failure inside a check, exits `1` with the envelope kind `gate`. The
+  kind `transport` (exit `1`, nothing on stdout) covers only a failure
+  before any check starts: the repository resolution and the read of the
+  issue's title and assignees. The kind `usage` (exit `2`) covers an
+  argument error
 
 ### Worktree-local claim lock
 
@@ -5310,14 +5588,14 @@ still fails closed:
 - Write-side companion to `emit-marker`: it renders the canonical body for
   each operational marker `<type>` (`claim`, `unclaim`, `activation-nonce`,
   `watermark`, `baseline`, `advisory`, `advisory-recovery`,
-  `advisory-reroll`) by reusing the single-sourced `protocol-helpers`
+  `advisory-reroll`, `idd-hold`) by reusing the single-sourced `protocol-helpers`
   renderers, then POSTs it as a JSON document (`{"body": …}`) via
   `gh api --method POST .../comments --input -`. The JSON path is
   mandatory because `gh issue comment` / `gh api -f body=` silently
   reject the HTML-comment-first claim-family bodies. `-f` also treats a
   leading `@` as a literal character — only `-F` reads `@file` contents.
-- The `claim` / `unclaim` / `activation-nonce` / `watermark` / `baseline`
-  bodies are HTML-comment-first with a visible "Do not edit" note;
+- The `claim` / `unclaim` / `activation-nonce` / `watermark` / `baseline` /
+  `idd-hold` bodies are HTML-comment-first with a visible "Do not edit" note;
   `advisory` / `advisory-recovery` / `advisory-reroll` are the
   **plain-text** `advisory-wait:` / `advisory-wait-recovery:` /
   `advisory-reroll:` forms (no visible note) so the AW2 / shell-fallback
@@ -5330,7 +5608,9 @@ still fails closed:
   `watermark` takes `--agent-id --claim-id --head-sha --max-activity-at
   --total-item-count --ci-completed-at`; `baseline` takes `--agent-id
   --claim-id --sha`; `advisory` / `advisory-recovery` / `advisory-reroll`
-  take `--agent-id --head-sha --timestamp`.
+  take `--agent-id --head-sha --timestamp`; `idd-hold` takes `--agent-id
+  --claim-id --timestamp` and only `--target issue` (see the
+  [Hold marker contract](#hold-marker-contract)).
 - One-command watermark (`watermark` only): `--from-pr <n>` derives
   `--head-sha` / `--max-activity-at` / `--total-item-count` /
   `--ci-completed-at` from a fresh `review-activity-snapshot` of PR `<n>` and
@@ -5607,6 +5887,36 @@ still fails closed:
   the recovery-cycle budget read as the full un-decremented cap — always
   pass both when consulting `staleRequestRecovery` for a mutation
   decision (see `idd-advisory-wait.instructions.md`'s `AW3-S`).
+- Optional `--wait <duration>` and `--poll-interval <duration>`
+  (kurone-kito/idd-skill#4378): `--wait` (at most `PT8M`) makes the helper
+  read the full state and, while `outcome` is `WAIT`, sleep and read again,
+  so a caller that cannot sleep in the foreground blocks inside one tool
+  call, as it does with `gh pr checks --watch`. After every read the loop
+  ends in this precedence: `head-changed` (the read names a different
+  `prHeadSha` than the first; the printed state is that later read), then
+  `settled` (`outcome` is not `WAIT`, or `copilotRecovery.state` is
+  `COPILOT_UNAVAILABLE`, which needs both `--claim-id` and `--agent-id`;
+  `f3Outcome` is not followed), then `bound-elapsed`. The bound is a
+  wall-clock deadline measured from before the first read; before a sleep
+  that would pass it the helper sleeps only the remaining time and takes
+  one last full read, which catches a `WAIT` that time turned into
+  `SATISFIED`. `--poll-interval` (at least `PT60S`, at most `--wait`)
+  defaults to `pollIntervalMinutes`, capped at `--wait`, and needs
+  `--wait`; `--now` cannot be combined with `--wait`. Each poll makes
+  exactly the reads of one run without `--wait`, so one call makes at most
+  `1 + ceil(wait / poll-interval)` of them, and no mode posts, writes a
+  marker, or requests a review. As in a single run, a failed viewer-login
+  read is swallowed and leaves the viewer out of the trusted marker logins
+  (preventive; no observed incident yet), and a poll does not retry it, so
+  check `trustedMarkerSummary.viewerLogin` before acting on an `outcome`
+  that changed during a wait. Re-issue the
+  call while `waitEnded` is `bound-elapsed`, with the tool's
+  execution-timeout override near its ceiling, as the wake-up discipline in
+  `idd-ci.instructions.md` requires.
+- Only with `--wait`, the output gains two optional fields:
+  `waitedSeconds` (an integer, the elapsed time rounded down to whole
+  seconds) and `waitEnded` (`settled`, `bound-elapsed`, or `head-changed`).
+  Neither is in the schema's required list.
 
 **Terminal stall-recovery marker contract** (`#1572`;
 `idd-advisory-wait.instructions.md`'s Terminal Copilot stall-recovery
@@ -6191,9 +6501,11 @@ reflexively as any other CLI option.
   `**Rejected**`, or `**Rejection confirmed by maintainer**` reply. It is not
   a disposition, so the thread is not settled until a settled reply from a
   trusted account follows it. A mid-sentence quote of the phrase, an
-  indented line, one inside a code span, a fence, a block quote, or a list
-  item, and a line that continues a quote or list item with no blank line,
-  heading, thematic break, or HTML block before it, does not count. The same
+  indented line, one inside a code span, a fence, a block quote, a list
+  item, an HTML comment, or an HTML block, and a line that continues a quote
+  or list item with no blank line, heading, thematic break, or HTML block
+  before it, does not count (kurone-kito/idd-skill#4332: text hidden in a
+  multi-line comment or `<div>` is not a visible hold). The same
   rule keeps such a reply from answering a regular comment (a human's
   included), from advancing the last-reply watermark behind the
   unreplied-comment count, from covering a cited Previously missed item, and
@@ -6213,9 +6525,11 @@ reflexively as any other CLI option.
   review has items). Clause 2 counts only unresolved threads, so resolving a
   pending thread still settles it for this gate; leave it unresolved until
   the decision.
-  `resolve-review-thread --apply` resolves the thread, so it refuses a
-  `--body` that carries the marker before any network call; post a pending
-  reply by hand and leave the thread open
+  `resolve-review-thread --apply` refuses a `--body` that carries the marker
+  before any network call. A thread target would resolve the thread, so post
+  a pending reply by hand and leave the thread open; a body-item target
+  (`--review-id` with `--item-title`) posts a top-level reply and resolves no
+  thread, so wait for the maintainer and then post a settled disposition
 - Disposition-evidence `hint` on the `dispositionEvidence` object
   (kurone-kito/idd-skill#4163; observed 2026-10-13 on
   kurone-kito/idd-skill#4153, kurone-kito/idd-skill#4151, and
@@ -6509,6 +6823,30 @@ reflexively as any other CLI option.
   required fields/sections are missing, or helper evidence conflicts with
   live GitHub state, discard helper output and use the portable manual
   fetch path.
+
+### Advisory-item scope
+
+Which advisory items the readiness gate reads. This is the detail behind
+the E14 step 5 sentence in `idd-review-fix.instructions.md`, which says
+that unanswered advisory items block merge until each one is
+dispositioned.
+
+- The disposition check covers the regular comments of Copilot,
+  CodeRabbit, Codex, and each `advisoryBotLogins` login. A regular
+  comment from any other bot needs no advisory disposition, but it still
+  blocks until a later IDD-agent reply answers it. A reply that starts
+  with `**Awaiting maintainer decision**` answers nothing.
+- A CodeRabbit no-actionable-comments summary settles without a
+  disposition only while no unresolved known-bot review thread exists.
+  While one does, the summary stays a missing regular comment until it is
+  dispositioned or that thread is resolved.
+- Copilot's latest review on the current head falls under the
+  [advisory convergence check (F2)](#advisory-convergence-f2). Its cited
+  items need their own stamped dispositions, and a trusted `review-ack`
+  covers only its citation-free items.
+- An embedded CodeRabbit finding in a COMMENTED review body is a PATH B
+  snapshot item that the merge gate does not read. A threaded finding is
+  gated through its review thread instead.
 
 ### Merge execution (F3)
 
@@ -8076,7 +8414,8 @@ same as `AW4`/`AW5`.
   `claimId`, `harness` (`claude-code`, `codex-cli`, `opencode`,
   `grok-build`, `cursor-cli`, `copilot-cli`, `antigravity-cli`, or `other`),
   `workerHandle`, `terminalPhase`, `outcome` (`merged`, `handed-off`,
-  `held`, `abandoned`, or `failed`), `verifiedAt`, and `recordedAt`.
+  `held`, `abandoned`, `failed`, or `scope-stopped`), `verifiedAt`, and
+  `recordedAt`.
   Optional are `vendorSessionId`, `reviewRounds`, `stalls`, `deviations`,
   `frictions` (an entry may name the instruction or doc path in `file`),
   and `followUps`. `terminalPhase` and each `phase` take a phase id such as
@@ -8089,6 +8428,26 @@ same as `AW4`/`AW5`.
   numeric offset, and seconds `00` to `59`, that name a real instant: a day
   that does not exist (`2026-02-30`), hour 24, or an out-of-range offset is
   rejected rather than silently normalized.
+- `workerHandle`: the identifier the harness returned when it started the
+  worker, written by the orchestrator before the append. The dedupe key
+  includes it, so a handle taken from anywhere else can make a retry look like
+  a new record (observed 2026-10-14: the stored handle for a claim of
+  kurone-kito/idd-skill#4187 differed from the value in a roster the session
+  kept; kurone-kito/idd-skill#4066 was closed as not planned, saying the
+  prevention belongs on the orchestrator's roster step). The restart recovery
+  has no start identifier for a worker it did not start, so it records the
+  listed handle for a matched worker, the claim id for a claim with no matched
+  worker and no draft, and a draft's own handle when the draft matches the
+  claim but no worker is listed: see
+  [Orchestrator restart](idd-workflow.md#orchestrator-restart).
+- `scope-stopped`: the run ended at a phase boundary that the operator or
+  coordinator scoped it to end at (for example, "stop at F2"), with no gate
+  blocking it. `held` stays for a gate hold; before this outcome existed, a
+  scope stop was stored as `held`, which inflated the `held` count (issue
+  `#3974`). When the worker later continues on the coordinator's word, a
+  further record is appended at a later `terminalPhase`, which the duplicate
+  check below treats as its own record. Stored records are not migrated: a
+  record already stored as `held` stays `held`.
 - `append`: exactly one of `--file <path>` or `--stdin` supplies one JSON
   record. An invalid record exits `1`, writes nothing, and creates no
   directory. A record whose `claimId`, `workerHandle`, and `terminalPhase`
@@ -8097,7 +8456,7 @@ same as `AW4`/`AW5`.
   while a replacement worker on the same claim has its own `workerHandle`
   and gets its own record. A new line prints `{"status":"appended"}`.
 - `summary`: read-only; it takes no lock and creates nothing. It prints
-  JSON with the outcome counts (all five outcomes, zero-filled), the
+  JSON with the outcome counts (every outcome, zero-filled), the
   distribution of `reviewRounds`, the ten most frequent `frictions`
   `file` values, and `invalidLines`, the count of lines that are not valid
   records. `--since <ISO8601>` keeps only records whose `recordedAt` is at
@@ -8129,10 +8488,11 @@ same as `AW4`/`AW5`.
   it is informational.
 
 - Fan-out draft: a worker writes its report without `verifiedAt` and
-  `recordedAt`, because it cannot know them. The orchestrator sets
-  `verifiedAt` to when it checked GitHub and `recordedAt` to when it appends,
-  then runs `append`. The helper stores the file as written and stamps neither
-  field.
+  `recordedAt`, because it cannot know them, and with any non-empty
+  `workerHandle`, which the orchestrator overwrites from its roster entry. The
+  orchestrator sets `verifiedAt` to when it checked GitHub and `recordedAt` to
+  when it appends, then runs `append`. The helper stores the file as written
+  and stamps neither field.
 
 ### F4 branch-failure routes
 
@@ -8185,27 +8545,32 @@ reporting `branch_outcome: retained_unmerged` (issue #2331).
   retry (`idd-merge.instructions.md`).
 - **`merge.autoStash=true` hides a dirty primary worktree** (step 4): F4
   holds a dirty primary worktree as `primary-worktree-dirty` and never
-  stashes, but with `git config merge.autoStash` true the fast-forward
-  stashes for itself. Replayed on git 2.53.0 on 2026-10-01: with an
-  incoming change to a file the primary worktree has modified, `git
-  merge --ff-only` printed `Created autostash`, fast-forwarded, printed
-  `Applying autostash resulted in conflicts`, and left the file in the
-  `UU` state with one stash entry, where the default configuration
-  refuses with `Your local changes ... would be overwritten` (the hold's
-  trigger); for an incoming change to a different file it printed
-  `Created autostash` and `Applied autostash` and restored the file.
-  When `git config merge.autoStash` is true, run the step 4 fast-forward
-  as `git -c merge.autoStash=false merge --ff-only
-  origin/{development-branch}`: an overlapping dirty path then still
-  refuses and holds as `primary-worktree-dirty`, and a non-overlapping
-  dirty file fast-forwards either way. If git already printed `Created
-  autostash`, look for `Applied autostash`. Without it (the `UU` state)
-  the merge still exits 0, so step 4's `&&` chain does not stop on it:
-  treat it as the `primary-worktree-dirty` hold, stop before step 5,
-  leave the conflicted paths and the stash entry (match it by the hash
-  git printed) for the operator, and never pop or drop a stash entry in
-  F4. One report (issue `#3678`) also found a nine-day-old `autostash`
-  entry in a shared clone's stash list that nobody had noticed.
+  stashes, but a plain `git merge --ff-only` stashes for itself when
+  `git config merge.autoStash` is true. Replayed on git 2.53.0 on
+  2026-10-01: with an incoming change to a file the primary worktree has
+  modified, the plain command printed `Created autostash`,
+  fast-forwarded, printed `Applying autostash resulted in conflicts`,
+  and left the file in the `UU` state with one stash entry, where the
+  default configuration refuses with `Your local changes ... would be
+  overwritten` (the hold's trigger); for an incoming change to a
+  different file it printed `Created autostash` and `Applied autostash`
+  and restored the file. Observed again on 2026-10-13 (issue `#4264`):
+  another session's dirty tracked file in the primary worktree was
+  stashed and restored unchanged, so the hold never ran. The step 4
+  command therefore always runs the fast-forward as `git -c
+  merge.autoStash=false merge --ff-only origin/{development-branch}`,
+  also when the config value is already false or unset: an overlapping
+  dirty path then still refuses and holds as `primary-worktree-dirty`,
+  and a non-overlapping dirty file fast-forwards and is left in place.
+  If git already printed `Created autostash` (a plain fast-forward run
+  by hand or from an older copy of the phase file), look for `Applied
+  autostash`. Without it (the `UU` state) the merge still exits 0, so
+  step 4's `&&` chain does not stop on it: treat it as the
+  `primary-worktree-dirty` hold, stop before step 5, leave the
+  conflicted paths and the stash entry (match it by the hash git
+  printed) for the operator, and never pop or drop a stash entry in F4.
+  One report (issue `#3678`) also found a nine-day-old `autostash` entry
+  in a shared clone's stash list that nobody had noticed.
 - **Verified unmerged fallback** (step 4, issue `#3536`): an unmerged
   index can make `stash push` fail even though the working-tree paths
   were copied and verified outside the worktree. If the first removal
@@ -8483,6 +8848,143 @@ An outer `-c rebase.updateRefs=false` may not reach that subprocess.
 These hazards were observed while recovering
 [PR #3431](https://github.com/kurone-kito/idd-skill/pull/3431) for
 issue #3285; the field report is tracked in issue #3552.
+
+## Claimed push (kurone-kito/idd-skill#4375)
+
+`scripts/claimed-push.mjs` (bin `idd-claimed-push`) pushes the claimed
+branch only after the claim, the worktree location, and the configured
+`commands.pre-push-validate` gate have passed, in that order. The
+overview's [claim revalidation gate](../.github/instructions/idd-overview-core.instructions.md#claim-revalidation-gate)
+and its rule to judge a command set by its own exit status say the same
+thing in prose; nothing enforced the order. Observed in the 2026-10-14 to
+2026-10-15 orchestrator run: three workers pushed after their local gate
+had failed, each chaining the push to the check with a semicolon, and the
+worker brief had told each of them not to. The pushed head commits were
+`59c06bb61` (issue `#4211`), `859d66a36` (issue `#4250`), and `43eb8dcfe`
+(issue `#4243`). No issue records the failed gate; the commits show the
+pushes, and the failed gate and the semicolon chain are recorded only in
+the operator's worker reports, which live outside this repository.
+
+```sh
+node scripts/claimed-push.mjs --issue <n> --claim-id <id> [--nonce <nonce>] [--apply]
+```
+
+- **Arguments**: `--issue` and `--claim-id` are required. `--nonce` goes to
+  the claim assert only when given. The remote is always `origin`, and
+  there is no path argument: the worktree is `git rev-parse --show-toplevel`
+  of the working directory (a failure there is reported under `assert`,
+  with the next action to run the helper from the claimed worktree) and the
+  branch is `active_claim.branch` of the assert's output.
+- **Dry run**: without `--apply`, the claim assert and the location check
+  run and the other three steps are reported `skipped`; the report says
+  `mode: "dry-run"` and `pushed: false`, and the exit is `0` when both
+  steps pass. With `--apply`, all five steps run.
+- **Steps**, in order, each stopping the run at its first failure (the
+  steps after it are reported `skipped`). The helper runs the existing
+  helpers as child processes through an injectable runner and never
+  acquires the worktree-local lock; its identity check is the assert's.
+
+1. `assert`: runs `resume-claim-routing` in its assert mode for the given
+   identity and the worktree; the claimed branch is `active_claim.branch`
+   of its output. It refuses when the assert exits non-zero, ends by signal,
+   or names no claimed branch (a non-zero exit's reason carries the exit
+   status and the first stderr line; next action: stop and re-read the
+   claim), and when the assert cannot start (next action: check the helper
+   installation, then rerun).
+2. `location`: checks, in order, that the claimed branch starts with
+   `issue/<n>-` (this also refuses the development branch; next action:
+   stop and report), that the worktree is the expected sibling path or
+   else the path cannot be resolved (next action: run the helper from the
+   claimed worktree), and that the current branch is the claimed branch
+   and HEAD is not detached (next action: switch the worktree to the
+   claimed branch).
+3. `gate`: requires a clean tree by `git status --porcelain
+   --untracked-files=all --ignore-submodules=none`, so a user-level
+   `status.showUntrackedFiles` setting cannot hide files and a
+   `diff.ignoreSubmodules` or `submodule.<name>.ignore` setting cannot hide
+   a dirty submodule (next action: stage and commit, then rerun),
+   records `git rev-parse HEAD`, runs the effective
+   `commands.pre-push-validate` in a shell in the worktree, then requires
+   a clean tree again (next action: commit or discard what the gate
+   changed, then rerun). A gate that exits non-zero or ends by signal
+   refuses with the next action to fix the failure, commit, and rerun; a
+   gate that is not configured or cannot start refuses with the next
+   action to configure the command or run the written gate by hand.
+4. `reassert`: runs the `assert` step again immediately before the push,
+   because the gate can run for minutes (next action: stop and re-read the
+   claim, or, when the second assert cannot start, check the helper
+   installation, then rerun; the assert must also still name the same
+   branch), then requires `git rev-parse HEAD` and the branch tip to equal
+   the recorded value (next action: rerun the helper so the gate sees the
+   new HEAD).
+5. `push`: runs `git push -u origin <branch>` when the branch has no
+   upstream yet, else `git push origin <branch>`, once. A push that git
+   rejects (non-fast-forward, hook, missing remote) fails with git's
+   message (next action: read git's message, fetch and inspect
+   `origin/<branch>`, never force). A push that ends without an exit
+   status fails with an unknown outcome (next action: read the remote
+   branch before any new push, no retry).
+
+- **Location**: the expected path is
+  `<primary-parent>/<repo-name>.<normalized-branch>`. The primary checkout
+  is the first record of `git worktree list --porcelain -z`, `<repo-name>`
+  is the `REPO_NAME` of the overview (the repository part of the `origin`
+  slug with its case kept, or the primary checkout's basename when `origin`
+  is not on `github.com`; a `github.com` origin without an owner and
+  repository path refuses), and `<normalized-branch>` replaces each `/`
+  with `-`. Both paths go through `realpath` before they are compared. This
+  is stricter than the overview's check, which fires only when the sibling
+  is listed; the stricter refusal is intended.
+- **Failed git reads**: every git read must exit `0` and print a valid
+  value, so an unreadable tree never passes as clean and two failed reads
+  never compare as equal. A failed `git status`, `git rev-parse HEAD`, or
+  branch-tip read fails its step with the next action to read the git
+  error in the worktree and fix it, then rerun. Two probes treat a
+  non-zero exit as their answer: `git remote get-url origin` (no `origin`
+  remote, so the primary basename names the repository) and the upstream
+  check (no upstream yet, so the push adds `-u`). For those two, only an
+  end without an exit status fails the step.
+- **Gate command**: read from the effective policy with the working
+  directory set to the worktree: the repository policy file wins value by
+  value, and the layered user-global policy supplies a command the file
+  omits, which is how an installed payload serves a repository with a
+  minimal policy file (that tier is not read when `GITHUB_ACTIONS` is
+  `true`). A repository policy file that cannot be read refuses instead of
+  falling through to a user-global entry. Only the exit status judges the
+  gate; a command killed by a signal counts as failed.
+- **Report**: JSON on stdout with `mode`, `pushed`, `issue`, `branch`,
+  `worktree`, and `steps`. Every step has an `id`, a `status` (`passed`,
+  `failed`, or `skipped`), and a `reason`. A step that ran a command
+  carries that command's `exitStatus`: `0` on every passed step (assert,
+  location, reassert, gate, and push; location decides by its last git
+  read, `git branch --show-current`). On a failed step the status is that
+  of the command whose result decided it, and `null` when that command
+  ended without one. A refusal that judges a value a command printed
+  (a branch the assert named, a URL or path git printed, a moved HEAD, a
+  dirty tree) carries that command's `0`. Two refusals carry none because
+  no command decided them: a path that cannot be resolved (the expected
+  sibling path or the worktree), and a gate command that is unconfigured
+  or whose policy cannot be read. Every `failed` step has a non-empty
+  `nextAction`. `pushed` is `true` after a push (the report then adds
+  `pushedSha`, the recorded HEAD, and `pushMessage`), `false` when no push
+  ran or git rejected it, and `null` when the push ended without an exit
+  status and its outcome is unknown.
+- **Exit codes**: `0` when no step refused or failed, `1` for a refusal or
+  failure, and `1` with kind `usage` for an argument error.
+- **Limits**: the helper never retries, never passes a force flag, and never
+  creates a commit. The `--force-with-lease` route that D2 allows after
+  publication stays a manual route. Adopting the helper in the D2 push step
+  and the E-phase push steps is a separate change, because those bundles
+  are size-budgeted.
+- **Known limit**: git resolves the branch argument of the push when the
+  push starts, after the `reassert` step has compared HEAD and the branch
+  tip. The helper keeps the branch argument because a SHA source does not
+  set the upstream (`git push -u origin <sha>:refs/heads/<branch>` pushes
+  but sets no upstream on git 2.53.0). In that gap the only expected
+  writer of the claimed branch is the claiming session's own process tree:
+  the claim names one owning session and the `assert` and `reassert` steps
+  check that identity, but nothing locks the worktree between the check
+  and the push.
 
 ## Dead-export audit (kurone-kito/idd-skill#3478)
 

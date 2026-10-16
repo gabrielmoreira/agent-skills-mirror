@@ -6,7 +6,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 ---
 # story-import：逆向导入已有小说
 
-你是小说项目逆向工程师。**交付物是写作工程**：把作者已有的书重建为可续写的工程（项目结构 + 拆文库分析资产），让作者能直接接着写。`拆文库/{导入书名}/` 是重建工程的数据源，保留不丢弃，但不是交付物本身；对作者以「建工程」为可见目标，别把「拆文」当成终点或对外标签。
+你是小说项目逆向工程师，把作者已有的书整理成**可续写的写作工程**，包含设定、大纲、正文及所需追踪。`拆文库/{导入书名}/` 保留为分析数据源；向作者汇报工程整理结果和续写入口。
 
 > Agent 兼容性：只检查当前运行时的 canonical 目录：Claude `.claude/agents/{agent}.md`、OpenCode `.opencode/agents/{agent}.md`、Codex `.codex/agents/{agent}.toml`、Antigravity `.agents/agents/agent-name/agent.md`（`agent-name` 为目标 agent 名），不得因其他端文件存在而误判。Codex 使用同名 `agent_type`；Antigravity 使用 `invoke_subagent` + `TypeName`。对应运行时未暴露 custom-agent registry / `invoke_subagent` 或返回未知 agent 时，必须降级 solo/direct。检测到 `.zcode/` 时同样直接 solo/direct，因为 ZCode 3.3.4 不执行项目 custom agents；报告 `Fallback: project custom agents unavailable -> solo`。Claude 用 `subagent_type`；OpenCode 用 `subagent` 工具的 `agent` 参数。
 >
@@ -19,11 +19,11 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 - `story-import` 可以复用拆解管道分析 `{导入书名}`，但**不得把 `{导入书名}` 登记为主/副对标，不得把 `拆文库/{导入书名}/` 或项目 `设定/` 复制进 `对标/`**。
 - 用户没有明确选择外部对标时，不创建对标子目录、不写 `主对标书`；后续由 story-long-write / story-short-write 的对标发现流程单独处理。
 
-先分析后迁移：深度分析复用现成管道（长篇 `/story-long-analyze`，短篇 `/story-short-analyze`），方法、模板与质量检查由 analyze skill 自带，本 skill 不另维护；再把分析结果迁移为项目结构。
+先复用长篇 `/story-long-analyze` 或短篇 `/story-short-analyze` 完成深度分析，再将结果迁移为项目结构。拆文方法、模板和质量检查由对应 skill 负责。
 
 ## 时刻表与交接
 
-导入是一串时刻，每个时刻只读自己的文件；后一时刻只靠落盘文件接上前一时刻，不靠对话记忆。
+导入按下表分时刻执行，各时刻通过落盘文件交接。
 
 | 时刻 | 作者确认什么 | 读什么 | 落盘 |
 |---|---|---|---|
@@ -48,7 +48,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ### Step 2：拿到原文
 
-问：「你要导入哪本书？请提供文件路径或直接贴文本。」单文件（.txt/.md）按章节分隔符自动切分；目录按文件名排序合并；直接贴的文本在 Step 5 书名定下后原样存成 `{书目录}/.story/work/导入原文.md`（换对话后对话里的文本就拿不到了）；都没有就请作者提供。本时刻只确认源文件就绪，原文备份到 `拆文库/{导入书名}/原文/` 由 Phase 2 的拆解管道负责，这里不另备份。
+未提供原文时问：「你要导入哪本书？请提供文件路径或直接贴文本。」单文件（.txt/.md）按章节分隔符切分，目录按文件名排序合并。贴入的文本在 Step 5 书名定下后原样保存到 `{书目录}/.story/work/导入原文.md`，供换对话后读取。原文备份到 `拆文库/{导入书名}/原文/` 由 Phase 2 拆解管道负责。
 
 ### Step 3：基本信息确认
 
@@ -59,9 +59,9 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ### Step 4：写作环境检测
 
-先读取 `.story-deployed` 并执行顶部 Spawn 版本门禁；旧版 `chapter-extractor` 文件即使仍在磁盘上也不可复用。通过后在当前运行时的 canonical 目录检查 `chapter-extractor`（Claude/OpenCode/Antigravity 为同名 Markdown，Codex 为同名 TOML），顺带记下 `story-architect` 是否可用（逐批细纲用）。`.story-deployed` 的 `target_cli` 含 `zcode` 时项目 agents 缺失是预期状态：不提示重复部署，直接串行 solo/direct 并报告 fallback。
+先读取 `.story-deployed`，按顶部说明检查版本并报告提示，版本不匹配不阻断调用。再在当前运行时的 canonical 目录检查 `chapter-extractor`（Claude/OpenCode/Antigravity 为同名 Markdown，Codex 为同名 TOML），记下 `story-architect` 是否可用，供逐批细纲使用。`.story-deployed` 的 `target_cli` 含 `zcode` 时直接串行 solo/direct 并报告 fallback，不提示重复部署。
 
-部署标记缺失、版本无效/过期，或当前端 agent 不可用（且不是已部署 ZCode 项目）时这样问：
+当前端 agent 不可用且不是已部署 ZCode 项目时这样问：
 
 > 「这个项目还没装好写作环境。装好后由专门的分析助手逐段拆书，主对话不会被整本书塞满；不装也能导，只是全部在主对话里做，慢一些，结果一样完整。你想：1. 先装环境（推荐）：运行 `/story-setup`，装完再说"导入" 2. 直接导入，慢一点也行」
 
@@ -95,7 +95,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ## Phase 2：深度分析
 
-读 [deep-analysis.md](references/deep-analysis.md)，按导入记录的篇幅与写作环境进入对应拆解管道，自动跑完本次需要的范围，不把拆书中途的停靠询问甩给作者。完成后勾进度。
+读 [deep-analysis.md](references/deep-analysis.md)，按导入记录进入对应拆解管道，自动完成已确认的分析范围，中途停靠按该文件处理。完成后勾进度。
 
 ## Phase 3：结构迁移
 
@@ -120,8 +120,3 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 | 想拆一本外部对标书 | story-long-analyze / story-short-analyze | `/story-long-analyze` / `/story-short-analyze` |
 | 从零开新书 | story-long-write / story-short-write | `/story-long-write` + "开书" / `/story-short-write` |
 | 项目未装写作环境 | story-setup | `/story-setup` |
-
-## 语言
-
-- 跟随用户的语言回复，用户用什么语言就用什么语言回复
-- 中文回复遵循《中文文案排版指北》

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `affaan-m/ECC` — 26 default patterns, 3 followed patterns, 1608 file(s) materialized.
+Mirror of `affaan-m/ECC` — 26 default patterns, 4 followed patterns, 1609 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `affaan-m/ECC` — 26 default patterns, 3 followed patterns, 1608 file
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 3 |
-| Files         | 1608 |
+| Followed pats | 4 |
+| Files         | 1609 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -54,6 +54,7 @@ Mirror of `affaan-m/ECC` — 26 default patterns, 3 followed patterns, 1608 file
 - `CONTRIBUTING.md`
 - `docs/SKILL-DEVELOPMENT-GUIDE.md`
 - `docs/skill-adaptation-policy.md`
+- `.github/PR_MODERATION.md`
 
 ## File Index
 
@@ -1666,9 +1667,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1603 | ✓ | [`skills/windows-desktop-e2e/SKILL.md`](skills/windows-desktop-e2e/SKILL.md) |
 | 1604 | ✓ | [`skills/workspace-surface-audit/SKILL.md`](skills/workspace-surface-audit/SKILL.md) |
 | 1605 | ✓ | [`skills/x-api/SKILL.md`](skills/x-api/SKILL.md) |
-| 1606 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 1607 | → | [`docs/skill-adaptation-policy.md`](docs/skill-adaptation-policy.md) |
-| 1608 | → | [`docs/SKILL-DEVELOPMENT-GUIDE.md`](docs/SKILL-DEVELOPMENT-GUIDE.md) |
+| 1606 | → | [`.github/PR_MODERATION.md`](.github/PR_MODERATION.md) |
+| 1607 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 1608 | → | [`docs/skill-adaptation-policy.md`](docs/skill-adaptation-policy.md) |
+| 1609 | → | [`docs/SKILL-DEVELOPMENT-GUIDE.md`](docs/SKILL-DEVELOPMENT-GUIDE.md) |
 
 ---
 

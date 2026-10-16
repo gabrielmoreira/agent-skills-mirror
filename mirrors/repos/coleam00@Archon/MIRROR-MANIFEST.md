@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `coleam00/Archon` — 26 default patterns, 10 followed patterns, 48 file(s) materialized.
+Mirror of `coleam00/Archon` — 26 default patterns, 11 followed patterns, 49 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `coleam00/Archon` — 26 default patterns, 10 followed patterns, 48 fi
 | Ref Type      | `branch` |
 | Ref           | `dev` |
 | Default pats  | 26 |
-| Followed pats | 10 |
-| Files         | 48 |
+| Followed pats | 11 |
+| Files         | 49 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -57,6 +57,7 @@ Mirror of `coleam00/Archon` — 26 default patterns, 10 followed patterns, 48 fi
 - `.archon/workflows/sdlc/CONSTITUTION.md`
 - `CONTRIBUTING.md`
 - `.github/pull_request_template.md`
+- `.archon/architecture.md`
 - `packages/docs-web/src/content/docs/reference/cli.md`
 - `packages/docs-web/src/content/docs/guides/authoring-workflows.md`
 - `packages/docs-web/src/content/docs/reference/database.md`
@@ -106,16 +107,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 36 | ✓ | [`packages/providers/src/codex/protocol/README.md`](packages/providers/src/codex/protocol/README.md) |
 | 37 | ✓ | [`packages/web/src/experiments/console/builder/README.md`](packages/web/src/experiments/console/builder/README.md) |
 | 38 | ✓ | [`packages/web/src/experiments/console/README.md`](packages/web/src/experiments/console/README.md) |
-| 39 | → | [`.archon/direction.md`](.archon/direction.md) |
-| 40 | → | [`.archon/engineering.md`](.archon/engineering.md) |
-| 41 | → | [`.archon/workflow-language-constitution.md`](.archon/workflow-language-constitution.md) |
-| 42 | → | [`.archon/workflows/sdlc/CONSTITUTION.md`](.archon/workflows/sdlc/CONSTITUTION.md) |
-| 43 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
-| 44 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 45 | → | [`packages/docs-web/src/content/docs/guides/authoring-workflows.md`](packages/docs-web/src/content/docs/guides/authoring-workflows.md) |
-| 46 | → | [`packages/docs-web/src/content/docs/reference/cli.md`](packages/docs-web/src/content/docs/reference/cli.md) |
-| 47 | → | [`packages/docs-web/src/content/docs/reference/database.md`](packages/docs-web/src/content/docs/reference/database.md) |
-| 48 | → | [`README.md`](README.md) |
+| 39 | → | [`.archon/architecture.md`](.archon/architecture.md) |
+| 40 | → | [`.archon/direction.md`](.archon/direction.md) |
+| 41 | → | [`.archon/engineering.md`](.archon/engineering.md) |
+| 42 | → | [`.archon/workflow-language-constitution.md`](.archon/workflow-language-constitution.md) |
+| 43 | → | [`.archon/workflows/sdlc/CONSTITUTION.md`](.archon/workflows/sdlc/CONSTITUTION.md) |
+| 44 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 45 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 46 | → | [`packages/docs-web/src/content/docs/guides/authoring-workflows.md`](packages/docs-web/src/content/docs/guides/authoring-workflows.md) |
+| 47 | → | [`packages/docs-web/src/content/docs/reference/cli.md`](packages/docs-web/src/content/docs/reference/cli.md) |
+| 48 | → | [`packages/docs-web/src/content/docs/reference/database.md`](packages/docs-web/src/content/docs/reference/database.md) |
+| 49 | → | [`README.md`](README.md) |
 
 ---
 

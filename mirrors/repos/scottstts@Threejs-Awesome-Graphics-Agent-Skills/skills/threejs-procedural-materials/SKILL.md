@@ -1,6 +1,6 @@
 ---
 name: threejs-procedural-materials
-description: Author production procedural materials in Three.js. Use for hybrid texture-backed PBR soil and moss with procedural displacement and masks, upward-facing model moss accumulation, atlas filtering, specular AA, planet-space fields, terrain wetness, deformable granular sand with mass-coupled grain shading, woven cloth with GPU XPBD mechanics and yarn microstructure, simulated fur with interactive grooming and strand shading, lava and emissive surfaces, reflective wave-optical diffraction gratings, air-film-air soap bubbles with Airy interference, raytraced diamond and gem refraction with internal reflection and dispersion, image-space glass transmission with spectral dispersion and volume absorption, deforming softbody jelly materials with XPBD mechanics and refractive caustics, per-instance dissolve, authored PBR identities, derivative normals, and custom direct-light shadow modulation.
+description: Author production procedural materials in Three.js. Use for hybrid texture-backed PBR soil and moss with procedural displacement and masks, upward-facing model moss accumulation, atlas filtering, specular AA, planet-space fields, terrain wetness, deformable granular sand with mass-coupled grain shading, simulated tearable denim with implicit yarn mechanics, wear-driven failure and frayed fibres, woven cloth with GPU XPBD mechanics and yarn microstructure, simulated fur with interactive grooming and strand shading, lava and emissive surfaces, reflective wave-optical diffraction gratings, air-film-air soap bubbles with Airy interference, raytraced diamond and gem refraction with internal reflection and dispersion, image-space glass transmission with spectral dispersion and volume absorption, deforming softbody jelly materials with XPBD mechanics and refractive caustics, per-instance dissolve, authored PBR identities, derivative normals, and custom direct-light shadow modulation.
 ---
 
 # Procedural Materials
@@ -113,6 +113,15 @@ for an exact plain-weave linen material coupled to a GPU XPBD sheet with yarn
 stretch, shear locking, bending, rigid contact, self-collision, and pinching.
 The calibrated solver and cloth-map contracts are in
 [references/simulated-cloth-system.md](references/simulated-cloth-system.md).
+
+Read the
+[simulated tearable denim implementation](examples/simulated-tearable-denim/simulated-tearable-denim.js)
+for 3/1 twill, implicit multigrid PCG mechanics, wear-driven yarn failure,
+connected grip patches, detached pieces, loose threads and frayed fibres.
+Read [references/simulated-tearable-denim.md](references/simulated-tearable-denim.md)
+for its material, solver, topology, filtering and integration contracts.
+Choose this example for material loss and yarn failure; choose
+`simulated-cloth` for plain-weave XPBD linen without tearing.
 
 Read the
 [simulated fur implementation](examples/simulated-fur/simulated-fur.js)

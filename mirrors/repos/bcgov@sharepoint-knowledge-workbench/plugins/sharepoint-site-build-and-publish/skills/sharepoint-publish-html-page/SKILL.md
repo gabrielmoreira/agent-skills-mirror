@@ -24,8 +24,9 @@ Uploads and publishes `.html` files to SharePoint Online Document Libraries or t
 - Dry-run by default: running without `-Execute` prints the target server-relative URL and upload plan without modifying tenant state.
 - Real writes require `-Execute -ConfirmToken PUBLISH-SPO-HTML`.
 - Enforces `.html` or `.htm` file extensions.
-- Uses checkout/checkin discipline (`Set-PnPFileCheckedOut` / `Set-PnPFileCheckedIn -CheckinType MajorCheckIn`) when replacing existing files.
-- Verifies post-upload presence and outputs the clean browser URL.
+- Uses checkout/checkin discipline (`Set-PnPFileCheckedOut`) when replacing existing files.
+- Uploads first, then uses `Set-PnPFileCheckedIn -CheckinType MajorCheckIn` so new and replaced files become a major version (e.g. 1.0), not a 0.1 draft. This avoids the SharePoint error caused by combining `Add-PnPFile -Publish` with an already checked-out destination.
+- Verifies the file's `_UIVersionString` is a major version and fails (instead of reporting `PUBLISHED`) if it is still a draft, e.g. when content approval is required. Outputs the clean browser URL and `Version`.
 
 ## Quick start
 

@@ -12,8 +12,6 @@ dbs-video-extract
 dbs-video-navigation
 dbs-knowledge
 dbs-title-cover-intro
-dbs-hook
-dbs-xhs-title
 dbs-deconstruct
 dbs-chatroom-austrian
 dbs-chatroom

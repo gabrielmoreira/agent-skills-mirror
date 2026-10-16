@@ -23,6 +23,8 @@ computer.doubleClick(x, y, opts?) / computer.move(x, y) / computer.drag([[x, y],
     Scroll direction is semantic and the same on every OS: positive dy moves the view toward the end of the content (negative toward the start), positive dx toward the right edge; the natural-scrolling setting does not change it.
 computer.type(text, { delivery? }?) / computer.press("cmd+shift+p" | keys[], { delivery? }?) → None
     Same helpers on a window handle: win.type, win.press.
+computer.holdKeys(keys[], { duration, delivery? }) / computer.holdMouse(x, y, { duration, button?, keys?, delivery?, frameId? }) → None
+    Exec tier, also available on window and display handles and the desktop object inside computer.run. Duration is finite seconds in 0..=100; holdKeys refuses an empty list. Mouse coordinates use the latest full screenshot, never a zoom. Input is always released before the call settles, including errors, cancellation, deadlines and the user's safety stop; keys release in reverse order. Foreground delivery still needs the human-confirmed control grant. Existing run and engine deadlines can interrupt a hold early; give long holds an adequate run budget. Older engines refuse unsupported hold methods without affecting press/click.
 win.raise() → None
     Brings the window to the front (exec tier). Unavailable on Wayland.
 win.menu.items(path?) → ComputerMenuItem[]

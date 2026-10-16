@@ -15,7 +15,7 @@ from . import env, http, schema
 GEMINI_FLASH_LITE = "gemini-3.1-flash-lite"
 GEMINI_PRO = "gemini-3.1-pro-preview"
 OPENAI_DEFAULT = "gpt-5.4-nano"
-XAI_DEFAULT = "grok-4-1-fast"
+XAI_DEFAULT = "grok-4.20-0309-non-reasoning"
 
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
 OPENAI_RESPONSES_URL = "https://api.openai.com/v1/responses"

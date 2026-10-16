@@ -20,7 +20,7 @@ accepted paths — read them, don't guess. See
 for the canonical SOQL; run it once per invoked workflow (`create`, `update`,
 `copy`), producing three contracts.
 
-**Additionally**, apply the eight cross-workflow rules (R1..R8) in
+**Additionally**, apply the nine cross-workflow rules (R1..R9) in
 `references/conventions-and-payload-rules.md` ("Promotion payload — cross-workflow
 rules"). These are the constraints the schema alone cannot express and every one
 has caused a smoke-test failure historically. Summary of what the skill MUST do
@@ -34,6 +34,7 @@ on top of the derived contract:
 - **R6** — for `copy`, derive requireds the same way, then layer the Apex-only preconditions (`Is_Copyable__c`, template type, anchor).
 - **R7** — reject any `Tactics[*].TacticTemplate` not linked to the chosen `PromotionTemplate` in this sales org.
 - **R8** — reject any `PromotionTemplate` whose `Promotion_Type__c != 'Promotion'` (fail-fast before ingest — otherwise it surfaces as a misleading `/productfilter` error).
+- **R9** — verify running user holds `Product_Category_Share__c` with `Access_Level__c='ReadWrite'` for every category referenced by the payload (template anchor category + `ProductFilter.Criteria.Category`). Missing rows → stop; do not insert shares.
 
 For each derived contract, compute:
 - `requiredPaths` = union of `Path__c` where `Required__c = true`.
@@ -93,6 +94,21 @@ request: a bearer token in shell output, traces, or agent context is a
 credential exposure (S1). Do **not** add `--json` to `sf api request rest` — the
 raw stdout body is already JSON. `${URL_NS}` is the namespace segment from
 Phase 1 (`/cgcloud` / `/cgcloud_dev` / empty); the endpoint is instance-relative.
+
+**Smoke-time re-check of running user's `${PREFIX_UNDER}Sales_Org__c`.** Phase 1
+step 7 gated the whole invocation on this, but Phase 6 can be minutes/hours later
+and the user record may have drifted (a parallel admin edit, a session on a
+different browser tab that re-ran with `--yes`). Re-run the same SOQL before the
+first REST call in each of 6a/6b/6c:
+
+```bash
+sf data query --target-org <alias> --json --query "
+  SELECT ${PREFIX_UNDER}Sales_Org__c FROM User WHERE Username = '<running-user-name>'
+" > ./out/smoke/user-so-check.json
+```
+
+If the value is blank or `!= <salesOrg>`, stop with the same fix options as
+Phase 1 step 7 — do NOT auto-mutate the user record.
 
 ```bash
 BASE="/services/apexrest${URL_NS}/promotions"

@@ -16,6 +16,34 @@ Missing runtime identity does not defer safety triage. When supplied configurati
 first perform the bounded, non-constructing inspection below and report a sanitized diagnosis; then
 request the identity before producing a deployable correction.
 
+## Parsers verified 2026-10-15 (newer releases may exist; check the pin before deploying)
+
+| Runtime | Parser | `file_format` | Check before deploying |
+|---|---|---|---|
+| Go | otelconf v0.27.0 | `"1.0-rc.3"` | Makefile schema tag |
+| Java SDK | 1.67.0 | `"1.2"` | `EXPECTED_FILE_FORMAT` |
+| Java agent / Spring starter | 2.32.0 (SDK 1.66.0) | `"1.1"` | embedded SDK version |
+| JS | configuration 0.223.0 | `"1.1"` | `CONFIG_VERSION` |
+| Python | configuration 0.66b1 | `"1.1"` | vendored `schema.json` |
+| Ruby | config 0.1.1 | `"1.0"` (README) | `generated_constants.rb` |
+| .NET | SDK: none; auto-instr. v1.17.0 (experimental) | `"1.0"` (docs) | - |
+
+Schema repo latest: v1.2.0. For evidence, validation behavior, or one file shared by several
+runtimes, read [`references/runtime-compatibility.md`](references/runtime-compatibility.md).
+
+## Evidence precedence
+
+Online, for a version the user names, check only that tag's evidence; for "latest", look up the
+latest release once and re-verify the row only if it differs.
+
+Consult sources in this order and stop at the first that answers; if sources you already hold
+disagree, the higher wins; name the conflict before recommending.
+
+1. Parser behavior at the release tag or in the published artifact (schema pin, `file_format` check).
+2. Release changelog and migration notes.
+3. Release-tagged fixtures and README examples.
+4. Language Support Status, which is coverage metadata only.
+
 ## Sources of Truth
 
 The schema, `file_format` strings, fields, and SDK coverage evolve per release. Fetch upstream
@@ -27,19 +55,18 @@ an older parser.
 | Fact | Fetch |
 |---|---|
 | Schema release discovery and selected-tag validation | `gh release list --repo open-telemetry/opentelemetry-configuration --exclude-drafts --json tagName,publishedAt --limit 100`, then `gh release view <schema-release-tag> --repo open-telemetry/opentelemetry-configuration --json tagName,publishedAt,targetCommitish` |
-| Language Support Status (coverage advisory, not authoritative for `file_format`) | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-configuration/main/language-support-status.md` |
+| Language Support Status (coverage only, never sets `file_format`) | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-configuration/main/language-support-status.md` |
 | Field-by-field type docs (renders the current schema; from `v1.2.0`, the tagged `schema-docs.md` is only a redirect stub) | `WebFetch https://opentelemetry.io/docs/specs/otel-config/types/`; for tags up to `v1.1.0`, the tagged `schema-docs.md` |
 | Compiled JSON Schema (validate generated YAML against this) | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-configuration/<schema-release-tag>/opentelemetry_configuration.json` |
-| Canonical full example | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-configuration/<schema-release-tag>/examples/otel-sdk-config.yaml` |
-| Migration template (every option, with comments) | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-configuration/<schema-release-tag>/examples/otel-sdk-migration-config.yaml` |
+| Canonical full example | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-configuration/<schema-release-tag>/examples/otel-sdk-config.yaml` (tags before `v1.0.0`: no `otel-` prefix) |
+| Migration template (every option, with comments) | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-configuration/<schema-release-tag>/examples/otel-sdk-migration-config.yaml` (tags before `v1.0.0`: no `otel-` prefix) |
 | Schema CHANGELOG (breaking-change history with migration steps) | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-configuration/<schema-release-tag>/CHANGELOG.md` |
 
 ## Generate YAML
 
 1. Identify the exact runtime/package/agent version that will parse the file.
-2. Fetch its source, docs, or release-matched test fixtures and confirm the accepted
-   `file_format`. Runtime/package evidence wins over Language Support Status coverage metadata.
-3. Use the tagged `examples/otel-sdk-config.yaml` as a structural template, adapting its literal
+2. Confirm the accepted `file_format` from that release's evidence, applying the precedence above.
+3. Use the tagged canonical example (see Sources of Truth) as a structural template, adapting its literal
    and fields to the selected parser.
 4. Overlay the user's specific values (service name, endpoint, sampling, headers).
 5. Apply all three validation levels below that the task authorizes.
@@ -51,10 +78,11 @@ released-version guidance from schema files or examples on `main`. Coverage iden
 `1.0.0` or `1.0.0-rc.3` are not automatically YAML literals; tagged examples may use `MAJOR.MINOR`
 values such as `1.1`. Generated YAML must use the literal verified in the target runtime.
 
-**\.NET note:** declarative YAML config has **no released implementation or package** in OpenTelemetry .NET
-(tracked by [`open-telemetry/opentelemetry-dotnet#7658`](https://github.com/open-telemetry/opentelemetry-dotnet/issues/7658)).
-.NET configures via the DI/builder API, `OTEL_*` env vars, and `IConfiguration`. Do **not**
-use `OTEL_CONFIG_FILE` with .NET runtimes.
+**\.NET note:** the OpenTelemetry .NET SDK has **no released declarative-config package**
+(tracked by [`open-telemetry/opentelemetry-dotnet#7658`](https://github.com/open-telemetry/opentelemetry-dotnet/issues/7658));
+SDK users configure via the DI/builder API, `OTEL_*` env vars, and `IConfiguration`, and must not
+rely on `OTEL_CONFIG_FILE`. The separate zero-code .NET auto-instrumentation has experimental
+file-based config instead; see the runtime table.
 
 ## Trust and evidence boundaries
 
@@ -159,3 +187,5 @@ behaviors were or were not verified; and the separate status of schema, selected
 validation. When compatibility evidence is cached, also state its reuse or invalidation decision and
 record the complete runtime, package or agent, version, selected schema tag, and source-revision
 identity. Omit only categories that do not apply to the request.
+For an answer from the dated table, state the date, that newer releases may exist, and the pin to
+check before deploying.

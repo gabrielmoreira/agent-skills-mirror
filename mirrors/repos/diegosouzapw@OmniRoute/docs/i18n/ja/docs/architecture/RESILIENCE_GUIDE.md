@@ -370,6 +370,17 @@ glm-4.7=3
 
 すべてのコンボ戦略（有効な場合）では、短時間の一時的なクールダウンによる429を確定させる可能性があるリクエストについて、429を返す代わりにクールダウンの終了を待って再ディスパッチします。これにより、複数モデルのコンボで発生するGemini系のTPM / RPMウィンドウ（retry-afterは約60秒）に対応できます。たとえば、2モデルのコンボで両方のターゲットがモデル単位のレート制限に達した場合が該当します。**設定 → レジリエンス**の `comboCooldownWait`（`enabled`、`maxWaitMs`、`maxAttempts`、`budgetMs`）によって制限されます。`quota_exhausted`（午前0時までロック）や、認証 / 未検出を理由とする場合には待機しません。
 
+```text
+#16319 · comboCooldownWait · pre-dispatch (attempts = 0)
+all targets skipped + transient model lockout:
+  enabled ∧ 0 < waitMs ≤ maxWaitMs ∧ attempt < maxAttempts ∧ budgetLeftMs ≥ waitMs
+    → wait → re-dispatch
+  wait = false → HTTP 429 rate_limit_error
+  retry_after / reset_at ← earliest transient lock expiry
+quota_exhausted / auth_error / not_found / not_found_local:
+  no transient hint → HTTP 503 ALL_TARGETS_SKIPPED
+```
+
 ---
 
 ## 5. リクエストキューのアドミッション制御 (v3.8.49 · issue #6593)

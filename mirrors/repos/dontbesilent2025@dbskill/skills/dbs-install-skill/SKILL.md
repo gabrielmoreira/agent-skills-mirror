@@ -84,9 +84,9 @@ Unix-like 系统使用符号链接；Windows 的 Bash／MSYS 环境使用目录 
 
 用户可能提供：
 
-- Skill 名称：`dbs-hook`；
-- 相对路径：`skills/dbs-hook`；
-- 绝对路径：`/Users/.../dbskill/skills/dbs-hook`；
+- Skill 名称：`dbs-diagnosis`；
+- 相对路径：`skills/dbs-diagnosis`；
+- 绝对路径：`/Users/.../dbskill/skills/dbs-diagnosis`；
 - 外部 Skill：`/Users/.../external-skills/lark-doc`；
 - Skill 集合目录：`/Users/.../dbskill/skills`；
 - 当前上下文刚创建或刚修改的 Skill。
@@ -120,7 +120,7 @@ skills/dbs-install-skill/scripts/install-skill.sh link <skill-name-or-path>
 示例：
 
 ```bash
-skills/dbs-install-skill/scripts/install-skill.sh link dbs-hook
+skills/dbs-install-skill/scripts/install-skill.sh link dbs-diagnosis
 skills/dbs-install-skill/scripts/install-skill.sh link skills/my-custom-skill
 skills/dbs-install-skill/scripts/install-skill.sh link skills
 skills/dbs-install-skill/scripts/install-skill.sh link "/absolute/path/to/skill"
@@ -197,11 +197,11 @@ skills/dbs-install-skill/scripts/install-skill.sh unlink <skill-name-or-path>
 - `~/.agents/skills/<name>` 是公共规范入口；
 - Codex 等公共兼容客户端的专属目录中没有同源链接；
 - 专属宿主目标位置若存在，必须是指向当前真源的符号链接或 Junction；
-- Grok 目标位置若存在，必须是本工具生成的 Grok 适配层才允许更新；
+- Grok 目标位置若存在，必须是本工具生成的 Grok 适配层，且指向当前真源或原真源已不存在，才允许更新或移除；
 - 真实目录、真实文件和其他来源链接没有被删除；
 - 源目录没有被删除；
 - `private/` 与 `.private/` 没有被读取、复制、暂存或安装。
 
 ---
 
-完成当前任务后直接结束。只有用户明确询问下一步，且当前环境已经安装 `/dbs` 时，简短提示：「下一步不确定时，可以输入 `/dbs`。」
+完成当前任务后直接结束。用户的请求超出本 Skill 的范围、任务完成后用户的材料里出现明确的后续需求，或用户询问下一步时，用一句话说明还需要哪种能力，不点名其他 Skill；当前环境已经安装 `/dbs` 时，补一句「可以输入 `/dbs`，由它匹配对应的 Skill」。

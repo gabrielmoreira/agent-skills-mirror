@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `p697/clawket` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `p697/clawket` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `p697/clawket` — 26 default patterns, 0 followed patterns, 16 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,19 +62,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`apps/bridge-cli/AGENTS.md`](apps/bridge-cli/AGENTS.md) |
 | 3 | ✓ | [`apps/bridge-cli/CLAUDE.md`](apps/bridge-cli/CLAUDE.md) |
-| 4 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
-| 5 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
-| 6 | ✓ | [`apps/mobile/modules/clawket-qa-viewport/AGENTS.md`](apps/mobile/modules/clawket-qa-viewport/AGENTS.md) |
-| 7 | ✓ | [`apps/mobile/modules/clawket-qa-viewport/CLAUDE.md`](apps/mobile/modules/clawket-qa-viewport/CLAUDE.md) |
-| 8 | ✓ | [`apps/speech-worker/AGENTS.md`](apps/speech-worker/AGENTS.md) |
-| 9 | ✓ | [`apps/speech-worker/CLAUDE.md`](apps/speech-worker/CLAUDE.md) |
-| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 11 | ✓ | [`packages/agent-protocol/AGENTS.md`](packages/agent-protocol/AGENTS.md) |
-| 12 | ✓ | [`packages/agent-protocol/CLAUDE.md`](packages/agent-protocol/CLAUDE.md) |
-| 13 | ✓ | [`packages/bridge-runtime/AGENTS.md`](packages/bridge-runtime/AGENTS.md) |
-| 14 | ✓ | [`packages/bridge-runtime/CLAUDE.md`](packages/bridge-runtime/CLAUDE.md) |
-| 15 | ✓ | [`packages/relay-shared/AGENTS.md`](packages/relay-shared/AGENTS.md) |
-| 16 | ✓ | [`packages/relay-shared/CLAUDE.md`](packages/relay-shared/CLAUDE.md) |
+| 4 | ✓ | [`apps/ios/AGENTS.md`](apps/ios/AGENTS.md) |
+| 5 | ✓ | [`apps/ios/CLAUDE.md`](apps/ios/CLAUDE.md) |
+| 6 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
+| 7 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
+| 8 | ✓ | [`apps/mobile/modules/clawket-qa-viewport/AGENTS.md`](apps/mobile/modules/clawket-qa-viewport/AGENTS.md) |
+| 9 | ✓ | [`apps/mobile/modules/clawket-qa-viewport/CLAUDE.md`](apps/mobile/modules/clawket-qa-viewport/CLAUDE.md) |
+| 10 | ✓ | [`apps/speech-worker/AGENTS.md`](apps/speech-worker/AGENTS.md) |
+| 11 | ✓ | [`apps/speech-worker/CLAUDE.md`](apps/speech-worker/CLAUDE.md) |
+| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 13 | ✓ | [`packages/agent-protocol/AGENTS.md`](packages/agent-protocol/AGENTS.md) |
+| 14 | ✓ | [`packages/agent-protocol/CLAUDE.md`](packages/agent-protocol/CLAUDE.md) |
+| 15 | ✓ | [`packages/apple/AGENTS.md`](packages/apple/AGENTS.md) |
+| 16 | ✓ | [`packages/apple/CLAUDE.md`](packages/apple/CLAUDE.md) |
+| 17 | ✓ | [`packages/apple/Sources/ClawketCommerce/AGENTS.md`](packages/apple/Sources/ClawketCommerce/AGENTS.md) |
+| 18 | ✓ | [`packages/apple/Sources/ClawketCommerce/CLAUDE.md`](packages/apple/Sources/ClawketCommerce/CLAUDE.md) |
+| 19 | ✓ | [`packages/apple/Sources/ClawketMedia/AGENTS.md`](packages/apple/Sources/ClawketMedia/AGENTS.md) |
+| 20 | ✓ | [`packages/apple/Sources/ClawketMedia/CLAUDE.md`](packages/apple/Sources/ClawketMedia/CLAUDE.md) |
+| 21 | ✓ | [`packages/apple/Sources/ClawketPersistence/AGENTS.md`](packages/apple/Sources/ClawketPersistence/AGENTS.md) |
+| 22 | ✓ | [`packages/apple/Sources/ClawketPersistence/CLAUDE.md`](packages/apple/Sources/ClawketPersistence/CLAUDE.md) |
+| 23 | ✓ | [`packages/apple/Sources/ClawketSpeech/AGENTS.md`](packages/apple/Sources/ClawketSpeech/AGENTS.md) |
+| 24 | ✓ | [`packages/apple/Sources/ClawketSpeech/CLAUDE.md`](packages/apple/Sources/ClawketSpeech/CLAUDE.md) |
+| 25 | ✓ | [`packages/apple/Sources/ClawketUI/AGENTS.md`](packages/apple/Sources/ClawketUI/AGENTS.md) |
+| 26 | ✓ | [`packages/apple/Sources/ClawketUI/CLAUDE.md`](packages/apple/Sources/ClawketUI/CLAUDE.md) |
+| 27 | ✓ | [`packages/apple/Sources/ClawketUpgrade/AGENTS.md`](packages/apple/Sources/ClawketUpgrade/AGENTS.md) |
+| 28 | ✓ | [`packages/apple/Sources/ClawketUpgrade/CLAUDE.md`](packages/apple/Sources/ClawketUpgrade/CLAUDE.md) |
+| 29 | ✓ | [`packages/bridge-runtime/AGENTS.md`](packages/bridge-runtime/AGENTS.md) |
+| 30 | ✓ | [`packages/bridge-runtime/CLAUDE.md`](packages/bridge-runtime/CLAUDE.md) |
+| 31 | ✓ | [`packages/relay-shared/AGENTS.md`](packages/relay-shared/AGENTS.md) |
+| 32 | ✓ | [`packages/relay-shared/CLAUDE.md`](packages/relay-shared/CLAUDE.md) |
 
 ---
 

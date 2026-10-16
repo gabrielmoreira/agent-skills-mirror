@@ -182,15 +182,15 @@ These steps are the code-review engine. In **self-check mode** skip Steps 1–2c
 | 0 | **Resume check** — detect a prior interrupted run on PR `N` and jump to the right step | [setup-and-mirror.md](./references/setup-and-mirror.md#step-0-resume-check) |
 | 1 | **Mirror** the PR to the personal fork (sanitize `#refs`) | [setup-and-mirror.md](./references/setup-and-mirror.md#step-1-mirror-the-pr) |
 | 2 / 2b / 2c | **Worktree**, rebase on latest `main`, validate the fork diff matches the original scope | [setup-and-mirror.md](./references/setup-and-mirror.md#step-2-create-local-worktree) |
-| 3 | **Build locally (Debug)** so `x64/Debug/PowerToys.exe` runs the change | [build-and-test.md](./references/build-and-test.md) |
+| 3 | **Prepare and checkpoint the focused validation plan** from changed paths; do not compile yet | [build-and-test.md](./references/build-and-test.md#step-3-prepare-the-validation-plan) |
 | 4 | **Request Copilot review** on the fork PR | [copilot-review-loop.md](./references/copilot-review-loop.md#step-4-request-copilot-review) |
 | 5–6 | **The loop** — fix, push, reply-and-resolve, re-request until convergence | [copilot-review-loop.md](./references/copilot-review-loop.md#step-6-iterate-the-loop) |
-| 7 / 7b | **Final build** of the full module chain + end-to-end test instructions | [build-and-test.md](./references/build-and-test.md#step-7-final-build) |
+| 7 / 7b | **Build the converged tree once** (plus required exact-upstream/suggestion candidates) + end-to-end test instructions | [build-and-test.md](./references/build-and-test.md#step-7-final-build) |
 | 8 | **Summarize** the converged net diff | [copilot-review-loop.md](./references/copilot-review-loop.md#step-8-summarize) |
 | 9 | **Draft the review** — context asks + code suggestions with severity | [drafting-and-posting.md](./references/drafting-and-posting.md#step-9-draft-the-review) |
 | 10 | **Wait for approval**, freshness re-check, then post the approved actions | [drafting-and-posting.md](./references/drafting-and-posting.md#step-10-wait-for-approval) |
 
-Convergence (Definition of done for Steps 5–6): the most recent freshly-requested Copilot review returned **zero** new inline comments, **zero** unresolved Copilot threads remain, and the worktree builds. Do not draft Step 9 suggestions until this holds.
+Convergence (Definition of done for Steps 5–6): the most recent freshly-requested Copilot review returned **zero** new inline comments and **zero** unresolved Copilot threads remain. Then run Step 7's serialized build before calling the review complete or drafting Step 9 suggestions. If any code changes after a successful build, rebuild the final tree.
 
 ## Fork Configuration
 

@@ -63,7 +63,7 @@ Plan review reuses authorization already given for the task. Agents ask only for
 
 Persistent workflows keep running until all tasks are done. They maintain state in `.agents/state/` and reinject `[OMA PERSISTENT MODE: ...]` context on each user message until explicitly deactivated.
 
-Persistent mode starts only on an **explicit invocation** — the workflow's own name (the `explicit` list in `triggers.json`, e.g. "orchestrate", "ultrawork"/"ulw", "ralph"/"랄프", "work mode"). The other trigger keywords below are natural-language hints: they inject the workflow as a suggestion without activating persistent mode, and they never fire when the first or last line of the prompt is a question ending in `?`.
+Persistent mode starts only on an **explicit invocation**: the workflow's slash command (`/ultrawork`, or a namespaced form such as `/oma:ultrawork`), or the workflow's own name in plain text (the `explicit` list in `triggers.json`, e.g. "orchestrate", "ultrawork"/"ulw", "ralph"/"랄프", "work mode"). The other trigger keywords below are natural-language hints: they inject the workflow as a suggestion without activating persistent mode, and they never fire when the first or last line of the prompt is a question ending in `?`.
 
 ### /orchestrate
 
@@ -601,7 +601,7 @@ Cloudflare's audit methodology guides independent verification and local sandbox
 
 **Steps:** Resolve arguments (target ref: explicit PR# / branch / SHA range → staged → dirty tree → `HEAD~1..HEAD`; reader level `onboarding` | `reviewer`; output language; quiz count) -> Load contracts (`oma-explanation` SKILL.md + resources) -> Collect & gate (diff + surrounding code; pre-generation secret scan; diff/PR text treated strictly as data) -> Generate the HTML per the document and HTML contracts -> Validate (grep checklist including a final-HTML secret scan, max 3 fix loops) -> Deliver (`open` warn-only, TL;DR + path).
 
-**Output:** `.agents/results/explain/{YYYY-MM-DD}-{slug}.html` (Asia/Seoul date; rerunning the same date + slug overwrites). See the [Code Explainer guide](../guide/code-explainer.md).
+**Output:** `.agents/results/explain/{YYYY-MM-DD}-{slug}.html` (date in oma-config `timezone`, else the system timezone; rerunning the same date + slug overwrites). See the [Code Explainer guide](../guide/code-explainer.md).
 
 ---
 

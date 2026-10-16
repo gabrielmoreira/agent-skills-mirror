@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import json
 import os
+import re
+import subprocess
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 
@@ -28,6 +30,7 @@ class ProcessInvocation:
     command: str
     args: list[str]
     env_override: dict[str, str | None] | None = None
+    isolate_xdg_state: bool = False
 
 
 @dataclass(frozen=True)
@@ -122,7 +125,7 @@ _GROK_PERMISSIONS = {
     "yolo": ("--permission-mode", "bypassPermissions", "--sandbox", "off"),
 }
 
-# OpenCode permissions are supplied through OPENCODE_PERMISSION.
+# OpenCode permissions are supplied through the environment.
 _OPENCODE_PERMISSIONS = {
     "read-only": (),
     "safe-edit": (),
@@ -231,14 +234,65 @@ _OPENCODE_PERMISSION_MAPPING = {
 }
 
 
+_OPENCODE_VERSION = re.compile(r"(\d+)\.\d+")
+_OPENCODE_VERSION_TIMEOUT_SEC = 10
+
+
+def _opencode_is_v2() -> bool:
+    """Unreadable versions count as 1.x, the behavior before 2.x support."""
+    try:
+        completed = subprocess.run(
+            ["opencode", "--version"],
+            stdin=subprocess.DEVNULL,
+            capture_output=True,
+            text=True,
+            timeout=_OPENCODE_VERSION_TIMEOUT_SEC,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    match = _OPENCODE_VERSION.search(completed.stdout)
+    return match is not None and int(match.group(1)) >= 2
+
+
+def _opencode_v2_flags(inv: AgentInvocation) -> list[str]:
+    # The shared background service ignores this process's environment,
+    # so per-run permissions require a private server.
+    flags = ["--standalone"]
+    model = inv.model
+    if inv.effort:
+        if not model:
+            raise ValueError(
+                "OpenCode 2 selects effort as a model variant, so effort requires model. "
+                "Set model or remove effort."
+            )
+        model = f"{model}#{inv.effort}"
+    if model:
+        flags.extend(["--model", model])
+    return flags
+
+
 def _build_opencode_args(inv: AgentInvocation) -> ProcessInvocation:
-    perm = _invocation_flags(inv)
+    is_v2 = _opencode_is_v2()
     formatted_prompt = format_concatenated_prompt(inv.system_context, inv.prompt)
-    command, base_args = build_command(inv.cli, formatted_prompt)
-    env_override: dict[str, str | None] = {
-        "OPENCODE_PERMISSION": json.dumps(_OPENCODE_PERMISSION_MAPPING[inv.permission])
-    }
-    return ProcessInvocation(command, perm + base_args, env_override)
+    command, (run, *run_args) = build_command(inv.cli, formatted_prompt)
+    # OpenCode 2 rejects run options placed before the subcommand.
+    flags = _opencode_v2_flags(inv) if is_v2 else _invocation_flags(inv)
+    permission = _OPENCODE_PERMISSION_MAPPING[inv.permission]
+    # OpenCode takes its working directory from PWD, not the process cwd.
+    env_override: dict[str, str | None] = {"PWD": inv.cwd}
+    if is_v2:
+        # OpenCode 2 ignores OPENCODE_PERMISSION and migrates the v1 permission shape.
+        env_override["OPENCODE_CONFIG_CONTENT"] = json.dumps({"permission": permission})
+    else:
+        env_override["OPENCODE_PERMISSION"] = json.dumps(permission)
+    return ProcessInvocation(
+        command,
+        [run, *flags, *run_args],
+        env_override,
+        # OpenCode 2 stores credentials in the database that isolation would hide.
+        isolate_xdg_state=not is_v2,
+    )
 
 
 _GLM_BASE_URL = "https://api.z.ai/api/anthropic"

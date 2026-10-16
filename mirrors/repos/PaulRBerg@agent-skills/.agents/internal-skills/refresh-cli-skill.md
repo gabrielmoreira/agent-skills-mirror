@@ -11,14 +11,19 @@ Refresh `skills/cli-*` when an installed CLI is newer than its `references/versi
 `skills/chromium-browser` against Chrome DevTools MCP every week, even when the installed version has not changed.
 
 Circadian's weekly maintenance job runs `jobs/refresh-cli-skills.sh` in an isolated clone of this repository. The job
-commits, pushes, and publishes the result after validation.
+commits, pushes, and publishes the result after validation. It can also request guidance reviews for explicitly named
+skills whose watched upstream sources changed.
 
 ## Arguments
 
 - Accept arguments as `<skill>=<version>`, for example `cli-just=1.43.0` or `chromium-browser=1.10.1`.
 - Treat each version as an already-normalized semver with no leading `v`.
-- Accept only `cli-*` and `chromium-browser` skills.
-- If no valid skill/version pairs are supplied, stop.
+- Accept version pairs only for `cli-*` and `chromium-browser` skills.
+- Also accept explicit upstream review names and source notes supplied alongside the pairs. The scheduler says
+  `Also review <space-separated names> against them` and appends notes from `SKILL_REFRESH_UPSTREAM_NOTES`.
+- Confirm that every additional name has an existing `skills/<name>/SKILL.md`. Reject unknown names.
+- Upstream-only reviews need no version pair or `references/version.txt` marker. Do not invent either.
+- If neither valid skill/version pairs nor explicit upstream review names are supplied, stop.
 
 ## Workflow
 
@@ -50,13 +55,21 @@ commits, pushes, and publishes the result after validation.
      shared-browser ownership.
    - Treat the wrapper audit as read-only. Never change wrapper flags, settings, client configuration, or installed
      copies.
-5. Edit only the requested skill directories. Never edit generated lockfiles, unrelated skills, installed copies under
+5. For each additional upstream review name:
+   - Read its source notes and affected skill guidance. Inspect every supplied source and the relevant stable changes.
+   - Check official documentation and source evidence before changing guidance. Confirm installed compatibility when the
+     proposed guidance depends on an installed tool or dependency.
+   - Change only guidance affected by those sources. Preserve local behavior and safety rules.
+   - Do not update dependencies or merge external skill forks through this review. Follow `@rebase-skill` only under its
+     separate invocation policy.
+   - Do not create or advance a version marker for an upstream-only review.
+6. Edit only the requested skill directories. Never edit generated lockfiles, unrelated skills, installed copies under
    `~/.agents`, or global Claude/Codex configuration.
-6. Run `just prettier-write <changed Markdown files>`. Then run `just prettier-check <changed files>` and
-   `just skill-check`.
-7. If the scheduled weekly job invoked you, stop without committing or publishing. The job performs both steps.
+7. Run `just prettier-write <changed Markdown files>`. Then run `just prettier-check <changed files>` and
+   `just skill-check`. Complete the local gate for any changed helper or behavior.
+8. If the scheduled weekly job invoked you, stop without committing or publishing. The job performs both steps.
    Otherwise, commit and publish per `AGENTS.md`.
-8. Report evidence sources, compatible documentation changes, newer upstream releases, and configuration
+9. Report evidence sources, compatible documentation changes, newer upstream releases, and configuration
    incompatibilities. If a required check or evidence source fails, report failure instead of claiming success.
 
    For the scheduled review, return structured output with `status` and `summary`. Set `status` to `succeeded` only when
@@ -66,8 +79,8 @@ commits, pushes, and publishes the result after validation.
 
 ## Version Metadata
 
-`references/version.txt` is the weekly maintenance job's contract. `ai-skillet doctor` also enforces it. The file must
-contain exactly one normalized semver:
+For CLI version refreshes, `references/version.txt` is the weekly maintenance job's contract. `ai-skillet doctor` also
+enforces it. Upstream-only reviews do not require this marker. The file must contain exactly one normalized semver:
 
 ```text
 1.2.3

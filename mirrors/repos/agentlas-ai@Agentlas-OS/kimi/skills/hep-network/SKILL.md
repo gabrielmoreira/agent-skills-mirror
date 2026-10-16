@@ -6,8 +6,6 @@ Update fallback: 자동 업데이트가 안 되면 `hephaestus update`를 한 �
 
 # /hep-network
 
-Raw request: `$ARGUMENTS`
-
 You are the active top-level workforce orchestrator. Use the local Agentlas
 OS MCP server named `hephaestus-network`, the only host-visible Workforce MCP.
 Core reaches Cloud and Hub through its internal upstream client. Network means all registered
@@ -37,7 +35,6 @@ for candidate in \
   "$HOME/.agentlas/runtime/current/bin/hephaestus" \
   "${CLAUDE_PLUGIN_ROOT:+$CLAUDE_PLUGIN_ROOT/bin/hephaestus}" \
   "${PLUGIN_ROOT:+$PLUGIN_ROOT/bin/hephaestus}" \
-  "${GEMINI_EXTENSION_ROOT:+$GEMINI_EXTENSION_ROOT/bin/hephaestus}" \
   "./bin/hephaestus"
 do
   if [ -n "$candidate" ] && [ -x "$candidate" ]; then RUNNER="$candidate"; break; fi
@@ -208,6 +205,17 @@ done
    `source_unavailable`, `blocked`, or `failed`. For `partial` or `failed`,
    report each source receipt's exact `failureCode`: never collapse several
    receipts into one, substitute a different code, or relabel the outcome.
+   If `workforce.prepare_execution` refuses with a `repair` object, the agent is
+   broken, not absent. Say in plain words what `repair.meaning` says, offer the
+   first `available` action in `repair.repair`, and run its `command` only after
+   the user agrees. When a repair reports `reselectionRequired: true`, select
+   again; never swap in a different agent without a new selection. A refusal
+   that carries `alternates` lists other callable agents from the same search:
+   present them as candidates.
+   An agent built into the global agent folder is registered automatically at
+   the next local search once it passes `contract verify`;
+   `hephaestus workforce local-autoregister` does it now and prints
+   `contractFailing` and `refused` rows for any that are missing.
 
 ## Recurring Hub use
 
@@ -222,3 +230,5 @@ for Core federation, or use popularity/history/local availability as
 semantic fit. Exact duplicate releases may collapse Local > Cloud > Hub only
 when Core returns verified identical lineage; a name or slug match is not
 enough. Name the actual workers in the result.
+
+Raw request: `$ARGUMENTS`

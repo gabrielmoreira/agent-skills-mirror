@@ -431,6 +431,17 @@ pr. model. Begrænset af `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttemp
 `budgetMs`) under **Indstillinger → Robusthed**. Den venter aldrig ved `quota_exhausted`
 (låst indtil midnat) eller årsager relateret til godkendelse/ikke fundet.
 
+```text
+#16319 · comboCooldownWait · pre-dispatch (attempts = 0)
+all targets skipped + transient model lockout:
+  enabled ∧ 0 < waitMs ≤ maxWaitMs ∧ attempt < maxAttempts ∧ budgetLeftMs ≥ waitMs
+    → wait → re-dispatch
+  wait = false → HTTP 429 rate_limit_error
+  retry_after / reset_at ← earliest transient lock expiry
+quota_exhausted / auth_error / not_found / not_found_local:
+  no transient hint → HTTP 503 ALL_TARGETS_SKIPPED
+```
+
 ---
 
 ## 5. Adgangskontrol til anmodningskøen (v3.8.49 · issue #6593)

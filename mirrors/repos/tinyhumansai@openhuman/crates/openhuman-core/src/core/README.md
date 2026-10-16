@@ -20,7 +20,7 @@ through the entry points in this folder.
 A domain exposes an operation by building a `RegisteredController`: a
 `ControllerSchema` (namespace, function, description, typed inputs and
 outputs) paired with a `ControllerHandler`, which is a plain
-`fn(Map<String, Value>) -> ControllerFuture`. The schema types
+`fn(DispatchCtx, Map<String, Value>) -> ControllerFuture`. The schema types
 (`ControllerSchema`, `FieldSchema`, `TypeSchema`) live in [`mod.rs`](./mod.rs).
 `TypeSchema` covers scalars, arrays, maps, options, string enums, nested
 objects, named refs, and `BoundedU64` for fields backed by a narrower

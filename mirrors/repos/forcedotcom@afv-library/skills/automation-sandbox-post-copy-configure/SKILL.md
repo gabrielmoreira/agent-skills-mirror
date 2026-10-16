@@ -1,13 +1,13 @@
 ---
 name: automation-sandbox-post-copy-configure
-description: "Apply a Salesforce sandbox post-copy automation JSON config against a target org. For each entry, the skill derives the correct Tooling API sobject from the entry's `ConfigurationName`, verifies the derivation via a describe probe, resolves the record Id via SOQL-over-REST, then PATCHes the record via the compound `Metadata` field using `sf api request rest`. `ScheduledApex` entries run anonymous Apex `System.schedule(...)` via `sf apex run` (because `CronTrigger` is read-only) and verify via a `CronTrigger` SOQL read-back. Use when the user asks to apply, run, execute, dry-run, or preview a post-copy or post-refresh config file (e.g. `post-copy-config.json`) against a sandbox. Trigger phrases: \"apply post-copy config\", \"run post-copy automation\", \"execute sandbox post-refresh JSON\", \"apply sandbox refresh config\", \"configure sandbox after refresh\". DO NOT TRIGGER for generating the config JSON from an SOP (delegate to `automation-sandbox-post-copy-config-generate`), or for deploying metadata XML."
+description: "Apply a Salesforce sandbox post-copy automation JSON config against a target org. Use when the user asks to apply, run, execute, dry-run, or preview a post-copy or post-refresh config file (e.g. `post-copy-config.json`) against a sandbox — including activating/deactivating a Flow (PATCH `FlowDefinition.Metadata.activeVersionNumber` to the version, or `null`), re-pointing an OBM endpoint, updating a RemoteSiteSetting URL, or re-scheduling a ScheduledApex job after refresh. Also trigger for phrasings like \"apply post-copy config\", \"run post-copy automation\", \"activate Flow <name> post-refresh\", \"deactivate Flow <name>\", \"re-point outbound messages after refresh\", or \"configure sandbox after refresh\". Per entry, derive the Tooling API sobject, verify via describe, resolve the Id via SOQL, then PATCH the compound `Metadata` field (`ScheduledApex` uses anonymous Apex). DO NOT TRIGGER for generating config JSON from an SOP (use `automation-sandbox-post-copy-config-generate`) or for deploying metadata XML."
 allowed-tools: Bash Read Write
 metadata:
   relatedSkills:
     - "automation-sandbox-post-copy-config-generate"
     - "dx-org-permission-set-assign"
     - "platform-metadata-deploy"
-  version: "1.1"
+  version: "1.3"
   domains: ["Automation"]
   cliTools:
     - tool: ["curl"]
@@ -23,31 +23,28 @@ metadata:
 # Automation: Sandbox Post-Copy Configure
 
 Apply a Salesforce sandbox post-copy automation JSON config to a target
-org. Three canonical `ConfigurationName` values are pinned:
-`OutboundMessages` and `RemoteSiteSettings` take the compound-`Metadata`
-PATCH route (Steps A–E); `ScheduledApex` takes the anonymous-Apex route
-(Step F), because `CronTrigger` is read-only in the Tooling API. Any
-other `ConfigurationName` is derived and describe-verified. Every A–E
-entry — pinned or derived — must pass Step B (describe returns 200 with
-a `Metadata` compound field) before any PATCH is planned; Step B does
-not apply to `ScheduledApex`. Entries whose API cannot be verified are
-surfaced in the summary and skipped — never guessed at.
+org. Four canonical `ConfigurationName` values are pinned:
+`OutboundMessages` + `RemoteSiteSettings` → compound-`Metadata` PATCH
+(Steps A–E); `ScheduledApex` → anonymous-Apex (Step F) since
+`CronTrigger` is read-only; `Flows` → flow-activation (Step G), same
+compound-`Metadata` transport as A–E with fixed mutation key
+`activeVersionNumber` + state-aware pre-flight (`ALREADY_ACTIVE` /
+`ALREADY_INACTIVE`). Non-canonical names are derived + describe-verified.
+Every A–E entry must pass Step B (describe 200 + `Metadata` compound
+field) before any PATCH is planned; Step B skipped for `ScheduledApex`.
+Unverified entries are surfaced in the summary and skipped — never
+guessed at.
 
 ## Tool Restrictions
 
 **Use ONLY the Bash tool** to execute `sf` CLI commands (`sf data query
 --use-tooling-api`, `sf api request rest`, `sf org display`). Do NOT
-use MCP tools like `execute_soql` — ignore them completely; the
-compound `Metadata` PATCH pattern this skill requires is not available
-through MCP tool wrappers. If the target org alias is not explicitly
-named by the user, invoke `sf` commands **without** `--target-org` —
-the harness has already set the CLI's default target-org. Never pass
-`--target-org default` — `default` is not an alias and will fail with
-`NamedOrgNotFoundError`.
-
-SOQL-over-REST (`sf data query --use-tooling-api ...`) is treated as
-an API call — same OAuth session, same authorization boundary as the
-subsequent PATCH. No direct database / non-Salesforce SQL access.
+use MCP tools like `execute_soql` — the compound `Metadata` PATCH
+pattern this skill requires is not available through MCP wrappers.
+Invoke `sf` **without** `--target-org` when the user didn't name an
+alias (the harness sets the CLI default); never pass `--target-org
+default` (`NamedOrgNotFoundError`). SOQL-over-REST is same-OAuth —
+no direct DB / non-Salesforce SQL access.
 
 ## STOP — do this before making any API call
 
@@ -93,17 +90,16 @@ substitute a different sobject name):**
 | `OutboundMessages`   | `WorkflowOutboundMessage` | `SELECT Id, FullName FROM WorkflowOutboundMessage WHERE EntityDefinition.QualifiedApiName = '<Fields.Object>'` — then client-side pick the row whose `FullName == '<Fields.Object>.<Label>'`. SOQL cannot filter on `FullName` directly for this sobject. |
 | `RemoteSiteSettings` | `RemoteProxy`             | `SELECT Id, SiteName FROM RemoteProxy WHERE SiteName = '<Label>'`. |
 | `ScheduledApex`      | `CronTrigger` (read-only — Anonymous Apex route, see Step F) | See Step F — pre-flight `SELECT Id FROM CronTrigger WHERE CronJobDetail.Name = '<escaped>'` gate. |
+| `Flows`              | `FlowDefinition` (compound-`Metadata` PATCH with fixed `activeVersionNumber` mutation — see Step G) | See Step G — pre-flight `SELECT Id, DeveloperName, ActiveVersion.VersionNumber FROM FlowDefinition WHERE DeveloperName = '<Fields.FlowApiName>'`. |
 
-For canonical entries use the pinned sobject and SOQL as-is; skip
+For canonical entries use the pinned sobject + SOQL as-is; skip
 "derive". Do not invent `OutboundMessage`, `RemoteSiteSetting`, or
-`MasterLabel` variants — plausible-looking but wrong.
-
-Field-name resolution (overrides + case rule + existence check) is
-owned by `scripts/map-metadata-key.mjs`.
+`MasterLabel` variants. Field-name resolution (overrides + case rule
++ existence check) is owned by `scripts/map-metadata-key.mjs`.
 
 **Non-canonical**: derive a candidate (usually singular of the
-Metadata API type name, sometimes prefixed); Step B rules out wrong
-guesses. Use the generic SOQL patterns in Step C.
+Metadata API type name); Step B rules out wrong guesses. Use the
+generic SOQL patterns in Step C.
 
 ### Step B — Verify the candidate exists and supports Metadata writes
 
@@ -174,11 +170,17 @@ Every Step D filename must include the record `<Id>` from Step C
 the working directory and would clobber a shared name.
 
 1. **GET** current `Metadata` → `/tmp/entry-<Id>-meta.json`.
-2. **Resolve the mutation key** — for each `Fields.<Xxx>`, run
+2. **Resolve the mutation key** (generic path only; `Flows` take
+   Step G's fixed `activeVersionNumber` and `ScheduledApex` takes
+   Step F's anonymous Apex — never run this script for either) —
+   for each `Fields.<Xxx>`, run
    `node scripts/map-metadata-key.mjs "<ConfigurationName>"
    "<ConfigFieldName>" /tmp/entry-<Id>-meta.json`. On
    `{"status":"OK","key":...}` use the returned key. On
    `{"status":"FIELD_MAP_UNKNOWN",...}` mark the entry and skip.
+   Do NOT skip this script and infer via naive first-char-lowercase:
+   `RemoteSiteSettings.Fields.RemoteSiteUrl` maps to `Metadata.url`
+   (not `remoteSiteUrl`); the script owns such overrides.
 3. **PATCH** — heredoc-build `/tmp/entry-<Id>-mutation.json`, merge
    with `jq --slurpfile m /tmp/entry-<Id>-mutation.json
    '. + $m[0] | {Metadata: .}' /tmp/entry-<Id>-meta.json >
@@ -211,25 +213,34 @@ visible (usually a naming or permission issue).
 
 ### Step F — Scheduled Apex (anonymous Apex route)
 
-`ScheduledApex` entries target the read-only `CronTrigger` sobject —
-Steps A–E do not apply. **Read `references/scheduled_apex_path.md`
-before executing** — it owns the full F-1 → F-4 recipe (pre-flight
-AMBIGUOUS gate, snippet build, `sf apex run`, verify, dry-run).
+**Read `references/scheduled_apex_path.md`** — Steps A–E do not apply
+(`CronTrigger` is read-only). The reference owns the F-1→F-4
+anonymous-Apex recipe (pre-flight AMBIGUOUS gate, snippet build,
+`sf apex run`, verify, dry-run) and the Step-F summary shape.
+
+### Step G — Flow activation / deactivation (`Flows`)
+
+**Read `references/flow_activation_path.md`** — Steps A + B still
+apply (`FlowDefinition` is the pinned sobject; Step B confirms the
+`Metadata` compound field). The reference owns the G-1→G-4
+compound-`Metadata` PATCH recipe with fixed mutation key
+`activeVersionNumber` (Step D-2 key derivation does NOT apply),
+decision rules (`FlowApiName` validation, `ALREADY_ACTIVE` /
+`ALREADY_INACTIVE` short-circuits, forbidden sibling keys), the
+dry-run contract, and the Flows summary shape.
 
 ---
 
 ## IsActive semantics
 
-- `IsActive: true`  → apply the PATCH as described in Steps A–E.
+- `IsActive: true`  → PATCH per Steps A–E (or Step G for `Flows`).
 - `IsActive: false` → **do not PATCH**. Record `SKIPPED_INACTIVE`
-  for the entry and add a bullet under **Follow-ups** in the summary
-  file listing the entry's `ConfigurationName` + `Label` so the
-  customer notices that a config-declared inactive record was left
-  untouched on the target org.
+  and add a Follow-ups bullet with the entry's `ConfigurationName`
+  + `Label` so the customer sees it was left untouched.
 
 Rationale: `IsActive: false` means "not active in this sandbox",
-not "deactivate the existing record". Silently deactivating a live
-integration is a much bigger blast radius than leaving it alone.
+not "deactivate the existing record" — silently deactivating a
+live integration is a much larger blast radius than leaving it.
 
 ---
 
@@ -239,6 +250,11 @@ Single Markdown summary written to `./post-copy-<mode>-summary.md`
 (mode is `dry-run` or `apply`) AND printed to the user. No JSON
 side-files (`plan/phases.json`, `requests/*.request.json`, etc.) —
 inline every planned/actual request in the Markdown.
+
+**`Flows` and `ScheduledApex` use step-specific summary shapes** —
+labeled narrative blocks that REPLACE the generic `Planned request:`
+block below (phase table unchanged); see each reference's "Summary
+shape" section. All other `ConfigurationName`s use the generic shape.
 
 **Phase enumeration is script-owned.** Run `node scripts/plan-phases.mjs
 <config.json>` and consume its `phases[]` verbatim — each entry carries
@@ -268,7 +284,7 @@ Mode: <dry-run|apply>
 Planned request:
 - Method: `PATCH`
 - Path: `/services/data/v<apiVersion>/tooling/sobjects/<VerifiedSobject>/<Id>`
-- Body: `<JSON — the FULL merged Metadata object: every existing key from the Step D-1 GET, overlaid with the mutated keys from the config. Preserved keys with verbose or org-specific values may appear as "<preserved-from-GET>" placeholder strings, but every key must be present. NEVER emit a minimal body containing only the mutated keys.>`
+- Body: `<FULL merged Metadata: every key from the Step D-1 GET overlaid with the mutated keys. Verbose/org-specific values may render as "<preserved-from-GET>", but every key must be present. NEVER emit a minimal body.>`
 
 | ConfigurationName | Label | Object | Sobject | Describe | Outcome | HTTP |
 |-------------------|-------|--------|---------|----------|---------|------|
@@ -285,36 +301,32 @@ Planned request:
 - <bullet per SKIPPED_INACTIVE / API_NOT_IDENTIFIED / AMBIGUOUS / FIELD_MAP_UNKNOWN / NOT_FOUND entry>
 ```
 
-Column semantics: `Object` = the entry's `Fields.Object` if present,
-`—` otherwise. `Sobject` = the Step A resolved sobject. `Describe` =
-the Step B describe HTTP status (`200` for verified, `404` for
-`API_NOT_IDENTIFIED`) — mandatory so skipped Step Bs are visible at a
-glance. Outcome vocabulary: `SUCCESS`, `NOT_FOUND`, `AMBIGUOUS`,
+Column semantics: `Object` = entry's `Fields.Object` or `—`. `Sobject`
+= Step A resolved sobject. `Describe` = Step B HTTP status (`200`
+verified, `404` → `API_NOT_IDENTIFIED`) — mandatory so skipped Step Bs
+are visible. Outcome vocabulary: `SUCCESS`, `NOT_FOUND`, `AMBIGUOUS`,
 `API_NOT_IDENTIFIED`, `FIELD_MAP_UNKNOWN`, `FAILED`, `FAILED_VERIFY`,
 `SKIPPED_INACTIVE`, `SKIPPED`, `DRY_RUN`, `DELETE_NOT_SUPPORTED`,
+`ALREADY_ACTIVE` (Flows: requested version already active — no PATCH),
+`ALREADY_INACTIVE` (Flows: Deactivate but already inactive — no PATCH),
 `NOT_ATTEMPTED`.
 
-**Scripts are internal.** Do **not** inline raw `node scripts/…` stdout
-or "I ran node …" narration into the summary or the printed response —
-consume the JSON, use the returned values, render the exact shape above.
+**Scripts are internal** — never inline raw `node scripts/…` stdout or
+"I ran node …" narration into the summary; consume the JSON, use the
+returned values, render the exact shape above.
 
 ## Scope
 
-- **In scope**: Reading a post-copy config JSON (the shape produced
-  by `automation-sandbox-post-copy-config-generate`), grouping entries
-  into `ExecutionOrder` phases, deriving+verifying the Tooling API
-  sobject for each entry, resolving Ids via SOQL-over-REST, PATCHing
-  via compound `Metadata`, and reporting per-entry outcomes.
+- **In scope**: Apply a post-copy config JSON against a live org —
+  phase-group by `ExecutionOrder`, derive+verify sobject, resolve Id
+  via SOQL-over-REST, PATCH via compound `Metadata`, report outcomes.
 - **Out of scope**: Generating the config JSON from an SOP (delegate
-  to `automation-sandbox-post-copy-config-generate`); deploying
-  metadata XML; running the Async Task Framework (ATF) orchestrator
-  itself (that is the platform-side Java implementation); inventing
-  API paths for `ConfigurationName` values whose describe probe
-  fails (surface as `API_NOT_IDENTIFIED` and stop).
+  to `automation-sandbox-post-copy-config-generate`); metadata-XML
+  deploys; the ATF Java orchestrator; guessing an API path for an
+  entry whose describe probe fails (`API_NOT_IDENTIFIED` → stop).
 
-Every API call is against a live org. Treat this skill as a mutation
-tool: prefer `--dry-run` first, confirm the target org alias, and
-never silently retry a failed entry against a different endpoint.
+Live-org mutation tool: prefer `--dry-run` first; never silently
+retry a failed entry against a different endpoint.
 
 ---
 
@@ -322,25 +334,21 @@ never silently retry a failed entry against a different endpoint.
 
 Gather or infer before applying:
 
-- **Config file path**: Path to the JSON produced by
-  `automation-sandbox-post-copy-config-generate` (default:
-  `./post-copy-config.json` in the current directory). If the file
-  does not exist, stop and ask.
-- **Target org alias / username**: The `sf` CLI alias or username of
-  the target sandbox. Never assume the default org — always confirm.
-  If the user has not supplied one, list available orgs with `sf org
-  list --json` and ask which to use.
-- **Dry-run flag** (optional, default `false`): **reads ALLOWED, writes
-  FORBIDDEN** — not "no network calls". Still run every read (Step B
-  describe `GET`, Step C SOQL, Step D-1 record `GET`); the plan's
-  would-be PATCH body is only accurate against the real Metadata block.
-  The ONLY skipped calls are Step D-3 (`PATCH`) and Step E (verify).
-  Never fabricate current Metadata or invent keys. On a read failure
-  (401, 404, `NamedOrgNotFoundError`), surface and stop — never fall
-  back to a from-memory plan. Prefer dry-run on the first pass.
-- **Continue-on-error** (optional, default `true`): true = failing
-  entries don't abort the phase (failure reported in the summary);
-  false = abort mid-phase.
+- **Config file path**: JSON from
+  `automation-sandbox-post-copy-config-generate` (default
+  `./post-copy-config.json`). Missing → stop and ask.
+- **Target org alias / username**: Never assume the default; if not
+  supplied, list via `sf org list --json` and ask.
+- **Dry-run flag** (default `false`): **reads ALLOWED, writes
+  FORBIDDEN** — not "no network calls". Still run Step B describe
+  GET, Step C SOQL, Step D-1 GET; the plan's would-be PATCH body is
+  only accurate against the real Metadata block. Steps D-3 (PATCH)
+  and E (verify) are skipped (Flows: see Step G — G-3 GET + PATCH
+  both skip, G-1 + G-2 still run). On a read failure (401, 404,
+  `NamedOrgNotFoundError`) surface and stop — never fall back to a
+  from-memory plan. Prefer dry-run on the first pass.
+- **Continue-on-error** (default `true`): true = failing entries
+  don't abort the phase; false = abort mid-phase.
 
 If the user supplies a clear config path and target alias, proceed
 without further questions.
@@ -349,49 +357,48 @@ without further questions.
 
 ## Workflow
 
-Every step executes real `sf` CLI commands via Bash. Do NOT narrate the
+Every step executes real `sf` CLI commands via Bash. Never narrate the
 plan without running the commands — this skill mutates the target org.
 
-1. **Read and validate the config JSON** — load the file with the
-   Read tool. Every entry must be a JSON object with the five
-   top-level keys (`ConfigurationName`, `Label`, `Fields`,
-   `IsActive`, `ExecutionOrder`). Malformed entries are a hard stop.
+1. **Read + validate the config JSON** — load with the Read tool.
+   Every entry needs the five top-level keys; malformed → hard stop.
 
-2. **Resolve the target org and API version** — run
-   `sf org display --json`. Parse the JSON to confirm the alias
-   resolves and to capture `result.apiVersion` (e.g. `62.0`). Do not
-   print the raw JSON — it contains the access token.
+2. **Resolve target org + API version** — `sf org display --json`.
+   Parse to confirm alias resolves and capture `result.apiVersion`.
+   Do not print the raw JSON — it contains the access token.
 
 3. **Plan phases** — run `node scripts/plan-phases.mjs <config.json>`
    and iterate its `phases[]` output. See
    `references/execution_phasing.md` for the concurrency cap.
 
-4. **Per-entry describe-verify pass** — for each distinct
-   `ConfigurationName` NOT equal to `ScheduledApex`, run Step A +
-   Step B once and cache the verified sobject. Any `ConfigurationName`
-   failing Step B marks every entry with that name as
-   `API_NOT_IDENTIFIED`. `ScheduledApex` skips describe-verify — it
-   uses the Anonymous Apex route (Step F), not compound-`Metadata`
-   PATCH.
+4. **Per-entry describe-verify** — for each distinct
+   `ConfigurationName` ≠ `ScheduledApex`, run Step A + Step B once
+   and cache the verified sobject. Step B failure → every entry with
+   that name is `API_NOT_IDENTIFIED`. `ScheduledApex` skips
+   describe-verify (Step F uses anonymous Apex, not compound
+   Metadata). `Flows` DOES run describe-verify (PATCH transport is
+   compound-Metadata on `FlowDefinition`); it skips only Step D's
+   mutation-key derivation (Step G-3 uses a fixed key).
 
 5. **Per-entry apply pass** — for each entry inside each phase:
-   - `SKIP_INACTIVE` pre-marked by plan-phases → record
-     `SKIPPED_INACTIVE`, add a Follow-ups bullet, continue.
-   - `ScheduledApex` → Step F (F-1 pre-flight, F-2 build, F-3 run,
-     F-4 verify). Dry-run: run F-1 + F-2 only; record `DRY_RUN`.
+   - `SKIP_INACTIVE` from plan-phases → `SKIPPED_INACTIVE` +
+     Follow-ups bullet, continue.
+   - `ScheduledApex` → Step F (F-1→F-4). Dry-run: F-1 + F-2 only;
+     record `DRY_RUN`.
+   - `Flows` → Step G (G-1→G-4). `ALREADY_ACTIVE` /
+     `ALREADY_INACTIVE` pre-flight bypasses the PATCH. Dry-run:
+     G-1 + G-2 only; record `DRY_RUN`.
    - All others → Step C (Id), Step D (GET+mutate+PATCH), Step E
-     (verify). Dry-run: run C + D-1/D-2 (so the printed plan reflects
-     the real merged payload); skip D-3 and E; record `DRY_RUN`.
+     (verify). Dry-run: C + D-1/D-2 only; record `DRY_RUN`.
 
 6. **Between phases** — wait for every entry in the current phase to
    complete before starting the next.
 
-7. **Write the summary file to disk** — the final deliverable is a
-   Markdown file at `./post-copy-<mode>-summary.md`, following the
-   shape in the "Canonical output shape" section. Also print it to
-   the user. Never write access tokens or full `sf org display`
-   output. If a URL contains embedded credentials, mask them in the
-   summary (`https://user:***@host/...`); the actual PATCH body
+7. **Write the summary file** — Markdown at
+   `./post-copy-<mode>-summary.md`, per the "Canonical output shape"
+   section; also print to the user. Never write access tokens or raw
+   `sf org display` output. Mask embedded URL credentials in the
+   summary (`https://user:***@host/...`); the real PATCH body
    carries the verbatim URL.
 
 ---
@@ -424,19 +431,20 @@ that file before deviating from the Step A–E procedure.
 
 | File | When to read |
 |------|-------------|
-| `references/api_endpoints.md` | Steps A–E — full generic recipe with OBM / RSS worked examples and the camelCase-field convention |
-| `references/scheduled_apex_path.md` | Step F — anonymous Apex route for `ScheduledApex` entries |
-| `references/execution_phasing.md` | Step 3 (workflow) — phase-grouping model behind `scripts/plan-phases.mjs` |
-| `references/authentication.md` | Step 2 — session check + how to handle 401 mid-run |
-| `references/rules_gotchas.md` | Before deviating from Step A–E — invariants and runtime-failure responses |
-| `scripts/plan-phases.mjs` | Step 3 — deterministic phase planner |
-| `scripts/map-metadata-key.mjs` | Step D-2 — deterministic Metadata-key resolver |
-| `scripts/classify-patch-result.mjs` | Step D-4 — deterministic HTTP-outcome classifier |
-| `scripts/resolve-target-org.mjs` | Canonical output shape — target-org alias resolver |
+| `references/api_endpoints.md` | Steps A–E — full generic recipe + OBM/RSS worked examples |
+| `references/scheduled_apex_path.md` | Step F — anonymous Apex route for `ScheduledApex` |
+| `references/flow_activation_path.md` | Step G — flow activation / deactivation (`Flows`) |
+| `references/execution_phasing.md` | Step 3 — phase-grouping model behind `plan-phases.mjs` |
+| `references/authentication.md` | Step 2 — session check + 401 mid-run handling |
+| `references/rules_gotchas.md` | Before deviating from Step A–E — invariants + failure responses |
+| `scripts/plan-phases.mjs` | Step 3 — phase planner |
+| `scripts/map-metadata-key.mjs` | Step D-2 — Metadata-key resolver |
+| `scripts/classify-patch-result.mjs` | Step D-4 — HTTP-outcome classifier |
+| `scripts/resolve-target-org.mjs` | Output shape — target-org alias resolver |
 | `scripts/build-scheduled-apex.mjs` | Step F-2 — anonymous-Apex snippet builder |
 | `scripts/soql-escape-job-name.mjs` | Step F-1/F-4 — SOQL-escape `JobName` |
-| `assets/api_request_templates.json` | Steps A–E — generic describe / lookup / GET+PATCH template |
-| `assets/scheduled_apex_template.apex` | Step F-2 — anonymous Apex template with `{{JOB_NAME}}` / `{{CRON_EXPRESSION}}` / `{{APEX_CLASS_NAME}}` placeholders |
-| `examples/sample_config_input.json` | Step 1 — shape of the config JSON this skill consumes |
-| `examples/sample_scheduled_apex_config.json` | Step 1 — shape of a `ScheduledApex` config entry |
-| `examples/sample_execution_summary.md` | Step 7 — shape of the summary report shown to the user |
+| `assets/api_request_templates.json` | Steps A–E — describe/lookup/GET+PATCH template |
+| `assets/scheduled_apex_template.apex` | Step F-2 — anonymous Apex template |
+| `examples/sample_config_input.json` | Step 1 — config JSON shape |
+| `examples/sample_scheduled_apex_config.json` | Step 1 — `ScheduledApex` entry shape |
+| `examples/sample_execution_summary.md` | Step 7 — summary report shape |

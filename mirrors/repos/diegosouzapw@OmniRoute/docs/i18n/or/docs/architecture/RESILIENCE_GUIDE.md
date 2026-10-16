@@ -433,6 +433,17 @@ glm-4.7=3
 `budgetMs`) ଦ୍ୱାରା ସୀମିତ। ଏହା `quota_exhausted`
 (ମଧ୍ୟରାତ୍ରି ପର୍ଯ୍ୟନ୍ତ ଲକ୍ ହୋଇଥିବା) କିମ୍ବା ପ୍ରମାଣୀକରଣ/ନ-ମିଳିବା କାରଣ ପାଇଁ କେବେବି ଅପେକ୍ଷା କରେ ନାହିଁ।
 
+```text
+#16319 · comboCooldownWait · pre-dispatch (attempts = 0)
+all targets skipped + transient model lockout:
+  enabled ∧ 0 < waitMs ≤ maxWaitMs ∧ attempt < maxAttempts ∧ budgetLeftMs ≥ waitMs
+    → wait → re-dispatch
+  wait = false → HTTP 429 rate_limit_error
+  retry_after / reset_at ← earliest transient lock expiry
+quota_exhausted / auth_error / not_found / not_found_local:
+  no transient hint → HTTP 503 ALL_TARGETS_SKIPPED
+```
+
 ---
 
 ## 5. ଅନୁରୋଧ କ୍ୟୁ ଭର୍ତ୍ତି ନିୟନ୍ତ୍ରଣ (v3.8.49 · issue #6593)

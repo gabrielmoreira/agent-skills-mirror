@@ -7,7 +7,7 @@
 - `setup_skill_version: 1.3.2`
 - `agents_version: 34`
 
-`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `34`，都视为待更新部署。直接重新运行 `/story-setup`（Codex 用 `$story-setup`，Antigravity 用 `/skills` 或自然语言点名）；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `34`，说明本地 story-setup 比项目旧：先更新 oh-story-claudecode，不得用 v34 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
+`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `34`，都视为待更新部署。直接重新运行 `/story-setup`（Codex 用 `$story-setup`，Antigravity 用 `/skills` 或自然语言点名）；如项目 `agents_version` 大于 `34`，说明本地 story-setup 比项目旧：先更新 oh-story-claudecode，不得用 v34 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
 
 ### v0.8.2 必须重跑 story-setup
 
@@ -20,7 +20,7 @@
 ### 已在写的项目不用迁移
 
 - 开书、导入、拆文改成按作者确认点分段做，每段落盘后可以新开对话接着做；已有的设定、卷纲、细纲、追踪照常可用。
-- 扫榜每次写到 `扫榜/{日期}/` 新目录；旧的扫榜目录不用动，下次扫榜会拿它当上一次对比。
+- 扫榜每次写到 `扫榜/{日期}/` 新目录；旧的扫榜目录不用动，下次扫榜可在平台、榜单与筛选范围可比时参考上次结果。
 - 作者记忆拆成常用和维护两份协议文件，数据文件格式不变。
 
 ### v0.8.1 必须重跑 story-setup（历史）
@@ -59,12 +59,12 @@
 Claude Code、Codex、Antigravity、OpenCode、ZCode、OpenClaw、Reasonix 用户更新技能包后都要在写作项目根重跑 `/story-setup`（Codex 用 `$story-setup`），再新开会话：
 
 - `chapter-extractor` 与 `story-explorer` 模板已改。`story-long-analyze` Stage 2 按新格式校验情节点，旧 extractor 的输出会被整批拒收。
-- 长篇拆文（`story-long-analyze`）的运行时改由 Python 脚本管理，本机需要 Python 3（`python3` / `python` / `py` 任一可用）。
+- 长篇拆文（`story-long-analyze`）的运行时改由 Python 脚本管理，本机需要 Python 3，按 `python3` → `python` → `py` 顺序探测。
 - 部署到项目的指令模板新增「与作者协作」三条规则：回复用写书的话说，不抛脚本名和字段名；作者要求记住 / 忘掉 / 确认写作习惯时走 story 的作者记忆（`.story/作者记忆/`），不写宿主自带记忆；skill 脚本报错时停下报告，不改写项目里已安装的 skill 文件。安装报告与检查报告改为先说「现在可以做什么」「你还需要做的事」。
 
 ## OpenCode 只支持 2.x（v0.7.11）
 
-OpenCode 2.0 起发布在 npm 包 `@opencode/cli`（`opencode-ai` 停在 1.x）。本适配只支持 2.x：1.x 的插件 loader 读不了新版 `story-hooks.ts`，在 1.x 上会没有写正文守卫与写后兜底；1.x 也不认 agents 的 `permissions:` 规则，三个只读 agent 会拿到完整读写与 shell 权限。story-setup 在版本是 1.x 或无法确定时停止部署。
+OpenCode 2.0 起发布在 npm 包 `@opencode/cli`（`opencode-ai` 停在 1.x）。本适配只支持 2.x：1.x 的插件 loader 读不了新版 `story-hooks.ts`，在 1.x 上会没有写正文守卫与写后兜底；1.x 也不认 agents 的 `permissions:` 规则，只读 agent 会失去权限限制。story-setup 在版本是 1.x 或无法确定时停止部署。
 
 1. 升级 OpenCode：先卸载旧包 `npm rm -g opencode-ai`，再 `npm i -g @opencode/cli`（或 `curl -fsSL https://opencode.ai/v2/install | bash`），确认 `opencode --version` 为 2.x。两个包都提供 `opencode` 命令，不先卸载旧包时 PATH 上可能仍是 1.x。
 2. 更新技能包后，在写作项目根重跑 story-setup：替换 `.opencode/plugins/story-hooks.ts` 与 `.opencode/agents/`（改为 2.x 原生 `permissions:` 规则列表，已配的 `model:` 会保留），并从 `opencode.json` / `opencode.jsonc` 删除旧的 story-hooks 插件注册。
@@ -135,7 +135,7 @@ Claude Code / ZCode 市场改为单一 `oh-story` 插件，仍包含全部 13 �
 | 合并部署 | 已有项目 | 替换 story-setup 管理文件，合并用户维护文件 |
 | 手动更新 | 只更新特定文件 | 仅建议熟悉部署契约的维护者使用 |
 
-推荐始终重新运行 story-setup，让部署器按 owner class 处理文件。
+需要部署或更新项目适配文件时，重新运行 story-setup，按文件所有权处理。
 
 ### 自嵌套残留
 
@@ -147,10 +147,10 @@ OpenClaw / Reasonix / generic 三条路径的 skill 副本在项目 `skills/` �
 
 ### story-setup 管理，可替换
 
-这些文件由 story-setup 管理，不含用户自定义内容：
-- `.claude/hooks/` — 所有 hook 脚本与 `lib/` 辅助库
-- `.claude/agents/` — 所有 agent 定义
-- `.claude/rules/` — 所有 path-scoped 规则
+以下只列 oh-story 管理的文件；同目录中其他用户文件保留：
+- `.claude/hooks/` — oh-story 的 hook 脚本与 `lib/` 辅助库
+- `.claude/agents/` — oh-story 的 agent 定义
+- `.claude/rules/` — oh-story 的 path-scoped 规则
 - `.claude/skills/story-setup/references/agent-references/` — Agent 参考资料副本
 - `.agents/skills/{13 known skills}/`、`.agents/agents/agent-name/agent.md`（7 个已知 `agent-name`）、`.agents/rules/oh-story.md`、`.agents/hooks/{story_antigravity_hook.js,story_hook_core.js}` — Antigravity 项目内真实 Skills、生成 Agents、Always-On Rule 与 Hook runtime；同目录其他用户 Skills/Agents 保留
 - `skills/{13 known skills}/` — OpenClaw / Reasonix / generic 的项目 skill 副本，仅覆盖 oh-story 已知名称
@@ -162,7 +162,7 @@ OpenClaw / Reasonix / generic 三条路径的 skill 副本在项目 `skills/` �
 这些文件可能含用户自定义内容：
 - `CLAUDE.md` — 按 marker/section 合并，用户独有 section 保留
 - `.claude/settings.local.json` — 按 command 识别 story hooks；已存在的受管 command 会迁移到当前模板的 event/matcher/timeout/if（例如 v25 的 Bash 正文 pre-guard），其他用户 hook 与配置保留
-- `AGENTS.md` — ZCode/OpenCode/Codex/OpenClaw/generic 按 marker/section 合并
+- `AGENTS.md` — ZCode/OpenCode/Codex/OpenClaw/Reasonix/generic 按 marker/section 合并
 - `.zcode/config.json` — 仅按事件、matcher 和 process args 去重合并 oh-story Hooks，其他字段保留
 - `.agents/hooks.json` — 仅替换顶层 `oh-story` named group，其他用户 hook groups 保留
 
@@ -177,9 +177,9 @@ OpenClaw / Reasonix / generic 三条路径的 skill 副本在项目 `skills/` �
 - story-long-analyze 新增可选「三层灵感库管道」：复用 Stage 3 的 EM 机制卡——IA 只是索引登记行（无文件），NM 只记合并增量，CBA 是唯一自包含写作消费卡；卡内禁路径引用，来源用 `书名/EM-xxx` 裸 ID，溯源经 `灵感索引.csv` 或 `resolve` 子命令。
 - story-long-write 在开书（适用阶段=设定）、卷纲、细纲三处可选召回 active CBA；逐章写前召回与写手 prompt 不接灵感库。无库或零命中只记 gap，不阻塞。
 
-## v32 当前契约
+## v32 引入、当前仍沿用的契约
 
-- `chapter-extractor` 按原文块逐章输出紧凑字段与 10–20 个情节点（长章最多 30），由 `manage_analysis_run.py commit` 校验后生成章节摘要；不合格的整批拒收重跑。
+- `chapter-extractor` 按原文块逐章输出紧凑字段与情节点（通常10–20个，短章按计划降低下限，最多30个），由 `manage_analysis_run.py commit` 校验后生成章节摘要；不合格的整批拒收重跑。
 - `story-explorer` 读新版轻量章节摘要的「信息变化」「状态变化」「章尾钩子」「三维节奏」字段，旧摘要回退读「关键信息与扩写技法」表；对标主产物只以两份文件是否存在判定，不看 `schema_version`。
 - OpenCode 只部署 2.x：agents 使用原生 `permissions:` 规则列表，`story-hooks.ts` 按 2.x 插件接口加载；版本为 1.x 或无法确定时停止部署。
 - 项目指令模板新增「与作者协作」一节：说写书的话、作者记忆路由、不改已安装 skill 文件。写正文拦截文案给补零的细纲名（`细纲_第001章.md`），shell 变量路径如实报「路径未解析」。
@@ -278,23 +278,23 @@ OpenClaw / Reasonix / generic 三条路径的 skill 副本在项目 `skills/` �
 - `拆文库/` 的「未完成拆文」提醒按 `_progress.md` 的「最终状态」取值过滤：`completed` / `completed_with_errors` 不计入，其余取值与字段缺失、空文件、不可读一律按未完成上报。判定收在 `lib/common.sh` 的 `discover_incomplete_analyses()`。
 - 被动版本更新提醒按 24h 节流提示本身；取不到 GitHub 时写入负缓存，同一窗口内不重复请求。
 
-## 升级步骤
+## 需要重新部署时的升级步骤
 
 1. 在项目根目录重新运行 story-setup。
 2. 确认 `.story-deployed` 写入 `agents_version: 34` 与 `setup_skill_version: 1.3.2`。
 3. 确认目标 CLI 的 agents、hooks/rules 和 reference bundle 都通过安装验证。
 4. 新开会话，使 custom agents 与 hooks 按当前文件重新注册。
 5. **长篇在写项目必做**：检查每本书的 `追踪/_tracking-state.json` 是否存在。不存在就是旧追踪结构，按下方「追踪模型迁移」重建，否则写下一章会被拦。
-6. 若已有拆文库或细纲不满足当前契约，先重新拆解/导入或补齐细纲，再继续写作。
+6. 若已有拆文库或细纲不满足当前契约，先按检查结果定点补齐拆文成果、重建导入工程或补细纲，再继续写作，不因单项缺口整本重拆。
 
-## 作者记忆两级 store 迁移（v0.7.11，#437）
+## 作者记忆两级存储（store） 迁移（v0.7.11，#437）
 
 作者记忆从「一个工作区一份」改成两级：工作区 `.story/作者记忆/` 只存全局、题材、流程条目（编号 `AP`），每本书目录下的 `.story/作者记忆/` 存这本书的条目（编号 `BP`），记忆随书归档、迁移。同时不再从反复修改或成稿推断偏好：`record` 拒绝 `repeated_correction` / `inferred_pattern` 来源，存量条目照常可读、可确认、可退役。
 
-要知道三件事：
+迁移时按以下三点处理：
 
 1. 新的本书偏好必须传 `--book-root {书目录}` 才能写入；旧 skill 副本没带这个参数会报错，重跑 `/story-setup` 让脚本与文档同版。
-2. 升级前写进工作区的本书条目**不再被 `query` 返回**（全局、题材、流程条目不受影响），直到搬进书目录；它们仍在工作区 `作者画像.md` 里可见。不做双读，是为了让迁移真的发生。
+2. 升级前写进工作区的本书条目**不再被 `query` 返回**（全局、题材、流程条目不受影响），直到搬进书目录；它们仍在工作区 `作者画像.md` 里可见。
 3. 对每本书运行一次即可整批搬家，幂等、中途失败直接重跑：
 
    ```text
@@ -303,7 +303,7 @@ OpenClaw / Reasonix / generic 三条路径的 skill 副本在项目 `skills/` �
 
    断言、原话证据、确认次数、重要度原样保留；与全局条目的冲突候选在迁移后退回待确认。也可以对 agent 说「整理作者记忆」，迁移会列为默认提案项。
 
-**单书布局**（`正文/`、`追踪/` 直接在工作区根）：书级 store 住 `{工作区}/.story/作者记忆/书级/`，迁移时 `--book-root` 就传工作区本身：
+**单书布局**（`正文/`、`追踪/` 直接在工作区根）：书级数据存储在 `{工作区}/.story/作者记忆/书级/`，迁移时 `--book-root` 就传工作区本身：
 
    ```text
    {PYTHON} {story skill 根}/scripts/author_memory_commit.py migrate --workspace {工作区} --book-root {工作区}
@@ -315,7 +315,7 @@ OpenClaw / Reasonix / generic 三条路径的 skill 副本在项目 `skills/` �
 
 - v0.7.10 及更早的拆文库如果原文以楔子/序章开头，续拆会先停下询问（旧版不认楔子，直接续跑会错一章）。只拆到黄金三章的库选「楔子单独成章重拆」代价最小；已有逐章摘要的库推荐「楔子并入第一章，按旧章号继续」。
 - `拆文报告.md` 小节结构变了（去掉「质量评估」，「证据边界与待核事项」改为「还不确定的地方」），旧报告不会自动改写，重跑 Stage 5 才生效。
-- 人物关系图改为 `人物关系图/人物关系图.md`（任何 Markdown 查看器都显示中文），有中文字体时另出 PNG；以前生成的拼音版 PNG 不会自动删除，可手动删掉。
+- 人物关系图改为 `人物关系图/人物关系图.md`（文字清单保留中文，支持 Mermaid 的查看器可显示关系图），有中文字体时另出 PNG；以前生成的拼音版 PNG 不会自动删除，可手动删掉。
 
 ## 导入项目的自对标清理（v23）
 
@@ -325,7 +325,7 @@ OpenClaw / Reasonix / generic 三条路径的 skill 副本在项目 `skills/` �
 2. 以项目根 `设定/` 为本书正式设定。若 `对标/{当前书名}/` 的内容确认只是从本书 `设定/` 或 `拆文库/{导入书名}/` 复制而来，且没有人工补充，再删除这个误建目录。
 3. 清理 `设定/题材定位.md` 中把当前书登记为主/副对标的字段；真实外部对标登记不动。
 4. 若某个 `对标/{外部书名}/` 目录名看似外部作品，但内容实际来自当前书，删除这份错误视图，再从真正的 `拆文库/{对标书名}/` 重新同步；不要改名冒充修复。
-5. 重新运行 `/story-setup`（Codex 用 `$story-setup`）并新开会话，使 v23 的 agent 模板生效；在此之前 spawn 照常工作，只会多一条版本不匹配提示。
+5. 重新运行 `/story-setup`（Codex 用 `$story-setup`）并新开会话，使当前 agent 模板生效（v23 起引入此规则）；在此之前 spawn 照常工作，只会多一条版本不匹配提示。
 
 ## 追踪模型迁移（v0.7.2 及更早的长篇项目必读）
 

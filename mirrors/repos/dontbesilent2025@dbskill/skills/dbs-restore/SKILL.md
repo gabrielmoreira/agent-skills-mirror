@@ -37,7 +37,7 @@ frontmatter 字段名（status / title / source_skill / next_skill）和文件�
 
 ## 项目（slug）解析
 
-跟 dbs-save 一样：默认 `basename $(pwd)`，非法字符替换成 `-`。
+跟 dbs-save 一样：默认取 `basename $(pwd)`，保留中文、英文字母和数字，英文字母转小写；空格、标点和其他符号替换成 `-`，连续的 `-` 合并，去掉首尾的 `-`，为空时用 `default`。
 
 ---
 
@@ -162,7 +162,7 @@ frontmatter 字段名（status / title / source_skill / next_skill）和文件�
 
 **C. 用户说具体的新问题**
 
-→ 按 dbs 主路由的逻辑判断该走哪个 skill。
+→ 交回 `/dbs`，由它按新问题匹配对应的 Skill。当前环境没有安装 `/dbs` 时，说明新问题需要哪种能力。
 
 ---
 
@@ -190,7 +190,7 @@ frontmatter 字段名（status / title / source_skill / next_skill）和文件�
 |---|---|
 | 「按 next_skill 接着走」/「按上次确认的继续」 | `/<next_skill 字段值>`，并把存档内容作为上下文 |
 | 「我换个问题」/「重新开始」 | 交回 `/dbs`，按新目标重新判断 |
-| 提到具体的新需求（小红书标题、AI 检测等） | 按 dbs 主路由判断，路由到对应 skill |
+| 提到具体的新需求（小红书标题、AI 检测等） | 交回 `/dbs` 匹配对应的 Skill；没有 `/dbs` 时说明需要哪种能力 |
 
 ---
 
@@ -202,4 +202,4 @@ frontmatter 字段名（status / title / source_skill / next_skill）和文件�
 
 ---
 
-完成当前任务后直接结束。只有用户明确询问下一步，且当前环境已经安装 `/dbs` 时，简短提示：「下一步不确定时，可以输入 `/dbs`。」
+完成当前任务后直接结束。用户的请求超出本 Skill 的范围、任务完成后用户的材料里出现明确的后续需求，或用户询问下一步时，用一句话说明还需要哪种能力，不点名其他 Skill；当前环境已经安装 `/dbs` 时，补一句「可以输入 `/dbs`，由它匹配对应的 Skill」。

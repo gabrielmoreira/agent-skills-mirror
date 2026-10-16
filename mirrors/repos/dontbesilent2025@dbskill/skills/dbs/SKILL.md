@@ -23,7 +23,7 @@ description: dontbesilent 商业工具箱主入口，根据当前问题和反馈
 每次进入本 Skill，在判断模式和编排之前，必须先定位本 `SKILL.md` 所在目录，并执行该目录中的版本检查脚本：
 
 ```bash
-DBS_LOCAL_VERSION="2.18.50"; bash "<本 SKILL.md 所在目录>/scripts/check-update.sh" "$DBS_LOCAL_VERSION"
+DBS_LOCAL_VERSION="2.18.51"; bash "<本 SKILL.md 所在目录>/scripts/check-update.sh" "$DBS_LOCAL_VERSION"
 ```
 
 执行规则：
@@ -133,7 +133,7 @@ DBS_LOCAL_VERSION="2.18.50"; bash "<本 SKILL.md 所在目录>/scripts/check-upd
 python3 "<本 Skill 目录>/scripts/list-official-skills.py"
 ```
 
-脚本在完整项目中以当前版本的 `.claude-plugin/marketplace.json` 为公开候选权威源；独立 Skill 安装包缺少 Marketplace 文件时，使用随版本构建并经过一致性检查的正式名称快照。脚本返回已经安装的正式 Skill 名称、实际安装版本的 description 和真源路径；缺定义或定义冲突的候选跳过并说明。
+脚本在完整项目中以当前版本的 `.claude-plugin/marketplace.json` 为公开候选权威源；独立 Skill 安装包缺少 Marketplace 文件时，使用随版本构建并经过一致性检查的正式名称快照。脚本返回已经安装的正式 Skill 名称、实际安装版本的 description 和真源路径；缺少定义或名称不符的副本会被忽略；同名副本内容不一致时，选用优先级最高的一份（项目 `skills/`、与入口同级的目录、各 Agent 用户目录依次降低）并说明冲突。
 
 候选范围规则：
 
@@ -198,13 +198,13 @@ python3 "<本 Skill 目录>/scripts/list-official-skills.py"
 
 ## 跨 Skill 交接契约
 
-`/dbs` 是正式 Skill 之间唯一的动态编排中心。所有正式 Skill 遵守下面的交接规则：
+`/dbs` 是正式 Skill 之间唯一的动态编排中心：从「需要哪种能力」到「用哪个 Skill」的匹配只在这里完成，依据是 Marketplace 中各 Skill 的描述。所有正式 Skill 遵守下面的交接规则：
 
 1. 当前目标未完成、方法仍匹配且有进展时，继续当前 Skill。前提失效、阶段改变或反馈揭示方法不匹配时，由 `/dbs` 重新判断，无需用户重述背景或重发入口命令。
-2. 当前目标完成时输出结果并结束。只有用户明确询问下一步，且当前环境已经安装 `/dbs` 时，可以简短提示输入 `/dbs`。
+2. 当前目标完成时输出结果并结束。用户的请求超出当前 Skill 的范围、任务完成后用户材料里出现明确的后续需求，或用户询问下一步时，叶子 Skill 用一句话说明还需要哪种能力；当前环境已经安装 `/dbs` 时，提示可以输入 `/dbs` 由它匹配对应的 Skill。
 3. 用户已经明确指定下一个 Skill，或明确确认存档中的 `next_skill` 时，检查匹配性后直接进入；不自行替用户登记尚未选择的下一站。
 4. 方法不匹配时保留事实、产出、未验证假设和反馈，由 `/dbs` 重新判断。无法访问入口时说明限制，不虚构调用或丢弃信息。
-5. Skill 可以说明相邻能力的适用条件，不在结尾预设下一站。除入口编排及用户明确选择外，叶子 Skill 不自行安排其他 Skill。
+5. 叶子 Skill 只描述自己的边界和还需要的能力，不点名其他正式 Skill，也不自行安排其他 Skill。这样新增、改名或下线一个 Skill 时，只需要修改 Marketplace 和该 Skill 本身。两类情况可以点名：把另一个 Skill 当作工具依赖调用（例如用安装能力安装产物），或与另一个 Skill 共用同一套存档格式；这些点名登记在 `tools/check-skill-routing-contract.py` 的允许清单中。
 6. 同一 Skill 内的自然后续继续留在当前 Skill，例如继续讨论、继续学习、知识库查询或收录。
 7. 组合和对照仅服务当前目标，不保存为默认跨任务长链；入口已安排的必要分工可以继续，无需用户逐个重发调用。
 
@@ -246,7 +246,3 @@ python3 "<本 Skill 目录>/scripts/list-official-skills.py"
 - 用户用中文就用中文回复，用户用英文就用英文回复。
 - 中文回复遵循《中文文案排版指北》。
 - 自然说明当前做法，避免把内部编排术语和状态表当成用户必填流程。
-
-## 旧版兼容入口
-
-目录中标有 `deprecated` 的 Skill 仅供用户明确调用或版本对照。标题、封面和短视频开头任务优先选择 `dbs-title-cover-intro`；新入口未安装时说明当前可用版本，不假装已经执行新版本。

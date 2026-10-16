@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hyhmrright/brooks-lint` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
+Mirror of `hyhmrright/brooks-lint` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `hyhmrright/brooks-lint` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 25 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,31 +59,36 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/brooks-harness/SKILL.md`](.claude/skills/brooks-harness/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/new-skill/SKILL.md`](.claude/skills/new-skill/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/release/SKILL.md`](.claude/skills/release/SKILL.md) |
-| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 7 | ✓ | [`skills/_shared/common.md`](skills/_shared/common.md) |
-| 8 | ✓ | [`skills/_shared/custom-risks-guide.md`](skills/_shared/custom-risks-guide.md) |
-| 9 | ✓ | [`skills/_shared/decay-risks.md`](skills/_shared/decay-risks.md) |
-| 10 | ✓ | [`skills/_shared/remedy-guide.md`](skills/_shared/remedy-guide.md) |
-| 11 | ✓ | [`skills/_shared/source-coverage.md`](skills/_shared/source-coverage.md) |
-| 12 | ✓ | [`skills/_shared/test-decay-risks.md`](skills/_shared/test-decay-risks.md) |
-| 13 | ✓ | [`skills/brooks-audit/architecture-guide.md`](skills/brooks-audit/architecture-guide.md) |
-| 14 | ✓ | [`skills/brooks-audit/onboarding-guide.md`](skills/brooks-audit/onboarding-guide.md) |
-| 15 | ✓ | [`skills/brooks-audit/SKILL.md`](skills/brooks-audit/SKILL.md) |
-| 16 | ✓ | [`skills/brooks-debt/debt-guide.md`](skills/brooks-debt/debt-guide.md) |
-| 17 | ✓ | [`skills/brooks-debt/SKILL.md`](skills/brooks-debt/SKILL.md) |
-| 18 | ✓ | [`skills/brooks-health/health-guide.md`](skills/brooks-health/health-guide.md) |
-| 19 | ✓ | [`skills/brooks-health/SKILL.md`](skills/brooks-health/SKILL.md) |
-| 20 | ✓ | [`skills/brooks-review/pr-review-guide.md`](skills/brooks-review/pr-review-guide.md) |
-| 21 | ✓ | [`skills/brooks-review/SKILL.md`](skills/brooks-review/SKILL.md) |
-| 22 | ✓ | [`skills/brooks-sweep/SKILL.md`](skills/brooks-sweep/SKILL.md) |
-| 23 | ✓ | [`skills/brooks-sweep/sweep-guide.md`](skills/brooks-sweep/sweep-guide.md) |
-| 24 | ✓ | [`skills/brooks-test/SKILL.md`](skills/brooks-test/SKILL.md) |
-| 25 | ✓ | [`skills/brooks-test/test-guide.md`](skills/brooks-test/test-guide.md) |
+| 1 | ✓ | [`.agents/skills/brooks-harness/SKILL.md`](.agents/skills/brooks-harness/SKILL.md) |
+| 2 | ✓ | [`.agents/skills/new-skill/agents/openai.yaml`](.agents/skills/new-skill/agents/openai.yaml) |
+| 3 | ✓ | [`.agents/skills/new-skill/SKILL.md`](.agents/skills/new-skill/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/release/agents/openai.yaml`](.agents/skills/release/agents/openai.yaml) |
+| 5 | ✓ | [`.agents/skills/release/SKILL.md`](.agents/skills/release/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/brooks-harness/SKILL.md`](.claude/skills/brooks-harness/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/new-skill/SKILL.md`](.claude/skills/new-skill/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/release/SKILL.md`](.claude/skills/release/SKILL.md) |
+| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 11 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 12 | ✓ | [`skills/_shared/common.md`](skills/_shared/common.md) |
+| 13 | ✓ | [`skills/_shared/custom-risks-guide.md`](skills/_shared/custom-risks-guide.md) |
+| 14 | ✓ | [`skills/_shared/decay-risks.md`](skills/_shared/decay-risks.md) |
+| 15 | ✓ | [`skills/_shared/remedy-guide.md`](skills/_shared/remedy-guide.md) |
+| 16 | ✓ | [`skills/_shared/source-coverage.md`](skills/_shared/source-coverage.md) |
+| 17 | ✓ | [`skills/_shared/test-decay-risks.md`](skills/_shared/test-decay-risks.md) |
+| 18 | ✓ | [`skills/brooks-audit/architecture-guide.md`](skills/brooks-audit/architecture-guide.md) |
+| 19 | ✓ | [`skills/brooks-audit/onboarding-guide.md`](skills/brooks-audit/onboarding-guide.md) |
+| 20 | ✓ | [`skills/brooks-audit/SKILL.md`](skills/brooks-audit/SKILL.md) |
+| 21 | ✓ | [`skills/brooks-debt/debt-guide.md`](skills/brooks-debt/debt-guide.md) |
+| 22 | ✓ | [`skills/brooks-debt/SKILL.md`](skills/brooks-debt/SKILL.md) |
+| 23 | ✓ | [`skills/brooks-health/health-guide.md`](skills/brooks-health/health-guide.md) |
+| 24 | ✓ | [`skills/brooks-health/SKILL.md`](skills/brooks-health/SKILL.md) |
+| 25 | ✓ | [`skills/brooks-review/pr-review-guide.md`](skills/brooks-review/pr-review-guide.md) |
+| 26 | ✓ | [`skills/brooks-review/SKILL.md`](skills/brooks-review/SKILL.md) |
+| 27 | ✓ | [`skills/brooks-sweep/SKILL.md`](skills/brooks-sweep/SKILL.md) |
+| 28 | ✓ | [`skills/brooks-sweep/sweep-guide.md`](skills/brooks-sweep/sweep-guide.md) |
+| 29 | ✓ | [`skills/brooks-test/SKILL.md`](skills/brooks-test/SKILL.md) |
+| 30 | ✓ | [`skills/brooks-test/test-guide.md`](skills/brooks-test/test-guide.md) |
 
 ---
 

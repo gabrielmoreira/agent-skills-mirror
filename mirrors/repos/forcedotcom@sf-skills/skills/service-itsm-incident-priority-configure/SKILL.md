@@ -10,9 +10,7 @@ metadata:
   cliTools:
     - tool: ["sf"]
       semver: ">=2.60.0"
-  accessCheck:
-    - type: "userPerm"
-      value: "CustomizeApplication"
+  accessCheck: "UserPermissions.CustomizeApplication"
 allowed-tools: |
   Read AskUserQuestion Bash
 ---

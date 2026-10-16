@@ -67,7 +67,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`docs-website/docs/CLAUDE.md`](docs-website/docs/CLAUDE.md) |
 | 7 | ✓ | [`docs-website/versioned_docs/version-3.2/CLAUDE.md`](docs-website/versioned_docs/version-3.2/CLAUDE.md) |
 | 8 | ✓ | [`docs-website/versioned_docs/version-3.3/CLAUDE.md`](docs-website/versioned_docs/version-3.3/CLAUDE.md) |
-| 9 | ✓ | [`docs-website/versioned_docs/version-3.4-unstable/CLAUDE.md`](docs-website/versioned_docs/version-3.4-unstable/CLAUDE.md) |
+| 9 | ✓ | [`docs-website/versioned_docs/version-3.4/CLAUDE.md`](docs-website/versioned_docs/version-3.4/CLAUDE.md) |
 | 10 | ✓ | [`haystack/hooks/compaction/AGENTS.md`](haystack/hooks/compaction/AGENTS.md) |
 | 11 | ✓ | [`haystack/hooks/compaction/CLAUDE.md`](haystack/hooks/compaction/CLAUDE.md) |
 | 12 | ✓ | [`releasenotes/notes/AGENTS.md`](releasenotes/notes/AGENTS.md) |

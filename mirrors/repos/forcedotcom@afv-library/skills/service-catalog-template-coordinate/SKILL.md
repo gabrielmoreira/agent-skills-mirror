@@ -8,9 +8,7 @@ metadata:
   # This skill now performs the Unified Catalog Service Process operations itself by following the
   # platform's guided setup recipes, so it declares the Unified Catalog access gate (it no longer
   # merely delegates to child skills that owned the gate).
-  accessCheck:
-    - type: "accessCheck"
-      value: "IndustriesEpc.orgHasUnifiedCatalog"
+  accessCheck: "IndustriesEpc.orgHasUnifiedCatalog"
   mcpTools:
     headless-360:
       tools: ["describe", "discover", "dispatch", "dispatch_readonly"]

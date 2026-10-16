@@ -235,6 +235,12 @@ handoff also closes the window that was left behind (a top-level navigation out 
 user leaving it), while `setWindowOpenHandler` does not, because the page that opened it
 is still using the one it has.
 
+A `window.open` or `target=_blank` of our own origin asks `classifyWindowOpen` instead,
+which sends it to the browser: the shell keeps no popup windows, and loading it here
+would replace a streaming turn. The exception is the console opening the app while they
+share the main window (the thread links on its usage page), which loads in the main
+window, as it already does when the console has a window of its own.
+
 ## OAuth
 
 Google refuses OAuth inside an embedded webview (`disallowed_useragent`, and a

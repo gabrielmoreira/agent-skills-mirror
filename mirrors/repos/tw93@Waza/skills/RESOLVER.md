@@ -37,7 +37,7 @@
 
 | 触发 | 技能 |
 |------|------|
-| 消息含 http(s) URL / 任何网页链接 / PDF 路径 / "看一下这个", "读一下这个" | `skills/read/SKILL.md` |
+| 请求读取、抓取、引用、转换或保存网页链接或 PDF / "看一下这个", "读一下这个" | `skills/read/SKILL.md` |
 | 写作 / 改稿 / 润色 / 去 AI 味（中英文） / 本地化文案 / 多语言产品文案 / 推特推文 / 社交媒体文案 / launch copy / release notes 文案 | `skills/write/SKILL.md` |
 | 文档审阅 / 白皮书 / release notes prose 审核 / "审稿" / "check this document" | `skills/write/SKILL.md` (Document Review Mode) |
 | 技术说明改写 / 指令消歧 / 安装步骤、错误提示、工具描述的措辞 / "clarify instructions" / "technical writing" | `skills/write/SKILL.md` 加载 `references/write-technical.md`，只处理文字，提示词设计与代码行为不在此模式内 |
@@ -48,7 +48,7 @@
 多个技能都可能匹配时按以下规则：
 
 1. **最具体优先**：`/ui` 比 `/think` 更具体（仅限 UI 决策）。用户说"帮我设计登录页"时优先 `/ui`。
-2. **URL 按内容类型二次分流**：消息含 URL → 先走 `/read` 取回 Markdown → 如果用户要总结或分析，继续完成总结或分析；如果是长文研究性素材再接 `/learn`。
+2. **URL 按内容类型二次分流**：用户请求读取 URL 内容时，先走 `/read` 取回 Markdown，再完成用户要求的总结或分析，长文研究性素材可继续交给 `/learn`。
 3. **改错 vs review**：代码已经交付或走到 PR → `/check`；代码跑不通或行为错了 → `/hunt`。两者都可能匹配"帮我看看"，按"有没有具体错误现象"判断。
 4. **配置/维护性异常 vs 代码错误**：Claude/Codex 本身不听话、hook 不触发、MCP 掉链子、AGENTS/CLAUDE/config.toml 漂移、`/health` 消耗 token、AI coding 腐化、上下文混乱、验证缺失或验证命令失真 → `/health`；用户写的代码抛异常 → `/hunt`。
 5. **发布动作 vs 发布文案**：要写 release notes / changelog → `/write`；要提交、打 tag、publish、push、上传 release asset、补 GitHub release reactions、回复/关闭 issue → `/check`。

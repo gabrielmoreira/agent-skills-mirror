@@ -24,8 +24,8 @@ This is an OMH `web-research` workflow skill, projected for Agent Skills hosts (
 - The decision needs reference-implementation study, a declared depth budget, or a decision-grounding dossier; use `ulw-research`.
 - The output is a typed candidate inventory and acquisition status rather than an answer; use `omh-source-finder`.
 - The ask is a market, competitor, pricing, or customer decision brief; use `omh-research-brief`.
-- The user wants recurring monitoring, a source inbox, or Scout/Analyst/Briefer operations; use `omh-research-department`.
-- The user wants to configure or cheapen web search itself, such as a provider API key or a search or extract backend or tier; use `omh-websearch-setup`.
+- The user wants recurring monitoring, a source inbox, or Scout/Analyst/Briefer operations.
+- The user wants to configure or cheapen web search itself, such as a provider API key or a search or extract backend or tier.
 - The study target is this repository rather than the open web; use `omh-codebase-onboarding`.
 
 ## Examples

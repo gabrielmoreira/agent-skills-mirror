@@ -49,7 +49,7 @@ Bad example:
 
 ## Recovery Notes
 
-- If the codegraph command is unavailable, route to doctor or toolbelt-readiness before claiming freshness.
+- If the codegraph command is unavailable, route to toolbelt-readiness before claiming freshness.
 - If no task focus is supplied, prepare build/summary guidance and ask for focus only when a handoff pack would otherwise be misleading.
 - If the index is stale or missing, report the stale/missing state and next safe command rather than treating prior summaries as current.
 

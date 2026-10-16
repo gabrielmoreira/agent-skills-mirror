@@ -15,8 +15,29 @@ Use these checklists to create, rename, delete, or shelve skills owned by this r
 2. Do not use the project-local scaffolding in `agents-brain create-skill` for this catalog. Its catalog guard routes
    creation here to this repository-owned lifecycle.
 3. Add a row to the skills table in `README.md`.
-4. Run `just skill-check` (SKILL.md invocation fields match `agents/openai.yaml`, README skill table, and dependencies).
-5. Publish via `@publish-skills`.
+4. For external sources, complete [External Provenance](#external-provenance) in the same change.
+5. Run `just skill-check` (SKILL.md invocation fields match `agents/openai.yaml`, README skill table, and dependencies).
+6. Publish via `@publish-skills`.
+
+## External Provenance
+
+For an imported or forked whole external skill, add its upstream URL to the README's "Forked Skills" table. Create
+`.agents/skill-upstreams/<name>.md` and add its entry to `.agents/skill-upstreams/README.md` in the same change. For
+borrowed components or inspiration, add the provenance record and index entry without adding a whole-skill fork row.
+
+Record each source repository and path, its relationship, and the known source revision and last reconciled base. Mark
+unknown revisions explicitly. Include upstream-to-local path mappings, local customizations, and the safe merge
+boundary. A source pin does not establish a whole-skill merge base. Inspiration and independent rewrites permit guidance
+review, not automatic content merges.
+
+Circadian's `jobs/rebase-upstream-skills.sh` discovers names from fresh `origin/main` on each weekly run. It takes the
+union of "Forked Skills" rows and active `.agents/skill-upstreams/<name>.md` records, excludes `README.md`, and
+deduplicates names. Do not add a per-skill scheduler list or run a live rebase to enroll a skill.
+
+Before committing, verify any whole-skill table row, record, index link, and existing `skills/<name>/SKILL.md` agree.
+After pushing, fetch `origin/main` and inspect its table and provenance record with `git show origin/main:<path>`.
+Confirm that the name still matches its active skill path. The scheduler discovers these inputs without a live rebase.
+Follow `@rebase-skill` for review and merge limits. Enrollment does not approve an unknown base or expand a mapping.
 
 ## Rename (Catalog)
 
@@ -25,7 +46,8 @@ Use these checklists to create, rename, delete, or shelve skills owned by this r
    plan.
 3. `rg` the repo for stale references: `$<old>` invocations, `skill-dependencies` entries naming `<old>`, and prose
    references in other skills or docs. Update every hit.
-4. Update the `README.md` row.
+4. Update both `README.md` tables where applicable. Rename `.agents/skill-upstreams/<old>.md` when present. Update its
+   local mappings and the provenance index entry to `<new>`. Preserve source paths and revision evidence.
 5. Run `just skill-check`.
 6. When publishing with an explicit commit range, pass **both** `--skill <old> --skill <new>`. The planner then removes
    the old install and adds the new one automatically.
@@ -33,7 +55,7 @@ Use these checklists to create, rename, delete, or shelve skills owned by this r
 ## Delete (Catalog)
 
 1. `git rm -r skills/<name>`.
-2. Remove the `README.md` row.
+2. Remove the skill's rows from both `README.md` tables where applicable. Remove its provenance record and index entry.
 3. `rg` the repo for `skill-dependencies` entries and `$<name>` references in other skills. Update or remove them.
 4. Publish. The remove group cleans global installs and the CLI lock.
 5. Caveat: a CLI-lock entry whose `source` is not `PaulRBerg/agent-skills` is invisible to the planner. Remove such an
@@ -41,14 +63,18 @@ Use these checklists to create, rename, delete, or shelve skills owned by this r
 
 ## Shelve (Catalog)
 
-The `shelved` branch is a skills-only catalog. It contains `skills/<name>/` plus a `README.md` table row per skill. Work
-on it in a temporary `git worktree`. Never switch the shared checkout.
+The `shelved` branch contains archived skills, a `README.md` table, and known provenance under
+`.agents/skill-upstreams/`. Work on it in a temporary `git worktree`. Never switch the shared checkout.
 
 1. Copy the committed skill verbatim into the worktree's `skills/<name>/`. Rename it only when asked. If renaming it,
    update `name:`.
-2. Add the `README.md` table row.
-3. Commit and push `shelved`. Do not run Prettier, `just skill-check`, or other checks on shelved skills. They are
-   archived as-is.
+2. Add the `README.md` skills row and any "Forked Skills" row. If the skill has a provenance record, copy it into
+   `.agents/skill-upstreams/` on `shelved`. Update that branch's provenance index and mark the record as shelved.
+3. Commit and push `shelved` before removing the active copy. Preserve archived skill files verbatim. Do not run
+   Prettier, `just skill-check`, or other checks on those skill files. Format only changed archive documentation.
+4. On `main`, apply the source cleanup from Delete (Catalog). Remove the skill's owned tests, provenance record, and
+   index entry. Keep shelved skill provenance only on `shelved`, not in `.agents/skill-upstreams/` on `main`.
+5. Run `just skill-check` on `main`. Commit and publish the removal through `@publish-skills`.
 
 ## Internal Skills (Create / Rename / Delete)
 

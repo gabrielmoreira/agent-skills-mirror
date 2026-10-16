@@ -190,6 +190,7 @@ On first run, HAPI:
 | `HAPI_EXPERIMENTAL` | - | - | CLI: enable experimental features (`true`/`1`/`yes`) |
 | `ELEVENLABS_API_KEY` | - | Settings / env | ElevenLabs API key for voice + dictation |
 | `ELEVENLABS_AGENT_ID` | Auto-created | - | Custom ElevenLabs agent ID |
+| `ELEVENLABS_MAX_DURATION_SECONDS` | `1800` | - | Max length of one ElevenLabs voice conversation (60-7200) |
 | `GEMINI_API_KEY` / `GOOGLE_API_KEY` | - | Settings / env | Gemini Live voice assistant |
 | `DASHSCOPE_API_KEY` / `QWEN_API_KEY` | - | Settings / env | Qwen Realtime voice assistant |
 | `VOICE_BACKEND` | Auto-detected | - | Default assistant backend: `elevenlabs`, `gemini-live`, or `qwen-realtime` |

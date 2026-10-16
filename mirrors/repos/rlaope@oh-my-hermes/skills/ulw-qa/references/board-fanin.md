@@ -35,15 +35,17 @@ Exactly one fixer row, prepared after every probe receipt is observed:
 | `skills` | `["ulw-work"]` |
 | `parents` | every probe row's observed task id |
 | `workspace_kind` | `worktree` |
-| `body` | the findings to fix, each quoted from the probe `result` it came from |
+| `body` | the findings to fix, each quoted from the probe `result` it came from; its `STOP WHEN` ends the run with `kanban_request_review` |
 
 Because `parents` lists every probe, the host promotes the fixer only after every probe is `done` or `archived`. A probe whose run reads back `timed_out` is neither: the budget ended the worker, not the row, so that probe is completed with a blocker summary or archived before the fixer can promote. One fixer, not one per probe: findings from separate probes often share a cause, and N fixers would race in N worktrees over the same files. The fixer's `body` is written from read-back probe results, so it cannot be prepared before the last probe reports.
 
 ## Re-Verification Through the Review Lane
 
-When the fixer row is `done`, the main session prepares `request_review` on it with a `summary` naming the probes the fix claims to address. Re-verification is the probes run again against the fixer's worktree: by a review-claimed run on the host's own review dispatcher where one exists, or by this session where the worktree is reachable. On a failed re-check the main session prepares `request_changes` on the fixer row with the failing probe's evidence as `reason`; the row returns to the fixer and the cycle repeats.
+The fixer asks for its own review: its run ends with `kanban_request_review` instead of `kanban_complete`, with a `summary` naming the probes the fix claims to address. Hermes moves a row to `review` only from `running` or `ready`, so the request has to come from the fixer's own run while its row is `running`. The main session never prepares `request_review` on a fixer row: once the row reads back `done`, Hermes refuses the move. A fixer that completed instead skipped the review lane; re-verify it in this session where its worktree is reachable, or report it as not re-verified.
 
-A row in `review` is a request (the observed fact is `review_requested`), and a review claim is not merge evidence. A headless host with review dispatch disabled cannot land a positive `request_changes`; the host denies the native call, the denial is recorded as a native boundary, and the re-check is done in this session or reported as not done.
+Re-verification is the probes run again against the fixer's worktree. Unless the operator set `kanban.review_dispatch` off, the host's dispatcher claims the `review` row for a review run, and that run either requests changes, which returns the row to the fixer and repeats the cycle, or completes it. Hermes takes `request_changes` only from inside that review run, so the main session never prepares it. Where no review run claims the row, this session runs the probes again where the worktree is reachable. A failed re-check is then a prepared `comment` on the fixer row carrying the failing probe's evidence, and the closing brief reports the fix as failing its re-check; sending the row back to the fixer is the operator's `hermes kanban reopen-review`, not a step of the QA pass.
+
+A row in `review` is a request (the observed fact is `review_requested`), and a review claim is not merge evidence.
 
 ## Findings Come Back Through Readback Only
 
@@ -73,7 +75,7 @@ prepare  coordination=durable operation=create
 prepare  coordination=durable operation=create
   title="Fixer: installer upgrade path"          assignee=<profile> skills=["ulw-work"]
   parents=[<probe 1 id>, <probe 2 id>, <probe 3 id>] workspace_kind=worktree
-  body=<findings quoted from the three probe results>
+  body=<findings quoted from the three probe results; STOP WHEN ends with kanban_request_review>
 ```
 
-The fixer's `parents` are the observed task ids from the three probe receipts, so the probes are prepared, invoked, and read back before the fixer is prepared. Four `omh_todo` items exist after the fourth receipt, one per row. `request_review` on the fixer is prepared only after its row reads back `done`.
+The fixer's `parents` are the observed task ids from the three probe receipts, so the probes are prepared, invoked, and read back before the fixer is prepared. Four `omh_todo` items exist after the fourth receipt, one per row. The fixer's own run requests the review, so once the fix is in its row reads back `review`, not `done`; the main session prepares no transition on it.

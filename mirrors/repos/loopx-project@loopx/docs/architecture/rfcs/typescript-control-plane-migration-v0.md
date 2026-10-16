@@ -1288,6 +1288,17 @@ This slice does not replace source adapters, add a second inventory, or claim
 full T3 completion. Continue auditing the remaining consumers below; independent
 standalone Todo summary display codecs remain until their callers migrate.
 
+The quota batch's co-deployed v4 carrier stores each shared producer record once
+and references it from ordered lanes. Python restores independent mutable
+records before the existing consumer sees them; the full decision, metadata,
+null/absent fields and source completeness remain unchanged. Versions v0–v3 keep
+their original response shape. This repairs a valid planning request whose
+repeated lane bodies exceed the 2 MiB inline response limit, blocking dispatch
+and exact committed-Turn replay after Goal growth. The global frame limit and
+unknown-effect policy are unchanged; decoded expansion uses the existing
+64 MiB local-snapshot bound before copying records. This is internal transport,
+not a new capability, setting, authority source or installed-runtime claim.
+
 Current bounded delivery: shared-goal alignment and amendment admission use one
 `shared_goal_work_source.py` snapshot per decision, reusing the canonical Todo
 summary after promotion. The same provider read optionally supplies leases at
@@ -1663,6 +1674,14 @@ reduction and returns one typed result. A replay with no pending provider needs
 only the reduction call. Python translates the result into the legacy CLI shape.
 It does not call a series of TypeScript leaf helpers or retain parallel enums
 and reducers.
+
+Explicit `turn run-once --resume-turn-key` now loads the original journal plan
+before fresh selection. It retains actor/Goal-lifetime admission, the existing
+TypeScript recovery decision and execution path, and current checks for any
+remaining effects. It no longer constructs and discards a fresh decision,
+TurnEnvelope or Turn-start context/sync/recall sequence. New Turns keep their
+shared fresh decision owner. This removes redundant Python composition from
+recovery; it does not retire the Python CLI or complete the remaining cutovers.
 
 The same PR must delete the Python semantic path it replaces. A new TypeScript
 module is not migration progress by itself: the payoff is fewer semantic

@@ -403,6 +403,17 @@ kombináció mindkét célpontja modellenkénti sebességkorlátba ütközik. A 
 `budgetMs`) korlátozza. Soha nem várakozik `quota_exhausted`
 (éjfélig zárolva), illetve hitelesítési/nem található okok esetén.
 
+```text
+#16319 · comboCooldownWait · pre-dispatch (attempts = 0)
+all targets skipped + transient model lockout:
+  enabled ∧ 0 < waitMs ≤ maxWaitMs ∧ attempt < maxAttempts ∧ budgetLeftMs ≥ waitMs
+    → wait → re-dispatch
+  wait = false → HTTP 429 rate_limit_error
+  retry_after / reset_at ← earliest transient lock expiry
+quota_exhausted / auth_error / not_found / not_found_local:
+  no transient hint → HTTP 503 ALL_TARGETS_SKIPPED
+```
+
 ---
 
 ## 5. Kérelemsorba-felvételi szabályozás (v3.8.49 · #6593. számú probléma)

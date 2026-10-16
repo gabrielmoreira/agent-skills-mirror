@@ -5,186 +5,130 @@ description: High-cost orchestrator workflow for large, high-risk, multi-phase c
 
 # Deepwork
 
-Deepwork is an orchestrator workflow for heavy coding sessions: multiple
-dependent phases, cross-cutting architectural change, unsafe-to-partially-ship
-migration, or sustained coordination across specialist lanes. Never infer it
-merely because a task touches multiple files; skip it for trivial edits, quick
-docs changes, simple bug fixes, or routine bounded features.
+Deepwork is an orchestrator workflow for heavy coding sessions: a whole
+product or subsystem, cross-cutting architectural change, unsafe-to-partially-
+ship migration, or sustained coordination across specialist lanes. Never infer
+it merely because a task touches multiple files; skip it for trivial edits,
+quick docs changes, simple bug fixes, or routine bounded features.
 
-## Core Contract
+## Work Like a Painter
 
-When deepwork is active, the orchestrator must manage the work as a scheduler,
-not as the default implementation worker. Scheduling does not mean
-delegating everything: apply small integration and remediation edits
-yourself when you already hold the context, rather than starting a lane
-that must re-read the same files. Value productivity: working results
-matter more than review rounds — deepwork is heavy because the task is
-large, not because every step needs debate.
+A painter does not finish one finger before sketching the hand. Build the
+whole picture in passes, each at a higher fidelity, keeping it easy to adjust:
 
-## Setup and Deepwork State
+1. **Sketch** — every major flow works end to end, thinly. Rough is fine;
+   faked or hidden is not.
+2. **Structure** — real data model, real module boundaries, the main failure
+   paths.
+3. **Detail** — hardening, crash recovery, edge cases, polish. Repeat as
+   needed.
 
-`.slim/deepwork/` holds exactly two shapes: the pinned router head
-`.slim/deepwork/<session-id>.md`, and one directory per task,
-`.slim/deepwork/<task-slug>/`, for that task's progress file and topic
-files. Route content to one address: status, open items, one-line verdicts
-→ the progress file; full analyses and verdicts → a topic file;
-deliverables (code, specs, data, docs) → real project paths; scratch
-intermediates → nowhere. `.slim/deepwork/.runtime/` is machine-written
-guard bookkeeping (receipts, claim markers) — never read by the workflow;
-guards record in shadow mode by default. Other root-level `.md` files are
-legacy notes: never resume, claim, or write them.
+Every pass ends with a committed, usable product and a ranked known-issues
+list. Work is never finished: there will always be more to harden and more
+bugs to fix. Stop when the task's goal is met at a fidelity that serves it,
+and hand the remaining known issues over — leftovers are expected, not
+failure.
 
-### Pinned Router Head
+Two things are never deferred to a later pass: security and money/data
+correctness. Everything else is judged against the current pass.
 
-The activation prompt pins `.slim/deepwork/<session-id>.md`, updated in
-place; re-running `/deepwork` reuses it. Never modify
-another session's file; only the orchestrator writes it. At most 12 lines:
-`status: active` (flip to `status: completed` when the session's work
-concludes), then `task:`, `slug:` (its task directory), `phase:`, `next:`,
-`blockers:` — one line each. A session without a task keeps only the
-`status:` line. The head is a hint: on conflict, the task progress file
-wins.
+## Autonomy
 
-Before creating any deepwork file, ensure `.gitignore` contains
+Run autonomously to the end by default. Make reasonable decisions yourself,
+record them in the progress file, and keep moving. Ask the user only when
+truly blocked: credentials, paid commitments, irreversible or public external
+actions, or a decision with no safe default. If the task asks for check-ins
+(for example, after each pass), honor that.
+
+## Role
+
+Act as scheduler and integrator, not the default implementation worker. Make
+small integration and remediation edits yourself when you already hold the
+context. Value productivity: a working whole picture beats a perfect corner.
+
+## Planning a Pass
+
+- Define the pass goal in one or two lines: what the whole product does at
+  this fidelity.
+- Split the pass into a few coherent lanes (about four or fewer) with
+  disjoint write scopes. Agree the interfaces between lanes before dispatching
+  them — only as firmly as this pass needs; expect them to move later.
+- Plan @designer and @fixer as separate lanes from the start: @designer owns
+  visuals; @fixer owns wiring, types, and tests.
+- If the pass has lanes that touch persistent state, money, concurrency,
+  crash recovery, or destructive operations, get one short @oracle design
+  review of the pass plan covering all of them before dispatch. Design flaws
+  are cheap to fix before implementation.
+- Record the pass plan in the progress file; give the user a compact version.
+
+## Running a Pass
+
+- Every delegation states scope, interfaces it relies on, and acceptance
+  evidence. Every lane report must list changed files, the exact commands run
+  with their exit codes, and what remains unverified.
+- Accept a lane after checking one decisive artifact — source for interfaces,
+  real output for runtime, opened screenshots for UI. A build passing proves
+  neither behavior nor visual quality.
+- After two misses from a lane, change the boundary or the specialist instead
+  of sending a longer version of the same prompt.
+- Lanes run focused checks for their own scope. Run the broad suite once per
+  pass, after reconciling all writers; reuse evidence while it stays valid.
+- If the pass runs about twice its expected effort, step back and re-plan
+  instead of pushing on.
+
+## Gate and Step Back
+
+At the end of each pass:
+
+1. Run the broad validation once on the reconciled state.
+2. Request one @oracle gate scoped to this pass: is the whole picture right at
+   this fidelity? Findings that belong to a later pass go to the known-issues
+   list, not into a fix loop. Fix blockers in one bounded pass; at most two
+   re-reviews, each only for materially changed risks. State the attempt in
+   every gate prompt, e.g. `Pass 2 gate — attempt 2 of 3`.
+3. Commit the pass.
+4. Step back: run the product as a whole, look at it, and re-plan the next
+   pass from what you see rather than from the original plan. Review the code
+   organization too — if files grew huge or module boundaries blurred, make
+   reorganization part of the next pass before it becomes unmaintainable.
+   Likewise, if slow tests or builds noticeably dragged this pass, make
+   speeding them up part of the next pass — without dropping essential
+   state, security, or real-service evidence.
+
+## State
+
+Keep state small and current. It exists to resume after compaction, not to
+log activity.
+
+- **Router head** `.slim/deepwork/<session-id>.md`, pinned by the activation
+  prompt and reused on re-run: `status: active` (or `status: completed`) and
+  `slug:` — nothing else. Never modify another session's head.
+- **Progress file** `.slim/deepwork/<task-slug>/progress.md`, rewritten in
+  place, at most about 40 lines of plain prose: status, pass and its goal,
+  next step, constraints and decisions, running lanes (one line each), and the
+  ranked known-issues list. No activity log — history lives in git commits and
+  gate verdicts.
+- **Topic files** in `.slim/deepwork/<task-slug>/` only for what will be
+  re-read: gate verdicts and research. One file per topic; a retry overwrites
+  it. Plans, specs, and docs go to real project paths. Routine lane results
+  stay in the task results.
+- Update state at pass transitions, decisions, and blockers — not after every
+  lane.
+
+Setup: before creating any deepwork file, ensure `.gitignore` contains
 `.slim/deepwork/` and `.ignore` contains `!.slim/deepwork/` plus
-`!.slim/deepwork/**`, adding only missing entries.
+`!.slim/deepwork/**`, adding only missing entries. Claim a new task with
+`mkdir -p .slim/deepwork` then a plain `mkdir .slim/deepwork/<task-slug>`;
+if it already exists and another session's `status: active` head names that
+slug, pick another slug, otherwise adopt it. Write the `slug:` into your head
+before working.
 
-### Task Progress File
-
-Each task keeps one progress file,
-`.slim/deepwork/<task-slug>/progress.md` — at most 80 lines, rewritten in
-place, never appended to. Head: one-line fields — `status: active`, current
-phase, next step, frozen constraints (a constraint not written here is
-gone). Below: an open-items checklist (3–8 items) and a dated log folding
-every closed phase or decision into one line — `[x] name: one-line
-conclusion (see <file>)`. Update at every phase close, decision, and
-review, folding as you go; the head and log-line format are the only fixed
-shapes. Claim a task with `mkdir -p .slim/deepwork` then a plain
-`mkdir .slim/deepwork/<task-slug>` (no `-p` on the task directory); on
-success, write its `slug:` into the pinned head — flipping a
-reused head's `status:` back to `active` — before working. If the
-directory already exists: a `slug:` in another session's `status: active`
-head means claimed; otherwise adopt it by writing the `slug:` yourself.
-Full delegated output lands verbatim in
-`<task-slug>/<topic>.md` — written by the lane itself when it can write,
-transcribed by the orchestrator when it cannot; the progress file gets
-only a one-line conclusion plus the path. Never paste
-`@council`/`@oracle`/`@librarian` output into a progress file or fork
-one. The artifact's first line is the lane's one-line conclusion, the
-same line it returns; accept lane completion only after re-reading the
-artifact from disk and finding that first line (on miss, re-check once).
-Past ~400 lines, consolidate a topic file — one per topic, new versions
-overwrite old ones.
-
-### Resuming
-
-On resume or after compaction, read one chain, one file per hop: the
-pinned head → the progress file its `slug:` points to → the topic files
-its pointers reference. Nothing else. To find an existing task, read task
-status lines only (`grep -m1 '^status:' .slim/deepwork/*/progress.md`)
-plus the pinned heads' `status:` and `slug:` lines; skip completed tasks,
-any task whose slug sits in another session's `status: active` head, and
-slug-less heads (legacy — never claimable, noted once); after picking
-one, do not read other task directories.
-
-## Planning
-
-- before dispatch, draft a phased implementation/delegation plan: a small number
-  of coherent phases from the work's dependencies and natural delivery
-  boundaries; do not split work merely to reduce an Oracle review's scope;
-- order phases by fidelity, like a painter: the first phase lands a working
-  end-to-end skeleton, later phases deepen structure, then detail and polish;
-  never finish one area in full detail before the whole shape exists;
-- make an `@oracle` review mandatory after each phase, scoped to that phase's
-  fidelity: early gates check direction, correctness, and blocking risks, not
-  polish or naming; record the phase order, specialist ownership, gate order,
-  and one-line gate rationale in the task progress file; share a compact
-  version with the user;
-
-## Phase Execution
-
-- before each implementation phase, decide the execution path: what can run in
-  parallel, what must be sequential, which specialists to delegate to, and
-  whether to split the same agent into multiple bounded lanes;
-
-### Scheduler Discipline
-
-Use the scheduler model throughout:
-
-- record task/session IDs and ownership boundaries;
-- wait for hook-driven background completion before consuming background results;
-- avoid blocking Orchestrator lane while background jobs run; if no independent
-  work remains, stop briefly and let the completion event resume the workflow;
-- do not advance to the next phase while relevant jobs are running or terminal
-  results are unreconciled.
-
-## Phase Gate and Commit
-
-- during a phase, lanes run only focused checks for their own scope; at phase
-  close, run the broad validation once on the reconciled state, and reuse it
-  for the gate rather than re-running it per lane or per review round;
-- after each planned phase, run relevant validation, update the task progress file,
-  then request its planned `@oracle` gate before continuing;
-- before its planned Oracle gate, record in the task progress file the phase goal,
-  changed paths, validation evidence, the specific decision or risk to review,
-  and accepted research with file references, so Oracle reviews established
-  context rather than repeating discovery;
-- when the phase changes module boundaries, dependency direction, or file
-  placement, run an `@explorer` structure scan in parallel with the Oracle gate;
-- reconcile review findings, perform one bounded remediation pass for issues
-  material at the current fidelity, and validate that pass with focused
-  evidence; record polish, naming, and simplify/readability findings that
-  belong to a later phase as open items instead of fixing them now; make
-  small remediation edits directly when you already hold the context;
-- create a focused commit when the phase is an independently valid delivery
-  boundary before starting the next phase;
-
-### Oracle Re-Reviews
-
-Every planned Oracle gate has one initial review and may have at most two
-re-reviews. Request a re-review only when the remediation materially changes
-the reviewed decision or risk, or when the original concern cannot be verified
-with focused evidence. Do not spend a re-review on a mechanical or
-already-verified change.
-
-State the attempt in every Oracle prompt, for example:
-
-```text
-Gate 2 — review attempt 2 of 3 (1 re-review remaining)
-```
-
-For re-reviews, tell Oracle to prioritize unresolved material findings, risks
-introduced by remediation, and whether prior findings are resolved. It must not
-reopen accepted, unchanged, or resolved concerns. When the two re-reviews are
-exhausted, record any remaining material risk or blocker in the task progress file
-and ask the user whether to accept the risk, change scope, or authorize an
-exceptional additional review.
-
-## Designer Handoff Guardrail
-
-When a deepwork phase includes `@designer`, treat the delivered UI/UX as
-accepted design intent for later phases. Record any important design decisions in
-the task progress file before continuing.
-
-After designer work:
-
-- preserve layout, rhythm, hierarchy, motion, spacing, color, affordances,
-  responsiveness, and component feel;
-- review and improve user-facing copy with grounded, normal wording, but do not
-  change visual structure or interaction intent;
-- route follow-up visual, responsive, motion, hierarchy, polish, or
-  component-feel changes back to `@designer`;
-- use `@fixer` only for bounded mechanical follow-up that preserves the design
-  exactly, such as wiring, tests, type fixes, or non-visual behavior changes;
-- if design intent must change, record why in the task progress file before changing
-  it.
+Resume: read your head, then its progress file, then only the topic files the
+progress file points to. Nothing else.
 
 ## Completion
 
-When the work concludes, rewrite the task progress file in place into a
-tombstone of at most 15 lines: first line `status: completed`, then the
-final conclusion, pointers to key deliverables, surviving frozen
-constraints, and the date. Drop the log and checklist. Move nothing; add
-no index files or ledgers. A finished task directory is read by nothing
-and may be deleted at any time, without record. Finish with final
-validation and a concise summary.
+Rewrite the progress file as a tombstone of at most 15 lines: first line
+`status: completed`, then the final outcome, pointers to key deliverables,
+the remaining known issues, and the date. Flip the head to
+`status: completed`. Finish with final validation and a concise summary.

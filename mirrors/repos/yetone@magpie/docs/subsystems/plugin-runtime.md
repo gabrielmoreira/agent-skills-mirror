@@ -9,8 +9,11 @@ runtime, the file and the window's switch) and P1 (the window's kernel: a
 plugin's page, its error boundary, the kit it draws with and its settings
 form, with the Gateway page as the first plugin to draw its own page), and
 P2 so far (a page moved out of the core whole: its code, styles and words:
-Sessions, Library, Routing and Usage), and P3 so far (the gateway's
-extension points: the observer, with OTel export as its first plugin). OpenCode plugins (npm packages in
+Sessions, Library, Routing and Usage), and P3 (the gateway's
+extension points: the observer, with OTel export as its first plugin; the
+router strategy, with the routings besides Smart and the user's groups; and
+the middleware point, with the JS gateway middleware and privacy masking;
+the tool point, with web search; and the budget point, with key limits). OpenCode plugins (npm packages in
 the plugin host) are a different thing; see
 [provider and plugin ownership](provider-plugins.md) and
 [gateway middleware](gateway-middleware.md).
@@ -25,7 +28,7 @@ the plugin host) are a different thing; see
 | Ctx | What `Apply` gets: `OnDispose(f)`, `Contribute(slot, key)`, `Provide(name, v)` (withdrawn when it goes), `Service(name)`, and its composed `Config`. Disposers run in reverse, each one's panic logged and the rest still run. | [`pluginrt.go`](../../internal/pluginrt/pluginrt.go) |
 | plugins.yml | `appdir.Config()/plugins.yml`: `preset` (`essentials` or `all`) and `plugins`, rows of `{id, enabled, config}` holding only what the user set. | [`config.go`](../../internal/pluginrt/config.go) |
 | Settings schema | `SchemaOf(Settings)` makes a JSON Schema object of the struct, in its fields' order (`x-order`): each exported field with a json name is a setting, of `bool`, an int, `float64` or `string`, with tags `title` (English; the window translates it), `description`, `enum` (comma separated) and `min`/`max`. Its values are the defaults. A field a form can't draw, or a tag that doesn't parse, panics at `Register`. `Schema.Validate` takes a value only as the schema allows it (a JSON float64 or a YAML int for an integer); `SetConfig(id, config)` writes the user's row through it, and `Compose` leaves out a value edited into plugins.yml by hand that it doesn't allow, so the default stands. | [`schema.go`](../../internal/pluginrt/schema.go), [`config.go`](../../internal/pluginrt/config.go) |
-| Built-in plugins | `groups`, `library`, `otel`, `sessions`, `warmups` (P0), `gateway` (P1), the Gateway page, which is Essential and in use while a gateway key is there (`access.List`), and `routing` (P2), the Routing page, Essential and in use while the user has a routing group, since the page is where groups are made and changed. `rotation` (P3), the routings besides Smart, is Essential and in use while a provider or group is routed by one of them. `usage` (P2), the Usage page, is Essential too, with no `InUse`: what it shows the gateway counts anyway, and the tray panel's Usage tab still shows the allowances with it off. The Gateway page's one setting, `callsPage` (10, 20, 50 or 100; 20), is how many recent calls the page shows at a time. The other five aren't Essential. Each one's `InUse` counts what the user made with it: routing groups not Auto and not hidden, library items given to agents, a collector sent to, gateway conversations recorded, warm-ups and check-ins on. | [`plugins/`](../../plugins) |
+| Built-in plugins | `groups`, `library`, `otel`, `sessions`, `warmups` (P0), `gateway` (P1), the Gateway page, which is Essential and in use while a gateway key is there (`access.List`), and `routing` (P2), the Routing page, Essential and in use while the user has a routing group, since the page is where groups are made and changed. `rotation` (P3), the routings besides Smart, is Essential and in use while a provider or group is routed by one of them. `middleware` (P3), the JS gateway middleware, is Essential and in use while plugins.json has a middleware on (`middleware.On`). `redact` (P3), privacy masking, is Essential and in use while Settings → Privacy asks for any masking (`masking.Wanted`). `search` (P3), magpie's web search, is Essential and in use while a search API is set up or a searcher is picked. `budget` (P3), key limits, is Essential and in use while a gateway key has a limit. `usage` (P2), the Usage page, is Essential too, with no `InUse`: what it shows the gateway counts anyway, and the tray panel's Usage tab still shows the allowances with it off. The Gateway page's one setting, `callsPage` (10, 20, 50 or 100; 20), is how many recent calls the page shows at a time. The other five aren't Essential. Each one's `InUse` counts what the user made with it: routing groups not Auto and not hidden, library items given to agents, a collector sent to, gateway conversations recorded, warm-ups and check-ins on. | [`plugins/`](../../plugins) |
 
 The boundary is checked by `TestPluginsImportOnlyCore`: no package outside
 `plugins/` imports one (but `main.go`, through `plugins/all`), a plugin never
@@ -102,7 +105,9 @@ says one of its words, which goes back to i18n.js.
   code, so its part has no `html`. Its hooks: `open` and `relang` load it,
   and `reveal(s, e)` is the Usage page's way in (a session's row and All
   sessions, #752), called through `magpie.call("sessions", "reveal", …)`,
-  so with no Sessions plugin it does nothing. Still in app.js: the Usage
+  so with no Sessions plugin it does nothing. With Sessions switched off,
+  a row of Usage's list unfolds its details in place instead
+  (`sessionItem`, #2311). Still in app.js: the Usage
   page's Sessions tab (`/api/sessions`) and Settings' session terminal row
   (`data-feature="sessions"`).
 - **Library** (`plugins/library`, `Client: i18n.js, library.css,
@@ -155,8 +160,8 @@ says one of its words, which goes back to i18n.js.
 
 ## Gateway extension points (P3): observer
 
-P3 opens the gateway to plugins at four points: observer, router strategy,
-middleware and tool. The observer is the first. It only reads, so it is
+P3 opens the gateway to plugins at five points: observer, router strategy,
+middleware, tool and budget. The observer is the first. It only reads, so it is
 the safest to move first. `plugins/otel` is its first consumer, and with the
 plugin off the gateway does no observing work.
 
@@ -200,9 +205,63 @@ not offered at all.
 | `GateGroups`, `ServeGroups` | The gateway holds `GateGroups` while it serves (`ListenAndServe`), and the plugin holds `ServeGroups` while it is on. Gated with none served, `groupsIn` leaves out every group not `Auto`, so `Groups`, `FindGroup`, `GroupFor`, the catalog, `/v1/models` and a group's `Unlists` go without them: a request for one is a model not served. A process not serving the gateway (the CLI, the TUI) is never gated and lists them all. Nothing built from the groups is kept past a call, so a flip is seen by the next lookup. Gated and off, a lookup that finds a group of the user's own first asks the gate's refresh (the gateway's is `pluginrt.Refresh`), at most once a second and never from inside one, then looks again: a group made a moment ago turns the plugin on and is served by the request that asks for it, not after `KeepFresh`'s next look (`TestOwnGroupRefreshesTheGate`). | [`group_serve.go`](../../internal/provider/group_serve.go), [`group.go`](../../internal/provider/group.go), [`gateway.go`](../../internal/gateway/gateway.go) |
 | `plugins/groups` | Requires `window` and `providers`, not Essential. Apply holds `ServeGroups`. `InUse` is `provider.NamedGroups`: the groups providers.json holds that are neither Auto nor hidden, read from the file, never through the gate (else off would count none and stay off); an unreadable file is an error, so it stays on. The `routing` plugin's `InUse` is the same count. The gateway's `KeepFresh` watches providers.json, so a group made with `magpie group add` turns it on within 2s, and a request for it before then turns it on itself (the gate's refresh, above); the window's New group button is `data-feature="groups"`. | [`groups.go`](../../plugins/groups/groups.go), [`routing.go`](../../plugins/routing/routing.go) |
 
-The other points follow in this order: middleware (the JS gateway middleware becomes one consumer of it, with its
-place, API and fail-open policy unchanged; redaction fails closed), then
-tool (search) and budget.
+## Gateway extension points (P3): middleware
+
+The middleware point is what changes a request on its way through the
+gateway and its reply on the way back. It has two places, each with its own
+failure policy, in [`internal/gwmw`](../../internal/gwmw/gwmw.go):
+
+| Part | What it does | Source |
+| --- | --- | --- |
+| `gwmw.Agent` | A middleware on a request an agent sent, in the agent's own API, before the gateway routes it, and on its reply as the agent gets it: `Begin(Info) Run`, and the run's `Request` (a `Reject` ends the request in the agent's error shape), `Wrap` and `End`. `Use(a)` registers one until its remove; `Agents` lists them in order. `serveAgent` runs each in turn; with none it calls `serve` directly. It fails open, as the JS middleware always did. | [`gwmw.go`](../../internal/gwmw/gwmw.go), [`middleware.go`](../../internal/gateway/middleware.go) |
+| `plugins/middleware` | Requires `gateway`, Essential. Apply registers `middleware.Chain`, the JS gateway middleware ([Gateway middleware](gateway-middleware.md)), whose place, API, limits and fail-open policy are unchanged. `InUse` is `middleware.On()`, the middleware plugins.json has on. Off, agents' requests go as they came and no middleware is called, while plugins.json is left as it is. The gateway's `KeepFresh` watches plugins.json too, so a middleware added from the CLI or the window turns it on within 2s, and a request before then asks the gate's refresh itself (`gwmw.AgentsWanted`: with no agent middleware registered and `middleware.On()` above 0, at most once a second), so the middleware runs on that request, as it did within a second before it was a plugin. | [`middleware.go`](../../plugins/middleware/middleware.go), [`run.go`](../../internal/middleware/run.go) |
+| `gwmw.Masker` | Masks what magpie sends a vendor and puts the values back in what comes back: `JSON`, `Text`, `Restore` and `Writer`. `Mask(m)` serves one until its remove (the last registered serves). It fails closed: `Masking(wanted)` is the masker for a request, or `ErrUnmasked` when the settings ask for masking and none serves, and `Safely` makes a masker that panics an error. The gateway's call sites (`serve`, count_tokens, embeddings and audio, transcriptions, images, video, the search stand-ins and their queries, the Codex backend) answer either with 503 "…nothing was sent", and the vendor gets nothing. `Served`, with none, asks the gate's refresh (the gateway's is `pluginrt.Refresh`, set by `gwmw.Refresh` in `ListenAndServe`) at most once a second and never from inside one, then looks again, so masking turned on a moment ago turns the plugin on for the request that needs it. | [`gwmw.go`](../../internal/gwmw/gwmw.go), [`redact.go`](../../internal/gateway/redact.go), [`gateway.go`](../../internal/gateway/gateway.go) |
+| `plugins/redact` | Requires `settings` and `gateway`, Essential. Apply serves `masking.Masker`, which reads settings.json on each call and masks with `internal/redact` as before (it lives in `internal/masking` because `settings` imports `redact`). `InUse` is `masking.Wanted`: *Mask secrets*, *Mask personal data* or a word of the user's own; settings.json that can't be read is an error, so it stays on. Since it is in use whenever masking is asked for, it can only be off while nothing is; the 503 is for a refresh not yet seen or a plugins.yml edited by hand. | [`redact.go`](../../plugins/redact/redact.go), [`masking.go`](../../internal/masking/masking.go) |
+
+## Gateway extension points (P3): tool
+
+The tool point is the tools magpie answers itself for an agent, in place of
+the vendor. Web search is the one now: the stand-in `web_search` a model
+that can't search is given, the search MCP server, and Codex's search when
+ChatGPT can't answer it ([Gateway routing](gateway-routing.md)). A vendor
+that searches by itself is never the point's: its own `web_search` goes to
+it, on or off.
+
+| Part | What it does | Source |
+| --- | --- | --- |
+| `gwtool` | `Serve(name)` serves a tool until its remove; `Gate()` makes every tool wait on `Serve` until its stop; `Served(name)` is not gated, or served. The gateway holds `Gate` while it serves (`ListenAndServe`, `TestServingGatesTools`), so a process not serving it (the CLI, the TUI, an agent's config written there) has every tool, as before the point. `WebSearch` is the search's name. | [`gwtool.go`](../../internal/gwtool/gwtool.go), [`gateway.go`](../../internal/gateway/gateway.go) |
+| Off | `searchServed` gates the three places every search path goes through: `canSearch` (the stand-in tool, `/v1/models`' search note to another magpie, the subscriptions' search, `CanSearch` for the agents' rows), `searchesOwn` (a Kimi Code or WorkBuddy plan's own search service, a Google sign-in's Gemini) and `webSearch` itself, which answers `errSearchOff` without asking a searcher or a search API. So off, a request with `web_search` goes to the vendor as it does with no searcher set up, and the MCP server and Codex's search say the plugin is off (`TestSearchOnAndOff`). | [`search.go`](../../internal/gateway/search.go), [`search_api.go`](../../internal/gateway/search_api.go), [`search_kimi.go`](../../internal/gateway/search_kimi.go) |
+| `plugins/search` | Requires `settings` and `gateway`, Essential. Apply serves `gwtool.WebSearch`. `InUse` counts the search APIs set up (`provider.SearchAPIsSet`, the file alone) and a searcher picked in Settings (neither magpie's pick nor off); an unreadable providers.json or settings.json is an error, so it stays on. The gateway's `KeepFresh` watches both files, so a search API added from the CLI or the window turns it on within 2s. | [`search.go`](../../plugins/search/search.go) |
+
+## Gateway extension points (P3): budget
+
+The budget point holds a gateway key to the limits its owner set (#585,
+#2227) before any of the key's requests goes to a provider. It is the last
+of the P3 points. A request without a key, or of a key with no limit, never
+asks it.
+
+| Part | What it does | Source |
+| --- | --- | --- |
+| `gwbudget.Limiter` | `Reserve(who, body, model, now) (release, refused)`: lets a key's request in, holding what it is expected to use until release, or refuses it with a `Refusal` (`RetryAfter`, `ResetAt`). `Limit(l)` serves one until its remove; registering again stacks, and the last one serves. | [`gwbudget.go`](../../internal/gwbudget/gwbudget.go) |
+| Fail closed | `Limiting(who)` is nil for a request with no key or a key with no limit, the served limiter otherwise, and `ErrUnlimited` when the key has a limit and none serves. With none it first asks the refresh (the gateway's is `pluginrt.Refresh`, set by `gwbudget.Refresh` in `ListenAndServe`), at most once a second and never from inside one, then looks again, so a limit set a moment ago turns the plugin on for the request that needs it. `reserveFor` is the gateway's one way in, for the chat APIs (`keyLimited`), the search MCP server and the vision one: a refusal is 429 `gateway_key_limit` with Retry-After and X-Magpie-Limit-Reset; `ErrUnlimited` is 503 `gateway_key_limit_off`, X-Should-Retry false, nothing sent, and a rejected usage row (`TestKeyLimitsOnAndOff`, `TestVisionMCPHeldToKeyLimit`). | [`gwbudget.go`](../../internal/gwbudget/gwbudget.go), [`key_limit.go`](../../internal/gateway/key_limit.go) |
+| `plugins/budget` | Requires `settings` and `gateway`, Essential. Apply serves `budget.Limiter`, `internal/budget`'s windows and reservations as before. `InUse` counts the gateway keys with a limit (`access.List`); a keys file that can't be read is an error, so it stays on. Since it is in use whenever a key has a limit, it can only be off while none has; the 503 is for a refresh not yet seen or a plugins.yml edited by hand. The gateway's `KeepFresh` watches the keys file too, so a limit set from the CLI or the window turns it on within 2s. | [`budget.go`](../../plugins/budget/budget.go) |
+| Stays in the core | What a key has used and has left (`budget.All`, `budget.Binding`) for `/v1/magpie/limit`, the Gateway page and the CLI, and `budget.Append`, so the usage ledger counts a key's use the same with the plugin on or off. The key editor's limit fields stay with the plugin off, since setting a limit is what turns it back on. | [`budget.go`](../../internal/budget/budget.go) |
+
+## P4: community plugins at every point
+
+P4 opens each extension point, the gateway's and the window's, to
+community plugins (OpenCode plugins, npm packages in the plugin host). A
+gateway point stays behind the built-in plugin that serves it, so off
+still means off; a page is its own plugin's to turn on and off.
+
+| Point | What a community plugin gives | Served by | Reference |
+| --- | --- | --- | --- |
+| Router strategy | A module's `export const strategies = {name: (pool, seats, options) => order}` (or `{order}` objects) are routings `<short name>/<name>`, registered with `routes.Register` while the gateway serves `middleware.Points()` and the plugin is on and loaded; off or reloaded, they are removed. 20ms each, fail open: an error, a timeout or what isn't an order of the seats is the listed order, counted on the Plugins page. The routing pickers offer the served ones (`jsRoutings` in the settings state); a routing saved whose plugin is gone shows as it is and is the listed order. providers.json keeps such a routing as saved (`provider.PluginRouting`), so a plugin turned off and on again routes its groups again. | `plugins/middleware` ("JS gateway plugins", from the same module as its [middleware](gateway-middleware.md)) | [`points.go`](../../internal/middleware/points.go), [`app.js`](../../internal/gui/assets/app.js), [`client.js`](../../internal/gui/assets/plugins/routing/client.js), [`groups_cli.go`](../../internal/cli/groups_cli.go), [`routing.go`](../../internal/provider/routing.go) |
+| Usage observer | `export function onUsage(row, options)` gets each usage row of an allow-list (no bodies, prompts or ids), from a bounded queue off the request path: a full queue drops and counts, and a request never waits. 250ms each, fail open. | `plugins/middleware` ("JS gateway plugins", from the same module as its [middleware](gateway-middleware.md)) | [`points.go`](../../internal/middleware/points.go) |
+| Tool | Its OpenCode `tool` hook's tools, offered to every agent by magpie's MCP server at `/mcp/magpie/tools`, each named `<plugin>_<tool>`, each call held to the calling key's limit and run in the host within 55s. Off, no tool is listed and a call says the plugin is off. | `plugins/tools` ("Plugin tools", Essential; `InUse` counts the plugins on that give tools, from `plugin-tools.json`), `gwtool.PluginTools` | [Plugin tools](plugin-tools.md) |
+| A page in the window | `magpie.page {title, file, icon}` and `magpie.permissions` in package.json, installed from npm, GitHub or a folder like any plugin (`plugin.WindowPage`: `file` an .html inside the plugin, the icon in the page's folder, reads kept to `plugin.PageReads`). An on plugin's page gets a tab in the sidebar's Plugins group, after the built-in pages (`pluginpages.js`, a kernel `page` part). It runs in an iframe sandboxed to `allow-scripts`, its files served from `/_magpie/plugin/<token>/` (an HMAC of the spec with a secret of this run) under a policy of `sandbox allow-scripts`, its own folder only, `connect-src 'none'`. The frame talks to the window by `postMessage`: the window answers only its own frame (`ev.source`), with the theme, its own options (`/api/plugin-pages/options`, at most once a second, saved without restarting the host for a page-only plugin) and the reads it declared (`/api/plugin-pages/read`, checked again by the server): `usage:summary` (totals and the top 20 models) and `providers:list` (ids and names). Nothing secret is readable, since a page can still send its frame to another site. `noFramedAPI` turns away every `/api/` request a sandboxed frame or another site can send (`Origin: null`, `Sec-Fetch-Dest` a frame, a cross-site subresource), since the desktop window's API has no key; `webGuard` lets the prefix through without the cookie the frame never sends, and the token is the key. A page that throws, or doesn't say hello in 10s, is broken through the kernel (`ctx.broke`), with Try again. The Plugins page shows the page and its reads on the row before the plugin is on. A plugin that is only a page is in-magpie-only: no Bun host starts for it. Discover lists a market entry of `kind: "page"` under Pages with the Page chip, and a GitHub repository tagged `magpie-plugin` whose package.json has `magpie.page.file` as a Page (`TaggedRepos`, which then checks that file is committed, as it does a provider's entry; `TestTaggedRepos`, `plugin-kinds-discover.test.cjs`). Tests: `TestWindowPageStaysInside`, `TestPluginPageServedShutIn`, `TestPluginPageReadsWhatItDeclared`, `TestPluginPageNoAPI`, `TestPluginPageWebGuard`, `plugin-page.test.cjs`. Example: `internal/gui/testdata/page-plugin`. | the window, no built-in plugin: the page is the plugin's own on/off | [`page.go`](../../internal/plugin/page.go), [`pluginpage.go`](../../internal/gui/pluginpage.go), [`pagebridge.js`](../../internal/gui/pagebridge.js), [`pluginpages.js`](../../internal/gui/assets/pluginpages.js) |
+
+`plugins/middleware` is now "JS gateway plugins". Apply registers the chain and `usage.Observe(middleware.Points())`; off, no JS middleware, strategy or `onUsage` runs, and a pool routed by a JS strategy is its listed order. `InUse` is unchanged. ([`middleware.go`](../../plugins/middleware/middleware.go))
 
 ## Source of truth and composing
 
@@ -240,7 +299,7 @@ remembering its layer (`Source`):
 - **The window**: see [GUI app shell](gui-shell.md), "Built-in plugins".
 - **The gateway**: the process serving it runs `pluginrt.KeepFresh` (every
   2s), which refreshes when plugins.yml, settings.json or providers.json
-  changes, so a
+  changes (and plugins.json, for `middleware`), so a
   plugin turned on or off in the window or by `magpie plugin builtin` comes
   and goes in the gateway without a restart, and a headless `magpie serve`
   follows the file too.
@@ -267,7 +326,8 @@ remembering its layer (`Source`):
   whole for it. An observer can't fail a request; it only reads. With
   `rotation` off a pool set to one of its routings is tried in its listed
   order; a strategy that fails falls back to the same order, never to an
-  error. Davsync doesn't carry
+  error. A JS middleware that fails leaves the request as it was; masking
+  that is asked for and can't be done sends nothing (503). Davsync doesn't carry
   plugins.yml.
 
 ## Verification
@@ -304,5 +364,13 @@ remembering its layer (`Source`):
   `ServeGroups`, the parity run with the plugin on; `TestGroupsOnAndOff`
   turns it off: the user's group leaves `/v1/models` and isn't served,
   the found one is both).
+- P3 middleware: `go test ./internal/gwmw/ ./plugins/middleware/
+  ./plugins/redact/` (`TestMaskingFailsClosed`, `TestServedRefreshesOnce`,
+  `TestSafelyTurnsAPanicIntoAnError`, `TestAgentsWantedRefreshesWhenWanted`, `TestOnServesOffDoesNot`,
+  `TestInUse`) and `go test ./internal/gateway/` whole (its `TestMain`
+  serves `masking.Masker` and `middleware.Chain`, the parity run with both
+  on; `TestMaskingOnAndOff`, `TestMaskedQueryFailsClosed` and
+  `TestMiddlewareOnAndOff` turn them off: masking asked for is a 503 and
+  the vendor gets nothing, middleware off sends the request as it came).
 - By hand, under a sandbox HOME: `magpie plugin builtin`, `magpie plugin
   builtin on groups`, `magpie plugin dump`, and a plugins.yml broken by hand.

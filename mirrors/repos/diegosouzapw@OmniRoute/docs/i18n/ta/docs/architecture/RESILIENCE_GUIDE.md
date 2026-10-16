@@ -439,6 +439,17 @@ rate limit-ஐ எட்டுவது. இது **Settings → Resilience** �
 `budgetMs`) மூலம் வரம்பிடப்படுகிறது. `quota_exhausted` (நள்ளிரவு வரை பூட்டப்பட்டிருக்கும்)
 அல்லது auth/not-found காரணங்களுக்காக இது ஒருபோதும் காத்திருக்காது.
 
+```text
+#16319 · comboCooldownWait · pre-dispatch (attempts = 0)
+all targets skipped + transient model lockout:
+  enabled ∧ 0 < waitMs ≤ maxWaitMs ∧ attempt < maxAttempts ∧ budgetLeftMs ≥ waitMs
+    → wait → re-dispatch
+  wait = false → HTTP 429 rate_limit_error
+  retry_after / reset_at ← earliest transient lock expiry
+quota_exhausted / auth_error / not_found / not_found_local:
+  no transient hint → HTTP 503 ALL_TARGETS_SKIPPED
+```
+
 ---
 
 ## 5. கோரிக்கை வரிசை அனுமதிக் கட்டுப்பாடு (v3.8.49 · issue #6593)

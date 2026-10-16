@@ -37,7 +37,7 @@ This repository is an AI-powered code quality tool grounded in twelve classic en
 - `skills/_shared/`: shared framework (common.md, source-coverage.md, decay-risks.md, test-decay-risks.md, remedy-guide.md, custom-risks-guide.md).
 - `commands/`: Short-form command wrappers (used by Claude Code, not Gemini CLI).
 - `hooks/`: SessionStart hook for Claude Code session-level awareness.
-- `evals/`: 57 scenarios across R1–R6 and T1–T6, including false-positive and tradeoff checks — `npm run evals` (structural), `npm run evals:live` (against the AI, needs `ANTHROPIC_API_KEY`). `evals/benchmark-corpus.json` is a frozen corpus of 30 real model-generated reports for the deterministic parser-fidelity benchmark: `npm run benchmark`.
+- `evals/`: 58 scenarios across R1–R6 and T1–T6, including false-positive and tradeoff checks — `npm run evals` (structural), `npm run evals:live` (against the AI, needs `ANTHROPIC_API_KEY`). `evals/benchmark-corpus.json` is a frozen corpus of 30 real model-generated reports for the deterministic parser-fidelity benchmark: `npm run benchmark`.
 
 ## Development & Debugging
 - **Skill Testing:** After modifying `skills/` locally, exit the Gemini CLI (`/quit`) and relaunch to pick up the changes.

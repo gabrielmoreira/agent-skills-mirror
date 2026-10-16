@@ -395,6 +395,17 @@ Když odeslání v režimu sdílení kvóty cílí na připojení, které deklar
 
 U každé strategie kombinace (je-li povolena) požadavek, který by vyústil v chybu 429 kvůli KRÁTKÉMU přechodnému období omezení, vyčká na jeho skončení a bude znovu odeslán namísto vrácení chyby 429 — to zahrnuje časová okna TPM/RPM třídy Gemini (~60s `retry-after`) u kombinací více modelů, například když oba cíle dvoumodelové kombinace narazí na limit rychlosti pro konkrétní model. Chování je omezeno nastavením `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts`, `budgetMs`) v části **Nastavení → Odolnost**. Nikdy nečeká při důvodu `quota_exhausted` (uzamčeno do půlnoci) ani při důvodech souvisejících s ověřením nebo nenalezením.
 
+```text
+#16319 · comboCooldownWait · pre-dispatch (attempts = 0)
+all targets skipped + transient model lockout:
+  enabled ∧ 0 < waitMs ≤ maxWaitMs ∧ attempt < maxAttempts ∧ budgetLeftMs ≥ waitMs
+    → wait → re-dispatch
+  wait = false → HTTP 429 rate_limit_error
+  retry_after / reset_at ← earliest transient lock expiry
+quota_exhausted / auth_error / not_found / not_found_local:
+  no transient hint → HTTP 503 ALL_TARGETS_SKIPPED
+```
+
 ---
 
 ## 5. Řízení přijímání požadavků do fronty (v3.8.49 · issue #6593)

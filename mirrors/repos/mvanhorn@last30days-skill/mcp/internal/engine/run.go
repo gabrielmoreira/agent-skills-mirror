@@ -8,15 +8,12 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"runtime"
 	"strconv"
 	"strings"
 	"time"
 )
 
-// DefaultPythonBinary is the interpreter we look up unless RunOptions
-// overrides it. Windows installs may expose only "python"; we surface a
-// clear error in that case rather than silently picking the wrong binary.
+// DefaultPythonBinary is preferred when its version meets MinPythonVersion.
 const DefaultPythonBinary = "python3"
 
 // MinPythonVersion mirrors the engine's MIN_PYTHON constant in
@@ -45,10 +42,6 @@ const termGracePeriod = 2 * time.Second
 // pipeGracePeriod bounds output draining after the engine exits even if
 // an unregistered detached descendant still holds its output pipes.
 const pipeGracePeriod = time.Second
-
-// PythonEnvOverride lets operators select the Python 3.12+ executable used
-// by the MCP server. When unset, Run preserves the python3 PATH lookup.
-const PythonEnvOverride = "LAST30DAYS_PYTHON"
 
 // RunOptions configures one invocation of the embedded Python engine.
 // PythonPath is exposed so tests can substitute a stub interpreter without
@@ -83,7 +76,7 @@ func Run(ctx context.Context, opts RunOptions) (*RunResult, error) {
 	if opts.CacheDir == "" {
 		return nil, errors.New("engine: CacheDir is required")
 	}
-	pythonPath, err := resolvePython(opts.PythonPath)
+	pythonPath, err := resolvePythonContext(ctx, opts.PythonPath)
 	if err != nil {
 		return nil, err
 	}
@@ -173,42 +166,6 @@ func Run(ctx context.Context, opts RunOptions) (*RunResult, error) {
 		return res, fmt.Errorf("engine: subprocess exited with code %d", res.ExitCode)
 	}
 	return res, fmt.Errorf("engine: subprocess failed: %w", err)
-}
-
-// resolvePython returns a resolved interpreter path or a clear error. A
-// caller-supplied path remains the highest-priority test seam. Otherwise an
-// explicitly configured LAST30DAYS_PYTHON must resolve successfully; only
-// an absent override falls back to the existing python3 PATH lookup.
-func resolvePython(override string) (string, error) {
-	if override != "" {
-		return override, nil
-	}
-	if configured, ok := os.LookupEnv(PythonEnvOverride); ok {
-		if configured == "" {
-			return "", fmt.Errorf(
-				"engine: %s is set but empty; set it to a Python %s+ executable or unset it to use %s on PATH",
-				PythonEnvOverride, MinPythonVersion, DefaultPythonBinary,
-			)
-		}
-		path, err := exec.LookPath(configured)
-		if err != nil {
-			return "", fmt.Errorf(
-				"engine: %s=%q does not resolve to an executable (need Python %s+, install from %s): %w",
-				PythonEnvOverride, configured, MinPythonVersion, PythonInstallURL, err,
-			)
-		}
-		return path, nil
-	}
-	path, err := exec.LookPath(DefaultPythonBinary)
-	// Go normally rejects relative results with ErrDot. Keep this invariant
-	// even when that protection is disabled with GODEBUG=execerrdot=0.
-	if err == nil && filepath.IsAbs(path) {
-		return path, nil
-	}
-	return "", fmt.Errorf(
-		"engine: %s not found on PATH (need Python %s+, install from %s; current GOOS=%s)",
-		DefaultPythonBinary, MinPythonVersion, PythonInstallURL, runtime.GOOS,
-	)
 }
 
 func resolveTimeout(explicit time.Duration) time.Duration {

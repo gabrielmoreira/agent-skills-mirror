@@ -18,27 +18,43 @@ description: 更新官方 dbskill，并保留其他 Skill 与用户存档。用�
 
 ## 执行步骤
 
-1. 运行以下命令，同步官方 dbskill 的全部正式 Skill 到已支持的 Agent：
+1. 判断 dbskill 的安装渠道。两种渠道可能同时存在，只更新实际检测到的渠道：
+
+   - **Claude Code 插件**：本 Skill 所在路径包含 `/.claude/plugins/`，或 `claude plugin list` 的输出中有以 `@dontbesilent-skills` 结尾的插件。
+   - **Skills CLI**：`~/.agents/skills/`、`~/.claude/skills/` 或其他 Agent 的 Skill 目录中存在 `dbs` 等官方 Skill，且它们不在 `/.claude/plugins/` 下。
+
+2. 更新 Claude Code 插件渠道：先刷新 marketplace，再逐个更新 `claude plugin list` 中以 `@dontbesilent-skills` 结尾的插件。
+
+   ```bash
+   claude plugin marketplace update dontbesilent-skills
+   claude plugin update dbs@dontbesilent-skills
+   ```
+
+   用户单独安装过其他插件（例如 `dbs-diagnosis@dontbesilent-skills`）时，对每个插件分别执行 `claude plugin update`。不要为插件用户再执行 Skills CLI 安装，否则会多出一套副本。
+
+3. 更新 Skills CLI 渠道：
 
    ```bash
    npx -y skills add dontbesilent2025/dbskill -g --all
    ```
 
-2. 命令成功后记录本次更新时间，避免当前对话仍加载旧 Skill 时重复提醒：
+   两种渠道都检测不到时，按这个命令更新。
+
+4. 命令成功后记录本次更新时间，避免当前对话仍加载旧 Skill 时重复提醒：
 
    ```bash
    mkdir -p "$HOME/.dbs" && date +%s > "$HOME/.dbs/update_check_at"
    ```
 
-3. 根据安装命令的退出状态确认是否完成。命令成功时告诉用户更新已完成，并提醒用户新建一次对话后再使用新能力。
+5. 根据命令的退出状态确认是否完成。命令成功时告诉用户更新已完成：插件渠道提醒用户运行 `/reload-plugins` 或新建对话；Skills CLI 渠道提醒用户新建一次对话后再使用新能力。
 
-4. 命令失败时，用一句话说明失败原因和下一步需要用户处理的权限或网络问题。不要把完整终端日志直接贴给用户，除非用户要求。
+6. 命令失败时，用一句话说明失败原因和下一步需要用户处理的权限或网络问题。不要把完整终端日志直接贴给用户，除非用户要求。
 
 ## 回复格式
 
 成功：
 
-> dbskill 已更新完成。当前对话如果还没有读取到新能力，新建一次对话后即可使用。
+> dbskill 已更新完成（{更新的渠道}）。当前对话如果还没有读取到新能力，{插件渠道：运行 `/reload-plugins`；其他渠道：新建一次对话}后即可使用。
 
 失败：
 
@@ -52,4 +68,4 @@ description: 更新官方 dbskill，并保留其他 Skill 与用户存档。用�
 
 ---
 
-完成当前任务后直接结束。只有用户明确询问下一步，且当前环境已经安装 `/dbs` 时，简短提示：「下一步不确定时，可以输入 `/dbs`。」
+完成当前任务后直接结束。用户的请求超出本 Skill 的范围、任务完成后用户的材料里出现明确的后续需求，或用户询问下一步时，用一句话说明还需要哪种能力，不点名其他 Skill；当前环境已经安装 `/dbs` 时，补一句「可以输入 `/dbs`，由它匹配对应的 Skill」。

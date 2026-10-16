@@ -1,10 +1,10 @@
 # OpenCode 部署
 
-`target_cli` 含 `opencode` 时，由 SKILL.md Phase 2 完整读取本文件并按顺序执行。路径安全检查、幂等重跑、清理自嵌套残留、部署标记、模板占位符、AGENTS.md 合并策略和安装报告的写法在 SKILL.md，这里只写 OpenCode 专属部分。
+`target_cli` 含 `opencode` 时，由 SKILL.md Phase 2 完整读取并依次执行本文件。路径检查、幂等重跑、残留清理、部署标记、模板占位符、AGENTS.md 合并和报告遵循 SKILL.md 的公共规则。
 
 ## 部署前置（先于下表任何 OpenCode 行执行）
 
-只适配 OpenCode 2.x：1.x 的插件 loader 读不了 `story-hooks.ts`，只记一行日志后照常运行，写正文守卫整场缺席；1.x 也不认 agents 的 `permissions:` 规则，三个只读 agent 会拿到写文件与 shell 权限。版本门 fail-closed。
+只适配 OpenCode 2.x：1.x 的插件 loader 读不了 `story-hooks.ts`，只记一行日志后照常运行，写正文守卫整场缺席；1.x 也不认 agents 的 `permissions:` 规则，只读 agent（`consistency-checker`、`story-explorer`）会拿到写文件与 shell 权限。版本门 fail-closed。
 
 1. 运行 `opencode --version`，取第一个 `主.次.修` 版本号：
    - 主版本 ≥ 2 → 继续
@@ -27,7 +27,7 @@
 
 ## 部署步骤
 
-1. **先缓存已有模型配置**：执行下方「配置 Agent 模型」的「保留已有模型配置」，再做第 2 步的 replace。顺序不能反——先覆盖再缓存，用户已配的模型就没了。
+1. **先缓存已有模型配置**：执行下方「配置 Agent 模型」的「保留已有模型配置」，再做第 2 步的 replace。先覆盖会丢失用户已配模型。
 2. 复制 `references/opencode/agents/` 到 `.opencode/agents/`。Agent 正文以 Claude Code Markdown 为真源，这里是仓库里预生成的产物，部署只做复制。
 3. 复制 `plugin.ts` 到 `.opencode/plugins/story-hooks.ts`，`story_hook_core.js` 到 `.opencode/plugins/lib/`，`commands/` 到 `.opencode/commands/`，`pre-commit.sh` 按清单行合并进 `.git/hooks/pre-commit`。
 4. 复制 agent references 到 `skills/story-setup/references/agent-references/`。OpenCode 只使用当前规范前缀 `skills/`，不在运行时遍历历史备选路径。
@@ -129,7 +129,7 @@ model: provider/model-id
 - 检查 `.opencode/plugins/story-hooks.ts` 是否存在
 - 检查 `.opencode/plugins/lib/story_hook_core.js` 存在且 `node --check` 通过（story-hooks.ts import 之，与 `.zcode` 副本字节一致的共享写正文守卫核；置于 `lib/` 子目录以避开 OpenCode 对 `.opencode/plugins/*.js` 的插件自动发现，`lib/` 里不得放 `index.*` / `server.*`）
 - 检查 `.opencode/commands/` 下的 13 个 command 文件是否存在
-- 检查 `skills/story-setup/references/agent-references/` 下 reference 文件完整且数量与源目录一致
+- 按源目录相对路径核对 `skills/story-setup/references/agent-references/`，含子目录
 - 检查 `opencode.json` / `opencode.jsonc`（如有）的 `plugin`、`plugins` 数组不再含指向 story-hooks.ts 的项
 - `opencode` 可用时在项目根执行 `opencode api plugin.list -H "x-opencode-directory:<项目根绝对路径>"`，确认 `id` 为 `oh-story.story-hooks` 的条目 `state.status` 为 `active`（首次请求可能返回空列表，隔几秒重试）
 - 检查 `.git/hooks/pre-commit` 是否存在且有执行权限（Windows 上跳过执行权限检查）
@@ -152,6 +152,6 @@ model: provider/model-id
 - 自动检测失败（读不到模型列表）时，在「你还需要做的事」里用白话写：
   <!-- author-report -->
   ```md
-  这次没能读到你能用的模型列表，拆书助手、校对员和资料检索员先用你的主模型，花费可能偏高。想省钱就告诉我一个便宜的模型名，我帮它们换上；写手和总指挥建议用你最好的模型。
+  这次没能读到可用模型列表。已配过的助手沿用原模型，未配过的先用主模型，花费可能偏高。想省钱就告诉我一个便宜的模型名，我帮它们换上；写手和总指挥建议用你最好的模型。
   ```
   「部署明细」只留一行：模型写在 `.opencode/agents/{agent名}.md` frontmatter 的 `model:`，可用模型见 `opencode models`，定价见 https://models.dev/。

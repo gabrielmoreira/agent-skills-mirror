@@ -173,7 +173,7 @@ GENERAL / NEWS / PROMPTING / RECOMMENDATIONS use `What I learned:` on line 3 and
 
 **LAW 4 - NO `##` or `###` SECTION HEADERS IN BODY (with COMPARISON exception).** Normal bodies use bold-lead-in paragraphs, the prose label `KEY PATTERNS from the research:`, and a numbered list. An engine-emitted `## Pre-Research Status` warning is allowed and must pass through verbatim. COMPARISON permits only its required `## Quick Verdict`, `## {Entity}` per entity, `## Head-to-Head`, `## The Bottom Line`, and `## The emerging stack` headers.
 
-**LAW 5 - ENGINE FOOTER PASS-THROUGH. EVERY QUERY TYPE. EVERY RUN.** Relay only the footer wrapped in `<!-- PASS-THROUGH FOOTER -->` / `<!-- END PASS-THROUGH FOOTER -->`, after the body/key patterns or comparison scaffold and before the invitation. Preserve the engine's `✅ All agents reported back!` emoji-tree block, statistics, and lines, subject to governing instructions. Required citations may appear separately. Relay a saved-file pointer only if emitted. Never invent a footer, saved path, source line, or replacement `## Notable Stats` block.
+**LAW 5 - ENGINE FOOTER PASS-THROUGH. EVERY QUERY TYPE. EVERY RUN.** Relay only the engine's fenced `text` footer block, fence included (it stops Markdown misreading `---`), after the body/key patterns or comparison scaffold and before the invitation. Preserve its `✅ All agents reported back!` emoji tree, statistics, and lines, subject to governing instructions. Required citations may appear separately. Relay a saved-file pointer only if emitted. Never invent a footer, saved path, source line, or replacement `## Notable Stats` block.
 
 **LAW 6 - NO RAW RANKED EVIDENCE CLUSTERS IN BODY.** The `<!-- EVIDENCE FOR SYNTHESIS -->` / `<!-- END EVIDENCE FOR SYNTHESIS -->` region, including `## Ranked Evidence Clusters`, `## Stats`, and `## Source Coverage`, is scratch evidence to transform into the selected prose template. Never emit raw score tuples or uncertainty rows. If the draft contains `### 1.` followed by `(score N, M items, sources: ...)`, `- Uncertainty: single-source`, or `- Uncertainty: thin-evidence`, stop and regenerate.
 
@@ -207,7 +207,7 @@ Write plans to a temporary file using `mktemp` with trailing `XXXXXX`, a cleanup
 Check governing formatting/citation instructions first. Skip a conflicting presentation default. If data supports a correction, regenerate at most once; if the data is absent, skip that check silently.
 
 1. Normal narrative paragraphs start `**Headline phrase** -`; no invented title, forbidden section headers, or unquoted em/en dashes. Comparison and audience-register exceptions follow their selected templates.
-2. Relay the emitted footer exactly, including every active nonzero source's emoji/count/engagement lines. Add no zero-result source, outcome/⚠ text, or saved path.
+2. Relay the emitted fenced footer exactly, including every active nonzero source's emoji/count/engagement lines. Add no zero-result source, outcome/⚠ text, or saved path.
 3. Weave at least two actual attributed comments when qualifying evidence exists. The GENERAL nothing-solid floor overrides rejected comments. Run LAW 8's citation check separately; never reconstruct URLs.
 4. Remove tooling meta-commentary. Keep claims grounded in the actual output and resolved entity.
 5. If Polymarket returned markets, include specific percentages and directional movement; do not substitute dollar volume for odds.

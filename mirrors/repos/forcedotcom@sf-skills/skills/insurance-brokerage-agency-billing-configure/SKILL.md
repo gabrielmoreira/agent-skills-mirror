@@ -4,9 +4,7 @@ description: "Configure end-to-end Agency Billing on a Salesforce FSC Insurance 
 metadata:
   version: "2.0"
   minApiVersion: "66.0"
-  accessCheck:
-  - type: "license"
-    value: "InsuranceBrokerageFoundationPsl"
+  accessCheck: "License.InsuranceBrokerageFoundationPsl"
 ---
 
 # Insurance Brokerage Agency Billing Configuration

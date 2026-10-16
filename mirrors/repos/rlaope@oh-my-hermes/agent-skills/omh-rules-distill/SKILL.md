@@ -21,7 +21,7 @@ This is an OMH `rules-distill` workflow skill, projected for Agent Skills hosts 
 
 ## Do Not Use When
 
-- The user wants a single workflow route regression; use `omh-workflow-learning`.
+- The user wants a single workflow route regression.
 - The user wants durable factual project memory; use `omh-wiki` or memory curation.
 - The user already approved a concrete code/doc change; use the implementation workflow.
 - The ask is writing or keeping current the file an agent reads at startup -- AGENTS.md, CLAUDE.md, a Cursor rule; use `omh-agent-instructions`, which updates only its marked region.
@@ -101,7 +101,7 @@ Safety rules:
 - Do not silently mutate skills, prompts, AGENTS.md, docs, memory, or catalog data from a distillation result.
 - Do not promote one-off preferences, weak anecdotes, or stale traces into global rules.
 - Keep observed sources, inferred principles, candidate wording, review state, and implementation patches separate.
-- On Hermes, when the destination is the user's own Hermes skills, an approved candidate lands through `skill_manage`: report it landed only from a result that succeeded without `staged: true`, with the matching skill audit ledger entry as its record while the ledger is on, and report a staged write as waiting in `/skills pending` for the person's own `/skills approve <id>` under their `skills.write_approval` setting. OMH-managed skills are generated from OMH's catalog and are never the destination; a lesson about one goes to `omh-workflow-learning`. An OMH-managed skill is one OMH installed, under a label OMH's catalog renders such as `omh-plan` or `ulw-work`; a companion skill the person or an agent created is theirs, whatever its name.
+- On Hermes, when the destination is the user's own Hermes skills, an approved candidate lands through `skill_manage`: report it landed only from a result that succeeded without `staged: true`, with the matching skill audit ledger entry as its record while the ledger is on, and report a staged write as waiting in `/skills pending` for the person's own `/skills approve <id>` under their `skills.write_approval` setting. OMH-managed skills are generated from OMH's catalog and are never the destination. An OMH-managed skill is one OMH installed, under a label OMH's catalog renders such as `omh-plan` or `ulw-work`; a companion skill the person or an agent created is theirs, whatever its name.
 
 ## Runtime Evidence
 

@@ -18,9 +18,7 @@ metadata:
       semver: ">=3.8"
     - tool: ["sf"]
       semver: ">=2.0.0"
-  accessCheck:
-    - type: "license"
-      value: "Agentforce"
+  accessCheck: "OrgPermissions.EinsteinAgentPlatform"
 ---
 
 # service-agentforce-channel-configure: Wire an Agentforce agent to a channel

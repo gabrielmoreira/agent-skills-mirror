@@ -234,7 +234,7 @@ Read [docs/performance.md](docs/performance.md) before claiming or measuring a p
 - **Don't rebase or merge the base branch into an open PR unasked.**
 - **A question is not a go-ahead**: asked what happened, why, or whether you changed something, answer and propose the change, then push only once the requester agrees, even to fix your own mistake. A request phrased as a question ("could you…?") is still a request.
 - **Every check ends green**; read coverage only once every uploading suite has reported.
-- **A wake that changes nothing ends with no message.**
+- **A wake that changes nothing ends with no message** — PR events, check-ins, background-task and subagent notifications alike, even when the harness asks for visible output or says the user hasn't heard from you.
 
 ## Do not touch
 
@@ -305,6 +305,18 @@ Runtime-emitting code (chunk loading, resource hints, library and externals pres
 ### Performance and memory
 
 Users measure webpack by build time and peak heap. Much of `lib/` sits on per-module hot paths (sometimes per module × runtime, or per chunk × module), so constant factors compound: weigh time and memory in every change, bug fixes and refactors included. Less allocation, smaller `Map`/`Set` footprints and fewer closures retained on hot paths are wins. For any per-`Compilation` state, ask whether it can be released after seal/emit so large structures aren't retained longer than needed (see #15521). Sanity-check perf changes with `FILTER="<case-name>" yarn benchmark` before CI's benchmarks flag them.
+
+### Startup cost
+
+Every build, CLI run and minimizer worker starts cold, and most of that start is V8 compiling the code it loads (each parser or printer costs 10–30 ms and 1.4–3 MB to load). So pay only for what this input and these options use:
+
+- **Load on first use.** A module some inputs, languages or options never need is reached through a facade getter (`syntax.js`) or `memoize(() => require(…))` at the point of use, never a top-level `require`; HTML without CSS never loads the CSS parser, and CSS without an SVG `data:` URL never loads the HTML parser.
+- **Keep what callers need without parsing in a light module** (`util/dataURL`, `ModuleSourceTypeConstants`): constants, option pickers and language lists, never read off a parser, printer or plugin.
+- **An option that turns work off turns its cost off too**: build its tables, regexes and closures on first use, not at load or construction.
+- **Keep laziness in one place** — the facade or memoize helper — not ad-hoc `require()` inside function bodies, so the move to ES modules stays mechanical.
+- **No `i` flag on a regex with a non-ASCII range**: V8 case-folds the whole range at compile time (8–16 ms measured); spell keywords in both ASCII cases instead.
+- **Workers and child processes inherit nothing**: hand them what the parent set up, as `bin/webpack.js` does with the compile cache through `NODE_COMPILE_CACHE`.
+- **Prove it by counting**: run the entry point in a fresh process and assert which `lib/` files `require.cache` holds, as `HtmlSyntax.unittest.js` "what it loads" does; gate Node-only APIs on `!process.versions.bun && !process.versions.deno`, not on the function existing.
 
 ### Keep instance shapes stable
 

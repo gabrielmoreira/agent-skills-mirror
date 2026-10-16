@@ -22,7 +22,7 @@ This is an OMH `workspace-audit` workflow skill, projected for Agent Skills host
 ## Do Not Use When
 
 - The user already named a concrete implementation task with files and acceptance criteria; use the coding handoff or delivery workflow.
-- The request is local OMH installation health only; use `omh-doctor`.
+- The request is local OMH installation health only.
 - The request is a source acquisition or current web lookup; use `omh-source-finder` or `ulw-research`.
 
 ## Examples

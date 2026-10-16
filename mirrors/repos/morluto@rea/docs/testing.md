@@ -199,6 +199,44 @@ Measure slow cases before pruning capacity coverage. Retain inputs beyond the
 formerly failing size/depth and distinguish cold runs, warm builds, coverage,
 and toolchain conditions when comparing timings.
 
+## Lifecycle regressions
+
+For changes to resource acquisition, readiness, cancellation, or cleanup, select
+the affected owners and applicable scenarios below. Include temporary snapshots
+and one-shot commands. Use public CLI/MCP workflows where practical and a
+controlled production seam for interleavings that cannot be reproduced reliably.
+
+| Scenario                                                                                | Assertion and control                                                                                                                                                                                                          |
+| --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Target admitted; startup still pending                                                  | Status preserves the readiness distinction and observed startup activity; readiness requires the provider's documented proof.                                                                                                  |
+| First handshake is late, absent, invalid, or recovered during close                     | Initial and recovery paths retain the same authenticated identity facts. Foreign run/token controls cannot authorize cleanup; authenticated idle/native work survives the unauthenticated listener deadline.                   |
+| Launch returns an error with a valid process handle                                     | Cover already-exited and still-live owned processes. Verify observed exit separately from creation; failed termination or unavailable identity remains unresolved.                                                             |
+| Cancellation arrives after workload exit, during result reads or temporary-root removal | Return typed cancellation with available partial observations and actual cleanup status. The non-aborted control succeeds; existing primary/cleanup failures keep their precedence.                                            |
+| Children have mixed health or cleanup outcomes                                          | Missing peer health does not erase an observed failure or activity. Idle plus unknown stays unknown. Retry a failed child without closing a successful peer again, including after a close-option change.                      |
+| Cleanup fails after success or primary failure                                          | Public output retains the completed observation or primary diagnostic, remaining resources, and owner recovery action. Restore the denied resource and verify the owning cleanup retry.                                        |
+| Target exits without an acknowledgement, or transport disappears while it stays alive   | Positive owned exit proof resolves target lifetime; other resources still need cleanup. Lost transport alone does not prove exit. Verify unrelated/attached targets survive and same-connection recovery works when supported. |
+
+Synchronize cancellation with the finalization boundary being tested; a fixed
+delay after dispatch does not establish that phase. Use markers, barriers, or
+owned cleanup seams while preserving real cleanup where feasible. Check server
+settlement and retained resources even if the MCP SDK rejects the client promise
+before the handler finishes. A cancellation during active execution does not
+cover cancellation during final cleanup.
+
+For atomic writes, exercise cancellation on both sides of the documented commit
+point and preserve any publication receipt. A late interruption does not prove
+that no output was published.
+
+Representative regressions include
+[process cleanup-time SIGINT](https://github.com/morluto/rea/blob/e78455338fe2d06c4cd03d59cbf33473d754998b/tests/boundary/process/processCaptureCancellationAdapters.test.ts),
+[late authenticated cleanup](https://github.com/morluto/rea/blob/e78455338fe2d06c4cd03d59cbf33473d754998b/tests/boundary/providers/hopper/hopperClient.handshakeRecovery.test.ts),
+[LLDB launch and finalization](https://github.com/morluto/rea/blob/e78455338fe2d06c4cd03d59cbf33473d754998b/tests/boundary/providers/native/lldbCallTracerFailures.test.ts),
+[composed child ownership](https://github.com/morluto/rea/blob/e78455338fe2d06c4cd03d59cbf33473d754998b/src/application/binary/CompositeProvider.test.ts),
+and [public CLI cleanup denial](https://github.com/morluto/rea/blob/e78455338fe2d06c4cd03d59cbf33473d754998b/tests/boundary/cli/wasmCleanupCli.test.ts).
+These controlled probes do not replace the matching real-provider lane. Record
+the base failure, passing control, exact host/provider, verified cleanup, and
+unavailable coverage; a missing engine is not a pass.
+
 ## Behavioral depths
 
 | Depth        | Location                | What it proves                                                                                        |
@@ -817,6 +855,38 @@ Native IDA MCP verification uses `"protocol": "native"` with an already-running 
 
 The initial Linux x64 IDA Free 9.4 run used native MCP 1.1.2 with a local navigation correction. Windows x64 verification uses **IDA Pro 9.3**, the two-function public fixture, and the shipped Windows `whoami.exe` application. The native plugin was built from upstream `c9d15d98e8a143fc74f6e14037c48f63889b6d6c`, including the merged navigation fix, with a local loopback-listener change. Production CLI/MCP parity, switching, identity and cleanup passed. Correctness and performance measurements are recorded in the [Windows native verification notes](https://github.com/morluto/rea/blob/main/experiments/analysis-efficiency/ida-native-windows.md). Stock 1.1.2 switching, native macOS, and Windows IDA Free remain unverified. See the [native bridge prerequisites](ida-provider.md#optional-native-ida-mcp-bridge).
 
+## Kuna lane
+
+`npm run verify:kuna` requires a caller-supplied `kuna` in `REA_KUNA_COMMAND`
+and a host C compiler (`REA_CC`, default `cc`) with `strip` and `nm`. It builds a
+source-owned fixture with non-inlined calls, with symbols and stripped, then verifies through MCP that
+callers, callees and exact incoming xrefs agree with those calls, graph/path
+composition reaches the callee, reference-only queries leave project/staging
+entries unchanged, repeated relationships reuse the graph, and
+the first cold pseudocode answer comes from a single-function run or an export
+that already finished, assembly waits for and serves from that export, and
+pseudocode and both dossier facets match their recorded file spans and digests,
+a fresh server reuses the export without rebuilding it, staging is empty after
+a completed export, and no owned process survives. Pass
+`--targets DIR --functions a,b` to add caller-built binaries laid out as
+`DIR/<flavor>/<name>` beside `<name>.stripped`; addresses come from the
+symbol-bearing build. `--compare-ghidra` with `GHIDRA_INSTALL_DIR` runs those
+caller-built functions through Ghidra (it refuses to run without `--targets` and
+`--functions`, an empty matrix, or names missing from every supplied target) and
+reports latency, sampled process-tree CPU and peak memory, UTF-8 response size,
+and goto and warning-marker counts. Those counts are not a correctness judgement,
+and model tokens are not measured. Reference timings and response sizes are
+reported separately; reference caches expire when the server closes. `--report PATH` writes the JSON report.
+
+The first matrix run used Kuna 1.833 and Ghidra 12.1.4 with JDK 21 on macOS
+arm64. It covered zlib 1.3.2 `minigzip`, coreutils 9.9 `sort` and the sqlite
+3.54.0 shell, built at `-O2` for ELF x86-64, ELF AArch64, Mach-O arm64 and
+Mach-O x86-64, each with symbols and stripped. A separate Linux x86-64 run verified
+the fixture and system zlib 1.2.13 / SQLite 3.40.1 libraries through MCP, including
+cached byte spans and a Ghidra comparison. See the [Linux report](https://github.com/morluto/rea/pull/3854#issuecomment-6185870391)
+for measured scope and limitations. Windows, PE and universal Mach-O remain
+unverified by this lane.
+
 ## DOS Ghidra analysis
 
 `npm run verify:ghidra:dos` requires the supported Ghidra and JDK installation
@@ -957,7 +1027,19 @@ the Apple or Windows curated lanes invoke explicitly, which also select that
 lane. Edits to verifier entrypoints run only by manual, licensed or self-hosted
 workflows run static checks and the Linux suite. Website changes run website
 checks. Provider workflow changes validate the workflow and run that provider's
-verifier. Manual-provider/Android workflow changes run workflow validation only.
+verifier. Changes under `bridge/ghidra/` also select the `ghidra_bridge` lane,
+which compiles the packaged bridge sources against the pinned Ghidra 12.1.4
+jars with `npm run verify:ghidra:bridge-sources`. It never launches Ghidra or
+imports a target, so a missing import fails the PR instead of every Ghidra
+session. The launcher, compiler and package checks share named required source
+roles. The manifest must match the complete Java cohort, so deleting a helper
+or adding an unregistered dependency cannot silently change the shipped set.
+The preflight reuses the provider's Java Properties parser with the pinned Node
+toolchain's native type stripping, without an npm install or runtime build.
+The shared release policy owns the verified version and JDK major. CI checks
+the archive pin before downloading and verifies the extracted SDK version;
+changes to these source owners also select the compile lane.
+Manual-provider/Android workflow changes run workflow validation only.
 The four-version SQLite compatibility matrix has its own `sqlite` scope for
 SQLite implementation, contracts, CLI/MCP registration, fixtures, and shared
 runtime boundaries. SQLite and server-lifecycle test edits and the SQLite npm

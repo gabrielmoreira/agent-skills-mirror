@@ -1,0 +1,72 @@
+# Kami
+
+> A warm parchment design system for AI-assisted professional documents. One accent color, serif fonts and clear heading levels, and consistent spacing.
+
+## Author
+- Name: Tw93
+- Site: https://tw93.fun
+- Stable entity ID: https://tw93.fun/#person
+
+
+## What is Kami
+Kami gives AI agents templates and layout rules for documents and landing pages. It includes one-pagers, resumes, portfolios, slides, long documents, letters, equity reports, and changelogs. Defaults include a warm parchment background (#f5f4ed), ink-blue accents (#1B365D), and Charter/TsangerJinKai serif fonts. A white-background option is available for printing.
+
+Kami installs into the agent that uses it and runs on that machine. There is no hosted Kami API, no account, and no API key: the integration surface is a local MCP server, JSON content schemas, and CLI checks.
+
+## When to use Kami
+Reach for Kami when the user wants a finished document whose appearance matters, and a plain text answer would not be enough:
+- "Make me a resume / CV" -> `resume`
+- "Turn this into a one-pager, product brief, or intro sheet" -> `one-pager`
+- "Write a formal letter, offer, or notice" -> `letter`
+- "Build a slide deck for this talk" -> `slides` (PDF, or editable PPTX)
+- "Write this research, spec, or report up as a document" -> `long-doc`
+- "Show my work, case studies, or portfolio" -> `portfolio`
+- "Analyze this company or stock and produce a report" -> `equity-report`
+- "Write release notes for this version" -> `changelog`
+- "Draw an architecture diagram, flowchart, timeline, or chart to embed" -> one of 18 inline SVG diagram types
+- "Build a landing page in this style" -> browser-only `landing-page` template
+
+Do not reach for Kami for chat answers, code files, or content where the user only wants the text. Kami's cost is layout work; it pays off when the artifact is handed to someone else.
+
+How an agent should call Kami: install the skill, fill the matching content schema, fill the template HTML, then finish with `python3 scripts/build.py --deliver filled.html content.json`, which runs every document check, renders the PDF, and exports page images for the perceptual pass, or drive the same steps as tools through the local MCP server. Judgment lives in SKILL.md; execution lives in the scripts.
+
+## Key Pages
+- [English showcase](https://kami.tw93.fun): Design system overview with live demos
+- [Developers](https://kami.tw93.fun/developers): Agent and developer integration surface
+- [About](https://kami.tw93.fun/about): What Kami is and who maintains it
+- [Contact](https://kami.tw93.fun/contact): Support and reporting channels
+- [Privacy](https://kami.tw93.fun/privacy): What this site and the skill collect
+- [Chinese showcase](https://kami.tw93.fun/index-zh.html): Chinese version
+- [Japanese showcase](https://kami.tw93.fun/index-ja.html): Japanese version (best-effort CJK path)
+- [Korean showcase](https://kami.tw93.fun/index-ko.html): Korean version (best-effort CJK path)
+- [Traditional Chinese showcase](https://kami.tw93.fun/index-tw.html): Traditional Chinese version
+- [GitHub](https://github.com/tw93/kami): Source code and templates
+
+## Install
+- Claude Code, Codex, Cursor, and other agents: `npx skills add tw93/kami -a claude-code codex cursor -g -y`
+- Claude Code plugin (v2.1.142+): `/plugin marketplace add tw93/kami` then `/plugin install kami@kami`
+- Codex plugin: `codex plugin marketplace add tw93/kami && codex plugin add kami@kami`
+- Claude Desktop: download the release asset `kami.zip` from GitHub Releases (not the source-code ZIP) and upload it via Customize > Skills > "+" > Create skill
+- MCP client: `claude mcp add kami -- python3 <checkout>/skills/kami/scripts/mcp_server.py`
+
+## Templates
+- 8 document template types: One-pager, Letter, Resume, Long document, Portfolio, Slides, Equity report, Changelog
+- 18 diagram types: architecture, architecture board, flowchart, quadrant, bar chart, line chart, donut chart, state machine, timeline, swimlane, tree, layer stack, venn, candlestick, waterfall, sequence, class, ER
+
+## Agent Interfaces
+- Content contracts: `references/schemas/<type>.json` carries the per-type structure and quality bar; new `content.json` files also carry an artifact `brief` with target, preserve boundary, evidence, and acceptance checks; validate before layout and check coverage after filling with `python3 scripts/build.py --check-content content.json [filled.html]`
+- Deterministic checks: placeholders, markdown residue, page density, orphan lines, slide rhythm, and a perceptual pass that exports page images with a fixed review checklist (`--check-visual`)
+- MCP server: `python3 scripts/mcp_server.py` speaks MCP over stdio with tools kami_templates / kami_doctor / kami_render / kami_check / kami_deliver / kami_screenshot, so agents can diagnose, render, and verify without loading the skill prompt
+
+## Machine-Readable Files
+- MCP server card: https://kami.tw93.fun/.well-known/mcp/server-card.json
+- Agent Skills index: https://kami.tw93.fun/.well-known/agent-skills/index.json
+- Skill definition: https://kami.tw93.fun/SKILL.md
+- Homepage as Markdown: https://kami.tw93.fun/index.md (a request to `/` carrying `Accept: text/markdown`, or `/?mode=agent`, redirects here)
+- Developer surface: https://kami.tw93.fun/developers.md and https://kami.tw93.fun/developers/llms.txt
+- Template and diagram catalog: https://kami.tw93.fun/feeds/catalog.jsonld (indexed by https://kami.tw93.fun/schemamap.xml)
+
+## Links
+- GitHub: https://github.com/tw93
+- Blog: https://tw93.fun
+- AI Profile: https://tw93.fun/llms-full.txt

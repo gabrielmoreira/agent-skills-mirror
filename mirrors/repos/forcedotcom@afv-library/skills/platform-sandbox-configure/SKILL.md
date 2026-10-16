@@ -8,9 +8,7 @@ metadata:
   relatedSkills:
     - "automation-sandbox-post-copy-config-generate"
     - "automation-sandbox-post-copy-configure"
-  accessCheck:
-    - type: "userPerm"
-      value: "ManageSandboxes"
+  accessCheck: "UserPermissions.ManageSandboxes"
   cliTools:
     - tool: ["sf"]
       semver: ">=2.0.0"

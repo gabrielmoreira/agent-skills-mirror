@@ -1,6 +1,6 @@
 # Google Antigravity 部署
 
-`target_cli` 含 `antigravity` 时，由 SKILL.md Phase 2 完整读取本文件并按顺序执行。路径安全检查、幂等重跑、清理自嵌套残留、部署标记和安装报告的写法在 SKILL.md，这里只写 Antigravity 专属部分。`references/antigravity/` 下是 Antigravity 2.0 Always-On Rule、named-group hooks 模板与 I/O adapter；正文写后 findings 经 session artifact 桥接到 PreInvocation/Stop。
+`target_cli` 含 `antigravity` 时，由 SKILL.md Phase 2 完整读取并依次执行本文件。路径检查、幂等重跑、残留清理、部署标记、模板占位符和报告遵循 SKILL.md 的公共规则。`references/antigravity/` 提供 Always-On Rule、named-group hooks 与 I/O adapter；写后 findings 经 session artifact 交给 PreInvocation/Stop。
 
 ## 部署清单（机械可检查）
 
@@ -18,7 +18,7 @@
 - 先确认 `node` 在 PATH；Antigravity agent 生成与项目 hooks 都依赖 Node。缺失时停止 Antigravity 这一目标的部署，不留下半成品，并提示安装 Node 后重跑。
 - Agent 正文以 Claude Code Markdown 为真源。`.agents/agents/agent-name/agent.md`（`agent-name` 为实际名称）在部署时调用随 story-setup 下发的 `scripts/generate-antigravity-agents.mjs`，把 Claude 工具名、模型档、reference 根和调用术语确定性转换为 Antigravity 2.0 契约；不得把 Claude frontmatter 原样复制过去。
 - 执行 `node "{story-setup skill目录}/scripts/generate-antigravity-agents.mjs" --source "{story-setup skill目录}/references/templates/agents" --dest "{项目}/.agents/agents"`。生成器先渲染全部 7 个 agent，再原子替换这 7 个已知 `.agents/agents/agent-name/agent.md` 定义（`agent-name` 为实际名称），并清理旧版同名扁平 `.md`；保留其他用户 agent，任一源 frontmatter 异常时不得留下半更新目录，也不得沿 managed agent symlink 写出项目外。
-- 校验 7 个 `.md`：`name` 与文件名一致；`mainAgent: false`、`subagent: true`；模型只使用 `flash` / `pro`；工具只来自 Antigravity 官方名称 `view_file`、`find_by_name`、`grep_search`、`write_to_file`、`replace_file_content`、`multi_replace_file_content`、`run_command`；不得残留 Claude 的 `Read/Glob/Grep/Write/Edit/Bash` 工具名或 `.claude/skills/` reference 前缀。Antigravity 只使用当前规范前缀 `.agents/skills/`。
+- 校验 7 个 `.md`：`name` 与父目录 `agent-name` 一致；`mainAgent: false`、`subagent: true`；模型只使用 `flash` / `pro`；工具只来自 Antigravity 官方名称 `view_file`、`find_by_name`、`grep_search`、`write_to_file`、`replace_file_content`、`multi_replace_file_content`、`run_command`；不得残留 Claude 的 `Read/Glob/Grep/Write/Edit/Bash` 工具名或 `.claude/skills/` reference 前缀。Antigravity 只使用当前规范前缀 `.agents/skills/`。
 - 只读 agent（`consistency-checker`、`story-explorer`）不得包含写文件或命令工具；`chapter-extractor` 只有读取与写文件、无命令工具；其他 agent 按 Claude 真源的能力边界映射。
 - Antigravity 通过 `invoke_subagent` 的 `TypeName` 调用这些 agent。部署后新开 Antigravity conversation，再用 `story-review` 验证 full/lean；运行时无法解析某个 custom agent 时按 skill 的 solo/direct fallback 执行。
 
@@ -41,7 +41,7 @@ Antigravity IDE 与交互式 `agy` 共用这套 workspace `.agents/` 产物，�
 
 - 检查 `.agents/skills/` 下 13 个 story skills 为真实目录且 `SKILL.md` 可读；`.agents/skills/story-setup/references/agent-references/` 完整
 - 检查 `.agents/agents/` 下 7 个 Markdown agent 可解析，名称、模型档、官方工具白名单、只读边界与 `.agents/skills/` reference 前缀正确
-- 检查 `.agents/rules/oh-story.md` 为 `trigger: always_on` 且未超过 12,000 字符
+- 检查 `.agents/rules/oh-story.md` 为 `trigger: always_on` 且小于 12,000 字符
 - 检查 `.agents/hooks.json` 有效、顶层 `oh-story` group 恰有 PreToolUse/PostToolUse/PreInvocation/Stop，用户 hook groups 保留；检查 `.agents/hooks/story_antigravity_hook.js` 与 `story_hook_core.js` 语法有效
 - 用 fixture 验证：PreToolUse 缺纲/追踪时 deny、普通写入 allow、commit advisory；PostToolUse stdout 恒为 `{}` 且把正文 findings 写进 session artifact；下一次 PreInvocation 注入 findings；Stop 对未处理 findings 最多 continue 一次；干净正文清除 pending state
 

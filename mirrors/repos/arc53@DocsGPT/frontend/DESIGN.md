@@ -111,7 +111,8 @@ One tint scale, by purpose:
   (enforced).
 - Status soft fill: `bg-<role>/10` in both themes (Badge, Alert, ToastHeader,
   a danger-zone panel); no `dark:` twin.
-- Status border: `border-<role>/50`.
+- Status border: `border-<role>/50`. A calendar event's state stripe is the
+  one full-strength border (see PATTERNS.md › Activity).
 - Tinted hover on a row that is already accent: `/15` light, `/20` dark
   (`ghost-on-accent`, `ghost-destructive-on-accent`, a destructive menu item).
 - Neutral hover: solid `bg-accent` in both themes (ghost buttons, combobox,
@@ -272,7 +273,7 @@ Patterns:
   Textarea, and a button inline with a field such as Add or Run) are square
   in forms, modals and sheets. Pill is for page chrome: header and toolbar
   actions, `SearchInput`, page filters (Logs, Analytics, GuardrailEvents,
-  the admin Activity toolbar, whose CSV / NDJSON exports are `outline field
+  the admin Audit log toolbar, whose CSV / NDJSON exports are `outline field
 pill`), and a field that takes a pill header button's place (AgentsList's
   new-folder field). Modal footers (`ModalActions`) stay `lg pill`.
 - Buttons on the agent pages (Overview, Logs, Schedules, the workflow builder's
@@ -1253,7 +1254,15 @@ formatted by the component; text is allowed ("2 of 5 allowed"). Never bake
 Dates and missing values go through the same file. Absolute dates are
 `formatDate`, `formatDateOnly` or `formatDateTime`, en-GB (DD/MM/YYYY,
 24-hour) in every language by decision; "a date or nothing" is
-`formatTimestamp`, never a local wrapper. "Last …" and "next run" are
+`formatTimestamp`, never a local wrapper. A time of day on its own ("09:30")
+is `formatClock`, 24-hour, never a local copy. A heading that spells out a
+month or a weekday ("Monday 12 October", a calendar's "12 – 18 October 2026")
+is in the reader's language through `headingLocale()`, which is `intlLocale()`
+except English, which stays en-GB (day before month); never pass
+`intlLocale('en')` to such a heading, it gives US order. The one exception to
+en-GB is `formatDeadline`: an expiry someone has to act before (an approval
+link, a monitor's end) is in the browser's own locale and clock with the zone
+named, so it may read "9:44 AM GMT+2" beside 24-hour times. "Last …" and "next run" are
 `formatRelative` (in the app language; `dateAfterDays` switches to the date
 past a cut-off, `future` words a coming time as "in …"), never a hand-rolled
 "5m / 3h". A missing value (a date, a count, an id) is `EMPTY_VALUE` (`—`),
@@ -1791,7 +1800,9 @@ shadow-lg` in both themes: the knob is white on any track, and a white knob
 Allowed without comment in `src/components/MermaidRenderer.tsx` and
 `src/agents/workflow/nodes/**` (third-party renderers and canvas
 positions). Elsewhere, prefer a CSS custom property
-(`style={{ '--progress': pct }}` with `w-(--progress)`), and when a value
+(`style={{ '--progress': pct }}` with `w-(--progress)`), written as an object
+literal at the call site (`style={{ '--top': top } as CSSProperties}`): a
+helper that returns the style object fails the rule as a dynamic style. When a value
 truly is computed at runtime, keep the inline style and add
 `// eslint-disable-next-line shadcn/no-inline-styles -- <reason>`.
 
@@ -1815,7 +1826,7 @@ list stays reviewable.
 | `components/MermaidRenderer.tsx`                                  | `shadcn/no-restyle`             | The zoom − / + buttons sit on the diagram's `bg-black/70` overlay, where ghost's accent hover paints a light square with dark text; they hover to `white/20` with white text instead, in both themes. Two disables.                                                                                                                                                                                                                                                                             |
 | `Hero.tsx`                                                        | `shadcn/no-restyle`             | The landing page's demo cards are `Button outline lg pill`, but each is a two-line pill (a title over a clamped 12px query), so it undoes lg's height, the base's one-row layout, weight and nowrap: `h-auto w-full flex-col items-start gap-0 py-3.5 text-left text-xs font-normal whitespace-normal`. Two disables: the demo cards and the connect card.                                                                                                                                                                            |
 | `Navigation.tsx`, `conversation/ConversationTile.tsx`             | `shadcn/no-restyle`             | A sidebar row whose link has sibling buttons (an agent's pin, a conversation's menu and rename Save / Cancel) keeps its fill while the pointer is on a sibling or the menu is open (`group-hover:bg-sidebar-accent`, `bg-sidebar-accent`), and `pr-10` keeps the label clear of the buttons. ConversationTile's `cn(...)` needs a `/* eslint-disable */` … `/* eslint-enable */` pair.                                                                                                          |
-| `admin/Usage.tsx`                                                 | `shadcn/no-restyle`             | The Top users id is a `link inline` Button inside a mono table cell; it keeps the cell's type and wraps (`font-mono text-xs font-normal whitespace-normal text-left`). One disable.                                                                                                                                                                                                                                                                                                             |
+| `admin/Usage.tsx`                                                 | `shadcn/no-restyle`             | The Top users name is a `link inline` Button inside a table cell; it wraps like the cell's text (`font-normal whitespace-normal text-left`), and a user with no email on file keeps the id's mono type (`font-mono text-xs`). One disable.                                                                                                                                                                                                                                                                                                             |
 | `conversation/ConversationBubble.tsx`                             | `shadcn/no-restyle`             | A source card's URL row is a `link inline` around an `<a>`: foreground at rest, primary on hover, regular weight, truncating (`text-current font-normal hover:text-primary underline-offset-2 max-w-full justify-start`). One disable.                                                                                                                                                                                                                                                          |
 | `admin/Overview.tsx`                                              | `shadcn/no-restyle`             | "View in Audit" under the denied-sign-ins tile keeps the tile's destructive tone at hint size (`text-destructive text-xs font-normal`). One disable.                                                                                                                                                                                                                                                                                                                                            |
 

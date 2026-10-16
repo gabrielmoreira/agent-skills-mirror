@@ -22,8 +22,8 @@ This is an OMH `skill-health` workflow skill, projected for Agent Skills hosts (
 
 ## Do Not Use When
 
-- OMH setup, install, or a skill that does not load; use `omh-doctor`.
-- One run that missed a route or went wrong; use `omh-workflow-learning`.
+- OMH setup, install, or a skill that does not load.
+- One run that missed a route or went wrong.
 - Finding a new skill to adopt; use `omh-skill-scout`.
 
 ## Examples
@@ -43,16 +43,16 @@ Bad example:
 ## Completion Checklist
 
 - Dashboard scope, source surfaces, stale/duplicate criteria, and stop condition are explicit.
-- Install/setup health is routed to doctor; catalog operations are routed to skill; failure retrospectives are routed to workflow-learning.
+- Install/setup health, catalog operations, and failure retrospectives stay out of the health card.
 - No skill, prompt, doc, memory, or model behavior is claimed changed until a reviewed implementation records evidence.
 - Never present use, view, or load counts, `.usage.json` included, as a health, prune, archive, or retire signal: a rarely used skill is not an unhealthy one, and no health card recommends removing, archiving, or pruning a skill for being used little.
-- On Hermes, read the skill audit ledger read-only (that skill's entries in `skills/.curator_ledger.jsonl` under the active profile's Hermes home, or `hermes curator ledger --skill <name> --limit <n>`, which lists only the 20 newest by default): an entry against an OMH-managed skill means Hermes changed that managed copy outside OMH, so it may no longer match its generated body; report it as drift with the entry's `action` and `actor` (`agent`, `user`, or `curator`, which covers Hermes' curator and its background review). An OMH-managed skill is one OMH installed, under a label OMH's catalog renders such as `omh-plan` or `ulw-work`; a companion skill the person or an agent created is theirs, whatever its name. An empty ledger is unknown, not clean, because `skills.ledger: false` turns it off.
+- On Hermes, read the skill audit ledger read-only (that skill's entries in `skills/.curator_ledger.jsonl` under the active profile's Hermes home, or `hermes curator ledger --skill <name> --limit <n>`, which lists only the 20 newest entries by default): an entry against an OMH-managed skill means Hermes changed that managed copy outside OMH, so it may no longer match its generated body; report it as drift with the entry's `action` and `actor` (`agent`, `user`, or `curator`, which covers Hermes' curator and its background review). An OMH-managed skill is one OMH installed, under a label OMH's catalog renders such as `omh-plan` or `ulw-work`; a companion skill the person or an agent created is theirs, whatever its name. An empty ledger is unknown, not clean, because `skills.ledger: false` turns it off.
 - On Hermes, record an authoring finding only from the `lint_warnings` a `skill_manage` write returned, which are advisory and never proof a skill works; only some writes return them (an `edit` never does), so a write without them is not a clean lint. Record an available update for a hub-installed skill only from `hermes skills check` output that was seen; that hub request is Hermes' own, not OMH's.
 
 ## Recovery Notes
 
-- If the request is about OMH setup, install, stale package paths, or command availability, route to doctor.
-- If the request is a missed-route or self-improvement trace, route to workflow-learning before adding health actions.
+- If the request is about OMH setup, install, stale package paths, or command availability, it is outside this skill.
+- If the request is a missed-route or self-improvement trace, it is outside this skill.
 
 
 

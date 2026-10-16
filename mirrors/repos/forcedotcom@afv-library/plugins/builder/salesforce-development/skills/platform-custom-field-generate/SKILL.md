@@ -6,6 +6,7 @@ metadata:
   domains: ["Platform"]
   minApiVersion: "60.0"
   relatedSkills:
+    - "platform-metadata-api-context-get"
     - "platform-validation-rule-generate"
     - "platform-value-set-generate"
   mcpTools:

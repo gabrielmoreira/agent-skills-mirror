@@ -1,6 +1,6 @@
 # 微信小程序全栈开发专家
 
-微信云开发（CloudBase 与微信小程序团队共建）的小程序全链路开发专家：以云开发 skill 为知识、微信开发者工具 CLI/MCP 为工具，覆盖云函数、云数据库、消息推送回调、编译预览部署，以及个人主体虚拟支付接入。
+微信云开发（CloudBase 与微信小程序团队共建）的小程序全链路开发专家：以云开发 skill 为知识、微信开发者工具 CLI/MCP 为工具，覆盖云函数、云数据库、消息推送回调、编译预览部署、AI 大模型接入，支持虚拟支付。
 
 ## 类型
 
@@ -19,7 +19,7 @@ Agent 型（单专家）
 
 - **微信开发者工具 Nightly 版 ≥ 2.02.2608312**（内置虚拟支付 Skill 与 MCP 能力）：https://developers.weixin.qq.com/miniprogram/dev/devtools/log.html
 - **云开发环境**：已开通 CloudBase，有 EnvId（tcb.cloud.tencent.com）
-- **三个核心 Skill**（未装时专家会引导按 https://skillhub.cn/install/skillhub.md 安装）：
+- **三个核心 Skill**（CloudBase 官方 skills 按 https://docs.cloudbase.net/skill.md 接入，WorkBuddy 已随插件内置；微信侧 skill 未装时专家会引导按 https://skillhub.cn/install/skillhub.md 安装）：
   - `miniprogram-virtualpay-person`
   - `miniprogram-development`
   - `wechatide-skill`
@@ -28,7 +28,7 @@ Agent 型（单专家）
 
 - 小程序云开发从 0 到 1（wx.cloud + 云函数 + 文档库 + OPENID）
 - 云函数创建、部署、消息推送回调订阅
-- 个人主体虚拟支付接入（开通、下单签名、幂等发货、查单兜底、退款）
+- 虚拟支付接入（开通、下单签名、幂等发货、查单兜底、退款）
 - 开发者工具 CLI 编译预览、真机联调、报错排查
 
 ## 使用示例

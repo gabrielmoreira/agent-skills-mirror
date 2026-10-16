@@ -73,7 +73,7 @@ Model tiering is separate from mode: `compact | mid | full` controls how many no
 
 The user types a message, the panel sends a detached `{action: 'chat_start', text, mode, tabId, requestId}` request, then reconnects to the background-owned run journal for `agent_update` events. The acknowledged start becomes the existing `chat` handler and `agent.processMessage()` lifecycle; closing or reloading the panel does not transfer ownership or start the run again. The panel renders tool calls, results, plan-review cards, clarification prompts, and the final answer incrementally.
 
-While a run is active, Send / Enter queues follow-up messages per tab. **Steer** / **Alt+Enter** sends a text correction to that same run; queued messages also have a Steer action. The background accepts corrections only from the extension chat panel and only for the matching run request ID. Both agent loops consume corrections as user messages before the next model request. An already running tool finishes; the remaining tool calls in its batch receive skipped results before the correction enters the conversation. Steering preserves the current mode and permission checks. If the run ends before consuming a correction, a journal event puts it at the front of that tab's queue for the next turn. A transport error retains the draft without automatically resending it. An accepted correction aborts the in-flight main model request (it has no browser side effects; like Stop, its usage is not metered) and is applied before any pending page refresh. After Stop (panel or page button), queued messages and unconsumed corrections stay in the queue, marked as paused, until the user edits, steers or deletes them; nothing is sent automatically.
+While a run is active, Send / Enter queues follow-up messages per tab. **Steer** / **Alt+Enter** sends a text correction to that same run; queued messages also have a Steer action. The background accepts corrections only from the extension chat panel and only for the matching run request ID. Both agent loops consume corrections as user messages before the next model request. An already running tool finishes; the remaining tool calls in its batch receive skipped results before the correction enters the conversation. Steering preserves the current mode and permission checks. If the run ends before consuming a correction, a journal event puts it at the front of that tab's queue for the next turn. A transport error retains the draft without automatically resending it. An accepted correction aborts the in-flight main model request (it has no browser side effects; like Stop, its usage is not metered) and is applied before any pending page refresh. After Stop (panel or page button), queued messages and unconsumed corrections stay in the queue, marked as paused, until the user edits, steers or deletes them; nothing is sent automatically. Right-click menu and selection-shortcut prompts pending for the tab at Stop, or arriving while it stops, are held the same way: the hold is stored with the prompt, so neither a reopened panel, another panel instance nor a restarted worker starts it. The queue lists each held prompt as paused with Send and Delete; Send releases the hold and runs it through the usual claim and lease with its original selection grounding, and Delete clears it. A newer prompt for the tab replaces a held one, as it replaces any pending prompt, and a conversation clear keeps its own rules for these prompts. An accepted correction is acknowledged only after it is journaled in session storage (`agentSteer:<tabId>`), and it stays there until the run has saved it into its conversation or handed it back, so a background restart (MV3 service worker or Firefox background page) cannot drop it. When the panel resumes the interrupted request, the resumed run restores its unapplied corrections ahead of any newer ones and applies them at its first boundary, before the old task acts again; corrections already saved in the conversation are not applied twice, and corrections of another request are never applied to it. If the run does not resume (recovery refused or failed, Stop, or a newer request in the tab), the panel puts them back in the queue marked as paused; clearing the conversation or closing the tab discards them with the rest of the run state.
 
 In Act and Dev, steering links the initiating request and ordered corrections into one task authority with internal run, message, and revision metadata. At the next safe boundary, both execution paths revalidate that authority through the configured intent or planning gate and refresh execution, recipient, workflow, progress, and tool policy. A newer correction supersedes an in-flight result and invalidates any pending plan-review card. Planner failure stops further dispatch with its concrete error. Ask stays read-only, and ordinary later chat messages remain new tasks. Task-authority messages survive compaction and session recovery; prior submission receipts survive separately from reset completion evidence. A correction preserves the original mutation receipt. Further consequential work requires reconciliation of that effect and authorization under the latest validated request; accepting a correction never authorizes replaying the original submission.
 
@@ -97,9 +97,118 @@ correction, searches and in-form toggles need no reconciliation. A form without
 record identity is bound by its action and values: an identical resubmission is
 reported as already made, a corrected in-place save needs the observed earlier
 result and authorization under the latest request, and a different target
-(another form or platform) needs a known earlier outcome. Removing characters,
-words or hashtags from a post is an edit; only removing the post or record
-makes deleting the original a prerequisite.
+(another form or platform) needs a known earlier outcome. Account names, read
+on X and Bluesky only, name a post's platform; any other attempt, such as a
+Mastodon post or a form, is placed by the site it was made on. Hosts that share
+their last two labels count as one site, and x.com and twitter.com as one
+platform. A post on another site than the earlier attempt counts as another
+platform only when the correction's receipt lists every publication the task
+had made and none was on the post's site; on x.com, twitter.com and bsky.app
+only a composer publication posts, so a settings save or a consent click there
+is not one. Their other hosts and clients, such as X Pro, post without the
+composer controls WebBrain recognizes, so there any action that may have been
+sent counts as a publication unless the page probe proved it cannot post (an
+ordinary form, a deletion, or a control resolved as a link, field, menu item or
+other non-submitting control). There, a control that looks ordinary only
+because no model read its caption in time proves nothing, and under a
+correction it is not clicked; Enter in the app-marked post editor edits the
+draft, as on x.com.
+The agent records, for the task from its first run on, the site of every
+dispatched attempt that may have changed something and of every publication
+among them (a search, a send the browser refused or a form the page rejected
+is not one; an action Stop interrupted after it was sent is). The record is
+saved with the conversation, and on its own just before each action that may
+commit something is sent, so a restart right after that action still counts
+it. When that save fails before a possible post on X or Bluesky, or an action
+of unknown site, the action is not sent and the run stops with persistence
+degraded, as it does when the run's recovery checkpoint cannot be saved. Each
+correction copies the record into its receipt. A post made under the
+correction is kept from repeating by the publication contract's outcomes and
+dispatch records of the run that applied it, and by that run's own list of
+the possible posts they never see, such as one from X Pro; a run rebuilt from the saved
+conversation, as after a restart or a typed "continue", has neither, so there
+a publication anywhere in the task on the post's site holds it too. Without a
+complete record, or with an earlier publication on the post's own site, the
+post stops once with a report instead of a search for the other site's post.
+For such a post, any page read since the earlier attempt was sent, including
+one after the correction, makes its outcome known; where account names or an
+ordinary form tell the targets apart, the earlier result must be observed as
+before. Whether a correction
+asks to delete the earlier post or record first is a fixed-choice question
+that a model answers from the correction as the user wrote it, in any language
+(see "Language decisions" below): removing characters, words or hashtags from a
+post is an edit; removing the post or record itself makes deleting the original
+a prerequisite. An unsure answer, or none, publishes or submits nothing.
+
+Whether a clicked control deletes one item or several, publishes, commits,
+moves to a next step, only edits the draft or only changes the view is what a
+model read its captions as (see `control_effect` below); no word list decides
+it. A deletion of a record that has a permalink is bound to that URL. A deletion
+of a record without one (a cart item, a mail or table row) is bound to the
+record instead; a caption read as deleting several or the selected items gets
+no record. The page probe takes the nearest row, list item or article
+holding no other visible deletion control (one repeating the clicked control's
+own caption, or read as a deletion), or else a bounded container that
+stops at lists, landmarks, editors, headings, other records, other deletion
+controls (including hover-only ones) and 2,000 characters, and keeps its
+visible text without the control's own caption, together with the text of up
+to twelve records of the same kind beside it, nearest first. A menu item
+borrows the record of its expanded aria-controls or popover launcher, or, for a
+menu the page mounts elsewhere without that link (a portal), of the launcher
+whose own click the probe saw open it: the one new menu shown within three
+seconds of that click, counted even while it fades in, never a menu opened by
+a script, by another launcher, or alongside a second new one. A menu that opens
+inside a dialog already on screen counts, and so does a menu inside a new
+wrapper that opened with it. A Mastodon post's
+menu and its confirmation are captured the same way for the native post, and
+the action bar Mastodon draws beside a detailed status belongs to that status.
+On a post of the signed-in account, the menu's entries Mastodon marks dangerous
+(Delete, Delete & re-draft; buttons since 4.4, links drawn as buttons in 4.3)
+are deletions of that post by page structure, read or not: with Mastodon's confirmation preference on, the confirmation such an
+entry's click opens belongs to the post; with it off, the entry is the deletion
+itself. Mastodon makes the rest of the page inert while its confirmation is
+open, so the native identity reads (the post, its links and text, the signed-in
+account) look through the inert mark on the siblings of that open modal root,
+and through nothing else. The signed-in account is the navigation's account
+link, or, in layouts without one, the account the app's initial state names;
+the two must agree. The confirmation's primary button counts as Mastodon's own
+commit in any layout, also below 1175 px, where Mastodon shows no composer
+beside the timeline. The probe identifies the page's records once per run,
+however many of its checks need them. A
+confirmation dialog borrows the record of the agent's own authorized click
+only when it opened after that click was checked, within 30 seconds, and holds
+that one deletion control. The probe receives nothing from the request.
+
+Whether the latest request asks to delete this exact item is a fixed-choice
+question (`deletion_request`) that a model answers from the request as the user
+wrote it, in any language, and the item as the page shows it: its text, its
+link, the step (the item's own control or the site's confirmation dialog, whose
+question it also sees) and the items beside it, all as untrusted data. The
+answer is one of: delete this item; unclear (another item fits as well, or it
+is named only by position); another item; no deletion asked; told not to
+delete. Only "delete this item" deletes without asking, and only with a
+quotation from the request that supports it. "Told not to delete" refuses
+without a card. Everything else, including no answer, goes to the user on
+WebBrain's card below. The same record is never deleted twice at the same step
+in a task, even after a reload, and a changed record, step or set of
+neighbours changes the checked action, so a decision cannot carry over to it.
+Toolbar, bulk and selection deletions, menus with neither a linked launcher nor
+that click provenance, and confirmation dialogs that cannot be linked get no
+record and stay blocked.
+Completion after such a deletion uses the ordinary post-submit checks.
+
+When the decision is not a clear "delete this item", WebBrain asks the user on
+its own card instead of refusing: "Delete this item on <site>?" with the item's
+text as the page shows it (plain, bounded text), its link when it has one, the
+site's own confirmation question at that step, and fixed choices (Delete,
+Don't delete) without free text. Delete authorizes that item for the rest of
+the task, including the confirmation dialog its click opens, with no further
+model check; the checks run again on a fresh reading of the page before the
+click, so a changed item is not deleted. Don't delete keeps it, and the item is
+not offered again in the task. Stop or a correction cancels the card and
+records nothing. Unattended scheduled runs are not asked and delete nothing.
+Toolbar, bulk and selection deletions, unlinked confirmation dialogs and
+repeated deletions stay refused: the user could not judge them from the card.
 
 When a runtime check ends a run, the chat shows a plain-language answer: what
 happened and what to check next. The exact diagnostic stays in verbose tool
@@ -359,6 +468,15 @@ to the older full `processMessageStream()` loop. Attachments, detached-run
 ownership, reconnect replay, persistence, traces, tool guards, and completion
 invariants therefore keep one production lifecycle.
 
+An Ask answer is about the page as the person asked about it. What they do on
+the page while it is written (scrolling, selecting, clicking, typing, and the
+page's changes from those), and any scroll or viewport resize, does not make
+it stale: the answer already shown is kept and is not written again, and
+its decision does not wait for the person to stop typing or scrolling. A
+navigation of the page to another address, a new document, a correction, and
+the page's own changes are weighed as before, so a page-dependent answer still
+refreshes after automatic churn within its retry budget.
+
 ### Selected-text source scopes
 
 Selected-text runs always carry an explicit, durable `source_grounding` policy.
@@ -515,6 +633,53 @@ the media-download recommendation preactivates FreeSkillz because it owns
 preactivates enabled FreeSkillz for that run; only a structured blocking
 `pageGate` adds the trusted instruction to call `fetch_nytimes_article`, so raw
 page prose cannot spoof fallback routing.
+
+A `pageGate` is a wall in front of an article: an overlay on an article page, or
+a block inside the article, whose text a model read as keeping the article
+from the reader until they subscribe, register or sign in (the `page_blocker`
+question, in any language; an offer beside readable text is not a wall). An
+overlay or block is read by its own name and title and by chunks of its
+rendered text: its elements in page order, an element longer than 600
+characters with block children split into them, gathered into texts of at
+most 600 characters, a heading starting a new one, and a longer stretch of
+inline text read in pieces of that length. The chunks are read in page order
+up to the first one read as a wall, at most 30 of them. In an article the
+wall starts at that chunk, or at a chunk before it nobody has read, since the
+wall's text may be there, so only text read as no wall comes before it: a
+preview in chunks before the wall stays readable, also inside the wall's own
+block, while the part of the wall's own chunk before its text is withheld
+with it. Of several walls in an article, the one that starts first decides;
+an overlay is the wall as a whole. A wall's label is its name or title, or
+the first line of the element its starting chunk begins in, and none when an
+unread chunk comes first, since what follows a wall's first line may be the
+article. A page read reports at most 40 texts nobody has read, overlays first
+and then blocks offering a control a wall would (a button, a field, a form or
+a link standing on its own), in `pageTextsNeeded`; the agent has them read
+(the decision model first, the active model within four seconds) and reads
+the page again with the readings, up to three times while each read reaches
+more. A text that differs only in its numbers from texts read as one wall
+is that wall at once, and is still reported to be read until two texts of
+its shape were read as that wall, so a countdown wall stands between reads
+at the cost of one more reading, and a quota that stops being a wall when
+its number changes reads as what it is once read; a shape with any other
+reading carries nothing over. When a text reads as
+a wall and the page cannot be read again, the read fails rather than return
+the answer made without that reading; so does an answer without that wall
+applied while texts are still unread, at any pass, as with a wall whose
+other text changes on every read or whose next text no model answered. An
+unread text is no wall, so the page reads as it is, and a text no model
+answered after both had their turn is not asked again for 30 seconds. A wall
+withholds the article, its links, forms and frames; its own text and
+controls stay readable. The CDP mirror of the page read (`readPage` in
+cdp-client.js) applies the same rules.
+
+Checks that run in the page, such as this one, the CAPTCHA scans, the submit
+probe and the recipient guard, receive the agent's most recent readings of
+their questions (the latest 400, at most 80,000 characters). A text the agent
+read earlier that a check still reports unread is not asked again: its reading
+becomes one of the most recent and the check runs again with it. Texts are
+keyed alike on both sides: spaces collapsed, and a text cut at its limit loses
+a trailing space or half of a surrogate pair.
 
 Single public-media downloads have a second deterministic guard. If the model
 calls `download_social_media` while an eligible inactive skill owns
@@ -703,6 +868,240 @@ exporting version and every turn's recording version, and Traces-page JSON adds
 `webbrain-trace/1` schema. Legacy runs are labeled with an unavailable recording
 version rather than being attributed to the currently installed build.
 
+### Language decisions (`semantic-decisions.js`)
+
+Where a rule depends on what the user's words mean, WebBrain asks a model one
+closed question instead of matching words (`semantic-decisions.js`, shared by
+both builds). Each question lists its choices and what each one means. The
+request is the user's own text; page text is passed as untrusted data and can
+never change the question or the choices. The decision model answers when it
+is enabled in settings and sure enough (0.85 for a choice that lets an action
+go ahead without asking, 0.7 otherwise); otherwise the active model answers
+and must quote the request for a choice that lets an action go ahead. Choices
+outside the list, a missing quotation and failed calls count as no answer, and
+every caller treats no answer as "ask the user" or "do nothing". Identical
+questions are answered once. Stop or a correction during a decision cancels
+it. The questions are: does the request ask to delete this item; does a
+correction ask to delete the earlier post first; does the request say not to
+send this message; and does a short Act turn sent after an earlier task only
+continue it or acknowledge it. That last answer is read once, when the turn
+arrives, and stored on the turn, so the task anchor, the progress ledger's
+scope and an approved plan read it without words. The Continue command is a
+continuation by construction; long turns, Ask turns, first turns and turns
+without a sure answer are new requests. A carousel scan asks whether the
+request wants the slides from last to first; no sure answer is the usual
+order. Consent itself never comes from reading words: who receives a message
+and whether an unclear deletion proceeds are answered on WebBrain's own cards
+with fixed choices, and a question the model asks, and whatever the user
+answers to it, approves neither.
+
+Plans and progress intents are the models' own reading of the request. No
+rule rewrites a plan from the request's words, an edited plan's expected items
+come only from its own expected-items line, and the items a repeated-action
+task leaves out ("everyone except alice") come from the intent model's
+`excludedTargets`. Ledger rows written before rows were stamped belong to the
+current task only when its classified intent allows the action they record.
+A click is recorded on the ledger when it lands on a row's own control, or
+when a model reads its label, in any language, as doing one of the run's
+allowed actions to an item (`progress_action`: it does the action, undoes it,
+or does something else); the item is then the ledger row for that action the
+label names, or the page its link opens. On a Mastodon instance's own pages
+(known instances, `mastodon.*` hosts, remote profiles and interaction routes;
+a `/@handle` page of another site is no fediverse account), a model reads
+the page's control and field labels while a ledger tracks the run
+(`follow_state`: follows, already followed or requested, asks for the user's
+own server, or something else) and which domain the request names as the
+user's own server (`home_instance`). A follow row is marked processed only
+after a followed state is read, and a server field arms the remote-follow
+handoff to that server; unread labels say nothing.
+Typed messages are sent as typed; `/screenshot` is the explicit local capture.
+
+The completion judge (the decision model or the active model) answers two
+more fixed-choice questions in the same request as its verdict: whether the
+request also expects something no run can verify, such as votes or moderators
+keeping a post up, and whether the candidate summary gives the result, only
+says that an answer was given, or only describes what will be done next. A sure
+"expects later" answer adds the note that publication was verified while later
+votes and moderation remain unverified; a summary read as a claim or a plan is
+sent back once for the actual result. Where no judge runs, a model reads the
+summary with the `done_summary` question: a short Ask answer with no structure
+of its own (a colon, line breaks or a list mean it carries content), and an Act
+run's failed or partial summary, which may also blame the agent's own Ask or
+read-only mode and then gets the runtime-mode correction. A planner-shaped
+object is recognized by its shape, and one the model rates at zero confidence
+is its refusal; a plain final message in an Act run gets one recovery whatever
+it says. No word list reads a summary or a final message.
+
+A request that contains one arithmetic expression (found by structure: the
+one span the calculator accepts, not digits inside a word or code) is read with
+the `calculation_request` question when the planner gave it no page reads,
+state changes or submissions. Only a sure "only the result" reading limits the
+run to the calculator and lets the calculator's receipt complete it while the
+page keeps changing. When the request also sets a form for the answer, the
+active model writes it down (only the number, the number last, an ending and
+other required texts), each text copied exactly from the request and checked
+against it; a form it cannot write down that way is left to the completion
+judge, with the calculator's result as evidence. The reading and the form are
+kept on the execution guard and read again only when the request changes.
+
+Questions about several items (`missing_value`, and the page readings that
+follow) are batched: the decision model gets one question per item in chunks of
+16, and the active model answers up to 64 items in one reply. A required value
+of an expected item that only says it is missing ("unknown", "bilinmiyor", "—")
+is found this way once, at a successful done, among values of 40 characters or
+fewer; no sure answer leaves the value counted as given. Missing values are
+otherwise JSON null. Action names in progress rows and requested field names
+are the canonical names the models are given; another word for one is rejected
+(progress_update) or names no field (the requirement stays incomplete).
+
+Page text is read by structure first. A page's words decide nothing where
+the page's own structure answers: Gmail's result range is parsed by its
+numbers whatever separates them; a carousel's slide total comes from the shape
+of its labels (two numbers joined by one word or a slash, or a series of
+labels that differ only in their number) read inside the post that holds the
+media; carousel back-and-forth is detected from the slide indexes the steps
+reach; ChatGPT's log-in, stop and send controls are its own test ids and auth
+links; and a trimmed accessibility tree keeps first the buttons that share a
+form or composer with a visible text entry. The completion judge's evidence is
+the latest read of each of the four most recently read pages, told apart by
+the address each read reports. Where structure cannot answer, a model reads
+the specific label once (the `carousel_control` question finds a carousel's
+Next control among the visible labels; only one sure "next" is clicked).
+
+What a page says after a submit is read the same way, never matched against
+words. Short page texts (300 characters, 500 for a validation alert) are read
+with one fixed-choice question each and remembered per text, so the
+synchronous checks that follow (`_pageTextReading`) cost nothing more; a text
+nobody read proves nothing. `status_message` reads whether a message says a
+submission succeeded, reports an error, or neither. At a successful done, when
+a submission still needs proof, it reads the page's live messages and the
+statuses the agent observed after the submit (the accessibility tree's
+status, alert and log lines, a page read short enough to be one message, a
+screenshot's short description, and, after the submit led to another
+document, its title); `pageState.successMessages` holds only the live
+messages read as success and is never taken from the page. A submitted
+iframe needs one new message read as success and none read as an error. Form
+validation sorts alerts by page structure: an alert an invalid field points
+to, one inside a form with an invalid field, or one the site's own id, class
+or state marks as an error rejects a submit unless it is read as success; any
+other alert rejects it only when read as an error. Only alerts new to the
+page are read (all of them after an earlier rejected submit). A site
+workflow's last step (`workflow_state`: a draft saved, a message sent on the
+sites whose own notice is part of the job, a form submitted, changes saved,
+review threads resolved) is shown by a page text read as reached with none
+read as failed or pending, among its live messages, dialog titles, prominent
+headings and status regions, the statuses observed after the submit, and the
+lines of a page short enough to be a confirmation page. Those are read only
+once the rest of the workflow's evidence is in place. Beside them, at the same
+time, an update-metadata or publication job reads which requested detail each
+field saved after the dispatch holds (`metadata_field`, `publication_field`),
+so the saved values can be compared with the requested ones in any language;
+a write in such a job reads its own field's labels and names before it is
+recorded.
+
+What a clicked control does is read from its captions the same way
+(`control_effect`: it publishes, commits, deletes one saved item, deletes
+several or the selected items, moves a form to its next step, only edits the
+form or draft, only changes the view, or is unclear), once per caption. The
+submit probe classifies every click by these readings before it is sent. The
+agent passes the readings it holds; on a collect pass the probe returns the
+activated control's unread captions (its text, ARIA and title names, action
+name and an input's value and labels, plus the other controls of a dialog it
+sits in) before it changes any page state, the decision model reads them (the
+active model within four seconds when there is none), and a final pass
+decides. Fields and plain links have no captions to read. A caption no model
+could read decides nothing, which is what any caption in a language the former
+word lists lacked always did: the control is ordinary unless page structure
+says otherwise. While the active model decides on a page, the decision model
+alone pre-reads the captions of the buttons, menu items and tabs its
+accessibility tree shows, so a click usually finds them read.
+
+Readings decide: a deletion (the record binding above, or no record for
+several items); a draft tool (a composer control not read as a commit, a
+publication or a deletion, and a draft edit only when the removed item is
+visibly an attachment); an ordinary control (outside a form, not read as a
+publication, commit or deletion; for an X or Bluesky control with a
+non-publish test id a publication reading does not count, while a popup
+launcher read as publishing stays a commit); strong submit evidence for a
+`type=button` control in a form (a caption read as a commit, publication or
+next step); an unnamed X or Bluesky composer control read as a publication; a
+dialog's named button outside any form read as only changing the view
+(closing, cancelling, going back), which is not a submit; and Mastodon's own
+"…" menu and dangerous item. A saved workflow's deterministic replay asks the
+decision model alone for these readings, never the active model. Form validation waits for a rejection after a caption read
+as a commit, a publication or a next step; a workflow click submits its form by
+structure or such a caption; and a rapid second text click is a duplicate only
+for a caption read as a commit or publication, asked then if the first click
+left it unread. Words in a CSS selector are not read. At a successful done, a
+visible form made only of search fields, sent with GET and holding no other
+task evidence, counts as a task form still on screen unless every one of its
+submit captions is read as `view` (showing, filtering or searching); an empty,
+unread or unclear caption keeps it counted.
+
+On a page whose sends the recipient guard checks (see the messaging
+adapters below), the page's own texts are read the same way, by what they mean
+in any language: what a control does, from its name (`message_control`: it
+sends something to someone, publishes, opens a reply or forward, opens a new
+message, opens a new post, only works on the draft being written, is one of the
+conversation's own tools such as a call, search, settings or back button, is
+something else such as a contact's name, or is unclear); which row of a message
+a field or a group of address chips is, from its labels and names
+(`message_field`: To, Cc, Bcc, subject, body or something else); whether a
+message's label says the page's own user sent it (`message_author`: self or
+other); and what a sent message's status says (`message_status`: delivered or
+read, sent, pending or failed, unclear). The agent hands the readings it holds
+to the page with each guard check and chat observation; texts the check
+consulted unread come back, are read (the decision model first, the active
+model within four seconds) and the check runs again, up to three times while
+it reaches texts nobody has read (a send control's name first, the recipient
+rows behind it next). The page monitor's capture reports only that texts were
+consulted unread; page feedback then asks for them, reads them and captures
+again, so the conversation that owns a footer action is decided with the
+readings. While the active model decides on such a page, the decision model
+alone pre-reads its button, menu item and tab names for the control question
+too. Until a text is read each check takes it the cautious way: a control as
+one that could send, a field as holding no recipient, a message as nobody's in
+particular, a status as not delivered. Readings decide: without a composer, a
+control read as sending, or not read yet, stays guarded (an unread one is
+blocked as retryable, so the click can be tried again once read), while any
+other is not a message send; a composer control read as only working on the
+draft is a composer utility; a Gmail control read as opening a reply or forward
+is composer setup; LinkedIn's feed entry read as opening a new post opens one;
+a conversation header's controls read as actions are not its contact; a
+Discord settings control, a LinkedIn image preview or Telegram's settings
+entry read as sending is not exempt; a webmail field read as a To, Cc or Bcc
+row holds that row's addresses (an email-typed field on a mail page is a To
+row, and an address chip keeps the row its field gave it); a Gmail chip takes
+its row from the labelled row around it, after the app's own row names; a
+message whose label reads as the user's own counts toward the sent-body
+baseline and is outgoing in a chat observation; and a native WhatsApp message
+counts as sent once its status reads as delivered. The content script keeps no
+word list: Discord's channel composer is found by its channelTextArea
+container and a channel or contact is named by the longest text of its
+selected rail link that the composer's label also contains, LinkedIn's
+conversation list by its class, a formatting toolbar by its role, WhatsApp's
+contact drawer closes through its header's one named button, and a phone
+number in a composer's label is taken by its digits.
+
+Chrome's one trusted retry click on a generic element whose synthetic click
+changed nothing visible (see `accessibility-tree-and-refs.md`) is decided the
+same way. Page structure rules out native, form, stateful, download, covered
+and handler-bound targets first; then the element's name is read once
+(`control_repeat`: a second click could send, buy, delete, like, follow,
+download or otherwise act twice or undo itself, it is harmless, or it is
+unclear) while the page settles. A name read as changing something is not
+clicked again; a harmless, unclear or unread name keeps the retry, as an
+unrecognized name always did. The content script keeps no word list.
+
+Requested field values (a message or post body, release notes, a title) come
+from the intent model too. A short value is returned as is; a long one is
+returned as its exact first and last words, and the runtime copies the text
+between them from the request or the approved plan, the way the social
+publication contract copies post bodies. No word list finds where a body
+starts or ends. An anchor that is missing, repeated or out of order resolves to
+nothing, so the field stays unresolved and nothing is verified against a
+guessed value.
+
 ### User Memory (`user-memory.js`)
 
 User memory stores local, user-stated durable preferences and profile/workflow
@@ -869,7 +1268,7 @@ Jobs are stored in `chrome.storage.local` under the key `wb_scheduled_jobs` as a
 
 110+ adapters inject site-specific guidance into the first user message (and re-inject on navigation to a different matched site). Only ONE adapter fires at a time (`getActiveAdapter(url)` returns the first match). See `docs/site-adapters.md` for how to write one. Each matched adapter emits a content-free `adapter_match` trace note with its identity, revision, and whether notes were injected. High-evidence repeated tasks may additionally expose validated V2 workflow jobs; the planner selects an app-owned ID semantically, the binding is revalidated on the live pre-execution URL, and the executor receives its trusted stages/evidence contract. Required submissions need dispatch plus post-submit observation, while jobs with a trusted complete inventory may require an explicit job-bound complete-coverage marker whose count matches terminal current-task ledger rows.
 
-Adapters may also expose narrowly scoped runtime policy. Douyin `/chat` is the first `messaging.verifyActiveRecipient` route. The structured planner resolves an anaphoric recipient to `named` only when authentic prior-user context identifies exactly one target; unresolved pronouns clarify, while `active_conversation` is reserved for an explicit reference to the currently open thread itself. An `active_conversation` planner target must first be pinned to exactly one strong visible header identity before any page tool runs; ambiguous or missing evidence stops for clarification. Immediately before a send-like click, submitted field, or Enter press, the content script resolves the exact target and a lower-page layout composer, then collects only unique header evidence from the narrow, non-scrollable region above it. Enter or submitted field input in a different editable is conclusively non-message only when structural semantics positively identify a search or navigation field; an alternate reply/forward/split-pane composer remains inconclusive and therefore cannot bypass recipient verification. A distant general control likewise remains inconclusive rather than being declared safe. A semantic conversation row in a separate left rail is conclusively navigation-only, allowing recovery to the requested thread whether or not the short rail currently overflows; nested row buttons, links, and their leaf descendants plus controls outside that structure remain inconclusive. The agent requires exact normalized identity equality and returns a no-dispatch blocker on missing, inconclusive, ambiguous, or mismatched evidence, and protected Enter dispatch permits exactly one keypress per verification. Every authorized `click`, `click_ax`, `set_field({submit:true})`, and composer Enter receives a one-use binding to the exact action target, composer, URL, and identity set. Direct content dispatches and Chrome's trusted CDP mouse/key paths consume and revalidate it immediately before `el.click()`, `mousePressed`, or Enter, after any field reconciliation and combobox delays; protected `click_ax` never issues a second no-progress fallback click. Search-result text, message content, input values, generic page text, failed probes, and edited plans with stale hidden metadata cannot authorize a send. Dispatch-capable tools whose effects cannot be bound to the probed recipient (`iframe_click`, `execute_js`, WebMCP execution, and `upload_file`, whose change event may auto-send) are unavailable on this protected route. Deterministic saved-workflow replay has no planner-owned recipient target, so a workflow with any potentially dispatching step scoped to a protected messaging route stops before page actions and directs the user to run a normal Act task with a named recipient; a per-step check also covers legacy workflows whose scope metadata is incomplete.
+Adapters may also expose narrowly scoped runtime policy. Douyin `/chat` is the first `messaging.verifyActiveRecipient` route. The structured planner resolves an anaphoric recipient to `named` only when authentic prior-user context identifies exactly one target; unresolved pronouns clarify, and words that refer back to someone named earlier never mean the open thread. `active_conversation` is reserved for a request that points at the conversation on screen itself instead of naming it ("reply here", "this one", "this user", in any language): the planner never sees the page, so it does not ask who that is. An `active_conversation` planner target must first be pinned to exactly one strong visible header identity, while planning or, where the identity needs the page's own preparation first (Gmail's collapsed reply composer, a native WhatsApp contact drawer), at the first send in the thread open when the run was authorized; ambiguous or missing evidence stops for clarification. Its `recipients` are only the people the same request also names. On a route where a conversation reaches one person, the pinned conversation is the target and stays authorized for the whole task, while each named person is kept as requested (`requestedMessaging`, shown in the reviewed plan) and confirmed on WebBrain's recipient card before the first send to them. Native WhatsApp checks a contact through its drawer once per run, for the first chat the run looks at; once that check is invalidated, as by a change of the chat selection, the observer and the recipient probe report `native_whatsapp_contact_check_spent`, and the agent is told that the chat needs a new request instead of being sent to retry. A chat only hidden for a moment, as behind a modal, is not a spent check. On a recipient-set route such as mail the named people are not added to the pin, since a planner copies names as the user wrote them while a mail composer shows addresses. The pin is the thread's recipients as before: one taken while planning sends a differing set to the card, while one taken at the first send from Gmail's collapsed reply composer is whatever that composer holds then, an existing limit. The first user message's screenshot note is dropped from the planner's copy of the task with the image the planner never receives. Immediately before a send-like click, submitted field, or Enter press, the content script resolves the exact target and a lower-page layout composer, then collects only unique header evidence from the narrow, non-scrollable region above it. Enter or submitted field input in a different editable is conclusively non-message only when structural semantics positively identify a search or navigation field; an alternate reply/forward/split-pane composer remains inconclusive and therefore cannot bypass recipient verification. A distant general control likewise remains inconclusive rather than being declared safe. A semantic conversation row in a separate left rail is conclusively navigation-only, allowing recovery to the requested thread whether or not the short rail currently overflows; nested row buttons, links, and their leaf descendants plus controls outside that structure remain inconclusive. The agent requires exact normalized identity equality and returns a no-dispatch blocker on missing, inconclusive, ambiguous, or mismatched evidence, and protected Enter dispatch permits exactly one keypress per verification. Every authorized `click`, `click_ax`, `set_field({submit:true})`, and composer Enter receives a one-use binding to the exact action target, composer, URL, and identity set. Direct content dispatches and Chrome's trusted CDP mouse/key paths consume and revalidate it immediately before `el.click()`, `mousePressed`, or Enter, after any field reconciliation and combobox delays; protected `click_ax` never issues a second no-progress fallback click. Search-result text, message content, input values, generic page text, failed probes, and edited plans with stale hidden metadata cannot authorize a send. Dispatch-capable tools whose effects cannot be bound to the probed recipient (`iframe_click`, `execute_js`, WebMCP execution, and `upload_file`, whose change event may auto-send) are unavailable on this protected route. Deterministic saved-workflow replay has no planner-owned recipient target, so a workflow with any potentially dispatching step scoped to a protected messaging route stops before page actions and directs the user to run a normal Act task with a named recipient; a per-step check also covers legacy workflows whose scope metadata is incomplete.
 
 ### Accessibility Tree (`accessibility-tree.js`)
 
@@ -901,6 +1300,12 @@ Other navigation warnings choose Stay. Dialog text is never treated as instructi
 
 The handler runs independently of blocked page commands and is removed on
 Stop, completion, or detach, even when Dev diagnostics retain the debugger.
+A run whose start page the debugger cannot attach to, such as
+chrome://extensions, or whose debugger connection drops, keeps its wish to
+answer dialogs: the next debugger attach arms it, and each navigation and
+history navigation arms it before dispatch and again on the page it reaches.
+Stop while a navigation waits for that arming sends nothing. The person
+cancelling the debugger ends it for the run.
 Ask mode and idle tabs do not auto-answer dialogs. Already-observed dialogs are
 resolved before startup commands. Dialogs opened before debugger attachment
 may need manual dismissal. Startup responds to Stop and times out after five

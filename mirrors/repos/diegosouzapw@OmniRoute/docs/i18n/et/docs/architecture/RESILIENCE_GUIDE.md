@@ -393,6 +393,17 @@ Kui quota-share'i edastus sihib ühendust, mis määrab positiivse `max_concurre
 
 Iga kombinatsioonistrateegia puhul (kui see on lubatud) ootab päring, mis muidu kinnistaks 429 vastuse LÜHIKESE ajutise ooteaja tõttu, ooteaja lõpuni ja edastatakse uuesti, selle asemel et 429 tagastada — see hõlmab Gemini-klassi TPM/RPM-i aknaid (~60 s `retry-after`) mitme mudeliga kombinatsioonides, näiteks kui kahe mudeliga kombinatsiooni mõlemad sihtmärgid jõuavad mudelipõhise kiiruspiiranguni. Piirangud määrab `comboCooldownWait` (`enabled`, `maxWaitMs`, `maxAttempts`, `budgetMs`) jaotises **Seaded → Vastupidavus**. See ei oota kunagi põhjuse `quota_exhausted` (lukustatud keskööni) ega autentimis- või mitteleidmise põhjuste korral.
 
+```text
+#16319 · comboCooldownWait · pre-dispatch (attempts = 0)
+all targets skipped + transient model lockout:
+  enabled ∧ 0 < waitMs ≤ maxWaitMs ∧ attempt < maxAttempts ∧ budgetLeftMs ≥ waitMs
+    → wait → re-dispatch
+  wait = false → HTTP 429 rate_limit_error
+  retry_after / reset_at ← earliest transient lock expiry
+quota_exhausted / auth_error / not_found / not_found_local:
+  no transient hint → HTTP 503 ALL_TARGETS_SKIPPED
+```
+
 ---
 
 ## 5. Päringujärjekorra vastuvõtukontroll (v3.8.49 · probleem #6593)

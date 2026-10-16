@@ -7,9 +7,9 @@ Provides an OpenCode hook implementation for managing deepwork sessions - heavy,
 This hook enables developers to:
 - Initiate deepwork sessions via `/deepwork <task>` command
 - Maintain `.slim/deepwork/` progress tracking files
-- Enforce phased implementation with `@oracle` review gates
-- Execute phases with background specialist agents where appropriate
-- Validate results and incorporate simplification/readability feedback
+- Run pass-by-pass work (sketch → structure → detail) with one `@oracle` gate per pass
+- Execute passes with background specialist agents where appropriate
+- Step back between passes to re-plan and reorganize code
 
 ## Design
 
@@ -25,6 +25,44 @@ The hook follows the OpenCode plugin hook pattern, exposing a factory function `
 - Validates task presence before activation
 
 ### Integration Points
+- Consumes OpenCode session context (`sessionID`)
+- Integrates with OpenCode command system via `command` configuration
+- Leverages `@oracle` for review and simplification feedback
+- Supports background specialist agents (`@fixer`, `@explorer`, etc.) for phase execution
+
+## Flow
+
+### Command Registration Phase
+1. Plugin initialization calls `registerCommand()` with OpenCode configuration
+2. Checks if `deepwork` command already registered
+3. If not, adds command configuration:
+   - Template: "Start a deepwork session for a complex coding task"
+   - Description: "Use the deepwork workflow for heavy multi-phase coding work"
+
+### Command Execution Phase
+1. User invokes `/deepwork <task>` command
+2. OpenCode triggers `handleCommandExecuteBefore()` hook
+3. Hook validates command name (`deepwork`)
+4. If no task provided:
+   - Outputs error message via `createInternalAgentTextPart()`
+   - Prompts user: "What task should deepwork manage? Run `/deepwork <task>`."
+5. If task provided:
+   - Clears existing output parts (`output.parts.length = 0`)
+   - Generates activation prompt via `activationPrompt(task, sessionID)`
+   - Injects activation prompt into output parts
+   - Prompt = bundled SKILL.md body (single contract source, build-time text
+     import) + pinned router-head path + task
+
+### Deepwork Session Execution
+1. Agent receives the full workflow instructions (SKILL.md body) with the pinned router-head path and task
+2. Agent creates its `.slim/deepwork/<session-id>.md` router head (`status:` + `slug:`) and the task directory it points to
+3. Agent works in passes over the whole product (sketch → structure → detail), each with a one-line goal and a few disjoint lanes
+4. One `@oracle` design review of the pass plan covers risky lanes before code; lanes report files, commands, and exit codes
+5. Each pass ends with broad validation, one `@oracle` gate scoped to that pass, a commit, and a step back (re-plan, reorganize code if needed)
+6. Runs autonomously to the end; asks only when truly blocked
+7. Completion rewrites the progress file into a `status: completed` tombstone listing remaining known issues
+
+## Integration Points
 - Consumes OpenCode session context (`sessionID`)
 - Integrates with OpenCode command system via `command` configuration
 - Leverages `@oracle` for review and simplification feedback

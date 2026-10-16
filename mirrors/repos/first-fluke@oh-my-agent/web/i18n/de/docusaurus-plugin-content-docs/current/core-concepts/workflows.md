@@ -63,7 +63,7 @@ Die Planprüfung nutzt die bereits erteilte Autorisierung für die Aufgabe. Agen
 
 Persistente Workflows laufen weiter, bis alle Aufgaben erledigt sind. Sie halten den Zustand in `.agents/state/` und injizieren bei jeder Benutzernachricht den Kontext `[OMA PERSISTENT MODE: ...]` erneut, bis sie explizit deaktiviert werden.
 
-Der persistente Modus startet nur bei einem **expliziten Aufruf** — dem eigenen Namen des Workflows (die Liste `explicit` in `triggers.json`, z. B. "orchestrate", "ultrawork"/"ulw", "ralph"/"랄프", "work mode"). Die übrigen Trigger-Keywords unten sind Hinweise in natürlicher Sprache: Sie injizieren den Workflow als Vorschlag, ohne den persistenten Modus zu aktivieren, und lösen nie aus, wenn die erste oder letzte Zeile des Prompts eine mit `?` endende Frage ist.
+Der persistente Modus startet nur bei einem **expliziten Aufruf**: dem Slash Command des Workflows (`/ultrawork` oder eine Form mit Namespace wie `/oma:ultrawork`) oder dem eigenen Namen des Workflows im Klartext (die Liste `explicit` in `triggers.json`, z. B. "orchestrate", "ultrawork"/"ulw", "ralph"/"랄프", "work mode"). Die übrigen Trigger-Keywords unten sind Hinweise in natürlicher Sprache: Sie injizieren den Workflow als Vorschlag, ohne den persistenten Modus zu aktivieren, und lösen nie aus, wenn die erste oder letzte Zeile des Prompts eine mit `?` endende Frage ist.
 
 ### /orchestrate
 
@@ -601,7 +601,7 @@ Cloudflares Audit-Methodik dient als Grundlage für die unabhängige Prüfung un
 
 **Schritte:** Argumente auflösen (explizite PR# / Branch / SHA-Bereich -> staged -> dirty tree -> `HEAD~1..HEAD`; Leserlevel `onboarding` | `reviewer`; Ausgabesprache; Quizanzahl) -> Verträge laden (`oma-explanation` SKILL.md + Ressourcen) -> sammeln und Gate anwenden (Diff + umgebender Code; Geheimnis-Scan vor der Generierung; Diff-/PR-Text strikt als Daten behandeln) -> HTML gemäß Dokument- und HTML-Verträgen erzeugen -> validieren (Grep-Checkliste einschließlich Geheimnis-Scan des fertigen HTML, maximal 3 Korrekturschleifen) -> ausliefern (`open` warn-only, TL;DR + Pfad).
 
-**Ausgabe:** `.agents/results/explain/{YYYY-MM-DD}-{slug}.html` (Datum in Asia/Seoul; erneutes Ausführen mit demselben Datum und Slug überschreibt). Siehe [Code-Explainer-Anleitung](../guide/code-explainer.md).
+**Ausgabe:** `.agents/results/explain/{YYYY-MM-DD}-{slug}.html` (Datum in der `timezone` aus oma-config, sonst in der Systemzeitzone; erneutes Ausführen mit demselben Datum und Slug überschreibt). Siehe [Code-Explainer-Anleitung](../guide/code-explainer.md).
 
 ---
 

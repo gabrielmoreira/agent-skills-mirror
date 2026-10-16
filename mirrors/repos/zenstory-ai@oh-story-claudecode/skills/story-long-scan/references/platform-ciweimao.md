@@ -1,14 +1,16 @@
 # 刺猬猫：采集与分析
 
-作者选了刺猬猫才读本文。需先用 `/browser-cdp` 启动 Chrome。rank-index 单页展示全部榜单，脚本按文本解析，按书名归一回填作品页链接，带连通性自检与空结果重试。
+先用 `/browser-cdp` 启动 Chrome。脚本解析 rank-index 各榜，按去空白书名匹配作品页链接。
 
 ## 榜单与命令
 
-`node scripts/ciweimao-rank-scraper.js --type {榜单} --outdir {输出目录}`：click 点击榜 / favor 收藏榜 / recommend 推荐榜 / subscribe 订阅榜 / monthly 月票榜 / tsukkomi 吐槽榜 / newbook 新书榜 / blade 刀片榜 / all 全部（默认）。
+`node scripts/ciweimao-rank-scraper.js --type {榜单} --outdir {输出目录}`：click 点击榜 / favor 收藏榜 / recommend 推荐榜 / subscribe 订阅榜 / monthly 月票榜 / tsukkomi 吐槽榜 / newbook 新书榜 / blade 刀片榜 / update 更新榜 / all 全部（默认）。
 
 ## 字段
 
-排名、书名、作者（仅榜首条目带）、题材（其余条目带）、榜单值（聚合的热度口径；各榜含义不同，不跨榜比较）、作品页链接。刺猬猫是小平台：同方向不到 10 本才算稀疏，聚合时加 `--sparse 10`。
+排名、书名、作者（仅榜首有）、题材（其余名次有）、榜单值与作品页链接。各榜值分别解读；同方向不足 10 本标稀疏，聚合加 `--sparse 10`。作者信息不齐，同书可能跨榜未合并，核对样本本数。
+
+多榜聚合取同书最大「榜单值」，热度回查单榜。
 
 ## 分析维度
 
@@ -16,4 +18,4 @@
 |---|---|
 | 月票/订阅榜 | 付费认可 |
 | 新书榜 | 二次元新梗与新设定 |
-| 吐槽/刀片榜 | 读者互动强度与争议点 |
+| 吐槽/刀片榜 | 看互动强度；争议点需有内容证据 |

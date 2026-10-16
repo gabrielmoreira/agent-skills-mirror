@@ -9,9 +9,7 @@ metadata:
     - "service-itsm-agentic-setup-cmdb-bundle-deploy"
     - "service-itsm-agentic-setup-cmdb-configure"
     - "service-itsm-agentic-setup-cmdb-discovery-configure"
-  accessCheck:
-    - type: "orgPerm"
-      value: "ITSrvcsCnfgMgmnt"
+  accessCheck: "OrgPermissions.ITSrvcsCnfgMgmnt"
 allowed-tools: AskUserQuestion
 ---
 

@@ -144,7 +144,7 @@ Voice contract LAWs 1, 3, 5 apply to comparisons unchanged (omit unnecessary tra
 
 **Required comparison structure (match the April 9 exemplar):**
 
-```
+````
 🌐 last30days v{VERSION} · synced {YYYY-MM-DD}
 
 # {TOPIC_A} vs {TOPIC_B} [vs {TOPIC_C}]: What the Community Says (/Last30Days)
@@ -204,18 +204,21 @@ Voice contract LAWs 1, 3, 5 apply to comparisons unchanged (omit unnecessary tra
 
 [One paragraph. Name the combination pattern the community is converging on. Cite specific sources (`per @handle`, `per r/sub`, `per {channel} on YouTube`). This is the synthesis moment of the piece. If the data does not support an emerging-stack observation, write "No emerging stack pattern has crystallized in the research window yet" rather than fabricating one.]
 
+```text
 ---
 ✅ All agents reported back!
 ├─ 🟠 Reddit: ...
 ├─ 🔵 X: ...
 (engine footer passed through when emitted, LAW 5; include its saved-file pointer only if emitted)
+---
+```
 
 I've compared {TOPIC_A} vs {TOPIC_B} [vs ...] using the latest community data. Some things you could ask:
 - [follow-up referencing comparison specifics, e.g. "Deep dive into {Entity} alone with /last30days {Entity}"]
 - [follow-up referencing a specific claim from the Strengths/Weaknesses block]
 - [follow-up on a specific dimension from the Head-to-Head table]
 - [follow-up on the emerging-stack combination pattern]
-```
+````
 
 **Do NOT:**
 - Use `What I learned:` prose label (that is general-query voice)

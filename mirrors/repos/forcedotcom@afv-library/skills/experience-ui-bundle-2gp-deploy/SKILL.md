@@ -8,9 +8,7 @@ metadata:
   relatedSkills:
     - "experience-ui-bundle-deploy"
     - "experience-ui-bundle-project-generate"
-  accessCheck:
-    - type: "orgPref"
-      value: "Package2Enabled"
+  accessCheck: "OrgPreferences.Package2Enabled"
   cliTools:
     - tool: ["jq"]
       semver: ">=1.6"

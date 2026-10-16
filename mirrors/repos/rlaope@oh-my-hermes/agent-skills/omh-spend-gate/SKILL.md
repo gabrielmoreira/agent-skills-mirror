@@ -17,7 +17,7 @@ This is an OMH `spend-gate` workflow skill, projected for Agent Skills hosts (Cl
 
 ## Why This Exists
 
-`spend-gate` exists because money movement had at most one native guard, on one rail: where Hermes' saved-card fill is present it asks before filling a card and refuses when nobody can confirm, while an HTTP 402 call, a wallet transfer, a booking, or a paid data endpoint had no pre-spend check, no receipt rule, and no cap. `omh-browser` gates payment only inside a page, and `omh-provider-profile-posture` claims no payment at all.
+`spend-gate` exists because money movement had at most one native guard, on one rail: where Hermes' saved-card fill is present it asks before filling a card and refuses when nobody can confirm, while an HTTP 402 call, a wallet transfer, a booking, or a paid data endpoint had no pre-spend check, no receipt rule, and no cap. `omh-provider-profile-posture` claims no payment at all.
 
 ## First Steps
 
@@ -26,7 +26,7 @@ This is an OMH `spend-gate` workflow skill, projected for Agent Skills hosts (Cl
 
 ## Do Not Use When
 
-- The page task moves no money -- open a URL, log in, fill a form, capture blockers; use `omh-browser`.
+- The page task moves no money -- open a URL, log in, fill a form, capture blockers.
 - Users report a payment failure in the product and the ask is to sort those reports; use `omh-feedback-triage`.
 - The ask is budget vs actual, a budget variance, or the month-end close; use `omh-finance-analysis`.
 - The ask is a provider profile's posture or whether its secrets are present, with nothing bought; use `omh-provider-profile-posture`.
@@ -64,7 +64,7 @@ Bad example:
 
 Use before the agent moves money on any rail: a card checkout in the browser, an HTTP 402 or pay-per-request call, a wallet transfer, a booking or deposit, a paid data endpoint, or a renewal that charges again. The output is a pre-spend card the person confirms, the receipt that proves the charge, and a metadata-only ledger against their cap; OMH moves no money, holds no credential, and never spends from a run nobody can answer.
 
-    Strong routing signals: `spend-gate`, `spend gate`, `pre-spend`, `pre-spend card`, `spend cap`, `spending cap`, `spend limit`, `spending limit`, `spend request`, `spend approval`, `approve the spend`, `approve this purchase`, `approve the purchase`, `complete the purchase`, `complete the checkout`, `buy this for me`, `buy it for me`, `place the order`, `place an order`, `pay with my card`, `pay with my saved card`, `with my saved card`, `with my card`, `with my credit card`, `use my card`, `use my credit card`, `send money`, `pay again`, `click pay again`, `http 402`, `402 payment required`, `402 challenge`, `pay per request`, `pay-per-request`, `paid endpoint`, `paid data endpoint`, `wallet transfer`, `from my wallet`, `money on my behalf`, `spend on my behalf`, `pay on my behalf`, `buy on my behalf`, `retry the payment`, `retry the purchase`, `retry the charge`, `did the payment go through`, `did the charge go through`, `pay for the booking`
+    Strong routing signals: `spend-gate`, `spend gate`, `pre-spend`, `pre-spend card`, `spend cap`, `spending cap`, `spend limit`, `spending limit`, `spend request`, `spend approval`, `approve the spend`, `approve this purchase`, `approve the purchase`, `complete the purchase`, `complete the checkout`, `buy this for me`, `buy it for me`, `place the order`, `place an order`, `pay with my card`, `pay with my saved card`, `with my saved card`, `with my card`, `with my credit card`, `use my card`, `use my credit card`, `send money`, `pay again`, `click pay again`, `http 402`, `402 payment required`, `402 challenge`, `pay per request`, `pay-per-request`, `paid endpoint`, `paid data endpoint`, `wallet transfer`, `from my wallet`, `money on my behalf`, `spend on my behalf`, `pay on my behalf`, `buy on my behalf`, `retry the payment`, `retry the purchase`, `retry the charge`, `did the payment go through`, `did the charge go through`, `pay for the booking`, `결제`, `송금`, `이체`, `입금`, `지불`, `납부`, `구매`, `구입`, `주문`, `예매`, `사줘`, `사 줘`, `사주세요`, `사 주세요`, `충전`, `예약`, `구독`, `갱신`, `후원`, `기부`, `보내`, `카드로`, `지갑에서`, `계좌에서`
 
 ## Catalog Metadata
 

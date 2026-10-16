@@ -2,7 +2,7 @@
 
 ## 初始化事务
 
-新书从第 0 章初始化：把下面的 JSON 写到 `{书目录}/.story/work/init.json`，跑 `{PYTHON} {skill 根}/scripts/tracking_commit.py init --project {书目录} --input {书目录}/.story/work/init.json`，成功后删掉临时文件。`story-import` 导入已有小说时把最后完整章写入 `last_chapter=N`；第 1..N 章不伪造日更记录，常规续写从 N+1 章开始。
+仅尚无追踪状态时初始化。新书从第 0 章开始：把下面的 JSON 写到 `{书目录}/.story/work/init.json`，跑 `{PYTHON} {skill 根}/scripts/tracking_commit.py init --project {书目录} --input {书目录}/.story/work/init.json`，成功后删掉临时文件。`story-import` 导入已有小说时把最后完整章写入 `last_chapter=N`；第 1..N 章不伪造日更记录，常规续写从 N+1 章开始。
 
 ```json
 {
@@ -28,4 +28,4 @@
 }
 ```
 
-导入初始化时直接传入当前核心角色快照、伏笔当前行、时间线事件和固定 7 栏状态输入。阶段/卷级回看按需查询正文，不作为每章强一致追踪产物。
+导入示例须按已读正文改写当前状态，不能照用第 0 章内容；全部导入批次完成后初始化一次，不重置已有 state。传入当前核心角色快照、伏笔当前行、时间线事件与 JSON 中六项 context 输入，由脚本生成七栏 `追踪/上下文.md`。阶段/卷级回看按需查询正文，不作为每章强一致追踪产物。

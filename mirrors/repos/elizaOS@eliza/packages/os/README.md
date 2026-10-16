@@ -73,6 +73,16 @@ CAS ports; the core has no default signer or publication destination. Run
 `bun run --cwd packages/os test:ota-publisher` for concurrency and real process-death
 recovery contracts. These tests do not authorize or perform production publication.
 
+`createPublicationAuthorizer` (`native/ota-publisher/publication-authorizer.mjs`)
+builds the transaction's `authorizeBundle` port. Each call reads the durable
+floors and the host's qualified publisher time, verifies the complete signed
+graph, binds every descriptor in the plan to it, and gets a fresh source approval
+and preflight report for each exact descriptor. It then verifies the graph again
+and only then advances the floors. `verifyPublicationGraph` runs the shared
+`ota-trust/cmd/verify-publication` executable with a host-supplied path,
+`AbortSignal` and `timeoutMs`. There are no default deadlines, request budgets or
+transport, and no APK or public-release verifier: those stay with the host.
+
 Downstream launcher hosts may use `createDevelopmentLauncherDescriptor` from
 `scripts/android/stage-launcher-overlay.ts` only with explicit development
 mode. It verifies one signer against a private APK copy and returns a hash-bound

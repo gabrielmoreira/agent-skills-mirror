@@ -100,7 +100,7 @@ refresh token is gone too: `grok login`.
 
 Why not refresh it here: `auth.json` is the grok CLI's file, the refresh token in
 it may rotate, and a second writer would break the login the user relies on
-everywhere else. The same shape as `sprite-gen gen`'s `codex login status` gate.
+everywhere else. The same shape as codex's: `sprite-gen` reads `codex login status` (`codex_provider.codex_login`) and never writes codex's login either.
 
 ### Direct API transport
 

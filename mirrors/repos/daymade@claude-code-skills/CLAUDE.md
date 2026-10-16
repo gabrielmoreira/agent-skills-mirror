@@ -319,6 +319,11 @@ For local correction tests and repository CI ownership, follow the
 [testing strategy](daymade-audio/transcript-fixer/references/architecture.md#testing-strategy);
 keep maintainer-only repository resources distinct from installed Skill paths.
 
+### Feishu Recording Lookup
+
+To find an existing Feishu recording by date, enter
+[lark-cli-router's recording lookup](daymade-claude-code/lark-cli-router/SKILL.md#find-an-existing-recording-by-date).
+
 ### Feishu Document Capture
 
 For Feishu document reads and archives, enter
@@ -366,6 +371,10 @@ those owners rather than copying them here.
 For an original Claude tool call and its result from one known Session, use
 [read-claude-code-history's narrow evidence entry](daymade-claude-code/read-claude-code-history/SKILL.md#original-tool-callresult-evidence).
 Keep selectors, pairing, source scope and incomplete-output handling in that owner.
+
+For Claude history discovery without a known Session, use
+[read-claude-code-history's indexed search entry](daymade-claude-code/read-claude-code-history/SKILL.md#indexed-content-search).
+Keep executable examples and coverage requirements in that owner.
 
 Codex inventory must use the index-only command in
 `daymade-claude-code/read-codex-history/SKILL.md`. If its state database is
@@ -534,12 +543,10 @@ scope through `git-safety-net`. For branch publication and PR creation, follow
 before the first push. Keep its policy preflight, pinned source and remote readback
 in that owner rather than maintaining another push example here.
 
-For recovery or repository convergence under concurrent work, treat
-`git-safety-net/SKILL.md` as the canonical authorization and evidence router. It owns the
-change-authorized / inspect-only / excluded partition, the scoped-vs-exhaustive audit
-boundary, and authorized temporary-backup retirement;
-do not copy its detailed commands here or treat a visible collaborator ref/worktree as a cleanup
-target merely because it appears in the inventory.
+For recovery or repository convergence under concurrent work, enter
+[git-safety-net](git-safety-net/SKILL.md).
+For inherited upload restrictions or source paths hidden by ignore rules, read its
+[convergence authority and source-inventory procedure](git-safety-net/references/merge_verification.md#1-freeze-the-outcome-and-the-first-ref-snapshot).
 
 For GitHub-hosted state — PRs, issues, Actions, repository or organization settings, permissions,
 and API/UI mutations — treat `github-ops/SKILL.md` as the canonical operating contract. A command
@@ -806,7 +813,7 @@ All Python scripts in this repository:
 
 ## Quality Standards
 
-For changes to scripts, configuration, or operating procedures, use
+For changes to scripts, importable API contracts, configuration, or operating procedures, use
 [docs-cleaner](daymade-docs/docs-cleaner/SKILL.md) for scoped documentation delivery:
 resolve implementation intent and authorization before updating the owning SOP,
 and validate the delivered command examples. Keep detailed governance in that Skill.

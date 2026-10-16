@@ -28,6 +28,30 @@ clone a working tree or synchronize arbitrary files.
   [`app.js`](../../internal/gui/assets/app.js) and
   [`webdav_cli.go`](../../webdav_cli.go) reach the same sync operations.
 
+## What stays on each computer
+
+The settings part carries the user's preferences, but not what is only about
+one computer. [`Settings.KeepOwn`](../../internal/settings/settings.go) puts
+those back from this computer's settings whenever a sync, a join, a Restore,
+an Undo or a backup file brings settings in, and `hashes` blanks them, so
+changing one is no change to push. They are: the window's size and whether it
+was maximised, the fonts, the proxy, the gateway's port, sharing on the local
+network (`LAN`) and the addresses let in to it (`AllowIPs`), the Dock, gateway
+mode, keeping awake, lightweight windows, WSL lookups, account discovery, when
+allowances are read, recording gateway conversations, the Mac terminal a
+session resumes in (`SessionTerminal`) and what the menu bar shows. Launch at
+login is the system's own setting (`internal/autostart`) and the listen
+address is `MAGPIE_ADDR`, so neither is in a bundle.
+
+Sharing turned on at one computer never turns it on or off at another
+(Lullaby on Discord). A backup restored onto a new computer leaves sharing as
+that computer has it, off on a fresh one: sharing opens the gateway to the
+network, and the user turns it on there by hand, as the port and proxy are
+set there. The default sharing key is different: it is in the gateway-key
+store, which rides the settings part with `LANKey` and `LANKeyID`, so every
+computer holds the same one, and sharing turned on at a second computer takes
+it up rather than making another (`TestLANSharingStaysOnItsComputer`).
+
 ## Runtime and state
 
 The gateway runs sync every three minutes by default. `SetAuto` can select a

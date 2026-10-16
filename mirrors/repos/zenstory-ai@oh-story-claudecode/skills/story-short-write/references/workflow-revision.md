@@ -2,7 +2,7 @@
 
 本文件中的 `scripts/` 与 `references/` 路径均相对本 skill 根目录。精修必读本文件与 `short-format.md`（格式快速检查、字数口径）；新对话里精修也先读它。
 
-Phase 3 写手只做内容覆盖与格式自检（该分工随写作 prompt 传入）。Phase 4 去味由一个执行者（下方 narrative-writer 或主会话）按 `references/short-deslop.md` 自检清单完成；一致性检查职责不变。S1/S2 与 blocking 必须修，S3 与 advisory 建议看，S4 仅提示。最终扫描与交付验收由主会话对落盘文件执行，修改后只复核改动、重跑受影响检查，不另开整轮去味。
+Phase 3 写手只做内容覆盖与格式自检，派写时将此分工写入 prompt。Phase 4 由 narrative-writer 或主会话其中一方按 `references/short-deslop.md` 去味，再检查一致性。S1/S2 与 blocking 必须修，S3 与 advisory 建议看，S4 仅提示。主会话负责最终文件扫描与交付验收；修改后只复核改动并重跑受影响检查。
 
 按文末「精修清单」完成检查。文件模式依次运行 `node scripts/check-ai-patterns.js --check --fail-on=blocking 正文.md`、`node scripts/check-outline-copy.js --outline 小节大纲.md 正文.md`、`node scripts/normalize-punctuation.js 正文.md`、`node scripts/check-degeneration.js --check 正文.md`，blocking 先改正文再复扫。照搬检测报出的誓词、关键原话等功能性台词保留，登记进 `小节大纲.md` 末尾「复沓锚句」再复检，其余现场重写。
 
@@ -12,9 +12,9 @@ Phase 3 写手只做内容覆盖与格式自检（该分工随写作 prompt 传�
 
 已部署对应 agent 时可派出：narrative-writer 去味的 prompt 见 [agent-calls.md](agent-calls.md)「精修去味」；一致性检查派 `Agent(subagent_type: "consistency-checker", prompt: "项目目录：{dir}\n检查范围：{正文文件}\n检查类型：事实冲突+伏笔断线+角色属性不一致")`。agent 不可用时主会话直接执行。
 
-**正文洁净规则**：自检（字数、禁用词、格式）结果只在对话里说明，不落盘成文件，**绝对不能**附到正文末尾，正文不得出现 `<!-- 自检 -->` 等检查标记。
+**正文洁净规则**：字数、禁用词、格式等自检结果只在对话中说明，不另存文件或附到正文；正文不得出现 `<!-- 自检 -->` 等检查标记。
 
-**交付说明（给作者看）**：只用大白话，按三块写：
+**交付说明（给作者看）**：用白话说明：
 1. 写了什么：标题、一句话核心钩子或反转、总字数、几节。
 2. 要作者拍板的事：每件写成一句问题并附推荐默认（如「结尾要不要再留个小反转？默认不留」）；没有就省略。
 3. 下一步可选：精修某段、去 AI 味、换平台改写等。
@@ -24,6 +24,8 @@ Phase 3 写手只做内容覆盖与格式自检（该分工随写作 prompt 传�
 ## 精修清单与常见问题
 
 ### 精修检查清单
+
+反转项仅用于反转篇；无反转时核对核心兑现与关系递进。
 
 ```
 ## 精修清单
@@ -72,10 +74,9 @@ Phase 3 写手只做内容覆盖与格式自检（该分工随写作 prompt 传�
 - [ ] 读者会不会想转发？
 ```
 
-### 标点确定性收尾
+### 标点收尾
 
-精修后对 `正文.md` 先运行 `node scripts/check-ai-patterns.js --check --fail-on=blocking 正文.md`。blocking 先改正文并复扫；advisory 只作读感提示，确属问题才改，功能性写法标 `[需复核]`。
-再运行 `node scripts/normalize-punctuation.js 正文.md`（默认 `--quote-mode keep`）清理无功能省略号、破折号、双连字符和独立分隔线；盐言「」不受影响。
+按本文件开头的文件扫描顺序，先运行 `node scripts/check-ai-patterns.js --check --fail-on=blocking 正文.md`，修正 blocking 后复扫；advisory 结合读感判断，功能性写法标 `[需复核]`。再运行 `node scripts/normalize-punctuation.js 正文.md`，默认 `--quote-mode keep`，清理无功能省略号、破折号、双连字符和独立分隔线，保留盐言「」。
 
 ### 删减原则
 
@@ -92,7 +93,7 @@ Phase 3 写手只做内容覆盖与格式自检（该分工随写作 prompt 传�
 | 反转没力度 | 铺垫不够或太明显 | 增加误导线索 |
 | 结尾无力 | 反转后还在补交代 | 篇幅按小节大纲；反转后只写兑现与余韵 |
 | 全篇平淡 | 情绪曲线太平 | 加大情绪落差 |
-| 感觉像流水账 | 缺乏情绪描写 | 加入人物内心感受 |
+| 感觉像流水账 | 事件没有改变判断、选择或情绪 | 补清事件后果及人物回应，删掉无变化的复述 |
 
 ### 冷门题材公式核对
 

@@ -17,7 +17,7 @@ $ARGUMENTS
 
 ## 核心原则
 
-**LLM 是无状态的**：CLAUDE.md 是每次对话中唯一会自动包含的文件。它是让 AI agent 了解代码库的主要入门文档。
+**LLM 是无状态的**：CLAUDE.md 是每次对话都会加载的主要项目文件（与自动记忆和未限定作用域的 rules 一起加载）。它是让 AI agent 了解代码库的主要入门文档。
 
 ### 黄金法则
 
@@ -214,3 +214,10 @@ Subagents 是单独定义的，放在 `.claude/agents/*.md` 里 — 不在 AGENT
 - 系统提醒会告诉 Claude，CLAUDE.md “可能相关，也可能不相关” - 噪音越多，越容易被忽略
 - monorepo 最需要清晰的 WHAT/WHY/HOW 结构
 - 目录级 CLAUDE.md 应该更聚焦
+
+---
+
+**最后更新**: 2026 年 10 月 15 日
+**Claude Code 版本**: 2.1.300
+**来源**:
+- https://code.claude.com/docs/en/memory

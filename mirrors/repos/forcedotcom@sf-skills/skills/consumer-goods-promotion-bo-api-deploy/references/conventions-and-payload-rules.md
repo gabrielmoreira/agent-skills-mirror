@@ -1,6 +1,6 @@
 # Conventions & payload rules (Promotion BO API)
 
-Load-bearing conventions and the eight cross-workflow payload rules the
+Load-bearing conventions and the nine cross-workflow payload rules the
 `BO_API_Step_Input_Structure__c` schema alone cannot express. The main
 `SKILL.md` references this file from Phase 5b (registering input paths) and
 Phase 6 (composing/validating smoke payloads).
@@ -33,8 +33,8 @@ subscriber orgs, or the dev-package prefix).
 | `PromotionTemplate` | `<prefix>__Promotion_Template__c` | `Name = <val> AND <prefix>__Sales_Org__c = <sales-org>` |
 | `Tactics[*].TacticTemplate` | `<prefix>__Tactic_Template__c` | `Name = <val> AND <prefix>__Sales_Org__c = <sales-org>` (and linked to the chosen PromotionTemplate via `<prefix>__Promotion_Template_Tactic_Template__c`) |
 | `AnchorAccount` | `Account` | `<prefix>__ExternalId__c = <val> AND <prefix>__Sales_Org__c = <sales-org>` |
-| `ProductFilter.Criteria.Brand[*]`, `.Category[*]`, `.Subcategory[*]`, `.Flavor[*]`, `.Package[*]` | `<prefix>__Product_Attribute__c` (or Category equivalents) | `Name = <val> AND <prefix>__Sales_Org__c = <sales-org>` |
-| `ProductFilter.{Included,Excluded}Products[*]` | `Product2` | matched by external key AND `<prefix>__Sales_Org__c = <sales-org>` |
+| `ProductFilter.Criteria.Brand[*]`, `.Category[*]`, `.Subcategory[*]`, `.Flavor[*]`, `.Package[*]` | `<prefix>__Product_Attribute__c` (or Category equivalents) | `<prefix>__Consumer_Goods_External_Product_Id__c = <val> AND <prefix>__Sales_Org__c = <sales-org>` — resolve against external id, NOT `Name`/label (see R3b). |
+| `ProductFilter.{Included,Excluded}Products[*]` | `Product2` | `<prefix>__Consumer_Goods_External_Product_Id__c = <val> AND <prefix>__Sales_Org__c = <sales-org>` |
 | `PromotionAccountSet` / `AnchorAccountSet` | `<prefix>__Account_Set__c` | `Name = <val> AND <prefix>__Sales_Org__c = <sales-org>` |
 
 Fail-fast — before any REST call — if any user-supplied reference does not
@@ -81,7 +81,7 @@ required columns).
 ## Promotion payload — cross-workflow rules the schema cannot express
 
 The `BO_API_Step_Input_Structure__c` contract declares WHICH keys the workflow
-accepts and which are `Required__c=true`, but eight additional constraints govern
+accepts and which are `Required__c=true`, but nine additional constraints govern
 whether a create/update/copy/derive call will actually succeed. Enforce them
 BEFORE the REST call — otherwise the request 202s, then dies asynchronously
 inside a workflow step with a `BO_API_Transaction_Log__c.Status__c = 'Error'`.
@@ -124,10 +124,45 @@ translate. Sending a Product2 field API name (e.g. `<prefix>__Criterion_1_Produc
 as a key fails schema validation with `"Properties other than those defined were
 not expected at #.ProductFilter.Criteria.<key>"`.
 
+Two placement/identifier constraints the schema alone cannot express:
+
+**R3a. `ProductFilter` is a top-level promotion field, NOT nested under `Tactics[]`.**
+Every entry in `promotions[]` may carry a `ProductFilter` sibling to
+`Slogan`/`DateFrom`/`Tactics`. Nesting the block under `Tactics[i]` is
+schema-valid at ingest but fails downstream with
+`"You must select at least one Category to the Promotion"` — the same error a
+missing block produces. Trial-and-error empirically discovers this;
+document once here so the skill never emits the wrong shape:
+
+```json
+"promotions": [{
+  "PromotionTemplate": "Customer Promotion",
+  "DateFrom": "2026-08-01",
+  "DateThru": "2026-08-31",
+  "Slogan": "...",
+  "ProductFilter": {
+    "Criteria": { "Category": ["<external-id>"] }
+  },
+  "Tactics": [ /* no ProductFilter here */ ]
+}]
+```
+
+**R3b. Criteria values are `<prefix>__Consumer_Goods_External_Product_Id__c` external ids, NOT `Name`/label.**
+Every value inside `ProductFilter.Criteria.<level>[]` is resolved against the
+category/attribute record's *external id* — the packaged
+`<prefix>__Consumer_Goods_External_Product_Id__c` field — NOT the display
+`Name` or label. Passing a Name (e.g. `"Chips (Canada Food)"`) yields
+`TransformationError: Could not find Products: <Name>` at ingest, and the
+misleading message suggests the underlying products are inactive when the real
+defect is the identifier field. The correct value for the same record is its
+external id (e.g. `Chips_Canada_Food`). Resolve every criteria value against
+external ids in the sales org before emitting the payload; if the user typed a
+Name, offer the external-id match(es) and ask to confirm.
+
 ```json
 "ProductFilter": {
   "Criteria": {
-    "Category": ["Snacks"],
+    "Category": ["Chips_Canada_Food"],
     "Brand":    ["YetiBar"]
   }
 }
@@ -216,6 +251,12 @@ then layer the Apex-only preconditions:
 **Copy:**
 - Schema-required: `.Id` (source promotion).
 - Apex-only: source promotion's template must have `Is_Copyable__c = true`; template `Promotion_Type__c` must equal `'Promotion'`; if template `Anchor_Type__c = 'Customer'`, `.AnchorAccount` must resolve in the sales org; if `'CustomerSet'`, `.AnchorAccountSet` must resolve.
+- Apex-only: **the running `User.Sales_Org__c` MUST equal the source PromotionTemplate's `Sales_Org__c`.** `Promotion2BoApiCoreCommon.loadPromotion` (invoked with `Operation.Copy`; the legacy shim `PromotionBoApiCopyCoreWorkflowSteps.loadPromotionBOForCopy2` delegates into the same method) throws `TransformationError: The User and the Promotion Template must have the same Sales org` when they differ, with no hint that the running user is the fix path. Create/update do not enforce this specific check, but they still resolve the operating sales org from the running user's `Sales_Org__c` via `SalesOrganizationUtil.getUserSalesOrganizationName` — a blank or mismatched value there fails every workflow, just less loudly (with `SOU0003` or misleading "not found" errors). SKILL.md Phase 1 step 7 gates the whole invocation on this match before any workflow runs; also verify at Phase 6 immediately before every ingest in case the user's `Sales_Org__c` drifted between phases. Zero-cost SOQL:
+  ```sql
+  SELECT Id, Username, ${PREFIX_UNDER}Sales_Org__c FROM User WHERE Username = '<running-user-name>' LIMIT 1
+  ```
+  If it does not match, do not silently mutate the user record — refuse and print the fix options.
+- **Copy ignores per-child input values on `Tactics[]`.** On `copy`, the framework sources per-child values from the source record's children — the payload's `Tactics[i].<field>` is accepted by the schema but has no effect on the cloned children. Custom step `outputWrites` still fire, but their input values come from the source child, not the copy payload. Only top-level promotion fields (e.g. `Slogan`) propagate from the copy payload. This is intentional and documented; the skill's confirm banner in SKILL.md Phase 5.5 must call this out so users do not expect a `create`-style customization to apply.
 
 **Derive:**
 - Schema-required: `.Id`, `.PromotionTemplate`, `.AnchorAccount` — all at the derive input root (`currentInput`), not nested (`PBACWS_REQUIRED_PROP_MISSING` fires against `Path__c` verbatim).
@@ -265,6 +306,42 @@ SELECT Id, Name, <prefix>__Promotion_Type__c
 ```
 Reject any row where `Promotion_Type__c != 'Promotion'` with:
 `"Promotion template <name> has Promotion_Type__c='<type>'; this workflow only supports templates with Promotion_Type__c='Promotion'. Sellable Promotions belong to the retail path."`
+
+### R9. Running user must hold `Product_Category_Share__c` ReadWrite on every referenced category
+
+`Promotion2BoApiCoreCommon.setPromotionAnchor` (invoked by every workflow that
+resolves a promotion anchor) calls `ProductCategoryShareService.getCategoryAccessBySalesOrgUserAnchorCategory`
+and hard-fails when the running user does not have a `<prefix>__Product_Category_Share__c`
+row with `<prefix>__Access_Level__c = 'ReadWrite'` for each category the payload
+references — either via the promotion template's anchor category, via
+`ProductFilter.Criteria.Category`, or via `Included/ExcludedProducts` whose
+category rolls up to a share-guarded category in the sales org. The error surfaces
+at ingest as `Access Denied` / `TransformationError: You do not have access to
+the category '<name>'` and does not identify the missing share row.
+
+Fail-fast before any REST call:
+
+`<userId>` comes from `sf org display --target-org <alias> --json` (`result.userId`); `<id1>`, `<id2>`, … are the category record ids resolved from the payload's criteria values in-sales-org.
+
+```sql
+SELECT <prefix>__Category__c, <prefix>__Access_Level__c
+  FROM <prefix>__Product_Category_Share__c
+ WHERE <prefix>__Sales_Org__c = '<salesOrg>'
+   AND <prefix>__User__c = '<userId>'
+   AND <prefix>__Category__c IN ('<id1>','<id2>')
+   AND <prefix>__Access_Level__c = 'ReadWrite'
+```
+
+`categoryIds` is the union of:
+1. The chosen `PromotionTemplate`'s `<prefix>__Anchor_Category__c` (if any).
+2. Every category external id in the payload's `ProductFilter.Criteria.Category`, resolved to `<prefix>__Product_Attribute__c.Id` (or the tenant's Category equivalent) in the sales org.
+
+Any missing row → stop and print:
+`"Running user <username> lacks ReadWrite Product_Category_Share on category <name> (<external-id>) in sales org <salesOrg>. Grant a Product_Category_Share__c row with Access_Level__c='ReadWrite', or re-run as a user who already has this access. Do not proceed."`
+
+Never silently insert share rows on behalf of the running user — that mutates
+sharing configuration invisibly and can leak read/write access to other
+categories via the same user in future runs.
 
 ## Wire-format quirks
 

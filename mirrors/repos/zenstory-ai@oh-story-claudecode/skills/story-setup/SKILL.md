@@ -6,11 +6,11 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 ---
 # story-setup：网文写作工具集基础设施部署
 
-你是写作基础设施部署器。将网文写作工具集部署到用户项目目录：已适配的 CLI 走专用 hooks/agents/config；NarraFork、Web AI、自定义 Agent 等环境走通用文件模式。
+你负责把网文写作工具集部署到用户项目目录：已适配的 CLI 使用专用 hooks/agents/config；NarraFork、Web AI、自定义 Agent 等使用通用文件模式。
 
-**执行铁律：不覆盖用户已有配置，合并而非替换。**
+**保留用户配置；受管文件按清单更新，共同维护的文件按管理块合并。**
 
-作者第一次部署的顺序：判断当前宿主 → 确认项目根 → 按宿主部署 → 验收 → 告诉作者下一步。本文件只写各宿主通用的流程；每个宿主专属的部署清单、算法、校验和安装报告提示在各自的部署文件里，**只读本次目标宿主的那一份**（见 Phase 2）。
+作者第一次部署的顺序：判断当前宿主 → 确认项目根 → 按宿主部署 → 验收 → 告诉作者下一步。本文件写公共流程；各宿主的部署清单、算法、校验和报告提示见 Phase 2 对应文件，**只读本次目标宿主的那一份**。
 
 ## 选择模式
 
@@ -59,9 +59,9 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ## Phase 2：部署基础设施
 
-整个 Phase 2 幂等：目录复制、文件写入和各宿主部署文件里的合并算法重复执行结果一致。因环境原因（工具不可用、权限被拒、网络失败）中途失败时，直接从头重跑本 Phase，不需要先清理半成品；`create only if absent` 的用户状态文件（见各部署清单的 Owner class）不会被二次覆盖。
+Phase 2 幂等：复制、写入与各宿主合并重复执行结果一致。工具、权限或网络问题中断后，从头重跑即可，不另清理半成品；`create only if absent` 的用户状态文件（见清单 Owner class）不会被覆盖。
 
-**两列基准目录不同**：部署清单里 `Source path` 相对正在执行的这份 skill 包，`Target path` 相对用户项目根。执行每一行（以及各宿主部署算法里的每个递归复制步骤）之前，先把通配符具体化为单个源/目标，再用本 `SKILL.md` 同级的 `scripts/copy-path-safety.py` 检查。该脚本按 `Path.resolve` / `realpath` 语义跟随已有 symlink，并在两侧都存在时用 `samefile` 核对文件系统对象；**只转绝对路径或比较字符串不算检查完成**。读取其 JSON：`status: same` 时 no-op，禁止复制；仅 `copy_allowed: true` 时可以复制；`source_missing`、`unsafe_target_within_source` 或 `filesystem_identity_error` 必须停止该步骤并报告。无法运行脚本时只能用当前环境的文件系统 API 做完全相同的 canonical realpath、same-object 与 target-descendant 检查；无法确认就停止，不得尝试复制。OpenClaw / Reasonix / generic 的项目副本是整份 skill 拷贝，重跑时执行的就是项目里那份；Reasonix / Codex 还可能经 `.agents/skills → ../skills` symlink 加载，路径文本不同也可能指向同一目录，照字面复制会把目录嵌进自身并撑满磁盘。
+**两列基准目录不同**：`Source path` 是包内来源，story-setup 内的路径以当前 `SKILL.md` 所在目录定位；`Target path` 相对用户项目根。执行每一行（以及各宿主部署算法里的每个递归复制步骤）之前，先把通配符具体化为单个源/目标，再用本 `SKILL.md` 同级的 `scripts/copy-path-safety.py` 检查。该脚本按 `Path.resolve` / `realpath` 语义跟随已有 symlink，并在两侧都存在时用 `samefile` 核对文件系统对象；**只转绝对路径或比较字符串不算检查完成**。读取其 JSON：`status: same` 时 no-op，禁止复制；仅 `copy_allowed: true` 时可以复制；`source_missing`、`unsafe_target_within_source` 或 `filesystem_identity_error` 必须停止该步骤并报告。无法运行脚本时只能用当前环境的文件系统 API 做完全相同的 canonical realpath、same-object 与 target-descendant 检查；无法确认就停止，不得尝试复制。OpenClaw / Reasonix / generic 的项目副本是整份 skill 拷贝，重跑时执行的就是项目里那份；Reasonix / Codex 还可能经 `.agents/skills → ../skills` symlink 加载，路径文本不同也可能指向同一目录，照字面复制会把目录嵌进自身并撑满磁盘。
 
 **部署前清理自嵌套残留**：`{.claude,.codex,.zcode}/skills/story-setup/references/agent-references/` 与项目根 `skills/story-setup/references/agent-references/` 里若多出 `agent-references/` 层（可能嵌了多层），以及 `skills/story-setup/skills/`，整段删掉再部署，并在安装报告里列出删掉的路径。
 
@@ -84,7 +84,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 
 ### Step 2：创建部署标记
 
-- 创建 `.story-deployed` 文件（sentinel file）
+- 仅为本次成功部署的目标创建或更新 `.story-deployed`（sentinel file）；全部目标停止时保留旧标记，不创建新标记。
 - 写入以下字段（YAML `key: value` 格式，hook 用 `references/templates/hooks/lib/sentinel.sh` 读取）：
   ```
   deployed_at: <date -u +"%Y-%m-%dT%H:%M:%SZ">
@@ -121,7 +121,7 @@ metadata: {"openclaw":{"source":"https://github.com/zenstory-ai/oh-story-claudec
 | `{目标平台}` | 目标发布平台 | 起点、番茄、晋江、知乎盐言 |
 | `{作者名}` | 用户笔名或昵称 | 未指定时用「作者」 |
 
-替换时去掉花括号。如果用户未指定项目名，用当前目录名。未指定的占位符保留原样不替换。CLAUDE.md 的合并策略在 Claude Code 部署文件里。
+替换时去掉花括号。未指定项目名用当前目录名；其余先按表中默认值处理，没有默认值的占位符保留原样。CLAUDE.md 的合并策略在 Claude Code 部署文件里。
 
 ## AGENTS.md 合并策略（OpenCode / Codex / ZCode / OpenClaw / Reasonix / generic）
 

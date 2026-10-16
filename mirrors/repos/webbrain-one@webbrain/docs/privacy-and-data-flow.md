@@ -339,6 +339,14 @@ counts, outcome categories, and safety-status booleans. URL, target labels,
 accessibility references, and other page content are excluded in both tiers,
 including lossless traces.
 
+`done_timing` trace notes retain only the milliseconds a completion check spent
+preparing its evidence, reading the page's status texts and reaching a verdict,
+with the verdict's outcome and engine names. Completion verification attempts
+in `system_one` notes retain the engine, modality (`vision` or `ax`), outcome,
+a reason code and their capture and evaluation times; a model's own words, the
+probabilities, the task, the summary and page content are excluded in both
+tiers, including lossless traces.
+
 Default trace redaction does not disable `/workflow --save`. While a traced run
 is active, the recorder keeps bounded raw tool payloads in memory only. On
 successful completion, the agent immediately compiles them into the existing

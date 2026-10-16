@@ -430,6 +430,17 @@ TPM/RPM విండోలను (~60s retry-after) కవర్ చేస్త
 విధిస్తుంది. ఇది `quota_exhausted` (అర్ధరాత్రి వరకు లాక్ చేయబడింది) లేదా
 ప్రామాణీకరణ/కనుగొనబడలేదు కారణాలపై ఎప్పుడూ వేచి ఉండదు.
 
+```text
+#16319 · comboCooldownWait · pre-dispatch (attempts = 0)
+all targets skipped + transient model lockout:
+  enabled ∧ 0 < waitMs ≤ maxWaitMs ∧ attempt < maxAttempts ∧ budgetLeftMs ≥ waitMs
+    → wait → re-dispatch
+  wait = false → HTTP 429 rate_limit_error
+  retry_after / reset_at ← earliest transient lock expiry
+quota_exhausted / auth_error / not_found / not_found_local:
+  no transient hint → HTTP 503 ALL_TARGETS_SKIPPED
+```
+
 ---
 
 ## 5. అభ్యర్థన క్యూ ప్రవేశ నియంత్రణ (v3.8.49 · issue #6593)

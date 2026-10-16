@@ -218,7 +218,7 @@ Three guards keep SaaS work from falling back to process-wide state:
   in-process tables keyed by caller-chosen thread or session ids,
   `session_key(&tenant)` for the host session store, and
   `storage::scope_for_profile` for the storage backend. A profile gets
-  fresh state slots, `current_slot` hands an unscoped SaaS task a throwaway
+  fresh state slots, `slot_for` hands an unscoped SaaS task a throwaway
   slot, and `CoreContext::tenant_in_use()` reports whether turns still run
   on a profile, so a host never evicts it mid-turn. The ratchet's
   `ambient-context` rule baselines the `CoreContext::current()` and

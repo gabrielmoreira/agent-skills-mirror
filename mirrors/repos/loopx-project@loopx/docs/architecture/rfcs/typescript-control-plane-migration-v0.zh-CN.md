@@ -859,6 +859,14 @@ User action 按 `bound_agent` 路由（兼容旧 claim 回退），不是执行�
 本批不替换 source adapter、不新增 inventory，也不宣称整个 T3 完成；继续按下文
 审计剩余消费者。独立 Todo summary 的展示 codec 保留至其真实调用者迁移。
 
+Quota 批次的协同发布 v4 carrier 将同一个 producer record 只存一次，各 lane
+保留有序引用。Python 在原消费者读取前恢复相互独立的可变记录；完整决策、元数据、
+null／缺省与来源完整性保持。v0–v3 仍返回原格式。此修复处理有效规划请求的多份
+lane 正文超过 2 MiB 响应边界、从而阻断启动及 Goal 增长后的原 Turn 重放的问题。
+全局 frame 上限及未知效果策略不变；解码在复制记录前沿用既有本地 snapshot 的
+64 MiB 展开边界。这是内部传输，不新增 capability、设置、授权源，也不代表安装态
+已采用此修改。
+
 当前有边界交付：shared-goal alignment 与 amendment admission 每次决策共用一份
 `shared_goal_work_source.py` 快照，promotion 后复用 canonical Todo summary；同一次
 provider 读取可返回同 revision 的 lease。缺失／空／陈旧展示及旧 lease 文件不再是
@@ -1115,6 +1123,12 @@ stack 中的 schema identifier 清理是独立维护，不是上述路线的前�
 TypeScript 完成最终 reduction 并返回 typed result。没有待执行 provider 的 replay
 只需一次 reduction。Python 只把结果投影为旧 CLI shape，不再串行调用一组
 TypeScript leaf helper，也不保留平行的 enum 和 reducer。
+
+显式 `turn run-once --resume-turn-key` 现在先加载原 journal plan，再进入原恢复路径，
+保留 actor／Goal 生命周期准入、既有 TypeScript 恢复判定，以及剩余效果的当前校验。
+它不再构造并丢弃 fresh decision、TurnEnvelope 或新一轮 Turn-start 的上下文、同步与
+recall。新 Turn 仍使用共享的 fresh decision owner。本批删除恢复中的冗余 Python
+编排，不代表 Python CLI 已退役，也不代表其余 cutover 已完成。
 
 同一 PR 必须删除被它替代的 Python 语义路径。仅新增 TypeScript module 不等于取得
 迁移进展；真正的兑现是语义 owner 更少、跨 runtime round trip 更少，并且 facade

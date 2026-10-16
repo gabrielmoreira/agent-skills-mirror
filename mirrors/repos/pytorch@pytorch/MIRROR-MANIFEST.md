@@ -97,7 +97,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 36 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 37 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 38 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 39 | ✓ | [`docs/source/elastic/examples.md`](docs/source/elastic/examples.md) |
+| 39 | ✓ | [`docs/source/distributed/elastic/examples.md`](docs/source/distributed/elastic/examples.md) |
 | 40 | ✓ | [`torch/_dynamo/CLAUDE.md`](torch/_dynamo/CLAUDE.md) |
 | 41 | ✓ | [`torch/distributed/AGENTS.md`](torch/distributed/AGENTS.md) |
 | 42 | ✓ | [`torch/distributed/CLAUDE.md`](torch/distributed/CLAUDE.md) |

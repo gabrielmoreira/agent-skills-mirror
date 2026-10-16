@@ -65,10 +65,14 @@ For Go-specific facts:
 |---|---|
 | Latest `go.opentelemetry.io/otel` core release | `gh api repos/open-telemetry/opentelemetry-go/releases/latest -q '.tag_name'` |
 | Latest `go.opentelemetry.io/contrib` release | `gh api repos/open-telemetry/opentelemetry-go-contrib/releases/latest -q '.tag_name'` |
-| Latest `otelconf` module tag | `gh api repos/open-telemetry/opentelemetry-go-contrib/git/matching-refs/tags/otelconf -q '.[-1].ref'` |
-| Latest Go semconv package | Search the selected core release's CHANGELOG for `Add the go.opentelemetry.io/otel/semconv/`; do not infer package availability from the upstream semantic-conventions release. |
+| Latest `otelconf` module tag | the version-sorted tag command below the table |
+| Latest Go semconv package | Search the selected core release's CHANGELOG for `Add the go.opentelemetry.io/otel/semconv/`; do not infer package availability from the upstream semantic-conventions release. Offline: `semconv/v1.43.0` in otel v1.47.0, verified 2026-10-15 (record: the `otel-semantic-conventions` skill's `references/sdk-semconv-packages.md`). |
 | `otel-go` CHANGELOG | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-go/main/CHANGELOG.md` |
 | `otel-go-contrib` CHANGELOG | `WebFetch https://raw.githubusercontent.com/open-telemetry/opentelemetry-go-contrib/main/CHANGELOG.md` |
+
+```bash
+gh api repos/open-telemetry/opentelemetry-go-contrib/git/matching-refs/tags/otelconf -q '.[].ref' | sort -V | tail -1
+```
 
 ## Cross-References
 

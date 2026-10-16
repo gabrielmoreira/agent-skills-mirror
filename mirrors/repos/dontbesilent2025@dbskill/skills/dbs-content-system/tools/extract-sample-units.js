@@ -2,6 +2,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { loadSourceRules, ruleMatchesPath } = require("./source-rules");
 
 const root = path.resolve(process.cwd());
 const stateRoot = path.join(root, "03-处理状态");
@@ -19,16 +20,7 @@ const typeConfig = {
   SOL: { dir: "方案单元", template: "方案单元模板.md", typeName: "方案单元" },
 };
 
-const ledgerCatalog = [
-  { category: "短视频", sourceType: "短视频", dirs: ["短视频/文稿"] },
-  { category: "公众号", sourceType: "公众号文章", dirs: ["公众号"] },
-  { category: "观点与概念", sourceType: "观点与概念", dirs: ["观点与概念"] },
-  { category: "爆款文稿", sourceType: "爆款文稿", dirs: ["爆款文稿"] },
-  { category: "推文", sourceType: "推文素材", dirs: ["推文"] },
-  { category: "其他作者", sourceType: "外部研究素材", dirs: ["其他作者"] },
-  { category: "dontbesilent", sourceType: "本人内容", dirs: ["dontbesilent"] },
-  { category: "完整副本", sourceType: "完整副本", dirs: ["完整副本"] },
-];
+const ledgerCatalog = loadSourceRules(root);
 
 function usage(exitCode = 0) {
   console[exitCode === 0 ? "log" : "error"](
@@ -553,6 +545,8 @@ function inferTheme(relPath, providedTheme, context) {
 }
 
 function inferSourceType(relPath) {
+  const configured = ledgerCatalog.find((rule) => ruleMatchesPath(rule, relPath));
+  if (configured) return configured.sourceType;
   if (relPath.includes("推文")) return "推文素材";
   if (relPath.includes("短视频")) return "短视频";
   if (relPath.includes("公众号")) return "公众号文章";

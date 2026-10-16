@@ -8,6 +8,7 @@ description: Use when creating or modifying OpenChamber Settings pages, dialogs,
 ## Required Companion Skills
 
 - Load `theme-system` for colors, buttons, icons, and visual states.
+- Load `openchamber-ui-guidance` for depth, surfaces, layout stability, sizing and composition.
 - Load `locale-ui-patterns` for every visible string, tooltip, placeholder, and accessible label.
 - Load `ui-api-decoupling` when a setting reads/writes runtime data or adds a capability, and write the surface list from its *Name The Surfaces Before Editing* step before adding or moving a settings page: a page that exists on desktop and is unreachable on a phone is the common way this goes wrong.
 

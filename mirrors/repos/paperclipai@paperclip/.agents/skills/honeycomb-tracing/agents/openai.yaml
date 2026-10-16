@@ -1,0 +1,3 @@
+interface:
+  display_name: "Honeycomb Tracing"
+  short_description: "Trace Paperclip runs, requests, and full CI waterfalls"

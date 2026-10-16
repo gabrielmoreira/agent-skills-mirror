@@ -63,7 +63,7 @@ A revisão do plano reutiliza a autorização já concedida para a tarefa. Os ag
 
 Workflows persistentes continuam executando até que todas as tarefas sejam concluídas. Mantêm estado em `.agents/state/` e reinjetam o contexto `[OMA PERSISTENT MODE: ...]` em cada mensagem do usuário até serem explicitamente desativados.
 
-O modo persistente começa somente com uma **invocação explícita**: o nome do próprio workflow (a lista `explicit` em `triggers.json`, por exemplo "orchestrate", "ultrawork"/"ulw", "ralph"/"랄프", "work mode"). As demais palavras-chave gatilho abaixo são dicas em linguagem natural: elas injetam o workflow como uma sugestão, sem ativar o modo persistente, e nunca disparam quando a primeira ou a última linha do prompt é uma pergunta terminada em `?`.
+O modo persistente começa somente com uma **invocação explícita**: o slash command do workflow (`/ultrawork`, ou uma forma com namespace como `/oma:ultrawork`), ou o nome do próprio workflow em texto simples (a lista `explicit` em `triggers.json`, por exemplo "orchestrate", "ultrawork"/"ulw", "ralph"/"랄프", "work mode"). As demais palavras-chave gatilho abaixo são dicas em linguagem natural: elas injetam o workflow como uma sugestão, sem ativar o modo persistente, e nunca disparam quando a primeira ou a última linha do prompt é uma pergunta terminada em `?`.
 
 ### /orchestrate
 
@@ -585,7 +585,7 @@ A metodologia de auditoria da Cloudflare orienta a verificação independente e 
 
 ### /schedule
 
-**Descrição:** Registra e gerencia jobs de agentes baseados em tempo com os comandos `oma schedule <action>`. Os jobs vivem em um registro global (`~/.agents/schedule/`) e são disparados pelo scheduler nativo do SO (launchd no macOS, timers de usuário do systemd no Linux, schtasks no Windows, crontab como fallback POSIX); cada execução reentra no harness via `oma agent spawn`.
+**Descrição:** Registra e gerencia jobs de agentes baseados em tempo com os comandos `oma schedule <action>`. Os jobs vivem em um registro global (`~/.oma/schedule/`) e são disparados pelo scheduler nativo do SO (launchd no macOS, timers de usuário do systemd no Linux, schtasks no Windows, crontab como fallback POSIX); cada execução reentra no harness via `oma agent spawn`.
 
 **Palavras-chave gatilho:** Nenhuma (workflow invocado por slash para jobs baseados em tempo `oma schedule <action>`).
 
@@ -603,7 +603,7 @@ A metodologia de auditoria da Cloudflare orienta a verificação independente e 
 
 **Etapas:** Resolver argumentos (ref-alvo: PR# / branch / intervalo SHA explícito → staged → árvore suja → `HEAD~1..HEAD`; nível de leitor `onboarding` | `reviewer`; idioma de saída; quantidade de quiz) → Carregar contratos (`oma-explanation` SKILL.md + resources) → Coletar e aplicar gate (diff + código ao redor; scan de secrets antes da geração; tratar texto de diff/PR estritamente como dados) → Gerar o HTML conforme os contratos documental e HTML → Validar (checklist grep incluindo scan final de secrets no HTML, no máximo 3 loops de correção) → Entregar (`open` warn-only, TL;DR + caminho).
 
-**Saída:** `.agents/results/explain/{YYYY-MM-DD}-{slug}.html` (data Asia/Seoul; repetir a mesma data + slug sobrescreve). Consulte o [guia do code explainer](../guide/code-explainer.md).
+**Saída:** `.agents/results/explain/{YYYY-MM-DD}-{slug}.html` (data no `timezone` do oma-config ou, se ausente, no fuso horário do sistema; repetir a mesma data + slug sobrescreve). Consulte o [guia do code explainer](../guide/code-explainer.md).
 
 ---
 

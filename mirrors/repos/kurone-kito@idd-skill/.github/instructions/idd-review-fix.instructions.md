@@ -408,6 +408,20 @@ REST fallback needs `{primary-advisory-bot-rest-login}`:
 `{primary-advisory-bot}` itself for a non-default bot (already a real
 login).
 
+At or above `critiqueLoop.deferAfterRounds` (the PR's Copilot review
+count), a confirmed PATH A Low finding whose change is wording or
+formatting only, changing no behavior (the `very-low` class), is not
+accepted when neither adopt-now clause (a) nor (b) holds: it is
+disposed `Reject (defer)` in the Defer reply form, with clause
+`round <round>/<threshold>`, and bundled into the pass's one follow-up.
+Where clause (a) or (b) holds, the finding stays adopt-now. This
+overrides adopt-now clause (d) in `idd-review-triage.instructions.md`.
+Factual and correctness findings are not covered by this rule and keep
+their existing handling; adopt-now clause (c) already covers a defect in
+instruction text that changes what an agent does. PATH B, scope-fenced,
+mid-fix, CODEOWNER, and required-reviewer items stay outside this rule.
+A false finding is Rejected on its merits.
+
 1. Fetch `PR_HEAD_SHA`:
 
    ```sh
@@ -481,8 +495,11 @@ login).
    only F2's `secondary-quiet-window` blocker
    (`idd-pre-merge.instructions.md`) waits, folded across every login.
 
-Copilot and CI advisory bot comments are advisory; unanswered ones do
-not block merge.
+Unanswered advisory items block merge until each one is dispositioned,
+unless the gate settles it without a disposition, as it does for a
+CodeRabbit no-actionable-comments summary while no known-bot review
+thread is unresolved. Which comments and findings the gate reads, and
+which it does not, is in [advisory-item scope](../../docs/idd-helper-scripts.md#advisory-item-scope).
 
 Whenever E14 posts a request/recovery marker or hold comment, update
 the digest: the marker/hold as `Authoritative by`, the advisory
