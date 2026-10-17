@@ -56,7 +56,7 @@ This codemap covers the plugin repository itself and excludes the nested `openco
 | `src/multiplexer/client/` | Per-client pane lifecycle core in the TUI client process: admission, event filtering, readiness gating, stable-idle close, busy rebuilds, reconnect backfill, crash-leftover sweep, pane-title metadata, and diagnostics. | [View Map](src/multiplexer/client/codemap.md) |
 | `src/skills/` | Bundled install-time OpenCode skills shipped as static payloads. | [View Map](src/skills/codemap.md) |
 | `src/skills/codemap/` | Repository-mapping skill package and codemap state-management script. | [View Map](src/skills/codemap/codemap.md) |
-| `src/skills/clonedeps/` | Workflow-only dependency source mirroring skill that routes discovery/ref resolution through librarian and direct orchestrator git operations. | [View Map](src/skills/clonedeps/codemap.md) |
+| `src/skills/clonedeps/` | Workflow-only dependency source mirroring skill that routes discovery/ref resolution through explorer and direct orchestrator git operations. | [View Map](src/skills/clonedeps/codemap.md) |
 | `src/skills/simplify/` | Behavior-preserving simplification skill package. | [View Map](src/skills/simplify/codemap.md) |
 | `src/tools/` | Tool factory surface for AST-grep, smartfetch, ACP, and task lifecycle controls (cancel/message/status/result/revive/wait-for-user), plus shared task-status policy and activity trackers and on-disk preset-switching helpers. | [View Map](src/tools/codemap.md) |
 | `src/tools/ast-grep/` | AST-grep binary management and AST-aware search/replace tool flow. | [View Map](src/tools/ast-grep/codemap.md) |

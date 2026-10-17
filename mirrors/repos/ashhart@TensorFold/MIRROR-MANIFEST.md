@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ashhart/TensorFold` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `ashhart/TensorFold` — 26 default patterns, 21 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `ashhart/TensorFold` — 26 default patterns, 0 followed patterns, 2 f
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 2 |
+| Followed pats | 21 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,27 @@ Mirror of `ashhart/TensorFold` — 26 default patterns, 0 followed patterns, 2 f
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `README.md`
+- `app/README.md`
+- `RUNBOOK.md`
+- `docs/living-weights.md`
+- `docs/recipes/nemotron-3.5-super-vl.md`
+- `docs/glm-5.3-exlr8.md`
+- `RELEASE-NOTES-1.0.0.md`
+- `docs/cortheon.md`
+- `docs/memory-diagnostics.md`
+- `docs/recall.md`
+- `docs/community-benchmarks.md`
+- `packaging/README.md`
+- `docs/cache-benchmarks.md`
+- `CONTRIBUTING.md`
+- `THIRD_PARTY_NOTICES.md`
+- `docs/credits.md`
+- `docs/memory-profiling.md`
+- `CHANGELOG.md`
+- `docs/kernel-contract.md`
+- `docs/known-issues.md`
+- `docs/recipes/cuda.md`
 
 ## File Index
 
@@ -61,6 +81,41 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`app/AGENTS.md`](app/AGENTS.md) |
 | 2 | ✓ | [`app/mobile/AGENTS.md`](app/mobile/AGENTS.md) |
+| 3 | ✓ | [`app/mobile/vendor/decode-uri-component/README.md`](app/mobile/vendor/decode-uri-component/README.md) |
+| 4 | ✓ | [`docs/api.md`](docs/api.md) |
+| 5 | ✓ | [`docs/receipts/glm-sampling-95818b3/README.md`](docs/receipts/glm-sampling-95818b3/README.md) |
+| 6 | ✓ | [`docs/recipes/adding-a-cuda-family.md`](docs/recipes/adding-a-cuda-family.md) |
+| 7 | ✓ | [`docs/recipes/adding-a-zig-family.md`](docs/recipes/adding-a-zig-family.md) |
+| 8 | ✓ | [`docs/recipes/exl3.md`](docs/recipes/exl3.md) |
+| 9 | ✓ | [`docs/recipes/README.md`](docs/recipes/README.md) |
+| 10 | ✓ | [`docs/recipes/SKILL.md`](docs/recipes/SKILL.md) |
+| 11 | ✓ | [`docs/recipes/speed-up-mode.md`](docs/recipes/speed-up-mode.md) |
+| 12 | ✓ | [`docs/speed-up-mode.md`](docs/speed-up-mode.md) |
+| 13 | ✓ | [`docs/xpu/README.md`](docs/xpu/README.md) |
+| 14 | ✓ | [`tools/zig/fixtures/README.md`](tools/zig/fixtures/README.md) |
+| 15 | ✓ | [`zig/kernels/cuda/torch_ops/README.md`](zig/kernels/cuda/torch_ops/README.md) |
+| 16 | ✓ | [`zig/tests/cuda/nemotron/box/README.md`](zig/tests/cuda/nemotron/box/README.md) |
+| 17 | → | [`app/README.md`](app/README.md) |
+| 18 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 19 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 20 | → | [`docs/cache-benchmarks.md`](docs/cache-benchmarks.md) |
+| 21 | → | [`docs/community-benchmarks.md`](docs/community-benchmarks.md) |
+| 22 | → | [`docs/cortheon.md`](docs/cortheon.md) |
+| 23 | → | [`docs/credits.md`](docs/credits.md) |
+| 24 | → | [`docs/glm-5.3-exlr8.md`](docs/glm-5.3-exlr8.md) |
+| 25 | → | [`docs/kernel-contract.md`](docs/kernel-contract.md) |
+| 26 | → | [`docs/known-issues.md`](docs/known-issues.md) |
+| 27 | → | [`docs/living-weights.md`](docs/living-weights.md) |
+| 28 | → | [`docs/memory-diagnostics.md`](docs/memory-diagnostics.md) |
+| 29 | → | [`docs/memory-profiling.md`](docs/memory-profiling.md) |
+| 30 | → | [`docs/recall.md`](docs/recall.md) |
+| 31 | → | [`docs/recipes/cuda.md`](docs/recipes/cuda.md) |
+| 32 | → | [`docs/recipes/nemotron-3.5-super-vl.md`](docs/recipes/nemotron-3.5-super-vl.md) |
+| 33 | → | [`packaging/README.md`](packaging/README.md) |
+| 34 | → | [`README.md`](README.md) |
+| 35 | → | [`RELEASE-NOTES-1.0.0.md`](RELEASE-NOTES-1.0.0.md) |
+| 36 | → | [`RUNBOOK.md`](RUNBOOK.md) |
+| 37 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
 
 ---
 

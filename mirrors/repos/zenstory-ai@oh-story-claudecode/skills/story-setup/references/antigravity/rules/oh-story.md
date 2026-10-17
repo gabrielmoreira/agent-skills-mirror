@@ -46,8 +46,11 @@ Read the selected skill's `SKILL.md` first, then load references as it directs.
 - Skill templates marked `<!-- author-report -->` are format references only:
   reply with the text inside, never the code fence.
 - When the author asks to remember, forget, or confirm a writing habit or
-  preference (e.g. 「记住：这本书对话用直角引号」), use the `story` skill's author
-  memory to write `.story/作者记忆/` in the relevant workspace or book directory. Never store it in Antigravity's
+  preference, use author memory management in `story-long-write` or
+  `story-short-write`, based on the author's explicit type or the active book.
+  For a general habit with no active book, use the long-form entry. Ask which
+  book only when a book-specific preference has no identifiable target; do not create a book.
+  Write `.story/作者记忆/` in the relevant workspace or book directory. Never store it in Antigravity's
   built-in memory. One-off requests are simply carried out, not recorded.
 - Never modify installed skill files (`SKILL.md`, `references/`, `scripts/`) in
   this workspace (redeploying via `story-setup` is the exception). If a skill script fails, stop and report its error and command; do not patch around it.

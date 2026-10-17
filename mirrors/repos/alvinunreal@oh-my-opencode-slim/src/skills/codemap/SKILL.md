@@ -115,49 +115,22 @@ Fixers are responsible for writing `codemap.md` files during this workflow. Use 
 - **Data & Control Flow** - Explicitly trace how data enters and leaves the module. Mention specific function call sequences and state transitions.
 - **Integration Points** - List dependencies and consumer modules. Use technical names for hooks, events, or API endpoints.
 
-Example codemap:
+Example skeleton:
 
 ```markdown
-# src/agents/
-
+# src/<dir>/
 ## Responsibility
-Defines agent personalities and manages their configuration lifecycle.
-
+<role of this directory>
 ## Design
-Each agent is a prompt + permission set. Config system uses:
-- Default prompts (orchestrator.ts, explorer.ts, etc.)
-- User overrides from ~/.config/opencode/oh-my-opencode-slim.json
-- Permission wildcards for skill/MCP access control
-
+<patterns and abstractions>
 ## Flow
-1. Plugin loads → calls getAgentConfigs()
-2. Reads user config preset
-3. Merges defaults with overrides
-4. Applies permission rules (wildcard expansion)
-5. Returns agent configs to OpenCode
-
+<data in → key calls → data out>
 ## Integration
-- Consumed by: Main plugin (src/index.ts)
-- Depends on: Config loader, skills registry
+<consumers / dependencies>
 ```
 
-Example **Root Codemap (Atlas)**:
+For root atlas, aggregate the same headings plus a Directory Map table:
 
-```markdown
-# Repository Atlas: oh-my-opencode-slim
-
-## Project Responsibility
-A high-performance, low-latency agent orchestration plugin for OpenCode, focusing on specialized sub-agent delegation and multiplexer-assisted child sessions.
-
-## System Entry Points
-- `src/index.ts`: Plugin initialization and OpenCode integration.
-- `package.json`: Dependency manifest and build scripts.
-- `oh-my-opencode-slim.json`: User configuration schema.
-
-## Directory Map (Aggregated)
-| Directory | Responsibility Summary | Detailed Map |
-|-----------|------------------------|--------------|
-| `src/agents/` | Defines agent personalities (Orchestrator, Explorer) and manages model routing. | [View Map](src/agents/codemap.md) |
-| `src/features/` | Core logic for tmux integration and session state. | [View Map](src/features/codemap.md) |
-| `src/config/` | Implements the configuration loading pipeline and environment variable injection. | [View Map](src/config/codemap.md) |
-```
+| Directory | Responsibility | Link |
+|-----------|----------------|------|
+| `src/<dir>/` | <one-line summary> | [View Map](src/<dir>/codemap.md) |

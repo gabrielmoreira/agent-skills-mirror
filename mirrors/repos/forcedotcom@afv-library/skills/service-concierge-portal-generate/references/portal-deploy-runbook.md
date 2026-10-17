@@ -6,9 +6,9 @@ Help Portal deploys an **Agentforce Concierge experience** on an LWR Experience 
 
 The agent script does **not** change here — this is channel/site metadata around the agent.
 
-## Execution model — headless with one operator pause
+## Execution model — Headless first, UI fallback
 
-Every step in §A–§S below is executed headlessly via `sf` CLI + Data API + Metadata API + Tooling API. There is exactly **one** step that requires the operator to click a Setup toggle: enabling the **Agentforce Orchestrator** OrgPerm (see §F.4). When the flow reaches that step, pause, present the operator with a direct Setup URL and clear instructions, and wait for them to reply `done` before continuing. Every other Setup-URL fallback in this document is a *last resort* — attempt the headless path first, and only fall back to UI if the headless path returns an unrecoverable error.
+Every step in §A–§S below is executed headlessly via `sf` CLI + Data API + Metadata API + Tooling API. The Agentforce Orchestrator OrgPerm (§F.4) is enabled via a Connect API POST — no operator UI pause is required. Every Setup-URL fallback in this document is a *last resort* — attempt the headless path first, and only fall back to UI if the headless path returns an unrecoverable error.
 
 If a non-critical step fails (branding polish, suggestion themes, progressive-rendering toggle), log the failure, continue, and surface the gap to the operator at the end. Do NOT abort the deploy for cosmetic gaps.
 
@@ -50,7 +50,7 @@ At the end of the run, print the live customer-facing portal URL for the operato
 > | 4 | Channel + routing + escalation | §E — `sf agent activate` first; if `MESSAGING_CHANNEL_DEV_NAME` not passed in, delegate to `service-digital-engagement-channel-configure` to create the channel (deploy XML with `<sessionHandlerType>AgentforceServiceAgent</sessionHandlerType>` + `<sessionHandlerQueue>` only — `sessionHandlerAsa` is not accepted by the v67 Metadata API); then delegate to `service-agentforce-channel-configure` (Phase 1: queue, Phase 2: Data API PATCH of `SessionHandlerId` + `FallbackQueueId` on the MessagingChannel, Phase 3: escalation question) | SOQL confirms `SessionHandlerId=$BOT_ID`, `FallbackQueueId` set; `BotVersion.Status=Active`; escalation answered by operator |
 > | 6 | Retrieve + edit + deploy bundle | §F.0 — retrieve `DigitalExperienceBundle:site/$BUNDLE_NAME`; **edit `sfdc_cms__brandingSet/*/content.json` with the four colors from §A (§D)**; replace home placeholder with 4 Concierge components (empty `attributes: {}`); add `Conversation__c` route + `conversation` view (§F.0.a); flip `authenticationType`; deploy | Retrieve confirms components + route; branding JSON contains user-specified hex values |
 > | 7 | Wire Concierge runtime binding | §F.3.a–d — create `EmbeddedServiceConfig` via Connect API `POST /connect/embeddedmessaging/deployment/setup` (same as Web Chat §C.4, omit `hostDomain`; auto-generates `ESW_*` site + test page), insert NSSE, **deploy AND assign** guest permset to Site's `GuestUserId` | `/webruntime/api/…/concierge/config` returns `deploymentName + siteUrl + scrtUrl` **AND** `SELECT PermissionSet.Name FROM PermissionSetAssignment WHERE AssigneeId=<GuestUserId>` returns the `<Bundle>_Guest_Concierge` row |
-> | 8 | **⏸ Enable Agentforce Orchestrator (operator pause)** | §F.4 — preflight SOQL on `AgenticCtxtDecorDefinition`; if not supported, pause and ask operator to flip the toggle at the printed Setup URL; wait for `done` reply; then `POST /connect/self-service/setup/agentOrchestrator {name, developerName, agentId}` | Connect GET returns orchestrator with agentId |
+> | 8 | Enable Agentforce Orchestrator + create orchestrator binding | §F.4 — `POST /connect/self-service/setup/agentforceOrchestratorEnablement?includeAgentforceOrchestratorPerms=false` (headless, no operator pause); verify SOQL probe; then `POST /connect/self-service/setup/agentOrchestrator {name, developerName, agentId}` | Connect GET returns orchestrator with agentId |
 > | 9 | Deploy the bundle | §G — `sf project deploy start -m DigitalExperienceBundle:site/$BUNDLE_NAME` | Status: Succeeded |
 > | 10 | Publish the site | §I — `POST /connect/communities/$NETWORK_ID/publish`; PATCH `Network.Status=Live` | Site loads at `PUBLISHED_PORTAL_URL` |
 > | 11 | Network guest flags | §L.0 — PATCH `Network.OptionsGuestChatterEnabled=true AND OptionsGuestMemberVisibility=true` (single Data API call). ALSO verify auth ESC `AreGuestUsersAllowed=true` — flip via mdapi + republish if false. | `/concierge/config?asGuest=true` returns 200; SOQL confirms both Network flags + ESC flag true |
@@ -712,13 +712,13 @@ curl -sS "$PUBLISHED_PORTAL_URL/webruntime/api/services/data/v67.0/connect/self-
 
 All three fields must be non-null. If `deploymentName` is null, the bound ESC references a different site or MessagingChannel — verify the `<site>` in the ESC metadata is the LWR site (F.3.a).
 
-### F.4 — Wire the Agentforce Orchestrator *(one operator pause, then fully headless)*
+### F.4 — Wire the Agentforce Orchestrator *(Headless first, UI fallback)*
 
-The Agentforce Orchestrator provides the personalized greeting, Action/Object recommendations, and Concierge proactive routing. The "Enable Agentforce Orchestrator" OrgPerm gates the agent-binding surfaces (Connect POST, Data API sObject, SOQL). Detect the toggle state with a SOQL write-probe, prompt one manual click if off, then continue fully headless.
+The Agentforce Orchestrator provides the personalized greeting, Action/Object recommendations, and Concierge proactive routing. The "Enable Agentforce Orchestrator" OrgPerm gates the agent-binding surfaces (Connect POST, Data API sObject, SOQL). Enable it headlessly via `POST /connect/self-service/setup/agentforceOrchestratorEnablement`, verify with the SOQL probe, then create the orchestrator binding.
 
 **F.4.0 — Detection preflight.**
 
-Run the probe up to **2 times** before concluding the toggle is off. The `sf` CLI occasionally mixes warning output into stdout on the first call, which causes a false "not supported" parse. Re-running the identical query without waiting resolves the issue — no org state changes between attempts.
+Run the SOQL probe up to **2 times** before concluding the toggle is off. The `sf` CLI occasionally mixes warning output into stdout on the first call causing a false "not supported" parse. Re-running the identical query without waiting resolves the issue — no org state changes between attempts.
 
 ```bash
 TOGGLE_STATE="UNKNOWN"
@@ -735,11 +735,24 @@ done
 ```
 
 - ✅ `TOGGLE_STATE=ON` → proceed with §F.4.2.
-- ❌ `TOGGLE_STATE=OFF` (both attempts) → toggle is genuinely OFF, **pause and prompt the operator**.
+- ❌ `TOGGLE_STATE=OFF` (both attempts) → toggle is genuinely OFF → proceed to §F.4.1 (headless enable).
 
-**F.4.1 — ⏸ OPERATOR PAUSE: enable the Orchestrator OrgPerm.**
+**F.4.1 — Headless enable via Connect API (fully headless — no operator pause).**
 
-If the SOQL probe returned "not supported", send this message verbatim to the operator, then wait for their reply:
+Enable Agentforce Orchestrator headlessly:
+
+> **`min_api_version: 68.0`** — this endpoint is only available on API v68.0+. On v67 orgs the POST returns `NOT_FOUND`; fall through to the UI path below.
+
+```bash
+sf api request rest -o "$ORG" --method POST \
+  "/services/data/v68.0/connect/self-service/setup/agentforceOrchestratorEnablement?includeAgentforceOrchestratorPerms=false" \
+  --body '{}'
+# → {"isSuccess": true}
+```
+
+After the POST, re-run the §F.4.0 SOQL probe to confirm `TOGGLE_STATE=ON`. If the probe still returns "not supported" after a successful POST (can happen on a slow pod), wait 10 seconds and re-probe once more. If the probe is still off after that re-probe, fall back to the UI step below — do not continue to §F.4.2.
+
+If the org **genuinely does not have this surface** (the POST itself returns `NOT_FOUND` or `UNSUPPORTED_OPERATION`), fall through to the legacy UI path as a last resort:
 
 > **One manual step needed.** Please open this URL and enable Agentforce Orchestrator:
 >
@@ -749,7 +762,7 @@ If the SOQL probe returned "not supported", send this message verbatim to the op
 > 2. Wait for the confirmation banner.
 > 3. Reply `done` here and I'll continue.
 
-When the operator replies `done`, re-run the F.4.0 SOQL probe. If it still returns "not supported", either the toggle wasn't flipped or there's an org-shape gap. Ask them to double-check, then re-probe. If the org genuinely does not have this surface (older-API pod), fall through to the F.4 skip: continue the deploy without the Orchestrator, and log the gap in the operator handoff.
+If the org cannot enable this at all, skip §F.4 entirely and log the gap in the operator handoff.
 
 **F.4.2 — Bot prerequisite check.**
 
@@ -1419,7 +1432,7 @@ sf org open --target-org $ORG --path "/<url-path>/"
 | Guest curl to `/webruntime/api/.../connect/self-service/*` returns `HTTP 401 UNAUTHORIZED` | `Network.OptionsGuestChatterEnabled = False` on target | Run §L.0 diagnostic; PATCH to True via Data API — no republish required |
 | Portal loads, `/concierge/config` returns 200, prompt bar renders but says **"Agents are not available. Try again later."** | Bot-routing wiring missing. Typical gaps: `PresenceUserConfigUser`, `GroupMember`, `Group.QueueRoutingConfigId` | Run §N — three Data-API writes |
 | §N writes all succeed but chat *still* shows "Agents are not available" immediately | Automated-Process pickup path needs to spin up after routing wiring changes | Re-activate the BotVersion via CLI (`sf agent deactivate` + `sf agent activate`). Wait a few minutes. Do NOT rely on `UserServicePresence` COUNT as the readiness signal |
-| Prompt bar responses are ungrounded / navigate to `/error` on newer-API orgs | Agentforce Orchestrator not wired | See §F.4 — enable the OrgPerm (operator pause) then `POST /connect/self-service/setup/agentOrchestrator` |
+| Prompt bar responses are ungrounded / navigate to `/error` on newer-API orgs | Agentforce Orchestrator not wired | See §F.4 — `POST /connect/self-service/setup/agentforceOrchestratorEnablement?includeAgentforceOrchestratorPerms=false`, verify SOQL probe, then `POST /connect/self-service/setup/agentOrchestrator` |
 | Agentforce Orchestrator's "Add Tool → Agent" picker is empty | `BotDefinition.AgentTemplate` is `null` — Bot was created via headless Metadata deploy, not the Setup wizard | Delete the Bot and recreate via Setup → Agentforce Agents → New Agent → From Template → Agentforce Service Agent |
 
 ---

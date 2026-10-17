@@ -81,6 +81,16 @@ Cookie 使用者（儀表板路由守衛（`isDashboardSessionAuthenticated()`�
 | `CLIENT_API` | 模型服務端點——`/api/v1/*`、`/api/v1beta/*`，以及別名 `/v1/*`、`/v1beta/*`、`/chat/completions`、`/responses`、`/models`、`/codex/*`。 | 有效的 `REQUIRE_API_KEY` 功能旗標啟用時需要 Bearer 金鑰 |
 | `MANAGEMENT` | 儀表板頁面、設定、提供者、金鑰、管理及診斷端點。                                                                                      | 儀表板工作階段，或具有 `manage` 範圍的 Bearer           |
 
+A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
+credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,
+`GET /api/db-backups/exportAll`), restoring a backup over the live data
+(`POST /api/db-backups/import` including `dryRun=true`, `POST /api/db-backups` restore by id,
+`POST /api/settings/import-json`), issuing a sync token (`POST /api/sync/tokens`) and minting an
+`admin` CLI access token (`POST /api/cli/tokens`) require a dashboard session, the local CLI
+subject, or login disabled; API keys of any scope and `oma_` access tokens get `403`. The check
+lives in `src/lib/api/operatorCredential.ts` (`resolveOperatorCredential()` /
+`requireOperatorCredential()`).
+
 ## 管線
 
 ```

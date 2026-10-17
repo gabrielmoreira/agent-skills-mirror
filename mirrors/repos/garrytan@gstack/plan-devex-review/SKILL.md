@@ -443,10 +443,11 @@ These are the laws. Every recommendation traces back to one of these.
 2. **Incremental steps.** Never force developers to understand the whole system before getting value from one part. Gentle ramp, not cliff.
 3. **Learn by doing.** Playgrounds, sandboxes, copy-paste code that works in context. Reference docs are necessary but never sufficient.
 4. **Decide for me, let me override.** Opinionated defaults are features. Escape hatches are requirements. Strong opinions, loosely held.
-5. **Fight uncertainty.** Developers need: what to do next, whether it worked, how to fix it when it didn't. Every error = problem + cause + fix.
+5. **Fight uncertainty.** Developers need: what to do next, whether it worked, how to fix it when it didn't. Every error meets the agent-ready error contract, so an agent can repair it or escalate precisely without reading the source.
 6. **Show code in context.** Hello world is a lie. Show real auth, real error handling, real deployment. Solve 100% of the problem.
 7. **Speed is a feature.** Iteration speed is everything. Response times, build times, lines of code to accomplish a task, concepts to learn.
 8. **Create magical moments.** What would feel like magic? Stripe's instant API response. Vercel's push-to-deploy. Find yours and make it the first thing developers experience.
+9. **Agents are users too.** Non-interactive by default, structured output, layered `--help`, and errors written as the agent's next prompt.
 
 ## The Seven DX Characteristics
 
@@ -466,7 +467,7 @@ Internalize these; don't enumerate them.
 
 1. **Chef-for-chefs** — Your users build products for a living. The bar is higher because they notice everything.
 2. **First five minutes obsession** — New dev arrives. Clock starts. Can they hello-world without docs, sales, or credit card?
-3. **Error message empathy** — Every error is pain. Does it identify the problem, explain the cause, show the fix, link to docs?
+3. **Error message empathy** — Every error is pain, and an agent often hits it first. Would an agent that hit this unattended know the safe next command, or exactly what to ask a human for?
 4. **Escape hatch awareness** — Every default needs an override. No escape hatch = no trust = no adoption at scale.
 5. **Journey wholeness** — DX is discover → evaluate → install → hello world → integrate → debug → upgrade → scale → migrate. Every gap = a lost dev.
 6. **Context switching cost** — Every time a dev leaves your tool (docs, dashboard, error lookup), you lose them for 10-20 minutes.
@@ -739,6 +740,7 @@ Persona examples by product type (pick the 3 most relevant):
 - **OSS contributor from GitHub** -- git clone && make test, CONTRIBUTING.md, issue templates
 - **Student learning to code** -- needs hand-holding, clear error messages, lots of examples
 - **DevOps engineer setting up infra** -- Terraform/Docker, non-interactive mode, env vars
+- **AI coding agent** -- reads errors literally, cannot ask, retries blindly, pays per token (any type except Documentation; picking it makes the agent the primary persona for every pass)
 
 After reply, keep this in working notes; write it above the plan's decision ledger
 only after 0C's target is answered:
@@ -1044,7 +1046,7 @@ For each DX section:
   for the persona. Each expansion requires its own opt-in AskUserQuestion.
 - **DX POLISH:** Examine every touchpoint within the accepted scope and contracts.
   Trace each issue to evidence. Do not redesign established APIs to improve a score.
-- **DX TRIAGE:** Flag adoption blockers (below 5); skip nice-to-haves (5-7).
+- **DX TRIAGE:** Flag adoption blockers (below 5) and every CAP4 error-contract finding; skip nice-to-haves (5-7).
 
 > **STOP.** Before running the 8 DX passes, required outputs, and review report (only after Step 0 investigation is complete), Read `~/.claude/skills/gstack/plan-devex-review/sections/review-sections.md` and execute it
 > in full. Do not work from memory — that section is the source of truth for this step.

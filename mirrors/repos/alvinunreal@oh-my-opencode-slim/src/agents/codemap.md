@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-Defines agent personalities (Orchestrator, Explorer, Librarian, etc.) and manages their configuration lifecycle. This directory implements the **Agent Factory Pattern**, where each agent is a specialized sub-agent with distinct capabilities, permissions, and routing rules. The Orchestrator agent (src/agents/index.ts) coordinates task delegation to these specialists. Note: Council and Councillor agents are included for multi-model consensus, with Councillors created dynamically per preset.
+Defines agent personalities (Orchestrator, Explorer, etc.) and manages their configuration lifecycle. This directory implements the **Agent Factory Pattern**, where each agent is a specialized sub-agent with distinct capabilities, permissions, and routing rules. The Orchestrator agent (src/agents/index.ts) coordinates task delegation to these specialists. Note: Council and Councillor agents are included for multi-model consensus, with Councillors created dynamically per preset.
 
 ## Design
 
@@ -13,8 +13,7 @@ Each agent is a **prompt-driven specialist** with a factory function that create
 | Agent | Factory | Role | Permissions | Model Default |
 |-------|---------|------|-------------|---------------|
 | **orchestrator** | `createOrchestratorAgent()` | Workflow manager that delegates tasks to specialists | Primary agent with full tool access | Resolved from config or runtime preset |
-| **explorer** | `createExplorerAgent()` | Fast codebase search and pattern matching | Read-only by prompt (glob, grep, ast_grep_search) | DEFAULT_MODELS.explorer |
-| **librarian** | `createLibrarianAgent()` | External documentation and library research | Read-only by prompt (context7, gh_grep) | DEFAULT_MODELS.librarian |
+| **explorer** | `createExplorerAgent()` | Fast codebase search, pattern matching, and external docs/library/web research | Read-only by prompt (glob, grep, ast_grep_search, context7, gh_grep) | DEFAULT_MODELS.explorer |
 | **oracle** | `createOracleAgent()` | Strategic technical advisor and code reviewer | Read-only by prompt (read, glob, grep, ast_grep_search) | DEFAULT_MODELS.oracle |
 | **designer** | `createDesignerAgent()` | UI/UX design, review, and implementation | Read/write (read, glob, grep, write, edit) | DEFAULT_MODELS.designer |
 | **fixer** | `createFixerAgent()` | Fast implementation specialist for bounded tasks | Read/write (read, glob, grep, write, edit) | DEFAULT_MODELS.fixer |
@@ -139,8 +138,7 @@ return {
 
 The orchestrator's system prompt contains dynamic routing rules that reference agent capabilities:
 
-- **@explorer**: Fast codebase recon, parallel searches
-- **@librarian**: Library research, web search
+- **@explorer**: Fast codebase recon, parallel searches, library research, web search
 - **@oracle**: Architecture decisions, code review
 - **@designer**: UI/UX design and polish
 - **@fixer**: Bounded implementation tasks
@@ -153,8 +151,7 @@ These rules are filtered based on disabled agents and injected into the orchestr
 
 - `index.ts` - Main agent factory and configuration system
 - `orchestrator.ts` - Orchestrator agent definition and prompt builder
-- `explorer.ts` - Fast codebase search specialist
-- `librarian.ts` - Documentation and library research specialist
+- `explorer.ts` - Fast codebase search, external docs, and library research specialist
 - `oracle.ts` - Architecture and code review specialist
 - `designer.ts` - UI/UX design specialist
 - `fixer.ts` - Implementation execution specialist

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `superradcompany/microsandbox` — 26 default patterns, 3 followed patterns, 4 file(s) materialized.
+Mirror of `superradcompany/microsandbox` — 26 default patterns, 3 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `superradcompany/microsandbox` — 26 default patterns, 3 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,10 +61,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | → | [`COMPATIBILITY.md`](COMPATIBILITY.md) |
-| 3 | → | [`crates/image/MATERIALIZATION.md`](crates/image/MATERIALIZATION.md) |
-| 4 | → | [`crates/protocol/VERSIONING.md`](crates/protocol/VERSIONING.md) |
+| 1 | ✓ | [`.agents/skills/microsandbox-docs/SKILL.md`](.agents/skills/microsandbox-docs/SKILL.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | → | [`COMPATIBILITY.md`](COMPATIBILITY.md) |
+| 4 | → | [`crates/image/MATERIALIZATION.md`](crates/image/MATERIALIZATION.md) |
+| 5 | → | [`crates/protocol/VERSIONING.md`](crates/protocol/VERSIONING.md) |
 
 ---
 

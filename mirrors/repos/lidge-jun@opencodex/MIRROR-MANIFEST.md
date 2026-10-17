@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 74 file(s) materialized.
+Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 78 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lidge-jun/opencodex` — 26 default patterns, 5 followed patterns, 74
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 74 |
+| Files         | 78 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -114,29 +114,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 49 | ✓ | [`structure/catalog.md`](structure/catalog.md) |
 | 50 | ✓ | [`structure/cli-management.md`](structure/cli-management.md) |
 | 51 | ✓ | [`structure/codex-account-controls.md`](structure/codex-account-controls.md) |
-| 52 | ✓ | [`structure/codex-home.md`](structure/codex-home.md) |
-| 53 | ✓ | [`structure/codex-prompts.md`](structure/codex-prompts.md) |
-| 54 | ✓ | [`structure/companion.md`](structure/companion.md) |
-| 55 | ✓ | [`structure/config-proxy.md`](structure/config-proxy.md) |
-| 56 | ✓ | [`structure/config.md`](structure/config.md) |
-| 57 | ✓ | [`structure/dashboard-and-usage.md`](structure/dashboard-and-usage.md) |
-| 58 | ✓ | [`structure/design-methodology.md`](structure/design-methodology.md) |
-| 59 | ✓ | [`structure/desktop-shell.md`](structure/desktop-shell.md) |
-| 60 | ✓ | [`structure/desktop-start-at-login.md`](structure/desktop-start-at-login.md) |
-| 61 | ✓ | [`structure/desktop-terminal-command.md`](structure/desktop-terminal-command.md) |
-| 62 | ✓ | [`structure/gui-and-management-api.md`](structure/gui-and-management-api.md) |
-| 63 | ✓ | [`structure/local-messaging.md`](structure/local-messaging.md) |
-| 64 | ✓ | [`structure/overview.md`](structure/overview.md) |
-| 65 | ✓ | [`structure/providers-and-adapters.md`](structure/providers-and-adapters.md) |
-| 66 | ✓ | [`structure/remote-link.md`](structure/remote-link.md) |
-| 67 | ✓ | [`structure/remote-workspace.md`](structure/remote-workspace.md) |
-| 68 | ✓ | [`structure/runtime.md`](structure/runtime.md) |
-| 69 | ✓ | [`structure/subagents.md`](structure/subagents.md) |
-| 70 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
-| 71 | → | [`CREDITS.md`](CREDITS.md) |
-| 72 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
-| 73 | → | [`SECURITY.md`](SECURITY.md) |
-| 74 | → | [`structure/INDEX.md`](structure/INDEX.md) |
+| 52 | ✓ | [`structure/codex-cli-update.md`](structure/codex-cli-update.md) |
+| 53 | ✓ | [`structure/codex-home.md`](structure/codex-home.md) |
+| 54 | ✓ | [`structure/codex-prompts.md`](structure/codex-prompts.md) |
+| 55 | ✓ | [`structure/codex-provider-routing.md`](structure/codex-provider-routing.md) |
+| 56 | ✓ | [`structure/companion.md`](structure/companion.md) |
+| 57 | ✓ | [`structure/config-proxy.md`](structure/config-proxy.md) |
+| 58 | ✓ | [`structure/config.md`](structure/config.md) |
+| 59 | ✓ | [`structure/dashboard-and-usage.md`](structure/dashboard-and-usage.md) |
+| 60 | ✓ | [`structure/design-methodology.md`](structure/design-methodology.md) |
+| 61 | ✓ | [`structure/desktop-shell.md`](structure/desktop-shell.md) |
+| 62 | ✓ | [`structure/desktop-start-at-login.md`](structure/desktop-start-at-login.md) |
+| 63 | ✓ | [`structure/desktop-terminal-command.md`](structure/desktop-terminal-command.md) |
+| 64 | ✓ | [`structure/gui-and-management-api.md`](structure/gui-and-management-api.md) |
+| 65 | ✓ | [`structure/local-messaging.md`](structure/local-messaging.md) |
+| 66 | ✓ | [`structure/overview.md`](structure/overview.md) |
+| 67 | ✓ | [`structure/pricing.md`](structure/pricing.md) |
+| 68 | ✓ | [`structure/providers-and-adapters.md`](structure/providers-and-adapters.md) |
+| 69 | ✓ | [`structure/remote-link.md`](structure/remote-link.md) |
+| 70 | ✓ | [`structure/remote-workspace.md`](structure/remote-workspace.md) |
+| 71 | ✓ | [`structure/runtime.md`](structure/runtime.md) |
+| 72 | ✓ | [`structure/subagent-capacity.md`](structure/subagent-capacity.md) |
+| 73 | ✓ | [`structure/subagents.md`](structure/subagents.md) |
+| 74 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
+| 75 | → | [`CREDITS.md`](CREDITS.md) |
+| 76 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
+| 77 | → | [`SECURITY.md`](SECURITY.md) |
+| 78 | → | [`structure/INDEX.md`](structure/INDEX.md) |
 
 ---
 

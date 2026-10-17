@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Kilo-Org/kilocode` — 26 default patterns, 2 followed patterns, 37 file(s) materialized.
+Mirror of `Kilo-Org/kilocode` — 26 default patterns, 2 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Kilo-Org/kilocode` — 26 default patterns, 2 followed patterns, 37 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 37 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,31 +72,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`.kilo/skills/jetbrains-session/SKILL.md`](.kilo/skills/jetbrains-session/SKILL.md) |
 | 11 | ✓ | [`.kilo/skills/jetbrains-ui/SKILL.md`](.kilo/skills/jetbrains-ui/SKILL.md) |
 | 12 | ✓ | [`.kilo/skills/kilocode-merge-minimizer/SKILL.md`](.kilo/skills/kilocode-merge-minimizer/SKILL.md) |
-| 13 | ✓ | [`.kilocode/skills/vscode-visual-regression/SKILL.md`](.kilocode/skills/vscode-visual-regression/SKILL.md) |
-| 14 | ✓ | [`.opencode/skills/effect/SKILL.md`](.opencode/skills/effect/SKILL.md) |
-| 15 | ✓ | [`.opencode/skills/rtl-aware-development/SKILL.md`](.opencode/skills/rtl-aware-development/SKILL.md) |
-| 16 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 17 | ✓ | [`packages/codemode/AGENTS.md`](packages/codemode/AGENTS.md) |
-| 18 | ✓ | [`packages/core/src/tool/AGENTS.md`](packages/core/src/tool/AGENTS.md) |
-| 19 | ✓ | [`packages/effect-drizzle-sqlite/AGENTS.md`](packages/effect-drizzle-sqlite/AGENTS.md) |
-| 20 | ✓ | [`packages/kilo-docs/AGENTS.md`](packages/kilo-docs/AGENTS.md) |
-| 21 | ✓ | [`packages/kilo-docs/pages/ai-providers/gemini.md`](packages/kilo-docs/pages/ai-providers/gemini.md) |
-| 22 | ✓ | [`packages/kilo-docs/pages/customize/skills.md`](packages/kilo-docs/pages/customize/skills.md) |
-| 23 | ✓ | [`packages/kilo-jetbrains/AGENTS.md`](packages/kilo-jetbrains/AGENTS.md) |
-| 24 | ✓ | [`packages/kilo-vscode/AGENTS.md`](packages/kilo-vscode/AGENTS.md) |
-| 25 | ✓ | [`packages/llm/AGENTS.md`](packages/llm/AGENTS.md) |
-| 26 | ✓ | [`packages/opencode/AGENTS.md`](packages/opencode/AGENTS.md) |
-| 27 | ✓ | [`packages/opencode/src/server/routes/instance/httpapi/AGENTS.md`](packages/opencode/src/server/routes/instance/httpapi/AGENTS.md) |
-| 28 | ✓ | [`packages/opencode/src/session/llm/AGENTS.md`](packages/opencode/src/session/llm/AGENTS.md) |
-| 29 | ✓ | [`packages/opencode/test/AGENTS.md`](packages/opencode/test/AGENTS.md) |
-| 30 | ✓ | [`packages/opencode/test/fixture/skills/agents-sdk/SKILL.md`](packages/opencode/test/fixture/skills/agents-sdk/SKILL.md) |
-| 31 | ✓ | [`packages/opencode/test/fixture/skills/cloudflare/SKILL.md`](packages/opencode/test/fixture/skills/cloudflare/SKILL.md) |
-| 32 | ✓ | [`packages/opencode/test/server/AGENTS.md`](packages/opencode/test/server/AGENTS.md) |
-| 33 | ✓ | [`packages/schema/AGENTS.md`](packages/schema/AGENTS.md) |
-| 34 | ✓ | [`packages/session-ui/AGENTS.md`](packages/session-ui/AGENTS.md) |
-| 35 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
-| 36 | → | [`packages/kilo-docs/pages/contributing/architecture/config-schema.md`](packages/kilo-docs/pages/contributing/architecture/config-schema.md) |
-| 37 | → | [`TESTING.md`](TESTING.md) |
+| 13 | ✓ | [`.kilo/skills/pr-track-v1/SKILL.md`](.kilo/skills/pr-track-v1/SKILL.md) |
+| 14 | ✓ | [`.kilocode/skills/vscode-visual-regression/SKILL.md`](.kilocode/skills/vscode-visual-regression/SKILL.md) |
+| 15 | ✓ | [`.opencode/skills/effect/SKILL.md`](.opencode/skills/effect/SKILL.md) |
+| 16 | ✓ | [`.opencode/skills/rtl-aware-development/SKILL.md`](.opencode/skills/rtl-aware-development/SKILL.md) |
+| 17 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 18 | ✓ | [`packages/codemode/AGENTS.md`](packages/codemode/AGENTS.md) |
+| 19 | ✓ | [`packages/core/src/tool/AGENTS.md`](packages/core/src/tool/AGENTS.md) |
+| 20 | ✓ | [`packages/effect-drizzle-sqlite/AGENTS.md`](packages/effect-drizzle-sqlite/AGENTS.md) |
+| 21 | ✓ | [`packages/kilo-docs/AGENTS.md`](packages/kilo-docs/AGENTS.md) |
+| 22 | ✓ | [`packages/kilo-docs/pages/ai-providers/gemini.md`](packages/kilo-docs/pages/ai-providers/gemini.md) |
+| 23 | ✓ | [`packages/kilo-docs/pages/customize/skills.md`](packages/kilo-docs/pages/customize/skills.md) |
+| 24 | ✓ | [`packages/kilo-jetbrains/AGENTS.md`](packages/kilo-jetbrains/AGENTS.md) |
+| 25 | ✓ | [`packages/kilo-vscode/AGENTS.md`](packages/kilo-vscode/AGENTS.md) |
+| 26 | ✓ | [`packages/llm/AGENTS.md`](packages/llm/AGENTS.md) |
+| 27 | ✓ | [`packages/opencode/AGENTS.md`](packages/opencode/AGENTS.md) |
+| 28 | ✓ | [`packages/opencode/src/server/routes/instance/httpapi/AGENTS.md`](packages/opencode/src/server/routes/instance/httpapi/AGENTS.md) |
+| 29 | ✓ | [`packages/opencode/src/session/llm/AGENTS.md`](packages/opencode/src/session/llm/AGENTS.md) |
+| 30 | ✓ | [`packages/opencode/test/AGENTS.md`](packages/opencode/test/AGENTS.md) |
+| 31 | ✓ | [`packages/opencode/test/fixture/skills/agents-sdk/SKILL.md`](packages/opencode/test/fixture/skills/agents-sdk/SKILL.md) |
+| 32 | ✓ | [`packages/opencode/test/fixture/skills/cloudflare/SKILL.md`](packages/opencode/test/fixture/skills/cloudflare/SKILL.md) |
+| 33 | ✓ | [`packages/opencode/test/server/AGENTS.md`](packages/opencode/test/server/AGENTS.md) |
+| 34 | ✓ | [`packages/schema/AGENTS.md`](packages/schema/AGENTS.md) |
+| 35 | ✓ | [`packages/session-ui/AGENTS.md`](packages/session-ui/AGENTS.md) |
+| 36 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
+| 37 | → | [`packages/kilo-docs/pages/contributing/architecture/config-schema.md`](packages/kilo-docs/pages/contributing/architecture/config-schema.md) |
+| 38 | → | [`TESTING.md`](TESTING.md) |
 
 ---
 

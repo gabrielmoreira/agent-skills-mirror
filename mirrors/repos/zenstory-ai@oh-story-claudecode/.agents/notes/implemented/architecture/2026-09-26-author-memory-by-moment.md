@@ -4,6 +4,8 @@ Status: implemented
 Date: 2026-09-26
 Related: [35K 加载上限](2026-09-26-per-call-load-ceiling-35k.md)、[作者记忆两级 store](2026-09-18-author-memory-two-level-store.md)
 
+后续归属调整见[作者记忆集中到长短篇写作 skill](../simplification/2026-10-15-author-memory-write-only.md)，本篇的时刻拆分与数据协议保持。
+
 ## Problem
 
 `skills/story/references/author-memory.md` 是共享 reference（同步到长篇、短篇、去 AI 味、审稿四份副本），作者只要说出一条长期偏好（「以后对话都短一点」），agent 就要整读这份 8954 字（去空白）的协议。其中大半只在少见时刻才用得上：单书布局与 `state.book` 报错、存量迁移 `migrate`、预算提醒的估算细节与查询装填顺序、`作者画像.md` 的 12288 字节硬上限、「整理作者记忆」、多事件原子 `commit`、`check`、冲突候选怎么落定、升级前的旧条目。各 skill 入口也已写好本任务的 `query` 命令，协议里的四行 kind 映射表对它们是重复。

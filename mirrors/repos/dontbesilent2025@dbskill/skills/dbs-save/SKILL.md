@@ -11,21 +11,15 @@ description: 把当前诊断的关键状态保存到本地，并查看或设置�
 
 ---
 
-## 用户面向的措辞约定
+## 存档契约
 
-跟用户对话时一律用中文，不要把内部术语暴露出去：
-
-- 「snapshot」→「存档」（一份诊断状态文件叫一份存档）
-- 「session」→「对话」或「下次回来」
-- 「slug」→「项目」（每个项目下独立一份存档目录）
-
-frontmatter 字段名（status / title / source_skill / next_skill）和文件路径中的 sessions / slug，是技术标识，不出现在用户对话里。
+措辞、项目名、存档根目录、文件名和存档格式统一按 [references/archive-contract.md](references/archive-contract.md) 执行。本文只写保存流程。
 
 ---
 
 ## 为什么需要存档
 
-dbskill 现有的 13 个诊断 skill，每次对话都是冷启动。用户上周诊断出来的结论、否决的方向，今天再来全部丢失。
+dbskill 的诊断类 Skill 每次对话都是冷启动。用户上周诊断出来的结论、否决的方向，今天再来全部丢失。
 
 诊断本来是累积的。客户跟你说过的话、走过的弯路、已经验证过的判断，下次应该接着用，而不是从头再讲一遍。
 
@@ -49,69 +43,18 @@ dbskill 现有的 13 个诊断 skill，每次对话都是冷启动。用户上�
 
 ---
 
-## 项目隔离（slug）
+## 设置存档位置
 
-每份存档都属于一个**项目**（内部叫 slug）。项目是用来分隔不同生意的诊断——做小红书的人和做线下课的人，诊断状态不能混在一起。
+存档根目录按契约第 3 节解析。本 Skill 是唯一可以写入 `.dbs/config.json` 的地方：
 
-**默认项目名**：取自 `basename $(pwd)`。保留中文、英文字母和数字，英文字母转小写；空格、标点和其他符号替换成 `-`，连续的 `-` 合并为一个，去掉首尾的 `-`。处理后为空时用 `default`。例如「命名讨论」保持为 `命名讨论`，`My Shop (2026)` 变成 `my-shop-2026`。
-
-**用户显式指定**：用 `--slug` 参数，例如 `/dbs-save --slug my-project 卖什么没想清楚`。
-
-如果当前在用户家目录或没有明确项目的地方，项目名默认是 `default`。
-
-跟用户对话时一律说「项目」，不要说「slug」——slug 是内部的目录名标识。
-
----
-
-## 存档根目录
-
-`dbs-save`、`dbs-restore`、`dbs-report` 必须先按同一套规则解析存档根目录，后续路径都基于这个结果拼接。
-
-配置文件固定为当前工作目录下的 `.dbs/config.json`。没有配置文件时，继续使用默认位置，不创建配置文件。
-
-```json
-{
-  "version": 1,
-  "mode": "default"
-}
-```
-
-`mode` 支持 3 个值：
-
-| mode | 存档根目录 |
-|---|---|
-| `default` | `~/.dbs/` |
-| `project` | 当前工作目录下的 `.dbs/` |
-| `custom` | `root` 字段指定的目录 |
-
-自定义示例：
-
-```json
-{
-  "version": 1,
-  "mode": "custom",
-  "root": "/Users/name/Library/Mobile Documents/com~apple~CloudDocs/dbs-archive"
-}
-```
-
-解析规则：
-
-1. 读取当前工作目录下的 `.dbs/config.json`。
-2. 文件不存在时，存档根目录为 `~/.dbs/`。
-3. `mode` 是 `default` 时，存档根目录为 `~/.dbs/`。
-4. `mode` 是 `project` 时，存档根目录为当前工作目录下的 `.dbs/`。
-5. `mode` 是 `custom` 时，读取 `root`。展开开头的 `~`；相对路径按当前工作目录解析。
-6. 配置无法解析、`mode` 不受支持、`root` 为空，或路径指向 `/`、用户家目录、当前项目根目录时，停止操作并说明配置问题。不要静默退回默认位置。
-
-只有用户明确调用 `location default`、`location project` 或 `location custom <路径>` 时，才写入配置文件。写入前说明最终解析出的绝对路径，并要求用户确认；用户确认后再创建或更新 `.dbs/config.json`。
+- 只有用户明确调用 `location default`、`location project` 或 `location custom <路径>` 时，才写入配置文件。写入前说明最终解析出的绝对路径，并要求用户确认；确认后再创建或更新 `.dbs/config.json`。
+- `/dbs-save location` 只显示当前模式、配置文件位置和解析后的存档根目录，不写文件。
 
 首次选择项目或自定义模式时提醒一次：
 
 - `.dbs/` 和存档目录内可能包含收入、客户与商业秘密，文件是本地纯文本，没有加密。
 - 如果当前项目使用 Git，建议把 `.dbs/` 加入 `.gitignore`。修改 `.gitignore` 前必须得到用户确认。
 - 切换位置不会自动搬动旧存档。需要迁移时，先展示来源与目标，得到用户确认后复制；保留原文件。
-
-`/dbs-save location` 只显示当前模式、配置文件位置和解析后的存档根目录，不写文件。
 
 ---
 
@@ -136,64 +79,11 @@ dbskill 现有的 13 个诊断 skill，每次对话都是冷启动。用户上�
 
 ### Step 3：拼路径
 
-先按「存档根目录」规则得到 `{存档根目录}`。
-
-```
-{存档根目录}/sessions/{slug}/{YYYYMMDD-HHMMSS}-{title-slug}.md
-```
-
-- `YYYYMMDD-HHMMSS` 用本地时间
-- `title-slug` 把标题里的空格和标点替换成 `-`，保留中英文字符
-- 如果同一秒已有同名（极少见），追加 4 位随机后缀，比如 `-a7k2`
-
-如果目录不存在，先 `mkdir -p`。
+按契约第 2～4 节确定项目名、存档根目录和文件名。目录不存在时先 `mkdir -p`。
 
 ### Step 4：写文件
 
-文件格式必须是 YAML frontmatter + markdown body。frontmatter 字段固定，body 用下面的 6 段结构。
-
-```yaml
----
-slug: {slug}
-timestamp: {ISO 8601 带时区，格式必须是 `2026-05-01T14:23:15+08:00`，不能是 `20260501T14:23:15+0800`。生成时优先用 `python3 -c "from datetime import datetime; print(datetime.now().astimezone().isoformat(timespec='seconds'))"`}
-title: {标题原文}
-source_skill: {对话中主要走过的 skill，比如 dbs-diagnosis；走了多个就用逗号分隔}
-status: {in-progress | resolved | abandoned}
-next_skill: {用户已确认的下一步 Skill，可以为空}
----
-
-## 用户主诉
-
-{用户最初问的问题，原文摘要 1-2 句。不要美化、不要总结成抽象概念，保留用户的原话语气}
-
-## 已得出的结论
-
-- {结论 1，一句话}
-- {结论 2，一句话}
-- ...
-
-## 用户已否决的方向
-
-- {用户主动放弃的路径} —— 否决理由：{为什么放弃}
-- ...
-
-如果没有，写「（暂无）」。
-
-## 待验证假设
-
-- {假设 1}
-- ...
-
-如果没有，写「（暂无）」。
-
-## 已确认的下一步
-
-{用户已经确认时，写做什么、为什么、对应哪个 Skill；尚未确认时写「待定，交回 /dbs 判断」}
-
-## 备注
-
-{自由 markdown，可以补任何对未来回访有用的信息：客户的原话、关键转折点、你当时的怀疑}
-```
+按契约第 5 节的格式写入：frontmatter 字段固定，正文 6 段按顺序写。`status` 和 `next_skill` 按契约第 5、6 节填写；`next_skill` 只写用户已经确认的 Skill，不确定时留空。
 
 ### Step 5：回执
 
@@ -212,7 +102,7 @@ next_skill: {用户已确认的下一步 Skill，可以为空}
 
 如果用户输入 `/dbs-save list` 或 `/dbs-save list <项目名>`，不写新文件，只列出已有存档。
 
-先按「存档根目录」规则定位 `sessions/{项目名}/`。只列出当前配置所指向位置中的存档，不混合其他位置。
+先按契约第 3 节定位 `sessions/{项目名}/`。只列出当前配置所指向位置中的存档，不混合其他位置。
 
 输出格式：
 
@@ -225,32 +115,11 @@ next_skill: {用户已确认的下一步 Skill，可以为空}
 3. 2026-05-01 14:23 · 定价拉到 10 倍价差 · 已结论 · 来自 dbs-diagnosis
 ```
 
-status 字段对用户展示时翻译成中文（in-progress → 进行中，resolved → 已结论，abandoned → 已放弃）。
+status 字段按契约第 5 节翻译成中文展示。
 
 如果当前项目下没有任何存档，告诉用户：
 
 > 当前项目 `{项目名}` 下没有存档。先做诊断再存档。
-
----
-
-## status 字段怎么定
-
-| 取值 | 含义 |
-|---|---|
-| `in-progress` | 诊断还没结束，下次回来要接着 |
-| `resolved` | 这个问题诊断完成、结论已经确定 |
-| `abandoned` | 用户决定放弃这个方向，不再追 |
-
-不确定时默认 `in-progress`。
-
----
-
-## next_skill 字段怎么填
-
-只有用户已经明确选择下一个 Skill，或明确确认按某个 Skill 继续时，才填写 `next_skill`。
-上一个 Skill 只给出候选方向、用户尚未确认时，留空并让 `/dbs` 在恢复后重新判断。
-
-不要瞎猜——这个字段是给 dbs-restore 自动接续用的，错了比空更糟。
 
 ---
 

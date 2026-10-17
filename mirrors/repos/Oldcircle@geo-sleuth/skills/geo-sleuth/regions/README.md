@@ -50,8 +50,10 @@ regions/<cc>/
 | `level_names` | what the levels are called locally, for the card |
 | `name_suffixes` | generic suffixes ignored when matching names across sources (CN: 市, 省, 区, 县) |
 | `admin_table` | optional; lets `board.py children` check OSM's list and gives candidates stable ids |
+| `also_children` | optional; OSM relation names `board.py children <country>` lists next to the first-level divisions when OSM's admin tree leaves them out or puts them at another level (CN: Hong Kong, Macau, Taiwan) |
+| `osm_name_keys` | optional; extra OSM `name:*` tags that place-name lookups also match (CN: `name:zh`, `name:zh-Hans`, because OSM's `name` adds a second script for some regions and simplified forms only exist there). Core scripts match `name` plus every installed pack's keys |
 | `lookups` | lookup kind → prefix table. Use an existing kind name when it means the same thing: `plate`, `area-code`, `postal-code` |
-| `services` | `poi` (sources and Nominatim country for `poi.py --region`), `street_view` (a core script), `datum` (local map datum, if any) |
+| `services` | `poi` (sources and Nominatim country for `poi.py --region`; optional `keyword_scripts`, Unicode character-name prefixes such as `CJK UNIFIED IDEOGRAPH`, makes its sources the default for keywords in that script when no `--region` is given), `street_view` (a core script), `datum` (local map datum, if any) |
 | `tips` | replaces the matching line of `board.py next`'s cheap tests (`livery`, `municipal`, …) |
 
 ### Prefix tables (`data/*.json` named in `lookups`)

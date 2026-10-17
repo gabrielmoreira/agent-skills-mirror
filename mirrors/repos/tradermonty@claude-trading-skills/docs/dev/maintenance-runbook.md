@@ -264,3 +264,52 @@ files from distributable archives. The `skill-docs-drift` hook's `files:`
 includes `skill-packages/*.skill`, so a stale archive that feeds a
 generator-owned page surfaces as drift. Repackage, `git add` the `.skill`, and
 re-run `pre-commit run --all-files`.
+
+## Automation failure notifications and heartbeat
+
+Both `scripts/run_skill_improvement.sh` and `scripts/run_skill_generation.sh`
+notify on a nonzero exit when `SKILL_LOOP_NOTIFY` is configured. Default is a
+silent no-op. Notifications contain only the job name, exit code, and a prompt
+to read local logs; command output and exception text are never sent.
+
+- Set `SKILL_LOOP_NOTIFY=macos` for a local macOS notification (`osascript`).
+- Set `SKILL_LOOP_NOTIFY=webhook` and `SKILL_LOOP_WEBHOOK_URL` to an HTTPS
+  endpoint accepting JSON `{"text": "..."}`. Redirects and URL credentials are
+  rejected. Keep the URL in a local, ignored environment file or launchd
+  environment, never in a committed plist or shell command history.
+- These settings must reach the wrapper, for example via the existing trusted
+  `.envrc`/direnv setup or the installed LaunchAgent's local environment.
+  Setup failures before `.envrc` is loaded require the variables to be inherited.
+
+Notification is best effort: one request with a five-second socket timeout,
+no retry, or a five-second macOS subprocess timeout. An unavailable Python
+interpreter prevents delivery and produces a fixed stderr warning instead.
+Notifier errors never replace the original job exit code. A killed process or
+unloaded LaunchAgent cannot send its own failure notification.
+
+Check all three job heartbeats offline:
+
+```bash
+python3 scripts/job_monitor.py --check-heartbeat --project-root .
+```
+
+Exit 0 means all success timestamps are fresh; exit 1 reports missing, invalid,
+future, or stale timestamps. Thresholds are 48 hours for improvement and daily
+generation, and 14 days for weekly generation. This command reads only the two
+existing `logs/.skill_*_state.json` files and does not notify or modify anything.
+Use the primary repository whose logs the improvement checkout shares, or pass
+its path with `--project-root`. After upgrading, jobs without a recorded success
+warn until their first healthy run; old `last_run` values are not evidence of
+success.
+
+State records UTC `last_success_at` (an ISO timestamp for improvement, a mapping
+with independent `daily` and `weekly` timestamps for generation). A completed
+daily check with no eligible ideas or an already open PR is healthy. Dry runs,
+lock skips, and failures do not refresh it. A failed improvement attempt returns
+nonzero even when scoring and the summary succeeded. Success is recorded after
+normal cleanup; it does not prove that a PR was merged or deployed.
+
+Schedule the checker independently (for example daily from a separate watchdog)
+and inspect its nonzero exit. Running it only inside the monitored agents will
+not detect agents that have stopped firing. No LaunchAgent is installed or
+notification enabled by this repository change.

@@ -63,6 +63,12 @@ later assignments. Selected skills and the legacy operational skill retain cache
 exclusion through version pinning. The [configuration regression](../../server/src/__tests__/heartbeat-execution-configuration.test.ts)
 uses a real PostgreSQL lock; live provider latency remains a separate check.
 
+Concurrent selected-skill preparations share one in-flight company inventory
+refresh before cache locking. Each run retains its own selection and durable
+version pins. The [concurrency regression](../../server/src/__tests__/company-skills-runtime-concurrency.test.ts)
+checks shared work and separate actor access; the cache tests check that cleanup
+cannot remove a snapshot before the run stores its pins.
+
 ## Gotchas
 
 - The release picker requires `enableBetaSkills`. Do not invent an Instructions
@@ -121,3 +127,9 @@ Sources: Source: [SkillStudio.tsx](../../ui/src/pages/SkillStudio.tsx), [company
 ### Documentation scope: Skills, Skill Studio, and teams
 
 Main library/Studio/source/policy and CLI team-install paths are mapped. Full source-provider conflicts, harness sync, and remote package variants remain; catalog UI is not a current top-level route.
+
+
+Installed skill updates and assignments can drive opt-in plugin runtime
+synchronization. Version pins remain effective. See
+[contract](../../doc/plugins/AGENT_RUNTIME_SYNC.md#skills) and
+[database coverage](../../server/src/__tests__/agent-runtime-skills.test.ts).

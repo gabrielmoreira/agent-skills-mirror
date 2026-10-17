@@ -1,6 +1,6 @@
 ---
 name: loop-engineering
-description: Loop engineering runtime Grill + Monitor
+description: Use to retry a task until tests, builds, or lint pass via Grill interview plus loop Monitor.
 ---
 
 # Loop Engineering Skill
@@ -10,7 +10,7 @@ description: Loop engineering runtime Grill + Monitor
 1. Goal: "What are you trying to accomplish?"
 2. Success criteria: "Describe how we know the loop succeeded."
 3. Success type: choose from `test`, `build`, `lint`, `command`, `fileExists`, `oracle`, `observer`, `manual`. For CLI steps provide `successCommand`; for file detection provide `successPath`.
-4. Execute agent: fixer / designer / explorer / librarian
+4. Execute agent: fixer / designer / explorer
 5. Verify agent: oracle / observer / test
 6. Max attempts (default 3)
 7. Optional context files: which files or directories should be read before execution?

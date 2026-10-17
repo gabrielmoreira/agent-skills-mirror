@@ -147,6 +147,28 @@ newer pages remain reachable when the visible window reaches 300 records.
 Looking back pauses automatic insertion; new activity is disclosed without
 moving the reader. Source and content fingerprints reject stale detail reads;
 history replacement resets the visible window instead of mixing conversations.
+An interrupted or timed-out history read keeps the records already displayed
+and explains that updates resume automatically when the connection recovers.
+Replies remain disabled until a fresh observation permits them. Changing the
+display language preserves the reader's position. These are read-recovery
+guarantees; interrupted reply delivery still follows its receipt contract.
+Initial conversation discovery also retries network interruptions, timeouts and
+server failures automatically, including service failures that answer with an
+HTML or empty body. The response status keeps deciding retryability when the
+body stalls or is cut short after the headers have arrived, so a retryable
+service failure still recovers while a denied read stays stopped. Permission,
+other client errors and unreadable successful responses remain visible without
+automatic retries. Leaving the Agent page cancels pending discovery retries;
+recovery never submits input or selects another Agent.
+
+These examples use public synthetic records and an isolated Desktop protocol
+peer. They illustrate the recovery message, not a live executor or installed-App
+qualification.
+
+| Interrupted read before | Recovery feedback |
+| --- | --- |
+| ![Interrupted history read with a technical error](../../examples/personal-workspace-browser/assets/attached-history-outage-before.png) | ![Retained history with automatic recovery guidance](../../examples/personal-workspace-browser/assets/attached-history-outage-after.png) |
+
 Pages contain at most 100 records and scan approximately 2 MiB, allowing a whole
 larger record at a boundary. The reader skips up to eight metadata-only windows
 per read gesture or observation; it stops on visible work, the source boundary,
@@ -159,8 +181,43 @@ event parity. Credential-shaped content is withheld through the shared detector;
 that detector is not a guarantee of identifying every possible secret.
 
 Original content remains private to the local owner. One-second observation of
-saved records is **not token streaming**. History is neither copied into LoopX
-run history nor made available to a shared sink. Stable Agent routing is shared
+saved records is **not token streaming**. When the original host is connected and
+not observed idle, the Agent page also subscribes to that exact owner's live
+state. Unfinished visible assistant text and supported tool work update in place;
+they are labelled as live observations. Looking back freezes insertion until
+**Back to latest**. Completion removes the transient row; saved history remains
+the durable reader and the place to continue long output. Neither observed work
+nor its completion establishes Goal acceptance or a delivery receipt.
+
+Current visible messages and tools carry a small activity glyph rather than a
+repeated live-observation banner. It moves only for supported work observed in
+the original active Turn while following the live tail. Looking back makes the
+glyph still; completion, disconnection and switching Agents stop it. Reduced
+motion keeps the readable glyph and accessible state label without rotation.
+Source/update details are available on the Codex App label; input availability
+and failures remain visible. This treatment does not imply token streaming.
+
+Live observation sends only the versioned following/unfollowing broadcasts. It
+never starts, resumes, steers or interrupts a Turn, loads complete history, or
+answers approvals. It rejects another owner/thread, unsupported versions and
+revision gaps, and rechecks the current binding before exposing updates. Leaving
+the page closes the subscription. Reasoning, user input, model/configuration
+metadata and unrecognized items do not enter this live projection. The existing
+credential detector still applies; it cannot identify every possible secret.
+
+The live reader has a separate 64 MiB frame bound, retains only compact current
+Turn content, and limits the browser projection to 32 rows / 256 KiB. Ordinary
+RPC/input bounds are unchanged. At most two live readers run per presentation
+process. Unsupported, over-limit or discontinuous live observations fall back to
+the saved-record reader with an explicit notice. Oversized live fields are
+withheld; after persistence the existing history/detail path remains available.
+Transient disconnections reconnect automatically; unsupported protocol/baseline
+shapes stop the live reader until the Agent view is reopened.
+These limits and private Desktop protocol compatibility remain coverage gaps.
+This adds observation, not native-input, approval or installed-host qualification.
+
+History is neither copied into LoopX run history nor made available to a shared
+sink. Stable Agent routing is shared
 by the Goal directory; other providers and native approval/stream parity remain
 within the working-session acceptance. The Codex provider does not close those gaps.
 

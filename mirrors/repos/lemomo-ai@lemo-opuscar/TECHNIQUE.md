@@ -26,6 +26,8 @@ Everything else installs in tiers, from the library root (`$LIB` in skill mode).
 | `sh tools/fetch.sh instruments <lib>` | a sample library: `freepats`, `karoryfer`, `salamander`, `vcsl`, `vsco2ce` or `all` | 70–400 MB each |
 | `sh tools/fetch.sh hdri` | HDRIs for 3D styles | 12 MB |
 
+Some styles need packages of their own (a LiDAR reader, a slide-scan decoder, a CAD importer); the style's `STYLE.md` lists them. They are packages, not system tools: install them yourself into a private venv or `node_modules` in the project folder, never into `$LIB/.venv`.
+
 A synthesized score needs no big download; `sampler.py` names the library to fetch when an instrument is missing. A pack needs about twice its size free while it unpacks. Downloads come from npm, PyPI, GitHub Releases and Hugging Face (`HF_ENDPOINT` sets a mirror).
 
 ## 2. The picture is a function of time
@@ -140,7 +142,9 @@ Write an original score from the cue map, in the instruments of the style's soun
 
 ## 11. Assets, credits and fonts
 
-Only CC0, CC BY or OFL material, each listed in the film's `CREDITS` with its source and licence; `core/audio/sampler.py credits(names)` writes the lines for the instruments you used.
+Only CC0, CC BY or OFL material, each listed in the film's `CREDITS` with its source and licence; `core/audio/sampler.py credits(names)` writes the lines for the instruments you used. Public-domain works count as CC0; "no known restrictions" does not. Data or images under other open licences (ODbL, CC BY-SA, open-hardware licences) only after you have named the licence and its terms (attribution, share-alike) to the user and they agree. The user's own material is fine as it is.
+
+A film that states facts (the Evidence Films styles) keeps a `FACTS.md` in the project folder: each claim with its source URL and the quoted wording, or the measurement that produced it.
 
 Fonts: Google Fonts (OFL), self-hosted in the project. The typefaces a `STYLE.md` names are not in the library; download them (`https://github.com/google/fonts/tree/main/ofl/<family>`) into the project's `fonts/`. `core/fonts/` holds a few Latin display fonts and a Chinese display font with only about 200 glyphs, not enough for running Chinese text. For Chinese, subset a CJK font to the characters you use: the Google Fonts CSS API with `&text=` returns just those glyphs (`https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@700&text=<URL-encoded characters>`). Download the font file it points to into the project's `fonts/` and load it with `@font-face`; don't link Google Fonts at render time.
 

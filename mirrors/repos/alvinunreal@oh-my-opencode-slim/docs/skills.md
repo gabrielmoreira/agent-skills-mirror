@@ -76,11 +76,11 @@ See **[Codemap Skill](codemap.md)** for full documentation including manual comm
 source repositories into `.slim/clonedeps/repos/` so OpenCode can inspect library
 internals while keeping cloned code out of git.
 
-The skill is assigned to `orchestrator`. The orchestrator may ask `@librarian`
+The skill is assigned to `orchestrator`. The orchestrator may ask `@explorer`
 to identify important dependencies and resolve official repository URLs/tags,
 then asks for approval before cloning with direct git/filesystem operations.
 There is intentionally no helper script; dependency discovery and ref validation
-are handled by the orchestrator/librarian workflow so the skill works across
+are handled by the orchestrator/explorer workflow so the skill works across
 languages and repository types.
 
 Before planning, the orchestrator checks `.slim/clonedeps.json` and reuses
@@ -168,7 +168,7 @@ weak, indirect evidence.
 
 It selects the narrowest path by credibility, signal quality, cost, safety, and
 independent inspectability or repeatability. When relevant project facilities or
-constraints are unfamiliar or rapidly changing, it asks `@librarian` for focused
+constraints are unfamiliar or rapidly changing, it asks `@explorer` for focused
 official and project-specific research before deciding; it does not seek generic
 testing advice or research when current evidence is already decisive.
 
@@ -266,7 +266,7 @@ Typical requests:
 Tune my oh-my-opencode-slim models for lower cost.
 Add a custom API reviewer agent.
 Make the Orchestrator more conservative about parallel writer agents.
-Help me configure MCP access for Librarian only.
+Help me configure MCP access for Explorer only.
 ```
 
 After config changes, expect guidance like:

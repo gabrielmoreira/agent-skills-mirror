@@ -80,6 +80,16 @@ server, `/api/settings/require-login`, `/api/auth/status`) அந்த helper �
 | `CLIENT_API` | மாதிரியை வழங்கும் முனைப்புள்ளிகள் — `/api/v1/*`, `/api/v1beta/*`, மேலும் `/v1/*`, `/v1beta/*`, `/chat/completions`, `/responses`, `/models`, `/codex/*` ஆகிய மாற்றுப் பெயர்கள். | நடைமுறையிலுள்ள `REQUIRE_API_KEY` அம்சக் கொடி இயக்கப்பட்டிருக்கும்போது Bearer விசை |
 | `MANAGEMENT` | கட்டுப்பாட்டுப் பலகைப் பக்கங்கள், அமைப்புகள், வழங்குநர்கள், விசைகள், நிர்வாக மற்றும் கண்டறிதல் முனைப்புள்ளிகள்.                                                                 | கட்டுப்பாட்டுப் பலகை அமர்வு அல்லது `manage` வரம்புடன் கூடிய Bearer                |
 
+A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
+credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,
+`GET /api/db-backups/exportAll`), restoring a backup over the live data
+(`POST /api/db-backups/import` including `dryRun=true`, `POST /api/db-backups` restore by id,
+`POST /api/settings/import-json`), issuing a sync token (`POST /api/sync/tokens`) and minting an
+`admin` CLI access token (`POST /api/cli/tokens`) require a dashboard session, the local CLI
+subject, or login disabled; API keys of any scope and `oma_` access tokens get `403`. The check
+lives in `src/lib/api/operatorCredential.ts` (`resolveOperatorCredential()` /
+`requireOperatorCredential()`).
+
 ## செயலாக்கத் தொடர்
 
 ```

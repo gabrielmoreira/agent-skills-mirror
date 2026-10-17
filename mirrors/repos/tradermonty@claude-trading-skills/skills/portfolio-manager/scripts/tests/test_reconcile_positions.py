@@ -228,3 +228,81 @@ def test_cli_rejects_hardlinked_output(tmp_path, capsys, extension, source_name)
     assert [p.read_bytes() for p in (broker, memory)] == original
     assert "overwrite" in capsys.readouterr().err
     assert {p.name for p in output.iterdir()} == {f"reconciliation_report.{extension}"}
+
+
+@pytest.mark.parametrize("side", ["broker", "memory"])
+@pytest.mark.parametrize(
+    ("content", "cause"),
+    [
+        (None, "file not found"),
+        (b"\xffPRIVATE_PAYLOAD", "encoding error (expected UTF-8)"),
+        (b"PRIVATE_PAYLOAD", "invalid JSON"),
+        (b'{"PRIVATE_KEY":1,"PRIVATE_KEY":2}', "duplicate JSON object key"),
+        (b"[" * 20000 + b"]" * 20000, "JSON too deeply nested"),
+        (b'{"quantity":1e999999999999999999999}', "invalid JSON"),
+    ],
+)
+def test_cli_read_failure_class_and_side(tmp_path, capsys, side, content, cause):
+    paths = {name: tmp_path / f"PRIVATE_PATH_{name}.json" for name in ("broker", "memory")}
+    for path in paths.values():
+        path.write_text(json.dumps(snapshot()))
+    if content is None:
+        paths[side].unlink()
+    else:
+        paths[side].write_bytes(content)
+    original = {name: path.read_bytes() for name, path in paths.items() if path.exists()}
+    output = tmp_path / "reports"
+    assert (
+        main(
+            [
+                "--broker",
+                str(paths["broker"]),
+                "--memory",
+                str(paths["memory"]),
+                "--output-dir",
+                str(output),
+            ]
+        )
+        == 1
+    )
+    streams = capsys.readouterr()
+    report = json.loads(streams.out)
+    assert report["status"] == "INVALID_INPUT"
+    assert report["errors"] == [f"{side}: {cause}"]
+    assert report["can_continue"] is False
+    assert report["requires_review"] is True
+    assert report["items"] == []
+    assert "PRIVATE" not in streams.out + streams.err
+    assert "stop allocation" in streams.err
+    assert not output.exists()
+    assert {name: paths[name].read_bytes() for name in original} == original
+
+
+@pytest.mark.parametrize("side", ["broker", "memory"])
+def test_cli_os_read_failure(tmp_path, capsys, side):
+    paths = {name: tmp_path / f"{name}.json" for name in ("broker", "memory")}
+    for path in paths.values():
+        path.write_text(json.dumps(snapshot()))
+    paths[side].unlink()
+    paths[side].mkdir()
+    assert main(["--broker", str(paths["broker"]), "--memory", str(paths["memory"])]) == 1
+    assert json.loads(capsys.readouterr().out)["errors"] == [f"{side}: file read error"]
+
+
+@pytest.mark.parametrize("side", ["broker", "memory"])
+def test_missing_markdown_values_keep_json_null(side):
+    broker = snapshot(row()) if side == "broker" else snapshot()
+    memory = snapshot(row()) if side == "memory" else snapshot()
+    report = reconcile(broker, memory)
+    missing = "memory" if side == "broker" else "broker"
+    assert report["items"][0][f"{missing}_quantity"] is None
+    assert report["items"][0][f"{missing}_direction"] is None
+    assert f'"{missing}_quantity": null' in json.dumps(report)
+    markdown = render_summary(report)
+    assert "None" not in markdown
+    expected = (
+        "| FICTA | 10 | - | LONG / - | BROKER_ONLY |"
+        if side == "broker"
+        else "| FICTA | - | 10 | - / LONG | MEMORY_ONLY |"
+    )
+    assert expected in markdown

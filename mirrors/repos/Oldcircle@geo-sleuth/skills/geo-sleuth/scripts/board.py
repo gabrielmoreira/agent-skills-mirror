@@ -121,10 +121,11 @@ def _log(b: dict, text: str) -> None:
     b.setdefault("log", []).append(f"{datetime.now():%H:%M} {text}")
 
 
-def _run(cmd: list[str]) -> subprocess.CompletedProcess:
-    """Run gazetteer.py, clues.py. Child scripts and this one both use UTF-8: Chinese Windows reads and writes GBK by default, and if the two sides differ you get mojibake or crashes."""
-    return subprocess.run(cmd, text=True, encoding="utf-8", errors="replace", capture_output=True,
-                          env={**os.environ, "PYTHONUTF8": "1"})
+def _run(cmd: list[str], live: bool = False) -> subprocess.CompletedProcess:
+    """Run gazetteer.py, clues.py. Child scripts and this one both use UTF-8: Chinese Windows reads and writes GBK by default, and if the two sides differ you get mojibake or crashes.
+    live=True passes the child's stderr straight through: Overpass retries can take many minutes, and captured they look like a hang."""
+    return subprocess.run(cmd, text=True, encoding="utf-8", errors="replace", stdout=subprocess.PIPE,
+                          stderr=None if live else subprocess.PIPE, env={**os.environ, "PYTHONUTF8": "1"})
 
 
 def _bbox_km2(bb: list[float]) -> float:
@@ -381,13 +382,10 @@ def cmd_children(args, p: Path) -> None:
         cmd += ["--within", args.within]
     if args.proxy:
         cmd += ["--proxy", args.proxy]
-    r = _run(cmd)
-    for line in r.stderr.splitlines():
-        if "not treated as the next level" in line or "falling back to the first" in line:
-            print(line)
+    r = _run(cmd, live=True)
     out = r.stdout.strip(); print(out if len(out) < 1800 else out[:1800].rsplit('\n', 1)[0] + '\n  …')
     if r.returncode != 0:
-        sys.exit(f"gazetteer failed: {r.stderr.strip()[-600:]}")
+        sys.exit("gazetteer failed; its messages are above")
     kids = json.loads((p.parent / ".gz_children.json").read_text(encoding="utf-8"))
     as_level, why = _child_level(b, args, out)
     # Stable ids from a region pack's admin table, so lookups (plates, area codes) land on these same candidates
@@ -478,6 +476,20 @@ def _parse_lr(items: list[str] | None, default: float | None) -> list[tuple[str,
     return out
 
 
+def _put_evidence(b: dict, rec: dict) -> dict | None:
+    """Revise one clue/candidate pair, including duplicate entries in older boards."""
+    key = (rec["clue"], rec["candidate"])
+    old = next((e for e in b["evidence"] if (e["clue"], e["candidate"]) == key), None)
+    if old is not None:
+        previous = dict(old)
+        old.update(rec)
+        b["evidence"] = [e for e in b["evidence"] if e is old or (e["clue"], e["candidate"]) != key]
+        return previous
+    next_id = max((int(e["id"][1:]) for e in b["evidence"]), default=0) + 1
+    b["evidence"].append({"id": f"E{next_id}", **rec})
+    return None
+
+
 def cmd_evidence(args, p: Path) -> None:
     b = _load(p)
     if args.clue not in b["clues"]:
@@ -487,7 +499,7 @@ def cmd_evidence(args, p: Path) -> None:
     pairs = _parse_lr(args.for_, 3.0) + [(n, v) for n, v in _parse_lr(args.against, 1 / 3)]
     if not pairs:
         sys.exit("Give at least one --for name:likelihood_ratio or --against name:likelihood_ratio")
-    clipped = []
+    clipped, replaced = [], []
     for name, lr in pairs:
         cname = _find(b, name)
         if lr <= 0:
@@ -495,8 +507,11 @@ def cmd_evidence(args, p: Path) -> None:
         lr2 = min(max(lr, 1 / cap), cap)
         if abs(lr2 - lr) > 1e-9:
             clipped.append(f"{cname}:{lr:g}→{lr2:g}")
-        b["evidence"].append({"id": f"E{len(b['evidence']) + 1}", "clue": args.clue, "candidate": cname, "lr": lr2,
-                              "why": args.why or "", "file": args.file or "", "cmd": args.command_ or ""})
+        rec = {"clue": args.clue, "candidate": cname, "lr": lr2, "why": args.why or "", "file": args.file or "", "cmd": args.command_ or ""}
+        # one clue counts once per candidate: recording it again revises that estimate instead of multiplying it in a second time
+        old = _put_evidence(b, rec)
+        if old:
+            replaced.append(f"{old['id']} {cname}:{old['lr']:g}→{lr2:g}")
     cl["used"] = True
     if args.file and not Path(args.file).exists():
         print(f"Note: {args.file} doesn't exist; evidence files must be real outputs of this session")
@@ -505,6 +520,9 @@ def cmd_evidence(args, p: Path) -> None:
     if clipped:
         print(f"Clue {args.clue} is \"{cl['status']}\", likelihood ratio clamped to 1/{cap:g}–{cap:g}: {'; '.join(clipped)}. "
               f"For more weight, first verify the clue as read/computed (read the text, run a script), then record a new clue.")
+    if replaced:
+        print(f"Clue {args.clue} already had evidence for these candidates; replaced it instead of counting it twice: {'; '.join(replaced)}. "
+              f"An independent observation (another photo detail, another source) is a new clue: `board.py clue` first.")
     print("Recorded." + ("" if args.why else " Suggest adding --why to state the basis."))
 
 
@@ -563,9 +581,9 @@ def cmd_urban(args, p: Path) -> None:
         cmd += ["--within", args.within]
     if args.proxy:
         cmd += ["--proxy", args.proxy]
-    r = _run(cmd)
+    r = _run(cmd, live=True)
     if r.returncode != 0:
-        sys.exit(f"gazetteer urban failed: {r.stderr.strip()[-600:]}")
+        sys.exit("gazetteer urban failed; its messages are above")
     d = json.loads(r.stdout[r.stdout.index("{"):])
     if d.get("urban_bbox"):
         b["candidates"][cname]["scan_bbox"] = d["urban_bbox"]
@@ -1014,8 +1032,8 @@ def cmd_apply(args, p: Path) -> None:
         if (lv, cname) in touched:   # one piece of evidence per place, however many table rows name it
             return
         touched[(lv, cname)] = None
-        b["evidence"].append({"id": f"E{len(b['evidence']) + 1}", "clue": kid, "candidate": cname, "lr": lr,
-                              "why": why, "file": args.file or "", "cmd": f"clues.py lookup {args.kind} {args.value}"})
+        _put_evidence(b, {"clue": kid, "candidate": cname, "lr": lr,
+                          "why": why, "file": args.file or "", "cmd": f"clues.py lookup {args.kind} {args.value}"})
 
     for m in matches:
         code = m.get("country_code")
@@ -1058,8 +1076,8 @@ def cmd_apply(args, p: Path) -> None:
         for k, c in b["candidates"].items():
             if c["level"] == lv and (lv, k) not in touched and c.get("status") != "excluded" and _norm(c.get("parent") or "") not in leaves \
                     and covered(k, c):
-                b["evidence"].append({"id": f"E{len(b['evidence']) + 1}", "clue": kid, "candidate": k, "lr": 1 / lr,
-                                      "why": f"lookup {args.kind}={args.value} doesn't point here", "file": "", "cmd": ""})
+                _put_evidence(b, {"clue": kid, "candidate": k, "lr": 1 / lr,
+                                  "why": f"lookup {args.kind}={args.value} doesn't point here", "file": "", "cmd": ""})
     b["clues"][kid]["used"] = True
     _log(b, f"apply {args.kind}={args.value} → {[n for _, n in touched]}")
     _save(p, b)

@@ -107,7 +107,7 @@ candidate's files are at the top of the run folder.
 | `--effort` | `medium`, `high`, `xhigh` (`high`) | Thinking effort of each drawing. |
 | `--format` | `chargrid`, `json` (`chargrid`) | How the model writes the grid. `grid.txt` is a character grid either way. |
 | `--batch` | flag | Draw through Message Batches at half price and wait for the batch (below). Batches exist only on the API, so the whole run uses `ANTHROPIC_API_KEY` even when a subscription is signed in. |
-| `--batch-wait S` | seconds (3600) | How long to wait for one batch before the run ends unfinished; `--resume` collects it later. `0` submits and returns. |
+| `--batch-wait S` | seconds (3600) | How long to wait for one batch before the run ends unfinished; `--resume` collects it later. `0` submits and returns. A refused status or results read is asked again only while its wait ends within it. |
 | `--max-tokens N` | 1024–128000 (32000 for one frame, 64000 for more) | Output cap of each drawing, thinking included. |
 | `--pick` | `vision`, `human` (`vision`) | Who picks among candidates that passed. |
 | `--out-dir DIR` | a new or empty folder | The run folder. |

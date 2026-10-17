@@ -81,6 +81,16 @@ dopolnjena:
 | `CLIENT_API` | Končne točke za streženje modelov — `/api/v1/*`, `/api/v1beta/*` ter vzdevki `/v1/*`, `/v1beta/*`, `/chat/completions`, `/responses`, `/models`, `/codex/*`. | Ključ Bearer, ko je veljavna funkcijska zastavica `REQUIRE_API_KEY` omogočena |
 | `MANAGEMENT` | Strani nadzorne plošče, nastavitve, ponudniki, ključi ter skrbniške in diagnostične končne točke.                                                            | Seja nadzorne plošče ALI Bearer z obsegom `manage`                            |
 
+A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
+credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,
+`GET /api/db-backups/exportAll`), restoring a backup over the live data
+(`POST /api/db-backups/import` including `dryRun=true`, `POST /api/db-backups` restore by id,
+`POST /api/settings/import-json`), issuing a sync token (`POST /api/sync/tokens`) and minting an
+`admin` CLI access token (`POST /api/cli/tokens`) require a dashboard session, the local CLI
+subject, or login disabled; API keys of any scope and `oma_` access tokens get `403`. The check
+lives in `src/lib/api/operatorCredential.ts` (`resolveOperatorCredential()` /
+`requireOperatorCredential()`).
+
 ## Cevovod
 
 ```

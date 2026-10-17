@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pydantic/logfire` — 26 default patterns, 1 followed patterns, 12 file(s) materialized.
+Mirror of `pydantic/logfire` — 26 default patterns, 1 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pydantic/logfire` — 26 default patterns, 1 followed patterns, 12 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,10 +67,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`docs/how-to-guides/skills.md`](docs/how-to-guides/skills.md) |
 | 7 | ✓ | [`docs/integrations/agent-frameworks/CLAUDE.md`](docs/integrations/agent-frameworks/CLAUDE.md) |
 | 8 | ✓ | [`logfire-sdk/logfire/.agents/skills/logfire-evals/SKILL.md`](logfire-sdk/logfire/.agents/skills/logfire-evals/SKILL.md) |
-| 9 | ✓ | [`logfire-sdk/logfire/.agents/skills/logfire-infrastructure/SKILL.md`](logfire-sdk/logfire/.agents/skills/logfire-infrastructure/SKILL.md) |
-| 10 | ✓ | [`logfire-sdk/logfire/.agents/skills/logfire-instrumentation/SKILL.md`](logfire-sdk/logfire/.agents/skills/logfire-instrumentation/SKILL.md) |
-| 11 | ✓ | [`logfire-sdk/logfire/.agents/skills/logfire-setup/SKILL.md`](logfire-sdk/logfire/.agents/skills/logfire-setup/SKILL.md) |
-| 12 | → | [`dev-docs/documentation-style-guide.md`](dev-docs/documentation-style-guide.md) |
+| 9 | ✓ | [`logfire-sdk/logfire/.agents/skills/logfire-gateway/SKILL.md`](logfire-sdk/logfire/.agents/skills/logfire-gateway/SKILL.md) |
+| 10 | ✓ | [`logfire-sdk/logfire/.agents/skills/logfire-infrastructure/SKILL.md`](logfire-sdk/logfire/.agents/skills/logfire-infrastructure/SKILL.md) |
+| 11 | ✓ | [`logfire-sdk/logfire/.agents/skills/logfire-instrumentation/SKILL.md`](logfire-sdk/logfire/.agents/skills/logfire-instrumentation/SKILL.md) |
+| 12 | ✓ | [`logfire-sdk/logfire/.agents/skills/logfire-setup/SKILL.md`](logfire-sdk/logfire/.agents/skills/logfire-setup/SKILL.md) |
+| 13 | → | [`dev-docs/documentation-style-guide.md`](dev-docs/documentation-style-guide.md) |
 
 ---
 

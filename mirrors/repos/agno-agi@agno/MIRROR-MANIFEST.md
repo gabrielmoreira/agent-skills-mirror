@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `agno-agi/agno` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `agno-agi/agno` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `agno-agi/agno` — 26 default patterns, 0 followed patterns, 9 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,6 +68,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`cookbook/05_agent_os/23_skills/sample_skills/system-info/SKILL.md`](cookbook/05_agent_os/23_skills/sample_skills/system-info/SKILL.md) |
 | 8 | ✓ | [`cookbook/frameworks/antigravity/example_agent/AGENTS.md`](cookbook/frameworks/antigravity/example_agent/AGENTS.md) |
 | 9 | ✓ | [`cookbook/frameworks/antigravity/example_agent/skills/haiku/SKILL.md`](cookbook/frameworks/antigravity/example_agent/skills/haiku/SKILL.md) |
+| 10 | ✓ | [`libs/agno/agno/company/skills/intake/SKILL.md`](libs/agno/agno/company/skills/intake/SKILL.md) |
+| 11 | ✓ | [`libs/agno/agno/company/skills/refresh/SKILL.md`](libs/agno/agno/company/skills/refresh/SKILL.md) |
+| 12 | ✓ | [`libs/agno/agno/company/skills/summary/SKILL.md`](libs/agno/agno/company/skills/summary/SKILL.md) |
 
 ---
 

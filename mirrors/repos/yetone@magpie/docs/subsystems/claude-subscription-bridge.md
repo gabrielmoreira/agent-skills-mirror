@@ -58,8 +58,8 @@ started a new Claude Code told the whole conversation (#1546).
 A run started anew is told the whole conversation in one user message
 (`renderClaudePrompt`), a prefix the prompt cache has never seen, so the
 conversation is written to the cache again and its images are sent again.
-That message holds the history in blocks of `historyChunk` messages, and
-magpie's one mark (Claude Code keeps three of Anthropic's four) is on the
+By default, that message holds the history in blocks of `historyChunk`
+messages, and magpie's one mark (Claude Code keeps three of Anthropic's four) is on the
 last whole block, else on the caller's instructions: a later run started
 anew for the same conversation within the hour reads the history up to an
 earlier run's mark, found within Anthropic's 20-block lookback. A
@@ -70,6 +70,99 @@ history is not chunked, and image blocks count toward the lookback.
 A turn that goes on in the run that had the last one is told only the
 messages since (`renderClaudeTurn`), and Anthropic reads the rest from the
 cache.
+
+## Client-placed cache marks (#1717)
+
+A client can send `X-Magpie-Cache-Marks: client` on a `/v1/messages`
+request to a Claude subscription. Without that header, the bridge behaves
+as before. Chat Completions and Responses ignore the header. The mode is
+part of the run's identity, including rewritten conversations and tool-result
+handoffs: opted-in and ordinary requests never share a run.
+
+An opted-in run sets `DISABLE_PROMPT_CACHING=1`. Its four cache slots belong
+to the client. `claude_cache.go` validates the marks before run selection;
+`renderClaudePrompt` places them in a new run's first user message.
+
+| Client mark | Bridge behavior |
+| --- | --- |
+| `cache_control` without `ttl` | Uses `5m`. |
+| System block | Ends its own instruction block with the same TTL. |
+| Top-level `cache_control` | Sets the request-level tail through `CLAUDE_CODE_EXTRA_BODY`. |
+| Last message block | Sets the same request-level tail. |
+| Earlier message block, new run | Ends a block at that point in the rendered history with the same TTL. |
+| Earlier message block, running or saved run | Dropped and reported; the existing history cannot be edited. |
+| Tool definition | Dropped and reported; Claude Code owns the tools. |
+| Bridge history-chunk mark | Uses only a free slot and never a longer TTL than a preceding mark. |
+
+`setSafeguards` updates the tail before each turn or tool-result handoff
+that changes its TTL, and clears it when a request no longer asks for it.
+An explicit last-block mark and a top-level mark both count toward the
+request limit. The bridge represents their shared boundary with one tail
+when their TTLs match. Different TTLs at that boundary are rejected. Marks retained
+in the first user message survive shelving. A new tail that cannot fit
+the retained slots or TTL order starts a new session with the rendered
+history.
+
+More than four marks, or a `1h` mark after a `5m` mark in tools → system →
+messages order, returns HTTP 400 with Anthropic's `type: error` and
+`invalid_request_error` shape. The count includes top-level
+`cache_control`. Both error messages and the omitted-TTL default were
+checked through a relay to the live Anthropic API.
+
+`X-Magpie-Cache-Marks-Dropped` lists counts by section, such as
+`tools:1,messages:3`. It is absent when nothing was dropped. A mark on a
+system block removed with the billing header is reported as `system`.
+The bridge also reports marks on content it cannot render. Cache usage
+retains Anthropic's `cache_creation.ephemeral_5m_input_tokens` and
+`ephemeral_1h_input_tokens` values.
+
+The dropped-mark header and its keepalive hold belong only to a Claude
+subscription try. An API-key member keeps the client's marks and clears
+any report or hold left by an earlier subscription try. Validation still
+applies before routing among the members.
+
+The dropped-mark header is best-effort on streaming responses. Validation
+and tool-drop counts are known before headers are sent. An opted-in
+Claude subscription try waits at most two seconds for run selection to
+decide the other drops. Selection releases that hold before process startup or upstream
+output. If selection takes longer, the gateway logs the missing report
+and sends keepalives without the dropped-mark header. Later fallback can
+also change the selected run after headers have been sent. Reporting never
+fails the request or delays an ordinary request's keepalives.
+
+## The caller's instructions as the system prompt (`claudeLeanPrompt`)
+
+Every run is the real Claude Code. By default it keeps Claude Code's own
+system prompt, and the caller's instructions go in the run's first user
+message inside `<external_system_instructions>`. Settings › Models ›
+Replies › Short Claude system prompt (`claudeLeanPrompt`, off by default)
+starts a run with `--system-prompt-file` instead. The file is `system.md`
+in the run's temp folder, under the distro's mount in WSL (`claudeCLI.file`).
+It holds `leanSystem`: the caller's instructions without a client Claude
+Code's billing line, plus the tool-choice line. The first message then holds
+the conversation alone. Claude Code still sends its billing block and its
+identity line, so requests come from the real binary. They no longer carry
+Claude Code's prompt, and that is the ban risk the setting names.
+
+A request with client cache marks (#1717) is never lean: its system marks
+are placed in the first message. The mode is part of the run's identity
+(`cacheIdentity`, and the tool-results check in `serveSubscription`), so a
+run started in one mode never takes a turn of the other. After the setting
+changes, the next turn starts a run with the rendered history.
+
+Measured on 2026-10-16 with a real Claude subscription on Sonnet 5.5,
+Claude Code 2.1.301:
+
+| Client | Off | On |
+| --- | --- | --- |
+| Chat client, ~600-token prompt, 2 tools, 3 turns | 10,048 input tokens | 6,580 (−35%) |
+| `claude -p` as the client, Read and Bash, 4 requests | 85,453 / 85,471 | 81,948 / 81,977 (−4%) |
+
+The saving is a fixed ~0.9–1.2K tokens a request. It is large for light
+clients and small for clients with Claude Code-sized prompts. Without any
+tool, Claude Code's built-in tools are already off (`--tools ""`). A run
+told the whole conversation again costs far more, because it writes the
+history to the 1h cache at 2×.
 
 ## Runtime path for a new turn
 
@@ -418,6 +511,8 @@ carries none.
 ## Verification
 
 ```sh
+go test -tags nogui ./internal/gateway/ -run '^TestClaudeClientCache' -count=1
+go test -tags nogui ./internal/gateway/ -run '^TestClaudeLeanPrompt' -count=1
 go test -tags nogui ./internal/claudecode/ -count=1
 go test -tags nogui ./internal/gateway/ -run 'ClaudeSubscriptionRunsTheDownloaded|ClaudeSubscriptionWithoutClaudeCode|ClaudeRewritten|LostMedia|ImagesTakenOut|RunLetGoWhenTheClientRewrote|ClaudeSessionTempFiles|ClaudeLetGo|ClaudeSessionFiles|ClaudeOldSessions|ClaudeSubscriptionReplySaysTheAllowance|ClaudeAllowanceHeaders|ClaudeForksAnsweringTheLeadsCalls|ClaudeTurnGivenUpOn|ClaudeToolResultsGivenUpOn|ClaudePromptMarksEarlierTurns|ClaudeHistoryCachedAcrossNewRuns|ClaudeUnloadableSession|ClaudeEndedRunSaysWhy|ClaudeIdle|ClaudeSideQuestion|ClaudeNoRunSaysWhy|ClaudeToolResultsNoRunSaysWhy|ClaudePromptToldUserText|ClaudePromptKeepsInstructions|ClaudeToolResultsGoOnWithTheUsersWords|ClaudeToolResultsKeepInstructions|ToolResultKeepsUserTextSentMidTurn' -count=1
 ```

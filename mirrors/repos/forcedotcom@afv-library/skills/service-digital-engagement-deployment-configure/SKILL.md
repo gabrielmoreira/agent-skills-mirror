@@ -23,13 +23,30 @@ Configures `EmbeddedServiceConfig` metadata for Salesforce Messaging for In-App 
 ## Scope
 
 - **In scope**: Creating new Embedded Service Deployments (API, Mobile, Web types) via Connect API; updating existing deployments with forms, branding, channel settings, and features via Metadata API; generating `EmbeddedServiceConfig` XML for updates
-- **Out of scope**: Creating the messaging channel itself (use `service-digital-engagement-channel-configure`), publishing deployments (Connect API post-step), creating Experience Sites (Connect API prerequisite for Web type)
+- **Out of scope**: Creating the messaging channel itself (use `service-digital-engagement-channel-configure`), generating the website code snippet (offered only as a next step, see `references/code_snippet.md`), creating Experience Sites (Connect API prerequisite for Web type)
+
+---
+
+## Entry points: delegated or standalone
+
+Decide this before asking anything.
+
+- **Delegated** — the invocation carries `{ values, context }` with `context.calledFrom == "service-onboarding"`. The admin already approved `values` in the onboarding plan. Ask nothing; skip Clarifying Questions. If a required key is missing, stop and return `failed` naming it — do not guess.
+- **Standalone** — no `context`. Run Clarifying Questions as written.
+
+Both paths run the same pre-scan, write and validate steps. Full contract (payload, wording rules, result shape, registration entry): `references/onboarding_contract.md`.
+
+---
+
+## Transport
+
+Org reads and writes go through the **headless-360 MCP `dispatch` / `dispatch_readonly`** tools on `/services/data/vXX.0/headless/metadata` (**Transport A, primary**). Use the **`sf` CLI** (**Transport B**) only for a type/verb that a read-only probe shows is not onboarded, or when the MCP is unavailable. Probe each type separately — never infer onboarding from a different type. Details, the GET → modify → full-document PUT rule, and the credential trap are in `references/onboarding_contract.md` §2. The `sf` commands in the steps below are the Transport B form. Exception: Web create always uses the `sf` CLI (step 17a).
 
 ---
 
 ## Clarifying Questions
 
-Before generating, ask the user if not already clear:
+Before generating, ask the user if not already clear (standalone only):
 
 - **Create or update?** Are you creating a new deployment or updating an existing one?
 - **Deployment type?** API (headless), Mobile (native apps), or Web (browser widget)?
@@ -46,7 +63,7 @@ Gather or infer before proceeding:
 
 - **Operation**: `create` or `update`
 - **Deployment type**: `API`, `Mobile`, or `Web`
-- **Deployment name**: Used for `masterLabel` and the API name
+- **Deployment name**: Used as `masterLabel`. Derive the API name (`fullName` / `DeveloperName`, Connect `name`) from it: replace each run of characters other than letters and digits with `_`, then trim leading/trailing `_` (`Acme Support Chat` → `Acme_Support_Chat`). The result must match `^[a-zA-Z][a-zA-Z0-9_]*$`. Use the API name for every lookup and write
 - **Channel name**: The `channelPlatformKey` of the associated messaging channel
 
 For **update** operations additionally:
@@ -69,11 +86,21 @@ All steps are sequential. Do not skip or reorder. Branch based on the operation 
 
 1. **Verify org API version** — run `scripts/check-api-version.sh 67.0 <org-alias>` and report any errors it returns. If the script fails, generate a `sfdx-project.json` in the metadata output folder with `"sourceApiVersion": "67.0"`.
 
-2. **Determine operation** — ask whether the user wants to create a new deployment or update an existing one.
+2. **Determine operation** — standalone: ask whether the user wants to create a new deployment or update an existing one. Delegated: taken from `values.operation`, then confirmed by the pre-scan (step 4a).
 
-3. **Collect inputs** — gather deployment name, type, and channel name per Clarifying Questions above.
+3. **Collect inputs** — standalone: gather deployment name, type, and channel name per Clarifying Questions above. Delegated: bind them from `values`; stop with `failed` if `deploymentName`, `deploymentType` or `channelName` is missing.
+
+3a. **Probe transport** — read-only `GET` of `EmbeddedServiceConfig` via `dispatch_readonly`. Onboarded → Transport A. `UNSUPPORTED_OPERATION` or MCP unavailable → Transport B for that call. See `references/onboarding_contract.md` §2.
 
 4. **Read deployment settings reference** — load `references/deployment_settings.md` to understand all available configuration options.
+
+4a. **Pre-scan** — using the step 3a read, look for a deployment whose API name is the one derived from `deploymentName` (Required Inputs):
+   - none → operation is `create` (Phase 2A)
+   - exists and every targeted field already matches → **make no write**; return `already-configured` (delegated) or say so plainly (standalone). Skip to Phase 3
+   - exists with differences → operation is `update` (Phase 2B); announce each change, then write (standalone: ask for a yes first)
+   - exists but linked to a different channel → standalone: ask before repointing; delegated: return `failed`
+
+   Standalone with an existing deployment: offer no change / override / add to existing.
 
 ### Phase 2A — Create New Deployment
 
@@ -99,11 +126,11 @@ Use this path when the operation is `create`.
 9. **Present output and next steps** — show the generated file and summarize what was configured. Recommend as next steps:
    - **Publish** the deployment via Connect API to make it live:
      ```bash
-     sf api request rest "/services/data/v67.0/connect/embeddedservice/embeddedserviceconfig/publish/<EMBEDDED_SERVICE_CONFIG_ID>" -X POST -o <org-alias>
+     sf api request rest "/services/data/v67.0/connect/embeddedservice/embeddedserviceconfig/publish/<EMBEDDED_SERVICE_CONFIG_ID>" -X POST -b '{}' -o <org-alias>
      ```
      To obtain the `EMBEDDED_SERVICE_CONFIG_ID`:
      ```bash
-     sf data query --query "SELECT Id FROM EmbeddedServiceConfig WHERE DeveloperName = '<DEPLOYMENT_NAME>'" --target-org <org-alias>
+     sf data query --use-tooling-api --query "SELECT Id FROM EmbeddedServiceConfig WHERE DeveloperName = '<DEPLOYMENT_NAME>'" --target-org <org-alias>
      ```
    - **Generate code snippet** for integration — see `references/code_snippet.md`
 
@@ -111,11 +138,11 @@ Use this path when the operation is `create`.
 
 Use this path when the operation is `update`.
 
-10. **Retrieve the existing deployment** — retrieve the current `EmbeddedServiceConfig` metadata from the org before making changes:
+10. **Retrieve the existing deployment** — take the current `EmbeddedServiceConfig` from the org before making changes. Transport A: the `xmlRep` from the step 3a/4a `GET`. Transport B:
     ```bash
     sf project retrieve start --metadata EmbeddedServiceConfig:<DEPLOYMENT_NAME> --target-org <org-alias>
     ```
-    Use the retrieved file as the starting structure. If retrieval is not possible, load `assets/esd_web_update_template.xml` as a fallback reference.
+    Use it as the starting structure — the update is always a **full document**, never a minimal payload (omitted inline blocks can be silently cleared). If retrieval is not possible, load `assets/esd_web_update_template.xml` as a fallback reference.
 
 11. **Apply messaging channel settings** — configure `<embeddedServiceMessagingChannel>` with:
     - `messagingChannel` — the channel's `channelPlatformKey`
@@ -146,17 +173,33 @@ Use this path when the operation is `update`.
 17. **Present output and next steps** — show the generated file and summarize what was configured. Recommend as next steps:
     - **Publish** the deployment via Connect API to make changes live:
       ```bash
-      sf api request rest "/services/data/v67.0/connect/embeddedservice/embeddedserviceconfig/publish/<EMBEDDED_SERVICE_CONFIG_ID>" -X POST -o <org-alias>
+      sf api request rest "/services/data/v67.0/connect/embeddedservice/embeddedserviceconfig/publish/<EMBEDDED_SERVICE_CONFIG_ID>" -X POST -b '{}' -o <org-alias>
       ```
       To obtain the `EMBEDDED_SERVICE_CONFIG_ID`:
       ```bash
-      sf data query --query "SELECT Id FROM EmbeddedServiceConfig WHERE DeveloperName = '<DEPLOYMENT_NAME>'" --target-org <org-alias>
+      sf data query --use-tooling-api --query "SELECT Id FROM EmbeddedServiceConfig WHERE DeveloperName = '<DEPLOYMENT_NAME>'" --target-org <org-alias>
       ```
     - **Generate code snippet** for integration — see `references/code_snippet.md`
+
+### Phase 2C — Apply to the org
+
+Runs for both Phase 2A and 2B, except when the pre-scan returned `already-configured`. Standalone: confirm before writing. Delegated: the plan approval is the confirmation; still announce each write.
+
+17a. **Write the deployment** —
+    - Web create: Connect API (see `references/connect_api_creation.md`) via `sf api request rest` — always, not `dispatch` (MCP `dispatch` fails with `INTERNAL_ERROR` during site creation).
+    - API/Mobile create: Transport A `POST` `EmbeddedServiceConfig` (body carries `type`, `fullName`, `xmlRep`); Transport B `sf project deploy start`.
+    - Update: Transport A `PUT` of the **full** document; Transport B `sf project deploy start`.
+    Check `results[].success`, not just HTTP status. On failure stop and report the step — no silent retry.
+
+17b. **Re-read and diff** — `GET` the component again and confirm every intended field landed and no inline block (`embeddedServiceMessagingChannel`, forms) was dropped.
+
+17c. **Publish (Web only, only if something was written)** — `dispatch` `POST` on the fully-qualified publish path; if it returns a path/route error, run the `sf` publish command from the next-steps block above. Skip after a Web create alone when the create response has `isPublishSuccess: true` — the create already published.
 
 ### Phase 3 — Validate
 
 18. **Verify against checklist** — confirm all items in the Verification Checklist below pass.
+
+19. **Report** — delegated: return `{ "status": "success" | "already-configured" | "failed", "errorMessage": "...", "outputs": { ... } }` (shape in `references/onboarding_contract.md` §5). Standalone: the same outcome in plain language.
 
 ---
 
@@ -174,7 +217,9 @@ Use this path when the operation is `update`.
 | Pre-chat form fields must reference valid channel custom parameters | ChoiceList fields need the parameter deployed on the channel first |
 | File extension is `.EmbeddedServiceConfig-meta.xml` | Metadata API uses this specific extension |
 | Do not hardcode file paths — respect `sfdx-project.json` package directories | Customer orgs customize source paths |
-| Never include deploy/push commands in generated output | This skill produces artifacts only |
+| Do not embed deploy/push commands inside generated files or artifacts | Artifacts stay portable; in-session writes happen in Phase 2C through the chosen transport |
+| Update with the full retrieved document, never a minimal PUT | Omitted inline blocks can be silently cleared by the update |
+| Pre-scan before every write; no write when the org already matches | Makes re-runs idempotent and keeps "already configured" honest |
 | Publish step (Connect API) required after Web ESD updates | Changes are not live until published |
 
 ---
@@ -188,6 +233,9 @@ Use this path when the operation is `update`.
 | Branding overrides not applied | Use Tooling API to update individual BrandingSet properties after the deployment is created |
 | Pre-chat ChoiceList not showing | ChoiceList requires two-step deploy: create ChoiceList first, then assign to form field |
 | Changes not appearing in widget | Web ESDs must be published via Connect API after any update |
+| `sf api request rest` POST fails with "No 'mode' found in 'body' entry" | The CLI rejects a POST with no body (and `-b ""`). Pass `-b '{}'` — the publish endpoint takes no input |
+| `sf api request rest` fails with "Nonexistent flag: --url" | The URL is a positional argument, not a flag, and must be fully qualified (`/services/data/vXX.0/connect/...`) |
+| Web create via MCP `dispatch` returns `INTERNAL_ERROR` | Platform limitation of the MCP route during site creation — use `sf api request rest` for Web create. API/Mobile create and publish work via `dispatch` |
 | `embeddedServiceFlowConfig.enabled` error | Set to `false` unless you specifically need embedded flows (not routing flows) |
 | reCAPTCHA configuration rejected | reCAPTCHA is `@HideInWsdl` — must use Tooling API |
 | Business hours not taking effect | Only updating existing business hours works; creation is managed separately |
@@ -246,6 +294,7 @@ File structure follows the templates in `assets/`.
 
 | File | When to read |
 |------|-------------|
+| `references/onboarding_contract.md` | Delegated mode (`context.calledFrom == "service-onboarding"`), org writes (transport), module registration |
 | `assets/esd_api_mobile_template.xml` | Before generating API or Mobile type deployments |
 | `assets/esd_web_update_template.xml` | Before generating Web type updates |
 | `references/deployment_settings.md` | When configuring deployment options beyond defaults |

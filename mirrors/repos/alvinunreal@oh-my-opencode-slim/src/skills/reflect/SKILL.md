@@ -12,6 +12,8 @@ configuration change, prompt rule, documentation playbook, or no change.
 
 The goal is to identify real repeated friction and suggest practical improvements with evidence.
 
+Branch: lines marked [branch: --sessions] run only with that flag; plain /reflect skips Session Mode.
+
 ## When to Use
 
 Use Reflect when the user asks to:
@@ -27,7 +29,7 @@ Use Reflect when the user asks to:
 Do not use Reflect for ordinary implementation work, one-off debugging, broad
 architecture review, or speculative agent creation without workflow evidence.
 
-## Session Mode
+## Session Mode [branch: --sessions]
 
 When the user includes `--sessions` in their reflect command, shift to session
 archaeology: analyze historical OpenCode sessions across all repos to find

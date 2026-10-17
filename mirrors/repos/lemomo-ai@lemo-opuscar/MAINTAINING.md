@@ -17,6 +17,11 @@ Work in `styles/<slug>/` (lowercase letters, digits, hyphens; unique). Start fro
 
 Assets are CC0, CC BY or OFL only, each in `demo/CREDITS`. No watermark on any film. Real people, brands and events appear only in an unofficial fan film; its `DEMO.md` says so.
 
+Rules for library demos only (a user's film follows `DIRECTOR.md`, not these):
+
+- **Bilingual subtitles, one line per language.** Each cue has one Chinese line and one English line, never wrapped. When a line is too long, split it into two cues.
+- **Comparisons hold still before the verdict.** When the film compares options (four bridges, three plans), each one is fully in frame and held at least 2.5 s before it is judged, so the viewer can read it.
+
 ## Register
 
 1. **Number.** `num` in `style.json` is the next free number after the highest in `styles/*/style.json` (two digits as a string, e.g. `"55"`); it orders the gallery within a category.

@@ -67,6 +67,16 @@ was tomorrow in UTC. A community layout change was merged and reverted the
 same day (#1354). Three plugin versions were bumped but never reached npm
 (plugins#56).
 
+From 10-16 04:00 to 10-17 04:00 there were 73 commits and 16 tags
+(v0.1.1261 to v0.1.1276), each on a green first attempt with its 16
+assets. Most bodies say what was run, what was broken by hand and what
+wasn't tried, and the reds they name have issues. What went wrong was at
+the edges of a run. v0.1.1276 moved every deprecated built-in onto its
+plugin for good, with no real move on record and #2596 asking for one. A
+run of chosen GUI files left i18n-keys red under a tag. A suite run at an
+older base passed while the pushed head failed. Parallel full suites on
+one machine made every run time out until the sessions took turns.
+
 ## Reading the report
 
 **Reproduce the reporter's exact case, on the surface they use, before you
@@ -290,6 +300,24 @@ ok except gateway" stops being a normal run record.
   package.
 - Seen 1× (2026-10-14).
 
+**One full suite runs on a machine at a time.**
+- On 10-16 one session ran three suites at once (a 150m agent and
+  gateway run, a full ./... run and an agent-only run) beside others, at
+  load 300 to 400. Every full suite timed out, so no record said the
+  suite passed, and the Cursor mover's one-line min waited ~3h behind
+  them (#2557).
+- Done right from the evening on: a751f5282 and later commits ran
+  "through suite-lock", one suite per machine, and their records say ok.
+- Seen 1× (2026-10-16).
+
+**A mover's min is npm's version when the change lands, not when the
+work started.**
+- 19e9fc47f (10-16) raised Cursor's min to 0.2.17 while npm already had
+  0.2.18, bumped an hour before it landed. 53009f81a then raised six mins
+  to `npm view --prefer-online` at landing, and left Factory a version
+  behind (#2557).
+- Seen 1× (2026-10-16).
+
 **Windows CI only compiles the tests, so a Windows-only red shows
 nowhere.** Run the package on the Windows box before calling a Windows
 failure "the same on main".
@@ -434,6 +462,20 @@ cause:
   code standards.
 
 ## Merging and closing
+
+**A change no user can undo gets a real run per vendor before its tag.**
+- 9fcf6a6e7, f9ceac162 and 7d7dba31a (10-16) moved every deprecated
+  built-in's accounts onto its plugin, dropped the check that held a move
+  back while a model was in use, and took away the way back. The owner
+  asked for it. The bodies have unit and GUI tests, broken by hand, and a
+  full suite, but no move of a real account and no "Not tried" line.
+  #2596 asked for a sandbox move per subscription, the models a plugin
+  lacks, Factory's min (0.1.31 while npm had 0.1.32) and a rollback
+  story. v0.1.1276 shipped it to every user with none of them answered.
+- "No way back" raises the bar. Move each vendor's real account in a
+  sandbox HOME, list what the user loses, and answer the open issue
+  before the tag.
+- Seen 1× (2026-10-16).
 
 **Never merge a PR whose own new test fails, or with known problems a
 review listed.** (Merging only the reviewed head, and writing what was run
@@ -616,6 +658,30 @@ each one.
     system: 6e2aa8e32 (#2300) made ~\.dsh never gone on Windows, and two
     Mac-app dsh tests that didn't force goneOS went red on Windows CI,
     which now runs the Dsh tests, until ce1251cc9.
+- **10-16, criteria still missed.**
+  - GUI tests in every file a change can reach: 9b04c4e20 (#2118 hooks,
+    v0.1.1273) ran the plugin GUI files and four more. plugins.js used a
+    core word as its own, so i18n-keys was red under the tag until
+    a4fa7bbd8 (#2586) 35 minutes later.
+  - What was run at the pushed head: 1978eabe5's suite ran at a751f5282.
+    1d6f461a9 and the 22:58 batch had added ~2.5KB of core script since,
+    so TestCoreScriptBudget passed at the base and failed at the pushed
+    head (1,426,102 > 1,426,000), red on CI for two runs until 81313b912
+    (#2612). Run the size budgets again after a rebase.
+  - Each commit's record is its own: 61ca3924c and 83f3316cf carry the
+    same body word for word, so neither says which test guards which
+    change.
+  - A cancelled run tests nothing: 6b3ee5a03 and e243937ca never had a
+    run of their own; the next push's run covered them.
+- **Done right on 10-16.** a751f5282 (#2567) found its 408 by injecting a
+  250ms stall and was red with renewal turned off. 9b04c4e20 ran a real
+  Codex Pro sign-in on every protocol. #1717 (deephbz) took four review
+  rounds, each with a probe that lost a 1h cache write, and diffed the
+  outgoing request against main through a recording proxy. 6641e1b0a
+  fixed #2449 at its cause, red 3 of 3 with an injected pause.
+  0cad76cd9 ran the whole GUI suite and filed each red. a15e57656 read
+  OpenPencil's keys from its own source and ran its real binary.
+  ee2a7c7e8 (ggbdpq) has a test red on the old code.
 - **Done right on 10-14.** 86cc7ac56 (hhh2210) ran -race -count=20 and
   says its ordering was injected, not captured. f074996d9 named its load
   red's issue (#2066). bfef5d51b checked the reverted page's screenshots

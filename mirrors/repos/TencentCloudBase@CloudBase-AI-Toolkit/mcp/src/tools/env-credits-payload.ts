@@ -1,4 +1,4 @@
-import type { CreditsBranch, EnvCreditsPayload, PlanCode } from "../resources/env-credits.js";
+import type { CreditsBranch, EnvCreditsPayload, EnvMetricsPayload, MetricsState, PlanCode } from "../resources/env-credits.js";
 
 /**
  * `queryEnv(action="usage")` 的结果 → `ui://cloudbase/env-credits` 面板载荷的映射。
@@ -450,5 +450,193 @@ export function buildEnvCreditsPayload(input: {
     ...(typeof input.isolatedDaysLeft === "number"
       ? { isolated_days_left: input.isolatedDaysLeft }
       : {}),
+  };
+}
+
+/**
+ * 指标曲线的抽样上限。
+ *
+ * 为什么是 48：面板曲线画布宽 280px（`resources/env-credits.ts` 的 `spark-svg`），48 点约合
+ * 每 5.8px 一个点——再密在视觉上没有区别。
+ *
+ * 真机实测（2026-10-16，单环境凭证只读 `queryEnv(action="metrics")`，`metricName=EnvQPSAll`，
+ * **不传 startTime/endTime/period**）：`TimeSource=defaultLast24h`、**`Period=3600`（1 小时）**、
+ * **`sampleCount=23`**（24h ÷ 1h ⇒ 23 个样本）。即"默认查询"本身远低于这个上限；
+ * 上限真正起作用的是**用户显式要细粒度 + 长窗口**的组合（例如 period=300 的 24h ⇒ 288 个样本 ⇒ 压到 48），
+ * 那时原样塞进 `structuredContent` 是数百个数一组，抽样后 ≤ 96 个数，载荷体积与宿主时延可控。
+ * 抽样是**均匀取点**（含首尾），不改变"峰值在哪里"这一结论——峰值本身来自 `Summary.max`，
+ * 不依赖抽样是否恰好取到那个点。
+ */
+export const METRICS_SPARK_MAX_POINTS = 48;
+
+/** 曲线里能用的值（优先 `NewValues`，退回 `Values`；非有限数一律丢弃，不当 0）。 */
+function pickMetricSeries(curve: {
+  Values?: unknown;
+  NewValues?: unknown;
+} | null | undefined): number[] {
+  const raw = curve && Array.isArray(curve.NewValues) && curve.NewValues.length > 0
+    ? curve.NewValues
+    : curve && Array.isArray(curve.Values)
+      ? curve.Values
+      : [];
+  const out: number[] = [];
+  for (let i = 0; i < raw.length; i++) {
+    const value = raw[i];
+    if (typeof value === "number" && Number.isFinite(value)) { out.push(value); }
+  }
+  return out;
+}
+
+/**
+ * 曲线时间轴（与值一一对应才可用）。
+ *
+ * `describeCurveData` 的 `Time` 真机形状未实测（本仓只有类型层面的 `unknown` 防御）：
+ * 这里**只接受与值等长的数组**，元素原样转成短字符串，认不出就不给时间——
+ * 宁可不显示时间，也不编一个时间。
+ */
+function pickMetricTimes(curve: { Time?: unknown } | null | undefined, length: number): string[] | null {
+  const raw = curve && Array.isArray(curve.Time) ? curve.Time : null;
+  if (!raw || raw.length !== length) { return null; }
+  const out: string[] = [];
+  for (let i = 0; i < raw.length; i++) {
+    const item = raw[i];
+    if (typeof item === "number" && Number.isFinite(item)) {
+      out.push(formatCurveTime(item));
+    } else if (typeof item === "string" && item.length > 0) {
+      out.push(item);
+    } else {
+      return null;
+    }
+  }
+  return out;
+}
+
+/**
+ * 曲线时间点 → 可读短串。
+ *
+ * 口径已由真机确认（2026-10-16 同一次只读调用）：`Curve.Time` 是**秒级 10 位整数**
+ * （如 1792054800，相邻间隔 3600 与 `Period` 一致）⇒ 走"秒"这一支。
+ * 这里仍保留 `≥ 1e12 视为毫秒` 的兜底：它不改变已确认的行为，只是让另一种口径也能读；
+ * 判断错的后果仅限时间显示，不影响数值与状态。
+ */
+export function formatCurveTime(value: number): string {
+  const ms = value >= 1e12 ? value : value * 1000;
+  const date = new Date(ms);
+  if (Number.isNaN(date.getTime())) { return String(value); }
+  const pad = (n: number): string => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+/** 均匀抽样（含首尾），返回原数组的索引。 */
+export function downsampleMetricIndices(length: number, maxPoints: number): number[] {
+  if (length <= 0) { return []; }
+  if (length <= maxPoints) {
+    const all: number[] = [];
+    for (let i = 0; i < length; i++) { all.push(i); }
+    return all;
+  }
+  const out: number[] = [];
+  const step = (length - 1) / (maxPoints - 1);
+  for (let i = 0; i < maxPoints; i++) {
+    const index = Math.round(i * step);
+    if (out[out.length - 1] !== index) { out.push(index); }
+  }
+  return out;
+}
+
+/**
+ * `queryEnv(action="metrics")` 的结果 → 监控指标卡载荷。
+ *
+ * 纪律（与用量卡同一套）：
+ *   1. **不编阈值**：状态只有"有数据 / 无流量"两种由数据推出的结论（`failed` 由面板在
+ *      `isError` 的结果上置位，不由这里猜）；**没有阈值字段就不显示"正常/异常"**。
+ *   2. **不编数**：`Summary` 里拿不到的字段一律不带（面板隐藏该行）；`Curve` 非有限数一律丢弃；
+ *      时间轴对不上就不给时间。
+ *   3. **裁剪**：曲线按 `METRICS_SPARK_MAX_POINTS` 均匀抽样；`Curve` 原样**不进**载荷。
+ */
+export function buildEnvMetricsPayload(input: {
+  envId: string;
+  envAlias?: string | null;
+  metricName: string;
+  site: string;
+  region: string;
+  planRaw?: string | null;
+  periodSeconds?: number | null;
+  /** 服务端摘要（`summarizeEnvMetricCurve` 的输出原样传进来；只读其中一部分）。 */
+  summary?: {
+    sampleCount?: unknown;
+    max?: unknown;
+    min?: unknown;
+    avg?: unknown;
+    latest?: unknown;
+    peakTimestamp?: unknown;
+    /** 只作参考：**不参与状态判据**（判据只看曲线，见上面的 sawAllZeroCurve）。 */
+    allZero?: unknown;
+  } | null;
+  curve?: { Values?: unknown; NewValues?: unknown; Time?: unknown } | null;
+}): EnvMetricsPayload {
+  const summary = input.summary ?? {};
+  const num = (v: unknown): number | null =>
+    typeof v === "number" && Number.isFinite(v) ? v : null;
+  const values = pickMetricSeries(input.curve);
+  const sampleCount = num(summary.sampleCount) ?? values.length;
+  // 状态词只允许断言我们证得了的事，分两种情况：
+  //
+  // 1) **曲线在**（`Curve` 里有可用数值）⇒ 曲线说了算：非空且全零才是"无流量"，否则"有数据"。
+  //    - 空数组的 every() 恒为 true，所以判据必须**同时**要求 `values.length > 0`，
+  //      否则"曲线缺失"会被误报成"没流量"（同屏出现"288 个样本、峰值 5"的自相矛盾）；
+  //    - 曲线与摘要 `allZero` 冲突时**以曲线为准**（曲线是我们实际读到的数据，摘要只是摘要）。
+  //
+  // 2) **曲线不在** ⇒ 只凭样本数下结论：`sampleCount > 0` 才敢说"有数据"，
+  //    否则一律 `noData`。这里**刻意选 noData 而不是新增一个"未确认"档**：
+  //    样本数为 0 或缺失（后者只手写载荷可达——服务端摘要恒带 sampleCount）时，
+  //    我们手上既没有数字也没有曲线，"没有数据"至少是"我们什么都没读到"的如实陈述，
+  //    而"有数据"是在断言存在数据——后者才是真正证不了的。
+  const sawCurve = values.length > 0;
+  // 注意：这里**不**再重复写 `sawCurve &&`——下面的三元已经先判 `sawCurve`，
+  // 而这个值只在"曲线在"那一支被读；空数组的 every() 恒为 true 这个坑由结构本身挡住。
+  const curveIsAllZero = values.every((v) => v === 0);
+  const state: MetricsState = sawCurve
+    ? curveIsAllZero
+      ? "noData"
+      : "data"
+    : sampleCount > 0
+      ? "data"
+      : "noData";
+
+  // 时间轴：只为曲线与峰值时间服务；对不上就都不给
+  const times = pickMetricTimes(input.curve, values.length);
+  const indices = downsampleMetricIndices(values.length, METRICS_SPARK_MAX_POINTS);
+  const spark = indices.length
+    ? indices.map((index) => ({
+        ...(times ? { calc_time: times[index] } : {}),
+        credits_value: values[index],
+      }))
+    : undefined;
+
+  // 峰值时间：Summary 只给下标对应的时间戳，且真机形状未实测 ⇒ 认不出就整项不显示
+  const peakTimestamp = num(summary.peakTimestamp);
+  const peakTime = peakTimestamp === null ? null : formatCurveTime(peakTimestamp);
+
+  const { plan } = resolvePlanCode(input.planRaw ?? null);
+
+  return {
+    kind: "metrics",
+    state,
+    metric: input.metricName,
+    env_alias: typeof input.envAlias === "string" && input.envAlias !== "" ? input.envAlias : null,
+    env_id: input.envId,
+    current_region: input.region,
+    site: input.site,
+    plan,
+    sample_count: sampleCount,
+    ...(typeof input.periodSeconds === "number" ? { period_seconds: input.periodSeconds } : {}),
+    // 只产出面板会读的字段：start_time / end_time / min 曾产出但无人读，已删除
+    // （要显示时间范围或最低值时必须同时接上 UI 与用例，再加回来）。
+    latest: num(summary.latest),
+    max: num(summary.max),
+    avg: num(summary.avg),
+    peak_time: peakTime,
+    ...(spark ? { spark } : {}),
   };
 }

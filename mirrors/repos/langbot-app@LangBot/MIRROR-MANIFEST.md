@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `langbot-app/LangBot` — 26 default patterns, 0 followed patterns, 279 file(s) materialized.
+Mirror of `langbot-app/LangBot` — 26 default patterns, 1 followed patterns, 280 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `langbot-app/LangBot` — 26 default patterns, 0 followed patterns, 27
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 279 |
+| Followed pats | 1 |
+| Files         | 280 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `langbot-app/LangBot` — 26 default patterns, 0 followed patterns, 27
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/architecture/backend-i18n.md`
 
 ## File Index
 
@@ -338,6 +338,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 277 | ✓ | [`skills/test/lbs-cli.test.ts`](skills/test/lbs-cli.test.ts) |
 | 278 | ✓ | [`skills/test/test_agent_run_ledger_policy.py`](skills/test/test_agent_run_ledger_policy.py) |
 | 279 | ✓ | [`skills/test/test_complex_agent_task_verify.py`](skills/test/test_complex_agent_task_verify.py) |
+| 280 | → | [`docs/architecture/backend-i18n.md`](docs/architecture/backend-i18n.md) |
 
 ---
 

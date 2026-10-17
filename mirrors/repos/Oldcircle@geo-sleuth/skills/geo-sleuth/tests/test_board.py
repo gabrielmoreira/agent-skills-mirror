@@ -195,6 +195,54 @@ class LevelGapTests(unittest.TestCase):
         b = json.loads(self.path.read_text(encoding="utf-8"))
         self.assertEqual(board._inherited(b, "A ST 100", {"K1"}), [])   # A ST 100 already has its own K1 evidence
 
+    def test_recording_a_clue_again_replaces_instead_of_stacking(self):
+        before = [e for e in json.loads(self.path.read_text(encoding="utf-8"))["evidence"] if e["candidate"] == "A ST 100"]
+        out = self.run_board("evidence", "--clue", "K1", "--for", "A ST 100:2", "--why", "same comparison again", "--file", "match.jpg").stdout
+        self.assertIn("replaced it instead of counting it twice", out)
+        after = [e for e in json.loads(self.path.read_text(encoding="utf-8"))["evidence"] if e["candidate"] == "A ST 100"]
+        self.assertEqual(len(after), len(before))
+        self.run_board("evidence", "--clue", "K1", "--for", "A ST 100:1.5", "--file", "match.jpg")
+        b = json.loads(self.path.read_text(encoding="utf-8"))
+        self.assertEqual([e["lr"] for e in b["evidence"] if e["candidate"] == "A ST 100"], [1.5])
+        self.assertEqual(len({e["id"] for e in b["evidence"]}), len(b["evidence"]))
+
+    def test_revision_removes_legacy_duplicates_without_reusing_ids(self):
+        b = json.loads(self.path.read_text(encoding="utf-8"))
+        b["evidence"] += [{**b["evidence"][0], "id": "E2", "lr": 3},
+                          {**b["evidence"][0], "id": "E3", "candidate": "B ST 200", "lr": 1}]
+        self.path.write_text(json.dumps(b), encoding="utf-8")
+        self.run_board("evidence", "--clue", "K1", "--against", "A ST 100:0.5", "--why", "corrected")
+        b = json.loads(self.path.read_text(encoding="utf-8"))
+        self.assertEqual([e["lr"] for e in b["evidence"] if e["candidate"] == "A ST 100"], [0.5])
+        self.assertEqual(b["evidence"][0]["id"], "E1")
+        self.run_board("clue", "Independent observation", "--kind", "municipal", "--status", "observed")
+        self.run_board("evidence", "--clue", "K2", "--for", "B ST 200:2")
+        b = json.loads(self.path.read_text(encoding="utf-8"))
+        self.assertEqual(len({e["id"] for e in b["evidence"]}), len(b["evidence"]))
+        self.assertEqual(self.ranking()[0], "B ST 200")
+
+    def test_independent_clues_still_accumulate_and_invalid_revision_is_atomic(self):
+        self.run_board("clue", "Independent observation", "--kind", "municipal", "--status", "observed")
+        self.run_board("evidence", "--clue", "K2", "--for", "A ST 100:3")
+        b = json.loads(self.path.read_text(encoding="utf-8"))
+        self.assertEqual([e["lr"] for e in b["evidence"]], [2, 3])
+        before = self.path.read_bytes()
+        self.run_board("evidence", "--clue", "K1", "--for", "A ST 100:4", "--for", "missing:2", ok=False)
+        self.assertEqual(self.path.read_bytes(), before)
+
+    def test_apply_can_revise_the_same_clue_and_handles_gaps_in_ids(self):
+        b = json.loads(self.path.read_text(encoding="utf-8"))
+        b["evidence"][0]["id"] = "E2"
+        self.path.write_text(json.dumps(b), encoding="utf-8")
+        self.run_board("clue", "Telephone prefix", "--kind", "calling-code", "--status", "read")
+        args = ("apply", "--kind", "calling-code", "--value", "+33", "--clue", "K2")
+        self.run_board(*args)
+        before = json.loads(self.path.read_text(encoding="utf-8"))["evidence"]
+        self.assertEqual(len({e["id"] for e in before}), len(before))
+        self.run_board(*args)
+        after = json.loads(self.path.read_text(encoding="utf-8"))["evidence"]
+        self.assertEqual(after, before)
+
     def test_move_rejects_finer_parent(self):
         self.run_board("add", "spot4", "--level", "point", "--parent", "A ST 100")
         self.run_board("move", "A ST 100", "--parent", "spot4", ok=False)

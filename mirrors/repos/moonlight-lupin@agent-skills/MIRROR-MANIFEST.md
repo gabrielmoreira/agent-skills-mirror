@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `moonlight-lupin/agent-skills` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
+Mirror of `moonlight-lupin/agent-skills` — 26 default patterns, 0 followed patterns, 40 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `moonlight-lupin/agent-skills` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 39 |
+| Files         | 40 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -95,9 +95,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 34 | ✓ | [`research/people-enrichment/SKILL.md`](research/people-enrichment/SKILL.md) |
 | 35 | ✓ | [`research/source-tracker/SKILL.md`](research/source-tracker/SKILL.md) |
 | 36 | ✓ | [`research/youtube-topic-research/SKILL.md`](research/youtube-topic-research/SKILL.md) |
-| 37 | ✓ | [`software-development/skill-quality-review/SKILL.md`](software-development/skill-quality-review/SKILL.md) |
-| 38 | ✓ | [`tests/fixtures/claude_plugin_sample/skills/greet/SKILL.md`](tests/fixtures/claude_plugin_sample/skills/greet/SKILL.md) |
-| 39 | ✓ | [`web-scraping/website-scraping/SKILL.md`](web-scraping/website-scraping/SKILL.md) |
+| 37 | ✓ | [`software-development/build-review-loop/SKILL.md`](software-development/build-review-loop/SKILL.md) |
+| 38 | ✓ | [`software-development/skill-quality-review/SKILL.md`](software-development/skill-quality-review/SKILL.md) |
+| 39 | ✓ | [`tests/fixtures/claude_plugin_sample/skills/greet/SKILL.md`](tests/fixtures/claude_plugin_sample/skills/greet/SKILL.md) |
+| 40 | ✓ | [`web-scraping/website-scraping/SKILL.md`](web-scraping/website-scraping/SKILL.md) |
 
 ---
 

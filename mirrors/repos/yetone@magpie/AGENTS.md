@@ -58,10 +58,17 @@ Two cases decide it:
   (`unusedSub` in app.js), so it is installed from the Plugins page. A user
   who installs the plugin themselves is moved too
   (`provider.HandOver`): at once when the built-in has no accounts, from the
-  gateway's hourly loop (`KeepRetiringMoved`) when it has, unless they moved
-  back or the plugin is signed in under its own `-plugin` id already. Until
+  gateway's hourly loop (`KeepRetiringMoved`) when it has, unless the
+  plugin is signed in under its own `-plugin` id already. Until
   then the Add sheet shows the plugin's tile only (`replacedSub` in app.js).
-- **Not moved:** the user is still signed in through the built-in.
+  Since 10-16 the built-ins are being retired: the hourly loop's
+  `MoveRetiring` moves every subscription with a mover that still has
+  built-in accounts, a user who moved back included, and there is no way
+  back. Turning the plugin off turns the subscription off with it; removing
+  it records `removed` (accounts kept with the plugin's sign-ins), and
+  installing it again gives the subscription back.
+- **Not moved:** the user is still signed in through the built-in: the
+  move hasn't run yet, or it failed (tried again after six hours).
 
 For a moved subscription, the plugin does everything: sign-in, refresh,
 models, requests, usage and errors. It runs in the plugin host

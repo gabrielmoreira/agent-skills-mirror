@@ -83,6 +83,16 @@ kawai ƙara mata wani zaɓi:
 | `CLIENT_API` | Wuraren ƙarshen samar da samfuri — `/api/v1/*`, `/api/v1beta/*`, tare da laƙabban `/v1/*`, `/v1beta/*`, `/chat/completions`, `/responses`, `/models`, `/codex/*`. | Maɓallin Bearer idan an kunna tutar fasalin `REQUIRE_API_KEY` mai aiki |
 | `MANAGEMENT` | Shafukan dashboard, saituna, masu samarwa, maɓallai, da wuraren ƙarshen gudanarwa da bincike.                                                                     | Zaman dashboard KO Bearer mai iyakar izinin `manage`                   |
 
+A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
+credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,
+`GET /api/db-backups/exportAll`), restoring a backup over the live data
+(`POST /api/db-backups/import` including `dryRun=true`, `POST /api/db-backups` restore by id,
+`POST /api/settings/import-json`), issuing a sync token (`POST /api/sync/tokens`) and minting an
+`admin` CLI access token (`POST /api/cli/tokens`) require a dashboard session, the local CLI
+subject, or login disabled; API keys of any scope and `oma_` access tokens get `403`. The check
+lives in `src/lib/api/operatorCredential.ts` (`resolveOperatorCredential()` /
+`requireOperatorCredential()`).
+
 ## Bututun Aiki
 
 ```

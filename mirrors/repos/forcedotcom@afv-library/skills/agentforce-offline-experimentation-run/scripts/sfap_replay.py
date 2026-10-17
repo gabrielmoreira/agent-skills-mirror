@@ -22,205 +22,9 @@ STDM_DATA_FILE = os.environ.get("STDM_DATA_FILE", "/tmp/details_result.json")
 LLM_STEPS_FILES = os.environ.get("LLM_STEPS_FILES", "/tmp/llm_steps_1.json,/tmp/llm_steps_2.json").split(",")
 
 # ---------------------------------------------------------------------------
-# Dynamic tool extraction from STDM data
+# Tool extraction is dynamic-only: definitions come from STDM step inputs
+# (gen_ai.request.tools) at runtime. No hardcoded tool schemas.
 # ---------------------------------------------------------------------------
-# Instead of hardcoded tools, we extract actual tool definitions from the
-# original LLM responses in the STDM data. This handles both routing tools
-# (go_to_*) and domain action tools (SearchProducts, AddToCart, etc.)
-# ---------------------------------------------------------------------------
-
-# Well-known tool schemas observed from agent responses. Keyed by tool name.
-# These are built from observed argument patterns in STDM LLM responses.
-KNOWN_TOOL_SCHEMAS = {
-    # --- Routing tools (topic router layer) ---
-    "go_to_product_discovery": {
-        "type": "function",
-        "function": {
-            "name": "go_to_product_discovery",
-            "description": "Route to product discovery topic for searching, browsing, product questions, recommendations.",
-            "parameters": {"type": "object", "properties": {}}
-        }
-    },
-    "go_to_cart_and_checkout": {
-        "type": "function",
-        "function": {
-            "name": "go_to_cart_and_checkout",
-            "description": "Route to cart and checkout topic for adding items, viewing cart, checkout, payments.",
-            "parameters": {"type": "object", "properties": {}}
-        }
-    },
-    "go_to_store_help": {
-        "type": "function",
-        "function": {
-            "name": "go_to_store_help",
-            "description": "Route to store help topic for shipping, returns, store policies, greetings.",
-            "parameters": {"type": "object", "properties": {}}
-        }
-    },
-    "go_to_off_topic": {
-        "type": "function",
-        "function": {
-            "name": "go_to_off_topic",
-            "description": "Route to off-topic handler for queries unrelated to shopping.",
-            "parameters": {"type": "object", "properties": {}}
-        }
-    },
-    # --- Domain action tools (sub-topic agents) ---
-    "SearchProducts": {
-        "type": "function",
-        "function": {
-            "name": "SearchProducts",
-            "description": "Search the product catalog with optional filters.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "searchQuery": {"type": "string", "description": "Search terms or keywords"},
-                    "category": {"type": "string", "description": "Product category filter"},
-                    "color": {"type": "string", "description": "Color filter"},
-                    "department": {"type": "string", "description": "Department filter (e.g. Men, Women, Unisex)"},
-                    "maxPrice": {"type": "string", "description": "Maximum price filter"},
-                    "minPrice": {"type": "string", "description": "Minimum price filter"},
-                    "sortBy": {"type": "string", "description": "Sort order (e.g. relevance, price_asc, price_desc, rating)"}
-                },
-                "required": []
-            }
-        }
-    },
-    "GetProductDetails": {
-        "type": "function",
-        "function": {
-            "name": "GetProductDetails",
-            "description": "Get detailed information about a specific product.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "productCode": {"type": "string", "description": "The product code (e.g. SHOE-M-088)"}
-                },
-                "required": ["productCode"]
-            }
-        }
-    },
-    "GetRecommendations": {
-        "type": "function",
-        "function": {
-            "name": "GetRecommendations",
-            "description": "Get product recommendations based on a product.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "productCode": {"type": "string", "description": "Product code to base recommendations on"}
-                },
-                "required": ["productCode"]
-            }
-        }
-    },
-    "AddToCart": {
-        "type": "function",
-        "function": {
-            "name": "AddToCart",
-            "description": "Add a product to the shopping cart.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "productCode": {"type": "string", "description": "Product code to add"},
-                    "quantity": {"type": "string", "description": "Quantity to add"},
-                    "size": {"type": "string", "description": "Size selection"},
-                    "color": {"type": "string", "description": "Color selection"}
-                },
-                "required": ["productCode", "quantity"]
-            }
-        }
-    },
-    "ViewCart": {
-        "type": "function",
-        "function": {
-            "name": "ViewCart",
-            "description": "View the current shopping cart contents.",
-            "parameters": {"type": "object", "properties": {}}
-        }
-    },
-    "UpdateCart": {
-        "type": "function",
-        "function": {
-            "name": "UpdateCart",
-            "description": "Update cart item quantity, size, or color. Set quantity to 0 to remove.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "productCode": {"type": "string", "description": "Product code to update (or 'all' to clear cart)"},
-                    "quantity": {"type": "string", "description": "New quantity (0 to remove)"},
-                    "size": {"type": "string", "description": "New size"},
-                    "color": {"type": "string", "description": "New color"}
-                },
-                "required": ["productCode", "quantity"]
-            }
-        }
-    },
-    "Checkout": {
-        "type": "function",
-        "function": {
-            "name": "Checkout",
-            "description": "Place an order with the current cart.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "shippingMethod": {"type": "string", "description": "Shipping method (Standard or Express)"},
-                    "shopperName": {"type": "string", "description": "Name for the order"}
-                },
-                "required": ["shippingMethod"]
-            }
-        }
-    },
-    # --- Generic CRM tools (fallback for non-shopper agents) ---
-    "QueryRecords": {
-        "type": "function",
-        "function": {
-            "name": "QueryRecords",
-            "description": "Query records using natural language.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "query": {"type": "string", "description": "Natural language query"}
-                },
-                "required": ["query"]
-            }
-        }
-    },
-    "IdentifyRecordByName": {
-        "type": "function",
-        "function": {
-            "name": "IdentifyRecordByName",
-            "description": "Identify a record by its name to get the record ID.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "name": {"type": "string", "description": "The name of the record"},
-                    "objectType": {"type": "string", "description": "The Salesforce object type"}
-                },
-                "required": ["name"]
-            }
-        }
-    },
-    "GetRecordDetails": {
-        "type": "function",
-        "function": {
-            "name": "GetRecordDetails",
-            "description": "Get detailed information about a specific record by its ID.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "recordId": {"type": "string", "description": "The Salesforce record ID"}
-                },
-                "required": ["recordId"]
-            }
-        }
-    },
-}
-
-ROUTING_TOOLS = ['go_to_product_discovery', 'go_to_cart_and_checkout', 'go_to_store_help', 'go_to_off_topic']
-ACTION_TOOLS_SHOPPER = ['SearchProducts', 'GetProductDetails', 'GetRecommendations',
-                        'AddToCart', 'ViewCart', 'UpdateCart', 'Checkout']
-GENERIC_CRM_TOOLS = ['QueryRecords', 'IdentifyRecordByName', 'GetRecordDetails']
 
 
 def _is_routing_tools(tools):
@@ -270,27 +74,6 @@ def sanitize_tools_for_sfap(tools):
     return sanitized
 
 
-def build_tools_for_step(original_tool_name, prompt_text):
-    """Select the right tool set based on the original tool call and prompt content."""
-    # If original called a routing tool, offer routing tools
-    if original_tool_name and original_tool_name.startswith('go_to_'):
-        return [KNOWN_TOOL_SCHEMAS[t] for t in ROUTING_TOOLS if t in KNOWN_TOOL_SCHEMAS]
-
-    # If original called a shopper action tool, offer shopper tools
-    if original_tool_name and original_tool_name in ACTION_TOOLS_SHOPPER:
-        return [KNOWN_TOOL_SCHEMAS[t] for t in ACTION_TOOLS_SHOPPER if t in KNOWN_TOOL_SCHEMAS]
-
-    # Detect from prompt content
-    if prompt_text:
-        if 'go_to_product_discovery' in prompt_text or 'go_to_cart' in prompt_text:
-            return [KNOWN_TOOL_SCHEMAS[t] for t in ROUTING_TOOLS if t in KNOWN_TOOL_SCHEMAS]
-        if 'SearchProducts' in prompt_text or 'AddToCart' in prompt_text:
-            return [KNOWN_TOOL_SCHEMAS[t] for t in ACTION_TOOLS_SHOPPER if t in KNOWN_TOOL_SCHEMAS]
-
-    # Fallback to generic CRM tools
-    return [KNOWN_TOOL_SCHEMAS[t] for t in GENERIC_CRM_TOOLS if t in KNOWN_TOOL_SCHEMAS]
-
-
 def extract_tools_from_llm_responses(llm_step_map):
     """Scan all LLM responses to discover the actual tool names used by the agent."""
     seen = set()
@@ -307,10 +90,6 @@ def extract_tools_from_llm_responses(llm_step_map):
         except:
             pass
     return seen
-
-
-# Legacy alias for backward compatibility
-AGENT_TOOLS = [KNOWN_TOOL_SCHEMAS[t] for t in GENERIC_CRM_TOOLS if t in KNOWN_TOOL_SCHEMAS]
 
 
 def read_token():
@@ -413,24 +192,6 @@ def convert_stdm_messages_for_sfap(stdm_messages):
     if out and out[-1]["role"] == "assistant":
         out.append({"role": "user", "content": "Continue."})
     return out
-
-
-def prompt_has_tools(prompt_text):
-    """Check if this prompt includes tool/function calling instructions."""
-    indicators = [
-        'data retrieval functions',
-        'QueryRecords',
-        'IdentifyRecordByName',
-        'GetRecordDetails',
-        'TOOL USAGE PROTOCOL',
-        'go_to_product_discovery',
-        'go_to_cart_and_checkout',
-        'go_to_store_help',
-        'SearchProducts',
-        'AddToCart',
-        'Checkout',
-    ]
-    return any(ind in prompt_text for ind in indicators)
 
 
 def call_sfap(messages, model, tools=None, max_tokens=2048):
@@ -880,13 +641,10 @@ def main():
             print(f"    SKIP: Could not parse prompt into messages")
             continue
 
-        # Use tool definitions from STDM step input if available, else fall back
+        # Use tool definitions from STDM step input (dynamic-only, no hardcoded fallback)
         tools = target.get('step_tools')
         if tools:
             tools = sanitize_tools_for_sfap(tools)
-        else:
-            has_tools = prompt_has_tools(target['prompt'])
-            tools = build_tools_for_step(target.get('original_tool_name'), target['prompt']) if has_tools else None
 
         print(f"    Messages: {len(messages)}, Tools: {'yes' if tools else 'no'}")
 

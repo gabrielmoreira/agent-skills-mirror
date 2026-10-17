@@ -64,6 +64,10 @@ The provider's editor lists them under *Plugin options* (`pluginOptionsField` in
 
 A plugin in front of Anthropic's or OpenAI's own API (a CPA or sub2api relay, say) can say its upstream answers a web search tool by itself (#2027). Its `config` hook sets `searches: true` on the provider; the host passes it through (`plugin.Provider.Searches`), and [`pluginProvider`](../../internal/provider/plugins.go) sets the provider's `Searches`, as a custom provider's "Searches the web by itself" does (#359). [`searchesItself`](../../internal/gateway/search.go) honours it for a plugin's provider only, on Anthropic's or Responses' API, and only for one the plugin has a model on: a client's `web_search` then goes to the plugin's `fetch` as sent, not through magpie's search. Another sign-in's `Searches` is never read, and Codex's and Grok's stay as they were. As with a relay, `searchRank` leaves it out, so magpie never picks it to search for other models; Settings can name it by hand (`namedSearcherRank`).
 
+## A plugin's service tiers
+
+A plugin says which service tiers its vendor serves a model at with `serviceTiers` on the model (#2514): ids such as `"priority"` and `"ultrafast"`, or objects with an `id`. The host keeps the ids (`tiersOf` in `host.js`, into `plugin.Model.ServiceTiers`), `pluginCatalog` puts them on the catalog model's `Tiers`, and [`CodexTiers`](../../internal/provider/codex_models.go) offers them to Codex, as `codexcat` names them (`priority` is Fast). In [`forwardTranslated`](../../internal/gateway/gateway.go) a request translated to the plugin's Chat or Responses keeps its `service_tier` (`Request.OwnTier`) only when it is among the model's tiers (`provider.PluginTiers`); a request relayed in its own protocol was sent as the client wrote it before, and still is. Cursor's `fast` flag is separate and unchanged.
+
 ## A plugin's decision API
 
 A plugin can serve TypeSafe's System One for its provider (#1514). Its `config` hook sets `decide: true` on the provider, and `decides: true` on a model that answers questions rather than a conversation, in the `config` hook or on the `models` hook's list. The host passes both through (`plugin.Provider.Decide`, `plugin.Model.Decides`). [`pluginProvider`](../../internal/provider/plugins.go) then sets the provider's `Decide` to `plugin://<id>/v1`, its own base: `pluginFetch` sends nowhere but the loader's host, so a decision address of the plugin's own couldn't be reached. `AskSystemOne` and the gateway's classifier post `/v1/systemone` with `Provider.Do`, which reaches the loader's `fetch` as `{baseURL}/systemone` with the account's sign-in.
@@ -112,22 +116,23 @@ How the store handles picks and names:
 
 ## How ownership changes
 
-Migration records use four states:
+Migration records use five states:
 
 | State | Meaning |
 | --- | --- |
 | `moving` | Migration is in progress or was interrupted. An explicit retry first rolls back the interrupted move. |
 | `plugin` | The plugin owns the built-in provider id. This is the only state recognized by `Moved`. |
-| `back` | Ownership returned to the built-in. Automatic handover leaves it there. |
+| `back` | Ownership returned to the built-in by an older magpie. `MoveRetiring` moves it again. |
 | `failed` | Migration failed and the built-in continues serving. Automatic retry waits six hours. |
+| `removed` | The user removed the plugin of a moved subscription. Its accounts stay with the plugin's sign-ins and the record keeps them. Nothing moves or installs it by itself; the plugin installed again (`HandOver`) or the editor's Move (`Adopt`) makes it `plugin` again, record and all. |
 
-The editor's "Move to plugin" action calls `provider.Adopt`. With accounts, adoption delegates to `Move`, which imports and validates accounts and model coverage before committing plugin ownership. With no accounts, adoption verifies the package and the provider it serves, then records plugin ownership without account checks.
+The editor's "Move to plugin" action calls `provider.Adopt`. With accounts, adoption delegates to `Move`, which installs the plugin, imports every account and commits plugin ownership. Each account is tried through the plugin, and none holds the move back, since the built-in is retired: one the vendor refuses goes along marked lapsed, and one already lapsed or that fails its check otherwise (its vendor unreachable) goes along untried, for the plugin's own reads to judge. No model the built-in served is checked against the plugin's list. Only an install failure, the plugin not serving the id, or a sign-in the plugin won't import fails the move, which then puts everything back (`putBack`) and is tried again after six hours. A `why` from an older magpie's failed move (`lapsed`, `unserved`, `account`) is still read and translated by the page. With no accounts, adoption verifies the package and the provider it serves, then records plugin ownership without account checks.
 
 Installing the plugin independently can also hand over ownership through `provider.HandOver`. The package must be enabled, meet the mover's minimum version, and serve the expected provider. After add, update, or upgrade, the GUI calls `HandOver(ctx, false)`, which can adopt a built-in with no accounts. Existing built-in accounts wait for `HandOver(ctx, true)` in gateway maintenance.
 
-`KeepRetiringMoved` first runs after 20 seconds, then hourly. Each cycle maintains moved plugin versions, calls `MoveRetiring`, then performs automatic handover. `MoveRetiring` moves subscriptions listed in `provider.Retiring` that have built-in accounts, preserving move-back choices and waiting six hours after a failed attempt. That list is currently empty. Handover preserves a plugin already signed in under its separate `-plugin` id and skips existing migration records except a `failed` record old enough to retry.
+`KeepRetiringMoved` first runs after 20 seconds, then hourly. Each cycle maintains moved plugin versions, calls `MoveRetiring`, then performs automatic handover. `MoveRetiring` moves every subscription with a mover (`retiring`, which is `MovableIDs`) that has built-in accounts, waiting six hours after a failed attempt. The built-ins are being retired (the owner, 10-16: 陆续把内置Provider下线掉), so a `back` record is moved again too; a `removed` one is left until the user installs the plugin. Handover turns a `removed` record whose plugin is installed and current back into `plugin`, preserves a plugin already signed in under its separate `-plugin` id and skips existing migration records except a `failed` record old enough to retry.
 
-`MoveBack` restores built-in ownership and records `back`. Compatible accounts added through the plugin can return too; incompatible accounts can remain with the plugin under its separate id. Removing or disabling a plugin first moves affected built-ins back and stops if that fails. A package installed by the user remains after moving back; a migration-installed package is removed only when no remaining signed-in or moved provider needs it.
+There is no move back: `provider/moveback` and `magpie plugins move-back` answer that the built-ins are retired, and removing or turning off the plugin doesn't move anything back either. Turned off, the plugin keeps the subscription `plugin`, off with it. Removed (`RemovePlugin`), the subscription is recorded `removed`, its accounts kept in the plugin's auth store, since `plugin.Remove` leaves sign-ins until the user signs out. The Plugins page and `magpie plugins rm`/`off` say the subscription stops working and its accounts are kept. Rolling back a failed move (`putBack`, through each mover's `back` and `settle`) is the only path that writes to the built-in's logins.
 
 Removing a plugin also sets aside the model picks its providers left in `providers.json` (#2057, `plugin_left.go`). Before, nothing listed those records and `magpie provider rm` couldn't find them, so sync and backup asked for a sign-in to them on every run (`NotSignedIn`).
 
@@ -174,6 +179,8 @@ A plugin's account whose sign-in its vendor refused (`lapsed`, or an allowance r
 The GUI's plugin integration includes `subOf`, `pluginSubs`, and `startPluginSignIn`. A change to sign-in or provider presentation must follow these paths as well as the built-in paths it affects.
 
 ## Verification
+
+Plugins may also declare a provider-independent `magpie.hooks` entry, including pure gateway packages and mixed provider/Pi packages. Its asynchronous request contract and verification are documented in [Gateway request hooks](gateway-request-hooks.md). Existing provider hooks still use their normal entry path.
 
 [`migrate_notice_test.go`](../../internal/provider/migrate_notice_test.go) includes `TestMovedBuiltinsSayTheirPlugin`, which checks that moved built-ins tell contributors which plugin serves them. Migration tests live beside [`migrate.go`](../../internal/provider/migrate.go).
 

@@ -8,7 +8,7 @@ Desktop companion application showing active agent GIFs per session. Runs as an 
 
 The companion communicates with OpenCode host runtime via file-based state sharing (JSON files) and displays animated overlays for active agents:
 
-- Displays animated GIFs for `idle`, `question`, `unknown`, and agent-specific animations (`council`, `designer`, `explorer`, `fixer`, `librarian`, `observer`, `oracle`, `orchestrator`).
+- Displays animated GIFs for `idle`, `question`, `unknown`, and agent-specific animations (`council`, `designer`, `explorer`, `fixer`, `observer`, `oracle`, `orchestrator`).
 - Agent tiles can expose live session model/variant metadata on hover; waiting-input uses an attention outline without changing the animation contract. Error attention is intentionally deferred until canonical terminal evidence is available.
 - Each waiting-input request carries a monotonic attention generation; native informational attention deduplicates by session/generation so back-to-back questions cannot collapse into one notification. The plugin restores that generation/request fence across manager replacement; ordinary states reset the native request.
 - Animated windows can be resized (S/M/L/XL presets), repositioned via drag-and-drop, and anchored to screen edges. Window-position persistence is dispatched off the egui thread with latest-write-wins generation fencing so shared-state lock contention cannot freeze animation or dragging.

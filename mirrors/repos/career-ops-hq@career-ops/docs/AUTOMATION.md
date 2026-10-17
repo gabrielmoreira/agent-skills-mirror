@@ -196,10 +196,11 @@ so this piece runs `claude -p` (or your CLI's headless equivalent, see
    every overdue/urgent entry, and **write the drafts to a dated file**
    (`output/followup-drafts-{date}.md`) instead of trying to act on them.
 3. Logs start/end to `data/followup-sweep.log` (gitignored).
-4. Does nothing useful when follow-ups are turned off: with
-   `follow_ups.enabled: false` in `config/profile.yml` the cadence reports no
-   entries and the followup mode stops before drafting, so unload the launchd
-   job too if you turned follow-ups off for good.
+4. Exits before starting Claude when follow-ups are turned off: with
+   `follow_ups.enabled: false` in `config/profile.yml` the sweep calls
+   `loadFollowupsEnabled` from `followup-cadence.mjs`, writes a skip line to
+   `data/followup-sweep.log`, and exits 0. Unload the launchd job too if you
+   turned follow-ups off for good.
 5. Fires a native notification (`osascript display notification` on macOS)
    so you know a fresh batch of drafts is waiting.
 

@@ -25,7 +25,7 @@ routes are not always ranked first; only a `404` from the dispatch itself means 
 Read each step's `status` from `describe`: `implemented` = live; `proposed` = not served on every org yet.
 
 > **MIM is configured by the two surfaces below.** The only feature that must be *on* first is **base**
-> Incident Management (`service-itsm-incident-mgmt-configure`) — see Preconditions.
+> Incident Management (the master-feature steps of the `IncidentMgmt` SOR) — see Preconditions.
 
 ### Transports MIM uses (all via the same `dispatch*` tools)
 
@@ -44,7 +44,7 @@ Read each step's `status` from `describe`: `implemented` = live; `proposed` = no
   precondition, licensing approvers with the **Major Incident Manager permission-set license** and standing
   up the approvers **public group**. Verify every write by read-back.
 - **Out of scope**: base Incident Management enablement
-  (`service-itsm-incident-mgmt-configure` — a prerequisite); the Incident Fulfiller / Incident Manager
+  (the `IncidentMgmt` SOR's master-feature steps — a prerequisite); the Incident Fulfiller / Incident Manager
   **persona** PSG (the orchestrator's **Persona** feature — see `references/incident-persona-psg.md`);
   Problem / Change / Case Management; the Priority Matrix; SLA / entitlement setup; any MIM org preference
   **other than** the two allowlisted.
@@ -53,8 +53,8 @@ Read each step's `status` from `describe`: `implemented` = live; `proposed` = no
 
 The acting user needs **ITSM setup access** (the SOR gates every MIM route on it), and:
 
-1. **Base Incident Management must be enabled** — MIM layers on it. If it is off, **stop and hand off** to
-   `service-itsm-incident-mgmt-configure`; do not configure MIM without base Incident Management.
+1. **Base Incident Management must be enabled** — MIM layers on it. The orchestrator first follows the
+   `IncidentMgmt` SOR's read/confirm/enable/verify prerequisite; stop if it cannot confirm ENABLED.
 2. **Approvers must hold the Major Incident Manager permission-set license.** This is a **LICENSE** —
    granted via `PermissionSetLicenseAssign` (`{AssigneeId, PermissionSetLicenseId}`), **never** a
    `PermissionSetAssignment`. Group-user validation requires every direct and transitive user of a group
@@ -135,7 +135,7 @@ Major Incident Management
 ```
 
 Report only what read-back confirmed; omit lines for surfaces out of the requested scope. If base Incident
-Management is off, say so and name `service-itsm-incident-mgmt-configure`.
+Management cannot be confirmed on, say so and stop without configuring MIM.
 
 ## Common failures (surface in plain language)
 
@@ -158,5 +158,5 @@ Management is off, say so and name `service-itsm-incident-mgmt-configure`.
 - Designate a **group** approver without `validate-group-users` returning **true** first.
 - Reassign without removing the existing designation first (create is a silent no-op).
 - Send any preference name other than `AutoCreationOfProblem` / `AutoClosureChildIncidents`.
-- Attempt MIM setup when base Incident Management is off — hand off to `service-itsm-incident-mgmt-configure`.
+- Attempt MIM setup when base Incident Management is off — first complete the `IncidentMgmt` master-feature prerequisite.
 - Pass `dispatch` the `{operation_id, arguments}` shape — it takes raw HTTP.

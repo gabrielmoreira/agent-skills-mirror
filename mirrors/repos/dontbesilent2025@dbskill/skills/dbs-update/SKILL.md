@@ -14,6 +14,7 @@ description: 更新官方 dbskill，并保留其他 Skill 与用户存档。用�
 - 只更新官方仓库 `dontbesilent2025/dbskill`。
 - 保留用户在 `~/.dbs/` 中的存档、报告和决策记录。
 - 不更新用户安装的其他 Skill。
+- 清理已下线的官方旧入口时，只处理能确认来自官方的副本；用户改过的或同名的自有 Skill 一律保留。
 - 不创建后台任务、定时任务或 Agent Hook。
 
 ## 执行步骤
@@ -40,21 +41,33 @@ description: 更新官方 dbskill，并保留其他 Skill 与用户存档。用�
 
    两种渠道都检测不到时，按这个命令更新。
 
-4. 命令成功后记录本次更新时间，避免当前对话仍加载旧 Skill 时重复提醒：
+4. 清理已下线的官方旧入口。名单与官方历史版本指纹在本 Skill 的 [references/retired-skills.json](references/retired-skills.json)：
+
+   - **Claude Code 插件渠道**：`claude plugin list` 中以 `@dontbesilent-skills` 结尾、且名称在名单里的插件，逐个执行 `claude plugin uninstall <名称>@dontbesilent-skills`。
+   - **本地 Skill 目录**：解析本 Skill 所在目录的绝对路径，运行其中的 `scripts/cleanup_retired_skills.py`（macOS 与 Linux 用 `python3`，Windows 用 `python` 或 `py`）。脚本只移除失效链接和指向官方旧版本的链接；与官方旧版本完全一致的目录移到 `~/.dbs/retired-skills/<时间>/` 备份；其余同名项保留并说明原因。
+   - 当前环境没有 Python 时跳过脚本，在回复中列出名单里的名称，请用户自行检查各 Agent 的 Skill 目录。
+
+5. 命令成功后记录本次更新时间，避免当前对话仍加载旧 Skill 时重复提醒：
 
    ```bash
    mkdir -p "$HOME/.dbs" && date +%s > "$HOME/.dbs/update_check_at"
    ```
 
-5. 根据命令的退出状态确认是否完成。命令成功时告诉用户更新已完成：插件渠道提醒用户运行 `/reload-plugins` 或新建对话；Skills CLI 渠道提醒用户新建一次对话后再使用新能力。
+6. 根据命令的退出状态确认是否完成。命令成功时告诉用户更新已完成：插件渠道提醒用户运行 `/reload-plugins` 或新建对话；Skills CLI 渠道提醒用户新建一次对话后再使用新能力。
 
-6. 命令失败时，用一句话说明失败原因和下一步需要用户处理的权限或网络问题。不要把完整终端日志直接贴给用户，除非用户要求。
+7. 命令失败时，用一句话说明失败原因和下一步需要用户处理的权限或网络问题。不要把完整终端日志直接贴给用户，除非用户要求。
 
 ## 回复格式
 
 成功：
 
 > dbskill 已更新完成（{更新的渠道}）。当前对话如果还没有读取到新能力，{插件渠道：运行 `/reload-plugins`；其他渠道：新建一次对话}后即可使用。
+
+清理了旧入口时追加一句：
+
+> 已清理下线的旧入口：{名称与位置}。{有备份时：原文件备份在 `{备份目录}`。}{有保留项时：`{路径}` 与官方版本不一致，已保留。}
+
+没有残留时不提清理。
 
 失败：
 

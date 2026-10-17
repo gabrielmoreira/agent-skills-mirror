@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `github/spec-kit` — 26 default patterns, 10 followed patterns, 14 file(s) materialized.
+Mirror of `github/spec-kit` — 26 default patterns, 10 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `github/spec-kit` — 26 default patterns, 10 followed patterns, 14 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 10 |
-| Files         | 14 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,17 +71,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.github/skills/add-community-extension/SKILL.md`](.github/skills/add-community-extension/SKILL.md) |
 | 2 | ✓ | [`.github/skills/code-review/SKILL.md`](.github/skills/code-review/SKILL.md) |
 | 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 4 | ✓ | [`docs/reference/mcp.md`](docs/reference/mcp.md) |
-| 5 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 6 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 7 | → | [`design/cli.md`](design/cli.md) |
-| 8 | → | [`design/integration.md`](design/integration.md) |
-| 9 | → | [`design/mcp.md`](design/mcp.md) |
-| 10 | → | [`design/shared.md`](design/shared.md) |
-| 11 | → | [`design/workflow-step.md`](design/workflow-step.md) |
-| 12 | → | [`docs/community/workflow-steps.md`](docs/community/workflow-steps.md) |
-| 13 | → | [`integrations/CONTRIBUTING.md`](integrations/CONTRIBUTING.md) |
-| 14 | → | [`spec-driven.md`](spec-driven.md) |
+| 4 | ✓ | [`design/catalogs.md`](design/catalogs.md) |
+| 5 | ✓ | [`docs/reference/catalogs.md`](docs/reference/catalogs.md) |
+| 6 | ✓ | [`docs/reference/mcp.md`](docs/reference/mcp.md) |
+| 7 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 8 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 9 | → | [`design/cli.md`](design/cli.md) |
+| 10 | → | [`design/integration.md`](design/integration.md) |
+| 11 | → | [`design/mcp.md`](design/mcp.md) |
+| 12 | → | [`design/shared.md`](design/shared.md) |
+| 13 | → | [`design/workflow-step.md`](design/workflow-step.md) |
+| 14 | → | [`docs/community/workflow-steps.md`](docs/community/workflow-steps.md) |
+| 15 | → | [`integrations/CONTRIBUTING.md`](integrations/CONTRIBUTING.md) |
+| 16 | → | [`spec-driven.md`](spec-driven.md) |
 
 ---
 

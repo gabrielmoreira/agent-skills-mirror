@@ -7,7 +7,7 @@ ref: next
 
 # Mirror Manifest
 
-Mirror of `storybookjs/storybook` — 26 default patterns, 1 followed patterns, 61 file(s) materialized.
+Mirror of `storybookjs/storybook` — 26 default patterns, 1 followed patterns, 63 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `storybookjs/storybook` — 26 default patterns, 1 followed patterns, 
 | Ref           | `next` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 61 |
+| Files         | 63 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -111,15 +111,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 50 | ✓ | [`.cursorrules`](.cursorrules) |
 | 51 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 52 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 53 | ✓ | [`code/lib/claude-plugin/skills/stories/SKILL.md`](code/lib/claude-plugin/skills/stories/SKILL.md) |
+| 53 | ✓ | [`code/lib/claude-plugin/skills/component-docs/SKILL.md`](code/lib/claude-plugin/skills/component-docs/SKILL.md) |
 | 54 | ✓ | [`code/lib/claude-plugin/skills/storybook-init/SKILL.md`](code/lib/claude-plugin/skills/storybook-init/SKILL.md) |
 | 55 | ✓ | [`code/lib/claude-plugin/skills/storybook-setup/SKILL.md`](code/lib/claude-plugin/skills/storybook-setup/SKILL.md) |
 | 56 | ✓ | [`code/lib/claude-plugin/skills/storybook-upgrade/SKILL.md`](code/lib/claude-plugin/skills/storybook-upgrade/SKILL.md) |
-| 57 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/init/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/init/SKILL.md) |
-| 58 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/setup/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/setup/SKILL.md) |
-| 59 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/stories/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/stories/SKILL.md) |
-| 60 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/upgrade/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/upgrade/SKILL.md) |
-| 61 | → | [`code/lib/cli-storybook/src/automigrate/README.md`](code/lib/cli-storybook/src/automigrate/README.md) |
+| 57 | ✓ | [`code/lib/claude-plugin/skills/ui-workflow/SKILL.md`](code/lib/claude-plugin/skills/ui-workflow/SKILL.md) |
+| 58 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/component-docs/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/component-docs/SKILL.md) |
+| 59 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/init/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/init/SKILL.md) |
+| 60 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/setup/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/setup/SKILL.md) |
+| 61 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/ui-workflow/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/ui-workflow/SKILL.md) |
+| 62 | ✓ | [`code/lib/codex-plugin/plugins/storybook/skills/upgrade/SKILL.md`](code/lib/codex-plugin/plugins/storybook/skills/upgrade/SKILL.md) |
+| 63 | → | [`code/lib/cli-storybook/src/automigrate/README.md`](code/lib/cli-storybook/src/automigrate/README.md) |
 
 ---
 

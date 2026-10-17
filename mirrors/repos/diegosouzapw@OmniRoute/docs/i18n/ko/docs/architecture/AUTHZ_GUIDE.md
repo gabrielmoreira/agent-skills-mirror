@@ -80,6 +80,16 @@ JWT가 검증되고 **동시에** `authenticated: true`를 포함하는 경우�
 | `CLIENT_API` | 모델 제공 엔드포인트 — `/api/v1/*`, `/api/v1beta/*` 및 별칭 `/v1/*`, `/v1beta/*`, `/chat/completions`, `/responses`, `/models`, `/codex/*`. | 유효한 `REQUIRE_API_KEY` 기능 플래그가 활성화된 경우 Bearer 키 |
 | `MANAGEMENT` | 대시보드 페이지, 설정, 제공자, 키, 관리자 및 진단 엔드포인트.                                                                               | 대시보드 세션 또는 `manage` 범위가 있는 Bearer                 |
 
+A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
+credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,
+`GET /api/db-backups/exportAll`), restoring a backup over the live data
+(`POST /api/db-backups/import` including `dryRun=true`, `POST /api/db-backups` restore by id,
+`POST /api/settings/import-json`), issuing a sync token (`POST /api/sync/tokens`) and minting an
+`admin` CLI access token (`POST /api/cli/tokens`) require a dashboard session, the local CLI
+subject, or login disabled; API keys of any scope and `oma_` access tokens get `403`. The check
+lives in `src/lib/api/operatorCredential.ts` (`resolveOperatorCredential()` /
+`requireOperatorCredential()`).
+
 ## 파이프라인
 
 ```

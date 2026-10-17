@@ -272,7 +272,11 @@ reviewer feedback:
   [needs-decision route] may apply first; otherwise this hold stands.
 - After posting your reply, **immediately resolve the thread** — except for
   `**Awaiting maintainer decision**`; a review-body item has no thread and takes
-  a stamped top-level comment; a Rejected one names its file or line. When
+  a stamped top-level comment; a Rejected one names its file or line as a
+  directory-qualified path, with an optional `:line` (one number, not a
+  range), inside backticks or `**` markers, for example
+  `` `src/scripts/foo.mts:12` ``; the convergence gate does not count a
+  file or line written as plain text (observed 2026-10-14 on PR `#4307`). When
   helper runtime is enabled, the profile-selected resolve-review-thread command
   (`--pr <number> --comment-id <id> --apply`, with
   `--body`/`--claim-issue`/`--claim-id` or `--claimless`; see
@@ -672,7 +676,11 @@ disposition-evidence or unreplied-comment backstops.
 
 **Disposition-evidence parity:** F2 in
 `idd-pre-merge.instructions.md` defines
-`soleCauseAckOnlyPostDisposition` and the ack-only override.
+`soleCauseAckOnlyPostDisposition` and the ack-only override. A missing
+watermark follows F2's missing-watermark sequence there, but only when
+every disposition-evidence blocker is an ack-only thread: refresh the
+watermark first, then evaluate the override on the refreshed snapshot. A
+mixed cause stays on the normal E1 path.
 (`inPlaceEditOnly`/`soleCauseInPlaceEditOnly`, #1313, is a
 stricter subset — not an override path of its own.) A
 verify-then-confirm reply (analysis before the confirmation verb)

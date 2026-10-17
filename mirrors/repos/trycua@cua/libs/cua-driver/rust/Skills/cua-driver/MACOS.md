@@ -320,6 +320,14 @@ chosen with `click` on the `AXMenuItem` (or in one call with
 `set_value` on the popup). Keyboard navigation of such a menu with
 `press_key` is not the route; pick the item by element.
 
+Opening a menu also brings the app's window above the user's window for a
+moment, and no client can stop that. So in the background, a `click` on a
+web `<select>` in Chrome or an Electron app is refused before anything is
+sent (`select_menu_would_raise_window`): choose the option with
+`set_value` on the same element, which types the option's text into the
+closed control and never opens the menu. Native popups and context menus
+still open and flash the window briefly.
+
 ### Apps that activate themselves
 
 Some apps activate themselves in answer to input, even in the background:
@@ -405,7 +413,15 @@ background: macOS tracks those sessions with the real pointer. The driver
 sees the session start, releases at once, and returns
 `background_unavailable` with `reason: "drag_and_drop_session"`. Look for a
 non-drag route first (Move Up/Down, a menu or context-menu command, a
-shortcut, cut and paste), then foreground if the user allows it. Toolkits that read the hardware pointer (Tk) or drop routed
+shortcut, cut and paste), then foreground if the user allows it.
+
+In an Electron window, `drag` is sent from the app's main process
+(CDP `Input.dispatchMouseEvent` with the button held, or
+`webContents.sendInputEvent`), because Chromium reads the held button from
+the hardware and a window-routed press cannot hold it. Pointer-capture
+widgets and HTML5 drag and drop both drop there, still without the real
+pointer, focus or a raise. If the app's inspector is off, the drag refuses
+with `background_unavailable`. Toolkits that read the hardware pointer (Tk) or drop routed
 mouse events (LibreOffice) refuse the background drag with
 `background_unavailable` before anything is sent.
 
@@ -499,10 +515,8 @@ Calc cells do: `set_value` returns success at the AX level and the cell
 keeps its old content. `set_value` re-reads the value, and when it has
 not moved it fails with `code:"write_not_applied"` and
 `effect:"not_applied"`, so a `run_script` stops there. LibreOffice also
-drops background pointer input, so its cells cannot be edited in the
-background at all: the edit needs the window in front (`bring_to_front`,
-then `type_text`), only if the user allows it. Otherwise stop and report
-the step as blocked.
+ignores background pointer input, so address it with `window_id` and type
+instead (see "LibreOffice, Numbers and other editors in the background").
 
 ### Known text-input limits (Catalyst + Electron)
 
@@ -659,4 +673,8 @@ above (`invoke_menu` with a path such as `["Go", "Downloads"]`).
 
 ### LibreOffice, Numbers and other editors in the background
 
-With `window_id`, `type_text`, `press_key` and `hotkey` post keys to that exact window: the driver makes it the app's key window through in-app key-window records (no raise, no activation, real pointer untouched), confirms that the app's focused window and focused element are in that window, posts, and hands key back. This also covers another window or dialog of the app holding focus, and a LibreOffice that was never activated. When the switch cannot be confirmed the call is refused with `window_not_key` and no key is sent. A second window of the same app (Find & Replace, another document) is no longer `same_pid_keyboard_ambiguity`. A command key whose menu route is refused (item disabled while the app is in the background) falls through to key events in that window. Recipe: Name Box navigation (`type_text` `A1\n`), type with `\n` and `\t`, then read the cell back.
+With `window_id`, `type_text`, `press_key` and `hotkey` post keys to that exact window: the driver makes it the app's key window through in-app key-window records (no raise, no activation, real pointer untouched), confirms that the app's focused window and focused element are in that window, posts, and hands key back. This also covers another window or dialog of the app holding focus, and a LibreOffice that was never activated. When the switch cannot be confirmed the call is refused with `window_not_key` and no key is sent. A second window of the same app (Find & Replace, another document) is no longer `same_pid_keyboard_ambiguity`. A command key whose menu route is refused (item disabled while the app is in the background) falls through to key events in that window. Recipe: pass `window_id` on every call; go to the cell with Name Box navigation (`type_text` `A1\n`), type with `\n` and `\t`, read the cell back; run commands (Paste Special, Format, Save) with `invoke_menu({pid, window_id, path})` rather than clicking the menu bar. A `background_unavailable` refusal here means use `get_window_state` and act by element, not stop.
+
+### Preview: export before resizing
+
+Duplicate is disabled in a background Preview, so work on an export: File > Export (`invoke_menu`) to the destination, then resize or edit the exported copy. Do not resize the original first.

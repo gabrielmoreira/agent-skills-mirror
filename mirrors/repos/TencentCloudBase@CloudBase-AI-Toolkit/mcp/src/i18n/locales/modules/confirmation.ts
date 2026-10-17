@@ -1,0 +1,87 @@
+import { defineModule } from "../types.js";
+
+/**
+ * 破坏性操作确认（elicitation 护栏）的文案。
+ *
+ * 两条硬约束决定了这里的形状：
+ *   1. 选项固定为两个受控值（确认 / 取消），**不得出现自由文本字段** —— form 模式禁止收集
+ *      密码 / API key / token（MCP 规范的 MUST NOT）；
+ *   2. 确认文案必须带**目标**（哪一个资源、哪个环境），不允许只问"确定吗"。
+ */
+export const confirmation = defineModule(
+  {
+    // 按钮文案**有意保留全局这一份**（裁定：不改）：本护栏拦下来的动作，无论是删函数、
+    // 删集合、销毁实例，还是 PostgreSQL 的 DROP TABLE / TRUNCATE / ALTER…DROP，本质都是
+    // "删数据或删对象" —— "确认删除"不误导；改成"确认执行"反而更含糊（执行什么？）。
+    "option.confirm": "确认删除",
+    "option.cancel": "取消",
+
+    // 每个 message 都必须带 {resource}（这次要动什么），环境 ID 只在拿到时拼进去
+    "message.deleteFunction": "即将删除云函数 {resource}（环境 {envId}）。删除后无法恢复。",
+    "message.deleteCollection": "即将删除集合 {resource}（环境 {envId}）。集合及其中的数据会一并删除，无法恢复。",
+    "message.deleteDocumentsOne": "即将删除集合 {resource} 中匹配查询的一条文档（环境 {envId}）。删除后无法恢复。",
+    "message.deleteDocumentsQuery": "即将删除集合 {resource} 中所有匹配查询的文档（环境 {envId}）。匹配到多少条就删多少条，删除后无法恢复。",
+    "message.deleteStorage": "即将删除云存储文件 {resource}（环境 {envId}）。删除后无法恢复。",
+    "message.deleteCloudRun": "即将删除云托管服务 {resource}（环境 {envId}）。服务会下线，需要重新部署才能恢复。",
+    "message.destroyMysql": "即将销毁 MySQL 实例 {resource}（环境 {envId}）。实例与数据都会删除，无法恢复。",
+    "message.destroyMysqlEnv": "即将销毁当前环境的 MySQL 实例（环境 {envId}）。实例与数据都会删除，无法恢复。",
+    "message.destroyEnv": "即将销毁环境 {resource}。环境本身以及其中的云函数、数据库和存储都会删除，无法恢复。",
+    "message.mysqlThisEnv": "当前环境的 MySQL 实例",
+    // PostgreSQL：按**参数里的 SQL** 判定才拦，所以文案要把命中的语句点名出来（{resource}）
+    "message.pgExecuteDestructiveSql":
+      "即将在环境 {envId} 上执行会改动数据的 SQL：{resource}。这条语句会删数据或删结构，执行后无法恢复，请确认它就是你要跑的那条。",
+    "message.pgApplyMigrationDestructive":
+      "这条 migration 里有会删结构的语句（环境 {envId}）：{resource}。执行后无法恢复，请确认这次迁移确实要这么做。",
+    // 多条时的变体：把**条数**说出来（预览只截首条，所以这个信号必须有）。单条时用上面那条，
+    // 不出现"共 1 条"这类噪音。
+    "message.pgExecuteDestructiveSqlMany":
+      "即将在环境 {envId} 上执行会改动数据的 SQL：{resource}。本次共有 {count} 条破坏性语句（这里只预览第一条），执行后无法恢复，请确认。",
+    "message.pgApplyMigrationDestructiveMany":
+      "这条 migration 里有会删结构的语句（环境 {envId}）：{resource}。本次共有 {count} 条破坏性语句（这里只预览第一条），执行后无法恢复，请确认这次迁移确实要这么做。",
+    "message.unknownResource": "（未能从参数中取到资源名）",
+    "message.unknownEnv": "未知",
+
+    "blocked.target": "目标：{resource}（环境 {envId}）",
+    "blocked.cancelled": "未执行：你在确认框里点了取消（{durationMs}ms）。",
+    "blocked.timeout": "未执行：{seconds}s 内没有收到确认（超时）。",
+    "blocked.error": "未执行：确认流程出错（{reason}）。",
+    "blocked.autoApprovedBlocked":
+      "未执行：Agent 自动审批通过（{durationMs}ms，未询问你），但 CLOUDBASE_MCP_ELICIT_AUTO_APPROVE=block。",
+    "hint.release":
+      "如需放行：把客户端权限改成会询问，或把它加入 CLOUDBASE_MCP_SKIP_ELICITATIONS（本次为 {action}）。",
+  },
+  {
+    "option.confirm": "Delete",
+    "option.cancel": "Cancel",
+
+    "message.deleteFunction": "About to delete the cloud function {resource} (env {envId}). This cannot be undone.",
+    "message.deleteCollection": "About to delete the collection {resource} (env {envId}). Its documents are deleted with it and cannot be recovered.",
+    "message.deleteDocumentsOne": "About to delete the one document in {resource} that matches the query (env {envId}). This cannot be undone.",
+    "message.deleteDocumentsQuery": "About to delete every document in {resource} that matches the query (env {envId}). However many match, they are all deleted and cannot be recovered.",
+    "message.deleteStorage": "About to delete the cloud storage file {resource} (env {envId}). This cannot be undone.",
+    "message.deleteCloudRun": "About to delete the CloudRun service {resource} (env {envId}). The service goes offline and needs a redeploy to come back.",
+    "message.destroyMysql": "About to destroy the MySQL instance {resource} (env {envId}). The instance and its data are deleted and cannot be recovered.",
+    "message.destroyMysqlEnv": "About to destroy this environment's MySQL instance (env {envId}). The instance and its data are deleted and cannot be recovered.",
+    "message.destroyEnv": "About to destroy the environment {resource}. The environment itself, and the functions, databases and storage inside it, are deleted and cannot be recovered.",
+    "message.mysqlThisEnv": "this environment's MySQL instance",
+    "message.pgExecuteDestructiveSql":
+      "About to run data-changing SQL in env {envId}: {resource}. This statement drops data or schema and cannot be undone - confirm it is the one you meant to run.",
+    "message.pgApplyMigrationDestructive":
+      "This migration contains statements that drop schema (env {envId}): {resource}. This cannot be undone - confirm this migration should do that.",
+    "message.pgExecuteDestructiveSqlMany":
+      "About to run data-changing SQL in env {envId}: {resource}. There are {count} destructive statements in this call (only the first is previewed here) and they cannot be undone - confirm.",
+    "message.pgApplyMigrationDestructiveMany":
+      "This migration contains statements that drop schema (env {envId}): {resource}. There are {count} destructive statements in this call (only the first is previewed here) and they cannot be undone - confirm this migration should do that.",
+    "message.unknownResource": "(could not read the resource name from the arguments)",
+    "message.unknownEnv": "unknown",
+
+    "blocked.target": "Target: {resource} (env {envId})",
+    "blocked.cancelled": "Not executed: you cancelled in the confirmation dialog ({durationMs}ms).",
+    "blocked.timeout": "Not executed: no confirmation within {seconds}s (timed out).",
+    "blocked.error": "Not executed: the confirmation flow failed ({reason}).",
+    "blocked.autoApprovedBlocked":
+      "Not executed: the agent auto-approved it ({durationMs}ms, you were not asked) while CLOUDBASE_MCP_ELICIT_AUTO_APPROVE=block.",
+    "hint.release":
+      "To allow it: switch the client permission to ask, or add it to CLOUDBASE_MCP_SKIP_ELICITATIONS (this call was {action}).",
+  },
+);

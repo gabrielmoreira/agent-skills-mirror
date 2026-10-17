@@ -8,13 +8,15 @@
  "level_names": {"admin1": "province / municipality", "admin2": "prefecture", "district": "county / district"},
  "name_suffixes": ["市", "省", "区", "县"],
  "admin_table": "data/admin.json",
+ "also_children": ["香港", "澳门", "臺灣"],
+ "osm_name_keys": ["name:zh", "name:zh-Hans"],
  "lookups": {
   "plate": {"file": "data/plates.json"},
   "area-code": {"file": "data/area_codes.json"}
  },
  "docs": ["clues.md", "search.md"],
  "services": {
-  "poi": {"sources": "so,osm,sug", "country": "cn"},
+  "poi": {"sources": "so,osm,sug", "country": "cn", "keyword_scripts": ["CJK UNIFIED IDEOGRAPH"]},
   "street_view": "baidu_pano.py",
   "datum": "GCJ-02 on Chinese web maps; report WGS84 and GCJ-02 (geo.py convert)"
  },

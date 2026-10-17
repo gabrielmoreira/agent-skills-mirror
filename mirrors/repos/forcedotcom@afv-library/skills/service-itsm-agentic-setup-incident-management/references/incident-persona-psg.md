@@ -51,7 +51,7 @@ licensing is part of the orchestrator's **Major Incident Management** feature).
   existing assignments (idempotency); assigning the missing backing PSL(s) and then the PSG; verifying by
   read-back.
 - **Out of scope**: the **Major Incident Manager** PSG; creating / editing / recalculating a PSG or its
-  membership; enabling ITSM / incident-management features (`service-itsm-incident-mgmt-configure`); the
+  membership; enabling ITSM / incident-management features (the `IncidentMgmt` SOR's master-feature steps); the
   `IncidentFulfiller` permission **set** for the Fulfiller **agent's** access
   (`service-itsm-agentic-setup-itsm-agentforce-permset-assign`); CMDB access
   (`service-itsm-agentic-setup-cmdb-access-assign`); generic, non-incident permission-set / PSG assignment
@@ -60,7 +60,8 @@ licensing is part of the orchestrator's **Major Incident Management** feature).
 ## Preconditions
 
 - **ITSM Incident Management must be provisioned** — the incident persona PSGs must exist on the org. If
-  neither is found, **stop and hand off** to `service-itsm-incident-mgmt-configure`; assign nothing.
+  neither is found, **stop and report that the personas are not provisioned**; the master-feature
+  prerequisite is handled by the orchestrator, but enabling it does not prove the PSGs exist.
 - **The acting user must be able to assign permission sets** (the SOR gates writes on it). A write that
   fails with an access error that is not a duplicate → surface it plainly and stop; an admin must do it.
 - **Each backing license consumes a seat.** A seat-exhausted license blocks that persona; report it.
@@ -68,8 +69,8 @@ licensing is part of the orchestrator's **Major Incident Management** feature).
 ## Operations (shapes come from `describe`)
 
 1. **Resolve which incident persona PSGs exist (read).** Look up the two PSGs by `DeveloperName`
-   (`IncidentFulfillerPSG`, `IncidentManagerPSG`) with **no `NamespacePrefix` filter**. None found → hand
-   off to `service-itsm-incident-mgmt-configure` and stop. Capture each PSG's Id and status.
+   (`IncidentFulfillerPSG`, `IncidentManagerPSG`) with **no `NamespacePrefix` filter**. None found →
+   stop and report that the personas are not provisioned. Capture each PSG's Id and status.
 2. **Resolve the target user (read).** To exactly one active user. For "me" / "the current user", read the
    API root's identity (the running user's `005…` Id) — **not** the `USER_ID()` SOQL function (Apex-only)
    and **not** the Chatter current-user endpoint (fails when Chatter is off). Zero / multiple → disambiguate.
@@ -124,13 +125,13 @@ Persona: <Incident Fulfiller | Incident Manager>
 ```
 
 Repeat the `Persona:` block per PSG if both were chosen. Report only what read-back confirmed. If the
-personas are not on the org, say so and name `service-itsm-incident-mgmt-configure`.
+personas are not on the org, say so without claiming master enablement will provision them.
 
 ## Common failures (surface in plain language)
 
 | Symptom | Likely cause | What to tell the user |
 |---------|--------------|-----------------------|
-| No incident PSG on the org | ITSM Incident Management not provisioned | The incident personas aren't set up yet — that's a separate step (`service-itsm-incident-mgmt-configure`) |
+| No incident PSG on the org | Incident persona PSGs not provisioned | The incident personas aren't set up yet — stop and report the missing PSGs |
 | Duplicate on assign | User already has that grant | Not an error — report as already assigned |
 | Seat / limit error on a license | An incident license has no free seats | A seat must free up (or more licenses added); the persona is incomplete without it |
 | PSG assigned but some actions missing | A backing license wasn't assigned, or the PSG is still recalculating | Confirm every backing license is assigned; if it's settling, retry in a moment |

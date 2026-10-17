@@ -98,14 +98,27 @@ read-write grants, TinyBox's scratch directory, `/private/tmp` and `/dev/null`.
 Network follows `policy.allow_network` (on for a local session, off for a
 remote one), which the jail's `allow_net` enforces.
 
-**Known limitation (`folder_confined`): reads are not confined.** Seatbelt's
-profile is allow-default for reads, so a command can read any file the user
-can, credential stores included (`~/.ssh`, `~/.gnupg`, `~/.aws`, Keychains), and
-with network on could send it out. The pinned TinyBox contract has no way to
-deny reads (`NativeJailConfig` carries no deny list). The capability is
-[tinyhumansai/tinybox#87](https://github.com/tinyhumansai/tinybox/pull/87)
-(`deny_read`, contract 1.20); once it is released and pinned, `folder_confined`
-requests will deny the `is_always_forbidden` credential stores.
+**`folder_confined`: credential stores are read-denied.** Seatbelt's profile
+is allow-default for reads, so `jail_request` sends the credential stores that
+`SecurityPolicy::is_always_forbidden` protects (`~/.ssh`, `~/.gnupg`, `~/.aws`,
+`~/.azure`, `~/.kube`, `~/Library/Keychains`, `~/.netrc`, `~/.git-credentials`,
+`~/.pgpass`, `~/.npmrc`, `~/.docker/config.json`, `~/.cargo/credentials.toml`)
+as `NativeJailConfig.deny_read` (TinyBox contract 1.20), built from the same
+lists by `security::policy::home_credential_stores`. OpenHuman's own credential
+files are denied too (`security::credentials::credential_files`, at the paths
+their stores write): the keyring's `secrets.enc`, `auth-profiles.json`,
+`http-credentials.json` and the account `config.toml`. The rest of the
+OpenHuman state folder stays readable for now, because TinyBox keeps the jail's
+scratch directory (its `TMPDIR`) under `<state_dir>/artifacts/sandbox-scratch`,
+and a denial is the profile's last rule, overriding that write grant. Only
+stores that exist are sent. When the workspace root or a read-write grant sits
+inside a store (an action dir of `~/.aws/project`), the folder-confined jail is
+refused with an error naming the store: TinyBox cannot deny a store that holds
+the command's workspace, and running without the denial would leave the rest of
+the store readable. A store inside a grant is still denied. Credential files
+outside these home locations, such as a project's own `.npmrc`, are not covered
+yet; that needs pattern denials in TinyBox. Other files the user can read stay readable. `isolated` (Landlock) sends none: it already denies
+every path it is not granted.
 
 TinyBox owns the jail provider, child process, pipe capture,
 and kill/reap acknowledgement; OpenHuman reads bounded output batches and

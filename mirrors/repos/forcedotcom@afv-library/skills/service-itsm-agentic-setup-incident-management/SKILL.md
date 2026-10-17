@@ -1,6 +1,6 @@
 ---
 name: service-itsm-agentic-setup-incident-management
-description: "Orchestrator for Incident Management setup in Service Cloud ITSM: presents the features, tracks progress, and configures each — SLA & Milestones, Priority Matrix, Incident preferences, Major Incident Management, Incident persona PSG assignment, Service Management Privilege, and Incident audit tracking. Use for: set up or configure incident management, incident management walkthrough, what incident features can I configure; the incident preference toggles (default field validations, auto-close child incidents, auto-triage, assign with Einstein, restrict assigned group, rich text descriptions); Major Incident Management (approval group + MIM preferences); assigning the Incident Fulfiller or Incident Manager persona PSG; Service Management Privilege / privilege escalation setup. DO NOT TRIGGER for: the master on/off switch (service-itsm-incident-mgmt-configure), the Priority Matrix, SLA, or field history tracking alone, the Major Incident Manager PSG, creating/editing PSGs, or Problem/Change/Case Management."
+description: "Orchestrator for Incident Management setup in Service Cloud ITSM: presents the features, tracks progress, and configures each — SLA & Milestones, Priority Matrix, Incident preferences, Major Incident Management, Incident persona PSG assignment, Service Management Privilege, and Incident audit tracking. Use for: set up or configure incident management, incident management walkthrough, what incident features can I configure; the incident preference toggles (default field validations, auto-close child incidents, auto-triage, assign with Einstein, restrict assigned group, rich text descriptions); Major Incident Management (approval group + MIM preferences); assigning the Incident Fulfiller or Incident Manager persona PSG; Service Management Privilege / privilege escalation setup. DO NOT TRIGGER for: the master on/off switch alone (use the IncidentMgmt SOR), the Priority Matrix, SLA, or field history tracking alone, the Major Incident Manager PSG, creating/editing PSGs, or Problem/Change/Case Management."
 metadata:
   version: "2.1"
   domains: ["Service"]
@@ -10,7 +10,6 @@ metadata:
     - "service-itsm-agentic-setup-cmdb-access-assign"
     - "service-itsm-agentic-setup-incident-sla-configure"
     - "service-itsm-agentic-setup-itsm-agentforce-permset-assign"
-    - "service-itsm-incident-mgmt-configure"
     - "service-itsm-incident-priority-configure"
   mcpTools:
     headless-360:
@@ -52,7 +51,7 @@ until the user is done.
 
 **Delegated** features hand off to their child skill or SOR. A child skill runs its own confirmations and
 read-backs, so this skill only coordinates. A SOR is a recipe, not an agent: for a SOR hand-off this skill
-runs the SOR's steps itself and owns the confirmation and read-back (see Audit Tracking below).
+runs the SOR's steps itself and owns the confirmation and read-back (see the master switch and Audit Tracking below).
 **Inline** features are run by this skill directly through the `headless-360` MCP server — **read the
 matching reference file before executing that feature** and follow it. Every inline operation is fetched at
 runtime: `discover` by intent, `describe` for the current route/schema/labels, then `dispatch_readonly`
@@ -105,10 +104,21 @@ and business context that informs which features are relevant.
 ### 2. Ensure the Incident Management master switch is on (prerequisite)
 
 Every feature below depends on the org-level `service-cloud-itsm-incident` master switch being enabled.
-Before showing the menu, delegate to `service-itsm-incident-mgmt-configure` to read current state; if on,
-it is a no-op — otherwise it confirms with the user before flipping it. **Skip only when the master switch
-was already confirmed *enabled* in this session** (see step 0). A cached "off"/unknown state MUST fall
-through to the delegation.
+Before showing the menu, `discover` the `IncidentMgmt` SOR by intent and `describe` its master-feature
+steps (`read-itsm-incident-feature-status`, `enable-itsm-incident-feature`,
+`verify-itsm-incident-feature-status`). Follow its current invocation and prefix the stored path as its
+version note says (`v67.0` is the minimum and a safe default). A `404` from a version above the org's
+maximum is a version mismatch: retry once at `v67.0` before treating `404` as unavailable.
+Do not use the Service-Foundation `IncidentManagement` look-alike or its broadcast toggles.
+Read the master status via `dispatch_readonly` and decide on `status` first: `ENABLED` is an idempotent
+no-op even if `enableBlockedReasons` is non-empty; `NOT_AVAILABLE` means halt (do not attempt enable);
+for `NOT_ENABLED`, surface any `enableBlockedReasons` as plain text (their messages are HTML-escaped
+markup) and halt if present. Otherwise show the exact off → on change and ask for explicit confirmation before
+running the SOR's enable step via `dispatch`. Re-read via the SOR's verify step and require
+`ENABLED` before continuing. On a declined confirmation, unexpected status, `401`/`403`/`404`,
+failed write, or read-back mismatch, stop without showing the menu; never infer success from
+the write response. **Skip only when the master switch was already confirmed *enabled* in this
+session** (see step 0). A cached "off"/unknown state MUST fall through to the live read.
 
 ### 3. Present the feature menu as a multi-select
 
@@ -144,8 +154,8 @@ Apply these whenever an inline feature runs; the **Everywhere** rules also apply
 hand-off. They are irreversible or silently-wrong if missed.
 
 - **Resolve the right node (Preferences).** Target the ITSM Incident Management org-preferences node
-  (controller `IPCManagementSetupController`), **not** the Service-Foundation look-alike
-  (`IncidentMgmtSetupController`, broadcast channels + a master switch).
+  (the one with the six per-feature toggles), **not** the Service-Foundation look-alike whose toggles
+  are broadcast channels plus its own master switch.
 - **Two preferences are one-way / enable-only (Preferences).** *Restrict Assigned Group to Regular Groups*
   and *Enable Rich Text for Incident Descriptions* cannot be turned off once on. Never offer to disable
   them; require an explicit "I understand this can't be undone" confirmation before enabling; never enable
@@ -189,8 +199,8 @@ hand-off. They are irreversible or silently-wrong if missed.
 ## Rules
 
 - ALWAYS show "(via service-itsm-agentic-setup-incident-management)" in the setup header
-- ALWAYS run the master-switch prerequisite (Behavior step 2) before showing the menu, unless the user
-  already confirmed the switch is on earlier in this conversation
+- ALWAYS run the master-switch prerequisite (Behavior step 2) before showing the menu, unless a live
+  status read already confirmed the switch ENABLED on this org earlier in this session
 - ALWAYS present the feature menu before configuring any selected feature (the master-switch prerequisite
   is the only permitted action before the menu) — do not assume which feature the user wants, **except**
   when the user named a specific feature, in which case go straight to it (single-select is fine)
@@ -214,8 +224,8 @@ hand-off. They are irreversible or silently-wrong if missed.
 Before emitting any menu or summary, confirm each; adjust the output before sending if any is unchecked.
 
 - [ ] The header line ends with `(via service-itsm-agentic-setup-incident-management)`
-- [ ] The master switch was confirmed on (via `service-itsm-incident-mgmt-configure`) before the menu,
-      unless already confirmed earlier in this conversation
+- [ ] The master switch was confirmed on (via the `IncidentMgmt` SOR status/verify steps) before the menu,
+      unless a live read already confirmed it ENABLED on this org earlier in this session
 - [ ] The feature menu emitted BOTH the ASCII table AND an `AskUserQuestion` (`multiSelect: true`) in the
       same response (single-select only if the user already named a specific feature)
 - [ ] Each feature row's `Status` reflects the actual tracked state (`Not done`, `In progress`, `Done`)

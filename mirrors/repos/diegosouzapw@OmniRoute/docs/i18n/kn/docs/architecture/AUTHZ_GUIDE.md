@@ -82,6 +82,16 @@ JWT ಪರಿಶೀಲನೆಯಲ್ಲಿ ಉತ್ತೀರ್ಣವಾದಾ
 | `CLIENT_API` | ಮಾಡೆಲ್ ಒದಗಿಸುವ ಎಂಡ್ಪಾಯಿಂಟ್ಗಳು — `/api/v1/*`, `/api/v1beta/*`, ಜೊತೆಗೆ `/v1/*`, `/v1beta/*`, `/chat/completions`, `/responses`, `/models`, `/codex/*` ಅಲಿಯಾಸ್ಗಳು. | ಪರಿಣಾಮಕಾರಿ `REQUIRE_API_KEY` ಫೀಚರ್ ಫ್ಲ್ಯಾಗ್ ಸಕ್ರಿಯವಾಗಿರುವಾಗ Bearer ಕೀ |
 | `MANAGEMENT` | ಡ್ಯಾಶ್ಬೋರ್ಡ್ ಪುಟಗಳು, ಸೆಟ್ಟಿಂಗ್ಗಳು, ಪ್ರೊವೈಡರ್ಗಳು, ಕೀಗಳು, ನಿರ್ವಾಹಕ ಮತ್ತು ಡಯಾಗ್ನೋಸ್ಟಿಕ್ಸ್ ಎಂಡ್ಪಾಯಿಂಟ್ಗಳು.                                                          | ಡ್ಯಾಶ್ಬೋರ್ಡ್ ಸೆಷನ್ ಅಥವಾ `manage` ಸ್ಕೋಪ್ ಹೊಂದಿರುವ Bearer               |
 
+A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
+credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,
+`GET /api/db-backups/exportAll`), restoring a backup over the live data
+(`POST /api/db-backups/import` including `dryRun=true`, `POST /api/db-backups` restore by id,
+`POST /api/settings/import-json`), issuing a sync token (`POST /api/sync/tokens`) and minting an
+`admin` CLI access token (`POST /api/cli/tokens`) require a dashboard session, the local CLI
+subject, or login disabled; API keys of any scope and `oma_` access tokens get `403`. The check
+lives in `src/lib/api/operatorCredential.ts` (`resolveOperatorCredential()` /
+`requireOperatorCredential()`).
+
 ## ಪೈಪ್ಲೈನ್
 
 ```

@@ -133,6 +133,11 @@ def sample(bbox: tuple[float, float, float, float], n: int, spread_m: float, see
     return items
 
 
+# The Baidu Maps logo render() gets baked into the bottom-left of every view (x < 120, y > 715 on 1024×768), as fractions
+# x0,y0,x1,y1. match.py keeps it out of SIFT: logo matches logo between any two renders (a wrong candidate got 27 of 30 inliers there).
+LOGO_BOX = (0.0, 0.93, 0.12, 1.0)
+
+
 def render(pid: str, heading: float, pitch: float = 10, fov: float = 80,
            w: int = 1024, h: int = 768, cache: Path | None = None, proxy: str | None = None) -> Image.Image:
     """Render a perspective view at a compass heading. heading 0 = north, positive pitch = looking up, fov is the vertical field of view. Max width 1024."""

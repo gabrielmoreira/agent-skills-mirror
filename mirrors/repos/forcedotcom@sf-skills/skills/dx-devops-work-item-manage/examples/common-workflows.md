@@ -477,3 +477,52 @@ Real-world examples of typical work item operations in DevOps Center autonomous 
    ```
 
 > **Note:** The CLI will return a non-zero status with error name `PR_ALREADY_EXISTS` if a PR already exists for that work item.
+
+---
+
+## Workflow 16: Commit Through the DevOps Center API (with git fallback)
+
+**User request:** "Commit the HelloWorld class to WI-000001. My changes are in the dev org <dev-org>."
+
+**Steps:**
+
+1. **Preflight on the dev org** (both orgs must be authenticated):
+   ```bash
+   sf api request rest "/services/data/v67.0/connect/devops/doceConnectionType" --target-org <dev-org>
+   ```
+   `{"isCore": true}` → continue. A failed call or `isCore` not `true` → use the git path (Workflow 3).
+
+2. **Look up the work item on the hub** (status must be New, In Progress, In Review or Ready to Promote):
+   ```bash
+   sf devops project list --target-org <hub-org> --json
+   sf devops work-item list --project-id <project-id> --target-org <hub-org> --json \
+     | jq '.result.workItems[] | select(.name == "WI-000001")'
+   ```
+
+3. **Commit** (body is the inner object, no wrapper; take `workItemId`/`projectId` from step 2):
+   ```bash
+   BODY=$(mktemp)
+   cat > "$BODY" <<'JSON'
+   {"isCommitCore":"true","workItemId":"<work-item-id>","projectId":"<project-id>",
+    "workItemName":"WI-000001","workItemLink":"<work item url>","commitMessage":"Update HelloWorld",
+    "changes":[{"fullName":"HelloWorld","type":"ApexClass","operation":"modify"}]}
+   JSON
+   sf api request rest "/services/data/v67.0/connect/devops/commitChanges" --method POST --body @"$BODY" --target-org <dev-org>
+   rm "$BODY"
+   ```
+   Expect `{"reqId":"<uuid>","status":"SUCCESS"}` (accepted). If the call fails or `status` is `ERROR`, report the error (`CODE:message` in `reqId`) and stop.
+
+4. **Poll until `SUCCESS` or `ERROR`** (every 10 s, up to 12 min):
+   ```bash
+   sf data query --target-org <dev-org> --json \
+     -q "SELECT Status, Message, ErrorDetails FROM DevopsRequestInfo WHERE RequestToken = '<reqId>'"
+   ```
+
+5. **Confirm on the hub**, then offer to create the review:
+   ```bash
+   sf data query --target-org <hub-org> --json \
+     -q "SELECT Name, CommitReference FROM WorkItemComponentList WHERE WorkItemId = '<work-item-id>' ORDER BY CreatedDate"
+   ```
+   A new row with a `CommitReference` means the commit was recorded.
+
+**Fallback:** if the preflight fails, retrieve the changes with `sf project retrieve start --target-org <dev-org>` if they exist only in the dev org, set the work item to In Progress if it is New, then follow Workflow 3 and re-check the hub before creating the PR.

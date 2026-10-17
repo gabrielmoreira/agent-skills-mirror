@@ -23,7 +23,8 @@ renders artifact content itself.
 | [`store.rs`](./store.rs) | All filesystem I/O over `tokio::fs`: `artifacts_root`, `create_artifact`, `finalize_artifact`, `fail_artifact`, `read_artifact_bytes` (`pub`); `save_artifact_meta`, `save_artifact_args`, `read_artifact_args`, `list_artifacts`, `get_artifact`, `delete_artifact` (`pub(crate)`); `validate_artifact_id` / `assert_within_root` sandboxing; `create_artifact_regenerating` (explicit regenerate target); `sanitize_filename_stem`. |
 | [`ops.rs`](./ops.rs) | RPC business logic returning `Outcome<Value>`: `ai_list_artifacts`, `ai_get_artifact`, `ai_delete_artifact`, `ai_regenerate`. `DEFAULT_LIMIT = 50`, `MAX_LIMIT = 200`. The regenerate path that re-runs `PresentationTool` is `#[cfg(feature = "documents")]`; without the feature `ai_regenerate` returns an error. |
 | [`schemas.rs`](./schemas.rs) | `ControllerSchema`s and `handle_*` fns for the four `ai.*` controllers; param helpers `read_required`, `read_optional_u64`, `read_optional_string` (whitespace-only → absent), `type_name`. |
-| [`tools.rs`](./tools.rs) | `ArtifactListTool`, `ArtifactGetTool`, `ArtifactDeleteTool`: shims over `ops` that unwrap the `Outcome` and return `outcome.value` as the `ToolResult` string. |
+| [`tiny_store.rs`](./tiny_store.rs) | OpenHuman's side of the versioned artifacts (`tiny-artifacts`): `versioned_store` (the records, in the configured storage backend: [`version_documents.rs`](./version_documents.rs); files from earlier builds under `<workspace>/artifacts/versioned/` are imported once), `version_files_dir` (each file version's own copy), `LegacyUiBridge` (the crate's `ArtifactObserver`: shows each artifact's newest version through the legacy row + events and the files folder), `artifacts_service`, the agent tools, and `save_operator_version` (the preview panel's autosave). |
+| [`production.rs`](./production.rs) | `Production`: how producer tools (deck, document, generated media) file their output — reserve the file and the card, open the versioned record under the same id, then complete or fail it. |
 | `*_tests.rs` | Sibling test files for each of the above (`#[path]`). |
 
 ## Public surface
@@ -62,16 +63,23 @@ When `thread_id` is given to `list_artifacts`, legacy records with no
 
 ## Agent tools
 
-Constructed in [`tools/ops.rs`](../../tools/ops.rs) (unconditionally) and re-exported through
-[`tools/mod.rs`](../../tools/mod.rs) (`pub use crate::agent::artifacts::tools::*`).
+The agent's artifact tools are the `tiny-artifacts` crate's, bound to this
+workspace by [`tiny_store::registered_tools`](./tiny_store.rs) and constructed in
+[`tools/ops.rs`](../../tools/ops.rs). Every write goes through the crate's
+`Artifacts` service, so a tool-made artifact is a versioned record shown
+through `LegacyUiBridge` exactly like a producer-made one.
 
 | Tool | Permission | Behavior |
 | --- | --- | --- |
-| `artifact_list` | default | `ops::ai_list_artifacts(.., thread_id = None)`: always the whole workspace; the per-thread filter is RPC-only. `offset` / `limit` args. Concurrency-safe. |
-| `artifact_get` | default | `ops::ai_get_artifact`; `artifact_id` required. Concurrency-safe. |
-| `artifact_delete` | `Dangerous` | `ops::ai_delete_artifact`. Default-OFF: listed as its own `ToolFamily` (`id: "artifact_delete"`, `default_enabled: false`) in `TOOL_FAMILIES` in [`tools/user_filter.rs`](../../tools/user_filter.rs); `artifact_list` / `artifact_get` are deliberately not in that map so they cannot be toggled off. |
+| `create_artifact` | `Write` | New artifact with its first version: `body` for `text` / `markdown` / `html`, `path` (a file in the agent's working folder or the files folder) for `image` / `file`. |
+| `update_artifact` | `Write` | Appends a version; an identical text body appends nothing. |
+| `read_artifact` | default | One record with its full history. |
+| `list_artifacts` | default | Every versioned record, newest first. |
+| `delete_artifact` | `Dangerous` | Deletes the record, its card and file. Default-OFF: its `ToolFamily` in [`tools/user_filter.rs`](../../tools/user_filter.rs) keeps the old toggle id `artifact_delete` so saved choices still apply. |
 
-There is no regenerate tool; regeneration is RPC-only.
+All five classify as `DomainGroup::Agent` (`tools/ops_tool_groups.rs`), so a
+harness-scoped agent keeps them. There is no regenerate tool; regeneration is
+RPC-only.
 
 ## Events
 
@@ -145,7 +153,7 @@ event.
 - `create_artifact` rejects empty titles/extensions and extensions
   containing `/`, `\`, or `.`. Filename stems are lowercased ASCII
   `[a-z0-9_-]`, capped at 80 chars, fallback `artifact`.
-- Log prefix is `[artifacts]` (`[tool][artifacts]` in `tools.rs`).
+- Log prefix is `[artifacts]` (`[tiny-artifacts]` in `tiny_store.rs`).
 
 ## Further reading
 

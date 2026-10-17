@@ -75,14 +75,30 @@ Omit `--output-dir` for stdout-only comparison. Both source files remain unchang
 Keep reports private: position quantities and the account alias can still reveal
 sensitive trading information. Do not commit real snapshots or reports.
 
-| Result | Meaning | Manual gate |
+### Report status
+
+| Status | Meaning | Manual gate |
 | --- | --- | --- |
-| MATCH | Every equity has the same remaining quantity and direction | Allocation review may continue after verifying provenance |
-| BROKER_ONLY | Broker holding has no matching memory position | Stop and review |
-| MEMORY_ONLY | Open memory position is absent from broker | Stop and review |
-| QUANTITY_MISMATCH | Remaining share counts differ | Stop and review |
-| DIRECTION_MISMATCH | Broker and memory sides differ | Stop and review |
+| MATCH | Every equity matches, including two verified empty accounts | Allocation review may continue after verifying provenance |
+| REVIEW_REQUIRED | Valid snapshots contain at least one item discrepancy | Stop and review |
 | INVALID_INPUT | Incomplete, malformed, duplicate, unsupported or incompatible inputs | Stop; no report files are written |
+
+Read failures name the input side (`broker:` or `memory:`) and cause: file not
+found, file read error, encoding error (expected UTF-8), invalid JSON, duplicate
+JSON object key, or JSON too deeply nested. Diagnostics omit paths and input data.
+If both files are unreadable, the first failure (broker) is reported.
+
+### Item status
+
+| Status | Meaning |
+| --- | --- |
+| MATCH | Remaining quantity and direction agree |
+| BROKER_ONLY | Broker holding has no matching memory position |
+| MEMORY_ONLY | Open memory position is absent from broker |
+| QUANTITY_MISMATCH | Remaining share counts differ |
+| DIRECTION_MISMATCH | Broker and memory sides differ |
+
+Missing quantities and directions are JSON `null` and appear as `-` in Markdown.
 
 Items are sorted by symbol and decimal quantities are emitted as strings without
 rounding or tolerance. If direction and quantity both differ, direction takes

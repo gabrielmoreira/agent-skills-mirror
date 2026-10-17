@@ -548,6 +548,7 @@ Direct rendered submodules under `vendor/`:
 
 | Submodule | Owns |
 | --- | --- |
+| `tiny-artifacts` | Versioned artifacts as a plain library (no bus contract): the record and version model, the `Artifacts` service and its rules (content fits the kind, file paths stay inside the host's `FileRoots` and pass its guard, revisions append, kept version files, publishing), the agent artifact tools, and the file-system store. OpenHuman owns the ports: the document-backed store, the card UI bridge, the protected-path guard and the cloud-storage publisher (`agent/artifacts/`). |
 | `tinyagents` | Provider-neutral agent harness and durable typed state graph: model/tool loop, tool-call dialects and parsing, middleware, retries, caching, sessions/transcripts, and graph execution. |
 | `tinybox` | Isolated execution environments for code the host does not trust; box lifecycle and isolation backends. |
 | `tinybus` | TinyBus runtime and module contracts: discovery/loading, ABI and manifest admission, transport, proxies, lifecycle, and module bus behavior. |
@@ -561,6 +562,7 @@ Direct rendered submodules under `vendor/`:
 | `tinyjuice` | Agent tool-output compression and recovery of omitted content. |
 | `tinymcp` | The TinyMCP module implementation and its bus contract. Put MCP module behavior and contract changes here; OpenHuman owns configuration, lifecycle, and host integration. |
 | `tinymemory` | Engine-neutral memory contracts, operations, and providers. Its nested TinyCortex submodule owns the TinyCortex memory engine. |
+| `tinystoragedrivers` | Storage ports, drivers (sqlite/file/mongodb/s3), secrets, storage bus contract; every module's tsd dependency is patched onto this checkout. |
 | `tinysearch` | Web-search module, provider dispatch, tool declarations, and execution behind its TinyBus contract. |
 | `tinyskills` | Host-independent skill/workflow bundle parsing, discovery, scope resolution, resource inventory, and safe reads. OpenHuman owns trust and execution policy. |
 | `tinyvoice` | Host-agnostic voice primitives such as audio framing, VAD, wake-word gating, routing, and STT hallucination detection. |

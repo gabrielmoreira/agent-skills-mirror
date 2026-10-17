@@ -24,7 +24,7 @@ export const functions = defineModule(
       "\n- `queryLogs` 工具用于搜索 CLS 日志服务（跨服务日志聚合）",
     manageTitle: "管理 CloudBase 云函数",
     manageDescription:
-      "CloudBase 云函数统一写入口。支持创建函数、更新代码、更新配置、调用函数、发布版本、配置流量别名、管理定时跑 / 定时任务 / scheduled job 的 timer 触发器和层绑定。" +
+      "CloudBase 云函数统一写入口。支持创建函数、更新代码、更新配置、调用函数、发布版本、配置流量别名、管理定时跑 / 定时任务 / scheduled job 的 timer 触发器和层绑定。部署包体积有硬上限：请勿把静态内容打进包里——媒体文件（视频、大图、字体）、用户上传的文件、以及频繁更新的静态资源都应放云存储按 URL 引用，否则每次改动都要重新部署函数，包还可能超限。" +
       "如果要创建 cron 定时任务，先用 createFunction 创建函数，再用 createFunctionTrigger 创建 timer 触发器（支持7段cron表达式），deleteFunctionTrigger 删除触发器。" +
       "版本发布：`publishVersion` 对齐 tcb fn publish-version / SDK publishVersion；灰度/切流：`updateFunctionAliasConfig` 对齐 tcb fn config-route / SDK updateFunctionAliasConfig（aliasName 默认 `$DEFAULT`）。" +
       "HTTP 云函数镜像构建部署：createFunction / updateFunctionCode 通过 func.buildStrategy 区分。" +
@@ -321,7 +321,7 @@ export const functions = defineModule(
       "\n- The `queryLogs` tool searches the CLS log service (cross-service log aggregation)",
     manageTitle: "Manage CloudBase Cloud Functions",
     manageDescription:
-      "Unified write entry for CloudBase cloud functions. Supports creating functions, updating code, updating configuration, invoking functions, publishing versions, configuring traffic aliases, and managing timer triggers (scheduled jobs / cron) and layer bindings." +
+      "Unified write entry for CloudBase cloud functions. Supports creating functions, updating code, updating configuration, invoking functions, publishing versions, configuring traffic aliases, and managing timer triggers (scheduled jobs / cron) and layer bindings. The deployment package has a hard size ceiling — do not bundle static content: media files (video, large images, fonts), user uploads, and frequently-updated static resources belong in cloud storage referenced by URL, otherwise every change forces a full function redeploy and the package can exceed the limit." +
       " To create a cron scheduled task, first create the function with createFunction, then create the timer trigger with createFunctionTrigger (7-field cron expression supported), and delete triggers with deleteFunctionTrigger." +
       " Version publish: `publishVersion` aligns with tcb fn publish-version / SDK publishVersion; canary / traffic shift: `updateFunctionAliasConfig` aligns with tcb fn config-route / SDK updateFunctionAliasConfig (aliasName defaults to `$DEFAULT`)." +
       " HTTP function image build & deploy: createFunction / updateFunctionCode distinguish via func.buildStrategy." +

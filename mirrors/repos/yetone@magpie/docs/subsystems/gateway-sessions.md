@@ -31,6 +31,14 @@ the native WorkBuddy session reader already knows; old requests without a
 recorded session remain unnamed. See `TestWorkBuddySessionHeader`,
 `TestWorkBuddySessionThroughGateway` and `TestRemoteMagpieKeepsTheSession`.
 
+DSH names its session in `x-deepseek-harness-session-id`, read the same way
+after the others, and marks a request that compacts its context with
+`x-deepseek-harness-compact` (#2505). `callKind` records such a call as
+`compact`, the Requests list's Compaction; a value of `0`, `false`, `no` or
+`off` is no mark, and a request without one is never taken for a compaction
+by its prompt. `passOnCaller` sends the mark on to a remote magpie beside
+the session, and no vendor is sent either (`TestDshMarksSessionAndCompaction`).
+
 When the same identity is present in a native session, the native session wins
 and the gateway projection is omitted. Gateway projections have no path,
 resume command or terminal action: the agent's own files of them are not on
@@ -329,7 +337,8 @@ them straight to its vendor, so the Usage page covers them too. The body is
 one record or an array of up to 5000 (32 MiB at most), in `usage.jsonl`'s
 shape: `t`, `agent`, `provider`, `model` and `rid` are required; `in`,
 `out`, `cache_read`, `cache_write`, `cache_write_1h`, `reasoning`, `ms`,
-`ttft_ms`, `status`, `cost`, `effort`, `session` and `err` are optional.
+`ttft_ms`, `first_text_ms`, `flow_ms`, `status`, `cost`, `effort`,
+`session` and `err` are optional.
 Any other field, a quoted number, a negative or out-of-range count, a time
 more than an hour ahead or before 2000-01-01T00:00:00Z refuses the whole
 post with a 400 that names the record (`error.index`) and the field
@@ -355,6 +364,16 @@ however old, so a client's history can be backfilled.
 - **Pricing:** a record with `cost` keeps it (`Record.OwnCost`, the
   `rowOwnCost` flag on a packed row). Without one it is priced at magpie's
   own prices, like a gateway row.
+- **Speed:** `first_text_ms` and `flow_ms` (#2637) mean what they do in
+  `usage.jsonl` (`Record.FirstText`, `Record.Flow`), so a reported row's
+  speed is `usage.DecodeOf`'s, as a gateway row's is, on the server
+  (`Row.Decode`, the totals' `DecodeN`) and in `page.js`'s `ledDecode`. A
+  row that reasoned tells none without `first_text_ms`; `ThinkPace` and,
+  with `flow_ms`, `HeldShare` tell a reply let go in a burst. `first_text_ms`
+  may not be before `ttft_ms` (the first text is content too) or after `ms`;
+  `flow_ms` is the middle 80% of the content's time scaled by 10/8, as
+  `firstToken.flowMs` measures it, so it is bounded by `ms` × 10/8, not
+  `ms`. `TestUsageIngestTellsSpeed` (the reporter's record), `TestUsageIngestTimesChecked`.
 - **Showing:** reported rows count in every total. They also have a source
   of their own (`SourceReported`): `RequestPage.Reported`, `?via=reported`,
   and a fourth cell and a "Reported" badge on the Requests tab.

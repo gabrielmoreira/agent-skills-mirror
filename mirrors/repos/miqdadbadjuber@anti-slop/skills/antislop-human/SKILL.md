@@ -62,7 +62,7 @@ If the `${CLAUDE_SKILL_DIR}` variable is not available in this agent, point the 
 1. Contrast ratio = (L1 + 0.05) / (L2 + 0.05), where L1 is the lighter relative luminance and L2 the darker.
 2. Relative luminance L of one color: convert each channel to 0-1 (`c = hex / 255`), then linearize: if `c <= 0.03928`, `c_lin = c / 12.92`; otherwise `c_lin = ((c + 0.055) / 1.055)^2.4`.
 3. `L = 0.2126*R + 0.7152*G + 0.0722*B`.
-4. Round the ratio to two decimals and compare: 4.5:1 for normal text, 3:1 for large text (18px+, per R-25). The maximum ratio is 21.0 (black on white).
+4. Compare the unrounded ratio: 4.5:1 for normal text, 3:1 for large text (18px+, per R-25). Round only for display, so a pairing at 4.498:1 prints as 4.50 and still fails 4.5:1. The maximum ratio is 21.0 (black on white).
 
 **The reference table** (common pairings, computed with the formula):
 
@@ -73,9 +73,12 @@ If the `${CLAUDE_SKILL_DIR}` variable is not available in this agent, point the 
 | White on #333333 | 12.63 | Pass | Pass |
 | White on #666666 | 5.74 | Pass | Pass |
 | #777777 on white | 4.48 | Fail | Pass |
+| #777777 on #070707 | 4.50 | Fail | Pass |
 | White on #888888 | 3.54 | Fail | Pass |
 | White on #999999 | 2.85 | Fail | Fail |
 | #555555 on black | 2.82 | Fail | Fail |
+
+The `#777777 on #070707` row is the near-threshold case: 4.4983:1 rounds to 4.50 for display and still fails 4.5:1.
 
 Read the table as a sanity check, not as a substitute. Any pairing not listed, or anything near a threshold, goes through the formula or the script.
 

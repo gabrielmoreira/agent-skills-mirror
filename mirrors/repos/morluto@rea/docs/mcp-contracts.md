@@ -404,14 +404,19 @@ at that bounded check. These are historical snapshots, not live process
 inventories, and do not claim that no short-lived descendant existed.
 
 `binary_session.cleanup_pending` reports whether the session retains a provider
-client, session file resource, or provider-candidate resource whose cleanup has
-not succeeded. It can be true with `open: false`; target retirement does not
-establish resource release. Health, activity, and lineage remain available
-under a retained client's original `analysis_run.run_id` where the provider
-supplies them. Successful client cleanup clears the retained run; a replacement
-client receives a fresh run ID. Follow the cleanup error's reported resources
-and recovery action before reopening; a missing health observation does not
-establish an idle provider.
+client, session file resource, or provider-candidate resource whose cleanup
+has not succeeded. It can be true with
+`open: false`; target retirement does not establish resource release. For a
+retained provider client, health, activity, and lineage remain available under
+its original `analysis_run.run_id` where the provider supplies them.
+Successful provider cleanup clears the retained run;
+a replacement client receives a fresh run ID. Follow the cleanup error's
+reported resources and recovery action before reopening; a missing health
+observation does not establish an idle provider.
+File cleanup can also remain after snapshot publication or after profile
+inspection fails or is cancelled before a provider client exists. If no client
+remains, no provider run or health observation is available; follow the cleanup
+error's reported resources.
 
 ## Progress and cancellation
 
@@ -430,6 +435,9 @@ Provider calls receive the request cancellation signal. Artifact traversal,
 hashing, version comparisons, Hopper requests, and process capture
 check the same signal. Cancellation is distinct from timeout. A cleanup failure
 uses `cleanup_incomplete` and lists only the owned resource kinds that remain.
+Once those owners confirm cleanup, composed failures recover their original
+typed primary outcome and recovery guidance. Historical composition diagnostics
+remain in `details.cleanup_history`, separate from the primary diagnostics.
 An atomic Evidence bundle or snapshot write can publish its complete output
 before staging cleanup fails. In that case, `details.published: true`,
 `details.published_path`, and `details.bytes` retain the publication receipt.
@@ -448,6 +456,15 @@ attempt and its delivery result in `details.partial_observation`, with
 `elapsed_ms` and `exit_code` null when no exit was observed.
 Derived comparisons and reconstruction verification yield before computation
 and before publication, so cancellation cannot race with successful Evidence.
+
+Bundle recovery requires a recorded Evidence ID. Some provider errors carry
+typed raw observations in `details.partial_observation` instead of Evidence.
+Those raw observations are not recorded in the Evidence bundle. If the SDK
+suppresses the error reply after client cancellation, Evidence tools cannot
+recover them. An empty bundle does not prove that no partial work or side
+effect occurred; output receipts and cleanup observations remain distinct.
+The broader retention decision is tracked in
+[#4276](https://github.com/morluto/rea/issues/4276).
 
 `analyze_javascript_application` also yields between reconstruction phases and
 during graph/result sealing, cross-graph binding checks, Evidence JSON validation,

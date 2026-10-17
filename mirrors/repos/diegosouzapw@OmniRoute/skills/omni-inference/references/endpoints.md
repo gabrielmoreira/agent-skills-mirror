@@ -1087,6 +1087,9 @@ curl http://localhost:20128/api/v1/quotas/check \
 
 GET registered keys
 
+Management-only, like `/api/keys`: a dashboard session, the local CLI token, or an API key with `manage`/`admin` scope. Inference-only API keys get 403.
+
+
 ```bash
 curl http://localhost:20128/api/v1/registered-keys \
   -H "Authorization: Bearer $OMNIROUTE_TOKEN"
@@ -1095,6 +1098,9 @@ curl http://localhost:20128/api/v1/registered-keys \
 ### POST /api/v1/registered-keys
 
 POST registered keys
+
+Management-only, like `/api/keys`: a dashboard session, the local CLI token, or an API key with `manage`/`admin` scope. Inference-only API keys get 403.
+
 
 ```bash
 curl -X POST http://localhost:20128/api/v1/registered-keys \
@@ -1107,6 +1113,9 @@ curl -X POST http://localhost:20128/api/v1/registered-keys \
 
 GET registered keys › <id>
 
+Management-only, like `/api/keys`: a dashboard session, the local CLI token, or an API key with `manage`/`admin` scope. Inference-only API keys get 403.
+
+
 ```bash
 curl http://localhost:20128/api/v1/registered-keys/{id} \
   -H "Authorization: Bearer $OMNIROUTE_TOKEN"
@@ -1116,6 +1125,9 @@ curl http://localhost:20128/api/v1/registered-keys/{id} \
 
 DELETE registered keys › <id>
 
+Management-only, like `/api/keys`: a dashboard session, the local CLI token, or an API key with `manage`/`admin` scope. Inference-only API keys get 403.
+
+
 ```bash
 curl -X DELETE http://localhost:20128/api/v1/registered-keys/{id} \
   -H "Authorization: Bearer $OMNIROUTE_TOKEN"
@@ -1124,6 +1136,9 @@ curl -X DELETE http://localhost:20128/api/v1/registered-keys/{id} \
 ### POST /api/v1/registered-keys/{id}/revoke
 
 POST registered keys › <id> › revoke
+
+Management-only, like `/api/keys`: a dashboard session, the local CLI token, or an API key with `manage`/`admin` scope. Inference-only API keys get 403.
+
 
 ```bash
 curl -X POST http://localhost:20128/api/v1/registered-keys/{id}/revoke \

@@ -398,6 +398,10 @@ complete observation.
   coroutine tables, and inherited overrides, have explicit unsupported or
   partial coverage. Other providers retain the
   existing symbol-based inventory with its narrower coverage.
+  Symbols without a reported location remain in that inventory: Swift symbol
+  `address` and Objective-C `implementation_address` are null. An empty provider
+  address is retained as `reported_address` in the symbol's evidence, whose
+  location also remains unknown. Nonempty provider address syntax is preserved.
 
 ## Native desktop observation
 

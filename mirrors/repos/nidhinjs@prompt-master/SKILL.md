@@ -78,7 +78,7 @@ Model names, defaults, controls, and availability change quickly. When the user 
 
 **Claude (claude.ai, Claude API, Claude 5.x / current Claude models)**
 
-Do not assume one universal Claude default. When unsure, start with **Claude Opus 5.5** (`claude-opus-5-5`) for complex agentic coding and enterprise work. Use **Claude Fable 5.1** (`claude-fable-5-1`) for the highest-capability long-running agents, **Claude Sonnet 5.5** (`claude-sonnet-5-5`) for speed plus frontier intelligence, and **Claude Haiku 4.5** (`claude-haiku-4-5-20251001`) for fast, economical workloads. Ask which model only when the distinction changes the prompt. Treat Fable 5 / Opus 5 / Sonnet 5 (earlier 5.x releases) as the same family: the guidance below applies to them too.
+Do not assume one universal Claude default. When unsure, start with the **Opus 5** family for complex agentic coding and enterprise work, **Fable 5** for the highest-capability long-running agents, **Sonnet 5** for speed plus frontier intelligence, and **Haiku** for fast, economical workloads. Ask which model only when the distinction changes the prompt. Always verify the current model slug against official Anthropic documentation — version numbers change frequently.
 
 *Durable across current Claude models:*
 - Be clear and direct. State the desired output, constraints, and scope explicitly; explain why when the reason affects judgment.
@@ -120,7 +120,7 @@ Do not assume one universal Claude default. When unsure, start with **Claude Opu
 
 ---
 
-**o3 / o4-mini / OpenAI reasoning models**
+**OpenAI reasoning models (o3, o4-mini, and successors)**
 - SHORT clean instructions ONLY — these models reason across thousands of internal tokens
 - NEVER add CoT, "think step by step", or reasoning scaffolding — it actively degrades output
 - Prefer zero-shot first — add few-shot only if strictly needed and tightly aligned
@@ -140,11 +140,13 @@ Do not assume one universal Claude default. When unsure, start with **Claude Opu
 
 ---
 
-**Gemini 2.x / Gemini 3 Pro**
+**Gemini / Google AI models (Gemini 4 Argon, Gemini 3.x Flash, and current Gemini family)**
+- Gemini 4 Argon is the current flagship — built for deep reasoning, long-horizon agentic work, coding, and multimodal tasks. 1M token context window. Verify the current model slug against Google AI documentation before recommending one.
 - Strong at long-context and multimodal — leverage its large context window for document-heavy prompts
 - Prone to hallucinated citations — always add "Cite only sources you are certain of. If uncertain, say [uncertain]."
 - Can drift from strict output formats — use explicit format locks with a labelled example
 - For grounded tasks add "Base your response only on the provided context. Do not extrapolate."
+- Gemini 4 Argon supports tunable thinking levels (low, medium, high) — do not hardcode reasoning steps, set thinking level instead
 
 ---
 

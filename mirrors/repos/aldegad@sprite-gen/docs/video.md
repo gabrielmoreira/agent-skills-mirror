@@ -144,7 +144,9 @@ What happens, in order:
 2. `POST /v1/videos/generations` with `model`, `prompt`, `duration`, `resolution`,
    then `image.url` / `last_frame.url` / `reference_images[].url` as base64 data
    URLs, optional `aspect_ratio` / `generate_audio`. A `429` — xAI's rate limit, a
-   request it did not take — is sent again, twice at most, after 8 s and 16 s
+   request it did not take — is sent again, twice at most, after 8 s and 16 s, while
+   the wait leaves some of the poll timeout (step 3); a wait that would reach it is not
+   waited, one that woke at it or past it sends nothing, and the run ends on that `429`
    ([a refused request sent again](gen.md#a-refused-request-sent-again)). A `401/403`
    names the credential source and its fix; any other reply without a `request_id`
    fails with the API's own error text.
@@ -163,14 +165,15 @@ What happens, in order:
    valid JSON` for an answer it could not read — goes to stderr each time.
 
    The poll timeout (`SPRITE_GEN_VIDEO_TIMEOUT_SECONDS`, default 600) is the one time
-   limit of the accepted request. It counts from the send of the POST xAI accepted and bounds the polls,
-   their waits and the clip's downloads (step 4) alike:
+   limit of the request. It counts from the POST's first send and bounds the waits before a refused
+   POST goes again (step 2), the polls, their waits and the clip's downloads (step 4) alike:
 
    - Each poll reads only what is left of it. One whose answer stalls, or comes too
      slowly for its 120 s read timeout ever to fire, is cut when the timeout comes and
      counts as a poll that got no answer (`timed out`).
-   - A poll whose wait would reach the timeout is not asked. A generation still
-     pending, refused or unanswered then is *unfinished* (below) at once.
+   - A poll whose wait would reach the timeout is not asked, nor one whose wait woke
+     at it or past it (a sleep may wake late). A generation still pending, refused or
+     unanswered then is *unfinished* (below) at once, on its last poll as it came.
    - The POST is not cut by it: its answer is the one way to the `request_id`, under its
      own 120 s read timeout. One answered after the whole timeout is unfinished before
      any poll.
@@ -189,9 +192,10 @@ What happens, in order:
    that the clip's host refuses with `429`, `500`, `502`, `503`, `504` or `529` is downloaded
    again, after 8 s and then 16 s — three downloads in all, within the poll timeout: each
    reads only what is left of it, so one that stalls or whose bytes come too slowly is
-   cut when it comes (`timed out`), and one whose wait would reach it is not tried. A
-   `[video] download N of generation <id> got no answer (<reason>); downloading again in
-   8s` (or `… was refused (503); …`) line goes to stderr before each. One still failing,
+   cut when it comes (`timed out`), and one whose wait would reach it, or woke at it or
+   past it, is not tried. A `[video] download N of generation <id> got no answer
+   (<reason>); downloading again in 8s` (or `… was refused (503); …`) line goes to
+   stderr before each. One still failing,
    one refused with another status (a `401` or `403` is asked once more with the bearer
    token first), a download the timeout leaves no time for, or bytes that are not an mp4
    end the run *unfinished* (below).

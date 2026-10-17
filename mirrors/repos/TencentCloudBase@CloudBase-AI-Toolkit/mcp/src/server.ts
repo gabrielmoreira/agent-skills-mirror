@@ -33,9 +33,15 @@ import { info } from './utils/logger.js';
 import { resolveSiteAndRegion, SITE_REGION_MAP } from "./utils/site-map.js";
 import { buildJsonToolResult, isToolPayloadError } from "./utils/tool-result.js";
 import { wrapServerWithTelemetry, applyCategoryAnnotationMeta, type ToolAnnotations } from "./utils/tool-wrapper.js";
-import { normalizeClientName } from "./utils/telemetry.js";
+import {
+  normalizeClientName,
+  readClientCapabilitiesFromServer,
+  readMcpClientInfoFromServer,
+  reportToolkitSessionInitialized,
+} from "./utils/telemetry.js";
 import { registerGetStartedResource } from "./resources/get-started.js";
 import { registerEnvCreditsResource } from "./resources/env-credits.js";
+import { registerArtifactCardResource } from "./resources/artifact-card.js";
 
 // 插件定义
 interface PluginDefinition {
@@ -277,6 +283,15 @@ export async function createCloudBaseMcpServer(options?: {
    * Metadata only. Hosted requests pass the value remembered for this credential.
    */
   clientInfo?: { name: string; version?: string };
+  /**
+   * 会话标识的取值入口（**调用点注入**，可选）。
+   *
+   * 有状态 HTTP / 托管路径把当前 transport 的 `sessionId` 传进来（那是公开 getter）；
+   * stdio、以及无状态托管（`sessionIdGenerator: undefined`）没有会话概念 ⇒ **不注入**，
+   * 会话级上报回落到常量，等价于"这个实例就是一个会话"。
+   * 只有会话级遥测用得到它；不注入时行为与"每实例一条"完全一致。
+   */
+  getSessionId?: () => string | undefined;
   logger?: Logger;
   pluginsEnabled?: string[];
   pluginsDisabled?: string[];
@@ -298,6 +313,7 @@ export async function createCloudBaseMcpServer(options?: {
     ide,
     client,
     clientInfo,
+    getSessionId,
     logger,
     pluginsEnabled,
     pluginsDisabled,
@@ -432,6 +448,56 @@ export async function createCloudBaseMcpServer(options?: {
   // Enable telemetry if requested
   if (enableTelemetry) {
     wrapServerWithTelemetry(server);
+
+    // 会话建立后上报一次（补"分母"：进程 start 早于握手，拿不到 client 与能力声明）。
+    // **这一个 if 就是总闸**：`enableTelemetry: false` 时连这条会话事件也不发——
+    // 关掉遥测的调用方（测试环境分支、冒烟脚本、评审 harness）本来就是为了不出网。
+    // - **每会话只发一次**：幂等粒度是**会话**，不是 server 实例 —— 同一会话里重复的
+    //   initialized 通知只报一次；不同会话即使共用同一个实例也各报一次；
+    // - **fire-and-forget**：绝不 await、也不让上报失败冒泡到握手；
+    // - 字段拿不到就留空，不臆造（见 reportToolkitSessionInitialized 的注释）。
+    // 多会话同进程的场景（HTTP/托管路径的每会话回调）本期不接，留待后续。
+    //
+    // 会话身份的取值来源（不留含糊）：**由调用点注入的 `getSessionId()`**
+    //   - 有状态 HTTP / 托管路径：`hosted/handle-hosted-mcp-request.ts:154` 注入
+    //     `() => transport?.sessionId`（transport 在 `:134` 声明、`:164` 创建、`:171` connect，
+    //     与建 server（`:142`）同一作用域）；`StreamableHTTPServerTransport.sessionId` 是**公开 getter**；
+    //   - stdio（`cli.ts`）与**无状态**托管（`sessionIdGenerator: undefined`，`:165`）没有会话概念
+    //     ⇒ 不注入 ⇒ 回落到常量 `single-session`，等价于"这个实例就是一个会话"。
+    // 不读 SDK 的 `Protocol._transport`（那是私有的指针，本版也没有公开的 transport 访问器）。
+    //
+    // 为什么粒度是会话而不是实例：今天托管路径每个请求都新建实例（无缓存 Map），两种粒度等价；
+    // 一旦有人把实例按凭证缓存复用，"实例级幂等"就会让 N 个会话只报 1 条、分母漏计 N−1。
+    //
+    // 内存：这个 Set 只增不减。托管路径每请求一个实例、随请求消亡；被复用的长命实例则会按
+    // 会话数累积（每个键就是一个 sessionId 字符串）。要收紧得挂在 transport 的关闭钩子上，
+    // 但 `onclose` 由 SDK 的协议层持有（`shared/protocol.js:221`），这里不为它绕路 —— 记为后续项。
+    const reportedSessions = new Set<string>();
+    const currentSessionKey = (): string => {
+      let injected: string | undefined;
+      try {
+        injected = getSessionId?.();
+      } catch {
+        // 注入的取值抛错不该影响会话：按"没有会话标识"处理（回落常量）
+      }
+      return typeof injected === "string" && injected.length > 0 ? injected : "single-session";
+    };
+    server.server.oninitialized = () => {
+      const sessionKey = currentSessionKey();
+      if (reportedSessions.has(sessionKey)) {
+        return;
+      }
+      reportedSessions.add(sessionKey);
+      void reportToolkitSessionInitialized({
+        cloudBaseOptions,
+        ide: server.ide || process.env.INTEGRATION_IDE,
+        client: server.client || process.env.CLOUDBASE_MCP_CLIENT,
+        mcpClientInfo: readMcpClientInfoFromServer(server),
+        mcpClientCapabilities: readClientCapabilitiesFromServer(server),
+      }).catch(() => {
+        /* 遥测失败不影响会话 */
+      });
+    };
   }
 
   // Register plugins based on configuration
@@ -452,6 +518,10 @@ export async function createCloudBaseMcpServer(options?: {
   // MCP Apps 环境资源用量面板（ui://cloudbase/env-credits）。同样一次性注册；
   // 只读用量与套餐，不执行计费（引导交给会话里的技能）。
   registerEnvCreditsResource(server);
+
+  // MCP Apps 产物卡片面板（ui://cloudbase/artifact-card）。挂在三个部署类工具上；
+  // 只读展示部署状态与访问地址，写意图一律交给会话。
+  registerArtifactCardResource(server);
 
   return server;
 }

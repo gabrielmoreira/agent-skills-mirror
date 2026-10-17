@@ -128,7 +128,17 @@ Set these env vars to target a specific device or bundle:
 GSTACK_IOS_TARGET_UDID=248C3A58-B843-5BDB-8F5D-89ADB7D7BF6A
 GSTACK_IOS_TARGET_BUNDLE_ID=com.yourorg.yourapp
 GSTACK_IOS_DAEMON_PORT=9099       # loopback listener port; default 9099
+GSTACK_IOS_LAUNCH_ENV='{"DEBUG_BRIDGE":"1"}'   # optional: env for the app when the daemon launches it
 ```
+
+`GSTACK_IOS_LAUNCH_ENV` is for apps whose debug bridge (or anything else) is
+gated on an environment variable. It is a JSON object of string to string, and
+the daemon passes it to `xcrun devicectl device process launch
+--environment-variables` on every launch it performs, including the one forced
+relaunch below. It only takes effect when the daemon launches the app; an app
+that is already running keeps the environment it started with. Invalid JSON, a
+non-string value, or a `GSTACK_` key (reserved for the debug bridge) refuses the
+launch with `IOS_LAUNCH_ENV_INVALID` instead of starting the app without it.
 
 If `GSTACK_IOS_TARGET_UDID` is unset, the daemon picks the best paired,
 available iPhone or iPad, preferring a wired device. When two devices tie (an
@@ -230,6 +240,7 @@ Before you ship to TestFlight or the App Store, run `/ios-clean`. It removes the
 | `Developer Mode` toggle missing from Settings → Privacy | Connect the device to Xcode → Window → Devices and Simulators once, or try any `devicectl device install` against it. iOS will surface the toggle after the first attempt. |
 | `xcrun devicectl device copy from` returns ERROR 7000 | The source path is wrong — boot token lives at `tmp/gstack-ios-qa.token` inside the app's data container (NSTemporaryDirectory), not at the path's root. |
 | Bootstrap fails with `multiple_devices` | More than one iPhone/iPad is connected. Run the printed `export GSTACK_IOS_TARGET_UDID=<udid>` and restart the daemon. |
+| Launch refused with `(IOS_LAUNCH_ENV_INVALID)` | `GSTACK_IOS_LAUNCH_ENV` is not a JSON object of string to string, or sets a `GSTACK_` key. Fix or unset it and restart the daemon; see [troubleshooting](troubleshooting.md#ios-launch-env-invalid). |
 | `boot_token_unavailable ... could not write tmp/gstack-ios-qa.token` | The app could not write its boot-token file. Fix the app's `tmp/` directory and relaunch the app. |
 | A SwiftUI `DragGesture` or `Canvas` ignores taps and swipes on iOS 26 | Synthesized in-process touches do not reach SwiftUI gesture recognizers on iOS 26, and `/swipe` only scrolls a `UIScrollView`. See "Known limits" in the `/ios-qa` skill for the input-routing workaround. |
 | `/healthz` returns 200 but `/tap` returns ok:true with no UI change | The phone is paired but the StateServer port may have changed across launches. Re-resolve the CoreDevice IPv6 (`dscacheutil -q host -a name '<DeviceName>.coredevice.local'`). |

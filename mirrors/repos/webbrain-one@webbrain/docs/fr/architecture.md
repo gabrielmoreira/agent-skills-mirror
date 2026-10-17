@@ -290,7 +290,7 @@ pending → running → completed
 - `queued` — l'alarme s'est déclenchée mais l'onglet était occupé ; réessaie toutes les 30 s (jusqu'à 120 reports avant échec).
 - `running` — l'agent exécute activement la tâche.
 - `needs_user_input` — l'agent a émis un `clarify` en cours d'exécution ; en attente de la réponse de l'utilisateur.
-- `paused` — l'utilisateur ou les paramètres ont mis en pause la tâche ; aucune alarme n'est réglée.
+- `paused` — l'utilisateur ou les paramètres ont mis en pause la tâche, ou le planificateur a mis en pause une tâche récurrente qui attend l'utilisateur ; aucune alarme n'est réglée.
 - `cancelled` / `failed` / `completed` — états terminaux.
 
 **Cibles**
@@ -301,7 +301,9 @@ pending → running → completed
 **Planification**
 
 - `once` — se déclenche à un moment unique `run_at` ou `after_seconds`. `after_seconds: 0` démarre la tâche immédiatement.
-- `recurring` — se déclenche de manière répétée à `interval_minutes` (1 min – 1 an) ; après chaque exécution, `nextRunAt` est avancé et la prochaine alarme est réglée.
+- `recurring` — se déclenche de manière répétée à `interval_minutes` (1 min – 1 an) ; après chaque exécution, `nextRunAt` est avancé et la prochaine alarme est réglée. Un intervalle fixe n'est pas un calendrier : 30 jours se décalent par rapport aux mois. Une exécution qui se termine par une question posée à l'utilisateur par le planner (`planner.js`), ou un troisième échec sans exécution réussie ou partielle entre-temps, met la tâche en pause (une exécution sans résultat ne change pas le compte). La reprise d'une tâche mise en pause par le planificateur relance l'intervalle à partir de ce moment ; une tâche mise en pause par l'utilisateur ou les paramètres garde sa prochaine exécution, ou s'exécute une minute après la reprise si cette heure est passée. Dans les deux cas, le compte d'échecs repart de zéro.
+
+Une exécution planifiée, récurrente ou ponctuelle, n'est jamais tenue d'appeler `schedule_task`, et l'étiquette de planification du planner ne la classe pas comme modifiant l'état : son prompt enregistré garde le délai d'origine de l'utilisateur (« dans 30 minutes, rappelle-moi… »), et l'une ou l'autre exigence faisait replanifier la tâche à chaque exécution ou l'empêchait de réussir. Le planner est informé que l'exécution réalise une tâche existante, et une marque de modification d'état que seule l'étiquette de planification explique est retirée (le plan brut doit ne déclarer que des outils d'observation pour chaque étape, fixer explicitement la soumission à false et ne montrer ni téléchargement, ni tâche de site, ni destinataire de message, ni action de progression, ni compétence) ; les exigences propres du plan (modification d'état, soumission, téléchargement) restent appliquées. Une exécution récurrente reçoit la consigne de ne pas créer d'autre planification pour sa tâche ; une exécution ponctuelle, celle de ne pas replanifier la tâche et de ne créer une autre planification que si la tâche le demande explicitement (par exemple « lundi à 9 h, lancer une vérification toutes les heures »). La reprise planifiée d'une tâche interactive garde les deux exigences.
 
 **Persistance**
 

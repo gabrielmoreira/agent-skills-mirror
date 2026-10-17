@@ -71,7 +71,7 @@ Import multiple external files.
 
 `items` currently expects a JSON string, not a native array.
 
-**Returns**: `{success, totalItems, successCount, failCount, results: [{success, sourcePath, destinationPath}]}`
+**Returns**: `{success, totalItems, successCount, failCount, results: [{target, success, serverAvailability?}]}`: `target` is the item's `destinationPath`; `serverAvailability` appears only when a script-domain asset was written or Unity is compiling.
 
 ```python
 import json
@@ -98,7 +98,7 @@ Delete multiple assets.
 
 `items` currently expects a JSON string, not a native array.
 
-**Returns**: `{success, totalItems, successCount, failCount, results: [{success, path}]}`
+**Returns**: `{success, totalItems, successCount, failCount, results: [{target, success, serverAvailability?}]}`: `target` is the deleted `path`; `serverAvailability` appears only when a script-domain asset was deleted or Unity is compiling.
 
 ```python
 import json
@@ -126,7 +126,7 @@ Move multiple assets.
 
 `items` currently expects a JSON string, not a native array.
 
-**Returns**: `{success, totalItems, successCount, failCount, results: [{success, sourcePath, destinationPath}]}`
+**Returns**: `{success, totalItems, successCount, failCount, results: [{target, success, from, to, serverAvailability?}]}`: `target` is the item's `sourcePath`; `serverAvailability` appears only when a script-domain asset was moved or Unity is compiling.
 
 ```python
 import json
@@ -196,7 +196,7 @@ No parameters.
 
 **Returns**: `{success, message, compileTriggered}`. When the refresh starts a script compilation (a `.cs`, `.asmdef`, `.asmref`, `.rsp` or `.dll` changed), `compileTriggered` is `true` and the result adds `status:"accepted"`, `jobId`, `waitUrl` (`/jobs/<jobId>?wait=90`), `serverAvailability` and, when Unity reported the files, `scriptChanges` (up to 20 paths; `scriptChangesTruncated` counts the rest). `compileTriggered:false` means there is nothing to wait for.
 
-Wrote a `.cs` yourself? Call `asset_refresh`, then GET its `waitUrl`, retrying the same URL through the domain reload: `curl -s --retry 20 --retry-connrefused --retry-all-errors --retry-delay 2 "http://localhost:<port>/jobs/<jobId>?wait=90"`. `status:"completed"` means the new types are ready to use; `"failed"` lists the compile errors in `resultData.compilation.errors`. The diagnostics are project-wide (`compilation.scope:"project"`); `compilation.compiled:false` means no compilation followed the refresh.
+Wrote a `.cs` yourself? Call `asset_refresh`, then GET its `waitUrl`, retrying the same URL through the domain reload: `curl -s --retry 20 --retry-connrefused --retry-all-errors --retry-delay 2 "http://localhost:<port>/jobs/<jobId>?wait=90"`. `status:"completed"` with `compilation.compiled:true`, `success:true`, and `domainLoaded:true` proves the new types are ready to use; `"failed"` lists the compile errors in `resultData.compilation.errors`. The diagnostics are project-wide (`compilation.scope:"project"`); `compilation.compiled:false` means no compilation followed the refresh.
 
 ### asset_get_info
 Get information about an asset.

@@ -63,7 +63,7 @@ OpenCode Core → Plugin Initialization (index.ts)
 1. **Config Loading**: `loadPluginConfig()` reads and validates plugin configuration; `RuntimeConfig` singleton seeded and host config captured
 2. **Agent Creation**: `createAgents()` instantiates agent definitions (incl. dynamic councillors) with prompts and permissions
 3. **Agent Configuration**: `getAgentConfigs()` merges defaults with user overrides and runtime presets
-4. **Tool Registration**: Tools are created conditionally based on config (task_cancel, task_message, task_revive, task_status, task_result, wait_for_user, webfetch, AST-grep, acp_run)
+4. **Tool Registration**: Tools are created conditionally based on config (task_cancel, task_message, task_revive, task_status, wait_for_user, webfetch, AST-grep, acp_run)
 5. **MCP Registration**: Built-in MCPs are created (context7, gh_grep)
 6. **Hook Initialization**: Auto-update checker, phase reminders, skill filters, task-session manager, cache monitor, orchestrator-wake scheduler, etc.
 7. **Runtime Model Resolution**: Resolves model arrays to startup primaries; independent children leave their primary provider only when the parent's confirmed fallback records it in `downProviders`, choosing the first healthy entry in their own chain. Inherited children follow the live parent for either error scope. v1 `task` and `task_revive` share prompt-claimed intentions, `task_message` pins transcript execution selection excluding compaction summaries, and v2 uses per-call `model#variant` overrides; internal v1 completions still follow the continuation policy

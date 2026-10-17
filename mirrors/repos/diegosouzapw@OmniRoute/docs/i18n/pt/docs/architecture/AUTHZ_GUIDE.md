@@ -83,6 +83,16 @@ complementado:
 | `CLIENT_API` | Endpoints de disponibilização de modelos — `/api/v1/*`, `/api/v1beta/*`, e ainda os aliases `/v1/*`, `/v1beta/*`, `/chat/completions`, `/responses`, `/models`, `/codex/*`. | Chave Bearer quando o feature flag efetivo `REQUIRE_API_KEY` está ativado |
 | `MANAGEMENT` | Páginas do painel, definições, fornecedores, chaves, endpoints de administração e diagnóstico.                                                                              | Sessão do painel OU Bearer com o âmbito `manage`                          |
 
+A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
+credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,
+`GET /api/db-backups/exportAll`), restoring a backup over the live data
+(`POST /api/db-backups/import` including `dryRun=true`, `POST /api/db-backups` restore by id,
+`POST /api/settings/import-json`), issuing a sync token (`POST /api/sync/tokens`) and minting an
+`admin` CLI access token (`POST /api/cli/tokens`) require a dashboard session, the local CLI
+subject, or login disabled; API keys of any scope and `oma_` access tokens get `403`. The check
+lives in `src/lib/api/operatorCredential.ts` (`resolveOperatorCredential()` /
+`requireOperatorCredential()`).
+
 ## Pipeline
 
 ```

@@ -57,6 +57,26 @@ images/<tweet_id>/N.jpg   # extracted image packs
 Search and retrieval work without the image packs. Only local image preview
 needs them.
 
+Videos follow the same rule: the packs ship images and poster frames, the corpus
+references 2,061 clips, and no video binary travels through Git. A `<video>`
+whose file is missing falls back to X's CDN — unreachable from mainland China,
+expiring over time — so a clone without clips shows posters only. When a task
+needs playable video, pull the clips onto the machine that serves them:
+
+```bash
+python3 scripts/fetch_videos.py --dry-run     # what is missing
+python3 scripts/fetch_videos.py --limit 20    # smoke-test a few
+python3 scripts/fetch_videos.py               # the rest (~8.8 GB, resumable)
+```
+
+Run it where `video.twimg.com` is reachable (a VPS or workstation outside
+mainland China, or with a VPN) or pass `--proxy http://host:port` (also honors
+`HTTPS_PROXY`). Each row pairs its own source URL with the exact `local_path`
+the API serves, so a clip always lands at
+`images/<tweet_id>/video_<index>.mp4` and never in another tweet's directory.
+Valid files are skipped on every re-run and `--report failures.json` records
+what still failed for a targeted retry.
+
 ## Ports
 
 Nothing binds a predictable port unconditionally, so never hardcode one.

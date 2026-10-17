@@ -58,13 +58,13 @@ Operations grouped by purpose. Use these as the building blocks for the workflow
 | `find-sessions` | read | implemented | `queryCdpAnsiSqlV2` | `verify-stdm-availability`, `discover-agents` |
 | `get-conversation-details` | read | proposed | `queryCdpAnsiSqlV2` | `find-sessions` |
 | `get-llm-step-details` | read | proposed | `queryCdpAnsiSqlV2` | `get-conversation-details` |
-| `obtain-sfap-token` | validate | proposed | `obtainSfapJwt` | — |
-| `replay-turn-prompts` | read | proposed | `sfapChatGenerations` | `get-llm-step-details`, `obtain-sfap-token` |
-| `score-exact-matches` | read | proposed | `computeExactMatchScores` | `replay-turn-prompts` |
-| `judge-function-args` | read | proposed | `sfapChatGenerations` | `score-exact-matches`, `obtain-sfap-token` |
-| `judge-text-responses` | read | proposed | `sfapChatGenerations` | `replay-turn-prompts`, `obtain-sfap-token` |
-| `generate-csv-report` | write | proposed | `generateCsvReport` | `score-exact-matches`, `judge-function-args`, `judge-text-responses` |
-| `generate-html-report` | write | proposed | `generateHtmlReport` | `generate-csv-report` |
+| `obtain-sfap-token` | validate | proposed | — | — |
+| `replay-turn-prompts` | read | proposed | — | `get-llm-step-details`, `obtain-sfap-token` |
+| `score-exact-matches` | read | proposed | — | `replay-turn-prompts` |
+| `judge-function-args` | read | proposed | — | `score-exact-matches`, `obtain-sfap-token` |
+| `judge-text-responses` | read | proposed | — | `replay-turn-prompts`, `obtain-sfap-token` |
+| `generate-csv-report` | write | proposed | — | `score-exact-matches`, `judge-function-args`, `judge-text-responses` |
+| `generate-html-report` | write | proposed | — | `generate-csv-report` |
 
 ### Dependency graph
 
@@ -172,9 +172,10 @@ Fetch interaction steps including LLM inputs and outputs for each interaction
 
 #### `replay-turn-prompts`
 
-Replay each turn's LLM prompt through the target model via SFAP REST API with structured tool calling
+Extract structured messages (system/assistant/user) from STDM LLM step inputs, convert to OpenAI-format messages array preserving role positions, extract tool definitions dynamically from gen_ai.request.tools, classify each step as router (topic) or action based on tool signatures, and replay via SFAP REST API POST /ai/gpt/v1/chat/generations with tool_choice=required
 
-**Call:** `sfapChatGenerations`   — status: `proposed`
+
+**Status:** `proposed`
 
 **Inputs:**
 
@@ -186,7 +187,7 @@ Replay each turn's LLM prompt through the target model via SFAP REST API with st
 
 Compute exact-match scores for topic agreement and function name accuracy
 
-**Call:** `computeExactMatchScores`   — status: `proposed`
+**Status:** `proposed`
 
 **Depends on:** `replay-turn-prompts`
 
@@ -194,7 +195,7 @@ Compute exact-match scores for topic agreement and function name accuracy
 
 LLM-as-judge scoring of function arguments when function names match (exact or lenient)
 
-**Call:** `sfapChatGenerations`   — status: `proposed`
+**Status:** `proposed`
 
 **Depends on:** `score-exact-matches`, `obtain-sfap-token`
 
@@ -202,7 +203,7 @@ LLM-as-judge scoring of function arguments when function names match (exact or l
 
 LLM-as-judge scoring of text responses for turns that end with text output
 
-**Call:** `sfapChatGenerations`   — status: `proposed`
+**Status:** `proposed`
 
 **Depends on:** `replay-turn-prompts`, `obtain-sfap-token`
 
@@ -212,7 +213,7 @@ LLM-as-judge scoring of text responses for turns that end with text output
 
 Generate CSV report with per-turn replay results and aggregate summary scores
 
-**Call:** `generateCsvReport`   — status: `proposed`
+**Status:** `proposed`
 
 **Inputs:**
 
@@ -224,7 +225,7 @@ Generate CSV report with per-turn replay results and aggregate summary scores
 
 Build a self-contained HTML analysis report with verdict badges, scorecards, and failure breakdown
 
-**Call:** `generateHtmlReport`   — status: `proposed`
+**Status:** `proposed`
 
 **Inputs:**
 
@@ -246,7 +247,7 @@ Verify STDM (Session Trace Data Model) is queryable in Data Cloud
 
 Obtain an SFAP JWT token via org session authentication and the /ide/auth endpoint
 
-**Call:** `obtainSfapJwt`   — status: `proposed`
+**Status:** `proposed`
 
 **Inputs:**
 

@@ -81,6 +81,9 @@ activity-universe values the handoff phase consumes.
 Do not treat "one bot says clean" as sufficient evidence — checks must
 cover the full activity universe (human reviewers plus advisory bot
 surfaces such as Copilot, CodeRabbit, Codex connectors, and CI bots).
+Here "cover" means reading each item actually posted and dispositioning
+it. For a non-primary advisory bot, it never means waiting for a review
+that has not been posted.
 
 The advisory-wait window is Copilot-only
 (`idd-advisory-wait.instructions.md`) and does not cover non-Copilot
@@ -228,6 +231,20 @@ is diagnostic and never changes the verdict.
   no reviewer finding or actionable content, a return-to-E1 triggered
   solely by that notice refreshes the watermark directly instead; a
   mixed-cause trigger still returns to E1 normally.
+
+  Missing-watermark sequence (PR `#4331`, issue `#4366`): when
+  `review-currency` returns `missing-watermark` and every blocking
+  disposition-evidence item is an ack-only reply to a disposition, clear
+  the missing watermark first. Check the full E1 Step 1 snapshot before
+  refreshing: if any `embeddedFindings` entry has `uncoveredCount` above
+  zero, return to E1 instead, because `embeddedFindings` is excluded from
+  `dispositionEvidence` and the refresh would mark that finding handled.
+  Otherwise refresh it directly, as the carve-outs above do, then re-run
+  `pre-merge-readiness` on the refreshed snapshot. Apply the
+  ack-only override only if that re-run reports
+  `dispositionEvidence.soleCauseAckOnlyPostDisposition` as `true`. A refresh
+  adds no disposition, so a `missingRegularComments` entry still blocks: a
+  plain comment is not ack-only and needs its own disposition.
 - **Advisory bot wait** (restart-safe enforcement): schedule a wake, or
   background only if the topology-safety condition holds (confirmed to
   route completion back to this turn) — otherwise wait synchronously:
@@ -299,9 +316,12 @@ is diagnostic and never changes the verdict.
   `secondaryQuietWindow.elapsed` must be `true`. A
   `secondary-quiet-window` blocker means that window has not elapsed
   since the last substantive review activity; wait (poll per
-  `advisoryWait.pollInterval`), then re-evaluate F2. When issue
-  `#2544`'s settled buffer clamps the wait, the blocker names that
-  buffer apart from the configured window.
+  `advisoryWait.pollInterval`), then re-evaluate F2. The only wait for a
+  non-primary advisory bot is this `secondary-quiet-window` blocker, and
+  it never waits for any bot to review; `advisoryWait.primaryBotLogin`
+  (default Copilot) is the only primary. When issue `#2544`'s settled
+  buffer clamps the wait, the blocker names that buffer apart from the
+  configured window.
 - **CI**: Current PR head SHA has all required CI checks generated and
   all passing (→ run CI wait per `idd-ci.instructions.md` using the
   same resolved `ciWait.runningTimeout`, `ciWait.generationTimeout`, and
@@ -457,7 +477,9 @@ is diagnostic and never changes the verdict.
   applied by the agent, not `pre-merge-readiness`'s own rollup. The
   signal never changes `route` itself; any other blocking cause makes it
   `false`, and the gate still routes to E1/E4. Fails closed: an unusable
-  check makes this condition unmet.
+  check makes this condition unmet. When the return-to-e1 also carried
+  `missing-watermark`, evaluate this override only on the snapshot the
+  missing-watermark sequence above refreshed.
 - **Closing-set and impact-checklist re-verification**:
   `closingSet`/`closing-set` evidences this section's re-run of
   D3.5 steps 6-7 only; re-derive D3.7 below locally.

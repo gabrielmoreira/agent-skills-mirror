@@ -274,3 +274,34 @@ The 4 remaining shouting pins are enum or marker tokens (`PLAN MODE EXCEPTION â€
 ALWAYS RUN`, `[CRITICAL]`, `ALWAYS-ON` CLI output), not emphasis. Most remaining
 sentence pins sit in QA caller, detector-helper and workflow files that other
 work in flight owns.
+
+## Post-merge follow-up (2026-10-15)
+
+The "post-merge audit metrics" TODO, from a no-spend run of
+`bun run test:health --since-days 7` (window 2026-10-08T22:14Z to
+2026-10-15T22:14Z). The 2026-10-12 figures are the weekly health run in issue
+#3154 (run 38234556073), kept as dated history.
+
+| Metric | 2026-10-12 | 2026-10-15 | Target | Verdict |
+|---|---:|---:|---|---|
+| PR full-fallback rate | 45.0% (58/129 runs) | 45.9% (39/85 runs) | none numeric; the replay above names the cause | open: branches touching `bin/`, `lib/`, `hosts/` or `make-pdf/` still select every case |
+| Recorded PR-lane spend per merged PR | $75.09 (46 merged) | $73.52 (33 merged) | down at least 50% from the pre-change baseline | unavailable: baseline not recorded (below) |
+| Cancelled slice-minutes per week | 1,939 (44 runs) | 1,545 (33 runs) | none numeric | reported |
+| PR push-to-verdict | p50 12.0 min, p95 1,160.7 min (122 runs) | p50 11.4 min, p95 107.9 min (80 runs) | 3â€“5 minutes for typical PR checks (CONTRIBUTING.md) | missed |
+| Free-suite flaky-pass rate | 13.0% (6/46 main runs) | 6.1% (2/33 main runs; `terminal-agent-publication-lock` 2/33, over the 5% per-file check) | under 5% of main runs | missed; fix wave 2 repairs the five ledger files |
+
+**Spend baseline.** The pre-change window was recomputed with the exported
+`collectHealth` at `now = 2026-10-04T00:00Z`, seven days, through a client that
+drops runs created and PRs merged after that instant (`listWorkflowRuns` has no
+upper bound of its own). The window holds 12 merged PRs but no
+`trial-outcomes-pr-*` artifacts and no paid-plan manifest with `prCoverage`:
+the recorder that feeds this metric shipped with the audit, so the PR lanes
+before it wrote nothing it can read (their other artifacts are retained until
+2026-11-02 and later). Baseline not recorded; verdict unavailable. The P1 in
+TODOS.md is opened on the absolute figures.
+
+**Census reliability (not yet due).** Due after the fourth scheduled census
+after the audit merge (2026-10-26). Interim: periodic 2.00 expected failed
+trials per run (6/538 over 3 runs; target at most 1.0), gate census 0.33 (1/308
+over 3 runs; target at most 0.5). The TODO keeps its due date; the census
+repair stays with #3153 and #3200.

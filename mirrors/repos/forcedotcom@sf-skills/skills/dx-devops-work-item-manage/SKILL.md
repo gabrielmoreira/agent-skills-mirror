@@ -1,10 +1,10 @@
 ---
 name: dx-devops-work-item-manage
-description: "Use this skill to manage the full lifecycle of DevOps Center work items — list, create, update, commit changes, perform status transitions, and create pull requests. Update fields like subject, description, and status. Commit and push code changes to work item branches. Create pull requests for work item branches via DevOps Center API. Invoke when the user wants to track, find, create, or update a work item, commit changes to a work item branch, advance a work item's status through the pipeline, or create a pull request for code review. Consolidates sf devops work-item and review operations. DO NOT TRIGGER for promotion or deployment operations, or conflict detection."
+description: "Use this skill to manage the full lifecycle of DevOps Center work items — list, create, update, commit changes, perform status transitions, and create pull requests. Update fields like subject, description, and status. Commit changes to work item branches, through the DevOps Center commit API or git. Create pull requests for work item branches via DevOps Center API. Invoke when the user wants to track, find, create, or update a work item, commit changes to a work item branch, advance a work item's status through the pipeline, or create a pull request for code review. Consolidates sf devops work-item and review operations. DO NOT TRIGGER for promotion or deployment operations, or conflict detection."
 metadata:
   relatedSkills:
     - "dx-devops-promote"
-  version: "1.0"
+  version: "1.1"
   domains: ["Developer Experience"]
   minApiVersion: "58.0"
   cliTools:
@@ -34,7 +34,7 @@ Gather or infer before proceeding:
 - **Operation type**: list, create, update, commit, or create-review
 - **For list**: project ID (required) — obtain via `sf devops project list --json` if not provided
 - **For create**: project ID (required), subject (required), description (optional)
-- **For commit**: work item name or ID (required) to retrieve branch name, files to commit, commit message
+- **For commit**: work item name or ID (required), commit message, and either the files to commit (git path) or the components to commit (API path). Optional: **dev org alias** — the org that holds the changes. When provided, try the DevOps Center commit API first (see step 5); otherwise use git
 - **For update**: work item name (e.g., WI-000001) or work item ID (required), fields to update (subject, description, status)
 - **For create-review**: work item name (e.g., WI-000001) or work item ID (required)
 
@@ -48,7 +48,7 @@ If the user provides a clear request ("list work items for Project Alpha", "crea
 
 ## Workflow
 
-All operations use `sf devops work-item` CLI commands with `--json` output for structured consumption.
+Operations use `sf devops work-item` CLI commands with `--json` output; the API commit path also uses `sf api request rest` and `sf data query`.
 
 ### Phase 1 — Identify Operation
 
@@ -71,6 +71,7 @@ All operations use `sf devops work-item` CLI commands with `--json` output for s
      ```
    - Verify the authenticated org has DevOps Center enabled by attempting to list projects
    - If the user wants to target a specific org, use `--target-org <alias>` on all subsequent commands
+   - For the API commit path, run `sf org display --target-org <alias> --json` for **both** the dev org and the hub org
 
 3. **List work items** — when the user wants to see existing work items:
    ```bash
@@ -102,9 +103,21 @@ All operations use `sf devops work-item` CLI commands with `--json` output for s
    - Capture the returned work item name (e.g., WI-000001), branch name, and environment from JSON output for future operations
    - Idempotent: if the user attempts to create a duplicate (same subject + project), check via list first and return the existing work item
 
-5. **Execute commit operation** — when operation type is commit:
-   - DevOps Center creates a dedicated feature branch for each work item (returned in the create operation)
-   - The user must commit and push changes to this branch before transitioning status or creating a PR
+5. **Execute commit operation** — when operation type is commit. Choose the path first:
+   - **API path** — only when the user gave a dev org alias AND the changes are already deployed in that dev org (if unsure, ask: deploy with `sf project deploy start`, or use git). Dev org alias: `commitChanges`, `DevopsRequestInfo`. Hub alias: `sf devops` and `WorkItemComponentList`. DevOps Center retrieves the named components from the dev org and commits them as `DevOps Center <noreply@salesforce.com>`.
+   - **Git path** — everything else. If the changes exist only in the dev org, run `sf project retrieve start --target-org <dev-org>` first.
+
+   **API path** (commands, body, error codes and polling in `references/commit-api.md`):
+   1. Preflight `GET /connect/devops/doceConnectionType` on the dev org; a failed call (non-zero exit or error body) or `isCore` not `true` means use the git path.
+   2. `sf devops project list` → project id, then `sf devops work-item list --project-id <id> --target-org <hub>` → work item id and name. Status must be New, In Progress, In Review or Ready to Promote.
+   3. `POST /connect/devops/commitChanges` on the **dev org**; the body is the inner object (no `commitChanges` wrapper).
+   4. A failed call, or `status: "ERROR"` with `reqId` = `CODE:message`: surface it and stop.
+   5. If the POST `status` is `SUCCESS` (accepted only), poll `DevopsRequestInfo WHERE RequestToken = '<reqId>'` on the dev org every 10 seconds until `Status` is `SUCCESS` or `ERROR` (report `Message`/`ErrorDetails`), 12-minute deadline. Past it the request is stuck; report it and do not retry automatically.
+   6. Confirm a new `WorkItemComponentList` exists on the hub before creating a review.
+
+   **Git path:**
+   - If the work item is New, first set it to In Progress (step 6); the hub ignores pushes made while it is New
+   - Use the work item's `branch` field as the branch
    - Standard git workflow:
      ```bash
      git checkout <branch-name>
@@ -112,8 +125,7 @@ All operations use `sf devops work-item` CLI commands with `--json` output for s
      git commit -m "<commit-message>"
      git push origin <branch-name>
      ```
-   - The branch name is available from the work item's `branch` field (retrieve via list or create operation)
-   - Changes must be committed before the work item can be marked "Ready to Promote" or before creating a PR
+   - The hub registers the push asynchronously; re-check it before creating a PR
 
 6. **Update work item** — when the user wants to change subject, description, or status:
    ```bash
@@ -162,7 +174,8 @@ All operations use `sf devops work-item` CLI commands with `--json` output for s
 8. **Verify operation success**:
    - **For list**: confirm the CLI returned status 0, parse the JSON `.result[]` array, and verify it contains work items (or is empty if no matches). If the user specified a project by name, confirm the resolved project ID matches.
    - **For create**: verify the CLI returned status 0 and the JSON output contains `.result.name` (work item ID like WI-000001), `.result.branch` (branch name), and `.result.environment` fields.
-   - **For commit**: verify each git command returned exit code 0. If `git push` succeeds, the commit is saved to the work item branch.
+   - **For commit (git path)**: verify each git command returned exit code 0. If `git push` succeeds, the commit is saved to the work item branch; the hub registers it asynchronously.
+   - **For commit (API path)**: verify the POST `status`, then `DevopsRequestInfo.Status`, are `SUCCESS`, and that a new `WorkItemComponentList` with a `CommitReference` exists on the hub. A new list with an empty `CommitReference` means nothing new was committed; report that, not a clean success.
    - **For update (general fields)**: verify the CLI returned status 0 and compare the returned JSON fields against the user's requested changes. If updating subject, confirm `.result.subject` matches the new value.
    - **For update (status transition)**: verify the CLI returned status 0, then **explicitly confirm the status transition** by checking `.result.status` in the JSON response matches the target status (e.g., "Ready to Promote"). If the response doesn't include the status field, re-run `sf devops work-item list` filtered to this work item and verify the status persisted.
    - **For create-review**: verify the CLI returned status 0 and the JSON output contains `.result.pullRequestUrl` (the PR URL) and `.result.status` (should be "open" or equivalent). If VCS credentials are missing, the CLI returns an error — surface this to the user.
@@ -170,7 +183,7 @@ All operations use `sf devops work-item` CLI commands with `--json` output for s
 9. **Report results**:
    - **List**: present work items in a readable format showing work item name, subject, status, branch, and environment. If filtering by status was requested, show only matching work items.
    - **Create**: return the work item name (e.g., WI-000001), branch name, environment, and confirm "Work item created successfully."
-   - **Commit**: confirm which files were staged, the commit SHA (from git output), and "Changes committed and pushed to branch <branch-name>."
+   - **Commit**: git path — confirm which files were staged, the commit SHA (from git output), and "Changes committed and pushed to branch <branch-name>." API path — confirm the `reqId`, components committed and hub `CommitReference` (author is DevOps Center)
    - **Update (general)**: confirm which fields changed with before/after values (e.g., "Subject updated from 'X' to 'Y'").
    - **Status transition**: explicitly state the transition with old → new status (e.g., "Status updated: In Progress → Ready to Promote").
    - **Create-review**: return the PR URL and confirm "Pull request created successfully. Status: open. URL: <url>"
@@ -187,7 +200,9 @@ All operations use `sf devops work-item` CLI commands with `--json` output for s
 | At least one update field required | Update command fails if no `--subject`, `--description`, or `--status` flag is provided |
 | Status values must be exact strings | "In Progress" and "Ready to Promote" (with spaces, proper capitalization); other values fail |
 | Idempotent create operations | Check for existing work item with same subject + project before creating duplicates |
-| Changes must be committed before status transition to Ready to Promote | DevOps Center validates that the work item branch has commits before allowing promotion readiness |
+| Commit before creating a PR | Commit first and confirm a component list exists on the hub before `review create` |
+| API commit only sends components already in the dev org | The API retrieves from the dev org, not from local disk; deploy local-only edits first (`sf project deploy start`) or use the git path |
+| Check `status` in the commit API response | Errors are returned as HTTP 200 with `status: "ERROR"` |
 | PR creation requires VCS credentials in org | DevOps Center API uses stored VCS credentials; no local git auth needed |
 | Never use interactive prompts | Skills run in headless environments; all inputs must be via CLI flags |
 
@@ -205,6 +220,8 @@ All operations use `sf devops work-item` CLI commands with `--json` output for s
 | **Invalid status value** | Only "In Progress" and "Ready to Promote" are valid (exact strings with spaces); check spelling and capitalization |
 | **Project not found** | User provided invalid project ID; run `sf devops project list --json` to show available projects |
 | **Duplicate work item subject** | Idempotent create check should catch this; return existing work item name instead of creating duplicate |
+| **Commit pushed while work item is New** | The hub ignores external pushes for New work items; set In Progress first and, if already pushed, re-check after the status change |
+| **API commit still in progress past the deadline** | Report it as stuck; do not retry automatically (a new request could race it) |
 | **Git push fails - no commits or branch not found** | Verify files are staged with `git status` and branch name retrieved from work item via list command |
 | **PR creation fails - VCS credentials** | VCS credentials not configured in DevOps Center UI; instruct user to configure in Setup → DevOps Center → VCS Credentials |
 
@@ -216,7 +233,7 @@ Deliverables vary by operation:
 
 - **List**: JSON array of work items with work item name (WI-######), subject, branch, environment, repository details
 - **Create**: Work item name (e.g., WI-000001), ID, branch name, and environment of the newly created work item
-- **Commit**: Confirmation of git commit and push success, with commit SHA
+- **Commit**: Confirmation of git commit and push success with commit SHA, or for the API path the `reqId`, final request status and `CommitReference`
 - **Update**: Confirmation of updated fields (old value → new value for subject/description, or status change)
 - **Create-review**: Pull request URL, PR number, and status
 
@@ -247,10 +264,9 @@ Before reporting results to the user:
 - [ ] Was `--project-id` provided (or obtained via project list)?
 
 ### Commit Operation Checks
-- [ ] Was the work item branch name retrieved successfully?
-- [ ] Were files staged with `git add`?
-- [ ] Did `git commit` succeed with exit code 0?
-- [ ] Did `git push` succeed with exit code 0?
+- [ ] API path: preflight passed, POST `status` checked, `DevopsRequestInfo` polled to `SUCCESS`, new `WorkItemComponentList` with `CommitReference` seen on the hub?
+- [ ] Git path: was the work item In Progress, and the branch name retrieved?
+- [ ] Git path: did `git add`, `git commit` and `git push` all exit 0?
 
 ### Update Operation Checks
 - [ ] Was work item identifier provided (name or ID)?
@@ -269,5 +285,6 @@ Before reporting results to the user:
 
 | File | When to read |
 |------|-------------|
+| `references/commit-api.md` | When committing through the DevOps Center API: request body, response and error codes, polling, preflight |
 | `references/cli-commands.md` | When you need detailed CLI flag documentation, JSON output schemas, or error handling patterns |
 | `examples/common-workflows.md` | When the user's request matches a common pattern (bulk updates, reassignment, idempotent creation, sequential transitions) |

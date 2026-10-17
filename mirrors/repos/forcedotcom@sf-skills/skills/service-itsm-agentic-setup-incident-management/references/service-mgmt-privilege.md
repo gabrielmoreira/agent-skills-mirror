@@ -70,7 +70,7 @@ keyed on the org preference **`PrivilegeAssignmentEnabled`**.
 - **In scope**: read / set the **Enable Privilege Assignment** master toggle; read / set the org-wide
   **escalation level**; list / create / update / delete **Service Management Privilege** definitions; bulk
   **add / remove employee assignments** for a privilege; verify by read-back where one exists.
-- **Out of scope**: base Incident Management enablement (`service-itsm-incident-mgmt-configure`); the
+- **Out of scope**: base Incident Management enablement (the `IncidentMgmt` SOR's master-feature steps); the
   Incident Fulfiller / Incident Manager **persona** PSG (the orchestrator's **Persona** feature); the Major
   Incident Manager approver licensing (the **Major Incident Management** feature); Problem / Change / Case
   Management; the Priority Matrix; SLA setup.

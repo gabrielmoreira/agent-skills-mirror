@@ -1133,15 +1133,44 @@ Free-suite flake rules:
   daemon without `CI=true` launches Chromium sandboxed.
 - Handshakes with a runner wait for the runner's own observable effect (its
   progress line, a coalesced read count), not for a fixture side file or a timer.
+- Fixtures that commit and then list, watch or remove a repository's `.git`
+  turn git auto-maintenance off themselves (`maintenance.auto=false` and
+  `gc.auto=0` in the repo config, or in the explicit git env they build). Since
+  git 2.29, `git commit` starts a detached `git maintenance run --auto` that
+  creates and deletes `.git/objects/maintenance.lock` after the commit has
+  returned; a listing counts it, a watcher's `lstat` misses it, and Bun's
+  `rmSync(..., { recursive: true, force: true })` returns without an error while
+  leaving the directory behind. `runFreeShard` appends the same two keys to
+  every shard child's `GIT_CONFIG_*` pairs as a backstop, so it covers fixtures
+  that inherit the environment, and `bun run scripts/ship-measure.ts free
+  --backend local` measures with that environment; a fixture with its own
+  replacement env never sees the backstop.
+
+To reproduce a ledger entry, take the shard's exact file list from the CI run's
+`free-plan` artifact, then rerun it with the flaky retry off on a CI-mirrored VM:
+
+```bash
+gh run download <run-id> -R garrytan/gstack -n free-plan -D /tmp/free-plan
+files=$(jq -r --argjson s <shard> '.shards[] | select(.shard == $s) | .files | join(",")' /tmp/free-plan/free-plan.json)
+bun run test:ubicloud --diagnostic --files "$files" --reruns 30
+```
+
+The ledger entry names the shard (`flake-ledger-<shard>`). Read the counts from
+the run's `free-measurement.json` (`completed`, `passed`, `capHit`): with a
+before-fix failure rate p, a fix needs at least 3/p clean completed reruns of
+the same command, so zero failures would have under a 5% chance if nothing had
+changed. Cut or unstarted reruns are incomplete, not passes.
 
 ### Free suite duration seed
 
 `scripts/free-test-durations.json` drives shard packing; files missing from it
-pack at the seed's 99th percentile. Acceptable seeds come from
+pack at the seed's 99th percentile. Acceptable seeds come only from
 `bun run test:ubicloud --record-durations` (each file timed in its own child on a
-VM with the CI lane's environment) or a CI recording. A 4-core laptop or
-small-sandbox recording is not acceptable: browser and display tests skip or slow
-down there, so the seed misstates them.
+VM with the CI lane's environment; it needs `UBICLOUD_API_KEY` and copies the
+refreshed seed back into the checkout). A 4-core laptop or small-sandbox
+recording is not acceptable: browser and display tests skip or slow down there,
+so the seed misstates them. Contributors without `UBICLOUD_API_KEY` leave the
+refresh to a maintainer.
 
 - `--ci-plan` warns in the job summary, with the refresh command, when more than 5
   files are unseeded; it never fails a PR. `--ci-verify` lists shards that ran

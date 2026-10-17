@@ -81,6 +81,16 @@ JWT ବୈଧୀକୃତ ହେବା **ଏବଂ** ସେଥିରେ `authent
 | `CLIENT_API` | ମଡେଲ୍-ସର୍ଭିଂ ଏଣ୍ଡପଏଣ୍ଟଗୁଡ଼ିକ — `/api/v1/*`, `/api/v1beta/*`, ଏବଂ ଉପନାମଗୁଡ଼ିକ `/v1/*`, `/v1beta/*`, `/chat/completions`, `/responses`, `/models`, `/codex/*`। | ପ୍ରଭାବୀ `REQUIRE_API_KEY` ଫିଚର୍ ଫ୍ଲାଗ୍ ସକ୍ଷମ ଥିବାବେଳେ Bearer କୀ |
 | `MANAGEMENT` | ଡ୍ୟାସ୍ବୋର୍ଡ ପୃଷ୍ଠା, ସେଟିଂସ୍, ପ୍ରଦାତା, କୀ, ପ୍ରଶାସନ ଏବଂ ଡାୟାଗ୍ନୋଷ୍ଟିକ୍ସ ଏଣ୍ଡପଏଣ୍ଟଗୁଡ଼ିକ।                                                                       | ଡ୍ୟାସ୍ବୋର୍ଡ ସେସନ୍ କିମ୍ବା `manage` ସ୍କୋପ୍ ସହିତ Bearer            |
 
+A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
+credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,
+`GET /api/db-backups/exportAll`), restoring a backup over the live data
+(`POST /api/db-backups/import` including `dryRun=true`, `POST /api/db-backups` restore by id,
+`POST /api/settings/import-json`), issuing a sync token (`POST /api/sync/tokens`) and minting an
+`admin` CLI access token (`POST /api/cli/tokens`) require a dashboard session, the local CLI
+subject, or login disabled; API keys of any scope and `oma_` access tokens get `403`. The check
+lives in `src/lib/api/operatorCredential.ts` (`resolveOperatorCredential()` /
+`requireOperatorCredential()`).
+
 ## ପାଇପ୍ଲାଇନ୍
 
 ```

@@ -11,6 +11,8 @@ description: >
   tracking deals, or maintaining any vault structure. Also triggers when the user
   wants to bootstrap a new vault from scratch, run a vault health check, or drop
   a _CLAUDE.md into their vault so all Claude surfaces share the same operating rules.
+  Also runs Crew (/crew): one shared logbook so Claude Code, Codex, Cursor, and Grok Bot
+  know what each other did, in any plain folder or the vault.
   Includes a research toolkit (7 commands: /x-read, /x-pulse, /research, /research-deep,
   /notebooklm, /youtube, /podcast) for AI-powered research via Grok, Perplexity, NotebookLM,
   YouTube, and podcast feeds - findings save
@@ -107,7 +109,7 @@ See `references/vault-schema.md` for full structural details.
 ## Core Operating Principles
 
 ### AI-first vault rule (applies to every note)
-The vault is designed for **future agent** to read and reason over, not for human review. Every note Claude writes - across all 47 commands - must follow `references/ai-first-rules.md`:
+The vault is designed for **future agent** to read and reason over, not for human review. Every note Claude writes - across all 48 commands - must follow `references/ai-first-rules.md`:
 
 1. **Self-contained context** - each note explains itself; don't rely on backlinks alone
 2. **"For future agent" preamble** - 2-3 sentence summary so any compatible agent can decide relevance in 10 seconds
@@ -696,6 +698,19 @@ Backed by `scripts/link_graph.py` (deterministic link extraction - no whole-vaul
 **Typed edges (graph engineering).** Beyond untyped `[[wikilinks]]`, notes can record *typed* relationships in a `relations:` frontmatter block - `supersedes`, `depends_on`, `caused`, `decided_by`, `relates_to`, `contradicts` (each with an inverse). This makes the graph traversable by meaning, not just adjacency. `scripts/link_graph.py` extracts them as a semantic overlay and `--lint` validates them (unknown types, dangling targets, contradiction cycles, missing inverses); `/obsidian-health` runs that lint. The full spec is Rule 6 § Typed edges in `references/ai-first-rules.md`. The overlay is always reconstructed from frontmatter on demand - plain markdown, no separate graph store.
 
 ---
+
+### `/crew [setup | add | lesson | show | digest | keep | drop]`
+
+**One shared logbook for Claude Code, Codex, Cursor, and Grok Bot. Works without Obsidian.**
+Full instructions live in `commands/crew.md`; setup and troubleshooting live in `references/crew.md`.
+
+Run `/crew setup` to choose a plain folder or your vault's `wiki/team/` folder.
+The helper uses Python's standard library, merges read hooks, and installs marked rules sections.
+Codex requires one `/hooks` trust review. Grok Bot receives a profile block to paste into its runner.
+
+Agents record one line per job and leave lessons for human review.
+Only an explicit human `keep` promotes a lesson into the recipient's rules.
+Every read frames records as data. Crew starts no background loop.
 
 ### `/create-command [seed]`
 

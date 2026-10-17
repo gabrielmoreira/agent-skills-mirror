@@ -122,9 +122,12 @@ def selftest():
     failures = 0
     for row in rows:
         color_a, color_b = parse_pairing(row["pairing"])
-        computed = round(contrast_ratio(color_a, color_b), 2)
-        expected_normal = "Pass" if computed >= 4.5 else "Fail"
-        expected_large = "Pass" if computed >= 3.0 else "Fail"
+        # The verdicts read the unrounded ratio, exactly as main() does. Rounding first
+        # turns a 4.498:1 pairing into a displayed 4.50 that would pass 4.5:1 on paper.
+        raw = contrast_ratio(color_a, color_b)
+        computed = round(raw, 2)
+        expected_normal = "Pass" if raw >= 4.5 else "Fail"
+        expected_large = "Pass" if raw >= 3.0 else "Fail"
         if f"{computed:.2f}" != f"{row['ratio']:.2f}":
             failures += 1
             print(f"selftest: {row['pairing']}: table says {row['ratio']}, the formula says {computed:.2f}")

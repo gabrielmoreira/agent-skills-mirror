@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 44 file(s) materialized.
+Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 46 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 44 |
+| Files         | 46 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -102,7 +102,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 41 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/set-up-openwork-team/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/set-up-openwork-team/SKILL.md) |
 | 42 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
 | 43 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
-| 44 | ✓ | [`integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md`](integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md) |
+| 44 | ✓ | [`infra/terraform/AGENTS.md`](infra/terraform/AGENTS.md) |
+| 45 | ✓ | [`infra/terraform/MODULE_CONTRACT.md`](infra/terraform/MODULE_CONTRACT.md) |
+| 46 | ✓ | [`integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md`](integrations/agent-plugins/openwork-connect/skills/openwork-connect/SKILL.md) |
 
 ---
 

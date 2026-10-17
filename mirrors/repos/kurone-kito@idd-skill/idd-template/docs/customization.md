@@ -104,6 +104,17 @@ distributed IDD workflow a repository imported.
   not independently trigger a release, and its changes ship with the
   parent roadmap's release (or the next top-level trigger).
 
+  A change to a default behavior that removes or renames no setting or
+  option, and does not make a previously accepted input fail, is a minor
+  bump. The release notes list such a change first under `Changed` as
+  "Default changes". Observed 2026-10-15 (issue `#4381`): an `iddVersion`
+  bump issue asked the session to stop and report on "a breaking change
+  to a default that existed at v0.15.0" with no test for "breaking". A
+  plan's "Default changes" bullet said no such change existed, and an
+  independent review found that false for pull request `#4290`, which
+  changed the orchestrator's host-load default with no setting removed or
+  renamed.
+
   Capture the merge SHA recorded by GitHub for the bump pull request and
   pass it as `RELEASE_CUT_MERGE_SHA`; do not derive the release target
   from the moving default-branch tip. Tagging a later tip would silently
@@ -131,6 +142,134 @@ distributed IDD workflow a repository imported.
   merge commit rather than a later default-branch tip. Only maintainers
   push these release tags; this process does not create a GitHub Release
   object or add GitHub Release automation.
+
+  Observed 2026-10-14, issue `#4239`: the `v0.15.0` tag was SSH-signed after
+  the GPG attempt failed at pinentry, and its signature could not be checked
+  locally, because `gpg.ssh.allowedSignersFile` was unset. The error text
+  below was reproduced on 2026-10-15 in the source repository's own checkout.
+  It means the setting is unset, so the snippet's verify line stops with it:
+
+  ```text
+  error: gpg.ssh.allowedSignersFile needs to be configured and exist for ssh signature verification
+  ```
+
+  `git verify-tag` checks an SSH signature only when
+  `gpg.ssh.allowedSignersFile` is set. Three cases follow: when the setting is
+  unset, the error above appears; when it names a path that does not exist,
+  verification prints `Unable to open allowed keys file` and then
+  `No principal matched.`; and when the file does not list the signing key, it
+  prints `No principal matched.`. Create the file outside the repository before
+  running the snippet. Each line holds a principal, the key type, and the
+  public identity:
+
+  ```text
+  <tagger-email> <key-type> <public-identity>
+  ```
+
+  The principal is a label. `git verify-tag` prints it in its
+  `Good "git" signature for <principal>` line and does not check it against
+  the tagger, so the tagger email is a readable choice, not a requirement.
+  In each command in this passage, replace each angle-bracket placeholder
+  with a real value; the brackets are not part of the command.
+
+  Take the key type and public identity from the first two fields of one of
+  these, and never copy private key material into the file:
+
+  - the `ssh-add -L` line for the signing identity;
+  - the matching public file for that key;
+  - when `user.signingkey` names a private key file, the output of
+    `ssh-keygen -y -f <private-key-file>`.
+
+  Point the setting at the file with `git config`, using an absolute path, so
+  that the snippet's own verify line sees it:
+
+  ```sh
+  git config gpg.ssh.allowedSignersFile <allowed-signers-file>
+  ```
+
+  `git config` writes to the repository config, which every worktree of this
+  clone shares, and `git config --unset gpg.ssh.allowedSignersFile` removes
+  the setting. To cover one command only, pass the same setting with `git -c`,
+  which leaves the repository config unchanged:
+
+  ```sh
+  release_version="${RELEASE_VERSION:?set to the iddVersion being released}"
+  git -c gpg.ssh.allowedSignersFile=<allowed-signers-file> \
+    verify-tag "v${release_version}"
+  ```
+
+  A GPG-signed tag needs no allowed-signers file, so drop the `-c` option for
+  it. Its verifier needs the signer's public key in the GPG keyring instead,
+  imported with `gpg --import <public-key-file>`; without it, verification
+  stops with a `No public key` error from `gpg`. The signer can write the
+  public-key file with `gpg --armor --output <public-key-file> --export
+  <key-id>`, and a verifier whose keyring already holds the key needs no
+  import.
+
+  When the snippet stops at verify, for any of the reasons above (the
+  `gpg.ssh.allowedSignersFile` error, a `No principal matched.` case, or the
+  `No public key` error from `gpg`), the local tag `v<version>` exists and
+  nothing was pushed. Do not run `git tag` again while
+  the tag is correct: it fails with `tag 'v<version>' already exists`. Before
+  you continue, check that `RELEASE_CUT_MERGE_SHA` is the merge commit of the
+  bump pull request, and do not continue if it is not: the block below compares
+  the tag with that same value, so it cannot catch a wrong one. Create the
+  allowed-signers file if you have not yet, as described above, and make sure
+  the setting is in place. For a GPG-signed tag, import the signer's public
+  key with `gpg --import <public-key-file>` instead, as described above. Run
+  the block below as
+  a script or in a subshell, not in your login shell, because `set -eu` in an
+  interactive shell can end that shell at the first failure. Set
+  `RELEASE_VERSION` and
+  `RELEASE_CUT_MERGE_SHA` in its environment, as for the snippet. For a
+  GPG-signed tag, replace the verify command in the block (its `git -c` line
+  and the `verify-tag` line after it) with
+  `git verify-tag "v${release_version}"`. A failure stops the block before the
+  push, so a failed verify or peel test never reaches it:
+
+  ```sh
+  set -eu
+  release_version="${RELEASE_VERSION:?set to the iddVersion being released}"
+  release_cut_merge_sha="${RELEASE_CUT_MERGE_SHA:?set to the bump PR merge SHA}"
+  release_commit="$(git rev-parse --verify "${release_cut_merge_sha}^{commit}")"
+  git -c gpg.ssh.allowedSignersFile=<allowed-signers-file> \
+    verify-tag "v${release_version}"
+  test "$(git rev-parse "v${release_version}^{commit}")" = "${release_commit}"
+  git push origin "v${release_version}"
+  ```
+
+  If the primary signing cannot finish without a terminal, such as a pinentry
+  or touch prompt that cannot be answered in this session, stop that attempt.
+  Use the same 2-minute bound for `git tag` that the
+  [signed-commit merge wrapper](idd-helper-scripts.md#signed-commit-merge-wrapper-shared-git-procedure)
+  gives commit, merge, and rebase, and do not rerun until you have confirmed
+  that nothing from the attempt is still running. Never fall back to an
+  unsigned tag, because a release tag must stay signed. Then test whether the
+  tag exists with this block, run as a script or in a subshell, as for the
+  recovery block above:
+
+  ```sh
+  release_version="${RELEASE_VERSION:?set to the iddVersion being released}"
+  if git rev-parse -q --verify "refs/tags/v${release_version}" >/dev/null; then
+    echo "tag exists: use the recovery block above"
+  fi
+  ```
+
+  The test is true when the tag exists. The if condition exits 1 when the tag
+  is absent, which an `if` condition tolerates even under `set -e`. Once
+  `RELEASE_VERSION` is set to a non-empty value, the block exits 0 whether or
+  not the tag exists, so read its output: the echo line means the tag exists.
+  When the tag does not
+  exist, and this repository configures the fallback signer that the
+  [signed-commit merge wrapper](idd-helper-scripts.md#signed-commit-merge-wrapper-shared-git-procedure)
+  describes, run the snippet again from its first line, once the setting is in
+  place, with that wrapper's `-c` settings for `gpg.format`, `user.signingkey`
+  (set to the absolute path of the fallback key file in place of the wrapper's
+  `<abs-path>` placeholder) and `commit.gpgsign` placed before `tag`, and keep
+  `-s`.
+  Without a configured fallback signer, stop there. A signing attempt that
+  fails before the tag is written leaves no tag.
+
 - **Adopters** can compare their `iddVersion` against the source release
   to see whether a re-sync is worthwhile. Because the value only moves
   when maintainers bump it, it is a coarse signal — so `idd-doctor` also
@@ -398,6 +537,24 @@ not-dispatched error; it is never queued or retried by this layer. It
 does not cover a standalone or ad hoc `gh` command, and it is not a
 cross-host or global limit. Turning it on does not connect Discover; the
 helper-script load-control section describes the contract.
+
+`localExec.admission` is the repository-local admission policy for local
+validation commands (issue `kurone-kito/idd-skill#4427`, roadmap
+`kurone-kito/idd-skill#4426`). Unlike `githubApi.loadControl`, it defaults
+on: an omitted object lets one validation run at a time, waits up to `PT2H`
+for a slot, and uses the `flock` backend. It defaults on because a repository
+that imports the template would otherwise run unprotected, while concurrent
+IDD sessions on one host can exhaust it. Only a literal `false` turns it off,
+and that turns it off for this repository's own commands only; another
+repository of the same operating-system user still takes the slot. The
+object belongs in the repository document. A user-global document that sets
+`localExec` fails schema validation, and the layered merge drops a user-global
+`localExec` whenever a repository document exists. `maxConcurrent` accepts 1 to
+8, and a value outside that range falls back to 1. `maxWait` accepts up to
+`PT6H`, and a longer or unparseable value falls back to `PT2H`. `backend` is
+`flock` or `pueue`. `pueueGroup` names the Pueue group, which defaults to
+`idd-validate`. `testCommand` is an optional command string, and a blank value
+leaves it unset.
 
 For advisory review timing, repositories may now customize
 `advisoryWait.requestCap`, `advisoryWait.pendingWindow`,

@@ -6,7 +6,7 @@ Incident Management preferences** (the feature toggles on the Incident Managemen
 four meta-tools (`discover`, `describe`, `dispatch_readonly`, `dispatch`). The org comes from the OAuth JWT
 on the MCP session — never handle an org id, alias, or credentials. Minimum API version **67.0**.
 
-This is **not** the master Incident Management on/off switch (`service-itsm-incident-mgmt-configure`) nor
+This is **not** the master Incident Management on/off switch (the master-feature steps of the `IncidentMgmt` SOR) nor
 the Incident Priority Matrix (`service-itsm-incident-priority-configure`).
 
 ## Delegate to the Setup Operation Recipe
@@ -20,17 +20,16 @@ id; a `discover` miss is not proof an operation is unavailable.
 
 | SOR | Owns | Status |
 |-----|------|--------|
-| **`IncidentMgmt`** (owning team ITSM-Aditya; controller `IPCManagementSetupController`) | Read a preference; toggle a preference; verify a preference read-back | Served |
+| **`IncidentMgmt`** | Read a preference; toggle a preference; verify a preference read-back | Served |
 
 Discover by intent — e.g. `discover("configure ITSM incident management preferences: automatically triage
 incidents, assign incidents with Einstein, enable rich text for incident descriptions")`.
 
 > **Resolve the right node — load-bearing.** Two setup nodes share the "Incident" name. Target the
-> **ITSM Incident Management org-preferences** node (controller `IPCManagementSetupController`) whose
-> toggles are the six below — **not** the Service-Foundation "Incident Management" node
-> (`IncidentMgmtSetupController`), whose toggles are broadcast/notification channels (Email/Sites/Alerts/
-> Slack) and a master switch. If a `discover` result is about broadcast channels or a master on/off, it is
-> the wrong node.
+> **ITSM Incident Management org-preferences** node whose toggles are the six below — **not** the
+> Service-Foundation "Incident Management" node, whose toggles are broadcast/notification channels
+> (Email/Sites/Alerts/Slack). The `IncidentMgmt` SOR also owns the master on/off switch; a `discover`
+> result about broadcast channels is the wrong node.
 
 ## Operations (shapes come from `describe`)
 
@@ -78,7 +77,7 @@ phrasing and the known-name enumeration.
   surface the raw access error and stop.
 - **Incident Management provisioned**: these preferences are writable only when Incident Management is
   enabled at the feature/license level. If reads or writes fail with an availability error, say the feature
-  must be enabled first (`service-itsm-incident-mgmt-configure`) and stop.
+  must be enabled first (the `IncidentMgmt` SOR's master-feature steps) and stop.
 
 ## Workflow
 
@@ -124,7 +123,7 @@ and what it means (e.g. "that setting can't be turned on once incidents exist").
 |---------|--------------|-----------------------|
 | Enable of "Restrict Assigned Group…" fails | The org already has Incident records (server freezes it) | That setting can only be turned on before any incidents exist; it can't be enabled now |
 | Read/write blocked with an access error | Caller lacks ITSM setup access | An admin with setup access must make this change |
-| Read/write unavailable on the org | Incident Management not enabled | Enable Incident Management first (`service-itsm-incident-mgmt-configure`) |
+| Read/write unavailable on the org | Incident Management not enabled | Enable Incident Management first through the `IncidentMgmt` SOR's master-feature steps |
 | Change didn't persist on read-back | Write did not take | Report it as failed and show the current state; do not claim success |
 | `dispatch*` auth error | headless-360 session not authenticated / expired | Re-authenticate the connection and confirm it points at the intended org |
 
@@ -144,5 +143,5 @@ missing setup access or an unauthenticated session. A `404` = the operation is n
 - Read or write against the Service-Foundation `IncidentManagement` node (broadcast channels) — wrong node.
 - Read or write any preference name the SOR does not list — an unknown name reads as `false` and is
   rejected on write.
-- Toggle the **master** Incident Management switch here (`service-itsm-incident-mgmt-configure`) or the
+- Toggle the **master** Incident Management switch as part of this preferences feature (use the orchestrator's prerequisite over the `IncidentMgmt` SOR) or the
   **Incident Priority Matrix** (`service-itsm-incident-priority-configure`).

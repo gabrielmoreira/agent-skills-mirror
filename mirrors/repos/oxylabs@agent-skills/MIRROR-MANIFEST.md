@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `oxylabs/agent-skills` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `oxylabs/agent-skills` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `oxylabs/agent-skills` — 26 default patterns, 0 followed patterns, 1
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 19 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,25 +59,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/agent-browser/errors.md`](skills/agent-browser/errors.md) |
-| 2 | ✓ | [`skills/agent-browser/examples.md`](skills/agent-browser/examples.md) |
-| 3 | ✓ | [`skills/agent-browser/parameters.md`](skills/agent-browser/parameters.md) |
-| 4 | ✓ | [`skills/agent-browser/scripts/playwright_scrape.js`](skills/agent-browser/scripts/playwright_scrape.js) |
-| 5 | ✓ | [`skills/agent-browser/scripts/playwright_scrape.py`](skills/agent-browser/scripts/playwright_scrape.py) |
-| 6 | ✓ | [`skills/agent-browser/SKILL.md`](skills/agent-browser/SKILL.md) |
-| 7 | ✓ | [`skills/agent-browser/targets.md`](skills/agent-browser/targets.md) |
-| 8 | ✓ | [`skills/proxies/dedicated-datacenter.md`](skills/proxies/dedicated-datacenter.md) |
-| 9 | ✓ | [`skills/proxies/dedicated-isp.md`](skills/proxies/dedicated-isp.md) |
-| 10 | ✓ | [`skills/proxies/examples.md`](skills/proxies/examples.md) |
-| 11 | ✓ | [`skills/proxies/proxy-types.md`](skills/proxies/proxy-types.md) |
-| 12 | ✓ | [`skills/proxies/SKILL.md`](skills/proxies/SKILL.md) |
-| 13 | ✓ | [`skills/video-data/examples.md`](skills/video-data/examples.md) |
-| 14 | ✓ | [`skills/video-data/SKILL.md`](skills/video-data/SKILL.md) |
-| 15 | ✓ | [`skills/web-scraper-api/examples.md`](skills/web-scraper-api/examples.md) |
-| 16 | ✓ | [`skills/web-scraper-api/SKILL.md`](skills/web-scraper-api/SKILL.md) |
-| 17 | ✓ | [`skills/web-scraper-api/sources.md`](skills/web-scraper-api/sources.md) |
-| 18 | ✓ | [`skills/web-unblocker/examples.md`](skills/web-unblocker/examples.md) |
-| 19 | ✓ | [`skills/web-unblocker/SKILL.md`](skills/web-unblocker/SKILL.md) |
+| 1 | ✓ | [`skills/agent-browser/challenges.md`](skills/agent-browser/challenges.md) |
+| 2 | ✓ | [`skills/agent-browser/errors.md`](skills/agent-browser/errors.md) |
+| 3 | ✓ | [`skills/agent-browser/examples.md`](skills/agent-browser/examples.md) |
+| 4 | ✓ | [`skills/agent-browser/parameters.md`](skills/agent-browser/parameters.md) |
+| 5 | ✓ | [`skills/agent-browser/scripts/playwright_scrape.js`](skills/agent-browser/scripts/playwright_scrape.js) |
+| 6 | ✓ | [`skills/agent-browser/scripts/playwright_scrape.py`](skills/agent-browser/scripts/playwright_scrape.py) |
+| 7 | ✓ | [`skills/agent-browser/SKILL.md`](skills/agent-browser/SKILL.md) |
+| 8 | ✓ | [`skills/agent-browser/targets.md`](skills/agent-browser/targets.md) |
+| 9 | ✓ | [`skills/proxies/dedicated-datacenter.md`](skills/proxies/dedicated-datacenter.md) |
+| 10 | ✓ | [`skills/proxies/dedicated-isp.md`](skills/proxies/dedicated-isp.md) |
+| 11 | ✓ | [`skills/proxies/examples.md`](skills/proxies/examples.md) |
+| 12 | ✓ | [`skills/proxies/proxy-types.md`](skills/proxies/proxy-types.md) |
+| 13 | ✓ | [`skills/proxies/SKILL.md`](skills/proxies/SKILL.md) |
+| 14 | ✓ | [`skills/video-data/examples.md`](skills/video-data/examples.md) |
+| 15 | ✓ | [`skills/video-data/SKILL.md`](skills/video-data/SKILL.md) |
+| 16 | ✓ | [`skills/web-scraper-api/examples.md`](skills/web-scraper-api/examples.md) |
+| 17 | ✓ | [`skills/web-scraper-api/SKILL.md`](skills/web-scraper-api/SKILL.md) |
+| 18 | ✓ | [`skills/web-scraper-api/sources.md`](skills/web-scraper-api/sources.md) |
+| 19 | ✓ | [`skills/web-unblocker/examples.md`](skills/web-unblocker/examples.md) |
+| 20 | ✓ | [`skills/web-unblocker/SKILL.md`](skills/web-unblocker/SKILL.md) |
 
 ---
 

@@ -88,7 +88,7 @@ The CLI follows a command pattern with two primary commands:
 2. Map agents to models with variants:
    - orchestrator → high-capacity model
    - oracle → high variant
-   - librarian/explorer → low variant
+   - explorer → low variant
    - designer → medium variant
    - fixer → low variant
 3. Apply skill permissions based on agent role

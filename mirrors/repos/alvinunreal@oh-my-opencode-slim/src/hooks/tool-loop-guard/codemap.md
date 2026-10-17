@@ -10,7 +10,7 @@ Prevents infinite tool call loops by detecting repeated identical tool calls wit
 The guard operates per session and distinguishes between different types of tools:
 
 - **Read-only file tools** (read, grep, glob): Hard-block after M confirmations to prevent infinite loops
-- **Task supervision tools** (task_status, task_result): Warn-only to avoid deadlocking terminal result retrieval
+- **Task supervision** (task_status): Warn-only to avoid deadlocking result retrieval
 - **Task lifecycle tools** (task, task_cancel, task_message, task_revive): Exempt entirely (managed by task-session-manager)
 - **Wait tools** (wait_for_user, wait_for_background_tasks): Dedicated per-turn counter that blocks on third consecutive call
 
@@ -32,7 +32,7 @@ The run counter only advances in `tool.execute.after` when arguments and output 
 - **stableStringify()**: Recursive deterministic JSON stringifier
 - **Exemption Lists**: Hard-coded tool categories with different protection levels
 - **Wait Tool Logic**: Separate per-turn counter for wait tools (end-turn semantics)
-- **Task Supervision Logic**: Separate tracking for task_status/task_result
+- **Task Supervision Logic**: Separate tracking for task_status result reads
 
 ### Algorithms
 - **Loop Detection**: Counter advances only when args AND output match previous call exactly
@@ -95,7 +95,7 @@ Plugin recreation → resetForTests()
 
 ### Task Supervision Flow
 ```
-task_status/task_result calls
+task_status calls
     ↓
 Track lifecycle state from output
     ↓
@@ -142,7 +142,7 @@ Key test scenarios:
 - **Output changes**: Different outputs reset counter
 - **Exemption verification**: Task lifecycle tools never tracked
 - **Wait tool handling**: Per-turn counter logic
-- **Task supervision**: Separate tracking for task_status/task_result
+- **Task supervision**: Separate tracking for task_status result reads
 - **Session isolation**: No cross-session contamination
 - **Edge cases**: Empty args, null outputs, special characters
 - **Concurrent calls**: Parallel call handling

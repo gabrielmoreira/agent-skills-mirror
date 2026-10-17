@@ -37,6 +37,17 @@ This repository is an AI-powered code quality tool grounded in twelve classic en
 **Note:** Codex CLI should prioritize instructions found in `AGENTS.md` when operating in this repository.
 
 
+## Maintainer Testing Policy
+
+The maintainer's Claude account has been banned. From 2026-10-16 onward,
+maintainer testing and verification cover only Codex-related capabilities.
+Other platform verification is historical; keep existing integrations available,
+but do not claim they are currently maintainer-tested. Community verification
+and contributions remain welcome. Continue running the repository's offline
+validation, unit tests, structural evals, and parser benchmark as applicable.
+Do not run Anthropic live evals as part of routine maintainer verification;
+changing the live evaluation provider requires a separate implementation change.
+
 ## Codex Maintenance Workflow
 
 Use `$brooks-harness` for changes to this repository's skills, framework, evals,

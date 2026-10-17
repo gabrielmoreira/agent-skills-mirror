@@ -92,6 +92,8 @@ unchanged.
 `kurone-kito/idd-skill#3585`).
 `githubApi.loadControl` is optional and defaults off (issue
 `kurone-kito/idd-skill#3586`).
+`localExec.admission` is optional and defaults on (issue
+`kurone-kito/idd-skill#4427`).
 See [Customizing IDD](customization.md#policy-constants).
 
 ## Ownership Defaults
@@ -303,8 +305,8 @@ Other `advisoryBotLogins` stay on the E1 watermark. **#2544**: once the
 secondary bot has already posted a genuine (non-notice) review for the
 current HEAD, the gate no longer requires the full configured duration --
 only a short, fixed confirmation buffer applies from that review's own
-timestamp, so the wait stays a fallback for a genuinely unreviewed HEAD
-rather than a fixed tax on every merge. **#2547**: a rate-limit /
+timestamp, so the window stays a rescue for late arrivals and is never a wait
+for a review, rather than a fixed tax on every merge. **#2547**: a rate-limit /
 skip-review notice for the current HEAD, with no later genuine comment, is
 a third, distinct outcome from `#2544`'s two-way pending/settled split -- a
 definitive decline, not "might still be reviewing." The gate skips the wait
@@ -509,6 +511,23 @@ Turning it on does not connect Discover. The contract is described in
 | Load control (`githubApi.loadControl.enabled`)      | `false`           | [`docs/idd-helper-scripts.md`](idd-helper-scripts.md) | Leave unset. Only a literal `true` enables host-local admission and a shared throttle cooldown for the owned `gh` wrappers.                |
 | Concurrency (`githubApi.loadControl.maxConcurrent`) | `1`               | [`docs/idd-helper-scripts.md`](idd-helper-scripts.md) | Serial by default. A value outside 1 to 8, or a non-integer, falls back to 1. The largest value across participating repositories applies. |
 | Read wait (`githubApi.loadControl.maxWait`)         | `PT30S`           | [`docs/idd-helper-scripts.md`](idd-helper-scripts.md) | Bounds how long a read waits for a slot or a cooldown. A value over ten minutes falls back. Writes never wait.                             |
+
+## Local Execution Admission Defaults
+
+`localExec.admission` stays on unless `enabled` is the literal `false`, and
+that turns it off for this repository's own validation commands only. The
+object belongs in the repository document; a user-global `localExec` fails
+schema validation. The contract is described in
+[Customizing IDD](customization.md#policy-constants).
+
+| Policy default                                    | Distributed value | Owning surface                      | Onboarding expectation                                                                                                                                                            |
+| ------------------------------------------------- | ----------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Admission switch (`localExec.admission.enabled`)  | `true`            | [Customizing IDD](customization.md) | Leave unset. Only a literal `false` turns admission off, and only for this repository. Unlike `githubApi.loadControl`, the default is on, so an imported repository is protected. |
+| Concurrency (`localExec.admission.maxConcurrent`) | `1`               | [Customizing IDD](customization.md) | Serial by default. A value outside 1 to 8, or a non-integer, falls back to 1.                                                                                                     |
+| Wait (`localExec.admission.maxWait`)              | `PT2H`            | [Customizing IDD](customization.md) | Bounds how long a validation run waits for a slot. A value longer than `PT6H`, or one that does not parse, falls back to `PT2H`.                                                  |
+| Backend (`localExec.admission.backend`)           | `flock`           | [Customizing IDD](customization.md) | `flock` or `pueue`. A `flock` backend with a cap above 1 is kept as written; the admission helper rejects that combination when it runs.                                          |
+| Pueue group (`localExec.admission.pueueGroup`)    | `idd-validate`    | [Customizing IDD](customization.md) | Used only with `pueue`. A blank value falls back to `idd-validate`.                                                                                                               |
+| Test command (`localExec.admission.testCommand`)  | Unset             | [Customizing IDD](customization.md) | Optional command string for the repository's test run. A blank value is unset.                                                                                                    |
 
 ## Provider Outage Declaration Defaults
 

@@ -21,10 +21,17 @@ Query parameters:
 |-------|--------|-------|
 | `countryCode` | `US`, `CA` | |
 | `phoneNumberType` | `10DLC`, `Toll Free` | URL-encode the space in `Toll Free` as `%20` |
+| `searchParam` | area code (`10DLC`) or prefix (`Toll Free`) | **Optional.** Narrows results to numbers matching the area code / prefix. Omit to list all available numbers for the type. Passed through as-is (the API returns `400 BAD_REQUEST` on an invalid value). |
 
 ```bash
+# All available Toll Free numbers for US
 sf api request rest \
   "/services/data/v68.0/connect/number-management/v1/numbers?countryCode=US&phoneNumberType=Toll%20Free" \
+  --target-org <alias>
+
+# Optional: narrow 10DLC numbers to a specific area code via searchParam
+sf api request rest \
+  "/services/data/v68.0/connect/number-management/v1/numbers?countryCode=US&phoneNumberType=10DLC&searchParam=415" \
   --target-org <alias>
 ```
 
@@ -42,9 +49,12 @@ Response:
 sf api request rest \
   "/services/data/v68.0/connect/number-management/v1/number" \
   --method POST \
-  --body '{"phoneNumberType":"Toll Free","country":"US","phoneNumber":"+14155551234"}' \
+  --body '{"phoneNumberType":"Toll Free","country":"US","phoneNumber":"+14155551234","contactCenterType":"Agentforce Contact Center"}' \
   --target-org <alias>
 ```
+
+`contactCenterType` is a fixed internal value (`Agentforce Contact Center`) — always sent,
+never gathered from the user.
 
 Success (`201`):
 

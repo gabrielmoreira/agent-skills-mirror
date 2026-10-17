@@ -25,6 +25,26 @@ Skill 领域入口为 [缺陷分类](../../knowledge/reference/skill-defect-taxo
 
 根级 `test`、`test:run`、`typecheck` 和 `build` 默认转发桌面命令，不能称为全仓验证。共享包、自部署 Web、CLI 和 Worker 使用各自命令，由根级 registry 组织；不能用多个重复嵌套的聚合脚本扩大“通过数量”。
 
+### Electron 隐藏运行与原生窗口专项
+
+桌面 E2E 默认使用隔离 profile 和应用已有的 `--hidden` 启动路径；macOS 的 E2E 进程使用 accessory 激活策略，不出现在 Dock。真实 renderer/preload/IPC/持久化仍运行，不等于浏览器的 headless 引擎，也不修改日常应用设置。`hidden-launch.spec.ts` 检查真实窗口 show/focus 事件均为零，并验证设置导航和重载仍可操作。
+
+显隐快捷键、隐藏启动后恢复 WebDAV 同步、可见启动后自动创建远端备份三项用例带 `@native-window` 标签，默认不选中，断言不改写或伪造。启动自动备份按现行合同要求活跃窗口；手动远端备份/恢复仍在隐藏集合中。需要原生可见窗口的验收必须在用户允许后显式执行：
+
+```sh
+PROMPTHUB_E2E_HEADED=1 pnpm --dir apps/desktop exec playwright test --grep @native-window
+```
+
+`PROMPTHUB_E2E_HEADED=1 pnpm test:e2e` 选择完整套件并允许显示窗口；普通 `pnpm test:e2e` 的通过结果仅覆盖隐藏运行集合，不能作为这三项原生窗口验收证据。Playwright 的浏览器 `--headed` 参数不控制 Electron 启动方式。撤销隐藏执行可使用上述显式环境变量，无数据迁移或偏好回滚。
+
+发布 CI 的既有 Linux `xvfb-run` 步骤显式设置 `PROMPTHUB_E2E_HEADED=1`，在虚拟显示器中保留原生窗口门禁；本地默认隐藏不会缩减该 CI 步骤的选择范围。
+
+发布验证 checkout 保留完整 Git 历史，供历史版本源码 fixture 核对和升级执行使用。Linux runner 安装 GNOME Keyring，并在独立 D-Bus 会话中解锁临时 runner 的密钥环；该服务覆盖仍调用系统凭据接口的集成测试。根级发布检查使用 `--concurrency 1`，避免多个检查争用 runner 导致 CLI 75 秒预算误差；预算和用例选择不变。JSON 报告和桌面失败附件作为 Actions artifact 保留。
+
+Electron E2E 通过 `-r tests/e2e/helpers/isolated-keyring.cjs` 在产品入口执行前替换操作系统凭据运输，密钥写入隔离 profile。应用重开时必须先恢复同一测试凭据，再执行真实设置解密和启动；不能在 `electron.launch()` 返回后才注入，否则启动读取与后续写入会使用不同存储。该文件只由测试命令预加载，不进入生产启动流程。
+
+隐藏启动恢复 WebDAV 同步与共同基线重开用例共用本地 HTTP WebDAV fixture，保留 GET/PUT、条件写入、目录创建及真实 head 发布；旧 WebDAV IPC mock 不覆盖主进程当前共同基线同步入口，不能用于该启动验收。
+
 `pnpm --filter @prompthub/desktop perf:budget` 使用项目已有的 `tsx` loader 执行 `scripts/check-large-data-budgets.ts`，遵循 Desktop 当前模块格式并解析被测模块的扩展名省略 import；脚本同时进入 `typecheck:tests`。不改变业务模块或预算阈值。它测量本地 Prompt/Skill selector 的固定数据集，不证明真实窗口滚动或大型 SQLite 工作流。
 
 ## 功能基线入口与证据边界
@@ -133,6 +153,7 @@ pnpm verify:release:quick --list --format json
 - [Skill runtime helper](../../../apps/desktop/tests/integration/helpers/skill-runtime.ts) 使用临时 profile、真实初始化/authority 启动路径、磁盘 SQLite 与隔离平台目录；只替换 Electron 运输和用户目录边界。
 - 本地 Git/文件包夹具在临时目录中构建，保留实际分支、目录层级、文件清单和字节。远端在线验收独立记录，不能由本地 fixture 推断。
 - CLI 的 [global setup](../../../apps/cli/tests/global-setup.ts) 创建已关闭的 SQLite 模板，由 [CLI harness](../../../apps/cli/tests/helpers/cli-harness.ts) 复制到独立数据目录。初始化、迁移和并发测试须绕过模板。完整 CLI suite 默认预算 75 秒，本地诊断可通过 `PROMPTHUB_CLI_TEST_MAX_MS` 临时调整。
+- CLI 独立进程验收在 global setup 中按正式 Vite 配置构建一次临时 CJS 产物，由各子进程启动该产物，避免每条命令重复装载和编译整个 TypeScript 图；构建耗时仍计入同一 75 秒预算。README 的 `pnpm dev` 用例继续验证源码入口，数据库并发 fixture 仍使用独立进程。临时构建目录和环境变量在 teardown 中回收，不复用可能过期的已有产物。
 - Self-Hosted Web 的 [global setup](../../../apps/web/tests/global-setup.ts) 创建已迁移并关闭的模板，测试目录复制使用；新库、损坏、锁与恢复场景自行构造前置状态。
 
 ## Pull Request 安全扫描

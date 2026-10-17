@@ -11,18 +11,6 @@ description: 把多次 dbs-save 存档合并成可交付的 Markdown 报告。�
 
 ---
 
-## 用户面向的措辞约定
-
-跟用户对话时一律用中文，不要把内部术语暴露出去：
-
-- 「snapshot」→「存档」（一份诊断状态文件叫一份存档）
-- 「session」→「对话」或「下次回来」
-- 「slug」→「项目」（每个项目下独立一份存档目录）
-
-frontmatter 字段名（status / title / source_skill / next_skill）和文件路径中的 sessions / slug，是技术标识，不出现在用户对话里。
-
----
-
 ## 为什么需要报告
 
 诊断结论现在漂在聊天里。客户想发给合伙人、想三周后回顾、想跟外部顾问对账，都得自己截图复制。
@@ -43,19 +31,13 @@ frontmatter 字段名（status / title / source_skill / next_skill）和文件�
 
 ---
 
-## 存档根目录
+## 存档契约
 
-先读取当前工作目录下的 `.dbs/config.json`，并与 dbs-save 使用同一套解析规则：
+措辞、项目名、存档根目录、文件名和存档格式统一按 [references/archive-contract.md](references/archive-contract.md) 执行。这份存档契约与保存、恢复、报告三个存档能力共用，内容一致。
 
-1. 配置文件不存在，或 `mode` 是 `default` → `~/.dbs/`
-2. `mode` 是 `project` → 当前工作目录下的 `.dbs/`
-3. `mode` 是 `custom` → `root` 指定的目录；展开开头的 `~`，相对路径按当前工作目录解析
+本 Skill 只读取配置，不修改配置。配置有问题时停止生成报告并说明原因；用户要查看或调整位置时，引导使用 `/dbs-save location`。
 
-配置无法解析、`mode` 不受支持、`root` 为空，或路径指向 `/`、用户家目录、当前项目根目录时，停止生成报告并说明配置问题。不要到其他位置猜测，也不要静默退回默认位置。
-
-`dbs-report` 只读取配置，不修改配置。用户要查看或调整位置时，引导使用 `/dbs-save location`。
-
-后文中的 `{存档根目录}` 都指这一步解析出的绝对路径。
+后文中的 `{存档根目录}` 都指按契约第 3 节解析出的绝对路径。
 
 ---
 
@@ -75,11 +57,7 @@ frontmatter 字段名（status / title / source_skill / next_skill）和文件�
 
 按文件名 `YYYYMMDD-HHMMSS` 排序（早 → 晚）。
 
-每个文件解析：
-- frontmatter 字段：`slug` / `timestamp` / `title` / `source_skill` / `status` / `next_skill`
-- body 6 段：用户主诉 / 已得出的结论 / 用户已否决的方向 / 待验证假设 / 已确认的下一步 / 备注
-
-如果某份存档格式有缺失，尽量用现有字段，不要因此中断报告生成。
+每个文件按契约第 5 节解析 frontmatter 和正文 6 段。旧版段落名和缺失字段的处理方式也按契约执行，不因格式缺失中断报告生成。
 
 ### Step 3：拼路径、写报告
 
@@ -155,7 +133,7 @@ frontmatter 字段名（status / title / source_skill / next_skill）和文件�
 
 ## 五、已确认的下一步
 
-汇总所有存档的「已确认的下一步」段落 + `next_skill` 字段。旧版存档里叫「推荐下一步」的段落按同一含义读取。
+汇总所有存档的「已确认的下一步」段落 + `next_skill` 字段，按契约第 6 节理解其含义。
 
 按优先级排：
 1. 最新存档里已确认的下一步（最优先）

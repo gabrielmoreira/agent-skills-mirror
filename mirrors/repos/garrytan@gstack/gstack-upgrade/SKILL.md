@@ -135,26 +135,26 @@ Use the install type and directory detected in Step 2:
 
 **For git installs** (global-git, local-git):
 
-Fast-forward first — the same policy the session-update auto-upgrade
-uses. `--autostash` carries local edits over the pull; render-footprint dirt
-is discarded first because it is regenerable and poisons stashes:
+Fast-forward first, through `bin/gstack-ff-update`, the same code the
+session-update auto-upgrade uses: local edits that merge cleanly ride over the
+update, and an edit that conflicts (or a staged change, or an unmerged file)
+is saved in a rescue ref instead of being left as conflict markers:
 ```bash
 cd -- "${INSTALL_DIR:?INSTALL_DIR is not set: re-run Step 2 and substitute the printed path}" || exit 1
 { [ -f VERSION ] && [ -f setup ] && [ -f bin/gstack-config ] && _p=$(git rev-parse --show-prefix 2>/dev/null) && [ -z "$_p" ] && [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = true ]; } || { echo "ERROR: $INSTALL_DIR is not a gstack checkout; nothing was changed. Re-run Step 2." >&2; exit 1; }
-# Discard render-footprint dirt: older gbrain-enabled installs rendered
-# generated SKILL.md / sections files IN PLACE. They are regenerable (setup
-# re-renders to ~/.gstack/render), so discarding is lossless.
-git checkout -- 'SKILL.md' '*/SKILL.md' '*/sections/*.md' 2>/dev/null || true
 git fetch origin
-# Same pre-advance check as the auto-updater: the incoming release's Bun floor.
-HOLD=$(. bin/gstack-bun-version.sh 2>/dev/null && gstack_bun_incoming_hold . origin/main) && { echo "BUN_TOO_OLD: $HOLD; nothing was changed" >&2; exit 1; }
+# Same pre-advance check as the auto-updater: the incoming release's Bun floor,
+# judged by bash whatever this tool shell is (zsh does not word-split).
+HOLD=$(bash -c '. bin/gstack-bun-version.sh && gstack_bun_incoming_hold . origin/main' 2>/dev/null) && { case "$HOLD" in bun-version-unreadable*) echo "BUN_VERSION_UNREADABLE: $HOLD; nothing was changed" >&2 ;; *) echo "BUN_TOO_OLD: $HOLD; nothing was changed" >&2 ;; esac; exit 1; }
 PRE_UPGRADE_COMMIT=$(git rev-parse HEAD)
 echo "PRE_UPGRADE_COMMIT=$PRE_UPGRADE_COMMIT"
-if git pull --ff-only --autostash origin main; then
-  if ./setup --refresh-registered; then echo "FF_OK"; else echo "SETUP_FAILED: git update succeeded; stop and inspect setup output (previous commit: $PRE_UPGRADE_COMMIT)" >&2; exit 1; fi
-else
-  echo "FF_REFUSED"
-fi
+FF=$(bash bin/gstack-ff-update . origin/main); FF_RC=$?
+echo "$FF"
+case "$FF_RC" in
+  0) if ./setup --refresh-registered; then echo "FF_OK"; else echo "SETUP_FAILED: git update succeeded; stop and inspect setup output (previous commit: $PRE_UPGRADE_COMMIT)" >&2; exit 1; fi ;;
+  4) echo "FF_REFUSED" ;;
+  *) echo "FF_STOPPED: $FF" >&2; exit 1 ;;
+esac
 ```
 
 Setup's `--refresh-registered` refreshes every install this checkout
@@ -165,9 +165,20 @@ its retry command and never say every host was refreshed. A `skipped` row
 belongs to another checkout or project; pass on its command, do not run it.
 
 If the output ends with `FF_OK`, the upgrade is done — skip the fallback
-below entirely.
+below entirely. When the line before it reads
+`rescued <old> <new> refs/gstack/rescue/<oid> unmerged=<0|1>`, tell the user
+their conflicting local edits were saved there and relay the `Inspect`,
+`Export` and `Delete` commands the script printed (export into a scratch
+checkout with `git apply -3`, never `stash apply` in the install;
+`unmerged=1` means the rescue needs manual resolution).
+On `FF_STOPPED`, STOP and relay the reason: nothing was changed.
+`ff-busy` means another gstack update is running (retry in a minute);
+`autostash-unrecoverable` names what is in the way (an untracked file the
+release adds, or another git command); `index-unreadable` means the checkout's
+index is damaged.
 On `BUN_TOO_OLD`, STOP: tell the user to run `bun upgrade`, then /gstack-upgrade again.
-On `SETUP_FAILED`, STOP; keep user changes and report the recovery commit. There is no `.bak` on the git path. Do not enter the divergence fallback merely because setup failed. Enter it only on `FF_REFUSED`, after inspecting the pull error; network/auth failures stop for repair, not reset.
+On `BUN_VERSION_UNREADABLE`, STOP: `bun --version` did not print a version gstack can read, so `bun upgrade` may not run either; tell the user to reinstall Bun from https://bun.sh (`curl -fsSL https://bun.sh/install | bash` in Git Bash or a macOS/Linux terminal), check that `bun --version` prints a version such as 1.4.2, then run /gstack-upgrade again (docs/troubleshooting.md#bun-version-unreadable).
+On `SETUP_FAILED`, STOP; keep user changes and report the recovery commit. There is no `.bak` on the git path. Do not enter the divergence fallback merely because setup failed. Enter it only on `FF_REFUSED` (local commits or a diverged history); network/auth failures stop for repair, not reset.
 
 **Fallback (ff-only refused — local commits or divergence).** `git reset
 --hard` DESTROYS things: a clean tree with unpushed local commits still loses
@@ -187,6 +198,8 @@ those commits. Gate it:
 ```bash
 cd -- "${INSTALL_DIR:?INSTALL_DIR is not set: re-run Step 2 and substitute the printed path}" || exit 1
 { [ -f VERSION ] && [ -f setup ] && [ -f bin/gstack-config ] && _p=$(git rev-parse --show-prefix 2>/dev/null) && [ -z "$_p" ] && [ "$(git rev-parse --is-inside-work-tree 2>/dev/null)" = true ]; } || { echo "ERROR: $INSTALL_DIR is not a gstack checkout; nothing was changed. Re-run Step 2." >&2; exit 1; }
+# Regenerable render-footprint dirt (setup re-renders it) never goes into the stash.
+git checkout -- 'SKILL.md' '*/SKILL.md' '*/sections/*.md' 2>/dev/null || true
 STASH_OUTPUT=$(git stash 2>&1)
 git reset --hard origin/main
 ./setup --refresh-registered

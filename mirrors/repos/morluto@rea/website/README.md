@@ -14,6 +14,13 @@ downloads and check the site. There is no frontend framework, bundler or npm
 dependency. A build generates all editions in `website/_site/`. The resulting
 files work as ordinary static files; language switching needs no JavaScript.
 
+Korean editions load the variable Noto Sans KR webfont through Google Fonts
+(`fonts.googleapis.com` and `fonts.gstatic.com`) so the preferred Korean font
+does not depend on fonts installed on the reader's PC. Other editions keep
+system fonts. Text remains visible while the font loads (`display=swap`), and
+local Korean fonts are used if Google Fonts is unavailable. The stylesheet is
+added during translation rendering; generated `_site/` pages are not authored.
+
 [style-guide.md](style-guide.md) explains the writing, page structure, figures,
 visual system and review process. Read it before adding or revising a page.
 

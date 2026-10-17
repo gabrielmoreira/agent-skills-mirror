@@ -82,6 +82,16 @@ Dashboard admin login သည် မူလ password login နှင့်အတ�
 | `CLIENT_API` | မော်ဒယ်ဝန်ဆောင်မှုပေးသည့် endpoint များ — `/api/v1/*`၊ `/api/v1beta/*` နှင့် alias များဖြစ်သော `/v1/*`၊ `/v1beta/*`၊ `/chat/completions`၊ `/responses`၊ `/models`၊ `/codex/*`။ | သက်ရောက်နေသော `REQUIRE_API_KEY` feature flag ကို ဖွင့်ထားသည့်အခါ Bearer key လိုအပ်သည် |
 | `MANAGEMENT` | Dashboard စာမျက်နှာများ၊ ဆက်တင်များ၊ provider များ၊ key များ၊ admin နှင့် စစ်ဆေးရှာဖွေရေး endpoint များ။                                                                       | Dashboard session သို့မဟုတ် `manage` scope ပါရှိသော Bearer                            |
 
+A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
+credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,
+`GET /api/db-backups/exportAll`), restoring a backup over the live data
+(`POST /api/db-backups/import` including `dryRun=true`, `POST /api/db-backups` restore by id,
+`POST /api/settings/import-json`), issuing a sync token (`POST /api/sync/tokens`) and minting an
+`admin` CLI access token (`POST /api/cli/tokens`) require a dashboard session, the local CLI
+subject, or login disabled; API keys of any scope and `oma_` access tokens get `403`. The check
+lives in `src/lib/api/operatorCredential.ts` (`resolveOperatorCredential()` /
+`requireOperatorCredential()`).
+
 ## လုပ်ငန်းစဉ်
 
 ```

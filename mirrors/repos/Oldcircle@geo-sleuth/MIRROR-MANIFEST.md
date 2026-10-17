@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Oldcircle/geo-sleuth` — 26 default patterns, 0 followed patterns, 81 file(s) materialized.
+Mirror of `Oldcircle/geo-sleuth` — 26 default patterns, 0 followed patterns, 83 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Oldcircle/geo-sleuth` — 26 default patterns, 0 followed patterns, 8
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 81 |
+| Files         | 83 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -137,9 +137,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 76 | ✓ | [`skills/geo-sleuth/scripts/tiles.py`](skills/geo-sleuth/scripts/tiles.py) |
 | 77 | ✓ | [`skills/geo-sleuth/SKILL.md`](skills/geo-sleuth/SKILL.md) |
 | 78 | ✓ | [`skills/geo-sleuth/tests/test_board.py`](skills/geo-sleuth/tests/test_board.py) |
-| 79 | ✓ | [`skills/geo-sleuth/tests/test_regions.py`](skills/geo-sleuth/tests/test_regions.py) |
-| 80 | ✓ | [`skills/geo-sleuth/tests/test_runtime.py`](skills/geo-sleuth/tests/test_runtime.py) |
-| 81 | ✓ | [`skills/geo-sleuth/tests/test_terrain.py`](skills/geo-sleuth/tests/test_terrain.py) |
+| 79 | ✓ | [`skills/geo-sleuth/tests/test_gazetteer.py`](skills/geo-sleuth/tests/test_gazetteer.py) |
+| 80 | ✓ | [`skills/geo-sleuth/tests/test_match.py`](skills/geo-sleuth/tests/test_match.py) |
+| 81 | ✓ | [`skills/geo-sleuth/tests/test_regions.py`](skills/geo-sleuth/tests/test_regions.py) |
+| 82 | ✓ | [`skills/geo-sleuth/tests/test_runtime.py`](skills/geo-sleuth/tests/test_runtime.py) |
+| 83 | ✓ | [`skills/geo-sleuth/tests/test_terrain.py`](skills/geo-sleuth/tests/test_terrain.py) |
 
 ---
 

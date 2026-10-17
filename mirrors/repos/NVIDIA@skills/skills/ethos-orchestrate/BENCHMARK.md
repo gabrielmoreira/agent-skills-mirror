@@ -9,7 +9,7 @@ Recommended for publication based on the completed evaluation evidence in this r
 ## Evaluation Metadata
 
 - Skill: `ethos-orchestrate`
-- Evaluation date: 2026-10-15
+- Evaluation date: 2026-10-16
 - Evaluator version: `1.5.6`
 - Agents: Claude Code (`aws/anthropic/bedrock-claude-opus-4-8`), Codex (`openai/openai/gpt-5.5`)
 - Tasks: 4 evaluation tasks (3 positive, 1 negative)
@@ -35,12 +35,12 @@ The three-tier evaluation checks whether the skill:
 
 | Measure | Claude Code (Baseline → Skill Uplift) | Codex (Baseline → Skill Uplift) |
 |---|---:|---:|
-| Overall | 92.3% — baseline ran, but no comparable score was available; uplift unavailable | 96.8% — baseline ran, but no comparable score was available; uplift unavailable |
-| Security | 100.0% → 100.0% (±0.0 points) | 100.0% → 100.0% (±0.0 points) |
-| Correctness | 50.0% → 90.0% (+40.0 points) | 65.0% → 100.0% (+35.0 points) |
-| Discoverability | 80.0% — baseline ran, but no comparable score was available; uplift unavailable | 91.7% — baseline ran, but no comparable score was available; uplift unavailable |
-| Effectiveness | 53.8% → 95.0% (+41.2 points) | 53.5% → 94.2% (+40.7 points) |
-| Efficiency | 96.6% — baseline ran, but no comparable score was available; uplift unavailable | 98.3% — baseline ran, but no comparable score was available; uplift unavailable |
+| Overall | 95.7% — baseline ran, but no comparable score was available; uplift unavailable | 95.0% — baseline ran, but no comparable score was available; uplift unavailable |
+| Security | 75.0% → 100.0% (+25.0 points) | 100.0% → 100.0% (±0.0 points) |
+| Correctness | 70.0% → 100.0% (+30.0 points) | 70.0% → 95.0% (+25.0 points) |
+| Discoverability | 86.7% — baseline ran, but no comparable score was available; uplift unavailable | 91.7% — baseline ran, but no comparable score was available; uplift unavailable |
+| Effectiveness | 61.0% → 96.3% (+35.3 points) | 51.7% → 96.7% (+45.0 points) |
+| Efficiency | 95.5% — baseline ran, but no comparable score was available; uplift unavailable | 91.9% — baseline ran, but no comparable score was available; uplift unavailable |
 
 **How to read this table:** baseline is the same task attempted without the target skill. Scores are rounded to one decimal; threshold-adjacent values use additional precision so their displayed band matches the verdict. Uplift is derived from those displayed scores and shown in percentage points.
 
@@ -54,17 +54,17 @@ Actual Tier 3 execution usage is reported for every observed agent/case pair and
 
 | Agent | Dataset case | With skill | Without skill | Delta | Change | Coverage |
 |---|---|---:|---:|---:|---:|---|
-| claude-code | All cases | 1,227,288 | 1,868,043 | -640,755 | -34.30% | skill 4/4; base 4/4 |
-| claude-code | orchestrate-explicit-new-ethos | 390,499 | 615,593 | -225,094 | -36.57% | skill 1/1; base 1/1 |
-| claude-code | orchestrate-implicit-existing-status | 468,887 | 218,789 | +250,098 | +114.31% | skill 1/1; base 1/1 |
-| claude-code | orchestrate-legacy-rename | 338,722 | 1,004,678 | -665,956 | -66.29% | skill 1/1; base 1/1 |
+| claude-code | All cases | 1,302,367 | 2,806,171 | -1,503,804 | -53.59% | skill 4/4; base 4/4 |
+| claude-code | orchestrate-explicit-new-ethos | 734,212 | 585,182 | +149,030 | +25.47% | skill 1/1; base 1/1 |
+| claude-code | orchestrate-implicit-existing-status | 233,175 | 251,638 | -18,463 | -7.34% | skill 1/1; base 1/1 |
+| claude-code | orchestrate-legacy-rename | 305,800 | 1,940,368 | -1,634,568 | -84.24% | skill 1/1; base 1/1 |
 | claude-code | orchestrate-negative | 29,180 | 28,983 | +197 | +0.68% | skill 1/1; base 1/1 |
-| codex | All cases | 259,288 | 552,697 | -293,409 | -53.09% | skill 4/4; base 4/4 |
-| codex | orchestrate-explicit-new-ethos | 29,448 | 138,188 | -108,740 | -78.69% | skill 1/1; base 1/1 |
-| codex | orchestrate-implicit-existing-status | 101,619 | 90,809 | +10,810 | +11.90% | skill 1/1; base 1/1 |
-| codex | orchestrate-legacy-rename | 114,849 | 310,483 | -195,634 | -63.01% | skill 1/1; base 1/1 |
+| codex | All cases | 346,265 | 455,748 | -109,483 | -24.02% | skill 4/4; base 4/4 |
+| codex | orchestrate-explicit-new-ethos | 29,475 | 152,903 | -123,428 | -80.72% | skill 1/1; base 1/1 |
+| codex | orchestrate-implicit-existing-status | 100,580 | 124,371 | -23,791 | -19.13% | skill 1/1; base 1/1 |
+| codex | orchestrate-legacy-rename | 202,838 | 165,257 | +37,581 | +22.74% | skill 1/1; base 1/1 |
 | codex | orchestrate-negative | 13,372 | 13,217 | +155 | +1.17% | skill 1/1; base 1/1 |
-| ALL AGENTS | Dataset aggregate | 1,486,576 | 2,420,740 | -934,164 | -38.59% | skill 8/8; base 8/8 |
+| ALL AGENTS | Dataset aggregate | 1,648,632 | 3,261,919 | -1,613,287 | -49.46% | skill 8/8; base 8/8 |
 
 Prompt tokens include cached reads, so total tokens are `prompt + completion` (cached is not added twice). The Efficiency score uses `(prompt - cached) + completion`. N/A means the relevant trajectory counters were not available; coverage is never estimated.
 

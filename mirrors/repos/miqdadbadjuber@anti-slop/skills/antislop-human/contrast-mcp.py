@@ -8,7 +8,7 @@ import sys
 
 PROTOCOL_VERSION = "2024-11-05"
 SERVER_NAME = "antislop-contrast"
-SERVER_VERSION = "3.2.20"
+SERVER_VERSION = "3.2.21"
 
 TOOLS = [
     {
@@ -40,17 +40,20 @@ def relative_luminance(hex_color):
 
 
 def contrast_ratio(fg, bg):
+    """The unrounded WCAG ratio. Callers decide what to print, never what to compare."""
     l1, l2 = relative_luminance(fg), relative_luminance(bg)
     lighter, darker = max(l1, l2), min(l1, l2)
-    return round((lighter + 0.05) / (darker + 0.05), 2)
+    return (lighter + 0.05) / (darker + 0.05)
 
 
 def check_contrast(fg, bg):
+    # The threshold is read from the raw ratio: 4.498:1 fails 4.5:1 even though it
+    # displays as 4.50 once rounded, and a rounded verdict would report the opposite.
     ratio = contrast_ratio(fg, bg)
     return {
         "foreground": fg,
         "background": bg,
-        "ratio": ratio,
+        "ratio": round(ratio, 2),
         "normal_text": {"threshold": 4.5, "pass": ratio >= 4.5},
         "large_text": {"threshold": 3.0, "pass": ratio >= 3.0},
     }

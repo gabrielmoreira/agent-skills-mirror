@@ -53,7 +53,7 @@ Use for any of the 45 visual types (§3) when a reader will learn more from a vi
 
 **Don't use for:**
 
-- Quick unicode diagrams → use **wiretext**.
+- Quick unicode diagrams → a separate plain-text tool such as wiretext. This skill doesn't ship one.
 - Lists of things → table or bullets.
 - Attribute-only before/after → table; topology changes → Architecture delta.
 - One-shape "diagrams" → just write the sentence.

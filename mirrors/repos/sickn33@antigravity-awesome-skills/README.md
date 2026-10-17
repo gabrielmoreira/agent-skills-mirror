@@ -1,11 +1,11 @@
-<!-- registry-sync: version=19.7.0; skills=2690; stars=47600; updated_at=2026-10-14T18:55:53+00:00 -->
+<!-- registry-sync: version=19.8.0; skills=2705; stars=47709; updated_at=2026-10-16T11:41:20+00:00 -->
 # AAS Core — Agentic Awesome Skills
 
 > **Find reusable instructions for your project, inspect their complete files, and keep an exact skill set you can review and reuse.**
 
-Agentic Awesome Skills is a library of 2,690+ installable `SKILL.md` playbooks. AAS Core helps Codex or Claude search the complete local catalog, record the skills the agent chooses, and preview a plan you can inspect before changing a target. Core does not rank or recommend skills.
+Agentic Awesome Skills is a library of 2,705+ installable `SKILL.md` playbooks. AAS Core helps Codex or Claude search the complete local catalog, record the skills the agent chooses, and preview a plan you can inspect before changing a target. Core does not rank or recommend skills.
 
-**Current release: V19.7.0.** AAS Core supports local catalog inspection, agent-owned selection, stack validation, and plan preview. Apply and recovery remain experimental. [Read the AAS Core preview guide](https://github.com/sickn33/agentic-awesome-skills/blob/v19.7.0/docs/users/aas-core.md) for setup and exact trust boundaries.
+**Current release: V19.8.0.** AAS Core supports local catalog inspection, agent-owned selection, stack validation, and plan preview. Apply and recovery remain experimental. [Read the AAS Core preview guide](https://github.com/sickn33/agentic-awesome-skills/blob/v19.8.0/docs/users/aas-core.md) for setup and exact trust boundaries.
 
 This README tracks `main`. Features listed under [Unreleased](CHANGELOG.md#unreleased) require a later release; the versioned guide describes the published package.
 
@@ -35,7 +35,7 @@ This is an independent community project, not affiliated with or endorsed by Goo
 - [Choose Your Tool](#choose-your-tool)
 - [Recommended Specialized Plugins](#recommended-specialized-plugins)
 - [Bundles & Workflows](#bundles--workflows)
-- [Browse 2,690+ Skills](#browse-2690-skills)
+- [Browse 2,705+ Skills](#browse-2705-skills)
 - [Troubleshooting](#troubleshooting)
 - [Stable Skills Manifest v1](#stable-skills-manifest-v1)
 - [Contributing](#contributing)
@@ -88,7 +88,7 @@ Codex or Claude inspects your project and chooses exact skills. Every current ca
 > [!IMPORTANT]
 > Structural and identity validity does not certify semantic fit, compatibility, setup correctness, operational safety, or safety to apply. Apply and recovery require experimental opt-in and remain outside the supported preview.
 
-The [Workbench](https://aaskills.tech/workbench) reviews stack and plan artifacts in browser memory without accessing your filesystem. See the [Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v19.7.0/docs/users/aas-core.md) for tool contracts, capability coverage, and limits.
+The [Workbench](https://aaskills.tech/workbench) reviews stack and plan artifacts in browser memory without accessing your filesystem. See the [Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/v19.8.0/docs/users/aas-core.md) for tool contracts, capability coverage, and limits.
 
 ## Installation
 
@@ -97,22 +97,22 @@ The [Workbench](https://aaskills.tech/workbench) reviews stack and plan artifact
 Start with AAS Core in Codex or Claude. Configure the local MCP using the [Codex](docs/users/codex-cli-skills.md) or [Claude](docs/users/claude-code-skills.md) guide. With the MCP available, ask the agent to inspect your project, compare relevant skills, and save the exact selection. Then validate its manifest and review the resulting plan before any installation. The first configuration command previews a change and returns an approval digest:
 
 ```bash
-npm exec --yes --ignore-scripts --package=agentic-awesome-skills@19.7.0 -- aas mcp configure \
+npm exec --yes --ignore-scripts --package=agentic-awesome-skills@19.8.0 -- aas mcp configure \
   --host codex \
   --scope user \
   --config /absolute/path/to/codex/config.toml \
   --cache-root /absolute/path/to/aas-cache
 ```
 
-Use `--host claude` and its configuration path for Claude. The [Core setup guide](https://github.com/sickn33/agentic-awesome-skills/blob/v19.7.0/docs/users/aas-core.md#configure-the-local-mcp) explains approval, reconnection, validation, and planning. To hand the reviewed IDs to the direct installer, use `aas stack install-preview` as described in the [manifest handoff](docs/users/aas-core.md#use-the-reviewed-selection); that command only prepares a `--dry-run` preview and does not apply a Core plan.
+Use `--host claude` and its configuration path for Claude. The [Core setup guide](https://github.com/sickn33/agentic-awesome-skills/blob/v19.8.0/docs/users/aas-core.md#configure-the-local-mcp) explains approval, reconnection, validation, and planning. To hand the reviewed IDs to the direct installer, use `aas stack install-preview` as described in the [manifest handoff](docs/users/aas-core.md#use-the-reviewed-selection); that command only prepares a `--dry-run` preview and does not apply a Core plan.
 
 ### Install selected skills directly
 
 If you already know the IDs, preview a focused install into your host's skill directory:
 
 ```bash
-npm exec --yes --ignore-scripts --package=agentic-awesome-skills@19.7.0 -- \
-  agentic-awesome-skills --release 19.7.0 --path .agents/skills \
+npm exec --yes --ignore-scripts --package=agentic-awesome-skills@19.8.0 -- \
+  agentic-awesome-skills --release 19.8.0 --path .agents/skills \
   --skills brainstorming,systematic-debugging --dry-run
 ```
 
@@ -170,7 +170,7 @@ Bundles suggest related skills; workflows describe the order to use them. They a
 - [Workflows](docs/users/workflows.md) give ordered playbooks for planning, shipping, testing, and auditing; [workflow metadata](data/workflows.json) is available for integrations.
 - If too many installed skills overload Antigravity, follow the [selective activation guide](docs/users/agent-overload-recovery.md). For other hosts, preview a smaller exact install or use the installer's `--risk`, `--category`, and `--tags` filters.
 
-## Browse 2,690+ Skills
+## Browse 2,705+ Skills
 
 Explore the complete library in the [hosted catalog](https://aaskills.tech/) or [`CATALOG.md`](CATALOG.md). The canonical playbooks live in [`skills/`](skills/); [`skills_index.json`](skills_index.json) provides machine-readable discovery. Use [Getting Started](docs/users/getting-started.md) and [Usage](docs/users/usage.md) for first steps, or the [Workbench](https://aaskills.tech/workbench) to inspect a saved Core stack and plan in your browser.
 
@@ -178,7 +178,7 @@ For narrower comparisons, see [Claude Code skills](docs/users/best-claude-code-s
 
 ## Troubleshooting
 
-- [Core setup and trust boundaries](https://github.com/sickn33/agentic-awesome-skills/blob/v19.7.0/docs/users/aas-core.md)
+- [Core setup and trust boundaries](https://github.com/sickn33/agentic-awesome-skills/blob/v19.8.0/docs/users/aas-core.md)
 - [Installation and everyday use](docs/users/usage.md)
 - [Windows context and truncation recovery](docs/users/windows-truncation-recovery.md)
 - [Linux/macOS overload and selective activation](docs/users/agent-overload-recovery.md)
@@ -220,6 +220,12 @@ Key source families include:
 <summary><strong>Official Sources</strong></summary>
 
 ### Official Sources
+
+- **[AltoRank/altorank](https://github.com/AltoRank/altorank)**: AGPL-3.0 official source for the `altorank` skill - SEO/AI-search readiness audits, Search Console reads, keyword research and draft creation into a person-reviewed queue through the hosted AltoRank MCP server.
+
+- **[getchordlabs/chord](https://github.com/getchordlabs/chord/tree/main/skills/chord)**: MIT official source for the `chord-onchain-trading` skill - DEX market data, best-route swap quotes and unsigned swap transactions on eight EVM chains through the Chord API; the skill never signs or sends. The hosted API and server have separate licensing.
+
+- **[tuantqse90/moltnode-mcp](https://github.com/tuantqse90/moltnode-mcp/tree/main/skills/moltnode)**: MIT official source for the `moltnode-chain-reader` skill - keyless JSON-RPC reads on 31 blockchains through MoltNode by Chord, plus Chord swap quotes with an unsigned transaction and simulation. The hosted gateway and server have separate licensing.
 
 - **[arcmira/mcp](https://github.com/arcmira/mcp/tree/v0.10.6/plugins/arcmira)**: Apache-2.0 plugin source for `arcmira-find-quotes`, YouTube and podcast quote research with timestamped sources. The hosted service and server have separate licensing.
 
@@ -336,6 +342,18 @@ Key source families include:
 
 ### Community Contributors
 
+- **[timini/agentic-verification](https://github.com/timini/agentic-verification)**: MIT source for the `agentic-verify` and `agentic-test-audit` skills - check a Python change by running every mutant of the changed lines and writing tests until they catch them, and audit a pytest suite for gaps, flaky and slow tests, and removal candidates checked on held-out mutants.
+- **[UmarSiddiqui/obsess](https://github.com/UmarSiddiqui/obsess)**: MIT source for the `obsess` skill - a bounded perfectionist loop for one target that keeps the best evidence-backed attempt and stops on an attempt or time budget.
+- **[openhook-dev/openhook-inbox](https://github.com/openhook-dev/openhook-inbox)**: MIT source for the `openhook` skill: disposable callback inboxes, event inspection and cursor-based waiting for authorized integration tests.
+- **[huyanxius/logo-to-stickers](https://github.com/huyanxius/logo-to-stickers)**: MIT source for `logo-to-stickers` — brand marks become consistent paper-sticker characters with small visual stories, reference roles and fifteen real examples.
+- **[moooai/takeout-coupon](https://github.com/moooai/takeout-coupon)**: MIT source for the `takeout-coupon` skill - Meituan, Ele.me/Taobao Shangou and JD Waimai hidden coupon feeds with verbatim taokouling codes and QR/H5 claim pages.
+- **[moooai/trip-coupon](https://github.com/moooai/trip-coupon)**: MIT source for the `trip-coupon` skill - Didi ride-hailing and hotel coupon feeds with verbatim codes and claim pages.
+- **[moooai/movie-coupon](https://github.com/moooai/movie-coupon)**: MIT source for the `movie-coupon` skill - movie-ticket discount feeds for Chinese cinema platforms with verbatim codes and claim links.
+- **[moooai/parcel-coupon](https://github.com/moooai/parcel-coupon)**: MIT source for the `parcel-coupon` skill - courier and parcel-delivery coupon feeds with verbatim codes and claim pages.
+- **[moooai/obtain-coupons-all-in-one](https://github.com/moooai/obtain-coupons-all-in-one)**: MIT source for the `obtain-coupons-all-in-one` skill - one aggregated coupon feed across the four categories above.
+
+- **[yumaheymans/carejobs-mcp](https://github.com/yumaheymans/carejobs-mcp)**: MIT source for the `healthcare-job-search` skill - US healthcare job and posted-pay lookup for nursing, CNA, allied health, therapy, imaging, pharmacy and physician roles through CareJobs.Now's free read-only MCP server or public CC BY 4.0 JSON endpoints.
+
 - **[AshenJyy/antigravity-browser-bridge](https://github.com/AshenJyy/antigravity-browser-bridge)**: Source for the Browser Bridge guide for authorized Edge/Chrome automation using a separately installed local extension and daemon (Apache-2.0).
 
 - **[Reak-Z/mcd-secret-menu-lab](https://github.com/Reak-Z/mcd-secret-menu-lab)**: MIT community recipe-planning workflow for McDonald's China using an authorized MCP connection and explicit account-action boundaries.
@@ -428,6 +446,7 @@ Key source families include:
 - **[mattpocock/skills](https://github.com/mattpocock/skills)**: Source for 17 Matt Pocock workflow skills - codebase design, TDD, bug diagnosis, triage, PRDs, issues, prototyping, handoff, teaching, and skill-writing guidance (MIT).
 - **[emilkowalski/skills](https://github.com/emilkowalski/skills)**: Source for Emil Kowalski design engineering skills - UI polish, motion review, animation standards, component craft, and high-taste frontend guidance (MIT).
 - **[chaunsin/agent-skills](https://github.com/chaunsin/agent-skills)**: Source for the `pre-release-review` and `drizzle-migration-conflict` skills - deploy-readiness audits and Drizzle Kit migration-conflict workflows (Apache-2.0).
+- **[harshmaur/apify-reddit-scraper-skill](https://github.com/harshmaur/apify-reddit-scraper-skill)**: Source for the `apify-reddit-scraper` skill - Reddit posts, comments, subreddits and user profiles as structured data through the `harshmaur/reddit-scraper` Apify Actor, with no Reddit API key, cost estimates before each run and date-window filters (MIT).
 - **[addyosmani/agent-skills](https://github.com/addyosmani/agent-skills)**: Source for the `browser-testing-with-devtools` skill - Chrome DevTools MCP browser verification, profiling, network inspection, and frontend debugging guidance (MIT).
 - **[stareezy-1/frontend-architecture-skill](https://github.com/stareezy-1/frontend-architecture-skill)**: Source for the `frontend-lighthouse` skill - portable Lighthouse CI Core Web Vitals gates, performance budgets, and GitHub Actions reporting (MIT).
 - **[bin1874/before-you-build-skill](https://github.com/bin1874/before-you-build-skill)**: Source for the `before-you-build` skill - pre-coding product risk review across demand, alternatives, switching costs, channels, and validation steps (MIT).

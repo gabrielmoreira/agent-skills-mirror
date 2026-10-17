@@ -83,6 +83,9 @@ providers need not expose identical state machines.
   recovery handshakes. Bound abandoned unauthenticated listeners where the
   protocol permits it; that deadline must not expire authenticated idle sessions
   or long-running native work. Listener expiry does not prove target closure.
+- Readiness observations may await owned prerequisite commands. Status must
+  remain readable during owner finalization without starting replacement work;
+  report readiness as unknown when it cannot be re-observed.
 - Shared startup has one producer and independently cancellable caller waits.
   Keep it running while any caller still needs it. The final departing caller
   waits for owned cleanup and retains its failure. Provider closure is distinct
@@ -93,9 +96,16 @@ providers need not expose identical state machines.
   last awaited finalization step.
   Retain collected observations under typed cancellation. Preserve an existing
   primary failure and let incomplete cleanup retain its own classification.
+  Preserve the caller's abort reason as the typed cancellation error's cause,
+  including when cancellation is observed only after provider completion.
+  Shared command owners must retain the observed cancellation reason separately
+  from physical failures and cleanup ownership. Carry that fact through failure
+  wrapping so adapters can preserve the exact reason without interpreting it.
   Client cancellation alone does not prove native work stopped.
   For atomic publication, document the cancellation cutoff and preserve any
   committed output's publication receipt.
+  Queued and retried work must retain the complete accepted execution controls,
+  including non-default lifecycle deadlines and cancellation signals.
 - Release only owned resources. Attaching owns a connection or session unless
   the provider contract explicitly establishes target ownership. A helper exit,
   missing reply, or missing PID does not establish target exit.
@@ -106,12 +116,41 @@ providers need not expose identical state machines.
   Bind cleanup failures to their exact resource owner. Resolve current cleanup
   uncertainty only after that owner confirms release, while preserving the
   original failure and completed observations. Later failure composition must
-  report only resources whose cleanup remains unresolved.
+  report only resources whose cleanup remains unresolved. Carry cleanup
+  capabilities explicitly in typed outcomes so consumers can bind returned errors
+  to exact owners without reparsing diagnostic cause chains.
+  Bind every caller-visible retry error and aggregate, including an error already
+  produced by the provider. An aggregate remains incomplete until all owners it
+  reports are released; releasing one child cannot clear another child's status.
 - Await one-shot cleanup without discarding the completed result or primary
   diagnostic. Preserve partial observations, remaining resources, and the cleanup
   owner's recovery instructions. CLI adapters should reuse
   [`finishAnalysisCommand`](https://github.com/morluto/rea/blob/main/src/cli/finishAnalysisCommand.ts) where its contract
   applies rather than duplicate close/finally handling.
+- Give descriptor-backed reads an owner before opening the file. A rejected
+  close must retain the exact handle and preserve any earlier failure. If an
+  abortable caller stops waiting, keep the underlying work in that owner's
+  lifetime so shutdown cannot report release before finalization settles.
+  Admit the entire inspection once, including later reads and finalization.
+  Helpers must borrow that admission or use an operation child scope; re-entering
+  the same draining scope can make cleanup wait for its own caller.
+  Retry retained cleanup before admitting new work and keep admission blocked
+  while it remains unresolved. Link the originating cleanup error to its exact
+  owner so confirmed release resolves its cleanup marker while preserving the
+  earlier diagnostic. Shared CLI/MCP adapters cannot infer that confirmation.
+- Provider profile selection owns every asynchronous candidate through its
+  terminal result and finalization. The registry owns profile-file cleanup,
+  joins all automatic-selection children, and closes those file owners before
+  reporting candidate shutdown. Final caller cancellation joins the selection;
+  an adapter that ignores cancellation remains active and owned until it settles.
+  Block new admission during shutdown and while cleanup remains unresolved;
+  reopen after confirmed retry. Preserve failed results before considering a
+  later signal, and retain every child's attributed cleanup in mixed outcomes.
+- Release child descriptors before removing their containing root. Retain a
+  composite owner when either stage fails so retry preserves that ordering.
+  A Windows command leader's exit does not establish Job Object closure. Keep
+  the process-tree observer and command lock alive through failed cleanup retries
+  until the owned tree's close event.
 
 Exercise the applicable [lifecycle regression scenarios](testing.md#lifecycle-regressions)
 through the producing owner and affected CLI/MCP consumers.

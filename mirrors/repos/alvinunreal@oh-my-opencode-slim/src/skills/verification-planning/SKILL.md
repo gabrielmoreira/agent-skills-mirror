@@ -1,6 +1,6 @@
 ---
 name: verification-planning
-description: Verification planning for non-trivial coding work. Use before implementing a feature, bug fix, refactor, cross-system change, or high-confidence behavior change that needs a credible project-specific evidence path.
+description: Use before implementing a feature, bug fix, refactor, or cross-system change to plan a credible project-specific verification path.
 ---
 
 # Verification Planning
@@ -68,7 +68,7 @@ its stakes, and any needed affordance has a defined lifecycle.
 ## 4. Research when the path is unknown
 
 When the right evidence path depends on an unfamiliar dependency, framework,
-external service, or rapidly changing capability, ask `@librarian` for focused
+external service, or rapidly changing capability, ask `@explorer` for focused
 research before committing to an approach.
 
 Ask for official or project-specific facilities, constraints, and trade-offs

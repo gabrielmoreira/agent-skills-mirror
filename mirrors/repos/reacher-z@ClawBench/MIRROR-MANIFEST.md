@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `reacher-z/ClawBench` — 26 default patterns, 13 followed patterns, 20 file(s) materialized.
+Mirror of `reacher-z/ClawBench` — 26 default patterns, 17 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `reacher-z/ClawBench` — 26 default patterns, 13 followed patterns, 2
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 13 |
-| Files         | 20 |
+| Followed pats | 17 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,17 +53,21 @@ Mirror of `reacher-z/ClawBench` — 26 default patterns, 13 followed patterns, 2
 
 - `README.md`
 - `CHANGELOG.md`
+- `docs/README.md`
+- `docs/cli.md`
+- `src/README.md`
 - `src/clawbench/runtime/runtime-server/README.md`
 - `CONTRIBUTING.md`
 - `eval/README.md`
 - `eval/agentic_eval.md`
-- `docs/browser-runtimes.md`
-- `docs/harbor.md`
-- `docs/cli.md`
 - `docs/trace-cookbook.md`
+- `docs/faq.md`
+- `docs/getting-started.md`
 - `eval/scoring.md`
+- `docs/browser-runtimes.md`
 - `docs/news.md`
-- `src/clawbench/runtime/chrome-extension/README.md`
+- `docs/walkthrough.md`
+- `docs/answer-mode-tasks.md`
 
 ## File Index
 
@@ -73,24 +77,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`docs/edgebench.md`](docs/edgebench.md) |
-| 3 | ✓ | [`docs/v1-vs-v2.md`](docs/v1-vs-v2.md) |
-| 4 | ✓ | [`llms.txt`](llms.txt) |
-| 5 | ✓ | [`src/clawbench/runtime/harnesses/webbrain/README.md`](src/clawbench/runtime/harnesses/webbrain/README.md) |
-| 6 | ✓ | [`src/README.md`](src/README.md) |
-| 7 | ✓ | [`test-cases/environmental-observation/README.md`](test-cases/environmental-observation/README.md) |
-| 8 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 9 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 10 | → | [`docs/browser-runtimes.md`](docs/browser-runtimes.md) |
-| 11 | → | [`docs/cli.md`](docs/cli.md) |
-| 12 | → | [`docs/harbor.md`](docs/harbor.md) |
-| 13 | → | [`docs/news.md`](docs/news.md) |
-| 14 | → | [`docs/trace-cookbook.md`](docs/trace-cookbook.md) |
-| 15 | → | [`eval/agentic_eval.md`](eval/agentic_eval.md) |
-| 16 | → | [`eval/README.md`](eval/README.md) |
-| 17 | → | [`eval/scoring.md`](eval/scoring.md) |
-| 18 | → | [`README.md`](README.md) |
-| 19 | → | [`src/clawbench/runtime/chrome-extension/README.md`](src/clawbench/runtime/chrome-extension/README.md) |
-| 20 | → | [`src/clawbench/runtime/runtime-server/README.md`](src/clawbench/runtime/runtime-server/README.md) |
+| 3 | ✓ | [`docs/harbor.md`](docs/harbor.md) |
+| 4 | ✓ | [`docs/prorl-rl-env.md`](docs/prorl-rl-env.md) |
+| 5 | ✓ | [`docs/README.zh-CN.md`](docs/README.zh-CN.md) |
+| 6 | ✓ | [`docs/v1-vs-v2.md`](docs/v1-vs-v2.md) |
+| 7 | ✓ | [`llms.txt`](llms.txt) |
+| 8 | ✓ | [`src/clawbench/runtime/chrome-extension/README.md`](src/clawbench/runtime/chrome-extension/README.md) |
+| 9 | ✓ | [`src/clawbench/runtime/harnesses/webbrain/README.md`](src/clawbench/runtime/harnesses/webbrain/README.md) |
+| 10 | ✓ | [`test-cases/environmental-observation/README.md`](test-cases/environmental-observation/README.md) |
+| 11 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 12 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 13 | → | [`docs/answer-mode-tasks.md`](docs/answer-mode-tasks.md) |
+| 14 | → | [`docs/browser-runtimes.md`](docs/browser-runtimes.md) |
+| 15 | → | [`docs/cli.md`](docs/cli.md) |
+| 16 | → | [`docs/faq.md`](docs/faq.md) |
+| 17 | → | [`docs/getting-started.md`](docs/getting-started.md) |
+| 18 | → | [`docs/news.md`](docs/news.md) |
+| 19 | → | [`docs/README.md`](docs/README.md) |
+| 20 | → | [`docs/trace-cookbook.md`](docs/trace-cookbook.md) |
+| 21 | → | [`docs/walkthrough.md`](docs/walkthrough.md) |
+| 22 | → | [`eval/agentic_eval.md`](eval/agentic_eval.md) |
+| 23 | → | [`eval/README.md`](eval/README.md) |
+| 24 | → | [`eval/scoring.md`](eval/scoring.md) |
+| 25 | → | [`README.md`](README.md) |
+| 26 | → | [`src/clawbench/runtime/runtime-server/README.md`](src/clawbench/runtime/runtime-server/README.md) |
+| 27 | → | [`src/README.md`](src/README.md) |
 
 ---
 

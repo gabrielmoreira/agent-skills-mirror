@@ -19,6 +19,8 @@ The user's message, the current page content (AX tree, screenshot, or extracted 
 | User credentials (passwords, API keys) | Yes | If the user types them in chat or the agent fills them and they appear in tool results |
 | Provider API key | Yes, when applicable | Sent as an HTTP header to endpoint-based providers; the in-browser WebGPU provider has no key or endpoint |
 
+On Google's sites the account control in Google's bar names the signed-in person. Text reads of the page (the accessibility tree, tool results, link and element lists, and the element list sent with a screenshot) call it `Google account` and keep only the origin and path of its link; see [signed-in account chrome](accessibility-tree-and-refs.md#signed-in-account-chrome). The screenshot image and the page title (Gmail's includes the account's address) are sent as they are.
+
 When **Plan before Act** is enabled, action-mode turns (Act or Dev) make an additional planner
 call to the same configured provider before any browser tools run. That call
 contains the user's task, sanitized page URL/title, a short recent-conversation
@@ -134,6 +136,28 @@ requirements, recent action/read evidence, document identity and fresh redacted
 pixels (when supported) or AX to the selected judge. Page content and pixels are
 untrusted data; an agent success summary is not proof. Text is bounded by
 serialized UTF-8 bytes; screenshots use the configured capture/redaction budgets.
+Recorded actions carry only their tool names, the `ref_N` target each named
+and app-owned booleans (verified, failed, credential field), never other
+arguments or entered values. A value of four characters or more that the
+current run entered into a password input, as the entry tool's own result
+reports the field, is masked in all judge evidence text while the conversation
+still holds that entry: as typed, as the accessibility tree prints it once a
+"show password" control reveals it (normalized, trimmed and cut to 60
+characters), line by line, and escaped. Values entered into other fields,
+including fields WebBrain flags as credentials such as a one-time-code box, are
+not masked: the page shows them, and judges compare them with the request.
+Screenshots are not masked this way; a password input shows only dots. The
+active conversation model already holds the task, approved plan and candidate
+summary, so its own check receives every line of them, with addresses cut to
+origin and path, bearer tokens hidden and entered passwords masked. A decision
+provider that stays on this device (Local Kev on a loopback address, or D1), or
+Compass's managed Cloud decision route while Compass is the conversation
+provider, receives that same copy. Any other decision provider receives those
+texts with every line that names a credential removed; when that removal leaves
+it without the task or plan while the active model can judge, it is not asked.
+Page evidence is redacted the same way for every judge: each line naming a
+credential is removed, and a credential field's accessibility line keeps at
+most its role and ref.
 Local Kev uses `/v1/systemone`, requires no key by default and works offline.
 Keys stay in local storage; config exports include them in plaintext.
 
@@ -786,7 +810,7 @@ CDP capture → JPEG/PNG data URL
 | Local feedback diagnostics | Keeps bounded metadata locally when ordinary tracing is off; disabling it clears automatic history. Uploading a feedback attachment requires separate confirmation. |
 | Screenshot fallback | Controls whether page images are sent to the LLM |
 | Auto-screenshot mode | Controls how frequently viewport captures are sent |
-| Strict secret handling | Keeps credentials out of assistant text and completion summaries: an instruction to the model, plus exact-match redaction in cloud runs of anything it typed, sent, or read from a labelled field |
+| Strict secret handling | Keeps credentials out of assistant text and completion summaries: an instruction to the model, exact-match redaction of credentials it filled into sensitive fields from its scratchpad and progress-ledger notes, plus exact-match redaction in cloud runs of anything it typed, sent, or read from a labelled field |
 | Profile auto-fill | Controls whether user profile text is sent to the LLM |
 | User memory | Controls whether saved memory records are sent to the LLM |
 | User memory auto-learn | Controls whether post-turn extractor calls run |

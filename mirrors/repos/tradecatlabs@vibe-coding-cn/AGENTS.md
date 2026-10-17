@@ -69,6 +69,7 @@ git push origin HEAD
 | `make lint` | 校验全仓库 Markdown | Node.js 22+；通过 `npx --yes markdownlint-cli@0.48.0` 执行 |
 | `make check-links` | 校验仓库内 Markdown 相对链接 | Python 3 |
 | `make check-details` | 校验 Markdown 折叠块 `<details>/<summary>` 结构 | Python 3 |
+| `make test-details` | 验证代码围栏隔离与真实折叠错误拒绝，保留 CLI 工件 | Python 3 标准库 |
 | `make check-doc-structure` | 校验 docs README 标准块顺序、目录入口和重复锚点 | Python 3 |
 | `make check-directory-docs` | 校验仓库自有目录 README/AGENTS 覆盖 | Python 3 |
 | `make check-metadata` | 校验 metadata 路径与锚点 | Python 3 |
@@ -199,14 +200,18 @@ git push origin HEAD
 - `.github/CODEOWNERS` - 路径级 owner 评审基线，当前维护者为 `@tukuaiai` 和 `@tradecatlabs`，用于让关键目录变更自动请求维护者审查
 - `.github/lint_config.json` - markdownlint 规则，供 `make lint` 与 CI 共用
 - `.github/workflows/ci.yml` - GitHub Actions：main 分支 markdown-lint + link-checker
+- `.github/workflows/welcome.yml` - Issue / PR 首次贡献者欢迎；当前 `actions/first-interaction@v3` 使用
+  `repo_token`、`issue_message`、`pr_message`，以实际 Action 元数据和源码为准，不照抄过时的横线参数示例。
+  保留平台 secret 注入、既有权限与事件边界，不 checkout 外部 PR；工作流变更后须核对真实新执行。
 - `.github/scripts/check-local-links.py` - 仓库内 Markdown 相对链接与锚点检查脚本，供 `make check-links` 与 CI 使用
-- `.github/scripts/check-markdown-details.py` - 仓库内 Markdown 折叠块结构检查脚本，供 `make check-details` 与 CI 使用
+- `.github/scripts/check-markdown-details.py` - 仓库内 Markdown 折叠块结构检查；围栏闭合须同字符、长度不少于开启且尾部仅空格/制表符
+- `.github/scripts/test-markdown-details.py` - 标准库 CLI 回归，覆盖长围栏与正文真实错误；`make test-details` 纳入本地总测试，不新增 CI 目标
 - `.github/scripts/check-doc-structure.py` - docs README 标准块顺序、目录入口和重复锚点检查脚本，供 `make check-doc-structure` 与 CI 使用
 - `.github/scripts/check-directory-docs.py` - 仓库自有目录 README/AGENTS 覆盖检查脚本，供 `make check-directory-docs` 与 CI 使用
 - `.github/scripts/check-metadata.py` - metadata 路径与锚点检查脚本，供 `make check-metadata` 与 CI 使用
 - `.github/metadata/faqi.json` / `faqi.schema.json` - 法器总分类登记及字段契约；复用本体类型、固定来源审查、依赖图对象和用户确认纳入的依赖类别，原资源事实仍归资源YAML；当前暂定品级按Vibe Coding重要性分组，正式效能评级仍须独立效果证据。
 - `.github/tools/faqi-catalog.md` - 法器品级、名称与详细解释的三列只读浏览表；解释合并重要性范围和分级依据，完整登记仍归`.github/metadata/faqi.json`，资源原事实归资源YAML。
-- `.github/scripts/sync-faqi-catalog.py` / `test-faqi-catalog.py` - 离线总表生成、检查及行为契约；核来源、图SHA、对象映射和品级边界，保留真实命令/结果；不执行被审程序或联网补证。
+- `.github/scripts/sync-faqi-catalog.py` / `test-faqi-catalog.py` - 离线总表生成、检查及行为契约；核来源、图SHA、对象映射和品级边界，保留真实命令/结果；不执行被审程序或联网补证；文件级许可线索仅作支持证据，不代表批准。
 - `.github/metadata/gongfa/registry.json` - 活跃功法登记、等级、规则、来源、内容版本、人工初评及正式评级历史的唯一可编辑数据源；类型语义仍归本体主文；新范围追加批次
 - `.github/metadata/gongfa/catalog.md` / `catalog.xlsx` - 功法总表的生成视图；Markdown列品级、名称与详细解释；品级使用“天阶高级”等完整名称，不缩写。登记摘要/问题/机制及条件/限制/预期结果，候选原文/用途/理由，Solve机制/适用范围/前提/边界；完整原始数据仍归JSON；Excel保留完整字段；不手改、不自动注册/去重/评级
 - `.github/metadata/gongfa/catalog-sources.json` - 仅索引仓内不可变候选快照的路径/SHA/范围；历史材料不是第二可编辑登记，不依赖个人目录或临时工件
@@ -224,9 +229,15 @@ git push origin HEAD
 - `.github/docs/getting-started/README.md` - 从零开始索引入口，正文拆分到学习地图、网络配置、CLI 配置、开发环境搭建与第一个项目闭环；通用人机经验链接到功法
 - `.github/docs/getting-started/first-project.md` - 用本地待办清单完成第一次可验证的需求、实现、验收与 Git 闭环
 - `.github/docs/gongfa/README.md` - 方法论、哲学、思维模型、工程准则和流程的统一正文入口；完整文集按任务导航，文集数不是独立功法数
-- `.github/docs/gongfa/faqi-system.md` - 法器分类边界、重要性分级、选用方式与登记入口；重要性不代表正式效能
+- `.github/docs/gongfa/faqi-system.md` - 法器分类、重要性、选用与固定MCP源码副作用边界；S66–S73只增支持来源，不增程序身份、运行或正式效能结论
+- `.github/docs/gongfa/methodology-toolbox.md` - 候选方法与有限来源复核；机器学习18条只提供分批审阅位置，不等于独立功法数或全量语义去重
 - 根 README 不展示六条核心命题内容或导航入口，仅保留兼容历史锚点；正文唯一维护源为 `.github/docs/gongfa/ai-core-propositions.md`，用户从功法体系进入正文，不维护首页副本或第二内容版本。
 - 根 README 的“法器体系”块与功法块同级，使用不带`open`属性的`<details>`默认折叠；只放概要和链接，正文归`.github/docs/gongfa/faqi-system.md`，登记归`.github/metadata/faqi.json`，逐条生成视图归`.github/tools/faqi-catalog.md`。
+- 首页“演示与产出”内 Mermaid 节点标签含括号等语法字符时须加双引号；修改图表后须真实渲染验证，不能只依赖 Markdown 检查。
+  2025 Q4–2026 Q2 甘特图仅保留历史规划，不标作当前进度、不虚构新排期。
+- “给 AI 助手的推荐摘要”和“为什么选择 vibe-coding-cn？”完整维护于根 `llms.txt`，首页不再展示这两个 AI 内容块。
+  首页不展示“仓库维护与验证”“参与贡献”“许可证”正文块；维护规则与命令仍归本文件、Makefile 及工具文档，
+  `CONTRIBUTING.md`、`CODE_OF_CONDUCT.md`、`LICENSE` 文件、顶部许可证徽章及贡献者鸣谢保留。
 - 首页其他方法只通过功法体系统一入口选择，不恢复经验、实验性方法、道法术器或哲学的独立栏目/分库；六命题旧锚点仅作兼容，正文入口在功法体系的 `.github/docs/gongfa/ai-core-propositions.md`，其他方法历史锚点定位功法块。首页徽章区仅保留独立目的地入口，统一使用 `<a><img>` 与紧凑 `style=flat`，保留其原href、顺序及完整alt；仅跳根README章节的目录徽章不放顶部，同一目标不重复展示（相对路径的 `./` 写法差异不算不同目标）。删除徽章不自动删除其目标正文或历史锚点，不恢复旧快捷导航徽章组；单一段落不等于已验证所有视口视觉单行。
 - 首页入口收口、文集归并与逐条身份登记分别验收；无来源绑定不自动等于未登记功法，模板、术语、工具和本体说明不机械注册或赋级。
 - 研究回填矩阵、模板和AI摘要也按现行职责定位：方法/流程/清单正文归 `.github/docs/gongfa/`，实例练习归 `.github/docs/getting-started/`，具体事实留 `.github/research/`；执行契约、工具配置和脚本分别归 `.github/skills/`、`.github/tools/config/`、`.github/scripts/`，不把旧分类词当目录或批量改写上游结构。
@@ -266,7 +277,13 @@ git push origin HEAD
 ### 分支职责
 
 - `main` 是默认主线，开发更新和贡献 PR 统一以 `main` 为目标；远端长期保留 `main`、`minimal`。
-- `minimal` 保留现有内容，不作为贡献集成分支；`main` 保留签名、CODEOWNER、最后推送审批和必需 CI 保护。
+- `minimal` 保留现有内容，不作为贡献集成分支；`main` 保留签名和必需 CI 保护。
+- 审批由独立 Ruleset `contributor-approval-owner-exemption`（ID `25244224`）管理：默认至少 1 个有效批准，
+  仅账号 `tradecatlabs`（User ID `288998340`）拥有 `pull_request` 模式豁免；只对其自己发起的 PR 使用免审。
+- GitHub 原生豁免按合并操作账号判断，不按 PR 作者自动判断；合并他人 PR 时必须核对有效批准，不能借此豁免绕过。
+- 主 Ruleset `17185792` 不配置豁免；CI、签名、线性历史、禁止强推/删除等保护仍对所有人适用。
+  主 Ruleset 与经典分支保护的审批数保持 0，避免重复阻断账号豁免；不代表普通贡献者免审。
+- Code Owner、最近推送及额外审批要求保持关闭；`CODEOWNERS` 仅作为路径级审查入口，不强制指定审批人。
 - 按用户授权收敛远端分支前，先迁移开放 PR 的目标、保存全部精确 SHA 与已验证恢复 bundle，并用 ref lease 防止误删并行更新。
 - 远端清理不删除本地分支或 worktree；尚未整合的历史只备份，不自动合入主线。临时任务分支在交付后按同一规则清理。
 - 不将 squash 后的非祖先 HEAD 自动判为未整合；须核对已合并 PR 的精确 HEAD 与主线中的 merge commit。
@@ -275,7 +292,10 @@ git push origin HEAD
 
 - 用户已明确要求：本仓修改完成并完成必要验证后，自动提交、推送并合并，不再停在“本地未推送”，不重复询问发布许可；用户后续暂停、仅本地或先看方案等明确要求优先。
 - 只选择性提交本任务范围，不夹带并行或无关改动；不自动切分支、改写历史、强推或删除交付引用。
-- 受保护主线走精确PR/HEAD流程；如审批或检查未通过，保留实际失败并按用户自动交付指令逐次留痕处理流程例外，完整恢复原保护，不伪造批准、成功checks或独立审核；凭据、权限和数据边界不因自动交付扩大。
+- 受保护主线走精确 PR/HEAD 流程；合并前核对 PR 作者、操作账号、必需 CI 和其他保留的保护。
+  `tradecatlabs` 合入自己发起的 PR 无须审批；他人发起的 PR 仍须有效批准，不伪造批准、成功 checks 或独立审核。
+  流程例外须按用户授权留痕；临时调整的保护按约定恢复，不擅自扩大账号豁免或叠加审批门槛。
+  凭据、权限和数据边界不因自动交付扩大。
 
 ### Commit 规范
 遵循简化 Conventional Commits：

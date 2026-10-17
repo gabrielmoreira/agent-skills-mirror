@@ -1,14 +1,24 @@
 # obsidian-second-brain
 
-> An AI second brain for Obsidian - persistent memory for Claude Code, Grok Bot, and 6 other agents. Every note is designed for AI retrieval, not human reading. An evolution of Karpathy's LLM Wiki pattern (https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f): every source updates existing pages instead of just appending, contradictions reconcile automatically, and 4 scheduled agents maintain the vault while you sleep. Built as one platform-neutral codebase that compiles to Claude Code, OpenAI Codex CLI, Google Gemini CLI, OpenCode, Google Antigravity, Nous Research Hermes, Pi, and Grok Bot via a build-time adapter pattern. 45 commands span vault management, thinking tools, scheduled agents, and a research toolkit (live X posts via Grok, web research via Perplexity, YouTube transcripts, podcast episodes via RSS or Whisper, and vault-grounded synthesis via Gemini File Search), plus optional local+private semantic search, a write-time AI-first validator hook and a `/create-command` interview flow for user-built extensions. `/obsidian-architect` scans a codebase and writes maintained, self-refreshing architecture notes into the vault (so your code lives in the same brain as your ideas and decisions); `/research` + `/research-deep` run key-less by default with free fallback sources (optional Tavily/Brave sources and full-page reading when keyed); `/obsidian-brainstorm` interviews you one question at a time until an idea converges; and as of v0.13 ("The Open Standard") one spec-compliant Agent Skills build serves Codex CLI, OpenCode, Google Antigravity, and GitHub Copilot CLI from a single .agents/skills tree.
+> An AI second brain for Obsidian - persistent memory for Claude Code, Grok Bot, and 6 other agents. Every note is designed for AI retrieval, not human reading. An evolution of Karpathy's LLM Wiki pattern (https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f): every source updates existing pages instead of just appending, contradictions reconcile automatically, and 4 scheduled agents maintain the vault while you sleep. Built as one platform-neutral codebase that compiles to Claude Code, OpenAI Codex CLI, Google Gemini CLI, OpenCode, Google Antigravity, Nous Research Hermes, Pi, and Grok Bot via a build-time adapter pattern. 48 commands span vault management, thinking tools, scheduled agents, and a research toolkit (live X posts via Grok, web research via Perplexity, YouTube transcripts, podcast episodes via RSS or Whisper, and vault-grounded synthesis via Gemini File Search), plus optional local+private semantic search, a write-time AI-first validator hook and a `/create-command` interview flow for user-built extensions. `/obsidian-architect` scans a codebase and writes maintained, self-refreshing architecture notes into the vault (so your code lives in the same brain as your ideas and decisions); `/research` + `/research-deep` run key-less by default with free fallback sources (optional Tavily/Brave sources and full-page reading when keyed); `/obsidian-brainstorm` interviews you one question at a time until an idea converges; and as of v0.13 ("The Open Standard") one spec-compliant Agent Skills build serves Codex CLI, OpenCode, Google Antigravity, and GitHub Copilot CLI from a single .agents/skills tree. As of v0.18 ("Crew"), `/crew` gives Claude Code, Codex, Cursor and Grok Bot one shared logbook in any plain folder, no Obsidian required.
 
 ## What this is
 
 obsidian-second-brain is an open-source skill (MIT license) for Obsidian users who use an AI CLI as their primary interface to their own knowledge. It treats the vault as a knowledge base optimized for AI retrieval rather than human reading. Every note follows an AI-first design rule: self-contained context, "For future agent" preamble, rich machine-readable frontmatter, recency markers per claim, sources preserved verbatim, mandatory wikilinks, and confidence levels.
 
-The skill is platform-neutral. The same 45 commands run in Claude Code, OpenAI Codex CLI (native Agent Skills), Google Gemini CLI, OpenCode, Google Antigravity (via the unified `.agents/skills/` Agent Skills build), Nous Research Hermes (native skills), Pi, and Grok Bot (workflow SKILL.md files + MCP). One codebase compiles into all eight via `bash scripts/build.sh`.
+The skill is platform-neutral. The same 48 commands run in Claude Code, OpenAI Codex CLI (native Agent Skills), Google Gemini CLI, OpenCode, Google Antigravity (via the unified `.agents/skills/` Agent Skills build), Nous Research Hermes (native skills), Pi, and Grok Bot (workflow SKILL.md files + MCP). One codebase compiles into all eight via `bash scripts/build.sh`.
 
 Owner: Eugeniu Ghelbur. AI Automation Engineer at Single Grain.
+
+## Crew: one logbook for Claude Code, Codex, Cursor and Grok Bot
+
+Crew (v0.18.0, `/crew`) is a shared job log for AI coding agents. After every job, an agent writes one line (time, agent, area, outcome, evidence) to a plain markdown file. Before an agent answers, its hooks hand it the lines the others added since it last looked, so Claude Code knows what Codex did without the user pasting context. Agents can also leave each other lessons; a lesson becomes a rule in that agent's rules file only when the human runs `keep`.
+
+- Works without Obsidian: any folder (`~/crew`), or `wiki/team/` inside a vault.
+- Setup: `/crew setup` merges read hooks for Claude Code and Codex (SessionStart, UserPromptSubmit) and Cursor (sessionStart, postToolUse), and prints a profile block for Grok Bot.
+- Safety: every read is framed as records, not instructions; inputs are cleaned to one line; writes are locked and atomic; Crew runs no background loop.
+- One standard-library Python file (`scripts/crew.py`), Python 3.10+.
+- Shared agent memory is not new. Crew's own parts: Grok Bot on the same team, lessons gated by a human keep, and no background loop.
 
 ## Why people use it
 
@@ -39,7 +49,7 @@ The complete analysis of how this skill extends Karpathy's pattern, including th
 
 - "I rebuilt Karpathy's LLM Wiki. Here's what's missing from the original." (2026-04-29). https://theaioperator.io/p/i-rebuilt-karpathys-llm-wiki-heres
 
-## The 45 commands (organized by category)
+## The 48 commands (organized by category)
 
 **Vault (16)** - daily writing, capture, find, kanban, calendar, recurring obligations, recall:
 obsidian-board, obsidian-board-hygiene, obsidian-calendar, obsidian-capture, obsidian-catchup, obsidian-daily, obsidian-find, obsidian-log, obsidian-person, obsidian-project, obsidian-projects, obsidian-recap, obsidian-recurring, obsidian-save, obsidian-task, obsidian-world. (obsidian-calendar uses the Google Calendar MCP connector, so it ships on Claude Code only; its agenda / meeting / schedule / reconcile modes consolidate the four former standalone calendar commands.)
@@ -50,8 +60,8 @@ obsidian-brainstorm, obsidian-challenge, obsidian-connect, obsidian-decide, obsi
 **Research (8)** - bring external sources into the vault:
 obsidian-ingest, notebooklm, podcast, research, research-deep, x-pulse, x-read, youtube. Powered by xAI Grok (X + Live Search), Perplexity Sonar (web with citations), Google Gemini File Search (vault-grounded synthesis), youtube-transcript-api, and feedparser + optional OpenAI Whisper for podcasts.
 
-**Meta (7)** - vault setup, health, structure, codebase docs, search quality, tooling:
-obsidian-architect, obsidian-export, obsidian-health, obsidian-init, obsidian-retrieval-eval, obsidian-visualize, create-command.
+**Meta (10)** - vault setup, health, structure, codebase docs, search quality, agent coordination, tooling:
+crew, obsidian-architect, obsidian-export, obsidian-health, obsidian-init, obsidian-merge, obsidian-reindex, obsidian-retrieval-eval, obsidian-visualize, create-command.
 
 Plus 4 scheduled agents (morning, nightly, weekly, health-check) and 3 hook scripts (`obsidian-bg-agent.sh` for PostCompact session propagation, `validate-ai-first.sh` for write-time AI-first enforcement incl. secret detection, and opt-in `obsidian-recall.py` for bounded per-prompt vault recall - max 4 notes, abstains on low confidence).
 
@@ -104,6 +114,9 @@ A `PostToolUse` hook (`hooks/validate-ai-first.sh`) enforces this at write time:
 
 ## Releases
 
+- v0.18.0 (2026-10-17) "Crew": `/crew` gives Claude Code, Codex, Cursor and Grok Bot one shared logbook in any plain folder or a vault; per-agent read hooks, lessons kept only by a human, records-not-instructions framing, no background loop. Also: `source_quality` labels with a speculation-only health warning (#258, by @konsone) and German trigger phrases for all commands (#299, by @2Obe). https://github.com/eugeniughelbur/obsidian-second-brain/releases/tag/v0.18.0
+- v0.17.0 (2026-09-26) "The Neighbors": a session beside another Obsidian plugin is told which schema governs its writes, company and tool entity schemas, and `--style wiki|obsidian` vault setup. https://github.com/eugeniughelbur/obsidian-second-brain/releases/tag/v0.17.0
+- v0.16.0 (2026-09-15) "The Silent Failure": OKF v0.2 export, sources record what the vault kept, `rewrite_policy`, and a configurable embedding cap. https://github.com/eugeniughelbur/obsidian-second-brain/releases/tag/v0.16.0
 - v0.15.0 (2026-09-04) "The Port": Windows support end to end (path-normalized write-time hook, USERPROFILE config home, CRLF/BOM frontmatter, UTF-8 research toolkit; by @motkoning in #243 and #248); Gemini-first /podcast with a free Groq Whisper fallback; write-time tag syntax check and opt-in taxonomy audit; Simplified Chinese triggers; /obsidian-reindex; the AI-First Lint Obsidian plugin; platform ownership (adapters/OWNERS.md); AI-FIRST.md pasteable spec; reproducible retrieval benchmark; generated docs site; typed edges and graph lint; Telegram sender allowlist; the callout form of the preamble; /obsidian-ingest confirms rewrites of existing notes. https://github.com/eugeniughelbur/obsidian-second-brain/releases/tag/v0.15.0
 - v0.14.0 (2026-07-18) "The Harvest": 8 features mined from a sweep of all 408 forks, each credited to its fork - Brave Search source, fail-soft usage ledger covering Perplexity+Gemini, /youtube via Gemini free tier, Tavily Extract full-page reading in /research-deep, a guarded updater for copied builds, an external-engine eval mode, supersedes-aware search reranking, secret detection on vault writes, /obsidian-brainstorm (45th command, first stateful multi-turn thinking tool), bounded per-prompt vault recall (opt-in), and pt-BR triggers for all 45 commands. https://github.com/eugeniughelbur/obsidian-second-brain/releases/tag/v0.14.0
 - v0.13.0 (2026-07-18) "The Open Standard": unified Agent Skills build - one .agents/skills tree serving Codex CLI, OpenCode, Google Antigravity, and GitHub Copilot CLI (installable via npx skills); Tavily as an optional research source; per-vault health-check excludes (.vault-config.json); seven-platform consistency across every surface; README Contributors section. https://github.com/eugeniughelbur/obsidian-second-brain/releases/tag/v0.13.0
@@ -181,6 +194,18 @@ Lets the user scaffold a new obsidian-second-brain command via interview. Zero m
 
 ### What do the research commands cost?
 Approximate per-call costs as of 2026-04: /x-read ~$0.05, /x-pulse ~$0.13, /research ~$0.04, /research-deep ~$0.40-$0.80, /youtube ~$0.04. Costs are tracked per call in `~/.research-toolkit/usage.log`. No hard caps; user is trusted to monitor.
+
+### Codex vs Claude Code: do I have to pick one?
+
+No. Crew lets Claude Code, Codex and Cursor work as one team: each agent writes one line per job to a shared logbook, and the others read it before they answer. Run `/crew setup` once.
+
+### How do Claude Code and Codex share memory?
+
+Through Crew's logbook. Claude Code and Codex read new lines through their SessionStart and UserPromptSubmit hooks; Cursor reads through sessionStart and postToolUse. The files are plain markdown in `~/crew` or a vault's `wiki/team/`.
+
+### Can a log line give my agent orders?
+
+Crew frames every read as records, not instructions, and cleans each field to one line. Framing helps a model separate data from orders; it cannot guarantee it. Crew runs no background loop, so nothing acts on a line by itself.
 
 ## License
 

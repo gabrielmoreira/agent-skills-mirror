@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `yetone/magpie` — 26 default patterns, 4 followed patterns, 18 file(s) materialized.
+Mirror of `yetone/magpie` — 26 default patterns, 4 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `yetone/magpie` — 26 default patterns, 4 followed patterns, 18 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,19 +67,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`docs/subsystems/agent-wiring.md`](docs/subsystems/agent-wiring.md) |
 | 4 | ✓ | [`docs/subsystems/claude-subscription-bridge.md`](docs/subsystems/claude-subscription-bridge.md) |
 | 5 | ✓ | [`docs/subsystems/gateway-middleware.md`](docs/subsystems/gateway-middleware.md) |
-| 6 | ✓ | [`docs/subsystems/gateway-routing.md`](docs/subsystems/gateway-routing.md) |
-| 7 | ✓ | [`docs/subsystems/gateway-sessions.md`](docs/subsystems/gateway-sessions.md) |
-| 8 | ✓ | [`docs/subsystems/gui-shell.md`](docs/subsystems/gui-shell.md) |
-| 9 | ✓ | [`docs/subsystems/library.md`](docs/subsystems/library.md) |
-| 10 | ✓ | [`docs/subsystems/plugin-runtime.md`](docs/subsystems/plugin-runtime.md) |
-| 11 | ✓ | [`docs/subsystems/plugin-tools.md`](docs/subsystems/plugin-tools.md) |
-| 12 | ✓ | [`docs/subsystems/provider-plugins.md`](docs/subsystems/provider-plugins.md) |
-| 13 | ✓ | [`docs/subsystems/providers-accounts.md`](docs/subsystems/providers-accounts.md) |
-| 14 | ✓ | [`docs/subsystems/sync-backup.md`](docs/subsystems/sync-backup.md) |
-| 15 | → | [`docs/code-standards.md`](docs/code-standards.md) |
-| 16 | → | [`docs/contributors.md`](docs/contributors.md) |
-| 17 | → | [`docs/subsystems/README.md`](docs/subsystems/README.md) |
-| 18 | → | [`LESSONS.md`](LESSONS.md) |
+| 6 | ✓ | [`docs/subsystems/gateway-request-hooks.md`](docs/subsystems/gateway-request-hooks.md) |
+| 7 | ✓ | [`docs/subsystems/gateway-routing.md`](docs/subsystems/gateway-routing.md) |
+| 8 | ✓ | [`docs/subsystems/gateway-sessions.md`](docs/subsystems/gateway-sessions.md) |
+| 9 | ✓ | [`docs/subsystems/gui-shell.md`](docs/subsystems/gui-shell.md) |
+| 10 | ✓ | [`docs/subsystems/library.md`](docs/subsystems/library.md) |
+| 11 | ✓ | [`docs/subsystems/plugin-runtime.md`](docs/subsystems/plugin-runtime.md) |
+| 12 | ✓ | [`docs/subsystems/plugin-tools.md`](docs/subsystems/plugin-tools.md) |
+| 13 | ✓ | [`docs/subsystems/provider-plugins.md`](docs/subsystems/provider-plugins.md) |
+| 14 | ✓ | [`docs/subsystems/providers-accounts.md`](docs/subsystems/providers-accounts.md) |
+| 15 | ✓ | [`docs/subsystems/sync-backup.md`](docs/subsystems/sync-backup.md) |
+| 16 | → | [`docs/code-standards.md`](docs/code-standards.md) |
+| 17 | → | [`docs/contributors.md`](docs/contributors.md) |
+| 18 | → | [`docs/subsystems/README.md`](docs/subsystems/README.md) |
+| 19 | → | [`LESSONS.md`](LESSONS.md) |
 
 ---
 

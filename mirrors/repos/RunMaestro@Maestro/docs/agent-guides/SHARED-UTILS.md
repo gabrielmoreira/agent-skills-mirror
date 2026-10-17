@@ -249,6 +249,7 @@ because that cost is paid on the main thread on every store write (~40ms on the
 | `formatRelativeTime(dateOrTimestamp)`  | `(Date \| number \| string) => string` | `"just now"`, `"5m ago"`, `"2h ago"`, `"Dec 3"`.                                  |
 | `formatCacheAge(cacheAgeMs)`           | `(number \| null) => string`           | Cache age labels from elapsed milliseconds: `"just now"`, `"5m ago"`, `"2h ago"`. |
 | `formatCalendarDay(isoDay)`            | `(string) => string`                   | A `YYYY-MM-DD` day for display: `"Jul 10, 2026"`. Parsed as LOCAL, not UTC.       |
+| `formatHourOfDay(hour)`                | `(number) => string`                   | Hour 0-23 as a clock label: `"12 AM"`, `"1 PM"`.                                  |
 | `formatElapsedTimeColon(seconds)`      | `(number) => string`                   | Timer style: `"5:12"`, `"1:30:45"`.                                               |
 | `fileTimestampSlug(dateOrTimestamp?)`  | `(Date \| number?) => string`          | `"20260713-142530"` for a generated file name. Local time, sorts chronologically. |
 | `formatCost(cost)`                     | `(number) => string`                   | USD: `"$1.23"`, `"<$0.01"`, `"$0.00"`.                                            |

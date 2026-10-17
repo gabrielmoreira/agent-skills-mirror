@@ -14,8 +14,9 @@ fi
 
 ALIAS="$1"; COUNTRY="$2"; PHONE_TYPE="$3"; NUMBER="$4"
 
+# contactCenterType is a fixed internal value, not a user-supplied input.
 BODY=$(jq -n --arg t "$PHONE_TYPE" --arg c "$COUNTRY" --arg p "$NUMBER" \
-  '{phoneNumberType:$t, country:$c, phoneNumber:$p}')
+  '{phoneNumberType:$t, country:$c, phoneNumber:$p, contactCenterType:"Agentforce Contact Center"}')
 
 sf api request rest \
   "/${NM_BASE}/number" \

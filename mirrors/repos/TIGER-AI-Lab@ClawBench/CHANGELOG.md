@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
+### Fixed
+- `clawbench-rescore` retries malformed judge caches, writes replacement verdicts atomically, and reports incomplete rescoring as an error.
 
 ## [v0.11.0]
 ### Added
@@ -22,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Changed the default Harbor version to `0.22.0`.
 
 ### Fixed
+- Declared `judge_context.gold_answer` in `test-cases/task.schema.json`. The answer judge reads it and [`docs/answer-mode-tasks.md`](docs/answer-mode-tasks.md) documents it, but `judge_context` sets `additionalProperties: false`, so no schema-valid task could ever set it and the branch was unreachable. `tests/test_answer_judge.py` now holds the schema's declared keys and the keys the judges read together, in both directions.
 - Isolate `clawbench-reproduce` downloads in a per-invocation cache directory so cleanup preserves existing work-directory files and removes only owned downloads, including on failure.
 - Align public discovery metadata with the canonical repository and shipping corpus, label historical V1 scores in both READMEs, and correct the v0.10.0 citation release date.
 - Host-timeout container termination now uses the lazy container-engine resolver.

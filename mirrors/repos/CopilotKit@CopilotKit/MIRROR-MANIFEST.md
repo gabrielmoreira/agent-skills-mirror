@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 8 followed patterns, 546 file(s) materialized.
+Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 8 followed patterns, 547 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `CopilotKit/CopilotKit` — 26 default patterns, 8 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 546 |
+| Files         | 547 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -601,17 +601,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 533 | ✓ | [`tools/compatibility-monitor/README.md`](tools/compatibility-monitor/README.md) |
 | 534 | ✓ | [`tools/intelligence-smoke/README.md`](tools/intelligence-smoke/README.md) |
 | 535 | ✓ | [`tools/learned-skill-conformance/README.md`](tools/learned-skill-conformance/README.md) |
-| 536 | ✓ | [`tools/runtime-conformance/AGENTS.md`](tools/runtime-conformance/AGENTS.md) |
-| 537 | ✓ | [`tools/runtime-conformance/README.md`](tools/runtime-conformance/README.md) |
-| 538 | ✓ | [`tools/runtime-conformance/REGRESSIONS.md`](tools/runtime-conformance/REGRESSIONS.md) |
-| 539 | → | [`.claude/docs/architecture.md`](.claude/docs/architecture.md) |
-| 540 | → | [`.claude/docs/documentation.md`](.claude/docs/documentation.md) |
-| 541 | → | [`.claude/docs/git.md`](.claude/docs/git.md) |
-| 542 | → | [`.claude/docs/hooks.md`](.claude/docs/hooks.md) |
-| 543 | → | [`.claude/docs/workflow.md`](.claude/docs/workflow.md) |
-| 544 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 545 | → | [`README.md`](README.md) |
-| 546 | → | [`VERSIONING.md`](VERSIONING.md) |
+| 536 | ✓ | [`tools/railway-runner-deploy/README.md`](tools/railway-runner-deploy/README.md) |
+| 537 | ✓ | [`tools/runtime-conformance/AGENTS.md`](tools/runtime-conformance/AGENTS.md) |
+| 538 | ✓ | [`tools/runtime-conformance/README.md`](tools/runtime-conformance/README.md) |
+| 539 | ✓ | [`tools/runtime-conformance/REGRESSIONS.md`](tools/runtime-conformance/REGRESSIONS.md) |
+| 540 | → | [`.claude/docs/architecture.md`](.claude/docs/architecture.md) |
+| 541 | → | [`.claude/docs/documentation.md`](.claude/docs/documentation.md) |
+| 542 | → | [`.claude/docs/git.md`](.claude/docs/git.md) |
+| 543 | → | [`.claude/docs/hooks.md`](.claude/docs/hooks.md) |
+| 544 | → | [`.claude/docs/workflow.md`](.claude/docs/workflow.md) |
+| 545 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 546 | → | [`README.md`](README.md) |
+| 547 | → | [`VERSIONING.md`](VERSIONING.md) |
 
 ---
 

@@ -2,7 +2,14 @@ import { ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { ExtendedMcpServer } from "../server.js";
 import { getInstanceLang, t, type Lang, type MessageKey } from "../i18n/index.js";
 import { getCachedEnvId } from "../cloudbase-manager.js";
-import { resolveSiteAndRegion } from "../utils/site-map.js";
+import {
+  SITE_IDS,
+  SITE_REGION_MAP,
+  getConsoleDevUrl,
+  normalizeSite,
+  resolveSiteAndRegion,
+  type SiteId,
+} from "../utils/site-map.js";
 import { debug } from "../utils/logger.js";
 import {
   readClientCapabilitiesFromServer,
@@ -60,6 +67,11 @@ export interface EnvCreditsFallback {
 
 /** 工具结果里携带的用量数据（面板按字段覆盖兜底值）。 */
 export interface EnvCreditsPayload {
+  /**
+   * 载荷判别式。`credits`（或**缺省**）走用量视图——缺省即 credits 是为了让本字段
+   * 上线前的一切既有载荷与断言**逐字不变**（旧路径不带这个键）。
+   */
+  kind?: "credits";
   branch?: CreditsBranch;
   env_alias?: string | null;
   env_id?: string | null;
@@ -74,12 +86,99 @@ export interface EnvCreditsPayload {
   isolated_days_left?: number | null;
 }
 
-/** 控制台路径（精确 hash 路径待核，见 handoff §6.4；核完替换这里即可，面板不硬编码）。 */
-export const ENV_CREDITS_CONSOLE_LINKS = {
-  package: "https://console.cloud.tencent.com/tcb/package",
-  renew: "https://console.cloud.tencent.com/tcb/renew",
-  expense: "https://console.cloud.tencent.com/expense",
+/** 监控指标卡的三态（其余情况一律不硬凑成某一态）。 */
+export type MetricsState = "data" | "noData" | "failed";
+
+/**
+ * 监控指标卡（`queryEnv(action=metrics)`）的面板载荷。
+ *
+ * 与 `EnvCreditsPayload` 共用同一个资源（`ui://cloudbase/env-credits`）：`_meta.ui.resourceUri`
+ * 是**工具级单值**，一个工具只能挂一个资源，所以第二个视图只能靠 `kind` 在同一面板里分派。
+ *
+ * 纪律与用量卡一致：**不猜、不编数**——`summary` 里拿不到的字段一律不带（面板隐藏该行），
+ * `curve` 已在工具侧裁剪（见 `buildEnvMetricsPayload`），这里只接收裁剪后的 `spark`。
+ */
+export interface EnvMetricsPayload {
+  kind: "metrics";
+  /** 面板状态：有数据 / 无流量 / 查询失败。 */
+  state: MetricsState;
+  /** 指标枚举值（只用于映射人话；未映射的一律退化为通用标题，不打印原始码）。 */
+  metric: string;
+  env_alias?: string | null;
+  env_id?: string | null;
+  current_region?: string;
+  site?: string;
+  plan?: PlanCode | null;
+  sample_count: number;
+  period_seconds?: number | null;
+  // 只保留面板会读的字段：start_time / end_time / min 曾产出但无人读，已删除。
+  latest?: number | null;
+  max?: number | null;
+  avg?: number | null;
+  /** 峰值时间（原样字符串；拿不到就不显示，不编时间）。 */
+  peak_time?: string | null;
+  spark?: Array<{ calc_time?: string; credits_value?: number }>;
+}
+
+/** 面板可能收到的两种载荷。 */
+export type EnvPanelPayload = EnvCreditsPayload | EnvMetricsPayload;
+
+/**
+ * 控制台入口（2026-10-16 登录态真机核对，三条链接逐条打开过）。
+ *
+ * 环境级的两条都落在云开发控制台的「套餐用量」页 —— 这是**本环境**套餐的唯一入口：
+ *   - 套餐资源点耗尽 → 该页给「升级套餐 / 加购资源包 / 套餐变配」；
+ *   - 套餐到期、环境被临时隔离 → 同一页给出「当前访问资源已临时隔离 … 续费」。
+ * （已隔离环境实测：同一 URL 会自行切到隔离/续费口径，所以续费不需要另一条路径。）
+ *
+ * 费用中心是**账户级**的、没有环境维度，所以只带充值页：欠费要先把账户充上。
+ *
+ * ⚠️ 旧值 `console.cloud.tencent.com/tcb/{package,renew}` 是**不存在的路径**：该主机下任何
+ * 未知的 `/tcb/*` 都会被 SPA 兜底到环境列表 `/tcb/platform/env`，既不带 envId 也不分站点，
+ * 用户点开只会看到环境列表。改动前先读这一句，不要改回去，也不要只锁主机名。
+ */
+export const ENV_CREDITS_CONSOLE_LINK_KEYS = ["package", "renew", "expense"] as const;
+export type EnvCreditsConsoleLinkKey = (typeof ENV_CREDITS_CONSOLE_LINK_KEYS)[number];
+
+/**
+ * 环境级入口的 hash 段。带前导 `/` —— 控制台自己的导航就是 `#/env/package-usage` 这个形制，
+ * 与 `getConsoleDevUrl(envId, "static-hosting")` 那种「`#static-hosting`」写法刻意不同。
+ */
+export const ENV_CREDITS_ENV_LINK_HASH: Readonly<
+  Record<Exclude<EnvCreditsConsoleLinkKey, "expense">, string>
+> = {
+  package: "/env/package-usage",
+  renew: "/env/package-usage",
+};
+
+/** 账户级费用中心：国家站与国际站不同域。 */
+export const ENV_CREDITS_BILLING = {
+  path: "/expense/recharge",
+  host: { domestic: "console.cloud.tencent.com", intl: "console.intl.cloud.tencent.com" },
+
 } as const;
+
+/** 面板脚本要用的主机表：由 SITE_REGION_MAP 派生，杜绝与 getConsoleDevUrl 漂移。 */
+const CONSOLE_HOST_BY_SITE = Object.fromEntries(
+  SITE_IDS.map((id) => [id, SITE_REGION_MAP[id].consoleHost]),
+) as Record<SiteId, string>;
+
+/**
+ * 拼一条控制台链接。`envId` / `site` 都应来自**本次工具结果**，在点击时才求值 ——
+ * 不要在建 HTML 时定死，同一个面板可能被用来查另一个环境（多地域账号尤甚）。
+ * 这是纯函数，所以完整 URL 可以在测试里直接锁死。
+ */
+export function buildEnvCreditsConsoleUrl(
+  key: EnvCreditsConsoleLinkKey,
+  envId: string | null | undefined,
+  site?: string,
+): string {
+  if (key === "expense") {
+    const resolvedSite = normalizeSite(site) ?? resolveSiteAndRegion({ site }).site;
+    return `https://${ENV_CREDITS_BILLING.host[resolvedSite]}${ENV_CREDITS_BILLING.path}`;
+  }
+  return getConsoleDevUrl(envId ?? undefined, ENV_CREDITS_ENV_LINK_HASH[key], site);
+}
 
 /**
  * 从 server 实例派生静态兜底值。
@@ -306,8 +405,10 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
                   <stop offset="1" style="stop-color:var(--ok);stop-opacity:0"/>
                 </linearGradient>
               </defs>
-              <path class="spark-area" id="spark-area" d="" fill="url(#g-err)"/>
-              <path class="spark-line" id="spark-line" d="" stroke="var(--err)"/>
+              <!-- Neutral initial styling on purpose: renderSpark sets both attributes in the same
+                   call, so a red initial value would only mislead whoever reads this template. -->
+              <path class="spark-area" id="spark-area" d="" fill="none"/>
+              <path class="spark-line" id="spark-line" d="" stroke="var(--text-2)"/>
             </svg>
             <i class="spark-dot" id="spark-dot" hidden></i>
           </div>
@@ -323,6 +424,22 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
       <div class="field" id="f-place">
         <p class="k">${E(L("mcpUiCredits.field.place"))}</p>
         <p class="v" id="k-place">${E(placeText)}</p>
+      </div>
+      <div class="field" id="f-m-latest" hidden>
+        <p class="k">${E(L("mcpUiCredits.metric.field.latest"))}</p>
+        <p class="v mono" id="k-m-latest"></p>
+      </div>
+      <div class="field" id="f-m-peak" hidden>
+        <p class="k">${E(L("mcpUiCredits.metric.field.peak"))}</p>
+        <p class="v mono" id="k-m-peak"></p>
+      </div>
+      <div class="field" id="f-m-avg" hidden>
+        <p class="k">${E(L("mcpUiCredits.metric.field.avg"))}</p>
+        <p class="v mono" id="k-m-avg"></p>
+      </div>
+      <div class="field" id="f-m-window" hidden>
+        <p class="k">${E(L("mcpUiCredits.metric.field.window"))}</p>
+        <p class="v" id="k-m-window"></p>
       </div>
       <p class="note" id="k-expired" hidden></p>
     </div>
@@ -390,6 +507,76 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
       enterprise: ${S("mcpUiCredits.plan.enterprise")},
       enterpriseAdvanced: ${S("mcpUiCredits.plan.enterpriseAdvanced")}
     },
+    // Metrics labels: enum -> dict key. Unmapped enums fall back to generic; a raw code is never printed.
+    metric: {
+      generic: ${S("mcpUiCredits.metric.generic")},
+      GatewayTraceEnvQPS: ${S("mcpUiCredits.metric.GatewayTraceEnvQPS")},
+      EnvQPSAll: ${S("mcpUiCredits.metric.EnvQPSAll")},
+      FunctionInvocation: ${S("mcpUiCredits.metric.FunctionInvocation")},
+      FunctionError: ${S("mcpUiCredits.metric.FunctionError")},
+      FunctionTimeout: ${S("mcpUiCredits.metric.FunctionTimeout")},
+      FunctionThrottle: ${S("mcpUiCredits.metric.FunctionThrottle")},
+      FunctionDuration: ${S("mcpUiCredits.metric.FunctionDuration")},
+      FunctionConcurrentExecutions: ${S("mcpUiCredits.metric.FunctionConcurrentExecutions")},
+      DbRead: ${S("mcpUiCredits.metric.DbRead")},
+      DbWrite: ${S("mcpUiCredits.metric.DbWrite")},
+      DbSizepkg: ${S("mcpUiCredits.metric.DbSizepkg")},
+      MysqlCpuUsageRate: ${S("mcpUiCredits.metric.MysqlCpuUsageRate")},
+      MysqlMemoryUse: ${S("mcpUiCredits.metric.MysqlMemoryUse")},
+      MysqlStorageUsage: ${S("mcpUiCredits.metric.MysqlStorageUsage")},
+      MysqlQps: ${S("mcpUiCredits.metric.MysqlQps")},
+      MysqlSlowQueries: ${S("mcpUiCredits.metric.MysqlSlowQueries")},
+      MysqlDbConnections: ${S("mcpUiCredits.metric.MysqlDbConnections")},
+      TkeCpuUsedService: ${S("mcpUiCredits.metric.TkeCpuUsedService")},
+      TkeMemUsedService: ${S("mcpUiCredits.metric.TkeMemUsedService")},
+      TkeQPSService: ${S("mcpUiCredits.metric.TkeQPSService")},
+      TkeHttpErrorService: ${S("mcpUiCredits.metric.TkeHttpErrorService")},
+      TkeInvokeNumService: ${S("mcpUiCredits.metric.TkeInvokeNumService")}
+    },
+    metricState: {
+      data: ${S("mcpUiCredits.metric.state.data")},
+      noData: ${S("mcpUiCredits.metric.state.noData")},
+      failed: ${S("mcpUiCredits.metric.state.failed")}
+    },
+    metricHint: {
+      data: ${S("mcpUiCredits.metric.hint.data")},
+      noData: ${S("mcpUiCredits.metric.hint.noData")},
+      failed: ${S("mcpUiCredits.metric.hint.failed")}
+    },
+    metricAction: {
+      data: ${S("mcpUiCredits.metric.action.data")},
+      noData: ${S("mcpUiCredits.metric.action.noData")},
+      failed: ${S("mcpUiCredits.metric.action.failed")}
+    },
+    metricMessage: {
+      data: ${S("mcpUiCredits.metric.message.data")},
+      noData: ${S("mcpUiCredits.metric.message.noData")},
+      failed: ${S("mcpUiCredits.metric.message.failed")}
+    },
+    stateNearLimit: ${S("mcpUiCredits.state.nearLimit")},
+    hintNearLimit: ${S("mcpUiCredits.hint.nearLimit")},
+    metricWindow: ${S("mcpUiCredits.metric.window")},
+    metricSamples: ${S("mcpUiCredits.metric.samples")},
+    // Interval (seconds -> words). An unnameable interval shows samples only, never an invented unit.
+    metricPeriod: {
+      "300": ${S("mcpUiCredits.metric.period.minute")},
+      "3600": ${S("mcpUiCredits.metric.period.hour")},
+      "86400": ${S("mcpUiCredits.metric.period.day")}
+    },
+    // Unit words come from the real console rendering (invocations -> times, runtime -> ms,
+    // compute usage -> GBs / CU) plus the package page (GB / KB / 10k times / %).
+    metricUnit: {
+      perSec: ${S("mcpUiCredits.metric.unit.perSec")},
+      item: ${S("mcpUiCredits.metric.unit.item")},
+      count: ${S("mcpUiCredits.metric.unit.count")},
+      ms: ${S("mcpUiCredits.metric.unit.ms")},
+      gbs: ${S("mcpUiCredits.metric.unit.gbs")},
+      cu: ${S("mcpUiCredits.metric.unit.cu")},
+      gb: ${S("mcpUiCredits.metric.unit.gb")},
+      percent: ${S("mcpUiCredits.metric.unit.percent")}
+    },
+    metricUnitWrap: ${S("mcpUiCredits.metric.unitWrap")},
+    metricUnitSuffix: ${S("mcpUiCredits.metric.unitSuffix")},
     module: {
       functions: ${S("mcpUiCredits.module.functions")},
       database: ${S("mcpUiCredits.module.database")},
@@ -426,13 +613,19 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     }
   };
 
-  // Console paths are injected by the server (exact hash paths pending); no URL literals live here.
-  var LINKS = ${JSON.stringify(ENV_CREDITS_CONSOLE_LINKS)};
+  // Console links are composed at click time from the live env id + site, so no URL literal
+  // lives in this template: only host tables and the hash fragment are injected.
+  var ENV_HASH = ${JSON.stringify(ENV_CREDITS_ENV_LINK_HASH)};
+  var DEV_HOST = ${JSON.stringify(CONSOLE_HOST_BY_SITE)};
+  var BILL_HOST = ${JSON.stringify(ENV_CREDITS_BILLING.host)};
+  var BILL_PATH = ${J(ENV_CREDITS_BILLING.path)};
   var LINK_LABEL = { package: T.copyConsoleLink, renew: T.copyConsoleLink, expense: T.copyExpenseLink };
 
   // Local fallback only fills fields the tool result does not carry; live values always win.
-  var FALLBACK = { envAlias: "", envId: ${J(fallback.envId ?? "")}, site: ${J(siteText)}, region: ${J(regionText)} };
-  var current = { branch: "unknown", envId: FALLBACK.envId, link: "" };
+  // FALLBACK comes from main (it carries siteCode, needed to build the console link on click).
+  // current is the union: main's site for links, plus this branch's mainMsg / kind / metricName.
+  var FALLBACK = { envAlias: "", envId: ${J(fallback.envId ?? "")}, siteCode: ${J(fallback.site)}, site: ${J(siteText)}, region: ${J(regionText)} };
+  var current = { branch: "unknown", envId: FALLBACK.envId, site: "domestic", link: "", mainMsg: "", kind: "credits", metricName: "" };
 
   function fmtNumber(value) {
     var n = Math.round(Number(value));
@@ -510,27 +703,226 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
   function hasField(payload, key) {
     return !!payload && typeof payload === "object" && key in payload;
   }
+  function linkSite(payload) {
+    // The console host we hand out follows the live site code. A missing or unrecognized code
+    // falls back to the local one instead of guessing a host from something we cannot read.
+    var code = hasField(payload, "site") && typeof payload.site === "string" ? payload.site : "";
+    if (code !== "domestic" && code !== "intl") { code = FALLBACK.siteCode; }
+    if (code !== "domestic" && code !== "intl") { code = "domestic"; }
+    return code;
+  }
+  function consoleLink(key) {
+    if (key === "expense") { return "https://" + BILL_HOST[current.site] + BILL_PATH; }
+    // No link for a branch that has none: an empty fragment is never handed out.
+    if (!ENV_HASH[key]) { return ""; }
+    var query = current.envId ? "?envId=" + encodeURIComponent(current.envId) : "";
+    return "https://" + DEV_HOST[current.site] + "/dev" + query + "#" + ENV_HASH[key];
+  }
   function branchOf(payload) {
     if (!payload || typeof payload.branch !== "string") { return "unknown"; }
     return BRANCHES[payload.branch] ? payload.branch : "unknown";
   }
+  /**
+   * Metric -> unit key. An empty string means the unit is NOT determined, and today that is exactly
+   * one metric (MysqlDbConnections: the console dashboard timed out before showing it), so we show
+   * none rather than inventing one. A new metric has to state its unit here explicitly - a test
+   * walks the enum and fails otherwise.
+   *
+   * The QPS family reads the "per second" unit because the console's QPS page states the figure as
+   * requests per second, and concurrency reads the "count of instances" unit because the dashboard's
+   * function view words it as concurrent executions (count). Both words are transcribed from those
+   * console pages - the exact Chinese wording lives in the dictionary module, never invented here.
+   */
+  var METRIC_UNIT_KEY = {
+    GatewayTraceEnvQPS: "perSec",
+    EnvQPSAll: "perSec",
+    FunctionInvocation: "count",
+    FunctionError: "count",
+    FunctionTimeout: "count",
+    FunctionThrottle: "count",
+    FunctionDuration: "ms",
+    FunctionConcurrentExecutions: "item",
+    DbRead: "count",
+    DbWrite: "count",
+    DbSizepkg: "gb",
+    MysqlCpuUsageRate: "percent",
+    MysqlMemoryUse: "gbs",
+    MysqlStorageUsage: "gb",
+    MysqlQps: "perSec",
+    MysqlSlowQueries: "count",
+    MysqlDbConnections: "",
+    TkeCpuUsedService: "cu",
+    TkeMemUsedService: "gbs",
+    TkeQPSService: "perSec",
+    TkeHttpErrorService: "count",
+    TkeInvokeNumService: "count"
+  };
+
+  /** Unit word for this metric, or "" when the unit is not determined (never invented). */
+  function metricUnitOf(payload) {
+    if (!payload || typeof payload.metric !== "string") { return ""; }
+    var key = METRIC_UNIT_KEY[payload.metric];
+    return key ? (T.metricUnit[key] || "") : "";
+  }
+
+  /**
+   * Metric numbers keep their decimals: the console does not round them away (it shows 4.52 / 88.3),
+   * and the server already hands us floats (avg 16.043478260869566). Two decimals is enough to read
+   * a metric, and trailing zeros are dropped so whole numbers stay whole (18, not 18.00).
+   * Credits keep using fmtNumber (Math.round) - those are integer resource points, untouched here.
+   */
+  function fmtMetricValue(value) {
+    var n = Number(value);
+    if (!isFinite(n)) { return ""; }
+    var parts = String(Math.round(n * 100) / 100).split(".");
+    parts[0] = parts[0].replace(/\\B(?=(\\d{3})+(?!\\d))/g, ",");
+    return parts.join(".");
+  }
+  function withUnit(text, unit) {
+    return unit ? T.metricUnitSuffix.replace("{value}", text).replace("{unit}", unit) : text;
+  }
+
+  /** Discriminator: kind === "metrics" renders the metrics view; anything else renders credits. */
+  function payloadKind(payload) {
+    return payload && payload.kind === "metrics" ? "metrics" : "credits";
+  }
+  /** Metric label: enum -> dict, falling back to the generic title - never the raw code. */
+  function metricLabel(payload) {
+    if (!payload || typeof payload.metric !== "string") { return T.metric.generic; }
+    return T.metric[payload.metric] || T.metric.generic;
+  }
+  /** Brand bar + place row, shared by both views: identity does not depend on the view. */
+  function applyBrand(payload) {
+    var alias = hasField(payload, "env_alias") && payload.env_alias ? String(payload.env_alias) : FALLBACK.envAlias;
+    var envId = hasField(payload, "env_id") ? (payload.env_id ? String(payload.env_id) : "") : FALLBACK.envId;
+    current.envId = envId;
+    var brandAlias = el("brand-alias");
+    setText(brandAlias, alias || ${J(siteText)});
+    if (brandAlias) { brandAlias.title = envId ? T.copyEnvId + ": " + envId : ""; }
+    var plan = payload ? planLabel(payload) : "";
+    var brandPlan = el("brand-plan");
+    brandPlan.hidden = !plan;
+    setText(brandPlan, plan);
+    setText(el("k-place"), placeOf(payload));
+    // main builds the console link on click from this payload's site, so site must follow the
+    // payload here too - and both views go through applyBrand, so both keep it up to date.
+    current.site = linkSite(payload);
+    var copyEnv = el("btn-copy-env");
+    copyEnv.hidden = !envId;
+    return { alias: alias, envId: envId, plan: plan };
+  }
+  function hideAll(ids) {
+    for (var i = 0; i < ids.length; i++) {
+      var node = el(ids[i]);
+      if (node) { node.hidden = true; }
+    }
+  }
+  /** Credits-only blocks, hidden while the metrics view renders. */
+  var CREDITS_ONLY = ["f-credits", "f-mods", "f-plan", "f-balance", "k-expired", "ubar-box"];
+  /** Metrics-only blocks, hidden while the credits view renders. */
+  var METRICS_ONLY = ["f-m-latest", "f-m-peak", "f-m-avg", "f-m-window"];
+
+  /**
+   * Metrics view (single-metric trend card): one call = one metric + one resource.
+   *
+   * The three states come from real data only, with no invented thresholds: failed is set by the panel
+   * for an error result, sampleCount 0 or all-zero is noData, otherwise data. Nothing here knows
+   * what a good value is, so the curve colour follows the state, not the value.
+   */
+  function renderMetrics(payload) {
+    var state = payload && T.metricState[payload.state] ? payload.state : "noData";
+    var label = metricLabel(payload);
+    current.kind = "metrics";
+    current.metricName = payload && typeof payload.metric === "string" ? payload.metric : "";
+    current.branch = "";
+    current.link = "";
+    // One label and one message per state: "no traffic" is the state closest to losing a user,
+    // so it must not be worded as an anomaly hunt, and a failed query asks for a retry.
+    var mainLabel = T.metricAction[state] || T.metricAction.noData;
+    var mainMessage = T.metricMessage[state] || T.metricMessage.noData;
+    current.mainMsg = mainMessage.replace("{metric}", label);
+
+    var brand = applyBrand(payload);
+    hideAll(CREDITS_ONLY);
+    var unit = metricUnitOf(payload);
+    var titleLabel = unit
+      ? T.metricUnitWrap.replace("{label}", label).replace("{unit}", unit)
+      : label;
+    setText(el("c-title"), titleLabel + (brand.alias ? T.titleSep + brand.alias : ""));
+    setText(el("st-text"), T.metricState[state]);
+    // Colour carries no health meaning on this card: "has data" is not "healthy" (a thousand
+    // function errors are still data), so it stays neutral; a failed query is an operation
+    // failure, not an environment problem, and red here would be read as the latter - the state
+    // word and the action button carry the meaning instead.
+    el("st-dot").className = "dot";
+    setText(el("c-hint"), T.metricHint[state]);
+
+    // latest / peak (+ its time)
+    var latest = payload && typeof payload.latest === "number" ? payload.latest : null;
+    var fLatest = el("f-m-latest");
+    fLatest.hidden = latest === null;
+    if (latest !== null) { setText(el("k-m-latest"), withUnit(fmtMetricValue(latest), unit)); }
+
+    var peak = payload && typeof payload.max === "number" ? payload.max : null;
+    var peakTime = payload && typeof payload.peak_time === "string" && payload.peak_time ? payload.peak_time : "";
+    var fPeak = el("f-m-peak");
+    fPeak.hidden = peak === null;
+    if (peak !== null) {
+      setText(el("k-m-peak"), withUnit(fmtMetricValue(peak), unit) + (peakTime ? T.modulesSep + peakTime : ""));
+    }
+
+    // average
+    var avg = payload && typeof payload.avg === "number" ? payload.avg : null;
+    var fAvg = el("f-m-avg");
+    fAvg.hidden = avg === null;
+    if (avg !== null) { setText(el("k-m-avg"), withUnit(fmtMetricValue(avg), unit)); }
+
+    // samples and interval: an unnameable interval shows samples only
+    var samples = payload && typeof payload.sample_count === "number" ? payload.sample_count : 0;
+    var period = payload && payload.period_seconds ? T.metricPeriod[String(payload.period_seconds)] : "";
+    var fWindow = el("f-m-window");
+    fWindow.hidden = samples <= 0;
+    if (!fWindow.hidden) {
+      var samplesText = T.metricSamples.replace("{n}", String(samples));
+      setText(el("k-m-window"), period ? T.metricWindow.replace("{samples}", samplesText).replace("{period}", period) : samplesText);
+    }
+
+    // single line reusing spark: under 2 points is not a line, noData stays neutral
+    var values = [];
+    if (payload && payload.spark && payload.spark.length) {
+      for (var i = 0; i < payload.spark.length; i++) { values.push(Number(payload.spark[i].credits_value || 0)); }
+    }
+    var fSpark = el("f-spark");
+    // All-zero means no traffic; a flat baseline would read as "there is data", so we do not draw it.
+    fSpark.hidden = values.length < 2 || state === "noData";
+    renderSpark(values.length < 2 || state === "noData" ? [] : values, "");
+
+    // The single primary action hands the follow-up to the session; the panel calls no tools itself.
+    var mainBtn = el("btn-main");
+    mainBtn.hidden = false;
+    setText(mainBtn, mainLabel);
+    mainBtn.disabled = false;
+    var linkBtn = el("btn-link");
+    linkBtn.hidden = true;
+    var copyNote = el("k-copynote");
+    if (copyNote) { copyNote.hidden = true; }
+  }
 
   function render(payload) {
+    if (payloadKind(payload) === "metrics") { renderMetrics(payload); return; }
+    hideAll(METRICS_ONLY);
+    current.kind = "credits";
     var key = branchOf(payload);
     var branch = BRANCHES[key];
     current.branch = key;
     current.link = branch.link || "";
+    current.mainMsg = branch.msg || "";
 
-    var alias = hasField(payload, "env_alias") && payload.env_alias ? String(payload.env_alias) : FALLBACK.envAlias;
-    var envId = hasField(payload, "env_id") ? (payload.env_id ? String(payload.env_id) : "") : FALLBACK.envId;
-    current.envId = envId;
+    var brand = applyBrand(payload);
+    var alias = brand.alias;
 
     setText(el("c-title"), T.title + (alias ? T.titleSep + alias : ""));
-    var brandAlias = el("brand-alias");
-    setText(brandAlias, alias || ${J(siteText)});
-    if (brandAlias) { brandAlias.title = envId ? ${S("mcpUiCredits.brand.copyEnvId")} + ": " + envId : ""; }
     setText(el("st-text"), branch.text);
-    setText(el("k-place"), placeOf(payload));
     el("st-dot").className = "dot" + (branch.dot ? " " + branch.dot : "");
     setText(el("c-hint"), branch.hint);
 
@@ -538,9 +930,6 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     var fPlan = el("f-plan");
     fPlan.hidden = !plan;
     setText(el("k-plan"), plan);
-    var brandPlan = el("brand-plan");
-    brandPlan.hidden = !plan;
-    setText(brandPlan, plan);
 
     var credits = payload && payload.credits ? payload.credits : null;
     var total = credits && typeof credits.total === "number" ? credits.total : null;
@@ -559,6 +948,13 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     if (pct !== null) {
       el("ubar").style.width = pct + "%";
       ubarBox.className = "ubar" + (pct < 80 ? " ok" : "");
+      // The bar already turns red from 80% (an early warning we keep), so the wording has to
+      // follow: a red bar next to "usage is within plan" is a contradiction on one screen.
+      // Only for the two states that make no claim about the level (normal / unknown).
+      if (pct >= 80 && (key === "normal" || key === "unknown")) {
+        setText(el("st-text"), T.stateNearLimit.replace("{pct}", String(pct)));
+        setText(el("c-hint"), T.hintNearLimit.replace("{pct}", String(pct)));
+      }
     }
 
     var mods = [];
@@ -603,8 +999,6 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
 
     var copyNote = el("k-copynote");
     if (copyNote) { copyNote.hidden = true; }
-    var copyEnv = el("btn-copy-env");
-    copyEnv.hidden = !envId;
   }
 
   function copyText(text) {
@@ -633,7 +1027,7 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     if (!node) { return; }
     if (node.id === "btn-copy-env") { copyText(current.envId); return; }
     if (node.id === "btn-link") {
-      copyText(LINKS[current.link] || "");
+      copyText(consoleLink(current.link));
       var copyNote = el("k-copynote");
       if (copyNote) {
         setText(copyNote, current.link === "expense" ? T.copiedExpense : T.copiedConsole);
@@ -642,7 +1036,7 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
       return;
     }
     if (node.id === "btn-main") {
-      var msg = BRANCHES[current.branch] ? BRANCHES[current.branch].msg : "";
+      var msg = current.mainMsg || "";
       if (!msg) { return; }
       node.disabled = true;
       request("ui/message", { role: "user", content: { type: "text", text: msg } })
@@ -654,7 +1048,10 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
   function readPayload(params) {
     if (!params || typeof params !== "object") { return null; }
     var candidate = params.structuredContent || params;
-    if (candidate && typeof candidate === "object" && typeof candidate.branch === "string") { return candidate; }
+    if (!candidate || typeof candidate !== "object") { return null; }
+    // Credits payloads are marked by branch, metrics payloads by kind; anything else is unreadable.
+    if (typeof candidate.branch === "string") { return candidate; }
+    if (candidate.kind === "metrics") { return candidate; }
     return null;
   }
 
@@ -664,7 +1061,15 @@ pre { margin: 8px 0 0; padding: 10px; border-radius: 8px; background: var(--bg);
     if (data.method === "ui/notifications/tool-result") {
       var payload = readPayload(data.params);
       // A result we cannot read is never spread across the card: it goes to the fold only.
-      if (payload) { render(payload); } else { render(null); }
+      if (payload) {
+        render(payload);
+      } else if (data.params && data.params.isError && current.kind === "metrics") {
+        // A failed metrics call carries error text but no structuredContent. The panel must not fall back
+        // to the credits view: it stays on metrics, reports the failure, and keeps the raw text in the fold.
+        renderMetrics({ kind: "metrics", state: "failed", metric: current.metricName, sample_count: 0 });
+      } else {
+        render(null);
+      }
       setText(el("raw-out"), JSON.stringify(data.params, null, 2));
       reportSize();
       return;

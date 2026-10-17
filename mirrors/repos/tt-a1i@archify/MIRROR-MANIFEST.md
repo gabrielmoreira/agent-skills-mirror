@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tt-a1i/archify` — 26 default patterns, 7 followed patterns, 35 file(s) materialized.
+Mirror of `tt-a1i/archify` — 26 default patterns, 8 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `tt-a1i/archify` — 26 default patterns, 7 followed patterns, 35 file
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 7 |
-| Files         | 35 |
+| Followed pats | 8 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,6 +55,7 @@ Mirror of `tt-a1i/archify` — 26 default patterns, 7 followed patterns, 35 file
 - `REVIEWING.md`
 - `SECURITY.md`
 - `.github/PULL_REQUEST_TEMPLATE.md`
+- `benchmarks/real-repo-generation/README.md`
 - `archify/references/authoring-contract.md`
 - `archify/references/delivery-contract.md`
 - `viewer/README.md`
@@ -92,14 +93,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 26 | ✓ | [`archify/references/architecture-layout-repair.md`](archify/references/architecture-layout-repair.md) |
 | 27 | ✓ | [`archify/SKILL.md`](archify/SKILL.md) |
-| 28 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 29 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 30 | → | [`archify/references/authoring-contract.md`](archify/references/authoring-contract.md) |
-| 31 | → | [`archify/references/delivery-contract.md`](archify/references/delivery-contract.md) |
-| 32 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 33 | → | [`REVIEWING.md`](REVIEWING.md) |
-| 34 | → | [`SECURITY.md`](SECURITY.md) |
-| 35 | → | [`viewer/README.md`](viewer/README.md) |
+| 28 | ✓ | [`benchmarks/real-repo-generation/prompts.md`](benchmarks/real-repo-generation/prompts.md) |
+| 29 | ✓ | [`benchmarks/real-repo-generation/report-template.md`](benchmarks/real-repo-generation/report-template.md) |
+| 30 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 31 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 32 | → | [`archify/references/authoring-contract.md`](archify/references/authoring-contract.md) |
+| 33 | → | [`archify/references/delivery-contract.md`](archify/references/delivery-contract.md) |
+| 34 | → | [`benchmarks/real-repo-generation/README.md`](benchmarks/real-repo-generation/README.md) |
+| 35 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 36 | → | [`REVIEWING.md`](REVIEWING.md) |
+| 37 | → | [`SECURITY.md`](SECURITY.md) |
+| 38 | → | [`viewer/README.md`](viewer/README.md) |
 
 ---
 

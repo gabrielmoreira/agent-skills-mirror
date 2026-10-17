@@ -11,18 +11,6 @@ description: 恢复由 dbs-save 保存的最近诊断状态。用户要求接着
 
 ---
 
-## 用户面向的措辞约定
-
-跟用户对话时一律用中文，不要把内部术语暴露出去：
-
-- 「snapshot」→「存档」（一份诊断状态文件叫一份存档）
-- 「session」→「对话」或「下次回来」
-- 「slug」→「项目」（每个项目下独立一份存档目录）
-
-frontmatter 字段名（status / title / source_skill / next_skill）和文件路径中的 sessions / slug，是技术标识，不出现在用户对话里。
-
----
-
 ## 触发方式
 
 | 命令 | 行为 |
@@ -35,25 +23,13 @@ frontmatter 字段名（status / title / source_skill / next_skill）和文件�
 
 ---
 
-## 项目（slug）解析
+## 存档契约
 
-跟 dbs-save 一样：默认取 `basename $(pwd)`，保留中文、英文字母和数字，英文字母转小写；空格、标点和其他符号替换成 `-`，连续的 `-` 合并，去掉首尾的 `-`，为空时用 `default`。
+措辞、项目名、存档根目录、文件名和存档格式统一按 [references/archive-contract.md](references/archive-contract.md) 执行。这份存档契约与保存、恢复、报告三个存档能力共用，内容一致。
 
----
+本 Skill 只读取配置，不修改配置。配置有问题时停止恢复并说明原因；用户要查看或调整位置时，引导使用 `/dbs-save location`。
 
-## 存档根目录
-
-先读取当前工作目录下的 `.dbs/config.json`，并与 dbs-save 使用同一套解析规则：
-
-1. 配置文件不存在，或 `mode` 是 `default` → `~/.dbs/`
-2. `mode` 是 `project` → 当前工作目录下的 `.dbs/`
-3. `mode` 是 `custom` → `root` 指定的目录；展开开头的 `~`，相对路径按当前工作目录解析
-
-配置无法解析、`mode` 不受支持、`root` 为空，或路径指向 `/`、用户家目录、当前项目根目录时，停止恢复并说明配置问题。不要到其他位置猜测，也不要静默退回默认位置。
-
-`dbs-restore` 只读取配置，不修改配置。用户要查看或调整位置时，引导使用 `/dbs-save location`。
-
-后文中的 `{存档根目录}` 都指这一步解析出的绝对路径。
+后文中的 `{存档根目录}` 都指按契约第 3 节解析出的绝对路径。
 
 ---
 
@@ -67,7 +43,7 @@ frontmatter 字段名（status / title / source_skill / next_skill）和文件�
 2. 用户传了 `--slug X` → 用 X 作为项目名，找该目录下最新的
 3. 都没传 → 用默认项目名，找该目录下最新的
 
-「最新」按文件名前缀的 `YYYYMMDD-HHMMSS` 排序，**不依赖文件 mtime**（mtime 不可信，可能被 iCloud 同步改写）。
+「最新」按契约第 4 节判断：看文件名前缀的时间，不看文件修改时间。
 
 ### Step 2：处理找不到的情况
 

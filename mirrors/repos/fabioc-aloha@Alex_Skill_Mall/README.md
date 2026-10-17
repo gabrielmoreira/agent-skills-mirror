@@ -84,7 +84,7 @@ Alex ACT ONE is the recommended starting point. It installs once at user level, 
 
 | What you want to do | Plugin | Published version | What it adds |
 | --- | --- | --- | --- |
-| Give Copilot one dependable setup across every project | [`alex-act-one`](https://github.com/fabioc-aloha/Alex_ACT_ONE/tree/v0.3.6) | `0.3.6` | Critical thinking and problem framing, engineering craft, prose and documentation, document conversion, visual authoring, and agent brain authoring |
+| Give Copilot one dependable setup across every project | [`alex-act-one`](https://github.com/fabioc-aloha/Alex_ACT_ONE/tree/v0.5.0) | `0.5.0` | Critical thinking and problem framing, engineering craft, prose and documentation, document conversion, visual authoring, and agent brain authoring |
 
 ### Recommended path
 

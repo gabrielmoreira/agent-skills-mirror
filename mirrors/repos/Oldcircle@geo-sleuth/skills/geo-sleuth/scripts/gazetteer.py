@@ -38,8 +38,6 @@ import geo  # noqa: E402
 import osm  # noqa: E402
 import regions  # noqa: E402
 
-LEVEL_NAMES = {"CN": {4: "province", 5: "prefecture", 6: "county", 7: "township"}, "FR": {4: "region", 6: "department", 8: "commune"},
-               "US": {4: "state", 6: "county", 8: "city"}, "*": {2: "country", 4: "first-level admin division", 6: "second-level admin division", 8: "third-level admin division"}}
 MIN_COVER = 0.3   # children auto level pick: this level's combined bbox area must be at least this fraction of the parent's bbox
 
 
@@ -52,16 +50,35 @@ def _bbox_km2(b: list[float]) -> float:
     return abs(n - s) * 110.574 * abs(e - w) * 111.320 * math.cos(math.radians((s + n) / 2))
 
 
+def _by_name(name: str, extra: str = "", scope: str = "") -> str:
+    """Union of admin-relation selectors matching name on `name` and the region packs' extra name keys (regions.osm_name_keys):
+    a bilingual OSM name ("<local> <second script>") never equals the plain name. Indexed tag lookups, fast."""
+    q = name.replace("\\", "\\\\").replace('"', '\\"')
+    return "(" + "".join(f'rel{scope}["{k}"="{q}"]["boundary"="administrative"]{extra};' for k in regions.osm_name_keys()) + ")"
+
+
+def _plain_name(t: dict, fallback: str) -> str:
+    """A bilingual name tag ("<Chinese> <Tibetan>") → the leading part that is one of the relation's own name:* values."""
+    name = t.get("name", fallback)
+    if " " in name:
+        heads = [v for k, v in t.items() if k.startswith("name:") and v and name.startswith(v + " ")]
+        if heads:
+            return max(heads, key=len)
+    return name
+
+
 def _rel_rows(data: dict) -> list[dict]:
-    rows = []
+    rows, seen = [], set()
     for el in data.get("elements", []):
-        if el.get("type") != "relation":
+        if el.get("type") != "relation" or el["id"] in seen:
             continue
         t, b = el.get("tags") or {}, el.get("bounds") or {}
         if not b:
             continue
+        seen.add(el["id"])
         bbox = [b["minlat"], b["minlon"], b["maxlat"], b["maxlon"]]
-        rows.append({"name": t.get("name", str(el["id"])), "name_en": t.get("name:en", ""), "osm_id": el["id"],
+        rows.append({"name": _plain_name(t, str(el["id"])), "name_en": t.get("name:en", ""), "osm_id": el["id"],
+                     "names": sorted({v for k, v in t.items() if k in regions.osm_name_keys() and v}),
                      "admin_level": int(t.get("admin_level") or 0), "bbox": [round(v, 5) for v in bbox],
                      "bbox_km2": round(_bbox_km2(bbox), 1),
                      "center": [round((bbox[0] + bbox[2]) / 2, 5), round((bbox[1] + bbox[3]) / 2, 5)],
@@ -74,13 +91,29 @@ def find_relation(name: str, proxy: str | None, cache: Path, within: str | None 
     """Find admin relations by name (there can be several with the same name: Chaoyang District in Beijing and in Changchun), with bbox."""
     lv = f'["admin_level"="{level}"]' if level else ""
     if within:
-        ql = (f'[out:json][timeout:120];rel["name"="{within}"]["boundary"="administrative"];map_to_area->.p;'
-              f'rel(area.p)["name"="{name}"]["boundary"="administrative"]{lv};out tags bb;')
+        ql = f'[out:json][timeout:120];{_by_name(within)};map_to_area->.p;{_by_name(name, lv, "(area.p)")};out tags bb;'
     else:
-        ql = f'[out:json][timeout:120];rel["name"="{name}"]["boundary"="administrative"]{lv};out tags bb;'
+        ql = f'[out:json][timeout:120];{_by_name(name, lv)};out tags bb;'
     rows = _rel_rows(osm.run(ql, proxy, cache))
     rows.sort(key=lambda r: (r["admin_level"], -r["bbox_km2"]))
     return rows
+
+
+def _filter_known_neighbours(parent: dict, rows: list[dict]) -> list[dict]:
+    """An area query also returns relations touching the border. Drop only places the same pack locates outside this parent;
+    unknown names and ambiguous parents stay in the results, because a partial admin table cannot prove they are outside."""
+    parents = regions.admin_find(parent["name"])
+    if len(parents) != 1:
+        return rows
+    pack, item = parents[0]
+    kept = []
+    for row in rows:
+        hits = [hit for name in {row["name"], *row.get("names", [])} for _, hit in regions.admin_find(name, pack["code"])]
+        if hits and not any(item["name"] in regions.admin_chain(pack, hit)[:-1] for hit in hits):
+            print(f"Skipping {row['name']}: {pack['code']} admin table places it outside {parent['name']}", file=sys.stderr)
+        else:
+            kept.append(row)
+    return kept
 
 
 def children(parent: str, proxy: str | None, cache: Path, level: int | None, within: str | None) -> tuple[dict, list[dict]]:
@@ -94,12 +127,12 @@ def children(parent: str, proxy: str | None, cache: Path, level: int | None, wit
         ql = (f'[out:json][timeout:180];rel({p["osm_id"]});map_to_area->.a;'
               f'rel(area.a)["boundary"="administrative"]["admin_level"="{lv}"];out tags bb;')
         rows = _rel_rows(osm.run(ql, proxy, cache))
-        rows = [r for r in rows if r["osm_id"] != p["osm_id"]]
-        if len(rows) < 2:
-            continue
+        rows = _filter_known_neighbours(p, [r for r in rows if r["osm_id"] != p["osm_id"]])
         rows = sorted(rows, key=lambda r: r["name"])
         if level:
             return p, rows
+        if len(rows) < 2:
+            continue
         # Auto level pick: a level that covers only a small part of the parent isn't the "next level" (China's admin_level 3 is only Hong Kong and Macau; provinces are 4)
         cover = sum(r["bbox_km2"] for r in rows) / max(p["bbox_km2"], 1e-9)
         if cover >= MIN_COVER:
@@ -110,6 +143,25 @@ def children(parent: str, proxy: str | None, cache: Path, level: int | None, wit
     if first:
         print("None of the lower levels covers the parent; falling back to the first level with ≥2; if that's wrong, give --level", file=sys.stderr)
     return p, first or []
+
+
+def also_children(parent: dict, rows: list[dict], proxy: str | None, cache: Path) -> tuple[list[dict], list[str]]:
+    """Areas a region pack lists next to a country's first-level divisions (region.json "also_children") that OSM's
+    admin tree leaves out or puts at another level. One query for all of them. (rows found, names not found)"""
+    pk = regions.resolve(parent["name"]) if parent.get("admin_level") == 2 else None
+    have = {n for r in rows for n in (r["name"], *r.get("names", []))}
+    want = [n for n in (pk or {}).get("also_children") or [] if n not in have]
+    if not want:
+        return [], []
+    found = _rel_rows(osm.run("[out:json][timeout:120];(" + "".join(_by_name(n) + ";" for n in want) + ");out tags bb;", proxy, cache))
+    out, missing = [], []
+    for n in want:
+        hits = sorted((r for r in found if n == r["name"] or n in r["names"]), key=lambda r: (r["admin_level"], -r["bbox_km2"]))
+        if not hits:
+            missing.append(n)
+        elif hits[0]["osm_id"] not in {r["osm_id"] for r in rows + out}:
+            out.append(hits[0])
+    return out, missing
 
 
 def _local_children(parent: str) -> tuple[list[str], str]:
@@ -271,6 +323,8 @@ def main() -> None:
         return
     if args.cmd == "children":
         p, rows = children(args.name, args.proxy, cache, args.level, args.within)
+        also, also_missing = also_children(p, rows, args.proxy, cache) if rows and not args.level else ([], [])
+        rows += also
         local, code = _local_children(p["name"])
         names = {r["name"] for r in rows}
         pk = regions.resolve(code) or {}
@@ -282,6 +336,8 @@ def main() -> None:
         lvl = rows[0]["admin_level"] if rows else None
         print(f"{p['name']} (admin_level {p['admin_level']}) children admin_level {lvl}: OSM {len(rows)}"
               + (f", {code} pack's admin table adds {len(missing)} ({', '.join(missing)})" if missing else "")
+              + (f"; region pack also lists {', '.join(r['name'] for r in also)}" if also else "")
+              + (f"; not found in OSM: {', '.join(also_missing)}" if also_missing else "")
               + ("; no region pack's admin table has this parent, can't check the list is complete" if not local else ""))
         for name, r in sorted(out.items(), key=lambda kv: -(kv[1]["bbox_km2"] or 0)):
             b = r["bbox"]

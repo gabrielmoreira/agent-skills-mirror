@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `IvanMurzak/Unity-MCP` — 26 default patterns, 5 followed patterns, 34 file(s) materialized.
+Mirror of `IvanMurzak/Unity-MCP` — 26 default patterns, 5 followed patterns, 48 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `IvanMurzak/Unity-MCP` — 26 default patterns, 5 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 34 |
+| Files         | 48 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,35 +68,49 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 5 | ✓ | [`cli/AGENTS.md`](cli/AGENTS.md) |
-| 6 | ✓ | [`Unity-MCP-Plugin/.claude/skills/package-add/SKILL.md`](Unity-MCP-Plugin/.claude/skills/package-add/SKILL.md) |
-| 7 | ✓ | [`Unity-MCP-Plugin/.claude/skills/package-list/SKILL.md`](Unity-MCP-Plugin/.claude/skills/package-list/SKILL.md) |
-| 8 | ✓ | [`Unity-MCP-Plugin/.claude/skills/package-remove/SKILL.md`](Unity-MCP-Plugin/.claude/skills/package-remove/SKILL.md) |
-| 9 | ✓ | [`Unity-MCP-Plugin/.claude/skills/package-search/SKILL.md`](Unity-MCP-Plugin/.claude/skills/package-search/SKILL.md) |
-| 10 | ✓ | [`Unity-MCP-Plugin/.claude/skills/ping/SKILL.md`](Unity-MCP-Plugin/.claude/skills/ping/SKILL.md) |
-| 11 | ✓ | [`Unity-MCP-Plugin/.claude/skills/rql-mutate/SKILL.md`](Unity-MCP-Plugin/.claude/skills/rql-mutate/SKILL.md) |
-| 12 | ✓ | [`Unity-MCP-Plugin/.claude/skills/rql-query/SKILL.md`](Unity-MCP-Plugin/.claude/skills/rql-query/SKILL.md) |
-| 13 | ✓ | [`Unity-MCP-Plugin/.claude/skills/rql-schema/SKILL.md`](Unity-MCP-Plugin/.claude/skills/rql-schema/SKILL.md) |
-| 14 | ✓ | [`Unity-MCP-Plugin/.claude/skills/screenshot-camera/SKILL.md`](Unity-MCP-Plugin/.claude/skills/screenshot-camera/SKILL.md) |
-| 15 | ✓ | [`Unity-MCP-Plugin/.claude/skills/screenshot-game-view/SKILL.md`](Unity-MCP-Plugin/.claude/skills/screenshot-game-view/SKILL.md) |
-| 16 | ✓ | [`Unity-MCP-Plugin/.claude/skills/screenshot-isolated/SKILL.md`](Unity-MCP-Plugin/.claude/skills/screenshot-isolated/SKILL.md) |
-| 17 | ✓ | [`Unity-MCP-Plugin/.claude/skills/screenshot-scene-view/SKILL.md`](Unity-MCP-Plugin/.claude/skills/screenshot-scene-view/SKILL.md) |
-| 18 | ✓ | [`Unity-MCP-Plugin/.claude/skills/script-delete/SKILL.md`](Unity-MCP-Plugin/.claude/skills/script-delete/SKILL.md) |
-| 19 | ✓ | [`Unity-MCP-Plugin/.claude/skills/script-execute/SKILL.md`](Unity-MCP-Plugin/.claude/skills/script-execute/SKILL.md) |
-| 20 | ✓ | [`Unity-MCP-Plugin/.claude/skills/script-read/SKILL.md`](Unity-MCP-Plugin/.claude/skills/script-read/SKILL.md) |
-| 21 | ✓ | [`Unity-MCP-Plugin/.claude/skills/script-update-or-create/SKILL.md`](Unity-MCP-Plugin/.claude/skills/script-update-or-create/SKILL.md) |
-| 22 | ✓ | [`Unity-MCP-Plugin/.claude/skills/tests-run/SKILL.md`](Unity-MCP-Plugin/.claude/skills/tests-run/SKILL.md) |
-| 23 | ✓ | [`Unity-MCP-Plugin/.claude/skills/tool-set-enabled-state/SKILL.md`](Unity-MCP-Plugin/.claude/skills/tool-set-enabled-state/SKILL.md) |
-| 24 | ✓ | [`Unity-MCP-Plugin/.claude/skills/unity-initial-setup/SKILL.md`](Unity-MCP-Plugin/.claude/skills/unity-initial-setup/SKILL.md) |
-| 25 | ✓ | [`Unity-MCP-Plugin/.claude/skills/unity-rql/SKILL.md`](Unity-MCP-Plugin/.claude/skills/unity-rql/SKILL.md) |
-| 26 | ✓ | [`Unity-MCP-Plugin/.claude/skills/unity-skill-create/SKILL.md`](Unity-MCP-Plugin/.claude/skills/unity-skill-create/SKILL.md) |
-| 27 | ✓ | [`Unity-MCP-Plugin/.claude/skills/unity-skill-generate/SKILL.md`](Unity-MCP-Plugin/.claude/skills/unity-skill-generate/SKILL.md) |
-| 28 | ✓ | [`Unity-MCP-Plugin/.claude/skills/unity-tool-list/SKILL.md`](Unity-MCP-Plugin/.claude/skills/unity-tool-list/SKILL.md) |
-| 29 | ✓ | [`Unity-MCP-Plugin/AGENTS.md`](Unity-MCP-Plugin/AGENTS.md) |
-| 30 | → | [`docs/agents/architecture.md`](docs/agents/architecture.md) |
-| 31 | → | [`docs/agents/ci-unity-license.md`](docs/agents/ci-unity-license.md) |
-| 32 | → | [`docs/agents/documentation-sync.md`](docs/agents/documentation-sync.md) |
-| 33 | → | [`docs/agents/release.md`](docs/agents/release.md) |
-| 34 | → | [`docs/agents/style.md`](docs/agents/style.md) |
+| 6 | ✓ | [`extensions/AGENTS.md`](extensions/AGENTS.md) |
+| 7 | ✓ | [`extensions/Animation/AGENTS.md`](extensions/Animation/AGENTS.md) |
+| 8 | ✓ | [`extensions/Cinemachine/AGENTS.md`](extensions/Cinemachine/AGENTS.md) |
+| 9 | ✓ | [`extensions/InputSystem/AGENTS.md`](extensions/InputSystem/AGENTS.md) |
+| 10 | ✓ | [`extensions/Navigation/AGENTS.md`](extensions/Navigation/AGENTS.md) |
+| 11 | ✓ | [`extensions/ParticleSystem/AGENTS.md`](extensions/ParticleSystem/AGENTS.md) |
+| 12 | ✓ | [`extensions/ProBuilder/AGENTS.md`](extensions/ProBuilder/AGENTS.md) |
+| 13 | ✓ | [`extensions/Splines/AGENTS.md`](extensions/Splines/AGENTS.md) |
+| 14 | ✓ | [`extensions/Terrain/AGENTS.md`](extensions/Terrain/AGENTS.md) |
+| 15 | ✓ | [`extensions/Tilemap/AGENTS.md`](extensions/Tilemap/AGENTS.md) |
+| 16 | ✓ | [`extensions/Timeline/AGENTS.md`](extensions/Timeline/AGENTS.md) |
+| 17 | ✓ | [`templates/AGENTS.md`](templates/AGENTS.md) |
+| 18 | ✓ | [`templates/extension/AGENTS.md`](templates/extension/AGENTS.md) |
+| 19 | ✓ | [`tests/extensions/AGENTS.md`](tests/extensions/AGENTS.md) |
+| 20 | ✓ | [`Unity-MCP-Plugin/.claude/skills/package-add/SKILL.md`](Unity-MCP-Plugin/.claude/skills/package-add/SKILL.md) |
+| 21 | ✓ | [`Unity-MCP-Plugin/.claude/skills/package-list/SKILL.md`](Unity-MCP-Plugin/.claude/skills/package-list/SKILL.md) |
+| 22 | ✓ | [`Unity-MCP-Plugin/.claude/skills/package-remove/SKILL.md`](Unity-MCP-Plugin/.claude/skills/package-remove/SKILL.md) |
+| 23 | ✓ | [`Unity-MCP-Plugin/.claude/skills/package-search/SKILL.md`](Unity-MCP-Plugin/.claude/skills/package-search/SKILL.md) |
+| 24 | ✓ | [`Unity-MCP-Plugin/.claude/skills/ping/SKILL.md`](Unity-MCP-Plugin/.claude/skills/ping/SKILL.md) |
+| 25 | ✓ | [`Unity-MCP-Plugin/.claude/skills/rql-mutate/SKILL.md`](Unity-MCP-Plugin/.claude/skills/rql-mutate/SKILL.md) |
+| 26 | ✓ | [`Unity-MCP-Plugin/.claude/skills/rql-query/SKILL.md`](Unity-MCP-Plugin/.claude/skills/rql-query/SKILL.md) |
+| 27 | ✓ | [`Unity-MCP-Plugin/.claude/skills/rql-schema/SKILL.md`](Unity-MCP-Plugin/.claude/skills/rql-schema/SKILL.md) |
+| 28 | ✓ | [`Unity-MCP-Plugin/.claude/skills/screenshot-camera/SKILL.md`](Unity-MCP-Plugin/.claude/skills/screenshot-camera/SKILL.md) |
+| 29 | ✓ | [`Unity-MCP-Plugin/.claude/skills/screenshot-game-view/SKILL.md`](Unity-MCP-Plugin/.claude/skills/screenshot-game-view/SKILL.md) |
+| 30 | ✓ | [`Unity-MCP-Plugin/.claude/skills/screenshot-isolated/SKILL.md`](Unity-MCP-Plugin/.claude/skills/screenshot-isolated/SKILL.md) |
+| 31 | ✓ | [`Unity-MCP-Plugin/.claude/skills/screenshot-scene-view/SKILL.md`](Unity-MCP-Plugin/.claude/skills/screenshot-scene-view/SKILL.md) |
+| 32 | ✓ | [`Unity-MCP-Plugin/.claude/skills/script-delete/SKILL.md`](Unity-MCP-Plugin/.claude/skills/script-delete/SKILL.md) |
+| 33 | ✓ | [`Unity-MCP-Plugin/.claude/skills/script-execute/SKILL.md`](Unity-MCP-Plugin/.claude/skills/script-execute/SKILL.md) |
+| 34 | ✓ | [`Unity-MCP-Plugin/.claude/skills/script-read/SKILL.md`](Unity-MCP-Plugin/.claude/skills/script-read/SKILL.md) |
+| 35 | ✓ | [`Unity-MCP-Plugin/.claude/skills/script-update-or-create/SKILL.md`](Unity-MCP-Plugin/.claude/skills/script-update-or-create/SKILL.md) |
+| 36 | ✓ | [`Unity-MCP-Plugin/.claude/skills/tests-run/SKILL.md`](Unity-MCP-Plugin/.claude/skills/tests-run/SKILL.md) |
+| 37 | ✓ | [`Unity-MCP-Plugin/.claude/skills/tool-set-enabled-state/SKILL.md`](Unity-MCP-Plugin/.claude/skills/tool-set-enabled-state/SKILL.md) |
+| 38 | ✓ | [`Unity-MCP-Plugin/.claude/skills/unity-initial-setup/SKILL.md`](Unity-MCP-Plugin/.claude/skills/unity-initial-setup/SKILL.md) |
+| 39 | ✓ | [`Unity-MCP-Plugin/.claude/skills/unity-rql/SKILL.md`](Unity-MCP-Plugin/.claude/skills/unity-rql/SKILL.md) |
+| 40 | ✓ | [`Unity-MCP-Plugin/.claude/skills/unity-skill-create/SKILL.md`](Unity-MCP-Plugin/.claude/skills/unity-skill-create/SKILL.md) |
+| 41 | ✓ | [`Unity-MCP-Plugin/.claude/skills/unity-skill-generate/SKILL.md`](Unity-MCP-Plugin/.claude/skills/unity-skill-generate/SKILL.md) |
+| 42 | ✓ | [`Unity-MCP-Plugin/.claude/skills/unity-tool-list/SKILL.md`](Unity-MCP-Plugin/.claude/skills/unity-tool-list/SKILL.md) |
+| 43 | ✓ | [`Unity-MCP-Plugin/AGENTS.md`](Unity-MCP-Plugin/AGENTS.md) |
+| 44 | → | [`docs/agents/architecture.md`](docs/agents/architecture.md) |
+| 45 | → | [`docs/agents/ci-unity-license.md`](docs/agents/ci-unity-license.md) |
+| 46 | → | [`docs/agents/documentation-sync.md`](docs/agents/documentation-sync.md) |
+| 47 | → | [`docs/agents/release.md`](docs/agents/release.md) |
+| 48 | → | [`docs/agents/style.md`](docs/agents/style.md) |
 
 ---
 

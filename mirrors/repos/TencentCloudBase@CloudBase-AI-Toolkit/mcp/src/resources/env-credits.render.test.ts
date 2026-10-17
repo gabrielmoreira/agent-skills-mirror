@@ -2,7 +2,13 @@ import { describe, expect, it } from "vitest";
 import vm from "node:vm";
 import { t } from "../i18n/index.js";
 import { buildEnvCreditsHtml } from "./env-credits.js";
-import { buildEnvCreditsPayload, type CreditsUsageLike } from "../tools/env-credits-payload.js";
+import {
+  buildEnvCreditsPayload,
+  buildEnvMetricsPayload,
+  type CreditsUsageLike,
+} from "../tools/env-credits-payload.js";
+import { ENV_METRIC_NAME_VALUES } from "../tools/env.js";
+import { mcpUiCredits } from "../i18n/locales/modules/mcpUiCredits.js";
 
 /**
  * `ui://cloudbase/env-credits` 面板**脚本的运行时**测试。
@@ -39,6 +45,12 @@ interface PanelHarness {
   el(id: string): ShimmedElement;
   /** 模拟一次 document 级点击（面板用 `event.target.closest("button")` 取按钮） */
   clickDocument(id: string): void;
+  /** 面板发给宿主的消息（按发出顺序）——本分支（指标卡 ui/message 断言用） */
+  posted: Array<Record<string, unknown>>;
+  /** 取某方法的最后一次请求参数（如 ui/message 的 params）——本分支 */
+  lastRequest(method: string): Record<string, unknown> | undefined;
+  /** 垫片里剪贴板不可用 ⇒ copyText 走 textarea 兜底；这里读回它实际要复制的文本 —— main（#1180 链接断言用） */
+  copiedText(): string | null;
 }
 
 const FALLBACK = { envId: "my-env-3gk9ab", site: "domestic", region: "ap-shanghai" };
@@ -81,12 +93,28 @@ function loadPanel(html: string): PanelHarness {
 
   const messageListeners: Array<(event: { data: unknown }) => void> = [];
   const clickListeners: Array<(event: unknown) => void> = [];
+  let copied: string | null = null;
   const sandbox: Record<string, unknown> = {
     document: {
       getElementById: (id: string) => elements.get(id) ?? null,
       documentElement: { scrollWidth: 480, scrollHeight: 320 },
       body: { appendChild() {}, removeChild() {} },
-      createElement: () => ({ setAttribute() {}, style: {}, select() {} }),
+      createElement: () => {
+        const area: {
+          value?: string;
+          setAttribute(): void;
+          style: Record<string, unknown>;
+          select(): void;
+        } = {
+          setAttribute() {},
+          style: {},
+          // copyText 先写 .value 再 .select()，所以在 select 处读回就是要复制的内容
+          select() {
+            copied = String(area.value ?? "");
+          },
+        };
+        return area;
+      },
       execCommand: () => true,
       addEventListener(type: string, fn: (event: unknown) => void) {
         if (type === "click") {
@@ -112,7 +140,9 @@ function loadPanel(html: string): PanelHarness {
     console,
   };
   sandbox.window = sandbox;
-  sandbox.parent = { postMessage() {} };
+  // 收集面板发往宿主的消息：ui/message 的**原文**必须能被断言（不再只断言按钮文案）
+  const posted: Array<Record<string, unknown>> = [];
+  sandbox.parent = { postMessage(message: Record<string, unknown>) { posted.push(message); } };
   sandbox.addEventListener = (type: string, fn: (event: { data: unknown }) => void) => {
     if (type === "message") {
       messageListeners.push(fn);
@@ -136,6 +166,20 @@ function loadPanel(html: string): PanelHarness {
       clickListeners.forEach((fn) =>
         fn({ target: { closest: (sel: string) => (sel === "button" ? elements.get(id) ?? null : null) } }),
       );
+    },
+    /** 面板发给宿主的消息（按发出顺序）。 */
+    posted,
+    /** 取某方法的最后一次请求参数（如 ui/message 的 params）。 */
+    lastRequest(method: string) {
+      for (let i = posted.length - 1; i >= 0; i--) {
+        const message = posted[i] as { method?: string; params?: unknown };
+        if (message.method === method) { return message.params as Record<string, unknown> | undefined; }
+      }
+      return undefined;
+    },
+    /** main（#1180）：读回 textarea 兜底实际复制出去的文本 */
+    copiedText() {
+      return copied;
     },
   };
 }
@@ -480,6 +524,73 @@ describe("env-credits 面板脚本运行时", () => {
     expect(panel2.el("c-hint").textContent).toBe(L("mcpUiCredits.hint.arrears"));
   });
 
+  it("复制出去的是完整控制台地址：带本次载荷的 envId，且站点决定主机", () => {
+    // 环境级（package / renew）→ 云开发控制台「套餐用量」页，必须带本环境的 envId
+    const exhausted = buildEnvCreditsPayload({
+      ...BASE,
+      planRaw: "baas_free",
+      usages: [usage("SCF", 3000)],
+      expired: false,
+    });
+    const pkg = render(exhausted);
+    pkg.clickDocument("btn-link");
+    expect(pkg.copiedText()).toBe(
+      "https://tcb.cloud.tencent.com/dev?envId=env-demo#/env/package-usage",
+    );
+
+    // 载荷带另一个站点 ⇒ 换主机（不是本地兜底的 domestic）
+    const intlExpired = buildEnvCreditsPayload({
+      ...BASE,
+      envId: "env-intl",
+      site: "intl",
+      region: "ap-singapore",
+      planRaw: "baas_personal",
+      usages: [usage("SCF", 1)],
+      expired: true,
+    });
+    const renew = render(intlExpired);
+    renew.clickDocument("btn-link");
+    expect(renew.copiedText()).toBe(
+      "https://tcb.tencentcloud.com/dev?envId=env-intl#/env/package-usage",
+    );
+
+    // 账户级（arrears）→ 充值页，主机同样随站点走，且不带 envId
+    const arrears = buildEnvCreditsPayload({
+      ...BASE,
+      envId: "env-intl",
+      site: "intl",
+      region: "ap-singapore",
+      planRaw: "baas_personal",
+      usages: [usage("SCF", 1)],
+      expired: false,
+      balance: -5,
+    });
+    const expense = render(arrears);
+    expense.clickDocument("btn-link");
+    expect(expense.copiedText()).toBe("https://console.intl.cloud.tencent.com/expense/recharge");
+
+    // 载荷明确说「没有 envId」（空串）⇒ 地址里就不带查询串，绝不编一个环境出来
+    const noEnv = render(
+      buildEnvCreditsPayload({
+        envId: "",
+        site: "domestic",
+        region: "ap-shanghai",
+        planRaw: "baas_free",
+        usages: [usage("SCF", 3000)],
+        expired: false,
+      }),
+    );
+    noEnv.clickDocument("btn-link");
+    expect(noEnv.copiedText()).toBe("https://tcb.cloud.tencent.com/dev#/env/package-usage");
+  });
+
+  it("没有链接可复制的分支，点了复制按钮也不会写出半截地址", () => {
+    const panel = loadPanel(HTML); // 不放载荷：分支 = unknown，link = 空
+    expect(panel.el("btn-link").hidden).toBe(true);
+    panel.clickDocument("btn-link");
+    expect(panel.copiedText(), "不该写出 #undefined / 只有主机名之类的东西").toBe(null);
+  });
+
   it("位置行：实时地域优先；缺字段才回落本地；实时值不可译时出「—」而绝不泄露原始码", () => {
     const open = L("mcpUi.place.open");
     const close = L("mcpUi.place.close");
@@ -628,5 +739,408 @@ describe("env-credits 面板脚本运行时", () => {
     });
     expect(HTML.split('"tools/call"').length - 1).toBe(0);
     expect(panel.el("f-credits").hidden).toBe(false);
+  });
+});
+
+describe("监控指标卡：同一资源按 kind 分派", () => {
+  const M = {
+    envId: "env-demo",
+    envAlias: "生产环境",
+    metricName: "FunctionError",
+    site: "domestic",
+    region: "ap-shanghai",
+  };
+  const metricsOf = (
+    values: number[],
+    extra: Record<string, unknown> = {},
+    metricName: string = M.metricName,
+  ) =>
+    buildEnvMetricsPayload({
+      ...M,
+      metricName,
+      periodSeconds: 300,
+      summary: {
+        sampleCount: values.length,
+        max: values.length ? Math.max(...values) : null,
+        min: values.length ? Math.min(...values) : null,
+        avg: values.length ? values.reduce((a, b) => a + b, 0) / values.length : null,
+        latest: values.length ? values[values.length - 1] : null,
+        allZero: values.length > 0 && values.every((v) => v === 0),
+        ...extra,
+      },
+      curve: { NewValues: values },
+    });
+
+  it("有数据：标题＝指标人话·别名、状态/说明句/四个字段/曲线/唯一主行动齐备", () => {
+    const panel = render(metricsOf([1, 3, 2, 5]));
+
+    expect(panel.el("c-title").textContent).toBe(
+      L("mcpUiCredits.metric.unitWrap", {
+        label: L("mcpUiCredits.metric.FunctionError"),
+        unit: L("mcpUiCredits.metric.unit.count"),
+      }) +
+        L("mcpUiCredits.title.sep") +
+        "生产环境",
+    );
+    expect(panel.el("st-text").textContent).toBe(L("mcpUiCredits.metric.state.data"));
+    expect(panel.el("c-hint").textContent).toBe(L("mcpUiCredits.metric.hint.data"));
+
+    expect(panel.el("f-m-latest").hidden).toBe(false);
+    expect(panel.el("k-m-latest").textContent).toBe("5" + L("mcpUiCredits.metric.unit.count"));
+    expect(panel.el("f-m-peak").hidden).toBe(false);
+    expect(panel.el("k-m-peak").textContent).toContain("5");
+    expect(panel.el("f-m-avg").hidden).toBe(false);
+    // 指标数值保留小数（控制台不抹小数、服务端本来就给浮点）：2.75 就是 2.75，不再取整成 3
+    expect(panel.el("k-m-avg").textContent).toBe("2.75" + L("mcpUiCredits.metric.unit.count"));
+    expect(panel.el("f-m-window").hidden).toBe(false);
+    expect(panel.el("k-m-window").textContent).toContain(L("mcpUiCredits.metric.period.minute"));
+
+    // 单线曲线：四个点足以成线
+    expect(panel.el("f-spark").hidden).toBe(false);
+    expect(panel.el("spark-line").getAttribute("d")).toContain("M");
+
+    // 一屏一个主行动：交给会话深挖（标签来自词典）
+    expect(panel.el("btn-main").hidden).toBe(false);
+    expect(panel.el("btn-main").textContent).toBe(L("mcpUiCredits.metric.action.data"));
+    // ① 绿在这张卡上不携带健康含义：有数据也只是中性圆点 + 默认曲线样式
+    expect(panel.el("st-dot").className).toBe("dot");
+    expect(panel.el("spark-line").getAttribute("stroke")).toBe("var(--text-2)");
+    expect(panel.el("btn-link").hidden).toBe(true);
+
+    // 用量卡专有块全部收起（同一块屏上不能两套字段并排）
+    for (const id of ["f-credits", "f-mods", "f-plan", "f-balance"]) {
+      expect(panel.el(id).hidden).toBe(true);
+    }
+  });
+
+  it("无流量（全零）：状态＝无流量，且不画曲线（不把贴底直线当成有数据）", () => {
+    const panel = render(metricsOf([0, 0, 0, 0]));
+    expect(panel.el("st-text").textContent).toBe(L("mcpUiCredits.metric.state.noData"));
+    expect(panel.el("c-hint").textContent).toBe(L("mcpUiCredits.metric.hint.noData"));
+    expect(panel.el("f-spark").hidden).toBe(true);
+    // 数值仍如实显示（0 是真实读数，不是"拿不到"），且带单位
+    expect(panel.el("k-m-latest").textContent).toBe("0" + L("mcpUiCredits.metric.unit.count"));
+  });
+
+  it("拿不到 Summary 的字段 ⇒ 整行隐藏，不编数（latest/max/avg/window 全隐）", () => {
+    const panel = render(
+      buildEnvMetricsPayload({ ...M, metricName: "EnvQPSAll", summary: { sampleCount: 0 }, curve: { NewValues: [] } }),
+    );
+    for (const id of ["f-m-latest", "f-m-peak", "f-m-avg", "f-m-window"]) {
+      expect(panel.el(id).hidden).toBe(true);
+    }
+  });
+
+  it("查询失败：保持指标视图并显示「查询失败」，原文只进折叠区", () => {
+    const panel = loadPanel(HTML);
+    panel.dispatch({ structuredContent: metricsOf([2, 4]) });
+    panel.dispatch({ isError: true, content: [{ type: "text", text: "metrics boom" }] });
+
+    expect(panel.el("st-text").textContent).toBe(L("mcpUiCredits.metric.state.failed"));
+    expect(panel.el("raw-out").textContent).toContain("metrics boom");
+    // 卡片正文里不出现错误原文
+    expect(panel.el("c-hint").textContent).not.toContain("boom");
+    expect(panel.el("f-spark").hidden).toBe(true);
+  });
+
+  it("未映射的指标码：退化为通用标题，且正文绝不出现原始码", () => {
+    const panel = render(metricsOf([1, 2], {}, "NotARealMetric"));
+    expect(panel.el("c-title").textContent).toContain(L("mcpUiCredits.metric.generic"));
+    // 正文（标题/说明/字段）绝不出现原始码……
+    expect(panel.el("c-title").textContent).not.toContain("NotARealMetric");
+    expect(panel.el("c-hint").textContent).not.toContain("NotARealMetric");
+    expect(panel.el("k-m-latest").textContent).not.toContain("NotARealMetric");
+    // ……但原始值必须能在折叠区里看到（折叠区就是原样的地方）
+    expect(panel.el("raw-out").textContent).toContain("NotARealMetric");
+  });
+
+  it("主行动交给会话：ui/message 原文含指标人话、且不含内部枚举码（指标卡）", () => {
+    const panel = render(metricsOf([1, 3, 2, 5]));
+    panel.clickDocument("btn-main");
+
+    const params = panel.lastRequest("ui/message");
+    const text = String((params?.content as { text?: unknown } | undefined)?.text ?? "");
+    expect(text).toBe(
+      L("mcpUiCredits.metric.message.data", {
+        metric: L("mcpUiCredits.metric.FunctionError"),
+      }),
+    );
+    // 人话进了消息，内部码没有
+    expect(text).toContain(L("mcpUiCredits.metric.FunctionError"));
+    expect(text).not.toContain("FunctionError");
+  });
+
+  it("按 kind 分派：切回用量载荷时，指标字段全部收起、用量块恢复", () => {
+    const panel = loadPanel(HTML);
+    panel.dispatch({ structuredContent: metricsOf([1, 2]) });
+    expect(panel.el("f-m-latest").hidden).toBe(false);
+
+    panel.dispatch({
+      structuredContent: buildEnvCreditsPayload({
+        ...BASE,
+        planRaw: "baas_free",
+        usages: [usage("SCF", 10)],
+        expired: false,
+      }),
+    });
+    expect(panel.el("f-m-latest").hidden).toBe(true);
+    expect(panel.el("f-spark").hidden).toBe(true);
+    expect(panel.el("f-credits").hidden).toBe(false);
+    // 状态词回到用量分支的话术（不是指标的三态）
+    expect(panel.el("st-text").textContent).toBe(L("mcpUiCredits.state.normal"));
+    // normal 分支没有主行动（只有耗尽/到期/欠费才有），主按钮应隐藏
+    expect(panel.el("btn-main").hidden).toBe(true);
+  });
+
+  it("主行动交给会话：ui/message 原文逐字等于分支话术（用量卡，两个分支）", () => {
+    const cases: Array<{ name: string; payload: unknown; message: string }> = [
+      {
+        name: "体验版耗尽",
+        payload: buildEnvCreditsPayload({
+          ...BASE,
+          planRaw: "baas_free",
+          usages: [usage("SCF", 3000)],
+          expired: false,
+        }),
+        message: L("mcpUiCredits.message.upgrade"),
+      },
+      {
+        name: "账户欠费",
+        payload: buildEnvCreditsPayload({
+          ...BASE,
+          planRaw: "baas_personal",
+          usages: [usage("SCF", 10)],
+          expired: false,
+          balance: -1,
+        }),
+        message: L("mcpUiCredits.message.topup"),
+      },
+    ];
+    for (const item of cases) {
+      const panel = render(item.payload);
+      expect(panel.el("btn-main").hidden, item.name).toBe(false);
+      panel.clickDocument("btn-main");
+      const params = panel.lastRequest("ui/message");
+      const text = String((params?.content as { text?: unknown } | undefined)?.text ?? "");
+      expect(text, item.name).toBe(item.message);
+    }
+  });
+
+  it("守卫：指标枚举 ↔ 词典标签齐备（未列出的枚举也必须有通用标题兜底）", () => {
+    // 直接查词典模块本身（不只查 t()）：两种语言都必须**逐个枚举**有标签，
+    // 少一个就是漏配——这条守卫的变异自证见提交说明（改名即可打红）。
+    const zh = mcpUiCredits.zh as Record<string, unknown>;
+    const en = mcpUiCredits.en as Record<string, unknown>;
+    expect(zh).toHaveProperty("metric.generic");
+    for (const name of ENV_METRIC_NAME_VALUES) {
+      const key = `metric.${name}`;
+      expect(Object.prototype.hasOwnProperty.call(zh, key), `zh 缺 ${key}`).toBe(true);
+      expect(Object.prototype.hasOwnProperty.call(en, key), `en 缺 ${key}`).toBe(true);
+      // 标签必须是人话：非空、且不是枚举码本身
+      expect(String(zh[key]).length).toBeGreaterThan(0);
+      expect(String(zh[key])).not.toBe(name);
+      expect(String(en[key]).length).toBeGreaterThan(0);
+      expect(String(en[key])).not.toBe(name);
+    }
+  });
+
+  it("单位覆盖：指标枚举每一个都在面板的单位表里显式表态（新增指标不许静默没单位）", () => {
+    // 从生成出来的面板脚本里抽出单位表——它就是运行时真正查的那张表
+    const table = HTML.match(/var METRIC_UNIT_KEY = \{([\s\S]*?)\};/);
+    expect(table, "面板脚本里应有 METRIC_UNIT_KEY").not.toBeNull();
+    const body = table![1];
+    const entries = new Map<string, string>();
+    for (const line of body.split("\n")) {
+      const hit = line.match(/^\s*([A-Za-z][A-Za-z0-9]*):\s*"([^"]*)"/);
+      if (hit) { entries.set(hit[1], hit[2]); }
+    }
+    // ① 枚举逐个都有条目
+    for (const name of ENV_METRIC_NAME_VALUES) {
+      expect(entries.has(name), `单位表缺 ${name}`).toBe(true);
+    }
+    // ② "单位未定"（空串）只能是这份**已知清单**：控制台对这些指标不给后缀，
+    //    我们不编；其余每一个都必须指向一个真实存在的单位键
+    // 唯一未定项：MysqlDbConnections（控制台仪表盘切到数据库时超时，没拿到它的单位）
+    const undetermined = [...entries.entries()].filter(([, key]) => key === "").map(([n]) => n);
+    expect(undetermined).toEqual(["MysqlDbConnections"]);
+    const unitKeys = new Set(
+      [...HTML.matchAll(/^\s*(count|ms|gbs|cu|gb|percent|perSec|item):\s*"/gm)].map((m) => m[1]),
+    );
+    expect(unitKeys.size).toBe(8);
+    for (const [, key] of entries) {
+      if (key !== "") { expect(unitKeys.has(key), `未知单位键 ${key}`).toBe(true); }
+    }
+    // ③ 表里没有枚举之外的私货（枚举之外的名字只可能来自控制台新增，需显式处理）
+    const known = new Set<string>(ENV_METRIC_NAME_VALUES);
+    for (const name of entries.keys()) {
+      expect(known.has(name), `单位表里有枚举之外的名字 ${name}`).toBe(true);
+    }
+  });
+
+  it("平均值保留小数：服务端浮点 16.043478260869566 渲染成 16.04（不是 16）", () => {
+    const panel = render(
+      buildEnvMetricsPayload({
+        ...M,
+        metricName: "FunctionInvocation",
+        summary: { sampleCount: 23, avg: 16.043478260869566, latest: 18, max: 88.3 },
+        curve: { NewValues: [1, 2] },
+      }),
+    );
+    expect(panel.el("k-m-avg").textContent).toBe("16.04" + L("mcpUiCredits.metric.unit.count"));
+    // 整数不留无意义的尾零
+    expect(panel.el("k-m-latest").textContent).toBe("18" + L("mcpUiCredits.metric.unit.count"));
+    // 一位小数照原样
+    expect(panel.el("k-m-peak").textContent).toContain("88.3");
+  });
+
+  it("单位未定（今日唯一：MysqlDbConnections）：标题不加括号、数值不加后缀，也不编一个单位", () => {
+    const panel = render(metricsOf([3, 9], {}, "MysqlDbConnections"));
+    expect(panel.el("c-title").textContent).toBe(
+      L("mcpUiCredits.metric.MysqlDbConnections") + L("mcpUiCredits.title.sep") + "生产环境",
+    );
+    expect(panel.el("k-m-latest").textContent).toBe("9");
+    expect(panel.el("k-m-avg").textContent).toBe("6");
+  });
+
+  it("新增两个单位词（控制台原文转写）：QPS 家族＝次/秒、并发＝个", () => {
+    const suffix = (value: string, unit: string) =>
+      L("mcpUiCredits.metric.unitSuffix", { value, unit });
+
+    // QPS 家族：控制台 QPS 页原文「当前环境QPS（每秒请求量）」
+    const qps = render(metricsOf([3, 9], {}, "EnvQPSAll"));
+    expect(qps.el("c-title").textContent).toBe(
+      L("mcpUiCredits.metric.unitWrap", {
+        label: L("mcpUiCredits.metric.EnvQPSAll"),
+        unit: L("mcpUiCredits.metric.unit.perSec"),
+      }) +
+        L("mcpUiCredits.title.sep") +
+        "生产环境",
+    );
+    expect(qps.el("k-m-latest").textContent).toBe(suffix("9", L("mcpUiCredits.metric.unit.perSec")));
+    expect(qps.el("k-m-avg").textContent).toBe(suffix("6", L("mcpUiCredits.metric.unit.perSec")));
+
+    // 并发：控制台云函数视图原文「并发执行个数（个）」——是「个」不是「次」
+    const conc = render(metricsOf([1, 3], {}, "FunctionConcurrentExecutions"));
+    expect(conc.el("c-title").textContent).toContain(L("mcpUiCredits.metric.unit.item"));
+    expect(conc.el("k-m-latest").textContent).toBe(suffix("3", L("mcpUiCredits.metric.unit.item")));
+    expect(conc.el("k-m-latest").textContent).not.toContain(L("mcpUiCredits.metric.unit.count"));
+  });
+
+  it("圆点与曲线不携带健康含义：三态都是中性圆点，失败也不染红（红在用量卡里表示环境有问题）", () => {
+    // 有数据：中性（旧行为是 ok，等于把"有数据"说成"健康"——一万次函数错误也是绿的）
+    const data = render(metricsOf([1, 3, 2, 5]));
+    expect(data.el("st-dot").className).toBe("dot");
+    expect(data.el("spark-line").getAttribute("stroke")).toBe("var(--text-2)");
+
+    // 无流量：中性
+    const noData = render(metricsOf([0, 0, 0]));
+    expect(noData.el("st-dot").className).toBe("dot");
+
+    // 查询失败：仍是中性 —— 这是"我们没问到"，不是"环境出问题了"；
+    // 用量卡里的红表示资源耗尽/欠费（环境问题），同色同义会让人读错。
+    const failed = loadPanel(HTML);
+    failed.dispatch({ structuredContent: metricsOf([2, 4]) });
+    failed.dispatch({ isError: true, content: [{ type: "text", text: "boom" }] });
+    expect(failed.el("st-text").textContent).toBe(L("mcpUiCredits.metric.state.failed"));
+    expect(failed.el("st-dot").className).toBe("dot");
+  });
+
+  it("80% 提前警告与文案一致：条/曲线已红时，状态词与说明句都换成「接近上限」", () => {
+    // 个人版 40000 配额用掉 34000 ⇒ 85%，分支仍是 normal（未耗尽）
+    const near = render(
+      buildEnvCreditsPayload({
+        ...BASE,
+        planRaw: "baas_personal",
+        // 带两点明细 ⇒ 曲线会真的画出来，才能同时断言"条红 + 曲线红 + 文案跟上"
+        usages: [usage("SCF", 34000, [["2026-08-01", 17000], ["2026-08-02", 17000]])],
+        expired: false,
+      }),
+    );
+    expect(near.el("st-text").textContent).toBe(
+      L("mcpUiCredits.state.nearLimit", { pct: 85 }),
+    );
+    expect(near.el("c-hint").textContent).toBe(L("mcpUiCredits.hint.nearLimit", { pct: 85 }));
+    // 同一条用例里两头都断：红色（提前警告保住）与文案（跟上）同时出现
+    expect(near.el("ubar-box").className).not.toContain(" ok");
+    expect(near.el("spark-line").getAttribute("stroke")).toBe("var(--err)");
+
+    // 对照：未到 80% 时文案不动（原 normal 话术）
+    const below = render(
+      buildEnvCreditsPayload({
+        ...BASE,
+        planRaw: "baas_personal",
+        usages: [usage("SCF", 1000)],
+        expired: false,
+      }),
+    );
+    expect(below.el("st-text").textContent).toBe(L("mcpUiCredits.state.normal"));
+    expect(below.el("c-hint").textContent).toBe(L("mcpUiCredits.hint.normal"));
+  });
+
+  it("主按钮三态各自的动作：文案互不相同、noData 不含「异常」、消息也按态给", () => {
+    const seen: Array<{ name: string; label: string; message: string }> = [];
+    const collect = (name: string, panel: PanelHarness) => {
+      const label = panel.el("btn-main").textContent;
+      panel.clickDocument("btn-main");
+      const text = String(
+        (panel.lastRequest("ui/message")?.content as { text?: unknown } | undefined)?.text ?? "",
+      );
+      seen.push({ name, label, message: text });
+      return label;
+    };
+
+    collect("data", render(metricsOf([1, 3, 2, 5])));
+    collect("noData", render(metricsOf([0, 0, 0])));
+    const failedPanel = loadPanel(HTML);
+    failedPanel.dispatch({ structuredContent: metricsOf([2, 4]) });
+    failedPanel.dispatch({ isError: true, content: [{ type: "text", text: "boom" }] });
+    collect("failed", failedPanel);
+
+    expect(seen.map((x) => x.label)).toEqual([
+      L("mcpUiCredits.metric.action.data"),
+      L("mcpUiCredits.metric.action.noData"),
+      L("mcpUiCredits.metric.action.failed"),
+    ]);
+    // 三条文案互不相同（含消息）
+    expect(new Set(seen.map((x) => x.label)).size).toBe(3);
+    expect(new Set(seen.map((x) => x.message)).size).toBe(3);
+    // noData 是最接近流失的状态：中性陈述，不许出现"异常"
+    const noData = seen[1];
+    expect(noData.label).not.toContain("异常");
+    expect(noData.message).not.toContain("异常");
+    // 文案里也不该再出现机制腔
+    for (const item of seen) {
+      expect(item.label).not.toContain("在会话里");
+      expect(item.message).not.toContain("在会话里");
+    }
+  });
+
+  it("守卫：metric.* 文案一律不含机制腔（hint 也纳入——上一轮只覆盖了 action/message）", () => {
+    const zh = mcpUiCredits.zh as Record<string, unknown>;
+    const en = mcpUiCredits.en as Record<string, unknown>;
+    const keys = Object.keys(zh).filter((k) => k.startsWith("metric."));
+    expect(keys.length).toBeGreaterThan(0);
+    // 三态 hint 必须都在，否则这条守卫会被"没有 hint"绕过
+    for (const state of ["data", "noData", "failed"]) {
+      expect(keys, `缺 metric.hint.${state}`).toContain(`metric.hint.${state}`);
+    }
+    for (const key of keys) {
+      for (const [lang, dict] of [["zh", zh], ["en", en]] as const) {
+        const value = String(dict[key] ?? "");
+        expect(value, `${lang} ${key} 含机制腔`).not.toContain("在会话里");
+        expect(value, `${lang} ${key} 含机制腔`).not.toContain("in the session");
+      }
+    }
+    // 失败态说明句不得逐字重复按钮的劝告（按钮＝重试这次查询 / Retry this query）
+    expect(String(zh["metric.hint.failed"])).not.toContain(String(zh["metric.action.failed"]));
+    expect(String(en["metric.hint.failed"])).not.toContain(String(en["metric.action.failed"]));
+  });
+
+  it("守卫：两个分支的渲染入口都在面板脚本里（缺一即红）", () => {
+    expect(HTML).toContain('id="f-credits"');
+    expect(HTML).toContain('id="f-m-latest"');
+    // 判别式与两条 render 路径都必须在脚本里出现
+    expect(HTML).toContain('payload.kind === "metrics"');
+    expect(HTML).toContain("renderMetrics(");
   });
 });

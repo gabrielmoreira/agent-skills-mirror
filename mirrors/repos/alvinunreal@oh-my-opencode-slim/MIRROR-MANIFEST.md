@@ -52,10 +52,10 @@ Mirror of `alvinunreal/oh-my-opencode-slim` — 26 default patterns, 37 followed
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `codemap.md`
-- `src/agents/codemap.md`
-- `src/config/codemap.md`
 - `src/codemap.md`
+- `src/agents/codemap.md`
 - `src/cli/codemap.md`
+- `src/config/codemap.md`
 - `src/hooks/codemap.md`
 - `src/hooks/absolute-path-rescue/codemap.md`
 - `src/hooks/apply-patch/codemap.md`

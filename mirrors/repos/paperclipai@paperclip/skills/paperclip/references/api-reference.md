@@ -1697,3 +1697,5 @@ per-call write approval, records activity, and dispatches the existing continuat
 An unauthorized approver receives 403; changed tool definitions, assignment,
 identity, or a closed task receive 409; unrelated connections receive 404.
 No credentials or provider authorization URL appear in the card payload.
+
+For sandbox run inspection, see [Run diagnostics from a sandbox](run-diagnostics.md).

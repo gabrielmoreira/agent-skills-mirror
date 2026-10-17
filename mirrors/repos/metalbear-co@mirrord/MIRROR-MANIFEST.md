@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `metalbear-co/mirrord` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `metalbear-co/mirrord` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `metalbear-co/mirrord` — 26 default patterns, 0 followed patterns, 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,26 +60,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-chaos/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-chaos/SKILL.md) |
-| 4 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-ci/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-ci/SKILL.md) |
-| 5 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-config/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-config/SKILL.md) |
-| 6 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-db-branching/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-db-branching/SKILL.md) |
-| 7 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-header-propagation/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-header-propagation/SKILL.md) |
-| 8 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-kafka/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-kafka/SKILL.md) |
-| 9 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-operator/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-operator/SKILL.md) |
-| 10 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-prev-env/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-prev-env/SKILL.md) |
-| 11 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-propagation-discovery/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-propagation-discovery/SKILL.md) |
-| 12 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-quickstart/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-quickstart/SKILL.md) |
-| 13 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-temporal/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-temporal/SKILL.md) |
-| 14 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-up/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-up/SKILL.md) |
-| 15 | ✓ | [`mirrord/operator-websocket/AGENTS.md`](mirrord/operator-websocket/AGENTS.md) |
-| 16 | ✓ | [`mirrord/operator-websocket/CLAUDE.md`](mirrord/operator-websocket/CLAUDE.md) |
-| 17 | ✓ | [`mirrord/operator/AGENTS.md`](mirrord/operator/AGENTS.md) |
-| 18 | ✓ | [`mirrord/operator/CLAUDE.md`](mirrord/operator/CLAUDE.md) |
-| 19 | ✓ | [`mirrord/protocol/AGENTS.md`](mirrord/protocol/AGENTS.md) |
-| 20 | ✓ | [`mirrord/protocol/CLAUDE.md`](mirrord/protocol/CLAUDE.md) |
-| 21 | ✓ | [`mirrord/tui/AGENTS.md`](mirrord/tui/AGENTS.md) |
+| 2 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-chaos/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-chaos/SKILL.md) |
+| 3 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-ci/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-ci/SKILL.md) |
+| 4 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-config/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-config/SKILL.md) |
+| 5 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-db-branching/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-db-branching/SKILL.md) |
+| 6 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-header-propagation/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-header-propagation/SKILL.md) |
+| 7 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-kafka/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-kafka/SKILL.md) |
+| 8 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-operator/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-operator/SKILL.md) |
+| 9 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-prev-env/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-prev-env/SKILL.md) |
+| 10 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-propagation-discovery/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-propagation-discovery/SKILL.md) |
+| 11 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-quickstart/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-quickstart/SKILL.md) |
+| 12 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-temporal/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-temporal/SKILL.md) |
+| 13 | ✓ | [`mirrord/mcp/corpus/skills/mirrord-up/SKILL.md`](mirrord/mcp/corpus/skills/mirrord-up/SKILL.md) |
+| 14 | ✓ | [`mirrord/operator-websocket/AGENTS.md`](mirrord/operator-websocket/AGENTS.md) |
+| 15 | ✓ | [`mirrord/operator-websocket/CLAUDE.md`](mirrord/operator-websocket/CLAUDE.md) |
+| 16 | ✓ | [`mirrord/operator/AGENTS.md`](mirrord/operator/AGENTS.md) |
+| 17 | ✓ | [`mirrord/protocol/AGENTS.md`](mirrord/protocol/AGENTS.md) |
+| 18 | ✓ | [`mirrord/tui/AGENTS.md`](mirrord/tui/AGENTS.md) |
 
 ---
 

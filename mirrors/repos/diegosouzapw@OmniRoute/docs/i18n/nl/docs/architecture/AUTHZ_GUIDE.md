@@ -82,6 +82,16 @@ aangevuld:
 | `CLIENT_API` | Endpoints voor modelaanroepen — `/api/v1/*`, `/api/v1beta/*`, plus aliassen `/v1/*`, `/v1beta/*`, `/chat/completions`, `/responses`, `/models`, `/codex/*`. | Bearer-sleutel wanneer de effectieve featureflag `REQUIRE_API_KEY` is ingeschakeld |
 | `MANAGEMENT` | Dashboardpagina's, instellingen, providers, sleutels en endpoints voor beheer en diagnostiek.                                                               | Dashboardsessie OF Bearer met het bereik `manage`                                  |
 
+A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
+credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,
+`GET /api/db-backups/exportAll`), restoring a backup over the live data
+(`POST /api/db-backups/import` including `dryRun=true`, `POST /api/db-backups` restore by id,
+`POST /api/settings/import-json`), issuing a sync token (`POST /api/sync/tokens`) and minting an
+`admin` CLI access token (`POST /api/cli/tokens`) require a dashboard session, the local CLI
+subject, or login disabled; API keys of any scope and `oma_` access tokens get `403`. The check
+lives in `src/lib/api/operatorCredential.ts` (`resolveOperatorCredential()` /
+`requireOperatorCredential()`).
+
 ## Pipeline
 
 ```

@@ -57,10 +57,11 @@ import {
 } from "./env-setup.js";
 import {
   buildEnvCreditsPayload,
+  buildEnvMetricsPayload,
   isBillingExpired,
   resolveIsolatedDaysLeft,
 } from "./env-credits-payload.js";
-import type { EnvCreditsPayload } from "../resources/env-credits.js";
+import type { EnvCreditsPayload, EnvMetricsPayload } from "../resources/env-credits.js";
 import type { CreateEnvParams } from "@cloudbase/manager-node/types/interfaces/tcb.interface.js";
 
 /**
@@ -102,6 +103,32 @@ export function resolveCreateEnvResources(
   }
   return [...DEFAULT_CREATE_ENV_RESOURCES];
 }
+
+/**
+ * 新购 / 新建菜单里真正可选的套餐 id —— `manageEnv(action="listPackages")` 的过滤白名单。
+ *
+ * 为什么用 id 白名单而不是按 `PackageTypeList` 过滤：**类型分不出「新版 / 旧版」**。
+ * 个人版 `baas_personal` 与旧版入门版 `starter` 同属 `default` 族；标准版 `baas_pf_standard`
+ * 与旧版教育体验版 `education_demo` 分别混在 `basic` / `vip` 族里。
+ * 控制台同样是枚举硬编码而非类型过滤 —— 新版套餐枚举、新建环境套餐清单、购买页套餐枚举
+ * 三处收敛到同一套：个人版 / 标准版 / 企业版 / 企业高级版（另有体验版；购买页还含集成版）。
+ *
+ * 旧版族（入门版 / 初创版 / 商用版 / 团队版 / 团队高级版 / 团队进阶版 / 团队旗舰版 /
+ * 企业入门版 / 企业基础版 / 教育体验版 / 企业标准版~企业旗舰版）不出现在任何新购或新建菜单里，
+ * 只在套餐升级映射中作为「可升级来源」存在，故不列出。
+ *
+ * 取数仍传多个 `PackageTypeList`（将来新增档位不会被类型过滤静默丢掉），只在返回前按本表收敛。
+ */
+export const LISTABLE_PACKAGE_IDS = [
+  "baas_trial",
+  "baas_integration",
+  "baas_personal",
+  "baas_pf_standard",
+  "baas_pf_enterprise",
+  "baas_pf_enterprise_senior",
+] as const;
+
+const LISTABLE_PACKAGE_ID_SET: ReadonlySet<string> = new Set(LISTABLE_PACKAGE_IDS);
 
 /**
  * Resource-usage modules aligned with tcb CLI `USAGE_MODULES`
@@ -1785,9 +1812,13 @@ async function fetchPackageTitle(
   packageId: string,
 ): Promise<string | undefined> {
   try {
+    // 与 listPackages 同一个坑：漏传 PackageTypeList 会被服务端默认按 ["default"] 过滤，
+    // basic 族（baas_pf_standard / baas_pf_enterprise 等）查不到，packageTitle 静默降级为 undefined。
+    // 这里只需要「能查到名字」，与 manager-node 询价口径一致，故含 vip。
     const result = await manager.env.describeBaasPackageList({
       TargetAction: "new",
       Source: "qcloud",
+      PackageTypeList: ["default", "vip", "basic", "trial"],
     });
     const packageList = result?.PackageList || [];
     const matched = packageList.find(
@@ -1913,6 +1944,18 @@ async function calculateModifyPrice(
 }
 
 /**
+ * 计费接口（billing PriceResult / DescribeBaasPackageList）的金额字段单位是「分」，不是「元」。
+ * 契约旁证：DescribeBaasPackageList 的 UnitPrice（元）× 100 == create 询价的 TotalCost（分），
+ * 四档套餐全部吻合。控制台同样处处 /100 展示（tea-console-buy 的 PricePartDetailResource.tsx、
+ * ResPackItem.tsx、PricePartDetailPrivate.tsx）。漏掉这次换算会把 199 元的标准版
+ * 报成「预计实付 ￥19900」。
+ */
+function fenToYuan(value: unknown): number {
+  const amount = Number(value);
+  return Number.isFinite(amount) ? amount / 100 : NaN;
+}
+
+/**
  * 把 PriceResult 格式化为人类可读的价格摘要。
  * 返回 { summary, detail }：summary 是一行短语，detail 是多行明细。
  */
@@ -1925,12 +1968,17 @@ function formatPriceSection(priceResult: any): {
   }
 
   const currency = priceResult.Currency === "USD" ? "$" : "￥";
-  const realTotalCost = Number(priceResult.RealTotalCost);
-  const totalCost = Number(priceResult.TotalCost);
-  const unitPrice = Number(priceResult.Price);
+  // ⚠️ 计费接口 PriceResult 的金额字段单位是「分」，不是「元」。
+  // 契约侧旁证：DescribeBaasPackageList 的 UnitPrice(元) × 100 == create 询价的 TotalCost(分)。
+  // 控制台实现同样处处 /100 展示：tea-console-buy/src/components/PricePartDetailResource.tsx、
+  // ResPackItem.tsx、PricePartDetailPrivate.tsx。此前漏了这次换算，
+  // 导致 199 元的标准版被报成「预计实付 ￥19900」。
+  const realTotalCost = fenToYuan(priceResult.RealTotalCost);
+  const totalCost = fenToYuan(priceResult.TotalCost);
+  const unitPrice = fenToYuan(priceResult.Price);
   const timeSpan = priceResult.TimeSpan;
   const TimeUnit = priceResult.TimeUnit || "";
-  const refund = priceResult.Refund ? Number(priceResult.Refund) : undefined;
+  const refund = priceResult.Refund ? fenToYuan(priceResult.Refund) : undefined;
 
   const lines: string[] = [];
   let summary = "";
@@ -3001,10 +3049,12 @@ export function registerEnvTools(server: ExtendedMcpServer) {
     }) => {
       try {
         let result;
-        // MCP Apps：queryEnv(action="usage") 额外把同一次查询换算成 `ui://cloudbase/env-credits`
-        // 面板的载荷，随结果一起返回（structuredContent）。其它 action 不带——面板会退回本地兜底态。
-        // 只读、best-effort：任何一步拿不到都不影响上面的文本回执。
+        // MCP Apps：`ui://cloudbase/env-credits` 挂在整个 queryEnv 上（resourceUri 是工具级单值），
+        // 所以两个视图靠载荷里的 `kind` 分派：usage → 用量卡（credits，缺省），metrics → 指标卡。
+        // 面板按 `ui/notifications/tool-result` 收到的 structuredContent 渲染；不带载荷的 action
+        // （list/info/domains）面板退回本地兜底态。只读、best-effort：任何一步拿不到都不影响文本回执。
         let creditsPayload: EnvCreditsPayload | undefined;
+        let metricsPayload: EnvMetricsPayload | undefined;
         // region 是否真正透传到按地域的 DescribeEnvs：环境级凭证会 pin 到绑定
         // envId 改走 describeEnvInfo（见下方 list 分支），此时 region 不生效，
         // 回执必须如实告知，避免调用方据此误判环境地域。
@@ -3336,6 +3386,48 @@ export function registerEnvTools(server: ExtendedMcpServer) {
               Curve: curve,
               Summary: summarizeEnvMetricCurve(curve ?? {}),
             };
+
+            // 指标卡载荷：与 usage 同样 best-effort 取一次环境信息，只为品牌条的身份行
+            // （别名 + 套餐）；失败就按字段缺失降级（面板身份回退站点人话）。
+            // 曲线已在 buildEnvMetricsPayload 里按上限均匀抽样——`Curve` 原样不进载荷。
+            let metricsEnvInfo: any;
+            try {
+              metricsEnvInfo = await cloudbaseMetrics.env.describeEnvInfo({
+                EnvId: metricsEnvId,
+              });
+              logCloudBaseResult(server.logger, metricsEnvInfo);
+            } catch (envInfoError) {
+              debug(
+                "queryEnv(metrics) describeEnvInfo 失败，面板按字段缺失降级:",
+                envInfoError instanceof Error ? envInfoError : new Error(String(envInfoError)),
+              );
+            }
+            const metricsBaseInfo = metricsEnvInfo?.EnvInfo?.EnvBaseInfo;
+            const metricsPlanRaw =
+              (typeof metricsBaseInfo?.PackageId === "string" && metricsBaseInfo.PackageId) ||
+              (typeof metricsBaseInfo?.PackageName === "string" &&
+                metricsBaseInfo.PackageName) ||
+              null;
+            const metricsPlace = resolveSiteAndRegion({
+              site: cloudBaseOptions?.site,
+              region:
+                (typeof metricsBaseInfo?.Region === "string" && metricsBaseInfo.Region) ||
+                region,
+            });
+            metricsPayload = buildEnvMetricsPayload({
+              envId: metricsEnvId,
+              envAlias:
+                typeof metricsBaseInfo?.Alias === "string" ? metricsBaseInfo.Alias : null,
+              metricName: resolvedMetricName,
+              site: metricsPlace.site,
+              region: metricsPlace.region,
+              planRaw: metricsPlanRaw,
+              periodSeconds:
+                resolvedPeriod ??
+                (typeof curve?.Period === "number" ? curve.Period : null),
+              summary: result.Summary,
+              curve,
+            });
             break;
           }
 
@@ -3352,9 +3444,12 @@ export function registerEnvTools(server: ExtendedMcpServer) {
               text: responseText,
             },
           ],
-          // 面板契约（见 resources/env-credits.ts 的 EnvCreditsPayload）：只在 usage 时附带，
+          // 面板契约（见 resources/env-credits.ts 的 EnvCreditsPayload / EnvMetricsPayload）：
+          // usage 带用量载荷、metrics 带指标载荷（同一资源、按 kind 分派）；
           // 文本回执逐字不变，不支持 UI 的客户端拿到的是纯加法。
-          ...(creditsPayload ? { structuredContent: creditsPayload } : {}),
+          ...(creditsPayload || metricsPayload
+            ? { structuredContent: creditsPayload ?? metricsPayload }
+            : {}),
         };
       } catch (error) {
         const toolPayloadResult = toolPayloadErrorToResult(error);
@@ -3609,16 +3704,31 @@ export function registerEnvTools(server: ExtendedMcpServer) {
         switch (action) {
           case "listPackages": {
             // Query packages for new purchase. Source aligns with billing-side Baas package APIs.
+            // PackageTypeList 必须显式传：服务端默认按 ["default"] 过滤（见控制台 SDK 类型注释
+            // transactioncontract/tcb.d.ts），漏传会把 basic 族（标准版/企业版/企业高级版/集成版）
+            // 和 vip 族整族滤掉，导致「列表里查不到、实际却能创建」。
+            // 取值对齐控制台新购页 NewCreateEnvDuck：vip 是白名单语义，MCP 侧无白名单能力故不含。
             const result = await cloudbase.env.describeBaasPackageList({
               TargetAction: "new",
               Source: "qcloud",
+              PackageTypeList: ["default", "basic", "trial"],
             });
             logCloudBaseResult(server.logger, result);
+            // 接口按「类型」返回，结果里混着旧版套餐（入门版 / 团队版 / 企业基础版 …）。
+            // 这里按 id 白名单收敛到新购 / 新建菜单真正可选的那几档，理由见 LISTABLE_PACKAGE_IDS。
+            const fetched = (result.PackageList || result) as unknown;
+            const packages = Array.isArray(fetched)
+              ? fetched.filter((item) =>
+                  LISTABLE_PACKAGE_ID_SET.has(
+                    String((item as { PackageName?: unknown } | null)?.PackageName ?? ""),
+                  ),
+                )
+              : fetched;
             return buildJsonToolResult({
               ok: true,
               code: "PACKAGE_LIST",
               message: t("env.manage.packagesSuccess"),
-              packages: result.PackageList || result,
+              packages,
             });
           }
 
@@ -3745,8 +3855,8 @@ export function registerEnvTools(server: ExtendedMcpServer) {
                   ? {
                       summary: priceSection.summary,
                       currency: priceProbe.priceResult?.Currency,
-                      realTotalCost: priceProbe.priceResult?.RealTotalCost,
-                      totalCost: priceProbe.priceResult?.TotalCost,
+                      realTotalCost: fenToYuan(priceProbe.priceResult?.RealTotalCost),
+                      totalCost: fenToYuan(priceProbe.priceResult?.TotalCost),
                       timeSpan: priceProbe.priceResult?.TimeSpan,
                       timeUnit: priceProbe.priceResult?.TimeUnit,
                       inquiryRegion: pricingRegion,
@@ -3934,8 +4044,8 @@ export function registerEnvTools(server: ExtendedMcpServer) {
                   ? {
                       summary: priceSection.summary,
                       currency: priceProbe.priceResult?.Currency,
-                      realTotalCost: priceProbe.priceResult?.RealTotalCost,
-                      totalCost: priceProbe.priceResult?.TotalCost,
+                      realTotalCost: fenToYuan(priceProbe.priceResult?.RealTotalCost),
+                      totalCost: fenToYuan(priceProbe.priceResult?.TotalCost),
                       refund: priceProbe.priceResult?.Refund,
                     }
                   : priceProbe.error
@@ -4065,8 +4175,8 @@ export function registerEnvTools(server: ExtendedMcpServer) {
                   ? {
                       summary: priceSection.summary,
                       currency: priceProbe.priceResult?.Currency,
-                      realTotalCost: priceProbe.priceResult?.RealTotalCost,
-                      totalCost: priceProbe.priceResult?.TotalCost,
+                      realTotalCost: fenToYuan(priceProbe.priceResult?.RealTotalCost),
+                      totalCost: fenToYuan(priceProbe.priceResult?.TotalCost),
                       timeSpan: priceProbe.priceResult?.TimeSpan,
                       timeUnit: priceProbe.priceResult?.TimeUnit,
                     }

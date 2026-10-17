@@ -81,6 +81,16 @@ JWT ची पडताळणी यशस्वी झाली **आणि** �
 | `CLIENT_API` | मॉडेल उपलब्ध करून देणारे एंडपॉइंट — `/api/v1/*`, `/api/v1beta/*`, तसेच `/v1/*`, `/v1beta/*`, `/chat/completions`, `/responses`, `/models`, `/codex/*` ही उपनावे. | प्रभावी `REQUIRE_API_KEY` फीचर फ्लॅग सक्षम असताना Bearer की |
 | `MANAGEMENT` | डॅशबोर्ड पृष्ठे, सेटिंग्ज, प्रोव्हायडर, की, प्रशासकीय आणि निदान एंडपॉइंट.                                                                                        | डॅशबोर्ड सत्र किंवा `manage` स्कोप असलेला Bearer            |
 
+A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
+credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,
+`GET /api/db-backups/exportAll`), restoring a backup over the live data
+(`POST /api/db-backups/import` including `dryRun=true`, `POST /api/db-backups` restore by id,
+`POST /api/settings/import-json`), issuing a sync token (`POST /api/sync/tokens`) and minting an
+`admin` CLI access token (`POST /api/cli/tokens`) require a dashboard session, the local CLI
+subject, or login disabled; API keys of any scope and `oma_` access tokens get `403`. The check
+lives in `src/lib/api/operatorCredential.ts` (`resolveOperatorCredential()` /
+`requireOperatorCredential()`).
+
 ## पाइपलाइन
 
 ```

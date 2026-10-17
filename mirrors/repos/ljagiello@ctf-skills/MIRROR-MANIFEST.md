@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ljagiello/ctf-skills` — 26 default patterns, 0 followed patterns, 130 file(s) materialized.
+Mirror of `ljagiello/ctf-skills` — 26 default patterns, 0 followed patterns, 131 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ljagiello/ctf-skills` — 26 default patterns, 0 followed patterns, 1
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 130 |
+| Files         | 131 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -155,40 +155,41 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 94 | ✓ | [`ctf-reverse/patterns.md`](ctf-reverse/patterns.md) |
 | 95 | ✓ | [`ctf-reverse/platforms-hardware.md`](ctf-reverse/platforms-hardware.md) |
 | 96 | ✓ | [`ctf-reverse/platforms.md`](ctf-reverse/platforms.md) |
-| 97 | ✓ | [`ctf-reverse/SKILL.md`](ctf-reverse/SKILL.md) |
-| 98 | ✓ | [`ctf-reverse/tools-advanced-2.md`](ctf-reverse/tools-advanced-2.md) |
-| 99 | ✓ | [`ctf-reverse/tools-advanced.md`](ctf-reverse/tools-advanced.md) |
-| 100 | ✓ | [`ctf-reverse/tools-dynamic.md`](ctf-reverse/tools-dynamic.md) |
-| 101 | ✓ | [`ctf-reverse/tools-emulation.md`](ctf-reverse/tools-emulation.md) |
-| 102 | ✓ | [`ctf-reverse/tools-mcp.md`](ctf-reverse/tools-mcp.md) |
-| 103 | ✓ | [`ctf-reverse/tools.md`](ctf-reverse/tools.md) |
-| 104 | ✓ | [`ctf-reverse/unicorn-emulation.md`](ctf-reverse/unicorn-emulation.md) |
-| 105 | ✓ | [`ctf-web/auth-and-access-2.md`](ctf-web/auth-and-access-2.md) |
-| 106 | ✓ | [`ctf-web/auth-and-access.md`](ctf-web/auth-and-access.md) |
-| 107 | ✓ | [`ctf-web/auth-infra.md`](ctf-web/auth-infra.md) |
-| 108 | ✓ | [`ctf-web/auth-jwt.md`](ctf-web/auth-jwt.md) |
-| 109 | ✓ | [`ctf-web/client-side-advanced.md`](ctf-web/client-side-advanced.md) |
-| 110 | ✓ | [`ctf-web/client-side.md`](ctf-web/client-side.md) |
-| 111 | ✓ | [`ctf-web/cves.md`](ctf-web/cves.md) |
-| 112 | ✓ | [`ctf-web/field-notes.md`](ctf-web/field-notes.md) |
-| 113 | ✓ | [`ctf-web/node-and-prototype.md`](ctf-web/node-and-prototype.md) |
-| 114 | ✓ | [`ctf-web/pat-reference.md`](ctf-web/pat-reference.md) |
-| 115 | ✓ | [`ctf-web/python-requests.md`](ctf-web/python-requests.md) |
-| 116 | ✓ | [`ctf-web/server-side-2.md`](ctf-web/server-side-2.md) |
-| 117 | ✓ | [`ctf-web/server-side-advanced-2.md`](ctf-web/server-side-advanced-2.md) |
-| 118 | ✓ | [`ctf-web/server-side-advanced-3.md`](ctf-web/server-side-advanced-3.md) |
-| 119 | ✓ | [`ctf-web/server-side-advanced-4.md`](ctf-web/server-side-advanced-4.md) |
-| 120 | ✓ | [`ctf-web/server-side-advanced.md`](ctf-web/server-side-advanced.md) |
-| 121 | ✓ | [`ctf-web/server-side-deser.md`](ctf-web/server-side-deser.md) |
-| 122 | ✓ | [`ctf-web/server-side-exec-2.md`](ctf-web/server-side-exec-2.md) |
-| 123 | ✓ | [`ctf-web/server-side-exec.md`](ctf-web/server-side-exec.md) |
-| 124 | ✓ | [`ctf-web/server-side.md`](ctf-web/server-side.md) |
-| 125 | ✓ | [`ctf-web/SKILL.md`](ctf-web/SKILL.md) |
-| 126 | ✓ | [`ctf-web/sql-injection.md`](ctf-web/sql-injection.md) |
-| 127 | ✓ | [`ctf-web/tools-mcp.md`](ctf-web/tools-mcp.md) |
-| 128 | ✓ | [`ctf-web/web3.md`](ctf-web/web3.md) |
-| 129 | ✓ | [`ctf-writeup/SKILL.md`](ctf-writeup/SKILL.md) |
-| 130 | ✓ | [`solve-challenge/SKILL.md`](solve-challenge/SKILL.md) |
+| 97 | ✓ | [`ctf-reverse/radare2-r2pipe.md`](ctf-reverse/radare2-r2pipe.md) |
+| 98 | ✓ | [`ctf-reverse/SKILL.md`](ctf-reverse/SKILL.md) |
+| 99 | ✓ | [`ctf-reverse/tools-advanced-2.md`](ctf-reverse/tools-advanced-2.md) |
+| 100 | ✓ | [`ctf-reverse/tools-advanced.md`](ctf-reverse/tools-advanced.md) |
+| 101 | ✓ | [`ctf-reverse/tools-dynamic.md`](ctf-reverse/tools-dynamic.md) |
+| 102 | ✓ | [`ctf-reverse/tools-emulation.md`](ctf-reverse/tools-emulation.md) |
+| 103 | ✓ | [`ctf-reverse/tools-mcp.md`](ctf-reverse/tools-mcp.md) |
+| 104 | ✓ | [`ctf-reverse/tools.md`](ctf-reverse/tools.md) |
+| 105 | ✓ | [`ctf-reverse/unicorn-emulation.md`](ctf-reverse/unicorn-emulation.md) |
+| 106 | ✓ | [`ctf-web/auth-and-access-2.md`](ctf-web/auth-and-access-2.md) |
+| 107 | ✓ | [`ctf-web/auth-and-access.md`](ctf-web/auth-and-access.md) |
+| 108 | ✓ | [`ctf-web/auth-infra.md`](ctf-web/auth-infra.md) |
+| 109 | ✓ | [`ctf-web/auth-jwt.md`](ctf-web/auth-jwt.md) |
+| 110 | ✓ | [`ctf-web/client-side-advanced.md`](ctf-web/client-side-advanced.md) |
+| 111 | ✓ | [`ctf-web/client-side.md`](ctf-web/client-side.md) |
+| 112 | ✓ | [`ctf-web/cves.md`](ctf-web/cves.md) |
+| 113 | ✓ | [`ctf-web/field-notes.md`](ctf-web/field-notes.md) |
+| 114 | ✓ | [`ctf-web/node-and-prototype.md`](ctf-web/node-and-prototype.md) |
+| 115 | ✓ | [`ctf-web/pat-reference.md`](ctf-web/pat-reference.md) |
+| 116 | ✓ | [`ctf-web/python-requests.md`](ctf-web/python-requests.md) |
+| 117 | ✓ | [`ctf-web/server-side-2.md`](ctf-web/server-side-2.md) |
+| 118 | ✓ | [`ctf-web/server-side-advanced-2.md`](ctf-web/server-side-advanced-2.md) |
+| 119 | ✓ | [`ctf-web/server-side-advanced-3.md`](ctf-web/server-side-advanced-3.md) |
+| 120 | ✓ | [`ctf-web/server-side-advanced-4.md`](ctf-web/server-side-advanced-4.md) |
+| 121 | ✓ | [`ctf-web/server-side-advanced.md`](ctf-web/server-side-advanced.md) |
+| 122 | ✓ | [`ctf-web/server-side-deser.md`](ctf-web/server-side-deser.md) |
+| 123 | ✓ | [`ctf-web/server-side-exec-2.md`](ctf-web/server-side-exec-2.md) |
+| 124 | ✓ | [`ctf-web/server-side-exec.md`](ctf-web/server-side-exec.md) |
+| 125 | ✓ | [`ctf-web/server-side.md`](ctf-web/server-side.md) |
+| 126 | ✓ | [`ctf-web/SKILL.md`](ctf-web/SKILL.md) |
+| 127 | ✓ | [`ctf-web/sql-injection.md`](ctf-web/sql-injection.md) |
+| 128 | ✓ | [`ctf-web/tools-mcp.md`](ctf-web/tools-mcp.md) |
+| 129 | ✓ | [`ctf-web/web3.md`](ctf-web/web3.md) |
+| 130 | ✓ | [`ctf-writeup/SKILL.md`](ctf-writeup/SKILL.md) |
+| 131 | ✓ | [`solve-challenge/SKILL.md`](solve-challenge/SKILL.md) |
 
 ---
 

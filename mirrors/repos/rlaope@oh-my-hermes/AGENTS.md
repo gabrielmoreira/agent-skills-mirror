@@ -169,9 +169,16 @@ PR without the chat history.
   `hermes --tui` with `HERMES_TUI_DIR` pointing at OMH's packaged frontend, so
   Hermes' launcher still resolves the profile, resume target, working
   directory and session ownership, then starts OMH's frontend in place of its
-  own. That frontend spawns exactly one child, Hermes' `tui_gateway`, with the
-  interpreter and import path the launcher handed it, and speaks the
-  gateway's stdio JSON-RPC. It relays only what the person types; on its
+  own. That frontend spawns one child at a time, Hermes' `tui_gateway`, with
+  the interpreter, import path and environment the launcher handed it, and
+  speaks the gateway's stdio JSON-RPC. When that child exits on its own with
+  a failure (never after a normal exit, after the person quits, or for a
+  gateway another runtime owns), it spawns it again the same way and resumes
+  the session that was open (`session.resume`), at most 3 times in 60 s, as
+  Hermes' own TUI does: the open question and those waiting behind it close
+  unanswered, a turn that was running is reported lost and never sent again,
+  and past that limit it exits as it would without recovery, naming
+  `hermes --tui`. It relays only what the person types; on its
   own it reads Hermes' settings and command catalog as a session opens
   and, at a fresh start, `session.list` to name the last session under
   the banner, and, beyond opening and closing sessions
@@ -185,13 +192,25 @@ PR without the chat history.
   know). It never
   answers an approval, clarify, sudo, or secret request on its own, apart
   from declining at once a request it cannot show (listed above): Esc or
-  Ctrl+C declines, an approval decline is an explicit deny, allowing a
-  command takes the arrows and then Enter, and a request the gateway
-  withdraws (its own timeout, an interrupt) closes without an answer.
+  Ctrl+C declines, an approval decline is an explicit deny and then
+  interrupts the running turn (`session.interrupt`, only while a turn runs;
+  every deny the person gives an approval does, `d`, `n` and Enter on deny
+  too, except the tell row's below), allowing a command takes the arrows
+  and then Enter, and a request the gateway withdraws (its own timeout, an
+  interrupt) closes without an answer.
+  Hermes' `always` choice is offered only when the request lists it and is
+  sent, like any allow, only on the person's arrows and then Enter; saving
+  it as a permanent allow (`command_allowlist`) is Hermes' doing, and like
+  allow this session for one session it stops Hermes asking about commands
+  that match. An approval's last row, "no, and tell Hermes what to do
+  instead", sends the explicit deny at once, interrupts nothing, and then
+  opens the composer for what the person tells Hermes instead; Esc there
+  sends nothing more.
   Leaving a session (`/new`, a switch) declines that session's open requests
   and says so in the new transcript. Shift+Tab is the one key that changes
-  what Hermes asks. It may turn on Hermes' per-session yolo, the switch
-  Shift+Tab sets in Hermes' own TUI, which stops Hermes from sending approval
+  what Hermes asks; the approval answers above change it only for the
+  commands they match. Shift+Tab may turn on Hermes' per-session yolo, the
+  switch it sets in Hermes' own TUI, which stops Hermes from sending approval
   requests for that session; the TUI still answers none, because Hermes then
   sends none. It does this only on the person's keypress, with a `config.set`
   that names the session and an explicit value and never a `scope`, so it
@@ -221,8 +240,10 @@ PR without the chat history.
   Hermes as `/plan <text>`. While Hermes has approvals off on its own (an off
   it confirmed did not end them, or they were off without the TUI turning
   them on), Shift+Tab sends nothing and turns only plan mode on and off. A
-  steer (Ctrl+Enter, `/steer`) sends into the running turn only text the
-  person typed and sent that way; the TUI never steers on its own, and a
+  steer (Ctrl+Enter, `/steer`, or what the person sends from the composer
+  the tell row opened) sends into the running turn only text the person
+  typed and sent that way, and the tell row's text goes as an ordinary
+  prompt once the turn has ended; the TUI never steers on its own, and a
   queued prompt is never turned into a steer. A steer Hermes does
   not take waits in the TUI's own queue for the running turn to
   end, whatever the busy mode, so it never interrupts that turn.
@@ -272,7 +293,8 @@ PR without the chat history.
   `omh` named, which `omh` removes. The frontend opens no socket and makes no
   network call, strips the sidecar and attach URLs from the gateway's
   environment, and reaps the gateway when it exits, SIGTERM and SIGHUP
-  included. OMH itself still makes no
+  included. Ctrl+Z stops the process group, Hermes' gateway with it, as
+  Hermes' own CLI's Ctrl+Z does, and fg continues both. OMH itself still makes no
   LLM call; every model call, and every other network call the gateway makes,
   is Hermes'. This is a foreground terminal the person launched, not a
   background runtime, a transport bot, or a third process bridge.

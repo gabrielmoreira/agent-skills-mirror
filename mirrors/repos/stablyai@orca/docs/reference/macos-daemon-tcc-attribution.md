@@ -32,7 +32,8 @@ So a packaged macOS GUI app starts its daemon from a private copy that the updat
   replaceable path. The label is fixed per profile and protocol
   (`com.stablyai.orca.terminal.<profile hash>.v<protocol>`). Before bootstrap a stopped job with
   that label is booted out. A running job gets a bounded wait for shutdown and launchd retirement;
-  a job still running afterward, or an unreadable one, is fatal. `--entry-path` stays the installed
+  a job still running afterward gets the retired-service recovery below for this protocol's label
+  only, and stays fatal unless that recovery releases it; an unreadable job is fatal. `--entry-path` stays the installed
   app's entry, which the replacement preflight compares. The job file is 0600 and deleted right
   after bootstrap, because the environment may hold credentials. It sets
   `AssociatedBundleIdentifiers` to `com.stablyai.orca`, which is how a launchd job not installed
@@ -130,8 +131,10 @@ An explicit, untargeted Restart also recovers signed-helper jobs left by older b
 retired their PID record and endpoint but failed to exit. Recovery uses exact launchd labels and
 arguments for this profile, ignores newer protocols, and preserves live or unreadable endpoints
 and services still publishing a PID record. It verifies descendant exits before killing the old
-root and releasing its label. Startup never runs this cleanup, and a failed recovery is logged
-without blocking the current daemon's restart. Node/SSH hosts do not perform GUI-service recovery.
+root and releasing its label. A failed recovery is logged without blocking the current daemon's
+restart. A launch runs the same recovery only for the current protocol's label, and only once that
+label still blocks bootstrap after the retirement wait (#29361); otherwise the label refused every
+new terminal until a manual Restart. Node/SSH hosts do not perform GUI-service recovery.
 
 Running old daemons keep their terminals; settings reports app and terminal-host Full Disk Access
 separately, and a denied terminal is recovered by closing it or restarting the daemon. The packaging

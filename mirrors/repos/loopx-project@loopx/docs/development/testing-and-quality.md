@@ -409,20 +409,27 @@ Effect 后台进程；相同源码指纹可能让源码环境与已安装版本�
 The Effect server drains admitted handlers before retiring. With compilation
 caching enabled, its final synchronous cache flush has a one-second allowance,
 supervised by a worker in the same process. Healthy completion still persists
-the real Node cache before removing the locator. A blocked/failed flush or
-unavailable supervisor instead performs the same fenced, identity-checked
-locator cleanup and forcefully exits the already settled process, bypassing
-Node's automatic cache flush at exit. This may discard optional cache entries;
-it never authorizes abandoning an admitted effect. Cache-disabled execution
-uses ordinary cleanup without a worker. The allowance does not bound locator
+the real Node cache before removing the locator. A blocked or failed flush
+keeps that cache-disabled worker responsible for the same fenced, identity-checked
+locator cleanup and termination of the already settled process. Node invokes
+the calling environment's [native exit hooks even on self-`SIGKILL`](https://github.com/nodejs/node/blob/v24.21.0/src/node_process_methods.cc#L199-L205), so terminating
+the worker and killing from the main thread can re-enter cache persistence.
+The regression checks real cache files, not just the exit signal. If no supervisor
+can start, locator cleanup and main-thread termination remain best effort: that
+fallback cannot promise to bypass the native cache hook. Worker retirement may
+discard optional cache entries; it never authorizes abandoning an admitted effect.
+Cache-disabled execution uses ordinary cleanup without a worker. The allowance does not bound locator
 lock/storage waits or OS scheduling. Native platform qualification remains
 separate from injected-failure coverage; V8 CPU samples do not measure kernel IO.
 
 Effect 服务先排空已接纳的 handler，再退出。启用编译缓存时，同进程 worker
 监督最终同步写盘，给缓存一秒处理时间；正常完成仍先持久化真实 Node 缓存，
-再清理定位文件。写盘阻塞、失败或监督 worker 不可用时，复用同一锁和精确身份
-校验清理定位文件，然后强制终止已结算的进程，绕过 Node 退出时的自动缓存写盘。
-这可能丢弃可选缓存条目，不允许放弃已接纳的业务操作。关闭缓存时无需 worker，
+再清理定位文件。写盘阻塞或失败时，保留已就绪且关闭缓存的 worker，由它复用
+同一锁和精确身份校验清理定位文件，并终止已结算的进程。Node 自发 `SIGKILL`
+也先执行调用环境的原生退出钩子，因此先停 worker 再由主线程终止会重入缓存写盘；
+回归检查实际缓存文件，不能只检查退出信号。监督 worker 无法启动时，定位文件
+清理和主线程终止仍尽力执行，该回退不能保证绕过原生缓存钩子。Worker 退休可能
+丢弃可选缓存条目，不允许放弃已接纳的业务操作。关闭缓存时无需 worker，
 继续普通清理。一秒额度不涵盖定位文件锁、存储等待或操作系统调度；故障注入不能
 代替原生平台资格验证，V8 CPU 样本也不测量内核 IO。
 
@@ -724,6 +731,8 @@ Each triggered snapshot uses an isolated same-interpreter writer with a 100ms
 self-exit deadline, plus a 500ms parent communication timeout with kill/reap.
 This bounds pipe backpressure without changing shared stderr flags or leaving
 a persistently blocked writer after pytest exits; native process startup can add latency.
+The observer retains its own process constructor, so test replacements of public
+`subprocess.run` or `subprocess.Popen` cannot capture its diagnostic writer.
 Snapshots may be dropped on IO failure or backpressure. Default `0` starts no
 observer timer or writer process; pytest's own results and reports remain authoritative.
 The reusable Sonar workflow consumes that same run's XML and never reruns
@@ -751,6 +760,8 @@ JUnit、coverage 或必过门禁。归属与测量边界见
 每次触发栈输出时，使用同解释器的隔离 writer，100ms 自行退出；父进程另设
 500ms 通信期限，超时则终止并回收。管道背压不会改变共享 stderr 标志或留下
 持续阻塞的 writer；原生进程启动仍可能增加延迟。IO 失败或背压时可丢弃栈输出。
+观察器保留自己的进程构造入口，测试替换公共 `subprocess.run` 或 `subprocess.Popen`
+不会接管诊断 writer。
 默认 `0` 不启动观察 timer 或 writer 进程；pytest 原生结果和报告仍是权威。
 Sonar 只复用同一次 run 的 XML，不重复测试、不跨 run 取产物。缺少 token 仍成功跳过
 Sonar，测试 job 不接收 Sonar secret。触发范围取原有两套 workflow 的并集；纯前端
@@ -1174,6 +1185,31 @@ it does not grant execution quota, spending, or provider authority.
    budget-only change need not force unrelated code cleanup. Frozen experiment
    or promotion thresholds stay fixed for that result; revised thresholds belong
    to a new qualification, never a relabeled historical pass.
+
+The initial-delivery guidance change measured the same 96-row fixture at
+`f6cf9583794eb8c4cca41fa832a1c2f150059583` and
+`da01f996c820aad3bae85268963e64c6bbb19d7c`. The complete instruction adds
+2,340 JSON characters to guided start/bootstrap, 3,496 to explicit command-pack
+detail, and 578 to bootstrap Markdown, with no added lines. Existing planner,
+plan-prompt, guided-transaction and message consumers retain their contracts;
+removing a copy requires a caller migration. The instruction preserves strong
+feasible first quality, coherent implementation/validation, full-cost comparison,
+bounded diagnostic probes and existing acceptance/feedback/authority limits.
+Truncating those obligations to fit the old differential is not lossless.
+
+Only the observed absence-to-complete-guidance transition on those carriers gets
+2,400 / 3,600 / 600 character-and-byte allowances (60 / 104 / 22 headroom).
+The probe recognizes the complete frozen structured field or rendered Todo
+instruction, never a runtime permission or quality classification. Absolute
+ceilings, semantic fields, fixture scale, line limits and every other surface
+remain unchanged; an already-upgraded, missing or incomplete instruction gets no
+transition allowance. This qualifies the disclosed default guidance change,
+not a real model's adoption, benchmark improvement or additional execution quota.
+
+首次交付指引在同一 96 行负载上增加默认 JSON 2340、详情 JSON 3496、Markdown
+578 个字符，行数不变。保留现有消费者与完整质量、诊断和权限义务，仅对上述输出
+载体从缺失到完整指引的首次变化给予 2400/3600/600 的有界额度；绝对上限、语义、
+规模及后续增长检查不变。原失败保留；不据此声称模型采用、实验增益或额外执行权限。
 
 The latest qualification pins true main `e47e4507a` and merged candidate
 `3955d1c8b` on the same public fixture, with explicit per-probe source imports.

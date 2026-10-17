@@ -103,6 +103,12 @@ existing analysis families directly, for example
 | `start_adb_activity`    | **mutates device** | Starts an intent (`am start -a` with optional URI, component, and up to 16 typed extras); preserves the activity manager's verdict                                                                                                    |
 | `stop_adb_app`          | **mutates device** | Force-stops every process of a package, ending a dynamic-analysis run                                                                                                                                                                 |
 
+For `inspect_adb_window`, an explicitly printed null focus reference becomes
+JSON `null`. `observed_lines` retains the original focus declarations, including
+their field names, so explicit absence can be distinguished from omitted
+declarations. REA reads the displays section only when the windows section
+declares neither focus field. If both sections omit them, focus remains unknown.
+
 For `install_adb_package`, `replace_requested` records whether `-r` was sent.
 The `replaced` result is `null`: the successful install response does not say
 whether the package was installed fresh or replaced, and REA does not query the
@@ -153,8 +159,10 @@ and during shutdown.
 - **Mutations are explicit.** `push_adb_file`, `install_adb_package`, and
   `uninstall_adb_package` declare `mutatesTarget` and never run implicitly:
   pushes check for existing device files before transfer and refuse them
-  unless `overwrite` is set. The check is not atomic, so a different process
-  can create the path before `adb push` writes it. When available, the device's
+  unless `overwrite` is set. A failed or unexpected existence probe stops
+  transfer even with `overwrite`; only a clean `test -e` exit of 1 with no
+  output is interpreted as absence. The check is not atomic, so a different
+  process can create the path before `adb push` writes it. When available, the device's
   `sha256sum` verifies the transfer; installs preserve the
   device's `Failure [...]` reason verbatim.
 - **Producer identity stays attached.** Every result embeds the producing
@@ -167,8 +175,10 @@ and during shutdown.
   The app/activity lifecycle tools use `am start -W` and `am force-stop`.
 - Per-invocation budgets: client/devices 10-20 s, shell reads 20-60 s with
   64 KiB-8 MiB capture caps (logcat 4 MiB, screen 32 MiB), transfers and
-  bugreports 600 s. Exceeded budgets report `resource_constraint`; stopped
-  commands report `provider_timeout`.
+  bugreports 600 s. Output capture overflow reports `resource_constraint`;
+  deadline expiration, including the client-version probe, reports
+  `provider_timeout`. Command cancellation preserves the caller's exact reason;
+  a later abort does not replace an already completed command failure.
 - Pull and capture outputs are additive: the destination must not already
   exist. Re-running a completed pull refuses the existing directory instead
   of overwriting evidence.

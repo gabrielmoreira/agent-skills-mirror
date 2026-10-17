@@ -222,10 +222,66 @@ owned cleanup seams while preserving real cleanup where feasible. Check server
 settlement and retained resources even if the MCP SDK rejects the client promise
 before the handler finishes. A cancellation during active execution does not
 cover cancellation during final cleanup.
+Use explicit abort reasons and assert their identity at admission and after
+provider completion, alongside retained observations and cleanup state.
 
 For atomic writes, exercise cancellation on both sides of the documented commit
 point and preserve any publication receipt. A late interruption does not prove
 that no output was published.
+
+For successful provider reports, test cancellation immediately before the report
+reaches the application workflow as well as during provider cleanup. Validate
+the report before classifying completion: a valid report must retain its Evidence
+on cancellation, and an invalid report must keep its output error. Exercise both
+the provider boundary and the shared CLI/MCP workflow; a downstream guard does
+not repair the provider's own completion contract. When callers share startup,
+cancel each waiter independently and verify that the last departure awaits owned
+cleanup while interested peers can still reach readiness. Repeat the same
+shutdown event after a cleanup failure to verify that its listener can retry.
+Exercise non-default lifecycle deadlines through queued requests and their
+consumers; default-only controls cannot detect dropped request options.
+
+For descriptor-backed reads, inject a close failure after a successful read and
+after a primary read or cancellation failure. Verify that the exact descriptor
+remains owned, both failures survive, and a later close retries it. Repeat
+admission attempts while close still fails: no additional descriptor or
+native command should start. Restore close and verify that the exact owner
+resolves the originating cleanup marker and allows later work, while the earlier
+failure remains available as a diagnostic. Retain errors returned by multiple
+failed retries, including admission and shutdown aggregates, and assert that
+each becomes complete after recovery. For an aggregate with multiple owners,
+release one owner while another still fails and assert that it remains incomplete.
+Cover recovery before the
+caller-specific error is bound to its retained owner, as
+another request can retry cleanup concurrently. Confirm that an already released
+owner resolves a later binding too. Include
+admission failure after opening the descriptor. If caller cancellation returns
+before an inspection settles, gate its final read or close and verify that
+session shutdown waits for the owned work and reports any retained resources.
+Gate a later read in a multi-read inspection, not only its first read. Overlap
+operations so one retains a failed descriptor while another reaches its next
+read; both the operation and shutdown must settle without nested-admission
+deadlock. Deny child close and verify its containing root survives until retry.
+
+Exercise publication on filesystems without hard links using an unsupported-link
+seam. Check exclusive destination creation, stat/write/close failures, completed
+output receipts, and cancellation at the documented cutoff. A streamed fallback
+has different visibility from an atomic hard-link commit and must report it
+accurately. For Windows command supervision, keep a descendant writing after its
+leader exits, deny cleanup observation, and verify a competing writer remains
+excluded until the exact Job Object closes. Portable doubles cover retry logic;
+the native Windows lane must establish actual process-tree behavior.
+
+Supervisor tests must observe process exit, output-pipe closure, and IPC
+disconnection separately. In the pinned Node runtime, a parent-initiated IPC
+disconnect can omit the aggregate `ChildProcess` close event. Join the actual
+resource observations before reporting completion; process exit alone does not
+establish pipe or process-tree release.
+
+When changing an internal helper contract, check its JavaScript verifier and
+subprocess-script consumers alongside TypeScript references. Source typecheck
+does not check those calls; run their orchestration tests against the built
+modules, including the verifier's failure and cleanup paths.
 
 Representative regressions include
 [process cleanup-time SIGINT](https://github.com/morluto/rea/blob/e78455338fe2d06c4cd03d59cbf33473d754998b/tests/boundary/process/processCaptureCancellationAdapters.test.ts),
@@ -919,6 +975,16 @@ decompilation, 16-bit overflow rejection without replacing the active session,
 and runtime cleanup. Windows additionally requires the matching native addon;
 its verifier lineage remains explicitly unavailable outside the provider's
 retained Job Object, as in the other Windows lanes.
+
+`npm run verify:ghidra:m68k` needs no assembler: its 22-byte big-endian 68000
+fixture is source-owned annotated hex in the verifier, loaded at `0x1000`. With
+an installed Ghidra 12.1.4 and full JDK on Linux or macOS, it verifies the
+`68000:BE:32:default` BinaryLoader import, real CLI/stdio MCP load-image parity,
+exact source bytes, both functions, the `bsr.b` call reference, decompilation
+through address and file offset, rejection of a misaligned entry and of a mapping
+past `0xffffffff` without replacing the active session, and runtime cleanup.
+Windows Ghidra P0 does not admit m68k, so this is not a Windows lane. The lane
+has been run on macOS; Linux has not been exercised.
 
 `npm run verify:ghidra:raw` uses a generated ARM little-endian headerless image
 through the compiled CLI and stdio MCP server. With the same Ghidra/JDK

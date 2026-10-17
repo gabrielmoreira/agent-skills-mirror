@@ -36,7 +36,8 @@ those back from this computer's settings whenever a sync, a join, a Restore,
 an Undo or a backup file brings settings in, and `hashes` blanks them, so
 changing one is no change to push. They are: the window's size and whether it
 was maximised, the fonts, the proxy, the gateway's port, sharing on the local
-network (`LAN`) and the addresses let in to it (`AllowIPs`), the Dock, gateway
+network (`LAN`) and the addresses let in to it (`AllowIPs`), the private
+hosts magpie may download from (`FetchPrivate`), the Dock, gateway
 mode, keeping awake, lightweight windows, WSL lookups, account discovery, when
 allowances are read, recording gateway conversations, the Mac terminal a
 session resumes in (`SessionTerminal`) and what the menu bar shows. Launch at

@@ -16,7 +16,7 @@ runtime, SDK, framework, plugin API, or other core dependency actually behaves.
 When you ask for cloned dependency source, the Orchestrator:
 
 1. Checks `.slim/clonedeps.json` first and reuses existing clones when possible.
-2. Asks `@librarian` for source-repo recommendations only if more context is
+2. Asks `@explorer` for source-repo recommendations only if more context is
    needed.
 3. Presents a small clone plan for approval.
 4. Clones each approved source repository once into

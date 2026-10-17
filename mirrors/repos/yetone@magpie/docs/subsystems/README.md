@@ -8,6 +8,7 @@ These pages describe current responsibilities, runtime paths, state, and contrac
 | Built-in plugins: registry, lifecycle, plugins.yml, presets, settings schemas, the window's kernel (slots, error boundary, kit) | [Plugin runtime](plugin-runtime.md) |
 | Plugins that run on the gateway's requests and replies | [Gateway middleware](gateway-middleware.md) |
 | Tools that plugins give, offered to every agent as an MCP server | [Plugin tools](plugin-tools.md) |
+| Plugins that await context recall and observe completed replies | [Asynchronous gateway request hooks](gateway-request-hooks.md) |
 | Claude subscription turns across Claude Code runs | [Claude subscription bridge](claude-subscription-bridge.md) |
 | How the gateway picks a provider, key or account, and falls back | [Gateway routing and fallback](gateway-routing.md) |
 | Gateway Session Aggregation | [Gateway Session Aggregation](gateway-sessions.md) |

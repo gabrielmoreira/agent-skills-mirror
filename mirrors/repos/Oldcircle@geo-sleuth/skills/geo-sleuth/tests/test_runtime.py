@@ -235,6 +235,46 @@ class OverpassMirrorTests(unittest.TestCase):
         data, _, _ = self.run_with(lambda ep, q: (count(0) if ep == osm.ENDPOINTS[0] else count(1), ""), ql)
         self.assertEqual(data["elements"][0]["tags"]["total"], "1")
 
+    def test_empty_admin_level_inside_a_relation_needs_a_second_mirror(self):
+        ql = ('[out:json][timeout:180];rel(161349);map_to_area->.a;'
+              'rel(area.a)["boundary"="administrative"]["admin_level"="5"];out tags bb;')
+        data, calls, cached = self.run_with(lambda ep, q: ({"elements": []} if ep == osm.ENDPOINTS[0] else {"elements": [LINE]}, ""), ql)
+        self.assertEqual(len(data["elements"]), 1)
+        self.assertEqual(calls, osm.ENDPOINTS[:2])
+
+    def test_legacy_empty_area_cache_is_rechecked_and_replaced(self):
+        import hashlib
+        ql = '[out:json];rel(161349);map_to_area->.a;rel(area.a);out tags bb;'
+        with tempfile.TemporaryDirectory() as d:
+            cache = Path(d)
+            key = cache / (hashlib.sha1(ql.encode()).hexdigest()[:16] + '.json')
+            key.write_text(json.dumps({'elements': []}), encoding='utf-8')
+            with patch.object(osm, '_post', return_value=({'elements': [LINE]}, '')) as post:
+                self.assertEqual(osm.run(ql, None, cache)['elements'], [LINE])
+                self.assertEqual(post.call_count, 1)
+            with patch.object(osm, '_post', side_effect=AssertionError('nonempty cache missed')):
+                self.assertEqual(osm.run(ql, None, cache)['elements'], [LINE])
+
+    def test_confirmed_empty_cache_is_reused_without_leaking_cache_metadata(self):
+        with tempfile.TemporaryDirectory() as d:
+            with patch.object(osm, '_post', return_value=({'elements': []}, '')) as post:
+                self.assertEqual(osm.run(QH, None, Path(d)), {'elements': []})
+                self.assertEqual(post.call_count, 2)
+            with patch.object(osm, '_post', side_effect=AssertionError('confirmed cache missed')):
+                self.assertEqual(osm.run(QH, None, Path(d)), {'elements': []})
+
+    def test_unconfirmed_refresh_does_not_turn_legacy_cache_into_confirmed_empty(self):
+        import hashlib
+        with tempfile.TemporaryDirectory() as d:
+            cache = Path(d)
+            key = cache / (hashlib.sha1(QH.encode()).hexdigest()[:16] + '.json')
+            key.write_text(json.dumps({'elements': []}), encoding='utf-8')
+            with patch.object(osm, '_post', side_effect=lambda ep, *a: ({'elements': []}, '') if ep == osm.ENDPOINTS[0] else (None, '503')):
+                self.assertEqual(osm.run(QH, None, cache), {'elements': []})
+            with patch.object(osm, '_post', return_value=({'elements': [LINE]}, '')) as post:
+                self.assertEqual(osm.run(QH, None, cache)['elements'], [LINE])
+                self.assertEqual(post.call_count, 1)
+
     def test_bbox_empty_is_trusted(self):
         ql = '[out:json][timeout:180];nwr["power"="line"](37.6,95.2,37.8,95.4);out geom tags;'
         _, calls, cached = self.run_with(lambda ep, q: ({"elements": []}, ""), ql)

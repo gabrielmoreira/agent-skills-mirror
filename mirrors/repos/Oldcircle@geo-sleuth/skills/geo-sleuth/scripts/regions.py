@@ -79,6 +79,30 @@ def _fold(s: str) -> str:
     return re.sub(r"[\s.()\-_'’]", "", s)
 
 
+def osm_name_keys() -> tuple[str, ...]:
+    """OSM tags to match a place name on: `name`, plus every installed pack's `osm_name_keys` (CN: name:zh, name:zh-Hans,
+    because OSM's `name` adds a second script for some regions and simplified forms live only in name:zh-Hans)."""
+    extra = {k for m in packs().values() if isinstance(m.get("osm_name_keys"), list)
+             for k in m["osm_name_keys"] if isinstance(k, str) and k.startswith("name:")}
+    return ("name", *sorted(extra))
+
+
+def poi_for_script(text: str) -> dict | None:
+    """The poi service of the first pack whose services.poi.keyword_scripts (Unicode character-name prefixes, e.g.
+    "CJK UNIFIED IDEOGRAPH") match a character of text: the default sources when poi.py gets no --region."""
+    import unicodedata as ud
+    names = [ud.name(ch, "") for ch in text]
+    for _, m in sorted(packs().items()):
+        services = m.get("services") or {}
+        poi = services.get("poi") if isinstance(services, dict) else None
+        scripts = poi.get("keyword_scripts") if isinstance(poi, dict) else None
+        if not isinstance(scripts, list) or not all(isinstance(s, str) and s.strip() for s in scripts):
+            continue   # lint reports malformed settings; other packs must keep working
+        if any(n.startswith(tuple(scripts)) for n in names if n):
+            return poi
+    return None
+
+
 def resolve(country: str | None) -> dict | None:
     """Country code / name / alias → pack, or None when no installed pack matches."""
     if not country:
@@ -351,6 +375,23 @@ def lint(pack: dict) -> tuple[list[str], list[str]]:
             errs.append(f"docs: {rel} not found")
             continue
         _lint_entries(f, rel, errs, warns)
+    keys = pack.get("osm_name_keys")
+    if keys is not None and not (isinstance(keys, list) and all(isinstance(k, str) and k.startswith("name:") for k in keys)):
+        errs.append("region.json: 'osm_name_keys' must be a list of OSM name:* tags")
+    services = pack.get("services", {})
+    if not isinstance(services, dict):
+        errs.append("region.json: 'services' must be an object")
+        services = {}
+    poi = services.get("poi", {})
+    if not isinstance(poi, dict):
+        errs.append("region.json: 'services.poi' must be an object")
+        poi = {}
+    scripts = poi.get("keyword_scripts")
+    if scripts is not None and not (isinstance(scripts, list) and all(isinstance(s, str) and s.strip() for s in scripts)):
+        errs.append("region.json: 'services.poi.keyword_scripts' must be a list of Unicode character-name prefixes")
+    also = pack.get("also_children")
+    if also is not None and not (isinstance(also, list) and all(isinstance(n, str) and n.strip() for n in also)):
+        errs.append("region.json: 'also_children' must be a list of OSM relation names")
     levels = set((pack.get("admin_levels") or {}).values())
     bad_lv = levels - set(MATCH_LEVELS)
     if bad_lv:

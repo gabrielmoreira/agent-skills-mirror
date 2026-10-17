@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `vinta/awesome-python` — 26 default patterns, 3 followed patterns, 9 file(s) materialized.
+Mirror of `vinta/awesome-python` — 26 default patterns, 3 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vinta/awesome-python` — 26 default patterns, 3 followed patterns, 9
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,12 +64,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.claude/skills/audit-the-list/SKILL.md`](.claude/skills/audit-the-list/SKILL.md) |
 | 2 | ✓ | [`.claude/skills/preview-verdicts/SKILL.md`](.claude/skills/preview-verdicts/SKILL.md) |
 | 3 | ✓ | [`.claude/skills/review-prs/SKILL.md`](.claude/skills/review-prs/SKILL.md) |
-| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | ✓ | [`website/templates/llms.txt`](website/templates/llms.txt) |
-| 7 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 8 | → | [`README.md`](README.md) |
-| 9 | → | [`SPONSORSHIP.md`](SPONSORSHIP.md) |
+| 4 | ✓ | [`.claude/skills/scan-github-stars/SKILL.md`](.claude/skills/scan-github-stars/SKILL.md) |
+| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 7 | ✓ | [`website/templates/llms.txt`](website/templates/llms.txt) |
+| 8 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 9 | → | [`README.md`](README.md) |
+| 10 | → | [`SPONSORSHIP.md`](SPONSORSHIP.md) |
 
 ---
 

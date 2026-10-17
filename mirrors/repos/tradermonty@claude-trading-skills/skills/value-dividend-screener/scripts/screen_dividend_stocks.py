@@ -680,7 +680,8 @@ class StockAnalyzer:
             "fcf_amount": None,
             "fcf_status": "MISSING_DATA",
             "fcf_coverage_status": "MISSING_DATA",
-            "sustainability_basis": "FFO" if is_reit else "EARNINGS_AND_FCF",
+            # FFO means a usable FFO payout assessment, including dividend data.
+            "sustainability_basis": "FFO_UNAVAILABLE" if is_reit else "EARNINGS_AND_FCF",
             "sustainable": False,
             "sustainability_note": "Required cash-flow data is unavailable; sustainability cannot be confirmed.",
         }
@@ -699,6 +700,9 @@ class StockAnalyzer:
             if math.isfinite(fcf):
                 result["fcf_amount"] = fcf
                 result["fcf_status"] = "POSITIVE" if fcf > 0 else "NEGATIVE" if fcf < 0 else "ZERO"
+            else:
+                result["fcf_status"] = "NON_FINITE"
+                result["fcf_coverage_status"] = "NON_FINITE"
 
         if dividends_paid is None:
             result["sustainability_note"] = (
@@ -733,6 +737,7 @@ class StockAnalyzer:
         if is_reit:
             ffo_payout = StockAnalyzer.calculate_ffo_payout_ratio(cash_flows)
             if ffo_payout is not None:
+                result["sustainability_basis"] = "FFO"
                 result["payout_ratio"] = ffo_payout
                 result["sustainable"] = ffo_payout < 80
                 result["sustainability_note"] = (
@@ -776,6 +781,10 @@ class StockAnalyzer:
             elif result["fcf_coverage_status"] == "AT_LIMIT":
                 result["sustainability_note"] = (
                     "Free cash flow exactly equals dividends, leaving no coverage buffer."
+                )
+            elif result["fcf_coverage_status"] == "NON_FINITE":
+                result["sustainability_note"] = (
+                    "Derived free cash flow is non-finite; dividend coverage cannot be assessed."
                 )
             elif result["fcf_coverage_status"] == "MISSING_DATA":
                 result["sustainability_note"] = (

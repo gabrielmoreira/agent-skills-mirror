@@ -19,9 +19,10 @@ MW2) showed about scaling up.
 
 ## Your tools
 
-`um` is the toolkit CLI. Plugin installs and clones put it on PATH (it lives at `bin/um` in the repo).
-Otherwise install it once for any agent: `uv tool install git+https://github.com/rehan-remade/universal-modder`
-(or `pipx install ...`). Every group has `--help` with examples.
+`um` is the toolkit CLI (`bin/um` in the repo). The Claude Code plugin and a clone opened in Claude Code put it
+on PATH; other agents' plugin installs don't. If `command -v um` finds nothing, use `bin/um` in a clone, or
+install it once: `uv tool install git+https://github.com/rehan-remade/universal-modder` (or `pipx install ...`).
+Every group has `--help` with examples.
 
 | Need | Command |
 |---|---|

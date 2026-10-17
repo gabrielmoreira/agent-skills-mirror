@@ -79,6 +79,16 @@ Cookieがセッションとして扱われるのは、JWTの検証に成功し�
 | `CLIENT_API` | モデル提供エンドポイント — `/api/v1/*`、`/api/v1beta/*`、およびエイリアス `/v1/*`、`/v1beta/*`、`/chat/completions`、`/responses`、`/models`、`/codex/*`。 | 有効な `REQUIRE_API_KEY` 機能フラグが有効な場合はBearerキー    |
 | `MANAGEMENT` | ダッシュボードページ、設定、プロバイダー、キー、管理および診断エンドポイント。                                                                             | ダッシュボードセッション、または `manage` スコープを持つBearer |
 
+A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
+credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,
+`GET /api/db-backups/exportAll`), restoring a backup over the live data
+(`POST /api/db-backups/import` including `dryRun=true`, `POST /api/db-backups` restore by id,
+`POST /api/settings/import-json`), issuing a sync token (`POST /api/sync/tokens`) and minting an
+`admin` CLI access token (`POST /api/cli/tokens`) require a dashboard session, the local CLI
+subject, or login disabled; API keys of any scope and `oma_` access tokens get `403`. The check
+lives in `src/lib/api/operatorCredential.ts` (`resolveOperatorCredential()` /
+`requireOperatorCredential()`).
+
 ## パイプライン
 
 ```

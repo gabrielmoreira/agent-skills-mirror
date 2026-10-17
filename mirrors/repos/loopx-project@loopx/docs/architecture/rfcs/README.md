@@ -96,6 +96,20 @@ failure leaves the generated files untouched.
   successor reciprocally names that predecessor in `Supersedes / closes`.
 
 
+## Bilingual changes
+
+Existing English/Chinese RFC pairs and their ledger entries must both have a
+diff in the same PR. Before committing, run
+`python3 scripts/check_rfc_bilingual.py --base origin/main --staged` (including
+earlier branch commits). Before merge, run
+`python3 scripts/check_rfc_bilingual.py --base origin/main --head HEAD`, using
+the PR's actual target branch and reviewed head. Source-checkout
+`uv run --extra test loopx canary premerge --from-git-diff` includes this direct
+blocking check in every tier. CI waiting and admin bypass do not waive it.
+Only committed changes satisfy the merge check. It compares from the merge base,
+includes paired deletion/renaming, and leaves legacy single-language files alone.
+Paired diffs do not certify translation accuracy.
+
 ## Overall Product and Delivery Roadmap
 
 - [LoopX Overall Roadmap v0](loopx-overall-roadmap-v0.md)
@@ -434,12 +448,17 @@ failure leaves the generated files untouched.
     approval. No new authority, Todo field, lifetime usage or Lark parity.
 - [Live Team Workspace v0](live-team-workspace-v0.md)
   ([中文版](live-team-workspace-v0.zh-CN.md))
-  - **Delivery on `main`:** Design proposal only; no live team-stream qualification.
+  - **Delivery on `main`:** Partial: bounded team inspection and readable Goal Chat
+    results/comparison are shipped; live team streaming remains unqualified.
   - **Current boundary:** A command surface plus spatial research studio, evidence
     handoff motion, conclusion revision and replay. L1 requires one real
     objection→revision→acceptance→adoption journey with evidence and intervention/stop
     feedback in packaged UI; L2 requires original-coordinator two-cycle acceptance;
     L3 qualifies semantic zoom and display scale. No new scheduler or authority.
+    The proposed [long-horizon product reading journey](../../product/use-cases/auto-research/long-horizon-progress-design.md)
+    ([中文版](../../product/use-cases/auto-research/long-horizon-progress-design.zh-CN.md))
+    adds a one-selection evidence-reading target under this presentation owner;
+    research calibration and packaged qualification remain open, without delaying L1/R2.
 - [Human Attention Wishlist v0](human-attention-wishlist-v0.md)
   ([中文版](human-attention-wishlist-v0.zh-CN.md))
   - **Delivery on `main`:** Intentionally deferred.

@@ -210,7 +210,7 @@ Skill discovery uses `SKILL.md` plus optional bundled resources:
 
 Script-backed skills run through the shell tool and use the host `node` and `python3` executables on `PATH`. Execution is gated by the `security/` sandbox policy like any other tool.
 
-Recurring work belongs to the `cron` domain (with `scheduler_gate`), not to skills. There is no per-skill cron handler.
+Recurring work belongs to the `cron` domain (with `platform::llm_gate`), not to skills. There is no per-skill cron handler.
 
 ---
 
@@ -324,7 +324,7 @@ Core subsystems run on `tiny*` crates, vendored as git submodules under `vendor/
 | WebSocket  | tokio-tungstenite + rustls         | Persistent connections with native TLS                    |
 | HTTP       | reqwest                            | Async HTTP with rustls + native-TLS support          |
 | Encryption | chacha20poly1305 (secret store), aes-gcm + argon2 (`security/encryption/`) | Config-field secrets use ChaCha20-Poly1305 under a keychain-backed master key (`enc2:` prefix); the separate user-facing encryption facility uses AES-256-GCM with Argon2id |
-| Scheduling | cron crate + `cron` domain         | Standard cron expressions, `scheduler_gate`-gated         |
+| Scheduling | cron crate + `cron` domain         | Standard cron expressions, `llm_gate`-gated         |
 | Telegram   | `tinychannels` Bot API driver      | Transport in vendored `tinychannels`; host keeps bus/approval glue |
 | Realtime   | Socket.io (client)                 | Bidirectional event-based communication                   |
 | AI         | MCP (JSON-RPC 2.0)                 | Standardized tool protocol for LLM integration            |

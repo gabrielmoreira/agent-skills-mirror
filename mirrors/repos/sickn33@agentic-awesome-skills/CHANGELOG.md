@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [19.8.0] - 2026-10-16 - "Fifteen Reviewed Additions And A Healthier Review Lane"
+
+> Adds **15** catalog skills, updates **mmx-cli**, and ships **2,705** skills. Every external contribution in this release went through an individual maintainer review bound to its exact content, and the fork review lane records eight additional explicitly reviewed skill bundles.
+
+### Added
+
+- **agentic-verify** — check that a Python change is caught by tests: run every mutant of the changed lines with a pinned runner, write tests until they catch them, and report kills, uncovered changed lines and which new tests fail on the old code.
+- **agentic-test-audit** — report-only audit of a pytest suite for surviving mutants, untested code, flaky, order-dependent and slow tests, with removal candidates checked on held-out mutants.
+- **altorank** — SEO and AI-search readiness audits, Search Console reads, keyword research and draft creation into a person-reviewed queue through the hosted AltoRank MCP server. Never publishes, approves or deletes content.
+- **apify-reddit-scraper** — Reddit posts, comments, subreddits and profiles as structured data through the `harshmaur/reddit-scraper` Apify Actor, with cost estimates before each run and explicit paid-run boundaries.
+- **chord-onchain-trading** — read DEX market data and prepare best-route swap quotes and unsigned transactions on eight EVM chains. Never signs or moves funds.
+- **moltnode-chain-reader** — keyless JSON-RPC reads (balances, blocks, contract calls) on 31 blockchains, plus Chord swap quotes with an unsigned transaction and simulation.
+- **healthcare-job-search** — US healthcare jobs and the hourly pay employers post, through CareJobs.Now's free read-only MCP server or public CC BY 4.0 JSON endpoints.
+- **openhook** — disposable callback inboxes, cursor-based waits, payload inspection and authorized cleanup for integration testing, with private-token and untrusted-body boundaries.
+- **obsess** — a bounded perfectionist loop for one target that keeps the best evidence-backed attempt and stops on an attempt or time budget.
+- **logo-to-stickers** — turn a brand mark into consistent paper-sticker characters with small visual stories and separate transparent images.
+- **movie-coupon**, **parcel-coupon**, **takeout-coupon**, **trip-coupon** and **obtain-coupons-all-in-one** — Chinese coupon feeds for cinema, courier, food-delivery and ride/travel platforms, with a verbatim coupon-code rule and explicit mainland-China redemption limits.
+
+### Changed
+
+- **mmx-cli** now documents the current MiniMax-H3 v2 video model, regional endpoints, content roles and lifecycle operations, and the current H3 and music-3.0 pricing instead of the retired defaults.
+- Raised `@supabase/supabase-js` and `react-virtuoso` to their current patch releases in the catalog app.
+- The protected fork ledger records eight additional explicitly reviewed skill bundles — #1938, #1939, #1943 and the five #1944 coupon skills — each bound to its fork, PR, reviewed head and complete skill tree object.
+
+### Fixed
+
+- Added the missing README source credit for `carejobs-mcp`, `UmarSiddiqui/obsess` and the five moooai coupon repositories so the source-credit gate passes for the merged skills.
+- Moved `walkthrough.md` and `EVALUATIONS.md` into `references/` inside their skills so the support-file contract covers them, and normalized the `obsess` helper scripts to non-executable modes.
+- Kept plugin mirrors and generated registries out of every source PR; canonical state is published only through the protected synchronization lane.
+
+### Review scope
+
+Each new or changed skill was reviewed in full at its exact content, including bundled scripts, references and assets. The new skills declare their own provider, cost, credential and host limits, and none of them was exercised against a live third-party paid service during review. The broader catalog audit remains unfinished.
+
+### Thanks
+
+Thanks to **@harshmaur**, **@mikececco**, **@UmarSiddiqui**, **@huyanxius**, **@tuantqse90**, **@berkantay**, **@moooai**, **@yumaheymans**, **@octo-patch** and **@timini** for the reviewed additions, and to the upstream authors whose licensed material is included.
+
+---
+
 ## [19.7.0] - 2026-10-14 - "Clearer Plugins, Recovered Resources And Safer Skills"
 
 > Adds **browser-bridge**, ships **2,690** catalog skills, and consolidates **58** overlapping plugin bundles into **30** active offers with preserved skill inventories and migration guidance.

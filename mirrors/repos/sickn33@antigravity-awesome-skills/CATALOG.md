@@ -1,8 +1,8 @@
 # Skill Catalog
 
-Generated at: 2026-10-14T18:55:53.000Z
+Generated at: 2026-10-16T11:41:20.000Z
 
-Total skills: 2690
+Total skills: 2705
 
 ## agent-behavior (5)
 
@@ -513,11 +513,12 @@ Total skills: 2690
 | `whatsapp-cloud-api` | Integracao com WhatsApp Business Cloud API (Meta). Mensagens, templates, webhooks HMAC-SHA256, automacao de atendimento. Boilerplates Node.js e Python. | critical | community | messaging, whatsapp, meta, webhooks | messaging, whatsapp, meta, webhooks, cloud, api, integracao, com, business, mensagens, hmac, sha256 |
 | `x402-express-wrapper` | Wrapper oficial de M2MCent (Node.js) para inyectar muros de pago x402 en APIs o servidores Model Context Protocol (MCP). Usar al construir nuevos servicios q... | critical | community | x402, defi, monetization, express, mcp | x402, defi, monetization, express, mcp, wrapper, oficial, de, m2mcent, node, js, para |
 
-## blockchain (11)
+## blockchain (13)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
 | `blockchain-developer` | Build production-ready Web3 applications, smart contracts, and decentralized systems. Implements DeFi protocols, NFT platforms, DAOs, and enterprise blockcha... | critical | community | blockchain | blockchain, developer, web3, applications, smart, contracts, decentralized, implements, defi, protocols, nft, platforms |
+| `chord-onchain-trading` | Read DEX market data and prepare best-route swap quotes and unsigned swap transactions on eight EVM chains with the Chord API. Never signs or moves funds. | critical | getchordlabs/chord | crypto, defi, dex, swap, evm, market-data | crypto, defi, dex, swap, evm, market-data, chord, onchain, trading, read, market, data |
 | `crypto-bd-agent` | Production-tested patterns for building AI agents that autonomously discover, evaluate, and acquire token listings for cryptocurrency exchanges. | safe | community | crypto, bd, agent | crypto, bd, agent, tested, building, ai, agents, autonomously, discover, evaluate, acquire, token |
 | `defi-protocol-templates` | Implement DeFi protocols with production-ready templates for staking, AMMs, governance, and lending systems. Use when building decentralized finance applicat... | critical | community | defi, protocol | defi, protocol, protocols, staking, amms, governance, lending, building, decentralized, finance, applications, smart |
 | `emblemai-crypto-wallet` | Crypto wallet management across 7 blockchains via EmblemAI Agent Hustle API. Balance checks, token swaps, portfolio analysis, and transaction execution for S... | critical | EmblemCompany/Agent-skills (MIT) | emblemai, crypto, wallet | emblemai, crypto, wallet, blockchains, via, agent, hustle, api, balance, checks, token, swaps |
@@ -526,6 +527,7 @@ Total skills: 2690
 | `lightning-factory-explainer` | Explain Bitcoin Lightning channel factories and the SuperScalar protocol — scalable Lightning onboarding using shared UTXOs, Decker-Wattenhofer trees, timeou... | safe | community | lightning, factory, explainer | lightning, factory, explainer, explain, bitcoin, channel, factories, superscalar, protocol, scalable, onboarding, shared |
 | `maxia` | Connect to MAXIA AI-to-AI marketplace on Solana. Discover, buy, sell AI services. Earn USDC. 13 MCP tools, A2A protocol, DeFi yields, sentiment analysis, rug... | critical | community | solana, crypto, marketplace, ai-agents, mcp, defi, usdc, web3, a2a | solana, crypto, marketplace, ai-agents, mcp, defi, usdc, web3, a2a, maxia, connect, ai |
 | `meteora-dlmm-pool-screening` | Screen and rank Meteora DLMM pools for LP quality using public Meteora APIs (fee/TVL, bin step, organic score). Read-only: never deploys, swaps, or signs. | safe | romankurnovskii/etemaro | meteora, dlmm, pool, screening | meteora, dlmm, pool, screening, screen, rank, pools, lp, quality, public, apis, fee |
+| `moltnode-chain-reader` | Read 31 blockchains over keyless JSON-RPC with MoltNode (balances, blocks, contract calls) and get Chord swap quotes with an unsigned transaction and simulat... | critical | tuantqse90/moltnode-mcp | crypto, blockchain, json-rpc, evm, solana, swap | crypto, blockchain, json-rpc, evm, solana, swap, moltnode, chain, reader, read, 31, blockchains |
 | `nft-standards` | Master ERC-721 and ERC-1155 NFT standards, metadata best practices, and advanced NFT features. | critical | community | nft, standards | nft, standards, erc, 721, 1155, metadata, features |
 | `web3-testing` | Master comprehensive testing strategies for smart contracts using Hardhat, Foundry, and advanced testing patterns. | critical | community | web3 | web3, testing, smart, contracts, hardhat, foundry |
 
@@ -731,6 +733,12 @@ Total skills: 2690
 | `find-complementary-founders` | Use when an owner explicitly asks for a cofounder or project partner, or explicitly says they need a complementary builder, operator, go-to-market partner, o... | critical | merc1305/findMate | cofounder, founder-matching, collaboration, privacy, agent-skills | cofounder, founder-matching, collaboration, privacy, agent-skills, find, complementary, founders, owner, explicitly, asks, partner |
 | `kotler-macro-analyzer` | Professional PESTEL/SWOT analysis agent based on Kotler's methodology for strategic market audits. | safe | self | marketing, economics, strategy, kotler, pestel | marketing, economics, strategy, kotler, pestel, macro, analyzer, professional, swot, analysis, agent, methodology |
 | `osterwalder-canvas-architect` | Iterative consultant agent for building and validating logically consistent 9-block Business Model Canvases. | safe | self | business-model, osterwalder, strategy, bmc | business-model, osterwalder, strategy, bmc, canvas, architect, iterative, consultant, agent, building, validating, logically |
+
+## career-jobs (1)
+
+| Skill | Description | Risk | Source | Tags | Triggers |
+| --- | --- | --- | --- | --- | --- |
+| `healthcare-job-search` | Find open US healthcare jobs (nursing, CNA, allied health, therapy, imaging, pharmacy, physicians) and the hourly pay employers post, via CareJobs.Now's free... | safe | yumaheymans/carejobs-mcp | jobs, healthcare, nursing, job-search, pay, mcp | jobs, healthcare, nursing, job-search, pay, mcp, job, search, find, open, us, cna |
 
 ## cloud (147)
 
@@ -1081,7 +1089,7 @@ Total skills: 2690
 | `liuguang-banlan-ui` | Builds two parameterized UI modes—流光溢彩白 (iridescent white) and 五彩斑斓黑 (colorful black)—with OKLCH, WebGL/CSS fallback, vision gating, screenshot QA, and total... | critical | self | ui, frontend, oklch, webgl, accessibility | ui, frontend, oklch, webgl, accessibility, liuguang, banlan, two, parameterized, modes, iridescent, white |
 | `modellix` | Integrate the Modellix API/CLI for async AI image, video, and speech generation or transcription (model run --wait, task download). | critical | Modellix/modellix-plugin | image-generation, video-generation, audio-generation, text-to-speech, speech-to-text, speech-to-speech, modellix, cli, api | image-generation, video-generation, audio-generation, text-to-speech, speech-to-text, speech-to-speech, modellix, cli, api, integrate, async, ai |
 
-## data (44)
+## data (45)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -1090,6 +1098,7 @@ Total skills: 2690
 | `analytics` | When the user wants to set up, improve, or audit analytics tracking and measurement. | critical | coreyhaines31/marketingskills | analytics | analytics, user, wants, set, up, improve, audit, tracking, measurement |
 | `analytics-product` | Analytics de produto — PostHog, Mixpanel, eventos, funnels, cohorts, retencao, north star metric, OKRs e dashboards de produto. | none | community | analytics, product, metrics, posthog, mixpanel | analytics, product, metrics, posthog, mixpanel, de, produto, eventos, funnels, cohorts, retencao, north |
 | `analytics-tracking` | Design, audit, and improve analytics tracking systems that produce reliable, decision-ready data. | critical | community | analytics, tracking | analytics, tracking, audit, improve, produce, reliable, decision, data |
+| `apify-reddit-scraper` | Scrape Reddit posts, comments, subreddits and users with the harshmaur/reddit-scraper Apify Actor. No Reddit API key. Keyword search, date windows, full thre... | critical | harshmaur/apify-reddit-scraper-skill | reddit, apify, scraping, social-listening, brand-monitoring, subreddit, comments | reddit, apify, scraping, social-listening, brand-monitoring, subreddit, comments, scraper, scrape, posts, subreddits, users |
 | `arrowspace` | Spectral vector search using graph Laplacian eigenstructure. Use when cosine/L2 similarity misses latent structure in your embeddings. | safe | Genefold/arrowspace-skills | vector-search, spectral-analysis, graph-laplacian, embeddings, lambda-tau | vector-search, spectral-analysis, graph-laplacian, embeddings, lambda-tau, arrowspace, spectral, vector, search, graph, laplacian, eigenstructure |
 | `data-engineer` | Build scalable data pipelines, modern data warehouses, and real-time streaming architectures. Implements Apache Spark, dbt, Airflow, and cloud-native data pl... | critical | community | data | data, engineer, scalable, pipelines, warehouses, real, time, streaming, architectures, implements, apache, spark |
 | `datacircle` | Look up LinkedIn profiles by URL through Datacircle (Up2Data, HarvestAPI or Fetchin, no markup), over its hosted MCP server or REST API, with the user's yes ... | critical | self | b2b-data, linkedin, enrichment, rest-api, mcp | b2b-data, linkedin, enrichment, rest-api, mcp, datacircle, look, up, profiles, url, through, up2data |
@@ -1219,7 +1228,7 @@ Total skills: 2690
 | `logic-locate` | Locate the root cause of a CONFIRMED failure via backward-then-forward semi-formal tracing. | safe | hyhmrright/logic-lens | logic, locate | logic, locate, root, cause, confirmed, failure, via, backward, then, forward, semi, formal |
 | `phase-gated-debugging` | Use when debugging any bug. Enforces a 5-phase protocol where code edits are blocked until root cause is confirmed. Prevents premature fix attempts. | safe | community | phase, gated, debugging | phase, gated, debugging, any, bug, enforces, protocol, where, code, edits, blocked, until |
 
-## design (43)
+## design (44)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -1242,6 +1251,7 @@ Total skills: 2690
 | `favicon` | Generate favicons from a source image | critical | community | favicon | favicon, generate, favicons, source, image |
 | `figma-automation` | Automate Figma tasks via Rube MCP (Composio): files, components, design tokens, comments, exports. Always search tools first for current schemas. | safe | community | figma | figma, automation, automate, tasks, via, rube, mcp, composio, files, components, tokens, comments |
 | `free-design-resources` | Design resource register: resource and provider, licence type, commercial-use and attribution rules, export format, lock-in risk, free tier limit and accessi... | safe | WHOISABHISHEKADHIKARI/sme-ops-system-builder | sme, design-tools, free-licences, fonts, icons, images, templates, accessibility, cost, csv, sql, notion | sme, design-tools, free-licences, fonts, icons, images, templates, accessibility, cost, csv, sql, notion |
+| `logo-to-stickers` | Turn a brand mark or existing IP into consistent, playful paper stickers with small visual stories and separate transparent images. Use for brand characters ... | safe | huyanxius/logo-to-stickers | branding, stickers, illustration, image-generation | branding, stickers, illustration, image-generation, logo, turn, brand, mark, existing, ip, consistent, playful |
 | `lookdev` | Human-in-the-loop web studio to tune AI-generated output by eye. Stand up a local interactive studio (sliders, pickers, drag handles) or an inline edit/highl... | safe | connerkward/lookdev-studio-skill | lookdev, design, ui, tuning, studio, visual-eval, annotation | lookdev, design, ui, tuning, studio, visual-eval, annotation, human, loop, web, tune, ai |
 | `lookdev-auto` | Automated visual tuning: a vision or video model rates rendered variants in a loop. Render several labeled variants into one artifact, ask the model to rate ... | safe | connerkward/lookdev-auto-skill | visual-eval, vision-model, tuning, automation, render-loop | visual-eval, vision-model, tuning, automation, render-loop, lookdev, auto, automated, visual, vision, video, model |
 | `loss-aversion-designer` | Compare gain and loss framing and describe credible costs of inaction when an offer needs urgency without fearmongering. | safe | community | loss, aversion, designer | loss, aversion, designer, compare, gain, framing, describe, credible, costs, inaction, offer, urgency |
@@ -1332,7 +1342,7 @@ Total skills: 2690
 | `skill-porter` | Preview conservative tool-name translations and copy complete local skill bundles for manual adaptation to Google Antigravity. | critical | Pranav-Nexus/antigravity-skill-porter | antigravity, claude, skills, migration, agent | antigravity, claude, skills, migration, agent, skill, porter, preview, conservative, name, translations, copy |
 | `tokenwise` | Measurement-driven model router for Claude Code. Routes Haiku/Sonnet/Opus per task class, logs every routed task with real $ numbers, and A/B tests cheaper t... | critical | CodeShuX/tokenwise | model-routing, token-optimization, cost-reduction, anthropic, haiku, sonnet, opus, claude-code, ab-testing, measurement | model-routing, token-optimization, cost-reduction, anthropic, haiku, sonnet, opus, claude-code, ab-testing, measurement, tokenwise, driven |
 
-## development (224)
+## development (226)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -1499,7 +1509,9 @@ Total skills: 2690
 | `nerdzao-elite` | Software engineering and product design workflow and Senior Product Designer. Full workflow with planning, architecture, TDD, clean code, and pixel-perfect U... | safe | community | nerdzao, elite | nerdzao, elite, software, engineering, product, senior, designer, full, planning, architecture, tdd, clean |
 | `nerdzao-elite-gemini-high` | Modo Elite Coder + UX Pixel-Perfect otimizado especificamente para Gemini 3.1 Pro High. Workflow completo com foco em qualidade máxima e eficiência de tokens. | safe | community | nerdzao, elite, gemini, high | nerdzao, elite, gemini, high, modo, coder, ux, pixel, perfect, otimizado, especificamente, para |
 | `nx-workspace-patterns` | Configure and optimize Nx monorepo workspaces. Use when setting up Nx, configuring project boundaries, optimizing build caching, or implementing affected com... | critical | community | nx, workspace | nx, workspace, configure, optimize, monorepo, workspaces, setting, up, configuring, boundaries, optimizing, caching |
+| `obsess` | Perfectionist mode for one target: checked attempts on a UI detail or hot path, keeps the best version, stops on a budget. Only on explicit /obsess. | safe | UmarSiddiqui/obsess | polish, ui, performance, verification, refactoring | polish, ui, performance, verification, refactoring, obsess, perfectionist, mode, one, target, checked, attempts |
 | `ontoly-software-graph` | Use Ontoly's deterministic Software Graph, MCP server, and agent skills for architecture review, request tracing, impact analysis, and dependency analysis. | critical | 0xsarwagya/ontoly | software-graph, codebase-analysis, mcp, typescript, architecture, impact-analysis | software-graph, codebase-analysis, mcp, typescript, architecture, impact-analysis, ontoly, software, graph, deterministic, server, agent |
+| `openhook` | Creates private callback inboxes with Openhook. Use when an agent needs to wait for a webhook, inspect received HTTP/email/DNS events, or verify a test callb... | critical | openhook-dev/openhook-inbox | webhooks, integration-testing, mcp | webhooks, integration-testing, mcp, openhook, creates, private, callback, inboxes, agent, wait, webhook, inspect |
 | `orca-replay` | Answers questions about a past agent run from its recording rather than from memory, and replays or forks that run. Use when asked why an earlier run did som... | critical | Continuum-AI-Corp/OrcaReplay | debugging, replay, trace, root-cause, agent-runs, mcp | debugging, replay, trace, root-cause, agent-runs, mcp, orca, answers, questions, about, past, agent |
 | `performance-engineer` | Diagnose performance bottlenecks using profiling, traces, load tests, and observability; verify latency and capacity improvements. | critical | community | performance | performance, engineer, diagnose, bottlenecks, profiling, traces, load, tests, observability, verify, latency, capacity |
 | `performance-optimization` | Optimizes application performance. Use when performance requirements exist, when you suspect performance regressions, or when Core Web Vitals or load times n... | critical | addyosmani/agent-skills | performance, optimization | performance, optimization, optimizes, application, requirements, exist, suspect, regressions, core, web, vitals, load |
@@ -2888,10 +2900,11 @@ Total skills: 2690
 | `zero-trust` | Implement zero-trust network architecture. Configure identity-based access, micro-segmentation, and continuous verification. Use when implementing modern sec... | critical | BagelHole/DevOps-Security-Agent-Skills | zero, trust | zero, trust, network, architecture, configure, identity, access, micro, segmentation, continuous, verification, implementing |
 | `zeroize-audit` | Detects missing zeroization of sensitive data in source code and identifies zeroization removed by compiler optimizations, with assembly-level analysis, and ... | offensive | community | zeroize, audit | zeroize, audit, detects, missing, zeroization, sensitive, data, source, code, identifies, removed, compiler |
 
-## seo (33)
+## seo (34)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
+| `altorank` | Run AltoRank through its hosted MCP server: readiness audits, Search Console, keyword research, and SEO drafts into a review queue. | safe | AltoRank/altorank | seo, geo, mcp, content, search-console, keyword-research | seo, geo, mcp, content, search-console, keyword-research, altorank, run, through, hosted, server, readiness |
 | `geo-audit` | Full website GEO+SEO audit with parallel subagent delegation. | safe | zubair-trabzada/geo-seo-claude | geo, audit | geo, audit, full, website, seo, parallel, subagent, delegation |
 | `geo-brand-mentions` | Brand mention and authority scanner for AI visibility. | safe | zubair-trabzada/geo-seo-claude | geo, brand, mentions | geo, brand, mentions, mention, authority, scanner, ai, visibility |
 | `geo-citability` | AI citability scoring and optimization. | safe | zubair-trabzada/geo-seo-claude | geo, citability | geo, citability, ai, scoring, optimization |
@@ -2925,6 +2938,16 @@ Total skills: 2690
 | `seo-sitemap` | Analyze existing XML sitemaps or generate new ones with industry templates. Validates format, URLs, and structure. Use when user says "sitemap", "generate si... | critical | https://github.com/AgriciDaniel/claude-seo | seo, sitemap | seo, sitemap, analyze, existing, xml, sitemaps, generate, new, ones, industry, validates, format |
 | `social-metadata-hardening` | Fix social sharing previews so URLs render as rich cards on Facebook, LinkedIn, X/Twitter, WhatsApp, Telegram, and more. Covers OG tags, Twitter cards, absol... | safe | self | seo, open-graph, twitter-card, social-sharing, og-image, nextjs, metadata | seo, open-graph, twitter-card, social-sharing, og-image, nextjs, metadata, social, hardening, fix, sharing, previews |
 | `tools-page-seo-optimizer` | Framework-agnostic SEO workflow for any site with multiple tool, product, or feature pages. Covers duplicate content, unique meta tags, heading hierarchy, in... | safe | community | seo, tools-pages, product-pages, duplicate-content, content-registry, meta-tags, internal-linking, url-slugs, e-e-a-t, framework-agnostic | seo, tools-pages, product-pages, duplicate-content, content-registry, meta-tags, internal-linking, url-slugs, e-e-a-t, framework-agnostic, page, optimizer |
+
+## shopping (5)
+
+| Skill | Description | Risk | Source | Tags | Triggers |
+| --- | --- | --- | --- | --- | --- |
+| `movie-coupon` | Fetch movie ticket coupons from platforms like Taopiaopiao and Maoyan. Returns coupon links and QR code images for users to redeem via WeChat. | safe | moooai/movie-coupon | coupons, movie, cinema, entertainment | coupons, movie, cinema, entertainment, coupon, fetch, ticket, platforms, like, taopiaopiao, maoyan, returns |
+| `obtain-coupons-all-in-one` | All-in-one coupon fetcher supporting takeout (Meituan, Ele.me, JD), parcel/courier (SF, ZTO, YTO, etc.), travel (DiDi, Ctrip), and movie tickets (Taopiaopiao... | safe | moooai/obtain-coupons-all-in-one | coupons, all-in-one, takeout, travel, movie, parcel | coupons, all-in-one, takeout, travel, movie, parcel, obtain, all, one, coupon, fetcher, supporting |
+| `parcel-coupon` | Call parcel/courier coupon API to fetch one-stop logistics service coupons, including smart shipping and smart price matching. Returns coupon links and QR co... | safe | moooai/parcel-coupon | coupons, parcel, courier, sf-express, cainiao | coupons, parcel, courier, sf-express, cainiao, coupon, call, api, fetch, one, stop, logistics |
+| `takeout-coupon` | Call takeout coupon API to fetch hidden coupon lists, red packets and aggregated redemption pages for platforms (Meituan, Taobao Flash/Ele.me, JD.com). Retur... | safe | moooai/takeout-coupon | coupons, takeout, food-delivery, meituan, eleme | coupons, takeout, food-delivery, meituan, eleme, coupon, call, api, fetch, hidden, lists, red |
+| `trip-coupon` | Call trip/travel coupon API to fetch travel coupons including DiDi ride-hailing gift packages and hotel coupon bundles. Returns coupon links and QR code imag... | safe | moooai/trip-coupon | coupons, travel, didi, hotel, ride-hailing | coupons, travel, didi, hotel, ride-hailing, trip, coupon, call, api, fetch, including, ride |
 
 ## skill-authoring (2)
 
@@ -2977,7 +3000,7 @@ Total skills: 2690
 | `test-automator` | Master AI-powered test automation with modern frameworks, self-healing tests, and comprehensive quality engineering. Build scalable testing strategies with a... | critical | community | automator | automator, test, ai, powered, automation, frameworks, self, healing, tests, quality, engineering, scalable |
 | `webapp-testing` | To test local web applications, write native Python Playwright scripts. | critical | community | webapp | webapp, testing, test, local, web, applications, write, native, python, playwright, scripts |
 
-## testing (47)
+## testing (49)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -2985,6 +3008,8 @@ Total skills: 2690
 | `agent-qa-authoring` | Create, edit, validate, and run Agent QA tests, suites, and hooks through MCP or CLI while preserving canonical IDs and schema contracts. | critical | vostride/agent-qa | testing, qa, mcp, web-testing, mobile-testing | testing, qa, mcp, web-testing, mobile-testing, agent, authoring, edit, validate, run, tests, suites |
 | `agent-qa-debug-fix` | Debug, patch, and verify failed Agent QA runs from MCP evidence, artifacts, logs, and local code without hiding product or infrastructure defects. | critical | vostride/agent-qa | testing, qa, debugging, mcp, self-healing | testing, qa, debugging, mcp, self-healing, agent, debug, fix, patch, verify, failed, runs |
 | `agent-qa-result-triage` | Triage failed Agent QA runs with MCP evidence, artifacts, logs, fixed failure categories, confidence, and actionable next steps. | safe | vostride/agent-qa | testing, qa, triage, mcp, debugging | testing, qa, triage, mcp, debugging, agent, result, failed, runs, evidence, artifacts, logs |
+| `agentic-test-audit` | Audit a pytest suite: surviving mutants and untested code, flaky, order-dependent and slow tests, and removal candidates checked on held-out mutants. Report-... | safe | timini/agentic-verification | testing, pytest, mutation-testing, python, flaky-tests, test-audit | testing, pytest, mutation-testing, python, flaky-tests, test-audit, agentic, test, audit, suite, surviving, mutants |
+| `agentic-verify` | Check that a Python change is caught by tests: run every mutant of the changed lines and write tests until they catch them. Reports evidence instead of a dif... | safe | timini/agentic-verification | testing, pytest, mutation-testing, python, verification | testing, pytest, mutation-testing, python, verification, agentic, verify, check, change, caught, tests, run |
 | `android-ui-journey-testing` | XML-specified Android UI journey testing, interactive step execution, assertion verification, and JSON outcome reporting. | critical | self | android, journey-testing, ui-verification, testing, adb, automation | android, journey-testing, ui-verification, testing, adb, automation, ui, journey, xml, specified, interactive, step |
 | `assay` | Run assay on a web page you just wrote or changed. It opens the page in a real browser, drives every control, and reports where the page contradicts itself. ... | safe | awss1i/assay | testing, qa, web, browser, playwright, html | testing, qa, web, browser, playwright, html, assay, run, page, just, wrote, changed |
 | `bats-testing-patterns` | Master Bash Automated Testing System (Bats) for comprehensive shell script testing. Use when writing tests for shell scripts, CI/CD pipelines, or requiring t... | critical | community | bats | bats, testing, bash, automated, shell, script, writing, tests, scripts, ci, cd, pipelines |

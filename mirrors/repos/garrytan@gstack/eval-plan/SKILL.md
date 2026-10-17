@@ -399,6 +399,15 @@ Write (or open) the preregistration file. Each section is required and must be f
 (`PREREG_INCOMPLETE`, exit 1); fill them and rerun. Do not continue on an incomplete
 preregistration.
 
+When the summarizer counts diagnostics, declare them before the freeze commit in a
+`## Diagnostics` section: `summarizer: <command naming {fixture}>`, `fixture: <synthetic
+records file>`, and one `| diagnostic | expected |` row per diagnostic, with the count the
+fixture is built to produce. The summarizer's last stdout line is one JSON object of counts.
+Then run `prereg --check <path> --allow-repo-commands`. Without the flag, the summarizer is
+listed and the check exits 3. Every `PREREG_DIAGNOSTIC:` line must say `ok`.
+`PREREG_DIAGNOSTIC_UNTESTED` (exit 1) means a count, a missing diagnostic or an
+undeclared one does not match its definition. Fix that before you freeze.
+
 ### Step 1b: Arms and their price
 
 ```bash
@@ -411,6 +420,12 @@ falling back to the repo's own policy document (`--policy-doc <path>`), or from
 and the per-item cost at the stated token estimate; `price=MISSING` (`EVAL_PRICE_MISSING`)
 means the model has no row in `lib/pricing.ts`: add the row from the provider's pricing
 page or drop the arm. Copy the priced arms into the Arms section.
+
+When the repo commits `.gstack/eval-models.json` (allow, deny, per-scope lists, families
+newest first; `docs/eval-models.md` in gstack), `arms`, `dry-run`, `pilot start` and
+`price-gate` print one `EVAL_MODEL:` line per arm. Pass `--scope smoke` for a smoke run;
+the default is `full`. A refused arm (`EVAL_MODEL_DENIED`, `EVAL_MODEL_OLD_GENERATION`,
+`EVAL_MODEL_GENERATION_UNRESOLVED`) is replaced, never argued past.
 
 ## Step 2: zero-cost stub-model dry run
 

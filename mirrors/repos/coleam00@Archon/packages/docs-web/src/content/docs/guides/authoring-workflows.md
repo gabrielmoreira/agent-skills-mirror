@@ -258,6 +258,31 @@ nodes:
 | `sandbox` | object | — | OS-level filesystem/network restrictions for the Claude subprocess. Claude only. Also settable at workflow level |
 | `settingSources` | (`'project'`\|`'user'`)[] | inherited | Which filesystem setting sources a capable provider discovers (for Claude: CLAUDE.md, skills, commands, agents). Workflow `skills:` remains the exact active skill set. Overrides the assistant-level default; unset everywhere = `['project', 'user']`. `[]` loads none. Requires the provider's `settingSources` capability. Per-node only |
 
+### Bash and script node timeouts
+
+When a `bash:` or `script:` node on the host reaches its `timeout`, Archon signals the node's
+whole process tree before it reports the timeout, so the real work behind a wrapper such as
+`bun run` or `uv run` stops too. On Windows it runs `taskkill /T /F` on the node's process.
+On macOS and Linux a foreground `workflow run`, `workflow resume` or `trigger execute` starts
+the node in its own process group and sends `SIGTERM` to that group. A node under
+`archon serve` or a detached run shares its owner's process group, so on macOS and Linux its
+timeout still ends only the node's own process, and work it started in the background keeps
+running. `until_bash` checks end only their own process. A container node's timeout ends only
+the local `docker exec` client, so the command inside the container may keep running.
+
+Archon does not confirm that the tree is gone, so some work outlives a reported timeout:
+
+- On macOS and Linux, a process that ignores or handles `SIGTERM` without exiting. Archon
+  sends no `SIGKILL` after it. When that process is the node's own process, the node does
+  not report the timeout until the process exits.
+- On macOS and Linux, a process that left the node's group, for example with `setsid`.
+- On every OS, background work still running when the node's own process had already exited
+  before the deadline. Archon does not signal a tree whose root has exited.
+
+If the tree cannot be ended, Archon kills the node's own process (`SIGKILL` on macOS and
+Linux) and the node fails with the termination error instead of timing out. It does not take
+`on_timeout: skip`, and dependents follow their `trigger_rule` as for any failed node.
+
 ### Addressable session ancestry
 
 Dependency edges determine execution and `$node.output` carries data. When a later command or prompt must continue one particular AI conversation instead of the latest ambient session, name that completed upstream node:
@@ -946,7 +971,7 @@ Archon sorts a failed attempt into one of three buckets before deciding whether 
 
 A `quota_exhausted` failure is never retried in the same window, but when the provider reports when the limit resets, the run [waits until that reset](/reference/configuration/#workflow-attention-and-continuation-settings) instead of failing.
 
-`misconfigured` means the setup must change before the node can succeed: a bad proxy URL, a missing or too-old CLI, an unknown model, an unreadable MCP config file. Fix the configuration and run again.
+`misconfigured` means the setup must change before the node can succeed: a bad proxy URL, a missing or too-old CLI, an unknown model, an unreadable checkout or provider MCP config file. Fix the configuration and run again. A host-local read failure in captured home MCP config pauses the existing run for continuation on a host that can read it; see [MCP servers](/guides/mcp-servers/).
 
 Capacity failures (`overloaded`) get at least five retries: six provider attempts with delay centers of 45, 90, 180, 300 and 300 seconds. Each delay has ±50% jitter; the 300-second cap applies before jitter, so a wait can reach 450 seconds. The nominal total wait is 15 minutes 15 seconds, excluding provider execution time. Node `delay_ms` does not change this schedule, including a loop policy with zero delay. The larger budget applies only while the current failure is capacity; ordinary transient failures keep their own budget. Rate limits keep their existing five-retry minimum and flat 45-second delay with ±50% jitter; once a rate limit occurs, that larger budget remains for the rest of the iteration or node attempt sequence.
 

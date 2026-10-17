@@ -88,12 +88,15 @@ base prompt". Two more corollaries earned here:
 - **Write down what a design does not do**, beside the behaviour it owns — a
   short known-limitations note in the owning module. A stated limit stops the
   next reader from assuming a capability that was never built.
-- **Agents do not comment on issues or PRs** (founder, 2026-09-22). Spend the
-  time on code: evidence goes in the commit message and PR body, claims go in
-  Linear. Do not reply to review bots or post status, "superseded", or
-  "for the record" notes. The one exception is closing or superseding a human
-  contributor's PR or issue: one sentence saying why, with the link. The PR and
-  issue review workflows are disabled; re-enable one only by founder decision.
+- **Substantive contributor replies are authorized for the 0.10.2 release**
+  (founder, 2026-10-13). Thank people specifically for their reports, diagnosis,
+  fixes and testing; link the carrying commit or PR and distinguish candidate
+  work from a shipped release. Status, answers and useful questions are welcome;
+  repetitive progress posts and bot noise are not. Evidence stays in commits
+  and PR bodies; ownership stays in Linear. Outside this release, the previous
+  no-comment rule remains, except a one-sentence reason when closing or
+  superseding a human contribution. Review workflows remain disabled unless
+  the founder separately authorizes enabling them.
 - **A user feature lands with its registry row.** A new command, `[features]`
   flag, provider or user-visible feature adds or updates its row in
   `docs/features.toml` in the same change;

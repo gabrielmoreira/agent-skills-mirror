@@ -59,10 +59,12 @@ Hopper installation or any file write. Declining or pressing Ctrl-C makes no
 changes. Agent configuration writes preserve unrelated entries and comments,
 create backups, use atomic replacement, and verify their result. Setup and
 uninstall retain an existing `.rea.backup` rather than replacing the first snapshot.
-If that snapshot differs from the current configuration, setup previews and
-preserves a verified `.rea.backup.<sha256>.recovery` copy of the current bytes.
-Both snapshots remain available; a failed rollback reports the current recovery
-copy's path and the restore failure.
+If that snapshot differs from the current configuration, setup and uninstall
+preserve a verified `.rea.backup.<sha256>.recovery` copy of the current bytes
+before editing; setup also previews it. Both snapshots remain available.
+When an edit made a backup, a failed uninstall update or restore, and a failed
+setup readback or rollback, name the backup path that holds the bytes from just
+before that edit.
 Setup also retains valid environment overrides in REA's existing server entry,
 such as `REA_MCP_INPUT_SCHEMA_PROFILE`, `REA_MCP_OUTPUT_SCHEMA_PROFILE`, and
 `REA_MCP_MAX_RESPONSE_BYTES`.
@@ -833,6 +835,16 @@ rea doctor --json
 rea setup
 ```
 
+On macOS, [Homebrew OpenJDK is keg-only](https://formulae.brew.sh/formula/openjdk)
+and may be unavailable to the system `java` wrapper. Set `JAVA_HOME` to the
+selected formula's `libexec/openjdk.jdk/Contents/Home`, for example
+`/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home` or
+`/usr/local/opt/openjdk/libexec/openjdk.jdk/Contents/Home`. Use a JDK inside the
+Java version bounds declared by your Ghidra installation; REA does not select
+another installed JDK automatically. Doctor distinguishes an absent Java
+command from a command that runs and fails, and retains bounded probe output
+and any parsed properties when the selected runtime cannot be admitted.
+
 On Windows, configure the existing installation in PowerShell:
 
 ```powershell
@@ -870,6 +882,21 @@ MCP clients do not depend on an incidental shell path. Setup shows every exact
 environment entry in its plan, writes only after approval, and never downloads,
 installs, upgrades, or modifies Ghidra or Java.
 
+Installation inspection derives the private configuration directory identity from
+`application.version` and `application.release.name` in
+`Ghidra/application.properties`. The directory's version spelling follows Ghidra
+(for example, `12.1.0` becomes
+`12.1`), while the reported provider version preserves the original value.
+The launcher uses that inspected coordinate; it does not reread the properties
+or guess from the extracted folder's name.
+If the identity is missing, malformed, or unsafe as a single path component,
+the launcher fails before preparing its home/cache/config/temp directories or
+starting Java. The client may already have allocated private runtime/endpoint
+resources and a target snapshot; existing startup-failure cleanup still applies.
+Restore the selected release's properties instead of renaming its installation folder.
+This coordinate selects only REA's session-private configuration directory, not
+the installation or an existing user configuration directory.
+
 Each verified session uses an ephemeral temporary project and isolated
 home/cache/config/temp paths. REA passes `-readOnly`, `-deleteProject`, uses
 Ghidra's default analysis settings, and loads its packaged Java
@@ -896,6 +923,9 @@ bridge, and health readiness. Large binaries can need more: set
 `REA_GHIDRA_STARTUP_TIMEOUT_MS` to an integer between 1 and 2,147,483,647
 milliseconds in the server environment. An absent setting uses the default;
 empty, invalid or out-of-range supplied values fail configuration validation.
+When the deadline elapses, the `provider_timeout` error names
+`REA_GHIDRA_STARTUP_TIMEOUT_MS` with the deadline that was applied and suggests
+`REA_GHIDRA_DISABLED_ANALYZERS` for analyzers that dominate the time.
 REA parses the supplied configuration environment and
 passes the deadline to each provider client; a startup failure is returned by the query that triggered it,
 without exposing partial analysis. This deadline is separate from MCP transport

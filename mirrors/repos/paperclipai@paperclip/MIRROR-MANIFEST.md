@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `paperclipai/paperclip` — 26 default patterns, 11 followed patterns, 204 file(s) materialized.
+Mirror of `paperclipai/paperclip` — 26 default patterns, 11 followed patterns, 205 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `paperclipai/paperclip` — 26 default patterns, 11 followed patterns,
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 11 |
-| Files         | 204 |
+| Files         | 205 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -249,30 +249,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 178 | ✓ | [`skills/paperclip/references/issue-documents.md`](skills/paperclip/references/issue-documents.md) |
 | 179 | ✓ | [`skills/paperclip/references/issue-workspaces.md`](skills/paperclip/references/issue-workspaces.md) |
 | 180 | ✓ | [`skills/paperclip/references/routines.md`](skills/paperclip/references/routines.md) |
-| 181 | ✓ | [`skills/paperclip/references/workflows.md`](skills/paperclip/references/workflows.md) |
-| 182 | ✓ | [`skills/paperclip/scripts/paperclip-issue-update.sh`](skills/paperclip/scripts/paperclip-issue-update.sh) |
-| 183 | ✓ | [`skills/paperclip/scripts/paperclip-upload-artifact.sh`](skills/paperclip/scripts/paperclip-upload-artifact.sh) |
-| 184 | ✓ | [`skills/paperclip/scripts/submit-agent-commentary.mjs`](skills/paperclip/scripts/submit-agent-commentary.mjs) |
-| 185 | ✓ | [`skills/paperclip/SKILL.md`](skills/paperclip/SKILL.md) |
-| 186 | ✓ | [`skills/para-memory-files/references/schemas.md`](skills/para-memory-files/references/schemas.md) |
-| 187 | ✓ | [`skills/para-memory-files/SKILL.md`](skills/para-memory-files/SKILL.md) |
-| 188 | ✓ | [`skills/slack/SKILL.md`](skills/slack/SKILL.md) |
-| 189 | ✓ | [`skills/suggestion-box/LICENSE`](skills/suggestion-box/LICENSE) |
-| 190 | ✓ | [`skills/suggestion-box/SKILL.md`](skills/suggestion-box/SKILL.md) |
-| 191 | ✓ | [`tests/runner-e2e/fixtures/git-streaming/AGENTS.md`](tests/runner-e2e/fixtures/git-streaming/AGENTS.md) |
-| 192 | ✓ | [`tests/runner-e2e/fixtures/warm-continuity/AGENTS.md`](tests/runner-e2e/fixtures/warm-continuity/AGENTS.md) |
-| 193 | ✓ | [`ui/public/fonts/NOTICE.md`](ui/public/fonts/NOTICE.md) |
-| 194 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
-| 195 | → | [`doc/connections/AI-CONNECTIONS.md`](doc/connections/AI-CONNECTIONS.md) |
-| 196 | → | [`doc/connections/MEMORY.md`](doc/connections/MEMORY.md) |
-| 197 | → | [`doc/execution-github-identity.md`](doc/execution-github-identity.md) |
-| 198 | → | [`doc/plugins/PLUGIN_SPEC.md`](doc/plugins/PLUGIN_SPEC.md) |
-| 199 | → | [`maps/agent-access-map/README.md`](maps/agent-access-map/README.md) |
-| 200 | → | [`maps/feature-map/README.md`](maps/feature-map/README.md) |
-| 201 | → | [`maps/README.md`](maps/README.md) |
-| 202 | → | [`maps/storybook-map/README.md`](maps/storybook-map/README.md) |
-| 203 | → | [`ROADMAP.md`](ROADMAP.md) |
-| 204 | → | [`rules/README.md`](rules/README.md) |
+| 181 | ✓ | [`skills/paperclip/references/run-diagnostics.md`](skills/paperclip/references/run-diagnostics.md) |
+| 182 | ✓ | [`skills/paperclip/references/workflows.md`](skills/paperclip/references/workflows.md) |
+| 183 | ✓ | [`skills/paperclip/scripts/paperclip-issue-update.sh`](skills/paperclip/scripts/paperclip-issue-update.sh) |
+| 184 | ✓ | [`skills/paperclip/scripts/paperclip-upload-artifact.sh`](skills/paperclip/scripts/paperclip-upload-artifact.sh) |
+| 185 | ✓ | [`skills/paperclip/scripts/submit-agent-commentary.mjs`](skills/paperclip/scripts/submit-agent-commentary.mjs) |
+| 186 | ✓ | [`skills/paperclip/SKILL.md`](skills/paperclip/SKILL.md) |
+| 187 | ✓ | [`skills/para-memory-files/references/schemas.md`](skills/para-memory-files/references/schemas.md) |
+| 188 | ✓ | [`skills/para-memory-files/SKILL.md`](skills/para-memory-files/SKILL.md) |
+| 189 | ✓ | [`skills/slack/SKILL.md`](skills/slack/SKILL.md) |
+| 190 | ✓ | [`skills/suggestion-box/LICENSE`](skills/suggestion-box/LICENSE) |
+| 191 | ✓ | [`skills/suggestion-box/SKILL.md`](skills/suggestion-box/SKILL.md) |
+| 192 | ✓ | [`tests/runner-e2e/fixtures/git-streaming/AGENTS.md`](tests/runner-e2e/fixtures/git-streaming/AGENTS.md) |
+| 193 | ✓ | [`tests/runner-e2e/fixtures/warm-continuity/AGENTS.md`](tests/runner-e2e/fixtures/warm-continuity/AGENTS.md) |
+| 194 | ✓ | [`ui/public/fonts/NOTICE.md`](ui/public/fonts/NOTICE.md) |
+| 195 | → | [`.github/PULL_REQUEST_TEMPLATE.md`](.github/PULL_REQUEST_TEMPLATE.md) |
+| 196 | → | [`doc/connections/AI-CONNECTIONS.md`](doc/connections/AI-CONNECTIONS.md) |
+| 197 | → | [`doc/connections/MEMORY.md`](doc/connections/MEMORY.md) |
+| 198 | → | [`doc/execution-github-identity.md`](doc/execution-github-identity.md) |
+| 199 | → | [`doc/plugins/PLUGIN_SPEC.md`](doc/plugins/PLUGIN_SPEC.md) |
+| 200 | → | [`maps/agent-access-map/README.md`](maps/agent-access-map/README.md) |
+| 201 | → | [`maps/feature-map/README.md`](maps/feature-map/README.md) |
+| 202 | → | [`maps/README.md`](maps/README.md) |
+| 203 | → | [`maps/storybook-map/README.md`](maps/storybook-map/README.md) |
+| 204 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 205 | → | [`rules/README.md`](rules/README.md) |
 
 ---
 

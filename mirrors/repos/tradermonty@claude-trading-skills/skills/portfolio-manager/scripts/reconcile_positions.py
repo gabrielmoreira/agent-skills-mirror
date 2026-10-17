@@ -159,9 +159,10 @@ def render_summary(report: dict) -> str:
             ]
         )
         for item in report["items"]:
+            display = {key: "-" if value is None else value for key, value in item.items()}
             lines.append(
-                f"| {item['symbol']} | {item['broker_quantity']} | {item['memory_quantity']} | "
-                f"{item['broker_direction']} / {item['memory_direction']} | {item['status']} |"
+                f"| {display['symbol']} | {display['broker_quantity']} | {display['memory_quantity']} | "
+                f"{display['broker_direction']} / {display['memory_direction']} | {display['status']} |"
             )
     lines.extend(["", *[f"- {note}" for note in report["limitations"]], ""])
     return "\n".join(lines)
@@ -176,6 +177,29 @@ def _unique_object(pairs: list) -> dict:
     return result
 
 
+def _read_snapshot(path: Path, source: str) -> object:
+    """Classify read failures without exposing paths, keys or payload contents."""
+    try:
+        return json.loads(
+            path.read_text(encoding="utf-8"),
+            parse_float=Decimal,
+            object_pairs_hook=_unique_object,
+        )
+    except FileNotFoundError:
+        cause = "file not found"
+    except OSError:
+        cause = "file read error"
+    except UnicodeError:
+        cause = "encoding error (expected UTF-8)"
+    except SnapshotError:
+        cause = "duplicate JSON object key"
+    except RecursionError:
+        cause = "JSON too deeply nested"
+    except (ValueError, InvalidOperation):
+        cause = "invalid JSON"
+    raise SnapshotError(f"{source}: {cause}") from None
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--broker", required=True, type=Path, help="Normalized broker JSON")
@@ -186,17 +210,13 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         snapshots = [
-            json.loads(
-                path.read_text(encoding="utf-8"),
-                parse_float=Decimal,
-                object_pairs_hook=_unique_object,
-            )
-            for path in (args.broker, args.memory)
+            _read_snapshot(path, source)
+            for path, source in ((args.broker, "broker"), (args.memory, "memory"))
         ]
         report = reconcile(*snapshots)
-    except (OSError, ValueError, UnicodeError, RecursionError, InvalidOperation):
+    except SnapshotError as exc:
         report = reconcile(None, None)
-        report["errors"] = ["Cannot read unique-key JSON snapshots; verify both input files."]
+        report["errors"] = [str(exc)]
     encoded = json.dumps(report, indent=2, sort_keys=True) + "\n"
     if args.output_dir is not None and report["status"] != "INVALID_INPUT":
         paths = [args.output_dir / f"reconciliation_report.{ext}" for ext in ("json", "md")]

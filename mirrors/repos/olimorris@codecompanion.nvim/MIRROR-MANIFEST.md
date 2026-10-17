@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `olimorris/codecompanion.nvim` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `olimorris/codecompanion.nvim` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `olimorris/codecompanion.nvim` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,16 +59,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`doc/configuration/skills.md`](doc/configuration/skills.md) |
-| 4 | ✓ | [`doc/usage/chat-buffer/skills.md`](doc/usage/chat-buffer/skills.md) |
-| 5 | ✓ | [`tests/stubs/rules/CLAUDE.md`](tests/stubs/rules/CLAUDE.md) |
-| 6 | ✓ | [`tests/stubs/skills/personal/house-style/SKILL.md`](tests/stubs/skills/personal/house-style/SKILL.md) |
-| 7 | ✓ | [`tests/stubs/skills/personal/name-not-a-string/SKILL.md`](tests/stubs/skills/personal/name-not-a-string/SKILL.md) |
-| 8 | ✓ | [`tests/stubs/skills/personal/no-description/SKILL.md`](tests/stubs/skills/personal/no-description/SKILL.md) |
-| 9 | ✓ | [`tests/stubs/skills/personal/pdf-forms/SKILL.md`](tests/stubs/skills/personal/pdf-forms/SKILL.md) |
-| 10 | ✓ | [`tests/stubs/skills/project/house-style/SKILL.md`](tests/stubs/skills/project/house-style/SKILL.md) |
+| 1 | ✓ | [`.codecompanion/skills/writing-docs/SKILL.md`](.codecompanion/skills/writing-docs/SKILL.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`doc/configuration/skills.md`](doc/configuration/skills.md) |
+| 5 | ✓ | [`doc/usage/chat-buffer/skills.md`](doc/usage/chat-buffer/skills.md) |
+| 6 | ✓ | [`tests/stubs/rules/CLAUDE.md`](tests/stubs/rules/CLAUDE.md) |
+| 7 | ✓ | [`tests/stubs/skills/nested/.hidden/hidden-skill/SKILL.md`](tests/stubs/skills/nested/.hidden/hidden-skill/SKILL.md) |
+| 8 | ✓ | [`tests/stubs/skills/nested/a/b/c/d/e/outside-limit/SKILL.md`](tests/stubs/skills/nested/a/b/c/d/e/outside-limit/SKILL.md) |
+| 9 | ✓ | [`tests/stubs/skills/nested/a/b/c/d/within-limit/SKILL.md`](tests/stubs/skills/nested/a/b/c/d/within-limit/SKILL.md) |
+| 10 | ✓ | [`tests/stubs/skills/personal/house-style/SKILL.md`](tests/stubs/skills/personal/house-style/SKILL.md) |
+| 11 | ✓ | [`tests/stubs/skills/personal/name-not-a-string/SKILL.md`](tests/stubs/skills/personal/name-not-a-string/SKILL.md) |
+| 12 | ✓ | [`tests/stubs/skills/personal/no-description/SKILL.md`](tests/stubs/skills/personal/no-description/SKILL.md) |
+| 13 | ✓ | [`tests/stubs/skills/personal/pdf-forms/SKILL.md`](tests/stubs/skills/personal/pdf-forms/SKILL.md) |
+| 14 | ✓ | [`tests/stubs/skills/project/house-style/SKILL.md`](tests/stubs/skills/project/house-style/SKILL.md) |
 
 ---
 

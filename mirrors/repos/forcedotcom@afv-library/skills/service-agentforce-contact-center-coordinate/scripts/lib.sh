@@ -13,6 +13,22 @@ NM_BASE="services/data/${API_VERSION}/connect/number-management/v1"
 # URL-encode a value's spaces (sufficient for country/phoneType query params).
 urlenc_spaces() { printf '%s' "${1// /%20}"; }
 
+# Percent-encode a full value for safe use as a URL query-parameter value: only
+# the RFC 3986 unreserved set stays literal, everything else becomes %XX. Needed
+# for free-text values (e.g. a user-supplied area code / prefix) so reserved
+# characters like & or = can't inject extra query parameters into the request.
+urlenc() {
+  local s="$1" i c out=""
+  for (( i=0; i<${#s}; i++ )); do
+    c="${s:i:1}"
+    case "$c" in
+      [a-zA-Z0-9.~_-]) out+="$c" ;;
+      *) printf -v c '%%%02X' "'$c"; out+="$c" ;;
+    esac
+  done
+  printf '%s' "$out"
+}
+
 # XML-escape a value for safe interpolation into flow-template stringValue/label nodes.
 # Free-text org data (queue names, agent labels) can contain &, <, >, ", ' — unescaped
 # they produce malformed XML and an opaque `sf project deploy start` parse error.

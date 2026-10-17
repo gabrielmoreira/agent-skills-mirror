@@ -53,6 +53,28 @@ class BundledPacks(unittest.TestCase):
         r = run("regions.py", "lint")
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
 
+    def test_poi_default_sources_come_from_the_pack_that_claims_the_script(self):
+        for keyword, sources in (("万科城", "so,osm,sug"), ("東京タワー", "so,osm,sug"), ("Starbucks", None), ("서울역", None)):
+            self.assertEqual((regions.poi_for_script(keyword) or {}).get("sources"), sources, keyword)
+        from unittest.mock import patch
+        with patch.object(regions, "packs", return_value={}):
+            self.assertIsNone(regions.poi_for_script("万科城"))      # core itself prefers no country
+
+    def test_malformed_optional_settings_do_not_break_other_packs(self):
+        from unittest.mock import patch
+        good = {"osm_name_keys": ["name:fr"], "services": {"poi": {"sources": "osm", "keyword_scripts": ["LATIN"]}}}
+        for bad in ({"osm_name_keys": 7}, {"services": {"poi": {"keyword_scripts": [7]}}},
+                    {"services": []}, {"services": {"poi": ["osm"]}}):
+            with self.subTest(bad=bad), patch.object(regions, "packs", return_value={"AA": bad, "ZZ": good}):
+                self.assertEqual(regions.osm_name_keys(), ("name", "name:fr"))
+                self.assertEqual(regions.poi_for_script("Cafe"), good["services"]["poi"])
+
+    def test_script_names_must_be_a_list_not_an_accidental_character_prefix_set(self):
+        from unittest.mock import patch
+        with patch.object(regions, "packs", return_value={"AA": {"osm_name_keys": "name:fr", "services": {"poi": {"sources": "so", "keyword_scripts": "LATIN"}}}}):
+            self.assertEqual(regions.osm_name_keys(), ("name",))
+            self.assertIsNone(regions.poi_for_script("Cafe"))
+
     def test_cn_lookups_keep_their_answers(self):
         m = regions.lookup("plate", "粤B·12345", "cn")["matches"]
         self.assertEqual([(x["admin1"], x.get("admin2")) for x in m], [("广东省", "深圳市")])
@@ -245,6 +267,16 @@ class FixturePack(unittest.TestCase):
         self.assertIn("_meta.source", text)
         self.assertIn("Alda / Brin", text)
         self.assertIn("Counterexamples", text)
+
+    def test_lint_reports_malformed_optional_manifest_settings(self):
+        for field, value in [('osm_name_keys', 7), ('services', []), ('services', {'poi': ['osm']}),
+                             ('services', {'poi': {'keyword_scripts': 'LATIN'}}), ('also_children', 'Elsewhere')]:
+            with self.subTest(field=field, value=value):
+                files = json.loads(json.dumps(FIXTURE))
+                files['region.json'][field] = value
+                d = write_pack(self.root / 'invalid-options', files)
+                errs, _ = regions.lint(dict(files['region.json'], dir=d))
+                self.assertTrue(any(field in e for e in errs), errs)
 
 
 class GlobalTables(unittest.TestCase):

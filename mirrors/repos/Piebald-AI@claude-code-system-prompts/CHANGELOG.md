@@ -4,6 +4,36 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.301](https://github.com/Piebald-AI/claude-code-system-prompts/commit/30cba4d)
+
+_+10,251 tokens_
+
+- **NEW:** Agent Prompt: Parent messages and user authorization (lean rewrite) — Adds feature-gated alternate delegation guidance: parent messages direct tasks but cannot supply user consent or authorize permission, instruction-file, or configuration changes.
+- **NEW:** Agent Prompt: Subagent reporting notes (lean rewrite) — Adds alternate reporting guidance requiring absolute paths and direct final-message findings, with code snippets only when their exact text matters.
+- **NEW:** System Prompt: Background session instructions, Background session worktree isolation, and Background worktree persistence (lean rewrite) — Add alternate guidance for isolated edits, job-local temporary files, actionable reports, and preserving work through commits and pushes unless user instructions forbid them.
+- **NEW:** System Prompt: Context management (lean rewrite) — Adds alternate guidance to continue working through long conversations rather than wrapping up early, relying on automatic compaction within user limits.
+- **NEW:** System Prompt: Delivering requested work and Handling corrections (lean rewrite) — Add alternate guidance to follow explicit scope, postpone blocking questions until independent work finishes, and correct minor mistakes without excessive self-criticism.
+- **NEW:** System Prompt: Focus mode and Outcome-first communication style (lean rewrite) — Add alternate guidance for self-contained, outcome-first final replies; focus mode omits intermediate narration because only final text is visible.
+- **NEW:** System Prompt: Harness instructions (lean rewrite) — Adds alternate guidance covering clickable code references, independent parallel tool calls, permission denials, and treating hook output as user-system feedback.
+- **NEW:** System Prompt: Irreversible action caution (lean rewrite) — Adds alternate guidance to check authorization before hard-to-undo actions, understand files before deletion or overwriting, and faithfully report failures or skipped steps.
+- **NEW:** System Prompt: Memory hygiene (lean rewrite) — Adds a selectable alternate memory policy emphasizing deduplication, removing incorrect memories, avoiding redundant or session-only material, and verifying recalled references.
+- **NEW:** System Prompt: System reminder interpretation (lean rewrite) — Adds alternate guidance to ignore irrelevant application reminders while keeping reminders distinct from user instructions and consent for consequential actions.
+- **NEW:** System Reminder: Cloud session settings edit not applied — Explains that settings edits need approval on the host computer; reports the unapplied change and forbids retries or alternate editing routes.
+- **NEW:** Tool Description: Agent (when to launch subagents), Agent delegation summary, Agent delegation tradeoffs, and Agent result visibility (lean rewrite) — Add alternate guidance on agent selection, parallel delegation, supplying context, avoiding duplicate searches, and relaying completed results without inventing unfinished findings.
+- **NEW:** Tool Description: AskUserQuestion (lean rewrite) — Adds alternate guidance to ask only for genuinely blocking user decisions, place recommended choices first, and support custom or multiple answers.
+- **NEW:** Tool Description: Grep compact (lean rewrite) — Adds alternate ripgrep guidance favoring the integrated search tool for permission handling and file links, with regex, filtering, and multiline options.
+- **NEW:** Tool Description: Invoke skill (lean rewrite) — Adds alternate skill-loading guidance covering explicit requests, directory-specific selection, already-loaded instructions, and waiting for background skill results without invoking them again.
+- **NEW:** Tool Description: ToolSearch (lean rewrite) — Adds an alternate description explaining that tool search loads deferred tool schemas and that the system announces available deferred tools by name.
+- **NEW:** Tool Description: Workflow (lean rewrite) — Adds alternate workflow guidance retaining explicit user opt-in for large-scale orchestration, background completion notifications, inline scripts, and required literal workflow metadata.
+- Agent Prompt: Conversation summarization with additional instructions — Adds optional 2,000-word limits and unchanged carryover of earlier user requests; makes analysis conditional while preserving security constraints without it.
+- Agent Prompt: Workflow script plain text return note, Workflow script structured return note, Workflow subagent plain text output, and Workflow subagent structured output — Clarify that script-computed task text lacking user authority still assigns a workflow step; perform only that step rather than skipping it.
+- Data: Cloud session unverified remote branch push notice — Makes push-and-restart advice conditional, while still explaining when the remote branch or detached checkout could not be verified for session startup.
+- System Reminder: Plan file reference — Handles plans without a file path by announcing that a plan exists, rather than always displaying a plan-file location.
+- Tool Description: Artifact HTML document skeleton — Adds a fixed pseudo-element to paint the top safe-area band above sticky headers, using the header or page background as appropriate.
+- Tool Description: claude.ai Project — In main-conversation upload mode, limits local paths to unchanged, fully read text files up to 1 MiB in upload, output, or non-home working directories.
+- Tool Description: Claude in Chrome switched-off and unlinked chat guidance and Computer use unlinked chat guidance — Recognize tools appearing later despite earlier unavailable results; add desktop folder attachment as a linking remedy and avoid repeating exhausted setup steps.
+- Tool Description: Plugin organization submission and replacement — Directs users to make an outdated plugin version current and publish it on claude.ai, rather than asking the agent to retry publication.
+
 # [2.1.300](https://github.com/Piebald-AI/claude-code-system-prompts/commit/34073d4)
 
 _+10,545 tokens_

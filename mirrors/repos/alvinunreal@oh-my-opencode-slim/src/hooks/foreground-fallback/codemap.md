@@ -68,6 +68,8 @@ Runtime model fallback system for foreground (interactive) agent sessions. When 
 - A retry arriving while a fallback is in progress is not admitted and does not
   consume retry budget; delayed fallback retains the triggering error for
   consistent inline-error toast suppression.
+- With a chain, host backoffs longer than 30 minutes bypass the retry budget
+  (`session.status.next` on v1, `decision.delay` on v2). Shorter or unspecified waits keep the count-based budget; no-chain behavior is unchanged.
 - Confirmed permanent quota/billing failures bypass the initial fallback delay.
   The delay is consumed once per descent; later links use only consecutive
   fallback backoff, and a confirmed new external turn clears that backoff.

@@ -969,7 +969,7 @@ If Phase 2 ran (UI scope):
 
 If Phase 2.5 ran (DX scope):
 ```bash
-~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"plan-devex-review","timestamp":"'"$TIMESTAMP"'","status":"STATUS","initial_score":N,"overall_score":N,"product_type":"TYPE","tthw_current":"TTHW","tthw_target":"TARGET","unresolved":N,"via":"autoplan","commit":"'"$COMMIT"'"}'
+~/.claude/skills/gstack/bin/gstack-review-log '{"skill":"plan-devex-review","timestamp":"'"$TIMESTAMP"'","status":"STATUS","initial_score":N,"overall_score":N,"product_type":"TYPE","tthw_current":"TTHW","tthw_target":"TARGET","unresolved":N,"dx_rubric":"agent-ready-v1","via":"autoplan","commit":"'"$COMMIT"'"}'
 ```
 
 Dual voice logs: one record per PHASE (`ceo`, `design`, `dx`, `eng`) with that

@@ -2,27 +2,28 @@
 
 > 按里程碑记录各阶段交付内容。每次分支合回 main 时追加条目。
 
-## 未发布：修复 expression drain 测试的时序 flake
+## v0.3.229：TikTok 新来源、远程访问安全收紧与 B 站登录失效横幅死锁修复（2026-10-16）
+
+- 修复 Safari 默认 Cookie store 不完整时扩展无法同步 B 站登录的问题（#304）：仅 Safari 构建通过 `getAllCookieStores()` 逐 store 查找，只有唯一候选 store 同时包含 `SESSDATA` / `bili_jct` / `DedeUserID` 才上传，不跨 store 拼接登录态，也不静默选择多个完整候选之一；缺失诊断仅记录 Cookie 名称，不记录值。
+- 修复用户 Cookie 已修复但「B 站登录已失效」横幅永久悬挂的死锁：`auth_expired` 持久化状态过去只有「完整跑完一轮账号同步」一个清理点，而 guided init 暂停（`llm_paused`）或 worker 崩溃循环让 daemon 永远到不了那个点，且 `account_sync_state.json` 随数据迁移原样保留。现在①B 站凭据一经落盘（`_credential_landed`）即调用 `AccountSyncService.clear_auth_expired_state()` 清除残留 `auth_expired`；②`llm_paused` 早退的 tick 仍会对持久化的 `auth_expired` 做一次 nav 复验，已登录即清除（暂停原因本就是避免与 guided init 的 bootstrap 抓取竞争，故选择轻量复验而非完整阶段拆分）。
+- `POST /api/bilibili/cookie` 在 guided init 期间不再 409 丢弃异值 Cookie：暂存到 `data/runtime/staged_bilibili_cookie.json`，init 终态与 `/api/init-completed` 自动经正常 validate+persist 路径应用；`/api/runtime-status` 新增 `bilibili_cookie_staged`（纯增量字段），桌面 Web 横幅会显示「新 Cookie 已暂存」。
+- 写入探针传输失败（`validation_network`）时 B 站 Cookie 不再拒绝落盘：短退避重试两次仍以显式 unverified 标记持久化（verdict 记为 `network_error` 而非干净失败，响应带 `unverified_reason`）；账号同步每轮真实拉取仍是复检兜底。平台明确回「未登录」（真实 -101）依旧拒绝；抖音等其他活体门禁平台行为不变。
+- 凭据写入后的运行时重建失败不再被 `suppress(Exception)` 吞掉：ERROR 带 traceback 记日志并记入 `pending_runtime_rebuilds`，下一次写入（包括此前是纯 no-op 的相同 Cookie 重投）自动重试，不再静默停留在旧 Cookie 的内存运行时上。
+- 旧版 `POST /api/bilibili/cookie` 响应不再吞掉 unverified 标记：传输失败兜底落盘时响应新增 `unverified: true` 与 `unverified_reason`（纯增量字段），`message` 改用门禁自身的「已按未验证 Cookie 保存」诚实文案而非笼统的 "Cookie synced"；`ok`/`authenticated`/`error_code` 语义不变，扩展旧版本行为不受影响。
 
 - `test_public_expression_drain_carries_partial_progress_into_missing_retry_transient` 与 `test_expression_coordinator_reports_same_branch_partial_progress` 依赖 drain 按 A→D 顺序出批，但 `_seed_pool` 写入的 `last_scored_at` 使用 SQLite `CURRENT_TIMESTAMP`（秒级精度），种子插入跨秒时 `ORDER BY last_scored_at DESC` 不再等于插入顺序，CI 上以约每秒一次的概率随机失败。测试新增 `_pin_seed_score_order`，在种子后显式钉入递减时间戳，使 drain 顺序与种子顺序一致；生产代码不变。
 
-## 未发布：配置写 / 探测接口远程访问门禁（issue #300 安全修复）
-
 - 修复默认部署下 `PUT /api/config` 零鉴权篡改配置的严重漏洞：远程对端可改写 `llm.*.base_url` 劫持全部 LLM 流量并窃取存储的 API Key、植入 `bilibili.browser_executable` 在本机任意执行。`PUT /api/config`、`POST /api/config/probe-service`、`POST /api/config/discover-models` 收口为与 B 站凭据接口相同的特权检查（`_local_or_authenticated_gate`）：本机或已认证会话可用，门禁关闭时远程一律 `403 local_only`；probe / discover 不写盘也可泄露 Key，一并收口。门禁关闭时跨设备的桌面 / 移动 Web 与扩展改设置会被拒，需先开启密码门禁。README 中英文、`config.example.toml` 与 `docs/modules/api-auth.md` 同步更新。
-
-## 未发布：B 站凭据接口远程访问门禁（issue #299 安全修复）
 
 - 修复默认部署（`0.0.0.0` 绑定 + `[api.auth]` 门禁关闭）下 `POST /api/bilibili/auth/export` 零鉴权泄露完整 B 站登录 Cookie（SESSDATA / bili_jct）的严重漏洞：凭据导入、导出、注销三个接口无论门禁开关都要求本机访问或已认证会话，远程零鉴权调用一律 `403 local_only`。移动 App 远程使用这三接口前需先开启密码门禁并登录。`config.example.toml`、README 中英文与 `docs/modules/api-auth.md` 同步补充安全警示。
 
-## 未发布：TikTok 源后端缺口修复与前端展示面补全（issue #88）
-
 - 补全 #284 的 wire 清洗：正文、简介或 `published_at` 只由控制字符组成（如单个 NUL）时，`_sanitize_wire_text()` 清洗后得到空串却仍写入 canonical item，wire 校验以「must be omitted when empty」对整批抛错。现与 tag 列表一致，清洗后为空即省略该字段。
 
-- README 中英文与项目首页突出 Instagram/TikTok 新来源，补齐首页首屏、搜索/分享摘要和连接指引；区分 Instagram 已发布、TikTok main 已合入待发版，保留默认关闭、代理要求及账号验收限制。
+- README 中英文与项目首页突出 Instagram/TikTok 新来源，补齐首页首屏、搜索/分享摘要和连接指引；区分 Instagram 已于 v0.3.227 发布、TikTok 自本版起正式发布，保留默认关闭、代理要求及账号验收限制。
 
 - query inspiration 新增可选 `parallel` grounding 后端，通过免费匿名 Parallel Search MCP 获取标题、URL 与摘录；默认后端顺序不变，沿用现有网络策略、限时和失败回退。V2EX 正式 search 的外部召回白名单同步接纳 `parallel`，配置后 `site:v2ex.com/t` 召回同样可走该后端。
 
-- TikTok 首版合并收尾：同步主线 v0.3.228 与动态日期测试修复，保留发现推荐已验收、收藏暂缓的范围；非空账号画像/周期增量及 Firefox 安装验收转由 #295 跟踪。未发布新版本。
+- TikTok 首版合并收尾：同步主线 v0.3.228 与动态日期测试修复，保留发现推荐已验收、收藏暂缓的范围；非空账号画像/周期增量及 Firefox 安装验收转由 #295 跟踪。
 
 - TikTok 全面复核：受测提交四项 CI 全绿（10316 passed），本地后端 426、手机 62、扩展 1814 项通过，真实发现/模型/推荐和桌面/手机展示续验通过。站内收藏按用户要求暂缓；非空真实画像/周期增量、Firefox 安装验收仍单列未完成，不宣称 full contract 通过。
 
@@ -139,6 +140,8 @@
 - 新增 `[sources.tiktok]` 实验性内容源：`TiktokClient` 基于 yt-dlp 匿名读取 `tiktok:tag` 话题标签列表、`tiktok:user` 创作者视频列表与单视频元数据，不登录、不用 Cookie、不依赖浏览器扩展、不下载视频；yt-dlp 无 TikTok 搜索 extractor，关键词统一压缩为 hashtag。
 - 新增 `tiktok_tag` / `tiktok_user` discovery 策略与 `TiktokDiscoveryProducer`（镜像 YouTube producer：每日执行 ledger、节流、pool 缺口门、统一 candidate pipeline、关键词规划器 P1.7/P1.8 生命周期）；`[scheduler.pool_source_shares]` 增加 `tiktok` 配额。
 - `tiktok` 从 douyin 平台族别名拆分为独立平台族（`requires_overseas_network=True`），source-auth 契约按公开源接入（无需登录），API config / status / credentials 面同步覆盖。
+
+- v0.3.229 发布回执已归档：Chrome / Firefox AMO 已提交待审核，桌面安装包、双架构 Docker 镜像与插件三渠道包均已发布，完整性校验逐项通过；详见 [发布记录](testing/2026-10-16-release-0.3.229.md)。
 
 ## v0.3.228：画像门控大幅降本与安装包信任修复（2026-10-13）
 

@@ -219,14 +219,15 @@ CloudBase（腾讯云开发）开发阶段登录与环境绑定。不确定该�
 
 📈 action=metrics 对齐 TCB DescribeCurveData（manager.monitor.describeCurveData，不是云监控 GetMonitorData）：查询环境/网关 QPS、云函数调用与错误、数据库 CPU/内存/磁盘、云托管 CPU/QPS 等时序。envId 与 metricName 必填；startTime/endTime 格式 YYYY-MM-DD HH:mm:ss，须成对传入，不传则默认最近 24 小时；period 仅 300/3600/86400。GatewayTraceEnvQPS 未传 resourceID 时自动填环境级 all|:|all|:|all|:|all；云托管 Tke* 指标必须传服务名 resourceID。禁止用 callCloudApi 猜测监控 Action。
 
-🔍 action=info 还会派生三个用于后端选型的字段：
+🔍 action=info 还会派生三个用于后端选型的字段（PG 环境另附实例形态）：
 - `EnvInfo.RuntimeMode`：'postgresql' 或 'nosql'，表示新业务建议默认使用的后端（PG 已开通时为 postgresql，否则为 nosql）。
 - `EnvInfo.RuntimeBackends`：`\{postgresql, nosql, mysql\}` 三个布尔值，描述当前环境实际并存的后端。
 - `EnvInfo.RuntimeModeHints`：每个后端对应的 API/工具/skill 提示。
+- `EnvInfo.PostgreSQL[].TenantType`：PG 实例形态 —— `SHARED`（仅支持 SDK / 网关访问）或 `DEDICATED`（有私网 host / TCP 直连）。
 
 🌐 action=info 还会在不改写 `StaticStorages[].StaticDomain`（云 API 名义域名）的前提下，投影网关路由 Enable 状态：`StaticStorages[].staticDomainRouteEnabled` 与 `EnvInfo.staticDomainRouteEnabled`（与 queryHosting websiteConfig 同源）。`false` 表示默认静态域名根路由已禁用（访问会返回 GATEWAY_ROUTE_DISABLED），勿把名义域名当成可达 URL。
 
-AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业务推荐 `app.rdb()` + RLS（`managePgDatabase action=execute` 跑 `CREATE POLICY`）+ pgstore；已存在的 NoSQL 集合 / 旧 storage / `managePermissions(resourceType="noSqlDatabase")` 在 PG 环境下仍然有效。真正不适用的是 MySQL：当 `RuntimeBackends.mysql === false` 时，`manageMysqlDatabase` / `queryMysqlDatabase` / `relational-database-mcp-cloudbase` skill 都不该使用。
+AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业务推荐 `app.rdb()` + RLS（`managePgDatabase action=execute` 跑 `CREATE POLICY`）+ pgstore；已存在的 NoSQL 集合 / 旧 storage / `managePermissions(resourceType="noSqlDatabase")` 在 PG 环境下仍然有效。真正不适用的是 MySQL 与数据模型：当 `RuntimeBackends.mysql === false` 时，`manageMysqlDatabase` / `queryMysqlDatabase` / `relational-database-mcp-cloudbase` skill 都不该使用；`manageDataModel` / `modifyDataModel` 只在传统模式下可用，PG 环境没有对应功能。
 
 #### 参数
 
@@ -386,7 +387,7 @@ AI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业
     {
       name: "packageId",
       type: "string",
-      description: `套餐 ID（action=create/modifyPlan 时必填）。取值以 manageEnv(action="listPackages") 返回的 PackageName 为准，各站点可售套餐不同，不要凭记忆填写。`,
+      description: `套餐 ID（action=create/modifyPlan 时必填）。取 manageEnv(action="listPackages") 返回的 PackageName —— 那是新购 / 新建菜单里可选的套餐（个人版 baas_personal、标准版 baas_pf_standard、企业版 baas_pf_enterprise、企业高级版 baas_pf_enterprise_senior、体验版 baas_trial、集成版 baas_integration）。平台仍接受其它合法 packageId（旧版套餐族、需白名单的套餐），以实际创建结果为准。各站点可售套餐不同，不要凭记忆填写。`,
     },
     {
       name: "resources",
@@ -1261,7 +1262,7 @@ CloudBase 云函数统一只读入口。通过更自解释的 action 查询 Clou
 ---
 
 ### `manageFunctions`
-CloudBase 云函数统一写入口。支持创建函数、更新代码、更新配置、调用函数、发布版本、配置流量别名、管理定时跑 / 定时任务 / scheduled job 的 timer 触发器和层绑定。如果要创建 cron 定时任务，先用 createFunction 创建函数，再用 createFunctionTrigger 创建 timer 触发器（支持7段cron表达式），deleteFunctionTrigger 删除触发器。版本发布：`publishVersion` 对齐 tcb fn publish-version / SDK publishVersion；灰度/切流：`updateFunctionAliasConfig` 对齐 tcb fn config-route / SDK updateFunctionAliasConfig（aliasName 默认 `$DEFAULT`）。HTTP 云函数镜像构建部署：createFunction / updateFunctionCode 通过 func.buildStrategy 区分。func.buildStrategy=image（已有镜像，填 func.imageConfig.imageUri）直接创建/更新 HTTP 函数；func.buildStrategy=local（本地 Docker 构建推送）、cloud（CloudApp 云端构建）走镜像构建部署编排（需要 func.imageConfig；build 非必填，缺省仓库坐标自动补齐：namespace 默认 envId、repository 默认函数名），默认仅生成 dry-run 计划；传入 dryRun=false 且 confirm=true 后执行真实部署。真实部署可传 wait=false 立即返回 taskId，再通过 queryFunctions 的 getFunctionDeployStatus 查询进度和结果。wait=false 仅表示当前 Tool 不等待完整部署；调用方不得在 status=running 时结束流程，必须自动轮询到 succeeded/failed 后再向用户汇报，除非达到轮询上限。local 始终要求本地 MCP 模式；cloud 的真实执行需要读取本地构建上下文，也要求本地 MCP 模式；cloud mode 仅支持 cloud dry-run 和 image 策略。func.buildStrategy 省略或为 zip 时按传统代码包部署。危险操作需要显式 confirm=true。
+CloudBase 云函数统一写入口。支持创建函数、更新代码、更新配置、调用函数、发布版本、配置流量别名、管理定时跑 / 定时任务 / scheduled job 的 timer 触发器和层绑定。部署包体积有硬上限：请勿把静态内容打进包里——媒体文件（视频、大图、字体）、用户上传的文件、以及频繁更新的静态资源都应放云存储按 URL 引用，否则每次改动都要重新部署函数，包还可能超限。如果要创建 cron 定时任务，先用 createFunction 创建函数，再用 createFunctionTrigger 创建 timer 触发器（支持7段cron表达式），deleteFunctionTrigger 删除触发器。版本发布：`publishVersion` 对齐 tcb fn publish-version / SDK publishVersion；灰度/切流：`updateFunctionAliasConfig` 对齐 tcb fn config-route / SDK updateFunctionAliasConfig（aliasName 默认 `$DEFAULT`）。HTTP 云函数镜像构建部署：createFunction / updateFunctionCode 通过 func.buildStrategy 区分。func.buildStrategy=image（已有镜像，填 func.imageConfig.imageUri）直接创建/更新 HTTP 函数；func.buildStrategy=local（本地 Docker 构建推送）、cloud（CloudApp 云端构建）走镜像构建部署编排（需要 func.imageConfig；build 非必填，缺省仓库坐标自动补齐：namespace 默认 envId、repository 默认函数名），默认仅生成 dry-run 计划；传入 dryRun=false 且 confirm=true 后执行真实部署。真实部署可传 wait=false 立即返回 taskId，再通过 queryFunctions 的 getFunctionDeployStatus 查询进度和结果。wait=false 仅表示当前 Tool 不等待完整部署；调用方不得在 status=running 时结束流程，必须自动轮询到 succeeded/failed 后再向用户汇报，除非达到轮询上限。local 始终要求本地 MCP 模式；cloud 的真实执行需要读取本地构建上下文，也要求本地 MCP 模式；cloud mode 仅支持 cloud dry-run 和 image 策略。func.buildStrategy 省略或为 zip 时按传统代码包部署。危险操作需要显式 confirm=true。
 
 **个人版 TCR 凭证**：imageType=personal 的 local/cloud 构建需要推送凭证。若 MCP 配置的 env 中已设置 TCB_TCR_USERNAME 与 TCB_TCR_PASSWORD（与 TENCENTCLOUD_SECRETID 等密钥同样的配置方式），则不需要在请求参数中传递 func.imageConfig.build.registryCredential，留空即可自动读取。不要向用户索要密码明文，也不要把密码写进工具参数。
 注意这条 env 通道只在**本地 stdio MCP、且客户端的 mcp.json 支持自定义 env 块**时可用：部分 GUI 客户端不继承 shell 的 export，IDE 内置型 MCP 的凭据注入通常是硬编码白名单（例如只放行 TENCENTCLOUD_*），这类用户没有配置自定义 env 的通道，「在 MCP 配置的 env 中设置」对他们是无效指引。面向内置 MCP 用户应改为引导：使用企业版（imageType=enterprise，走实例临时令牌，不需要固定密码），或改用 buildStrategy=image 直接部署已推送的镜像。
@@ -2351,7 +2352,7 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
 ---
 
 ### `manageCloudRun`
-管理云托管服务，按开发顺序支持：开通云托管环境（initEnv）、初始化项目（可从模板开始，模板列表可通过 queryCloudRun 查询）、下载服务代码、本地运行（仅函数型服务）、部署代码、仅更新配置（updateConfig，无需重新上传代码）、删除服务。deploy 支持两种方式：1) 源码构建（传入 targetPath，本地代码打包上传，默认路径）；2) 已有镜像部署（传入 imageUrl，如 ccr.ccs.tencentyun.com/ns/img:v1，走 DeployType=image 容器型部署，targetPath 可省略）。deploy 语义为「触发部署 + 轻量等待任务注册」（最多约 45s；不需要 buildId 时可传 waitRegistration=false 跳过等待）。源码构建返回 buildId，用 getDeployLog 轮询构建进度后再 getProcessLog；镜像部署（imageUrl）BuildId 常为 0，跳过 getDeployLog，返回 runId/next_step 引导 getProcessLog（或先 getDeployRecords 取 RunId）。若用户明确指定镜像或无需重新构建，必须传 imageUrl，不要仅因本地有源码目录就回退到源码构建。deploy 对已存在服务会先读取远程配置再合并（保留 VpcConf/EnvParams/OpenAccessTypes）。updateConfig 对齐控制台服务设置页。删除操作需要确认，建议设置force=true。新环境首次部署前若提示未开通云托管，先调用 initEnv 开通（异步、幂等）。
+管理云托管服务，按开发顺序支持：开通云托管环境（initEnv）、初始化项目（可从模板开始，模板列表可通过 queryCloudRun 查询）、下载服务代码、本地运行（仅函数型服务）、部署代码、仅更新配置（updateConfig，无需重新上传代码）、删除服务。deploy 支持两种方式：1) 源码构建（传入 targetPath，本地代码打包上传，默认路径）；2) 已有镜像部署（传入 imageUrl，如 ccr.ccs.tencentyun.com/ns/img:v1，走 DeployType=image 容器型部署，targetPath 可省略）。deploy 语义为「触发部署 + 轻量等待任务注册」（最多约 45s；不需要 buildId 时可传 waitRegistration=false 跳过等待）。源码构建返回 buildId，用 getDeployLog 轮询构建进度后再 getProcessLog；镜像部署（imageUrl）BuildId 常为 0，跳过 getDeployLog，返回 runId/next_step 引导 getProcessLog（或先 getDeployRecords 取 RunId）。若用户明确指定镜像或无需重新构建，必须传 imageUrl，不要仅因本地有源码目录就回退到源码构建。deploy 对已存在服务会先读取远程配置再合并（保留 VpcConf/EnvParams/OpenAccessTypes）。updateConfig 对齐控制台服务设置页。删除操作需要确认，建议设置force=true。新环境首次部署前若提示未开通云托管，先调用 initEnv 开通（异步、幂等）。部署前请确认镜像里没有静态内容：媒体文件（视频、大图、字体）、用户上传的文件、以及频繁更新的静态资源，都应放进云存储按 URL 引用，不要打进镜像——否则每次部署都要全量重推、每个扩容实例都要重拉，一个 demo 视频就能把 30 秒的部署拖成几分钟。
 
 #### 参数
 

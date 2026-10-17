@@ -80,6 +80,16 @@ Dashboard පරිපාලක පිවිසුම පෙරනිමි ම�
 | `CLIENT_API` | මාදිලි සේවා සපයන අන්ත ලක්ෂ්ය — `/api/v1/*`, `/api/v1beta/*`, සහ `/v1/*`, `/v1beta/*`, `/chat/completions`, `/responses`, `/models`, `/codex/*` යන අන්වර්ථ නාම. | ක්රියාත්මක `REQUIRE_API_KEY` විශේෂාංග ධජය සක්රීය කර ඇති විට Bearer යතුරක් |
 | `MANAGEMENT` | උපකරණ පුවරු පිටු, සැකසුම්, සපයන්නන්, යතුරු, පරිපාලන සහ රෝගනිශ්චය අන්ත ලක්ෂ්ය.                                                                                  | උපකරණ පුවරු සැසියක් හෝ `manage` විෂය පථය සහිත Bearer එකක්                 |
 
+A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
+credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,
+`GET /api/db-backups/exportAll`), restoring a backup over the live data
+(`POST /api/db-backups/import` including `dryRun=true`, `POST /api/db-backups` restore by id,
+`POST /api/settings/import-json`), issuing a sync token (`POST /api/sync/tokens`) and minting an
+`admin` CLI access token (`POST /api/cli/tokens`) require a dashboard session, the local CLI
+subject, or login disabled; API keys of any scope and `oma_` access tokens get `403`. The check
+lives in `src/lib/api/operatorCredential.ts` (`resolveOperatorCredential()` /
+`requireOperatorCredential()`).
+
 ## නළ මාර්ගය
 
 ```

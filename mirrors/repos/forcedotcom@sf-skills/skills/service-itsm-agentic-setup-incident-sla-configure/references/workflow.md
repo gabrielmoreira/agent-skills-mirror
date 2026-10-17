@@ -11,34 +11,65 @@ tools. Call shapes / templates / response envelope / gotchas live in `references
 Each Phase 3a read carries a **skip-if-already-known** clause: skip only when the same fact was
 produced **this session** by a successful `dispatch_readonly` on the current org and unwritten since —
 a user statement is never cache-eligible. Cacheable: IT Service Management enablement (Phase 1a,
-only if `ENABLED`), master Incident Mgmt pref (step 1, only if
-`ENABLED`), SLA feature + Versioning (Phase 1b), Incident describe (3, incl. the `Incident.Priority`
+only if `ENABLED`), master Incident Mgmt pref (Phase 1b, only if
+`ENABLED`), SLA feature + Versioning (Phase 1c), Incident describe (3, incl. the `Incident.Priority`
 picklist), the priority-matrix flag (Phase 2 step 2), `BusinessHoursId` (4), SLA Connect ops (2). (Step 5 resolves no Account — Incident has
 none.) **When in doubt, re-check.**
 
 ## Phase 1a — IT Service Management enablement gate
 
-**Resolve this gate first, before Phase 1b and before the Master Incident Mgmt pref below.**
+**Resolve this gate first. The Incident Management gate (Phase 1b) is resolved immediately after it and before Phase 1c.**
 "IT Service Management" (`service-cloud-itsm-setup`) is a higher-level org gate — it sits above every per-feature ITSM master toggle, including Master
 Incident Management. Read via the Setup Discovery Connect API
-(`GET .../connect/setup/discovery/features`), filtered client-side to the **exact** apiName
-`service-cloud-itsm-setup` — never a look-alike. It has two states, `ENABLED` /
-`NOT_ENABLED` (no `NOT_AVAILABLE` — treat any unexpected value as a halt).
+(`GET /services/data/v{version}/connect/setup/discovery/features`, using the org's full API version with its
+minor such as v68.0; if the read fails, stop and do not retry other version strings), filtered client-side to the **exact** apiName
+`service-cloud-itsm-setup` — never a look-alike. Exact `ENABLED` passes immediately. Only exact
+`NOT_ENABLED` with no blocked reasons is eligible for confirmed enablement.
 
-- `ENABLED` → proceed to Phase 1b.
-- `NOT_ENABLED` → tell the user plainly that IT Service Management is not enabled, then a single
-  `AskUserQuestion`: enable it now (note it's **reversible** — it can be disabled again later) or
-  stop.
-  - **Enable** → dispatch the enable route **directly** — there is no owning SOR to delegate this
-    write to yet (unlike the Master Incident Mgmt gate below, which delegates to
-    `service-itsm-incident-mgmt-configure`); this is a scoped, temporary exception to "delegate
-    every write," flagged for a future delegate swap once a dedicated SOR exists. Halt and surface
-    the raw error on any failure. Re-read to confirm `ENABLED` before continuing.
-  - **Stop** → halt, point to Setup for manual enablement.
+- `ENABLED` → continue to Phase 1b (Incident Management gate), then Phase 1c.
+- Exact `NOT_ENABLED` with no blocked reasons → ask every time, never as plain text, with a single
+  `AskUserQuestion` (single-select, exactly two options: Yes and No): **“IT Service Enablement is off —
+  enable it now?”** The options are exactly “Yes” and “No”, with no other text in the question
+  or options. Do not preview later steps before it is answered.
+  - **Yes** → delegate to the `IncidentMgmt` SOR, explicitly stating that the user already
+    confirmed this exact change in this conversation so it does not ask again. Run its
+    `read-itsm-setup-feature-status`, `enable-itsm-setup-feature`, and
+    `verify-itsm-setup-feature-status` steps. Halt on blocked reasons, an error, a missing entry, or
+    any verify result other than exact `ENABLED`.
+    Delegating means the MCP tools, not a Claude Code skill: `describe` the `IncidentMgmt` SOR, read
+    its steps by `id`, and `dispatch` each step exactly as the SOR defines it. Never call `Skill` for
+    it and never invent an enable URL.
+  - **No** → halt, point to Setup for manual enablement.
+- Missing entry, error, blocked reasons, or any other status → halt and point to Setup; do not ask
+  to enable and do not delegate.
 
 Shapes: `references/mcp-invocation.md` (Phase 1a).
 
-## Phase 1b — SLA Management for IT Service prerequisite gate
+## Phase 1b — Incident Management prerequisite gate
+
+**Resolve this gate right after Phase 1a and before Phase 1c; it is a separate question from the SLA Management acks.**
+`service-cloud-itsm-incident` is the master ITSM Incident Management pref that every Incident SLA artifact
+depends on. Read via the same Setup Discovery Connect API as Phase 1a, filtered client-side to the
+**exact** apiName `service-cloud-itsm-incident` — never a look-alike (`service-cloud-incident-management`
+is generic Case-based Incident Management, not our target). Skip the read only when the cache clause in
+“Before you start” applies. Read `status`:
+
+- `ENABLED` → continue to Phase 1c.
+- `NOT_AVAILABLE` (license missing) → **halt and surface it** — cannot be enabled here, no delegate/ack.
+- `NOT_ENABLED` (empty blocked reasons) → ask “Incident Management is off — enable it now?” every time with a single
+  `AskUserQuestion` (single-select, exactly two options: Yes and No), never as plain text, and never auto-enable as an
+  implied SLA dependency.
+  - **Yes** → delegate to the `IncidentMgmt` SOR, stating that the user already confirmed this exact change so it must
+    not ask again. Run its `read-itsm-incident-feature-status`, `enable-itsm-incident-feature` and
+    `verify-itsm-incident-feature-status` steps; require exact `ENABLED`. Delegating means the MCP tools, not a Claude
+    Code skill: `describe` the `IncidentMgmt` SOR, read its steps by `id`, and `dispatch` each step exactly as the SOR
+    defines it. Never call `Skill` for it and never invent an enable URL.
+  - **No** → halt and point to Setup; every SLA artifact depends on the master being on.
+- Blocked reasons, error, missing entry or any other status → halt with a plain explanation and no question.
+
+Full shape + why setup-org-preferences 404s here: `references/mcp-invocation.md` (Phase 1b).
+
+## Phase 1c — SLA Management for IT Service prerequisite gate
 
 **Resolve this gate first, on its own. Reads are safe up front; confirm the org before any write.**
 "SLA Management for IT Service" is enabled only when **both** Simplified SLA Setup **and** SLA
@@ -50,13 +81,15 @@ settings surface) — discover → describe → dispatch rather than re-deriving
 Shapes / preconditions / `enableBlockedReasons` / ack wording: `references/mcp-invocation.md`.
 
 - **Read both** (`dispatch_readonly`); proceed to Phase 2 **only when both are on**.
-- **On an OFF org, read the master license first** (Phase 3a step 1, `service-cloud-itsm-incident`):
-  `NOT_AVAILABLE` → **HALT** — don't flip the permanent Versioning switch where Incident SLA can't run.
-- **Two separate `AskUserQuestion` acks — never merge.** (a) master Incident Mgmt `NOT_ENABLED` → ask
-  to enable it first (reversible, no permanence warning). (b) a *distinct* permanence ack: completing
-  the gate also turns on **SLA Versioning** (a **separate** write), which **can't be turned off** (SLA
-  Management disables later but Versioning stays on). Offer **enable**/**stop** — no "versioning-off";
-  a bare "enable SLA" is **not** consent.
+- **The master license was already resolved in Phase 1b** (`service-cloud-itsm-incident`): `NOT_AVAILABLE` halted there, so
+  the permanent Versioning switch is never flipped where Incident SLA can't run.
+- **Two separate `AskUserQuestion`s before any write — never merge, never skip.** (Q1) SLA Management
+  off → ask “SLA Management for IT Service is off — enable it now?” (Yes/No, no permanence warning; skip
+  only when SLA Management already reads on). (Q2) a *distinct* permanence ack: completing the gate also
+  turns on **SLA Versioning** (a **separate** write), which **can't be turned off** (SLA Management
+  disables later but Versioning stays on). Offer **enable**/**stop** — no "versioning-off". A Yes at
+  Phase 1a/1b, a bare "enable SLA" or the original request is **not** consent for either write; do not
+  preview later steps before each question is answered. Incident Management was already asked at Phase 1b.
 - **Decline (b), non-empty `enableBlockedReasons`, or a re-read mismatch → HALT** — enable no SLA
   Mgmt/Versioning, don't proceed to Phase 2/3a (a reversible master enable from (a) stands). **After
   any write, re-read both and report the REAL state** — never trust `201`/`204`.
@@ -65,7 +98,7 @@ Shapes / preconditions / `enableBlockedReasons` / ack wording: `references/mcp-i
 
 Once the gate passes, offer the OOB policy **before** any custom-flow questions. **Incident only.**
 
-1. **Prerequisite + detect.** Confirm master Incident Mgmt pref `ENABLED` (Phase 3a step 1). Then
+1. **Prerequisite + detect.** Confirm master Incident Mgmt pref `ENABLED` (Phase 1b). Then
    `dispatch_readonly` `GET /headless/invoke/platform/slasettings` (get-existing-checkbox-states) —
    its lowercase-keyed map's `incident` value is the authoritative "is the OOB default seeded?"
    answer (this is the seeder's own dedup read; it maps to display name **"Standard Support for
@@ -93,7 +126,7 @@ Once the gate passes, offer the OOB policy **before** any custom-flow questions.
    matrix flag). The predefined policy is priority-tiered, and with the matrix **off** every Incident
    gets the org's default priority, so only that tier's milestones fire. If it is off, say so plainly
    in the fork prompt (when the fork is skipped, on the Priority-tiered option of the strategy
-   question instead) and point to `service-itsm-incident-priority-configure` to turn it on. This is a
+   question instead) and point to the Priority Matrix setting in Setup to turn it on. This is a
    warning, not a gate — never enable the matrix from this skill.
    **Business Hours note (only when the user specified hours).** The seeder takes **no** Business Hours
    input — it always attaches the org's active **default** Business Hours (`IsDefault = true`), or none
@@ -120,15 +153,7 @@ Once the gate passes, offer the OOB policy **before** any custom-flow questions.
 
 **On any `401` / `403` / `404` from a step below, halt and surface the raw error** — the org/client is misconfigured. `401` → MCP auth (ECA/token). `403` → user perm OR ITSM Incident Management license/pref missing. `404` → `headless-360` not activated OR Entitlement Management not enabled for Incident.
 
-1. **Master Incident Management pref — direct read** *(skip conditions in “Before you start”)*.
-   `dispatch_readonly` `GET .../connect/setup/discovery/features`, filter `features[]` to the **exact**
-   `apiName == "service-cloud-itsm-incident"` — never a look-alike (`service-cloud-incident-management`
-   is generic Case-based Incident Management, not our target). Read `status`: `ENABLED` → proceed;
-   `NOT_AVAILABLE` (license missing) → **halt and surface it** — cannot be enabled here, no delegate/ack;
-   `NOT_ENABLED` → **explicit `AskUserQuestion` ack first (never auto-enable as an implied SLA
-   dependency)**, then delegate to `service-itsm-incident-mgmt-configure` inline — that ack is the
-   delegate's confirm-to-write, so never ask twice — and re-read; if declined, halt — every SLA artifact below depends on the master being on. Full shape + why
-   setup-org-preferences 404s here: `references/mcp-invocation.md` (Preflight A).
+1. **Master Incident Management pref** — already gated in Phase 1b; reuse that result. Do not re-ask or re-read unless a write happened since *(skip conditions in “Before you start”)*.
 2. **Discover the Connect operations** — *(skip if already verified this session — see “Before you start”)*.
    `mcp__headless-360__discover(query="sla-management milestone")` to confirm the SLA Management
    Connect API is indexed, then `mcp__headless-360__describe(id=<operation_id>)`
@@ -212,7 +237,7 @@ selection expands to N creates in Phase 4A step 4 (one delegation per milestone,
 
 ## Phase 3c — Confirm before mutating
 
-1. **Confirm the plan** — present the resolved config (target **org**, **SLA Policy** name,
+1. **Confirm the plan** — print the plan as text in the reply **first**, then ask; the `AskUserQuestion` must never refer to a plan that has not already been shown. Present the resolved config (target **org**, **SLA Policy** name,
    **Business Hours: `<name>`** (and, if Phase 3a step 4 planned a create, its time zone + weekly windows and
    that it will be **created** — a new record this skill does not remove later), the **engagement model** (per-Incident via `EntitlementId` — **no
    Account**, since Incident has no Account field), and the **full per-milestone list** — never
@@ -348,7 +373,7 @@ IST business-hours note: `references/mcp-invocation.md` (Milestone Actions).
     but the derived `Priority` is still the order-1 tier after **one** `Impact`/`Urgency` adjustment,
     stop creating test Incidents. Either way, report that the SLA engages but the other tiers were not
     checked, say why (matrix off / matrix maps these inputs to that tier), and point to
-    `service-itsm-incident-priority-configure`. Narrate by `IncidentNumber`, never the Id.
+    the Priority Matrix setting in Setup. Narrate by `IncidentNumber`, never the Id.
 3. **Verify engagement + tiering** — SOQL that an `EntityMilestone` landed on the **correct tier**
     (a Moderate/Low Incident → the 240/960 tier, NOT 30/120) with a `TargetDate` — that row is the
     reliable engagement proof. `Incident.SlaStartDate` is populated when you set `EntitlementId` at

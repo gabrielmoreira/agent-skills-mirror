@@ -2,7 +2,7 @@
 
 Status: implemented
 Date: 2026-09-27
-Related: [给 35K 上限留余量](../simplification/2026-09-27-load-headroom.md)
+Related: [给 35K 上限留余量](../simplification/2026-09-27-load-headroom.md)、[后续三层诊断决定](../architecture/2026-10-15-deslop-three-layer.md)（取代本篇的定档与删减率执行方式，保留本篇为历史决定）
 
 ## Problem
 

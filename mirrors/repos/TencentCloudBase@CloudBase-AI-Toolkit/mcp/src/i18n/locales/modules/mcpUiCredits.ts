@@ -38,6 +38,7 @@ export const mcpUiCredits = defineModule(
     // 状态词（四分支 + 未确认）
     "state.unknown": "用量尚未确认",
     "state.normal": "用量正常",
+    "state.nearLimit": "用量接近上限（已用 {pct}%）",
     "state.trialExhausted": "体验版耗尽",
     "state.stopped": "套餐资源点已用完",
     "state.expired": "套餐已到期",
@@ -51,6 +52,7 @@ export const mcpUiCredits = defineModule(
     // 说明句（四分支 + 未确认）
     "hint.unknown": "这份数据不足以判断资源点是否充足；完整配额可在控制台查看。",
     "hint.normal": "本月资源点仍充足。",
+    "hint.nearLimit": "本月资源点已用 {pct}%，接近上限；升级套餐或购买资源包可避免中断。",
 
     // 说明句（四分支）
     "hint.trialExhausted": "本月资源点已用完；体验版不支持资源包与按量计费，升级付费套餐是唯一恢复途径。",
@@ -63,7 +65,7 @@ export const mcpUiCredits = defineModule(
     "action.upgrade": "升级付费套餐（唯一恢复途径）",
     "action.recommendRestore": "推荐恢复方案",
     "action.renew": "立即续费",
-    "action.guidedTopup": "在会话里引导充值",
+    "action.guidedTopup": "去充值",
     "action.copyConsoleLink": "复制控制台链接",
     "action.copyExpenseLink": "复制费用中心链接",
     "action.copiedConsole": "控制台链接已复制；无计费权限时可转给主账号管理员",
@@ -93,6 +95,83 @@ export const mcpUiCredits = defineModule(
     "plan.standard": "标准版",
     "plan.enterprise": "企业版",
     "plan.enterpriseAdvanced": "企业高级版",
+
+    // ---- 监控指标卡（queryEnv(action=metrics)：同一资源按 kind 分派的第二个视图）----
+    // 指标人话名（枚举 ↔ 词典键；未列出的枚举一律退化为 metric.generic，绝不打印原始码）
+    "metric.generic": "环境指标",
+    "metric.GatewayTraceEnvQPS": "环境网关 QPS",
+    "metric.EnvQPSAll": "环境总 QPS",
+    "metric.FunctionInvocation": "函数调用次数",
+    "metric.FunctionError": "函数错误次数",
+    "metric.FunctionTimeout": "函数超时次数",
+    "metric.FunctionThrottle": "函数限流次数",
+    "metric.FunctionDuration": "函数执行耗时",
+    "metric.FunctionConcurrentExecutions": "函数并发数",
+    "metric.DbRead": "数据库读次数",
+    "metric.DbWrite": "数据库写次数",
+    "metric.DbSizepkg": "数据库存储用量",
+    "metric.MysqlCpuUsageRate": "MySQL CPU 使用率",
+    "metric.MysqlMemoryUse": "MySQL 内存使用",
+    "metric.MysqlStorageUsage": "MySQL 存储用量",
+    "metric.MysqlQps": "MySQL QPS",
+    "metric.MysqlSlowQueries": "MySQL 慢查询",
+    "metric.MysqlDbConnections": "MySQL 连接数",
+    "metric.TkeCpuUsedService": "云托管 CPU 使用",
+    "metric.TkeMemUsedService": "云托管内存使用",
+    "metric.TkeQPSService": "云托管 QPS",
+    "metric.TkeHttpErrorService": "云托管 HTTP 错误",
+    "metric.TkeInvokeNumService": "云托管调用次数",
+
+    // 状态（三态：有数据 / 无流量 / 查询失败）
+    // 指标单位（词表来自云开发控制台的真实呈现：调用次数（次）/ 运行时间（ms）/
+    // 资源用量（GBs）/ 资源用量（CU），以及套餐用量页的 GB / KB / 万次 / %）
+    // 控制台原文：QPS 页「当前环境QPS（每秒请求量）」、仪表盘云函数视图「并发执行个数（个）」
+    // ⇒ 新增两个词按原文转写（英文取 req/s、items，控制台英文界面未核到时的稳妥写法）
+    "metric.unit.perSec": "次/秒",
+    "metric.unit.item": "个",
+
+    "metric.unit.count": "次",
+    "metric.unit.ms": "ms",
+    "metric.unit.gbs": "GBs",
+    "metric.unit.cu": "CU",
+    "metric.unit.gb": "GB",
+    "metric.unit.percent": "%",
+
+    // 单位摆放（跟控制台一致：单位写在指标名后的括号里）
+    "metric.unitWrap": "{label}（{unit}）",
+    // 数值后缀的拼接：中文紧贴（18次），英文要留空格（18 items）
+    "metric.unitSuffix": "{value}{unit}",
+
+    "metric.state.data": "有数据",
+    "metric.state.noData": "无流量",
+    "metric.state.failed": "查询失败",
+
+    // 说明句
+    "metric.hint.data": "所选时段内该指标有数据。",
+    "metric.hint.noData": "所选时段内该指标没有数据。",
+    "metric.hint.failed": "这次查询没有拿到数据；可以先重试，或去日志看这段时间有没有报错。",
+
+    // 字段标签
+    "metric.field.latest": "最新值",
+    "metric.field.peak": "峰值",
+    "metric.field.avg": "平均",
+    "metric.field.window": "样本与粒度",
+
+    // 行动（一屏一个主行动）
+    // 三态各自的动作（动作腔；noData 最接近流失，不许说"异常"）
+    "metric.action.data": "看这段曲线的解释",
+    "metric.action.noData": "去日志看这段时间有没有请求",
+    "metric.action.failed": "重试这次查询",
+    "metric.message.data": "帮我解释这段时间「{metric}」这条曲线的变化",
+    "metric.message.noData": "这段时间「{metric}」没有数据，帮我看看是不是没有请求进来",
+    "metric.message.failed": "刚才查「{metric}」失败了，帮我重试并看看原因",
+
+    // 值拼接（模板串保持纯 ASCII，连接一律走词典）
+    "metric.window": "{samples} 个样本 · 每 {period} 采样",
+    "metric.samples": "{n} 个样本",
+    "metric.period.minute": "5 分钟",
+    "metric.period.hour": "1 小时",
+    "metric.period.day": "1 天",
   },
   {
     resourceTitle: "Environment usage",
@@ -112,6 +191,7 @@ export const mcpUiCredits = defineModule(
 
     "state.unknown": "Usage not confirmed",
     "state.normal": "Usage is within plan",
+    "state.nearLimit": "Usage near the limit ({pct}% used)",
     "state.trialExhausted": "Trial credits used up",
     "state.stopped": "Plan credits used up",
     "state.expired": "Plan expired",
@@ -124,6 +204,7 @@ export const mcpUiCredits = defineModule(
     "hint.unknown":
       "This data is not enough to tell whether credits are sufficient. The full quota is available in the console.",
     "hint.normal": "This month's credits are still within the plan.",
+    "hint.nearLimit": "Credits are {pct}% used and nearing the limit; upgrade the plan or add a credit pack to avoid interruption.",
 
     "hint.trialExhausted":
       "This month's credits are used up. The trial plan supports neither credit packs nor pay-as-you-go, so upgrading to a paid plan is the only way back.",
@@ -138,7 +219,7 @@ export const mcpUiCredits = defineModule(
     "action.upgrade": "Upgrade plan (the only way back)",
     "action.recommendRestore": "Recommend a recovery option",
     "action.renew": "Renew now",
-    "action.guidedTopup": "Get top-up guidance in chat",
+    "action.guidedTopup": "Top up",
     "action.copyConsoleLink": "Copy console link",
     "action.copyExpenseLink": "Copy billing center link",
     "action.copiedConsole": "Console link copied. Without billing permission, forward it to the account owner.",
@@ -166,5 +247,68 @@ export const mcpUiCredits = defineModule(
     "plan.standard": "Standard",
     "plan.enterprise": "Enterprise",
     "plan.enterpriseAdvanced": "Enterprise Advanced",
+
+    "metric.generic": "Environment metric",
+    "metric.GatewayTraceEnvQPS": "Gateway QPS",
+    "metric.EnvQPSAll": "Environment QPS",
+    "metric.FunctionInvocation": "Function invocations",
+    "metric.FunctionError": "Function errors",
+    "metric.FunctionTimeout": "Function timeouts",
+    "metric.FunctionThrottle": "Function throttles",
+    "metric.FunctionDuration": "Function duration",
+    "metric.FunctionConcurrentExecutions": "Function concurrency",
+    "metric.DbRead": "Database reads",
+    "metric.DbWrite": "Database writes",
+    "metric.DbSizepkg": "Database storage",
+    "metric.MysqlCpuUsageRate": "MySQL CPU usage",
+    "metric.MysqlMemoryUse": "MySQL memory usage",
+    "metric.MysqlStorageUsage": "MySQL storage usage",
+    "metric.MysqlQps": "MySQL QPS",
+    "metric.MysqlSlowQueries": "MySQL slow queries",
+    "metric.MysqlDbConnections": "MySQL connections",
+    "metric.TkeCpuUsedService": "CloudRun CPU usage",
+    "metric.TkeMemUsedService": "CloudRun memory usage",
+    "metric.TkeQPSService": "CloudRun QPS",
+    "metric.TkeHttpErrorService": "CloudRun HTTP errors",
+    "metric.TkeInvokeNumService": "CloudRun invocations",
+
+    "metric.unit.perSec": "req/s",
+    "metric.unit.item": "items",
+
+    "metric.unit.count": "times",
+    "metric.unit.ms": "ms",
+    "metric.unit.gbs": "GBs",
+    "metric.unit.cu": "CU",
+    "metric.unit.gb": "GB",
+    "metric.unit.percent": "%",
+
+    "metric.unitWrap": "{label} ({unit})",
+    "metric.unitSuffix": "{value} {unit}",
+
+    "metric.state.data": "Has data",
+    "metric.state.noData": "No traffic",
+    "metric.state.failed": "Query failed",
+
+    "metric.hint.data": "This metric has data in the selected window.",
+    "metric.hint.noData": "This metric has no data in the selected window.",
+    "metric.hint.failed": "This query returned no data; retry it, or check the logs for errors in this period.",
+
+    "metric.field.latest": "Latest",
+    "metric.field.peak": "Peak",
+    "metric.field.avg": "Average",
+    "metric.field.window": "Samples and interval",
+
+    "metric.action.data": "Explain this curve",
+    "metric.action.noData": "Check the logs for requests in this period",
+    "metric.action.failed": "Retry this query",
+    "metric.message.data": "Walk me through this curve for {metric} in the selected window",
+    "metric.message.noData": "There is no data for {metric} in this window - check whether requests ever arrived",
+    "metric.message.failed": "The last {metric} query failed - retry it and tell me why",
+
+    "metric.window": "{samples} samples, every {period}",
+    "metric.samples": "{n} samples",
+    "metric.period.minute": "5 minutes",
+    "metric.period.hour": "1 hour",
+    "metric.period.day": "1 day",
   },
 );

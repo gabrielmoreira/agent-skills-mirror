@@ -9,8 +9,15 @@ A suite of Claude Code skills for rigorous academic research, paper writing, pee
 | `deep-research` v2.12.1 | 13-agent research team | full, quick, socratic, review, lit-review, three-way-scan, fact-check, systematic-review |
 | `academic-paper` v3.3.1 | 12-agent paper writing | full, plan, outline-only, revision, revision-coach, abstract-only, lit-review, format-convert, citation-check, disclosure, rebuttal-audit |
 | `academic-paper-reviewer` v1.11.1 | Multi-perspective paper review (5 reviewers + optional cross-model DA critique) | full, re-review, quick, methodology-focus, guided, calibration |
-| `academic-pipeline` v3.23.0 | Full pipeline orchestrator | (coordinates all above) |
+| `academic-pipeline` v3.23.1 | Full pipeline orchestrator | (coordinates all above) |
 | `sr-screener` v1.0.0 | Protocol-driven study screening (2 blinded AI reviewers + adjudicator) | protocol, quick, pilot, ta-screen, ft-screen, adjudicate, audit, report |
+
+## v3.23.1 Key Additions (write-scope guard repairs + RFC 4180 CSV reading in `sr-screener` + Gemini 4 Argon as a provisional verifier)
+
+- **Two write-scope guard fail-open paths closed (#972), and the docs state where the fence engages (#974).** Plugin-dispatched Bucket A agents are reported as `academic-research-skills:<agent>`; the guard now strips this plugin's own prefix before the manifest lookup (#971). `hooks/run_guard.sh` no longer trusts a `timeout` that rejects the GNU form, such as Windows `timeout.exe`, which had left every write unchecked (#970). Inline main-session roles carry no agent type and are not fenced; the docs now say so.
+- **`sr-screener` reads CSV exports by RFC 4180 quoting (#979, reported by @paololimo).** `parse_csv` sniffs only the delimiter; quote rules no longer come from a 5,000-character sample, which had split later quoted fields, guessed `'` as the quote character, and read single-column exports with semicolons as semicolon-delimited.
+- **Gemini 4 Argon is a provisional Google verifier and the recommended Google id (#980).** `gemini-3.1-pro-preview` stays validated; no Gemini smoke script ships, so the Promotion Bakeoff entry gate for a Gemini candidate is pending.
+- **Smaller changes.** A mid-message `[direct-mode]` token is not the escape hatch (#892); lint type checks for `exception_reason` (#965, #977) and a Windows path comparison (#963), contributed by @SID-6921 and @daniyyell-dev; `THIRD_PARTY.md` lists md-to-word (#969, @ls-open). The #892 smoke test does not meet its acceptance rule (Claude Fable 5.1 on a plugin install still honored the token in 3 of 6 sessions), so #892 stays open; no accuracy or performance claim ships.
 
 ## v3.23.0 Key Additions (`sr-screener` as a fifth skill + repairs from a pipeline walk-through + evidence and ledger hardening)
 
@@ -328,7 +335,7 @@ Spec: `docs/design/2026-05-17-ars-v3.9.0-cross-index-triangulation-measurement-s
 
 - **Anti-sycophancy protocols**: DA agents score rebuttals 1-5 before conceding. No concession below 4/5. Frame-lock detection.
 - **Intent detection**: Socratic Mentor classifies user intent as exploratory vs. goal-oriented. Exploratory mode disables auto-convergence.
-- **Cross-model verification** (optional): Set `ARS_CROSS_MODEL` env var to enable a non-Anthropic verifier (currently GPT-6 Astra (provisional) or Gemini 3.1 Pro; per-transport statuses of every id live in the supported-model table) for integrity sample checks, a blind and separately executed Devil's Advocate critique, and blind disagreement checkpoints at design freeze + final editorial decision (#518). The once-planned generic sixth reviewer is retired, not deferred — see the "Why there is no generic 6th reviewer" note in `shared/cross_model_verification.md`, which also carries the supported-model table. These execution facts are not a binary independence claim.
+- **Cross-model verification** (optional): Set `ARS_CROSS_MODEL` env var to enable a non-Anthropic verifier (currently GPT-6 Astra (provisional) or Gemini 4 Argon (provisional), with Gemini 3.1 Pro as the validated Google option; per-transport statuses of every id live in the supported-model table) for integrity sample checks, a blind and separately executed Devil's Advocate critique, and blind disagreement checkpoints at design freeze + final editorial decision (#518). The once-planned generic sixth reviewer is retired, not deferred — see the "Why there is no generic 6th reviewer" note in `shared/cross_model_verification.md`, which also carries the supported-model table. These execution facts are not a binary independence claim.
 - **AI Self-Reflection Report**: Pipeline Stage 6 now includes AI behavioral self-assessment (concession rate, health alerts, sycophancy risk rating).
 
 ## Routing Discipline (v3.9.2)
@@ -413,7 +420,7 @@ Materials: Editorial Decision Letter, Revision Roadmap, Per-reviewer detailed co
 Materials in: screening protocol source (proposal, PROSPERO record, or `systematic-review` mode protocol), database exports (RIS, PubMed .nbib, Web of Science, CSV), full-text PDFs. Materials out: `*_literature_corpus.yaml` (`literature_corpus[]` entries for the Material Passport), PRISMA 2020 counts, methods draft, exclusion reasons, screening log.
 
 ## Version Info
-- **Suite version**: 3.23.0 (per CHANGELOG.md)
-- **Last Updated**: 2026-10-03
+- **Suite version**: 3.23.1 (per CHANGELOG.md)
+- **Last Updated**: 2026-10-16
 - **Author**: Cheng-I Wu
 - **License**: CC-BY-NC 4.0

@@ -102,6 +102,13 @@ exclusion and immutable version pinning. This changes no agent endpoint or grant
 the [configuration tests](../../server/src/__tests__/heartbeat-execution-configuration.test.ts)
 cover the held-lock boundary with real PostgreSQL.
 
+Concurrent preparations share only in-flight inventory reconciliation. After
+that work, each actor's visible skill rows are read again under the company cache
+lock. Snapshot delivery and durable run pins complete before the lock is released.
+No permission result is shared or kept between requests. The
+[concurrency tests](../../server/src/__tests__/company-skills-runtime-concurrency.test.ts)
+cover separate actors and project-access revocation; this adds no agent API.
+
 ## `policy`
 
 Review: `baseline`.
@@ -202,3 +209,11 @@ responsible person's other grants for an agent-created source.
 Initial automatic imports reserve company work credits before provider reads.
 Failures retain the reservation; completed jobs cannot replenish the queue's
 work allowance. Jobs remain durable and resume as company credits refill.
+
+
+Plugin runtime synchronization uses the agent's current skill access and immutable
+version resolver. A change to an installed skill invalidates its referencing
+agents. Private-source access changes also request reconciliation. This is a
+host-to-plugin hook, not a new agent-facing endpoint. See
+[contract](../../doc/plugins/AGENT_RUNTIME_SYNC.md#skills) and
+[database coverage](../../server/src/__tests__/agent-runtime-skills.test.ts).

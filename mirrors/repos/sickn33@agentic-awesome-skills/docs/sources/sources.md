@@ -19,6 +19,7 @@ If you recognize your work here and it is not properly attributed, please open a
 | `browser-testing-with-devtools` | [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills)  | MIT            | Chrome DevTools MCP browser verification and security-boundary guidance. |
 | `langgraph`                 | [LangGraph](https://github.com/langchain-ai/langgraph)                     | MIT            | Framework guides.             |
 | `react-patterns`            | [React Docs](https://react.dev/)                                           | CC-BY          | Official patterns.            |
+| `apify-reddit-scraper`      | [harshmaur/apify-reddit-scraper-skill](https://github.com/harshmaur/apify-reddit-scraper-skill) | MIT | Community skill by the Actor author; also published in [apify/awesome-skills](https://github.com/apify/awesome-skills/tree/main/skills/apify-reddit-scraper). |
 | **All Official Skills**     | [Anthropic / Google / OpenAI / Microsoft / Supabase / Apify / Vercel Labs] | Proprietary    | Usage encouraged by vendors.  |
 
 ## Skills from zhaoxuya520/reverse-skill

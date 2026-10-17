@@ -81,6 +81,16 @@ Die Administratoranmeldung des Dashboards unterstützt neben der standardmäßig
 | `CLIENT_API` | Endpunkte zur Modellbereitstellung — `/api/v1/*`, `/api/v1beta/*` sowie die Aliase `/v1/*`, `/v1beta/*`, `/chat/completions`, `/responses`, `/models`, `/codex/*`. | Bearer-Key, wenn das effektive Feature-Flag `REQUIRE_API_KEY` aktiviert ist |
 | `MANAGEMENT` | Dashboard-Seiten, Einstellungen, Anbieter, Schlüssel sowie Admin- und Diagnoseendpunkte.                                                                           | Dashboard-Sitzung ODER Bearer mit `manage`-Scope                            |
 
+A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
+credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,
+`GET /api/db-backups/exportAll`), restoring a backup over the live data
+(`POST /api/db-backups/import` including `dryRun=true`, `POST /api/db-backups` restore by id,
+`POST /api/settings/import-json`), issuing a sync token (`POST /api/sync/tokens`) and minting an
+`admin` CLI access token (`POST /api/cli/tokens`) require a dashboard session, the local CLI
+subject, or login disabled; API keys of any scope and `oma_` access tokens get `403`. The check
+lives in `src/lib/api/operatorCredential.ts` (`resolveOperatorCredential()` /
+`requireOperatorCredential()`).
+
 ## Pipeline
 
 ```

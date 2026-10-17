@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `mongodb/agent-skills` — 26 default patterns, 0 followed patterns, 94 file(s) materialized.
+Mirror of `mongodb/agent-skills` — 26 default patterns, 0 followed patterns, 96 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mongodb/agent-skills` — 26 default patterns, 0 followed patterns, 9
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 94 |
+| Files         | 96 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -149,10 +149,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 88 | ✓ | [`skills/mongodb-search-and-ai/references/hybrid-search.md`](skills/mongodb-search-and-ai/references/hybrid-search.md) |
 | 89 | ✓ | [`skills/mongodb-search-and-ai/references/lexical-search-indexing.md`](skills/mongodb-search-and-ai/references/lexical-search-indexing.md) |
 | 90 | ✓ | [`skills/mongodb-search-and-ai/references/lexical-search-querying.md`](skills/mongodb-search-and-ai/references/lexical-search-querying.md) |
-| 91 | ✓ | [`skills/mongodb-search-and-ai/references/vector-search.md`](skills/mongodb-search-and-ai/references/vector-search.md) |
-| 92 | ✓ | [`skills/mongodb-search-and-ai/SKILL.md`](skills/mongodb-search-and-ai/SKILL.md) |
-| 93 | ✓ | [`skills/OWNERS.yaml`](skills/OWNERS.yaml) |
-| 94 | ✓ | [`tools/review-skill/SKILL.md`](tools/review-skill/SKILL.md) |
+| 91 | ✓ | [`skills/mongodb-search-and-ai/references/quick-start.md`](skills/mongodb-search-and-ai/references/quick-start.md) |
+| 92 | ✓ | [`skills/mongodb-search-and-ai/references/vector-search.md`](skills/mongodb-search-and-ai/references/vector-search.md) |
+| 93 | ✓ | [`skills/mongodb-search-and-ai/scripts/quickstart_complete.py`](skills/mongodb-search-and-ai/scripts/quickstart_complete.py) |
+| 94 | ✓ | [`skills/mongodb-search-and-ai/SKILL.md`](skills/mongodb-search-and-ai/SKILL.md) |
+| 95 | ✓ | [`skills/OWNERS.yaml`](skills/OWNERS.yaml) |
+| 96 | ✓ | [`tools/review-skill/SKILL.md`](tools/review-skill/SKILL.md) |
 
 ---
 

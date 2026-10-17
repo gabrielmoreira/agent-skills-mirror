@@ -211,6 +211,18 @@ Anthropic transport of `pixel-draw` (docs/pixel-draw.md) — in `sprite_gen/gen/
   `[gen] openai refused the request (429 rate_limit_exceeded); nothing was made — asking again in 8s (1 of 2)`.
   A refusal still there after that ends the call as any refusal does, its line saying
   `sent 3 times, no provider fallback` where it says `no retry or provider fallback`.
+- **The waits are inside the call's time limit**, counted from its first send:
+  `SPRITE_GEN_GEN_TIMEOUT_SECONDS` (180) for an OpenAI or Grok image and the OpenAI
+  facing check, 120 s for the Grok facing check — each send reading only what is left
+  of it — the poll timeout for a clip (docs/video.md), `--batch-wait` for the reads of
+  a Message Batch (docs/pixel-draw.md). A wait that would reach the limit is not
+  waited: the refusal ends the call after one line,
+  `[gen] openai refused the request (429 rate_limit_exceeded); nothing was made — not asking again: the 16s wait would reach the time limit (12s left)`.
+  The limit is read again after the wait, right before the send: a sleep may wake
+  later than it was asked to, and one that woke at the limit or past it sends nothing —
+  the refusal ends the call the same way,
+  `[gen] openai refused the request (429 rate_limit_exceeded); nothing was made — not asking again: the time limit came during the 8s wait`.
+  A realtime `pixel-draw` call has no time limit of its own.
 - **A request that got no answer it could read is never sent again** — the connection
   broke, it timed out, or the answer broke on the way, a refusal whose body broke
   included (`xai.error_body`: a refusal's status alone is not an answer read whole).

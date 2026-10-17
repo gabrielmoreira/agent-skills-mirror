@@ -270,6 +270,10 @@ For browser-backed recurring jobs, enter
 acceptance before shipping. That Skill owns resource-budget and focus evidence;
 keep the detailed procedure there.
 
+Before selecting file-event or periodic triggers, follow
+[macos-watchdog's trigger and acceptance workflow](daymade-macos/macos-watchdog/references/event-driven-observers.md).
+For loaded plist scheduling and configuration, use its
+[native readback](daymade-macos/macos-watchdog/references/native-job-readback.md).
 Before choosing or changing any periodic observer's cadence, follow
 [macos-watchdog's observation contract](daymade-macos/macos-watchdog/references/probe-cost.md).
 For named macOS load/runaway alerts, follow
@@ -427,6 +431,10 @@ For change-only automatic backups, use its
 
 ### Codex Quota and Account Checks
 
+For a remote Codex sign-in prompt or terminal refresh rejection, start at
+[Local Codex authentication recovery](daymade-codex/local-codex/references/oauth-guide.md#remote-account-switch-and-expired-login-recovery).
+That owner defines project-authorization recovery, credential-store selection and usable-access verification; quota checks below remain a separate route.
+
 For Codex reset announcements or account quota questions, enter
 [tibo-reset-codex](tibo-reset-codex/SKILL.md). Follow its
 [account usage SOP](tibo-reset-codex/references/account-usage.md) for authentication,
@@ -469,7 +477,7 @@ re-add a marketplace: removing it uninstalls plugins installed from that
 marketplace. Do not `cp -r` a second Skill tree into a user Skill directory; that
 copy immediately creates an independent drift owner.
 
-For maintainer source-backed activation, follow
+For maintainer source-backed activation or source-watcher deployment, follow
 [Local Source Sync Architecture](daymade-claude-code/claude-switch-models-setup/references/local-source-sync-architecture.md).
 That reference owns the activation-manifest contract, host-specific selection,
 legacy compatibility, and repair workflow. An approved whole-marketplace policy

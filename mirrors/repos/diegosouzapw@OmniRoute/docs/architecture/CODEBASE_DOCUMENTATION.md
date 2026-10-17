@@ -449,7 +449,7 @@ open-sse/
 ├── types.d.ts
 ├── config/                 Provider registries, header profiles, identity, …
 ├── handlers/               Request handlers (chat, embeddings, audio, image, …)
-├── executors/              108 provider-specific HTTP executors
+├── executors/              150 provider executor modules (executor classes + per-provider helpers)
 ├── translator/             Format conversion (OpenAI ↔ Claude ↔ Gemini ↔ Cursor ↔ Kiro)
 ├── transformer/            Responses API ↔ Chat Completions stream transformer
 ├── services/               80+ service modules (combos, fallback, quotas, identity, …)
@@ -479,7 +479,10 @@ open-sse/
 
 ### 4.2 `open-sse/executors/`
 
-148 provider executors, each extending `BaseExecutor` (`base.ts`):
+150 top-level executor modules (`*.ts` minus `base.ts`, `index.ts` and tests — the count
+`npm run check:docs-counts` measures). Every executor class extends `BaseExecutor` (`base.ts`),
+directly or through `DefaultExecutor` or another executor; the remaining modules are per-provider
+helpers (tool schemas, fetch/TTS adapters, quirk handlers). Executors include:
 
 `antigravity`, `azure-openai`, `blackbox-web`, `cliproxyapi`,
 `chatgpt-web-codex`, `cloudflare-ai`, `codex`, `commandCode`, `cursor`, `default`, `devin-cli`,
@@ -488,7 +491,7 @@ open-sse/
 (shared identity helper) and `index.ts` (registry).
 
 > Note: providers not listed here are served by `default.ts` using the generic
-> OpenAI-compatible executor. The full provider catalog (355 providers) lives in
+> OpenAI-compatible executor. The full provider catalog (372 providers) lives in
 > `src/shared/constants/providers.ts`.
 
 ### 4.3 `open-sse/translator/`

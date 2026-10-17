@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 125 file(s) materialized.
+Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 126 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `labring/FastGPT` — 26 default patterns, 0 followed patterns, 125 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 125 |
+| Files         | 126 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -182,8 +182,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 121 | ✓ | [`.agents/skills/system/system-migration-development/SKILL.md`](.agents/skills/system/system-migration-development/SKILL.md) |
 | 122 | ✓ | [`.agents/skills/system/test-case/SKILL.md`](.agents/skills/system/test-case/SKILL.md) |
 | 123 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 124 | ✓ | [`document/app/[lang]/llms.txt/route.ts`](document/app/[lang]/llms.txt/route.ts) |
-| 125 | ✓ | [`document/public/deploy/SKILL.md`](document/public/deploy/SKILL.md) |
+| 124 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 125 | ✓ | [`document/app/[lang]/llms.txt/route.ts`](document/app/[lang]/llms.txt/route.ts) |
+| 126 | ✓ | [`document/public/deploy/SKILL.md`](document/public/deploy/SKILL.md) |
 
 ---
 

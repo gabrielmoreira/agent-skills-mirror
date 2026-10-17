@@ -2,7 +2,7 @@
 
 The process's storage backend on the
 [tinystoragedrivers](https://github.com/tinyhumansai/tinystoragedrivers)
-ports, taken by git tag (`v0.11.0`) by the host and by every module, so the build holds one copy.
+ports, vendored at `vendor/tinystoragedrivers` (v0.11.0). The host and every module declare it by git tag and the root and app `[patch]` tables redirect them all onto that checkout, so the build holds one copy (`scripts/ci/check-storage-owner.mjs` enforces it).
 
 One URL picks it: `OPENHUMAN_STORAGE_URL`, else `[storage] url` in
 `config.toml` (`config::StorageConfig`), else the default,

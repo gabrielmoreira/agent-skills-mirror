@@ -159,11 +159,10 @@ def test_main_uses_hints_llm_news_and_futures(monkeypatch, capsys, ohlcv, tmp_pa
     assert manifest["watchlist_count"] == 3
 
     exportable = load_tickets(out / "tickets" / "exportable")
-    # top-n=1 breakout ticket + PANIC reversal + BRK news reaction (PANIC news is not on the target date)
+    # News reactions are research-only; only supported families are exportable.
     assert set(exportable) == {
         "edge_auto_vcp_brk_20260220",
         "edge_auto_panic_reversal_panic_20260220",
-        "edge_auto_news_reaction_brk_20260220",
     }
     assert exportable["edge_auto_vcp_brk_20260220"]["observation"]["matched_hints"] == [
         "Leaders breaking out"
@@ -172,8 +171,6 @@ def test_main_uses_hints_llm_news_and_futures(monkeypatch, capsys, ohlcv, tmp_pa
     assert exportable["edge_auto_panic_reversal_panic_20260220"]["observation"][
         "matched_hints"
     ] == ["LLM idea"]
-    news_ticket = exportable["edge_auto_news_reaction_brk_20260220"]
-    assert news_ticket["observation"]["reaction_direction"] == "up"
 
     research = load_tickets(out / "tickets" / "research_only")
     assert {
@@ -325,26 +322,89 @@ def test_main_pipeline_validation_pass_and_fail(monkeypatch, capsys, ohlcv, tmp_
     assert "  - edge_auto_vcp_brk_20260220: schema says no" in stdout
 
 
-def test_main_export_of_news_reaction_ticket_fails_contract(
-    monkeypatch, capsys, ohlcv, tmp_path
+@pytest.mark.parametrize("reverse_export_order", [False, True])
+@pytest.mark.parametrize("news_only", [False, True])
+def test_main_news_research_does_not_abort_export(
+    monkeypatch, capsys, ohlcv, tmp_path, reverse_export_order, news_only
 ) -> None:
-    """Pinned: news_reaction tickets land in the exportable folder but the contract
-    rejects them (no downstream detector), so --export-strategies-dir aborts with exit 1."""
     news = tmp_path / "news.csv"
     news.write_text("symbol,timestamp,reaction_1d\nBRK,2026-02-20,0.10\n", encoding="utf-8")
+    original_scan = adc.scan_candidates
+
+    def scan(**kwargs):
+        watchlist, candidates = original_scan(**kwargs)
+        candidates = [] if news_only else candidates
+        return watchlist, candidates  # news is routed by its dedicated scanner
+
+    monkeypatch.setattr(adc, "scan_candidates", scan)
+    if news_only:
+        monkeypatch.setattr(adc, "scan_reversal_candidates", lambda **kw: [])
+    original_write = adc.write_outputs
+
+    def write(**kwargs):
+        kwargs["exportable_tickets"].sort(
+            key=lambda t: t["entry_family"], reverse=reverse_export_order
+        )
+        return original_write(**kwargs)
+
+    monkeypatch.setattr(adc, "write_outputs", write)
+    out = tmp_path / "out"
     strategies = tmp_path / "strategies"
-    rc = run_main(
-        monkeypatch,
-        *base_args(ohlcv, tmp_path / "out"),
+    args = [
+        *base_args(ohlcv, out),
         "--news-reactions",
         str(news),
+        "--top-research-n",
+        "100",
         "--export-strategies-dir",
         str(strategies),
-    )
+    ]
+    assert run_main(monkeypatch, *args) == 0
     stdout = capsys.readouterr().out
-    assert rc == 1
-    assert "[ERROR] export/validation integration failed" in stdout
-    assert "news_reaction has no downstream detector" in stdout
+    exportable = load_tickets(out / "tickets" / "exportable")
+    research = load_tickets(out / "tickets" / "research_only")
+    news_ticket = research["edge_auto_news_reaction_brk_20260220"]
+    assert news_ticket["research_only"] is True
+    assert news_ticket["hypothesis_type"] == "news_reaction"
+    assert news_ticket["observation"]["reaction_direction"] == "up"
+    assert not {"entry_family", "entry", "validation"} & news_ticket.keys()
+    expected = 0 if news_only else 4
+    assert len(exportable) == expected
+    assert len(list(strategies.glob("*/strategy.yaml"))) == expected
+    assert f"exportable_tickets={expected}" in stdout
+    assert f"exported_strategies={expected}" in stdout
+    assert "news_research_tickets=1" in stdout
+    assert "no downstream detector; excluded from strategy export" in stdout
+    assert "News research-only tickets: **1**" in (out / "daily_report.md").read_text()
+    manifest = json.loads((out / "run_manifest.json").read_text())
+    assert manifest["exportable_ticket_count"] == expected
+    assert manifest["research_ticket_count"] == len(research)
+    if not news_only:
+        assert {t["entry_family"] for t in exportable.values()} == {
+            "pivot_breakout",
+            "gap_up_continuation",
+            "panic_reversal",
+        }
+        assert run_main(monkeypatch, *args) == 1
+        assert "export/validation integration failed" in capsys.readouterr().out
+
+
+def test_main_news_respects_shared_research_cap(monkeypatch, ohlcv, tmp_path):
+    news = tmp_path / "news.csv"
+    news.write_text("symbol,timestamp,reaction_1d\nBRK,2026-02-20,0.10\n")
+    out = tmp_path / "out"
+    assert (
+        run_main(
+            monkeypatch,
+            *base_args(ohlcv, out),
+            "--news-reactions",
+            str(news),
+            "--top-research-n",
+            "1",
+        )
+        == 0
+    )
+    assert len(load_tickets(out / "tickets" / "research_only")) == 1
 
 
 # --- write_outputs --------------------------------------------------------------

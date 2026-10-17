@@ -18,7 +18,7 @@ Examples:
   poi.py "<district> <road name> 学校" --city <municipality or prefecture-level city>   # --city only accepts prefecture-level cities; put the district in the keyword (学校 = school)
   poi.py "<compound name>" --city <city> --region cn       # sources from the region pack (CN: 360 Maps + OSM + Baidu suggestions)
   poi.py "<street address or place name>" --region mx     # packs without a poi service: OSM restricted to that country
-  poi.py "<compound name>"                                # no city: lists which cities in China have a same-name point
+  poi.py "<compound name>"                                # no --region: sources of the pack whose keyword script matches (CN: Han characters)
   poi.py "<hotel name>" --city <city> --out pois.json && tiles.py sheet --points pois.json --zoom 18 --out pois_sheet.jpg
 
 Baidu Maps web place search requires a CAPTCHA, so the script doesn't use it; the Tencent and Amap APIs require a key, so it doesn't use them either.
@@ -116,7 +116,7 @@ def main() -> None:
     ap.add_argument("keyword", help="place name, residential compound name, housing development name, or shop name")
     ap.add_argument("--city", help="city name, e.g. <name>市 or <name> (omit to search the whole country)")
     ap.add_argument("--region", help="region pack (code or name): sources and Nominatim country come from its services.poi")
-    ap.add_argument("--sources", help="any of so,osm,sug, comma-separated (default: the region pack's; without one, so,osm,sug for Han-script keywords, else osm)")
+    ap.add_argument("--sources", help="any of so,osm,sug, comma-separated (default: the region pack's; without --region, the sources of a pack whose services.poi.keyword_scripts match the keyword, else osm)")
     ap.add_argument("--limit", type=int, default=10, help="max results per source")
     ap.add_argument("--country", help="Nominatim country code (default: the region pack's; without one, no restriction)")
     ap.add_argument("--proxy", default=os.environ.get("GEO_PROXY"), help=PROXY_HELP)
@@ -134,8 +134,8 @@ def main() -> None:
         else:
             sys.exit(f"No region pack for '{args.region}' (installed: {', '.join(sorted(regions.packs()))}): "
                      f"pass its ISO 3166-1 alpha-2 code (e.g. --region in) so the search stays inside that country")
-    han = re.search(r"[\u4e00-\u9fff]", args.keyword)
-    args.sources = args.sources or svc.get("sources") or ("so,osm,sug" if han and not args.region else "osm")
+    by_script = None if args.region else regions.poi_for_script(args.keyword)   # sources only: no country restriction without --region
+    args.sources = args.sources or svc.get("sources") or (by_script or {}).get("sources") or "osm"
     args.country = args.country if args.country is not None else svc.get("country", "")
 
     src = set(args.sources.split(","))

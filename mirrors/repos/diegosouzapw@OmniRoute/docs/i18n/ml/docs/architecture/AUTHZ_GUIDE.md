@@ -81,6 +81,16 @@ JWT സാധുത പരിശോധിക്കപ്പെടുകയും
 | `CLIENT_API` | മോഡൽ നൽകുന്ന എൻഡ്പോയിന്റുകൾ — `/api/v1/*`, `/api/v1beta/*`, കൂടാതെ `/v1/*`, `/v1beta/*`, `/chat/completions`, `/responses`, `/models`, `/codex/*` എന്നീ അപരനാമങ്ങളും. | പ്രാബല്യത്തിലുള്ള `REQUIRE_API_KEY` ഫീച്ചർ ഫ്ലാഗ് പ്രവർത്തനക്ഷമമാകുമ്പോൾ ബെയറർ കീ |
 | `MANAGEMENT` | ഡാഷ്ബോർഡ് പേജുകൾ, ക്രമീകരണങ്ങൾ, പ്രൊവൈഡറുകൾ, കീകൾ, അഡ്മിൻ, ഡയഗ്നോസ്റ്റിക്സ് എൻഡ്പോയിന്റുകൾ.                                                                           | ഡാഷ്ബോർഡ് സെഷൻ അല്ലെങ്കിൽ `manage` സ്കോപ്പുള്ള ബെയറർ                              |
 
+A few `MANAGEMENT` actions are **operator-only**: a `manage` key is not enough. Exporting stored
+credentials (`GET /api/settings/export-json`, `GET /api/db-backups/export`,
+`GET /api/db-backups/exportAll`), restoring a backup over the live data
+(`POST /api/db-backups/import` including `dryRun=true`, `POST /api/db-backups` restore by id,
+`POST /api/settings/import-json`), issuing a sync token (`POST /api/sync/tokens`) and minting an
+`admin` CLI access token (`POST /api/cli/tokens`) require a dashboard session, the local CLI
+subject, or login disabled; API keys of any scope and `oma_` access tokens get `403`. The check
+lives in `src/lib/api/operatorCredential.ts` (`resolveOperatorCredential()` /
+`requireOperatorCredential()`).
+
 ## പൈപ്പ്ലൈൻ
 
 ```

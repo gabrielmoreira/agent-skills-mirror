@@ -18,17 +18,21 @@ Keep requested **target**, CLI **harness/intermediary**, serving **family/provid
 Attest both the host harness and its serving family:
 
 ```bash
-if [ "${CLAUDECODE:-}" = "1" ]; then XHOST_HARNESS=claude; XHOST_FAMILY=claude;
-elif [ -n "${CODEX_SANDBOX:-}${CODEX_SANDBOX_NETWORK_DISABLED:-}${CODEX_SESSION_ID:-}${CODEX_THREAD_ID:-}${CODEX_CI:-}" ]; then XHOST_HARNESS=codex; XHOST_FAMILY=codex;
-elif [ "${GROK_AGENT:-}" = "1" ] || [ -n "${GROK_SESSION_ID:-}" ]; then XHOST_HARNESS=grok; XHOST_FAMILY=grok;
+XHOST_SEEN=;
+if [ "${CLAUDECODE:-}" = "1" ]; then XHOST_SEEN="$XHOST_SEEN claude"; fi;
+if [ -n "${CODEX_SANDBOX:-}${CODEX_SANDBOX_NETWORK_DISABLED:-}${CODEX_SESSION_ID:-}${CODEX_THREAD_ID:-}${CODEX_CI:-}" ]; then XHOST_SEEN="$XHOST_SEEN codex"; fi;
+if [ "${GROK_AGENT:-}" = "1" ] || [ -n "${GROK_SESSION_ID:-}" ]; then XHOST_SEEN="$XHOST_SEEN grok"; fi;
+if [ -n "${OMPCODE:-}" ]; then XHOST_HARNESS=omp; XHOST_FAMILY=unknown;
+elif [ "$XHOST_SEEN" = " claude" ] || [ "$XHOST_SEEN" = " codex" ] || [ "$XHOST_SEEN" = " grok" ]; then XHOST_HARNESS="${XHOST_SEEN# }"; XHOST_FAMILY="$XHOST_HARNESS";
+elif [ -n "$XHOST_SEEN" ]; then XHOST_HARNESS=unknown; XHOST_FAMILY=unknown;
 elif [ -n "${CURSOR_AGENT:-}${CURSOR_CONVERSATION_ID:-}" ]; then XHOST_HARNESS=cursor; XHOST_FAMILY=unknown;
 elif [ -n "${OPENCODE_TERMINAL:-}" ]; then XHOST_HARNESS=opencode; XHOST_FAMILY=unknown;
 else XHOST_HARNESS=unknown; XHOST_FAMILY=unknown; fi
 ```
 
-Pass `XHOST_HARNESS` as `CROSS_MODEL_HOST_HARNESS`; pass `XHOST_FAMILY` as the first worker argument. The snippet is evidence, not the verdict: it resolves the harnesses whose environment markers it already names, and where it yields `unknown` on a harness you can identify from your own runtime, attest what you know instead. A harness the snippet does not name needs no new branch here. Both tokens must be peer keys the worker accepts, never a provider's company name. Family is `codex`, `claude`, `grok`, `composer`, `gemini`, or `unknown`. Harness is `codex`, `claude`, `grok`, `cursor`, `opencode`, `antigravity`, or `unknown`. A company name such as `anthropic`, `openai`, or `xai` in either slot makes the worker refuse the job and write no artifact.
+Pass `XHOST_HARNESS` as `CROSS_MODEL_HOST_HARNESS`; pass `XHOST_FAMILY` as the first worker argument. The snippet is evidence, not the verdict: it resolves the harnesses whose environment markers it already names, and where it yields `unknown` on a harness you can identify from your own runtime, attest what you know instead. A harness the snippet does not name needs no new branch here. Both tokens must be peer keys the worker accepts, never a provider's company name. Family is `codex`, `claude`, `grok`, `composer`, `gemini`, or `unknown`. Harness is `codex`, `claude`, `grok`, `cursor`, `opencode`, `antigravity`, `omp`, or `unknown`. A company name such as `anthropic`, `openai`, or `xai` in either slot makes the worker refuse the job and write no artifact.
 
-Cursor is the one harness where your own knowledge cannot fill in the family, because the Cursor harness does not decide which model serves it. Keep family `unknown` unless an observable attestation of the serving family supplies one of the known families above. Never infer serving family from the Cursor brand. An unknown host family cannot pass the automatic same-family check, so skip the automatic cross-model pass.
+Claude Code, Codex, and Grok each serve their own model family, so the snippet takes the family from that harness's marker when it is the only such marker present. Another harness can copy one of those markers (oh-my-pi sets `CLAUDECODE=1` whatever model serves it), and a session started from inside another harness inherits that harness's marker. So the snippet leaves family `unknown` under `OMPCODE` or when more than one of those markers is present. Pass a family the snippet names. Where it leaves family `unknown`, set it only from a model id the runtime publishes as the model serving this session, and only when that id maps to `codex`, `claude`, `grok`, `composer`, or `gemini`. A requested model, the model's own claim, and the product name are not that id. Never infer serving family from the Cursor brand. An unknown host family cannot pass the automatic same-family check, so skip the automatic cross-model pass.
 
 <!-- ce-config-layers:start -->
 **Resolve ordinary CE yaml keys from the two repo files.**
@@ -85,7 +89,7 @@ Pre-dispatch eligibility is based on installed route presence and sanction, not 
   - Call the pass **independent** only when host and target serving families are attestably different. For Cursor default/Auto or an unknown host family, call it a cross-harness review and state that independence is unverified; do not promise agreement promotion before the receipt exists.
   - Announce the one fixed route and every recipient before dispatch. After a failure, apply Step 1's retry/disclosure condition. Reconcile target, harness, route, requested model, and actual model from the artifact.
 - **Interactive host, no peer resolved** (host serving family un-attestable, no different-provider route installed, or disabled by checkout config): one quiet line that the cross-model pass was skipped and why. Name the checkout policy when that is the reason. Never an error.
-- **`mode:agent`:** emit no user-facing prose. The script still writes a one-line stderr audit log per send saying that review content was sent cross-model to the named provider, so the transfer to a third party is auditable.
+- **`mode:agent`:** emit no user-facing prose. The script still writes a one-line stderr audit log per send saying that review content was sent cross-model to the named provider, so the transfer to a third party is auditable. The JSON result still records the peer outcome as `references/modes-and-output.md` defines.
 
 ## Step 4 — Start the detached peer job before local dispatch
 
@@ -136,7 +140,7 @@ The three nested time windows are one budget controlled by one setting (the "kno
 **Do not forward `CROSS_MODEL_HARD_SECS` to the worker.** The runner already passes the ambient environment through, so a knob the user actually set reaches the worker on its own. Re-exporting the orchestrator's *resolved* value would turn a fallback into an explicit override and strip the worker of its own default.
 
 - `<run-id>` = the Stage 1b run id (the same one that forms `<run-dir>`); job state lives under `<run-dir>/jobs/<job-id>/`.
-- `<host-serving-family>` is `codex`, `claude`, `grok`, `composer`, `gemini`, or `unknown`; `<host-harness>` is `codex`, `claude`, `grok`, `cursor`, `opencode`, `antigravity`, or `unknown`.
+- `<host-serving-family>` is `codex`, `claude`, `grok`, `composer`, `gemini`, or `unknown`; `<host-harness>` is `codex`, `claude`, `grok`, `cursor`, `opencode`, `antigravity`, `omp`, or `unknown`.
 - `<target>` is one of `codex`, `claude`, `grok`, `cursor`, `composer`, `opencode`, or `antigravity`; `<fixed-route>` is its already-sanctioned concrete route token from the Step 1 table (`codex`, `claude`, `grok-cli`, `grok-cursor`, `cursor`, `composer`, `opencode`, or `antigravity`).
 - `<base-ref>` = the Stage 1 `BASE` (the diff base the peer reviews via `git diff <base-ref>`).
 - `<run-dir>` = the absolute Stage 4 run dir. The script writes `adversarial-<provider>.json` there **only after** forcing `reviewer` to `adversarial-<provider>` and downgrading peer `safe_auto` → `gated_auto`.
@@ -177,11 +181,11 @@ Repeat that call until the job is terminal or the derived deadline is spent; do 
   "$PY" "$SKILL_DIR/scripts/peer-job-runner.py" result "<job-id>" --path <run-dir>/adversarial-<target>.json
   ```
 
-  The runner checks that it owns the file descriptor and bounds the read. Exit 0 emits the artifact. Exit 2 means the job is still running, so the deadline loop above was left early; return to it rather than classifying. Exit 3 is the only outcome that means the peer produced nothing; it names the job's state, and at that point read `references/cross-model-recovery.md` and follow the branch that matches that state, since it alone owns what happens when the peer yielded no usable artifact. Any other exit means the runner could not complete the read: a trust failure on the artifact or on the job's own state, or a job id that did not resolve. None of those has a recovery branch. Name the failure in Coverage as a degraded cross-model pass, and never fold it into the silent skip.
+  The runner checks that it owns the file descriptor and bounds the read. Exit 0 emits the artifact. Exit 2 means the job is still running, so the deadline loop above was left early; return to it rather than classifying. Exit 3 is the only outcome that means the peer produced nothing; it names the job's state, and at that point read `references/cross-model-recovery.md` and follow the branch that matches that state, since it alone owns what happens when the peer yielded no usable artifact. Any other exit means the runner could not complete the read: a trust failure on the artifact or on the job's own state, or a job id that did not resolve. None of those has a recovery branch. Name the failure in Coverage as a degraded cross-model pass, and never fold it into the clean skip.
 
   Its findings enter ordinary dedup, but agreement promotion is allowed **only when `independence_verified` is `true`**. A false or absent value may contribute findings but never raises confidence. `independence_verified` attests a different serving family; it does not claim the exact served model was verified. `receipt_supported`, `model_actual`, and `effort_actual` carry that separate identity evidence. Peer findings never grant silent-apply authority.
 - In final Coverage, name `cross_model_route`, `model_requested`, `effort_requested`, `receipt_supported`, `model_actual`, `effort_actual`, and `independence_verified` from the artifact. Keep the literal `unverified`; never compress a request into a serving claim such as "via Codex high" when actual model or effort is unverified. The disclosure condition above decides how the peer is named in the report.
-- **Never started / not run** — the job was never started (run conditions not met, disabled by checkout config, host un-attestable, no different-provider route installed, or CLI missing): the pass simply didn't run. Note "cross-model pass: not run" in Coverage for human-facing markdown — or "cross-model pass: disabled by checkout config" when Step 1's checkout policy was the reason; stay silent in `mode:agent`. Ignore any `*.raw.json` leftovers — they are not fold-in artifacts.
+- **Never started / not run** — the job was never started (run conditions not met, disabled by checkout config, host un-attestable, no different-provider route installed, or CLI missing): the pass simply didn't run. Note "cross-model pass: not run" in Coverage for human-facing markdown — or "cross-model pass: disabled by checkout config" when Step 1's checkout policy was the reason. In `mode:agent`, do not announce the skip; the JSON result records it as `references/modes-and-output.md` defines. Ignore any `*.raw.json` leftovers — they are not fold-in artifacts.
 - Empty `findings` → note "cross-model pass: no additional issues" in Coverage.
 - After fold-in (or after deadline reaping), delete the consumed job directory (`<run-dir>/jobs/<job-id>/`). Its log and result are review content and must not outlive their use.
 - A finding sharing a fingerprint with in-process `adversarial` promotes only when the artifact records `independence_verified: true`. Cursor-default artifacts default false; an unattested host skips automatic dispatch.

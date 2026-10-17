@@ -43,25 +43,6 @@ DATA = Path(__file__).parent.parent / "data"
 GLOBAL_TABLES = ("calling_codes", "driving_side", "territories", "country_names")
 GLOBAL_KINDS = ("calling-code", "driving-side", "territories")
 
-# Chinese → English country aliases (common ones only; if not found, retry with the English name)
-COUNTRY_ZH = {
-    "中国": "China", "日本": "Japan", "英国": "United Kingdom", "法国": "France", "美国": "United States", "澳大利亚": "Australia",
-    "香港": "Hong Kong", "澳门": "Macau", "美属维尔京群岛": "U.S. Virgin Islands", "直布罗陀": "Gibraltar", "百慕大": "Bermuda", "开曼群岛": "Cayman Islands", "新喀里多尼亚": "New Caledonia", "法属波利尼西亚": "French Polynesia", "马约特": "Mayotte", "加那利群岛": "Canary Islands", "印度": "India", "泰国": "Thailand", "印尼": "Indonesia", "印度尼西亚": "Indonesia",
-    "马来西亚": "Malaysia", "新加坡": "Singapore", "新西兰": "New Zealand", "南非": "South Africa", "巴西": "Brazil", "墨西哥": "Mexico",
-    "德国": "Germany", "意大利": "Italy", "西班牙": "Spain", "俄罗斯": "Russia", "韩国": "South Korea", "越南": "Vietnam",
-    "菲律宾": "Philippines", "巴基斯坦": "Pakistan", "孟加拉国": "Bangladesh", "斯里兰卡": "Sri Lanka", "尼泊尔": "Nepal", "肯尼亚": "Kenya",
-    "爱尔兰": "Ireland", "加拿大": "Canada", "法属圭亚那": "French Guiana", "荷兰": "Netherlands", "葡萄牙": "Portugal", "丹麦": "Denmark",
-    "挪威": "Norway", "瑞典": "Sweden", "芬兰": "Finland", "阿根廷": "Argentina", "智利": "Chile", "秘鲁": "Peru", "哥伦比亚": "Colombia",
-    "埃及": "Egypt", "土耳其": "Turkey", "伊朗": "Iran", "沙特阿拉伯": "Saudi Arabia", "阿联酋": "United Arab Emirates", "以色列": "Israel",
-    "缅甸": "Myanmar", "柬埔寨": "Cambodia", "老挝": "Laos", "蒙古": "Mongolia", "朝鲜": "North Korea", "台湾": "Taiwan", "瑞士": "Switzerland",
-    "奥地利": "Austria", "比利时": "Belgium", "波兰": "Poland", "捷克": "Czech Republic", "希腊": "Greece", "乌克兰": "Ukraine",
-    "哈萨克斯坦": "Kazakhstan", "摩洛哥": "Morocco", "尼日利亚": "Nigeria", "埃塞俄比亚": "Ethiopia", "坦桑尼亚": "Tanzania", "乌干达": "Uganda",
-    "莫桑比克": "Mozambique", "纳米比亚": "Namibia", "津巴布韦": "Zimbabwe", "赞比亚": "Zambia", "马耳他": "Malta", "塞浦路斯": "Cyprus",
-    "冰岛": "Iceland", "古巴": "Cuba", "牙买加": "Jamaica", "巴哈马": "Bahamas", "圭亚那": "Guyana", "苏里南": "Suriname",
-    "巴布亚新几内亚": "Papua New Guinea", "斐济": "Fiji", "萨摩亚": "Samoa", "汤加": "Tonga", "阿尔及利亚": "Algeria", "突尼斯": "Tunisia",
-    "塞内加尔": "Senegal", "科特迪瓦": "Ivory Coast", "加纳": "Ghana", "喀麦隆": "Cameroon", "马达加斯加": "Madagascar", "毛里求斯": "Mauritius",
-    "留尼汪": "Réunion", "马提尼克": "Martinique", "瓜德罗普": "Guadeloupe", "波多黎各": "Puerto Rico", "关岛": "Guam", "格陵兰": "Greenland",
-}
 CONTINENT_ZH = {"亚洲": ["Asia"], "欧洲": ["Europe"], "非洲": ["Africa"], "大洋洲": ["Oceania"], "北美洲": ["Northern America", "North America"],
                 "南美洲": ["South America"], "美洲": ["Americas"], "加勒比": ["Caribbean"], "中美洲": ["Central America"], "南极洲": ["Antarctica"]}
 
@@ -100,7 +81,7 @@ _CN_NAMES: dict | None = None
 
 
 def _country_en(name: str) -> str:
-    """Chinese name / alias → the English name the tables use. Checks data/country_names.json (300 countries + aliases) first, then the built-in COUNTRY_ZH."""
+    """Chinese name / alias → the English name the tables use, from data/country_names.json (300 countries + aliases)."""
     global _CN_NAMES
     n = name.strip()
     if _CN_NAMES is None:
@@ -113,7 +94,7 @@ def _country_en(name: str) -> str:
     for en, zh in en2zh.items():
         if zh == n:
             return en
-    return COUNTRY_ZH.get(n, n)
+    return n
 
 
 def lookup_driving_side(value: str | None, country: str | None) -> dict:

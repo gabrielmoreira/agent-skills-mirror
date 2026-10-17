@@ -113,7 +113,7 @@ def test_no_dividend_keeps_negative_fcf_observation(is_reit):
         ({"operatingCashFlow": None}, 100, "MISSING_DATA"),
         ({"capitalExpenditure": math.inf}, 100, "MISSING_DATA"),
         ({"operatingCashFlow": 1e308, "capitalExpenditure": -1e308}, 100, "ZERO"),
-        ({"operatingCashFlow": -1e308, "capitalExpenditure": -1e308}, 100, "MISSING_DATA"),
+        ({"operatingCashFlow": -1e308, "capitalExpenditure": -1e308}, 100, "NON_FINITE"),
     ],
 )
 def test_invalid_and_derived_fcf_stay_json_finite(cashflow, income, expected):
@@ -171,6 +171,7 @@ def test_reit_missing_ffo_component_cannot_be_sustainable(field):
     }
     del cash_flow[field]
     result = module.StockAnalyzer.analyze_dividend_sustainability([], [cash_flow], is_reit=True)
+    assert result["sustainability_basis"] == "FFO_UNAVAILABLE"
     assert result["payout_ratio"] is None
     assert result["sustainable"] is False
 
@@ -308,3 +309,36 @@ def test_screen_ranking_bonus_only_for_supported_coverage(monkeypatch):
     assert shortfall["fcf_coverage_status"] == "NEGATIVE_FCF"
     assert covered["composite_score"] - shortfall["composite_score"] == 10
     json.dumps(results, allow_nan=False)
+
+
+@pytest.mark.parametrize("cash_flows", [[], [{}], [{"dividendsPaid": 0}]])
+def test_reit_without_payout_assessment_has_unavailable_basis(cash_flows):
+    result = module.StockAnalyzer.analyze_dividend_sustainability([], cash_flows, is_reit=True)
+    assert result["sustainability_basis"] == "FFO_UNAVAILABLE"
+    assert result["sustainable"] is False
+
+
+@pytest.mark.parametrize("dividends", [None, 0])
+def test_reit_with_ffo_but_no_dividend_assessment_has_unavailable_basis(dividends):
+    result = analyze(is_reit=True, dividends=dividends)
+    assert result["sustainability_basis"] == "FFO_UNAVAILABLE"
+    assert result["sustainable"] is False
+
+
+@pytest.mark.parametrize("capex", [-1e308, 1e308])
+def test_derived_fcf_overflow_is_distinct_from_missing_data(capex):
+    result = analyze(operatingCashFlow=-1e308, capitalExpenditure=capex)
+    assert result["fcf_amount"] is None
+    assert result["fcf_payout_ratio"] is None
+    assert result["fcf_status"] == "NON_FINITE"
+    assert result["fcf_coverage_status"] == "NON_FINITE"
+    assert result["sustainable"] is False
+    assert "coverage cannot be assessed" in result["sustainability_note"]
+    json.dumps(result, allow_nan=False)
+
+
+def test_zero_dividend_takes_precedence_over_nonfinite_fcf_coverage():
+    result = analyze(dividends=0, operatingCashFlow=-1e308, capitalExpenditure=1e308)
+    assert result["fcf_status"] == "NON_FINITE"
+    assert result["fcf_coverage_status"] == "NO_DIVIDEND"
+    assert result["sustainable"] is False

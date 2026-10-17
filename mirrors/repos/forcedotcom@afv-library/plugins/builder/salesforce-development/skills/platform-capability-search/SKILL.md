@@ -26,7 +26,7 @@ When the user asks "what could help me do X", "which plugin would help with X", 
 ${CLAUDE_PLUGIN_ROOT}/scripts/sf-context plugin-match "<text>"
 ```
 
-Pass the user's task description as `<text>` exactly as given; do not paraphrase or fabricate it. Claude Code automatically supplies the current session id to the Bash subprocess, so candidates actually displayed by this command can be correlated with a later explicit same-session decision; do not add, invent, or substitute a session id. Present the ranked results faithfully — each candidate's name, confidence band, and its own install command — or the honest "no matching uninstalled plugin" result when there is nothing to show. This command only surfaces candidates; it never installs. A later, separate, explicit user acceptance is required before running the guarded `/salesforce-development:plugin-install <name>` flow for exactly one named plugin.
+In Codex, add `--client codex` before `<text>`. Pass the user's task description as `<text>` exactly as given; do not paraphrase or fabricate it. The host supplies the current session id to the subprocess, so candidates actually displayed by this command can be correlated with a later explicit same-session decision; do not add, invent, or substitute a session id. Present the ranked results faithfully — each candidate's name, confidence band, and its own install command — or the honest "no matching uninstalled plugin" result when there is nothing to show. This command only surfaces candidates; it never installs. A later, separate, explicit user acceptance is required before running the guarded `/salesforce-development:plugin-install <name>` flow for exactly one named plugin.
 
 ## Show the journey hints
 
